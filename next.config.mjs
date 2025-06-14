@@ -1,17 +1,18 @@
-import { withContentlayer } from "next-contentlayer"
+// next.config.mjs
+import createNextIntlPlugin from 'next-intl/plugin';
+import { withContentlayer } from 'next-contentlayer';
 
-import "./env.mjs"
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts'); // hoặc request.tsx
 
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["avatars.githubusercontent.com"],
+    domains: ['avatars.githubusercontent.com'],
   },
   experimental: {
-    appDir: true,
-    serverComponentsExternalPackages: ["@prisma/client"],
+    // Không cần `appDir: true` nếu Next 14+, App Router mặc định bật
   },
-}
+  serverExternalPackages: ['@prisma/client'],
+};
 
-export default withContentlayer(nextConfig)
+export default withContentlayer(withNextIntl(nextConfig));

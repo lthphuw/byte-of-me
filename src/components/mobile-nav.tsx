@@ -8,7 +8,7 @@ import { Icons } from "@/components/icons"
 import { siteConfig } from "@/config/site"
 import { useLockBody } from "@/hooks/use-lock-body"
 import { cn } from "@/lib/utils"
-import { MainNavItem } from "types"
+import { MainNavItem } from "@/types"
 import { LiquidGlass } from "./liquid-glass"
 
 // Constants for positioning offsets

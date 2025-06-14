@@ -10,7 +10,9 @@ const textTypes = ["text", "emphasis", "strong", "inlineCode"]
 function flattenNode(node) {
   const p = []
   visit(node, (node) => {
-    if (!textTypes.includes(node.type)) return
+    if (!textTypes.includes(node.type)) {
+      return
+    }
     p.push(node.value)
   })
   return p.join(``)
