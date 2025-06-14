@@ -1,7 +1,7 @@
 "use client"
 
 import { autoUpdate, FloatingPortal, offset, useFloating, useFocus, useInteractions } from '@floating-ui/react';
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
 import * as React from "react";
@@ -9,6 +9,7 @@ import * as React from "react";
 import { Icons } from "@/components/icons";
 import { MobileNav } from "@/components/mobile-nav";
 import { siteConfig } from "@/config/site";
+import { useTranslations } from '@/hooks/use-translations';
 import { cn } from "@/lib/utils";
 import { MainNavItem } from "@/types";
 
@@ -18,13 +19,13 @@ interface MainNavProps {
   minimized?: boolean;
 }
 
-const logoAnimVariants = {
+const logoAnimVariants: Variants = {
   minimized: {
     scale: 0.9,
     x: 0,
     opacity: 0.95,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 100,
       damping: 10,
       mass: 0.4,
@@ -35,7 +36,7 @@ const logoAnimVariants = {
     x: 0,
     opacity: 1,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 100,
       damping: 10,
       mass: 0.4,
@@ -44,6 +45,7 @@ const logoAnimVariants = {
 };
 
 export function MainNav({ items, children, minimized }: MainNavProps) {
+  const t = useTranslations("global.header.nav")
   const segment = useSelectedLayoutSegment()
   const [showMobileMenu, setShowMobileMenu] = React.useState(false)
   const [originPosition, setOriginPosition] = React.useState({ x: 0, y: 0 })
@@ -107,7 +109,7 @@ export function MainNav({ items, children, minimized }: MainNavProps) {
                 item.disabled && "cursor-not-allowed opacity-80"
               )}
             >
-              {item.title}
+              {t(item.title as any)}
             </Link>
           ))}
         </nav>

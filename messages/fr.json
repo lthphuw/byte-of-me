@@ -1,0 +1,26 @@
+{
+    "global": {
+        "i18nToggle": {
+            "Toggle language": "Basculer la langue",
+            "Vietnamese": "Vietnamien",
+            "English": "Anglais",
+            "French": "Français"
+        },
+        "modeToggle": {
+            "Toggle theme": "Basculer le thème",
+            "Light": "Clair",
+            "Dark": "Sombre",
+            "System": "Système"
+        },
+        "header": {
+            "nav": {
+                "About": "À propos",
+                "Experience": "Expérience",
+                "Projects": "Projets",
+                "Hobbies": "Passe-temps",
+                "More": "Plus",
+                "Let's talk": "Parlons-en"
+            }
+        }
+    }
+}

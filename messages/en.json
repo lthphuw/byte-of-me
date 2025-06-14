@@ -1,6 +1,26 @@
 {
-    "HomePage": {
-        "title": "Hello world!",
-        "about": "Go to the about page"
+    "global": {
+        "i18nToggle": {
+            "Toggle language": "Toggle language",
+            "Vietnamese": "Vietnamese",
+            "English": "English",
+            "French": "French"
+        },
+        "modeToggle": {
+            "Toggle theme": "Toggle theme",
+            "Light": "Light",
+            "Dark": "Dark",
+            "System": "System"
+        },
+        "header": {
+            "nav": {
+                "About": "About",
+                "Experience": "Experience",
+                "Projects": "Projects",
+                "Hobbies": "Hobbies",
+                "More": "More",
+                "Let's talk": "Let's talk"
+            }
+        }
     }
 }

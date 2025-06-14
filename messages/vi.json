@@ -1,0 +1,26 @@
+{
+    "global": {
+        "i18nToggle": {
+            "Toggle language": "Chuyển đổi ngôn ngữ",
+            "Vietnamese": "Tiếng Việt",
+            "English": "Tiếng Anh",
+            "French": "Tiếng Pháp"
+        },
+        "modeToggle": {
+            "Toggle theme": "Chuyển đổi chủ đề",
+            "Light": "Sáng",
+            "Dark": "Tối",
+            "System": "Hệ thống"
+        },
+        "header": {
+            "nav": {
+                "About": "Giới thiệu",
+                "Experience": "Kinh nghiệm",
+                "Projects": "Dự án",
+                "Hobbies": "Sở thích",
+                "More": "Thêm",
+                "Let's talk": "Liên lạc"
+            }
+        }
+    }
+}

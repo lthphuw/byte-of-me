@@ -1,62 +1,81 @@
-"use client"
+"use client";
 
-import { useFloating, offset, flip, shift, useClick, useDismiss, useRole, useInteractions, FloatingPortal, autoUpdate } from "@floating-ui/react"
-import { AnimatePresence, motion, Variants } from "framer-motion"
-import { useCallback, useState } from "react"
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { autoUpdate, flip, FloatingPortal, offset, shift, useClick, useDismiss, useFloating, useInteractions, useRole } from "@floating-ui/react";
+import { AnimatePresence, motion, Variants } from "framer-motion";
+import { useLocale } from 'next-intl';
+import { useCallback, useEffect, useState } from "react";
 
-import { Button } from "@/components/ui/button"
-import { Flags, FlagType } from "./flag"
-import { LiquidGlass } from "./liquid-glass"
+import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/hooks/use-translations";
+import { cn } from "@/lib/utils";
+import { Flags, FlagType } from "./flag";
+import { LiquidGlass } from "./liquid-glass";
 
-export interface I18NToggleProps {
-  liquidGlassDisabled?: boolean
+interface I18NToggleProps {
+  liquidGlassDisabled?: boolean;
 }
 
-export function I18NToggle({ liquidGlassDisabled }: I18NToggleProps) {
-  const [lang, setLang] = useState<FlagType>("en")
-  const FlagComponent = Flags[lang]
-  const [open, setOpen] = useState(false)
+const SUPPORTED_LANGUAGES: FlagType[] = ["en", "vi", "fr"];
+const LANGUAGE_NAMES: Record<FlagType, string> = {
+  en: "English",
+  vi: "Vietnamese",
+  fr: "French",
+};
+
+export function I18NToggle({ liquidGlassDisabled = false }: I18NToggleProps) {
+  const t = useTranslations("global.i18nToggle");
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentLang, setCurrentLang] = useState<FlagType>("en");
+
+  const FlagComponent = Flags[currentLang];
 
   const { refs, floatingStyles, context } = useFloating({
-    open,
-    onOpenChange: setOpen,
+    open: isOpen,
+    onOpenChange: setIsOpen,
     strategy: "absolute",
     placement: "bottom-end",
     middleware: [offset(8), flip(), shift()],
     whileElementsMounted: autoUpdate,
-  })
+  });
 
-  const click = useClick(context)
-  const dismiss = useDismiss(context)
-  const role = useRole(context)
   const { getReferenceProps, getFloatingProps } = useInteractions([
-    click,
-    dismiss,
-    role,
-  ])
+    useClick(context),
+    useDismiss(context),
+    useRole(context),
+  ]);
 
-  const changeLanguage = useCallback((lang: FlagType) => {
-    setLang(lang)
-    // router.push(`/vi/path`, undefined, { locale: lang })
-  }, [])
+  const changeLanguage = useCallback(
+    (newLang: FlagType) => {
+      setCurrentLang(newLang);
+      setIsOpen(false);
+      router.replace(pathname, { locale: newLang });
+    },
+    [router, pathname]
+  );
 
   const itemVariants: Variants = {
     hidden: { opacity: 0, y: 10 },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      transition: {
-        delay: i * 0.1,
-        type: "spring",
-        stiffness: 260,
-        damping: 20,
-      },
+      transition: { delay: i * 0.1, type: "spring", stiffness: 100, damping: 20 },
     }),
     exit: { opacity: 0, y: 10 },
-  }
+  };
+
+  useEffect(() => {
+    setCurrentLang(locale);
+  }, [locale]);
 
   return (
-    <motion.div layout style={{ position: "relative" }}>
+    <motion.div
+      layout="position"
+      className="relative"
+    >
       <LiquidGlass
         variant="button-icon"
         intensity="medium"
@@ -76,7 +95,7 @@ export function I18NToggle({ liquidGlassDisabled }: I18NToggleProps) {
           <AnimatePresence mode="wait">
             {FlagComponent && (
               <motion.span
-                key={lang}
+                key={currentLang}
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
@@ -86,19 +105,18 @@ export function I18NToggle({ liquidGlassDisabled }: I18NToggleProps) {
               </motion.span>
             )}
           </AnimatePresence>
-          <span className="sr-only">Toggle language</span>
+          <span className="sr-only">{t("Toggle language")}</span>
         </Button>
       </LiquidGlass>
 
       <FloatingPortal>
         <AnimatePresence>
-          {open && (
+          {isOpen && (
             <div
               ref={refs.setFloating}
               style={{
                 ...floatingStyles,
-                zIndex: 1000,
-                position: "absolute",
+                zIndex: 60,
               }}
               {...getFloatingProps()}
             >
@@ -114,25 +132,32 @@ export function I18NToggle({ liquidGlassDisabled }: I18NToggleProps) {
                   rippleEffect
                   flowOnHover
                   stretchOnDrag={false}
-                  className="mt-0 min-w-[160px] rounded-md p-1 text-sm shadow-xl"
+                  className="mt-0 min-w-[160px] rounded-md border-none p-1 text-sm shadow-2xl hover:border-none hover:shadow-2xl"
                 >
-                  {["vi", "en", "fr"].map((lng, index) => {
-                    const Flag = Flags[lng as FlagType]
+                  {SUPPORTED_LANGUAGES.map((lang, index) => {
+                    const Flag = Flags[lang];
                     return (
                       <motion.div
-                        key={lng}
+                        key={lang}
                         custom={index}
                         variants={itemVariants}
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        onClick={() => changeLanguage(lng as FlagType)}
-                        className="flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 hover:bg-accent"
+                        onClick={() => changeLanguage(lang)}
+                        className={cn(
+                          "flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
+                          lang === locale ? "bg-muted text-primary" : "text-muted-foreground hover:bg-muted"
+                        )}
                       >
-                        <Flag className="mr-2 size-5" />
-                        <span>{lng === "vi" ? "Vietnamese" : lng === "en" ? "English" : "French"} ({lng})</span>
+                        <Flag className="size-5" />
+                        <span>
+                          {t(LANGUAGE_NAMES[lang])}{" "}
+                          <span className="uppercase tracking-wide">{(lang)}</span>
+                        </span>
                       </motion.div>
-                    )
+
+                    );
                   })}
                 </LiquidGlass>
               </motion.div>
@@ -141,5 +166,5 @@ export function I18NToggle({ liquidGlassDisabled }: I18NToggleProps) {
         </AnimatePresence>
       </FloatingPortal>
     </motion.div>
-  )
+  );
 }

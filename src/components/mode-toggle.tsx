@@ -1,32 +1,33 @@
 "use client"
+import { useTranslations } from '@/hooks/use-translations';
 
-import { useTheme } from "next-themes"
 import {
-  useFloating,
-  offset,
-  flip,
-  shift,
-  useClick,
-  useDismiss,
-  useRole,
-  useInteractions,
   FloatingPortal,
   autoUpdate,
-  autoPlacement,
-} from "@floating-ui/react"
-import { useState } from "react"
-import { motion, AnimatePresence, Variants } from "framer-motion"
+  offset,
+  useClick,
+  useDismiss,
+  useFloating,
+  useInteractions,
+  useRole
+} from "@floating-ui/react";
+import { AnimatePresence, Variants, motion } from "framer-motion";
+import { useTheme } from "next-themes";
+import { useState } from "react";
 
-import { Icons } from "@/components/icons"
-import { Button } from "@/components/ui/button"
-import { LiquidGlass } from "./liquid-glass"
+import { Icons } from "@/components/icons";
+import { Button } from "@/components/ui/button";
+import { cn } from '@/lib/utils';
+import { LiquidGlass } from "./liquid-glass";
 
 export interface ModeToggleProps {
   liquidGlassDisabled?: boolean
 }
 
 export function ModeToggle({ liquidGlassDisabled }: ModeToggleProps) {
-  const { setTheme } = useTheme()
+  const t = useTranslations('global.modeToggle');
+
+  const { theme, setTheme } = useTheme()
   const [open, setOpen] = useState(false)
 
   const { refs, floatingStyles, context } = useFloating({
@@ -55,7 +56,7 @@ export function ModeToggle({ liquidGlassDisabled }: ModeToggleProps) {
       y: 0,
       transition: {
         delay: i * 0.1,
-        type: "spring",
+        type: "spring" as const,
         stiffness: 260,
         damping: 20,
       },
@@ -83,7 +84,7 @@ export function ModeToggle({ liquidGlassDisabled }: ModeToggleProps) {
         >
           <Icons.sun className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <Icons.moon className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">Toggle theme</span>
+          <span className="sr-only">{t("Toggle theme")}</span>
         </Button>
       </LiquidGlass>
 
@@ -94,8 +95,7 @@ export function ModeToggle({ liquidGlassDisabled }: ModeToggleProps) {
               ref={refs.setFloating}
               style={{
                 ...floatingStyles,
-                zIndex: 1000,
-                position: "absolute",
+                zIndex: 60,
               }}
               {...getFloatingProps()}
             >
@@ -111,12 +111,12 @@ export function ModeToggle({ liquidGlassDisabled }: ModeToggleProps) {
                   rippleEffect
                   flowOnHover
                   stretchOnDrag={false}
-                  className="mt-0 min-w-[140px] rounded-md p-1 text-sm shadow-xl"
+                  className="mt-0 box-border min-w-[140px] rounded-md border-none p-1 text-sm shadow-2xl hover:border-none hover:shadow-2xl"
                 >
                   {[
-                    { theme: "light", icon: Icons.sun, label: "Light" },
-                    { theme: "dark", icon: Icons.moon, label: "Dark" },
-                    { theme: "system", icon: Icons.laptop, label: "System" },
+                    { theme: "light", icon: Icons.sun, label: t("Light") },
+                    { theme: "dark", icon: Icons.moon, label: t("Dark") },
+                    { theme: "system", icon: Icons.laptop, label: t("System") },
                   ].map((item, index) => (
                     <motion.div
                       key={item.theme}
@@ -126,8 +126,10 @@ export function ModeToggle({ liquidGlassDisabled }: ModeToggleProps) {
                       animate="visible"
                       exit="exit"
                       onClick={() => setTheme(item.theme)}
-                      className="flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 hover:bg-accent"
-                    >
+                      className={cn(
+                        "flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
+                        theme === item.theme ? "bg-muted text-primary" : "text-muted-foreground hover:bg-muted"
+                      )}>
                       <item.icon className="mr-2 size-4" />
                       <span>{item.label}</span>
                     </motion.div>

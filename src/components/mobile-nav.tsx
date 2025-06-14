@@ -1,6 +1,6 @@
 "use client"
 
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence, motion, Variants } from "framer-motion"
 import Link from "next/link"
 import * as React from "react"
 
@@ -30,36 +30,47 @@ interface MobileNavProps extends React.ComponentProps<typeof motion.div> {
 }
 
 // Animation variants for the container
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: {
     opacity: 0,
     scale: 0.3,
-    transition: { duration: 0.3, ease: "easeIn", delay: 0.1 },
+    transition: {
+      duration: 0.3,
+      ease: "easeIn",
+      delay: 0.1,
+    },
   },
   visible: {
     opacity: 1,
     scale: 1,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       duration: 0.3,
       ease: "easeOut",
       when: "beforeChildren",
       delayChildren: 0.1,
       staggerChildren: 0.05,
-    },
+    } as const, // Đảm bảo kiểu transition hợp lệ
   },
   exit: {
     opacity: 0,
     scale: 0,
-    transition: { duration: 0.3, ease: "easeOut" },
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+    },
   },
-}
+};
 
 // Animation variants for individual items
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } },
-}
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3, ease: "easeOut" } as const,
+  },
+};
 
 /**
  * A mobile navigation component that slides in with animation and locks body scroll.

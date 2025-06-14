@@ -55,7 +55,7 @@ export function SiteHeader() {
             {/* Main Header */}
             <motion.header
                 className={cn(
-                    "fixed left-0 top-0 z-40 w-full pl-6 md:pl-0",
+                    "fixed left-0 top-0 z-50 w-full pl-6 md:pl-0",
                     themeStyles,
                     isCompact && "mr-auto pl-0 md:left-6"
                 )}
