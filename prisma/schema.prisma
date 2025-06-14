@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  firstName     String?
+  lastName      String?
+  birthdate     String?
+  tagLine       String?
+  email         String?   @unique
+  phoneNumber   String?   @unique @db.VarChar(20) // Phone number with max length
+  linkedIn      String?   @unique @db.VarChar(255) // LinkedIn profile URL
+  facebook      String?   @unique @db.VarChar(255) // Facebook profile URL
+  github        String?   @unique @db.VarChar(255) // GitHub profile URL
+  leetCode      String?   @unique @db.VarChar(255) // LeetCode profile URL
+  twitter       String?   @unique @db.VarChar(255) // Twitter/X profile URL
+  portfolio     String?   @unique @db.VarChar(255) // Personal portfolio URL
+  stackOverflow String?   @unique @db.VarChar(255) // Stack Overflow profile URL
+  image         String?   @db.VarChar(255) // Profile image URL
+  imageCaption  String?
+  quote         String?   @db.Text // Supports longer quotes
+  createdAt     DateTime  @default(now()) @map(name: "created_at")
+  updatedAt     DateTime  @default(now()) @map(name: "updated_at")
+  @@map(name: "users")
+}

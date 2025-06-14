@@ -1,0 +1,61 @@
+import { cn } from "@/lib/utils"
+import * as React from "react"
+
+interface HomeShellProps extends React.HTMLAttributes<HTMLDivElement> { }
+interface AboutShellProps extends React.HTMLAttributes<HTMLDivElement> { }
+
+export function HomeShell({
+  children,
+  className,
+  ...props
+}: HomeShellProps) {
+  return (
+    <section
+      className={cn(
+        "mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 pb-16 pt-20 sm:px-6 sm:pt-32",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </section>
+  )
+}
+
+
+export function AboutShell({
+  children,
+  className,
+  ...props
+}: AboutShellProps) {
+  return (
+    <section
+      className={cn(
+        "mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 sm:px-6 sm:pt-32",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </section>
+  )
+}
+
+
+export function ExperiencesShell({
+  children,
+  className,
+  ...props
+}: AboutShellProps) {
+  return (
+    <section
+      className={cn(
+        "mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 sm:px-6 sm:pt-32",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </section>
+  )
+}
