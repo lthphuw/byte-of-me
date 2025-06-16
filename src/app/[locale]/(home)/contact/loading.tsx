@@ -1,11 +1,11 @@
-import { ExperiencesShell } from "@/components/shell"
+import { ContactShell } from "@/components/shell"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
-export default function ExperiencesLoading() {
+export default function ContactLoading() {
     return (
-        <ExperiencesShell>
+        <ContactShell>
             <Skeleton className={cn("size-full")} />
-        </ExperiencesShell>
+        </ContactShell>
     )
 }

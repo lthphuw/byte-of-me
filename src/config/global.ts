@@ -9,7 +9,7 @@ export const globalConfig: GlobalConfig = {
             },
             {
                 title: "Experience",
-                href: "/experiences",
+                href: "/experience",
             },
             {
                 title: "Projects",

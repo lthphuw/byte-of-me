@@ -111,7 +111,7 @@ export const MobileNav = React.forwardRef<HTMLDivElement, MobileNavProps>(
             initial="hidden"
             animate="visible"
             exit="exit"
-            style={{ ...style, ...positionOffset, transformOrigin }}
+            style={{ ...style, ...positionOffset, transformOrigin, left: 48, right: 48 }}
             {...motionProps}
           >
             <LiquidGlass
@@ -123,7 +123,7 @@ export const MobileNav = React.forwardRef<HTMLDivElement, MobileNavProps>(
             >
               <motion.div
                 className="relative z-20 grid gap-6 bg-transparent p-4 text-popover-foreground"
-                variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
+                variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
               >
                 <Link href="/" onClick={handleClose} className="flex items-center space-x-2">
                   <motion.div key="logo" initial="hidden" animate="visible" exit="hidden">

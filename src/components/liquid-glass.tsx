@@ -16,6 +16,7 @@ interface LiquidGlassProps {
     onDragStart?: () => void
     onDragEnd?: () => void
     disabled?: boolean;
+    disabledVibrantPress?: boolean;
 }
 
 export function LiquidGlass({
@@ -29,7 +30,8 @@ export function LiquidGlass({
     onClick,
     onDragStart,
     onDragEnd,
-    disabled
+    disabled,
+    disabledVibrantPress
 }: LiquidGlassProps) {
     const [isJiggling, setIsJiggling] = useState(false)
     const [isDragging, setIsDragging] = useState(false)
@@ -104,8 +106,8 @@ export function LiquidGlass({
                 setIsDragging(true)
                 dragStartPos.current = { x: e.clientX, y: e.clientY }
                 onDragStart?.()
-            } else if (variant === "button") {
-                setIsPressed(true)
+            } else if (variant === "button" && !disabledVibrantPress) {
+                setIsPressed(true);
             }
 
             createRipple(e)
@@ -178,7 +180,7 @@ export function LiquidGlass({
                 setIsDragging(true)
                 dragStartPos.current = { x: touch.clientX, y: touch.clientY }
                 onDragStart?.()
-            } else if (variant === "button") {
+            } else if (variant === "button" && !disabledVibrantPress) {
                 setIsPressed(true)
             }
 

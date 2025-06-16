@@ -1,5 +1,5 @@
 import ExperienceTimeline, { CompanyExperience } from "@/components/experience-timeline";
-import { ExperiencesShell } from "@/components/shell";
+import { ExperienceShell } from "@/components/shell";
 
 const experienceData: CompanyExperience[] = [
     {
@@ -72,10 +72,10 @@ const experienceData: CompanyExperience[] = [
 
 export default function Page() {
     return (
-        <ExperiencesShell>
+        <ExperienceShell>
             <ExperienceTimeline
                 experienceData={experienceData}
             />
-        </ExperiencesShell>
+        </ExperienceShell>
     );
 }

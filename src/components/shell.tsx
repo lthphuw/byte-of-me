@@ -42,7 +42,27 @@ export function AboutShell({
 }
 
 
-export function ExperiencesShell({
+export function ExperienceShell({
+  children,
+  className,
+  ...props
+}: AboutShellProps) {
+  return (
+    <section
+      className={cn(
+        "mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 sm:px-6 sm:pt-32",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </section>
+  )
+}
+
+
+
+export function ContactShell({
   children,
   className,
   ...props

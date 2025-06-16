@@ -18,7 +18,7 @@ export function GreetingWriter({ text = "Hi, I'm Phu." }: GreetingWriterProps) {
     useEffect(() => {
         const controls = animate(count, text.length, {
             type: "tween",
-            duration: text.length * 0.05,
+            duration: text.length * 0.3,
             ease: "easeInOut",
             onComplete: () => setDone(true),
         });

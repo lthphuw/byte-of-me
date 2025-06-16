@@ -1,11 +1,11 @@
 
-interface ExperiencesLayoutProps {
+interface ExperienceLayoutProps {
     children?: React.ReactNode
 }
 
-export default async function ExperiencesLayout({
+export default async function ExperienceLayout({
     children,
-}: ExperiencesLayoutProps) {
+}: ExperienceLayoutProps) {
 
     return (
         <div className="flex flex-col gap-6">

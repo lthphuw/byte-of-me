@@ -35,19 +35,6 @@ export type SiteConfig = {
   }
 }
 
-export type DocsConfig = {
-  mainNav: MainNavItem[]
-  sidebarNav: SidebarNavItem[]
-}
-
-export type MarketingConfig = {
-  mainNav: MainNavItem[]
-}
-
-export type HomeConfig = {
-  mainNav: MainNavItem[]
-}
-
 export type GlobalConfig = {
   header: {
     nav: MainNavItem[]

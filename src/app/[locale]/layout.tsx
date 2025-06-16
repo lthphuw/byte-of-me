@@ -12,7 +12,7 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 
 import "@/styles/globals.css";
-import "./globals.css";
+import "@/styles/liquid-glass.css";
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 
 const fontSans = FontSans({
@@ -22,7 +22,7 @@ const fontSans = FontSans({
 
 // Font files can be colocated inside of `pages`
 const fontHeading = localFont({
-  src: "../../../assets/fonts/CalSans-SemiBold.woff2",
+  src: "../../assets/fonts/CalSans-SemiBold.woff2",
   variable: "--font-heading",
 })
 
@@ -73,7 +73,7 @@ export const metadata = {
   manifest: `${siteConfig.url}/site.webmanifest`,
 }
 
-export default async function RootLayout({
+export default async function RootLocaleLayout({
   children,
   params
 }: {

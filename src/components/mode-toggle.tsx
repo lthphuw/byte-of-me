@@ -57,8 +57,8 @@ export function ModeToggle({ liquidGlassDisabled }: ModeToggleProps) {
       transition: {
         delay: i * 0.1,
         type: "spring" as const,
-        stiffness: 260,
-        damping: 20,
+        stiffness: 130,
+        damping: 10,
       },
     }),
     exit: { opacity: 0, y: 10 },
@@ -100,14 +100,14 @@ export function ModeToggle({ liquidGlassDisabled }: ModeToggleProps) {
               {...getFloatingProps()}
             >
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
+                initial={{ opacity: 0.3, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 130, damping: 10 }}
               >
                 <LiquidGlass
                   variant="panel"
-                  intensity="medium"
+                  intensity="strong"
                   rippleEffect
                   flowOnHover
                   stretchOnDrag={false}

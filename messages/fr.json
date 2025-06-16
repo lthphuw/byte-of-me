@@ -1,5 +1,6 @@
 {
     "global": {
+        "Table of Content": "Sommaire",
         "i18nToggle": {
             "Toggle language": "Basculer la langue",
             "Vietnamese": "Vietnamien",
@@ -22,5 +23,87 @@
                 "Let's talk": "Parlons-en"
             }
         }
+    },
+    "notFound": {
+        "404 - Page Not Found": "404 - Page non trouvée",
+        "Oops! Page not found": "Oups ! Page introuvable",
+        "Sorry, we couldn’t find that page": "Désolé, je ne trouve pas la page demandée",
+        "Please check the URL or go back home": "Veuillez vérifier l’URL ou revenir à l’accueil",
+        "Go back": "Retourner",
+        "Home": "Accueil",
+        "About me": "À propos de moi",
+        "Learn more about my background and journey": "En savoir plus sur mon parcours et mes expériences",
+        "See my work": "Voir mes projets",
+        "Check out the projects I've built": "Découvrez les projets que j'ai réalisés",
+        "Contact": "Contact",
+        "Reach out for collaboration or questions": "Contactez-moi pour toute collaboration ou question",
+        "Explore": "Explorer"
+    },
+    "home": {
+        "See my work": "Voir mon travail",
+        "README": "README",
+        "greeting": "Salut, je suis Phu",
+        "tagline": "Code, carrière, contrôleur — un octet à la fois",
+        "bannerAlt": "Pris au Musée d'Histoire Militaire du Vietnam, ce tableau de 2024 est intitulé « Sống bám đá, chết hoá đá » — « S'accrocher aux rochers dans la vie, se transformer en pierre dans la mort. »",
+        "bannerCaption": "Pris au Musée d'Histoire Militaire du Vietnam, ce tableau de 2024 est intitulé « Sống bám đá, chết hoá đá » — « S'accrocher aux rochers dans la vie, se transformer en pierre dans la mort. »",
+        "quote": "J'aime apprendre de nouvelles choses et j'ai un fort intérêt pour les projets open-source, où je découvre souvent des idées utiles et des meilleures pratiques. Ces expériences m'aident à construire des solutions meilleures et plus efficaces. Pour moi, la croissance ne vient pas seulement du travail, mais aussi de l'auto-exploration et de l'apprentissage continu. C'est ce qui motive véritablement mon développement."
+    },
+    "about": {
+        "section": {
+            "About me": "À propos de moi",
+            "Education": "Éducation",
+            "Skills / Tech Stack": "Compétences / Pile technologique"
+        },
+        "aboutMe": "Je suis un développeur full-stack junior, principalement axé sur le développement backend. J'aime construire des systèmes performants et évolutifs, avec une expérience pratique en Golang, Node.js et Python. Bien que mon focus principal soit le backend, j'ai également travaillé avec des technologies frontend comme React.js et Next.js. J'ai de l'expérience dans la recherche et le développement de modèles d'IA, et je suis toujours eager d'apprendre et de progresser à travers des projets concrets.\n\nÀ l'avenir, je vise à approfondir mon expertise en conception de systèmes, systèmes distribués et intégration d'IA — en construisant des logiciels fiables, efficaces et intelligents à grande échelle.",
+        "education": {
+            "bachelorTitle": "Licence en sciences (programme d'honneur) en informatique",
+            "bachelorMessage": "Université des Sciences - VNUHCM, Hô Chi Minh-Ville, Vietnam",
+            "bachelorLogoAlt": "Logo de l'Université des Sciences",
+            "highSchoolTitle": "Diplôme de fin d'études secondaires",
+            "highSchoolMessage": "Lycée Phan Châu Trinh, Đà Nẵng",
+            "highSchoolLogoAlt": "Lycée",
+            "academicPerformanceTitle": "Performance académique",
+            "academicPerformanceMessage": "Diplômé avec une moyenne de 8,67/10",
+            "publishedPaperTitle": "Article publié à CV4DC 2024",
+            "publishedPaperMessagePart1": "Article publié à",
+            "publishedPaperLinkText": "Atelier sur la Computer Vision for Developing Countries (CV4DC) à ACCV 2024",
+            "publishedPaperTitleText": "Détection d'anomalies dans les images médicales basée sur un modèle de langage-visuel",
+            "publishedPaperOral": "Oral",
+            "publishedPaperViewLink": "Voir l'article",
+            "publishedPaperAuthors": "Auteurs : Hoang-Phu Thanh-Luong, Van-Thai Vu, et Professeur Quoc-Ngoc Ly (mentor).",
+            "thesisScoreTitle": "Score de thèse",
+            "thesisScoreMessage": "Score de thèse : 10/10 (Excellent)",
+            "researchAwardTitle": "Prix de recherche étudiant exceptionnel",
+            "researchAwardMessage": "Récompensé pour l'excellence en recherche scientifique",
+            "entranceExamTitle": "Top 6 des meilleurs scores à l'examen d'entrée",
+            "entranceExamMessage": "Classé parmi les 6 meilleurs scores à l'examen d'entrée en 2020",
+            "aiChallengeTitle": "Défi IA 2023 (HCMC)",
+            "aiChallengeMessage": "Prix de consolation"
+        },
+        "techStack": {
+            "frameworksTitle": "Frameworks",
+            "librariesTitle": "Bibliothèques",
+            "programmingLanguagesTitle": "Langages de programmation",
+            "databaseTitle": "Base de données",
+            "gin": "Gin",
+            "grpc": "gRPC",
+            "nodejs": "Node.js",
+            "fastapi": "FastAPI",
+            "nextjs": "Next.js",
+            "reactjs": "React.js",
+            "framerMotion": "Framer Motion",
+            "floatingUi": "Floating UI",
+            "go": "Go",
+            "python": "Python",
+            "typescript": "TypeScript",
+            "javascript": "JavaScript",
+            "mongodb": "MongoDB",
+            "postgresql": "PostgreSQL",
+            "cache": "Cache"
+        }
+    },
+    "contact": {
+        "Connect With Me": "Connectons-nous",
+        "Reach out, let's code the future!": "Contactez-moi, construisons le futur ensemble !"
     }
 }

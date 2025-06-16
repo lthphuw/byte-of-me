@@ -38,7 +38,7 @@ export function I18NToggle({ liquidGlassDisabled = false }: I18NToggleProps) {
     onOpenChange: setIsOpen,
     strategy: "absolute",
     placement: "bottom-end",
-    middleware: [offset(8), flip(), shift()],
+    middleware: [offset(4), flip(), shift()],
     whileElementsMounted: autoUpdate,
   });
 
@@ -57,15 +57,22 @@ export function I18NToggle({ liquidGlassDisabled = false }: I18NToggleProps) {
     [router, pathname]
   );
 
+  // Variants cho animation của từng item
   const itemVariants: Variants = {
     hidden: { opacity: 0, y: 10 },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      transition: { delay: i * 0.1, type: "spring", stiffness: 100, damping: 20 },
+      transition: {
+        delay: i * 0.1,
+        type: "spring" as const,
+        stiffness: 130,
+        damping: 10,
+      },
     }),
     exit: { opacity: 0, y: 10 },
-  };
+  }
+
 
   useEffect(() => {
     setCurrentLang(locale);
@@ -121,16 +128,16 @@ export function I18NToggle({ liquidGlassDisabled = false }: I18NToggleProps) {
               {...getFloatingProps()}
             >
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0.3, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 130, damping: 10 }}
               >
                 <LiquidGlass
                   variant="panel"
-                  intensity="medium"
-                  rippleEffect
-                  flowOnHover
+                  intensity="strong"
+                  rippleEffect={false}
+                  flowOnHover={true}
                   stretchOnDrag={false}
                   className="mt-0 min-w-[160px] rounded-md border-none p-1 text-sm shadow-2xl hover:border-none hover:shadow-2xl"
                 >
