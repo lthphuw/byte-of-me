@@ -7,21 +7,16 @@ import { useLocale } from 'next-intl';
 import { useCallback, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { languageNames, supportedLanguages } from "@/config/language";
 import { useTranslations } from "@/hooks/use-translations";
 import { cn } from "@/lib/utils";
-import { Flags, FlagType } from "./flag";
+import { FlagType } from "@/types";
+import { Flags, } from "./flag";
 import { LiquidGlass } from "./liquid-glass";
 
 interface I18NToggleProps {
   liquidGlassDisabled?: boolean;
 }
-
-const SUPPORTED_LANGUAGES: FlagType[] = ["en", "vi", "fr"];
-const LANGUAGE_NAMES: Record<FlagType, string> = {
-  en: "English",
-  vi: "Vietnamese",
-  fr: "French",
-};
 
 export function I18NToggle({ liquidGlassDisabled = false }: I18NToggleProps) {
   const t = useTranslations("global.i18nToggle");
@@ -141,7 +136,7 @@ export function I18NToggle({ liquidGlassDisabled = false }: I18NToggleProps) {
                   stretchOnDrag={false}
                   className="mt-0 min-w-[160px] rounded-md border-none p-1 text-sm shadow-2xl hover:border-none hover:shadow-2xl"
                 >
-                  {SUPPORTED_LANGUAGES.map((lang, index) => {
+                  {supportedLanguages.map((lang, index) => {
                     const Flag = Flags[lang];
                     return (
                       <motion.div
@@ -159,7 +154,7 @@ export function I18NToggle({ liquidGlassDisabled = false }: I18NToggleProps) {
                       >
                         <Flag className="size-5" />
                         <span>
-                          {t(LANGUAGE_NAMES[lang])}{" "}
+                          {t(languageNames[lang])}{" "}
                           <span className="uppercase tracking-wide">{(lang)}</span>
                         </span>
                       </motion.div>

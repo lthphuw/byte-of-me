@@ -40,7 +40,7 @@
         "Explore": "Khám phá"
     },
     "home": {
-        "See my work": "Xem công việc của tôi",
+        "See my work": "Xem dự án của tôi",
         "README": "README",
         "greeting": "Chào, tôi là Phú",
         "tagline": "Lập trình, sự nghiệp, sở thích — từng byte một",
@@ -99,7 +99,8 @@
             "javascript": "JavaScript",
             "mongodb": "MongoDB",
             "postgresql": "PostgreSQL",
-            "cache": "Redis"
+            "cache": "Redis",
+            "reactBit": "React Bits"
         }
     },
     "contact": {

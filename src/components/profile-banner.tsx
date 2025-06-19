@@ -1,40 +1,57 @@
 "use client";
 
-import Image from "next/image";
-import { useState } from "react";
-import { Skeleton } from "./ui/skeleton";
+import { useEffect, useRef, useState } from "react";
+import Stack from "./image-stack";
 
-interface ProfileBannerProps {
+export interface ImagesProps {
+    id: string;
     src: string;
-    alt: string;
+    alt?: string;
     caption?: string;
 }
+export interface ProfileBannerProps {
+    images: ImagesProps[];
+}
 
-export function ProfileBanner({ src, alt, caption }: ProfileBannerProps) {
-    const [isLoading, setIsLoading] = useState(true);
+export function ProfileBanner({ images }: ProfileBannerProps) {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [cardWidth, setCardWidth] = useState(720); // default fallback
 
+    useEffect(() => {
+        if (!containerRef.current) {
+            return;
+        }
+        const observer = new ResizeObserver(([entry]) => {
+            const fullWidth = entry.contentRect.width - 50;
+            // padding: 24 * 2 = 48, nên width còn lại:
+            const usableWidth = fullWidth;
+            setCardWidth(Math.min(usableWidth, 720)); // không vượt quá 720
+        });
+        observer.observe(containerRef.current);
+        return () => observer.disconnect();
+    }, []);
+
+    const [selectedImage, setSelectedImage] = useState(images[images.length - 1].id);
+    const [caption, setCaption] = useState(images[images.length - 1].caption);
+
+    useEffect(() => {
+        setCaption(images.find((it) => it.id === selectedImage)?.caption || images[0].caption);
+    }, [selectedImage]);
     return (
-        <figure className="flex w-full flex-col items-center gap-3 overflow-hidden">
+        <figure ref={containerRef} className="flex w-full flex-col items-start gap-4 md:gap-6 overflow-visible">
             <div className="relative w-full">
-                {isLoading && (
-                    <Skeleton className="absolute inset-0 z-10 size-full rounded-xl" />
-                )}
-                <Image
-                    src={src}
-                    alt={alt}
-                    width={1200}
-                    height={800}
-                    sizes="100vw"
-                    className={`w-full rounded-xl border object-cover shadow-md transition-opacity duration-500 ${isLoading ? "opacity-0" : "opacity-100"
-                        }`}
-                    priority
-                    quality={100}
-                    onLoadingComplete={() => setIsLoading(false)}
+                <Stack
+                    randomRotation={true}
+                    sensitivity={200}
+                    sendToBackOnClick={true}
+                    cardDimensions={{ width: cardWidth, height: Math.floor(cardWidth * 2 / 3) }}
+                    cardsData={images}
+                    setSelectedCard={setSelectedImage}
                 />
             </div>
 
             {caption && (
-                <figcaption className="mt-2 text-sm italic">{caption}</figcaption>
+                <figcaption className="text-sm italic">{caption}</figcaption>
             )}
         </figure>
     );

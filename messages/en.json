@@ -99,7 +99,8 @@
             "javascript": "Javascript",
             "mongodb": "MongoDB",
             "postgresql": "Postgresql",
-            "cache": "Cache"
+            "cache": "Cache",
+            "reactBit": "React Bits"
         }
     },
     "contact": {

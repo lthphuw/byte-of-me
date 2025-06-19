@@ -1,4 +1,3 @@
-
 interface AboutLayoutProps {
     children?: React.ReactNode
 }

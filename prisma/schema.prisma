@@ -1,5 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  generatedFileExtension = "ts"
+  importFileExtension    = "ts"
+  moduleFormat           = "esm"
+  runtime                = "nodejs"
 }
 
 datasource db {
@@ -8,25 +13,265 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String            @id @default(cuid())
   name          String?
   firstName     String?
   lastName      String?
   birthdate     String?
-  tagLine       String?
-  email         String?   @unique
-  phoneNumber   String?   @unique @db.VarChar(20) // Phone number with max length
-  linkedIn      String?   @unique @db.VarChar(255) // LinkedIn profile URL
-  facebook      String?   @unique @db.VarChar(255) // Facebook profile URL
-  github        String?   @unique @db.VarChar(255) // GitHub profile URL
-  leetCode      String?   @unique @db.VarChar(255) // LeetCode profile URL
-  twitter       String?   @unique @db.VarChar(255) // Twitter/X profile URL
-  portfolio     String?   @unique @db.VarChar(255) // Personal portfolio URL
-  stackOverflow String?   @unique @db.VarChar(255) // Stack Overflow profile URL
-  image         String?   @db.VarChar(255) // Profile image URL
-  imageCaption  String?
-  quote         String?   @db.Text // Supports longer quotes
-  createdAt     DateTime  @default(now()) @map(name: "created_at")
-  updatedAt     DateTime  @default(now()) @map(name: "updated_at")
-  @@map(name: "users")
+  greeting      String?           @db.Text
+  tagLine       String?           @db.Text
+  email         String?           @unique
+  phoneNumber   String?           @unique @db.VarChar(20)
+  linkedIn      String?           @unique @db.VarChar(255)
+  facebook      String?           @unique @db.VarChar(255)
+  github        String?           @unique @db.VarChar(255)
+  leetCode      String?           @unique @db.VarChar(255)
+  twitter       String?           @unique @db.VarChar(255)
+  portfolio     String?           @unique @db.VarChar(255)
+  stackOverflow String?           @unique @db.VarChar(255)
+  image         String?           @db.VarChar(255)
+  imageCaption  String?           @db.Text
+  quote         String?           @db.Text
+  bio           String?           @db.Text
+  aboutMe       String?           @db.Text
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @default(now()) @map("updated_at")
+  blogs         Blog[]
+  educations    Education[]
+  experiences   Experience[]
+  projects      Project[]
+  translations  Translation[]
+  bannerImages  UserBannerImage[]
+  techstacks    TechStack[]
+
+  @@map("users")
+}
+
+model UserBannerImage {
+  id           String        @id @default(cuid())
+  userId       String
+  User         User          @relation(fields: [userId], references: [id])
+  src          String
+  caption      String
+  translations Translation[]
+
+  @@map("user_banner_images")
+}
+
+model Education {
+  id           String             @id @default(cuid())
+  userId       String
+  timeline     String
+  title        String
+  message      String?            @db.Text
+  icon         String?            @db.VarChar(255)
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @default(now()) @map("updated_at")
+  subItems     EducationSubItem[]
+  user         User               @relation(fields: [userId], references: [id])
+  translations Translation[]
+
+  @@index([userId], map: "educations_userId_fkey")
+  @@map("educations")
+}
+
+model EducationSubItem {
+  id           String        @id @default(cuid())
+  educationId  String
+  title        String
+  message      String?       @db.Text
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @default(now()) @map("updated_at")
+  education    Education     @relation(fields: [educationId], references: [id])
+  translations Translation[]
+
+  @@index([educationId], map: "education_sub_items_educationId_fkey")
+  @@map("education_sub_items")
+}
+
+model TechStack {
+  id           String             @id @default(cuid())
+  name         String             @unique
+  logo         String?            @db.VarChar(255)
+  group        String
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @default(now()) @map("updated_at")
+  userId       String
+  user         User               @relation(fields: [userId], references: [id])
+  projects     ProjectTechStack[]
+  translations Translation[]
+
+  @@map("tech_stacks")
+}
+
+model Experience {
+  id           String                 @id @default(cuid())
+  userId       String
+  company      String
+  role         String
+  startDate    DateTime
+  endDate      DateTime?
+  description  String?                @db.Text
+  createdAt    DateTime               @default(now()) @map("created_at")
+  updatedAt    DateTime               @default(now()) @map("updated_at")
+  technologies ExperienceTechnology[]
+  user         User                   @relation(fields: [userId], references: [id])
+  translations Translation[]
+
+  @@index([userId], map: "experiences_userId_fkey")
+  @@map("experiences")
+}
+
+model Technology {
+  id           String                 @id @default(cuid())
+  name         String                 @unique
+  createdAt    DateTime               @default(now()) @map("created_at")
+  updatedAt    DateTime               @default(now()) @map("updated_at")
+  experiences  ExperienceTechnology[]
+  translations Translation[]
+
+  @@map("technologies")
+}
+
+model ExperienceTechnology {
+  experienceId String
+  technologyId String
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @default(now()) @map("updated_at")
+  experience   Experience @relation(fields: [experienceId], references: [id])
+  technology   Technology @relation(fields: [technologyId], references: [id])
+
+  @@id([experienceId, technologyId])
+  @@index([technologyId], map: "experience_technologies_technologyId_fkey")
+  @@map("experience_technologies")
+}
+
+model Project {
+  id           String             @id @default(cuid())
+  userId       String
+  title        String
+  description  String?            @db.Text
+  githubLink   String?            @db.VarChar(255)
+  liveLink     String?            @db.VarChar(255)
+  startDate    DateTime?
+  endDate      DateTime?
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @default(now()) @map("updated_at")
+  images       ProjectImage[]
+  techStacks   ProjectTechStack[]
+  user         User               @relation(fields: [userId], references: [id])
+  translations Translation[]
+
+  @@index([userId], map: "projects_userId_fkey")
+  @@map("projects")
+}
+
+model ProjectTechStack {
+  projectId   String
+  techStackId String
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @map("updated_at")
+  project     Project   @relation(fields: [projectId], references: [id])
+  techStack   TechStack @relation(fields: [techStackId], references: [id])
+
+  @@id([projectId, techStackId])
+  @@index([techStackId], map: "project_tech_stacks_techStackId_fkey")
+  @@map("project_tech_stacks")
+}
+
+model ProjectImage {
+  id           String        @id @default(cuid())
+  url          String        @db.VarChar(255)
+  projectId    String
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @default(now()) @map("updated_at")
+  project      Project       @relation(fields: [projectId], references: [id])
+  translations Translation[]
+
+  @@index([projectId], map: "project_images_projectId_fkey")
+  @@map("project_images")
+}
+
+model Blog {
+  id            String        @id @default(cuid())
+  userId        String
+  title         String
+  content       String        @db.Text
+  publishedDate DateTime      @default(now())
+  slug          String        @unique
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @default(now()) @map("updated_at")
+  tags          BlogTag[]
+  user          User          @relation(fields: [userId], references: [id])
+  translations  Translation[]
+
+  @@index([userId], map: "blogs_userId_fkey")
+  @@map("blogs")
+}
+
+model Tag {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @default(now()) @map("updated_at")
+  blogs        BlogTag[]
+  translations Translation[]
+
+  @@map("tags")
+}
+
+model BlogTag {
+  blogId    String
+  tagId     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+  blog      Blog     @relation(fields: [blogId], references: [id])
+  tag       Tag      @relation(fields: [tagId], references: [id])
+
+  @@id([blogId, tagId])
+  @@index([tagId], map: "blog_tags_tagId_fkey")
+  @@map("blog_tags")
+}
+
+model Translation {
+  id                 String            @id @default(cuid())
+  language           String
+  field              String
+  value              String            @db.Text
+  userId             String?
+  educationId        String?
+  educationSubItemId String?
+  techStackId        String?
+  experienceId       String?
+  projectId          String?
+  projectImageId     String?
+  blogId             String?
+  tagId              String?
+  technologyId       String?
+  bannerImageId      String?
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @default(now()) @map("updated_at")
+  blog               Blog?             @relation(fields: [blogId], references: [id])
+  education          Education?        @relation(fields: [educationId], references: [id])
+  educationSubItem   EducationSubItem? @relation(fields: [educationSubItemId], references: [id])
+  experience         Experience?       @relation(fields: [experienceId], references: [id])
+  project            Project?          @relation(fields: [projectId], references: [id])
+  projectImage       ProjectImage?     @relation(fields: [projectImageId], references: [id])
+  tag                Tag?              @relation(fields: [tagId], references: [id])
+  techStack          TechStack?        @relation(fields: [techStackId], references: [id])
+  technology         Technology?       @relation(fields: [technologyId], references: [id])
+  user               User?             @relation(fields: [userId], references: [id])
+  bannerImage        UserBannerImage?  @relation(fields: [bannerImageId], references: [id])
+
+  @@index([blogId], map: "translations_blogId_fkey")
+  @@index([educationId], map: "translations_educationId_fkey")
+  @@index([educationSubItemId], map: "translations_educationSubItemId_fkey")
+  @@index([experienceId], map: "translations_experienceId_fkey")
+  @@index([projectId], map: "translations_projectId_fkey")
+  @@index([projectImageId], map: "translations_projectImageId_fkey")
+  @@index([tagId], map: "translations_tagId_fkey")
+  @@index([techStackId], map: "translations_techStackId_fkey")
+  @@index([technologyId], map: "translations_technologyId_fkey")
+  @@index([userId], map: "translations_userId_fkey")
+  @@map("translations")
 }

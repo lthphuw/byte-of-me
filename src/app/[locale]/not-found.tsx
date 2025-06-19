@@ -1,3 +1,4 @@
+import { FuzzyNotFound } from "@/components/fuzzy-not-found";
 import GoBackButton from "@/components/go-back";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -7,23 +8,20 @@ import Link from "next/link";
 
 export default async function NotFound() {
     const t = await getTranslations("notFound");
-
     return (
-        <section>
+        <section className="relative z-30">
             <div className="container flex items-center justify-center min-h-screen px-6 py-12 mx-auto">
                 <div className="w-full">
-                    <div className="flex flex-col items-stretch md:items-center max-w-lg mx-auto text-center">
-                        <div className="flex flex-row items-center justify-center">
-                            <Icons.sad size={48} />
-                        </div>
+                    <div className="flex flex-col gap-2 md:gap-4  items-stretch md:items-center max-w-lg mx-auto text-center">
+                        <FuzzyNotFound />
                         <h1 className="mt-2 text-xl font-bold text-gray-800 dark:text-white">
                             {t("Oops! Page not found")}
                         </h1>
-                        <p className="mt-2 text-gray-900 dark:text-gray-400">
+                        <p className="text-gray-900 dark:text-gray-400">
                             {`${t("Sorry, we couldn’t find that page")}. ${t("Please check the URL or go back home")}.`}
                         </p>
 
-                        <div className="flex flex-col flex-wrap gap-4 mt-4 md:flex-row">
+                        <div className="flex flex-col flex-wrap gap-4 mt-2 md:flex-row">
                             <GoBackButton> {t("Go back")}</GoBackButton>
                             <Link href="/">
                                 <Button

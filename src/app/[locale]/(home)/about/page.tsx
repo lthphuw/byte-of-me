@@ -1,194 +1,96 @@
-"use client";
-
-import { FloatingToc } from "@/components/floating-toc";
-import { AboutShell } from "@/components/shell";
-import { TechGroup, TechStack } from "@/components/tech-stack";
-import { Timeline, TimelineItemProps } from "@/components/timeline";
-import { motion } from "framer-motion";
-import { useTranslations } from "next-intl";
+import AboutContent from '@/components/about';
+import { AboutShell } from '@/components/shell';
+import { TechGroup } from '@/components/tech-stack';
+import { TimelineItemProps } from '@/components/timeline';
+import { host } from '@/config/config';
+import { Education, TechStack, User } from '@/generated/prisma/client';
+import DOMPurify from 'isomorphic-dompurify';
+import { getLocale, getTranslations } from 'next-intl/server';
 import Image from "next/image";
-import Link from "next/link";
 
-const fadeInUp = {
-    hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
+export const revalidate = 86400;
 
-export default function AboutPage() {
-    const t = useTranslations("about");
+async function getData(locale: string): Promise<Education[]> {
+    const res = await fetch(`${host}/api/me?locale=${locale}`);
 
-    const aboutMe = t("aboutMe");
+    if (!res.ok) {
+        throw new Error('Failed to fetch user');
+    }
 
-    const educationItems: TimelineItemProps[] = [
-        {
-            timeline: "2020 - 2024",
-            title: t("education.bachelorTitle"),
-            message: t("education.bachelorMessage"),
-            icon: (
-                <Image
-                    src="/images/about/education/hcmus.png"
-                    alt={t("education.bachelorLogoAlt")}
-                    width={40}
-                    height={40}
-                    className="rounded-none object-contain"
-                />
-            ),
-            username: "",
-            subItems: [
-                {
-                    title: t("education.academicPerformanceTitle"),
-                    message: t("education.academicPerformanceMessage"),
-                },
-                {
-                    title: t("education.publishedPaperTitle"),
-                    message: (
-                        <div className="flex flex-col gap-2 text-sm leading-relaxed">
-                            <span>
-                                {t("education.publishedPaperMessagePart1")}{" "}
-                                <Link
-                                    href="https://cv4dc.github.io/2024/"
-                                    className="text-blue-600 hover:underline"
-                                >
-                                    {t("education.publishedPaperLinkText")}
-                                </Link>
-                                :{" "}
-                                <em>{t("education.publishedPaperTitleText")}</em>{" "}
-                                <strong>({t("education.publishedPaperOral")})</strong>.{" "}
-                                <Link
-                                    href="https://cv4dc.github.io/files/2024/papers/16.pdf"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-500 hover:underline"
-                                >
-                                    {t("education.publishedPaperViewLink")}
-                                </Link>
-                            </span>
-                            <span>{t("education.publishedPaperAuthors")}</span>
-                        </div>
-                    ),
-                },
-                {
-                    title: t("education.thesisScoreTitle"),
-                    message: t("education.thesisScoreMessage"),
-                },
-                {
-                    title: t("education.researchAwardTitle"),
-                    message: t("education.researchAwardMessage"),
-                },
-                {
-                    title: t("education.entranceExamTitle"),
-                    message: t("education.entranceExamMessage"),
-                },
-                {
-                    title: t("education.aiChallengeTitle"),
-                    message: t("education.aiChallengeMessage"),
-                },
-            ],
-        },
-        {
-            timeline: "2018 - 2020",
-            title: t("education.highSchoolTitle"),
-            message: t("education.highSchoolMessage"),
-            icon: (
-                <Image
-                    src="/images/about/education/pct.png"
-                    alt={t("education.highSchoolLogoAlt")}
-                    width={40}
-                    height={40}
-                    className="rounded-none object-contain"
-                />
-            ),
-            username: "",
-            subItems: [],
-        },
-    ];
+    const educations: Education[] = await res.json();
+    return educations;
+}
 
-    const techGroups: TechGroup[] = [
-        {
-            title: t("techStack.frameworksTitle"),
-            items: [
-                { name: t("techStack.gin"), logo: "/images/about/techstacks/gin.png" },
-                { name: t("techStack.grpc"), logo: "/images/about/techstacks/grpc.png" },
-                { name: t("techStack.nodejs"), logo: "/images/about/techstacks/nodejs.png" },
-                { name: t("techStack.fastapi"), logo: "/images/about/techstacks/fastapi.png" },
-                { name: t("techStack.nextjs"), logo: "/images/about/techstacks/next.png" },
-            ],
-        },
-        {
-            title: t("techStack.librariesTitle"),
-            items: [
-                { name: t("techStack.reactjs"), logo: "/images/about/techstacks/react.png" },
-                { name: t("techStack.framerMotion"), logo: "/images/about/techstacks/framer-motion.png" },
-                { name: t("techStack.floatingUi"), logo: "/images/about/techstacks/floating-ui.png" },
-            ],
-        },
-        {
-            title: t("techStack.programmingLanguagesTitle"),
-            items: [
-                { name: t("techStack.go"), logo: "/images/about/techstacks/go.png" },
-                { name: t("techStack.python"), logo: "/images/about/techstacks/python.png" },
-                { name: t("techStack.typescript"), logo: "/images/about/techstacks/typescript.png" },
-                { name: t("techStack.javascript"), logo: "/images/about/techstacks/javascript.png" },
-            ],
-        },
-        {
-            title: t("techStack.databaseTitle"),
-            items: [
-                { name: t("techStack.mongodb"), logo: "/images/about/techstacks/Mongodb.png" },
-                { name: t("techStack.postgresql"), logo: "/images/about/techstacks/postgresql.png" },
-                { name: t("techStack.cache"), logo: "/images/about/techstacks/redis.png" },
-            ],
-        },
+export default async function AboutPage() {
+    const t = await getTranslations('about');
+    const locale = await getLocale();
+    let error: string | null = null;
+    // Fetch user data from API
+    const userRes = await fetch(`${host}/api/me?locale=${locale}`);
+    const user: User = await userRes.json();
+
+    const educationRes = await fetch(`${host}/api/me/educations?locale=${locale}`);
+    const educations: Education[] = await educationRes.json();
+
+
+    const techstackRes = await fetch(`${host}/api/me/techstacks?locale=${locale}`);
+    const techstacks: TechStack[] = await techstackRes.json();
+
+    const techGroups: TechGroup[] = [];
+
+    for (let i = 0; i < techstacks.length; i++) {
+        let it = techGroups.find(it => it.title === techstacks[i].group);
+        if (!it) {
+            it = {
+                title: techstacks[i].group,
+                items: []
+            }
+            techGroups.push(it);
+        }
+        it.items.push({
+            name: techstacks[i].name,
+            logo: techstacks[i].logo || "",
+        })
+    }
+    console.log("techGroups: ", techGroups);
+    const educationItems: TimelineItemProps[] = educations.map((edu: any) => ({
+        timeline: edu?.timeline,
+        title: edu?.title,
+        message: DOMPurify.sanitize(edu?.message || ""),
+        icon: edu.icon ? (
+            <Image
+                src={edu.icon}
+                alt={""}
+                width={32}
+                height={32}
+            />
+        ) : undefined,
+        username: '',
+        subItems: edu.subItems.map((sub: any) => ({
+            title: sub.title,
+            message: DOMPurify.sanitize(sub.message),
+        })),
+    }));
+
+    const tocItems = [
+        { href: '#aboutme', label: t('section.About me') },
+        { href: '#education', label: t('section.Education') },
+        { href: '#skills', label: t('section.Skills / Tech Stack') },
     ];
 
     return (
         <AboutShell>
-            <div className="relative flex justify-center px-4 lg:px-8 py-12">
-                {/* Main Content */}
-                <div className="max-w-4xl w-full space-y-12">
-                    {/* Who I Am */}
-                    <motion.section
-                        id="aboutme"
-                        variants={fadeInUp}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, amount: 0.3 }}
-                    >
-                        <h2 className="text-xl md:text-3xl font-bold mb-4">{t("section.About me")}</h2>
-                        <p className="text-sm md:text-md leading-relaxed whitespace-pre-line">{aboutMe}</p>
-                    </motion.section>
-
-                    {/* Education */}
-                    <motion.section
-                        id="education"
-                        variants={fadeInUp}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, amount: 0.3 }}
-                    >
-                        <Timeline title={t("section.Education")} items={educationItems} />
-                    </motion.section>
-
-                    {/* Skills */}
-                    <motion.section
-                        id="skills"
-                        variants={fadeInUp}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, amount: 0.3 }}
-                    >
-                        <h2 className="text-xl md:text-3xl font-bold mb-4">{t("section.Skills / Tech Stack")}</h2>
-                        <TechStack groups={techGroups} />
-                    </motion.section>
-                </div>
-            </div>
-
-            <FloatingToc
-                items={[
-                    { href: "#aboutme", label: t("section.About me") },
-                    { href: "#education", label: t("section.Education") },
-                    { href: "#skills", label: t("section.Skills / Tech Stack") },
-                ]}
+            <AboutContent
+                error={error}
+                user={user}
+                techGroups={techGroups}
+                educationItems={educationItems}
+                tocItems={tocItems}
+                sectionTitles={{
+                    aboutMe: t('section.About me'),
+                    education: t('section.Education'),
+                    skills: t('section.Skills / Tech Stack'),
+                }}
             />
         </AboutShell>
     );

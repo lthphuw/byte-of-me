@@ -10,15 +10,17 @@ export function HomeShell({
   ...props
 }: HomeShellProps) {
   return (
-    <section
-      className={cn(
-        "mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 pb-16 pt-20 sm:px-6 sm:pt-32",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </section>
+    <>
+      <section
+        className={cn(
+          "mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 pb-16 pt-20 sm:px-6 sm:pt-32 z-20",
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </section>
+    </>
   )
 }
 
@@ -31,7 +33,7 @@ export function AboutShell({
   return (
     <section
       className={cn(
-        "mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 sm:px-6 sm:pt-32",
+        "mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 sm:px-6 z-20 sm:pt-32",
         className
       )}
       {...props}
@@ -50,7 +52,7 @@ export function ExperienceShell({
   return (
     <section
       className={cn(
-        "mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 sm:px-6 sm:pt-32",
+        "mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 z-20 sm:px-6 sm:pt-32",
         className
       )}
       {...props}
@@ -70,7 +72,7 @@ export function ContactShell({
   return (
     <section
       className={cn(
-        "mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 sm:px-6 sm:pt-32",
+        "mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 z-20 sm:px-6 sm:pt-32",
         className
       )}
       {...props}

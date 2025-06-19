@@ -11,7 +11,7 @@ export default async function HomeLayout({
 }: HomeLayoutProps) {
 
   return (
-    <div className="flex min-h-screen flex-col overflow-hidden">
+    <div className="flex relative min-h-screen flex-col overflow-hidden">
       <SiteHeader />
 
       <div className="container grid flex-1 gap-12">

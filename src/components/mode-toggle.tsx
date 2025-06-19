@@ -27,8 +27,8 @@ export interface ModeToggleProps {
 export function ModeToggle({ liquidGlassDisabled }: ModeToggleProps) {
   const t = useTranslations('global.modeToggle');
 
-  const { theme, setTheme } = useTheme()
-  const [open, setOpen] = useState(false)
+  const { theme, setTheme } = useTheme();
+  const [open, setOpen] = useState(false);
 
   const { refs, floatingStyles, context } = useFloating({
     open,
@@ -63,6 +63,7 @@ export function ModeToggle({ liquidGlassDisabled }: ModeToggleProps) {
     }),
     exit: { opacity: 0, y: 10 },
   }
+  
 
   return (
     <motion.div layout style={{ position: "relative" }}>

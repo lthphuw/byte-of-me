@@ -101,7 +101,7 @@ export function FloatingToc({ items }: FloatingTocProps) {
                         ref={refs.setFloating}
                         style={floatingStyles}
                         {...getFloatingProps()}
-                        className="z-50"
+                        className="z-50 !m-0"
                     >
                         <motion.div
                             variants={panelVariants}

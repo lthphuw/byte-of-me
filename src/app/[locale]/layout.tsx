@@ -11,8 +11,10 @@ import { cn } from "@/lib/utils";
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 
+import { BackgroundWrapper } from "@/components/background-wrapper";
 import "@/styles/globals.css";
 import "@/styles/liquid-glass.css";
+import { Viewport } from "next";
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 
 const fontSans = FontSans({
@@ -46,10 +48,6 @@ export const metadata = {
     },
   ],
   creator: "shadcn",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -73,6 +71,12 @@ export const metadata = {
   manifest: `${siteConfig.url}/site.webmanifest`,
 }
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
+}
 export default async function RootLocaleLayout({
   children,
   params
@@ -98,6 +102,7 @@ export default async function RootLocaleLayout({
       >
         <NextIntlClientProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <BackgroundWrapper />
             {children}
             <Analytics />
             <Toaster />
