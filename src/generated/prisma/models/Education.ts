@@ -222,7 +222,6 @@ export type EducationOrderByWithRelationInput = {
   subItems?: Prisma.EducationSubItemOrderByRelationAggregateInput
   user?: Prisma.UserOrderByWithRelationInput
   translations?: Prisma.TranslationOrderByRelationAggregateInput
-  _relevance?: Prisma.EducationOrderByRelevanceInput
 }
 
 export type EducationWhereUniqueInput = Prisma.AtLeast<{
@@ -362,12 +361,6 @@ export type EducationListRelationFilter = {
 
 export type EducationOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type EducationOrderByRelevanceInput = {
-  fields: Prisma.EducationOrderByRelevanceFieldEnum | Prisma.EducationOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type EducationCountOrderByAggregateInput = {
@@ -776,7 +769,29 @@ export type EducationSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   _count?: boolean | Prisma.EducationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["education"]>
 
+export type EducationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  userId?: boolean
+  timeline?: boolean
+  title?: boolean
+  message?: boolean
+  icon?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["education"]>
 
+export type EducationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  userId?: boolean
+  timeline?: boolean
+  title?: boolean
+  message?: boolean
+  icon?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["education"]>
 
 export type EducationSelectScalar = {
   id?: boolean
@@ -795,6 +810,12 @@ export type EducationInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   translations?: boolean | Prisma.Education$translationsArgs<ExtArgs>
   _count?: boolean | Prisma.EducationCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type EducationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}
+export type EducationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $EducationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -931,6 +952,30 @@ export interface EducationDelegate<ExtArgs extends runtime.Types.Extensions.Inte
   createMany<T extends EducationCreateManyArgs>(args?: Prisma.SelectSubset<T, EducationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many Educations and returns the data saved in the database.
+   * @param {EducationCreateManyAndReturnArgs} args - Arguments to create many Educations.
+   * @example
+   * // Create many Educations
+   * const education = await prisma.education.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many Educations and only return the `id`
+   * const educationWithIdOnly = await prisma.education.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends EducationCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, EducationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EducationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a Education.
    * @param {EducationDeleteArgs} args - Arguments to delete one Education.
    * @example
@@ -993,6 +1038,36 @@ export interface EducationDelegate<ExtArgs extends runtime.Types.Extensions.Inte
    * 
    */
   updateMany<T extends EducationUpdateManyArgs>(args: Prisma.SelectSubset<T, EducationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more Educations and returns the data updated in the database.
+   * @param {EducationUpdateManyAndReturnArgs} args - Arguments to update many Educations.
+   * @example
+   * // Update many Educations
+   * const education = await prisma.education.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more Educations and only return the `id`
+   * const educationWithIdOnly = await prisma.education.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends EducationUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, EducationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EducationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Education.
@@ -1426,6 +1501,29 @@ export type EducationCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
+ * Education createManyAndReturn
+ */
+export type EducationCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Education
+   */
+  select?: Prisma.EducationSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Education
+   */
+  omit?: Prisma.EducationOmit<ExtArgs> | null
+  /**
+   * The data used to create many Educations.
+   */
+  data: Prisma.EducationCreateManyInput | Prisma.EducationCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EducationIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * Education update
  */
 export type EducationUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1467,6 +1565,36 @@ export type EducationUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Limit how many Educations to update.
    */
   limit?: number
+}
+
+/**
+ * Education updateManyAndReturn
+ */
+export type EducationUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Education
+   */
+  select?: Prisma.EducationSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Education
+   */
+  omit?: Prisma.EducationOmit<ExtArgs> | null
+  /**
+   * The data used to update Educations.
+   */
+  data: Prisma.XOR<Prisma.EducationUpdateManyMutationInput, Prisma.EducationUncheckedUpdateManyInput>
+  /**
+   * Filter which Educations to update
+   */
+  where?: Prisma.EducationWhereInput
+  /**
+   * Limit how many Educations to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EducationIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

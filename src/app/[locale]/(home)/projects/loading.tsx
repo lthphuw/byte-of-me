@@ -11,7 +11,7 @@ export default function ProjectsLoading() {
 
                 <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" >
                     {
-                        (Array.from({ length: 3 }, (_, index) => index + 1)).map((_it, index) => (
+                        (Array.from({ length: 10 }, (_, index) => index + 1)).map((_it, index) => (
                             <Skeleton
                                 key={index}
                                 className={cn("min-w-[160px] h-72 rounded-2xl border-none p-1 text-sm shadow-2xl")}

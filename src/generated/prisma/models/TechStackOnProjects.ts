@@ -174,7 +174,7 @@ export type TechStackOnProjectsWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"TechStackOnProjects"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TechStackOnProjects"> | Date | string
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
-  techStack?: Prisma.XOR<Prisma.TechStackScalarRelationFilter, Prisma.TechStackWhereInput>
+  techstack?: Prisma.XOR<Prisma.TechStackScalarRelationFilter, Prisma.TechStackWhereInput>
 }
 
 export type TechStackOnProjectsOrderByWithRelationInput = {
@@ -183,8 +183,7 @@ export type TechStackOnProjectsOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   project?: Prisma.ProjectOrderByWithRelationInput
-  techStack?: Prisma.TechStackOrderByWithRelationInput
-  _relevance?: Prisma.TechStackOnProjectsOrderByRelevanceInput
+  techstack?: Prisma.TechStackOrderByWithRelationInput
 }
 
 export type TechStackOnProjectsWhereUniqueInput = Prisma.AtLeast<{
@@ -197,7 +196,7 @@ export type TechStackOnProjectsWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"TechStackOnProjects"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TechStackOnProjects"> | Date | string
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
-  techStack?: Prisma.XOR<Prisma.TechStackScalarRelationFilter, Prisma.TechStackWhereInput>
+  techstack?: Prisma.XOR<Prisma.TechStackScalarRelationFilter, Prisma.TechStackWhereInput>
 }, "projectId_techstackId">
 
 export type TechStackOnProjectsOrderByWithAggregationInput = {
@@ -224,7 +223,7 @@ export type TechStackOnProjectsCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutTechstacksInput
-  techStack: Prisma.TechStackCreateNestedOneWithoutProjectsInput
+  techstack: Prisma.TechStackCreateNestedOneWithoutProjectsInput
 }
 
 export type TechStackOnProjectsUncheckedCreateInput = {
@@ -238,7 +237,7 @@ export type TechStackOnProjectsUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutTechstacksNestedInput
-  techStack?: Prisma.TechStackUpdateOneRequiredWithoutProjectsNestedInput
+  techstack?: Prisma.TechStackUpdateOneRequiredWithoutProjectsNestedInput
 }
 
 export type TechStackOnProjectsUncheckedUpdateInput = {
@@ -277,12 +276,6 @@ export type TechStackOnProjectsOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type TechStackOnProjectsOrderByRelevanceInput = {
-  fields: Prisma.TechStackOnProjectsOrderByRelevanceFieldEnum | Prisma.TechStackOnProjectsOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
-}
-
 export type TechStackOnProjectsProjectIdTechstackIdCompoundUniqueInput = {
   projectId: string
   techstackId: string
@@ -309,45 +302,45 @@ export type TechStackOnProjectsMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
-export type TechStackOnProjectsCreateNestedManyWithoutTechStackInput = {
-  create?: Prisma.XOR<Prisma.TechStackOnProjectsCreateWithoutTechStackInput, Prisma.TechStackOnProjectsUncheckedCreateWithoutTechStackInput> | Prisma.TechStackOnProjectsCreateWithoutTechStackInput[] | Prisma.TechStackOnProjectsUncheckedCreateWithoutTechStackInput[]
-  connectOrCreate?: Prisma.TechStackOnProjectsCreateOrConnectWithoutTechStackInput | Prisma.TechStackOnProjectsCreateOrConnectWithoutTechStackInput[]
-  createMany?: Prisma.TechStackOnProjectsCreateManyTechStackInputEnvelope
+export type TechStackOnProjectsCreateNestedManyWithoutTechstackInput = {
+  create?: Prisma.XOR<Prisma.TechStackOnProjectsCreateWithoutTechstackInput, Prisma.TechStackOnProjectsUncheckedCreateWithoutTechstackInput> | Prisma.TechStackOnProjectsCreateWithoutTechstackInput[] | Prisma.TechStackOnProjectsUncheckedCreateWithoutTechstackInput[]
+  connectOrCreate?: Prisma.TechStackOnProjectsCreateOrConnectWithoutTechstackInput | Prisma.TechStackOnProjectsCreateOrConnectWithoutTechstackInput[]
+  createMany?: Prisma.TechStackOnProjectsCreateManyTechstackInputEnvelope
   connect?: Prisma.TechStackOnProjectsWhereUniqueInput | Prisma.TechStackOnProjectsWhereUniqueInput[]
 }
 
-export type TechStackOnProjectsUncheckedCreateNestedManyWithoutTechStackInput = {
-  create?: Prisma.XOR<Prisma.TechStackOnProjectsCreateWithoutTechStackInput, Prisma.TechStackOnProjectsUncheckedCreateWithoutTechStackInput> | Prisma.TechStackOnProjectsCreateWithoutTechStackInput[] | Prisma.TechStackOnProjectsUncheckedCreateWithoutTechStackInput[]
-  connectOrCreate?: Prisma.TechStackOnProjectsCreateOrConnectWithoutTechStackInput | Prisma.TechStackOnProjectsCreateOrConnectWithoutTechStackInput[]
-  createMany?: Prisma.TechStackOnProjectsCreateManyTechStackInputEnvelope
+export type TechStackOnProjectsUncheckedCreateNestedManyWithoutTechstackInput = {
+  create?: Prisma.XOR<Prisma.TechStackOnProjectsCreateWithoutTechstackInput, Prisma.TechStackOnProjectsUncheckedCreateWithoutTechstackInput> | Prisma.TechStackOnProjectsCreateWithoutTechstackInput[] | Prisma.TechStackOnProjectsUncheckedCreateWithoutTechstackInput[]
+  connectOrCreate?: Prisma.TechStackOnProjectsCreateOrConnectWithoutTechstackInput | Prisma.TechStackOnProjectsCreateOrConnectWithoutTechstackInput[]
+  createMany?: Prisma.TechStackOnProjectsCreateManyTechstackInputEnvelope
   connect?: Prisma.TechStackOnProjectsWhereUniqueInput | Prisma.TechStackOnProjectsWhereUniqueInput[]
 }
 
-export type TechStackOnProjectsUpdateManyWithoutTechStackNestedInput = {
-  create?: Prisma.XOR<Prisma.TechStackOnProjectsCreateWithoutTechStackInput, Prisma.TechStackOnProjectsUncheckedCreateWithoutTechStackInput> | Prisma.TechStackOnProjectsCreateWithoutTechStackInput[] | Prisma.TechStackOnProjectsUncheckedCreateWithoutTechStackInput[]
-  connectOrCreate?: Prisma.TechStackOnProjectsCreateOrConnectWithoutTechStackInput | Prisma.TechStackOnProjectsCreateOrConnectWithoutTechStackInput[]
-  upsert?: Prisma.TechStackOnProjectsUpsertWithWhereUniqueWithoutTechStackInput | Prisma.TechStackOnProjectsUpsertWithWhereUniqueWithoutTechStackInput[]
-  createMany?: Prisma.TechStackOnProjectsCreateManyTechStackInputEnvelope
+export type TechStackOnProjectsUpdateManyWithoutTechstackNestedInput = {
+  create?: Prisma.XOR<Prisma.TechStackOnProjectsCreateWithoutTechstackInput, Prisma.TechStackOnProjectsUncheckedCreateWithoutTechstackInput> | Prisma.TechStackOnProjectsCreateWithoutTechstackInput[] | Prisma.TechStackOnProjectsUncheckedCreateWithoutTechstackInput[]
+  connectOrCreate?: Prisma.TechStackOnProjectsCreateOrConnectWithoutTechstackInput | Prisma.TechStackOnProjectsCreateOrConnectWithoutTechstackInput[]
+  upsert?: Prisma.TechStackOnProjectsUpsertWithWhereUniqueWithoutTechstackInput | Prisma.TechStackOnProjectsUpsertWithWhereUniqueWithoutTechstackInput[]
+  createMany?: Prisma.TechStackOnProjectsCreateManyTechstackInputEnvelope
   set?: Prisma.TechStackOnProjectsWhereUniqueInput | Prisma.TechStackOnProjectsWhereUniqueInput[]
   disconnect?: Prisma.TechStackOnProjectsWhereUniqueInput | Prisma.TechStackOnProjectsWhereUniqueInput[]
   delete?: Prisma.TechStackOnProjectsWhereUniqueInput | Prisma.TechStackOnProjectsWhereUniqueInput[]
   connect?: Prisma.TechStackOnProjectsWhereUniqueInput | Prisma.TechStackOnProjectsWhereUniqueInput[]
-  update?: Prisma.TechStackOnProjectsUpdateWithWhereUniqueWithoutTechStackInput | Prisma.TechStackOnProjectsUpdateWithWhereUniqueWithoutTechStackInput[]
-  updateMany?: Prisma.TechStackOnProjectsUpdateManyWithWhereWithoutTechStackInput | Prisma.TechStackOnProjectsUpdateManyWithWhereWithoutTechStackInput[]
+  update?: Prisma.TechStackOnProjectsUpdateWithWhereUniqueWithoutTechstackInput | Prisma.TechStackOnProjectsUpdateWithWhereUniqueWithoutTechstackInput[]
+  updateMany?: Prisma.TechStackOnProjectsUpdateManyWithWhereWithoutTechstackInput | Prisma.TechStackOnProjectsUpdateManyWithWhereWithoutTechstackInput[]
   deleteMany?: Prisma.TechStackOnProjectsScalarWhereInput | Prisma.TechStackOnProjectsScalarWhereInput[]
 }
 
-export type TechStackOnProjectsUncheckedUpdateManyWithoutTechStackNestedInput = {
-  create?: Prisma.XOR<Prisma.TechStackOnProjectsCreateWithoutTechStackInput, Prisma.TechStackOnProjectsUncheckedCreateWithoutTechStackInput> | Prisma.TechStackOnProjectsCreateWithoutTechStackInput[] | Prisma.TechStackOnProjectsUncheckedCreateWithoutTechStackInput[]
-  connectOrCreate?: Prisma.TechStackOnProjectsCreateOrConnectWithoutTechStackInput | Prisma.TechStackOnProjectsCreateOrConnectWithoutTechStackInput[]
-  upsert?: Prisma.TechStackOnProjectsUpsertWithWhereUniqueWithoutTechStackInput | Prisma.TechStackOnProjectsUpsertWithWhereUniqueWithoutTechStackInput[]
-  createMany?: Prisma.TechStackOnProjectsCreateManyTechStackInputEnvelope
+export type TechStackOnProjectsUncheckedUpdateManyWithoutTechstackNestedInput = {
+  create?: Prisma.XOR<Prisma.TechStackOnProjectsCreateWithoutTechstackInput, Prisma.TechStackOnProjectsUncheckedCreateWithoutTechstackInput> | Prisma.TechStackOnProjectsCreateWithoutTechstackInput[] | Prisma.TechStackOnProjectsUncheckedCreateWithoutTechstackInput[]
+  connectOrCreate?: Prisma.TechStackOnProjectsCreateOrConnectWithoutTechstackInput | Prisma.TechStackOnProjectsCreateOrConnectWithoutTechstackInput[]
+  upsert?: Prisma.TechStackOnProjectsUpsertWithWhereUniqueWithoutTechstackInput | Prisma.TechStackOnProjectsUpsertWithWhereUniqueWithoutTechstackInput[]
+  createMany?: Prisma.TechStackOnProjectsCreateManyTechstackInputEnvelope
   set?: Prisma.TechStackOnProjectsWhereUniqueInput | Prisma.TechStackOnProjectsWhereUniqueInput[]
   disconnect?: Prisma.TechStackOnProjectsWhereUniqueInput | Prisma.TechStackOnProjectsWhereUniqueInput[]
   delete?: Prisma.TechStackOnProjectsWhereUniqueInput | Prisma.TechStackOnProjectsWhereUniqueInput[]
   connect?: Prisma.TechStackOnProjectsWhereUniqueInput | Prisma.TechStackOnProjectsWhereUniqueInput[]
-  update?: Prisma.TechStackOnProjectsUpdateWithWhereUniqueWithoutTechStackInput | Prisma.TechStackOnProjectsUpdateWithWhereUniqueWithoutTechStackInput[]
-  updateMany?: Prisma.TechStackOnProjectsUpdateManyWithWhereWithoutTechStackInput | Prisma.TechStackOnProjectsUpdateManyWithWhereWithoutTechStackInput[]
+  update?: Prisma.TechStackOnProjectsUpdateWithWhereUniqueWithoutTechstackInput | Prisma.TechStackOnProjectsUpdateWithWhereUniqueWithoutTechstackInput[]
+  updateMany?: Prisma.TechStackOnProjectsUpdateManyWithWhereWithoutTechstackInput | Prisma.TechStackOnProjectsUpdateManyWithWhereWithoutTechstackInput[]
   deleteMany?: Prisma.TechStackOnProjectsScalarWhereInput | Prisma.TechStackOnProjectsScalarWhereInput[]
 }
 
@@ -393,42 +386,42 @@ export type TechStackOnProjectsUncheckedUpdateManyWithoutProjectNestedInput = {
   deleteMany?: Prisma.TechStackOnProjectsScalarWhereInput | Prisma.TechStackOnProjectsScalarWhereInput[]
 }
 
-export type TechStackOnProjectsCreateWithoutTechStackInput = {
+export type TechStackOnProjectsCreateWithoutTechstackInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutTechstacksInput
 }
 
-export type TechStackOnProjectsUncheckedCreateWithoutTechStackInput = {
+export type TechStackOnProjectsUncheckedCreateWithoutTechstackInput = {
   projectId: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
-export type TechStackOnProjectsCreateOrConnectWithoutTechStackInput = {
+export type TechStackOnProjectsCreateOrConnectWithoutTechstackInput = {
   where: Prisma.TechStackOnProjectsWhereUniqueInput
-  create: Prisma.XOR<Prisma.TechStackOnProjectsCreateWithoutTechStackInput, Prisma.TechStackOnProjectsUncheckedCreateWithoutTechStackInput>
+  create: Prisma.XOR<Prisma.TechStackOnProjectsCreateWithoutTechstackInput, Prisma.TechStackOnProjectsUncheckedCreateWithoutTechstackInput>
 }
 
-export type TechStackOnProjectsCreateManyTechStackInputEnvelope = {
-  data: Prisma.TechStackOnProjectsCreateManyTechStackInput | Prisma.TechStackOnProjectsCreateManyTechStackInput[]
+export type TechStackOnProjectsCreateManyTechstackInputEnvelope = {
+  data: Prisma.TechStackOnProjectsCreateManyTechstackInput | Prisma.TechStackOnProjectsCreateManyTechstackInput[]
   skipDuplicates?: boolean
 }
 
-export type TechStackOnProjectsUpsertWithWhereUniqueWithoutTechStackInput = {
+export type TechStackOnProjectsUpsertWithWhereUniqueWithoutTechstackInput = {
   where: Prisma.TechStackOnProjectsWhereUniqueInput
-  update: Prisma.XOR<Prisma.TechStackOnProjectsUpdateWithoutTechStackInput, Prisma.TechStackOnProjectsUncheckedUpdateWithoutTechStackInput>
-  create: Prisma.XOR<Prisma.TechStackOnProjectsCreateWithoutTechStackInput, Prisma.TechStackOnProjectsUncheckedCreateWithoutTechStackInput>
+  update: Prisma.XOR<Prisma.TechStackOnProjectsUpdateWithoutTechstackInput, Prisma.TechStackOnProjectsUncheckedUpdateWithoutTechstackInput>
+  create: Prisma.XOR<Prisma.TechStackOnProjectsCreateWithoutTechstackInput, Prisma.TechStackOnProjectsUncheckedCreateWithoutTechstackInput>
 }
 
-export type TechStackOnProjectsUpdateWithWhereUniqueWithoutTechStackInput = {
+export type TechStackOnProjectsUpdateWithWhereUniqueWithoutTechstackInput = {
   where: Prisma.TechStackOnProjectsWhereUniqueInput
-  data: Prisma.XOR<Prisma.TechStackOnProjectsUpdateWithoutTechStackInput, Prisma.TechStackOnProjectsUncheckedUpdateWithoutTechStackInput>
+  data: Prisma.XOR<Prisma.TechStackOnProjectsUpdateWithoutTechstackInput, Prisma.TechStackOnProjectsUncheckedUpdateWithoutTechstackInput>
 }
 
-export type TechStackOnProjectsUpdateManyWithWhereWithoutTechStackInput = {
+export type TechStackOnProjectsUpdateManyWithWhereWithoutTechstackInput = {
   where: Prisma.TechStackOnProjectsScalarWhereInput
-  data: Prisma.XOR<Prisma.TechStackOnProjectsUpdateManyMutationInput, Prisma.TechStackOnProjectsUncheckedUpdateManyWithoutTechStackInput>
+  data: Prisma.XOR<Prisma.TechStackOnProjectsUpdateManyMutationInput, Prisma.TechStackOnProjectsUncheckedUpdateManyWithoutTechstackInput>
 }
 
 export type TechStackOnProjectsScalarWhereInput = {
@@ -444,7 +437,7 @@ export type TechStackOnProjectsScalarWhereInput = {
 export type TechStackOnProjectsCreateWithoutProjectInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
-  techStack: Prisma.TechStackCreateNestedOneWithoutProjectsInput
+  techstack: Prisma.TechStackCreateNestedOneWithoutProjectsInput
 }
 
 export type TechStackOnProjectsUncheckedCreateWithoutProjectInput = {
@@ -479,25 +472,25 @@ export type TechStackOnProjectsUpdateManyWithWhereWithoutProjectInput = {
   data: Prisma.XOR<Prisma.TechStackOnProjectsUpdateManyMutationInput, Prisma.TechStackOnProjectsUncheckedUpdateManyWithoutProjectInput>
 }
 
-export type TechStackOnProjectsCreateManyTechStackInput = {
+export type TechStackOnProjectsCreateManyTechstackInput = {
   projectId: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
-export type TechStackOnProjectsUpdateWithoutTechStackInput = {
+export type TechStackOnProjectsUpdateWithoutTechstackInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutTechstacksNestedInput
 }
 
-export type TechStackOnProjectsUncheckedUpdateWithoutTechStackInput = {
+export type TechStackOnProjectsUncheckedUpdateWithoutTechstackInput = {
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type TechStackOnProjectsUncheckedUpdateManyWithoutTechStackInput = {
+export type TechStackOnProjectsUncheckedUpdateManyWithoutTechstackInput = {
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -512,7 +505,7 @@ export type TechStackOnProjectsCreateManyProjectInput = {
 export type TechStackOnProjectsUpdateWithoutProjectInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  techStack?: Prisma.TechStackUpdateOneRequiredWithoutProjectsNestedInput
+  techstack?: Prisma.TechStackUpdateOneRequiredWithoutProjectsNestedInput
 }
 
 export type TechStackOnProjectsUncheckedUpdateWithoutProjectInput = {
@@ -535,10 +528,26 @@ export type TechStackOnProjectsSelect<ExtArgs extends runtime.Types.Extensions.I
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
-  techStack?: boolean | Prisma.TechStackDefaultArgs<ExtArgs>
+  techstack?: boolean | Prisma.TechStackDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["techStackOnProjects"]>
 
+export type TechStackOnProjectsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  projectId?: boolean
+  techstackId?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  techstack?: boolean | Prisma.TechStackDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["techStackOnProjects"]>
 
+export type TechStackOnProjectsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  projectId?: boolean
+  techstackId?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  techstack?: boolean | Prisma.TechStackDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["techStackOnProjects"]>
 
 export type TechStackOnProjectsSelectScalar = {
   projectId?: boolean
@@ -550,14 +559,22 @@ export type TechStackOnProjectsSelectScalar = {
 export type TechStackOnProjectsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"projectId" | "techstackId" | "createdAt" | "updatedAt", ExtArgs["result"]["techStackOnProjects"]>
 export type TechStackOnProjectsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
-  techStack?: boolean | Prisma.TechStackDefaultArgs<ExtArgs>
+  techstack?: boolean | Prisma.TechStackDefaultArgs<ExtArgs>
+}
+export type TechStackOnProjectsIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  techstack?: boolean | Prisma.TechStackDefaultArgs<ExtArgs>
+}
+export type TechStackOnProjectsIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  techstack?: boolean | Prisma.TechStackDefaultArgs<ExtArgs>
 }
 
 export type $TechStackOnProjectsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TechStackOnProjects"
   objects: {
     project: Prisma.$ProjectPayload<ExtArgs>
-    techStack: Prisma.$TechStackPayload<ExtArgs>
+    techstack: Prisma.$TechStackPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     projectId: string
@@ -682,6 +699,30 @@ export interface TechStackOnProjectsDelegate<ExtArgs extends runtime.Types.Exten
   createMany<T extends TechStackOnProjectsCreateManyArgs>(args?: Prisma.SelectSubset<T, TechStackOnProjectsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many TechStackOnProjects and returns the data saved in the database.
+   * @param {TechStackOnProjectsCreateManyAndReturnArgs} args - Arguments to create many TechStackOnProjects.
+   * @example
+   * // Create many TechStackOnProjects
+   * const techStackOnProjects = await prisma.techStackOnProjects.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many TechStackOnProjects and only return the `projectId`
+   * const techStackOnProjectsWithProjectIdOnly = await prisma.techStackOnProjects.createManyAndReturn({
+   *   select: { projectId: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends TechStackOnProjectsCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, TechStackOnProjectsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TechStackOnProjectsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a TechStackOnProjects.
    * @param {TechStackOnProjectsDeleteArgs} args - Arguments to delete one TechStackOnProjects.
    * @example
@@ -744,6 +785,36 @@ export interface TechStackOnProjectsDelegate<ExtArgs extends runtime.Types.Exten
    * 
    */
   updateMany<T extends TechStackOnProjectsUpdateManyArgs>(args: Prisma.SelectSubset<T, TechStackOnProjectsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more TechStackOnProjects and returns the data updated in the database.
+   * @param {TechStackOnProjectsUpdateManyAndReturnArgs} args - Arguments to update many TechStackOnProjects.
+   * @example
+   * // Update many TechStackOnProjects
+   * const techStackOnProjects = await prisma.techStackOnProjects.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more TechStackOnProjects and only return the `projectId`
+   * const techStackOnProjectsWithProjectIdOnly = await prisma.techStackOnProjects.updateManyAndReturn({
+   *   select: { projectId: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends TechStackOnProjectsUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, TechStackOnProjectsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TechStackOnProjectsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one TechStackOnProjects.
@@ -905,7 +976,7 @@ readonly fields: TechStackOnProjectsFieldRefs;
 export interface Prisma__TechStackOnProjectsClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  techStack<T extends Prisma.TechStackDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TechStackDefaultArgs<ExtArgs>>): Prisma.Prisma__TechStackClient<runtime.Types.Result.GetResult<Prisma.$TechStackPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  techstack<T extends Prisma.TechStackDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TechStackDefaultArgs<ExtArgs>>): Prisma.Prisma__TechStackClient<runtime.Types.Result.GetResult<Prisma.$TechStackPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1172,6 +1243,29 @@ export type TechStackOnProjectsCreateManyArgs<ExtArgs extends runtime.Types.Exte
 }
 
 /**
+ * TechStackOnProjects createManyAndReturn
+ */
+export type TechStackOnProjectsCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TechStackOnProjects
+   */
+  select?: Prisma.TechStackOnProjectsSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the TechStackOnProjects
+   */
+  omit?: Prisma.TechStackOnProjectsOmit<ExtArgs> | null
+  /**
+   * The data used to create many TechStackOnProjects.
+   */
+  data: Prisma.TechStackOnProjectsCreateManyInput | Prisma.TechStackOnProjectsCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TechStackOnProjectsIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * TechStackOnProjects update
  */
 export type TechStackOnProjectsUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1213,6 +1307,36 @@ export type TechStackOnProjectsUpdateManyArgs<ExtArgs extends runtime.Types.Exte
    * Limit how many TechStackOnProjects to update.
    */
   limit?: number
+}
+
+/**
+ * TechStackOnProjects updateManyAndReturn
+ */
+export type TechStackOnProjectsUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TechStackOnProjects
+   */
+  select?: Prisma.TechStackOnProjectsSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the TechStackOnProjects
+   */
+  omit?: Prisma.TechStackOnProjectsOmit<ExtArgs> | null
+  /**
+   * The data used to update TechStackOnProjects.
+   */
+  data: Prisma.XOR<Prisma.TechStackOnProjectsUpdateManyMutationInput, Prisma.TechStackOnProjectsUncheckedUpdateManyInput>
+  /**
+   * Filter which TechStackOnProjects to update
+   */
+  where?: Prisma.TechStackOnProjectsWhereInput
+  /**
+   * Limit how many TechStackOnProjects to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TechStackOnProjectsIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

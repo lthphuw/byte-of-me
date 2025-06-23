@@ -50,13 +50,13 @@ export async function GET(req: NextRequest) {
         const translatedEducations = educations.map((edu) => ({
             id: edu.id,
             timeline: edu.timeline,
-            title: edu.translations.find(t => t.field === 'title')?.value || edu.title,
-            message: edu.translations.find(t => t.field === 'message')?.value || edu.message,
+            title: edu.translations?.find(t => t.field === 'title')?.value || edu.title,
+            message: edu.translations?.find(t => t.field === 'message')?.value || edu.message,
             icon: edu.icon,
-            subItems: edu.subItems.map(sub => ({
+            subItems: edu.subItems?.map(sub => ({
                 id: sub.id,
-                title: sub.translations.find(t => t.field === 'title')?.value || sub.title,
-                message: sub.translations.find(t => t.field === 'message')?.value || sub.message,
+                title: sub.translations?.find(t => t.field === 'title')?.value || sub.title,
+                message: sub.translations?.find(t => t.field === 'message')?.value || sub.message,
             })),
         }));
 

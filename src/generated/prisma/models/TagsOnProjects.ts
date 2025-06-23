@@ -184,7 +184,6 @@ export type TagsOnProjectsOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   project?: Prisma.ProjectOrderByWithRelationInput
   tag?: Prisma.TagOrderByWithRelationInput
-  _relevance?: Prisma.TagsOnProjectsOrderByRelevanceInput
 }
 
 export type TagsOnProjectsWhereUniqueInput = Prisma.AtLeast<{
@@ -275,12 +274,6 @@ export type TagsOnProjectsListRelationFilter = {
 
 export type TagsOnProjectsOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type TagsOnProjectsOrderByRelevanceInput = {
-  fields: Prisma.TagsOnProjectsOrderByRelevanceFieldEnum | Prisma.TagsOnProjectsOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type TagsOnProjectsProjectIdTagIdCompoundUniqueInput = {
@@ -538,7 +531,23 @@ export type TagsOnProjectsSelect<ExtArgs extends runtime.Types.Extensions.Intern
   tag?: boolean | Prisma.TagDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tagsOnProjects"]>
 
+export type TagsOnProjectsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  projectId?: boolean
+  tagId?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  tag?: boolean | Prisma.TagDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["tagsOnProjects"]>
 
+export type TagsOnProjectsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  projectId?: boolean
+  tagId?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  tag?: boolean | Prisma.TagDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["tagsOnProjects"]>
 
 export type TagsOnProjectsSelectScalar = {
   projectId?: boolean
@@ -549,6 +558,14 @@ export type TagsOnProjectsSelectScalar = {
 
 export type TagsOnProjectsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"projectId" | "tagId" | "createdAt" | "updatedAt", ExtArgs["result"]["tagsOnProjects"]>
 export type TagsOnProjectsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  tag?: boolean | Prisma.TagDefaultArgs<ExtArgs>
+}
+export type TagsOnProjectsIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  tag?: boolean | Prisma.TagDefaultArgs<ExtArgs>
+}
+export type TagsOnProjectsIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   tag?: boolean | Prisma.TagDefaultArgs<ExtArgs>
 }
@@ -682,6 +699,30 @@ export interface TagsOnProjectsDelegate<ExtArgs extends runtime.Types.Extensions
   createMany<T extends TagsOnProjectsCreateManyArgs>(args?: Prisma.SelectSubset<T, TagsOnProjectsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many TagsOnProjects and returns the data saved in the database.
+   * @param {TagsOnProjectsCreateManyAndReturnArgs} args - Arguments to create many TagsOnProjects.
+   * @example
+   * // Create many TagsOnProjects
+   * const tagsOnProjects = await prisma.tagsOnProjects.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many TagsOnProjects and only return the `projectId`
+   * const tagsOnProjectsWithProjectIdOnly = await prisma.tagsOnProjects.createManyAndReturn({
+   *   select: { projectId: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends TagsOnProjectsCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, TagsOnProjectsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TagsOnProjectsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a TagsOnProjects.
    * @param {TagsOnProjectsDeleteArgs} args - Arguments to delete one TagsOnProjects.
    * @example
@@ -744,6 +785,36 @@ export interface TagsOnProjectsDelegate<ExtArgs extends runtime.Types.Extensions
    * 
    */
   updateMany<T extends TagsOnProjectsUpdateManyArgs>(args: Prisma.SelectSubset<T, TagsOnProjectsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more TagsOnProjects and returns the data updated in the database.
+   * @param {TagsOnProjectsUpdateManyAndReturnArgs} args - Arguments to update many TagsOnProjects.
+   * @example
+   * // Update many TagsOnProjects
+   * const tagsOnProjects = await prisma.tagsOnProjects.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more TagsOnProjects and only return the `projectId`
+   * const tagsOnProjectsWithProjectIdOnly = await prisma.tagsOnProjects.updateManyAndReturn({
+   *   select: { projectId: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends TagsOnProjectsUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, TagsOnProjectsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TagsOnProjectsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one TagsOnProjects.
@@ -1172,6 +1243,29 @@ export type TagsOnProjectsCreateManyArgs<ExtArgs extends runtime.Types.Extension
 }
 
 /**
+ * TagsOnProjects createManyAndReturn
+ */
+export type TagsOnProjectsCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TagsOnProjects
+   */
+  select?: Prisma.TagsOnProjectsSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the TagsOnProjects
+   */
+  omit?: Prisma.TagsOnProjectsOmit<ExtArgs> | null
+  /**
+   * The data used to create many TagsOnProjects.
+   */
+  data: Prisma.TagsOnProjectsCreateManyInput | Prisma.TagsOnProjectsCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TagsOnProjectsIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * TagsOnProjects update
  */
 export type TagsOnProjectsUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1213,6 +1307,36 @@ export type TagsOnProjectsUpdateManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many TagsOnProjects to update.
    */
   limit?: number
+}
+
+/**
+ * TagsOnProjects updateManyAndReturn
+ */
+export type TagsOnProjectsUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TagsOnProjects
+   */
+  select?: Prisma.TagsOnProjectsSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the TagsOnProjects
+   */
+  omit?: Prisma.TagsOnProjectsOmit<ExtArgs> | null
+  /**
+   * The data used to update TagsOnProjects.
+   */
+  data: Prisma.XOR<Prisma.TagsOnProjectsUpdateManyMutationInput, Prisma.TagsOnProjectsUncheckedUpdateManyInput>
+  /**
+   * Filter which TagsOnProjects to update
+   */
+  where?: Prisma.TagsOnProjectsWhereInput
+  /**
+   * Limit how many TagsOnProjects to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TagsOnProjectsIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

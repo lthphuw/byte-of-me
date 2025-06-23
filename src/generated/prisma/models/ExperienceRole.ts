@@ -193,7 +193,6 @@ export type ExperienceRoleOrderByWithRelationInput = {
   endDate?: Prisma.SortOrderInput | Prisma.SortOrder
   tasks?: Prisma.TaskOrderByRelationAggregateInput
   experience?: Prisma.ExperienceOrderByWithRelationInput
-  _relevance?: Prisma.ExperienceRoleOrderByRelevanceInput
 }
 
 export type ExperienceRoleWhereUniqueInput = Prisma.AtLeast<{
@@ -298,12 +297,6 @@ export type ExperienceRoleListRelationFilter = {
 
 export type ExperienceRoleOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type ExperienceRoleOrderByRelevanceInput = {
-  fields: Prisma.ExperienceRoleOrderByRelevanceFieldEnum | Prisma.ExperienceRoleOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type ExperienceRoleCountOrderByAggregateInput = {
@@ -568,7 +561,23 @@ export type ExperienceRoleSelect<ExtArgs extends runtime.Types.Extensions.Intern
   _count?: boolean | Prisma.ExperienceRoleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["experienceRole"]>
 
+export type ExperienceRoleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  experienceId?: boolean
+  title?: boolean
+  startDate?: boolean
+  endDate?: boolean
+  experience?: boolean | Prisma.ExperienceDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["experienceRole"]>
 
+export type ExperienceRoleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  experienceId?: boolean
+  title?: boolean
+  startDate?: boolean
+  endDate?: boolean
+  experience?: boolean | Prisma.ExperienceDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["experienceRole"]>
 
 export type ExperienceRoleSelectScalar = {
   id?: boolean
@@ -583,6 +592,12 @@ export type ExperienceRoleInclude<ExtArgs extends runtime.Types.Extensions.Inter
   tasks?: boolean | Prisma.ExperienceRole$tasksArgs<ExtArgs>
   experience?: boolean | Prisma.ExperienceDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ExperienceRoleCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type ExperienceRoleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  experience?: boolean | Prisma.ExperienceDefaultArgs<ExtArgs>
+}
+export type ExperienceRoleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  experience?: boolean | Prisma.ExperienceDefaultArgs<ExtArgs>
 }
 
 export type $ExperienceRolePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -715,6 +730,30 @@ export interface ExperienceRoleDelegate<ExtArgs extends runtime.Types.Extensions
   createMany<T extends ExperienceRoleCreateManyArgs>(args?: Prisma.SelectSubset<T, ExperienceRoleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many ExperienceRoles and returns the data saved in the database.
+   * @param {ExperienceRoleCreateManyAndReturnArgs} args - Arguments to create many ExperienceRoles.
+   * @example
+   * // Create many ExperienceRoles
+   * const experienceRole = await prisma.experienceRole.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many ExperienceRoles and only return the `id`
+   * const experienceRoleWithIdOnly = await prisma.experienceRole.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends ExperienceRoleCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, ExperienceRoleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExperienceRolePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a ExperienceRole.
    * @param {ExperienceRoleDeleteArgs} args - Arguments to delete one ExperienceRole.
    * @example
@@ -777,6 +816,36 @@ export interface ExperienceRoleDelegate<ExtArgs extends runtime.Types.Extensions
    * 
    */
   updateMany<T extends ExperienceRoleUpdateManyArgs>(args: Prisma.SelectSubset<T, ExperienceRoleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more ExperienceRoles and returns the data updated in the database.
+   * @param {ExperienceRoleUpdateManyAndReturnArgs} args - Arguments to update many ExperienceRoles.
+   * @example
+   * // Update many ExperienceRoles
+   * const experienceRole = await prisma.experienceRole.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more ExperienceRoles and only return the `id`
+   * const experienceRoleWithIdOnly = await prisma.experienceRole.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends ExperienceRoleUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, ExperienceRoleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExperienceRolePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one ExperienceRole.
@@ -1206,6 +1275,29 @@ export type ExperienceRoleCreateManyArgs<ExtArgs extends runtime.Types.Extension
 }
 
 /**
+ * ExperienceRole createManyAndReturn
+ */
+export type ExperienceRoleCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ExperienceRole
+   */
+  select?: Prisma.ExperienceRoleSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the ExperienceRole
+   */
+  omit?: Prisma.ExperienceRoleOmit<ExtArgs> | null
+  /**
+   * The data used to create many ExperienceRoles.
+   */
+  data: Prisma.ExperienceRoleCreateManyInput | Prisma.ExperienceRoleCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExperienceRoleIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * ExperienceRole update
  */
 export type ExperienceRoleUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1247,6 +1339,36 @@ export type ExperienceRoleUpdateManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many ExperienceRoles to update.
    */
   limit?: number
+}
+
+/**
+ * ExperienceRole updateManyAndReturn
+ */
+export type ExperienceRoleUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ExperienceRole
+   */
+  select?: Prisma.ExperienceRoleSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the ExperienceRole
+   */
+  omit?: Prisma.ExperienceRoleOmit<ExtArgs> | null
+  /**
+   * The data used to update ExperienceRoles.
+   */
+  data: Prisma.XOR<Prisma.ExperienceRoleUpdateManyMutationInput, Prisma.ExperienceRoleUncheckedUpdateManyInput>
+  /**
+   * Filter which ExperienceRoles to update
+   */
+  where?: Prisma.ExperienceRoleWhereInput
+  /**
+   * Limit how many ExperienceRoles to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExperienceRoleIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

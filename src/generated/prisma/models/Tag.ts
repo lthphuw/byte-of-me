@@ -186,7 +186,6 @@ export type TagOrderByWithRelationInput = {
   blogs?: Prisma.BlogTagOrderByRelationAggregateInput
   translations?: Prisma.TranslationOrderByRelationAggregateInput
   projects?: Prisma.TagsOnProjectsOrderByRelationAggregateInput
-  _relevance?: Prisma.TagOrderByRelevanceInput
 }
 
 export type TagWhereUniqueInput = Prisma.AtLeast<{
@@ -286,12 +285,6 @@ export type TagUncheckedUpdateManyInput = {
 export type TagScalarRelationFilter = {
   is?: Prisma.TagWhereInput
   isNot?: Prisma.TagWhereInput
-}
-
-export type TagOrderByRelevanceInput = {
-  fields: Prisma.TagOrderByRelevanceFieldEnum | Prisma.TagOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type TagCountOrderByAggregateInput = {
@@ -580,7 +573,19 @@ export type TagSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   _count?: boolean | Prisma.TagCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tag"]>
 
+export type TagSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  name?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+}, ExtArgs["result"]["tag"]>
 
+export type TagSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  name?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+}, ExtArgs["result"]["tag"]>
 
 export type TagSelectScalar = {
   id?: boolean
@@ -596,6 +601,8 @@ export type TagInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   projects?: boolean | Prisma.Tag$projectsArgs<ExtArgs>
   _count?: boolean | Prisma.TagCountOutputTypeDefaultArgs<ExtArgs>
 }
+export type TagIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type TagIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $TagPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Tag"
@@ -727,6 +734,30 @@ export interface TagDelegate<ExtArgs extends runtime.Types.Extensions.InternalAr
   createMany<T extends TagCreateManyArgs>(args?: Prisma.SelectSubset<T, TagCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many Tags and returns the data saved in the database.
+   * @param {TagCreateManyAndReturnArgs} args - Arguments to create many Tags.
+   * @example
+   * // Create many Tags
+   * const tag = await prisma.tag.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many Tags and only return the `id`
+   * const tagWithIdOnly = await prisma.tag.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends TagCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, TagCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a Tag.
    * @param {TagDeleteArgs} args - Arguments to delete one Tag.
    * @example
@@ -789,6 +820,36 @@ export interface TagDelegate<ExtArgs extends runtime.Types.Extensions.InternalAr
    * 
    */
   updateMany<T extends TagUpdateManyArgs>(args: Prisma.SelectSubset<T, TagUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more Tags and returns the data updated in the database.
+   * @param {TagUpdateManyAndReturnArgs} args - Arguments to update many Tags.
+   * @example
+   * // Update many Tags
+   * const tag = await prisma.tag.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more Tags and only return the `id`
+   * const tagWithIdOnly = await prisma.tag.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends TagUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, TagUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Tag.
@@ -1218,6 +1279,25 @@ export type TagCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 /**
+ * Tag createManyAndReturn
+ */
+export type TagCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Tag
+   */
+  select?: Prisma.TagSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Tag
+   */
+  omit?: Prisma.TagOmit<ExtArgs> | null
+  /**
+   * The data used to create many Tags.
+   */
+  data: Prisma.TagCreateManyInput | Prisma.TagCreateManyInput[]
+  skipDuplicates?: boolean
+}
+
+/**
  * Tag update
  */
 export type TagUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1247,6 +1327,32 @@ export type TagUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs 
  * Tag updateMany
  */
 export type TagUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * The data used to update Tags.
+   */
+  data: Prisma.XOR<Prisma.TagUpdateManyMutationInput, Prisma.TagUncheckedUpdateManyInput>
+  /**
+   * Filter which Tags to update
+   */
+  where?: Prisma.TagWhereInput
+  /**
+   * Limit how many Tags to update.
+   */
+  limit?: number
+}
+
+/**
+ * Tag updateManyAndReturn
+ */
+export type TagUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Tag
+   */
+  select?: Prisma.TagSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Tag
+   */
+  omit?: Prisma.TagOmit<ExtArgs> | null
   /**
    * The data used to update Tags.
    */

@@ -184,7 +184,6 @@ export type BlogTagOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   blog?: Prisma.BlogOrderByWithRelationInput
   tag?: Prisma.TagOrderByWithRelationInput
-  _relevance?: Prisma.BlogTagOrderByRelevanceInput
 }
 
 export type BlogTagWhereUniqueInput = Prisma.AtLeast<{
@@ -275,12 +274,6 @@ export type BlogTagListRelationFilter = {
 
 export type BlogTagOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type BlogTagOrderByRelevanceInput = {
-  fields: Prisma.BlogTagOrderByRelevanceFieldEnum | Prisma.BlogTagOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type BlogTagBlogIdTagIdCompoundUniqueInput = {
@@ -538,7 +531,23 @@ export type BlogTagSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   tag?: boolean | Prisma.TagDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["blogTag"]>
 
+export type BlogTagSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  blogId?: boolean
+  tagId?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  blog?: boolean | Prisma.BlogDefaultArgs<ExtArgs>
+  tag?: boolean | Prisma.TagDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["blogTag"]>
 
+export type BlogTagSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  blogId?: boolean
+  tagId?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  blog?: boolean | Prisma.BlogDefaultArgs<ExtArgs>
+  tag?: boolean | Prisma.TagDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["blogTag"]>
 
 export type BlogTagSelectScalar = {
   blogId?: boolean
@@ -549,6 +558,14 @@ export type BlogTagSelectScalar = {
 
 export type BlogTagOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"blogId" | "tagId" | "createdAt" | "updatedAt", ExtArgs["result"]["blogTag"]>
 export type BlogTagInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  blog?: boolean | Prisma.BlogDefaultArgs<ExtArgs>
+  tag?: boolean | Prisma.TagDefaultArgs<ExtArgs>
+}
+export type BlogTagIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  blog?: boolean | Prisma.BlogDefaultArgs<ExtArgs>
+  tag?: boolean | Prisma.TagDefaultArgs<ExtArgs>
+}
+export type BlogTagIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   blog?: boolean | Prisma.BlogDefaultArgs<ExtArgs>
   tag?: boolean | Prisma.TagDefaultArgs<ExtArgs>
 }
@@ -682,6 +699,30 @@ export interface BlogTagDelegate<ExtArgs extends runtime.Types.Extensions.Intern
   createMany<T extends BlogTagCreateManyArgs>(args?: Prisma.SelectSubset<T, BlogTagCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many BlogTags and returns the data saved in the database.
+   * @param {BlogTagCreateManyAndReturnArgs} args - Arguments to create many BlogTags.
+   * @example
+   * // Create many BlogTags
+   * const blogTag = await prisma.blogTag.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many BlogTags and only return the `blogId`
+   * const blogTagWithBlogIdOnly = await prisma.blogTag.createManyAndReturn({
+   *   select: { blogId: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends BlogTagCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, BlogTagCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlogTagPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a BlogTag.
    * @param {BlogTagDeleteArgs} args - Arguments to delete one BlogTag.
    * @example
@@ -744,6 +785,36 @@ export interface BlogTagDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    * 
    */
   updateMany<T extends BlogTagUpdateManyArgs>(args: Prisma.SelectSubset<T, BlogTagUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more BlogTags and returns the data updated in the database.
+   * @param {BlogTagUpdateManyAndReturnArgs} args - Arguments to update many BlogTags.
+   * @example
+   * // Update many BlogTags
+   * const blogTag = await prisma.blogTag.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more BlogTags and only return the `blogId`
+   * const blogTagWithBlogIdOnly = await prisma.blogTag.updateManyAndReturn({
+   *   select: { blogId: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends BlogTagUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, BlogTagUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlogTagPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one BlogTag.
@@ -1172,6 +1243,29 @@ export type BlogTagCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
+ * BlogTag createManyAndReturn
+ */
+export type BlogTagCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BlogTag
+   */
+  select?: Prisma.BlogTagSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the BlogTag
+   */
+  omit?: Prisma.BlogTagOmit<ExtArgs> | null
+  /**
+   * The data used to create many BlogTags.
+   */
+  data: Prisma.BlogTagCreateManyInput | Prisma.BlogTagCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlogTagIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * BlogTag update
  */
 export type BlogTagUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1213,6 +1307,36 @@ export type BlogTagUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many BlogTags to update.
    */
   limit?: number
+}
+
+/**
+ * BlogTag updateManyAndReturn
+ */
+export type BlogTagUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BlogTag
+   */
+  select?: Prisma.BlogTagSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the BlogTag
+   */
+  omit?: Prisma.BlogTagOmit<ExtArgs> | null
+  /**
+   * The data used to update BlogTags.
+   */
+  data: Prisma.XOR<Prisma.BlogTagUpdateManyMutationInput, Prisma.BlogTagUncheckedUpdateManyInput>
+  /**
+   * Filter which BlogTags to update
+   */
+  where?: Prisma.BlogTagWhereInput
+  /**
+   * Limit how many BlogTags to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlogTagIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

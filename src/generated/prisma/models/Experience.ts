@@ -215,7 +215,7 @@ export type ExperienceWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Experience"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   roles?: Prisma.ExperienceRoleListRelationFilter
-  techstacks?: Prisma.TechstacksOnExperiencesListRelationFilter
+  techstacks?: Prisma.TechStackOnExperiencesListRelationFilter
   translations?: Prisma.TranslationListRelationFilter
 }
 
@@ -231,9 +231,8 @@ export type ExperienceOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   roles?: Prisma.ExperienceRoleOrderByRelationAggregateInput
-  techstacks?: Prisma.TechstacksOnExperiencesOrderByRelationAggregateInput
+  techstacks?: Prisma.TechStackOnExperiencesOrderByRelationAggregateInput
   translations?: Prisma.TranslationOrderByRelationAggregateInput
-  _relevance?: Prisma.ExperienceOrderByRelevanceInput
 }
 
 export type ExperienceWhereUniqueInput = Prisma.AtLeast<{
@@ -251,7 +250,7 @@ export type ExperienceWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Experience"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   roles?: Prisma.ExperienceRoleListRelationFilter
-  techstacks?: Prisma.TechstacksOnExperiencesListRelationFilter
+  techstacks?: Prisma.TechStackOnExperiencesListRelationFilter
   translations?: Prisma.TranslationListRelationFilter
 }, "id">
 
@@ -296,7 +295,7 @@ export type ExperienceCreateInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutExperiencesInput
   roles?: Prisma.ExperienceRoleCreateNestedManyWithoutExperienceInput
-  techstacks?: Prisma.TechstacksOnExperiencesCreateNestedManyWithoutExperienceInput
+  techstacks?: Prisma.TechStackOnExperiencesCreateNestedManyWithoutExperienceInput
   translations?: Prisma.TranslationCreateNestedManyWithoutExperienceInput
 }
 
@@ -311,7 +310,7 @@ export type ExperienceUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   roles?: Prisma.ExperienceRoleUncheckedCreateNestedManyWithoutExperienceInput
-  techstacks?: Prisma.TechstacksOnExperiencesUncheckedCreateNestedManyWithoutExperienceInput
+  techstacks?: Prisma.TechStackOnExperiencesUncheckedCreateNestedManyWithoutExperienceInput
   translations?: Prisma.TranslationUncheckedCreateNestedManyWithoutExperienceInput
 }
 
@@ -326,7 +325,7 @@ export type ExperienceUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutExperiencesNestedInput
   roles?: Prisma.ExperienceRoleUpdateManyWithoutExperienceNestedInput
-  techstacks?: Prisma.TechstacksOnExperiencesUpdateManyWithoutExperienceNestedInput
+  techstacks?: Prisma.TechStackOnExperiencesUpdateManyWithoutExperienceNestedInput
   translations?: Prisma.TranslationUpdateManyWithoutExperienceNestedInput
 }
 
@@ -341,7 +340,7 @@ export type ExperienceUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roles?: Prisma.ExperienceRoleUncheckedUpdateManyWithoutExperienceNestedInput
-  techstacks?: Prisma.TechstacksOnExperiencesUncheckedUpdateManyWithoutExperienceNestedInput
+  techstacks?: Prisma.TechStackOnExperiencesUncheckedUpdateManyWithoutExperienceNestedInput
   translations?: Prisma.TranslationUncheckedUpdateManyWithoutExperienceNestedInput
 }
 
@@ -390,10 +389,9 @@ export type ExperienceOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type ExperienceOrderByRelevanceInput = {
-  fields: Prisma.ExperienceOrderByRelevanceFieldEnum | Prisma.ExperienceOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
+export type ExperienceScalarRelationFilter = {
+  is?: Prisma.ExperienceWhereInput
+  isNot?: Prisma.ExperienceWhereInput
 }
 
 export type ExperienceCountOrderByAggregateInput = {
@@ -430,11 +428,6 @@ export type ExperienceMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-}
-
-export type ExperienceScalarRelationFilter = {
-  is?: Prisma.ExperienceWhereInput
-  isNot?: Prisma.ExperienceWhereInput
 }
 
 export type ExperienceNullableScalarRelationFilter = {
@@ -538,7 +531,7 @@ export type ExperienceCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   roles?: Prisma.ExperienceRoleCreateNestedManyWithoutExperienceInput
-  techstacks?: Prisma.TechstacksOnExperiencesCreateNestedManyWithoutExperienceInput
+  techstacks?: Prisma.TechStackOnExperiencesCreateNestedManyWithoutExperienceInput
   translations?: Prisma.TranslationCreateNestedManyWithoutExperienceInput
 }
 
@@ -552,7 +545,7 @@ export type ExperienceUncheckedCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   roles?: Prisma.ExperienceRoleUncheckedCreateNestedManyWithoutExperienceInput
-  techstacks?: Prisma.TechstacksOnExperiencesUncheckedCreateNestedManyWithoutExperienceInput
+  techstacks?: Prisma.TechStackOnExperiencesUncheckedCreateNestedManyWithoutExperienceInput
   translations?: Prisma.TranslationUncheckedCreateNestedManyWithoutExperienceInput
 }
 
@@ -679,7 +672,7 @@ export type ExperienceCreateWithoutRolesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutExperiencesInput
-  techstacks?: Prisma.TechstacksOnExperiencesCreateNestedManyWithoutExperienceInput
+  techstacks?: Prisma.TechStackOnExperiencesCreateNestedManyWithoutExperienceInput
   translations?: Prisma.TranslationCreateNestedManyWithoutExperienceInput
 }
 
@@ -693,7 +686,7 @@ export type ExperienceUncheckedCreateWithoutRolesInput = {
   description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  techstacks?: Prisma.TechstacksOnExperiencesUncheckedCreateNestedManyWithoutExperienceInput
+  techstacks?: Prisma.TechStackOnExperiencesUncheckedCreateNestedManyWithoutExperienceInput
   translations?: Prisma.TranslationUncheckedCreateNestedManyWithoutExperienceInput
 }
 
@@ -723,7 +716,7 @@ export type ExperienceUpdateWithoutRolesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutExperiencesNestedInput
-  techstacks?: Prisma.TechstacksOnExperiencesUpdateManyWithoutExperienceNestedInput
+  techstacks?: Prisma.TechStackOnExperiencesUpdateManyWithoutExperienceNestedInput
   translations?: Prisma.TranslationUpdateManyWithoutExperienceNestedInput
 }
 
@@ -737,7 +730,7 @@ export type ExperienceUncheckedUpdateWithoutRolesInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  techstacks?: Prisma.TechstacksOnExperiencesUncheckedUpdateManyWithoutExperienceNestedInput
+  techstacks?: Prisma.TechStackOnExperiencesUncheckedUpdateManyWithoutExperienceNestedInput
   translations?: Prisma.TranslationUncheckedUpdateManyWithoutExperienceNestedInput
 }
 
@@ -752,7 +745,7 @@ export type ExperienceCreateWithoutTranslationsInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutExperiencesInput
   roles?: Prisma.ExperienceRoleCreateNestedManyWithoutExperienceInput
-  techstacks?: Prisma.TechstacksOnExperiencesCreateNestedManyWithoutExperienceInput
+  techstacks?: Prisma.TechStackOnExperiencesCreateNestedManyWithoutExperienceInput
 }
 
 export type ExperienceUncheckedCreateWithoutTranslationsInput = {
@@ -766,7 +759,7 @@ export type ExperienceUncheckedCreateWithoutTranslationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   roles?: Prisma.ExperienceRoleUncheckedCreateNestedManyWithoutExperienceInput
-  techstacks?: Prisma.TechstacksOnExperiencesUncheckedCreateNestedManyWithoutExperienceInput
+  techstacks?: Prisma.TechStackOnExperiencesUncheckedCreateNestedManyWithoutExperienceInput
 }
 
 export type ExperienceCreateOrConnectWithoutTranslationsInput = {
@@ -796,7 +789,7 @@ export type ExperienceUpdateWithoutTranslationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutExperiencesNestedInput
   roles?: Prisma.ExperienceRoleUpdateManyWithoutExperienceNestedInput
-  techstacks?: Prisma.TechstacksOnExperiencesUpdateManyWithoutExperienceNestedInput
+  techstacks?: Prisma.TechStackOnExperiencesUpdateManyWithoutExperienceNestedInput
 }
 
 export type ExperienceUncheckedUpdateWithoutTranslationsInput = {
@@ -810,7 +803,7 @@ export type ExperienceUncheckedUpdateWithoutTranslationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roles?: Prisma.ExperienceRoleUncheckedUpdateManyWithoutExperienceNestedInput
-  techstacks?: Prisma.TechstacksOnExperiencesUncheckedUpdateManyWithoutExperienceNestedInput
+  techstacks?: Prisma.TechStackOnExperiencesUncheckedUpdateManyWithoutExperienceNestedInput
 }
 
 export type ExperienceCreateManyUserInput = {
@@ -834,7 +827,7 @@ export type ExperienceUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roles?: Prisma.ExperienceRoleUpdateManyWithoutExperienceNestedInput
-  techstacks?: Prisma.TechstacksOnExperiencesUpdateManyWithoutExperienceNestedInput
+  techstacks?: Prisma.TechStackOnExperiencesUpdateManyWithoutExperienceNestedInput
   translations?: Prisma.TranslationUpdateManyWithoutExperienceNestedInput
 }
 
@@ -848,7 +841,7 @@ export type ExperienceUncheckedUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   roles?: Prisma.ExperienceRoleUncheckedUpdateManyWithoutExperienceNestedInput
-  techstacks?: Prisma.TechstacksOnExperiencesUncheckedUpdateManyWithoutExperienceNestedInput
+  techstacks?: Prisma.TechStackOnExperiencesUncheckedUpdateManyWithoutExperienceNestedInput
   translations?: Prisma.TranslationUncheckedUpdateManyWithoutExperienceNestedInput
 }
 
@@ -901,7 +894,7 @@ export type ExperienceCountOutputTypeCountRolesArgs<ExtArgs extends runtime.Type
  * ExperienceCountOutputType without action
  */
 export type ExperienceCountOutputTypeCountTechstacksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TechstacksOnExperiencesWhereInput
+  where?: Prisma.TechStackOnExperiencesWhereInput
 }
 
 /**
@@ -929,7 +922,31 @@ export type ExperienceSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   _count?: boolean | Prisma.ExperienceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["experience"]>
 
+export type ExperienceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  userId?: boolean
+  company?: boolean
+  logoUrl?: boolean
+  location?: boolean
+  type?: boolean
+  description?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["experience"]>
 
+export type ExperienceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  userId?: boolean
+  company?: boolean
+  logoUrl?: boolean
+  location?: boolean
+  type?: boolean
+  description?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["experience"]>
 
 export type ExperienceSelectScalar = {
   id?: boolean
@@ -951,13 +968,19 @@ export type ExperienceInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   translations?: boolean | Prisma.Experience$translationsArgs<ExtArgs>
   _count?: boolean | Prisma.ExperienceCountOutputTypeDefaultArgs<ExtArgs>
 }
+export type ExperienceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}
+export type ExperienceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}
 
 export type $ExperiencePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Experience"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     roles: Prisma.$ExperienceRolePayload<ExtArgs>[]
-    techstacks: Prisma.$TechstacksOnExperiencesPayload<ExtArgs>[]
+    techstacks: Prisma.$TechStackOnExperiencesPayload<ExtArgs>[]
     translations: Prisma.$TranslationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1088,6 +1111,30 @@ export interface ExperienceDelegate<ExtArgs extends runtime.Types.Extensions.Int
   createMany<T extends ExperienceCreateManyArgs>(args?: Prisma.SelectSubset<T, ExperienceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many Experiences and returns the data saved in the database.
+   * @param {ExperienceCreateManyAndReturnArgs} args - Arguments to create many Experiences.
+   * @example
+   * // Create many Experiences
+   * const experience = await prisma.experience.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many Experiences and only return the `id`
+   * const experienceWithIdOnly = await prisma.experience.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends ExperienceCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, ExperienceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExperiencePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a Experience.
    * @param {ExperienceDeleteArgs} args - Arguments to delete one Experience.
    * @example
@@ -1150,6 +1197,36 @@ export interface ExperienceDelegate<ExtArgs extends runtime.Types.Extensions.Int
    * 
    */
   updateMany<T extends ExperienceUpdateManyArgs>(args: Prisma.SelectSubset<T, ExperienceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more Experiences and returns the data updated in the database.
+   * @param {ExperienceUpdateManyAndReturnArgs} args - Arguments to update many Experiences.
+   * @example
+   * // Update many Experiences
+   * const experience = await prisma.experience.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more Experiences and only return the `id`
+   * const experienceWithIdOnly = await prisma.experience.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends ExperienceUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, ExperienceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExperiencePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Experience.
@@ -1312,7 +1389,7 @@ export interface Prisma__ExperienceClient<T, Null = never, ExtArgs extends runti
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   roles<T extends Prisma.Experience$rolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Experience$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExperienceRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  techstacks<T extends Prisma.Experience$techstacksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Experience$techstacksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TechstacksOnExperiencesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  techstacks<T extends Prisma.Experience$techstacksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Experience$techstacksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TechStackOnExperiencesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   translations<T extends Prisma.Experience$translationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Experience$translationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TranslationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1585,6 +1662,29 @@ export type ExperienceCreateManyArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
+ * Experience createManyAndReturn
+ */
+export type ExperienceCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Experience
+   */
+  select?: Prisma.ExperienceSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Experience
+   */
+  omit?: Prisma.ExperienceOmit<ExtArgs> | null
+  /**
+   * The data used to create many Experiences.
+   */
+  data: Prisma.ExperienceCreateManyInput | Prisma.ExperienceCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExperienceIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * Experience update
  */
 export type ExperienceUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1626,6 +1726,36 @@ export type ExperienceUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Limit how many Experiences to update.
    */
   limit?: number
+}
+
+/**
+ * Experience updateManyAndReturn
+ */
+export type ExperienceUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Experience
+   */
+  select?: Prisma.ExperienceSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Experience
+   */
+  omit?: Prisma.ExperienceOmit<ExtArgs> | null
+  /**
+   * The data used to update Experiences.
+   */
+  data: Prisma.XOR<Prisma.ExperienceUpdateManyMutationInput, Prisma.ExperienceUncheckedUpdateManyInput>
+  /**
+   * Filter which Experiences to update
+   */
+  where?: Prisma.ExperienceWhereInput
+  /**
+   * Limit how many Experiences to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExperienceIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1723,23 +1853,23 @@ export type Experience$rolesArgs<ExtArgs extends runtime.Types.Extensions.Intern
  */
 export type Experience$techstacksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the TechstacksOnExperiences
+   * Select specific fields to fetch from the TechStackOnExperiences
    */
-  select?: Prisma.TechstacksOnExperiencesSelect<ExtArgs> | null
+  select?: Prisma.TechStackOnExperiencesSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the TechstacksOnExperiences
+   * Omit specific fields from the TechStackOnExperiences
    */
-  omit?: Prisma.TechstacksOnExperiencesOmit<ExtArgs> | null
+  omit?: Prisma.TechStackOnExperiencesOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.TechstacksOnExperiencesInclude<ExtArgs> | null
-  where?: Prisma.TechstacksOnExperiencesWhereInput
-  orderBy?: Prisma.TechstacksOnExperiencesOrderByWithRelationInput | Prisma.TechstacksOnExperiencesOrderByWithRelationInput[]
-  cursor?: Prisma.TechstacksOnExperiencesWhereUniqueInput
+  include?: Prisma.TechStackOnExperiencesInclude<ExtArgs> | null
+  where?: Prisma.TechStackOnExperiencesWhereInput
+  orderBy?: Prisma.TechStackOnExperiencesOrderByWithRelationInput | Prisma.TechStackOnExperiencesOrderByWithRelationInput[]
+  cursor?: Prisma.TechStackOnExperiencesWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.TechstacksOnExperiencesScalarFieldEnum | Prisma.TechstacksOnExperiencesScalarFieldEnum[]
+  distinct?: Prisma.TechStackOnExperiencesScalarFieldEnum | Prisma.TechStackOnExperiencesScalarFieldEnum[]
 }
 
 /**

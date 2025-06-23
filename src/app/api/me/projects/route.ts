@@ -22,11 +22,6 @@ export async function GET(req: NextRequest) {
     try {
         const email = 'lthphuw@gmail.com';
 
-        function sleep(ms: number) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-        await sleep(3000);
-
         const user = await unstable_cache(
             async () =>
                 await prisma.user.findUnique({
@@ -49,7 +44,7 @@ export async function GET(req: NextRequest) {
                     where: { userId: user.id },
                     include: {
                         tags: { include: { tag: true } },
-                        techstacks: { include: { techStack: true } },
+                        techstacks: { include: { techstack: true } },
                         translations: { where: { language: locale } },
                     },
                 }),
@@ -58,7 +53,7 @@ export async function GET(req: NextRequest) {
         )();
 
         const translatedProjects: any[] = projects.map((proj) => {
-            const translations = proj.translations.reduce(
+            const translations = proj.translations?.reduce(
                 (acc, t) => ({ ...acc, [t.field]: t.value }),
                 {} as Record<string, string>,
             );
@@ -77,8 +72,8 @@ export async function GET(req: NextRequest) {
                     name: ts.tag.name,
                 })),
                 techstacks: proj.techstacks.map((ts) => ({
-                    id: ts.techStack.id,
-                    name: ts.techStack.name,
+                    id: ts.techstack.id,
+                    name: ts.techstack.name,
                 })),
             };
         });

@@ -67,15 +67,15 @@ export type EducationSubItem = Prisma.EducationSubItemModel
  */
 export type TechStack = Prisma.TechStackModel
 /**
+ * Model TechStackOnExperiences
+ * 
+ */
+export type TechStackOnExperiences = Prisma.TechStackOnExperiencesModel
+/**
  * Model Experience
  * 
  */
 export type Experience = Prisma.ExperienceModel
-/**
- * Model TechstacksOnExperiences
- * 
- */
-export type TechstacksOnExperiences = Prisma.TechstacksOnExperiencesModel
 /**
  * Model ExperienceRole
  * 

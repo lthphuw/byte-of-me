@@ -173,7 +173,7 @@ export type UserBannerImageWhereInput = {
   userId?: Prisma.StringFilter<"UserBannerImage"> | string
   src?: Prisma.StringFilter<"UserBannerImage"> | string
   caption?: Prisma.StringFilter<"UserBannerImage"> | string
-  User?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   translations?: Prisma.TranslationListRelationFilter
 }
 
@@ -182,9 +182,8 @@ export type UserBannerImageOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   src?: Prisma.SortOrder
   caption?: Prisma.SortOrder
-  User?: Prisma.UserOrderByWithRelationInput
+  user?: Prisma.UserOrderByWithRelationInput
   translations?: Prisma.TranslationOrderByRelationAggregateInput
-  _relevance?: Prisma.UserBannerImageOrderByRelevanceInput
 }
 
 export type UserBannerImageWhereUniqueInput = Prisma.AtLeast<{
@@ -195,7 +194,7 @@ export type UserBannerImageWhereUniqueInput = Prisma.AtLeast<{
   userId?: Prisma.StringFilter<"UserBannerImage"> | string
   src?: Prisma.StringFilter<"UserBannerImage"> | string
   caption?: Prisma.StringFilter<"UserBannerImage"> | string
-  User?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   translations?: Prisma.TranslationListRelationFilter
 }, "id">
 
@@ -223,7 +222,7 @@ export type UserBannerImageCreateInput = {
   id?: string
   src: string
   caption: string
-  User: Prisma.UserCreateNestedOneWithoutBannerImagesInput
+  user: Prisma.UserCreateNestedOneWithoutBannerImagesInput
   translations?: Prisma.TranslationCreateNestedManyWithoutBannerImageInput
 }
 
@@ -239,7 +238,7 @@ export type UserBannerImageUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   src?: Prisma.StringFieldUpdateOperationsInput | string
   caption?: Prisma.StringFieldUpdateOperationsInput | string
-  User?: Prisma.UserUpdateOneRequiredWithoutBannerImagesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutBannerImagesNestedInput
   translations?: Prisma.TranslationUpdateManyWithoutBannerImageNestedInput
 }
 
@@ -279,12 +278,6 @@ export type UserBannerImageListRelationFilter = {
 
 export type UserBannerImageOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type UserBannerImageOrderByRelevanceInput = {
-  fields: Prisma.UserBannerImageOrderByRelevanceFieldEnum | Prisma.UserBannerImageOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type UserBannerImageCountOrderByAggregateInput = {
@@ -425,7 +418,7 @@ export type UserBannerImageCreateWithoutTranslationsInput = {
   id?: string
   src: string
   caption: string
-  User: Prisma.UserCreateNestedOneWithoutBannerImagesInput
+  user: Prisma.UserCreateNestedOneWithoutBannerImagesInput
 }
 
 export type UserBannerImageUncheckedCreateWithoutTranslationsInput = {
@@ -455,7 +448,7 @@ export type UserBannerImageUpdateWithoutTranslationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   src?: Prisma.StringFieldUpdateOperationsInput | string
   caption?: Prisma.StringFieldUpdateOperationsInput | string
-  User?: Prisma.UserUpdateOneRequiredWithoutBannerImagesNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutBannerImagesNestedInput
 }
 
 export type UserBannerImageUncheckedUpdateWithoutTranslationsInput = {
@@ -527,12 +520,26 @@ export type UserBannerImageSelect<ExtArgs extends runtime.Types.Extensions.Inter
   userId?: boolean
   src?: boolean
   caption?: boolean
-  User?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   translations?: boolean | Prisma.UserBannerImage$translationsArgs<ExtArgs>
   _count?: boolean | Prisma.UserBannerImageCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userBannerImage"]>
 
+export type UserBannerImageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  userId?: boolean
+  src?: boolean
+  caption?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["userBannerImage"]>
 
+export type UserBannerImageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  userId?: boolean
+  src?: boolean
+  caption?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["userBannerImage"]>
 
 export type UserBannerImageSelectScalar = {
   id?: boolean
@@ -543,15 +550,21 @@ export type UserBannerImageSelectScalar = {
 
 export type UserBannerImageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "src" | "caption", ExtArgs["result"]["userBannerImage"]>
 export type UserBannerImageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  User?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   translations?: boolean | Prisma.UserBannerImage$translationsArgs<ExtArgs>
   _count?: boolean | Prisma.UserBannerImageCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type UserBannerImageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}
+export type UserBannerImageIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $UserBannerImagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "UserBannerImage"
   objects: {
-    User: Prisma.$UserPayload<ExtArgs>
+    user: Prisma.$UserPayload<ExtArgs>
     translations: Prisma.$TranslationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -677,6 +690,30 @@ export interface UserBannerImageDelegate<ExtArgs extends runtime.Types.Extension
   createMany<T extends UserBannerImageCreateManyArgs>(args?: Prisma.SelectSubset<T, UserBannerImageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many UserBannerImages and returns the data saved in the database.
+   * @param {UserBannerImageCreateManyAndReturnArgs} args - Arguments to create many UserBannerImages.
+   * @example
+   * // Create many UserBannerImages
+   * const userBannerImage = await prisma.userBannerImage.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many UserBannerImages and only return the `id`
+   * const userBannerImageWithIdOnly = await prisma.userBannerImage.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends UserBannerImageCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, UserBannerImageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserBannerImagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a UserBannerImage.
    * @param {UserBannerImageDeleteArgs} args - Arguments to delete one UserBannerImage.
    * @example
@@ -739,6 +776,36 @@ export interface UserBannerImageDelegate<ExtArgs extends runtime.Types.Extension
    * 
    */
   updateMany<T extends UserBannerImageUpdateManyArgs>(args: Prisma.SelectSubset<T, UserBannerImageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more UserBannerImages and returns the data updated in the database.
+   * @param {UserBannerImageUpdateManyAndReturnArgs} args - Arguments to update many UserBannerImages.
+   * @example
+   * // Update many UserBannerImages
+   * const userBannerImage = await prisma.userBannerImage.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more UserBannerImages and only return the `id`
+   * const userBannerImageWithIdOnly = await prisma.userBannerImage.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends UserBannerImageUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, UserBannerImageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserBannerImagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one UserBannerImage.
@@ -899,7 +966,7 @@ readonly fields: UserBannerImageFieldRefs;
  */
 export interface Prisma__UserBannerImageClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  User<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   translations<T extends Prisma.UserBannerImage$translationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserBannerImage$translationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TranslationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1167,6 +1234,29 @@ export type UserBannerImageCreateManyArgs<ExtArgs extends runtime.Types.Extensio
 }
 
 /**
+ * UserBannerImage createManyAndReturn
+ */
+export type UserBannerImageCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserBannerImage
+   */
+  select?: Prisma.UserBannerImageSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserBannerImage
+   */
+  omit?: Prisma.UserBannerImageOmit<ExtArgs> | null
+  /**
+   * The data used to create many UserBannerImages.
+   */
+  data: Prisma.UserBannerImageCreateManyInput | Prisma.UserBannerImageCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserBannerImageIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * UserBannerImage update
  */
 export type UserBannerImageUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1208,6 +1298,36 @@ export type UserBannerImageUpdateManyArgs<ExtArgs extends runtime.Types.Extensio
    * Limit how many UserBannerImages to update.
    */
   limit?: number
+}
+
+/**
+ * UserBannerImage updateManyAndReturn
+ */
+export type UserBannerImageUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserBannerImage
+   */
+  select?: Prisma.UserBannerImageSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserBannerImage
+   */
+  omit?: Prisma.UserBannerImageOmit<ExtArgs> | null
+  /**
+   * The data used to update UserBannerImages.
+   */
+  data: Prisma.XOR<Prisma.UserBannerImageUpdateManyMutationInput, Prisma.UserBannerImageUncheckedUpdateManyInput>
+  /**
+   * Filter which UserBannerImages to update
+   */
+  where?: Prisma.UserBannerImageWhereInput
+  /**
+   * Limit how many UserBannerImages to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserBannerImageIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

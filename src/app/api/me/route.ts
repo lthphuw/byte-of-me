@@ -53,10 +53,10 @@ export async function GET(req: NextRequest) {
             firstName: user.firstName,
             lastName: user.lastName,
             birthdate: user.birthdate,
-            greeting: user.translations.find(t => t.field === 'greeting')?.value || user.greeting,
-            bio: user.translations.find(t => t.field === 'bio')?.value || user.bio,
-            aboutMe: user.translations.find(t => t.field === 'aboutMe')?.value || user.aboutMe,
-            tagLine: user.translations.find(t => t.field === 'tagLine')?.value || user.tagLine,
+            greeting: user.translations?.find(t => t.field === 'greeting')?.value || user.greeting,
+            bio: user.translations?.find(t => t.field === 'bio')?.value || user.bio,
+            aboutMe: user.translations?.find(t => t.field === 'aboutMe')?.value || user.aboutMe,
+            tagLine: user.translations?.find(t => t.field === 'tagLine')?.value || user.tagLine,
             email: user.email,
             // phoneNumber: user.phoneNumber,
             // linkedIn: user.linkedIn,
@@ -68,13 +68,13 @@ export async function GET(req: NextRequest) {
             // stackOverflow: user.stackOverflow,
             // image: user.image,
             // imageCaption: user.translations.find(t => t.field === 'imageCaption')?.value || user.imageCaption,
-            quote: user.translations.find(t => t.field === 'quote')?.value || user.quote,
-            createdAt: user.createdAt.toISOString(),
-            updatedAt: user.updatedAt.toISOString(),
-            bannerImages: user.bannerImages.map(img => ({
+            quote: user.translations?.find(t => t.field === 'quote')?.value || user.quote,
+            createdAt: user.createdAt?.toISOString(),
+            updatedAt: user.updatedAt?.toISOString(),
+            bannerImages: user.bannerImages?.map(img => ({
                 id: img.id,
                 src: img.src,
-                caption: img.translations.find(t => t.field === 'caption')?.value || img.caption,
+                caption: img.translations?.find(t => t.field === 'caption')?.value || img.caption,
             })),
         };
 

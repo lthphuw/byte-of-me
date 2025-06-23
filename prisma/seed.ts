@@ -64,7 +64,7 @@ async function cleanData() {
     // Clear data in correct order with safe deletion
     await safeDeleteMany(prisma.blogTag, "BlogTag")
     await safeDeleteMany(prisma.techStackOnProjects, "ProjectTechStack")
-    await safeDeleteMany(prisma.techstacksOnExperiences, "ProjectTechStack")
+    await safeDeleteMany(prisma.techStackOnExperiences, "ProjectTechStack")
     await safeDeleteMany(prisma.educationSubItem, "EducationSubItem")
     await safeDeleteMany(prisma.task, "Task")
     await safeDeleteMany(prisma.translation, "Translation")

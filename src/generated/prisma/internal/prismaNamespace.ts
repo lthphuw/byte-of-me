@@ -399,8 +399,8 @@ export const ModelName = {
   Education: 'Education',
   EducationSubItem: 'EducationSubItem',
   TechStack: 'TechStack',
+  TechStackOnExperiences: 'TechStackOnExperiences',
   Experience: 'Experience',
-  TechstacksOnExperiences: 'TechstacksOnExperiences',
   ExperienceRole: 'ExperienceRole',
   Task: 'Task',
   Project: 'Project',
@@ -425,7 +425,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "userBannerImage" | "education" | "educationSubItem" | "techStack" | "experience" | "techstacksOnExperiences" | "experienceRole" | "task" | "project" | "techStackOnProjects" | "tagsOnProjects" | "blog" | "tag" | "blogTag" | "translation"
+    modelProps: "user" | "userBannerImage" | "education" | "educationSubItem" | "techStack" | "techStackOnExperiences" | "experience" | "experienceRole" | "task" | "project" | "techStackOnProjects" | "tagsOnProjects" | "blog" | "tag" | "blogTag" | "translation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -461,6 +461,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.UserCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        createManyAndReturn: {
+          args: Prisma.UserCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>[]
+        }
         delete: {
           args: Prisma.UserDeleteArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>
@@ -476,6 +480,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         updateMany: {
           args: Prisma.UserUpdateManyArgs<ExtArgs>
           result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UserUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>[]
         }
         upsert: {
           args: Prisma.UserUpsertArgs<ExtArgs>
@@ -527,6 +535,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.UserBannerImageCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        createManyAndReturn: {
+          args: Prisma.UserBannerImageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserBannerImagePayload>[]
+        }
         delete: {
           args: Prisma.UserBannerImageDeleteArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$UserBannerImagePayload>
@@ -542,6 +554,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         updateMany: {
           args: Prisma.UserBannerImageUpdateManyArgs<ExtArgs>
           result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UserBannerImageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserBannerImagePayload>[]
         }
         upsert: {
           args: Prisma.UserBannerImageUpsertArgs<ExtArgs>
@@ -593,6 +609,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.EducationCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        createManyAndReturn: {
+          args: Prisma.EducationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationPayload>[]
+        }
         delete: {
           args: Prisma.EducationDeleteArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationPayload>
@@ -608,6 +628,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         updateMany: {
           args: Prisma.EducationUpdateManyArgs<ExtArgs>
           result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EducationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationPayload>[]
         }
         upsert: {
           args: Prisma.EducationUpsertArgs<ExtArgs>
@@ -659,6 +683,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.EducationSubItemCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        createManyAndReturn: {
+          args: Prisma.EducationSubItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationSubItemPayload>[]
+        }
         delete: {
           args: Prisma.EducationSubItemDeleteArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationSubItemPayload>
@@ -674,6 +702,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         updateMany: {
           args: Prisma.EducationSubItemUpdateManyArgs<ExtArgs>
           result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EducationSubItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationSubItemPayload>[]
         }
         upsert: {
           args: Prisma.EducationSubItemUpsertArgs<ExtArgs>
@@ -725,6 +757,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.TechStackCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        createManyAndReturn: {
+          args: Prisma.TechStackCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackPayload>[]
+        }
         delete: {
           args: Prisma.TechStackDeleteArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackPayload>
@@ -741,6 +777,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.TechStackUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        updateManyAndReturn: {
+          args: Prisma.TechStackUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackPayload>[]
+        }
         upsert: {
           args: Prisma.TechStackUpsertArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackPayload>
@@ -756,6 +796,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.TechStackCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.TechStackCountAggregateOutputType> | number
+        }
+      }
+    }
+    TechStackOnExperiences: {
+      payload: Prisma.$TechStackOnExperiencesPayload<ExtArgs>
+      fields: Prisma.TechStackOnExperiencesFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TechStackOnExperiencesFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackOnExperiencesPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TechStackOnExperiencesFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackOnExperiencesPayload>
+        }
+        findFirst: {
+          args: Prisma.TechStackOnExperiencesFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackOnExperiencesPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TechStackOnExperiencesFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackOnExperiencesPayload>
+        }
+        findMany: {
+          args: Prisma.TechStackOnExperiencesFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackOnExperiencesPayload>[]
+        }
+        create: {
+          args: Prisma.TechStackOnExperiencesCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackOnExperiencesPayload>
+        }
+        createMany: {
+          args: Prisma.TechStackOnExperiencesCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TechStackOnExperiencesCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackOnExperiencesPayload>[]
+        }
+        delete: {
+          args: Prisma.TechStackOnExperiencesDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackOnExperiencesPayload>
+        }
+        update: {
+          args: Prisma.TechStackOnExperiencesUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackOnExperiencesPayload>
+        }
+        deleteMany: {
+          args: Prisma.TechStackOnExperiencesDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TechStackOnExperiencesUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TechStackOnExperiencesUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackOnExperiencesPayload>[]
+        }
+        upsert: {
+          args: Prisma.TechStackOnExperiencesUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackOnExperiencesPayload>
+        }
+        aggregate: {
+          args: Prisma.TechStackOnExperiencesAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTechStackOnExperiences>
+        }
+        groupBy: {
+          args: Prisma.TechStackOnExperiencesGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TechStackOnExperiencesGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TechStackOnExperiencesCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TechStackOnExperiencesCountAggregateOutputType> | number
         }
       }
     }
@@ -791,6 +905,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.ExperienceCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        createManyAndReturn: {
+          args: Prisma.ExperienceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExperiencePayload>[]
+        }
         delete: {
           args: Prisma.ExperienceDeleteArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$ExperiencePayload>
@@ -807,6 +925,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.ExperienceUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        updateManyAndReturn: {
+          args: Prisma.ExperienceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExperiencePayload>[]
+        }
         upsert: {
           args: Prisma.ExperienceUpsertArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$ExperiencePayload>
@@ -822,72 +944,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ExperienceCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ExperienceCountAggregateOutputType> | number
-        }
-      }
-    }
-    TechstacksOnExperiences: {
-      payload: Prisma.$TechstacksOnExperiencesPayload<ExtArgs>
-      fields: Prisma.TechstacksOnExperiencesFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.TechstacksOnExperiencesFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechstacksOnExperiencesPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.TechstacksOnExperiencesFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechstacksOnExperiencesPayload>
-        }
-        findFirst: {
-          args: Prisma.TechstacksOnExperiencesFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechstacksOnExperiencesPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.TechstacksOnExperiencesFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechstacksOnExperiencesPayload>
-        }
-        findMany: {
-          args: Prisma.TechstacksOnExperiencesFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechstacksOnExperiencesPayload>[]
-        }
-        create: {
-          args: Prisma.TechstacksOnExperiencesCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechstacksOnExperiencesPayload>
-        }
-        createMany: {
-          args: Prisma.TechstacksOnExperiencesCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        delete: {
-          args: Prisma.TechstacksOnExperiencesDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechstacksOnExperiencesPayload>
-        }
-        update: {
-          args: Prisma.TechstacksOnExperiencesUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechstacksOnExperiencesPayload>
-        }
-        deleteMany: {
-          args: Prisma.TechstacksOnExperiencesDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.TechstacksOnExperiencesUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        upsert: {
-          args: Prisma.TechstacksOnExperiencesUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechstacksOnExperiencesPayload>
-        }
-        aggregate: {
-          args: Prisma.TechstacksOnExperiencesAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateTechstacksOnExperiences>
-        }
-        groupBy: {
-          args: Prisma.TechstacksOnExperiencesGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.TechstacksOnExperiencesGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.TechstacksOnExperiencesCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.TechstacksOnExperiencesCountAggregateOutputType> | number
         }
       }
     }
@@ -923,6 +979,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.ExperienceRoleCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        createManyAndReturn: {
+          args: Prisma.ExperienceRoleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExperienceRolePayload>[]
+        }
         delete: {
           args: Prisma.ExperienceRoleDeleteArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$ExperienceRolePayload>
@@ -938,6 +998,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         updateMany: {
           args: Prisma.ExperienceRoleUpdateManyArgs<ExtArgs>
           result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ExperienceRoleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExperienceRolePayload>[]
         }
         upsert: {
           args: Prisma.ExperienceRoleUpsertArgs<ExtArgs>
@@ -989,6 +1053,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.TaskCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        createManyAndReturn: {
+          args: Prisma.TaskCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskPayload>[]
+        }
         delete: {
           args: Prisma.TaskDeleteArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskPayload>
@@ -1004,6 +1072,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         updateMany: {
           args: Prisma.TaskUpdateManyArgs<ExtArgs>
           result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TaskUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskPayload>[]
         }
         upsert: {
           args: Prisma.TaskUpsertArgs<ExtArgs>
@@ -1055,6 +1127,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.ProjectCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        createManyAndReturn: {
+          args: Prisma.ProjectCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>[]
+        }
         delete: {
           args: Prisma.ProjectDeleteArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>
@@ -1070,6 +1146,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         updateMany: {
           args: Prisma.ProjectUpdateManyArgs<ExtArgs>
           result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProjectUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectPayload>[]
         }
         upsert: {
           args: Prisma.ProjectUpsertArgs<ExtArgs>
@@ -1121,6 +1201,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.TechStackOnProjectsCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        createManyAndReturn: {
+          args: Prisma.TechStackOnProjectsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackOnProjectsPayload>[]
+        }
         delete: {
           args: Prisma.TechStackOnProjectsDeleteArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackOnProjectsPayload>
@@ -1136,6 +1220,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         updateMany: {
           args: Prisma.TechStackOnProjectsUpdateManyArgs<ExtArgs>
           result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TechStackOnProjectsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TechStackOnProjectsPayload>[]
         }
         upsert: {
           args: Prisma.TechStackOnProjectsUpsertArgs<ExtArgs>
@@ -1187,6 +1275,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.TagsOnProjectsCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        createManyAndReturn: {
+          args: Prisma.TagsOnProjectsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagsOnProjectsPayload>[]
+        }
         delete: {
           args: Prisma.TagsOnProjectsDeleteArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$TagsOnProjectsPayload>
@@ -1202,6 +1294,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         updateMany: {
           args: Prisma.TagsOnProjectsUpdateManyArgs<ExtArgs>
           result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TagsOnProjectsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagsOnProjectsPayload>[]
         }
         upsert: {
           args: Prisma.TagsOnProjectsUpsertArgs<ExtArgs>
@@ -1253,6 +1349,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.BlogCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        createManyAndReturn: {
+          args: Prisma.BlogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogPayload>[]
+        }
         delete: {
           args: Prisma.BlogDeleteArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogPayload>
@@ -1268,6 +1368,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         updateMany: {
           args: Prisma.BlogUpdateManyArgs<ExtArgs>
           result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BlogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogPayload>[]
         }
         upsert: {
           args: Prisma.BlogUpsertArgs<ExtArgs>
@@ -1319,6 +1423,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.TagCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        createManyAndReturn: {
+          args: Prisma.TagCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagPayload>[]
+        }
         delete: {
           args: Prisma.TagDeleteArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$TagPayload>
@@ -1334,6 +1442,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         updateMany: {
           args: Prisma.TagUpdateManyArgs<ExtArgs>
           result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TagUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagPayload>[]
         }
         upsert: {
           args: Prisma.TagUpsertArgs<ExtArgs>
@@ -1385,6 +1497,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.BlogTagCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        createManyAndReturn: {
+          args: Prisma.BlogTagCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogTagPayload>[]
+        }
         delete: {
           args: Prisma.BlogTagDeleteArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogTagPayload>
@@ -1400,6 +1516,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         updateMany: {
           args: Prisma.BlogTagUpdateManyArgs<ExtArgs>
           result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BlogTagUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BlogTagPayload>[]
         }
         upsert: {
           args: Prisma.BlogTagUpsertArgs<ExtArgs>
@@ -1451,6 +1571,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
           args: Prisma.TranslationCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
+        createManyAndReturn: {
+          args: Prisma.TranslationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationPayload>[]
+        }
         delete: {
           args: Prisma.TranslationDeleteArgs<ExtArgs>
           result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationPayload>
@@ -1466,6 +1590,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         updateMany: {
           args: Prisma.TranslationUpdateManyArgs<ExtArgs>
           result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TranslationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationPayload>[]
         }
         upsert: {
           args: Prisma.TranslationUpsertArgs<ExtArgs>
@@ -1602,6 +1730,14 @@ export const TechStackScalarFieldEnum = {
 export type TechStackScalarFieldEnum = (typeof TechStackScalarFieldEnum)[keyof typeof TechStackScalarFieldEnum]
 
 
+export const TechStackOnExperiencesScalarFieldEnum = {
+  experienceId: 'experienceId',
+  techstackId: 'techstackId'
+} as const
+
+export type TechStackOnExperiencesScalarFieldEnum = (typeof TechStackOnExperiencesScalarFieldEnum)[keyof typeof TechStackOnExperiencesScalarFieldEnum]
+
+
 export const ExperienceScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -1615,14 +1751,6 @@ export const ExperienceScalarFieldEnum = {
 } as const
 
 export type ExperienceScalarFieldEnum = (typeof ExperienceScalarFieldEnum)[keyof typeof ExperienceScalarFieldEnum]
-
-
-export const TechstacksOnExperiencesScalarFieldEnum = {
-  experienceId: 'experienceId',
-  techstackId: 'techstackId'
-} as const
-
-export type TechstacksOnExperiencesScalarFieldEnum = (typeof TechstacksOnExperiencesScalarFieldEnum)[keyof typeof TechstacksOnExperiencesScalarFieldEnum]
 
 
 export const ExperienceRoleScalarFieldEnum = {
@@ -1734,9 +1862,9 @@ export const TranslationScalarFieldEnum = {
   tagId: 'tagId',
   technologyId: 'technologyId',
   bannerImageId: 'bannerImageId',
+  taskId: 'taskId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  taskId: 'taskId'
+  updatedAt: 'updatedAt'
 } as const
 
 export type TranslationScalarFieldEnum = (typeof TranslationScalarFieldEnum)[keyof typeof TranslationScalarFieldEnum]
@@ -1750,199 +1878,20 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
 export const NullsOrder = {
   first: 'first',
   last: 'last'
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
-
-
-export const UserOrderByRelevanceFieldEnum = {
-  id: 'id',
-  name: 'name',
-  firstName: 'firstName',
-  lastName: 'lastName',
-  birthdate: 'birthdate',
-  greeting: 'greeting',
-  tagLine: 'tagLine',
-  email: 'email',
-  phoneNumber: 'phoneNumber',
-  linkedIn: 'linkedIn',
-  facebook: 'facebook',
-  github: 'github',
-  leetCode: 'leetCode',
-  twitter: 'twitter',
-  portfolio: 'portfolio',
-  stackOverflow: 'stackOverflow',
-  image: 'image',
-  imageCaption: 'imageCaption',
-  quote: 'quote',
-  bio: 'bio',
-  aboutMe: 'aboutMe'
-} as const
-
-export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
-
-
-export const UserBannerImageOrderByRelevanceFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  src: 'src',
-  caption: 'caption'
-} as const
-
-export type UserBannerImageOrderByRelevanceFieldEnum = (typeof UserBannerImageOrderByRelevanceFieldEnum)[keyof typeof UserBannerImageOrderByRelevanceFieldEnum]
-
-
-export const EducationOrderByRelevanceFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  timeline: 'timeline',
-  title: 'title',
-  message: 'message',
-  icon: 'icon'
-} as const
-
-export type EducationOrderByRelevanceFieldEnum = (typeof EducationOrderByRelevanceFieldEnum)[keyof typeof EducationOrderByRelevanceFieldEnum]
-
-
-export const EducationSubItemOrderByRelevanceFieldEnum = {
-  id: 'id',
-  educationId: 'educationId',
-  title: 'title',
-  message: 'message'
-} as const
-
-export type EducationSubItemOrderByRelevanceFieldEnum = (typeof EducationSubItemOrderByRelevanceFieldEnum)[keyof typeof EducationSubItemOrderByRelevanceFieldEnum]
-
-
-export const TechStackOrderByRelevanceFieldEnum = {
-  id: 'id',
-  name: 'name',
-  logo: 'logo',
-  group: 'group',
-  userId: 'userId'
-} as const
-
-export type TechStackOrderByRelevanceFieldEnum = (typeof TechStackOrderByRelevanceFieldEnum)[keyof typeof TechStackOrderByRelevanceFieldEnum]
-
-
-export const ExperienceOrderByRelevanceFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  company: 'company',
-  logoUrl: 'logoUrl',
-  location: 'location',
-  type: 'type',
-  description: 'description'
-} as const
-
-export type ExperienceOrderByRelevanceFieldEnum = (typeof ExperienceOrderByRelevanceFieldEnum)[keyof typeof ExperienceOrderByRelevanceFieldEnum]
-
-
-export const TechstacksOnExperiencesOrderByRelevanceFieldEnum = {
-  experienceId: 'experienceId',
-  techstackId: 'techstackId'
-} as const
-
-export type TechstacksOnExperiencesOrderByRelevanceFieldEnum = (typeof TechstacksOnExperiencesOrderByRelevanceFieldEnum)[keyof typeof TechstacksOnExperiencesOrderByRelevanceFieldEnum]
-
-
-export const ExperienceRoleOrderByRelevanceFieldEnum = {
-  id: 'id',
-  experienceId: 'experienceId',
-  title: 'title'
-} as const
-
-export type ExperienceRoleOrderByRelevanceFieldEnum = (typeof ExperienceRoleOrderByRelevanceFieldEnum)[keyof typeof ExperienceRoleOrderByRelevanceFieldEnum]
-
-
-export const TaskOrderByRelevanceFieldEnum = {
-  id: 'id',
-  experienceRoleId: 'experienceRoleId',
-  content: 'content'
-} as const
-
-export type TaskOrderByRelevanceFieldEnum = (typeof TaskOrderByRelevanceFieldEnum)[keyof typeof TaskOrderByRelevanceFieldEnum]
-
-
-export const ProjectOrderByRelevanceFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  title: 'title',
-  description: 'description',
-  githubLink: 'githubLink',
-  liveLink: 'liveLink'
-} as const
-
-export type ProjectOrderByRelevanceFieldEnum = (typeof ProjectOrderByRelevanceFieldEnum)[keyof typeof ProjectOrderByRelevanceFieldEnum]
-
-
-export const TechStackOnProjectsOrderByRelevanceFieldEnum = {
-  projectId: 'projectId',
-  techstackId: 'techstackId'
-} as const
-
-export type TechStackOnProjectsOrderByRelevanceFieldEnum = (typeof TechStackOnProjectsOrderByRelevanceFieldEnum)[keyof typeof TechStackOnProjectsOrderByRelevanceFieldEnum]
-
-
-export const TagsOnProjectsOrderByRelevanceFieldEnum = {
-  projectId: 'projectId',
-  tagId: 'tagId'
-} as const
-
-export type TagsOnProjectsOrderByRelevanceFieldEnum = (typeof TagsOnProjectsOrderByRelevanceFieldEnum)[keyof typeof TagsOnProjectsOrderByRelevanceFieldEnum]
-
-
-export const BlogOrderByRelevanceFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  title: 'title',
-  content: 'content',
-  slug: 'slug',
-  projectId: 'projectId'
-} as const
-
-export type BlogOrderByRelevanceFieldEnum = (typeof BlogOrderByRelevanceFieldEnum)[keyof typeof BlogOrderByRelevanceFieldEnum]
-
-
-export const TagOrderByRelevanceFieldEnum = {
-  id: 'id',
-  name: 'name'
-} as const
-
-export type TagOrderByRelevanceFieldEnum = (typeof TagOrderByRelevanceFieldEnum)[keyof typeof TagOrderByRelevanceFieldEnum]
-
-
-export const BlogTagOrderByRelevanceFieldEnum = {
-  blogId: 'blogId',
-  tagId: 'tagId'
-} as const
-
-export type BlogTagOrderByRelevanceFieldEnum = (typeof BlogTagOrderByRelevanceFieldEnum)[keyof typeof BlogTagOrderByRelevanceFieldEnum]
-
-
-export const TranslationOrderByRelevanceFieldEnum = {
-  id: 'id',
-  language: 'language',
-  field: 'field',
-  value: 'value',
-  userId: 'userId',
-  educationId: 'educationId',
-  educationSubItemId: 'educationSubItemId',
-  techStackId: 'techStackId',
-  experienceId: 'experienceId',
-  projectId: 'projectId',
-  projectImageId: 'projectImageId',
-  blogId: 'blogId',
-  tagId: 'tagId',
-  technologyId: 'technologyId',
-  bannerImageId: 'bannerImageId',
-  taskId: 'taskId'
-} as const
-
-export type TranslationOrderByRelevanceFieldEnum = (typeof TranslationOrderByRelevanceFieldEnum)[keyof typeof TranslationOrderByRelevanceFieldEnum]
 
 
 
@@ -1959,6 +1908,13 @@ export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
 
 
 /**
+ * Reference to a field of type 'String[]'
+ */
+export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
+    
+
+
+/**
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -1966,9 +1922,23 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
 
 
 /**
+ * Reference to a field of type 'DateTime[]'
+ */
+export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 /**
@@ -2051,8 +2021,8 @@ export type GlobalOmitConfig = {
   education?: Prisma.EducationOmit
   educationSubItem?: Prisma.EducationSubItemOmit
   techStack?: Prisma.TechStackOmit
+  techStackOnExperiences?: Prisma.TechStackOnExperiencesOmit
   experience?: Prisma.ExperienceOmit
-  techstacksOnExperiences?: Prisma.TechstacksOnExperiencesOmit
   experienceRole?: Prisma.ExperienceRoleOmit
   task?: Prisma.TaskOmit
   project?: Prisma.ProjectOmit

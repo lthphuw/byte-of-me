@@ -202,7 +202,6 @@ export type EducationSubItemOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   education?: Prisma.EducationOrderByWithRelationInput
   translations?: Prisma.TranslationOrderByRelationAggregateInput
-  _relevance?: Prisma.EducationSubItemOrderByRelevanceInput
 }
 
 export type EducationSubItemWhereUniqueInput = Prisma.AtLeast<{
@@ -317,12 +316,6 @@ export type EducationSubItemListRelationFilter = {
 
 export type EducationSubItemOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type EducationSubItemOrderByRelevanceInput = {
-  fields: Prisma.EducationSubItemOrderByRelevanceFieldEnum | Prisma.EducationSubItemOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type EducationSubItemCountOrderByAggregateInput = {
@@ -600,7 +593,25 @@ export type EducationSubItemSelect<ExtArgs extends runtime.Types.Extensions.Inte
   _count?: boolean | Prisma.EducationSubItemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["educationSubItem"]>
 
+export type EducationSubItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  educationId?: boolean
+  title?: boolean
+  message?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["educationSubItem"]>
 
+export type EducationSubItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  educationId?: boolean
+  title?: boolean
+  message?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["educationSubItem"]>
 
 export type EducationSubItemSelectScalar = {
   id?: boolean
@@ -616,6 +627,12 @@ export type EducationSubItemInclude<ExtArgs extends runtime.Types.Extensions.Int
   education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
   translations?: boolean | Prisma.EducationSubItem$translationsArgs<ExtArgs>
   _count?: boolean | Prisma.EducationSubItemCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type EducationSubItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
+}
+export type EducationSubItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
 }
 
 export type $EducationSubItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -749,6 +766,30 @@ export interface EducationSubItemDelegate<ExtArgs extends runtime.Types.Extensio
   createMany<T extends EducationSubItemCreateManyArgs>(args?: Prisma.SelectSubset<T, EducationSubItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many EducationSubItems and returns the data saved in the database.
+   * @param {EducationSubItemCreateManyAndReturnArgs} args - Arguments to create many EducationSubItems.
+   * @example
+   * // Create many EducationSubItems
+   * const educationSubItem = await prisma.educationSubItem.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many EducationSubItems and only return the `id`
+   * const educationSubItemWithIdOnly = await prisma.educationSubItem.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends EducationSubItemCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, EducationSubItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EducationSubItemPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a EducationSubItem.
    * @param {EducationSubItemDeleteArgs} args - Arguments to delete one EducationSubItem.
    * @example
@@ -811,6 +852,36 @@ export interface EducationSubItemDelegate<ExtArgs extends runtime.Types.Extensio
    * 
    */
   updateMany<T extends EducationSubItemUpdateManyArgs>(args: Prisma.SelectSubset<T, EducationSubItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more EducationSubItems and returns the data updated in the database.
+   * @param {EducationSubItemUpdateManyAndReturnArgs} args - Arguments to update many EducationSubItems.
+   * @example
+   * // Update many EducationSubItems
+   * const educationSubItem = await prisma.educationSubItem.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more EducationSubItems and only return the `id`
+   * const educationSubItemWithIdOnly = await prisma.educationSubItem.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends EducationSubItemUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, EducationSubItemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EducationSubItemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one EducationSubItem.
@@ -1241,6 +1312,29 @@ export type EducationSubItemCreateManyArgs<ExtArgs extends runtime.Types.Extensi
 }
 
 /**
+ * EducationSubItem createManyAndReturn
+ */
+export type EducationSubItemCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EducationSubItem
+   */
+  select?: Prisma.EducationSubItemSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the EducationSubItem
+   */
+  omit?: Prisma.EducationSubItemOmit<ExtArgs> | null
+  /**
+   * The data used to create many EducationSubItems.
+   */
+  data: Prisma.EducationSubItemCreateManyInput | Prisma.EducationSubItemCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EducationSubItemIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * EducationSubItem update
  */
 export type EducationSubItemUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1282,6 +1376,36 @@ export type EducationSubItemUpdateManyArgs<ExtArgs extends runtime.Types.Extensi
    * Limit how many EducationSubItems to update.
    */
   limit?: number
+}
+
+/**
+ * EducationSubItem updateManyAndReturn
+ */
+export type EducationSubItemUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EducationSubItem
+   */
+  select?: Prisma.EducationSubItemSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the EducationSubItem
+   */
+  omit?: Prisma.EducationSubItemOmit<ExtArgs> | null
+  /**
+   * The data used to update EducationSubItems.
+   */
+  data: Prisma.XOR<Prisma.EducationSubItemUpdateManyMutationInput, Prisma.EducationSubItemUncheckedUpdateManyInput>
+  /**
+   * Filter which EducationSubItems to update
+   */
+  where?: Prisma.EducationSubItemWhereInput
+  /**
+   * Limit how many EducationSubItems to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EducationSubItemIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

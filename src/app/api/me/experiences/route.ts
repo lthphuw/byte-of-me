@@ -65,9 +65,9 @@ export async function GET(req: NextRequest) {
                 techStack: exp.techstacks.map((ts) => ts.techstack.name),
                 roles: exp.roles.map((role) => ({
                     title: translations[`role_title_${role.title}`] || role.title,
-                    from: role.startDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+                    from: role.startDate?.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
                     to: role.endDate
-                        ? role.endDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                        ? role.endDate?.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
                         : 'Present',
                     duration: calculateDuration(role.startDate, role.endDate),
                     location: exp.location,
