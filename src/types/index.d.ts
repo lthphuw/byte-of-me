@@ -1,6 +1,11 @@
 
-import { Icons } from "@/components/icons"
+import { Icons } from "@/components/icons";
 export type FlagType = "vi" | "en" | "fr";
+
+export type BaseSelectItem = {
+  id: string;
+  label: string;
+}
 
 export type NavItem = {
   title: string

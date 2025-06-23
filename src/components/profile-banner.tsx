@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Stack from "./image-stack";
+import ImageStack from "./image-stack";
 
 export interface ImagesProps {
     id: string;
@@ -9,50 +9,61 @@ export interface ImagesProps {
     alt?: string;
     caption?: string;
 }
+
 export interface ProfileBannerProps {
     images: ImagesProps[];
 }
 
 export function ProfileBanner({ images }: ProfileBannerProps) {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [cardWidth, setCardWidth] = useState(720); // default fallback
+    const [cardWidth, setCardWidth] = useState(720);
 
+    const defaultImage = images.at(-1);
+    const [selectedImage, setSelectedImage] = useState(defaultImage?.id ?? "");
+    const [caption, setCaption] = useState(defaultImage?.caption ?? "");
+
+    // Update width based on container resize
     useEffect(() => {
-        if (!containerRef.current) {
+        const container = containerRef.current;
+        if (!container) {
             return;
         }
+
         const observer = new ResizeObserver(([entry]) => {
-            const fullWidth = entry.contentRect.width - 50;
-            // padding: 24 * 2 = 48, nên width còn lại:
-            const usableWidth = fullWidth;
-            setCardWidth(Math.min(usableWidth, 720)); // không vượt quá 720
+            const usableWidth = entry.contentRect.width - 50;
+            setCardWidth(Math.min(usableWidth, 720));
         });
-        observer.observe(containerRef.current);
+
+        observer.observe(container);
         return () => observer.disconnect();
     }, []);
 
-    const [selectedImage, setSelectedImage] = useState(images[images.length - 1].id);
-    const [caption, setCaption] = useState(images[images.length - 1].caption);
-
+    // Update caption based on selected image
     useEffect(() => {
-        setCaption(images.find((it) => it.id === selectedImage)?.caption || images[0].caption);
-    }, [selectedImage]);
+        const found = images.find((img) => img.id === selectedImage);
+        setCaption(found?.caption ?? images[0]?.caption ?? "");
+    }, [selectedImage, images]);
+
     return (
-        <figure ref={containerRef} className="flex w-full flex-col items-start gap-4 md:gap-6 overflow-visible">
+        <figure
+            ref={containerRef}
+            className="flex w-full flex-col items-start gap-4 md:gap-6 overflow-visible"
+        >
             <div className="relative w-full">
-                <Stack
-                    randomRotation={true}
+                <ImageStack
+                    randomRotation={false}
                     sensitivity={200}
-                    sendToBackOnClick={true}
-                    cardDimensions={{ width: cardWidth, height: Math.floor(cardWidth * 2 / 3) }}
+                    sendToBackOnClick
+                    cardDimensions={{
+                        width: cardWidth,
+                        height: Math.floor((cardWidth * 2) / 3),
+                    }}
                     cardsData={images}
                     setSelectedCard={setSelectedImage}
                 />
             </div>
 
-            {caption && (
-                <figcaption className="text-sm italic">{caption}</figcaption>
-            )}
+            {caption && <figcaption className="text-sm italic">{caption}</figcaption>}
         </figure>
     );
 }

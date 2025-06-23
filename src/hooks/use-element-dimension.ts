@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useRef } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 
 interface Dimensions {
     width: number
@@ -6,7 +6,7 @@ interface Dimensions {
 }
 
 export function useElementDimensions<T extends HTMLElement>(): {
-    ref: React.RefObject<T>
+    ref: React.RefObject<T | null>
     dimensions: Dimensions | undefined
 } {
     const ref = useRef<T>(null)
@@ -14,7 +14,7 @@ export function useElementDimensions<T extends HTMLElement>(): {
 
     useLayoutEffect(() => {
         if (!ref.current) {
-          return
+            return
         }
 
         const element = ref.current

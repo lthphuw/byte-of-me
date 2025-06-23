@@ -30,9 +30,9 @@ export function FloatingToc({ items }: FloatingTocProps) {
     const t = useTranslations("global");
     const [open, setOpen] = useState(false);
     const { refs, floatingStyles, context } = useFloating({
-        strategy: "absolute",
         open,
         onOpenChange: setOpen,
+        strategy: "absolute",
         middleware: [offset(12), flip(), shift()],
         placement: "left",
         whileElementsMounted: autoUpdate,
@@ -74,10 +74,11 @@ export function FloatingToc({ items }: FloatingTocProps) {
                 <LiquidGlass
                     variant="button"
                     intensity="medium"
-                    rippleEffect={false}
-                    flowOnHover
-                    stretchOnDrag={false}
-                    disabledVibrantPress={true}
+                    // rippleEffect={false}
+                    disableRipple
+                    // flowOnHover
+                    disableStretch
+                    disableJiggle
                 >
                     <div className="bg-transparent flex flex-col justify-center items-center px-1.5 py-2 md:px-2 md:py-3">
                         {items.map((item, index) => (
@@ -112,9 +113,7 @@ export function FloatingToc({ items }: FloatingTocProps) {
                             <LiquidGlass
                                 variant="panel"
                                 intensity="strong"
-                                rippleEffect
-                                flowOnHover
-                                stretchOnDrag={false}
+                                disableStretch
                                 className="overflow-hidden rounded-lg"
                             >
                                 <motion.div

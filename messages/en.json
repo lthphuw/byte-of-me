@@ -39,14 +39,25 @@
         "Reach out for collaboration or questions": "Reach out for collaboration or questions",
         "Explore": "Explore"
     },
+    "error": {
+        "Something went wrong!": "Something went wrong!",
+        "Go back": "Go back",
+        "Home": "Home",
+        "Report for me": "Report this error",
+        "Report for me about this error": "Send a report about this error",
+        "Send": "Send",
+        "Error Details": "Error Details",
+        "Copy Error": "Copy Error",
+        "Copied!": "Copied!"
+    },
     "home": {
         "See my work": "See my work",
         "README": "README",
         "greeting": "Hi, I'm Phu",
         "tagline": "Code, career, controller — one byte at a time",
-        "bannerAlt": "Taken at the Vietnam Military History Museum, this 2024 painting is titled “Sống bám đá, chết hoá đá” — “Cling to rocks in life, turn to stone in death.”",
-        "bannerCaption": "Taken at the Vietnam Military History Museum, this 2024 painting is titled “Sống bám đá, chết hoá đá” — “Cling to rocks in life, turn to stone in death.”",
-        "quote": "I enjoy learning new things and have a strong interest in open - source projects, where I often discover useful ideas and best practices.These experiences help me build better and more efficient solutions. For me, growth doesn’t just come from work—it also comes from self - exploration and continuous learning.That’s what truly drives my development."
+        "bannerAlt": "Taken at the Vietnam Military History Museum, this 2024 painting is titled “Sống bám đá, chết hoá đá” — “Cling to rocks in life, turn to stone in death”",
+        "bannerCaption": "Taken at the Vietnam Military History Museum, this 2024 painting is titled “Sống bám đá, chết hoá đá” — “Cling to rocks in life, turn to stone in death”",
+        "quote": "I enjoy learning new things and have a strong interest in open - source projects, where I often discover useful ideas and best practicesThese experiences help me build better and more efficient solutions For me, growth doesn’t just come from work—it also comes from self - exploration and continuous learningThat’s what truly drives my development"
     },
     "about": {
         "section": {
@@ -54,7 +65,7 @@
             "Education": "Education",
             "Skills / Tech Stack": "Skills / Tech Stack"
         },
-        "aboutMe": "I'm a junior full-stack developer, primarily focused on backend development. I enjoy building scalable, high-performance systems and have hands-on experience with Golang, Node.js, and Python. While my main focus is backend, I’ve also worked with frontend technologies like React.js and Next.js. I have experience in researching and developing AI models, and I'm always eager to learn and grow through real-world projects.\n\nIn the future, I aim to deepen my expertise in system design, distributed systems, and AI integration — building reliable, efficient, and intelligent software at scale.",
+        "aboutMe": "I'm a junior full-stack developer, primarily focused on backend development I enjoy building scalable, high-performance systems and have hands-on experience with Golang, Nodejs, and Python While my main focus is backend, I’ve also worked with frontend technologies like Reactjs and Nextjs I have experience in researching and developing AI models, and I'm always eager to learn and grow through real-world projects\n\nIn the future, I aim to deepen my expertise in system design, distributed systems, and AI integration — building reliable, efficient, and intelligent software at scale",
         "education": {
             "bachelorTitle": "Bachelor of Science (Honors Program) in Information Technology",
             "bachelorMessage": "University of Science - VNUHCM, Ho Chi Minh City, Vietnam",
@@ -63,14 +74,14 @@
             "highSchoolMessage": "Phan Chau Trinh High School, Da Nang",
             "highSchoolLogoAlt": "High School",
             "academicPerformanceTitle": "Academic Performance",
-            "academicPerformanceMessage": "Graduated with a GPA of 8.67/10",
+            "academicPerformanceMessage": "Graduated with a GPA of 867/10",
             "publishedPaperTitle": "Published Paper at CV4DC 2024",
             "publishedPaperMessagePart1": "Published paper at",
             "publishedPaperLinkText": "Workshop on Computer Vision for Developing Countries (CV4DC) at ACCV 2024",
             "publishedPaperTitleText": "Abnormality Detection in Medical Image Based on Visual-Language Model",
             "publishedPaperOral": "Oral",
             "publishedPaperViewLink": "View Paper",
-            "publishedPaperAuthors": "Authors: Hoang-Phu Thanh-Luong, Van-Thai Vu, and Prof. Quoc-Ngoc Ly (mentor).",
+            "publishedPaperAuthors": "Authors: Hoang-Phu Thanh-Luong, Van-Thai Vu, and Prof Quoc-Ngoc Ly (mentor)",
             "thesisScoreTitle": "Thesis Score",
             "thesisScoreMessage": "Thesis Score: 10/10 (Excellent)",
             "researchAwardTitle": "Outstanding Student Research Award",
@@ -87,10 +98,10 @@
             "databaseTitle": "Database",
             "gin": "Gin",
             "grpc": "gRPC",
-            "nodejs": "Node.JS",
+            "nodejs": "NodeJS",
             "fastapi": "FastAPI",
-            "nextjs": "Next.JS",
-            "reactjs": "React.JS",
+            "nextjs": "NextJS",
+            "reactjs": "ReactJS",
             "framerMotion": "Framer Motion",
             "floatingUi": "Floating UI",
             "go": "Go",
@@ -102,6 +113,15 @@
             "cache": "Cache",
             "reactBit": "React Bits"
         }
+    },
+    "project": {
+        "Details": "Details",
+        "GitHub": "GitHub",
+        "All": "All",
+        "There are no projects yet": "There are no projects yet",
+        "No projects match your search": "No projects match your search",
+        "Loading project list": "Loading project list",
+        "Failed to load project list": "Failed to load project list Please try again"
     },
     "contact": {
         "Connect With Me": "Connect With Me",

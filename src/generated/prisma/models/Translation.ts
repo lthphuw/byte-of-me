@@ -41,6 +41,7 @@ export type TranslationMinAggregateOutputType = {
   bannerImageId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  taskId: string | null
 }
 
 export type TranslationMaxAggregateOutputType = {
@@ -61,6 +62,7 @@ export type TranslationMaxAggregateOutputType = {
   bannerImageId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  taskId: string | null
 }
 
 export type TranslationCountAggregateOutputType = {
@@ -81,6 +83,7 @@ export type TranslationCountAggregateOutputType = {
   bannerImageId: number
   createdAt: number
   updatedAt: number
+  taskId: number
   _all: number
 }
 
@@ -103,6 +106,7 @@ export type TranslationMinAggregateInputType = {
   bannerImageId?: true
   createdAt?: true
   updatedAt?: true
+  taskId?: true
 }
 
 export type TranslationMaxAggregateInputType = {
@@ -123,6 +127,7 @@ export type TranslationMaxAggregateInputType = {
   bannerImageId?: true
   createdAt?: true
   updatedAt?: true
+  taskId?: true
 }
 
 export type TranslationCountAggregateInputType = {
@@ -143,6 +148,7 @@ export type TranslationCountAggregateInputType = {
   bannerImageId?: true
   createdAt?: true
   updatedAt?: true
+  taskId?: true
   _all?: true
 }
 
@@ -236,6 +242,7 @@ export type TranslationGroupByOutputType = {
   bannerImageId: string | null
   createdAt: Date
   updatedAt: Date
+  taskId: string | null
   _count: TranslationCountAggregateOutputType | null
   _min: TranslationMinAggregateOutputType | null
   _max: TranslationMaxAggregateOutputType | null
@@ -277,17 +284,17 @@ export type TranslationWhereInput = {
   bannerImageId?: Prisma.StringNullableFilter<"Translation"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Translation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Translation"> | Date | string
+  taskId?: Prisma.StringNullableFilter<"Translation"> | string | null
   blog?: Prisma.XOR<Prisma.BlogNullableScalarRelationFilter, Prisma.BlogWhereInput> | null
   education?: Prisma.XOR<Prisma.EducationNullableScalarRelationFilter, Prisma.EducationWhereInput> | null
   educationSubItem?: Prisma.XOR<Prisma.EducationSubItemNullableScalarRelationFilter, Prisma.EducationSubItemWhereInput> | null
   experience?: Prisma.XOR<Prisma.ExperienceNullableScalarRelationFilter, Prisma.ExperienceWhereInput> | null
   project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
-  projectImage?: Prisma.XOR<Prisma.ProjectImageNullableScalarRelationFilter, Prisma.ProjectImageWhereInput> | null
   tag?: Prisma.XOR<Prisma.TagNullableScalarRelationFilter, Prisma.TagWhereInput> | null
   techStack?: Prisma.XOR<Prisma.TechStackNullableScalarRelationFilter, Prisma.TechStackWhereInput> | null
-  technology?: Prisma.XOR<Prisma.TechnologyNullableScalarRelationFilter, Prisma.TechnologyWhereInput> | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   bannerImage?: Prisma.XOR<Prisma.UserBannerImageNullableScalarRelationFilter, Prisma.UserBannerImageWhereInput> | null
+  Task?: Prisma.XOR<Prisma.TaskNullableScalarRelationFilter, Prisma.TaskWhereInput> | null
 }
 
 export type TranslationOrderByWithRelationInput = {
@@ -308,17 +315,17 @@ export type TranslationOrderByWithRelationInput = {
   bannerImageId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  taskId?: Prisma.SortOrderInput | Prisma.SortOrder
   blog?: Prisma.BlogOrderByWithRelationInput
   education?: Prisma.EducationOrderByWithRelationInput
   educationSubItem?: Prisma.EducationSubItemOrderByWithRelationInput
   experience?: Prisma.ExperienceOrderByWithRelationInput
   project?: Prisma.ProjectOrderByWithRelationInput
-  projectImage?: Prisma.ProjectImageOrderByWithRelationInput
   tag?: Prisma.TagOrderByWithRelationInput
   techStack?: Prisma.TechStackOrderByWithRelationInput
-  technology?: Prisma.TechnologyOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
   bannerImage?: Prisma.UserBannerImageOrderByWithRelationInput
+  Task?: Prisma.TaskOrderByWithRelationInput
   _relevance?: Prisma.TranslationOrderByRelevanceInput
 }
 
@@ -343,17 +350,17 @@ export type TranslationWhereUniqueInput = Prisma.AtLeast<{
   bannerImageId?: Prisma.StringNullableFilter<"Translation"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Translation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Translation"> | Date | string
+  taskId?: Prisma.StringNullableFilter<"Translation"> | string | null
   blog?: Prisma.XOR<Prisma.BlogNullableScalarRelationFilter, Prisma.BlogWhereInput> | null
   education?: Prisma.XOR<Prisma.EducationNullableScalarRelationFilter, Prisma.EducationWhereInput> | null
   educationSubItem?: Prisma.XOR<Prisma.EducationSubItemNullableScalarRelationFilter, Prisma.EducationSubItemWhereInput> | null
   experience?: Prisma.XOR<Prisma.ExperienceNullableScalarRelationFilter, Prisma.ExperienceWhereInput> | null
   project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
-  projectImage?: Prisma.XOR<Prisma.ProjectImageNullableScalarRelationFilter, Prisma.ProjectImageWhereInput> | null
   tag?: Prisma.XOR<Prisma.TagNullableScalarRelationFilter, Prisma.TagWhereInput> | null
   techStack?: Prisma.XOR<Prisma.TechStackNullableScalarRelationFilter, Prisma.TechStackWhereInput> | null
-  technology?: Prisma.XOR<Prisma.TechnologyNullableScalarRelationFilter, Prisma.TechnologyWhereInput> | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   bannerImage?: Prisma.XOR<Prisma.UserBannerImageNullableScalarRelationFilter, Prisma.UserBannerImageWhereInput> | null
+  Task?: Prisma.XOR<Prisma.TaskNullableScalarRelationFilter, Prisma.TaskWhereInput> | null
 }, "id">
 
 export type TranslationOrderByWithAggregationInput = {
@@ -374,6 +381,7 @@ export type TranslationOrderByWithAggregationInput = {
   bannerImageId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  taskId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.TranslationCountOrderByAggregateInput
   _max?: Prisma.TranslationMaxOrderByAggregateInput
   _min?: Prisma.TranslationMinOrderByAggregateInput
@@ -400,6 +408,7 @@ export type TranslationScalarWhereWithAggregatesInput = {
   bannerImageId?: Prisma.StringNullableWithAggregatesFilter<"Translation"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Translation"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Translation"> | Date | string
+  taskId?: Prisma.StringNullableWithAggregatesFilter<"Translation"> | string | null
 }
 
 export type TranslationCreateInput = {
@@ -407,6 +416,8 @@ export type TranslationCreateInput = {
   language: string
   field: string
   value: string
+  projectImageId?: string | null
+  technologyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   blog?: Prisma.BlogCreateNestedOneWithoutTranslationsInput
@@ -414,12 +425,11 @@ export type TranslationCreateInput = {
   educationSubItem?: Prisma.EducationSubItemCreateNestedOneWithoutTranslationsInput
   experience?: Prisma.ExperienceCreateNestedOneWithoutTranslationsInput
   project?: Prisma.ProjectCreateNestedOneWithoutTranslationsInput
-  projectImage?: Prisma.ProjectImageCreateNestedOneWithoutTranslationsInput
   tag?: Prisma.TagCreateNestedOneWithoutTranslationsInput
   techStack?: Prisma.TechStackCreateNestedOneWithoutTranslationsInput
-  technology?: Prisma.TechnologyCreateNestedOneWithoutTranslationsInput
   user?: Prisma.UserCreateNestedOneWithoutTranslationsInput
   bannerImage?: Prisma.UserBannerImageCreateNestedOneWithoutTranslationsInput
+  Task?: Prisma.TaskCreateNestedOneWithoutTranslationsInput
 }
 
 export type TranslationUncheckedCreateInput = {
@@ -440,6 +450,7 @@ export type TranslationUncheckedCreateInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationUpdateInput = {
@@ -447,6 +458,8 @@ export type TranslationUpdateInput = {
   language?: Prisma.StringFieldUpdateOperationsInput | string
   field?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
+  projectImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blog?: Prisma.BlogUpdateOneWithoutTranslationsNestedInput
@@ -454,12 +467,11 @@ export type TranslationUpdateInput = {
   educationSubItem?: Prisma.EducationSubItemUpdateOneWithoutTranslationsNestedInput
   experience?: Prisma.ExperienceUpdateOneWithoutTranslationsNestedInput
   project?: Prisma.ProjectUpdateOneWithoutTranslationsNestedInput
-  projectImage?: Prisma.ProjectImageUpdateOneWithoutTranslationsNestedInput
   tag?: Prisma.TagUpdateOneWithoutTranslationsNestedInput
   techStack?: Prisma.TechStackUpdateOneWithoutTranslationsNestedInput
-  technology?: Prisma.TechnologyUpdateOneWithoutTranslationsNestedInput
   user?: Prisma.UserUpdateOneWithoutTranslationsNestedInput
   bannerImage?: Prisma.UserBannerImageUpdateOneWithoutTranslationsNestedInput
+  Task?: Prisma.TaskUpdateOneWithoutTranslationsNestedInput
 }
 
 export type TranslationUncheckedUpdateInput = {
@@ -480,6 +492,7 @@ export type TranslationUncheckedUpdateInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationCreateManyInput = {
@@ -500,6 +513,7 @@ export type TranslationCreateManyInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationUpdateManyMutationInput = {
@@ -507,6 +521,8 @@ export type TranslationUpdateManyMutationInput = {
   language?: Prisma.StringFieldUpdateOperationsInput | string
   field?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
+  projectImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -529,6 +545,7 @@ export type TranslationUncheckedUpdateManyInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationListRelationFilter = {
@@ -565,6 +582,7 @@ export type TranslationCountOrderByAggregateInput = {
   bannerImageId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  taskId?: Prisma.SortOrder
 }
 
 export type TranslationMaxOrderByAggregateInput = {
@@ -585,6 +603,7 @@ export type TranslationMaxOrderByAggregateInput = {
   bannerImageId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  taskId?: Prisma.SortOrder
 }
 
 export type TranslationMinOrderByAggregateInput = {
@@ -605,6 +624,7 @@ export type TranslationMinOrderByAggregateInput = {
   bannerImageId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  taskId?: Prisma.SortOrder
 }
 
 export type TranslationCreateNestedManyWithoutUserInput = {
@@ -859,45 +879,45 @@ export type TranslationUncheckedUpdateManyWithoutExperienceNestedInput = {
   deleteMany?: Prisma.TranslationScalarWhereInput | Prisma.TranslationScalarWhereInput[]
 }
 
-export type TranslationCreateNestedManyWithoutTechnologyInput = {
-  create?: Prisma.XOR<Prisma.TranslationCreateWithoutTechnologyInput, Prisma.TranslationUncheckedCreateWithoutTechnologyInput> | Prisma.TranslationCreateWithoutTechnologyInput[] | Prisma.TranslationUncheckedCreateWithoutTechnologyInput[]
-  connectOrCreate?: Prisma.TranslationCreateOrConnectWithoutTechnologyInput | Prisma.TranslationCreateOrConnectWithoutTechnologyInput[]
-  createMany?: Prisma.TranslationCreateManyTechnologyInputEnvelope
+export type TranslationCreateNestedManyWithoutTaskInput = {
+  create?: Prisma.XOR<Prisma.TranslationCreateWithoutTaskInput, Prisma.TranslationUncheckedCreateWithoutTaskInput> | Prisma.TranslationCreateWithoutTaskInput[] | Prisma.TranslationUncheckedCreateWithoutTaskInput[]
+  connectOrCreate?: Prisma.TranslationCreateOrConnectWithoutTaskInput | Prisma.TranslationCreateOrConnectWithoutTaskInput[]
+  createMany?: Prisma.TranslationCreateManyTaskInputEnvelope
   connect?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
 }
 
-export type TranslationUncheckedCreateNestedManyWithoutTechnologyInput = {
-  create?: Prisma.XOR<Prisma.TranslationCreateWithoutTechnologyInput, Prisma.TranslationUncheckedCreateWithoutTechnologyInput> | Prisma.TranslationCreateWithoutTechnologyInput[] | Prisma.TranslationUncheckedCreateWithoutTechnologyInput[]
-  connectOrCreate?: Prisma.TranslationCreateOrConnectWithoutTechnologyInput | Prisma.TranslationCreateOrConnectWithoutTechnologyInput[]
-  createMany?: Prisma.TranslationCreateManyTechnologyInputEnvelope
+export type TranslationUncheckedCreateNestedManyWithoutTaskInput = {
+  create?: Prisma.XOR<Prisma.TranslationCreateWithoutTaskInput, Prisma.TranslationUncheckedCreateWithoutTaskInput> | Prisma.TranslationCreateWithoutTaskInput[] | Prisma.TranslationUncheckedCreateWithoutTaskInput[]
+  connectOrCreate?: Prisma.TranslationCreateOrConnectWithoutTaskInput | Prisma.TranslationCreateOrConnectWithoutTaskInput[]
+  createMany?: Prisma.TranslationCreateManyTaskInputEnvelope
   connect?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
 }
 
-export type TranslationUpdateManyWithoutTechnologyNestedInput = {
-  create?: Prisma.XOR<Prisma.TranslationCreateWithoutTechnologyInput, Prisma.TranslationUncheckedCreateWithoutTechnologyInput> | Prisma.TranslationCreateWithoutTechnologyInput[] | Prisma.TranslationUncheckedCreateWithoutTechnologyInput[]
-  connectOrCreate?: Prisma.TranslationCreateOrConnectWithoutTechnologyInput | Prisma.TranslationCreateOrConnectWithoutTechnologyInput[]
-  upsert?: Prisma.TranslationUpsertWithWhereUniqueWithoutTechnologyInput | Prisma.TranslationUpsertWithWhereUniqueWithoutTechnologyInput[]
-  createMany?: Prisma.TranslationCreateManyTechnologyInputEnvelope
+export type TranslationUpdateManyWithoutTaskNestedInput = {
+  create?: Prisma.XOR<Prisma.TranslationCreateWithoutTaskInput, Prisma.TranslationUncheckedCreateWithoutTaskInput> | Prisma.TranslationCreateWithoutTaskInput[] | Prisma.TranslationUncheckedCreateWithoutTaskInput[]
+  connectOrCreate?: Prisma.TranslationCreateOrConnectWithoutTaskInput | Prisma.TranslationCreateOrConnectWithoutTaskInput[]
+  upsert?: Prisma.TranslationUpsertWithWhereUniqueWithoutTaskInput | Prisma.TranslationUpsertWithWhereUniqueWithoutTaskInput[]
+  createMany?: Prisma.TranslationCreateManyTaskInputEnvelope
   set?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
   disconnect?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
   delete?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
   connect?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
-  update?: Prisma.TranslationUpdateWithWhereUniqueWithoutTechnologyInput | Prisma.TranslationUpdateWithWhereUniqueWithoutTechnologyInput[]
-  updateMany?: Prisma.TranslationUpdateManyWithWhereWithoutTechnologyInput | Prisma.TranslationUpdateManyWithWhereWithoutTechnologyInput[]
+  update?: Prisma.TranslationUpdateWithWhereUniqueWithoutTaskInput | Prisma.TranslationUpdateWithWhereUniqueWithoutTaskInput[]
+  updateMany?: Prisma.TranslationUpdateManyWithWhereWithoutTaskInput | Prisma.TranslationUpdateManyWithWhereWithoutTaskInput[]
   deleteMany?: Prisma.TranslationScalarWhereInput | Prisma.TranslationScalarWhereInput[]
 }
 
-export type TranslationUncheckedUpdateManyWithoutTechnologyNestedInput = {
-  create?: Prisma.XOR<Prisma.TranslationCreateWithoutTechnologyInput, Prisma.TranslationUncheckedCreateWithoutTechnologyInput> | Prisma.TranslationCreateWithoutTechnologyInput[] | Prisma.TranslationUncheckedCreateWithoutTechnologyInput[]
-  connectOrCreate?: Prisma.TranslationCreateOrConnectWithoutTechnologyInput | Prisma.TranslationCreateOrConnectWithoutTechnologyInput[]
-  upsert?: Prisma.TranslationUpsertWithWhereUniqueWithoutTechnologyInput | Prisma.TranslationUpsertWithWhereUniqueWithoutTechnologyInput[]
-  createMany?: Prisma.TranslationCreateManyTechnologyInputEnvelope
+export type TranslationUncheckedUpdateManyWithoutTaskNestedInput = {
+  create?: Prisma.XOR<Prisma.TranslationCreateWithoutTaskInput, Prisma.TranslationUncheckedCreateWithoutTaskInput> | Prisma.TranslationCreateWithoutTaskInput[] | Prisma.TranslationUncheckedCreateWithoutTaskInput[]
+  connectOrCreate?: Prisma.TranslationCreateOrConnectWithoutTaskInput | Prisma.TranslationCreateOrConnectWithoutTaskInput[]
+  upsert?: Prisma.TranslationUpsertWithWhereUniqueWithoutTaskInput | Prisma.TranslationUpsertWithWhereUniqueWithoutTaskInput[]
+  createMany?: Prisma.TranslationCreateManyTaskInputEnvelope
   set?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
   disconnect?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
   delete?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
   connect?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
-  update?: Prisma.TranslationUpdateWithWhereUniqueWithoutTechnologyInput | Prisma.TranslationUpdateWithWhereUniqueWithoutTechnologyInput[]
-  updateMany?: Prisma.TranslationUpdateManyWithWhereWithoutTechnologyInput | Prisma.TranslationUpdateManyWithWhereWithoutTechnologyInput[]
+  update?: Prisma.TranslationUpdateWithWhereUniqueWithoutTaskInput | Prisma.TranslationUpdateWithWhereUniqueWithoutTaskInput[]
+  updateMany?: Prisma.TranslationUpdateManyWithWhereWithoutTaskInput | Prisma.TranslationUpdateManyWithWhereWithoutTaskInput[]
   deleteMany?: Prisma.TranslationScalarWhereInput | Prisma.TranslationScalarWhereInput[]
 }
 
@@ -940,48 +960,6 @@ export type TranslationUncheckedUpdateManyWithoutProjectNestedInput = {
   connect?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
   update?: Prisma.TranslationUpdateWithWhereUniqueWithoutProjectInput | Prisma.TranslationUpdateWithWhereUniqueWithoutProjectInput[]
   updateMany?: Prisma.TranslationUpdateManyWithWhereWithoutProjectInput | Prisma.TranslationUpdateManyWithWhereWithoutProjectInput[]
-  deleteMany?: Prisma.TranslationScalarWhereInput | Prisma.TranslationScalarWhereInput[]
-}
-
-export type TranslationCreateNestedManyWithoutProjectImageInput = {
-  create?: Prisma.XOR<Prisma.TranslationCreateWithoutProjectImageInput, Prisma.TranslationUncheckedCreateWithoutProjectImageInput> | Prisma.TranslationCreateWithoutProjectImageInput[] | Prisma.TranslationUncheckedCreateWithoutProjectImageInput[]
-  connectOrCreate?: Prisma.TranslationCreateOrConnectWithoutProjectImageInput | Prisma.TranslationCreateOrConnectWithoutProjectImageInput[]
-  createMany?: Prisma.TranslationCreateManyProjectImageInputEnvelope
-  connect?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
-}
-
-export type TranslationUncheckedCreateNestedManyWithoutProjectImageInput = {
-  create?: Prisma.XOR<Prisma.TranslationCreateWithoutProjectImageInput, Prisma.TranslationUncheckedCreateWithoutProjectImageInput> | Prisma.TranslationCreateWithoutProjectImageInput[] | Prisma.TranslationUncheckedCreateWithoutProjectImageInput[]
-  connectOrCreate?: Prisma.TranslationCreateOrConnectWithoutProjectImageInput | Prisma.TranslationCreateOrConnectWithoutProjectImageInput[]
-  createMany?: Prisma.TranslationCreateManyProjectImageInputEnvelope
-  connect?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
-}
-
-export type TranslationUpdateManyWithoutProjectImageNestedInput = {
-  create?: Prisma.XOR<Prisma.TranslationCreateWithoutProjectImageInput, Prisma.TranslationUncheckedCreateWithoutProjectImageInput> | Prisma.TranslationCreateWithoutProjectImageInput[] | Prisma.TranslationUncheckedCreateWithoutProjectImageInput[]
-  connectOrCreate?: Prisma.TranslationCreateOrConnectWithoutProjectImageInput | Prisma.TranslationCreateOrConnectWithoutProjectImageInput[]
-  upsert?: Prisma.TranslationUpsertWithWhereUniqueWithoutProjectImageInput | Prisma.TranslationUpsertWithWhereUniqueWithoutProjectImageInput[]
-  createMany?: Prisma.TranslationCreateManyProjectImageInputEnvelope
-  set?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
-  disconnect?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
-  delete?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
-  connect?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
-  update?: Prisma.TranslationUpdateWithWhereUniqueWithoutProjectImageInput | Prisma.TranslationUpdateWithWhereUniqueWithoutProjectImageInput[]
-  updateMany?: Prisma.TranslationUpdateManyWithWhereWithoutProjectImageInput | Prisma.TranslationUpdateManyWithWhereWithoutProjectImageInput[]
-  deleteMany?: Prisma.TranslationScalarWhereInput | Prisma.TranslationScalarWhereInput[]
-}
-
-export type TranslationUncheckedUpdateManyWithoutProjectImageNestedInput = {
-  create?: Prisma.XOR<Prisma.TranslationCreateWithoutProjectImageInput, Prisma.TranslationUncheckedCreateWithoutProjectImageInput> | Prisma.TranslationCreateWithoutProjectImageInput[] | Prisma.TranslationUncheckedCreateWithoutProjectImageInput[]
-  connectOrCreate?: Prisma.TranslationCreateOrConnectWithoutProjectImageInput | Prisma.TranslationCreateOrConnectWithoutProjectImageInput[]
-  upsert?: Prisma.TranslationUpsertWithWhereUniqueWithoutProjectImageInput | Prisma.TranslationUpsertWithWhereUniqueWithoutProjectImageInput[]
-  createMany?: Prisma.TranslationCreateManyProjectImageInputEnvelope
-  set?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
-  disconnect?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
-  delete?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
-  connect?: Prisma.TranslationWhereUniqueInput | Prisma.TranslationWhereUniqueInput[]
-  update?: Prisma.TranslationUpdateWithWhereUniqueWithoutProjectImageInput | Prisma.TranslationUpdateWithWhereUniqueWithoutProjectImageInput[]
-  updateMany?: Prisma.TranslationUpdateManyWithWhereWithoutProjectImageInput | Prisma.TranslationUpdateManyWithWhereWithoutProjectImageInput[]
   deleteMany?: Prisma.TranslationScalarWhereInput | Prisma.TranslationScalarWhereInput[]
 }
 
@@ -1074,6 +1052,8 @@ export type TranslationCreateWithoutUserInput = {
   language: string
   field: string
   value: string
+  projectImageId?: string | null
+  technologyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   blog?: Prisma.BlogCreateNestedOneWithoutTranslationsInput
@@ -1081,11 +1061,10 @@ export type TranslationCreateWithoutUserInput = {
   educationSubItem?: Prisma.EducationSubItemCreateNestedOneWithoutTranslationsInput
   experience?: Prisma.ExperienceCreateNestedOneWithoutTranslationsInput
   project?: Prisma.ProjectCreateNestedOneWithoutTranslationsInput
-  projectImage?: Prisma.ProjectImageCreateNestedOneWithoutTranslationsInput
   tag?: Prisma.TagCreateNestedOneWithoutTranslationsInput
   techStack?: Prisma.TechStackCreateNestedOneWithoutTranslationsInput
-  technology?: Prisma.TechnologyCreateNestedOneWithoutTranslationsInput
   bannerImage?: Prisma.UserBannerImageCreateNestedOneWithoutTranslationsInput
+  Task?: Prisma.TaskCreateNestedOneWithoutTranslationsInput
 }
 
 export type TranslationUncheckedCreateWithoutUserInput = {
@@ -1105,6 +1084,7 @@ export type TranslationUncheckedCreateWithoutUserInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationCreateOrConnectWithoutUserInput = {
@@ -1154,6 +1134,7 @@ export type TranslationScalarWhereInput = {
   bannerImageId?: Prisma.StringNullableFilter<"Translation"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Translation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Translation"> | Date | string
+  taskId?: Prisma.StringNullableFilter<"Translation"> | string | null
 }
 
 export type TranslationCreateWithoutBannerImageInput = {
@@ -1161,6 +1142,8 @@ export type TranslationCreateWithoutBannerImageInput = {
   language: string
   field: string
   value: string
+  projectImageId?: string | null
+  technologyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   blog?: Prisma.BlogCreateNestedOneWithoutTranslationsInput
@@ -1168,11 +1151,10 @@ export type TranslationCreateWithoutBannerImageInput = {
   educationSubItem?: Prisma.EducationSubItemCreateNestedOneWithoutTranslationsInput
   experience?: Prisma.ExperienceCreateNestedOneWithoutTranslationsInput
   project?: Prisma.ProjectCreateNestedOneWithoutTranslationsInput
-  projectImage?: Prisma.ProjectImageCreateNestedOneWithoutTranslationsInput
   tag?: Prisma.TagCreateNestedOneWithoutTranslationsInput
   techStack?: Prisma.TechStackCreateNestedOneWithoutTranslationsInput
-  technology?: Prisma.TechnologyCreateNestedOneWithoutTranslationsInput
   user?: Prisma.UserCreateNestedOneWithoutTranslationsInput
+  Task?: Prisma.TaskCreateNestedOneWithoutTranslationsInput
 }
 
 export type TranslationUncheckedCreateWithoutBannerImageInput = {
@@ -1192,6 +1174,7 @@ export type TranslationUncheckedCreateWithoutBannerImageInput = {
   technologyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationCreateOrConnectWithoutBannerImageInput = {
@@ -1225,18 +1208,19 @@ export type TranslationCreateWithoutEducationInput = {
   language: string
   field: string
   value: string
+  projectImageId?: string | null
+  technologyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   blog?: Prisma.BlogCreateNestedOneWithoutTranslationsInput
   educationSubItem?: Prisma.EducationSubItemCreateNestedOneWithoutTranslationsInput
   experience?: Prisma.ExperienceCreateNestedOneWithoutTranslationsInput
   project?: Prisma.ProjectCreateNestedOneWithoutTranslationsInput
-  projectImage?: Prisma.ProjectImageCreateNestedOneWithoutTranslationsInput
   tag?: Prisma.TagCreateNestedOneWithoutTranslationsInput
   techStack?: Prisma.TechStackCreateNestedOneWithoutTranslationsInput
-  technology?: Prisma.TechnologyCreateNestedOneWithoutTranslationsInput
   user?: Prisma.UserCreateNestedOneWithoutTranslationsInput
   bannerImage?: Prisma.UserBannerImageCreateNestedOneWithoutTranslationsInput
+  Task?: Prisma.TaskCreateNestedOneWithoutTranslationsInput
 }
 
 export type TranslationUncheckedCreateWithoutEducationInput = {
@@ -1256,6 +1240,7 @@ export type TranslationUncheckedCreateWithoutEducationInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationCreateOrConnectWithoutEducationInput = {
@@ -1289,18 +1274,19 @@ export type TranslationCreateWithoutEducationSubItemInput = {
   language: string
   field: string
   value: string
+  projectImageId?: string | null
+  technologyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   blog?: Prisma.BlogCreateNestedOneWithoutTranslationsInput
   education?: Prisma.EducationCreateNestedOneWithoutTranslationsInput
   experience?: Prisma.ExperienceCreateNestedOneWithoutTranslationsInput
   project?: Prisma.ProjectCreateNestedOneWithoutTranslationsInput
-  projectImage?: Prisma.ProjectImageCreateNestedOneWithoutTranslationsInput
   tag?: Prisma.TagCreateNestedOneWithoutTranslationsInput
   techStack?: Prisma.TechStackCreateNestedOneWithoutTranslationsInput
-  technology?: Prisma.TechnologyCreateNestedOneWithoutTranslationsInput
   user?: Prisma.UserCreateNestedOneWithoutTranslationsInput
   bannerImage?: Prisma.UserBannerImageCreateNestedOneWithoutTranslationsInput
+  Task?: Prisma.TaskCreateNestedOneWithoutTranslationsInput
 }
 
 export type TranslationUncheckedCreateWithoutEducationSubItemInput = {
@@ -1320,6 +1306,7 @@ export type TranslationUncheckedCreateWithoutEducationSubItemInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationCreateOrConnectWithoutEducationSubItemInput = {
@@ -1353,6 +1340,8 @@ export type TranslationCreateWithoutTechStackInput = {
   language: string
   field: string
   value: string
+  projectImageId?: string | null
+  technologyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   blog?: Prisma.BlogCreateNestedOneWithoutTranslationsInput
@@ -1360,11 +1349,10 @@ export type TranslationCreateWithoutTechStackInput = {
   educationSubItem?: Prisma.EducationSubItemCreateNestedOneWithoutTranslationsInput
   experience?: Prisma.ExperienceCreateNestedOneWithoutTranslationsInput
   project?: Prisma.ProjectCreateNestedOneWithoutTranslationsInput
-  projectImage?: Prisma.ProjectImageCreateNestedOneWithoutTranslationsInput
   tag?: Prisma.TagCreateNestedOneWithoutTranslationsInput
-  technology?: Prisma.TechnologyCreateNestedOneWithoutTranslationsInput
   user?: Prisma.UserCreateNestedOneWithoutTranslationsInput
   bannerImage?: Prisma.UserBannerImageCreateNestedOneWithoutTranslationsInput
+  Task?: Prisma.TaskCreateNestedOneWithoutTranslationsInput
 }
 
 export type TranslationUncheckedCreateWithoutTechStackInput = {
@@ -1384,6 +1372,7 @@ export type TranslationUncheckedCreateWithoutTechStackInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationCreateOrConnectWithoutTechStackInput = {
@@ -1417,18 +1406,19 @@ export type TranslationCreateWithoutExperienceInput = {
   language: string
   field: string
   value: string
+  projectImageId?: string | null
+  technologyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   blog?: Prisma.BlogCreateNestedOneWithoutTranslationsInput
   education?: Prisma.EducationCreateNestedOneWithoutTranslationsInput
   educationSubItem?: Prisma.EducationSubItemCreateNestedOneWithoutTranslationsInput
   project?: Prisma.ProjectCreateNestedOneWithoutTranslationsInput
-  projectImage?: Prisma.ProjectImageCreateNestedOneWithoutTranslationsInput
   tag?: Prisma.TagCreateNestedOneWithoutTranslationsInput
   techStack?: Prisma.TechStackCreateNestedOneWithoutTranslationsInput
-  technology?: Prisma.TechnologyCreateNestedOneWithoutTranslationsInput
   user?: Prisma.UserCreateNestedOneWithoutTranslationsInput
   bannerImage?: Prisma.UserBannerImageCreateNestedOneWithoutTranslationsInput
+  Task?: Prisma.TaskCreateNestedOneWithoutTranslationsInput
 }
 
 export type TranslationUncheckedCreateWithoutExperienceInput = {
@@ -1448,6 +1438,7 @@ export type TranslationUncheckedCreateWithoutExperienceInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationCreateOrConnectWithoutExperienceInput = {
@@ -1476,11 +1467,13 @@ export type TranslationUpdateManyWithWhereWithoutExperienceInput = {
   data: Prisma.XOR<Prisma.TranslationUpdateManyMutationInput, Prisma.TranslationUncheckedUpdateManyWithoutExperienceInput>
 }
 
-export type TranslationCreateWithoutTechnologyInput = {
+export type TranslationCreateWithoutTaskInput = {
   id?: string
   language: string
   field: string
   value: string
+  projectImageId?: string | null
+  technologyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   blog?: Prisma.BlogCreateNestedOneWithoutTranslationsInput
@@ -1488,14 +1481,13 @@ export type TranslationCreateWithoutTechnologyInput = {
   educationSubItem?: Prisma.EducationSubItemCreateNestedOneWithoutTranslationsInput
   experience?: Prisma.ExperienceCreateNestedOneWithoutTranslationsInput
   project?: Prisma.ProjectCreateNestedOneWithoutTranslationsInput
-  projectImage?: Prisma.ProjectImageCreateNestedOneWithoutTranslationsInput
   tag?: Prisma.TagCreateNestedOneWithoutTranslationsInput
   techStack?: Prisma.TechStackCreateNestedOneWithoutTranslationsInput
   user?: Prisma.UserCreateNestedOneWithoutTranslationsInput
   bannerImage?: Prisma.UserBannerImageCreateNestedOneWithoutTranslationsInput
 }
 
-export type TranslationUncheckedCreateWithoutTechnologyInput = {
+export type TranslationUncheckedCreateWithoutTaskInput = {
   id?: string
   language: string
   field: string
@@ -1509,35 +1501,36 @@ export type TranslationUncheckedCreateWithoutTechnologyInput = {
   projectImageId?: string | null
   blogId?: string | null
   tagId?: string | null
+  technologyId?: string | null
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
-export type TranslationCreateOrConnectWithoutTechnologyInput = {
+export type TranslationCreateOrConnectWithoutTaskInput = {
   where: Prisma.TranslationWhereUniqueInput
-  create: Prisma.XOR<Prisma.TranslationCreateWithoutTechnologyInput, Prisma.TranslationUncheckedCreateWithoutTechnologyInput>
+  create: Prisma.XOR<Prisma.TranslationCreateWithoutTaskInput, Prisma.TranslationUncheckedCreateWithoutTaskInput>
 }
 
-export type TranslationCreateManyTechnologyInputEnvelope = {
-  data: Prisma.TranslationCreateManyTechnologyInput | Prisma.TranslationCreateManyTechnologyInput[]
+export type TranslationCreateManyTaskInputEnvelope = {
+  data: Prisma.TranslationCreateManyTaskInput | Prisma.TranslationCreateManyTaskInput[]
   skipDuplicates?: boolean
 }
 
-export type TranslationUpsertWithWhereUniqueWithoutTechnologyInput = {
+export type TranslationUpsertWithWhereUniqueWithoutTaskInput = {
   where: Prisma.TranslationWhereUniqueInput
-  update: Prisma.XOR<Prisma.TranslationUpdateWithoutTechnologyInput, Prisma.TranslationUncheckedUpdateWithoutTechnologyInput>
-  create: Prisma.XOR<Prisma.TranslationCreateWithoutTechnologyInput, Prisma.TranslationUncheckedCreateWithoutTechnologyInput>
+  update: Prisma.XOR<Prisma.TranslationUpdateWithoutTaskInput, Prisma.TranslationUncheckedUpdateWithoutTaskInput>
+  create: Prisma.XOR<Prisma.TranslationCreateWithoutTaskInput, Prisma.TranslationUncheckedCreateWithoutTaskInput>
 }
 
-export type TranslationUpdateWithWhereUniqueWithoutTechnologyInput = {
+export type TranslationUpdateWithWhereUniqueWithoutTaskInput = {
   where: Prisma.TranslationWhereUniqueInput
-  data: Prisma.XOR<Prisma.TranslationUpdateWithoutTechnologyInput, Prisma.TranslationUncheckedUpdateWithoutTechnologyInput>
+  data: Prisma.XOR<Prisma.TranslationUpdateWithoutTaskInput, Prisma.TranslationUncheckedUpdateWithoutTaskInput>
 }
 
-export type TranslationUpdateManyWithWhereWithoutTechnologyInput = {
+export type TranslationUpdateManyWithWhereWithoutTaskInput = {
   where: Prisma.TranslationScalarWhereInput
-  data: Prisma.XOR<Prisma.TranslationUpdateManyMutationInput, Prisma.TranslationUncheckedUpdateManyWithoutTechnologyInput>
+  data: Prisma.XOR<Prisma.TranslationUpdateManyMutationInput, Prisma.TranslationUncheckedUpdateManyWithoutTaskInput>
 }
 
 export type TranslationCreateWithoutProjectInput = {
@@ -1545,18 +1538,19 @@ export type TranslationCreateWithoutProjectInput = {
   language: string
   field: string
   value: string
+  projectImageId?: string | null
+  technologyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   blog?: Prisma.BlogCreateNestedOneWithoutTranslationsInput
   education?: Prisma.EducationCreateNestedOneWithoutTranslationsInput
   educationSubItem?: Prisma.EducationSubItemCreateNestedOneWithoutTranslationsInput
   experience?: Prisma.ExperienceCreateNestedOneWithoutTranslationsInput
-  projectImage?: Prisma.ProjectImageCreateNestedOneWithoutTranslationsInput
   tag?: Prisma.TagCreateNestedOneWithoutTranslationsInput
   techStack?: Prisma.TechStackCreateNestedOneWithoutTranslationsInput
-  technology?: Prisma.TechnologyCreateNestedOneWithoutTranslationsInput
   user?: Prisma.UserCreateNestedOneWithoutTranslationsInput
   bannerImage?: Prisma.UserBannerImageCreateNestedOneWithoutTranslationsInput
+  Task?: Prisma.TaskCreateNestedOneWithoutTranslationsInput
 }
 
 export type TranslationUncheckedCreateWithoutProjectInput = {
@@ -1576,6 +1570,7 @@ export type TranslationUncheckedCreateWithoutProjectInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationCreateOrConnectWithoutProjectInput = {
@@ -1604,87 +1599,24 @@ export type TranslationUpdateManyWithWhereWithoutProjectInput = {
   data: Prisma.XOR<Prisma.TranslationUpdateManyMutationInput, Prisma.TranslationUncheckedUpdateManyWithoutProjectInput>
 }
 
-export type TranslationCreateWithoutProjectImageInput = {
-  id?: string
-  language: string
-  field: string
-  value: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  blog?: Prisma.BlogCreateNestedOneWithoutTranslationsInput
-  education?: Prisma.EducationCreateNestedOneWithoutTranslationsInput
-  educationSubItem?: Prisma.EducationSubItemCreateNestedOneWithoutTranslationsInput
-  experience?: Prisma.ExperienceCreateNestedOneWithoutTranslationsInput
-  project?: Prisma.ProjectCreateNestedOneWithoutTranslationsInput
-  tag?: Prisma.TagCreateNestedOneWithoutTranslationsInput
-  techStack?: Prisma.TechStackCreateNestedOneWithoutTranslationsInput
-  technology?: Prisma.TechnologyCreateNestedOneWithoutTranslationsInput
-  user?: Prisma.UserCreateNestedOneWithoutTranslationsInput
-  bannerImage?: Prisma.UserBannerImageCreateNestedOneWithoutTranslationsInput
-}
-
-export type TranslationUncheckedCreateWithoutProjectImageInput = {
-  id?: string
-  language: string
-  field: string
-  value: string
-  userId?: string | null
-  educationId?: string | null
-  educationSubItemId?: string | null
-  techStackId?: string | null
-  experienceId?: string | null
-  projectId?: string | null
-  blogId?: string | null
-  tagId?: string | null
-  technologyId?: string | null
-  bannerImageId?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type TranslationCreateOrConnectWithoutProjectImageInput = {
-  where: Prisma.TranslationWhereUniqueInput
-  create: Prisma.XOR<Prisma.TranslationCreateWithoutProjectImageInput, Prisma.TranslationUncheckedCreateWithoutProjectImageInput>
-}
-
-export type TranslationCreateManyProjectImageInputEnvelope = {
-  data: Prisma.TranslationCreateManyProjectImageInput | Prisma.TranslationCreateManyProjectImageInput[]
-  skipDuplicates?: boolean
-}
-
-export type TranslationUpsertWithWhereUniqueWithoutProjectImageInput = {
-  where: Prisma.TranslationWhereUniqueInput
-  update: Prisma.XOR<Prisma.TranslationUpdateWithoutProjectImageInput, Prisma.TranslationUncheckedUpdateWithoutProjectImageInput>
-  create: Prisma.XOR<Prisma.TranslationCreateWithoutProjectImageInput, Prisma.TranslationUncheckedCreateWithoutProjectImageInput>
-}
-
-export type TranslationUpdateWithWhereUniqueWithoutProjectImageInput = {
-  where: Prisma.TranslationWhereUniqueInput
-  data: Prisma.XOR<Prisma.TranslationUpdateWithoutProjectImageInput, Prisma.TranslationUncheckedUpdateWithoutProjectImageInput>
-}
-
-export type TranslationUpdateManyWithWhereWithoutProjectImageInput = {
-  where: Prisma.TranslationScalarWhereInput
-  data: Prisma.XOR<Prisma.TranslationUpdateManyMutationInput, Prisma.TranslationUncheckedUpdateManyWithoutProjectImageInput>
-}
-
 export type TranslationCreateWithoutBlogInput = {
   id?: string
   language: string
   field: string
   value: string
+  projectImageId?: string | null
+  technologyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   education?: Prisma.EducationCreateNestedOneWithoutTranslationsInput
   educationSubItem?: Prisma.EducationSubItemCreateNestedOneWithoutTranslationsInput
   experience?: Prisma.ExperienceCreateNestedOneWithoutTranslationsInput
   project?: Prisma.ProjectCreateNestedOneWithoutTranslationsInput
-  projectImage?: Prisma.ProjectImageCreateNestedOneWithoutTranslationsInput
   tag?: Prisma.TagCreateNestedOneWithoutTranslationsInput
   techStack?: Prisma.TechStackCreateNestedOneWithoutTranslationsInput
-  technology?: Prisma.TechnologyCreateNestedOneWithoutTranslationsInput
   user?: Prisma.UserCreateNestedOneWithoutTranslationsInput
   bannerImage?: Prisma.UserBannerImageCreateNestedOneWithoutTranslationsInput
+  Task?: Prisma.TaskCreateNestedOneWithoutTranslationsInput
 }
 
 export type TranslationUncheckedCreateWithoutBlogInput = {
@@ -1704,6 +1636,7 @@ export type TranslationUncheckedCreateWithoutBlogInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationCreateOrConnectWithoutBlogInput = {
@@ -1737,6 +1670,8 @@ export type TranslationCreateWithoutTagInput = {
   language: string
   field: string
   value: string
+  projectImageId?: string | null
+  technologyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   blog?: Prisma.BlogCreateNestedOneWithoutTranslationsInput
@@ -1744,11 +1679,10 @@ export type TranslationCreateWithoutTagInput = {
   educationSubItem?: Prisma.EducationSubItemCreateNestedOneWithoutTranslationsInput
   experience?: Prisma.ExperienceCreateNestedOneWithoutTranslationsInput
   project?: Prisma.ProjectCreateNestedOneWithoutTranslationsInput
-  projectImage?: Prisma.ProjectImageCreateNestedOneWithoutTranslationsInput
   techStack?: Prisma.TechStackCreateNestedOneWithoutTranslationsInput
-  technology?: Prisma.TechnologyCreateNestedOneWithoutTranslationsInput
   user?: Prisma.UserCreateNestedOneWithoutTranslationsInput
   bannerImage?: Prisma.UserBannerImageCreateNestedOneWithoutTranslationsInput
+  Task?: Prisma.TaskCreateNestedOneWithoutTranslationsInput
 }
 
 export type TranslationUncheckedCreateWithoutTagInput = {
@@ -1768,6 +1702,7 @@ export type TranslationUncheckedCreateWithoutTagInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationCreateOrConnectWithoutTagInput = {
@@ -1813,6 +1748,7 @@ export type TranslationCreateManyUserInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationUpdateWithoutUserInput = {
@@ -1820,6 +1756,8 @@ export type TranslationUpdateWithoutUserInput = {
   language?: Prisma.StringFieldUpdateOperationsInput | string
   field?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
+  projectImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blog?: Prisma.BlogUpdateOneWithoutTranslationsNestedInput
@@ -1827,11 +1765,10 @@ export type TranslationUpdateWithoutUserInput = {
   educationSubItem?: Prisma.EducationSubItemUpdateOneWithoutTranslationsNestedInput
   experience?: Prisma.ExperienceUpdateOneWithoutTranslationsNestedInput
   project?: Prisma.ProjectUpdateOneWithoutTranslationsNestedInput
-  projectImage?: Prisma.ProjectImageUpdateOneWithoutTranslationsNestedInput
   tag?: Prisma.TagUpdateOneWithoutTranslationsNestedInput
   techStack?: Prisma.TechStackUpdateOneWithoutTranslationsNestedInput
-  technology?: Prisma.TechnologyUpdateOneWithoutTranslationsNestedInput
   bannerImage?: Prisma.UserBannerImageUpdateOneWithoutTranslationsNestedInput
+  Task?: Prisma.TaskUpdateOneWithoutTranslationsNestedInput
 }
 
 export type TranslationUncheckedUpdateWithoutUserInput = {
@@ -1851,6 +1788,7 @@ export type TranslationUncheckedUpdateWithoutUserInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationUncheckedUpdateManyWithoutUserInput = {
@@ -1870,6 +1808,7 @@ export type TranslationUncheckedUpdateManyWithoutUserInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationCreateManyBannerImageInput = {
@@ -1889,6 +1828,7 @@ export type TranslationCreateManyBannerImageInput = {
   technologyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationUpdateWithoutBannerImageInput = {
@@ -1896,6 +1836,8 @@ export type TranslationUpdateWithoutBannerImageInput = {
   language?: Prisma.StringFieldUpdateOperationsInput | string
   field?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
+  projectImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blog?: Prisma.BlogUpdateOneWithoutTranslationsNestedInput
@@ -1903,11 +1845,10 @@ export type TranslationUpdateWithoutBannerImageInput = {
   educationSubItem?: Prisma.EducationSubItemUpdateOneWithoutTranslationsNestedInput
   experience?: Prisma.ExperienceUpdateOneWithoutTranslationsNestedInput
   project?: Prisma.ProjectUpdateOneWithoutTranslationsNestedInput
-  projectImage?: Prisma.ProjectImageUpdateOneWithoutTranslationsNestedInput
   tag?: Prisma.TagUpdateOneWithoutTranslationsNestedInput
   techStack?: Prisma.TechStackUpdateOneWithoutTranslationsNestedInput
-  technology?: Prisma.TechnologyUpdateOneWithoutTranslationsNestedInput
   user?: Prisma.UserUpdateOneWithoutTranslationsNestedInput
+  Task?: Prisma.TaskUpdateOneWithoutTranslationsNestedInput
 }
 
 export type TranslationUncheckedUpdateWithoutBannerImageInput = {
@@ -1927,6 +1868,7 @@ export type TranslationUncheckedUpdateWithoutBannerImageInput = {
   technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationUncheckedUpdateManyWithoutBannerImageInput = {
@@ -1946,6 +1888,7 @@ export type TranslationUncheckedUpdateManyWithoutBannerImageInput = {
   technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationCreateManyEducationInput = {
@@ -1965,6 +1908,7 @@ export type TranslationCreateManyEducationInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationUpdateWithoutEducationInput = {
@@ -1972,18 +1916,19 @@ export type TranslationUpdateWithoutEducationInput = {
   language?: Prisma.StringFieldUpdateOperationsInput | string
   field?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
+  projectImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blog?: Prisma.BlogUpdateOneWithoutTranslationsNestedInput
   educationSubItem?: Prisma.EducationSubItemUpdateOneWithoutTranslationsNestedInput
   experience?: Prisma.ExperienceUpdateOneWithoutTranslationsNestedInput
   project?: Prisma.ProjectUpdateOneWithoutTranslationsNestedInput
-  projectImage?: Prisma.ProjectImageUpdateOneWithoutTranslationsNestedInput
   tag?: Prisma.TagUpdateOneWithoutTranslationsNestedInput
   techStack?: Prisma.TechStackUpdateOneWithoutTranslationsNestedInput
-  technology?: Prisma.TechnologyUpdateOneWithoutTranslationsNestedInput
   user?: Prisma.UserUpdateOneWithoutTranslationsNestedInput
   bannerImage?: Prisma.UserBannerImageUpdateOneWithoutTranslationsNestedInput
+  Task?: Prisma.TaskUpdateOneWithoutTranslationsNestedInput
 }
 
 export type TranslationUncheckedUpdateWithoutEducationInput = {
@@ -2003,6 +1948,7 @@ export type TranslationUncheckedUpdateWithoutEducationInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationUncheckedUpdateManyWithoutEducationInput = {
@@ -2022,6 +1968,7 @@ export type TranslationUncheckedUpdateManyWithoutEducationInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationCreateManyEducationSubItemInput = {
@@ -2041,6 +1988,7 @@ export type TranslationCreateManyEducationSubItemInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationUpdateWithoutEducationSubItemInput = {
@@ -2048,18 +1996,19 @@ export type TranslationUpdateWithoutEducationSubItemInput = {
   language?: Prisma.StringFieldUpdateOperationsInput | string
   field?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
+  projectImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blog?: Prisma.BlogUpdateOneWithoutTranslationsNestedInput
   education?: Prisma.EducationUpdateOneWithoutTranslationsNestedInput
   experience?: Prisma.ExperienceUpdateOneWithoutTranslationsNestedInput
   project?: Prisma.ProjectUpdateOneWithoutTranslationsNestedInput
-  projectImage?: Prisma.ProjectImageUpdateOneWithoutTranslationsNestedInput
   tag?: Prisma.TagUpdateOneWithoutTranslationsNestedInput
   techStack?: Prisma.TechStackUpdateOneWithoutTranslationsNestedInput
-  technology?: Prisma.TechnologyUpdateOneWithoutTranslationsNestedInput
   user?: Prisma.UserUpdateOneWithoutTranslationsNestedInput
   bannerImage?: Prisma.UserBannerImageUpdateOneWithoutTranslationsNestedInput
+  Task?: Prisma.TaskUpdateOneWithoutTranslationsNestedInput
 }
 
 export type TranslationUncheckedUpdateWithoutEducationSubItemInput = {
@@ -2079,6 +2028,7 @@ export type TranslationUncheckedUpdateWithoutEducationSubItemInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationUncheckedUpdateManyWithoutEducationSubItemInput = {
@@ -2098,6 +2048,7 @@ export type TranslationUncheckedUpdateManyWithoutEducationSubItemInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationCreateManyTechStackInput = {
@@ -2117,6 +2068,7 @@ export type TranslationCreateManyTechStackInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationUpdateWithoutTechStackInput = {
@@ -2124,6 +2076,8 @@ export type TranslationUpdateWithoutTechStackInput = {
   language?: Prisma.StringFieldUpdateOperationsInput | string
   field?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
+  projectImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blog?: Prisma.BlogUpdateOneWithoutTranslationsNestedInput
@@ -2131,11 +2085,10 @@ export type TranslationUpdateWithoutTechStackInput = {
   educationSubItem?: Prisma.EducationSubItemUpdateOneWithoutTranslationsNestedInput
   experience?: Prisma.ExperienceUpdateOneWithoutTranslationsNestedInput
   project?: Prisma.ProjectUpdateOneWithoutTranslationsNestedInput
-  projectImage?: Prisma.ProjectImageUpdateOneWithoutTranslationsNestedInput
   tag?: Prisma.TagUpdateOneWithoutTranslationsNestedInput
-  technology?: Prisma.TechnologyUpdateOneWithoutTranslationsNestedInput
   user?: Prisma.UserUpdateOneWithoutTranslationsNestedInput
   bannerImage?: Prisma.UserBannerImageUpdateOneWithoutTranslationsNestedInput
+  Task?: Prisma.TaskUpdateOneWithoutTranslationsNestedInput
 }
 
 export type TranslationUncheckedUpdateWithoutTechStackInput = {
@@ -2155,6 +2108,7 @@ export type TranslationUncheckedUpdateWithoutTechStackInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationUncheckedUpdateManyWithoutTechStackInput = {
@@ -2174,6 +2128,7 @@ export type TranslationUncheckedUpdateManyWithoutTechStackInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationCreateManyExperienceInput = {
@@ -2193,6 +2148,7 @@ export type TranslationCreateManyExperienceInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationUpdateWithoutExperienceInput = {
@@ -2200,18 +2156,19 @@ export type TranslationUpdateWithoutExperienceInput = {
   language?: Prisma.StringFieldUpdateOperationsInput | string
   field?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
+  projectImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blog?: Prisma.BlogUpdateOneWithoutTranslationsNestedInput
   education?: Prisma.EducationUpdateOneWithoutTranslationsNestedInput
   educationSubItem?: Prisma.EducationSubItemUpdateOneWithoutTranslationsNestedInput
   project?: Prisma.ProjectUpdateOneWithoutTranslationsNestedInput
-  projectImage?: Prisma.ProjectImageUpdateOneWithoutTranslationsNestedInput
   tag?: Prisma.TagUpdateOneWithoutTranslationsNestedInput
   techStack?: Prisma.TechStackUpdateOneWithoutTranslationsNestedInput
-  technology?: Prisma.TechnologyUpdateOneWithoutTranslationsNestedInput
   user?: Prisma.UserUpdateOneWithoutTranslationsNestedInput
   bannerImage?: Prisma.UserBannerImageUpdateOneWithoutTranslationsNestedInput
+  Task?: Prisma.TaskUpdateOneWithoutTranslationsNestedInput
 }
 
 export type TranslationUncheckedUpdateWithoutExperienceInput = {
@@ -2231,6 +2188,7 @@ export type TranslationUncheckedUpdateWithoutExperienceInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationUncheckedUpdateManyWithoutExperienceInput = {
@@ -2250,9 +2208,10 @@ export type TranslationUncheckedUpdateManyWithoutExperienceInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
-export type TranslationCreateManyTechnologyInput = {
+export type TranslationCreateManyTaskInput = {
   id?: string
   language: string
   field: string
@@ -2266,16 +2225,19 @@ export type TranslationCreateManyTechnologyInput = {
   projectImageId?: string | null
   blogId?: string | null
   tagId?: string | null
+  technologyId?: string | null
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
-export type TranslationUpdateWithoutTechnologyInput = {
+export type TranslationUpdateWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   field?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
+  projectImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blog?: Prisma.BlogUpdateOneWithoutTranslationsNestedInput
@@ -2283,14 +2245,13 @@ export type TranslationUpdateWithoutTechnologyInput = {
   educationSubItem?: Prisma.EducationSubItemUpdateOneWithoutTranslationsNestedInput
   experience?: Prisma.ExperienceUpdateOneWithoutTranslationsNestedInput
   project?: Prisma.ProjectUpdateOneWithoutTranslationsNestedInput
-  projectImage?: Prisma.ProjectImageUpdateOneWithoutTranslationsNestedInput
   tag?: Prisma.TagUpdateOneWithoutTranslationsNestedInput
   techStack?: Prisma.TechStackUpdateOneWithoutTranslationsNestedInput
   user?: Prisma.UserUpdateOneWithoutTranslationsNestedInput
   bannerImage?: Prisma.UserBannerImageUpdateOneWithoutTranslationsNestedInput
 }
 
-export type TranslationUncheckedUpdateWithoutTechnologyInput = {
+export type TranslationUncheckedUpdateWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   field?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2304,12 +2265,13 @@ export type TranslationUncheckedUpdateWithoutTechnologyInput = {
   projectImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blogId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type TranslationUncheckedUpdateManyWithoutTechnologyInput = {
+export type TranslationUncheckedUpdateManyWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   field?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2323,6 +2285,7 @@ export type TranslationUncheckedUpdateManyWithoutTechnologyInput = {
   projectImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blogId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2345,6 +2308,7 @@ export type TranslationCreateManyProjectInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationUpdateWithoutProjectInput = {
@@ -2352,18 +2316,19 @@ export type TranslationUpdateWithoutProjectInput = {
   language?: Prisma.StringFieldUpdateOperationsInput | string
   field?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
+  projectImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blog?: Prisma.BlogUpdateOneWithoutTranslationsNestedInput
   education?: Prisma.EducationUpdateOneWithoutTranslationsNestedInput
   educationSubItem?: Prisma.EducationSubItemUpdateOneWithoutTranslationsNestedInput
   experience?: Prisma.ExperienceUpdateOneWithoutTranslationsNestedInput
-  projectImage?: Prisma.ProjectImageUpdateOneWithoutTranslationsNestedInput
   tag?: Prisma.TagUpdateOneWithoutTranslationsNestedInput
   techStack?: Prisma.TechStackUpdateOneWithoutTranslationsNestedInput
-  technology?: Prisma.TechnologyUpdateOneWithoutTranslationsNestedInput
   user?: Prisma.UserUpdateOneWithoutTranslationsNestedInput
   bannerImage?: Prisma.UserBannerImageUpdateOneWithoutTranslationsNestedInput
+  Task?: Prisma.TaskUpdateOneWithoutTranslationsNestedInput
 }
 
 export type TranslationUncheckedUpdateWithoutProjectInput = {
@@ -2383,6 +2348,7 @@ export type TranslationUncheckedUpdateWithoutProjectInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationUncheckedUpdateManyWithoutProjectInput = {
@@ -2402,82 +2368,7 @@ export type TranslationUncheckedUpdateManyWithoutProjectInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type TranslationCreateManyProjectImageInput = {
-  id?: string
-  language: string
-  field: string
-  value: string
-  userId?: string | null
-  educationId?: string | null
-  educationSubItemId?: string | null
-  techStackId?: string | null
-  experienceId?: string | null
-  projectId?: string | null
-  blogId?: string | null
-  tagId?: string | null
-  technologyId?: string | null
-  bannerImageId?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type TranslationUpdateWithoutProjectImageInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  language?: Prisma.StringFieldUpdateOperationsInput | string
-  field?: Prisma.StringFieldUpdateOperationsInput | string
-  value?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  blog?: Prisma.BlogUpdateOneWithoutTranslationsNestedInput
-  education?: Prisma.EducationUpdateOneWithoutTranslationsNestedInput
-  educationSubItem?: Prisma.EducationSubItemUpdateOneWithoutTranslationsNestedInput
-  experience?: Prisma.ExperienceUpdateOneWithoutTranslationsNestedInput
-  project?: Prisma.ProjectUpdateOneWithoutTranslationsNestedInput
-  tag?: Prisma.TagUpdateOneWithoutTranslationsNestedInput
-  techStack?: Prisma.TechStackUpdateOneWithoutTranslationsNestedInput
-  technology?: Prisma.TechnologyUpdateOneWithoutTranslationsNestedInput
-  user?: Prisma.UserUpdateOneWithoutTranslationsNestedInput
-  bannerImage?: Prisma.UserBannerImageUpdateOneWithoutTranslationsNestedInput
-}
-
-export type TranslationUncheckedUpdateWithoutProjectImageInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  language?: Prisma.StringFieldUpdateOperationsInput | string
-  field?: Prisma.StringFieldUpdateOperationsInput | string
-  value?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  educationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  educationSubItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  techStackId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  experienceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  blogId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type TranslationUncheckedUpdateManyWithoutProjectImageInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  language?: Prisma.StringFieldUpdateOperationsInput | string
-  field?: Prisma.StringFieldUpdateOperationsInput | string
-  value?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  educationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  educationSubItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  techStackId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  experienceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  blogId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  tagId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationCreateManyBlogInput = {
@@ -2497,6 +2388,7 @@ export type TranslationCreateManyBlogInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationUpdateWithoutBlogInput = {
@@ -2504,18 +2396,19 @@ export type TranslationUpdateWithoutBlogInput = {
   language?: Prisma.StringFieldUpdateOperationsInput | string
   field?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
+  projectImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   education?: Prisma.EducationUpdateOneWithoutTranslationsNestedInput
   educationSubItem?: Prisma.EducationSubItemUpdateOneWithoutTranslationsNestedInput
   experience?: Prisma.ExperienceUpdateOneWithoutTranslationsNestedInput
   project?: Prisma.ProjectUpdateOneWithoutTranslationsNestedInput
-  projectImage?: Prisma.ProjectImageUpdateOneWithoutTranslationsNestedInput
   tag?: Prisma.TagUpdateOneWithoutTranslationsNestedInput
   techStack?: Prisma.TechStackUpdateOneWithoutTranslationsNestedInput
-  technology?: Prisma.TechnologyUpdateOneWithoutTranslationsNestedInput
   user?: Prisma.UserUpdateOneWithoutTranslationsNestedInput
   bannerImage?: Prisma.UserBannerImageUpdateOneWithoutTranslationsNestedInput
+  Task?: Prisma.TaskUpdateOneWithoutTranslationsNestedInput
 }
 
 export type TranslationUncheckedUpdateWithoutBlogInput = {
@@ -2535,6 +2428,7 @@ export type TranslationUncheckedUpdateWithoutBlogInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationUncheckedUpdateManyWithoutBlogInput = {
@@ -2554,6 +2448,7 @@ export type TranslationUncheckedUpdateManyWithoutBlogInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationCreateManyTagInput = {
@@ -2573,6 +2468,7 @@ export type TranslationCreateManyTagInput = {
   bannerImageId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskId?: string | null
 }
 
 export type TranslationUpdateWithoutTagInput = {
@@ -2580,6 +2476,8 @@ export type TranslationUpdateWithoutTagInput = {
   language?: Prisma.StringFieldUpdateOperationsInput | string
   field?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
+  projectImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technologyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blog?: Prisma.BlogUpdateOneWithoutTranslationsNestedInput
@@ -2587,11 +2485,10 @@ export type TranslationUpdateWithoutTagInput = {
   educationSubItem?: Prisma.EducationSubItemUpdateOneWithoutTranslationsNestedInput
   experience?: Prisma.ExperienceUpdateOneWithoutTranslationsNestedInput
   project?: Prisma.ProjectUpdateOneWithoutTranslationsNestedInput
-  projectImage?: Prisma.ProjectImageUpdateOneWithoutTranslationsNestedInput
   techStack?: Prisma.TechStackUpdateOneWithoutTranslationsNestedInput
-  technology?: Prisma.TechnologyUpdateOneWithoutTranslationsNestedInput
   user?: Prisma.UserUpdateOneWithoutTranslationsNestedInput
   bannerImage?: Prisma.UserBannerImageUpdateOneWithoutTranslationsNestedInput
+  Task?: Prisma.TaskUpdateOneWithoutTranslationsNestedInput
 }
 
 export type TranslationUncheckedUpdateWithoutTagInput = {
@@ -2611,6 +2508,7 @@ export type TranslationUncheckedUpdateWithoutTagInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationUncheckedUpdateManyWithoutTagInput = {
@@ -2630,6 +2528,7 @@ export type TranslationUncheckedUpdateManyWithoutTagInput = {
   bannerImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -2652,17 +2551,17 @@ export type TranslationSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   bannerImageId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  taskId?: boolean
   blog?: boolean | Prisma.Translation$blogArgs<ExtArgs>
   education?: boolean | Prisma.Translation$educationArgs<ExtArgs>
   educationSubItem?: boolean | Prisma.Translation$educationSubItemArgs<ExtArgs>
   experience?: boolean | Prisma.Translation$experienceArgs<ExtArgs>
   project?: boolean | Prisma.Translation$projectArgs<ExtArgs>
-  projectImage?: boolean | Prisma.Translation$projectImageArgs<ExtArgs>
   tag?: boolean | Prisma.Translation$tagArgs<ExtArgs>
   techStack?: boolean | Prisma.Translation$techStackArgs<ExtArgs>
-  technology?: boolean | Prisma.Translation$technologyArgs<ExtArgs>
   user?: boolean | Prisma.Translation$userArgs<ExtArgs>
   bannerImage?: boolean | Prisma.Translation$bannerImageArgs<ExtArgs>
+  Task?: boolean | Prisma.Translation$TaskArgs<ExtArgs>
 }, ExtArgs["result"]["translation"]>
 
 
@@ -2685,21 +2584,21 @@ export type TranslationSelectScalar = {
   bannerImageId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  taskId?: boolean
 }
 
-export type TranslationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "language" | "field" | "value" | "userId" | "educationId" | "educationSubItemId" | "techStackId" | "experienceId" | "projectId" | "projectImageId" | "blogId" | "tagId" | "technologyId" | "bannerImageId" | "createdAt" | "updatedAt", ExtArgs["result"]["translation"]>
+export type TranslationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "language" | "field" | "value" | "userId" | "educationId" | "educationSubItemId" | "techStackId" | "experienceId" | "projectId" | "projectImageId" | "blogId" | "tagId" | "technologyId" | "bannerImageId" | "createdAt" | "updatedAt" | "taskId", ExtArgs["result"]["translation"]>
 export type TranslationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   blog?: boolean | Prisma.Translation$blogArgs<ExtArgs>
   education?: boolean | Prisma.Translation$educationArgs<ExtArgs>
   educationSubItem?: boolean | Prisma.Translation$educationSubItemArgs<ExtArgs>
   experience?: boolean | Prisma.Translation$experienceArgs<ExtArgs>
   project?: boolean | Prisma.Translation$projectArgs<ExtArgs>
-  projectImage?: boolean | Prisma.Translation$projectImageArgs<ExtArgs>
   tag?: boolean | Prisma.Translation$tagArgs<ExtArgs>
   techStack?: boolean | Prisma.Translation$techStackArgs<ExtArgs>
-  technology?: boolean | Prisma.Translation$technologyArgs<ExtArgs>
   user?: boolean | Prisma.Translation$userArgs<ExtArgs>
   bannerImage?: boolean | Prisma.Translation$bannerImageArgs<ExtArgs>
+  Task?: boolean | Prisma.Translation$TaskArgs<ExtArgs>
 }
 
 export type $TranslationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2710,12 +2609,11 @@ export type $TranslationPayload<ExtArgs extends runtime.Types.Extensions.Interna
     educationSubItem: Prisma.$EducationSubItemPayload<ExtArgs> | null
     experience: Prisma.$ExperiencePayload<ExtArgs> | null
     project: Prisma.$ProjectPayload<ExtArgs> | null
-    projectImage: Prisma.$ProjectImagePayload<ExtArgs> | null
     tag: Prisma.$TagPayload<ExtArgs> | null
     techStack: Prisma.$TechStackPayload<ExtArgs> | null
-    technology: Prisma.$TechnologyPayload<ExtArgs> | null
     user: Prisma.$UserPayload<ExtArgs> | null
     bannerImage: Prisma.$UserBannerImagePayload<ExtArgs> | null
+    Task: Prisma.$TaskPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2735,6 +2633,7 @@ export type $TranslationPayload<ExtArgs extends runtime.Types.Extensions.Interna
     bannerImageId: string | null
     createdAt: Date
     updatedAt: Date
+    taskId: string | null
   }, ExtArgs["result"]["translation"]>
   composites: {}
 }
@@ -3080,12 +2979,11 @@ export interface Prisma__TranslationClient<T, Null = never, ExtArgs extends runt
   educationSubItem<T extends Prisma.Translation$educationSubItemArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Translation$educationSubItemArgs<ExtArgs>>): Prisma.Prisma__EducationSubItemClient<runtime.Types.Result.GetResult<Prisma.$EducationSubItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   experience<T extends Prisma.Translation$experienceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Translation$experienceArgs<ExtArgs>>): Prisma.Prisma__ExperienceClient<runtime.Types.Result.GetResult<Prisma.$ExperiencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   project<T extends Prisma.Translation$projectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Translation$projectArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  projectImage<T extends Prisma.Translation$projectImageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Translation$projectImageArgs<ExtArgs>>): Prisma.Prisma__ProjectImageClient<runtime.Types.Result.GetResult<Prisma.$ProjectImagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   tag<T extends Prisma.Translation$tagArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Translation$tagArgs<ExtArgs>>): Prisma.Prisma__TagClient<runtime.Types.Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   techStack<T extends Prisma.Translation$techStackArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Translation$techStackArgs<ExtArgs>>): Prisma.Prisma__TechStackClient<runtime.Types.Result.GetResult<Prisma.$TechStackPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  technology<T extends Prisma.Translation$technologyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Translation$technologyArgs<ExtArgs>>): Prisma.Prisma__TechnologyClient<runtime.Types.Result.GetResult<Prisma.$TechnologyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.Translation$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Translation$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   bannerImage<T extends Prisma.Translation$bannerImageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Translation$bannerImageArgs<ExtArgs>>): Prisma.Prisma__UserBannerImageClient<runtime.Types.Result.GetResult<Prisma.$UserBannerImagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  Task<T extends Prisma.Translation$TaskArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Translation$TaskArgs<ExtArgs>>): Prisma.Prisma__TaskClient<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3132,6 +3030,7 @@ export interface TranslationFieldRefs {
   readonly bannerImageId: Prisma.FieldRef<"Translation", 'String'>
   readonly createdAt: Prisma.FieldRef<"Translation", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Translation", 'DateTime'>
+  readonly taskId: Prisma.FieldRef<"Translation", 'String'>
 }
     
 
@@ -3570,25 +3469,6 @@ export type Translation$projectArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * Translation.projectImage
- */
-export type Translation$projectImageArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the ProjectImage
-   */
-  select?: Prisma.ProjectImageSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the ProjectImage
-   */
-  omit?: Prisma.ProjectImageOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ProjectImageInclude<ExtArgs> | null
-  where?: Prisma.ProjectImageWhereInput
-}
-
-/**
  * Translation.tag
  */
 export type Translation$tagArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3627,25 +3507,6 @@ export type Translation$techStackArgs<ExtArgs extends runtime.Types.Extensions.I
 }
 
 /**
- * Translation.technology
- */
-export type Translation$technologyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Technology
-   */
-  select?: Prisma.TechnologySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Technology
-   */
-  omit?: Prisma.TechnologyOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TechnologyInclude<ExtArgs> | null
-  where?: Prisma.TechnologyWhereInput
-}
-
-/**
  * Translation.user
  */
 export type Translation$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3681,6 +3542,25 @@ export type Translation$bannerImageArgs<ExtArgs extends runtime.Types.Extensions
    */
   include?: Prisma.UserBannerImageInclude<ExtArgs> | null
   where?: Prisma.UserBannerImageWhereInput
+}
+
+/**
+ * Translation.Task
+ */
+export type Translation$TaskArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Task
+   */
+  select?: Prisma.TaskSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Task
+   */
+  omit?: Prisma.TaskOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskInclude<ExtArgs> | null
+  where?: Prisma.TaskWhereInput
 }
 
 /**

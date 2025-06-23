@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface CardRotateProps {
     children: React.ReactNode;
@@ -42,7 +42,7 @@ function CardRotate({ children, onSendToBack, sensitivity }: CardRotateProps) {
     );
 }
 
-interface StackProps {
+interface ImageStackProps {
     randomRotation?: boolean;
     sensitivity?: number;
     cardDimensions?: { width: number; height: number };
@@ -52,7 +52,7 @@ interface StackProps {
     setSelectedCard?: (id: string) => void;
 }
 
-export default function Stack({
+export default function ImageStack({
     randomRotation = false,
     sensitivity = 200,
     cardDimensions = { width: 208, height: 208 },
@@ -60,22 +60,28 @@ export default function Stack({
     animationConfig = { stiffness: 260, damping: 20 },
     sendToBackOnClick = false,
     setSelectedCard
-}: StackProps) {
+}: ImageStackProps) {
     const [cards, setCards] = useState(cardsData);
+    const randomRotateList = useMemo<number[]>(() =>
+        cardsData.map(() => Math.random() * 10 - 5), []
+    );
 
-    const sendToBack = (id: string) => {
+    const sendToBack = useCallback((id: string) => {
         setCards((prev) => {
             const newCards = [...prev];
             const index = newCards.findIndex((card) => card.id === id);
-            if (setSelectedCard) {
-                setSelectedCard(newCards[((index - 1) + newCards.length) % newCards.length].id)
-            }
             const [card] = newCards.splice(index, 1);
 
             newCards.unshift(card);
             return newCards;
         });
-    };
+    }, []);
+
+    useEffect(() => {
+        if (setSelectedCard && cards.length > 0) {
+            setSelectedCard(cards[cards.length - 1].id);
+        }
+    }, [cards]);
 
     return (
         <div
@@ -87,8 +93,7 @@ export default function Stack({
             }}
         >
             {cards.map((card, index) => {
-                const randomRotate = randomRotation ? Math.random() * 10 - 5 : 0;
-
+                const randomRotate = randomRotation ? randomRotateList[index] : 0;
                 return (
                     <CardRotate
                         key={card.id}
@@ -103,7 +108,7 @@ export default function Stack({
                                 scale: 1 + index * 0.06 - cards.length * 0.06,
                                 transformOrigin: "90% 90%",
                             }}
-                            initial={false}
+                            initial={true}
                             transition={{
                                 type: "spring",
                                 stiffness: animationConfig.stiffness,

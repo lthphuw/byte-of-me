@@ -198,7 +198,8 @@ export type TechStackWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"TechStack"> | Date | string
   userId?: Prisma.StringFilter<"TechStack"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  projects?: Prisma.ProjectTechStackListRelationFilter
+  projects?: Prisma.TechStackOnProjectsListRelationFilter
+  experiences?: Prisma.TechstacksOnExperiencesListRelationFilter
   translations?: Prisma.TranslationListRelationFilter
 }
 
@@ -211,7 +212,8 @@ export type TechStackOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
-  projects?: Prisma.ProjectTechStackOrderByRelationAggregateInput
+  projects?: Prisma.TechStackOnProjectsOrderByRelationAggregateInput
+  experiences?: Prisma.TechstacksOnExperiencesOrderByRelationAggregateInput
   translations?: Prisma.TranslationOrderByRelationAggregateInput
   _relevance?: Prisma.TechStackOrderByRelevanceInput
 }
@@ -228,7 +230,8 @@ export type TechStackWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"TechStack"> | Date | string
   userId?: Prisma.StringFilter<"TechStack"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  projects?: Prisma.ProjectTechStackListRelationFilter
+  projects?: Prisma.TechStackOnProjectsListRelationFilter
+  experiences?: Prisma.TechstacksOnExperiencesListRelationFilter
   translations?: Prisma.TranslationListRelationFilter
 }, "id" | "name">
 
@@ -266,7 +269,8 @@ export type TechStackCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutTechstacksInput
-  projects?: Prisma.ProjectTechStackCreateNestedManyWithoutTechStackInput
+  projects?: Prisma.TechStackOnProjectsCreateNestedManyWithoutTechStackInput
+  experiences?: Prisma.TechstacksOnExperiencesCreateNestedManyWithoutTechstackInput
   translations?: Prisma.TranslationCreateNestedManyWithoutTechStackInput
 }
 
@@ -278,7 +282,8 @@ export type TechStackUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
-  projects?: Prisma.ProjectTechStackUncheckedCreateNestedManyWithoutTechStackInput
+  projects?: Prisma.TechStackOnProjectsUncheckedCreateNestedManyWithoutTechStackInput
+  experiences?: Prisma.TechstacksOnExperiencesUncheckedCreateNestedManyWithoutTechstackInput
   translations?: Prisma.TranslationUncheckedCreateNestedManyWithoutTechStackInput
 }
 
@@ -290,7 +295,8 @@ export type TechStackUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutTechstacksNestedInput
-  projects?: Prisma.ProjectTechStackUpdateManyWithoutTechStackNestedInput
+  projects?: Prisma.TechStackOnProjectsUpdateManyWithoutTechStackNestedInput
+  experiences?: Prisma.TechstacksOnExperiencesUpdateManyWithoutTechstackNestedInput
   translations?: Prisma.TranslationUpdateManyWithoutTechStackNestedInput
 }
 
@@ -302,7 +308,8 @@ export type TechStackUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  projects?: Prisma.ProjectTechStackUncheckedUpdateManyWithoutTechStackNestedInput
+  projects?: Prisma.TechStackOnProjectsUncheckedUpdateManyWithoutTechStackNestedInput
+  experiences?: Prisma.TechstacksOnExperiencesUncheckedUpdateManyWithoutTechstackNestedInput
   translations?: Prisma.TranslationUncheckedUpdateManyWithoutTechStackNestedInput
 }
 
@@ -433,6 +440,20 @@ export type TechStackUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.TechStackScalarWhereInput | Prisma.TechStackScalarWhereInput[]
 }
 
+export type TechStackCreateNestedOneWithoutExperiencesInput = {
+  create?: Prisma.XOR<Prisma.TechStackCreateWithoutExperiencesInput, Prisma.TechStackUncheckedCreateWithoutExperiencesInput>
+  connectOrCreate?: Prisma.TechStackCreateOrConnectWithoutExperiencesInput
+  connect?: Prisma.TechStackWhereUniqueInput
+}
+
+export type TechStackUpdateOneRequiredWithoutExperiencesNestedInput = {
+  create?: Prisma.XOR<Prisma.TechStackCreateWithoutExperiencesInput, Prisma.TechStackUncheckedCreateWithoutExperiencesInput>
+  connectOrCreate?: Prisma.TechStackCreateOrConnectWithoutExperiencesInput
+  upsert?: Prisma.TechStackUpsertWithoutExperiencesInput
+  connect?: Prisma.TechStackWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TechStackUpdateToOneWithWhereWithoutExperiencesInput, Prisma.TechStackUpdateWithoutExperiencesInput>, Prisma.TechStackUncheckedUpdateWithoutExperiencesInput>
+}
+
 export type TechStackCreateNestedOneWithoutProjectsInput = {
   create?: Prisma.XOR<Prisma.TechStackCreateWithoutProjectsInput, Prisma.TechStackUncheckedCreateWithoutProjectsInput>
   connectOrCreate?: Prisma.TechStackCreateOrConnectWithoutProjectsInput
@@ -470,7 +491,8 @@ export type TechStackCreateWithoutUserInput = {
   group: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  projects?: Prisma.ProjectTechStackCreateNestedManyWithoutTechStackInput
+  projects?: Prisma.TechStackOnProjectsCreateNestedManyWithoutTechStackInput
+  experiences?: Prisma.TechstacksOnExperiencesCreateNestedManyWithoutTechstackInput
   translations?: Prisma.TranslationCreateNestedManyWithoutTechStackInput
 }
 
@@ -481,7 +503,8 @@ export type TechStackUncheckedCreateWithoutUserInput = {
   group: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  projects?: Prisma.ProjectTechStackUncheckedCreateNestedManyWithoutTechStackInput
+  projects?: Prisma.TechStackOnProjectsUncheckedCreateNestedManyWithoutTechStackInput
+  experiences?: Prisma.TechstacksOnExperiencesUncheckedCreateNestedManyWithoutTechstackInput
   translations?: Prisma.TranslationUncheckedCreateNestedManyWithoutTechStackInput
 }
 
@@ -524,6 +547,70 @@ export type TechStackScalarWhereInput = {
   userId?: Prisma.StringFilter<"TechStack"> | string
 }
 
+export type TechStackCreateWithoutExperiencesInput = {
+  id?: string
+  name: string
+  logo?: string | null
+  group: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutTechstacksInput
+  projects?: Prisma.TechStackOnProjectsCreateNestedManyWithoutTechStackInput
+  translations?: Prisma.TranslationCreateNestedManyWithoutTechStackInput
+}
+
+export type TechStackUncheckedCreateWithoutExperiencesInput = {
+  id?: string
+  name: string
+  logo?: string | null
+  group: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId: string
+  projects?: Prisma.TechStackOnProjectsUncheckedCreateNestedManyWithoutTechStackInput
+  translations?: Prisma.TranslationUncheckedCreateNestedManyWithoutTechStackInput
+}
+
+export type TechStackCreateOrConnectWithoutExperiencesInput = {
+  where: Prisma.TechStackWhereUniqueInput
+  create: Prisma.XOR<Prisma.TechStackCreateWithoutExperiencesInput, Prisma.TechStackUncheckedCreateWithoutExperiencesInput>
+}
+
+export type TechStackUpsertWithoutExperiencesInput = {
+  update: Prisma.XOR<Prisma.TechStackUpdateWithoutExperiencesInput, Prisma.TechStackUncheckedUpdateWithoutExperiencesInput>
+  create: Prisma.XOR<Prisma.TechStackCreateWithoutExperiencesInput, Prisma.TechStackUncheckedCreateWithoutExperiencesInput>
+  where?: Prisma.TechStackWhereInput
+}
+
+export type TechStackUpdateToOneWithWhereWithoutExperiencesInput = {
+  where?: Prisma.TechStackWhereInput
+  data: Prisma.XOR<Prisma.TechStackUpdateWithoutExperiencesInput, Prisma.TechStackUncheckedUpdateWithoutExperiencesInput>
+}
+
+export type TechStackUpdateWithoutExperiencesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  group?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutTechstacksNestedInput
+  projects?: Prisma.TechStackOnProjectsUpdateManyWithoutTechStackNestedInput
+  translations?: Prisma.TranslationUpdateManyWithoutTechStackNestedInput
+}
+
+export type TechStackUncheckedUpdateWithoutExperiencesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  group?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  projects?: Prisma.TechStackOnProjectsUncheckedUpdateManyWithoutTechStackNestedInput
+  translations?: Prisma.TranslationUncheckedUpdateManyWithoutTechStackNestedInput
+}
+
 export type TechStackCreateWithoutProjectsInput = {
   id?: string
   name: string
@@ -532,6 +619,7 @@ export type TechStackCreateWithoutProjectsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutTechstacksInput
+  experiences?: Prisma.TechstacksOnExperiencesCreateNestedManyWithoutTechstackInput
   translations?: Prisma.TranslationCreateNestedManyWithoutTechStackInput
 }
 
@@ -543,6 +631,7 @@ export type TechStackUncheckedCreateWithoutProjectsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
+  experiences?: Prisma.TechstacksOnExperiencesUncheckedCreateNestedManyWithoutTechstackInput
   translations?: Prisma.TranslationUncheckedCreateNestedManyWithoutTechStackInput
 }
 
@@ -570,6 +659,7 @@ export type TechStackUpdateWithoutProjectsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutTechstacksNestedInput
+  experiences?: Prisma.TechstacksOnExperiencesUpdateManyWithoutTechstackNestedInput
   translations?: Prisma.TranslationUpdateManyWithoutTechStackNestedInput
 }
 
@@ -581,6 +671,7 @@ export type TechStackUncheckedUpdateWithoutProjectsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  experiences?: Prisma.TechstacksOnExperiencesUncheckedUpdateManyWithoutTechstackNestedInput
   translations?: Prisma.TranslationUncheckedUpdateManyWithoutTechStackNestedInput
 }
 
@@ -592,7 +683,8 @@ export type TechStackCreateWithoutTranslationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutTechstacksInput
-  projects?: Prisma.ProjectTechStackCreateNestedManyWithoutTechStackInput
+  projects?: Prisma.TechStackOnProjectsCreateNestedManyWithoutTechStackInput
+  experiences?: Prisma.TechstacksOnExperiencesCreateNestedManyWithoutTechstackInput
 }
 
 export type TechStackUncheckedCreateWithoutTranslationsInput = {
@@ -603,7 +695,8 @@ export type TechStackUncheckedCreateWithoutTranslationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
-  projects?: Prisma.ProjectTechStackUncheckedCreateNestedManyWithoutTechStackInput
+  projects?: Prisma.TechStackOnProjectsUncheckedCreateNestedManyWithoutTechStackInput
+  experiences?: Prisma.TechstacksOnExperiencesUncheckedCreateNestedManyWithoutTechstackInput
 }
 
 export type TechStackCreateOrConnectWithoutTranslationsInput = {
@@ -630,7 +723,8 @@ export type TechStackUpdateWithoutTranslationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutTechstacksNestedInput
-  projects?: Prisma.ProjectTechStackUpdateManyWithoutTechStackNestedInput
+  projects?: Prisma.TechStackOnProjectsUpdateManyWithoutTechStackNestedInput
+  experiences?: Prisma.TechstacksOnExperiencesUpdateManyWithoutTechstackNestedInput
 }
 
 export type TechStackUncheckedUpdateWithoutTranslationsInput = {
@@ -641,7 +735,8 @@ export type TechStackUncheckedUpdateWithoutTranslationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  projects?: Prisma.ProjectTechStackUncheckedUpdateManyWithoutTechStackNestedInput
+  projects?: Prisma.TechStackOnProjectsUncheckedUpdateManyWithoutTechStackNestedInput
+  experiences?: Prisma.TechstacksOnExperiencesUncheckedUpdateManyWithoutTechstackNestedInput
 }
 
 export type TechStackCreateManyUserInput = {
@@ -660,7 +755,8 @@ export type TechStackUpdateWithoutUserInput = {
   group?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  projects?: Prisma.ProjectTechStackUpdateManyWithoutTechStackNestedInput
+  projects?: Prisma.TechStackOnProjectsUpdateManyWithoutTechStackNestedInput
+  experiences?: Prisma.TechstacksOnExperiencesUpdateManyWithoutTechstackNestedInput
   translations?: Prisma.TranslationUpdateManyWithoutTechStackNestedInput
 }
 
@@ -671,7 +767,8 @@ export type TechStackUncheckedUpdateWithoutUserInput = {
   group?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  projects?: Prisma.ProjectTechStackUncheckedUpdateManyWithoutTechStackNestedInput
+  projects?: Prisma.TechStackOnProjectsUncheckedUpdateManyWithoutTechStackNestedInput
+  experiences?: Prisma.TechstacksOnExperiencesUncheckedUpdateManyWithoutTechstackNestedInput
   translations?: Prisma.TranslationUncheckedUpdateManyWithoutTechStackNestedInput
 }
 
@@ -691,11 +788,13 @@ export type TechStackUncheckedUpdateManyWithoutUserInput = {
 
 export type TechStackCountOutputType = {
   projects: number
+  experiences: number
   translations: number
 }
 
 export type TechStackCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   projects?: boolean | TechStackCountOutputTypeCountProjectsArgs
+  experiences?: boolean | TechStackCountOutputTypeCountExperiencesArgs
   translations?: boolean | TechStackCountOutputTypeCountTranslationsArgs
 }
 
@@ -713,7 +812,14 @@ export type TechStackCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ex
  * TechStackCountOutputType without action
  */
 export type TechStackCountOutputTypeCountProjectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ProjectTechStackWhereInput
+  where?: Prisma.TechStackOnProjectsWhereInput
+}
+
+/**
+ * TechStackCountOutputType without action
+ */
+export type TechStackCountOutputTypeCountExperiencesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TechstacksOnExperiencesWhereInput
 }
 
 /**
@@ -734,6 +840,7 @@ export type TechStackSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   projects?: boolean | Prisma.TechStack$projectsArgs<ExtArgs>
+  experiences?: boolean | Prisma.TechStack$experiencesArgs<ExtArgs>
   translations?: boolean | Prisma.TechStack$translationsArgs<ExtArgs>
   _count?: boolean | Prisma.TechStackCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["techStack"]>
@@ -754,6 +861,7 @@ export type TechStackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type TechStackInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   projects?: boolean | Prisma.TechStack$projectsArgs<ExtArgs>
+  experiences?: boolean | Prisma.TechStack$experiencesArgs<ExtArgs>
   translations?: boolean | Prisma.TechStack$translationsArgs<ExtArgs>
   _count?: boolean | Prisma.TechStackCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -762,7 +870,8 @@ export type $TechStackPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   name: "TechStack"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
-    projects: Prisma.$ProjectTechStackPayload<ExtArgs>[]
+    projects: Prisma.$TechStackOnProjectsPayload<ExtArgs>[]
+    experiences: Prisma.$TechstacksOnExperiencesPayload<ExtArgs>[]
     translations: Prisma.$TranslationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1114,7 +1223,8 @@ readonly fields: TechStackFieldRefs;
 export interface Prisma__TechStackClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  projects<T extends Prisma.TechStack$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TechStack$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectTechStackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  projects<T extends Prisma.TechStack$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TechStack$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TechStackOnProjectsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  experiences<T extends Prisma.TechStack$experiencesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TechStack$experiencesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TechstacksOnExperiencesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   translations<T extends Prisma.TechStack$translationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TechStack$translationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TranslationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1499,23 +1609,47 @@ export type TechStackDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
  */
 export type TechStack$projectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the ProjectTechStack
+   * Select specific fields to fetch from the TechStackOnProjects
    */
-  select?: Prisma.ProjectTechStackSelect<ExtArgs> | null
+  select?: Prisma.TechStackOnProjectsSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the ProjectTechStack
+   * Omit specific fields from the TechStackOnProjects
    */
-  omit?: Prisma.ProjectTechStackOmit<ExtArgs> | null
+  omit?: Prisma.TechStackOnProjectsOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ProjectTechStackInclude<ExtArgs> | null
-  where?: Prisma.ProjectTechStackWhereInput
-  orderBy?: Prisma.ProjectTechStackOrderByWithRelationInput | Prisma.ProjectTechStackOrderByWithRelationInput[]
-  cursor?: Prisma.ProjectTechStackWhereUniqueInput
+  include?: Prisma.TechStackOnProjectsInclude<ExtArgs> | null
+  where?: Prisma.TechStackOnProjectsWhereInput
+  orderBy?: Prisma.TechStackOnProjectsOrderByWithRelationInput | Prisma.TechStackOnProjectsOrderByWithRelationInput[]
+  cursor?: Prisma.TechStackOnProjectsWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.ProjectTechStackScalarFieldEnum | Prisma.ProjectTechStackScalarFieldEnum[]
+  distinct?: Prisma.TechStackOnProjectsScalarFieldEnum | Prisma.TechStackOnProjectsScalarFieldEnum[]
+}
+
+/**
+ * TechStack.experiences
+ */
+export type TechStack$experiencesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TechstacksOnExperiences
+   */
+  select?: Prisma.TechstacksOnExperiencesSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TechstacksOnExperiences
+   */
+  omit?: Prisma.TechstacksOnExperiencesOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TechstacksOnExperiencesInclude<ExtArgs> | null
+  where?: Prisma.TechstacksOnExperiencesWhereInput
+  orderBy?: Prisma.TechstacksOnExperiencesOrderByWithRelationInput | Prisma.TechstacksOnExperiencesOrderByWithRelationInput[]
+  cursor?: Prisma.TechstacksOnExperiencesWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TechstacksOnExperiencesScalarFieldEnum | Prisma.TechstacksOnExperiencesScalarFieldEnum[]
 }
 
 /**

@@ -12,6 +12,7 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 
 import { BackgroundWrapper } from "@/components/background-wrapper";
+import { ExperimentalProvider } from "@/providers/experimental";
 import "@/styles/globals.css";
 import "@/styles/liquid-glass.css";
 import { Viewport } from "next";
@@ -95,21 +96,23 @@ export default async function RootLocaleLayout({
       <head />
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          "min-h-screen bg-transparent font-sans antialiased",
           fontSans.variable,
           fontHeading.variable
         )}
       >
-        <NextIntlClientProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <BackgroundWrapper />
-            {children}
-            <Analytics />
-            <Toaster />
-            <TailwindIndicator />
-          </ThemeProvider>
-        </NextIntlClientProvider>
+        <ExperimentalProvider>
+          <NextIntlClientProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              <BackgroundWrapper />
+              {children}
+              <Analytics />
+              <Toaster />
+              <TailwindIndicator />
+            </ThemeProvider>
+          </NextIntlClientProvider>
+        </ExperimentalProvider>
       </body>
-    </html>
+    </html >
   )
 }

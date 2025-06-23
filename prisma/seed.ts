@@ -1,42 +1,86 @@
-import { PrismaClient } from "@/generated/prisma/client"
-import * as dotenv from "dotenv"
+import { PrismaClient, User } from "@/generated/prisma/client";
+import * as dotenv from "dotenv";
 
 dotenv.config()
 const prisma = new PrismaClient()
+type PrismaModel = {
+    deleteMany: () => Promise<any>;
+};
 
-async function safeDeleteMany(model: any, modelName: string) {
+async function safeDeleteMany<T extends PrismaModel>(
+    model: T,
+    modelName: string
+) {
     try {
-        await model.deleteMany()
-        console.log(`Cleared ${modelName} table`)
+        await model.deleteMany();
+        console.log(`Cleared ${modelName} table`);
     } catch (error) {
         console.warn(
-            `Warning: Failed to clear ${modelName} table. It may not exist yet.`
-        )
+            `Warning: Failed to clear ${modelName} table. It may not exist yet.`,
+            error
+        );
     }
 }
 
 async function main(): Promise<void> {
     console.log("Seeding database...")
+    await cleanData();
 
+    // Seed user
+    const user = await seedUser()
+
+    // Seed user banner image
+    await seedUserBannerImage(user);
+
+    // Seed education
+    await seedEducations(user);
+
+    // Seed tech stacks
+    await seedTechstacks(user);
+
+    // Seed experiences 
+    await seedExperiences(user);
+
+    await seedTags(user);
+    // Seed projects
+    await seedProjects(user);
+
+    console.log("Seeding completed!");
+}
+
+main()
+    .catch((e: unknown) => {
+        console.error("Error seeding database:", e)
+        process.exit(1)
+    })
+    .finally(async () => {
+        await prisma.$disconnect()
+    })
+
+
+
+
+async function cleanData() {
     // Clear data in correct order with safe deletion
     await safeDeleteMany(prisma.blogTag, "BlogTag")
-    await safeDeleteMany(prisma.experienceTechnology, "ExperienceTechnology")
-    await safeDeleteMany(prisma.projectTechStack, "ProjectTechStack")
-    await safeDeleteMany(prisma.projectImage, "ProjectImage")
+    await safeDeleteMany(prisma.techStackOnProjects, "ProjectTechStack")
+    await safeDeleteMany(prisma.techstacksOnExperiences, "ProjectTechStack")
     await safeDeleteMany(prisma.educationSubItem, "EducationSubItem")
+    await safeDeleteMany(prisma.task, "Task")
     await safeDeleteMany(prisma.translation, "Translation")
     await safeDeleteMany(prisma.blog, "Blog")
     await safeDeleteMany(prisma.project, "Project")
+    await safeDeleteMany(prisma.experienceRole, "Experience")
     await safeDeleteMany(prisma.experience, "Experience")
     await safeDeleteMany(prisma.education, "Education")
     await safeDeleteMany(prisma.tag, "Tag")
-    await safeDeleteMany(prisma.technology, "Technology")
     await safeDeleteMany(prisma.techStack, "TechStack")
     await safeDeleteMany(prisma.userBannerImage, "UserImageBanner")
     await safeDeleteMany(prisma.user, "User")
+}
 
-    // Seed user
-    const user = await prisma.user.create({
+async function seedUser() {
+    return await prisma.user.create({
         data: {
             name: "Luong Thanh Phu Hoang",
             firstName: "Phu",
@@ -52,13 +96,12 @@ async function main(): Promise<void> {
             I enjoy learning new things and have a strong interest in open - source projects, where I often discover useful ideas and best practices.These experiences help me build better and more efficient solutions. For me, growth doesn’t just come from work—it also comes from self - exploration and continuous learning.That’s what truly drives my development.`,
             bio: "A passionate developer exploring the world of open-source and modern web technologies.",
             aboutMe: `
-                <p>Hi, I'm Phu, a <strong>software developer</strong> with a passion for building <em>modern web applications</em>.</p>
-                <p>I specialize in <a href="https://react.dev" target="_blank" rel="noopener noreferrer">React</a> and <a href="https://go.dev" target="_blank" rel="noopener noreferrer">Go</a>, and love contributing to open-source projects.</p>
-                <ul>
-                    <li>Based in Ho Chi Minh City, Vietnam</li>
-                    <li>Graduated from University of Science, VNU-HCM</li>
-                    <li>Hobby: Exploring new tech and gaming</li>
-                </ul>
+                 <p>
+                    I'm a junior full-stack developer, mainly focused on backend development. I enjoy building high-performance, scalable systems and have hands-on experience with Golang, Node.js, and Python. While backend is my strong suit, I've also worked with frontend technologies like React.js and Next.js. I’ve dabbled in AI too, doing some research and building simple models. I'm always eager to learn and grow through real-world projects.
+                </p>
+                <p>
+                    Moving forward, I aim to deepen my knowledge in system design, distributed systems, and AI integration – with the goal of building smart, efficient, and reliable software at scale.
+                </p>
             `,
             linkedIn: "www.linkedin.com/in/phu-lth",
             github: "https://github.com/lthphuw",
@@ -141,37 +184,48 @@ async function main(): Promise<void> {
                         language: "en",
                         field: "aboutMe",
                         value: `
-                       <p> I'm a junior full-stack developer, primarily focused on backend development. I enjoy building scalable, high-performance systems and have hands-on experience with Golang, Node.js, and Python. While my main focus is backend, I’ve also worked with frontend technologies like React.js and Next.js. I have experience in researching and developing AI models, and I'm always eager to learn and grow through real-world projects.</p>
-                        <p>In the future, I aim to deepen my expertise in system design, distributed systems, and AI integration — building reliable, efficient, and intelligent software at scale.</p>
-                    `,
+                          <p>
+                            I'm a junior full-stack developer, mainly focused on backend development. I enjoy building high-performance, scalable systems and have hands-on experience with Golang, Node.js, and Python. While backend is my strong suit, I've also worked with frontend technologies like React.js and Next.js. I’ve dabbled in AI too, doing some research and building simple models. I'm always eager to learn and grow through real-world projects.
+                          </p>
+                          <p>
+                            Moving forward, I aim to deepen my knowledge in system design, distributed systems, and AI integration – with the goal of building smart, efficient, and reliable software at scale.
+                          </p>
+                          
+                        `,
                     },
                     {
                         language: "vi",
                         field: "aboutMe",
                         value: `
-                    <p>
-                    Tôi là một lập trình viên full-stack (junior), chủ yếu tập trung vào phát triển backend. Tôi thích xây dựng các hệ thống hiệu suất cao, có khả năng mở rộng và có kinh nghiệm thực tế với Golang, Node.js và Python. Mặc dù trọng tâm chính là backend, tôi cũng đã làm việc với các công nghệ frontend như React.js và Next.js. Tôi có kinh nghiệm nghiên cứu và phát triển các mô hình AI, và luôn háo hức học hỏi và phát triển qua các dự án thực tế.
-                    </p> 
-                    <p>
-                    Trong tương lai, tôi hướng đến việc nâng cao chuyên môn trong thiết kế hệ thống, hệ thống phân tán và tích hợp AI — xây dựng phần mềm đáng tin cậy, hiệu quả và thông minh ở quy mô lớn.
-                    </p>
-                    `,
+                          <p>
+                            Mình là một lập trình viên full-stack (junior), chủ yếu tập trung vào backend. Mình thích xây dựng những hệ thống hiệu suất cao, dễ mở rộng, và đã có kinh nghiệm thực chiến với Golang, Node.js, và Python. Dù backend là sở trường, mình cũng đã làm việc với một số công nghệ frontend như React.js và Next.js. Ngoài ra, mình có chút kinh nghiệm với AI, từng nghiên cứu và phát triển vài mô hình đơn giản. Mình luôn háo hức học hỏi và phát triển thông qua các dự án thực tế.
+                          </p>
+                          <p>
+                            Trong tương lai, mình muốn đào sâu hơn về thiết kế hệ thống, hệ thống phân tán, và tích hợp AI – hướng tới việc xây dựng phần mềm thông minh, hiệu quả, và đáng tin cậy ở quy mô lớn.
+                          </p>
+                          
+                        `,
                     },
                     {
                         language: "fr",
                         field: "aboutMe",
                         value: `
-                       <p>Je suis un développeur full-stack junior, principalement axé sur le développement backend. J'aime construire des systèmes performants et évolutifs, avec une expérience pratique en Golang, Node.js et Python. Bien que mon focus principal soit le backend, j'ai également travaillé avec des technologies frontend comme React.js et Next.js. J'ai de l'expérience dans la recherche et le développement de modèles d'IA, et je suis toujours eager d'apprendre et de progresser à travers des projets concrets.</p>
-                       <p>À l'avenir, je vise à approfondir mon expertise en conception de systèmes, systèmes distribués et intégration d'IA — en construisant des logiciels fiables, efficaces et intelligents à grande échelle.</p>
-                    `,
-                    },
+                          <p>
+                            Je suis développeur full-stack junior, avec une préférence pour le backend. J'aime concevoir des systèmes performants et évolutifs, et j'ai de l'expérience pratique avec Golang, Node.js et Python. Même si le backend est mon domaine principal, j’ai aussi travaillé avec des technos frontend comme React.js et Next.js. J’ai également un peu touché à l’IA, en développant quelques modèles simples. J’aime apprendre en pratiquant, à travers des projets concrets.
+                          </p>
+                          <p>
+                            À l’avenir, je souhaite approfondir mes compétences en conception de systèmes, en systèmes distribués, et en intégration d’IA – pour créer des logiciels intelligents, fiables et efficaces à grande échelle.
+                          </p>
+                         
+                        `,
+                    }
                 ],
             },
         },
     })
+}
 
-
-    // Tạo banner image 3
+async function seedUserBannerImage(user: User) {
     await prisma.userBannerImage.create({
         data: {
             userId: user.id,
@@ -199,7 +253,6 @@ async function main(): Promise<void> {
         },
     });
 
-    // Tạo banner image 2
     await prisma.userBannerImage.create({
         data: {
             userId: user.id,
@@ -227,7 +280,6 @@ async function main(): Promise<void> {
         },
     });
 
-    // Tạo banner image 1
     await prisma.userBannerImage.create({
         data: {
             userId: user.id,
@@ -254,8 +306,9 @@ async function main(): Promise<void> {
             },
         },
     });
+}
 
-    // Seed education
+async function seedEducations(user: User) {
     await prisma.education.create({
         data: {
             userId: user.id,
@@ -670,7 +723,9 @@ async function main(): Promise<void> {
         },
     })
 
-    // Seed tech stacks
+}
+
+async function seedTechstacks(user: User) {
     const techStacks = [
         // Frameworks
         {
@@ -719,6 +774,12 @@ async function main(): Promise<void> {
         },
         {
             userId: user.id,
+            name: "Ant Design",
+            group: "Libraries",
+            logo: "/images/about/techstacks/antd.png",
+        },
+        {
+            userId: user.id,
             name: "Framer Motion",
             group: "Libraries",
             logo: "/images/about/techstacks/framer-motion.png",
@@ -729,7 +790,6 @@ async function main(): Promise<void> {
             group: "Libraries",
             logo: "/images/about/techstacks/react-bits.png",
         },
-
         // Programming Languages
         {
             userId: user.id,
@@ -777,279 +837,594 @@ async function main(): Promise<void> {
         },
     ]
 
-    await prisma.techStack.createMany({
+    return await prisma.techStack.createMany({
         data: techStacks.map((ts) => ({
             ...ts
         })),
         skipDuplicates: true,
     })
-
-    // // Seed translations for tech stacks
-    // for (const ts of techStacks) {
-    //     const techStack = await prisma.techStack.findFirst({
-    //         where: { name: ts.name },
-    //     })
-    //     if (techStack) {
-    //         await prisma.translation.createMany({
-    //             data: [
-    //                 {
-    //                     language: "en",
-    //                     field: `techStack.${ts.name}.name`,
-    //                     value: ts.name,
-    //                     techStackId: techStack.id,
-    //                 },
-    //                 {
-    //                     language: "vi",
-    //                     field: `techStack.${ts.name}.name`,
-    //                     value: ts.name,
-    //                     techStackId: techStack.id,
-    //                 },
-    //             ],
-    //             skipDuplicates: true,
-    //         })
-    //     }
-    // }
-
-    // // Seed technologies
-    // const technologies = [
-    //     { name: "React" },
-    //     { name: "Node.js" },
-    //     { name: "MongoDB" },
-    // ]
-
-    // await prisma.technology.createMany({
-    //     data: technologies.map((tech) => ({ name: tech.name })),
-    //     skipDuplicates: true,
-    // })
-
-    // // Seed translations for technologies
-    // for (const tech of technologies) {
-    //     const technology = await prisma.technology.findFirst({
-    //         where: { name: tech.name },
-    //     })
-    //     if (technology) {
-    //         await prisma.translation.createMany({
-    //             data: [
-    //                 {
-    //                     language: "en",
-    //                     field: `technology.${tech.name}.name`,
-    //                     value: tech.name,
-    //                     technologyId: technology.id,
-    //                 },
-    //                 {
-    //                     language: "vi",
-    //                     field: `technology.${tech.name}.name`,
-    //                     value: tech.name,
-    //                     technologyId: technology.id,
-    //                 },
-    //             ],
-    //             skipDuplicates: true,
-    //         })
-    //     }
-    // }
-
-    // Seed experience
-    // await prisma.experience.create({
-    //     data: {
-    //         userId: user.id,
-    //         company: "Tech Corp",
-    //         role: "Software Developer",
-    //         startDate: new Date("2022-07-01"),
-    //         endDate: new Date("2023-12-31"),
-    //         description:
-    //             "Developed web applications using modern JavaScript frameworks.",
-    //         translations: {
-    //             create: [
-    //                 { language: "en", field: "company", value: "Tech Corp" },
-    //                 { language: "vi", field: "company", value: "Công ty Tech" },
-    //                 { language: "en", field: "role", value: "Software Developer" },
-    //                 { language: "vi", field: "role", value: "Lập trình viên phần mềm" },
-    //                 {
-    //                     language: "en",
-    //                     field: "description",
-    //                     value:
-    //                         "Developed web applications using modern JavaScript frameworks.",
-    //                 },
-    //                 {
-    //                     language: "vi",
-    //                     field: "description",
-    //                     value:
-    //                         "Phát triển các ứng dụng web sử dụng các framework JavaScript hiện đại.",
-    //                 },
-    //             ],
-    //         },
-    //         technologies: {
-    //             create: [
-    //                 { technology: { connect: { name: "React" } } },
-    //                 { technology: { connect: { name: "Node.js" } } },
-    //             ],
-    //         },
-    //     },
-    // })
-
-    // // Seed project
-    // await prisma.project.create({
-    //     data: {
-    //         userId: user.id,
-    //         title: "Portfolio Website",
-    //         description: "My personal portfolio to showcase projects and skills.",
-    //         githubLink: "https://github.com/lthphuw/portfolio",
-    //         liveLink: "https://yourportfolio.com",
-    //         startDate: new Date("2023-01-01"),
-    //         endDate: new Date("2023-03-01"),
-    //         translations: {
-    //             create: [
-    //                 { language: "en", field: "title", value: "Portfolio Website" },
-    //                 { language: "vi", field: "title", value: "Trang Web Danh Mục" },
-    //                 {
-    //                     language: "en",
-    //                     field: "description",
-    //                     value: "My personal portfolio to showcase projects and skills.",
-    //                 },
-    //                 {
-    //                     language: "vi",
-    //                     field: "description",
-    //                     value:
-    //                         "Danh mục cá nhân của tôi để giới thiệu các dự án và kỹ năng.",
-    //                 },
-    //             ],
-    //         },
-    //         techStacks: {
-    //             create: [
-    //                 { techStack: { connect: { name: "React" } } },
-    //                 { techStack: { connect: { name: "Node.js" } } },
-    //             ],
-    //         },
-    //         images: {
-    //             create: [
-    //                 {
-    //                     url: "/images/portfolio-screenshot.jpg",
-    //                     translations: {
-    //                         create: [
-    //                             {
-    //                                 language: "en",
-    //                                 field: "caption",
-    //                                 value: "Portfolio screenshot",
-    //                             },
-    //                             {
-    //                                 language: "vi",
-    //                                 field: "caption",
-    //                                 value: "Ảnh chụp màn hình danh mục",
-    //                             },
-    //                         ],
-    //                     },
-    //                 },
-    //                 {
-    //                     url: "images/portfolio-screenshot2.jpg",
-    //                     translations: {
-    //                         create: [
-    //                             {
-    //                                 language: "en",
-    //                                 field: "caption",
-    //                                 value: "Portfolio screenshot 2",
-    //                             },
-    //                             {
-    //                                 language: "vi",
-    //                                 field: "caption",
-    //                                 value: "Ảnh chụp màn hình danh mục 2",
-    //                             },
-    //                         ],
-    //                     },
-    //                 },
-    //             ],
-    //         },
-    //     },
-    // })
-
-    // // Seed tags
-    // const tags = [
-    //     { name: "coding" },
-    //     { name: "web-development" },
-    //     { name: "open-source" },
-    // ]
-
-    // await prisma.tag.createMany({
-    //     data: tags.map((tag) => ({ name: tag.name })),
-    //     skipDuplicates: true,
-    // })
-
-    // // Seed translations for tags
-    // for (const tag of tags) {
-    //     const tagRecord = await prisma.tag.findFirst({ where: { name: tag.name } })
-    //     if (tagRecord) {
-    //         await prisma.translation.createMany({
-    //             data: [
-    //                 {
-    //                     language: "en",
-    //                     field: `tag.${tag.name}.name`,
-    //                     value:
-    //                         tag.name === "web-development" ? "web development" : tag.name,
-    //                     tagId: tagRecord.id,
-    //                 },
-    //                 {
-    //                     language: "vi",
-    //                     field: `tag.${tag.name}.name`,
-    //                     value:
-    //                         tag.name === "coding"
-    //                             ? "lập trình"
-    //                             : tag.name === "web-development"
-    //                                 ? "phát triển web"
-    //                                 : "mã nguồn mở",
-    //                     tagId: tagRecord.id,
-    //                 },
-    //             ],
-    //             skipDuplicates: true,
-    //         })
-    //     }
-    // }
-
-    // // Seed blog
-    // await prisma.blog.create({
-    //     data: {
-    //         userId: user.id,
-    //         title: "My First Blog Post",
-    //         content:
-    //             "This is the content of my first blog post about my journey as a developer.",
-    //         slug: "my-first-blog-post",
-    //         translations: {
-    //             create: [
-    //                 { language: "en", field: "title", value: "My First Blog Post" },
-    //                 {
-    //                     language: "vi",
-    //                     field: "title",
-    //                     value: "Bài Blog Đầu Tiên Của Tôi",
-    //                 },
-    //                 {
-    //                     language: "en",
-    //                     field: "content",
-    //                     value:
-    //                         "This is the content of my first blog post about my journey as a developer.",
-    //                 },
-    //                 {
-    //                     language: "vi",
-    //                     field: "content",
-    //                     value:
-    //                         "Đây là nội dung bài blog đầu tiên của tôi về hành trình làm lập trình viên.",
-    //                 },
-    //             ],
-    //         },
-    //         tags: {
-    //             create: [
-    //                 { tag: { connect: { name: "coding" } } },
-    //                 { tag: { connect: { name: "web-development" } } },
-    //             ],
-    //         },
-    //     },
-    // })
-
-    console.log("Seeding completed!")
 }
 
-main()
-    .catch((e: unknown) => {
-        console.error("Error seeding database:", e)
-        process.exit(1)
-    })
-    .finally(async () => {
-        await prisma.$disconnect()
-    })
+async function seedExperiences(user: User) {
+    // Lấy danh sách tech stack đã seed để liên kết
+    const techStacks = await prisma.techStack.findMany({
+        where: { userId: user.id },
+        select: { id: true, name: true },
+    });
+
+    // Tạo map để tra cứu tech stack ID theo tên
+    const techStackMap = new Map(techStacks.map((ts) => [ts.name, ts.id]));
+
+    const experiences = [
+        {
+            userId: user.id,
+            company: 'Amiras',
+            logoUrl: '/images/experiences/amiras.png',
+            location: 'Ho Chi Minh, Vietnam',
+            type: 'Full-time',
+            description: 'Worked as a Fullstack Developer, focusing on Loyalty system maintenance and feature development.',
+            roles: [
+                {
+                    title: 'Software Engineer - Junior',
+                    startDate: new Date('2024-03-01'),
+                    endDate: null,
+                    tasks: [
+                        'Writed reusable Go Package for HTTP Server & gRPC',
+                        'Writed Bi-directional End-to-End encryption plugin for client & server',
+                        'Writed translation service',
+                        'Integrated RESTful & GraphQL APIs.',
+                        'Optimized SSR, CSR, SSG, ISR.',
+                        'Developed frontend with Next.js.',
+                        'Optimized MongoDB queries.',
+                        'Used Redis for caching.',
+                        'Designed batch processing for scalability.',
+                    ],
+                },
+            ],
+            techStackNames: ['Go', 'Node.js', 'Gin', 'gRPC', 'React.js', 'Next.js', 'MongoDB', 'Redis', 'FastAPI'],
+            translations: [
+                { language: 'en', field: 'company', value: 'Amiras' },
+                { language: 'vi', field: 'company', value: 'Amiras' },
+                { language: 'fr', field: 'company', value: 'Amiras' },
+                {
+                    language: 'en',
+                    field: 'description',
+                    value: 'Worked as a Fullstack Developer, focusing on Loyalty system maintenance and feature development.',
+                },
+                {
+                    language: 'vi',
+                    field: 'description',
+                    value: 'Làm việc với vai trò Fullstack Developer, tập trung vào bảo trì và phát triển tính năng cho hệ thống Loyalty.',
+                },
+                {
+                    language: 'fr',
+                    field: 'description',
+                    value: 'Travaillé en tant que développeur Fullstack, axé sur la maintenance et le développement de fonctionnalités du système Loyalty.',
+                },
+                {
+                    language: 'en',
+                    field: 'role_title_Software Engineer - Junior',
+                    value: 'Software Engineer - Junior',
+                },
+                {
+                    language: 'vi',
+                    field: 'role_title_Software Engineer - Junior',
+                    value: 'Kỹ sư phần mềm - Junior',
+                },
+                {
+                    language: 'fr',
+                    field: 'role_title_Software Engineer - Junior',
+                    value: 'Ingénieur logiciel - Junior',
+                },
+                // Bản dịch cho tasks
+                ...[
+                    {
+                        language: 'en',
+                        field: 'task_Software Engineer - Junior_0',
+                        value: 'Wrote reusable Go package for HTTP Server & gRPC.',
+                    },
+                    {
+                        language: 'vi',
+                        field: 'task_Software Engineer - Junior_0',
+                        value: 'Viết package Go tái sử dụng cho HTTP Server & gRPC.',
+                    },
+                    {
+                        language: 'fr',
+                        field: 'task_Software Engineer - Junior_0',
+                        value: 'Développé un package Go réutilisable pour HTTP Server et gRPC.',
+                    },
+                    {
+                        language: 'en',
+                        field: 'task_Software Engineer - Junior_1',
+                        value: 'Wrote bi-directional end-to-end encryption plugin.',
+                    },
+                    {
+                        language: 'vi',
+                        field: 'task_Software Engineer - Junior_1',
+                        value: 'Viết plugin mã hóa hai chiều đầu cuối.',
+                    },
+                    {
+                        language: 'fr',
+                        field: 'task_Software Engineer - Junior_1',
+                        value: 'Développé un plugin de chiffrement bidirectionnel de bout en bout.',
+                    },
+                    {
+                        language: 'en',
+                        field: 'task_Software Engineer - Junior_2',
+                        value: 'Wrote translation service.',
+                    },
+                    {
+                        language: 'vi',
+                        field: 'task_Software Engineer - Junior_2',
+                        value: 'Viết dịch vụ dịch ngôn ngữ.',
+                    },
+                    {
+                        language: 'fr',
+                        field: 'task_Software Engineer - Junior_2',
+                        value: 'Développé un service de traduction.',
+                    },
+                    {
+                        language: 'en',
+                        field: 'task_Software Engineer - Junior_3',
+                        value: 'Integrated RESTful & GraphQL APIs.',
+                    },
+                    {
+                        language: 'vi',
+                        field: 'task_Software Engineer - Junior_3',
+                        value: 'Tích hợp API RESTful & GraphQL.',
+                    },
+                    {
+                        language: 'fr',
+                        field: 'task_Software Engineer - Junior_3',
+                        value: 'Intégration d’API RESTful et GraphQL.',
+                    },
+                    {
+                        language: 'en',
+                        field: 'task_Software Engineer - Junior_4',
+                        value: 'Optimized SSR, CSR, SSG, ISR.',
+                    },
+                    {
+                        language: 'vi',
+                        field: 'task_Software Engineer - Junior_4',
+                        value: 'Tối ưu hóa SSR, CSR, SSG, ISR.',
+                    },
+                    {
+                        language: 'fr',
+                        field: 'task_Software Engineer - Junior_4',
+                        value: 'Optimisation de SSR, CSR, SSG, ISR.',
+                    },
+                    {
+                        language: 'en',
+                        field: 'task_Software Engineer - Junior_5',
+                        value: 'Developed frontend with Next.js.',
+                    },
+                    {
+                        language: 'vi',
+                        field: 'task_Software Engineer - Junior_5',
+                        value: 'Phát triển frontend bằng Next.js.',
+                    },
+                    {
+                        language: 'fr',
+                        field: 'task_Software Engineer - Junior_5',
+                        value: 'Développement frontend avec Next.js.',
+                    },
+                    {
+                        language: 'en',
+                        field: 'task_Software Engineer - Junior_6',
+                        value: 'Optimized MongoDB queries.',
+                    },
+                    {
+                        language: 'vi',
+                        field: 'task_Software Engineer - Junior_6',
+                        value: 'Tối ưu hóa truy vấn MongoDB.',
+                    },
+                    {
+                        language: 'fr',
+                        field: 'task_Software Engineer - Junior_6',
+                        value: 'Optimisation des requêtes MongoDB.',
+                    },
+                    {
+                        language: 'en',
+                        field: 'task_Software Engineer - Junior_7',
+                        value: 'Used Redis for caching.',
+                    },
+                    {
+                        language: 'vi',
+                        field: 'task_Software Engineer - Junior_7',
+                        value: 'Sử dụng Redis để caching.',
+                    },
+                    {
+                        language: 'fr',
+                        field: 'task_Software Engineer - Junior_7',
+                        value: 'Utilisation de Redis pour la mise en cache.',
+                    },
+                    {
+                        language: 'en',
+                        field: 'task_Software Engineer - Junior_8',
+                        value: 'Designed batch processing for scalability.',
+                    },
+                    {
+                        language: 'vi',
+                        field: 'task_Software Engineer - Junior_8',
+                        value: 'Thiết kế xử lý hàng loạt để mở rộng.',
+                    },
+                    {
+                        language: 'fr',
+                        field: 'task_Software Engineer - Junior_8',
+                        value: 'Conception du traitement par lots pour l’évolutivité.',
+                    },
+                ],
+            ],
+        },
+        {
+            userId: user.id,
+            company: 'Smart Loyalty',
+            logoUrl: '/images/experiences/smart-loyalty.jpg',
+            location: 'Ho Chi Minh, Vietnam',
+            type: 'Full-time',
+            description: 'Developed React component library and Next.js apps with performance optimization.',
+            roles: [
+                {
+                    title: 'Software Engineer - Intern 2',
+                    startDate: new Date('2023-10-30'),
+                    endDate: new Date('2024-02-29'),
+                    tasks: [
+                        'Wrote cryptography Go package.',
+                        'Wrote Golang packages for Redis, MongoDB.',
+                        'Built notification service with gRPC.',
+                    ],
+                },
+                {
+                    title: 'Software Engineer - Intern 1',
+                    startDate: new Date('2023-08-01'),
+                    endDate: new Date('2023-10-30'),
+                    tasks: [
+                        'Built React component library.',
+                        'Developed Next.js apps with SSR, CSR, ISR.',
+                    ],
+                },
+            ],
+            techStackNames: ['React.js', 'Next.js', 'Go', 'MongoDB'],
+            translations: [
+                { language: 'en', field: 'company', value: 'Smart Loyalty' },
+                { language: 'vi', field: 'company', value: 'Smart Loyalty' },
+                { language: 'fr', field: 'company', value: 'Smart Loyalty' },
+                {
+                    language: 'en',
+                    field: 'description',
+                    value: 'Developed React component library and Next.js apps with performance optimization.',
+                },
+                {
+                    language: 'vi',
+                    field: 'description',
+                    value: 'Phát triển thư viện thành phần React và ứng dụng Next.js với tối ưu hóa hiệu suất.',
+                },
+                {
+                    language: 'fr',
+                    field: 'description',
+                    value: 'Développé une bibliothèque de composants React et des applications Next.js avec optimisation des performances.',
+                },
+                // Bản dịch cho role titles
+                {
+                    language: 'en',
+                    field: 'role_title_Software Engineer - Intern 2',
+                    value: 'Software Engineer - Intern 2',
+                },
+                {
+                    language: 'vi',
+                    field: 'role_title_Software Engineer - Intern 2',
+                    value: 'Kỹ sư phần mềm - Thực tập 2',
+                },
+                {
+                    language: 'fr',
+                    field: 'role_title_Software Engineer - Intern 2',
+                    value: 'Ingénieur logiciel - Stagiaire 2',
+                },
+                {
+                    language: 'en',
+                    field: 'role_title_Software Engineer - Intern 1',
+                    value: 'Software Engineer - Intern 1',
+                },
+                {
+                    language: 'vi',
+                    field: 'role_title_Software Engineer - Intern 1',
+                    value: 'Kỹ sư phần mềm - Thực tập 1',
+                },
+                {
+                    language: 'fr',
+                    field: 'role_title_Software Engineer - Intern 1',
+                    value: 'Ingénieur logiciel - Stagiaire 1',
+                },
+                // Bản dịch cho tasks của Software Engineer - Intern 2
+                ...[
+                    {
+                        language: 'en',
+                        field: 'task_Software Engineer - Intern 2_0',
+                        value: 'Wrote cryptography Go package.',
+                    },
+                    {
+                        language: 'vi',
+                        field: 'task_Software Engineer - Intern 2_0',
+                        value: 'Viết package Go cho mã hóa.',
+                    },
+                    {
+                        language: 'fr',
+                        field: 'task_Software Engineer - Intern 2_0',
+                        value: 'Développé un package Go pour le chiffrement.',
+                    },
+                    {
+                        language: 'en',
+                        field: 'task_Software Engineer - Intern 2_1',
+                        value: 'Wrote Golang packages for Redis, MongoDB.',
+                    },
+                    {
+                        language: 'vi',
+                        field: 'task_Software Engineer - Intern 2_1',
+                        value: 'Viết package Golang cho Redis, MongoDB.',
+                    },
+                    {
+                        language: 'fr',
+                        field: 'task_Software Engineer - Intern 2_1',
+                        value: 'Développé des packages Golang pour Redis et MongoDB.',
+                    },
+                    {
+                        language: 'en',
+                        field: 'task_Software Engineer - Intern 2_2',
+                        value: 'Built notification service with gRPC.',
+                    },
+                    {
+                        language: 'vi',
+                        field: 'task_Software Engineer - Intern 2_2',
+                        value: 'Xây dựng dịch vụ thông báo bằng gRPC.',
+                    },
+                    {
+                        language: 'fr',
+                        field: 'task_Software Engineer - Intern 2_2',
+                        value: 'Création d’un service de notification avec gRPC.',
+                    },
+                ],
+                // Bản dịch cho tasks của Software Engineer - Intern 1
+                ...[
+                    {
+                        language: 'en',
+                        field: 'task_Software Engineer - Intern 1_0',
+                        value: 'Built React component library.',
+                    },
+                    {
+                        language: 'vi',
+                        field: 'task_Software Engineer - Intern 1_0',
+                        value: 'Xây dựng thư viện React Components.',
+                    },
+                    {
+                        language: 'fr',
+                        field: 'task_Software Engineer - Intern 1_0',
+                        value: 'Création d’une bibliothèque de composants React.',
+                    },
+                    {
+                        language: 'en',
+                        field: 'task_Software Engineer - Intern 1_1',
+                        value: 'Developed Next.js apps with SSR, CSR, ISR.',
+                    },
+                    {
+                        language: 'vi',
+                        field: 'task_Software Engineer - Intern 1_1',
+                        value: 'Phát triển ứng dụng Next.js với SSR, CSR, ISR.',
+                    },
+                    {
+                        language: 'fr',
+                        field: 'task_Software Engineer - Intern 1_1',
+                        value: 'Développement d’applications Next.js avec SSR, CSR, ISR.',
+                    },
+                ],
+            ],
+        },
+    ];
+
+    // Tạo experiences
+    for (const exp of experiences) {
+        const createdExp = await prisma.experience.create({
+            data: {
+                userId: exp.userId,
+                company: exp.company,
+                logoUrl: exp.logoUrl,
+                location: exp.location,
+                type: exp.type,
+                description: exp.description,
+                roles: {
+                    create: exp.roles.map((role) => ({
+                        title: role.title,
+                        startDate: role.startDate,
+                        endDate: role.endDate,
+                    })),
+                },
+                techstacks: {
+                    create: exp.techStackNames.map((name) => ({
+                        techstackId: techStackMap.get(name)!,
+                    })),
+                },
+                translations: {
+                    create: exp.translations,
+                },
+            },
+        });
+
+        // Tạo tasks riêng cho mỗi role
+        for (const role of exp.roles) {
+            const createdRole = await prisma.experienceRole.findFirst({
+                where: { title: role.title, experienceId: createdExp.id },
+            });
+            if (createdRole) {
+                await prisma.task.createMany({
+                    data: role.tasks.map((task, idx) => ({
+                        experienceRoleId: createdRole.id,
+                        content: task,
+                    })),
+                });
+            }
+        }
+
+        console.log(`Created experience: ${createdExp.company}`);
+    }
+
+    return prisma.experience.findMany({
+        where: { userId: user.id },
+        include: {
+            roles: { include: { tasks: true } },
+            techstacks: { include: { techstack: true } },
+            translations: true,
+        },
+    });
+}
+
+async function seedTags(user: User) {
+    const tags = [
+        {
+            name: "defaults"
+        },
+        {
+            name: "struct-tag"
+        },
+        {
+            name: "logging"
+        },
+        {
+            name: "structured-logging"
+        },
+        {
+            name: "translator"
+        },
+        {
+            name: "service"
+        }
+    ];
+
+    for (const tag of tags) {
+        const createdTag = await prisma.tag.create({
+            data: {
+                name: tag.name
+            }
+        })
+    }
+}
+
+async function seedProjects(user: User) {
+    // Lấy danh sách tech stack đã seed để liên kết
+    const techStacks = await prisma.techStack.findMany({
+        where: { userId: user.id },
+        select: { id: true, name: true },
+    });
+
+    const tags = await prisma.tag.findMany({
+        select: { id: true, name: true },
+    });
+
+    // Tạo map để tra cứu tech stack ID theo tên
+    const techStackMap = new Map(techStacks.map((ts) => [ts.name, ts.id]));
+    const tagMap = new Map(tags.map((ts) => [ts.name, ts.id]));
+
+    const projects = [
+        {
+            userId: user.id,
+            title: 'go-defaults',
+            description: 'The defaults package simplifies the process of setting default values for struct fields in Go when they are unset (i.e., at their zero value or nil for pointers). Instead of manually checking each field for its zero value and assigning defaults, defaults uses struct tags to automatically parse and set default values, making your code cleaner and more maintainable.',
+            githubLink: 'https://github.com/lthphuw/go-defaults',
+            liveLink: '',
+            techStackNames: ['Go'],
+            tagNames: ['defaults', 'struct-tag'],
+            translations: [
+                {
+                    language: 'en',
+                    field: 'description',
+                    value: 'The defaults package simplifies the process of setting default values for struct fields in Go when they are unset (i.e., at their zero value or nil for pointers). Instead of manually checking each field for its zero value and assigning defaults, defaults uses struct tags to automatically parse and set default values, making your code cleaner and more maintainable.',
+                },
+                {
+                    language: 'vi',
+                    field: 'description',
+                    value: 'Gói defaults đơn giản hóa việc đặt giá trị mặc định cho các trường struct trong Go khi chúng chưa được thiết lập (tức là ở giá trị zero hoặc nil đối với con trỏ). Thay vì kiểm tra thủ công từng trường để tìm giá trị zero và gán giá trị mặc định, defaults sử dụng struct tags để tự động phân tích và đặt giá trị mặc định, giúp mã của bạn gọn gàng và dễ bảo trì hơn.',
+                },
+                {
+                    language: 'fr',
+                    field: 'description',
+                    value: 'Le package defaults simplifie le processus de définition des valeurs par défaut pour les champs de struct dans Go lorsqu’ils ne sont pas définis (c’est-à-dire à leur valeur zéro ou nil pour les pointeurs). Au lieu de vérifier manuellement chaque champ pour sa valeur zéro et d’assigner des valeurs par défaut, defaults utilise des struct tags pour analyser et définir automatiquement les valeurs par défaut, rendant votre code plus propre et plus facile à maintenir.',
+                },
+            ],
+        },
+        {
+            userId: user.id,
+            title: 'plogger',
+            description: 'A lightweight logger for Go with structured output and pluggable formatter/writer.',
+            githubLink: 'https://github.com/lthphuw/plogger',
+            liveLink: '',
+            techStackNames: ['Go'],
+            tagNames: ['logging', 'structured-logging'],
+            translations: [
+                {
+                    language: 'en',
+                    field: 'description',
+                    value: 'A lightweight logger for Go with structured output and pluggable formatter/writer.',
+                },
+                {
+                    language: 'vi',
+                    field: 'description',
+                    value: 'Một logger nhẹ cho Go với đầu ra có cấu trúc và formatter/writer có thể cắm thêm.',
+                },
+                {
+                    language: 'fr',
+                    field: 'description',
+                    value: 'Un logger léger pour Go avec une sortie structurée et un formatter/writer enfichable.',
+                },
+            ],
+        },
+        {
+            userId: user.id,
+            title: 'Translator as a Service',
+            description: 'A lightweight API for translating between English, Vietnamese, and French using pretrained models. Supports auto language detection and can be easily extended to other language pairs.',
+            githubLink: 'https://github.com/lthphuw/translator-as-service',
+            liveLink: '',
+            techStackNames: ['Python'],
+            tagNames: ['translator', 'service'],
+            translations: [
+                {
+                    language: 'en',
+                    field: 'description',
+                    value: 'A lightweight API for translating between English, Vietnamese, and French using pretrained models. Supports auto language detection and can be easily extended to other language pairs.',
+                },
+                {
+                    language: 'vi',
+                    field: 'description',
+                    value: 'Một API nhẹ để dịch giữa tiếng Anh, tiếng Việt và tiếng Pháp bằng các mô hình pretrained. Hỗ trợ phát hiện ngôn ngữ tự động và có thể dễ dàng mở rộng sang các cặp ngôn ngữ khác.',
+                },
+                {
+                    language: 'fr',
+                    field: 'description',
+                    value: 'Une API légère pour traduire entre l’anglais, le vietnamien et le français à l’aide de modèles pretrained. Prend en charge la détection automatique de la langue et peut être facilement étendue à d’autres paires de langues.',
+                },
+            ],
+        }
+    ]
+
+    for (const proj of projects) {
+        const createdProj = await prisma.project.create({
+            data: {
+                userId: proj.userId,
+                title: proj.title,
+                description: proj.description,
+                githubLink: proj.githubLink,
+                liveLink: proj.liveLink,
+                techstacks: {
+                    create: proj.techStackNames.map((name) => ({
+                        techstackId: techStackMap.get(name)!,
+                    })),
+                },
+                tags: {
+                    create: proj.tagNames.map((name) => ({
+                        tagId: tagMap.get(name)!,
+                    })),
+                },
+                translations: {
+                    create: proj.translations,
+                },
+            },
+        });
+    }
+}

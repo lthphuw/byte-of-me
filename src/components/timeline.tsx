@@ -66,7 +66,7 @@ export function TimelineItem({
                         {icon}
                         <span>{title}</span>
                     </h3>
-                    <p className="mt-1 text-xs md:text-sm italic">{message}</p>
+                    <div className="mt-1 text-xs md:text-sm italic">{message}</div>
 
                     {avatarImg && (
                         <button

@@ -8,7 +8,9 @@ const nextConfig = {
   images: {
     remotePatterns: [],
   },
-  experimental: {},
+  experimental: {
+    webpackMemoryOptimizations: true,
+  },
   serverExternalPackages: ['@prisma/client'],
   logging: {
     fetches: {

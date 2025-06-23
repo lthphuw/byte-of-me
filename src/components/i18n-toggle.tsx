@@ -81,9 +81,6 @@ export function I18NToggle({ liquidGlassDisabled = false }: I18NToggleProps) {
       <LiquidGlass
         variant="button-icon"
         intensity="medium"
-        rippleEffect
-        flowOnHover
-        stretchOnDrag
         disabled={liquidGlassDisabled}
         className="bg-transparent"
       >
@@ -127,14 +124,13 @@ export function I18NToggle({ liquidGlassDisabled = false }: I18NToggleProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ type: "spring", stiffness: 130, damping: 10 }}
+                className="overflow-visible"
               >
                 <LiquidGlass
                   variant="panel"
                   intensity="strong"
-                  rippleEffect={false}
-                  flowOnHover={true}
-                  stretchOnDrag={false}
-                  className="mt-0 min-w-[160px] rounded-md border-none p-1 text-sm shadow-2xl hover:border-none hover:shadow-2xl"
+                  disableStretch
+                  className="overflow-hidden mt-0 min-w-[160px] rounded-md border-none p-1 text-sm shadow-2xl hover:border-none hover:shadow-2xl"
                 >
                   {supportedLanguages.map((lang, index) => {
                     const Flag = Flags[lang];

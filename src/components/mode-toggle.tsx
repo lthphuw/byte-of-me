@@ -63,16 +63,13 @@ export function ModeToggle({ liquidGlassDisabled }: ModeToggleProps) {
     }),
     exit: { opacity: 0, y: 10 },
   }
-  
+
 
   return (
     <motion.div layout style={{ position: "relative" }}>
       <LiquidGlass
         variant="button-icon"
         intensity="medium"
-        rippleEffect
-        flowOnHover
-        stretchOnDrag
         disabled={liquidGlassDisabled}
         className="bg-transparent"
       >
@@ -109,9 +106,7 @@ export function ModeToggle({ liquidGlassDisabled }: ModeToggleProps) {
                 <LiquidGlass
                   variant="panel"
                   intensity="strong"
-                  rippleEffect
-                  flowOnHover
-                  stretchOnDrag={false}
+                  disableStretch
                   className="mt-0 box-border min-w-[140px] rounded-md border-none p-1 text-sm shadow-2xl hover:border-none hover:shadow-2xl"
                 >
                   {[

@@ -221,8 +221,9 @@ export type ProjectWhereInput = {
   endDate?: Prisma.DateTimeNullableFilter<"Project"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
-  images?: Prisma.ProjectImageListRelationFilter
-  techStacks?: Prisma.ProjectTechStackListRelationFilter
+  techstacks?: Prisma.TechStackOnProjectsListRelationFilter
+  tags?: Prisma.TagsOnProjectsListRelationFilter
+  articles?: Prisma.BlogListRelationFilter
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   translations?: Prisma.TranslationListRelationFilter
 }
@@ -238,8 +239,9 @@ export type ProjectOrderByWithRelationInput = {
   endDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  images?: Prisma.ProjectImageOrderByRelationAggregateInput
-  techStacks?: Prisma.ProjectTechStackOrderByRelationAggregateInput
+  techstacks?: Prisma.TechStackOnProjectsOrderByRelationAggregateInput
+  tags?: Prisma.TagsOnProjectsOrderByRelationAggregateInput
+  articles?: Prisma.BlogOrderByRelationAggregateInput
   user?: Prisma.UserOrderByWithRelationInput
   translations?: Prisma.TranslationOrderByRelationAggregateInput
   _relevance?: Prisma.ProjectOrderByRelevanceInput
@@ -259,8 +261,9 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   endDate?: Prisma.DateTimeNullableFilter<"Project"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
-  images?: Prisma.ProjectImageListRelationFilter
-  techStacks?: Prisma.ProjectTechStackListRelationFilter
+  techstacks?: Prisma.TechStackOnProjectsListRelationFilter
+  tags?: Prisma.TagsOnProjectsListRelationFilter
+  articles?: Prisma.BlogListRelationFilter
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   translations?: Prisma.TranslationListRelationFilter
 }, "id">
@@ -307,8 +310,9 @@ export type ProjectCreateInput = {
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  images?: Prisma.ProjectImageCreateNestedManyWithoutProjectInput
-  techStacks?: Prisma.ProjectTechStackCreateNestedManyWithoutProjectInput
+  techstacks?: Prisma.TechStackOnProjectsCreateNestedManyWithoutProjectInput
+  tags?: Prisma.TagsOnProjectsCreateNestedManyWithoutProjectInput
+  articles?: Prisma.BlogCreateNestedManyWithoutProjectInput
   user: Prisma.UserCreateNestedOneWithoutProjectsInput
   translations?: Prisma.TranslationCreateNestedManyWithoutProjectInput
 }
@@ -324,8 +328,9 @@ export type ProjectUncheckedCreateInput = {
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  images?: Prisma.ProjectImageUncheckedCreateNestedManyWithoutProjectInput
-  techStacks?: Prisma.ProjectTechStackUncheckedCreateNestedManyWithoutProjectInput
+  techstacks?: Prisma.TechStackOnProjectsUncheckedCreateNestedManyWithoutProjectInput
+  tags?: Prisma.TagsOnProjectsUncheckedCreateNestedManyWithoutProjectInput
+  articles?: Prisma.BlogUncheckedCreateNestedManyWithoutProjectInput
   translations?: Prisma.TranslationUncheckedCreateNestedManyWithoutProjectInput
 }
 
@@ -339,8 +344,9 @@ export type ProjectUpdateInput = {
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  images?: Prisma.ProjectImageUpdateManyWithoutProjectNestedInput
-  techStacks?: Prisma.ProjectTechStackUpdateManyWithoutProjectNestedInput
+  techstacks?: Prisma.TechStackOnProjectsUpdateManyWithoutProjectNestedInput
+  tags?: Prisma.TagsOnProjectsUpdateManyWithoutProjectNestedInput
+  articles?: Prisma.BlogUpdateManyWithoutProjectNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
   translations?: Prisma.TranslationUpdateManyWithoutProjectNestedInput
 }
@@ -356,8 +362,9 @@ export type ProjectUncheckedUpdateInput = {
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  images?: Prisma.ProjectImageUncheckedUpdateManyWithoutProjectNestedInput
-  techStacks?: Prisma.ProjectTechStackUncheckedUpdateManyWithoutProjectNestedInput
+  techstacks?: Prisma.TechStackOnProjectsUncheckedUpdateManyWithoutProjectNestedInput
+  tags?: Prisma.TagsOnProjectsUncheckedUpdateManyWithoutProjectNestedInput
+  articles?: Prisma.BlogUncheckedUpdateManyWithoutProjectNestedInput
   translations?: Prisma.TranslationUncheckedUpdateManyWithoutProjectNestedInput
 }
 
@@ -506,32 +513,48 @@ export type ProjectUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.ProjectScalarWhereInput | Prisma.ProjectScalarWhereInput[]
 }
 
-export type ProjectCreateNestedOneWithoutTechStacksInput = {
-  create?: Prisma.XOR<Prisma.ProjectCreateWithoutTechStacksInput, Prisma.ProjectUncheckedCreateWithoutTechStacksInput>
-  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutTechStacksInput
+export type ProjectCreateNestedOneWithoutTechstacksInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutTechstacksInput, Prisma.ProjectUncheckedCreateWithoutTechstacksInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutTechstacksInput
   connect?: Prisma.ProjectWhereUniqueInput
 }
 
-export type ProjectUpdateOneRequiredWithoutTechStacksNestedInput = {
-  create?: Prisma.XOR<Prisma.ProjectCreateWithoutTechStacksInput, Prisma.ProjectUncheckedCreateWithoutTechStacksInput>
-  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutTechStacksInput
-  upsert?: Prisma.ProjectUpsertWithoutTechStacksInput
+export type ProjectUpdateOneRequiredWithoutTechstacksNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutTechstacksInput, Prisma.ProjectUncheckedCreateWithoutTechstacksInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutTechstacksInput
+  upsert?: Prisma.ProjectUpsertWithoutTechstacksInput
   connect?: Prisma.ProjectWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutTechStacksInput, Prisma.ProjectUpdateWithoutTechStacksInput>, Prisma.ProjectUncheckedUpdateWithoutTechStacksInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutTechstacksInput, Prisma.ProjectUpdateWithoutTechstacksInput>, Prisma.ProjectUncheckedUpdateWithoutTechstacksInput>
 }
 
-export type ProjectCreateNestedOneWithoutImagesInput = {
-  create?: Prisma.XOR<Prisma.ProjectCreateWithoutImagesInput, Prisma.ProjectUncheckedCreateWithoutImagesInput>
-  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutImagesInput
+export type ProjectCreateNestedOneWithoutTagsInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutTagsInput, Prisma.ProjectUncheckedCreateWithoutTagsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutTagsInput
   connect?: Prisma.ProjectWhereUniqueInput
 }
 
-export type ProjectUpdateOneRequiredWithoutImagesNestedInput = {
-  create?: Prisma.XOR<Prisma.ProjectCreateWithoutImagesInput, Prisma.ProjectUncheckedCreateWithoutImagesInput>
-  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutImagesInput
-  upsert?: Prisma.ProjectUpsertWithoutImagesInput
+export type ProjectUpdateOneRequiredWithoutTagsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutTagsInput, Prisma.ProjectUncheckedCreateWithoutTagsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutTagsInput
+  upsert?: Prisma.ProjectUpsertWithoutTagsInput
   connect?: Prisma.ProjectWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutImagesInput, Prisma.ProjectUpdateWithoutImagesInput>, Prisma.ProjectUncheckedUpdateWithoutImagesInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutTagsInput, Prisma.ProjectUpdateWithoutTagsInput>, Prisma.ProjectUncheckedUpdateWithoutTagsInput>
+}
+
+export type ProjectCreateNestedOneWithoutArticlesInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutArticlesInput, Prisma.ProjectUncheckedCreateWithoutArticlesInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutArticlesInput
+  connect?: Prisma.ProjectWhereUniqueInput
+}
+
+export type ProjectUpdateOneWithoutArticlesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutArticlesInput, Prisma.ProjectUncheckedCreateWithoutArticlesInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutArticlesInput
+  upsert?: Prisma.ProjectUpsertWithoutArticlesInput
+  disconnect?: Prisma.ProjectWhereInput | boolean
+  delete?: Prisma.ProjectWhereInput | boolean
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutArticlesInput, Prisma.ProjectUpdateWithoutArticlesInput>, Prisma.ProjectUncheckedUpdateWithoutArticlesInput>
 }
 
 export type ProjectCreateNestedOneWithoutTranslationsInput = {
@@ -560,8 +583,9 @@ export type ProjectCreateWithoutUserInput = {
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  images?: Prisma.ProjectImageCreateNestedManyWithoutProjectInput
-  techStacks?: Prisma.ProjectTechStackCreateNestedManyWithoutProjectInput
+  techstacks?: Prisma.TechStackOnProjectsCreateNestedManyWithoutProjectInput
+  tags?: Prisma.TagsOnProjectsCreateNestedManyWithoutProjectInput
+  articles?: Prisma.BlogCreateNestedManyWithoutProjectInput
   translations?: Prisma.TranslationCreateNestedManyWithoutProjectInput
 }
 
@@ -575,8 +599,9 @@ export type ProjectUncheckedCreateWithoutUserInput = {
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  images?: Prisma.ProjectImageUncheckedCreateNestedManyWithoutProjectInput
-  techStacks?: Prisma.ProjectTechStackUncheckedCreateNestedManyWithoutProjectInput
+  techstacks?: Prisma.TechStackOnProjectsUncheckedCreateNestedManyWithoutProjectInput
+  tags?: Prisma.TagsOnProjectsUncheckedCreateNestedManyWithoutProjectInput
+  articles?: Prisma.BlogUncheckedCreateNestedManyWithoutProjectInput
   translations?: Prisma.TranslationUncheckedCreateNestedManyWithoutProjectInput
 }
 
@@ -622,7 +647,7 @@ export type ProjectScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
 }
 
-export type ProjectCreateWithoutTechStacksInput = {
+export type ProjectCreateWithoutTechstacksInput = {
   id?: string
   title: string
   description?: string | null
@@ -632,12 +657,13 @@ export type ProjectCreateWithoutTechStacksInput = {
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  images?: Prisma.ProjectImageCreateNestedManyWithoutProjectInput
+  tags?: Prisma.TagsOnProjectsCreateNestedManyWithoutProjectInput
+  articles?: Prisma.BlogCreateNestedManyWithoutProjectInput
   user: Prisma.UserCreateNestedOneWithoutProjectsInput
   translations?: Prisma.TranslationCreateNestedManyWithoutProjectInput
 }
 
-export type ProjectUncheckedCreateWithoutTechStacksInput = {
+export type ProjectUncheckedCreateWithoutTechstacksInput = {
   id?: string
   userId: string
   title: string
@@ -648,27 +674,28 @@ export type ProjectUncheckedCreateWithoutTechStacksInput = {
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  images?: Prisma.ProjectImageUncheckedCreateNestedManyWithoutProjectInput
+  tags?: Prisma.TagsOnProjectsUncheckedCreateNestedManyWithoutProjectInput
+  articles?: Prisma.BlogUncheckedCreateNestedManyWithoutProjectInput
   translations?: Prisma.TranslationUncheckedCreateNestedManyWithoutProjectInput
 }
 
-export type ProjectCreateOrConnectWithoutTechStacksInput = {
+export type ProjectCreateOrConnectWithoutTechstacksInput = {
   where: Prisma.ProjectWhereUniqueInput
-  create: Prisma.XOR<Prisma.ProjectCreateWithoutTechStacksInput, Prisma.ProjectUncheckedCreateWithoutTechStacksInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutTechstacksInput, Prisma.ProjectUncheckedCreateWithoutTechstacksInput>
 }
 
-export type ProjectUpsertWithoutTechStacksInput = {
-  update: Prisma.XOR<Prisma.ProjectUpdateWithoutTechStacksInput, Prisma.ProjectUncheckedUpdateWithoutTechStacksInput>
-  create: Prisma.XOR<Prisma.ProjectCreateWithoutTechStacksInput, Prisma.ProjectUncheckedCreateWithoutTechStacksInput>
+export type ProjectUpsertWithoutTechstacksInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutTechstacksInput, Prisma.ProjectUncheckedUpdateWithoutTechstacksInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutTechstacksInput, Prisma.ProjectUncheckedCreateWithoutTechstacksInput>
   where?: Prisma.ProjectWhereInput
 }
 
-export type ProjectUpdateToOneWithWhereWithoutTechStacksInput = {
+export type ProjectUpdateToOneWithWhereWithoutTechstacksInput = {
   where?: Prisma.ProjectWhereInput
-  data: Prisma.XOR<Prisma.ProjectUpdateWithoutTechStacksInput, Prisma.ProjectUncheckedUpdateWithoutTechStacksInput>
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutTechstacksInput, Prisma.ProjectUncheckedUpdateWithoutTechstacksInput>
 }
 
-export type ProjectUpdateWithoutTechStacksInput = {
+export type ProjectUpdateWithoutTechstacksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -678,12 +705,13 @@ export type ProjectUpdateWithoutTechStacksInput = {
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  images?: Prisma.ProjectImageUpdateManyWithoutProjectNestedInput
+  tags?: Prisma.TagsOnProjectsUpdateManyWithoutProjectNestedInput
+  articles?: Prisma.BlogUpdateManyWithoutProjectNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
   translations?: Prisma.TranslationUpdateManyWithoutProjectNestedInput
 }
 
-export type ProjectUncheckedUpdateWithoutTechStacksInput = {
+export type ProjectUncheckedUpdateWithoutTechstacksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -694,11 +722,12 @@ export type ProjectUncheckedUpdateWithoutTechStacksInput = {
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  images?: Prisma.ProjectImageUncheckedUpdateManyWithoutProjectNestedInput
+  tags?: Prisma.TagsOnProjectsUncheckedUpdateManyWithoutProjectNestedInput
+  articles?: Prisma.BlogUncheckedUpdateManyWithoutProjectNestedInput
   translations?: Prisma.TranslationUncheckedUpdateManyWithoutProjectNestedInput
 }
 
-export type ProjectCreateWithoutImagesInput = {
+export type ProjectCreateWithoutTagsInput = {
   id?: string
   title: string
   description?: string | null
@@ -708,12 +737,13 @@ export type ProjectCreateWithoutImagesInput = {
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  techStacks?: Prisma.ProjectTechStackCreateNestedManyWithoutProjectInput
+  techstacks?: Prisma.TechStackOnProjectsCreateNestedManyWithoutProjectInput
+  articles?: Prisma.BlogCreateNestedManyWithoutProjectInput
   user: Prisma.UserCreateNestedOneWithoutProjectsInput
   translations?: Prisma.TranslationCreateNestedManyWithoutProjectInput
 }
 
-export type ProjectUncheckedCreateWithoutImagesInput = {
+export type ProjectUncheckedCreateWithoutTagsInput = {
   id?: string
   userId: string
   title: string
@@ -724,27 +754,28 @@ export type ProjectUncheckedCreateWithoutImagesInput = {
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  techStacks?: Prisma.ProjectTechStackUncheckedCreateNestedManyWithoutProjectInput
+  techstacks?: Prisma.TechStackOnProjectsUncheckedCreateNestedManyWithoutProjectInput
+  articles?: Prisma.BlogUncheckedCreateNestedManyWithoutProjectInput
   translations?: Prisma.TranslationUncheckedCreateNestedManyWithoutProjectInput
 }
 
-export type ProjectCreateOrConnectWithoutImagesInput = {
+export type ProjectCreateOrConnectWithoutTagsInput = {
   where: Prisma.ProjectWhereUniqueInput
-  create: Prisma.XOR<Prisma.ProjectCreateWithoutImagesInput, Prisma.ProjectUncheckedCreateWithoutImagesInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutTagsInput, Prisma.ProjectUncheckedCreateWithoutTagsInput>
 }
 
-export type ProjectUpsertWithoutImagesInput = {
-  update: Prisma.XOR<Prisma.ProjectUpdateWithoutImagesInput, Prisma.ProjectUncheckedUpdateWithoutImagesInput>
-  create: Prisma.XOR<Prisma.ProjectCreateWithoutImagesInput, Prisma.ProjectUncheckedCreateWithoutImagesInput>
+export type ProjectUpsertWithoutTagsInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutTagsInput, Prisma.ProjectUncheckedUpdateWithoutTagsInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutTagsInput, Prisma.ProjectUncheckedCreateWithoutTagsInput>
   where?: Prisma.ProjectWhereInput
 }
 
-export type ProjectUpdateToOneWithWhereWithoutImagesInput = {
+export type ProjectUpdateToOneWithWhereWithoutTagsInput = {
   where?: Prisma.ProjectWhereInput
-  data: Prisma.XOR<Prisma.ProjectUpdateWithoutImagesInput, Prisma.ProjectUncheckedUpdateWithoutImagesInput>
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutTagsInput, Prisma.ProjectUncheckedUpdateWithoutTagsInput>
 }
 
-export type ProjectUpdateWithoutImagesInput = {
+export type ProjectUpdateWithoutTagsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -754,12 +785,13 @@ export type ProjectUpdateWithoutImagesInput = {
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  techStacks?: Prisma.ProjectTechStackUpdateManyWithoutProjectNestedInput
+  techstacks?: Prisma.TechStackOnProjectsUpdateManyWithoutProjectNestedInput
+  articles?: Prisma.BlogUpdateManyWithoutProjectNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
   translations?: Prisma.TranslationUpdateManyWithoutProjectNestedInput
 }
 
-export type ProjectUncheckedUpdateWithoutImagesInput = {
+export type ProjectUncheckedUpdateWithoutTagsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
@@ -770,7 +802,88 @@ export type ProjectUncheckedUpdateWithoutImagesInput = {
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  techStacks?: Prisma.ProjectTechStackUncheckedUpdateManyWithoutProjectNestedInput
+  techstacks?: Prisma.TechStackOnProjectsUncheckedUpdateManyWithoutProjectNestedInput
+  articles?: Prisma.BlogUncheckedUpdateManyWithoutProjectNestedInput
+  translations?: Prisma.TranslationUncheckedUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectCreateWithoutArticlesInput = {
+  id?: string
+  title: string
+  description?: string | null
+  githubLink?: string | null
+  liveLink?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  techstacks?: Prisma.TechStackOnProjectsCreateNestedManyWithoutProjectInput
+  tags?: Prisma.TagsOnProjectsCreateNestedManyWithoutProjectInput
+  user: Prisma.UserCreateNestedOneWithoutProjectsInput
+  translations?: Prisma.TranslationCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutArticlesInput = {
+  id?: string
+  userId: string
+  title: string
+  description?: string | null
+  githubLink?: string | null
+  liveLink?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  techstacks?: Prisma.TechStackOnProjectsUncheckedCreateNestedManyWithoutProjectInput
+  tags?: Prisma.TagsOnProjectsUncheckedCreateNestedManyWithoutProjectInput
+  translations?: Prisma.TranslationUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutArticlesInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutArticlesInput, Prisma.ProjectUncheckedCreateWithoutArticlesInput>
+}
+
+export type ProjectUpsertWithoutArticlesInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutArticlesInput, Prisma.ProjectUncheckedUpdateWithoutArticlesInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutArticlesInput, Prisma.ProjectUncheckedCreateWithoutArticlesInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutArticlesInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutArticlesInput, Prisma.ProjectUncheckedUpdateWithoutArticlesInput>
+}
+
+export type ProjectUpdateWithoutArticlesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  liveLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  techstacks?: Prisma.TechStackOnProjectsUpdateManyWithoutProjectNestedInput
+  tags?: Prisma.TagsOnProjectsUpdateManyWithoutProjectNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
+  translations?: Prisma.TranslationUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutArticlesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  liveLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  techstacks?: Prisma.TechStackOnProjectsUncheckedUpdateManyWithoutProjectNestedInput
+  tags?: Prisma.TagsOnProjectsUncheckedUpdateManyWithoutProjectNestedInput
   translations?: Prisma.TranslationUncheckedUpdateManyWithoutProjectNestedInput
 }
 
@@ -784,8 +897,9 @@ export type ProjectCreateWithoutTranslationsInput = {
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  images?: Prisma.ProjectImageCreateNestedManyWithoutProjectInput
-  techStacks?: Prisma.ProjectTechStackCreateNestedManyWithoutProjectInput
+  techstacks?: Prisma.TechStackOnProjectsCreateNestedManyWithoutProjectInput
+  tags?: Prisma.TagsOnProjectsCreateNestedManyWithoutProjectInput
+  articles?: Prisma.BlogCreateNestedManyWithoutProjectInput
   user: Prisma.UserCreateNestedOneWithoutProjectsInput
 }
 
@@ -800,8 +914,9 @@ export type ProjectUncheckedCreateWithoutTranslationsInput = {
   endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  images?: Prisma.ProjectImageUncheckedCreateNestedManyWithoutProjectInput
-  techStacks?: Prisma.ProjectTechStackUncheckedCreateNestedManyWithoutProjectInput
+  techstacks?: Prisma.TechStackOnProjectsUncheckedCreateNestedManyWithoutProjectInput
+  tags?: Prisma.TagsOnProjectsUncheckedCreateNestedManyWithoutProjectInput
+  articles?: Prisma.BlogUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutTranslationsInput = {
@@ -830,8 +945,9 @@ export type ProjectUpdateWithoutTranslationsInput = {
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  images?: Prisma.ProjectImageUpdateManyWithoutProjectNestedInput
-  techStacks?: Prisma.ProjectTechStackUpdateManyWithoutProjectNestedInput
+  techstacks?: Prisma.TechStackOnProjectsUpdateManyWithoutProjectNestedInput
+  tags?: Prisma.TagsOnProjectsUpdateManyWithoutProjectNestedInput
+  articles?: Prisma.BlogUpdateManyWithoutProjectNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
 }
 
@@ -846,8 +962,9 @@ export type ProjectUncheckedUpdateWithoutTranslationsInput = {
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  images?: Prisma.ProjectImageUncheckedUpdateManyWithoutProjectNestedInput
-  techStacks?: Prisma.ProjectTechStackUncheckedUpdateManyWithoutProjectNestedInput
+  techstacks?: Prisma.TechStackOnProjectsUncheckedUpdateManyWithoutProjectNestedInput
+  tags?: Prisma.TagsOnProjectsUncheckedUpdateManyWithoutProjectNestedInput
+  articles?: Prisma.BlogUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyUserInput = {
@@ -872,8 +989,9 @@ export type ProjectUpdateWithoutUserInput = {
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  images?: Prisma.ProjectImageUpdateManyWithoutProjectNestedInput
-  techStacks?: Prisma.ProjectTechStackUpdateManyWithoutProjectNestedInput
+  techstacks?: Prisma.TechStackOnProjectsUpdateManyWithoutProjectNestedInput
+  tags?: Prisma.TagsOnProjectsUpdateManyWithoutProjectNestedInput
+  articles?: Prisma.BlogUpdateManyWithoutProjectNestedInput
   translations?: Prisma.TranslationUpdateManyWithoutProjectNestedInput
 }
 
@@ -887,8 +1005,9 @@ export type ProjectUncheckedUpdateWithoutUserInput = {
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  images?: Prisma.ProjectImageUncheckedUpdateManyWithoutProjectNestedInput
-  techStacks?: Prisma.ProjectTechStackUncheckedUpdateManyWithoutProjectNestedInput
+  techstacks?: Prisma.TechStackOnProjectsUncheckedUpdateManyWithoutProjectNestedInput
+  tags?: Prisma.TagsOnProjectsUncheckedUpdateManyWithoutProjectNestedInput
+  articles?: Prisma.BlogUncheckedUpdateManyWithoutProjectNestedInput
   translations?: Prisma.TranslationUncheckedUpdateManyWithoutProjectNestedInput
 }
 
@@ -910,14 +1029,16 @@ export type ProjectUncheckedUpdateManyWithoutUserInput = {
  */
 
 export type ProjectCountOutputType = {
-  images: number
-  techStacks: number
+  techstacks: number
+  tags: number
+  articles: number
   translations: number
 }
 
 export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  images?: boolean | ProjectCountOutputTypeCountImagesArgs
-  techStacks?: boolean | ProjectCountOutputTypeCountTechStacksArgs
+  techstacks?: boolean | ProjectCountOutputTypeCountTechstacksArgs
+  tags?: boolean | ProjectCountOutputTypeCountTagsArgs
+  articles?: boolean | ProjectCountOutputTypeCountArticlesArgs
   translations?: boolean | ProjectCountOutputTypeCountTranslationsArgs
 }
 
@@ -934,15 +1055,22 @@ export type ProjectCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
 /**
  * ProjectCountOutputType without action
  */
-export type ProjectCountOutputTypeCountImagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ProjectImageWhereInput
+export type ProjectCountOutputTypeCountTechstacksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TechStackOnProjectsWhereInput
 }
 
 /**
  * ProjectCountOutputType without action
  */
-export type ProjectCountOutputTypeCountTechStacksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ProjectTechStackWhereInput
+export type ProjectCountOutputTypeCountTagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TagsOnProjectsWhereInput
+}
+
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeCountArticlesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BlogWhereInput
 }
 
 /**
@@ -964,8 +1092,9 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   endDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  images?: boolean | Prisma.Project$imagesArgs<ExtArgs>
-  techStacks?: boolean | Prisma.Project$techStacksArgs<ExtArgs>
+  techstacks?: boolean | Prisma.Project$techstacksArgs<ExtArgs>
+  tags?: boolean | Prisma.Project$tagsArgs<ExtArgs>
+  articles?: boolean | Prisma.Project$articlesArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   translations?: boolean | Prisma.Project$translationsArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
@@ -988,8 +1117,9 @@ export type ProjectSelectScalar = {
 
 export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "title" | "description" | "githubLink" | "liveLink" | "startDate" | "endDate" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
 export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  images?: boolean | Prisma.Project$imagesArgs<ExtArgs>
-  techStacks?: boolean | Prisma.Project$techStacksArgs<ExtArgs>
+  techstacks?: boolean | Prisma.Project$techstacksArgs<ExtArgs>
+  tags?: boolean | Prisma.Project$tagsArgs<ExtArgs>
+  articles?: boolean | Prisma.Project$articlesArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   translations?: boolean | Prisma.Project$translationsArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
@@ -998,8 +1128,9 @@ export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Project"
   objects: {
-    images: Prisma.$ProjectImagePayload<ExtArgs>[]
-    techStacks: Prisma.$ProjectTechStackPayload<ExtArgs>[]
+    techstacks: Prisma.$TechStackOnProjectsPayload<ExtArgs>[]
+    tags: Prisma.$TagsOnProjectsPayload<ExtArgs>[]
+    articles: Prisma.$BlogPayload<ExtArgs>[]
     user: Prisma.$UserPayload<ExtArgs>
     translations: Prisma.$TranslationPayload<ExtArgs>[]
   }
@@ -1354,8 +1485,9 @@ readonly fields: ProjectFieldRefs;
  */
 export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  images<T extends Prisma.Project$imagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$imagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  techStacks<T extends Prisma.Project$techStacksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$techStacksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectTechStackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  techstacks<T extends Prisma.Project$techstacksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$techstacksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TechStackOnProjectsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tags<T extends Prisma.Project$tagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TagsOnProjectsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  articles<T extends Prisma.Project$articlesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$articlesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   translations<T extends Prisma.Project$translationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$translationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TranslationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1740,51 +1872,75 @@ export type ProjectDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * Project.images
+ * Project.techstacks
  */
-export type Project$imagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Project$techstacksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the ProjectImage
+   * Select specific fields to fetch from the TechStackOnProjects
    */
-  select?: Prisma.ProjectImageSelect<ExtArgs> | null
+  select?: Prisma.TechStackOnProjectsSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the ProjectImage
+   * Omit specific fields from the TechStackOnProjects
    */
-  omit?: Prisma.ProjectImageOmit<ExtArgs> | null
+  omit?: Prisma.TechStackOnProjectsOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ProjectImageInclude<ExtArgs> | null
-  where?: Prisma.ProjectImageWhereInput
-  orderBy?: Prisma.ProjectImageOrderByWithRelationInput | Prisma.ProjectImageOrderByWithRelationInput[]
-  cursor?: Prisma.ProjectImageWhereUniqueInput
+  include?: Prisma.TechStackOnProjectsInclude<ExtArgs> | null
+  where?: Prisma.TechStackOnProjectsWhereInput
+  orderBy?: Prisma.TechStackOnProjectsOrderByWithRelationInput | Prisma.TechStackOnProjectsOrderByWithRelationInput[]
+  cursor?: Prisma.TechStackOnProjectsWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.ProjectImageScalarFieldEnum | Prisma.ProjectImageScalarFieldEnum[]
+  distinct?: Prisma.TechStackOnProjectsScalarFieldEnum | Prisma.TechStackOnProjectsScalarFieldEnum[]
 }
 
 /**
- * Project.techStacks
+ * Project.tags
  */
-export type Project$techStacksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Project$tagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the ProjectTechStack
+   * Select specific fields to fetch from the TagsOnProjects
    */
-  select?: Prisma.ProjectTechStackSelect<ExtArgs> | null
+  select?: Prisma.TagsOnProjectsSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the ProjectTechStack
+   * Omit specific fields from the TagsOnProjects
    */
-  omit?: Prisma.ProjectTechStackOmit<ExtArgs> | null
+  omit?: Prisma.TagsOnProjectsOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ProjectTechStackInclude<ExtArgs> | null
-  where?: Prisma.ProjectTechStackWhereInput
-  orderBy?: Prisma.ProjectTechStackOrderByWithRelationInput | Prisma.ProjectTechStackOrderByWithRelationInput[]
-  cursor?: Prisma.ProjectTechStackWhereUniqueInput
+  include?: Prisma.TagsOnProjectsInclude<ExtArgs> | null
+  where?: Prisma.TagsOnProjectsWhereInput
+  orderBy?: Prisma.TagsOnProjectsOrderByWithRelationInput | Prisma.TagsOnProjectsOrderByWithRelationInput[]
+  cursor?: Prisma.TagsOnProjectsWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.ProjectTechStackScalarFieldEnum | Prisma.ProjectTechStackScalarFieldEnum[]
+  distinct?: Prisma.TagsOnProjectsScalarFieldEnum | Prisma.TagsOnProjectsScalarFieldEnum[]
+}
+
+/**
+ * Project.articles
+ */
+export type Project$articlesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Blog
+   */
+  select?: Prisma.BlogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Blog
+   */
+  omit?: Prisma.BlogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlogInclude<ExtArgs> | null
+  where?: Prisma.BlogWhereInput
+  orderBy?: Prisma.BlogOrderByWithRelationInput | Prisma.BlogOrderByWithRelationInput[]
+  cursor?: Prisma.BlogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BlogScalarFieldEnum | Prisma.BlogScalarFieldEnum[]
 }
 
 /**

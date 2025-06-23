@@ -72,30 +72,35 @@ export type TechStack = Prisma.TechStackModel
  */
 export type Experience = Prisma.ExperienceModel
 /**
- * Model Technology
+ * Model TechstacksOnExperiences
  * 
  */
-export type Technology = Prisma.TechnologyModel
+export type TechstacksOnExperiences = Prisma.TechstacksOnExperiencesModel
 /**
- * Model ExperienceTechnology
+ * Model ExperienceRole
  * 
  */
-export type ExperienceTechnology = Prisma.ExperienceTechnologyModel
+export type ExperienceRole = Prisma.ExperienceRoleModel
+/**
+ * Model Task
+ * 
+ */
+export type Task = Prisma.TaskModel
 /**
  * Model Project
  * 
  */
 export type Project = Prisma.ProjectModel
 /**
- * Model ProjectTechStack
+ * Model TechStackOnProjects
  * 
  */
-export type ProjectTechStack = Prisma.ProjectTechStackModel
+export type TechStackOnProjects = Prisma.TechStackOnProjectsModel
 /**
- * Model ProjectImage
+ * Model TagsOnProjects
  * 
  */
-export type ProjectImage = Prisma.ProjectImageModel
+export type TagsOnProjects = Prisma.TagsOnProjectsModel
 /**
  * Model Blog
  * 

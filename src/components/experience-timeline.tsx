@@ -1,7 +1,28 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import AvatarWithFallback from "./ui/avatar-with-fallback";
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import AvatarWithFallback from './ui/avatar-with-fallback';
+import { Badge } from './ui/badge';
+
+const TechStack: React.FC<{ techs: string[] }> = ({ techs }) => {
+    return (
+        <div className="flex flex-wrap gap-2">
+            {techs.map((tech, idx) => (
+                <Link
+                    key={idx}
+                    // href={`/tech/${tech.toLowerCase().replace(/\s+/g, '-')}`} // URL động dựa trên tên tech
+                    href={"#"}
+                    className="inline-block"
+                >
+                    <Badge variant="secondary" className="text-xs">
+                        {tech}
+                    </Badge>
+                </Link>
+            ))}
+        </div>
+    );
+};
 
 interface Role {
     title: string;
@@ -10,20 +31,20 @@ interface Role {
     duration: string;
     location: string;
     type: string;
-    isHighlighted?: boolean;
-    tasks: string[]; // Array of short task descriptions
+    tasks: string[];
 }
 
 export interface CompanyExperience {
     company: string;
     logoUrl: string;
     roles: Role[];
+    techStack: string[];
 }
 
 interface ExperienceTimelineProps {
     experienceData: CompanyExperience[];
-    className?: string; // Optional className for customization
-    style?: React.CSSProperties; // Optional inline styles
+    className?: string;
+    style?: React.CSSProperties;
 }
 
 export default function ExperienceTimeline({
@@ -32,9 +53,14 @@ export default function ExperienceTimeline({
     style,
 }: ExperienceTimelineProps) {
     return (
-        <section className={`mx-auto max-w-3xl px-4 py-10 ${className}`} style={style}>
-            <h2 className="mb-10 text-3xl font-bold">Experience</h2>
-            <div className="space-y-10">
+        <section
+            className={`mx-auto px-4 py-12${className}`}
+            style={style}
+        >
+            <h2 className="mb-12 text-3xl font-bold tracking-tight sm:text-4xl">
+                Experience
+            </h2>
+            <div className="space-y-12">
                 {experienceData.map((company, idx) => (
                     <motion.div
                         key={idx}
@@ -42,41 +68,47 @@ export default function ExperienceTimeline({
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{
-                            ease: "easeOut",
+                            ease: 'easeOut',
                             duration: 0.4,
                             delay: idx * 0.3,
                         }}
+                        className="flex flex-col sm:flex-row items-start gap-4"
                     >
-                        <div className="flex items-start">
-                            <div className="mr-4">
-                                <AvatarWithFallback
-                                    src={company.logoUrl}
-                                    alt={company.company}
-                                    fallbackSrc="/images/experiences/placeholder.png"
-                                    fallbackText="?"
-                                    size={32}
-                                />
-                            </div>
-                            <div className="flex-1">
-                                <h3 className="text-lg font-bold">{company.company}</h3>
-                                <div className="mt-2 space-y-4">
-                                    {company.roles.map((role, rIdx) => (
-                                        <div key={rIdx} className={`pl-3 ${role.isHighlighted ? "border-l-2" : "border-l"}`}>
-                                            <p className="font-medium">
-                                                {role.title}{" "}
-                                                {role.isHighlighted && <span>✔</span>}
-                                            </p>
-                                            <p className="text-sm">
-                                                {role.from} – {role.to} ({role.duration}) • {role.location} • {role.type}
-                                            </p>
-                                            <ul className="mt-1 list-disc pl-5 text-sm">
-                                                {role.tasks.map((task, tIdx) => (
-                                                    <li key={tIdx}>{task}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ))}
-                                </div>
+                        <div className="flex-shrink-0">
+                            <AvatarWithFallback
+                                src={company.logoUrl}
+                                alt={company.company}
+                                fallbackSrc="/images/experiences/placeholder.png"
+                                fallbackText="?"
+                                size={40}
+                                className="rounded-lg"
+                            />
+                        </div>
+                        <div className="flex-1 gap-2">
+                            <h3 className="text-xl font-semibold tracking-tight sm:text-2xl">
+                                {company.company}
+                            </h3>
+                            <TechStack techs={company.techStack} />
+                            <div className="mt-2 md:mt-4 space-y-6">
+                                {company.roles.map((role, rIdx) => (
+                                    <div
+                                        key={rIdx}
+                                        className="border-l-2 border-border pl-4 sm:pl-6"
+                                    >
+                                        <p className="font-medium text-base sm:text-lg">
+                                            {role.title}
+                                        </p>
+                                        <p className="text-sm italic">
+                                            {role.from} – {role.to} ({role.duration}) • {role.location} •{' '}
+                                            {role.type}
+                                        </p>
+                                        <ul className="mt-2 list-disc pl-5 text-sm sm:text-base">
+                                            {role.tasks.map((task, tIdx) => (
+                                                <li key={tIdx}>{task}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </motion.div>

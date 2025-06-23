@@ -90,106 +90,122 @@ model EducationSubItem {
 }
 
 model TechStack {
-  id           String             @id @default(cuid())
-  name         String             @unique
-  logo         String?            @db.VarChar(255)
+  id           String                    @id @default(cuid())
+  name         String                    @unique
+  logo         String?                   @db.VarChar(255)
   group        String
-  createdAt    DateTime           @default(now()) @map("created_at")
-  updatedAt    DateTime           @default(now()) @map("updated_at")
+  createdAt    DateTime                  @default(now()) @map("created_at")
+  updatedAt    DateTime                  @default(now()) @map("updated_at")
   userId       String
-  user         User               @relation(fields: [userId], references: [id])
-  projects     ProjectTechStack[]
+  user         User                      @relation(fields: [userId], references: [id])
+  projects     TechStackOnProjects[]
+  experiences  TechstacksOnExperiences[]
   translations Translation[]
 
   @@map("tech_stacks")
 }
 
 model Experience {
-  id           String                 @id @default(cuid())
+  id           String                    @id @default(cuid())
   userId       String
   company      String
-  role         String
-  startDate    DateTime
-  endDate      DateTime?
-  description  String?                @db.Text
-  createdAt    DateTime               @default(now()) @map("created_at")
-  updatedAt    DateTime               @default(now()) @map("updated_at")
-  technologies ExperienceTechnology[]
-  user         User                   @relation(fields: [userId], references: [id])
+  logoUrl      String
+  location     String
+  type         String
+  description  String?                   @db.Text
+  createdAt    DateTime                  @default(now()) @map("created_at")
+  updatedAt    DateTime                  @default(now()) @map("updated_at")
+  user         User                      @relation(fields: [userId], references: [id])
+  roles        ExperienceRole[]
+  techstacks   TechstacksOnExperiences[]
   translations Translation[]
 
   @@index([userId], map: "experiences_userId_fkey")
   @@map("experiences")
 }
 
-model Technology {
-  id           String                 @id @default(cuid())
-  name         String                 @unique
-  createdAt    DateTime               @default(now()) @map("created_at")
-  updatedAt    DateTime               @default(now()) @map("updated_at")
-  experiences  ExperienceTechnology[]
-  translations Translation[]
+model TechstacksOnExperiences {
+  experienceId String
+  experience   Experience @relation(fields: [experienceId], references: [id])
 
-  @@map("technologies")
+  techstackId String
+  techstack   TechStack @relation(fields: [techstackId], references: [id])
+
+  @@id([techstackId, experienceId])
 }
 
-model ExperienceTechnology {
+model ExperienceRole {
+  id           String    @id @default(cuid())
   experienceId String
-  technologyId String
-  createdAt    DateTime   @default(now()) @map("created_at")
-  updatedAt    DateTime   @default(now()) @map("updated_at")
-  experience   Experience @relation(fields: [experienceId], references: [id])
-  technology   Technology @relation(fields: [technologyId], references: [id])
+  title        String
+  startDate    DateTime
+  endDate      DateTime?
+  tasks        Task[]
 
-  @@id([experienceId, technologyId])
-  @@index([technologyId], map: "experience_technologies_technologyId_fkey")
-  @@map("experience_technologies")
+  experience Experience @relation(fields: [experienceId], references: [id])
+}
+
+model Task {
+  id               String         @id @default(cuid())
+  experienceRoleId String         @map("experience_role_id")
+  content          String         @db.Text
+  experienceRole   ExperienceRole @relation(fields: [experienceRoleId], references: [id])
+  translations     Translation[]
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  @@map("tasks")
 }
 
 model Project {
-  id           String             @id @default(cuid())
+  id           String                @id @default(cuid())
   userId       String
   title        String
-  description  String?            @db.Text
-  githubLink   String?            @db.VarChar(255)
-  liveLink     String?            @db.VarChar(255)
+  description  String?               @db.Text
+  githubLink   String?               @db.VarChar(255)
+  liveLink     String?               @db.VarChar(255)
   startDate    DateTime?
   endDate      DateTime?
-  createdAt    DateTime           @default(now()) @map("created_at")
-  updatedAt    DateTime           @default(now()) @map("updated_at")
-  images       ProjectImage[]
-  techStacks   ProjectTechStack[]
-  user         User               @relation(fields: [userId], references: [id])
+  createdAt    DateTime              @default(now()) @map("created_at")
+  updatedAt    DateTime              @default(now()) @map("updated_at")
+  techstacks   TechStackOnProjects[]
+  tags         TagsOnProjects[]
+  articles     Blog[]
+  user         User                  @relation(fields: [userId], references: [id])
   translations Translation[]
 
   @@index([userId], map: "projects_userId_fkey")
   @@map("projects")
 }
 
-model ProjectTechStack {
-  projectId   String
-  techStackId String
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @default(now()) @map("updated_at")
-  project     Project   @relation(fields: [projectId], references: [id])
-  techStack   TechStack @relation(fields: [techStackId], references: [id])
+model TechStackOnProjects {
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
 
-  @@id([projectId, techStackId])
-  @@index([techStackId], map: "project_tech_stacks_techStackId_fkey")
+  techstackId String
+  techStack   TechStack @relation(fields: [techstackId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@id([projectId, techstackId])
+  @@index([techstackId], map: "project_tech_stacks_techStackId_fkey")
   @@map("project_tech_stacks")
 }
 
-model ProjectImage {
-  id           String        @id @default(cuid())
-  url          String        @db.VarChar(255)
-  projectId    String
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime      @default(now()) @map("updated_at")
-  project      Project       @relation(fields: [projectId], references: [id])
-  translations Translation[]
+model TagsOnProjects {
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
 
-  @@index([projectId], map: "project_images_projectId_fkey")
-  @@map("project_images")
+  tagId String
+  tag   Tag    @relation(fields: [tagId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@id([projectId, tagId])
+  @@index([tagId], map: "project_tagid_fkey")
+  @@map("project_tag")
 }
 
 model Blog {
@@ -201,6 +217,8 @@ model Blog {
   slug          String        @unique
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @default(now()) @map("updated_at")
+  projectId     String?
+  project       Project?      @relation(fields: [projectId], references: [id])
   tags          BlogTag[]
   user          User          @relation(fields: [userId], references: [id])
   translations  Translation[]
@@ -210,12 +228,13 @@ model Blog {
 }
 
 model Tag {
-  id           String        @id @default(cuid())
-  name         String        @unique
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime      @default(now()) @map("updated_at")
+  id           String           @id @default(cuid())
+  name         String           @unique
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @default(now()) @map("updated_at")
   blogs        BlogTag[]
   translations Translation[]
+  projects     TagsOnProjects[]
 
   @@map("tags")
 }
@@ -256,12 +275,12 @@ model Translation {
   educationSubItem   EducationSubItem? @relation(fields: [educationSubItemId], references: [id])
   experience         Experience?       @relation(fields: [experienceId], references: [id])
   project            Project?          @relation(fields: [projectId], references: [id])
-  projectImage       ProjectImage?     @relation(fields: [projectImageId], references: [id])
   tag                Tag?              @relation(fields: [tagId], references: [id])
   techStack          TechStack?        @relation(fields: [techStackId], references: [id])
-  technology         Technology?       @relation(fields: [technologyId], references: [id])
   user               User?             @relation(fields: [userId], references: [id])
   bannerImage        UserBannerImage?  @relation(fields: [bannerImageId], references: [id])
+  Task               Task?             @relation(fields: [taskId], references: [id])
+  taskId             String?
 
   @@index([blogId], map: "translations_blogId_fkey")
   @@index([educationId], map: "translations_educationId_fkey")
@@ -271,7 +290,6 @@ model Translation {
   @@index([projectImageId], map: "translations_projectImageId_fkey")
   @@index([tagId], map: "translations_tagId_fkey")
   @@index([techStackId], map: "translations_techStackId_fkey")
-  @@index([technologyId], map: "translations_technologyId_fkey")
   @@index([userId], map: "translations_userId_fkey")
   @@map("translations")
 }

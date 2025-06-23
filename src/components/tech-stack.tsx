@@ -67,9 +67,7 @@ export function TechStack({ groups, className, style }: TechStackProps) {
                     <LiquidGlass
                         variant="panel"
                         intensity="medium"
-                        rippleEffect
-                        flowOnHover
-                        stretchOnDrag={false}
+                        disableStretch
                         className="p-5 h-full"
                     >
                         <div className="flex flex-col gap-4 rounded-2xl">

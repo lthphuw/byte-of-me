@@ -3,10 +3,11 @@ import { ProfileBanner } from "@/components/profile-banner";
 import { ProfileQuote } from "@/components/profile-quote";
 import { HomeShell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
-import { host } from "@/config/config";
+import { User } from "@/generated/prisma/client";
+import { fetchData } from "@/lib/fetch";
 import { cn } from "@/lib/utils";
 import { FileText } from "lucide-react";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 // Next.js will invalidate the cache when a
@@ -19,12 +20,8 @@ export const revalidate = 86400
 export const dynamicParams = true // or false, to 404 on unknown paths
 
 export default async function HomePage() {
-  const locale = await getLocale();
   const t = await getTranslations("home");
-
-  // Fetch user data from API
-  const res = await fetch(`${host}/api/me?locale=${locale}`);
-  const user = await res.json();
+  const user = await fetchData<User>('me');
   
   return (
     <HomeShell>
@@ -33,13 +30,13 @@ export default async function HomePage() {
 
       {/* Tagline */}
       <p className="mb-2 text-base text-muted-foreground md:text-lg">
-        {user.tagLine || ""}
+        {user?.tagLine || ""}
       </p>
 
       <ProfileBanner
-        images={user.bannerImages}
+        images={(user as any)?.bannerImages}
       />
-      <ProfileQuote quote={user.quote || ""} />
+      <ProfileQuote quote={user?.quote || ""} />
 
       <div className="flex flex-col flex-wrap gap-4 md:flex-row">
         <Link href="/projects">

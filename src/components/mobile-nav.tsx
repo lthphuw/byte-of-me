@@ -117,9 +117,7 @@ export const MobileNav = React.forwardRef<HTMLDivElement, MobileNavProps>(
             <LiquidGlass
               variant="panel"
               intensity="medium"
-              rippleEffect={true}
-              flowOnHover={true}
-              stretchOnDrag={false}
+              disableStretch
             >
               <motion.div
                 className="relative z-20 grid gap-6 bg-transparent p-4 text-popover-foreground"
