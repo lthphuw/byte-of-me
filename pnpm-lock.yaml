@@ -159,7 +159,7 @@ importers:
         specifier: ^8.0.1
         version: 8.2.2
       contentlayer:
-        specifier: ^0.3.1
+        specifier: ^0.3.4
         version: 0.3.4(esbuild@0.25.5)
       date-fns:
         specifier: ^2.29.3

@@ -5,6 +5,7 @@ generator client {
   importFileExtension    = "ts"
   moduleFormat           = "esm"
   runtime                = "nodejs"
+  binaryTargets          = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
