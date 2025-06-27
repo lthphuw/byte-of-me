@@ -38,3 +38,9 @@ next-env.d.ts
 
 .vscode
 .contentlayer
+
+# It is recommended to add ../generated/prisma to the .gitignore file because it contains platform-specific binaries that can cause compatibility issues across different environments.
+# packages/db/generated
+apps/web/.next
+apps/web/node_modules
+packages/db/node_modules

@@ -1,0 +1,137 @@
+{
+  "global": {
+    "Table of Content": "Mục lục",
+    "i18nToggle": {
+      "Toggle language": "Chuyển đổi ngôn ngữ",
+      "Vietnamese": "Tiếng Việt",
+      "English": "Tiếng Anh",
+      "French": "Tiếng Pháp"
+    },
+    "modeToggle": {
+      "Toggle theme": "Chuyển đổi chủ đề",
+      "Light": "Sáng",
+      "Dark": "Tối",
+      "System": "Hệ thống"
+    },
+    "header": {
+      "nav": {
+        "About": "Giới thiệu",
+        "Experience": "Kinh nghiệm",
+        "Projects": "Dự án",
+        "Hobbies": "Sở thích",
+        "More": "Thêm",
+        "Let's talk": "Liên lạc"
+      }
+    }
+  },
+  "notFound": {
+    "404 - Page Not Found": "404 - Không tìm thấy trang",
+    "Oops! Page not found": "Rất tiếc! Không tìm thấy trang",
+    "Sorry, we couldn’t find that page": "Xin lỗi, tôi không thể tìm thấy trang bạn yêu cầu",
+    "Please check the URL or go back home": "Vui lòng kiểm tra lại đường dẫn hoặc quay về trang chủ",
+    "Go back": "Quay lại",
+    "Home": "Trang chủ",
+    "About me": "Giới thiệu",
+    "Learn more about my background and journey": "Tìm hiểu thêm về hành trình và kinh nghiệm của tôi",
+    "See my work": "Xem dự án",
+    "Check out the projects I've built": "Khám phá những dự án mà tôi đã thực hiện",
+    "Contact": "Liên hệ",
+    "Reach out for collaboration or questions": "Liên hệ với tôi nếu bạn có câu hỏi hoặc muốn hợp tác",
+    "Explore": "Khám phá"
+  },
+  "error": {
+    "Something went wrong!": "Đã xảy ra lỗi!",
+    "Go back": "Quay lại",
+    "Home": "Trang chủ",
+    "Report for me": "Báo cáo lỗi cho tôi",
+    "Report for me about this error": "Báo cáo về lỗi này cho tôi",
+    "Send": "Gửi",
+    "Error Details": "Chi tiết lỗi",
+    "Copy Error": "Sao chép lỗi",
+    "Copied!": "Đã sao chép!"
+  },
+  "home": {
+    "See my work": "Xem dự án của tôi",
+    "README": "README",
+    "greeting": "Chào, tôi là Phú",
+    "tagline": "Lập trình, sự nghiệp, sở thích — từng byte một",
+    "bannerAlt": "Chụp tại Bảo tàng Lịch sử Quân sự Việt Nam, bức tranh năm 2024 này có tiêu đề “Sống bám đá, chết hoá đá” — “Sống bám vào đá, chết hóa thành đá”",
+    "bannerCaption": "Chụp tại Bảo tàng Lịch sử Quân sự Việt Nam, bức tranh năm 2024 này có tiêu đề “Sống bám đá, chết hoá đá” — “Sống bám vào đá, chết hóa thành đá”",
+    "quote": "Tôi thích học hỏi những điều mới và có hứng thú mạnh mẽ với các dự án mã nguồn mở, nơi tôi thường tìm thấy những ý tưởng hữu ích và các phương pháp hay nhất Những trải nghiệm này giúp tôi xây dựng các giải pháp tốt hơn và hiệu quả hơn Đối với tôi, sự phát triển không chỉ đến từ công việc—mà còn từ việc tự khám phá và học tập không ngừng Đó là điều thực sự thúc đẩy sự phát triển của tôi"
+  },
+  "about": {
+    "section": {
+      "About me": "Giới thiệu",
+      "Education": "Học vấn",
+      "Skills / Tech Stack": "Công nghệ đã sử dụng"
+    },
+    "aboutMe": "Tôi là một lập trình viên full-stack (junior), chủ yếu tập trung vào phát triển backend Tôi thích xây dựng các hệ thống hiệu suất cao, có khả năng mở rộng và có kinh nghiệm thực tế với Golang, Nodejs và Python Mặc dù trọng tâm chính là backend, tôi cũng đã làm việc với các công nghệ frontend như Reactjs và Nextjs Tôi có kinh nghiệm nghiên cứu và phát triển các mô hình AI, và luôn háo hức học hỏi và phát triển qua các dự án thực tế\n\nTrong tương lai, tôi hướng đến việc nâng cao chuyên môn trong thiết kế hệ thống, hệ thống phân tán và tích hợp AI — xây dựng phần mềm đáng tin cậy, hiệu quả và thông minh ở quy mô lớn",
+    "education": {
+      "bachelorTitle": "Cử nhân Khoa học (Chương trình Tài năng) ngành Công nghệ Thông tin",
+      "bachelorMessage": "Trường Đại học Khoa học Tự nhiên - ĐHQG-HCM, TP Hồ Chí Minh, Việt Nam",
+      "bachelorLogoAlt": "Logo ĐH KHTN",
+      "highSchoolTitle": "Bằng Tốt nghiệp Trung học Phổ thông",
+      "highSchoolMessage": "Trường THPT Phan Châu Trinh, Đà Nẵng",
+      "highSchoolLogoAlt": "Trường THPT",
+      "academicPerformanceTitle": "Thành tích học tập",
+      "academicPerformanceMessage": "Tốt nghiệp với GPA 867/10",
+      "publishedPaperTitle": "Công bố bài báo tại CV4DC 2024",
+      "publishedPaperMessagePart1": "Công bố bài báo tại",
+      "publishedPaperLinkText": "Hội thảo về Computer Vision for Developing Countries (CV4DC) tại ACCV 2024",
+      "publishedPaperTitleText": "Phát hiện bất thường trong hình ảnh y khoa dựa trên mô hình Ngôn ngữ-Tầm nhìn",
+      "publishedPaperOral": "Thuyết trình",
+      "publishedPaperViewLink": "Xem bài báo",
+      "publishedPaperAuthors": "Tác giả: Lương Thanh Hoàng Phú, Vũ Văn Thái, và PGS TS Lý Quốc Ngọc",
+      "thesisScoreTitle": "Điểm luận văn",
+      "thesisScoreMessage": "Điểm luận văn: 10/10 (Xuất sắc)",
+      "researchAwardTitle": "Giải thưởng Sinh viên Nghiên cứu Xuất sắc",
+      "researchAwardMessage": "Được trao giải vì xuất sắc trong nghiên cứu khoa học",
+      "entranceExamTitle": "Top 6 Thí sinh có điểm thi đầu vào cao nhất",
+      "entranceExamMessage": "Xếp trong top 6 thí sinh có điểm thi đầu vào cao nhất năm 2020",
+      "aiChallengeTitle": "Thách thức AI 2023 (TPHCM)",
+      "aiChallengeMessage": "Giải khuyến khích"
+    },
+    "techStack": {
+      "frameworksTitle": "Frameworks",
+      "librariesTitle": "Thư viện",
+      "programmingLanguagesTitle": "Ngôn ngữ lập trình",
+      "databaseTitle": "Cơ sở dữ liệu",
+      "gin": "Gin",
+      "grpc": "gRPC",
+      "nodejs": "Nodejs",
+      "fastapi": "FastAPI",
+      "nextjs": "Nextjs",
+      "reactjs": "Reactjs",
+      "framerMotion": "Framer Motion",
+      "floatingUi": "Floating UI",
+      "go": "Go",
+      "python": "Python",
+      "typescript": "TypeScript",
+      "javascript": "JavaScript",
+      "mongodb": "MongoDB",
+      "postgresql": "PostgreSQL",
+      "cache": "Redis",
+      "reactBit": "React Bits"
+    }
+  },
+  "project": {
+    "Details": "Chi tiết",
+    "GitHub": "GitHub",
+    "All": "Tất cả",
+    "There are no projects yet": "Hiện chưa có dự án nào",
+    "No projects match your search": "Không tìm thấy dự án nào phù hợp với từ khóa",
+    "Loading project list": "Đang tải danh sách dự án",
+    "Failed to load project list": "Không thể tải danh sách dự án. Vui lòng thử lại",
+    "No projects match the selected filters": "Không có dự án nào phù hợp với bộ lọc đã chọn",
+    "No projects match your current search and filters": "Không tìm thấy dự án nào phù hợp với từ khóa và bộ lọc hiện tại",
+    "You've reached the end of the project list": "Bạn đã xem hết tất cả dự án",
+    "Clear filters": "Xóa bộ lọc",
+    "Clear search": "Xóa từ khóa tìm kiếm",
+    "No Projects Yet": "Chưa có dự án",
+    "You can start by creating a new project": "Bạn có thể bắt đầu bằng cách tạo một dự án mới"
+  },
+  "contact": {
+    "Connect With Me": "Kết nối với tôi",
+    "Reach out, let's code the future!": "Hãy liên hệ, cùng tôi kiến tạo tương lai qua từng dòng code!"
+  }
+}
