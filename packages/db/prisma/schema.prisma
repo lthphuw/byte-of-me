@@ -1,12 +1,12 @@
 generator client {
-  provider               = "prisma-client"
-  runtime                = "nodejs"
+  provider        = "prisma-client-js"
+  runtime         = "nodejs"
   // moduleFormat           = "esm"
-  generatedFileExtension = "ts"
-  importFileExtension    = "ts"
-  output                 = "../generated/prisma"
-  previewFeatures        = ["driverAdapters"]
-  binaryTargets          = ["native", "rhel-openssl-3.0.x"]
+  // generatedFileExtension = "ts"
+  // importFileExtension    = "ts"
+  // output                 = "../generated/prisma"
+  previewFeatures = ["driverAdapters"]
+  binaryTargets   = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {

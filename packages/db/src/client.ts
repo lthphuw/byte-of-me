@@ -1,12 +1,7 @@
 import { PrismaNeon } from '@prisma/adapter-neon';
-import { PrismaClient } from '../generated/prisma/client';
-
+import { PrismaClient } from '@prisma/client';
 export const runtime = 'edge';
 
-console.log(
-  'process.env.POSTGRES_PRISMA_URL: ',
-  process.env.POSTGRES_PRISMA_URL,
-);
 const adapter = new PrismaNeon({
   connectionString: process.env.POSTGRES_PRISMA_URL,
 });
