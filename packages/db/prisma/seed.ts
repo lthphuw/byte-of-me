@@ -88,7 +88,8 @@ async function seedUser() {
       lastName: 'Luong Thanh Hoang',
       birthdate: '2002-11-20',
       greeting: "Hi, I'm Phu",
-      tagLine: 'Code, career, controller — one byte at a time.',
+      tagLine:
+        'Crafting code, shaping careers, enjoying the game — one byte at a time.',
       email: 'lthphuw@gmail.com',
       image: '/images/avatars/HaNoi2024.jpeg',
       imageCaption:
@@ -121,17 +122,19 @@ async function seedUser() {
           {
             language: 'en',
             field: 'tagLine',
-            value: 'Code, career, controller — one byte at a time.',
+            value:
+              'Crafting code, shaping careers, enjoying the game — one byte at a time.',
           },
           {
             language: 'vi',
             field: 'tagLine',
-            value: 'Lập trình, sự nghiệp, sở thích — từng byte một.',
+            value: 'Tay gõ code, đầu lo job, tim chill game — từng byte một.',
           },
           {
             language: 'fr',
             field: 'tagLine',
-            value: 'Code, carrière, contrôleur — un octet à la fois.',
+            value:
+              'Du code, une carrière, et le plaisir du jeu. — un octet à la fois.',
           },
 
           {

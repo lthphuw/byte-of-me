@@ -3,8 +3,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { FlagType } from '@/types';
 import { prisma } from '@db/client';
 
+
+
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
+
+
+
+
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -25,8 +31,8 @@ export async function GET(req: NextRequest) {
         await prisma.user.findUnique({
           where: { email },
         }),
-      ['me-simple'],
-      { revalidate: 86400, tags: ['me-simple'] }
+      ['simple-me', locale],
+      { revalidate: 86400, tags: ['simple-me', `simple-me-${locale}`] }
     )();
     if (!user) {
       return NextResponse.json(
@@ -46,8 +52,8 @@ export async function GET(req: NextRequest) {
             },
           },
         }),
-      ['educations'],
-      { revalidate: 86400, tags: ['educations'] }
+      ['educations', locale],
+      { revalidate: 86400, tags: ['educations', `educations-${locale}`] }
     )();
 
     const translatedEducations = educations.map((edu) => ({

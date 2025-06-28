@@ -3,8 +3,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { FlagType } from '@/types';
 import { prisma } from '@db/client';
 
+
+
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
+
+
+
+
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -34,8 +40,8 @@ export async function GET(req: NextRequest) {
           },
         });
       },
-      ['me'],
-      { revalidate: 86400, tags: ['me'] }
+      ['me', locale],
+      { revalidate: 86400, tags: ['me', `me-${locale}`] }
     )();
 
     if (!user) {

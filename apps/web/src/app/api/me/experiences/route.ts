@@ -28,8 +28,8 @@ export async function GET(req: NextRequest) {
         await prisma.user.findUnique({
           where: { email },
         }),
-      ['user-simple'],
-      { revalidate: 86400, tags: ['user-simple'] }
+      ['simple-me', locale],
+      { revalidate: 86400, tags: ['simple-me', `simple-me-${locale}`] }
     )();
 
     if (!user) {
@@ -38,6 +38,11 @@ export async function GET(req: NextRequest) {
         { status: 404 }
       );
     }
+
+    // const sleep = () => {
+    //   return new Promise((resolve) => setTimeout(resolve, 5000));
+    // };
+    // await sleep();
 
     const experiences = await unstable_cache(
       async () =>
@@ -49,8 +54,8 @@ export async function GET(req: NextRequest) {
             translations: { where: { language: locale } },
           },
         }),
-      ['experiences'],
-      { revalidate: 86400, tags: ['experiences'] }
+      ['experiences', locale],
+      { revalidate: 86400, tags: ['experiences', `experiences-${locale}`] }
     )();
 
     const translatedExperiences: CompanyExperience[] = experiences.map(

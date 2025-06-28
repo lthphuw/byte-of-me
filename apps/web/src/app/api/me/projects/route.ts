@@ -6,8 +6,14 @@ import { FlagType } from '@/types';
 import { prisma } from '@db/client';
 import { Project } from '@db/index';
 
+
+
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
+
+
+
+
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -28,8 +34,8 @@ export async function GET(req: NextRequest) {
         await prisma.user.findUnique({
           where: { email },
         }),
-      ['user-simple'],
-      { revalidate: 86400, tags: ['user-simple'] }
+      ['user-simple', locale],
+      { revalidate: 86400, tags: ['user-simple', `user-simple-${locale}`] }
     )();
 
     if (!user) {
@@ -49,8 +55,8 @@ export async function GET(req: NextRequest) {
             translations: { where: { language: locale } },
           },
         }),
-      ['experiences'],
-      { revalidate: 86400, tags: ['experiences'] }
+      ['projects', locale],
+      { revalidate: 86400, tags: ['projects', `projects-${locale}`] }
     )();
 
     const translatedProjects: any[] = projects.map((proj) => {
