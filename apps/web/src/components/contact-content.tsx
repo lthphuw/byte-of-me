@@ -1,11 +1,10 @@
 'use client';
 
-import Link from 'next/link';
 import { Variants, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 
 import { Icons } from '@/components/icons';
-import { LiquidGlass } from '@/components/liquid-glass';
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -23,6 +22,7 @@ const itemVariants: Variants = {
     transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
   },
 };
+
 export function ContactContent() {
   const t = useTranslations('contact');
 
@@ -45,83 +45,43 @@ export function ContactContent() {
 
       <motion.div
         variants={containerVariants}
-        className="grid grid-cols-2 gap-4"
+        className="grid grid-cols-2 gap-4 md:gap-10"
       >
-        <motion.div variants={itemVariants}>
-          <LiquidGlass
-            variant="card"
-            intensity="medium"
-            disableRipple
-            disableStretch
-            disableHoverCursor
-          >
-            <Link
-              href={'mailto:lthphuw@gmail.com'}
-              target="_blank"
-              className="flex flex-col cursor-pointer items-center justify-center gap-4 w-full h-full px-4 py-4"
-            >
-              <Icons.email size={48} />
-              <p className="text-base font-semibold">Email</p>
-            </Link>
-          </LiquidGlass>
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <LiquidGlass
-            variant="card"
-            intensity="medium"
-            disableRipple
-            disableStretch
-            disableHoverCursor
-          >
-            <Link
-              href={'https://linkedin.com/in/phu-lth'}
-              target="_blank"
-              className="flex flex-col cursor-pointer items-center justify-center gap-4 w-full h-full px-4 py-4"
-            >
-              <Icons.linkedin size={48} />
-              <p className="text-base font-semibold">Linkedin</p>
-            </Link>
-          </LiquidGlass>
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <LiquidGlass
-            variant="card"
-            intensity="medium"
-            disableRipple
-            disableStretch
-            disableHoverCursor
-          >
-            <Link
-              href={'https://github.com/lthphuw'}
-              target="_blank"
-              className="flex flex-col cursor-pointer items-center justify-center gap-4 w-full h-full px-4 py-4"
-            >
-              <Icons.github size={48} />
-              <p className="text-base font-semibold">Github</p>
-            </Link>
-          </LiquidGlass>
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <LiquidGlass
-            variant="card"
-            intensity="medium"
-            disableRipple
-            disableStretch
-            disableHoverCursor
-          >
-            <Link
-              href={'https://www.facebook.com/lthphu2011'}
-              target="_blank"
-              className="flex flex-col cursor-pointer items-center justify-center gap-4 w-full h-full px-4 py-4"
-            >
-              <Icons.facebook size={48} />
-              <p className="text-base font-semibold">Facebook</p>
-            </Link>
-          </LiquidGlass>
-        </motion.div>
+        {[
+          {
+            href: 'mailto:lthphuw@gmail.com',
+            icon: <Icons.email size={48} />,
+            label: 'Email',
+          },
+          {
+            href: 'https://linkedin.com/in/phu-lth',
+            icon: <Icons.linkedin size={48} />,
+            label: 'Linkedin',
+          },
+          {
+            href: 'https://github.com/lthphuw',
+            icon: <Icons.github size={48} />,
+            label: 'Github',
+          },
+          {
+            href: 'https://www.facebook.com/lthphu2011',
+            icon: <Icons.facebook size={48} />,
+            label: 'Facebook',
+          },
+        ].map((item, index) => (
+          <motion.div key={item.href} variants={itemVariants}>
+            <div className="glass-base w-[216px] h-[184px] rounded-xl shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)]">
+              <Link
+                href={item.href}
+                target="_blank"
+                className="flex flex-col items-center justify-center gap-4 w-full h-full px-4 py-4"
+              >
+                {item.icon}
+                <p className="text-base font-semibold">{item.label}</p>
+              </Link>
+            </div>
+          </motion.div>
+        ))}
       </motion.div>
     </motion.div>
   );

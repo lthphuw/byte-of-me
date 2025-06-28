@@ -66,22 +66,16 @@ export async function GET(req: NextRequest) {
           techStack: exp.techstacks.map((ts) => ts.techstack.name),
           roles: exp.roles.map((role) => ({
             title: translations[`role_title_${role.title}`] || role.title,
-            from: role.startDate?.toLocaleDateString('en-US', {
-              month: 'short',
-              year: 'numeric',
-            }),
-            to: role.endDate
-              ? role.endDate?.toLocaleDateString('en-US', {
-                  month: 'short',
-                  year: 'numeric',
-                })
-              : 'Present',
+            from: formatDate(role.startDate),
+            to: role.endDate ? formatDate(role.endDate) : 'Present',
             duration: calculateDuration(role.startDate, role.endDate),
-            location: exp.location,
-            type: exp.type,
+            location: exp.location || 'Unknown',
+            type: exp.type || 'Unknown',
             tasks: role.tasks.map(
               (task, idx) =>
-                translations[`task_${role.title}_${idx}`] || task.content
+                translations[`task_${role.title}_${idx}`] ||
+                task.content ||
+                'No task description'
             ),
           })),
         };
@@ -102,14 +96,32 @@ export async function GET(req: NextRequest) {
     // await prisma.$disconnect();
   }
 }
+function formatDate(date?: Date | null): string {
+  if (!date) return 'Unknown';
+  return new Date(date).toLocaleDateString('en-US', {
+    month: 'short',
+    year: 'numeric',
+  });
+}
+function calculateDuration(
+  startDate?: Date | null,
+  endDate?: Date | null
+): string {
+  if (!startDate) return 'Unknown';
 
-function calculateDuration(startDate: Date, endDate: Date | null): string {
   const start = new Date(startDate);
   const end = endDate ? new Date(endDate) : new Date();
-  const years = end.getFullYear() - start.getFullYear();
-  const months = end.getMonth() - start.getMonth() + years * 12;
-  if (months >= 12) {
-    return `${Math.floor(months / 12)} year${months >= 24 ? 's' : ''}`;
-  }
-  return `${months} month${months > 1 ? 's' : ''}`;
+
+  let months = (end.getFullYear() - start.getFullYear()) * 12;
+  months += end.getMonth() - start.getMonth();
+
+  if (months < 0) return 'Invalid';
+
+  const years = Math.floor(months / 12);
+  const remainingMonths = months % 12;
+
+  const yearStr = years > 0 ? `${years}y` : '';
+  const monthStr = remainingMonths > 0 ? `${remainingMonths}m` : '';
+
+  return [yearStr, monthStr].filter(Boolean).join(' ') || '0m';
 }

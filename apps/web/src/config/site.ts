@@ -6,7 +6,7 @@ import { host } from './config';
 
 
 export const siteConfig: SiteConfig = {
-  name: 'Byte Of Me',
+  name: 'Byte of me',
   description:
     'Passion, experience, projects, hobbies — all logged, one byte at a time.',
   url: host,

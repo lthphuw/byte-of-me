@@ -6,7 +6,6 @@ import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
 import { Icons } from './icons';
-import { LiquidGlass } from './liquid-glass';
 import { Loading } from './loading';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
@@ -66,15 +65,8 @@ export const ProjectItem: FC<ProjectItemProps> = ({
       variants={itemVariants}
       {...motionProps}
     >
-      <LiquidGlass
-        variant="panel"
-        intensity="strong"
-        className="min-w-[160px] rounded-2xl border-none p-1 text-sm shadow-2xl"
-        disableHoverCursor={true}
-        disableJiggle={true}
-        disableRipple={false}
-        disableStretch={true}
-        disablePress={false}
+      <div
+        className="glass-base min-w-[160px] rounded-2xl border-none p-1 text-sm shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)]"
       >
         <div className="flex h-full flex-col items-stretch gap-2 p-6 rounded-2xl">
           <h2 className="text-lg font-semibold mb-2">{project.title}</h2>
@@ -123,7 +115,6 @@ export const ProjectItem: FC<ProjectItemProps> = ({
                 href={project.githubLink ?? '#'}
                 className="w-full md:w-1/2"
               >
-                {' '}
                 <Button
                   variant="secondary"
                   className={cn(
@@ -137,7 +128,7 @@ export const ProjectItem: FC<ProjectItemProps> = ({
             </div>
           </div>
         </div>
-      </LiquidGlass>
+      </div>
     </motion.div>
   );
 };

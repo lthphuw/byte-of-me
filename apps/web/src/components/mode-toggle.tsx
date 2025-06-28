@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import {
   FloatingPortal,
   autoUpdate,
@@ -13,21 +12,15 @@ import {
 } from '@floating-ui/react';
 import { AnimatePresence, Variants, motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
+import { useState } from 'react';
 
-import { cn } from '@/lib/utils';
-import { useTranslations } from '@/hooks/use-translations';
-import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons';
+import { Button } from '@/components/ui/button';
+import { useTranslations } from '@/hooks/use-translations';
+import { cn } from '@/lib/utils';
 
-import { LiquidGlass } from './liquid-glass';
-
-export interface ModeToggleProps {
-  liquidGlassDisabled?: boolean;
-}
-
-export function ModeToggle({ liquidGlassDisabled }: ModeToggleProps) {
+export function ModeToggle() {
   const t = useTranslations('global.modeToggle');
-
   const { theme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
 
@@ -49,7 +42,6 @@ export function ModeToggle({ liquidGlassDisabled }: ModeToggleProps) {
     role,
   ]);
 
-  // Variants cho animation của từng item
   const itemVariants: Variants = {
     hidden: { opacity: 0, y: 10 },
     visible: (i: number) => ({
@@ -67,34 +59,24 @@ export function ModeToggle({ liquidGlassDisabled }: ModeToggleProps) {
 
   return (
     <motion.div layout style={{ position: 'relative' }}>
-      <LiquidGlass
-        variant="button-icon"
-        intensity="medium"
-        disabled={liquidGlassDisabled}
-        className="bg-transparent"
+      <Button
+        ref={refs.setReference}
+        {...getReferenceProps()}
+        variant="icon"
+        size="sm"
+        className="relative size-9 px-0 focus:outline-none"
       >
-        <Button
-          ref={refs.setReference}
-          {...getReferenceProps()}
-          variant="icon"
-          size="sm"
-          className="relative size-9 px-0 focus:outline-none"
-        >
-          <Icons.sun className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Icons.moon className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">{t('Toggle theme')}</span>
-        </Button>
-      </LiquidGlass>
+        <Icons.sun className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+        <Icons.moon className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <span className="sr-only">{t('Toggle theme')}</span>
+      </Button>
 
       <FloatingPortal>
         <AnimatePresence>
           {open && (
             <div
               ref={refs.setFloating}
-              style={{
-                ...floatingStyles,
-                zIndex: 60,
-              }}
+              style={{ ...floatingStyles, zIndex: 60 }}
               {...getFloatingProps()}
             >
               <motion.div
@@ -102,38 +84,35 @@ export function ModeToggle({ liquidGlassDisabled }: ModeToggleProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ type: 'spring', stiffness: 130, damping: 10 }}
+                className={cn(
+                  'glass-base',
+                  'mt-0 min-w-[140px] rounded-md p-1 shadow-2xl'
+                )}
               >
-                <LiquidGlass
-                  variant="panel"
-                  intensity="strong"
-                  disableStretch
-                  className="mt-0 box-border min-w-[140px] rounded-md border-none p-1 text-sm shadow-2xl hover:border-none hover:shadow-2xl"
-                >
-                  {[
-                    { theme: 'light', icon: Icons.sun, label: t('Light') },
-                    { theme: 'dark', icon: Icons.moon, label: t('Dark') },
-                    { theme: 'system', icon: Icons.laptop, label: t('System') },
-                  ].map((item, index) => (
-                    <motion.div
-                      key={item.theme}
-                      custom={index}
-                      variants={itemVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      onClick={() => setTheme(item.theme)}
-                      className={cn(
-                        'flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
-                        theme === item.theme
-                          ? 'bg-muted text-primary'
-                          : 'text-muted-foreground hover:bg-muted'
-                      )}
-                    >
-                      <item.icon className="mr-2 size-4" />
-                      <span>{item.label}</span>
-                    </motion.div>
-                  ))}
-                </LiquidGlass>
+                {[
+                  { theme: 'light', icon: Icons.sun, label: t('Light') },
+                  { theme: 'dark', icon: Icons.moon, label: t('Dark') },
+                  { theme: 'system', icon: Icons.laptop, label: t('System') },
+                ].map((item, index) => (
+                  <motion.div
+                    key={item.theme}
+                    custom={index}
+                    variants={itemVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    onClick={() => setTheme(item.theme)}
+                    className={cn(
+                      'flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
+                      theme === item.theme
+                        ? 'bg-muted text-primary'
+                        : 'text-muted-foreground hover:bg-muted'
+                    )}
+                  >
+                    <item.icon className="mr-2 size-4" />
+                    <span>{item.label}</span>
+                  </motion.div>
+                ))}
               </motion.div>
             </div>
           )}

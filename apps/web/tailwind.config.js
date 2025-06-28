@@ -1,4 +1,5 @@
 const { fontFamily } = require('tailwindcss/defaultTheme');
+const plugin = require('tailwindcss/plugin');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -78,5 +79,22 @@ module.exports = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
+  plugins: [
+    require('tailwindcss-animate'),
+    require('@tailwindcss/typography'),
+    plugin(({ addUtilities }) => {
+      addUtilities({
+        '.glass-base': {
+          '@apply backdrop-blur-md bg-white/70 dark:bg-neutral-900/70': {},
+        },
+      });
+    }),
+    plugin(({ addUtilities }) => {
+      addUtilities({
+        '.all-\\[unset\\]': {
+          all: 'unset',
+        },
+      });
+    }),
+  ],
 };

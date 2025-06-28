@@ -19,18 +19,21 @@ export function BackgroundWrapper() {
       >
         <NightOfStars
           backgroundMode={resolvedTheme as any}
-          particleCount={500}
-          meteorCount={15}
-          meteorBaseSize={100}
-          particleSpread={30}
-          speed={0.05}
-          particleBaseSize={50}
-          moveParticlesOnHover={true}
-          alphaParticles={false}
-          disableRotation={false}
-          sizeRandomness={0.5}
-          particleHoverFactor={0}
-          cameraDistance={30}
+          particleCount={2000}
+          meteorCount={5}
+          particleSpread={10}
+          speed={0.1}
+          meteorSpeed={0.5}
+          // backgroundMode="night"
+          alphaParticles={true}
+          particleBaseSize={30}
+          meteorBaseSize={50}
+          sizeRandomness={0.7}
+          cameraDistance={25}
+          disableRotation={true}
+        // precessionRate={0.02}
+        // semiMajorAxisRange={[0.3, 0.8]}
+        // useSpirograph={false}  
         />
       </ClickSpark>
     </div>

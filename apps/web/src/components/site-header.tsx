@@ -1,17 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
 
 import { globalConfig } from '@/config/global';
-import { cn } from '@/lib/utils';
 import { useCompactHeader } from '@/hooks/use-compact-header';
 import { useElementDimensions } from '@/hooks/use-element-dimension';
 import { useWindowScroll } from '@/hooks/use-window-scroll';
+import { cn } from '@/lib/utils';
 
 import { I18NToggle } from './i18n-toggle';
-import { LiquidGlass } from './liquid-glass';
 import { MainNav } from './main-nav';
 import { ModeToggle } from './mode-toggle';
 
@@ -68,44 +67,34 @@ export function SiteHeader() {
         initial={false}
         className={cn(
           'fixed left-0 top-0 z-50 w-full',
-          clientThemeStyles, // Use client-side theme styles
-          isCompact && 'mr-auto pl-0'
+          clientThemeStyles,
+          isCompact && 'mr-auto pl-0 glass-base'
         )}
         animate={animationControls}
       >
-        {/* Rest of your header code */}
-        <LiquidGlass
-          variant="panel"
-          intensity="strong"
-          disableRipple={!isCompact}
-          disableHoverCursor={!isCompact}
-          disableStretch
-          className="relative flex flex-row items-center"
-          disabled={!isCompact}
+
+        <motion.div
+          className={cn(
+            'flex w-fit items-center justify-between rounded-2xl',
+            isCompact
+              ? 'py-1 px-2 md:py-3 md:px-4'
+              : `${DEFAULT_PADDING} md:ml-12`
+          )}
+          animate={{
+            height: isCompact ? COMPACT_HEIGHT : DEFAULT_HEIGHT,
+            padding: isCompact ? COMPACT_PADDING : DEFAULT_PADDING,
+          }}
+          transition={transitionConfig}
+          ref={headerRef}
         >
-          <motion.div
-            className={cn(
-              'flex w-fit items-center justify-between rounded-2xl',
-              isCompact
-                ? 'py-1 px-2 md:py-3 md:px-4'
-                : `${DEFAULT_PADDING} md:ml-12`
-            )}
-            animate={{
-              height: isCompact ? COMPACT_HEIGHT : DEFAULT_HEIGHT,
-              padding: isCompact ? COMPACT_PADDING : DEFAULT_PADDING,
-            }}
-            transition={transitionConfig}
-            ref={headerRef}
-          >
-            <MainNav items={globalConfig.header.nav} minimized={isCompact} />
-          </motion.div>
-        </LiquidGlass>
+          <MainNav items={globalConfig.header.nav} minimized={isCompact} />
+        </motion.div>
       </motion.header>
 
       <motion.div
         className={cn(
           `fixed top-0 right-12 z-50 space-x-2`,
-          isCompact && `ml-auto ${clientThemeStyles}`
+          isCompact ? `ml-auto mr-auto pl-0 glass-base ${clientThemeStyles} ` : 'bg-transparent shadow-none'
         )}
         animate={{
           left: 'auto',
@@ -116,45 +105,34 @@ export function SiteHeader() {
         }}
         transition={transitionConfig}
       >
-        <LiquidGlass
-          variant="panel"
-          intensity="strong"
-          disableRipple={!isCompact}
-          disableHoverCursor={!isCompact}
-          disableStretch
-          className="relative flex flex-row items-center"
-          disabled={!isCompact}
+        <motion.div
+          className={cn(
+            'flex items-center gap-2 rounded-2xl justify-end',
+            isCompact ? 'py-1 px-2 md:py-3 md:px-4' : `px-4`
+          )}
+          animate={{
+            height: isCompact ? COMPACT_HEIGHT : DEFAULT_HEIGHT,
+            borderRadius: isCompact ? COMPACT_BORDER_RADIUS : 0,
+          }}
+          transition={transitionConfig}
         >
-          <motion.div
-            className={cn(
-              'flex items-center gap-2 rounded-2xl justify-end',
-              clientThemeStyles, // Apply clientThemeStyles here
-              isCompact ? 'py-1 px-2 md:py-3 md:px-4' : `px-4`
-            )}
-            animate={{
-              height: isCompact ? COMPACT_HEIGHT : DEFAULT_HEIGHT,
-              borderRadius: isCompact ? COMPACT_BORDER_RADIUS : 0,
-            }}
-            transition={transitionConfig}
-          >
-            <div className="flex items-center gap-2">
-              <motion.div
-                variants={controlVariants}
-                animate={isCompact ? 'compact' : 'default'}
-                transition={transitionConfig}
-              >
-                <ModeToggle liquidGlassDisabled={!isCompact} />
-              </motion.div>
-              <motion.div
-                variants={controlVariants}
-                animate={isCompact ? 'compact' : 'default'}
-                transition={transitionConfig}
-              >
-                <I18NToggle liquidGlassDisabled={!isCompact} />
-              </motion.div>
-            </div>
-          </motion.div>
-        </LiquidGlass>
+          <div className="flex items-center gap-2">
+            <motion.div
+              variants={controlVariants}
+              animate={isCompact ? 'compact' : 'default'}
+              transition={transitionConfig}
+            >
+              <ModeToggle />
+            </motion.div>
+            <motion.div
+              variants={controlVariants}
+              animate={isCompact ? 'compact' : 'default'}
+              transition={transitionConfig}
+            >
+              <I18NToggle />
+            </motion.div>
+          </div>
+        </motion.div>
       </motion.div>
     </>
   );

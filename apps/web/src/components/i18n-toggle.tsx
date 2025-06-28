@@ -1,6 +1,5 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { FlagType } from '@/types';
 import {
@@ -17,20 +16,16 @@ import {
 } from '@floating-ui/react';
 import { AnimatePresence, Variants, motion } from 'framer-motion';
 import { useLocale } from 'next-intl';
+import { useCallback, useEffect, useState } from 'react';
 
-import { languageNames, supportedLanguages } from '@/config/language';
-import { cn } from '@/lib/utils';
-import { useTranslations } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
+import { languageNames, supportedLanguages } from '@/config/language';
+import { useTranslations } from '@/hooks/use-translations';
+import { cn } from '@/lib/utils';
 
 import { Flags } from './flag';
-import { LiquidGlass } from './liquid-glass';
 
-interface I18NToggleProps {
-  liquidGlassDisabled?: boolean;
-}
-
-export function I18NToggle({ liquidGlassDisabled = false }: I18NToggleProps) {
+export function I18NToggle() {
   const t = useTranslations('global.i18nToggle');
   const locale = useLocale();
   const router = useRouter();
@@ -64,7 +59,6 @@ export function I18NToggle({ liquidGlassDisabled = false }: I18NToggleProps) {
     [router, pathname]
   );
 
-  // Variants cho animation của từng item
   const itemVariants: Variants = {
     hidden: { opacity: 0, y: 10 },
     visible: (i: number) => ({
@@ -86,35 +80,28 @@ export function I18NToggle({ liquidGlassDisabled = false }: I18NToggleProps) {
 
   return (
     <motion.div layout="position" className="relative">
-      <LiquidGlass
-        variant="button-icon"
-        intensity="medium"
-        disabled={liquidGlassDisabled}
-        className="bg-transparent"
+      <Button
+        ref={refs.setReference}
+        {...getReferenceProps()}
+        variant="icon"
+        size="sm"
+        className="relative size-9 px-0 focus:outline-none"
       >
-        <Button
-          ref={refs.setReference}
-          {...getReferenceProps()}
-          variant="icon"
-          size="sm"
-          className="relative size-9 px-0 focus:outline-none"
-        >
-          <AnimatePresence mode="wait">
-            {FlagComponent && (
-              <motion.span
-                key={currentLang}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-              >
-                <FlagComponent className="size-5" />
-              </motion.span>
-            )}
-          </AnimatePresence>
-          <span className="sr-only">{t('Toggle language')}</span>
-        </Button>
-      </LiquidGlass>
+        <AnimatePresence mode="wait">
+          {FlagComponent && (
+            <motion.span
+              key={currentLang}
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+            >
+              <FlagComponent className="size-5" />
+            </motion.span>
+          )}
+        </AnimatePresence>
+        <span className="sr-only">{t('Toggle language')}</span>
+      </Button>
 
       <FloatingPortal>
         <AnimatePresence>
@@ -132,43 +119,37 @@ export function I18NToggle({ liquidGlassDisabled = false }: I18NToggleProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ type: 'spring', stiffness: 130, damping: 10 }}
-                className="overflow-visible"
+                className={cn(
+                  'mt-0 min-w-[160px] rounded-md p-1 shadow-2xl overflow-hidden',
+                  'glass-base'
+                )}
               >
-                <LiquidGlass
-                  variant="panel"
-                  intensity="strong"
-                  disableStretch
-                  className="overflow-hidden mt-0 min-w-[160px] rounded-md border-none p-1 text-sm shadow-2xl hover:border-none hover:shadow-2xl"
-                >
-                  {supportedLanguages.map((lang, index) => {
-                    const Flag = Flags[lang];
-                    return (
-                      <motion.div
-                        key={lang}
-                        custom={index}
-                        variants={itemVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        onClick={() => changeLanguage(lang)}
-                        className={cn(
-                          'flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
-                          lang === locale
-                            ? 'bg-muted text-primary'
-                            : 'text-muted-foreground hover:bg-muted'
-                        )}
-                      >
-                        <Flag className="size-5" />
-                        <span>
-                          {t(languageNames[lang])}{' '}
-                          <span className="uppercase tracking-wide">
-                            {lang}
-                          </span>
-                        </span>
-                      </motion.div>
-                    );
-                  })}
-                </LiquidGlass>
+                {supportedLanguages.map((lang, index) => {
+                  const Flag = Flags[lang];
+                  return (
+                    <motion.div
+                      key={lang}
+                      custom={index}
+                      variants={itemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      onClick={() => changeLanguage(lang)}
+                      className={cn(
+                        'flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
+                        lang === locale
+                          ? 'bg-muted text-primary'
+                          : 'text-muted-foreground hover:bg-muted'
+                      )}
+                    >
+                      <Flag className="size-5" />
+                      <span>
+                        {t(languageNames[lang])}{' '}
+                        <span className="uppercase tracking-wide">{lang}</span>
+                      </span>
+                    </motion.div>
+                  );
+                })}
               </motion.div>
             </div>
           )}

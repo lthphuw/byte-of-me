@@ -1,7 +1,11 @@
-// import * as dotenv from 'dotenv';
-import { prisma, User } from '../src';
+/* The above code is a comment block in TypeScript. It appears to be attempting to import the `dotenv`
+module using the `import` statement, but the actual import statement is commented out with ` */
+import { PrismaClient, User } from '@prisma/client';
+import * as dotenv from 'dotenv';
 
-// dotenv.config();
+const prisma = new PrismaClient();
+
+dotenv.config();
 type PrismaModel = {
   deleteMany: () => Promise<any>;
 };
@@ -58,13 +62,14 @@ main()
 
 async function cleanData() {
   // Clear data in correct order with safe deletion
+  await safeDeleteMany(prisma.translation, 'translation');
   await safeDeleteMany(prisma.blogTag, 'BlogTag');
-  await safeDeleteMany(prisma.techStackOnProjects, 'ProjectTechStack');
-  await safeDeleteMany(prisma.techStackOnExperiences, 'ProjectTechStack');
+  await safeDeleteMany(prisma.techStackOnProjects, 'techStackOnProjects');
+  await safeDeleteMany(prisma.techStackOnExperiences, 'techStackOnExperiences');
   await safeDeleteMany(prisma.educationSubItem, 'EducationSubItem');
   await safeDeleteMany(prisma.task, 'Task');
-  await safeDeleteMany(prisma.translation, 'Translation');
   await safeDeleteMany(prisma.blog, 'Blog');
+  await safeDeleteMany(prisma.tagsOnProjects, 'tagsOnProjects');
   await safeDeleteMany(prisma.project, 'Project');
   await safeDeleteMany(prisma.experienceRole, 'Experience');
   await safeDeleteMany(prisma.experience, 'Experience');
@@ -92,13 +97,20 @@ async function seedUser() {
             I enjoy learning new things and have a strong interest in open - source projects, where I often discover useful ideas and best practices.These experiences help me build better and more efficient solutions. For me, growth doesn’t just come from work—it also comes from self - exploration and continuous learning.That’s what truly drives my development.`,
       bio: 'A passionate developer exploring the world of open-source and modern web technologies.',
       aboutMe: `
-                 <p>
-                    I'm a junior full-stack developer, mainly focused on backend development. I enjoy building high-performance, scalable systems and have hands-on experience with Golang, Node.js, and Python. While backend is my strong suit, I've also worked with frontend technologies like React.js and Next.js. I’ve dabbled in AI too, doing some research and building simple models. I'm always eager to learn and grow through real-world projects.
-                </p>
-                <p>
-                    Moving forward, I aim to deepen my knowledge in system design, distributed systems, and AI integration – with the goal of building smart, efficient, and reliable software at scale.
-                </p>
-            `,
+    <div class="text-sm md:text-base space-y-2">
+      <p>
+        <strong>Full name:</strong> Luong Thanh Hoang Phu<br />
+        <strong>Date of birth:</strong> August 22, 2001<br />
+        <strong>Location:</strong> Ho Chi Minh City, Vietnam
+      </p>
+      <p>
+        I'm a junior full-stack developer, mainly focused on backend development. I enjoy building high-performance, scalable systems and have hands-on experience with Golang, Node.js, and Python. While backend is my strong suit, I've also worked with frontend technologies like React.js and Next.js. I’ve dabbled in AI too, doing some research and building simple models. I'm always eager to learn and grow through real-world projects.
+      </p>
+      <p>
+        Moving forward, I aim to deepen my knowledge in system design, distributed systems, and AI integration – with the goal of building smart, efficient, and reliable software at scale.
+      </p>
+    </div>
+  `,
       linkedIn: 'www.linkedin.com/in/phu-lth',
       github: 'https://github.com/lthphuw',
       translations: {
@@ -180,40 +192,58 @@ async function seedUser() {
             language: 'en',
             field: 'aboutMe',
             value: `
-                          <p>
-                            I'm a junior full-stack developer, mainly focused on backend development. I enjoy building high-performance, scalable systems and have hands-on experience with Golang, Node.js, and Python. While backend is my strong suit, I've also worked with frontend technologies like React.js and Next.js. I’ve dabbled in AI too, doing some research and building simple models. I'm always eager to learn and grow through real-world projects.
-                          </p>
-                          <p>
-                            Moving forward, I aim to deepen my knowledge in system design, distributed systems, and AI integration – with the goal of building smart, efficient, and reliable software at scale.
-                          </p>
-                          
-                        `,
+    <div class="text-sm md:text-base space-y-2">
+      <p>
+        <strong>Full name:</strong> Luong Thanh Hoang Phu<br />
+        <strong>Date of birth:</strong>  20/11/2002 <br />
+        <strong>Location:</strong> Ho Chi Minh City, Vietnam
+      </p>
+      <p>
+        I'm a junior full-stack developer, mainly focused on backend development. I enjoy building high-performance, scalable systems and have hands-on experience with Golang, Node.js, and Python. While backend is my strong suit, I've also worked with frontend technologies like React.js and Next.js. I’ve dabbled in AI too, doing some research and building simple models. I'm always eager to learn and grow through real-world projects.
+      </p>
+      <p>
+        Moving forward, I aim to deepen my knowledge in system design, distributed systems, and AI integration – with the goal of building smart, efficient, and reliable software at scale.
+      </p>
+    </div>
+  `,
           },
           {
             language: 'vi',
             field: 'aboutMe',
             value: `
-                          <p>
-                            Mình là một lập trình viên full-stack (junior), chủ yếu tập trung vào backend. Mình thích xây dựng những hệ thống hiệu suất cao, dễ mở rộng, và đã có kinh nghiệm thực chiến với Golang, Node.js, và Python. Dù backend là sở trường, mình cũng đã làm việc với một số công nghệ frontend như React.js và Next.js. Ngoài ra, mình có chút kinh nghiệm với AI, từng nghiên cứu và phát triển vài mô hình đơn giản. Mình luôn háo hức học hỏi và phát triển thông qua các dự án thực tế.
-                          </p>
-                          <p>
-                            Trong tương lai, mình muốn đào sâu hơn về thiết kế hệ thống, hệ thống phân tán, và tích hợp AI – hướng tới việc xây dựng phần mềm thông minh, hiệu quả, và đáng tin cậy ở quy mô lớn.
-                          </p>
-                          
-                        `,
+    <div class="text-sm md:text-base space-y-2">
+      <p>
+        <strong>Họ tên:</strong> Lương Thanh Hoàng Phú<br />
+        <strong>Ngày sinh:</strong> 20/11/2002 <br />
+        <strong>Địa chỉ:</strong> TP. Hồ Chí Minh, Việt Nam
+      </p>
+      <p>
+        Mình là một lập trình viên full-stack junior, tập trung chủ yếu vào mảng backend. Mình yêu thích xây dựng các hệ thống hiệu năng cao, có khả năng mở rộng và từng làm việc thực tế với Golang, Node.js và Python. Ngoài ra, mình cũng đã làm frontend với React.js và Next.js. Mình từng thử sức với AI, nghiên cứu và xây dựng vài mô hình đơn giản. Mình luôn mong muốn học hỏi và trưởng thành thông qua các dự án thực tế.
+      </p>
+      <p>
+        Trong thời gian tới, mình hướng đến việc đào sâu hơn về thiết kế hệ thống, hệ phân tán và tích hợp AI – với mục tiêu xây dựng phần mềm thông minh, hiệu quả và tin cậy ở quy mô lớn.
+      </p>
+    </div>
+  `,
           },
           {
             language: 'fr',
             field: 'aboutMe',
             value: `
-                          <p>
-                            Je suis développeur full-stack junior, avec une préférence pour le backend. J'aime concevoir des systèmes performants et évolutifs, et j'ai de l'expérience pratique avec Golang, Node.js et Python. Même si le backend est mon domaine principal, j’ai aussi travaillé avec des technos frontend comme React.js et Next.js. J’ai également un peu touché à l’IA, en développant quelques modèles simples. J’aime apprendre en pratiquant, à travers des projets concrets.
-                          </p>
-                          <p>
-                            À l’avenir, je souhaite approfondir mes compétences en conception de systèmes, en systèmes distribués, et en intégration d’IA – pour créer des logiciels intelligents, fiables et efficaces à grande échelle.
-                          </p>
-                         
-                        `,
+    <div class="text-sm md:text-base space-y-2">
+      <p>
+        <strong>Nom complet :</strong> Luong Thanh Hoang Phu<br />
+        <strong>Date de naissance :</strong> 20/11/2002 <br />
+        <strong>Lieu :</strong> Hô Chi Minh-Ville, Vietnam
+      </p>
+      <p>
+        Je suis un développeur full-stack junior, spécialisé principalement dans le développement backend. J’aime construire des systèmes performants et évolutifs, et j’ai de l’expérience pratique avec Golang, Node.js et Python. Bien que le backend soit mon point fort, j’ai également travaillé avec des technologies frontend comme React.js et Next.js. J’ai aussi exploré l’IA, fait de la recherche et créé quelques modèles simples. Je suis toujours motivé à apprendre et progresser à travers des projets concrets.
+      </p>
+      <p>
+        À l’avenir, je souhaite approfondir mes connaissances en conception de systèmes, systèmes distribués et intégration de l’IA – dans le but de créer des logiciels intelligents, efficaces et fiables à grande échelle.
+      </p>
+    </div>
+  `,
           },
         ],
       },
@@ -722,6 +752,49 @@ async function seedEducations(user: User) {
           },
         ],
       },
+      subItems: {
+        create: [
+          {
+            title: 'Vietnam National High School Graduation Examination',
+            message: '<p>Scored <strong>28.65 / 30.00</strong>.</p>',
+            translations: {
+              create: [
+                {
+                  language: 'en',
+                  field: 'title',
+                  value: 'Vietnam National High School Graduation Examination',
+                },
+                {
+                  language: 'vi',
+                  field: 'title',
+                  value: 'Kỳ thi Tốt nghiệp THPT Quốc gia',
+                },
+                {
+                  language: 'fr',
+                  field: 'title',
+                  value:
+                    "Examen National de Fin d'Études Secondaires (Vietnam)",
+                },
+                {
+                  language: 'en',
+                  field: 'message',
+                  value: '<p>Scored <strong>28.65 / 30.00</strong>.</p>',
+                },
+                {
+                  language: 'vi',
+                  field: 'message',
+                  value: '<p>Đạt <strong>28.65 / 30.00</strong> điểm.</p>',
+                },
+                {
+                  language: 'fr',
+                  field: 'message',
+                  value: '<p>Score de <strong>28.65 / 30.00</strong>.</p>',
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
   });
 }
@@ -1084,7 +1157,7 @@ async function seedExperiences(user: User) {
       roles: [
         {
           title: 'Software Engineer - Intern 2',
-          startDate: new Date('2023-10-30'),
+          startDate: new Date('2023-11-30'),
           endDate: new Date('2024-02-29'),
           tasks: [
             'Wrote cryptography Go package.',
@@ -1095,7 +1168,7 @@ async function seedExperiences(user: User) {
         {
           title: 'Software Engineer - Intern 1',
           startDate: new Date('2023-08-01'),
-          endDate: new Date('2023-10-30'),
+          endDate: new Date('2023-11-30'),
           tasks: [
             'Built React component library.',
             'Developed Next.js apps with SSR, CSR, ISR.',

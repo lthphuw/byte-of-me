@@ -14,6 +14,7 @@ import {
   FileText,
   Fingerprint,
   FolderCog,
+  FolderSearch,
   Frown,
   Github,
   HelpCircle,
@@ -151,4 +152,5 @@ export const Icons = {
       <path d="m16 16-1.9-1.9" />
     </svg>
   ),
+  folderSearch: FolderSearch,
 };

@@ -3,8 +3,6 @@
 import Image from 'next/image';
 import { Variants, motion } from 'framer-motion';
 
-import { LiquidGlass } from './liquid-glass';
-
 export interface TechItem {
   name: string;
   logo: string; // image src
@@ -22,7 +20,6 @@ export interface TechStackProps {
 }
 
 export function TechStack({ groups, className, style }: TechStackProps) {
-  // Animation variants for the group container
   const groupVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: (i: number) => ({
@@ -36,7 +33,6 @@ export function TechStack({ groups, className, style }: TechStackProps) {
     }),
   };
 
-  // Animation variants for individual tech items
   const itemVariants: Variants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: (j: number) => ({
@@ -65,14 +61,9 @@ export function TechStack({ groups, className, style }: TechStackProps) {
           viewport={{ once: true, amount: 0.2 }}
           className="h-full"
         >
-          <LiquidGlass
-            variant="panel"
-            intensity="medium"
-            disableStretch
-            className="p-5 h-full"
-          >
-            <div className="flex flex-col gap-4 rounded-2xl">
-              <h3 className="text-lg font-semibold  md:text-xl">
+          <div className="glass-base p-5 h-full rounded-2xl shadow-xl dark:shadow-[0_4px_12px_rgba(255,255,255,0.04)]">
+            <div className="flex flex-col gap-4">
+              <h3 className="text-lg font-semibold md:text-xl">
                 {group.title}
               </h3>
               <div className="flex flex-wrap gap-4 justify-start">
@@ -102,7 +93,7 @@ export function TechStack({ groups, className, style }: TechStackProps) {
                 ))}
               </div>
             </div>
-          </LiquidGlass>
+          </div>
         </motion.div>
       ))}
     </div>

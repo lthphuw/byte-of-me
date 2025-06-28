@@ -1,6 +1,5 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FloatingPortal,
   autoUpdate,
@@ -15,31 +14,27 @@ import {
   useRole,
 } from '@floating-ui/react';
 import { AnimatePresence, Variants, motion } from 'framer-motion';
-import { debounce } from 'lodash';
-import { Search } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { Item, Trie } from '@/lib/core/algorithms/trie';
-import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-
-import { LiquidGlass } from './liquid-glass';
+import { cn } from '@/lib/utils';
+import { Icons } from './icons';
 
 export interface SearchItem {
   id: string;
   label: string;
+  desc?: string;
 }
 
 export interface SearchBarProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   onItemSelect?: (item: SearchItem) => void;
-
   previewItems?: SearchItem[];
   isLoading: boolean;
   setIsLoading: (flag: boolean) => void;
 }
 
-// Variants cho animation của từng item
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 10 },
   visible: (i: number) => ({
@@ -66,11 +61,7 @@ export function SearchBar({
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    if (previewItems.length > 0 && searchQuery) {
-      setIsOpen(true);
-    } else {
-      setIsOpen(false);
-    }
+    setIsOpen(previewItems.length > 0 && !!searchQuery);
   }, [previewItems, searchQuery]);
 
   const { refs, floatingStyles, context } = useFloating({
@@ -96,72 +87,102 @@ export function SearchBar({
   });
 
   const { getReferenceProps, getFloatingProps } = useInteractions([
-    // useClick(context, { enabled: prefixResults.length > 0 }),
     useFocus(context, { enabled: previewItems.length > 0 }),
     useDismiss(context),
     useRole(context),
   ]);
 
+  // Function to highlight search query in text
+  const highlightText = useCallback(
+    (text: string, query: string) => {
+      if (!query) return text;
+      const parts = text.split(new RegExp(`(${query})`, 'gi'));
+      return parts.map((part, index) =>
+        part.toLowerCase() === query.toLowerCase() ? (
+          <strong key={index} className="font-bold">
+            {part}
+          </strong>
+        ) : (
+          <span key={index}>{part}</span>
+        )
+      );
+    },
+    [searchQuery]
+  );
+
+  // Function to display a search item with highlighted query
+  const displayItem = useCallback(
+    (item: SearchItem) => {
+      const labelParts = highlightText(item.label, searchQuery);
+      const descParts = item.desc ? highlightText(item.desc, searchQuery) : null;
+      return (
+        <>
+          {labelParts}
+          {descParts && (
+            <>
+              <span className="mx-1">|</span>
+              {descParts}
+            </>
+          )}
+        </>
+      );
+    },
+    [searchQuery, highlightText]
+  );
+
   return (
     <motion.div layout="position" className="relative mb-6">
-      <LiquidGlass
-        variant="button"
-        intensity="medium"
-        className="bg-transparent rounded-xl overflow-hidden"
-        disablePress
-        disableJiggle
-        disableStretch
-        disableRipple
+      {/* Input with glass & shadow */}
+      <div
+        className="glass-base shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] rounded-xl overflow-hidden w-full"
+        style={{ willChange: 'transform, opacity, backdrop-filter' }}
+        ref={refs.setReference}
+        {...getReferenceProps()}
       >
-        <div
-          className="relative w-full"
-          ref={refs.setReference}
-          {...getReferenceProps()}
-        >
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
-          <Input
-            type="text"
-            placeholder="Search projects..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="px-10 py-3 h-full w-full rounded-md"
-          />
-          {isLoading && (
-            <div className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2">
-              <svg
-                className="animate-spin h-4 w-4 text-gray-500"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-            </div>
-          )}
-        </div>
-      </LiquidGlass>
+        <Icons.folderSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+        <Input
+          type="text"
+          placeholder="Search projects..."
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setIsLoading(true); // Set loading state when query changes
+          }}
+          className="px-10 py-3 h-full w-full rounded-xl"
+        />
+        {isLoading && (
+          <div className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2">
+            <svg
+              className="animate-spin h-4 w-4 text-gray-500"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+          </div>
+        )}
+      </div>
 
+      {/* Result list popup */}
       <FloatingPortal>
         <AnimatePresence>
           {isOpen && (
             <div
               ref={refs.setFloating}
-              style={{
-                ...floatingStyles,
-                zIndex: 60,
-              }}
+              style={{ ...floatingStyles, zIndex: 40 }}
               {...getFloatingProps()}
             >
               <motion.div
@@ -170,32 +191,18 @@ export function SearchBar({
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ type: 'spring', stiffness: 130, damping: 10 }}
               >
-                <LiquidGlass
-                  variant="panel"
-                  intensity="strong"
-                  className="mt-0 min-w-[160px] rounded-md border-none p-1 text-sm shadow-2xl hover:border-none hover:shadow-2xl"
-                  disableHoverCursor
-                  disableJiggle
-                  disableRipple
-                  disableStretch
-                  disablePress
-                >
-                  {previewItems.map((it, index) => (
+                <div className="glass-base shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] mt-0 min-w-[160px] rounded-md border-none p-1 text-sm">
+                  {previewItems.map((item, index) => (
                     <motion.div
-                      key={it.id}
+                      key={item.id}
                       custom={index}
                       variants={itemVariants}
                       initial="hidden"
                       animate="visible"
                       exit="exit"
                       onClick={() => {
-                        const selectedItem = previewItems.find(
-                          (item) => item.id === it.id
-                        );
-                        if (selectedItem) {
-                          onItemSelect?.(selectedItem);
-                          setIsOpen(false);
-                        }
+                        onItemSelect?.(item);
+                        setIsOpen(false);
                       }}
                       className={cn(
                         'flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
@@ -204,11 +211,11 @@ export function SearchBar({
                       )}
                     >
                       <span className="tracking-wide font-medium line-clamp-1">
-                        {it.label}
+                        {displayItem(item)}
                       </span>
                     </motion.div>
                   ))}
-                </LiquidGlass>
+                </div>
               </motion.div>
             </div>
           )}
