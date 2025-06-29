@@ -15,14 +15,14 @@ export const globalConfig: GlobalConfig = {
         title: 'Projects',
         href: '/projects',
       },
-      {
-        title: 'Hobbies',
-        href: '/hobbies',
-      },
-      {
-        title: 'More',
-        href: '/more',
-      },
+      // {
+      //   title: 'Hobbies',
+      //   href: '/hobbies',
+      // },
+      // {
+      //   title: 'More',
+      //   href: '/more',
+      // },
       {
         title: "Let's talk",
         href: '/contact',

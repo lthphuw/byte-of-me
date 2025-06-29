@@ -1,14 +1,14 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
 
 import { globalConfig } from '@/config/global';
+import { cn } from '@/lib/utils';
 import { useCompactHeader } from '@/hooks/use-compact-header';
 import { useElementDimensions } from '@/hooks/use-element-dimension';
 import { useWindowScroll } from '@/hooks/use-window-scroll';
-import { cn } from '@/lib/utils';
 
 import { I18NToggle } from './i18n-toggle';
 import { MainNav } from './main-nav';
@@ -72,7 +72,6 @@ export function SiteHeader() {
         )}
         animate={animationControls}
       >
-
         <motion.div
           className={cn(
             'flex w-fit items-center justify-between rounded-2xl',
@@ -94,7 +93,9 @@ export function SiteHeader() {
       <motion.div
         className={cn(
           `fixed top-0 right-12 z-50 space-x-2`,
-          isCompact ? `ml-auto mr-auto pl-0 glass-base ${clientThemeStyles} ` : 'bg-transparent shadow-none'
+          isCompact
+            ? `ml-auto mr-auto pl-0 glass-base ${clientThemeStyles} `
+            : 'bg-transparent shadow-none'
         )}
         animate={{
           left: 'auto',
@@ -108,7 +109,7 @@ export function SiteHeader() {
         <motion.div
           className={cn(
             'flex items-center gap-2 rounded-2xl justify-end',
-            isCompact ? 'py-1 px-2 md:py-3 md:px-4' : `px-4`
+            isCompact ? 'py-1 px-2 md:py-3 md:px-4' : `md:px-4`
           )}
           animate={{
             height: isCompact ? COMPACT_HEIGHT : DEFAULT_HEIGHT,

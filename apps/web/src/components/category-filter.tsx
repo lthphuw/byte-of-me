@@ -1,5 +1,7 @@
 'use client';
 
+import { BaseSelectItem } from '@/types';
+
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -8,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { BaseSelectItem } from '@/types';
 
 interface CategoryFilterProps {
   techstacks: BaseSelectItem[];

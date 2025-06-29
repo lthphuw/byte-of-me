@@ -34,7 +34,10 @@ const lightMeteorColors: string[] = ['#000000', '#333300', '#222200']; // Black,
 const hexToRgb = (hex: string): [number, number, number] => {
   hex = hex.replace(/^#/, '');
   if (hex.length === 3) {
-    hex = hex.split('').map((c) => c + c).join('');
+    hex = hex
+      .split('')
+      .map((c) => c + c)
+      .join('');
   }
   const int = parseInt(hex, 16);
   const r = ((int >> 16) & 255) / 255;
@@ -200,12 +203,18 @@ export const NightOfStars: React.FC<NightOfStarsProps> = ({
     }
 
     // Select color palette based on background mode
-    const starPalette = particleColors && particleColors.length > 0
-      ? particleColors
-      : (backgroundMode === 'night' ? nightColors : lightColors);
-    const _meteorPalette = meteorColors && meteorColors.length > 0
-      ? meteorColors
-      : (backgroundMode === 'night' ? nightMeteorColors : lightMeteorColors);
+    const starPalette =
+      particleColors && particleColors.length > 0
+        ? particleColors
+        : backgroundMode === 'night'
+        ? nightColors
+        : lightColors;
+    const _meteorPalette =
+      meteorColors && meteorColors.length > 0
+        ? meteorColors
+        : backgroundMode === 'night'
+        ? nightMeteorColors
+        : lightMeteorColors;
 
     // Data for stars
     const starCount = particleCount;
@@ -236,7 +245,9 @@ export const NightOfStars: React.FC<NightOfStarsProps> = ({
         [Math.random(), Math.random(), Math.random(), Math.random()],
         i * 4
       );
-      const col = hexToRgb(starPalette[Math.floor(Math.random() * starPalette.length)]);
+      const col = hexToRgb(
+        starPalette[Math.floor(Math.random() * starPalette.length)]
+      );
       starColors.set(col, i * 3);
     }
 
@@ -255,7 +266,9 @@ export const NightOfStars: React.FC<NightOfStarsProps> = ({
         [Math.random(), Math.random(), Math.random(), Math.random()],
         i * 4
       );
-      const col = hexToRgb(_meteorPalette[Math.floor(Math.random() * _meteorPalette.length)]);
+      const col = hexToRgb(
+        _meteorPalette[Math.floor(Math.random() * _meteorPalette.length)]
+      );
       _meteorColors.set(col, i * 3);
     }
 
@@ -362,4 +375,3 @@ export const NightOfStars: React.FC<NightOfStarsProps> = ({
     <div ref={containerRef} className={`relative w-full h-full ${className}`} />
   );
 };
-

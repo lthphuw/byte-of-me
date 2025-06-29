@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback, useEffect, useState } from 'react';
 import {
   FloatingPortal,
   autoUpdate,
@@ -14,10 +15,10 @@ import {
   useRole,
 } from '@floating-ui/react';
 import { AnimatePresence, Variants, motion } from 'framer-motion';
-import { useCallback, useEffect, useState } from 'react';
 
-import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+
 import { Icons } from './icons';
 
 export interface SearchItem {
@@ -114,7 +115,9 @@ export function SearchBar({
   const displayItem = useCallback(
     (item: SearchItem) => {
       const labelParts = highlightText(item.label, searchQuery);
-      const descParts = item.desc ? highlightText(item.desc, searchQuery) : null;
+      const descParts = item.desc
+        ? highlightText(item.desc, searchQuery)
+        : null;
       return (
         <>
           {labelParts}

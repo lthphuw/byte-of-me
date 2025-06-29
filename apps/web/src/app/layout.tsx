@@ -6,11 +6,12 @@ import '@/styles/globals.css';
 import { Viewport } from 'next';
 
 import { host } from '@/config/config';
+
 import '/node_modules/flag-icons/css/flag-icons.min.css';
 
 export const metadata = {
   title: {
-    default: "Lương Thanh Hoàng Phú",
+    default: 'Lương Thanh Hoàng Phú',
     template: `%s | Phú`,
   },
   description: siteConfig.description,

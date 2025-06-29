@@ -31,9 +31,9 @@ export function BackgroundWrapper() {
           sizeRandomness={0.7}
           cameraDistance={25}
           disableRotation={true}
-        // precessionRate={0.02}
-        // semiMajorAxisRange={[0.3, 0.8]}
-        // useSpirograph={false}  
+          // precessionRate={0.02}
+          // semiMajorAxisRange={[0.3, 0.8]}
+          // useSpirograph={false}
         />
       </ClickSpark>
     </div>

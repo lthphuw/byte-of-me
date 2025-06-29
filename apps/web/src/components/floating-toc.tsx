@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+import Link from 'next/link';
 import {
   autoUpdate,
   flip,
@@ -11,13 +13,17 @@ import {
   useInteractions,
 } from '@floating-ui/react';
 import { AnimatePresence, Variants, motion } from 'framer-motion';
-import Link from 'next/link';
-import { useState } from 'react';
+import { useTheme } from 'next-themes';
 
 import { useTranslations } from '@/hooks/use-translations';
-import { useTheme } from 'next-themes';
+
 import { Icons } from './icons';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip';
 
 interface TocItem {
   href: string;
@@ -27,7 +33,6 @@ interface TocItem {
 interface FloatingTocProps {
   items: TocItem[];
 }
-
 
 const panelVariants: Variants = {
   hidden: { opacity: 0, x: 30 },
@@ -48,7 +53,6 @@ const panelVariants: Variants = {
     },
   },
 };
-
 
 export function FloatingToc({ items }: FloatingTocProps) {
   const t = useTranslations('global');
@@ -75,7 +79,7 @@ export function FloatingToc({ items }: FloatingTocProps) {
       ? 'shadow-[0_4px_24px_rgba(255,255,255,0.06)]'
       : 'shadow-xl';
 
-  console.log("theme: ", theme);
+  console.log('theme: ', theme);
   return (
     <>
       {/* Docked TOC indicator */}
@@ -109,9 +113,7 @@ export function FloatingToc({ items }: FloatingTocProps) {
               </div>
             </TooltipContent>
           </Tooltip>
-
         </TooltipProvider>
-
       </div>
 
       {/* Full TOC popup */}

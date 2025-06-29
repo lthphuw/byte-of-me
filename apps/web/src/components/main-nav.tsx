@@ -1,5 +1,8 @@
 'use client';
 
+import * as React from 'react';
+import { useSelectedLayoutSegment } from 'next/navigation';
+import { Link } from '@/i18n/navigation';
 import { MainNavItem } from '@/types';
 import {
   FloatingPortal,
@@ -10,16 +13,13 @@ import {
   useInteractions,
 } from '@floating-ui/react';
 import { Variants, motion } from 'framer-motion';
-import { useSelectedLayoutSegment } from 'next/navigation';
-import * as React from 'react';
+import { useLocale } from 'next-intl';
 
+import { siteConfig } from '@/config/site';
+import { cn } from '@/lib/utils';
+import { useTranslations } from '@/hooks/use-translations';
 import { Icons } from '@/components/icons';
 import { MobileNav } from '@/components/mobile-nav';
-import { siteConfig } from '@/config/site';
-import { useTranslations } from '@/hooks/use-translations';
-import { Link } from '@/i18n/navigation';
-import { cn } from '@/lib/utils';
-import { useLocale } from 'next-intl';
 
 interface MainNavProps {
   items?: MainNavItem[];
@@ -93,7 +93,11 @@ export function MainNav({ items, children, minimized }: MainNavProps) {
 
   return (
     <div className="flex gap-6 md:gap-10">
-      <Link href="/" locale={locale} className="hidden items-center space-x-2 md:flex">
+      <Link
+        href="/"
+        locale={locale}
+        className="hidden items-center space-x-2 md:flex"
+      >
         <motion.div
           variants={logoAnimVariants}
           animate={minimized ? 'minimized' : 'initial'}

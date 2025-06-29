@@ -1,9 +1,6 @@
 import { SiteConfig } from '@/types';
 
-
-
 import { host } from './config';
-
 
 export const siteConfig: SiteConfig = {
   name: 'Byte of me',

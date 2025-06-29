@@ -70,7 +70,9 @@ export function ContactContent() {
           },
         ].map((item, index) => (
           <motion.div key={item.href} variants={itemVariants}>
-            <div className="glass-base w-[216px] h-[184px] rounded-xl shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)]">
+            <div
+              className="glass-base cursor-pointer px-4 py-6 w-full min-h-[97px] md:w-[216px] md:min-h-[184px] flex flex-col justify-center align-center rounded-xl gap-4 shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)]"
+            >
               <Link
                 href={item.href}
                 target="_blank"

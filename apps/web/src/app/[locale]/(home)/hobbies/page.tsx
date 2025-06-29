@@ -1,3 +1,4 @@
+import { HobbiesContent } from '@/components/hobbies-content';
 import { HobbiesShell } from '@/components/shell';
 
 // Next.js will invalidate the cache when a
@@ -9,6 +10,11 @@ export const revalidate = 86400;
 // Next.js will server-render the page on-demand.
 export const dynamicParams = true; // or false, to 404 on unknown paths
 
+
 export default async function HobbiesPage() {
-  return <HobbiesShell></HobbiesShell>;
+  return (
+    <HobbiesShell>
+      <HobbiesContent />
+    </HobbiesShell>
+  );
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { FlagType } from '@/types';
 import {
@@ -16,12 +17,11 @@ import {
 } from '@floating-ui/react';
 import { AnimatePresence, Variants, motion } from 'framer-motion';
 import { useLocale } from 'next-intl';
-import { useCallback, useEffect, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { languageNames, supportedLanguages } from '@/config/language';
-import { useTranslations } from '@/hooks/use-translations';
 import { cn } from '@/lib/utils';
+import { useTranslations } from '@/hooks/use-translations';
+import { Button } from '@/components/ui/button';
 
 import { Flags } from './flag';
 

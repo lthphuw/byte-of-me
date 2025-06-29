@@ -1,11 +1,11 @@
 'use client';
 
-import { debounce } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
+import { debounce } from 'lodash';
 
+import { Trie } from '@/lib/core/algorithms/trie';
 import { CategoryFilter } from '@/components/category-filter';
 import { SearchBar, SearchItem } from '@/components/search-bar';
-import { Trie } from '@/lib/core/algorithms/trie';
 
 import { Project, ProjectList } from './project-list';
 
@@ -54,8 +54,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
   const categorizedProjects = useMemo(() => {
     return projects.filter(
       (it) =>
-        (!selectedTag ||
-          it.tags.some((tag) => tag.id === selectedTag)) &&
+        (!selectedTag || it.tags.some((tag) => tag.id === selectedTag)) &&
         (!selectedTechstack ||
           it.techstacks.some((stack) => stack.id === selectedTechstack))
     );

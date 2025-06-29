@@ -2,13 +2,16 @@ import {
   AlertTriangle,
   ArrowLeft,
   ArrowRight,
+  AudioLines,
   Bug,
   Check,
   ChevronLeft,
   ChevronRight,
+  Code,
   Contact,
   Copy,
   CreditCard,
+  Dumbbell,
   Facebook,
   File,
   FileText,
@@ -32,11 +35,11 @@ import {
   Plus,
   Settings,
   SunMedium,
+  Swords,
   Trash,
   Twitter,
   User,
-  X,
-  type Icon as LucideIcon,
+  X
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -153,4 +156,8 @@ export const Icons = {
     </svg>
   ),
   folderSearch: FolderSearch,
+  game: Swords,
+  music: AudioLines,
+  exercise: Dumbbell,
+  coding: Code,
 };

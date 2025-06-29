@@ -15,7 +15,7 @@ export const dynamicParams = true; // or false, to 404 on unknown paths
 
 export default async function ExperiencesPage() {
   const experiences = await fetchData<CompanyExperience[]>('me/experiences', {
-    cache: 'no-cache'
+    cache: 'no-cache',
   });
   return (
     <ExperienceShell>

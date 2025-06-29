@@ -65,9 +65,7 @@ export const ProjectItem: FC<ProjectItemProps> = ({
       variants={itemVariants}
       {...motionProps}
     >
-      <div
-        className="glass-base min-w-[160px] rounded-2xl border-none p-1 text-sm shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)]"
-      >
+      <div className="glass-base min-w-[160px] rounded-2xl border-none p-1 text-sm shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)]">
         <div className="flex h-full flex-col items-stretch gap-2 p-6 rounded-2xl">
           <h2 className="text-lg font-semibold mb-2">{project.title}</h2>
           <div className="flex gap-2 flex-wrap">
