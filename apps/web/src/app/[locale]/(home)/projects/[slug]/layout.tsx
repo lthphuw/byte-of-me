@@ -1,5 +1,5 @@
-import type { Metadata } from 'next';
 import { Project } from '@db/index';
+import type { Metadata } from 'next';
 
 import { fetchData } from '@/lib/fetch';
 
@@ -11,7 +11,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const slug = (await params).slug;
 
   const project = await fetchData<Project>(`me/projects/${slug}`);
-
   if (!project) {
     return {
       title: 'Not found project...',

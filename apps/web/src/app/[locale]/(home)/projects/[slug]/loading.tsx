@@ -29,7 +29,7 @@ export default function ProjectDetailsLoading() {
         </div>
 
         {/* Fake code block */}
-        <div className="bg-slate-200 dark:bg-slate-800 p-4 rounded-lg space-y-2">
+        <div className="p-4 rounded-lg space-y-2">
           <Skeleton className="h-4 w-5/6" />
           <Skeleton className="h-4 w-2/3" />
           <Skeleton className="h-4 w-3/4" />

@@ -27,7 +27,7 @@ export const metadata = {
   ],
   authors: [{ name: 'lthphuw', url: host }],
   creator: 'lthphuw',
-  applicationName: 'Byte of me | Phú',
+  applicationName: `${siteConfig.name} | Phú`,
   generator: 'Next.js',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: 'white' },
@@ -37,9 +37,9 @@ export const metadata = {
     type: 'website',
     locale: 'en_US',
     url: '/',
-    title: siteConfig.name,
+    title: `${siteConfig.name} | Phú`,
     description: siteConfig.description,
-    siteName: siteConfig.name,
+    siteName: `${siteConfig.name} | Phú`,
     images: ['/images/avatars/HaNoi2024.jpeg'],
   },
   twitter: {

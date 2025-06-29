@@ -25,7 +25,8 @@ export async function fetchData<T>(
   });
 
   if (!resp.ok) {
-    throw new Error(`Failed to fetch ${api}: ${JSON.stringify(resp)}`);
+    const data = await resp.json();
+    throw new Error(`Failed to fetch ${api}: ${JSON.stringify(data)}`);
   }
 
   const { data }: ApiResponse<T> = await resp.json();

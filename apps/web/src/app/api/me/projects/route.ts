@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
           where: { email },
         }),
       ['user-simple', locale],
-      { revalidate: 1, tags: ['user-simple', `user-simple-${locale}`] }
+      { revalidate: 86400, tags: ['user-simple', `user-simple-${locale}`] }
     )();
 
     if (!user) {
@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
           },
         }),
       ['projects', locale],
-      { revalidate: 1, tags: ['projects', `projects-${locale}`] }
+      { revalidate: 86400, tags: ['projects', `projects-${locale}`] }
     )();
 
     const translatedProjects: any[] = projects.map((proj) => {

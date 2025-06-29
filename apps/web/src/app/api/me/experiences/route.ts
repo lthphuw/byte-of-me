@@ -1,14 +1,14 @@
 // app/api/experiences/route.ts
 
-import { unstable_cache } from 'next/cache';
-import { NextRequest, NextResponse } from 'next/server';
 import { FlagType } from '@/types';
 import { prisma } from '@db/client';
+import { unstable_cache } from 'next/cache';
+import { NextRequest, NextResponse } from 'next/server';
 
-import { ApiResponse } from '@/types/api';
+import { CompanyExperience } from '@/components/experience-timeline';
 import { supportedLanguages } from '@/config/language';
 import { calculateDuration, formatDate } from '@/lib/utils';
-import { CompanyExperience } from '@/components/experience-timeline';
+import { ApiResponse } from '@/types/api';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

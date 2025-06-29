@@ -27,13 +27,12 @@ import { Button } from '@/components/ui/button';
 import { Flags } from './flag';
 
 export function I18NToggle() {
-  const mounted = useMounted();
   const t = useTranslations('global.i18nToggle');
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState<FlagType>('en');
+  const [currentLang, setCurrentLang] = useState<FlagType>(locale);
 
   const FlagComponent = Flags[currentLang];
 

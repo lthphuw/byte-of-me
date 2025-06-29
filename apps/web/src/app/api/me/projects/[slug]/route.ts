@@ -24,6 +24,7 @@ export async function GET(
   }
 
   try {
+    console.log('slug: ', slug);
     const project = await unstable_cache(
       async () =>
         await prisma.project.findUnique({
@@ -36,7 +37,7 @@ export async function GET(
         }),
       ['project', slug, locale],
       {
-        revalidate: 60,
+        revalidate: 86400,
         tags: ['project', `project-${slug}`, `project-${slug}-${locale}`],
       }
     )();

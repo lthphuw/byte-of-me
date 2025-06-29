@@ -21,7 +21,8 @@ export interface ProfileBannerProps {
 export function ProfileBanner({ images }: ProfileBannerProps) {
   const mounted = useMounted();
   const containerRef = useRef<HTMLDivElement>(null);
-  const [cardWidth, setCardWidth] = useState(720);
+  
+  const [cardWidth, setCardWidth] = useState(0);
 
   const defaultImage = images.at(-1);
   const [selectedImage, setSelectedImage] = useState(defaultImage?.id ?? '');
