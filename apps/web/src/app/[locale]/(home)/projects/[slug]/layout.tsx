@@ -1,5 +1,5 @@
-import { Project } from '@db/index';
 import type { Metadata } from 'next';
+import { Project } from '@db/index';
 
 import { fetchData } from '@/lib/fetch';
 
@@ -7,9 +7,7 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-export async function generateMetadata(
-  { params }: Props,
-): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const slug = (await params).slug;
 
   const project = await fetchData<Project>(`me/projects/${slug}`);

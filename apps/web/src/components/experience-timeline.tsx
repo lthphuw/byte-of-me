@@ -10,12 +10,7 @@ const TechStack: React.FC<{ techs: string[] }> = ({ techs }) => {
   return (
     <div className="flex flex-wrap gap-2">
       {techs.map((tech, idx) => (
-        <Link
-          key={idx}
-          // href={`/tech/${tech.toLowerCase().replace(/\s+/g, '-')}`} // URL động dựa trên tên tech
-          href={'#'}
-          className="inline-block"
-        >
+        <Link key={idx} href={'#'} className="inline-block">
           <Badge variant="secondary" className="text-xs">
             {tech}
           </Badge>

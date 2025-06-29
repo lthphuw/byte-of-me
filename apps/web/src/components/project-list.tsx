@@ -54,6 +54,8 @@ export const ProjectItem: FC<ProjectItemProps> = ({
   onViewDetails,
   ...motionProps
 }) => {
+  const t = useTranslations('project');
+
   return (
     <motion.div
       custom={index}
@@ -65,9 +67,10 @@ export const ProjectItem: FC<ProjectItemProps> = ({
       variants={itemVariants}
       {...motionProps}
     >
-      <div className="container-bg min-w-[160px] rounded-2xl border-none p-1 text-sm shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)]">
-        <div className="flex h-full flex-col items-stretch gap-2 p-6 rounded-2xl">
+      <div className="container-bg min-w-[160px] rounded-2xl border-none p-1 text-sm shadow-md dark:shadow-[0_4px_10px_rgba(255,255,255,0.06)]">
+        <div className="flex h-full flex-col items-stretch gap-3 p-6 rounded-2xl">
           <h2 className="text-lg font-semibold mb-2">{project.title}</h2>
+
           <div className="flex gap-2 flex-wrap">
             {project.techstacks.map((tech, index) => (
               <Link key={index} href={'#'}>
@@ -83,7 +86,8 @@ export const ProjectItem: FC<ProjectItemProps> = ({
               </Link>
             ))}
           </div>
-          <p className=" text-sm line-clamp-3 mb-4">
+
+          <p className=" text-sm line-clamp-3">
             {project.description || 'Không có mô tả'}
           </p>
 
@@ -96,20 +100,20 @@ export const ProjectItem: FC<ProjectItemProps> = ({
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:underline"
               >
-                View Live
+                {project.liveLink}
               </a>
             </div>
           )}
 
           <div className="space-y-2 text-sm mt-auto md:self-end">
-            <div className="flex flex-col items-stretch gap-4 md:flex-row md:flex-nowrap">
+            <div className="mt-2 flex flex-col items-stretch gap-4 md:flex-row md:flex-nowrap">
               <Link
                 href={project.article ?? `/projects/${project.id}`}
                 className="w-full md:w-1/2"
               >
                 <Button className="w-full gap-2 py-3 text-lg md:py-2 md:text-base">
                   <Icons.article />
-                  <span>{'Details'}</span>
+                  <span className="line-clamp-1">{t('Details')}</span>
                 </Button>
               </Link>
               <Link

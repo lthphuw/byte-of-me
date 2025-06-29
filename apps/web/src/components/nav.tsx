@@ -17,7 +17,7 @@ export function HomeNav({ items }: HomeNavProps) {
   if (!items?.length) {
     return null;
   }
-  console.log('Pathname: ', path);
+
   return (
     <nav className="grid items-start gap-2">
       {items.map((item, index) => {

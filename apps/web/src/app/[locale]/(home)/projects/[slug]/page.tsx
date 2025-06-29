@@ -1,10 +1,9 @@
 import { Project } from '@db/index';
 
-import { ProjectDetailsContent } from '@/components/project-details-content';
-import { ProjectDetailsShell } from '@/components/shell';
 import { fetchData, fetchREADMEData } from '@/lib/fetch';
 import { extractToc } from '@/lib/markdown';
-
+import { ProjectDetailsContent } from '@/components/project-details-content';
+import { ProjectDetailsShell } from '@/components/shell';
 
 type Props = {
   params: Promise<{ slug: string }>;

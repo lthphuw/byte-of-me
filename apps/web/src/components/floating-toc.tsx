@@ -58,6 +58,7 @@ export function FloatingToc({ items }: FloatingTocProps) {
   const t = useTranslations('global');
   const { resolvedTheme: theme } = useTheme();
   const [open, setOpen] = useState(false);
+
   const { refs, floatingStyles, context } = useFloating({
     open,
     onOpenChange: setOpen,
@@ -79,7 +80,6 @@ export function FloatingToc({ items }: FloatingTocProps) {
       ? 'shadow-[0_4px_24px_rgba(255,255,255,0.06)]'
       : 'shadow-xl';
 
-  console.log('theme: ', theme);
   return (
     <>
       {/* Docked TOC indicator */}

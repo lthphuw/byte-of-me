@@ -10,6 +10,7 @@ import { host } from '@/config/config';
 import '/node_modules/flag-icons/css/flag-icons.min.css';
 
 export const metadata = {
+  metadataBase: new URL(siteConfig.url),
   title: {
     default: 'Lương Thanh Hoàng Phú',
     template: `%s | Phú`,
@@ -19,29 +20,33 @@ export const metadata = {
     'Next.js',
     'React',
     'Tailwind CSS',
-    'Server Components',
-    'Radix UI',
+    'Portfolio',
+    'Fullstack',
+    'Lương Thanh Hoàng Phú',
+    'Byte of me',
   ],
-  authors: [
-    {
-      name: 'lthphuw',
-      url: host,
-    },
-  ],
+  authors: [{ name: 'lthphuw', url: host }],
   creator: 'lthphuw',
+  applicationName: 'Byte of me | Phú',
+  generator: 'Next.js',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'white' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
+  ],
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: siteConfig.url,
+    url: '/',
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,
+    images: ['/images/avatars/HaNoi2024.jpeg'],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: siteConfig.name,
     title: siteConfig.name,
     description: siteConfig.description,
-    images: [`${siteConfig.url}/og.jpeg`],
+    images: ['/images/avatars/HaNoi2024.jpeg'],
     creator: '@lthphuw',
   },
   icons: {
@@ -49,7 +54,7 @@ export const metadata = {
     shortcut: '/favicon-16x16.png',
     apple: '/apple-touch-icon.png',
   },
-  manifest: `${siteConfig.url}/site.webmanifest`,
+  manifest: '/site.webmanifest',
 };
 
 export const viewport: Viewport = {
@@ -59,16 +64,10 @@ export const viewport: Viewport = {
   ],
 };
 
+
 type Props = {
   children: ReactNode;
 };
-// export const metadata = {
-//   title: {
-//     default: 'Lương Thanh Hoàng Phú',
-//     template: '%s | Phú',
-//   },
-//   description: 'The personal website and portfolio of Luong Thanh Hoang Phu – a fullstack developer passionate about backend systems, performance, and AI.'
-// };
 
 // Since we have a `not-found.tsx` page on the root, a layout file
 // is required, even if it's just passing children through.

@@ -17,6 +17,7 @@ import { useLocale } from 'next-intl';
 
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { useTranslations } from '@/hooks/use-translations';
 import { Icons } from '@/components/icons';
 import { MobileNav } from '@/components/mobile-nav';
@@ -54,7 +55,7 @@ const logoAnimVariants: Variants = {
 
 export function MainNav({ items, children, minimized }: MainNavProps) {
   const locale = useLocale();
-
+  const isMobile = useMediaQuery('only screen and (max-width : 768px)');
   const t = useTranslations('global.header.nav');
   const segment = useSelectedLayoutSegment();
   const [showMobileMenu, setShowMobileMenu] = React.useState(false);
@@ -146,7 +147,7 @@ export function MainNav({ items, children, minimized }: MainNavProps) {
       </button>
 
       <FloatingPortal>
-        {items && (
+        {items && isMobile && (
           <MobileNav
             isOpen={showMobileMenu}
             onOpenChange={setShowMobileMenu}

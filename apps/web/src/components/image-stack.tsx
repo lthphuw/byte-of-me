@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
+import { Skeleton } from './ui/skeleton';
+
 interface CardRotateProps {
   children: React.ReactNode;
   onSendToBack: () => void;
@@ -96,6 +98,8 @@ export default function ImageStack({
     >
       {cards.map((card, index) => {
         const randomRotate = randomRotation ? randomRotateList[index] : 0;
+        const [isLoaded, setIsLoaded] = useState(false);
+
         return (
           <CardRotate
             key={card.id}
@@ -103,7 +107,7 @@ export default function ImageStack({
             sensitivity={sensitivity}
           >
             <motion.div
-              className="relative rounded-2xl overflow-hidden border-4 border-white"
+              className="relative rounded-2xl overflow-hidden border-4 border-white bg-muted"
               onClick={() => sendToBackOnClick && sendToBack(card.id)}
               animate={{
                 rotateZ: (cards.length - index - 1) * 4 + randomRotate,
@@ -121,11 +125,16 @@ export default function ImageStack({
                 height: cardDimensions.height,
               }}
             >
+              {!isLoaded && (
+                <Skeleton className="absolute inset-0 w-full h-full z-0" />
+              )}
+
               <Image
                 src={card.src}
                 alt={`card-${card.id}`}
-                className="w-full h-full object-cover pointer-events-none"
+                className="w-full h-full object-cover pointer-events-none z-10"
                 fill
+                onLoadingComplete={() => setIsLoaded(true)}
               />
             </motion.div>
           </CardRotate>

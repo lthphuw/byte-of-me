@@ -3,6 +3,8 @@ import { getLocale } from 'next-intl/server';
 import { ApiResponse } from '@/types/api';
 import { host } from '@/config/config';
 
+import { resolveRelativeImages } from './markdown';
+
 export type FetchOptions = {
   cache?: RequestCache;
 };
@@ -54,7 +56,8 @@ export async function fetchREADMEData(
     });
 
     if (resp.ok) {
-      return await resp.text();
+      const readme = await resp.text();
+      return resolveRelativeImages(readme, githubUrl);
     }
   }
 

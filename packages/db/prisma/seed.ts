@@ -209,7 +209,7 @@ async function seedUser() {
   `,
           },
           {
-            language: 'en',
+            language: 'vi',
             field: 'aboutMe',
             value: `
    <div class="text-sm md:text-base space-y-2">
@@ -1542,7 +1542,7 @@ async function seedProjects(user: User) {
       description:
         'My digital garden — where thoughts, code, and growth converge.',
       githubLink: 'https://github.com/lthphuw/byte-of-me',
-      liveLink: '',
+      liveLink: 'https://phu-lth.space/',
       techStackNames: [
         'Next.js',
         'React.js',
@@ -1560,7 +1560,6 @@ async function seedProjects(user: User) {
         'developer-journey',
         'multilingual',
       ],
-
       translations: [
         {
           language: 'en',

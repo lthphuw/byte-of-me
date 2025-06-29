@@ -16,6 +16,7 @@ import {
   useRole,
 } from '@floating-ui/react';
 import { AnimatePresence, Variants, motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -61,7 +62,7 @@ export function SearchBar({
   onItemSelect,
 }: SearchBarProps) {
   const [isOpen, setIsOpen] = useState(false);
-
+  const t = useTranslations('global.search');
   useEffect(() => {
     setIsOpen(previewItems.length > 0 && !!searchQuery);
   }, [previewItems, searchQuery]);
@@ -146,7 +147,7 @@ export function SearchBar({
         <Icons.folderSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
         <Input
           type="text"
-          placeholder="Search projects..."
+          placeholder={`${t('Search projects')}...`}
           value={searchQuery}
           onChange={(e) => {
             setSearchQuery(e.target.value);
@@ -216,7 +217,6 @@ export function SearchBar({
                     >
                       <Link
                         href={`/projects/${item.id}`}
-                        target="_blank"
                         className="tracking-wide font-medium line-clamp-1"
                       >
                         {displayItem(item)}

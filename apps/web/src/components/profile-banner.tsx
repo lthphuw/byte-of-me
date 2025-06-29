@@ -2,6 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+import { cn } from '@/lib/utils';
+import { useMounted } from '@/hooks/use-mounted';
+
 import ImageStack from './image-stack';
 
 export interface ImagesProps {
@@ -16,6 +19,7 @@ export interface ProfileBannerProps {
 }
 
 export function ProfileBanner({ images }: ProfileBannerProps) {
+  const mounted = useMounted();
   const containerRef = useRef<HTMLDivElement>(null);
   const [cardWidth, setCardWidth] = useState(720);
 
@@ -50,7 +54,7 @@ export function ProfileBanner({ images }: ProfileBannerProps) {
       ref={containerRef}
       className="flex w-full flex-col items-start gap-4 md:gap-6 overflow-visible"
     >
-      <div className="relative w-full">
+      <div className={cn('relative w-full', !mounted && 'hidden')}>
         <ImageStack
           randomRotation={false}
           sensitivity={200}

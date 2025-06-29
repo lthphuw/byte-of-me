@@ -4,6 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { MainNavItem } from '@/types';
 import { AnimatePresence, Variants, motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
@@ -78,6 +79,7 @@ export const MobileNav = React.forwardRef<HTMLDivElement, MobileNavProps>(
   ) => {
     useLockBody(isOpen);
 
+    const t = useTranslations('global.header.nav');
     const transformOrigin = `${originPosition.x}px ${originPosition.y}px`;
 
     const positionOffset = {
@@ -146,7 +148,7 @@ export const MobileNav = React.forwardRef<HTMLDivElement, MobileNavProps>(
                         item.disabled && 'cursor-not-allowed opacity-60'
                       )}
                     >
-                      {item.title}
+                      {t(item.title as any)}
                     </Link>
                   </motion.div>
                 ))}

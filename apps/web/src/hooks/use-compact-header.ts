@@ -10,7 +10,7 @@ const COMPACT_X_OFFSET = 48;
 const COMPACT_WIDTH_OFFSET = 8;
 
 const transitionConfig: Transition = {
-  duration: 0.4,
+  duration: 0.3,
   ease: 'easeOut',
 };
 
@@ -24,7 +24,7 @@ export function useCompactHeader(scrollY: number | null, width?: number) {
     if (width) {
       animationControls.start(
         {
-          width: compact ? `calc(${width}px + ${16}px)` : '100%',
+          width: compact ? `calc(${width}px + ${24}px)` : '100%',
           borderRadius: compact ? COMPACT_BORDER_RADIUS : 0,
           left: compact ? COMPACT_X_OFFSET : 0,
           top: compact ? COMPACT_TOP_OFFSET : 0,

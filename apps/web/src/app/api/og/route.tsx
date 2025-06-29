@@ -1,62 +1,36 @@
 import { ImageResponse } from 'next/og';
 
-// App router includes @vercel/og.
-// No need to install it.
-
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
 
-    // ?title=<title>
-    const hasTitle = searchParams.has('title');
-    const title = hasTitle
-      ? searchParams.get('title')?.slice(0, 100)
-      : 'My default title';
+    const title = searchParams.get('title')?.slice(0, 100) || 'Byte of Me';
 
     return new ImageResponse(
       (
         <div
           style={{
-            backgroundColor: 'black',
-            backgroundSize: '150px 150px',
+            backgroundColor: '#000',
             height: '100%',
             width: '100%',
             display: 'flex',
-            textAlign: 'center',
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            flexDirection: 'column',
-            flexWrap: 'nowrap',
+            fontFamily: 'sans-serif',
+            color: '#fff',
+            padding: '60px 100px',
+            textAlign: 'center',
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              justifyItems: 'center',
-            }}
-          >
-            <img
-              alt="Vercel"
-              height={200}
-              src="data:image/svg+xml,%3Csvg width='116' height='100' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M57.5 0L115 100H0L57.5 0z' /%3E%3C/svg%3E"
-              style={{ margin: '0 30px' }}
-              width={232}
-            />
-          </div>
-          <div
-            style={{
-              fontSize: 60,
-              fontStyle: 'normal',
-              letterSpacing: '-0.025em',
-              color: 'white',
-              marginTop: 30,
-              padding: '0 120px',
-              lineHeight: 1.4,
-              whiteSpace: 'pre-wrap',
-            }}
-          >
+          <img
+            src="https://your-domain.com/images/avatars/HaNoi2024.jpeg"
+            width={160}
+            height={160}
+            style={{ borderRadius: '50%', marginBottom: '40px' }}
+            alt="Avatar"
+          />
+          <div style={{ fontSize: 56, fontWeight: 700, lineHeight: 1.2 }}>
             {title}
           </div>
         </div>
@@ -67,7 +41,7 @@ export async function GET(request: Request) {
       }
     );
   } catch (e: any) {
-    return new Response(`Failed to generate the image`, {
+    return new Response(`Failed to generate the image: ${e.message}`, {
       status: 500,
     });
   }

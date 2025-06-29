@@ -1,9 +1,10 @@
+// 'use client';
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
+import Fuse from 'fuse.js';
 import { debounce } from 'lodash';
 
-import { Trie } from '@/lib/core/algorithms/trie';
 import { CategoryFilter } from '@/components/category-filter';
 import { SearchBar, SearchItem } from '@/components/search-bar';
 
@@ -13,14 +14,18 @@ interface ProjectsContentProps {
   projects: Project[];
 }
 
+const fuseOptions = {
+  keys: ['title', 'description', 'techstacks.name', 'tags.name'],
+  threshold: 0.4,
+};
+
 export function ProjectsContent({ projects }: ProjectsContentProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
   const [selectedTechstack, setSelectedTechstack] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [prefix, setPrefix] = useState('');
 
-  // All techstacks
   const techstacks = useMemo(() => {
     const set = new Set();
     const result = [];
@@ -35,7 +40,6 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
     return result;
   }, [projects]);
 
-  // All tags
   const tags = useMemo(() => {
     const set = new Set();
     const result = [];
@@ -50,7 +54,6 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
     return result;
   }, [projects]);
 
-  // Lọc theo tag & techstack
   const categorizedProjects = useMemo(() => {
     return projects.filter(
       (it) =>
@@ -60,50 +63,16 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
     );
   }, [projects, selectedTag, selectedTechstack]);
 
-  // Danh sách item search, mỗi project tạo 1 item với cả title & description
-  const items = useMemo(() => {
-    return categorizedProjects.map((it) => ({
-      id: it.id,
-      label: it.title,
-      desc: it.description || '',
-    }));
-  }, [categorizedProjects]);
+  const fuse = useMemo(
+    () => new Fuse(categorizedProjects, fuseOptions),
+    [categorizedProjects]
+  );
 
-  // Tạo Trie
-  const trie = useMemo(() => {
-    const _trie = new Trie();
-    for (const it of items) {
-      _trie.insert(it.label, it.id); // title
-      if (it.desc) {
-        _trie.insert(it.desc, it.id); // description
-      }
-    }
-    return _trie;
-  }, [items]);
-
-  // Kết quả preview trong SearchBar
-  const previewItems: SearchItem[] = useMemo(() => {
-    if (!prefix || !trie) return [];
-
-    const rawResults = trie.searchPrefix(prefix); // { word, id }
-    const grouped = Object.groupBy(rawResults, (r) => r.id || '');
-
-    return Object.entries(grouped).map(([id]) => {
-      const match = items.find((it) => it.id === id);
-      return {
-        id,
-        label: match?.label || '',
-        desc: match?.desc || '',
-      };
-    });
-  }, [prefix, trie, items]);
-
-  // Debounce prefix search
   const debouncedSearch = useCallback(
     debounce((query: string) => {
-      setPrefix(query);
+      setDebouncedQuery(query);
       setIsLoading(false);
-    }, 500),
+    }, 1000),
     []
   );
 
@@ -113,20 +82,26 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
     debouncedSearch(query);
   };
 
-  // Kết quả chính thức hiển thị ra ProjectList
+  const previewItems: SearchItem[] = useMemo(() => {
+    if (!debouncedQuery.trim()) return [];
+    return fuse
+      .search(debouncedQuery)
+      .slice(0, 5)
+      .map((res) => ({
+        id: res.item.id,
+        label: res.item.title,
+        desc: res.item.description || '',
+      }));
+  }, [debouncedQuery, fuse]);
+
   const showedProjects = useMemo(() => {
-    const lowerPrefix = prefix.toLowerCase();
-    return categorizedProjects.filter(
-      (it) =>
-        it.title.toLowerCase().includes(lowerPrefix) ||
-        it.description?.toLowerCase().includes(lowerPrefix)
-    );
-  }, [categorizedProjects, prefix]);
+    if (!debouncedQuery.trim()) return categorizedProjects;
+    return fuse.search(debouncedQuery).map((res) => res.item);
+  }, [debouncedQuery, categorizedProjects, fuse]);
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col items-stretch gap-8">
-        {/* Sidebar: Search and Filter */}
         <div className="md:col-span-1 md:sticky md:top-4 md:h-fit">
           <SearchBar
             previewItems={previewItems}
@@ -145,7 +120,6 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
           />
         </div>
 
-        {/* Project List */}
         <ProjectList projects={showedProjects} />
       </div>
     </div>

@@ -20,12 +20,14 @@ import { useLocale } from 'next-intl';
 
 import { languageNames, supportedLanguages } from '@/config/language';
 import { cn } from '@/lib/utils';
+import { useMounted } from '@/hooks/use-mounted';
 import { useTranslations } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
 
 import { Flags } from './flag';
 
 export function I18NToggle() {
+  const mounted = useMounted();
   const t = useTranslations('global.i18nToggle');
   const locale = useLocale();
   const router = useRouter();
@@ -79,17 +81,18 @@ export function I18NToggle() {
   }, [locale]);
 
   return (
-    <motion.div layout="position" className="relative">
+    <>
       <Button
         ref={refs.setReference}
         {...getReferenceProps()}
         variant="icon"
         size="sm"
-        className="relative size-9 px-0 focus:outline-none"
+        className="overflow-y-hidden relative size-9 px-0 focus:outline-none"
       >
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="sync">
           {FlagComponent && (
             <motion.span
+              layout="position"
               key={currentLang}
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -155,6 +158,6 @@ export function I18NToggle() {
           )}
         </AnimatePresence>
       </FloatingPortal>
-    </motion.div>
+    </>
   );
 }
