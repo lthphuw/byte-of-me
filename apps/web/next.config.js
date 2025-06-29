@@ -1,5 +1,4 @@
 // next.config.js
-const { withContentlayer } = require('next-contentlayer');
 const createNextIntlPlugin = require('next-intl/plugin');
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 const { PrismaPlugin } = require('@prisma/nextjs-monorepo-workaround-plugin');
@@ -19,4 +18,4 @@ const nextConfig = {
   },
 };
 
-module.exports = withContentlayer(withNextIntl(nextConfig));
+module.exports = withNextIntl(nextConfig);

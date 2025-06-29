@@ -1,15 +1,14 @@
 import { Project } from '@db/index';
 
-import { fetchData, fetchREADMEData } from '@/lib/fetch';
-import { extractToc } from '@/lib/markdown';
 import { ProjectDetailsContent } from '@/components/project-details-content';
 import { ProjectDetailsShell } from '@/components/shell';
+import { fetchData, fetchREADMEData } from '@/lib/fetch';
+import { extractToc } from '@/lib/markdown';
+
 
 type Props = {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
-
 export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params;
 

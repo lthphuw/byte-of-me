@@ -7,32 +7,33 @@ import remarkGfm from 'remark-gfm';
 
 import { FloatingToc } from '@/components/floating-toc';
 
+import { Pluggable } from 'unified';
 import { TocItem } from './floating-toc';
 
 export interface ProjectDetailsContentProps {
-  readme: string;
-  tocItems: TocItem[];
+    readme: string;
+    tocItems: TocItem[];
 }
 
 export function ProjectDetailsContent({
-  readme,
-  tocItems,
+    readme,
+    tocItems,
 }: ProjectDetailsContentProps) {
-  return (
-    <>
-      <article
-        className="article-text prose dark:prose-invert max-w-none break-words overflow-x-auto
+    return (
+        <>
+            <article
+                className="article-text prose dark:prose-invert max-w-none break-words overflow-x-auto
   [&_pre]:whitespace-pre-wrap [&_pre]:break-words 
   [&_img]:max-w-full [&_img]:h-auto"
-      >
-        <ReactMarkdown
-          children={readme}
-          remarkPlugins={[remarkGfm as any]}
-          rehypePlugins={[rehypeRaw as any, rehypeSlug]}
-        />
-      </article>
+            >
+                <ReactMarkdown
+                    children={readme}
+                    remarkPlugins={[remarkGfm as Pluggable]}
+                    rehypePlugins={[rehypeRaw as Pluggable, rehypeSlug as Pluggable]}
+                />
+            </article>
 
-      <FloatingToc items={tocItems} />
-    </>
-  );
+            <FloatingToc items={tocItems} />
+        </>
+    );
 }

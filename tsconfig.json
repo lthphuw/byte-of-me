@@ -18,7 +18,6 @@
     "paths": {
       "@/*": ["apps/web/src/*"],
       "@db/*": ["packages/db/src/*"],
-      "contentlayer/generated": ["apps/web/.contentlayer/generated"]
     },
     "strictNullChecks": true,
     "plugins": [
