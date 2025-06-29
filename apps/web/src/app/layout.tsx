@@ -43,7 +43,7 @@ export const metadata = {
     images: ['/images/avatars/HaNoi2024.jpeg'],
   },
   twitter: {
-    card: siteConfig.name,
+    card: 'summary_large_image',
     title: siteConfig.name,
     description: siteConfig.description,
     images: ['/images/avatars/HaNoi2024.jpeg'],
