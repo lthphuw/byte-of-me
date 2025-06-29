@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .break-safe {
+    hyphens: auto;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -74,8 +82,13 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: 'rlig' 1, 'calt' 1;
   }
+}
+
+html {
+  scroll-behavior: smooth;
 }

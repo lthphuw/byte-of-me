@@ -14,9 +14,8 @@ export const revalidate = 86400;
 export const dynamicParams = true; // or false, to 404 on unknown paths
 
 export default async function ExperiencesPage() {
-  const experiences = await fetchData<CompanyExperience[]>('me/experiences', {
-    cache: 'no-cache',
-  });
+  const experiences = await fetchData<CompanyExperience[]>('me/experiences');
+  console.log('experiences: ', experiences);
   return (
     <ExperienceShell>
       <ExperienceTimeline experienceData={experiences} />

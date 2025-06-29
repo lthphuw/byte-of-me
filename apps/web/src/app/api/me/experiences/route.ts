@@ -7,6 +7,7 @@ import { prisma } from '@db/client';
 
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
+import { calculateDuration, formatDate } from '@/lib/utils';
 import { CompanyExperience } from '@/components/experience-timeline';
 
 export async function GET(req: NextRequest) {
@@ -39,11 +40,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // const sleep = () => {
-    //   return new Promise((resolve) => setTimeout(resolve, 5000));
-    // };
-    // await sleep();
-
     const experiences = await unstable_cache(
       async () =>
         await prisma.experience.findMany({
@@ -71,8 +67,8 @@ export async function GET(req: NextRequest) {
           techStack: exp.techstacks.map((ts) => ts.techstack.name),
           roles: exp.roles.map((role) => ({
             title: translations[`role_title_${role.title}`] || role.title,
-            from: formatDate(role.startDate),
-            to: role.endDate ? formatDate(role.endDate) : 'Present',
+            from: formatDate(role?.startDate),
+            to: role.endDate ? formatDate(role?.endDate) : 'Present',
             duration: calculateDuration(role.startDate, role.endDate),
             location: exp.location || 'Unknown',
             type: exp.type || 'Unknown',
@@ -100,33 +96,4 @@ export async function GET(req: NextRequest) {
   } finally {
     // await prisma.$disconnect();
   }
-}
-function formatDate(date?: Date | null): string {
-  if (!date) return 'Unknown';
-  return new Date(date).toLocaleDateString('en-US', {
-    month: 'short',
-    year: 'numeric',
-  });
-}
-function calculateDuration(
-  startDate?: Date | null,
-  endDate?: Date | null
-): string {
-  if (!startDate) return 'Unknown';
-
-  const start = new Date(startDate);
-  const end = endDate ? new Date(endDate) : new Date();
-
-  let months = (end.getFullYear() - start.getFullYear()) * 12;
-  months += end.getMonth() - start.getMonth();
-
-  if (months < 0) return 'Invalid';
-
-  const years = Math.floor(months / 12);
-  const remainingMonths = months % 12;
-
-  const yearStr = years > 0 ? `${years}y` : '';
-  const monthStr = remainingMonths > 0 ? `${remainingMonths}m` : '';
-
-  return [yearStr, monthStr].filter(Boolean).join(' ') || '0m';
 }

@@ -121,7 +121,7 @@ export function I18NToggle() {
                 transition={{ type: 'spring', stiffness: 130, damping: 10 }}
                 className={cn(
                   'mt-0 min-w-[160px] rounded-md p-1 shadow-2xl overflow-hidden',
-                  'glass-base'
+                  'container-bg'
                 )}
               >
                 {supportedLanguages.map((lang, index) => {

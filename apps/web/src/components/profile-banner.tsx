@@ -31,7 +31,7 @@ export function ProfileBanner({ images }: ProfileBannerProps) {
     }
 
     const observer = new ResizeObserver(([entry]) => {
-      const usableWidth = entry.contentRect.width - 50;
+      const usableWidth = entry.contentRect.width - 10;
       setCardWidth(Math.min(usableWidth, 720));
     });
 
@@ -64,7 +64,11 @@ export function ProfileBanner({ images }: ProfileBannerProps) {
         />
       </div>
 
-      {caption && <figcaption className="text-sm italic">{caption}</figcaption>}
+      {caption && (
+        <figcaption className="article-text text-sm italic">
+          {caption}
+        </figcaption>
+      )}
     </figure>
   );
 }

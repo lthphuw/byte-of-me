@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
 interface CardRotateProps {
@@ -102,7 +103,7 @@ export default function ImageStack({
             sensitivity={sensitivity}
           >
             <motion.div
-              className="rounded-2xl overflow-hidden border-4 border-white"
+              className="relative rounded-2xl overflow-hidden border-4 border-white"
               onClick={() => sendToBackOnClick && sendToBack(card.id)}
               animate={{
                 rotateZ: (cards.length - index - 1) * 4 + randomRotate,
@@ -120,10 +121,11 @@ export default function ImageStack({
                 height: cardDimensions.height,
               }}
             >
-              <img
+              <Image
                 src={card.src}
                 alt={`card-${card.id}`}
                 className="w-full h-full object-cover pointer-events-none"
+                fill
               />
             </motion.div>
           </CardRotate>

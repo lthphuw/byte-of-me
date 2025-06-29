@@ -30,7 +30,7 @@ export default async function HomePage() {
       <GreetingWriter text={user.greeting || ''} />
 
       {/* Tagline */}
-      <p className="mb-2 text-base text-muted-foreground md:text-lg">
+      <p className="article-text mb-2 text-muted-foreground md:text-lg">
         {user?.tagLine || ''}
       </p>
 
@@ -39,7 +39,7 @@ export default async function HomePage() {
 
       <div className="flex flex-col flex-wrap gap-4 md:flex-row">
         <Link href="/projects">
-          <Button className="w-full py-3 text-lg md:w-auto md:py-2 md:text-base">
+          <Button className="w-full py-3 text-base md:w-auto md:py-2 md:text-base">
             {t('See my work')}
           </Button>
         </Link>
@@ -47,7 +47,7 @@ export default async function HomePage() {
           <Button
             variant="secondary"
             className={cn(
-              'w-full gap-1 py-3 text-lg md:w-auto md:py-2 md:text-base'
+              'w-full gap-1 py-3 text-base md:w-auto md:py-2 md:text-base'
             )}
           >
             <FileText />

@@ -69,7 +69,6 @@ export default async function AboutPage() {
   return (
     <AboutShell>
       <AboutContent
-        error={error}
         user={user}
         techGroups={techGroups}
         educationItems={educationItems}

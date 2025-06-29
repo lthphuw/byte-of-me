@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { Link } from '@/i18n/navigation';
 import {
   FloatingPortal,
   autoUpdate,
@@ -137,7 +138,7 @@ export function SearchBar({
     <motion.div layout="position" className="relative mb-6">
       {/* Input with glass & shadow */}
       <div
-        className="glass-base shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] rounded-xl overflow-hidden w-full"
+        className="container-bg shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] rounded-xl overflow-hidden w-full"
         style={{ willChange: 'transform, opacity, backdrop-filter' }}
         ref={refs.setReference}
         {...getReferenceProps()}
@@ -194,7 +195,7 @@ export function SearchBar({
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ type: 'spring', stiffness: 130, damping: 10 }}
               >
-                <div className="glass-base shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] mt-0 min-w-[160px] rounded-md border-none p-1 text-sm">
+                <div className="container-bg shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] mt-0 min-w-[160px] rounded-md border-none p-1 text-sm">
                   {previewItems.map((item, index) => (
                     <motion.div
                       key={item.id}
@@ -213,9 +214,13 @@ export function SearchBar({
                         'focus:bg-gray-100 focus:text-gray-900 focus:outline-none'
                       )}
                     >
-                      <span className="tracking-wide font-medium line-clamp-1">
+                      <Link
+                        href={`/projects/${item.id}`}
+                        target="_blank"
+                        className="tracking-wide font-medium line-clamp-1"
+                      >
                         {displayItem(item)}
-                      </span>
+                      </Link>
                     </motion.div>
                   ))}
                 </div>

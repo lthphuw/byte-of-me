@@ -12,7 +12,6 @@ const fadeInUp = {
 };
 
 type AboutContentProps = {
-  error: string | null;
   user: { id: string; name: string | null; aboutMe: string | null } | null;
   techGroups: TechGroup[];
   educationItems: TimelineItemProps[];
@@ -21,14 +20,12 @@ type AboutContentProps = {
 };
 
 export default function AboutContent({
-  error,
   user,
   techGroups,
   educationItems,
   tocItems,
   sectionTitles,
 }: AboutContentProps) {
-  if (error) return <p>{error}</p>;
   if (!user) return <p>Loading...</p>;
 
   return (
@@ -45,7 +42,7 @@ export default function AboutContent({
             {sectionTitles.aboutMe}
           </h2>
           <div
-            className="text-sm md:text-md flex flex-col gap-3 leading-relaxed"
+            className="article-text text-sm md:text-md flex flex-col gap-3"
             dangerouslySetInnerHTML={{ __html: user.aboutMe || '' }}
           />
         </motion.section>

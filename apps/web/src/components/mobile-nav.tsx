@@ -97,7 +97,7 @@ export const MobileNav = React.forwardRef<HTMLDivElement, MobileNavProps>(
             ref={ref}
             className={cn(
               'fixed z-50 grid grid-flow-row auto-rows-max overflow-auto rounded-2xl shadow-2xl md:hidden',
-              'glass-base',
+              'container-bg',
               className
             )}
             variants={containerVariants}

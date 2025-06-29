@@ -25,7 +25,7 @@ import {
   TooltipTrigger,
 } from './ui/tooltip';
 
-interface TocItem {
+export interface TocItem {
   href: string;
   label: string;
 }
@@ -86,7 +86,7 @@ export function FloatingToc({ items }: FloatingTocProps) {
       <div
         ref={refs.setReference}
         {...getReferenceProps()}
-        className={`glass-base fixed right-4 md:right-12 top-1/3 z-60 flex flex-col items-center cursor-pointer rounded-xl px-2 py-2 transition-all ${shadowClass}`}
+        className={`container-bg fixed right-3 md:right-12 top-1/3 z-60 flex flex-col items-center cursor-pointer rounded-xl px-[6px] py-[6px] md:px-2 md:py-2 transition-all ${shadowClass}`}
       >
         <TooltipProvider delayDuration={0.3}>
           <Tooltip>
@@ -130,7 +130,7 @@ export function FloatingToc({ items }: FloatingTocProps) {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className={`rounded-lg glass-base shadow-2xl ${shadowClass}`}
+              className={`rounded-lg container-bg shadow-2xl ${shadowClass}`}
             >
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
@@ -141,7 +141,7 @@ export function FloatingToc({ items }: FloatingTocProps) {
                   ease: [0.4, 0, 0.2, 1],
                   delay: 0.1,
                 }}
-                className="w-72 max-h-[80vh] overflow-y-auto px-4 py-5"
+                className="w-56 md:w-72 max-h-[80vh] overflow-y-auto px-4 py-5"
               >
                 <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-900 dark:text-gray-100 mb-4">
                   {t('Table of Content')}

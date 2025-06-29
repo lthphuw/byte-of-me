@@ -65,11 +65,13 @@ export function TimelineItem({
         </div>
 
         <div className="grow pb-4 pt-0.5">
-          <h3 className="flex items-start md:items-center gap-x-2 text-base md:text-lg font-semibold">
+          <h3 className="article-text flex items-start md:items-center gap-x-2 text-base md:text-lg font-semibold">
             {icon}
-            <span>{title}</span>
+            <span className="article-text">{title}</span>
           </h3>
-          <div className="mt-1 text-xs md:text-sm italic">{message}</div>
+          <div className="article-text mt-1 text-xs md:text-sm italic">
+            {message}
+          </div>
 
           {avatarImg && (
             <button

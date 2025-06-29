@@ -1,90 +1,55 @@
-# Taxonomy
+# 📸 Byte of Me
 
-An open source application built using the new router, server components and everything new in Next.js 13.
+> A personal digital garden — built for storytelling, self-reflection, and showcasing growth as a developer, one byte at a time.
 
-> **Warning**
-> This app is a work in progress. I'm building this in public. You can follow the progress on Twitter [@shadcn](https://twitter.com/shadcn).
-> See the roadmap below.
+<div align="flex center">  
+    <img src="./images/mobile.png" alt="Mobile view" width="45%" style="border-radius: 8px;" /> 
+  <img src="./images/pc.png" alt="Desktop view" width="45%" style="border-radius: 8px; margin-right: 1rem;" />
+</div>
 
-## About this project
-
-This project as an experiment to see how a modern app (with features like authentication, subscriptions, API routes, static pages for docs ...etc) would work in Next.js 13 and server components.
-
-**This is not a starter template.**
-
-A few people have asked me to turn this into a starter. I think we could do that once the new features are out of beta.
-
-## Note on Performance
-
-> **Warning**
-> This app is using the unstable releases for Next.js 13 and React 18. The new router and app dir is still in beta and not production-ready.
-> **Expect some performance hits when testing the Home**.
-> If you see something broken, you can ping me [@shadcn](https://twitter.com/shadcn).
+---
 
 ## Features
 
-- New `/app` dir,
-- Routing, Layouts, Nested Layouts and Layout Groups
-- Data Fetching, Caching and Mutation
-- Loading UI
-- Route handlers
-- Metadata files
-- Server and Client Components
-- API Routes and Middlewares
-- Authentication using **NextAuth.js**
-- ORM using **Prisma**
-- Database on **PlanetScale**
-- UI Components built using **Radix UI**
-- Documentation and blog using **MDX** and **Contentlayer**
-- Subscriptions using **Stripe**
-- Styled using **Tailwind CSS**
-- Validations using **Zod**
-- Written in **TypeScript**
+- Personal profile with bio, quote, and timeline
+- Developer journey & reflections
+- Multilingual support (EN, VI, FR) with `next-intl`
+- Dark & Light theme with system preference
 
-## Roadmap
+---
 
-- [x] ~Add MDX support for basic pages~
-- [x] ~Build marketing pages~
-- [x] ~Subscriptions using Stripe~
-- [x] ~Responsive styles~
-- [x] ~Add OG image for blog using @vercel/og~
-- [x] Dark mode
+## Tech Stack
 
-## Known Issues
+| Layer      | Stack                                                                   |
+| ---------- | ----------------------------------------------------------------------- |
+| Frontend   | [Next.js](https://nextjs.org/) (App Router)                             |
+| Backend    | [Prisma](https://www.prisma.io/) ORM + PostgreSQL                       |
+| Styling    | [Tailwind CSS](https://tailwindcss.com/) + Typography Plugin            |
+| i18n       | [next-intl](https://github.com/amannn/next-intl) + dynamic translation. |
+| Deployment | [Vercel](https://vercel.com/)                                           |
 
-A list of things not working right now:
+---
 
-1. ~GitHub authentication (use email)~
-2. ~[Prisma: Error: ENOENT: no such file or directory, open '/var/task/.next/server/chunks/schema.prisma'](https://github.com/prisma/prisma/issues/16117)~
-3. ~[Next.js 13: Client side navigation does not update head](https://github.com/vercel/next.js/issues/42414)~
-4. [Cannot use opengraph-image.tsx inside catch-all routes](https://github.com/vercel/next.js/issues/48162)
+## Getting Started
 
-## Why not tRPC, Turborepo or X?
+```bash
+# 1. Clone the repository
+git clone https://github.com/lthphuw/byte-of-me.git
+cd byte-of-me
 
-I might add this later. For now, I want to see how far we can get using Next.js only.
-
-If you have some suggestions, feel free to create an issue.
-
-## Running Locally
-
-1. Install dependencies using pnpm:
-
-```sh
+# 2. Install dependencies
 pnpm install
-```
 
-2. Copy `.env.example` to `.env.local` and update the variables.
+# 3. Setup environment
+cp .env.example .env
+# Fill in DATABASE_URL and other secrets
 
-```sh
-cp .env.example .env.local
-```
+# 4. Run migrations & seed
+pnpm prisma migrate dev --name init
+pnpm db:seed
 
-3. Start the development server:
-
-```sh
+# 5. Start development server
 pnpm dev
 ```
 
-## License
-
-Licensed under the [MIT license](https://github.com/shadcn/taxonomy/blob/main/LICENSE.md).
+## Future work

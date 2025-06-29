@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { HTMLMotionProps, Variants, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 
@@ -65,7 +65,7 @@ export const ProjectItem: FC<ProjectItemProps> = ({
       variants={itemVariants}
       {...motionProps}
     >
-      <div className="glass-base min-w-[160px] rounded-2xl border-none p-1 text-sm shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)]">
+      <div className="container-bg min-w-[160px] rounded-2xl border-none p-1 text-sm shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)]">
         <div className="flex h-full flex-col items-stretch gap-2 p-6 rounded-2xl">
           <h2 className="text-lg font-semibold mb-2">{project.title}</h2>
           <div className="flex gap-2 flex-wrap">
@@ -103,7 +103,10 @@ export const ProjectItem: FC<ProjectItemProps> = ({
 
           <div className="space-y-2 text-sm mt-auto md:self-end">
             <div className="flex flex-col items-stretch gap-4 md:flex-row md:flex-nowrap">
-              <Link href={project.article ?? '#'} className="w-full md:w-1/2">
+              <Link
+                href={project.article ?? `/projects/${project.id}`}
+                className="w-full md:w-1/2"
+              >
                 <Button className="w-full gap-2 py-3 text-lg md:py-2 md:text-base">
                   <Icons.article />
                   <span>{'Details'}</span>

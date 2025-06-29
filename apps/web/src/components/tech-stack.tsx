@@ -61,12 +61,12 @@ export function TechStack({ groups, className, style }: TechStackProps) {
           viewport={{ once: true, amount: 0.2 }}
           className="h-full"
         >
-          <div className="glass-base p-5 h-full rounded-2xl shadow-xl dark:shadow-[0_4px_12px_rgba(255,255,255,0.04)]">
+          <div className="container-bg p-5 h-full rounded-2xl shadow-xl dark:shadow-[0_4px_12px_rgba(255,255,255,0.04)]">
             <div className="flex flex-col gap-4">
               <h3 className="text-lg font-semibold md:text-xl">
                 {group.title}
               </h3>
-              <div className="flex flex-wrap gap-4 justify-start">
+              <div className=" grid grid-cols-2 md:flex md:flex-wrap md:gap-4 justify-start">
                 {group.items.map((item, j) => (
                   <motion.div
                     key={j}

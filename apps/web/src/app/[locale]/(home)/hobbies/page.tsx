@@ -10,7 +10,6 @@ export const revalidate = 86400;
 // Next.js will server-render the page on-demand.
 export const dynamicParams = true; // or false, to 404 on unknown paths
 
-
 export default async function HobbiesPage() {
   return (
     <HobbiesShell>

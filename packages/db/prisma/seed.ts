@@ -94,21 +94,20 @@ async function seedUser() {
       image: '/images/avatars/HaNoi2024.jpeg',
       imageCaption:
         'Taken at the Vietnam Military History Museum, this 2024 painting is titled “Sống bám đá, chết hoá đá” — “Cling to rocks in life, turn to stone in death.”',
-      quote: `
-            I enjoy learning new things and have a strong interest in open - source projects, where I often discover useful ideas and best practices.These experiences help me build better and more efficient solutions. For me, growth doesn’t just come from work—it also comes from self - exploration and continuous learning.That’s what truly drives my development.`,
+      quote: `I enjoy learning new things and have a strong interest in open-source projects, where I often discover useful ideas and best practices. These experiences help me build better and more efficient solutions. For me, growth doesn’t just come from work — it also comes from self-exploration and continuous learning. That’s what truly drives my development.`,
       bio: 'A passionate developer exploring the world of open-source and modern web technologies.',
       aboutMe: `
     <div class="text-sm md:text-base space-y-2">
       <p>
         <strong>Full name:</strong> Luong Thanh Hoang Phu<br />
-        <strong>Date of birth:</strong> August 22, 2001<br />
+        <strong>Date of birth:</strong> November 20, 2002<br />
         <strong>Location:</strong> Ho Chi Minh City, Vietnam
       </p>
       <p>
-        I'm a junior full-stack developer, mainly focused on backend development. I enjoy building high-performance, scalable systems and have hands-on experience with Golang, Node.js, and Python. While backend is my strong suit, I've also worked with frontend technologies like React.js and Next.js. I’ve dabbled in AI too, doing some research and building simple models. I'm always eager to learn and grow through real-world projects.
+        I'm a <strong>junior full-stack developer</strong>, mainly focused on <strong>backend development</strong>. I enjoy building <strong>high-performance</strong>, <strong>scalable systems</strong> and have hands-on experience with <strong>Golang</strong>, <strong>Node.js</strong>, and <strong>Python</strong>. While backend is my strong suit, I've also worked with frontend technologies like <strong>React.js</strong> and <strong>Next.js</strong>. I’ve dabbled in <strong>AI</strong> too, doing some research and building simple models. I'm always eager to learn and grow through <em>real-world projects</em>.
       </p>
       <p>
-        Moving forward, I aim to deepen my knowledge in system design, distributed systems, and AI integration – with the goal of building smart, efficient, and reliable software at scale.
+        Moving forward, I aim to deepen my knowledge in <strong>system design</strong>, <strong>distributed systems</strong>, and <strong>AI integration</strong> – with the goal of building <strong>smart</strong>, <strong>efficient</strong>, and <strong>reliable software</strong> at scale.
       </p>
     </div>
   `,
@@ -117,7 +116,7 @@ async function seedUser() {
       translations: {
         create: [
           { language: 'en', field: 'greeting', value: "Hi, I'm Phu" },
-          { language: 'vi', field: 'greeting', value: 'Chào, tôi là Phú' },
+          { language: 'vi', field: 'greeting', value: 'Chào, mình là Phú' },
           { language: 'fr', field: 'greeting', value: 'Salut, je suis Phu' },
           {
             language: 'en',
@@ -134,14 +133,13 @@ async function seedUser() {
             language: 'fr',
             field: 'tagLine',
             value:
-              'Du code, une carrière, et le plaisir du jeu. — un octet à la fois.',
+              'Du code, une carrière, et le plaisir du jeu — un octet à la fois.',
           },
-
           {
             language: 'en',
             field: 'imageCaption',
             value:
-              'Taken at the Vietnam Military History Museum, this 2024 painting is titled  “Sống bám đá, chết hoá đá” - “Cling to rocks in life, turn to stone in death.”',
+              'Taken at the Vietnam Military History Museum, this 2024 painting is titled “Sống bám đá, chết hoá đá” — “Cling to rocks in life, turn to stone in death.”',
           },
           {
             language: 'vi',
@@ -153,25 +151,25 @@ async function seedUser() {
             language: 'fr',
             field: 'imageCaption',
             value:
-              "Pris au Musée d'Histoire Militaire du Vietnam, ce tableau de 2024 est intitulé “Sống bám đá, chết hoá đá” — “ S'accrocher aux rochers dans la vie, se transformer en pierre dans la mort. ”",
+              "Pris au Musée d'Histoire Militaire du Vietnam, ce tableau de 2024 est intitulé “Sống bám đá, chết hoá đá” — “S'accrocher aux rochers dans la vie, se transformer en pierre dans la mort.”",
           },
           {
             language: 'en',
             field: 'quote',
             value:
-              'I enjoy learning new things and have a strong interest in open - source projects, where I often discover useful ideas and best practices.These experiences help me build better and more efficient solutions. \nFor me, growth doesn’t just come from work—it also comes from self - exploration and continuous learning.That’s what truly drives my development.',
+              'I enjoy learning new things and have a strong interest in open-source projects, where I often discover useful ideas and best practices. These experiences help me build better and more efficient solutions. For me, growth doesn’t just come from work — it also comes from self-exploration and continuous learning. That’s what truly drives my development.',
           },
           {
             language: 'vi',
             field: 'quote',
             value:
-              'Tôi thích học hỏi những điều mới và có hứng thú mạnh mẽ với các dự án mã nguồn mở, nơi tôi thường tìm thấy những ý tưởng hữu ích và các phương pháp hay nhất. Những trải nghiệm này giúp tôi xây dựng các giải pháp tốt hơn và hiệu quả hơn. \nĐối với tôi, sự phát triển không chỉ đến từ công việc—mà còn từ việc tự khám phá và học tập không ngừng. Đó là điều thực sự thúc đẩy sự phát triển của tôi.',
+              'Mình thích học hỏi những điều mới và có hứng thú mạnh mẽ với các dự án mã nguồn mở, nơi mình thường tìm thấy những ý tưởng hữu ích và các phương pháp hay nhất. Những trải nghiệm này giúp mình xây dựng các giải pháp tốt hơn và hiệu quả hơn. Đối với mình, sự phát triển không chỉ đến từ công việc — mà còn từ việc tự khám phá và học tập không ngừng. Đó là điều thực sự thúc đẩy sự phát triển của mình.',
           },
           {
             language: 'fr',
             field: 'quote',
             value:
-              "J'aime apprendre de nouvelles choses et j'ai un fort intérêt pour les projets open-source, où je découvre souvent des idées utiles et des meilleures pratiques. Ces expériences m'aident à construire des solutions meilleures et plus efficaces. \nPour moi, la croissance ne vient pas seulement du travail, mais aussi de l'auto-exploration et de l'apprentissage continu. C'est ce qui motive véritablement mon développement.",
+              "J'aime apprendre de nouvelles choses et j'ai un fort intérêt pour les projets open-source, où je découvre souvent des idées utiles et des meilleures pratiques. Ces expériences m'aident à construire des solutions meilleures et plus efficaces. Pour moi, la croissance ne vient pas seulement du travail, mais aussi de l'auto-exploration et de l'apprentissage continu. C'est ce qui motive véritablement mon développement.",
           },
           {
             language: 'en',
@@ -198,55 +196,57 @@ async function seedUser() {
     <div class="text-sm md:text-base space-y-2">
       <p>
         <strong>Full name:</strong> Luong Thanh Hoang Phu<br />
-        <strong>Date of birth:</strong>  20/11/2002 <br />
+        <strong>Date of birth:</strong> November 20, 2002<br />
         <strong>Location:</strong> Ho Chi Minh City, Vietnam
       </p>
       <p>
-        I'm a junior full-stack developer, mainly focused on backend development. I enjoy building high-performance, scalable systems and have hands-on experience with Golang, Node.js, and Python. While backend is my strong suit, I've also worked with frontend technologies like React.js and Next.js. I’ve dabbled in AI too, doing some research and building simple models. I'm always eager to learn and grow through real-world projects.
+        I'm a <strong>junior full-stack developer</strong>, mainly focused on <strong>backend development</strong>. I enjoy building <strong>high-performance</strong>, <strong>scalable systems</strong> and have hands-on experience with <strong>Golang</strong>, <strong>Node.js</strong>, and <strong>Python</strong>. While backend is my strong suit, I've also worked with frontend technologies like <strong>React.js</strong> and <strong>Next.js</strong>. I’ve dabbled in <strong>AI</strong> too, doing some research and building simple models. I'm always eager to learn and grow through <em>real-world projects</em>.
       </p>
       <p>
-        Moving forward, I aim to deepen my knowledge in system design, distributed systems, and AI integration – with the goal of building smart, efficient, and reliable software at scale.
+        Moving forward, I aim to deepen my knowledge in <strong>system design</strong>, <strong>distributed systems</strong>, and <strong>AI integration</strong> – with the goal of building <strong>smart</strong>, <strong>efficient</strong>, and <strong>reliable software</strong> at scale.
       </p>
     </div>
   `,
           },
           {
-            language: 'vi',
+            language: 'en',
             field: 'aboutMe',
             value: `
-    <div class="text-sm md:text-base space-y-2">
-      <p>
-        <strong>Họ tên:</strong> Lương Thanh Hoàng Phú<br />
-        <strong>Ngày sinh:</strong> 20/11/2002 <br />
-        <strong>Địa chỉ:</strong> TP. Hồ Chí Minh, Việt Nam
-      </p>
-      <p>
-        Mình là một lập trình viên full-stack junior, tập trung chủ yếu vào mảng backend. Mình yêu thích xây dựng các hệ thống hiệu năng cao, có khả năng mở rộng và từng làm việc thực tế với Golang, Node.js và Python. Ngoài ra, mình cũng đã làm frontend với React.js và Next.js. Mình từng thử sức với AI, nghiên cứu và xây dựng vài mô hình đơn giản. Mình luôn mong muốn học hỏi và trưởng thành thông qua các dự án thực tế.
-      </p>
-      <p>
-        Trong thời gian tới, mình hướng đến việc đào sâu hơn về thiết kế hệ thống, hệ phân tán và tích hợp AI – với mục tiêu xây dựng phần mềm thông minh, hiệu quả và tin cậy ở quy mô lớn.
-      </p>
-    </div>
+   <div class="text-sm md:text-base space-y-2">
+  <p>
+    <strong>Họ tên:</strong> Lương Thanh Hoàng Phú<br />
+    <strong>Ngày sinh:</strong> 20/11/2002<br />
+    <strong>Sinh sống:</strong> TP. Hồ Chí Minh, Việt Nam
+  </p>
+  <p>
+    Mình là một <strong>lập trình viên full-stack junior</strong>, tập trung chủ yếu vào <strong>backend</strong>. Mình yêu thích xây dựng các <strong>hệ thống hiệu năng cao</strong>, <strong>có khả năng mở rộng</strong> và từng làm việc thực tế với <strong>Golang</strong>, <strong>Node.js</strong> và <strong>Python</strong>. Ngoài ra, mình cũng từng làm frontend với <strong>React.js</strong> và <strong>Next.js</strong>. Mình đã thử sức với <strong>AI</strong>, nghiên cứu và xây dựng vài mô hình đơn giản. Mình luôn khao khát được học hỏi và phát triển qua <em>dự án thực tế</em>.
+  </p>
+  <p>
+    Trong thời gian tới, mình hướng đến việc đào sâu hơn về <strong>thiết kế hệ thống</strong>, <strong>hệ phân tán</strong> và <strong>tích hợp AI</strong> – với mục tiêu xây dựng <strong>phần mềm thông minh</strong>, <strong>hiệu quả</strong> và <strong>đáng tin cậy</strong> ở quy mô lớn.
+  </p>
+</div>
+
   `,
           },
           {
             language: 'fr',
             field: 'aboutMe',
             value: `
-    <div class="text-sm md:text-base space-y-2">
-      <p>
-        <strong>Nom complet :</strong> Luong Thanh Hoang Phu<br />
-        <strong>Date de naissance :</strong> 20/11/2002 <br />
-        <strong>Lieu :</strong> Hô Chi Minh-Ville, Vietnam
-      </p>
-      <p>
-        Je suis un développeur full-stack junior, spécialisé principalement dans le développement backend. J’aime construire des systèmes performants et évolutifs, et j’ai de l’expérience pratique avec Golang, Node.js et Python. Bien que le backend soit mon point fort, j’ai également travaillé avec des technologies frontend comme React.js et Next.js. J’ai aussi exploré l’IA, fait de la recherche et créé quelques modèles simples. Je suis toujours motivé à apprendre et progresser à travers des projets concrets.
-      </p>
-      <p>
-        À l’avenir, je souhaite approfondir mes connaissances en conception de systèmes, systèmes distribués et intégration de l’IA – dans le but de créer des logiciels intelligents, efficaces et fiables à grande échelle.
-      </p>
-    </div>
-  `,
+            <div class="text-sm md:text-base space-y-2">
+  <p>
+    <strong>Nom complet :</strong> Luong Thanh Hoang Phu<br />
+    <strong>Date de naissance :</strong> 20/11/2002<br />
+    <strong>Lieu :</strong> Hô Chi Minh-Ville, Vietnam
+  </p>
+  <p>
+    Je suis un <strong>développeur full-stack junior</strong>, spécialisé principalement dans le <strong>backend</strong>. J’aime construire des <strong>systèmes performants</strong> et <strong>évolutifs</strong>, et j’ai de l’expérience pratique avec <strong>Golang</strong>, <strong>Node.js</strong> et <strong>Python</strong>. Bien que le backend soit mon point fort, j’ai également travaillé avec des technologies frontend comme <strong>React.js</strong> et <strong>Next.js</strong>. J’ai aussi exploré <strong>l’IA</strong>, fait de la recherche et créé quelques modèles simples. Je suis toujours motivé à apprendre et progresser à travers <em>des projets concrets</em>.
+  </p>
+  <p>
+    À l’avenir, je souhaite approfondir mes connaissances en <strong>conception de systèmes</strong>, <strong>systèmes distribués</strong> et <strong>intégration de l’IA</strong> – dans le but de créer des <strong>logiciels intelligents</strong>, <strong>efficaces</strong> et <strong>fiables</strong> à grande échelle.
+  </p>
+</div>
+
+            `,
           },
         ],
       },
@@ -836,6 +836,12 @@ async function seedTechstacks(user: User) {
       logo: '/images/about/techstacks/next-js.png',
     },
 
+    {
+      userId: user.id,
+      name: 'Prisma',
+      group: 'Frameworks',
+      logo: '/images/about/techstacks/prisma.png',
+    },
     // Libraries
     {
       userId: user.id,
@@ -867,6 +873,14 @@ async function seedTechstacks(user: User) {
       group: 'Libraries',
       logo: '/images/about/techstacks/react-bits.png',
     },
+
+    {
+      userId: user.id,
+      name: 'next-intl',
+      group: 'Libraries',
+      logo: '/images/about/techstacks/next-intl.png',
+    },
+
     // Programming Languages
     {
       userId: user.id,
@@ -1393,6 +1407,18 @@ async function seedTags(user: User) {
     {
       name: 'service',
     },
+    {
+      name: 'portfolio',
+    },
+    {
+      name: 'open-source',
+    },
+    {
+      name: 'developer-journey',
+    },
+    {
+      name: 'multilingual',
+    },
   ];
 
   for (const tag of tags) {
@@ -1428,7 +1454,7 @@ async function seedProjects(user: User) {
       githubLink: 'https://github.com/lthphuw/go-defaults',
       liveLink: '',
       techStackNames: ['Go'],
-      tagNames: ['defaults', 'struct-tag'],
+      tagNames: ['open-source', 'defaults', 'struct-tag'],
       translations: [
         {
           language: 'en',
@@ -1458,7 +1484,7 @@ async function seedProjects(user: User) {
       githubLink: 'https://github.com/lthphuw/plogger',
       liveLink: '',
       techStackNames: ['Go'],
-      tagNames: ['logging', 'structured-logging'],
+      tagNames: ['open-source', 'logging', 'structured-logging'],
       translations: [
         {
           language: 'en',
@@ -1487,8 +1513,8 @@ async function seedProjects(user: User) {
         'A lightweight API for translating between English, Vietnamese, and French using pretrained models. Supports auto language detection and can be easily extended to other language pairs.',
       githubLink: 'https://github.com/lthphuw/translator-as-service',
       liveLink: '',
-      techStackNames: ['Python'],
-      tagNames: ['translator', 'service'],
+      techStackNames: ['Python', 'FastAPI'],
+      tagNames: ['open-source', 'translator', 'service'],
       translations: [
         {
           language: 'en',
@@ -1507,6 +1533,52 @@ async function seedProjects(user: User) {
           field: 'description',
           value:
             'Une API légère pour traduire entre l’anglais, le vietnamien et le français à l’aide de modèles pretrained. Prend en charge la détection automatique de la langue et peut être facilement étendue à d’autres paires de langues.',
+        },
+      ],
+    },
+    {
+      userId: user.id,
+      title: 'Byte of me',
+      description:
+        'My digital garden — where thoughts, code, and growth converge.',
+      githubLink: 'https://github.com/lthphuw/byte-of-me',
+      liveLink: '',
+      techStackNames: [
+        'Next.js',
+        'React.js',
+        'Float UI',
+        'Framer Motion',
+        'React Bits',
+        'next-intl',
+        'Prisma',
+        'Typescript',
+        'PostgreSQL',
+      ],
+      tagNames: [
+        'portfolio',
+        'open-source',
+        'developer-journey',
+        'multilingual',
+      ],
+
+      translations: [
+        {
+          language: 'en',
+          field: 'description',
+          value:
+            'My digital garden — where thoughts, code, and growth converge.',
+        },
+        {
+          language: 'vi',
+          field: 'description',
+          value:
+            'Không gian cá nhân – nơi hội tụ ý tưởng, code và sự trưởng thành của bản thân.',
+        },
+        {
+          language: 'fr',
+          field: 'description',
+          value:
+            'Mon espace personnel — où convergent pensées, code et évolution personnelle.',
         },
       ],
     },

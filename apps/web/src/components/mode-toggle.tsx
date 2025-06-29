@@ -85,7 +85,7 @@ export function ModeToggle() {
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ type: 'spring', stiffness: 130, damping: 10 }}
                 className={cn(
-                  'glass-base',
+                  'container-bg',
                   'mt-0 min-w-[140px] rounded-md p-1 shadow-2xl'
                 )}
               >

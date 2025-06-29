@@ -68,7 +68,7 @@ export function SiteHeader() {
         className={cn(
           'fixed left-0 top-0 z-50 w-full',
           clientThemeStyles,
-          isCompact && 'mr-auto pl-0 glass-base'
+          isCompact && 'mr-auto pl-0 container-bg'
         )}
         animate={animationControls}
       >
@@ -94,7 +94,7 @@ export function SiteHeader() {
         className={cn(
           `fixed top-0 right-12 z-50 space-x-2`,
           isCompact
-            ? `ml-auto mr-auto pl-0 glass-base ${clientThemeStyles} `
+            ? `ml-auto mr-auto pl-0 container-bg ${clientThemeStyles} `
             : 'bg-transparent shadow-none'
         )}
         animate={{

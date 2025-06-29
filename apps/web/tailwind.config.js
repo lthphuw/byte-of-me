@@ -84,8 +84,11 @@ module.exports = {
     require('@tailwindcss/typography'),
     plugin(({ addUtilities }) => {
       addUtilities({
-        '.glass-base': {
+        '.container-bg': {
           '@apply backdrop-blur-md bg-white/70 dark:bg-neutral-900/70': {},
+        },
+        '.article-text': {
+          '@apply leading-relaxed text-justify tracking-normal break-safe': {},
         },
       });
     }),
@@ -97,4 +100,7 @@ module.exports = {
       });
     }),
   ],
+  corePlugins: {
+    hyphens: true,
+  },
 };

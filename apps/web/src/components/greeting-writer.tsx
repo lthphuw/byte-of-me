@@ -1,8 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { animate, useMotionValue, useTransform } from 'framer-motion';
-
 import { SplitText } from './split-text';
 
 export interface GreetingWriterProps {
@@ -11,7 +8,7 @@ export interface GreetingWriterProps {
 
 export function GreetingWriter({ text = "Hi, I'm Phu." }: GreetingWriterProps) {
   return (
-    <h1 className="font-mono text-4xl font-bold sm:text-5xl md:text-6xl overflow-visible">
+    <h1 className="font-mono text-justify leading-relaxed break-words text-4xl font-bold sm:text-5xl md:text-6xl overflow-visible">
       <SplitText
         className="overflow-visible"
         text={text}

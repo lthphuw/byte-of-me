@@ -39,7 +39,7 @@ import {
   Trash,
   Twitter,
   User,
-  X
+  X,
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';

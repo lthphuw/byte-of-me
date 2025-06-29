@@ -33,7 +33,7 @@ export function CategoryFilter({
       {/* Mobile: Dropdown */}
       <div className="md:hidden flex gap-3">
         <Select value={selectedTechstack} onValueChange={setSelectedTechstack}>
-          <div className="glass-base shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] w-full rounded-xl">
+          <div className="container-bg shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] w-full rounded-xl">
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select techstack" />
             </SelectTrigger>
@@ -51,7 +51,7 @@ export function CategoryFilter({
         </Select>
 
         <Select value={selectedTag} onValueChange={setSelectedTag}>
-          <div className="glass-base shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] w-full rounded-xl">
+          <div className="container-bg shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] w-full rounded-xl">
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select tag" />
             </SelectTrigger>
@@ -71,7 +71,7 @@ export function CategoryFilter({
 
       {/* Desktop: Buttons */}
       <div className="hidden md:flex md:gap-2 items-start">
-        <div className="shrink-0 max-w-fit flex flex-wrap gap-2">
+        <div className="flex-1 flex flex-wrap gap-2">
           <SingleCategoryFilter
             items={techstacks}
             seletedItem={selectedTechstack || ''}
@@ -79,9 +79,9 @@ export function CategoryFilter({
           />
         </div>
 
-        <div className="min-h-[1em] w-[2.5px] self-stretch opacity-20 rounded-md bg-slate-800 dark:bg-slate-600 dark:opacity-100"></div>
+        <div className="min-h-[1em] w-[2.5px] self-stretch opacity-20 rounded-md bg-slate-800 dark:bg-slate-800 dark:opacity-100 shadow-xl"></div>
 
-        <div className="flex-grow flex flex-wrap gap-2">
+        <div className="flex-1 flex flex-wrap gap-2">
           <SingleCategoryFilter
             items={tags}
             seletedItem={selectedTag || ''}
@@ -104,7 +104,7 @@ function SingleCategoryFilter({
 }) {
   return (
     <div className="hidden md:flex md:flex-wrap items-start md:gap-2">
-      <div className="glass-base shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] rounded-full">
+      <div className="container-bg shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] rounded-full">
         <Button
           variant={seletedItem === '' ? 'default' : 'outline'}
           onClick={() => setSelectedItem('')}
@@ -117,7 +117,7 @@ function SingleCategoryFilter({
       {items.map((it) => (
         <div
           key={it.id}
-          className="glass-base shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] rounded-full"
+          className="container-bg shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] rounded-full"
         >
           <Button
             variant={seletedItem === it.id ? 'default' : 'outline'}
