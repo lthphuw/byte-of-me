@@ -1,13 +1,11 @@
+import { host } from '@/config/config';
+import { siteConfig } from '@/config/site';
+import { Viewport } from 'next';
 import { ReactNode } from 'react';
 
-import { siteConfig } from '@/config/site';
-
 import '@/styles/globals.css';
-import { Viewport } from 'next';
+import '../../node_modules/flag-icons/css/flag-icons.min.css';
 
-import { host } from '@/config/config';
-
-import '/node_modules/flag-icons/css/flag-icons.min.css';
 
 export const metadata = {
   metadataBase: new URL(siteConfig.url),
