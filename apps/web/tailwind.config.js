@@ -85,7 +85,7 @@ module.exports = {
     plugin(({ addUtilities }) => {
       addUtilities({
         '.container-bg': {
-          '@apply backdrop-blur-md bg-white/70 dark:bg-neutral-900/70': {},
+          '@apply backdrop-blur-md backdrop-invert-0 backdrop-saturate-200 bg-white/70 dark:bg-neutral-900/70 appearance-none': {},
         },
         '.article-text': {
           '@apply leading-relaxed text-justify tracking-normal break-safe': {},

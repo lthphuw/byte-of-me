@@ -49,10 +49,7 @@ export default function ExperienceTimeline({
   style,
 }: ExperienceTimelineProps) {
   return (
-    <section className={`mx-auto px-4 py-12${className}`} style={style}>
-      <h2 className="mb-12 text-3xl font-bold tracking-tight sm:text-4xl">
-        Experience
-      </h2>
+    <section className={`mx-auto px-4 py-12 md:py-16 ${className}`} style={style}>
       <div className="space-y-12">
         {experienceData.map((company, idx) => (
           <motion.div
