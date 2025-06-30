@@ -5,6 +5,7 @@ import { prisma } from '@db/client';
 
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
+import { revalidateTime } from '@/config/revalidate';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -26,7 +27,7 @@ export async function GET(req: NextRequest) {
           where: { email },
         }),
       ['me-simple'],
-      { revalidate: 86400, tags: ['me-simple'] }
+      { revalidate: revalidateTime, tags: ['me-simple'] }
     )();
 
     if (!user) {
@@ -45,7 +46,7 @@ export async function GET(req: NextRequest) {
           },
         }),
       ['techstacks'],
-      { revalidate: 86400, tags: ['techstacks'] }
+      { revalidate: revalidateTime, tags: ['techstacks'] }
     )();
 
     return NextResponse.json(

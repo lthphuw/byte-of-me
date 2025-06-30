@@ -5,6 +5,7 @@ import { prisma } from '@db/client';
 
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
+import { revalidateTime } from '@/config/revalidate';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -35,7 +36,7 @@ export async function GET(req: NextRequest) {
         });
       },
       ['me', locale],
-      { revalidate: 86400, tags: ['me', `me-${locale}`] }
+      { revalidate: revalidateTime, tags: ['me', `me-${locale}`] }
     )();
 
     if (!user) {

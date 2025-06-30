@@ -3,7 +3,7 @@ import { getPathname } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { Locale } from 'next-intl';
 
-import { host } from '@/config/config';
+import { host } from '@/config/host';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [...getEntries('/'), ...getEntries('/pathnames')];

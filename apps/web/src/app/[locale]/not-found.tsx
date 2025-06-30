@@ -1,11 +1,11 @@
 import { Link } from '@/i18n/navigation';
 import { getTranslations } from 'next-intl/server';
 
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import { FuzzyNotFound } from '@/components/fuzzy-not-found';
 import GoBackButton from '@/components/go-back';
 import { Icons } from '@/components/icons';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 
 export default async function NotFound() {
   const t = await getTranslations('notFound');

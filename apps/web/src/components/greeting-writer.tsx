@@ -1,5 +1,3 @@
-'use client';
-
 import { SplitText } from './split-text';
 
 export interface GreetingWriterProps {

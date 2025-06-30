@@ -21,7 +21,7 @@ export interface ProfileBannerProps {
 export function ProfileBanner({ images }: ProfileBannerProps) {
   const mounted = useMounted();
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const [cardWidth, setCardWidth] = useState(0);
 
   const defaultImage = images.at(-1);
@@ -36,7 +36,7 @@ export function ProfileBanner({ images }: ProfileBannerProps) {
     }
 
     const observer = new ResizeObserver(([entry]) => {
-      const usableWidth = entry.contentRect.width - 10;
+      const usableWidth = entry.contentRect.width;
       setCardWidth(Math.min(usableWidth, 720));
     });
 

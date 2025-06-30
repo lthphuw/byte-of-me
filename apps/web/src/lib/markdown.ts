@@ -9,37 +9,6 @@ export interface TocItem {
   depth: number;
   text: string;
 }
-export function resolveRelativeImages(
-  markdown: string,
-  githubUrl: string
-): string {
-  const match = githubUrl.match(/github\.com\/([^/]+\/[^/]+)/);
-  const repo = match?.[1];
-
-  if (!repo) return markdown;
-
-  const baseURL = `https://raw.githubusercontent.com/${repo}/main/`;
-
-  // Replace Markdown image: ![alt](./relative/path.png)
-  const mdImageReplaced = markdown.replace(
-    /!\[([^\]]*)\]\((\.?\/[^)]+)\)/g,
-    (_, alt, path) => {
-      const cleanedPath = path.replace(/^\.?\//, '');
-      return `![${alt}](${baseURL}${cleanedPath})`;
-    }
-  );
-
-  // Replace HTML image: <img src="./relative/path.png" ...>
-  const htmlImageReplaced = mdImageReplaced.replace(
-    /<img([^>]+)src=["'](\.?\/[^"']+)["']/g,
-    (_, attrs, src) => {
-      const cleanedSrc = src.replace(/^\.?\//, '');
-      return `<img${attrs}src="${baseURL}${cleanedSrc}"`;
-    }
-  );
-
-  return htmlImageReplaced;
-}
 
 export function extractToc(markdown: string): TocItem[] {
   const toc: TocItem[] = [];
@@ -57,4 +26,36 @@ export function extractToc(markdown: string): TocItem[] {
   });
 
   return toc;
+}
+
+export function resolveRelativeImages(
+  markdown: string,
+  githubUrl: string
+): string {
+  const match = githubUrl.match(/github\.com\/([^/]+\/[^/]+)/);
+  const repo = match?.[1];
+
+  if (!repo) return markdown;
+
+  const baseURL = `https://raw.githubusercontent.com/${repo}/main/`;
+
+  // Replace Markdown image: ![alt](relative/path.png)
+  const mdImageReplaced = markdown.replace(
+    /!\[([^\]]*)\]\(((?!https?:\/\/)[^)]+)\)/g,
+    (_, alt, path) => {
+      const cleanedPath = path.replace(/^\.?\/*/, '');
+      return `![${alt}](${baseURL}${cleanedPath})`;
+    }
+  );
+
+  // Replace HTML image: <img src="..." ...>
+  const htmlImageReplaced = mdImageReplaced.replace(
+    /<img([^>]+?)src=["']((?!https?:\/\/)[^"']+)["']/g,
+    (_, attrs, src) => {
+      const cleanedSrc = src.replace(/^\.?\/*/, '');
+      return `<img${attrs}src="${baseURL}${cleanedSrc}"`;
+    }
+  );
+
+  return htmlImageReplaced;
 }

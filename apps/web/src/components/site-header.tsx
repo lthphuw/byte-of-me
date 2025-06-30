@@ -1,14 +1,14 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
 
 import { globalConfig } from '@/config/global';
+import { cn } from '@/lib/utils';
 import { useCompactHeader } from '@/hooks/use-compact-header';
 import { useElementDimensions } from '@/hooks/use-element-dimension';
 import { useWindowScroll } from '@/hooks/use-window-scroll';
-import { cn } from '@/lib/utils';
 
 import { I18NToggle } from './i18n-toggle';
 import { MainNav } from './main-nav';

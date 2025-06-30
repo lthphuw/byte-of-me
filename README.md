@@ -42,12 +42,13 @@ pnpm install
 
 # 3. Setup environment
 cp .env.example .env
-# Fill in DATABASE_URL and other secrets
+
+# Fill in POSTGRES_PRISMA_URL and other secrets
 
 # 4. Run migrations & seed
-pnpm prisma migrate dev --name init
-pnpm db:seed
-
+cd apps/web
+npx prisma migrate dev --name <name>
+npx prisma db seed
 # 5. Start development server
 pnpm dev
 ```

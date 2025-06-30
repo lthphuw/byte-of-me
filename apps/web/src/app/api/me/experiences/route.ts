@@ -1,14 +1,15 @@
 // app/api/experiences/route.ts
 
-import { FlagType } from '@/types';
-import { prisma } from '@db/client';
 import { unstable_cache } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
+import { FlagType } from '@/types';
+import { prisma } from '@db/client';
 
-import { CompanyExperience } from '@/components/experience-timeline';
-import { supportedLanguages } from '@/config/language';
-import { calculateDuration, formatDate } from '@/lib/utils';
 import { ApiResponse } from '@/types/api';
+import { supportedLanguages } from '@/config/language';
+import { revalidateTime } from '@/config/revalidate';
+import { calculateDuration, formatDate } from '@/lib/utils';
+import { CompanyExperience } from '@/components/experience-timeline';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -30,7 +31,7 @@ export async function GET(req: NextRequest) {
           where: { email },
         }),
       ['simple-me', locale],
-      { revalidate: 86400, tags: ['simple-me', `simple-me-${locale}`] }
+      { revalidate: revalidateTime, tags: ['simple-me', `simple-me-${locale}`] }
     )();
 
     if (!user) {
@@ -51,7 +52,10 @@ export async function GET(req: NextRequest) {
           },
         }),
       ['experiences', locale],
-      { revalidate: 86400, tags: ['experiences', `experiences-${locale}`] }
+      {
+        revalidate: revalidateTime,
+        tags: ['experiences', `experiences-${locale}`],
+      }
     )();
 
     const translatedExperiences: CompanyExperience[] = experiences.map(

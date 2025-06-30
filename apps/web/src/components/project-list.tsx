@@ -105,7 +105,7 @@ export const ProjectItem: FC<ProjectItemProps> = ({
             </div>
           )}
 
-          <div className="space-y-2 text-sm mt-auto md:self-end">
+          <div className="w-full space-y-2 text-sm mt-auto md:self-end">
             <div className="mt-2 flex flex-col items-stretch gap-4 md:flex-row md:flex-nowrap">
               <Link
                 href={project.article ?? `/projects/${project.id}`}

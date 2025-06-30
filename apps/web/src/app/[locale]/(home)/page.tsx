@@ -3,36 +3,27 @@ import { User } from '@db/index';
 import { FileText } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
+import { fetchData } from '@/lib/fetch';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import { GreetingWriter } from '@/components/greeting-writer';
 import { ProfileBanner } from '@/components/profile-banner';
 import { ProfileQuote } from '@/components/profile-quote';
 import { HomeShell } from '@/components/shell';
-import { Button } from '@/components/ui/button';
-import { fetchData } from '@/lib/fetch';
-import { cn } from '@/lib/utils';
-
-// Next.js will invalidate the cache when a
-// request comes in, at most once every 60 seconds.
-export const revalidate = 86400;
-
-// We'll prerender only the params from `generateStaticParams` at build time.
-// If a request comes in for a path that hasn't been generated,
-// Next.js will server-render the page on-demand.
-export const dynamicParams = true; // or false, to 404 on unknown paths
 
 export default async function HomePage() {
   const t = await getTranslations('home');
   const user = await fetchData<User>('me');
 
   return (
-    <HomeShell>
+    <HomeShell className="flex flex-col items-stretch">
       {/* Heading */}
       <GreetingWriter text={user.greeting || ''} />
 
       {/* Tagline */}
-      <p className="article-text mb-2 text-muted-foreground md:text-lg">
+      <h2 className="article-text mb-2 text-muted-foreground md:text-lg">
         {user?.tagLine || ''}
-      </p>
+      </h2>
 
       <ProfileBanner images={(user as any)?.bannerImages} />
       <ProfileQuote quote={user?.quote || ''} />

@@ -1,7 +1,8 @@
 import { getLocale } from 'next-intl/server';
 
 import { ApiResponse } from '@/types/api';
-import { host } from '@/config/config';
+import { host } from '@/config/host';
+import { revalidateTime } from '@/config/revalidate';
 
 import { resolveRelativeImages } from './markdown';
 
@@ -19,7 +20,7 @@ export async function fetchData<T>(
   const resp = await fetch(api, {
     cache,
     next: {
-      revalidate: 86400,
+      revalidate: revalidateTime,
       tags: [`${endpoint}-${locale}`],
     },
   });
@@ -33,11 +34,9 @@ export async function fetchData<T>(
   return data;
 }
 
-// const match = githubUrl.match(/github\.com\/([^/]+\/[^/]+)/);
-
 export async function fetchREADMEData(
   githubUrl: string,
-  { cache }: FetchOptions = { cache: 'force-cache' }
+  { cache }: FetchOptions = { cache: 'no-store' }
 ): Promise<string> {
   const match = githubUrl.match(/github\.com\/([^/]+\/[^/]+)/);
   const repo = match?.[1];
@@ -51,7 +50,7 @@ export async function fetchREADMEData(
     const resp = await fetch(url, {
       cache,
       next: {
-        revalidate: 86400,
+        revalidate: revalidateTime,
         tags: [githubUrl],
       },
     });

@@ -8,6 +8,7 @@ import { Project } from '@db/index';
 
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
+import { revalidateTime } from '@/config/revalidate';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -29,7 +30,10 @@ export async function GET(req: NextRequest) {
           where: { email },
         }),
       ['user-simple', locale],
-      { revalidate: 86400, tags: ['user-simple', `user-simple-${locale}`] }
+      {
+        revalidate: revalidateTime,
+        tags: ['user-simple', `user-simple-${locale}`],
+      }
     )();
 
     if (!user) {
@@ -50,7 +54,7 @@ export async function GET(req: NextRequest) {
           },
         }),
       ['projects', locale],
-      { revalidate: 86400, tags: ['projects', `projects-${locale}`] }
+      { revalidate: revalidateTime, tags: ['projects', `projects-${locale}`] }
     )();
 
     const translatedProjects: any[] = projects.map((proj) => {

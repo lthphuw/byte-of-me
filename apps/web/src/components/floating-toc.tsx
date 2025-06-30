@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Link } from '@/i18n/navigation';
 import {
   autoUpdate,
@@ -13,7 +14,6 @@ import {
 } from '@floating-ui/react';
 import { AnimatePresence, Variants, motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
-import { useState } from 'react';
 
 import { useTranslations } from '@/hooks/use-translations';
 
@@ -83,7 +83,7 @@ export function FloatingToc({ items }: FloatingTocProps) {
   return (
     <>
       {/* Docked TOC indicator */}
-      <div
+      <nav
         ref={refs.setReference}
         {...getReferenceProps()}
         className={`container-bg fixed right-3 md:right-12 top-1/3 z-60 flex flex-col items-center cursor-pointer rounded-xl px-[6px] py-[6px] md:px-2 md:py-2 transition-all ${shadowClass}`}
@@ -114,12 +114,12 @@ export function FloatingToc({ items }: FloatingTocProps) {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-      </div>
+      </nav>
 
       {/* Full TOC popup */}
       <AnimatePresence>
         {open && (
-          <div
+          <nav
             ref={refs.setFloating}
             style={floatingStyles}
             {...getFloatingProps()}
@@ -160,7 +160,7 @@ export function FloatingToc({ items }: FloatingTocProps) {
                 </ul>
               </motion.div>
             </motion.div>
-          </div>
+          </nav>
         )}
       </AnimatePresence>
     </>

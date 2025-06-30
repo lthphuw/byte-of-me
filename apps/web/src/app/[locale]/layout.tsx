@@ -1,19 +1,17 @@
-import { routing } from '@/i18n/routing';
-import { ExperimentalProvider } from '@/providers/experimental';
-import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { Inter as FontSans } from 'next/font/google';
 import localFont from 'next/font/local';
 import { notFound } from 'next/navigation';
+import { routing } from '@/i18n/routing';
+import { ExperimentalProvider } from '@/providers/experimental';
+import { NextIntlClientProvider, hasLocale } from 'next-intl';
 
+import { cn } from '@/lib/utils';
+import { Toaster } from '@/components/ui/toaster';
 import { Analytics } from '@/components/analytics';
 import { BackgroundWrapper } from '@/components/background-wrapper';
+import { SpeedInsights } from '@/components/speed-insight';
 import { TailwindIndicator } from '@/components/tailwind-indicator';
 import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from '@/components/ui/toaster';
-import { cn } from '@/lib/utils';
-
-import { SpeedInsights } from '@/components/speed-insight';
-
 
 const fontSans = FontSans({
   subsets: ['latin'],

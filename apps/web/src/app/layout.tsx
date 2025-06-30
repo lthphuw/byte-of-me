@@ -1,11 +1,11 @@
-import { host } from '@/config/config';
-import { siteConfig } from '@/config/site';
-import { Viewport } from 'next';
 import { ReactNode } from 'react';
+import { Viewport } from 'next';
+
+import { host } from '@/config/host';
+import { siteConfig } from '@/config/site';
 
 import '@/styles/globals.css';
 import '../../node_modules/flag-icons/css/flag-icons.min.css';
-
 
 export const metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -61,7 +61,6 @@ export const viewport: Viewport = {
     { media: '(prefers-color-scheme: dark)', color: 'black' },
   ],
 };
-
 
 type Props = {
   children: ReactNode;

@@ -1,5 +1,5 @@
-import { Project } from '@db/index';
 import type { Metadata } from 'next';
+import { Project } from '@db/index';
 
 import { fetchData } from '@/lib/fetch';
 

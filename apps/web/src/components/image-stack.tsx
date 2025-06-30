@@ -89,7 +89,7 @@ export default function ImageStack({
 
   return (
     <div
-      className="relative"
+      className="relative -ml-4 md:-ml-8"
       style={{
         width: cardDimensions.width,
         height: cardDimensions.height,
