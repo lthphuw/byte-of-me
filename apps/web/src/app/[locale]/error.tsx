@@ -1,16 +1,16 @@
 'use client';
 
 // Error boundaries must be Client Components
-import { useCallback, useEffect, useMemo } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
+import { useCallback, useEffect, useMemo } from 'react';
 
-import { cn, prettyStringify } from '@/lib/utils';
-import { useClipboard } from '@/hooks/use-clipboard';
-import { Button } from '@/components/ui/button';
 import { FuzzyError } from '@/components/fuzzy-error';
 import GoBackButton from '@/components/go-back';
 import { Icons } from '@/components/icons';
+import { Button } from '@/components/ui/button';
+import { useClipboard } from '@/hooks/use-clipboard';
+import { cn, prettyStringify } from '@/lib/utils';
 
 export default function Error({
   error,

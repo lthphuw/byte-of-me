@@ -1,15 +1,15 @@
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { User } from '@db/index';
 import { FileText } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
-import { fetchData } from '@/lib/fetch';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { GreetingWriter } from '@/components/greeting-writer';
 import { ProfileBanner } from '@/components/profile-banner';
 import { ProfileQuote } from '@/components/profile-quote';
 import { HomeShell } from '@/components/shell';
+import { Button } from '@/components/ui/button';
+import { fetchData } from '@/lib/fetch';
+import { cn } from '@/lib/utils';
 
 // Next.js will invalidate the cache when a
 // request comes in, at most once every 60 seconds.

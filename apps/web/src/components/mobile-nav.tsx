@@ -1,15 +1,15 @@
 'use client';
 
-import * as React from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { MainNavItem } from '@/types';
 import { AnimatePresence, Variants, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import * as React from 'react';
 
-import { siteConfig } from '@/config/site';
-import { cn } from '@/lib/utils';
-import { useLockBody } from '@/hooks/use-lock-body';
 import { Icons } from '@/components/icons';
+import { siteConfig } from '@/config/site';
+import { useLockBody } from '@/hooks/use-lock-body';
+import { cn } from '@/lib/utils';
 
 const TOP_OFFSET = 100;
 const SIDE_OFFSET = 16;
@@ -69,7 +69,7 @@ export const MobileNav = React.forwardRef<HTMLDivElement, MobileNavProps>(
       items,
       children,
       isOpen,
-      onOpenChange = () => {},
+      onOpenChange = () => { },
       originPosition,
       className,
       style,

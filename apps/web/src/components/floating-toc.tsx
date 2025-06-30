@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import {
   autoUpdate,
   flip,
@@ -14,6 +13,7 @@ import {
 } from '@floating-ui/react';
 import { AnimatePresence, Variants, motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
+import { useState } from 'react';
 
 import { useTranslations } from '@/hooks/use-translations';
 
