@@ -124,7 +124,8 @@
     "There are no projects yet": "There are no projects yet",
     "No projects match your search": "No projects match your search",
     "Loading project list": "Loading project list",
-    "Failed to load project list": "Failed to load project list Please try again"
+    "Failed to load project list": "Failed to load project list Please try again",
+    "Back to projects": "Back to projects"
   },
   "contact": {
     "Connect With Me": "Connect With Me",

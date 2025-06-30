@@ -66,7 +66,7 @@ export function SiteHeader() {
       <motion.header
         initial={false}
         className={cn(
-          'fixed left-0 top-0 z-50 w-full appearance-none',
+          'fixed left-0 top-0 pl-2 z-50 w-full appearance-none',
           clientThemeStyles,
           isCompact && 'mr-auto pl-0 container-bg'
         )}
@@ -92,14 +92,14 @@ export function SiteHeader() {
 
       <motion.div
         className={cn(
-          `fixed top-0 right-12 z-50 space-x-2 appearance-none`,
+          `fixed top-0 right-6 md:right-12 z-50 space-x-2 appearance-none`,
           isCompact
             ? `ml-auto mr-auto pl-0 container-bg ${clientThemeStyles} `
             : 'bg-transparent shadow-none'
         )}
         animate={{
           left: 'auto',
-          right: isCompact ? COMPACT_X_OFFSET : 48,
+          right: isCompact ? COMPACT_X_OFFSET : 24,
           top: isCompact ? COMPACT_TOP_OFFSET : 0,
           borderRadius: isCompact ? COMPACT_BORDER_RADIUS : 0,
           transition: { ease: ['easeOut'] },

@@ -1373,8 +1373,6 @@ async function seedExperiences(user: User) {
         });
       }
     }
-
-    console.log(`Created experience: ${createdExp.company}`);
   }
 
   return prisma.experience.findMany({
@@ -1418,6 +1416,15 @@ async function seedTags(user: User) {
     },
     {
       name: 'multilingual',
+    },
+    {
+      name: 'Vision-Language Model',
+    },
+    {
+      name: 'Medical image',
+    },
+    {
+      name: 'Anomaly Detection',
     },
   ];
 
@@ -1578,6 +1585,42 @@ async function seedProjects(user: User) {
           field: 'description',
           value:
             'Mon espace personnel — où convergent pensées, code et évolution personnelle.',
+        },
+      ],
+    },
+    {
+      userId: user.id,
+      title:
+        'MLA-LP: Multi-Level Adapters with Learnable Prompt for Medical Image Anomaly Detection',
+      description:
+        'The MLA-LP model leverages the pre-trained CLIP vision-language model, enhanced with multi-level adapters and learnable prompts, to address the challenge of detecting and segmenting abnormalities in medical images. The model excels in both zero-shot and few-shot learning scenarios, achieving superior performance in anomaly classification (AC) and anomaly segmentation (AS) tasks across diverse medical imaging datasets.',
+      githubLink: 'https://github.com/vvthai10/mla-pl',
+      liveLink: '',
+      techStackNames: ['Python'],
+      tagNames: [
+        'open-source',
+        'Vision-Language Model',
+        'Medical image',
+        'Anomaly Detection',
+      ],
+      translations: [
+        {
+          language: 'en',
+          field: 'description',
+          value:
+            'The MLA-LP model leverages the pre-trained CLIP vision-language model, enhanced with multi-level adapters and learnable prompts, to address the challenge of detecting and segmenting abnormalities in medical images. The model excels in both zero-shot and few-shot learning scenarios, achieving superior performance in anomaly classification (AC) and anomaly segmentation (AS) tasks across diverse medical imaging datasets.',
+        },
+        {
+          language: 'vi',
+          field: 'description',
+          value:
+            'Mô hình MLA-LP tận dụng mô hình vision-language CLIP được huấn luyện trước, được cải tiến với multi-level adapters và learnable prompts, để giải quyết thách thức trong việc phát hiện và phân đoạn các bất thường trong hình ảnh y khoa. Mô hình này nổi bật trong cả hai kịch bản zero-shot và few-shot learning, đạt được hiệu suất vượt trội trong các nhiệm vụ anomaly classification (AC) và anomaly segmentation (AS) trên nhiều tập dữ liệu hình ảnh y khoa đa dạng.',
+        },
+        {
+          language: 'fr',
+          field: 'description',
+          value:
+            'Le modèle MLA-LP exploite le modèle vision-language CLIP pré-entraîné, amélioré avec des multi-level adapters et des learnable prompts, pour relever le défi de la détection et de la segmentation des anomalies dans les images médicales. Le modèle excelle dans les scénarios de zero-shot et few-shot learning, offrant des performances supérieures dans les tâches d’anomaly classification (AC) et d’anomaly segmentation (AS) sur divers ensembles de données d’imagerie médicale.',
         },
       ],
     },

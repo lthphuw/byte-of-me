@@ -226,6 +226,9 @@ importers:
       ogl:
         specifier: ^1.0.11
         version: 1.0.11
+      parse-numeric-range:
+        specifier: ^1.3.0
+        version: 1.3.0
       postmark:
         specifier: ^3.0.15
         version: 3.11.0

@@ -10,7 +10,7 @@ const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.2, delayChildren: 0.3 },
+    transition: { staggerChildren: 0.1, delayChildren: 0.15 },
   },
 };
 
@@ -19,7 +19,7 @@ const itemVariants: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+    transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
   },
 };
 
@@ -69,8 +69,8 @@ export function ContactContent() {
             label: 'Facebook',
           },
         ].map((item, index) => (
-          <motion.div key={item.href} variants={itemVariants}>
-            <div className="container-bg cursor-pointer px-4 py-4 w-full min-h-[97px] md:w-[216px] md:min-h-[184px] flex flex-col justify-center align-center rounded-xl gap-4 shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)]">
+          <motion.div id={index.toString()} key={item.href} variants={itemVariants}>
+            <div className="container-bg cursor-pointer px-4 py-2 md:py-4 w-full min-h-[97px] md:w-[216px] md:min-h-[184px] flex flex-col justify-center align-center rounded-xl gap-4 shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)]">
               <Link
                 href={item.href}
                 target="_blank"

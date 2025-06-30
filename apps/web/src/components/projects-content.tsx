@@ -1,9 +1,9 @@
 // 'use client';
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
 import Fuse from 'fuse.js';
 import { debounce } from 'lodash';
+import { useCallback, useMemo, useState } from 'react';
 
 import { CategoryFilter } from '@/components/category-filter';
 import { SearchBar, SearchItem } from '@/components/search-bar';
@@ -100,7 +100,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
   }, [debouncedQuery, categorizedProjects, fuse]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container w-full px-0 py-8">
       <div className="flex flex-col items-stretch gap-8">
         <div className="md:col-span-1 md:sticky md:top-4 md:h-fit">
           <SearchBar
