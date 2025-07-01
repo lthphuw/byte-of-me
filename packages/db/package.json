@@ -19,7 +19,8 @@
   "dependencies": {
     "@prisma/adapter-neon": "^6.10.1",
     "@prisma/adapter-pg": "^6.10.1",
-    "@prisma/client": "^6.10.1"
+    "@prisma/client": "^6.10.1",
+    "@prisma/extension-accelerate": "^2.0.1"
   },
   "exports": {
     ".": "./src/index.ts",

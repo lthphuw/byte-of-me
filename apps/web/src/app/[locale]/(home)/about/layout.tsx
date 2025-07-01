@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'About me',
 };
+
 interface AboutLayoutProps {
   children?: React.ReactNode;
 }

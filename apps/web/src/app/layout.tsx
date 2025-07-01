@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
 import { Viewport } from 'next';
+import { ReactNode } from 'react';
 
 import { host } from '@/config/host';
 import { siteConfig } from '@/config/site';
@@ -18,10 +18,28 @@ export const metadata = {
     'Next.js',
     'React',
     'Tailwind CSS',
+    'TypeScript',
+    'MDX',
+    'Contentlayer',
+    'Static Site',
+    'Personal Website',
     'Portfolio',
-    'Fullstack',
+    'Blog Template',
+    'Frontend Developer',
+    'Fullstack Developer',
+    'Digital Garden',
+    'Luong Thanh Hoang Phu',
     'Lương Thanh Hoàng Phú',
     'Byte of me',
+    'Vercel',
+    'Web Developer Portfolio',
+    'Software Engineer',
+    'Minimal Blog',
+    'Developer Notes',
+    'Next.js Starter',
+    'Personal Blog Template',
+    'Byte of me',
+    'byte-of-me'
   ],
   authors: [{ name: 'lthphuw', url: host }],
   creator: 'lthphuw',

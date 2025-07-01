@@ -1,19 +1,17 @@
-import { PrismaNeon } from '@prisma/adapter-neon';
-import { PrismaClient } from '@prisma/client';
-export const runtime = 'edge';
+import { PrismaClient } from '@prisma/client/edge';
+import { withAccelerate } from '@prisma/extension-accelerate';
 
-const adapter = new PrismaNeon({
-  connectionString: process.env.POSTGRES_PRISMA_URL,
-});
+const prismaClientSingleton = () => {
+  return new PrismaClient().$extends(withAccelerate());
+};
 
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
+type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    adapter,
-  });
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClientSingleton | undefined;
+};
 
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma;
-}
+export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
+
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
