@@ -20,7 +20,6 @@ import { useLocale } from 'next-intl';
 
 import { languageNames, supportedLanguages } from '@/config/language';
 import { cn } from '@/lib/utils';
-import { useMounted } from '@/hooks/use-mounted';
 import { useTranslations } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
 
@@ -108,7 +107,7 @@ export function I18NToggle() {
       <FloatingPortal>
         <AnimatePresence>
           {isOpen && (
-            <div
+            <nav
               ref={refs.setFloating}
               style={{
                 ...floatingStyles,
@@ -116,7 +115,7 @@ export function I18NToggle() {
               }}
               {...getFloatingProps()}
             >
-              <motion.div
+              <motion.ul
                 initial={{ opacity: 0.3, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
@@ -129,7 +128,7 @@ export function I18NToggle() {
                 {supportedLanguages.map((lang, index) => {
                   const Flag = Flags[lang];
                   return (
-                    <motion.div
+                    <motion.li
                       key={lang}
                       custom={index}
                       variants={itemVariants}
@@ -149,11 +148,11 @@ export function I18NToggle() {
                         {t(languageNames[lang])}{' '}
                         <span className="uppercase tracking-wide">{lang}</span>
                       </span>
-                    </motion.div>
+                    </motion.li>
                   );
                 })}
-              </motion.div>
-            </div>
+              </motion.ul>
+            </nav>
           )}
         </AnimatePresence>
       </FloatingPortal>

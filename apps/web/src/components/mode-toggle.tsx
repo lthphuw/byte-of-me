@@ -64,7 +64,7 @@ export function ModeToggle() {
         {...getReferenceProps()}
         variant="icon"
         size="sm"
-        className="relative size-9 px-0 focus:outline-none"
+        className="overflow-y-hidden relative size-9 px-0 focus:outline-none"
       >
         <Icons.sun className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
         <Icons.moon className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -74,12 +74,12 @@ export function ModeToggle() {
       <FloatingPortal>
         <AnimatePresence>
           {open && (
-            <div
+            <nav
               ref={refs.setFloating}
               style={{ ...floatingStyles, zIndex: 60 }}
               {...getFloatingProps()}
             >
-              <motion.div
+              <motion.ul
                 initial={{ opacity: 0.3, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
@@ -94,7 +94,7 @@ export function ModeToggle() {
                   { theme: 'dark', icon: Icons.moon, label: t('Dark') },
                   { theme: 'system', icon: Icons.laptop, label: t('System') },
                 ].map((item, index) => (
-                  <motion.div
+                  <motion.li
                     key={item.theme}
                     custom={index}
                     variants={itemVariants}
@@ -111,10 +111,10 @@ export function ModeToggle() {
                   >
                     <item.icon className="mr-2 size-4" />
                     <span>{item.label}</span>
-                  </motion.div>
+                  </motion.li>
                 ))}
-              </motion.div>
-            </div>
+              </motion.ul>
+            </nav>
           )}
         </AnimatePresence>
       </FloatingPortal>

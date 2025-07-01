@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Experience',
 };
+
 interface ExperienceLayoutProps {
   children?: React.ReactNode;
 }

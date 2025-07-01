@@ -3,13 +3,8 @@
 import { BaseSelectItem } from '@/types';
 
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+
+import { FilterSelect } from './filter-select';
 
 interface CategoryFilterProps {
   techstacks: BaseSelectItem[];
@@ -32,41 +27,17 @@ export function CategoryFilter({
     <div className="mb-4">
       {/* Mobile: Dropdown */}
       <div className="md:hidden flex gap-3">
-        <Select value={selectedTechstack} onValueChange={setSelectedTechstack}>
-          <div className="container-bg shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] w-full rounded-xl">
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select techstack" />
-            </SelectTrigger>
-          </div>
-          <SelectContent>
-            <SelectItem key={''} value={''}>
-              All
-            </SelectItem>
-            {techstacks.map((it) => (
-              <SelectItem key={it.id} value={it.id}>
-                {it.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <FilterSelect
+          items={techstacks}
+          selectedFilter={selectedTechstack || ''}
+          setSelectedFilter={setSelectedTechstack}
+        />
 
-        <Select value={selectedTag} onValueChange={setSelectedTag}>
-          <div className="container-bg shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] w-full rounded-xl">
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select tag" />
-            </SelectTrigger>
-          </div>
-          <SelectContent>
-            <SelectItem key={''} value={''}>
-              All
-            </SelectItem>
-            {tags.map((it) => (
-              <SelectItem key={it.id} value={it.id}>
-                {it.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <FilterSelect
+          items={tags}
+          selectedFilter={selectedTag || ''}
+          setSelectedFilter={setSelectedTag}
+        />
       </div>
 
       {/* Desktop: Buttons */}

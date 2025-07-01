@@ -1,9 +1,11 @@
 // 'use client';
 'use client';
 
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from '@/i18n/navigation';
 import Fuse from 'fuse.js';
 import { debounce } from 'lodash';
-import { useCallback, useMemo, useState } from 'react';
 
 import { CategoryFilter } from '@/components/category-filter';
 import { SearchBar, SearchItem } from '@/components/search-bar';
@@ -20,11 +22,36 @@ const fuseOptions = {
 };
 
 export function ProjectsContent({ projects }: ProjectsContentProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
-  const [selectedTag, setSelectedTag] = useState('');
-  const [selectedTechstack, setSelectedTechstack] = useState('');
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const [searchQuery, setSearchQuery] = useState<string>(
+    searchParams.get('q') || ''
+  );
+  const [debouncedQuery, setDebouncedQuery] = useState<string>(
+    searchParams.get('q') || ''
+  );
+  const [selectedTag, setSelectedTag] = useState<string>(
+    searchParams.get('tag') || ''
+  );
+  const [selectedTechstack, setSelectedTechstack] = useState<string>(
+    searchParams.get('tech') || ''
+  );
   const [isLoading, setIsLoading] = useState(false);
+
+  // Update URL parameters when filters change
+  const updateUrlParams = useCallback(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('q', searchQuery);
+    if (selectedTechstack) params.set('tech', selectedTechstack);
+    if (selectedTag) params.set('tag', selectedTag);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchQuery, selectedTechstack, selectedTag, pathname, router]);
+
+  useEffect(() => {
+    updateUrlParams();
+  }, [searchQuery, selectedTechstack, selectedTag, updateUrlParams]);
 
   const techstacks = useMemo(() => {
     const set = new Set();

@@ -69,7 +69,9 @@ export const ProjectItem: FC<ProjectItemProps> = ({
     >
       <div className="container-bg min-w-[160px] rounded-2xl border-none p-1 text-sm shadow-md dark:shadow-[0_4px_10px_rgba(255,255,255,0.06)]">
         <div className="flex h-full flex-col items-stretch gap-3 p-6 rounded-2xl">
-          <h2 className="text-lg font-semibold line-clamp-3 mb-2">{project.title}</h2>
+          <h2 className="text-lg font-semibold line-clamp-3 mb-2">
+            {project.title}
+          </h2>
 
           <div className="flex gap-2 flex-wrap">
             {project.techstacks.map((tech, index) => (
