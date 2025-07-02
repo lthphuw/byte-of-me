@@ -9,6 +9,9 @@ const nextConfig = {
     webpackMemoryOptimizations: true,
     serverActions: true,
   },
+  turbopack: {
+    resolveExtensions: ['.mdx', '.tsx', '.ts', '.jsx', '.js', '.mjs', '.json'],
+  },
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.plugins = [...config.plugins, new PrismaPlugin()];

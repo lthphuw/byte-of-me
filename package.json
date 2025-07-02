@@ -1,16 +1,20 @@
 {
   "name": "byte-of-me",
   "private": true,
-  "version": "0.2.0",
+  "version": "1.0.0",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
-    "dev": "pnpm --filter web dev",
-    "build": "pnpm generate && pnpm --filter web build",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
     "generate": "pnpm --filter @repo/db generate",
     "lint": "pnpm --filter web lint",
     "format": "pnpm --filter web format"
+  },
+  "packageManager": "pnpm@10.0.0",
+  "dependencies": {
+    "@prisma/client": "^6.10.1"
   }
 }

@@ -25,7 +25,6 @@ const COMPACT_PADDING = '12px 16px';
 const DEFAULT_PADDING = '16px';
 const SHADOW_TRANSITION_THRESHOLD = 10;
 
-
 export function SiteHeader() {
   const [{ y: scrollY }] = useWindowScroll();
   const { dimensions: headerDimensions, ref: mainNavRef } = useElementDimensions<HTMLDivElement>();
@@ -46,7 +45,8 @@ export function SiteHeader() {
 
   const boxShadow = useMemo(() => {
     const color = theme === 'dark' ? '255,255,255' : '0,0,0';
-    return `0 4px 10px rgba(${color},${shadowOpacity})`;
+    const opacity = theme === 'dark' ? Math.min(shadowOpacity + 0.05, 0.15) : shadowOpacity;
+    return `0 4px 10px rgba(${color},${opacity})`;
   }, [theme, shadowOpacity, isCompact]);
 
   const controllerBoxShadow = useMemo(() => isCompact ? boxShadow : 'none', [isCompact, boxShadow]);
@@ -58,14 +58,13 @@ export function SiteHeader() {
     [isCompact, compactWidth]
   );
 
-
-  const transitionConfig: Transition = isMobile ?
-    {
-      type: "spring",
+  const transitionConfig: Transition = isMobile
+    ? {
+      type: 'spring',
       bounce: 0.25,
       visualDuration: 0.4,
-    } :
-    {
+    }
+    : {
       duration: 0.4,
       ease: 'easeOut',
     };
@@ -101,6 +100,7 @@ export function SiteHeader() {
       transition: transitionConfig,
     },
   };
+
   return (
     <>
       <motion.header
@@ -135,8 +135,7 @@ export function SiteHeader() {
           }}
           transition={transitionConfig}
         >
-          <MainNav items={globalConfig.header.nav} minimized={isCompact} ref={mainNavRef}
-          />
+          <MainNav items={globalConfig.header.nav} minimized={isCompact} ref={mainNavRef} />
         </motion.div>
       </motion.header>
 

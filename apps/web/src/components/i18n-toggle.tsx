@@ -81,7 +81,7 @@ export function I18NToggle() {
         size="sm"
         className="relative size-9 px-0 focus:outline-none"
       >
-        <motion.button
+        <motion.div
           whileHover={{ scale: 1.2 }}
           whileTap={{ scale: 0.8 }}
           className="absolute inset-0 flex items-center justify-center"
@@ -102,7 +102,7 @@ export function I18NToggle() {
             </AnimatePresence>
           </motion.span>
           <span className="sr-only ">{t('Toggle language')}</span>
-        </motion.button>
+        </motion.div>
       </Button>
 
       <FloatingPortal>
@@ -152,13 +152,13 @@ export function I18NToggle() {
                         <span className="uppercase tracking-wide">{lang}</span>
                       </span>
                     </motion.li>
-              );
+                  );
                 })}
-            </motion.ul>
+              </motion.ul>
             </nav>
           )}
-      </AnimatePresence>
-    </FloatingPortal >
+        </AnimatePresence>
+      </FloatingPortal >
     </>
   );
 }

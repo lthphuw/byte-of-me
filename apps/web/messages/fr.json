@@ -138,5 +138,20 @@
   "contact": {
     "Connect With Me": "Connectons-nous",
     "Reach out, let's code the future!": "Contactez-moi, construisons le futur ensemble!"
+  },
+  "footer": {
+    "home": "Accueil",
+    "builtBy": "Construit par",
+    "openSource": "Open source sur",
+    "links": "Liens rapides",
+    "about": "À propos",
+    "projects": "Projets",
+    "experience": "Expérience",
+    "contact": "Contact",
+    "connect": "Connectez-vous",
+    "email": "Email",
+    "navigation": "Navigation du pied de page",
+    "license": "Sous licence",
+    "rights": "Tous droits réservés."
   }
 }

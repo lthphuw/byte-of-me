@@ -62,10 +62,9 @@ export function ModeToggle() {
         size="sm"
         className="relative size-9 px-0 focus-visible:outline-none"
       >
-        <motion.button
+        <motion.span
           whileTap={{ scale: 0.8 }}
           whileHover={{ scale: 1.2 }}
-          tabIndex={-1} // Prevent double focus
           className="absolute inset-0 flex items-center justify-center"
         >
           <motion.span className="relative size-6">
@@ -98,7 +97,7 @@ export function ModeToggle() {
             </AnimatePresence>
           </motion.span>
           <span className="sr-only">{t('Toggle theme')}</span>
-        </motion.button>
+        </motion.span>
       </Button>
 
       <FloatingPortal>

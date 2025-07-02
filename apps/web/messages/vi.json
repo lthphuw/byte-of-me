@@ -138,5 +138,20 @@
   "contact": {
     "Connect With Me": "Kết nối với tôi",
     "Reach out, let's code the future!": "Hãy liên hệ, cùng tôi kiến tạo tương lai qua từng dòng code!"
+  },
+  "footer": {
+    "home": "Trang chủ",
+    "builtBy": "Xây dựng bởi",
+    "openSource": "Mã nguồn mở trên",
+    "links": "Liên kết nhanh",
+    "about": "Giới thiệu",
+    "projects": "Dự án",
+    "experience": "Kinh nghiệm",
+    "contact": "Liên hệ",
+    "connect": "Kết nối",
+    "email": "Email",
+    "navigation": "Điều hướng chân trang",
+    "license": "Được cấp phép theo",
+    "rights": "Bản quyền thuộc về tác giả."
   }
 }

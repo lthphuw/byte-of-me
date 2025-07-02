@@ -131,5 +131,20 @@
   "contact": {
     "Connect With Me": "Connect With Me",
     "Reach out, let's code the future!": "Reach out, let's code the future!"
+  },
+  "footer": {
+    "home": "Home",
+    "builtBy": "Built by",
+    "openSource": "Open source on",
+    "links": "Quick Links",
+    "about": "About",
+    "projects": "Projects",
+    "experience": "Experience",
+    "contact": "Contact",
+    "connect": "Connect",
+    "email": "Email",
+    "navigation": "Footer Navigation",
+    "license": "Licensed under",
+    "rights": "All rights reserved."
   }
 }

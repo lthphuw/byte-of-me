@@ -136,7 +136,7 @@ export default function ImageStack({
                 alt={card.alt ?? `card-${card.id}`}
                 className="w-full h-full object-cover pointer-events-none z-10"
                 onLoad={() => setIsLoaded(true)}
-                quality={isMobile ? 75 : 100}
+                quality={isMobile ? index === 0 ? 75 : 25 : (index === 0) ? 100 : 50}
                 fill
               />
             </motion.div>

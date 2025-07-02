@@ -44,3 +44,5 @@ next-env.d.ts
 apps/web/.next
 apps/web/node_modules
 packages/db/node_modules
+
+.turbo

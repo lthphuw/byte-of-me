@@ -6,11 +6,12 @@
     "name": "Luong Thanh Hoang Phu"
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build --experimental-debug-memory-usage",
+    "check-types": "tsc --noEmit",
+    "dev": "next dev --turbopack",
+    "build": "next build  --turbopack --experimental-debug-memory-usage",
     "turbo": "next dev --turbo",
-    "start": "next start",
-    "preview": "next build && next start",
+    "start": "next start --turbopack",
+    "preview": "next build  --turbopack && next start --turbopack",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx"
   },
