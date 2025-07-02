@@ -5,7 +5,7 @@ import { prisma } from '@db/client';
 
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
-import { revalidateTime } from '@/config/revalidate';
+import { dbCachingConfig, revalidateTime } from '@/config/revalidate';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
     const user = await unstable_cache(
       async () => {
         return await prisma.user.findUnique({
+          cacheStrategy: dbCachingConfig,
           where: { email },
           include: {
             translations: { where: { language: locale } },

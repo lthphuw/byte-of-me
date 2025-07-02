@@ -1,15 +1,13 @@
-// 'use client';
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import Fuse from 'fuse.js';
 import { debounce } from 'lodash';
+import { useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { CategoryFilter } from '@/components/category-filter';
 import { SearchBar, SearchItem } from '@/components/search-bar';
-
 import { Project, ProjectList } from './project-list';
 
 interface ProjectsContentProps {
@@ -26,21 +24,54 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [searchQuery, setSearchQuery] = useState<string>(
-    searchParams.get('q') || ''
-  );
-  const [debouncedQuery, setDebouncedQuery] = useState<string>(
-    searchParams.get('q') || ''
-  );
-  const [selectedTag, setSelectedTag] = useState<string>(
-    searchParams.get('tag') || ''
-  );
-  const [selectedTechstack, setSelectedTechstack] = useState<string>(
-    searchParams.get('tech') || ''
-  );
+  const [previewItems, setPreviewItems] = useState<SearchItem[]>([]);
+  const [showedItems, setShowedItems] = useState<Project[]>(projects);
+  const [searchQuery, setSearchQuery] = useState<string>(searchParams.get('q') || '');
+  const [debouncedQuery, setDebouncedQuery] = useState<string>(searchParams.get('q') || '');
+  const [selectedTag, setSelectedTag] = useState<string>(searchParams.get('tag') || '');
+  const [selectedTechstack, setSelectedTechstack] = useState<string>(searchParams.get('tech') || '');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Update URL parameters when filters change
+  // Initialize fuzzy search
+  const fuse = useMemo(() => new Fuse(projects, fuseOptions), [projects]);
+
+  // Extract unique techstacks and tags
+  const techstacks = useMemo(() => {
+    const set = new Set<string>();
+    return projects
+      .flatMap((proj) => proj.techstacks)
+      .filter((it) => !set.has(it.id) && set.add(it.id))
+      .map((it) => ({ id: it.id, label: it.name }));
+  }, [projects]);
+
+  const tags = useMemo(() => {
+    const set = new Set<string>();
+    return projects
+      .flatMap((proj) => proj.tags)
+      .filter((it) => !set.has(it.id) && set.add(it.id))
+      .map((it) => ({ id: it.id, label: it.name }));
+  }, [projects]);
+
+  // Debounced search handler
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((query: string) => {
+        setDebouncedQuery(query);
+      }, 500),
+    []
+  );
+
+  // Handle search query change
+  const handleSearchQueryChange = useCallback(
+    (query: string) => {
+      setSearchQuery(query);
+      setIsLoading(true);
+      debouncedSearch(query);
+    },
+    [debouncedSearch]
+  );
+
+  // Update URL parameters
   const updateUrlParams = useCallback(() => {
     const params = new URLSearchParams();
     if (searchQuery) params.set('q', searchQuery);
@@ -49,82 +80,54 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [searchQuery, selectedTechstack, selectedTag, pathname, router]);
 
+  // Sync URL parameters when filters change
   useEffect(() => {
     updateUrlParams();
   }, [searchQuery, selectedTechstack, selectedTag, updateUrlParams]);
 
-  const techstacks = useMemo(() => {
-    const set = new Set();
-    const result = [];
-    for (const proj of projects) {
-      for (const it of proj.techstacks) {
-        if (!set.has(it.id)) {
-          result.push({ id: it.id, label: it.name });
-          set.add(it.id);
-        }
-      }
+  // Filter projects based on query, tag, and techstack
+  useEffect(() => {
+    let filteredProjects = projects;
+
+    // Apply search query filter
+    if (debouncedQuery.trim()) {
+      const fuzzyItems = fuse.search(debouncedQuery);
+      filteredProjects = fuzzyItems.map((it) => it.item);
+      setPreviewItems(
+        fuzzyItems.slice(0, 5).map((res) => ({
+          id: res.item.id,
+          label: res.item.title,
+          desc: res.item.description || '',
+        }))
+      );
+    } else {
+      setPreviewItems([]);
     }
-    return result;
-  }, [projects]);
 
-  const tags = useMemo(() => {
-    const set = new Set();
-    const result = [];
-    for (const proj of projects) {
-      for (const it of proj.tags) {
-        if (!set.has(it.id)) {
-          result.push({ id: it.id, label: it.name });
-          set.add(it.id);
-        }
-      }
+    // Apply tag filter
+    if (selectedTag) {
+      filteredProjects = filteredProjects.filter((project) =>
+        project.tags.some((tag) => tag.id === selectedTag)
+      );
     }
-    return result;
-  }, [projects]);
 
-  const categorizedProjects = useMemo(() => {
-    return projects.filter(
-      (it) =>
-        (!selectedTag || it.tags.some((tag) => tag.id === selectedTag)) &&
-        (!selectedTechstack ||
-          it.techstacks.some((stack) => stack.id === selectedTechstack))
-    );
-  }, [projects, selectedTag, selectedTechstack]);
+    // Apply techstack filter
+    if (selectedTechstack) {
+      filteredProjects = filteredProjects.filter((project) =>
+        project.techstacks.some((tech) => tech.id === selectedTechstack)
+      );
+    }
 
-  const fuse = useMemo(
-    () => new Fuse(categorizedProjects, fuseOptions),
-    [categorizedProjects]
-  );
+    setShowedItems(filteredProjects);
+    setIsLoading(false);
+  }, [debouncedQuery, selectedTag, selectedTechstack, fuse, projects]);
 
-  const debouncedSearch = useCallback(
-    debounce((query: string) => {
-      setDebouncedQuery(query);
-      setIsLoading(false);
-    }, 1000),
-    []
-  );
-
-  const handleSearchQueryChange = (query: string) => {
-    setSearchQuery(query);
-    setIsLoading(true);
-    debouncedSearch(query);
-  };
-
-  const previewItems: SearchItem[] = useMemo(() => {
-    if (!debouncedQuery.trim()) return [];
-    return fuse
-      .search(debouncedQuery)
-      .slice(0, 5)
-      .map((res) => ({
-        id: res.item.id,
-        label: res.item.title,
-        desc: res.item.description || '',
-      }));
-  }, [debouncedQuery, fuse]);
-
-  const showedProjects = useMemo(() => {
-    if (!debouncedQuery.trim()) return categorizedProjects;
-    return fuse.search(debouncedQuery).map((res) => res.item);
-  }, [debouncedQuery, categorizedProjects, fuse]);
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
 
   return (
     <div className="container w-full px-0 py-8">
@@ -146,8 +149,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
             selectedTechstack={selectedTechstack}
           />
         </div>
-
-        <ProjectList projects={showedProjects} />
+        <ProjectList isLoading={isLoading} projects={showedItems} />
       </div>
     </div>
   );

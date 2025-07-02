@@ -1,9 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
+import Image from 'next/image';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { useIsMobile } from '@/hooks/use-is-mobile';
 import { Skeleton } from './ui/skeleton';
 
 interface CardRotateProps {
@@ -50,7 +51,7 @@ interface ImageStackProps {
   sensitivity?: number;
   cardDimensions?: { width: number; height: number };
   sendToBackOnClick?: boolean;
-  cardsData?: { id: string; src: string }[];
+  cardsData?: { id: string; src: string, alt?: string }[];
   animationConfig?: { stiffness: number; damping: number };
   setSelectedCard?: (id: string) => void;
 }
@@ -64,6 +65,7 @@ export default function ImageStack({
   sendToBackOnClick = false,
   setSelectedCard,
 }: ImageStackProps) {
+  const isMobile = useIsMobile();
   const [cards, setCards] = useState(cardsData);
   const randomRotateList = useMemo<number[]>(
     () => cardsData.map(() => Math.random() * 10 - 5),
@@ -107,7 +109,7 @@ export default function ImageStack({
             sensitivity={sensitivity}
           >
             <motion.div
-              className="relative rounded-2xl overflow-hidden border-4 border-white bg-muted"
+              className="relative rounded-2xl overflow-hidden border-4 border-slate-600 dark:border-slate-300  bg-muted"
               onClick={() => sendToBackOnClick && sendToBack(card.id)}
               animate={{
                 rotateZ: (cards.length - index - 1) * 4 + randomRotate,
@@ -131,10 +133,11 @@ export default function ImageStack({
 
               <Image
                 src={card.src}
-                alt={`card-${card.id}`}
+                alt={card.alt ?? `card-${card.id}`}
                 className="w-full h-full object-cover pointer-events-none z-10"
+                onLoad={() => setIsLoaded(true)}
+                quality={isMobile ? 75 : 100}
                 fill
-                onLoadingComplete={() => setIsLoaded(true)}
               />
             </motion.div>
           </CardRotate>

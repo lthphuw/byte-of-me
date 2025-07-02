@@ -1,6 +1,5 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
 import {
   FloatingPortal,
   ReferenceType,
@@ -17,7 +16,9 @@ import {
 import { Variants, motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useCallback, useMemo, useState } from 'react';
 
+import { itemVariants } from '@/config/anim';
 import { cn } from '@/lib/utils';
 
 interface Item {
@@ -31,20 +32,6 @@ interface FilterSelectProps {
   setSelectedFilter: (value: string) => void;
 }
 
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 8 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.03,
-      type: 'spring',
-      stiffness: 120,
-      damping: 10,
-    },
-  }),
-  exit: { opacity: 0, transition: { duration: 0.15 } },
-};
 
 const chevronVariants: Variants = {
   closed: { rotate: 0 },

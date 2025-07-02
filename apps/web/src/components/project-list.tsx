@@ -1,12 +1,12 @@
-import { FC } from 'react';
 import { Link } from '@/i18n/navigation';
 import { HTMLMotionProps, Variants, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import { FC } from 'react';
 
 import { cn } from '@/lib/utils';
 
 import { Icons } from './icons';
-import { Loading } from './loading';
+import Loading from './loading';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 
@@ -31,6 +31,7 @@ interface ProjectItemProps extends HTMLMotionProps<'div'> {
 
 interface ProjectListProps {
   projects: Project[];
+  isLoading?: boolean;
 }
 
 const itemVariants: Variants = {
@@ -140,13 +141,13 @@ export const ProjectItem: FC<ProjectItemProps> = ({
   );
 };
 
-export const ProjectList: FC<ProjectListProps> = ({ projects }) => {
+export const ProjectList: FC<ProjectListProps> = ({ isLoading, projects }) => {
   const t = useTranslations('project');
 
-  return !Array.isArray(projects) ? (
+  return !Array.isArray(projects) || isLoading ? (
     <div className="flex items-center gap-2 justify-center">
-      <Loading />
-      <span>{t('Loading project list')}...</span>
+      <Loading
+      />
     </div>
   ) : projects.length === 0 ? (
     <div className="flex items-center gap-2 justify-center">

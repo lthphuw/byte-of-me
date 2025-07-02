@@ -7,7 +7,7 @@ import { prisma } from '@db/client';
 
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
-import { revalidateTime } from '@/config/revalidate';
+import { dbCachingConfig, revalidateTime } from '@/config/revalidate';
 import { calculateDuration, formatDate } from '@/lib/utils';
 import { CompanyExperience } from '@/components/experience-timeline';
 
@@ -28,6 +28,7 @@ export async function GET(req: NextRequest) {
     const user = await unstable_cache(
       async () =>
         await prisma.user.findUnique({
+          cacheStrategy: dbCachingConfig,
           where: { email },
         }),
       ['simple-me', locale],
@@ -44,6 +45,7 @@ export async function GET(req: NextRequest) {
     const experiences = await unstable_cache(
       async () =>
         await prisma.experience.findMany({
+          cacheStrategy: dbCachingConfig,
           where: { userId: user.id },
           include: {
             roles: { include: { tasks: true } },

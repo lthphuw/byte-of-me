@@ -5,7 +5,7 @@ import { prisma } from '@db/client';
 
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
-import { revalidateTime } from '@/config/revalidate';
+import { dbCachingConfig, revalidateTime } from '@/config/revalidate';
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/route#dynamic-route-segments
 export async function GET(
@@ -28,6 +28,7 @@ export async function GET(
     const project = await unstable_cache(
       async () =>
         await prisma.project.findUnique({
+          cacheStrategy: dbCachingConfig,
           where: { id: slug },
           include: {
             tags: { include: { tag: true } },

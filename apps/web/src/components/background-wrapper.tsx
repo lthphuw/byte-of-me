@@ -9,7 +9,7 @@ export function BackgroundWrapper() {
   const { resolvedTheme } = useTheme();
   const color = resolvedTheme == 'light' ? '#1D1D1D' : '#fafafa';
   return (
-    <div className="absolute opacity-80 inset-0 z-[10]">
+    <div className="fixed opacity-80 inset-0 z-[10]">
       <ClickSpark
         sparkColor={color}
         sparkSize={10}

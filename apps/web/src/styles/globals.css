@@ -92,3 +92,12 @@
 html {
   scroll-behavior: smooth;
 }
+
+.fi {
+  display: inline-block;
+  width: 100% !important;
+  height: 100% !important;
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}

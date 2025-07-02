@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import {
   FloatingPortal,
   autoUpdate,
@@ -8,20 +7,30 @@ import {
   useClick,
   useDismiss,
   useFloating,
+  useFocus,
   useInteractions,
   useRole,
 } from '@floating-ui/react';
-import { AnimatePresence, Variants, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
+import { useState } from 'react';
 
-import { cn } from '@/lib/utils';
-import { useTranslations } from '@/hooks/use-translations';
-import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons';
+import { Button } from '@/components/ui/button';
+import { itemVariants } from '@/config/anim';
+import { useTranslations } from '@/hooks/use-translations';
+import { cn } from '@/lib/utils';
+
+// Define icon animation variants
+const iconVariants = {
+  initial: { opacity: 0, scale: 0.8, rotate: 90 },
+  animate: { opacity: 1, scale: 1, rotate: 0 },
+  exit: { opacity: 0, scale: 0.8, rotate: -90 },
+};
 
 export function ModeToggle() {
   const t = useTranslations('global.modeToggle');
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [open, setOpen] = useState(false);
 
   const { refs, floatingStyles, context } = useFloating({
@@ -34,41 +43,62 @@ export function ModeToggle() {
   });
 
   const click = useClick(context);
+  const focus = useFocus(context);
   const dismiss = useDismiss(context);
   const role = useRole(context);
   const { getReferenceProps, getFloatingProps } = useInteractions([
     click,
+    focus,
     dismiss,
     role,
   ]);
 
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: i * 0.1,
-        type: 'spring' as const,
-        stiffness: 130,
-        damping: 10,
-      },
-    }),
-    exit: { opacity: 0, y: 10 },
-  };
-
   return (
-    <motion.div layout style={{ position: 'relative' }}>
+    <>
       <Button
         ref={refs.setReference}
         {...getReferenceProps()}
         variant="icon"
         size="sm"
-        className="overflow-y-hidden relative size-9 px-0 focus:outline-none"
+        className="relative size-9 px-0 focus-visible:outline-none"
       >
-        <Icons.sun className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-        <Icons.moon className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-        <span className="sr-only">{t('Toggle theme')}</span>
+        <motion.button
+          whileTap={{ scale: 0.8 }}
+          whileHover={{ scale: 1.2 }}
+          tabIndex={-1} // Prevent double focus
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <motion.span className="relative size-6">
+            <AnimatePresence initial={false}>
+              {resolvedTheme === 'light' ? (
+                <motion.div
+                  key="sun"
+                  variants={iconVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ type: 'spring', stiffness: 150, damping: 15, duration: 0.2 }}
+                  className="absolute inset-0"
+                >
+                  <Icons.sun className="size-6" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="moon"
+                  variants={iconVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ type: 'spring', stiffness: 150, damping: 15, duration: 0.2 }}
+                  className="absolute inset-0"
+                >
+                  <Icons.moon className="size-6" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.span>
+          <span className="sr-only">{t('Toggle theme')}</span>
+        </motion.button>
       </Button>
 
       <FloatingPortal>
@@ -118,6 +148,6 @@ export function ModeToggle() {
           )}
         </AnimatePresence>
       </FloatingPortal>
-    </motion.div>
+    </>
   );
 }

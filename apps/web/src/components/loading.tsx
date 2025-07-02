@@ -1,23 +1,82 @@
-export function Loading() {
-  return (
-    <div role="status">
-      <svg
-        aria-hidden="true"
-        className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-        viewBox="0 0 100 101"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-          fill="currentColor"
-        />
-        <path
-          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-          fill="currentFill"
-        />
-      </svg>
-      <span className="sr-only">Loading...</span>
-    </div>
-  );
+'use client';
+
+import { cn } from '@/lib/utils';
+import { motion, useAnimate, type AnimationSequence, type Transition } from 'framer-motion';
+import { useEffect } from 'react';
+
+export type LoadingProps = {
+    className?: string
+}
+
+export default function Loading({ className }: LoadingProps) {
+    const [scope, animate] = useAnimate();
+
+    useEffect(() => {
+        const animateLoader = async () => {
+            const sequence: AnimationSequence = [
+                ['.p', { pathLength: 1, pathOffset: 0 }, { duration: 0.8, ease: 'linear' } as Transition],
+                ['.p', { pathLength: 0, pathOffset: 1 }, { duration: 0.4, ease: 'linear' } as Transition],
+                ['.h', { pathLength: 1, pathOffset: 0 }, { duration: 0.8, ease: 'linear' } as Transition],
+                ['.h', { pathLength: 0, pathOffset: 1 }, { duration: 0.4, ease: 'linear' } as Transition],
+                ['.u', { pathLength: 1, pathOffset: 0 }, { duration: 0.8, ease: 'linear' } as Transition],
+                ['.u', { pathLength: 0, pathOffset: 1 }, { duration: 0.4, ease: 'linear' } as Transition],
+            ];
+
+            const runAnimation = async () => {
+                await animate(sequence);
+                runAnimation(); // Recursively repeat the sequence
+            };
+
+            runAnimation();
+        };
+
+        animateLoader();
+    }, [animate]);
+
+    return (
+        <motion.svg
+            ref={scope}
+            className={cn("block mx-auto w-[80px] h-[30px]", className)}
+            viewBox="0 0 80 30"
+            style={{ overflow: 'visible' }}
+            aria-label="Loading animation"
+        >
+            {/* P */}
+            <motion.path
+                className="p stroke-gray-700 dark:stroke-gray-200"
+                initial={{ pathLength: 0, pathOffset: 0 }}
+                d="M 5 25 V 5 H 15 Q 20 5 20 10 Q 20 15 15 15 H 10 V 25 Z"
+                style={{
+                    fill: 'none',
+                    strokeWidth: 2,
+                    strokeLinecap: 'round',
+                    strokeLinejoin: 'round',
+                }}
+            />
+            {/* H */}
+            <motion.path
+                className="h stroke-gray-700 dark:stroke-gray-200"
+                initial={{ pathLength: 0, pathOffset: 0 }}
+                d="M 30 25 V 5 H 35 V 15 H 45 V 5 H 50 V 25 H 45 V 15 H 35 V 25 Z"
+                style={{
+                    fill: 'none',
+                    strokeWidth: 2,
+                    strokeLinecap: 'round',
+                    strokeLinejoin: 'round',
+                }}
+            />
+            {/* U */}
+            <motion.path
+                className="u stroke-gray-700 dark:stroke-gray-200"
+                initial={{ pathLength: 0, pathOffset: 0 }}
+                d="M 55 5 H 60 V 20 Q 60 25 65 25 Q 70 25 70 20 V 5 H 75 V 20 Q 75 28 65 28 Q 55 28 55 20 Z"
+                style={{
+                    fill: 'none',
+                    strokeWidth: 2,
+                    strokeLinecap: 'round',
+                    strokeLinejoin: 'round',
+                }}
+            />
+        </motion.svg>
+    );
 }

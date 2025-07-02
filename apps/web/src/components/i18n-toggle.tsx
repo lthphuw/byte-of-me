@@ -1,6 +1,5 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { FlagType } from '@/types';
 import {
@@ -15,15 +14,24 @@ import {
   useInteractions,
   useRole,
 } from '@floating-ui/react';
-import { AnimatePresence, Variants, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useLocale } from 'next-intl';
+import { useCallback, useEffect, useState } from 'react';
 
-import { languageNames, supportedLanguages } from '@/config/language';
-import { cn } from '@/lib/utils';
-import { useTranslations } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
+import { languageNames, supportedLanguages } from '@/config/language';
+import { useTranslations } from '@/hooks/use-translations';
+import { cn } from '@/lib/utils';
 
+import { itemVariants } from '@/config/anim';
 import { Flags } from './flag';
+
+// Define flag animation variants
+const flagVariants = {
+  initial: { opacity: 0, scale: 0.8, y: 5 },
+  animate: { opacity: 1, scale: 1, y: 0 },
+  exit: { opacity: 0, scale: 0.8, y: -5 },
+};
 
 export function I18NToggle() {
   const t = useTranslations('global.i18nToggle');
@@ -41,8 +49,8 @@ export function I18NToggle() {
     strategy: 'absolute',
     placement: 'bottom-end',
     middleware: [offset(4), flip(), shift()],
-    whileElementsMounted: autoUpdate,
-  });
+    whileElementsMounted: autoUpdate
+  })
 
   const { getReferenceProps, getFloatingProps } = useInteractions([
     useClick(context),
@@ -59,21 +67,7 @@ export function I18NToggle() {
     [router, pathname]
   );
 
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: i * 0.1,
-        type: 'spring' as const,
-        stiffness: 130,
-        damping: 10,
-      },
-    }),
-    exit: { opacity: 0, y: 10 },
-  };
-
+  // Sync currentLang with locale changes
   useEffect(() => {
     setCurrentLang(locale);
   }, [locale]);
@@ -85,23 +79,30 @@ export function I18NToggle() {
         {...getReferenceProps()}
         variant="icon"
         size="sm"
-        className="overflow-y-hidden relative size-9 px-0 focus:outline-none"
+        className="relative size-9 px-0 focus:outline-none"
       >
-        <AnimatePresence mode="sync">
-          {FlagComponent && (
-            <motion.span
-              layout="position"
-              key={currentLang}
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-            >
-              <FlagComponent className="size-5" />
-            </motion.span>
-          )}
-        </AnimatePresence>
-        <span className="sr-only">{t('Toggle language')}</span>
+        <motion.button
+          whileHover={{ scale: 1.2 }}
+          whileTap={{ scale: 0.8 }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <motion.span className="relative size-6">
+            <AnimatePresence initial={false}>
+              <motion.div
+                key={currentLang}
+                variants={flagVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ type: 'spring', stiffness: 150, damping: 15, duration: 0.2 }}
+                className="absolute inset-0 flex items-center justify-center"
+              >
+                <FlagComponent className="size-6 fi" />
+              </motion.div>
+            </AnimatePresence>
+          </motion.span>
+          <span className="sr-only ">{t('Toggle language')}</span>
+        </motion.button>
       </Button>
 
       <FloatingPortal>
@@ -143,19 +144,21 @@ export function I18NToggle() {
                           : 'text-muted-foreground hover:bg-muted'
                       )}
                     >
-                      <Flag className="size-5" />
+                      <span className="relative size-5 flex items-center justify-center" >
+                        <Flag className="size-5 fi" />
+                      </span>
                       <span>
                         {t(languageNames[lang])}{' '}
                         <span className="uppercase tracking-wide">{lang}</span>
                       </span>
                     </motion.li>
-                  );
+              );
                 })}
-              </motion.ul>
+            </motion.ul>
             </nav>
           )}
-        </AnimatePresence>
-      </FloatingPortal>
+      </AnimatePresence>
+    </FloatingPortal >
     </>
   );
 }

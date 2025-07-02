@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "generate": "pnpm db:generate",
-    "db:generate": "npx prisma generate",
+    "db:generate": "npx prisma generate --no-engine",
     "db:migrate": "npx prisma migrate dev --skip-generate",
     "db:deploy": "npx prisma migrate deploy",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate --no-engine"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
