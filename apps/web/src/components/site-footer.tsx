@@ -5,11 +5,11 @@ import { Facebook, Github, Linkedin, Mail } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { fetchData } from '@/lib/fetch';
-import { cn } from '@/lib/utils';
+import { cn, ensureValidUrl } from '@/lib/utils';
 
 import { Icons } from './icons';
 
-interface SiteFooterProps extends React.HTMLAttributes<HTMLElement> {}
+interface SiteFooterProps extends React.HTMLAttributes<HTMLElement> { }
 
 export async function SiteFooter({ className }: SiteFooterProps) {
   const t = await getTranslations('footer');
@@ -60,7 +60,7 @@ export async function SiteFooter({ className }: SiteFooterProps) {
           <div className="flex gap-4">
             {me.github && (
               <a
-                href={me.github}
+                href={ensureValidUrl(me.github)}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
@@ -72,7 +72,7 @@ export async function SiteFooter({ className }: SiteFooterProps) {
 
             {me.linkedIn && (
               <a
-                href={me.linkedIn}
+                href={ensureValidUrl(me.linkedIn)}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
