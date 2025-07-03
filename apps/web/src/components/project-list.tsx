@@ -1,7 +1,7 @@
-import { FC } from 'react';
 import { Link } from '@/i18n/navigation';
 import { HTMLMotionProps, Variants, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import { FC } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -20,6 +20,7 @@ export interface Project {
   startDate?: Date | null;
   endDate?: Date | null;
   techstacks: { name: string; id: string }[];
+  coauthors: { fullname: string; email: string }[];
   tags: { name: string; id: string }[];
 }
 
@@ -56,6 +57,7 @@ export const ProjectItem: FC<ProjectItemProps> = ({
   ...motionProps
 }) => {
   const t = useTranslations('project');
+  console.log("- authors: ", project.coauthors)
 
   return (
     <motion.div
@@ -107,7 +109,23 @@ export const ProjectItem: FC<ProjectItemProps> = ({
               </a>
             </div>
           )}
-
+          {Array.isArray(project.coauthors) && project.coauthors.length > 0 && (
+            <div className='flex flex-row gap-2'>
+              <span className="font-medium">Co-authors: </span>
+              {
+                project.coauthors.map(it => (
+                  <a
+                    key={it.email}
+                    href={`mailto:${it.email}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    {it.fullname}
+                  </a>))
+              }
+            </div>
+          )}
           <div className="w-full space-y-2 text-sm mt-auto md:self-end">
             <div className="mt-2 flex flex-col items-stretch gap-4 md:flex-row md:flex-nowrap">
               <Link
@@ -137,7 +155,7 @@ export const ProjectItem: FC<ProjectItemProps> = ({
           </div>
         </div>
       </div>
-    </motion.div>
+    </motion.div >
   );
 };
 

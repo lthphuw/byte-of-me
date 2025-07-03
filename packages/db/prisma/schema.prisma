@@ -160,24 +160,46 @@ model Task {
 }
 
 model Project {
-  id           String                @id @default(cuid())
+  id           String                     @id @default(cuid())
   userId       String
   title        String
-  description  String?               @db.Text
+  description  String?                    @db.Text
   githubLink   String?
   liveLink     String?
   startDate    DateTime?
   endDate      DateTime?
-  createdAt    DateTime              @default(now()) @map("created_at")
-  updatedAt    DateTime              @default(now()) @map("updated_at")
+  createdAt    DateTime                   @default(now()) @map("created_at")
+  updatedAt    DateTime                   @default(now()) @map("updated_at")
   techstacks   TechStackOnProjects[]
   tags         TagsOnProjects[]
   articles     Blog[]
-  user         User                  @relation(fields: [userId], references: [id])
+  user         User                       @relation(fields: [userId], references: [id])
   translations Translation[]
+  coauthors    ProjectOnProjectCoAuthor[]
 
   @@index([userId])
   @@map("projects")
+}
+
+model ProjectOnProjectCoAuthor {
+  projectId  String
+  coauthorID String
+  project    Project  @relation(fields: [projectId], references: [id])
+  coauthor   Coauthor @relation(fields: [coauthorID], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@id([projectId, coauthorID])
+  @@index([coauthorID])
+  @@map("project_coauthor")
+}
+
+model Coauthor {
+  id       String                     @id @default(cuid())
+  fullname String
+  email    String?
+  projects ProjectOnProjectCoAuthor[]
 }
 
 model TechStackOnProjects {

@@ -1,6 +1,6 @@
 /* The above code is a comment block in TypeScript. It appears to be attempting to import the `dotenv`
 module using the `import` statement, but the actual import statement is commented out with ` */
-import { PrismaClient, User } from '@prisma/client';
+import { Coauthor, PrismaClient, User } from '@prisma/client';
 import * as dotenv from 'dotenv';
 
 const prisma = new PrismaClient();
@@ -45,8 +45,12 @@ async function main(): Promise<void> {
   await seedExperiences(user);
 
   await seedTags(user);
+
+  // Seed coauthors
+  const coauthors = await seedCoauthor();
+
   // Seed projects
-  await seedProjects(user);
+  await seedProjects(user, coauthors);
 
   console.log('Seeding completed!');
 }
@@ -64,12 +68,14 @@ async function cleanData() {
   // Clear data in correct order with safe deletion
   await safeDeleteMany(prisma.translation, 'translation');
   await safeDeleteMany(prisma.blogTag, 'BlogTag');
+  await safeDeleteMany(prisma.projectOnProjectCoAuthor, 'techStackOnProjects');
   await safeDeleteMany(prisma.techStackOnProjects, 'techStackOnProjects');
   await safeDeleteMany(prisma.techStackOnExperiences, 'techStackOnExperiences');
   await safeDeleteMany(prisma.educationSubItem, 'EducationSubItem');
   await safeDeleteMany(prisma.task, 'Task');
   await safeDeleteMany(prisma.blog, 'Blog');
-  await safeDeleteMany(prisma.tagsOnProjects, 'tagsOnProjects');
+  await safeDeleteMany(prisma.blog, 'Blog');
+  await safeDeleteMany(prisma.coauthor, 'Coauthor');
   await safeDeleteMany(prisma.project, 'Project');
   await safeDeleteMany(prisma.experienceRole, 'Experience');
   await safeDeleteMany(prisma.experience, 'Experience');
@@ -461,7 +467,7 @@ async function seedEducations(user: User) {
                                         <p>
                                           Authors: <span class="font-medium">Hoang-Phu Thanh-Luong</span>, Van-Thai Vu, and
                                           <span class="italic">Prof. Quoc-Ngoc Ly</span>.
-                                          <a href="https://cv4dc.github.io/files/2024/papers/16.pdf" target="_blank" rel="noopener noreferrer" class="inline-block text-white bg-blue-600 hover:bg-blue-700 rounded">
+                                          <a href="https://cv4dc.github.io/files/2024/papers/16.pdf" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline hover:text-blue-800">
                                             [View Paper]
                                           </a>
                                         </p>
@@ -500,7 +506,7 @@ async function seedEducations(user: User) {
                                         <p>
                                           Authors: <span class="font-medium">Hoang-Phu Thanh-Luong</span>, Van-Thai Vu, and 
                                           <span class="italic">Prof. Quoc-Ngoc Ly</span>.
-                                          <a href="https://cv4dc.github.io/files/2024/papers/16.pdf" target="_blank" rel="noopener noreferrer" class="inline-block text-white bg-blue-600 hover:bg-blue-700 rounded">
+                                          <a href="https://cv4dc.github.io/files/2024/papers/16.pdf" target="_blank" rel="noopener noreferrer" class="inline-block text-blue-600 underline hover:text-blue-800">
                                             [View Paper]
                                           </a>
                                         </p>
@@ -523,7 +529,7 @@ async function seedEducations(user: User) {
                                         <p>
                                           Tác giả: <span class="font-medium">Lương Thanh Hoàng Phú</span>, Vũ Văn Thái, và 
                                           <span class="italic">PGS. TS. Lý Quốc Ngọc</span>.
-                                          <a href="https://cv4dc.github.io/files/2024/papers/16.pdf" target="_blank" rel="noopener noreferrer" class="inline-block text-white bg-blue-600 hover:bg-blue-700 rounded">
+                                          <a href="https://cv4dc.github.io/files/2024/papers/16.pdf" target="_blank" rel="noopener noreferrer" class="inline-block text-blue-600 underline hover:text-blue-800">
                                             [Xem bài báo]
                                           </a>
                                         </p>
@@ -548,7 +554,7 @@ async function seedEducations(user: User) {
                                           <span class="italic">Professeur Quoc-Ngoc Ly</span>.
                                         </p>
                                         <p>
-                                          <a href="https://cv4dc.github.io/files/2024/papers/16.pdf" target="_blank" rel="noopener noreferrer" class="inline-block text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded">
+                                          <a href="https://cv4dc.github.io/files/2024/papers/16.pdf" target="_blank" rel="noopener noreferrer" class="inline-block text-blue-600 underline hover:text-blue-800">
                                             [Voir l'article]
                                           </a>
                                         </p>
@@ -925,6 +931,26 @@ async function seedTechstacks(user: User) {
       name: 'Redis',
       group: 'Database',
       logo: '/images/about/techstacks/redis.png',
+    },
+
+    // AI & Vector Databases
+    {
+      userId: user.id,
+      name: 'PyTorch',
+      group: 'AI',
+      logo: '/images/about/techstacks/pytorch.png',
+    },
+    {
+      userId: user.id,
+      name: 'HuggingFace',
+      group: 'AI',
+      logo: '/images/about/techstacks/hugging-face.png',
+    },
+    {
+      userId: user.id,
+      name: 'Jina AI',
+      group: 'AI',
+      logo: '/images/about/techstacks/jina.png',
     },
   ];
 
@@ -1437,7 +1463,26 @@ async function seedTags(user: User) {
   }
 }
 
-async function seedProjects(user: User) {
+async function seedCoauthor() {
+  const coauthors = [
+    {
+      fullname: 'Vũ Văn Thái',
+      email: '20120579@student.hcmus.edu.vn',
+    },
+  ];
+  const res: Coauthor[] = [];
+  for (const coauthor of coauthors) {
+    const r = await prisma.coauthor.create({
+      data: {
+        ...coauthor,
+      },
+    });
+    res.push(r);
+  }
+  return res;
+}
+
+async function seedProjects(user: User, coauthors: Coauthor[]) {
   // Lấy danh sách tech stack đã seed để liên kết
   const techStacks = await prisma.techStack.findMany({
     where: { userId: user.id },
@@ -1451,6 +1496,7 @@ async function seedProjects(user: User) {
   // Tạo map để tra cứu tech stack ID theo tên
   const techStackMap = new Map(techStacks.map((ts) => [ts.name, ts.id]));
   const tagMap = new Map(tags.map((ts) => [ts.name, ts.id]));
+  const coauthorMap = new Map(coauthors.map((ts) => [ts.fullname, ts.id]));
 
   const projects = [
     {
@@ -1462,6 +1508,7 @@ async function seedProjects(user: User) {
       liveLink: '',
       techStackNames: ['Go'],
       tagNames: ['open-source', 'defaults', 'struct-tag'],
+      coauthor: [],
       translations: [
         {
           language: 'en',
@@ -1492,6 +1539,7 @@ async function seedProjects(user: User) {
       liveLink: '',
       techStackNames: ['Go'],
       tagNames: ['open-source', 'logging', 'structured-logging'],
+      coauthor: [],
       translations: [
         {
           language: 'en',
@@ -1522,6 +1570,7 @@ async function seedProjects(user: User) {
       liveLink: '',
       techStackNames: ['Python', 'FastAPI'],
       tagNames: ['open-source', 'translator', 'service'],
+      coauthor: [],
       translations: [
         {
           language: 'en',
@@ -1550,6 +1599,7 @@ async function seedProjects(user: User) {
         'My digital garden — where thoughts, code, and growth converge.',
       githubLink: 'https://github.com/lthphuw/byte-of-me',
       liveLink: 'https://phu-lth.space/',
+      coauthor: [],
       techStackNames: [
         'Next.js',
         'React.js',
@@ -1596,7 +1646,8 @@ async function seedProjects(user: User) {
         'The MLA-LP model leverages the pre-trained CLIP vision-language model, enhanced with multi-level adapters and learnable prompts, to address the challenge of detecting and segmenting abnormalities in medical images. The model excels in both zero-shot and few-shot learning scenarios, achieving superior performance in anomaly classification (AC) and anomaly segmentation (AS) tasks across diverse medical imaging datasets.',
       githubLink: 'https://github.com/vvthai10/mla-pl',
       liveLink: '',
-      techStackNames: ['Python'],
+      techStackNames: ['Python', 'PyTorch'],
+      coauthor: ['Vũ Văn Thái'],
       tagNames: [
         'open-source',
         'Vision-Language Model',
@@ -1634,6 +1685,11 @@ async function seedProjects(user: User) {
         description: proj.description,
         githubLink: proj.githubLink,
         liveLink: proj.liveLink,
+        coauthors: {
+          create: proj.coauthor.map((name) => ({
+            coauthorID: coauthorMap.get(name)!,
+          })),
+        },
         techstacks: {
           create: proj.techStackNames.map((name) => ({
             techstackId: techStackMap.get(name)!,

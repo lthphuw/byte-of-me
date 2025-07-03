@@ -50,6 +50,7 @@ export async function GET(req: NextRequest) {
           include: {
             tags: { include: { tag: true } },
             techstacks: { include: { techstack: true } },
+            coauthors: { include: { coauthor: true } },
             translations: { where: { language: locale } },
           },
         }),
@@ -72,6 +73,11 @@ export async function GET(req: NextRequest) {
         liveLink: proj.liveLink,
         startDate: proj.startDate,
         endDate: proj.endDate,
+        coauthors: proj.coauthors.map((it) => ({
+          id: it.coauthor.id,
+          fullname: it.coauthor.fullname,
+          email: it.coauthor.email,
+        })),
         tags: proj.tags.map((ts) => ({
           id: ts.tag.id,
           name: ts.tag.name,
