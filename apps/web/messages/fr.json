@@ -1,4 +1,24 @@
 {
+  "metadata": {
+    "title": "Luong Thanh Hoang Phu",
+    "description": "Passion, expérience, projets et loisirs — tout est enregistré, un octet à la fois.",
+    "about": {
+      "title": "À propos de moi",
+      "description": "Une présentation de qui je suis — des informations de base à mon parcours académique, en passant par les technologies utilisées."
+    },
+    "experience": {
+      "title": "Expérience professionnelle",
+      "description": "Un aperçu de mes expériences concrètes dans divers rôles et projets."
+    },
+    "projects": {
+      "title": "Mes projets",
+      "description": "Un aperçu des projets que j’ai réalisés, aussi bien académiques que professionnels."
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "N'hésitez pas à me contacter pour échanger ou collaborer."
+    }
+  },
   "global": {
     "Table of Content": "Sommaire",
     "i18nToggle": {

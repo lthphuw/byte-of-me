@@ -1,13 +1,12 @@
+import { supportedLanguages } from '@/config/language';
+import { fetchData } from '@/lib/fetch';
 import ExperienceTimeline, {
   CompanyExperience,
 } from '@/components/experience-timeline';
 import { ExperienceShell } from '@/components/shell';
-import { supportedLanguages } from '@/config/language';
-import { fetchData } from '@/lib/fetch';
-
 
 export function generateStaticParams() {
-  return supportedLanguages.map(lang => ({ locale: lang }))
+  return supportedLanguages.map((lang) => ({ locale: lang }));
 }
 
 export default async function ExperiencesPage() {

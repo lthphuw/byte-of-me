@@ -1,48 +1,64 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
+# =====================
+# Dependencies
+# =====================
+node_modules/
+.pnp/
 .pnp.js
 
-# testing
-/coverage
+# =====================
+# Testing
+# =====================
+coverage/
 
-# next.js
-/.next/
-/out/
+# =====================
+# Next.js
+# =====================
+.next/
+out/
+apps/web/.next
+apps/web/node_modules
 
-# production
-/build
+# =====================
+# Build Artifacts
+# =====================
+build/
+*.tsbuildinfo
+next-env.d.ts
 
-# misc
-.DS_Store
-*.pem
+# =====================
+# Vercel
+# =====================
+.vercel/
 
-# debug
+# =====================
+# Environment Variables
+# =====================
+.env
+.env*.local
+**/.env
+# **/.env.*
+
+
+# =====================
+# Debug logs
+# =====================
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# local env files
-.env*.local
-.env
+# =====================
+# Misc
+# =====================
+.DS_Store
+*.pem
+.vscode/
+.turbo/
+.contentlayer/
 
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-.vscode
-.contentlayer
-
-# It is recommended to add ../generated/prisma to the .gitignore file because it contains platform-specific binaries that can cause compatibility issues across different environments.
-# packages/db/generated
-apps/web/.next
-apps/web/node_modules
+# =====================
+# Monorepo Packages
+# =====================
 packages/db/node_modules
-
-.turbo
+packages/db/prisma/seed.ts
+packages/ai/node_modules

@@ -1,4 +1,24 @@
 {
+  "metadata": {
+    "title": "Lương Thanh Hoàng Phú",
+    "description": "Đam mê, kinh nghiệm, dự án và sở thích — tất cả được lưu giữ, từng byte một.",
+    "about": {
+      "title": "Về bản thân tôi",
+      "description": "Tôi chia sẻ về bản thân mình — từ thông tin cơ bản, quá trình học vấn cho đến những công nghệ tôi đã sử dụng."
+    },
+    "experience": {
+      "title": "Kinh nghiệm làm việc",
+      "description": "Tổng quan về kinh nghiệm thực tế của tôi trong các vai trò và dự án khác nhau."
+    },
+    "projects": {
+      "title": "Dự án cá nhân",
+      "description": "Tổng hợp các dự án mà tôi đã thực hiện, từ học tập đến thực tế."
+    },
+    "contact": {
+      "title": "Liên hệ",
+      "description": "Thông tin liên lạc nếu bạn muốn kết nối hoặc cộng tác với tôi."
+    }
+  },
   "global": {
     "Table of Content": "Mục lục",
     "i18nToggle": {

@@ -8,6 +8,7 @@ import { prisma } from '@db/client';
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
 import { dbCachingConfig, revalidateTime } from '@/config/revalidate';
+import { siteConfig } from '@/config/site';
 import { calculateDuration, formatDate } from '@/lib/utils';
 import { CompanyExperience } from '@/components/experience-timeline';
 
@@ -23,7 +24,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const email = 'lthphuw@gmail.com';
+    const email = siteConfig.email;
 
     const user = await unstable_cache(
       async () =>

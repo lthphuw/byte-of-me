@@ -6,6 +6,7 @@ import { prisma } from '@db/client';
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
 import { dbCachingConfig, revalidateTime } from '@/config/revalidate';
+import { siteConfig } from '@/config/site';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const email = 'lthphuw@gmail.com';
+    const email = siteConfig.email;
 
     const user = await unstable_cache(
       async () =>

@@ -34,11 +34,13 @@ export type SidebarNavItem = {
 export type SiteConfig = {
   name: string;
   description: string;
+  email: string;
   url: string;
   ogImage: string;
   links: {
     github: string;
   };
+  keywords: string[];
 };
 
 export type GlobalConfig = {

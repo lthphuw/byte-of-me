@@ -1,21 +1,22 @@
+import { Metadata, Viewport } from 'next';
+import { Inter as FontSans } from 'next/font/google';
+import localFont from 'next/font/local';
+import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { ExperimentalProvider } from '@/providers/experimental';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { Inter as FontSans } from 'next/font/google';
-import localFont from 'next/font/local';
-import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 
+import { host } from '@/config/host';
+import { siteConfig } from '@/config/site';
+import { cn } from '@/lib/utils';
+import { Toaster } from '@/components/ui/toaster';
 import { Analytics } from '@/components/analytics';
 import { BackgroundWrapper } from '@/components/background-wrapper';
 import { SpeedInsights } from '@/components/speed-insight';
 import { TailwindIndicator } from '@/components/tailwind-indicator';
 import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from '@/components/ui/toaster';
-import { host } from '@/config/host';
-import { siteConfig } from '@/config/site';
-import { cn } from '@/lib/utils';
-import { Metadata, Viewport } from 'next';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -28,61 +29,26 @@ const fontHeading = localFont({
   variable: '--font-heading',
 });
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-  const { locale } = await params
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const t = await getTranslations('metadata');
+  const { locale } = await params;
   const url = `${host}/${locale}`;
 
   return {
     metadataBase: new URL(siteConfig.url),
     title: {
-      default: 'Lương Thanh Hoàng Phú',
+      default: `${t('title')} | Byte of me`,
       template: '%s | Byte of me',
     },
-    description: siteConfig.description,
-    keywords: [
-      // Myself
-      'Byte of me',
-      'byte-of-me',
-      'Phú',
-      'phu-lth',
-      'Lương Thanh Hoàng Phú',
-      'Luong Thanh Hoang Phu',
-      'lthphuw',
-
-      // Role
-      'Frontend Developer',
-      'Fullstack Developer',
-      'Web Developer Portfolio',
-      'Software Engineer',
-
-      // Topic
-      'Portfolio',
-      'Personal Website',
-      'Personal Blog Template',
-      'Minimal Blog',
-      'Digital Garden',
-      'Developer Notes',
-      'Blog Template',
-
-      // Techstack
-      'Next.js',
-      'React',
-      'TypeScript',
-      'Tailwind CSS',
-      'Prisma ORM',
-      'Supabase',
-      'MDX',
-      'Contentlayer',
-      'Next.js Starter',
-      'Static Site',
-
-      // Hosting
-      'Vercel',
-    ],
-
+    description: t('description'),
+    keywords: siteConfig.keywords,
     authors: [{ name: 'lthphuw', url: host }],
     creator: 'lthphuw',
-    applicationName: `${siteConfig.name} | Phú`,
+    applicationName: `${t('title')} | Byte of me`,
     generator: 'Next.js',
     manifest: '/site.webmanifest',
     alternates: {
@@ -95,17 +61,17 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     },
     openGraph: {
       type: 'website',
-      locale: 'en_US',
+      locale: locale === 'vi' ? 'vi_VN' : locale === 'fr' ? 'fr_FR' : 'en_US',
       url: siteConfig.url,
-      title: `${siteConfig.name} | Byte of me`,
-      description: siteConfig.description,
-      siteName: `${siteConfig.name} | Byte of me`,
+      title: `${t('title')} | Byte of me`,
+      description: t('description'),
+      siteName: 'Byte of me',
       images: [`${siteConfig.url}/images/avatars/HaNoi2024.jpeg`],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${siteConfig.name} | Byte of me`,
-      description: siteConfig.description,
+      title: `${t('title')} | Byte of me`,
+      description: t('description'),
       images: [`${siteConfig.url}/images/avatars/HaNoi2024.jpeg`],
       creator: '@lthphuw',
     },
@@ -134,7 +100,6 @@ export const viewport: Viewport = {
     { media: '(prefers-color-scheme: dark)', color: 'black' },
   ],
 };
-
 
 export default async function RootLocaleLayout({
   children,

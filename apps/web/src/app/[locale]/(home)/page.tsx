@@ -3,17 +3,17 @@ import { User } from '@db/index';
 import { FileText } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
+import { supportedLanguages } from '@/config/language';
+import { fetchData } from '@/lib/fetch';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import { GreetingWriter } from '@/components/greeting-writer';
 import { ProfileBanner } from '@/components/profile-banner';
 import { ProfileQuote } from '@/components/profile-quote';
 import { HomeShell } from '@/components/shell';
-import { Button } from '@/components/ui/button';
-import { supportedLanguages } from '@/config/language';
-import { fetchData } from '@/lib/fetch';
-import { cn } from '@/lib/utils';
 
 export function generateStaticParams() {
-  return supportedLanguages.map(lang => ({ locale: lang }))
+  return supportedLanguages.map((lang) => ({ locale: lang }));
 }
 
 export default async function HomePage() {

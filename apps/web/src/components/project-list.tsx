@@ -1,7 +1,7 @@
+import React, { FC } from 'react';
 import { Link } from '@/i18n/navigation';
 import { HTMLMotionProps, Variants, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { FC } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -57,7 +57,6 @@ export const ProjectItem: FC<ProjectItemProps> = ({
   ...motionProps
 }) => {
   const t = useTranslations('project');
-  console.log("- authors: ", project.coauthors)
 
   return (
     <motion.div
@@ -109,23 +108,28 @@ export const ProjectItem: FC<ProjectItemProps> = ({
               </a>
             </div>
           )}
+
           {Array.isArray(project.coauthors) && project.coauthors.length > 0 && (
-            <div className='flex flex-row gap-2'>
-              <span className="font-medium">Co-authors: </span>
-              {
-                project.coauthors.map(it => (
+            <div className="flex flex-row flex-wrap gap-2">
+              <span className="font-medium">
+                {`Co-author${project.coauthors.length > 1 ? 's' : ''}:`}
+              </span>
+              {project.coauthors.map((it, index) => (
+                <React.Fragment key={it.email}>
                   <a
-                    key={it.email}
                     href={`mailto:${it.email}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:underline"
                   >
                     {it.fullname}
-                  </a>))
-              }
+                  </a>
+                  {index < project.coauthors.length - 1 && <span>,</span>}
+                </React.Fragment>
+              ))}
             </div>
           )}
+
           <div className="w-full space-y-2 text-sm mt-auto md:self-end">
             <div className="mt-2 flex flex-col items-stretch gap-4 md:flex-row md:flex-nowrap">
               <Link
@@ -155,23 +159,31 @@ export const ProjectItem: FC<ProjectItemProps> = ({
           </div>
         </div>
       </div>
-    </motion.div >
+    </motion.div>
   );
 };
 
 export const ProjectList: FC<ProjectListProps> = ({ isLoading, projects }) => {
   const t = useTranslations('project');
 
-  return !Array.isArray(projects) || isLoading ? (
-    <div className="flex items-center gap-2 justify-center">
-      <Loading />
-    </div>
-  ) : projects.length === 0 ? (
-    <div className="flex items-center gap-2 justify-center">
-      <Icons.scanSearch width={32} height={32} />
-      <span className="text-lg">{t('There are no projects yet')}.</span>
-    </div>
-  ) : (
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-2 justify-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  if (!Array.isArray(projects) || projects.length === 0) {
+    return (
+      <div className="flex items-center gap-2 justify-center">
+        <Icons.scanSearch width={32} height={32} />
+        <span className="text-lg">{t('There are no projects yet')}.</span>
+      </div>
+    );
+  }
+
+  return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {projects.map((project, index) => (
         <ProjectItem index={index} project={project} key={project.id} />

@@ -1,4 +1,24 @@
 {
+  "metadata": {
+    "title": "Luong Thanh Hoang Phu",
+    "description": "Passion, experience, projects, and hobbies — all captured, one byte at a time.",
+    "about": {
+      "title": "About Me",
+      "description": "An introduction to who I am — from the basics and education to the technologies I've worked with."
+    },
+    "experience": {
+      "title": "Work Experience",
+      "description": "A summary of my hands-on experience in various roles and projects."
+    },
+    "projects": {
+      "title": "My Projects",
+      "description": "A showcase of the projects I’ve built — from academic to real-world applications."
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Get in touch if you're interested in working together or just want to say hi."
+    }
+  },
   "global": {
     "Table of Content": "Table of Content",
     "i18nToggle": {
