@@ -1,11 +1,11 @@
-import { prisma, Project } from '@db/index';
+import { Project, prisma } from '@db/index';
 
-import { ProjectDetailsContent } from '@/components/project-details-content';
-import { ProjectDetailsShell } from '@/components/shell';
 import { supportedLanguages } from '@/config/language';
 import { dbCachingConfig } from '@/config/revalidate';
 import { fetchData, fetchREADMEData } from '@/lib/fetch';
 import { extractToc } from '@/lib/markdown';
+import { ProjectDetailsContent } from '@/components/project-details-content';
+import { ProjectDetailsShell } from '@/components/shell';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -45,7 +45,6 @@ export async function generateStaticParams() {
     return []; // fallback an toàn
   }
 }
-
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params;

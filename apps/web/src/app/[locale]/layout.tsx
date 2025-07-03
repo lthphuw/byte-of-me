@@ -1,21 +1,21 @@
+import { Metadata, Viewport } from 'next';
+import { Inter as FontSans } from 'next/font/google';
+import localFont from 'next/font/local';
+import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { ExperimentalProvider } from '@/providers/experimental';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { Inter as FontSans } from 'next/font/google';
-import localFont from 'next/font/local';
-import { notFound } from 'next/navigation';
 
+import { host } from '@/config/host';
+import { siteConfig } from '@/config/site';
+import { cn } from '@/lib/utils';
+import { Toaster } from '@/components/ui/toaster';
 import { Analytics } from '@/components/analytics';
 import { BackgroundWrapper } from '@/components/background-wrapper';
 import { SpeedInsights } from '@/components/speed-insight';
 import { TailwindIndicator } from '@/components/tailwind-indicator';
 import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from '@/components/ui/toaster';
-import { host } from '@/config/host';
-import { siteConfig } from '@/config/site';
-import { cn } from '@/lib/utils';
-import { Metadata, Viewport } from 'next';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -28,8 +28,12 @@ const fontHeading = localFont({
   variable: '--font-heading',
 });
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-  const { locale } = await params
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
   const url = `${host}/${locale}`;
 
   return {
@@ -134,7 +138,6 @@ export const viewport: Viewport = {
     { media: '(prefers-color-scheme: dark)', color: 'black' },
   ],
 };
-
 
 export default async function RootLocaleLayout({
   children,
