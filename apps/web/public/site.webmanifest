@@ -1,7 +1,7 @@
 {
   "name": "Byte of me | Lương Thanh Hoàng Phú",
   "short_name": "Byte of me",
-  "description": "Personal blog and portfolio of Lương Thanh Hoàng Phú, sharing insights on web development, fullstack engineering, and modern frontend technologies.",
+  "description": "The personal space of Luong Thanh Hoang Phu — where I share insights on web development, frontend technologies, and my journey as a fullstack software engineer.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -13,13 +13,13 @@
       "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     },
     {
       "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     },
     {
       "src": "/apple-touch-icon.png",
