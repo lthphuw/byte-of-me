@@ -1,14 +1,14 @@
 'use client';
 
-import { motion, Variants, type Transition } from 'framer-motion';
-import { useTheme } from 'next-themes';
 import { useMemo } from 'react';
+import { Variants, motion, type Transition } from 'framer-motion';
+import { useTheme } from 'next-themes';
 
 import { globalConfig } from '@/config/global';
+import { cn } from '@/lib/utils';
 import { useElementDimensions } from '@/hooks/use-element-dimension';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useWindowScroll } from '@/hooks/use-window-scroll';
-import { cn } from '@/lib/utils';
 
 import { I18NToggle } from './i18n-toggle';
 import { MainNav } from './main-nav';
@@ -27,7 +27,8 @@ const SHADOW_TRANSITION_THRESHOLD = 10;
 
 export function SiteHeader() {
   const [{ y: scrollY }] = useWindowScroll();
-  const { dimensions: headerDimensions, ref: mainNavRef } = useElementDimensions<HTMLDivElement>();
+  const { dimensions: headerDimensions, ref: mainNavRef } =
+    useElementDimensions<HTMLDivElement>();
   const { width: headerWidth } = headerDimensions ?? {};
   const { resolvedTheme: theme } = useTheme();
   const isMobile = useIsMobile();
@@ -35,7 +36,9 @@ export function SiteHeader() {
   const isCompact = useMemo(() => scrollY >= SCROLL_THRESHOLD, [scrollY]);
 
   const compactWidth = useMemo(() => {
-    return headerWidth ? `calc(${headerWidth}px + ${COMPACT_WIDTH_OFFSET}px)` : '100%';
+    return headerWidth
+      ? `calc(${headerWidth}px + ${COMPACT_WIDTH_OFFSET}px)`
+      : '100%';
   }, [headerWidth, isMobile]);
 
   const shadowOpacity = useMemo(() => {
@@ -45,29 +48,34 @@ export function SiteHeader() {
 
   const boxShadow = useMemo(() => {
     const color = theme === 'dark' ? '255,255,255' : '0,0,0';
-    const opacity = theme === 'dark' ? Math.min(shadowOpacity + 0.05, 0.15) : shadowOpacity;
+    const opacity =
+      theme === 'dark' ? Math.min(shadowOpacity + 0.05, 0.15) : shadowOpacity;
     return `0 4px 10px rgba(${color},${opacity})`;
   }, [theme, shadowOpacity, isCompact]);
 
-  const controllerBoxShadow = useMemo(() => isCompact ? boxShadow : 'none', [isCompact, boxShadow]);
+  const controllerBoxShadow = useMemo(
+    () => (isCompact ? boxShadow : 'none'),
+    [isCompact, boxShadow]
+  );
 
   const headerStyle = useMemo(
-    () => ({
-      '--header-width': isCompact ? compactWidth : '100%',
-    }) as React.CSSProperties,
+    () =>
+      ({
+        '--header-width': isCompact ? compactWidth : '100%',
+      } as React.CSSProperties),
     [isCompact, compactWidth]
   );
 
   const transitionConfig: Transition = isMobile
     ? {
-      type: 'spring',
-      bounce: 0.25,
-      visualDuration: 0.4,
-    }
+        type: 'spring',
+        bounce: 0.25,
+        visualDuration: 0.4,
+      }
     : {
-      duration: 0.4,
-      ease: 'easeOut',
-    };
+        duration: 0.4,
+        ease: 'easeOut',
+      };
 
   const headerVariants: Variants = {
     compact: {
@@ -126,7 +134,9 @@ export function SiteHeader() {
           animate={isCompact ? 'compact' : 'full'}
           className={cn(
             'flex w-full items-center justify-between rounded-2xl overflow-hidden',
-            isCompact ? 'py-1 px-2 md:py-3 md:px-4' : `${DEFAULT_PADDING} md:ml-12`,
+            isCompact
+              ? 'py-1 px-2 md:py-3 md:px-4'
+              : `${DEFAULT_PADDING} md:ml-12`
           )}
           style={{
             height: isCompact ? COMPACT_HEIGHT : DEFAULT_HEIGHT,
@@ -135,7 +145,11 @@ export function SiteHeader() {
           }}
           transition={transitionConfig}
         >
-          <MainNav items={globalConfig.header.nav} minimized={isCompact} ref={mainNavRef} />
+          <MainNav
+            items={globalConfig.header.nav}
+            minimized={isCompact}
+            ref={mainNavRef}
+          />
         </motion.div>
       </motion.header>
 

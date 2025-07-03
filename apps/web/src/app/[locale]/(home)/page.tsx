@@ -3,14 +3,14 @@ import { User } from '@db/index';
 import { FileText } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
+import { fetchData } from '@/lib/fetch';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import { GreetingWriter } from '@/components/greeting-writer';
 import SvgPathLoader from '@/components/loading';
 import { ProfileBanner } from '@/components/profile-banner';
 import { ProfileQuote } from '@/components/profile-quote';
 import { HomeShell } from '@/components/shell';
-import { Button } from '@/components/ui/button';
-import { fetchData } from '@/lib/fetch';
-import { cn } from '@/lib/utils';
 
 export default async function HomePage() {
   const t = await getTranslations('home');
@@ -26,10 +26,12 @@ export default async function HomePage() {
         {user?.tagLine || ''}
       </h2>
 
-      <ProfileBanner images={((user as any)?.bannerImages).map((it: any) => ({
-        ...it,
-        alt: it.caption
-      }))} />
+      <ProfileBanner
+        images={((user as any)?.bannerImages).map((it: any) => ({
+          ...it,
+          alt: it.caption,
+        }))}
+      />
       <ProfileQuote quote={user?.quote || ''} />
 
       <div className="flex flex-col flex-wrap gap-4 md:flex-row">

@@ -1,10 +1,11 @@
 'use client';
 
-import { motion, useMotionValue, useTransform } from 'framer-motion';
-import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
 
 import { useIsMobile } from '@/hooks/use-is-mobile';
+
 import { Skeleton } from './ui/skeleton';
 
 interface CardRotateProps {
@@ -51,7 +52,7 @@ interface ImageStackProps {
   sensitivity?: number;
   cardDimensions?: { width: number; height: number };
   sendToBackOnClick?: boolean;
-  cardsData?: { id: string; src: string, alt?: string }[];
+  cardsData?: { id: string; src: string; alt?: string }[];
   animationConfig?: { stiffness: number; damping: number };
   setSelectedCard?: (id: string) => void;
 }
@@ -136,7 +137,9 @@ export default function ImageStack({
                 alt={card.alt ?? `card-${card.id}`}
                 className="w-full h-full object-cover pointer-events-none z-10"
                 onLoad={() => setIsLoaded(true)}
-                quality={isMobile ? index === 0 ? 75 : 25 : (index === 0) ? 100 : 50}
+                quality={
+                  isMobile ? (index === 0 ? 75 : 25) : index === 0 ? 100 : 50
+                }
                 fill
               />
             </motion.div>

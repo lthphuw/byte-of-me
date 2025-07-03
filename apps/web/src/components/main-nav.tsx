@@ -1,5 +1,7 @@
 'use client';
 
+import * as React from 'react';
+import { useSelectedLayoutSegment } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import { MainNavItem } from '@/types';
 import {
@@ -12,16 +14,14 @@ import {
 } from '@floating-ui/react';
 import { Variants, motion } from 'framer-motion';
 import { useLocale } from 'next-intl';
-import { useSelectedLayoutSegment } from 'next/navigation';
-import * as React from 'react';
 
-import { Icons } from '@/components/icons';
-import { MobileNav } from '@/components/mobile-nav';
+import { iconVariants } from '@/config/anim';
 import { siteConfig } from '@/config/site';
+import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useTranslations } from '@/hooks/use-translations';
-import { cn } from '@/lib/utils';
-import { iconVariants } from '@/config/anim';
+import { Icons } from '@/components/icons';
+import { MobileNav } from '@/components/mobile-nav';
 
 interface MainNavProps {
   items: MainNavItem[];
@@ -58,10 +58,12 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
       onOpenChange: setShowMobileMenu,
       strategy: 'fixed',
       middleware: [offset({ mainAxis: 10, crossAxis: 10 })],
-      whileElementsMounted: autoUpdate
+      whileElementsMounted: autoUpdate,
     });
 
-    const { getReferenceProps, getFloatingProps } = useInteractions([useFocus(context)]);
+    const { getReferenceProps, getFloatingProps } = useInteractions([
+      useFocus(context),
+    ]);
 
     const iconRef = React.useRef<SVGSVGElement | null>(null);
 
@@ -80,7 +82,11 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
       <div ref={ref} className="flex gap-6 md:gap-10">
         {/* Desktop Logo */}
         {!isMobile && (
-          <Link href="/" locale={locale} className="flex items-center space-x-2">
+          <Link
+            href="/"
+            locale={locale}
+            className="flex items-center space-x-2"
+          >
             <motion.div
               initial="initial"
               animate={minimized ? 'minimized' : 'initial'}
@@ -88,7 +94,9 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
               className="flex items-center gap-2 will-change-transform"
             >
               <Icons.logo />
-              <span className="hidden font-bold sm:inline-block">{siteConfig.name}</span>
+              <span className="hidden font-bold sm:inline-block">
+                {siteConfig.name}
+              </span>
             </motion.div>
           </Link>
         )}
@@ -103,7 +111,9 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
                 locale={locale}
                 className={cn(
                   'flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm',
-                  item.href.startsWith(`/${segment}`) ? 'text-foreground' : 'text-foreground/60',
+                  item.href.startsWith(`/${segment}`)
+                    ? 'text-foreground'
+                    : 'text-foreground/60',
                   item.disabled && 'cursor-not-allowed opacity-80'
                 )}
               >
@@ -129,7 +139,10 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
                   variants={iconVariants}
                   animate={showMobileMenu ? 'open' : 'closed'}
                 >
-                  <Icons.close ref={iconRef} className="absolute inset-0 size-6" />
+                  <Icons.close
+                    ref={iconRef}
+                    className="absolute inset-0 size-6"
+                  />
                 </motion.div>
                 <motion.div
                   variants={iconVariants}

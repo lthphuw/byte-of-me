@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { FlagType } from '@/types';
 import {
@@ -16,14 +17,13 @@ import {
 } from '@floating-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLocale } from 'next-intl';
-import { useCallback, useEffect, useState } from 'react';
-
-import { Button } from '@/components/ui/button';
-import { languageNames, supportedLanguages } from '@/config/language';
-import { useTranslations } from '@/hooks/use-translations';
-import { cn } from '@/lib/utils';
 
 import { itemVariants } from '@/config/anim';
+import { languageNames, supportedLanguages } from '@/config/language';
+import { cn } from '@/lib/utils';
+import { useTranslations } from '@/hooks/use-translations';
+import { Button } from '@/components/ui/button';
+
 import { Flags } from './flag';
 
 // Define flag animation variants
@@ -49,8 +49,8 @@ export function I18NToggle() {
     strategy: 'absolute',
     placement: 'bottom-end',
     middleware: [offset(4), flip(), shift()],
-    whileElementsMounted: autoUpdate
-  })
+    whileElementsMounted: autoUpdate,
+  });
 
   const { getReferenceProps, getFloatingProps } = useInteractions([
     useClick(context),
@@ -94,7 +94,12 @@ export function I18NToggle() {
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                transition={{ type: 'spring', stiffness: 150, damping: 15, duration: 0.2 }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 150,
+                  damping: 15,
+                  duration: 0.2,
+                }}
                 className="absolute inset-0 flex items-center justify-center"
               >
                 <FlagComponent className="size-6 fi" />
@@ -144,7 +149,7 @@ export function I18NToggle() {
                           : 'text-muted-foreground hover:bg-muted'
                       )}
                     >
-                      <span className="relative size-5 flex items-center justify-center" >
+                      <span className="relative size-5 flex items-center justify-center">
                         <Flag className="size-5 fi" />
                       </span>
                       <span>
@@ -158,7 +163,7 @@ export function I18NToggle() {
             </nav>
           )}
         </AnimatePresence>
-      </FloatingPortal >
+      </FloatingPortal>
     </>
   );
 }

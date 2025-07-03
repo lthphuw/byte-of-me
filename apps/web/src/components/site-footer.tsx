@@ -1,13 +1,15 @@
 // components/SiteFooter.tsx
 import { Link } from '@/i18n/navigation';
-import { fetchData } from '@/lib/fetch';
-import { cn } from '@/lib/utils';
 import { User } from '@db/index';
 import { Facebook, Github, Linkedin, Mail } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+
+import { fetchData } from '@/lib/fetch';
+import { cn } from '@/lib/utils';
+
 import { Icons } from './icons';
 
-interface SiteFooterProps extends React.HTMLAttributes<HTMLElement> { }
+interface SiteFooterProps extends React.HTMLAttributes<HTMLElement> {}
 
 export async function SiteFooter({ className }: SiteFooterProps) {
   const t = await getTranslations('footer');
@@ -16,7 +18,6 @@ export async function SiteFooter({ className }: SiteFooterProps) {
   return (
     <footer className={cn(' py-8 relative z-20', className)}>
       <div className="container mx-auto px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
-
         {/* Logo and Credit */}
         <div className="flex flex-col items-center md:items-start gap-2">
           <Link href="/" aria-label={t('home')}>
@@ -35,11 +36,22 @@ export async function SiteFooter({ className }: SiteFooterProps) {
         </div>
 
         {/* Navigation Links */}
-        <nav className="flex items-center md:items-start gap-2 md:gap-6" aria-label={t('navigation')}>
-          <Link href="/about" className="hover:text-blue-400">{t('about')}</Link>
-          <Link href="/experience" className="hover:text-blue-400">{t('experience')}</Link>
-          <Link href="/projects" className="hover:text-blue-400">{t('projects')}</Link>
-          <Link href="/contact" className="hover:text-blue-400">{t('contact')}</Link>
+        <nav
+          className="flex items-center md:items-start gap-2 md:gap-6"
+          aria-label={t('navigation')}
+        >
+          <Link href="/about" className="hover:text-blue-400">
+            {t('about')}
+          </Link>
+          <Link href="/experience" className="hover:text-blue-400">
+            {t('experience')}
+          </Link>
+          <Link href="/projects" className="hover:text-blue-400">
+            {t('projects')}
+          </Link>
+          <Link href="/contact" className="hover:text-blue-400">
+            {t('contact')}
+          </Link>
         </nav>
 
         {/* Social Media and License */}

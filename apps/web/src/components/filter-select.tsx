@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback, useMemo, useState } from 'react';
 import {
   FloatingPortal,
   ReferenceType,
@@ -16,7 +17,6 @@ import {
 import { Variants, motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useCallback, useMemo, useState } from 'react';
 
 import { itemVariants } from '@/config/anim';
 import { cn } from '@/lib/utils';
@@ -31,7 +31,6 @@ interface FilterSelectProps {
   selectedFilter: string;
   setSelectedFilter: (value: string) => void;
 }
-
 
 const chevronVariants: Variants = {
   closed: { rotate: 0 },

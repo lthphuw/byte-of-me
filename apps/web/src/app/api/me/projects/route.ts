@@ -6,15 +6,9 @@ import { FlagType } from '@/types';
 import { prisma } from '@db/client';
 import { Project } from '@db/index';
 
-
-
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
 import { dbCachingConfig, revalidateTime } from '@/config/revalidate';
-
-
-
-
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

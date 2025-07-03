@@ -1,13 +1,14 @@
 'use client';
 
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import Fuse from 'fuse.js';
 import { debounce } from 'lodash';
-import { useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { CategoryFilter } from '@/components/category-filter';
 import { SearchBar, SearchItem } from '@/components/search-bar';
+
 import { Project, ProjectList } from './project-list';
 
 interface ProjectsContentProps {
@@ -26,10 +27,18 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
 
   const [previewItems, setPreviewItems] = useState<SearchItem[]>([]);
   const [showedItems, setShowedItems] = useState<Project[]>(projects);
-  const [searchQuery, setSearchQuery] = useState<string>(searchParams.get('q') || '');
-  const [debouncedQuery, setDebouncedQuery] = useState<string>(searchParams.get('q') || '');
-  const [selectedTag, setSelectedTag] = useState<string>(searchParams.get('tag') || '');
-  const [selectedTechstack, setSelectedTechstack] = useState<string>(searchParams.get('tech') || '');
+  const [searchQuery, setSearchQuery] = useState<string>(
+    searchParams.get('q') || ''
+  );
+  const [debouncedQuery, setDebouncedQuery] = useState<string>(
+    searchParams.get('q') || ''
+  );
+  const [selectedTag, setSelectedTag] = useState<string>(
+    searchParams.get('tag') || ''
+  );
+  const [selectedTechstack, setSelectedTechstack] = useState<string>(
+    searchParams.get('tech') || ''
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   // Initialize fuzzy search
