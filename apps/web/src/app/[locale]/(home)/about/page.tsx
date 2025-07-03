@@ -1,17 +1,21 @@
-import Image from 'next/image';
 import { Education, TechStack, User } from '@db/index';
 import DOMPurify from 'isomorphic-dompurify';
 import { getTranslations } from 'next-intl/server';
+import Image from 'next/image';
 
-import { fetchData } from '@/lib/fetch';
 import AboutContent from '@/components/about-content';
 import { AboutShell } from '@/components/shell';
 import { TechGroup } from '@/components/tech-stack';
 import { TimelineItemProps } from '@/components/timeline';
+import { fetchData } from '@/lib/fetch';
+import { supportedLanguages } from '@/config/language';
+
+export function generateStaticParams() {
+  return supportedLanguages.map(lang => ({ locale: lang }))
+}
 
 export default async function AboutPage() {
   const t = await getTranslations('about');
-  let error: string | null = null;
 
   // Fetch all data concurrently
   const [user, educations, techstacks] = await Promise.all([

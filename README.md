@@ -38,6 +38,29 @@ Built with [Next.js](https://nextjs.org/), [Tailwind CSS](https://tailwindcss.co
 
 ---
 
+## Key Frontend Technologies Used
+
+- **Next.js App Router**:  
+  File-based routing, `client` & `server components`, utilizing both `static` and `dynamic` rendering.
+
+- **Dynamic Metadata & SEO**:  
+  Uses `generateMetadata()` per locale and route to ensure correct `og:image`, `canonical`, and `hreflang` tags for better SEO and social sharing.
+
+- **Tailwind CSS**:  
+  Utility-first CSS framework with custom themes. Fully supports responsive design and dark/light mode via system preference.
+
+- **Theme System**:  
+  Built with **CSS custom properties**, toggled using `@media (prefers-color-scheme)` and class-based overrides like `.dark`.
+
+- **Internationalization (i18n)**:  
+  Powered by [`next-intl`](https://github.com/amannn/next-intl), with support for dynamic route translation, locale-aware routing, and graceful fallbacks.
+
+- **Optimized Performance**:  
+  Leverages `unstable_cache()` and **Prisma Accelerate** for efficient data fetching and caching, improving TTFB and overall page load.
+
+- **Responsive UI**:  
+  Fully mobile-first design. Tested across multiple screen sizes. Components are built with accessibility and semantic structure in mind.
+
 ## Getting Started
 
 ```bash
@@ -61,6 +84,10 @@ pnpm dev
 ```
 
 ## Future work
+
+- Add support for `theming customization` via dashboard.
+- Partial Prerendering (PPR).
+- ...
 
 ## License
 

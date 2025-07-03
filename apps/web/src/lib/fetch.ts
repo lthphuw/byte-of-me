@@ -36,7 +36,7 @@ export async function fetchData<T>(
 
 export async function fetchREADMEData(
   githubUrl: string,
-  { cache }: FetchOptions = { cache: 'no-store' }
+  { cache }: FetchOptions = { cache: 'force-cache' }
 ): Promise<string> {
   const match = githubUrl.match(/github\.com\/([^/]+\/[^/]+)/);
   const repo = match?.[1];

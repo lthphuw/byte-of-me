@@ -1,13 +1,51 @@
-import { Project } from '@db/index';
+import { prisma, Project } from '@db/index';
 
-import { fetchData, fetchREADMEData } from '@/lib/fetch';
-import { extractToc } from '@/lib/markdown';
 import { ProjectDetailsContent } from '@/components/project-details-content';
 import { ProjectDetailsShell } from '@/components/shell';
+import { supportedLanguages } from '@/config/language';
+import { dbCachingConfig } from '@/config/revalidate';
+import { fetchData, fetchREADMEData } from '@/lib/fetch';
+import { extractToc } from '@/lib/markdown';
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
+
+export async function getAllProjectSlugs() {
+  const email = 'lthphuw@gmail.com';
+  const user = await prisma.user.findUnique({
+    cacheStrategy: dbCachingConfig,
+    where: { email },
+  });
+
+  if (!user) return [];
+
+  const projects = await prisma.project.findMany({
+    cacheStrategy: dbCachingConfig,
+    where: { userId: user.id },
+    select: { id: true },
+  });
+
+  return projects.map((proj) => proj.id.toString());
+}
+
+export async function generateStaticParams() {
+  try {
+    const ids = await getAllProjectSlugs();
+    if (!ids) return [];
+
+    return supportedLanguages.flatMap((locale) =>
+      ids.map((id) => ({
+        locale,
+        slug: id.toString(),
+      }))
+    );
+  } catch (err) {
+    console.error('generateStaticParams error:', err);
+    return []; // fallback an toàn
+  }
+}
+
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params;
