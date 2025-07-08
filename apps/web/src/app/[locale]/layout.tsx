@@ -1,22 +1,21 @@
+import { routing } from '@/i18n/routing';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import { Metadata, Viewport } from 'next';
+import { NextIntlClientProvider, hasLocale } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { Inter as FontSans } from 'next/font/google';
 import localFont from 'next/font/local';
 import { notFound } from 'next/navigation';
-import { routing } from '@/i18n/routing';
-import { ExperimentalProvider } from '@/providers/experimental';
-import { GoogleAnalytics } from '@next/third-parties/google';
-import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { getTranslations } from 'next-intl/server';
 
-import { host } from '@/config/host';
-import { siteConfig } from '@/config/site';
-import { cn } from '@/lib/utils';
-import { Toaster } from '@/components/ui/toaster';
 import { Analytics } from '@/components/analytics';
 import { BackgroundWrapper } from '@/components/background-wrapper';
 import { SpeedInsights } from '@/components/speed-insight';
 import { TailwindIndicator } from '@/components/tailwind-indicator';
 import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/toaster';
+import { host } from '@/config/host';
+import { siteConfig } from '@/config/site';
+import { cn } from '@/lib/utils';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -95,6 +94,9 @@ export async function generateMetadata({
 }
 
 export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: 'white' },
     { media: '(prefers-color-scheme: dark)', color: 'black' },
@@ -123,21 +125,17 @@ export default async function RootLocaleLayout({
           fontHeading.variable
         )}
       >
-        <ExperimentalProvider>
-          <NextIntlClientProvider>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              <BackgroundWrapper />
-
-              {children}
-
-              <Analytics />
-              <SpeedInsights />
-              <Toaster />
-              <TailwindIndicator />
-              <GoogleAnalytics gaId={`${process.env.NEXT_PUBLIC_GA_ID}`} />
-            </ThemeProvider>
-          </NextIntlClientProvider>
-        </ExperimentalProvider>
+        <NextIntlClientProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <BackgroundWrapper />
+            {children}
+            <Analytics />
+            <SpeedInsights />
+            <Toaster />
+            <TailwindIndicator />
+            <GoogleAnalytics gaId={`${process.env.NEXT_PUBLIC_GA_ID}`} />
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

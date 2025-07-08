@@ -1,3 +1,4 @@
+import { Locale } from 'next-intl';
 import { getLocale } from 'next-intl/server';
 
 import { ApiResponse } from '@/types/api';
@@ -7,15 +8,16 @@ import { revalidateTime } from '@/config/revalidate';
 import { resolveRelativeImages } from './markdown';
 
 export type FetchOptions = {
+  locale?: Locale;
   cache?: RequestCache;
 };
 
 export async function fetchData<T>(
   endpoint: string,
-  { cache }: FetchOptions = { cache: 'force-cache' }
+  { locale, cache }: FetchOptions = { cache: 'force-cache' }
 ): Promise<T> {
-  const locale = await getLocale();
-  const api = `${host}/api/${endpoint}?locale=${locale}`;
+  const curLocale = await getLocale();
+  const api = `${host}/api/${endpoint}?locale=${locale ?? curLocale}`;
 
   const resp = await fetch(api, {
     cache,

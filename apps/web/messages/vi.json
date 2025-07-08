@@ -17,6 +17,10 @@
     "contact": {
       "title": "Liên hệ",
       "description": "Thông tin liên lạc nếu bạn muốn kết nối hoặc cộng tác với tôi."
+    },
+    "askMe": {
+      "title": "Hỏi tôi bất cứ điều gì",
+      "description": "Trò chuyện với trợ lý AI được huấn luyện bằng thông tin thật của tôi. Hỏi về kỹ năng, dự án, kinh nghiệm làm việc hoặc bất kỳ điều gì bạn tò mò!"
     }
   },
   "global": {
@@ -44,7 +48,8 @@
         "Projects": "Dự án",
         "Hobbies": "Sở thích",
         "More": "Thêm",
-        "Let's talk": "Liên lạc"
+        "Let's talk": "Liên lạc",
+        "Ask me": "Hỏi về tôi"
       }
     }
   },

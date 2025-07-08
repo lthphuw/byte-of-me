@@ -1,6 +1,6 @@
 {
   "name": "@repo/db",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "generate": "pnpm db:generate",
     "db:generate": "npx prisma generate --no-engine",

@@ -17,6 +17,10 @@
     "contact": {
       "title": "Contact",
       "description": "Get in touch if you're interested in working together or just want to say hi."
+    },
+    "askMe": {
+      "title": "Ask Me Anything",
+      "description": "Chat with an AI assistant trained on my real data. Ask about my skills, projects, work experience, or anything you're curious about!"
     }
   },
   "global": {
@@ -44,7 +48,8 @@
         "Projects": "Projects",
         "Hobbies": "Hobbies",
         "More": "More",
-        "Let's talk": "Let's talk"
+        "Let's talk": "Let's talk",
+        "Ask me": "Ask Me"
       }
     }
   },

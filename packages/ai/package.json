@@ -1,0 +1,39 @@
+{
+  "name": "@repo/ai",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "index-pinecone": "tsx src/data/indexers/pinecone.indexer.ts",
+    "test": "vitest",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@langchain/core": "^0.3.62",
+    "@langchain/google-genai": "^0.2.14",
+    "@langchain/langgraph": "^0.3.6",
+    "@langchain/langgraph-checkpoint-postgres": "^0.0.5",
+    "@langchain/mistralai": "^0.2.1",
+    "@langchain/pinecone": "^0.2.0",
+    "@pinecone-database/pinecone": "^6.1.1",
+    "@types/pg": "^8.15.4",
+    "dotenv": "^17.0.1",
+    "html-to-text": "^9.0.5",
+    "langchain": "^0.3.29",
+    "pg": "^8.16.3",
+    "uuid": "^11.1.0",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@types/html-to-text": "^9.0.4",
+    "@types/jest": "^30.0.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
+    "typescript": "5.8.3",
+    "vitest": "^3.2.4"
+  }
+}

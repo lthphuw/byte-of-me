@@ -20,6 +20,10 @@ module.exports = {
     },
     extend: {
       colors: {
+        'neutral-dark': 'hsl(220 5% 15%)',
+        'neutral-light': 'hsl(220 5% 96%)',
+        'neutral-lighter': 'hsl(220 5% 90%)',
+        'neutral-gray': 'hsl(220 5% 85%)',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
