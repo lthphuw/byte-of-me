@@ -178,5 +178,13 @@
     "navigation": "Navigation du pied de page",
     "license": "Sous licence",
     "rights": "Tous droits réservés."
+  },
+  "chat": {
+    "Ask Phu's Assistant": "Demandez à l’assistant de Phu",
+    "Asking": "En cours",
+    "Ask": "Envoyer",
+    "Clear chat": "Effacer la discussion",
+    "Ask something": "Posez une question",
+    "Copy": "Copy"
   }
 }

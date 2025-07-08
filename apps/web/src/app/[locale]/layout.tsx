@@ -117,10 +117,11 @@ export default async function RootLocaleLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
+
       <head />
       <body
         className={cn(
-          'min-h-screen bg-transparent font-sans antialiased',
+          'relative min-h-screen bg-transparent font-sans antialiased',
           fontSans.variable,
           fontHeading.variable
         )}

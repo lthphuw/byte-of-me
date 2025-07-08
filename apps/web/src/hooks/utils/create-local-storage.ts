@@ -90,8 +90,8 @@ export type UseStorageReturnValue<T> = [
 export function createStorage<T>(type: StorageType, hookName: string) {
   const eventName =
     type === 'localStorage'
-      ? 'mantine-local-storage'
-      : 'mantine-session-storage';
+      ? 'byte-of-me-local-storage'
+      : 'byte-of-me-session-storage';
   const { getItem, setItem, removeItem } = createStorageHandler(type);
 
   return function useStorage({

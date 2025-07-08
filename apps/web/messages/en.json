@@ -171,5 +171,13 @@
     "navigation": "Footer Navigation",
     "license": "Licensed under",
     "rights": "All rights reserved."
+  }, 
+  "chat": {
+    "Ask Phu's Assistant": "Ask Phu's Assistant",
+    "Asking": "Asking",
+    "Ask": "Ask",
+    "Clear chat": "Clear chat",
+    "Ask something": "Ask something",
+    "Copy": "Copy"
   }
 }

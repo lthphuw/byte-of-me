@@ -23,10 +23,10 @@ export const globalConfig: GlobalConfig = {
       //   title: 'More',
       //   href: '/more',
       // },
-      {
-        title: 'Ask me',
-        href: '/ask-me',
-      },
+      // {
+      //   title: 'Ask me',
+      //   href: '/ask-me',
+      // },
       {
         title: "Let's talk",
         href: '/contact',

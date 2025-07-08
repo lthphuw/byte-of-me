@@ -2,6 +2,7 @@
 
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import { Icons } from "./icons";
 
 export interface ChatTitleProps {
@@ -10,6 +11,8 @@ export interface ChatTitleProps {
 }
 
 export function ChatTitle({ invoke, className }: ChatTitleProps) {
+    const t = useTranslations("chat");
+
     const isMobile = useIsMobile();
 
     const examplePrompts = [
@@ -28,16 +31,16 @@ export function ChatTitle({ invoke, className }: ChatTitleProps) {
             <div className="flex flex-col md:flex-row justify-center items-center gap-2 md:gap-3">
                 <Icons.logo size={isMobile ? 32 : 48} />
                 <h1 className="text-xl md:text-2xl font-semibold">
-                    Ask Phu's Assistant
+                    {t("Ask Phu's Assistant")}
                 </h1>
             </div>
 
             <div className="text-sm text-neutral-500 dark:text-neutral-400 space-y-1">
-                <ul className="flex flex-col flex-wrap justify-center gap-1.5 text-sm">
+                <ul className="flex flex-col flex-wrap justify-center gap-1.5 md:gap-3 text-sm">
                     {examplePrompts.map((q, i) => (
                         <li
                             key={i}
-                            className="bg-neutral-100 cursor-pointer dark:bg-neutral-800 px-3 py-1 md:px-4 md:py-2 rounded-md"
+                            className="container-bg cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-md shadow-md dark:shadow-[0_2px_4px_rgba(255,255,255,0.04)] hover:opacity-95 hover:scale-105 ease-out duration-300"
                             onClick={() => invoke(q)}
                         >
                             {q}

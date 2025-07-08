@@ -178,5 +178,13 @@
     "navigation": "Điều hướng chân trang",
     "license": "Được cấp phép theo",
     "rights": "Bản quyền thuộc về tác giả."
+  },
+  "chat": {
+    "Ask Phu's Assistant": "Hỏi trợ lý AI của Phú",
+    "Asking": "Đang hỏi",
+    "Ask": "Hỏi",
+    "Clear chat": "Xoá hội thoại",
+    "Ask something": "Hỏi bất cứ điều gì",
+    "Copy": "Sao chép"
   }
 }

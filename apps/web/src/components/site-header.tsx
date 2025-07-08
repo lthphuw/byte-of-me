@@ -1,15 +1,16 @@
 'use client';
 
-import { useMemo } from 'react';
 import { Variants, motion, type Transition } from 'framer-motion';
 import { useTheme } from 'next-themes';
+import { useMemo } from 'react';
 
 import { globalConfig } from '@/config/global';
-import { cn } from '@/lib/utils';
 import { useElementDimensions } from '@/hooks/use-element-dimension';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useWindowScroll } from '@/hooks/use-window-scroll';
+import { cn } from '@/lib/utils';
 
+import { ChatButton } from './chat-button';
 import { I18NToggle } from './i18n-toggle';
 import { MainNav } from './main-nav';
 import { ModeToggle } from './mode-toggle';
@@ -24,6 +25,8 @@ const DEFAULT_HEIGHT = 64;
 const COMPACT_PADDING = '12px 16px';
 const DEFAULT_PADDING = '16px';
 const SHADOW_TRANSITION_THRESHOLD = 10;
+
+const COMPACT_CHAT_BUTTON_X_OFFSET = 200;
 
 export function SiteHeader() {
   const [{ y: scrollY }] = useWindowScroll();
@@ -60,22 +63,22 @@ export function SiteHeader() {
 
   const headerStyle = useMemo(
     () =>
-      ({
-        '--header-width': isCompact ? compactWidth : '100%',
-      } as React.CSSProperties),
+    ({
+      '--header-width': isCompact ? compactWidth : '100%',
+    } as React.CSSProperties),
     [isCompact, compactWidth]
   );
 
   const transitionConfig: Transition = isMobile
     ? {
-        type: 'spring',
-        bounce: 0.25,
-        visualDuration: 0.4,
-      }
+      type: 'spring',
+      bounce: 0.25,
+      visualDuration: 0.4,
+    }
     : {
-        duration: 0.4,
-        ease: 'easeOut',
-      };
+      duration: 0.4,
+      ease: 'easeOut',
+    };
 
   const headerVariants: Variants = {
     compact: {
@@ -152,6 +155,38 @@ export function SiteHeader() {
           />
         </motion.div>
       </motion.header>
+
+      {/* Chat button */}
+      <motion.div
+        layout
+        className={cn(
+          'hidden md:block fixed top-0 right-32 bg-transparent md:right-32 z-50 space-x-2 appearance-none [-webkit-appearance:none]',
+          isCompact && 'ml-auto pl-0 container-bg'
+        )}
+        animate={{
+          right: isCompact ? COMPACT_CHAT_BUTTON_X_OFFSET : 132,
+          top: isCompact ? COMPACT_TOP_OFFSET : 0,
+          borderRadius: isCompact ? COMPACT_BORDER_RADIUS : 1,
+          boxShadow: controllerBoxShadow,
+        }}
+        transition={transitionConfig}
+      >
+        <motion.button
+          layout
+          variants={controlVariants}
+          animate={isCompact ? 'compact' : 'full'}
+          className={cn(
+            'flex items-center gap-2 rounded-2xl justify-end',
+            isCompact ? 'py-1 px-2 md:py-3 md:px-4' : 'md:px-4'
+          )}
+          style={{
+            height: isCompact ? COMPACT_HEIGHT : DEFAULT_HEIGHT,
+          }}
+          transition={transitionConfig}
+        >
+          <ChatButton />
+        </motion.button>
+      </motion.div>
 
       <motion.div
         layout

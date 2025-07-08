@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import {
   FloatingPortal,
   autoUpdate,
@@ -14,19 +13,14 @@ import {
 } from '@floating-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
+import { useState } from 'react';
 
-import { itemVariants } from '@/config/anim';
-import { cn } from '@/lib/utils';
-import { useTranslations } from '@/hooks/use-translations';
-import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons';
+import { Button } from '@/components/ui/button';
+import { iconSwicthVariants, itemVariants } from '@/config/anim';
+import { useTranslations } from '@/hooks/use-translations';
+import { cn } from '@/lib/utils';
 
-// Define icon animation variants
-const iconVariants = {
-  initial: { opacity: 0, scale: 0.8, rotate: 90 },
-  animate: { opacity: 1, scale: 1, rotate: 0 },
-  exit: { opacity: 0, scale: 0.8, rotate: -90 },
-};
 
 export function ModeToggle() {
   const t = useTranslations('global.modeToggle');
@@ -72,7 +66,7 @@ export function ModeToggle() {
               {resolvedTheme === 'light' ? (
                 <motion.div
                   key="sun"
-                  variants={iconVariants}
+                  variants={iconSwicthVariants}
                   initial="initial"
                   animate="animate"
                   exit="exit"
@@ -89,7 +83,7 @@ export function ModeToggle() {
               ) : (
                 <motion.div
                   key="moon"
-                  variants={iconVariants}
+                  variants={iconSwicthVariants}
                   initial="initial"
                   animate="animate"
                   exit="exit"

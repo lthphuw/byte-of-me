@@ -1,10 +1,15 @@
+"use client";
+
 import ChatContent from '@/components/chat-content';
 import { AskMeShell } from '@/components/shell';
+import { AssistantProvider } from '@/providers/assistant';
 
-export default async function AskMePage() {
+export default function AskMePage() {
   return (
     <AskMeShell>
-      <ChatContent />
+      <AssistantProvider>
+        <ChatContent />
+      </AssistantProvider>
     </AskMeShell>
   );
 }

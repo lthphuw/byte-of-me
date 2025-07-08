@@ -1,5 +1,9 @@
 import { NextRequest } from 'next/server';
-import { answer } from '@ai/interface/services';
+import { answer, deleteCheckpoint } from '@ai/interface/services';
+
+
+
+
 
 export async function POST(req: NextRequest) {
   const { question, history, stream, thread_id } = await req.json();
@@ -39,4 +43,28 @@ export async function POST(req: NextRequest) {
 
   const result = await answer(question, { history, thread_id });
   return Response.json(result);
+}
+
+export async function DELETE(req: NextRequest) {
+  const { thread_id } = await req.json();
+
+  if (!thread_id) {
+    return new Response(JSON.stringify({ error: 'Missing thread_id' }), {
+      status: 400,
+    });
+  }
+
+  try {
+    const res = await deleteCheckpoint(thread_id);
+    console.log('[delete-checkpoint-result] result: ', res);
+    return new Response(JSON.stringify({ success: true }));
+  } catch (err) {
+    console.error('[delete-checkpoint-error]', err);
+    return new Response(
+      JSON.stringify({ error: 'Failed to delete checkpoint' }),
+      {
+        status: 500,
+      }
+    );
+  }
 }
