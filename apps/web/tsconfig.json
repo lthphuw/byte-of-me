@@ -5,6 +5,7 @@
     "paths": {
       "@/*": ["src/*"],
       "@db/*": ["../../packages/db/src/*"],
+      "@ai/*": ["../../packages/ai/src/*"],
       "contentlayer/generated": [".contentlayer/generated"]
     }
   },

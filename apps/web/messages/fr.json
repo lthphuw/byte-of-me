@@ -17,6 +17,10 @@
     "contact": {
       "title": "Contact",
       "description": "N'hésitez pas à me contacter pour échanger ou collaborer."
+    },
+    "askMe": {
+      "title": "Posez-moi n'importe quoi",
+      "description": "Discutez avec un assistant IA formé à partir de mes vraies données. Posez des questions sur mes compétences, mes projets, mon expérience professionnelle ou tout ce qui vous intéresse !"
     }
   },
   "global": {
@@ -44,7 +48,8 @@
         "Projects": "Projets",
         "Hobbies": "Passe-temps",
         "More": "Plus",
-        "Let's talk": "Parlons-en"
+        "Let's talk": "Parlons-en",
+        "Ask me": "Me poser une question"
       }
     }
   },

@@ -24,6 +24,10 @@ export const globalConfig: GlobalConfig = {
       //   href: '/more',
       // },
       {
+        title: 'Ask me',
+        href: '/ask-me',
+      },
+      {
         title: "Let's talk",
         href: '/contact',
       },

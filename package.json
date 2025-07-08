@@ -13,5 +13,5 @@
     "lint": "pnpm --filter web lint",
     "format": "pnpm --filter web format"
   },
-  "packageManager": "pnpm@10.0.0"
+  "packageManager": "pnpm@10.12.4"
 }
