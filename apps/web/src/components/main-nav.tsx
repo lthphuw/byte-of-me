@@ -15,7 +15,7 @@ import {
 import { Variants, motion } from 'framer-motion';
 import { useLocale } from 'next-intl';
 
-import { iconVariants } from '@/config/anim';
+import { iconOpenCloseVariants } from '@/config/anim';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-is-mobile';
@@ -136,7 +136,7 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
             >
               <motion.span className="relative size-6">
                 <motion.div
-                  variants={iconVariants}
+                  variants={iconOpenCloseVariants}
                   animate={showMobileMenu ? 'open' : 'closed'}
                 >
                   <Icons.close
@@ -145,7 +145,7 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
                   />
                 </motion.div>
                 <motion.div
-                  variants={iconVariants}
+                  variants={iconOpenCloseVariants}
                   animate={showMobileMenu ? 'closed' : 'open'}
                 >
                   <Icons.logo className="absolute inset-0 size-6" />

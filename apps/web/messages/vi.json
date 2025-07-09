@@ -17,6 +17,10 @@
     "contact": {
       "title": "Liên hệ",
       "description": "Thông tin liên lạc nếu bạn muốn kết nối hoặc cộng tác với tôi."
+    },
+    "askMe": {
+      "title": "Hỏi tôi bất cứ điều gì",
+      "description": "Đặt câu hỏi cho trợ lý AI được xây dựng bằng pipeline RAG. Dữ liệu từ chính portfolio của tôi được xử lý bằng vector search và LLM — phù hợp để khám phá kinh nghiệm, dự án và kỹ năng lập trình của tôi."
     }
   },
   "global": {
@@ -44,7 +48,8 @@
         "Projects": "Dự án",
         "Hobbies": "Sở thích",
         "More": "Thêm",
-        "Let's talk": "Liên lạc"
+        "Let's talk": "Liên lạc",
+        "Ask me": "Hỏi về tôi"
       }
     }
   },
@@ -173,5 +178,13 @@
     "navigation": "Điều hướng chân trang",
     "license": "Được cấp phép theo",
     "rights": "Bản quyền thuộc về tác giả."
+  },
+  "chat": {
+    "Ask Phu's Assistant": "Hỏi trợ lý AI của Phú",
+    "Asking": "Đang hỏi",
+    "Ask": "Hỏi",
+    "Clear chat": "Xoá hội thoại",
+    "Ask something": "Hỏi bất cứ điều gì",
+    "Copy": "Sao chép"
   }
 }

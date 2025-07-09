@@ -4,7 +4,7 @@ import DOMPurify from 'isomorphic-dompurify';
 import { getTranslations } from 'next-intl/server';
 
 import { supportedLanguages } from '@/config/language';
-import { fetchData } from '@/lib/fetch';
+import { fetchData } from '@/lib/core/fetch';
 import AboutContent from '@/components/about-content';
 import { AboutShell } from '@/components/shell';
 import { TechGroup } from '@/components/tech-stack';

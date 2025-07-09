@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "types": ["vitest"],
+    "module": "esnext",
+    "target": "es2017",
+    "moduleResolution": "node"
+  },
+  "paths": {
+    "@ai/*": ["packages/ai/src/*"]
+  },
+  "include": ["src", "tests"]
+}

@@ -29,7 +29,7 @@ export default function AboutContent({
   if (!user) return <p>Loading...</p>;
 
   return (
-    <div className="relative flex justify-center px-4 lg:px-8 py-12">
+    <div className="relative flex justify-center px-4 md:px-8 py-12">
       <div className="max-w-4xl w-full space-y-12">
         <motion.section
           id="aboutme"

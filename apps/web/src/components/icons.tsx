@@ -28,6 +28,7 @@ import {
   Loader2,
   LucideProps,
   Mail,
+  MessageSquareText,
   Moon,
   MoreVertical,
   Newspaper,
@@ -160,4 +161,6 @@ export const Icons = {
   music: AudioLines,
   exercise: Dumbbell,
   coding: Code,
+  chat: MessageSquareText,
+  file: FileText,
 };

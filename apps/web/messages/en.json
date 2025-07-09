@@ -17,6 +17,10 @@
     "contact": {
       "title": "Contact",
       "description": "Get in touch if you're interested in working together or just want to say hi."
+    },
+    "askMe": {
+      "title": "Ask Me Anything",
+      "description": "Ask questions to an AI assistant powered by a RAG pipeline. It's built with real data from my portfolio, vector search, and LLM responses — ideal for exploring my experience, projects, and tech skills."
     }
   },
   "global": {
@@ -44,7 +48,8 @@
         "Projects": "Projects",
         "Hobbies": "Hobbies",
         "More": "More",
-        "Let's talk": "Let's talk"
+        "Let's talk": "Let's talk",
+        "Ask me": "Ask Me"
       }
     }
   },
@@ -166,5 +171,13 @@
     "navigation": "Footer Navigation",
     "license": "Licensed under",
     "rights": "All rights reserved."
+  },
+  "chat": {
+    "Ask Phu's Assistant": "Ask Phu's Assistant",
+    "Asking": "Asking",
+    "Ask": "Ask",
+    "Clear chat": "Clear chat",
+    "Ask something": "Ask something",
+    "Copy": "Copy"
   }
 }

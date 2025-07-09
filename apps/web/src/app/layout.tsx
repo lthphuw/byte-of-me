@@ -1,8 +1,4 @@
 import { ReactNode } from 'react';
-import { Viewport } from 'next';
-
-import { host } from '@/config/host';
-import { siteConfig } from '@/config/site';
 
 import '@/styles/globals.css';
 import '../../node_modules/flag-icons/css/flag-icons.min.css';

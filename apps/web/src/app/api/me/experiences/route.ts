@@ -9,7 +9,7 @@ import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
 import { dbCachingConfig, revalidateTime } from '@/config/revalidate';
 import { siteConfig } from '@/config/site';
-import { calculateDuration, formatDate } from '@/lib/utils';
+import { calculateDuration, formatDate } from '@/lib/core';
 import { CompanyExperience } from '@/components/experience-timeline';
 
 export async function GET(req: NextRequest) {

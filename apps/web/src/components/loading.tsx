@@ -20,44 +20,59 @@ export default function Loading({ className }: LoadingProps) {
   useEffect(() => {
     const animateLoader = async () => {
       const sequence: AnimationSequence = [
+        // P animation
         [
           '.p',
-          { pathLength: 1, pathOffset: 0 },
+          { pathLength: 1, pathOffset: 0, stroke: '#4b5563' }, // gray-700
           { duration: 0.8, ease: 'linear' } as Transition,
         ],
         [
           '.p',
-          { pathLength: 0, pathOffset: 1 },
+          { pathLength: 0, pathOffset: 1, stroke: '#4b5563' },
+          { duration: 0.4, ease: 'linear' } as Transition,
+        ],
+        [
+          '.p',
+          { stroke: 'none' }, // Hide after animation
+          { duration: 0 } as Transition,
+        ],
+        // H animation (starts after P completes)
+        [
+          '.h',
+          { pathLength: 1, pathOffset: 0, stroke: '#4b5563' },
+          { duration: 0.8, ease: 'linear' } as Transition,
+        ],
+        [
+          '.h',
+          { pathLength: 0, pathOffset: 1, stroke: '#4b5563' },
           { duration: 0.4, ease: 'linear' } as Transition,
         ],
         [
           '.h',
-          { pathLength: 1, pathOffset: 0 },
-          { duration: 0.8, ease: 'linear' } as Transition,
+          { stroke: 'none' }, // Hide after animation
+          { duration: 0 } as Transition,
         ],
-        [
-          '.h',
-          { pathLength: 0, pathOffset: 1 },
-          { duration: 0.4, ease: 'linear' } as Transition,
-        ],
+        // U animation (starts after H completes)
         [
           '.u',
-          { pathLength: 1, pathOffset: 0 },
+          { pathLength: 1, pathOffset: 0, stroke: '#4b5563' },
           { duration: 0.8, ease: 'linear' } as Transition,
         ],
         [
           '.u',
-          { pathLength: 0, pathOffset: 1 },
+          { pathLength: 0, pathOffset: 1, stroke: '#4b5563' },
           { duration: 0.4, ease: 'linear' } as Transition,
+        ],
+        [
+          '.u',
+          { stroke: 'none' }, // Hide after animation
+          { duration: 0 } as Transition,
         ],
       ];
 
-      const runAnimation = async () => {
+      while (true) {
         await animate(sequence);
-        runAnimation(); // Recursively repeat the sequence
-      };
-
-      runAnimation();
+      }
     };
 
     animateLoader();
@@ -73,8 +88,8 @@ export default function Loading({ className }: LoadingProps) {
     >
       {/* P */}
       <motion.path
-        className="p stroke-gray-700 dark:stroke-gray-200"
-        initial={{ pathLength: 0, pathOffset: 0 }}
+        className="p"
+        initial={{ pathLength: 0, pathOffset: 0, stroke: 'none' }}
         d="M 5 25 V 5 H 15 Q 20 5 20 10 Q 20 15 15 15 H 10 V 25 Z"
         style={{
           fill: 'none',
@@ -85,8 +100,8 @@ export default function Loading({ className }: LoadingProps) {
       />
       {/* H */}
       <motion.path
-        className="h stroke-gray-700 dark:stroke-gray-200"
-        initial={{ pathLength: 0, pathOffset: 0 }}
+        className="h"
+        initial={{ pathLength: 0, pathOffset: 0, stroke: 'none' }}
         d="M 30 25 V 5 H 35 V 15 H 45 V 5 H 50 V 25 H 45 V 15 H 35 V 25 Z"
         style={{
           fill: 'none',
@@ -97,8 +112,8 @@ export default function Loading({ className }: LoadingProps) {
       />
       {/* U */}
       <motion.path
-        className="u stroke-gray-700 dark:stroke-gray-200"
-        initial={{ pathLength: 0, pathOffset: 0 }}
+        className="u"
+        initial={{ pathLength: 0, pathOffset: 0, stroke: 'none' }}
         d="M 55 5 H 60 V 20 Q 60 25 65 25 Q 70 25 70 20 V 5 H 75 V 20 Q 75 28 65 28 Q 55 28 55 20 Z"
         style={{
           fill: 'none',

@@ -3,39 +3,82 @@ import { z } from 'zod';
 
 export const env = createEnv({
   server: {
-    // This is optional because it's only used in development.
-    // See https://next-auth.js.org/deployment.
-    // NEXTAUTH_URL: z.string().url().optional(),
-    // NEXTAUTH_SECRET: z.string().min(1),
-    // GITHUB_CLIENT_ID: z.string().min(1),
-    // GITHUB_CLIENT_SECRET: z.string().min(1),
-    // GITHUB_ACCESS_TOKEN: z.string().min(1),
-    // DATABASE_URL: z.string().min(1),
-    // SMTP_FROM: z.string().min(1),
-    // POSTMARK_API_TOKEN: z.string().min(1),
-    // POSTMARK_SIGN_IN_TEMPLATE: z.string().min(1),
-    // POSTMARK_ACTIVATION_TEMPLATE: z.string().min(1),
-    // STRIPE_API_KEY: z.string().min(1),
-    // STRIPE_WEBHOOK_SECRET: z.string().min(1),
-    // STRIPE_PRO_MONTHLY_PLAN_ID: z.string().min(1),
+    GEMINI_API_KEY: z.string().min(1),
+    GOOGLE_API_KEY: z.string().min(1),
+    PINECONE_API_KEY: z.string().min(1),
+    PINECONE_INDEX: z.string().min(1),
+    PINECONE_NAMESPACE: z.string().min(1),
+    CHECKPOINTER_SCHEMA: z.string().min(1),
+
+    PRISMA_CACHE_SWR: z.coerce.number().default(86400),
+    PRISMA_CACHE_TTL: z.coerce.number().default(86400),
+
+    KV_URL: z.string().min(1),
+    KV_REST_API_URL: z.string().min(1),
+    KV_REST_API_TOKEN: z.string().min(1),
+    KV_REST_API_READ_ONLY_TOKEN: z.string().min(1),
+    REDIS_URL: z.string().default(''),
+
+    DATABASE_URL: z.string().min(1),
+    DIRECT_DATABASE_URL: z.string().min(1),
+
+    NEXT_EMAIL: z.string().email().default('lthphuw@gmail.com'),
+
+    RATE_LIMIT_CHAT_PER_MIN: z.coerce.number().default(5),
+    RATE_LIMIT_CHAT_PER_DAY: z.coerce.number().default(15),
+
+    TURNSTILE_SECRET_KEY: z.string().default(''),
+
+    NODE_ENV: z
+      .enum(['development', 'production'])
+      .optional()
+      .default('development'),
   },
+
   client: {
-    NEXT_PUBLIC_APP_URL: z.string().min(1),
+    NEXT_CACHE: z.coerce.number().default(86400),
+    NEXT_PUBLIC_APP_URL: z.string().url().min(1),
+    NEXT_PUBLIC_GA_ID: z.string().default(''),
+    NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().default(''),
+    NEXT_PUBLIC_ENV: z
+      .enum(['development', 'production'])
+      .optional()
+      .default('development'),
   },
+
   runtimeEnv: {
-    // NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    // NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-    // GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
-    // GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
-    // GITHUB_ACCESS_TOKEN: process.env.GITHUB_ACCESS_TOKEN,
+    // Server
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
+    PINECONE_API_KEY: process.env.PINECONE_API_KEY,
+    PINECONE_INDEX: process.env.PINECONE_INDEX,
+    PINECONE_NAMESPACE: process.env.PINECONE_NAMESPACE,
+    CHECKPOINTER_SCHEMA: process.env.CHECKPOINTER_SCHEMA,
+
+    PRISMA_CACHE_SWR: process.env.PRISMA_CACHE_SWR,
+    PRISMA_CACHE_TTL: process.env.PRISMA_CACHE_TTL,
+
+    KV_URL: process.env.KV_URL,
+    KV_REST_API_URL: process.env.KV_REST_API_URL,
+    KV_REST_API_TOKEN: process.env.KV_REST_API_TOKEN,
+    KV_REST_API_READ_ONLY_TOKEN: process.env.KV_REST_API_READ_ONLY_TOKEN,
+    REDIS_URL: process.env.REDIS_URL,
+
     DATABASE_URL: process.env.DATABASE_URL,
-    // SMTP_FROM: process.env.SMTP_FROM,
-    // POSTMARK_API_TOKEN: process.env.POSTMARK_API_TOKEN,
-    // POSTMARK_SIGN_IN_TEMPLATE: process.env.POSTMARK_SIGN_IN_TEMPLATE,
-    // POSTMARK_ACTIVATION_TEMPLATE: process.env.POSTMARK_ACTIVATION_TEMPLATE,
-    // STRIPE_API_KEY: process.env.STRIPE_API_KEY,
-    // STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
-    // STRIPE_PRO_MONTHLY_PLAN_ID: process.env.STRIPE_PRO_MONTHLY_PLAN_ID,
+    DIRECT_DATABASE_URL: process.env.DIRECT_DATABASE_URL,
+
+    NEXT_EMAIL: process.env.NEXT_EMAIL,
+
+    RATE_LIMIT_CHAT_PER_MIN: process.env.RATE_LIMIT_CHAT_PER_MIN,
+    RATE_LIMIT_CHAT_PER_DAY: process.env.RATE_LIMIT_CHAT_PER_DAY,
+    TURNSTILE_SECRET_KEY: process.env.TURNSTILE_SECRET_KEY,
+    NODE_ENV: process.env.NODE_ENV,
+
+    // Client
+    NEXT_CACHE: process.env.NEXT_CACHE,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
+    NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+    NEXT_PUBLIC_ENV: process.env.NEXT_PUBLIC_ENV,
   },
 });

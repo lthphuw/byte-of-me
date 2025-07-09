@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { host } from '@/config/host';
 import { siteConfig } from '@/config/site';
-import { fetchData } from '@/lib/fetch';
+import { fetchData } from '@/lib/core/fetch';
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;

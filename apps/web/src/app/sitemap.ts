@@ -6,7 +6,7 @@ import { Locale } from 'next-intl';
 
 // Import Locale from next-intl
 import { host } from '@/config/host';
-import { fetchData } from '@/lib/fetch';
+import { fetchData } from '@/lib/core/fetch';
 
 async function getDynamicRoutes(): Promise<string[]> {
   const projects = await fetchData<Project[]>('me/projects');
@@ -15,7 +15,14 @@ async function getDynamicRoutes(): Promise<string[]> {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Define static routes
-  const staticRoutes = ['/', '/about', '/experience', '/projects', '/contact'];
+  const staticRoutes = [
+    '/',
+    '/about',
+    '/experience',
+    '/projects',
+    '/contact',
+    '/ask-me',
+  ];
 
   // Fetch dynamic routes
   const dynamicRoutes = await getDynamicRoutes();

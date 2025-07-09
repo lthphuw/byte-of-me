@@ -2,12 +2,15 @@
 
 import { useTheme } from 'next-themes';
 
+import { useIsMobile } from '@/hooks/use-is-mobile';
+
 import { ClickSpark } from './click-spark';
 import { NightOfStars } from './night-of-stars';
 
 export function BackgroundWrapper() {
   const { resolvedTheme } = useTheme();
   const color = resolvedTheme == 'light' ? '#1D1D1D' : '#fafafa';
+  const isMobile = useIsMobile();
   return (
     <div className="fixed opacity-80 inset-0 z-[10]">
       <ClickSpark
@@ -20,12 +23,12 @@ export function BackgroundWrapper() {
         <NightOfStars
           backgroundMode={resolvedTheme as any}
           particleCount={2000}
-          meteorCount={100}
+          meteorCount={0}
           particleSpread={10}
           speed={0.1}
           meteorSpeed={0.5}
           alphaParticles={true}
-          particleBaseSize={50}
+          particleBaseSize={isMobile ? 35 : 50}
           meteorBaseSize={100}
           sizeRandomness={0.7}
           cameraDistance={25}
