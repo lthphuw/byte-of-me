@@ -1,8 +1,8 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import { useCallback, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
@@ -10,8 +10,8 @@ import remarkGfm from 'remark-gfm';
 import { Pluggable } from 'unified';
 
 import { defaultSpring, iconSwicthVariants } from '@/config/anim';
-import { cn } from '@/lib/utils';
 import { useClipboard } from '@/hooks/use-clipboard';
+import { cn } from '@/lib/utils';
 
 import { Icons } from './icons';
 import {
@@ -22,7 +22,7 @@ import {
 } from './ui/tooltip';
 
 export interface ChatMessageProps {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   content: string;
 }
 
@@ -48,8 +48,8 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
           isSystem
             ? 'w-full min-w-full'
             : isUser
-            ? 'bg-neutral-200 dark:bg-neutral-dark shadow-md rounded-tl-3xl rounded-tr-3xl rounded-bl-3xl rounded-br-lg max-w-[80%]'
-            : 'bg-zinc-100 dark:bg-zinc-800 rounded-xl shadow-sm max-w-[85%]'
+              ? 'bg-neutral-200 dark:bg-neutral-dark shadow-md rounded-tl-3xl rounded-tr-3xl rounded-bl-3xl rounded-br-lg max-w-[80%]'
+              : 'bg-zinc-100 dark:bg-zinc-800 rounded-xl shadow-sm max-w-[85%]'
         )}
       >
         <ReactMarkdown
@@ -71,55 +71,53 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
         </ReactMarkdown>
       </section>
 
-      {/* Action bar (not shown for system messages) */}
-      {!isSystem && (
-        <div
-          className={cn(
-            'h-8 mt-1 flex items-center gap-2 transition-opacity duration-200 md:opacity-0 md:group-hover:opacity-100 md:pointer-events-none md:group-hover:pointer-events-auto',
-            isUser ? 'justify-end self-end' : 'justify-start self-start'
-          )}
-        >
-          <TooltipProvider delayDuration={300}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="relative size-4">
-                  <AnimatePresence initial={false}>
-                    {copied ? (
-                      <motion.button
-                        key="check"
-                        variants={iconSwicthVariants}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"
-                        transition={defaultSpring}
-                        className="absolute inset-0"
-                      >
-                        <Icons.check size={16} />
-                      </motion.button>
-                    ) : (
-                      <motion.button
-                        key="copy"
-                        variants={iconSwicthVariants}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"
-                        transition={defaultSpring}
-                        onClick={onCopy}
-                        className="absolute inset-0"
-                      >
-                        <Icons.copy size={16} />
-                      </motion.button>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent sideOffset={4} side="bottom">
-                <p>{t('Copy')}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      )}
+      {/* Action bar*/}
+      <div
+        className={cn(
+          'h-8 mt-1 flex items-center gap-2 transition-opacity duration-200 md:opacity-0 md:group-hover:opacity-100 md:pointer-events-none md:group-hover:pointer-events-auto',
+          isUser ? 'justify-end self-end' : 'justify-start self-start'
+        )}
+      >
+        <TooltipProvider delayDuration={300}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="relative size-4">
+                <AnimatePresence initial={false}>
+                  {copied ? (
+                    <motion.button
+                      key="check"
+                      variants={iconSwicthVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      transition={defaultSpring}
+                      className="absolute inset-0"
+                    >
+                      <Icons.check size={16} />
+                    </motion.button>
+                  ) : (
+                    <motion.button
+                      key="copy"
+                      variants={iconSwicthVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      transition={defaultSpring}
+                      onClick={onCopy}
+                      className="absolute inset-0"
+                    >
+                      <Icons.copy size={16} />
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent sideOffset={4} side="bottom">
+              <p>{t('Copy')}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
     </div>
   );
 }
