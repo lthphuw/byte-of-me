@@ -6,7 +6,7 @@ import { FloatingPortal } from '@floating-ui/react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 
-import { env } from '@/env.mjs';
+import { turnstileSitekey } from '@/config/turnstile-client';
 import { cn } from '@/lib/utils';
 
 import { Icons } from './icons';
@@ -35,11 +35,12 @@ export default function ChatInput({
   const t = useTranslations('chat');
   const { threadId, isRateLimited } = useAssistant();
   const [showCaptchaModal, setShowCaptchaModal] = useState(false);
-
   const [input, setInput] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [isTurnstileReady, setIsTurnstileReady] = useState(false);
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const isProduction = env.NEXT_PUBLIC_ENV === 'production';
+  const captchaRef = useRef<HTMLDivElement>(null);
 
   const handleSend = async () => {
     if (!input.trim() || loading) return;
@@ -52,7 +53,7 @@ export default function ChatInput({
       return;
     }
 
-    if (isProduction && !captchaToken) {
+    if (!captchaToken) {
       setShowCaptchaModal(true);
       return;
     }
@@ -63,7 +64,7 @@ export default function ChatInput({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: input.trim(),
-          token: isProduction ? captchaToken : null,
+          token: captchaToken,
         }),
       });
 
@@ -71,17 +72,12 @@ export default function ChatInput({
       if (result.success) {
         onSend(input.trim());
         setInput('');
-        if (isProduction) {
-          window.turnstile?.reset();
-        }
+        window.turnstile?.reset();
       } else {
-        alert(result.error || 'CAPTCHA verification failed');
-        if (isProduction) {
-          window.turnstile?.reset();
-        }
+        toast({ title: result.error || 'CAPTCHA verification failed' });
+        window.turnstile?.reset();
       }
     } catch (error) {
-      console.error('Error sending message:', error);
       toast({ title: 'Failed to send message: ' + error });
     }
   };
@@ -95,23 +91,70 @@ export default function ChatInput({
 
   // Load Turnstile script
   useEffect(() => {
-    if (!isProduction) return;
+    if (
+      typeof window === 'undefined' ||
+      document.querySelector('script[src*="turnstile"]')
+    )
+      return;
 
     const script = document.createElement('script');
-    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+    script.src =
+      'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad';
     script.async = true;
     script.defer = true;
-    document.body.appendChild(script);
-
-    window.turnstileCallback = (token: string) => {
-      setCaptchaToken(token);
-      setShowCaptchaModal(false);
-    };
+    script.onerror = () => console.error('Failed to load Turnstile script');
+    document.head.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      script.remove();
     };
-  }, [isProduction]);
+  }, []);
+
+  // Handle global callback
+  useEffect(() => {
+    window.onTurnstileLoad = () => {
+      console.log('Turnstile script loaded successfully');
+      setIsTurnstileReady(true);
+    };
+  }, []);
+
+  // Render Turnstile when modal is shown
+  useEffect(() => {
+    console.log('Turnstile debug:', {
+      showCaptchaModal,
+      isTurnstileReady,
+      captchaRef: captchaRef.current,
+      sitekey: turnstileSitekey,
+      windowTurnstile: window.turnstile,
+    });
+
+    if (!isTurnstileReady || !captchaRef.current) return;
+
+    try {
+      captchaRef.current.innerHTML = '';
+      window.turnstile?.render(captchaRef.current, {
+        sitekey: turnstileSitekey,
+        callback: (token: string) => {
+          setTimeout(() => {
+            setCaptchaToken(token);
+            setShowCaptchaModal(false);
+          }, 2000);
+        },
+        'error-callback': (errorCode: string) => {
+          toast({ title: 'Failed to load CAPTCHA' });
+        },
+        theme: 'auto',
+      });
+    } catch (error) {
+      toast({ title: 'Failed to initialize CAPTCHA' });
+    }
+  }, [isTurnstileReady]);
+
+  useEffect(() => {
+    if (!captchaToken || !showCaptchaModal) return;
+
+    handleSend();
+  }, [captchaToken]);
 
   return (
     <>
@@ -155,7 +198,7 @@ export default function ChatInput({
                 <Button
                   variant="icon"
                   onClick={clearChat}
-                  disabled={!Boolean(threadId)}
+                  disabled={!threadId}
                   className="transition-all duration-300 ease-out hover:scale-105 active:scale-95"
                 >
                   <Icons.trash />
@@ -170,12 +213,7 @@ export default function ChatInput({
           <Button
             variant="default"
             onClick={handleSend}
-            disabled={
-              loading ||
-              !input.trim() ||
-              isRateLimited ||
-              (isProduction && !captchaToken)
-            }
+            disabled={loading || !input.trim() || isRateLimited}
             className="px-4 py-1.5 text-sm rounded-md bg-black dark:bg-white text-white dark:text-black disabled:opacity-50 transition-all duration-300 ease-out hover:scale-105 active:scale-95"
           >
             {loading ? `${t('Asking')}...` : t('Ask')}
@@ -183,33 +221,44 @@ export default function ChatInput({
         </div>
       </motion.div>
 
-      {/* Turnstile Widget */}
-      {showCaptchaModal && (
-        <FloatingPortal>
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-lg w-full max-w-sm">
-              <h2 className="text-lg font-semibold text-center mb-4 text-neutral-800 dark:text-neutral-100">
-                Please complete CAPTCHA
-              </h2>
-              <div
-                className="cf-turnstile"
-                data-sitekey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-                data-callback="turnstileCallback"
-                data-theme="auto"
-                data-pre-clearance="true"
-              ></div>
-              <div className="mt-4 text-center">
-                <button
-                  className="text-sm text-neutral-500 hover:underline"
-                  onClick={() => setShowCaptchaModal(false)}
-                >
-                  Cancel
-                </button>
-              </div>
+      {/* Turnstile Widget Modal - Always present in DOM */}
+      <FloatingPortal>
+        <motion.div
+          initial={{ opacity: 0, zIndex: -50 }}
+          animate={{
+            opacity: showCaptchaModal ? 1 : 0,
+            zIndex: showCaptchaModal ? 50 : -50,
+          }}
+          transition={{ duration: 0.3 }}
+          className={cn(
+            'fixed inset-0 flex items-center justify-center bg-black/50',
+            !showCaptchaModal && 'hidden'
+          )}
+        >
+          <motion.div
+            initial={{ scale: 0.7, opacity: 0 }}
+            animate={{
+              scale: showCaptchaModal ? 1 : 0.7,
+              opacity: showCaptchaModal ? 1 : 0,
+            }}
+            transition={{ duration: 0.3 }}
+            className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-lg w-full max-w-sm"
+          >
+            <h2 className="text-lg font-semibold text-center mb-4 text-neutral-800 dark:text-neutral-100">
+              Please complete CAPTCHA
+            </h2>
+            <div ref={captchaRef} />
+            <div className="mt-4 text-center">
+              <button
+                className="text-sm text-neutral-500 hover:underline"
+                onClick={() => setShowCaptchaModal(false)}
+              >
+                Cancel
+              </button>
             </div>
-          </div>
-        </FloatingPortal>
-      )}
+          </motion.div>
+        </motion.div>
+      </FloatingPortal>
     </>
   );
 }

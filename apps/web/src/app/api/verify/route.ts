@@ -1,20 +1,12 @@
 // https://github.com/cloudflare/turnstile-demo-workers/blob/main/src/index.mjs
+
 import { NextRequest, NextResponse } from 'next/server';
 
-import { env } from '@/env.mjs';
-
-const SECRET_KEY = env.TURNSTILE_SECRET_KEY as string;
+import { turnstileSecretKey } from '@/config/turnstile-server';
 
 export async function POST(request: NextRequest) {
   try {
     const { message, token } = await request.json();
-
-    if (env.NODE_ENV !== 'production') {
-      return NextResponse.json({
-        success: true,
-        message: 'Verified',
-      });
-    }
 
     // Early check for missing CAPTCHA token
     if (!token) {
@@ -48,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     // Verify Turnstile token with Cloudflare
     const formData = new FormData();
-    formData.append('secret', SECRET_KEY);
+    formData.append('secret', turnstileSecretKey);
     formData.append('response', token);
     if (ip) formData.append('remoteip', ip);
 
