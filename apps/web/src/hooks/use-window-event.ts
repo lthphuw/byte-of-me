@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // @see https://github.com/mantinedev/mantine
 // packages/@mantine/hooks/src/use-window-event/use-window-event.ts
 import { useEffect } from 'react';

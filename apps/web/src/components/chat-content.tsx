@@ -10,6 +10,7 @@ import ChatInput from './chat-input';
 import { ChatMessage } from './chat-message';
 import { ChatTitle } from './chat-title';
 import Loading from './loading';
+import { ScrollArea } from './ui/scroll-area';
 
 export type Message = {
   role: 'user' | 'assistant';
@@ -23,12 +24,18 @@ export default function ChatContent() {
 
   const { threadId, fetchHistory, clearHistory, sendMessage } = useAssistant();
   const mounted = useMounted();
-  const [_, scrollTo] = useWindowScroll();
-  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const [, scrollTo] = useWindowScroll();
+  const chatContainerRef = useRef<HTMLDivElement | null>(null);
 
+  // Scroll chat container to bottom when messages change
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages.length]);
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+  }, [messages]);
 
   useEffect(() => {
     if (!mounted || !threadId) return;
@@ -42,6 +49,7 @@ export default function ChatContent() {
   }, [mounted, threadId, fetchHistory]);
 
   const handleSend = async (question: string) => {
+    // Scroll window to top
     scrollTo({ x: 0, y: 0 });
     setLoading(true);
 
@@ -73,18 +81,21 @@ export default function ChatContent() {
       ) : messages.length === 0 ? (
         <ChatTitle
           invoke={handleSend}
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+          className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
         />
       ) : (
-        <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4 scroll-smooth">
+        <ScrollArea
+          type="always"
+          ref={chatContainerRef}
+          className="flex-1 overflow-y-auto px-4 py-6 space-y-4 scroll-smooth"
+        >
           {messages.map((msg, i) => (
             <React.Fragment key={i}>
-              {i > 0 && i === messages.length - 1 && <div ref={bottomRef} />}
               <ChatMessage content={msg.content} role={msg.role} />
             </React.Fragment>
           ))}
           {loading && <Loading />}
-        </div>
+        </ScrollArea>
       )}
 
       <ChatInput

@@ -1,13 +1,15 @@
+// components/chat/chat-input.tsx
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAssistant } from '@/providers/assistant';
 import { FloatingPortal } from '@floating-ui/react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 
-import { turnstileSitekey } from '@/config/turnstile-client';
+import { verifyCaptcha } from '@/lib/core/verify-capcha';
 import { cn } from '@/lib/utils';
+import { useTurnstile } from '@/hooks/use-turnstile';
 
 import { Icons } from './icons';
 import { Button } from './ui/button';
@@ -19,7 +21,9 @@ import {
 } from './ui/tooltip';
 import { toast } from './ui/use-toast';
 
-type ChatInputProps = {
+const dangerousKeywords = ['ignore', 'system prompt', 'bypass', 'secret'];
+
+export type ChatInputProps = {
   clearChat: () => void;
   onSend: (message: string) => void;
   loading?: boolean;
@@ -34,21 +38,24 @@ export default function ChatInput({
 }: ChatInputProps) {
   const t = useTranslations('chat');
   const { threadId, isRateLimited } = useAssistant();
-  const [showCaptchaModal, setShowCaptchaModal] = useState(false);
+
   const [input, setInput] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const [isTurnstileReady, setIsTurnstileReady] = useState(false);
+  const [showCaptchaModal, setShowCaptchaModal] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const captchaRef = useRef<HTMLDivElement>(null);
+  const { captchaRef } = useTurnstile({
+    onVerify: (token) => {
+      setCaptchaToken(token);
+      setShowCaptchaModal(false);
+    },
+  });
 
   const handleSend = async () => {
-    if (!input.trim() || loading) return;
+    const message = input.trim();
+    if (!message || loading) return;
 
-    const dangerousKeywords = ['ignore', 'system prompt', 'bypass', 'secret'];
-    if (
-      dangerousKeywords.some((keyword) => input.toLowerCase().includes(keyword))
-    ) {
+    if (dangerousKeywords.some((k) => message.toLowerCase().includes(k))) {
       toast({ title: 'Invalid input detected' });
       return;
     }
@@ -58,107 +65,42 @@ export default function ChatInput({
       return;
     }
 
-    try {
-      const response = await fetch('/api/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: input.trim(),
-          token: captchaToken,
-        }),
-      });
+    const result = await verifyCaptcha(message, captchaToken);
+    if (result.success) {
+      onSend(message);
+      setInput('');
+      window.turnstile?.reset();
+    } else {
+      toast({ title: result.error || 'CAPTCHA verification failed' });
+      window.turnstile?.reset();
+    }
+  };
 
-      const result = await response.json();
-      if (result.success) {
-        onSend(input.trim());
-        setInput('');
-        window.turnstile?.reset();
-      } else {
-        toast({ title: result.error || 'CAPTCHA verification failed' });
-        window.turnstile?.reset();
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
       }
-    } catch (error) {
-      toast({ title: 'Failed to send message: ' + error });
+    },
+    [handleSend]
+  );
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
     }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  // Load Turnstile script
-  useEffect(() => {
-    if (
-      typeof window === 'undefined' ||
-      document.querySelector('script[src*="turnstile"]')
-    )
-      return;
-
-    const script = document.createElement('script');
-    script.src =
-      'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad';
-    script.async = true;
-    script.defer = true;
-    script.onerror = () => console.error('Failed to load Turnstile script');
-    document.head.appendChild(script);
-
-    return () => {
-      script.remove();
-    };
-  }, []);
-
-  // Handle global callback
-  useEffect(() => {
-    window.onTurnstileLoad = () => {
-      console.log('Turnstile script loaded successfully');
-      setIsTurnstileReady(true);
-    };
-  }, []);
-
-  // Render Turnstile when modal is shown
-  useEffect(() => {
-    console.log('Turnstile debug:', {
-      showCaptchaModal,
-      isTurnstileReady,
-      captchaRef: captchaRef.current,
-      sitekey: turnstileSitekey,
-      windowTurnstile: window.turnstile,
-    });
-
-    if (!isTurnstileReady || !captchaRef.current) return;
-
-    try {
-      captchaRef.current.innerHTML = '';
-      window.turnstile?.render(captchaRef.current, {
-        sitekey: turnstileSitekey,
-        callback: (token: string) => {
-          setTimeout(() => {
-            setCaptchaToken(token);
-            setShowCaptchaModal(false);
-          }, 2000);
-        },
-        'error-callback': (errorCode: string) => {
-          toast({ title: 'Failed to load CAPTCHA' });
-        },
-        theme: 'auto',
-      });
-    } catch (error) {
-      toast({ title: 'Failed to initialize CAPTCHA' });
-    }
-  }, [isTurnstileReady]);
-
-  useEffect(() => {
-    if (!captchaToken || !showCaptchaModal) return;
-
-    handleSend();
-  }, [captchaToken]);
+  }, [input]);
 
   return (
     <>
-      <motion.div
+      <motion.form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSend();
+        }}
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2 }}
@@ -170,24 +112,12 @@ export default function ChatInput({
         <textarea
           ref={textareaRef}
           value={input}
-          onChange={(e) => {
-            const value = e.target.value;
-            const charLimit = 150;
-            const wordLimit = 25;
-
-            const trimmedValue = value.slice(0, charLimit);
-            const words = trimmedValue.trim().split(/\s+/);
-
-            if (words.length <= wordLimit) {
-              setInput(trimmedValue);
-            } else {
-              const trimmedWords = words.slice(0, wordLimit).join(' ');
-              setInput(trimmedWords.slice(0, charLimit));
-            }
-          }}
+          maxLength={50}
+          onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           rows={2}
           placeholder={`${t('Ask something')}...`}
+          aria-label="Chat input"
           className="w-full resize-none border-none h-10 outline-none bg-transparent text-neutral-800 dark:text-neutral-100 text-lg placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
         />
 
@@ -199,7 +129,7 @@ export default function ChatInput({
                   variant="icon"
                   onClick={clearChat}
                   disabled={!threadId}
-                  className="transition-all duration-300 ease-out hover:scale-105 active:scale-95"
+                  aria-label="Clear chat"
                 >
                   <Icons.trash />
                 </Button>
@@ -212,16 +142,15 @@ export default function ChatInput({
 
           <Button
             variant="default"
-            onClick={handleSend}
+            type="submit"
             disabled={loading || !input.trim() || isRateLimited}
-            className="px-4 py-1.5 text-sm rounded-md bg-black dark:bg-white text-white dark:text-black disabled:opacity-50 transition-all duration-300 ease-out hover:scale-105 active:scale-95"
           >
             {loading ? `${t('Asking')}...` : t('Ask')}
           </Button>
         </div>
-      </motion.div>
+      </motion.form>
 
-      {/* Turnstile Widget Modal - Always present in DOM */}
+      {/* Turnstile Cloudflare Widget */}
       <FloatingPortal>
         <motion.div
           initial={{ opacity: 0, zIndex: -50 }}

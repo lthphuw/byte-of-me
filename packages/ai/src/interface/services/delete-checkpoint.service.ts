@@ -34,7 +34,7 @@ export async function deleteCheckpoint(thread_id: string) {
   } catch (err) {
     await client.query('ROLLBACK');
     console.error('[checkpoint-delete-error]', err);
-    return { success: false, error: 'Failed to delete checkpoint' };
+    return { success: false, error: 'Failed to delete checkpoint: ' + err };
   } finally {
     client.release();
   }

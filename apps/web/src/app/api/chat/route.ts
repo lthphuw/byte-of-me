@@ -65,8 +65,12 @@ export async function DELETE(req: NextRequest) {
 
   try {
     const res = await deleteCheckpoint(thread_id);
-    return new Response(JSON.stringify({ success: true }));
-  } catch (err) {
+    if (res.success) {
+      return new Response(JSON.stringify({ success: true }));
+    } else {
+      return new Response(JSON.stringify({ success: false, error: res.error }));
+    }
+  } catch {
     return new Response(
       JSON.stringify({ error: 'Failed to delete checkpoint' }),
       {

@@ -38,7 +38,7 @@ export function ChatTitle({ invoke, className }: ChatTitleProps) {
       </div>
 
       <div className="text-sm text-neutral-500 dark:text-neutral-400 space-y-1">
-        <ul className="flex flex-col flex-wrap justify-center gap-1.5 md:gap-3 text-sm">
+        <ul className="flex flex-col flex-wrap justify-center gap-2 md:gap-3 text-sm">
           {examplePrompts.map((q, i) => (
             <li
               key={i}

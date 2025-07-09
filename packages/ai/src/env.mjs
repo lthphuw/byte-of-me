@@ -1,5 +1,7 @@
 import { createEnv } from '@t3-oss/env-core';
+import * as dotenv from 'dotenv';
 import { z } from 'zod';
+dotenv.config();
 
 export const env = createEnv({
   server: {
@@ -33,7 +35,7 @@ export const env = createEnv({
     PINECONE_INDEX: process.env.PINECONE_INDEX,
     PINECONE_NAMESPACE: process.env.PINECONE_NAMESPACE,
     CHECKPOINTER_SCHEMA: process.env.CHECKPOINTER_SCHEMA,
-
+    HOST: process.env.HOST,
     DIRECT_DATABASE_URL: process.env.DIRECT_DATABASE_URL,
 
     NODE_ENV: process.env.NODE_ENV,

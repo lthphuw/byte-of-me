@@ -18,6 +18,7 @@ export function absoluteUrl(path: string) {
   return `${env.NEXT_PUBLIC_APP_URL}${path}`;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function prettyStringify(json: any) {
   return JSON.stringify(json, null, 2);
 }

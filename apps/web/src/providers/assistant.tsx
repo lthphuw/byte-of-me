@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React, {
@@ -166,7 +167,6 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
             updateLast({ content });
           }
         } catch (err: any) {
-          console.error('Stream error:', err);
           toast({
             title: 'Oops! Something went wrong.',
             description:
@@ -213,7 +213,6 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
             content: data.answer || 'No answer',
           });
         } catch (err) {
-          console.error('Non-stream error:', err);
           toast({
             title: 'Oops! Something went wrong.',
             description:

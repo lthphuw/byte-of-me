@@ -69,6 +69,7 @@ export async function GET(req: NextRequest) {
         );
 
         return {
+          id: exp.id,
           company: translations.company || exp.company,
           logoUrl: exp.logoUrl,
           techStack: exp.techstacks.map((ts) => ts.techstack.name),

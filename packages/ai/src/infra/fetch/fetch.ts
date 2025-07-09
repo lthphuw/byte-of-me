@@ -6,7 +6,6 @@ export async function fetchData<T>(
   { locale, cache }: FetchOptions,
 ): Promise<T> {
   const api = `${env.HOST}/api/${endpoint}?locale=${locale}`;
-
   const resp = await fetch(api, {
     cache,
   });

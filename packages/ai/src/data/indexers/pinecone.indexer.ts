@@ -22,6 +22,7 @@ export async function indexMyPortfolioDocs() {
     console.error('[Indexer] Error while indexing documents:', err);
   }
 }
+
 if (import.meta.url === `file://${process.argv[1]}`) {
   indexMyPortfolioDocs().catch(console.error);
 }

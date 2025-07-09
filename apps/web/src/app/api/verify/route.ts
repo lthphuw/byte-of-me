@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
-import { turnstileSecretKey } from '@/config/turnstile-server';
+import { turnstileSecretKey } from '@/config/turnstile';
 
 export async function POST(request: NextRequest) {
   try {
