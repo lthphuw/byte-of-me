@@ -1,5 +1,5 @@
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
-import { env } from '../../config';
+import { env } from '../../env.mjs';
 
 // Standard API rate limits: https://ai.google.dev/gemini-api/docs/rate-limits#current-rate-limits
 // RPM: 15

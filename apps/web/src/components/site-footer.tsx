@@ -4,7 +4,7 @@ import { User } from '@db/index';
 import { Facebook, Github, Linkedin, Mail } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
-import { fetchData } from '@/lib/fetch';
+import { fetchData } from '@/lib/core/fetch';
 import { cn, ensureValidUrl } from '@/lib/utils';
 
 import { Icons } from './icons';

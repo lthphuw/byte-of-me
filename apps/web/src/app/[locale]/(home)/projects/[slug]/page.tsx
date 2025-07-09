@@ -3,8 +3,8 @@ import { Project, prisma } from '@db/index';
 import { supportedLanguages } from '@/config/language';
 import { dbCachingConfig } from '@/config/revalidate';
 import { siteConfig } from '@/config/site';
-import { fetchData, fetchREADMEData } from '@/lib/fetch';
-import { extractToc } from '@/lib/markdown';
+import { fetchData, fetchREADMEData } from '@/lib/core/fetch';
+import { extractToc } from '@/lib/core/markdown';
 import { ProjectDetailsContent } from '@/components/project-details-content';
 import { ProjectDetailsShell } from '@/components/shell';
 

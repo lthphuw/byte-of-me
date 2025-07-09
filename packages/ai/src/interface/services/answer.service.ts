@@ -1,4 +1,5 @@
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
+
 import { checkpointer } from '../../infra/checkpointer/postgres';
 import { graph } from '../pipeline/assistant.graph';
 
@@ -11,7 +12,7 @@ export async function answer(
   } = {},
 ): Promise<any> {
   let history = options.history;
-  const thread_id = options.thread_id || uuidv4();
+  const thread_id = options.thread_id || nanoid(16);
 
   if (!history && thread_id) {
     const previous = await checkpointer.get({

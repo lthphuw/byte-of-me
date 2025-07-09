@@ -162,4 +162,5 @@ export const Icons = {
   exercise: Dumbbell,
   coding: Code,
   chat: MessageSquareText,
+  file: FileText,
 };

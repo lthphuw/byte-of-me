@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { AssistantProvider } from '@/providers/assistant';
 import { getTranslations } from 'next-intl/server';
 
 import { host } from '@/config/host';
@@ -18,6 +19,8 @@ export async function generateMetadata({
     description: t('description'),
     keywords: [
       'RAG',
+      'Chat Bot',
+      'Assistant',
       'Ask me anthing',
       ...siteConfig.keywords,
     ],
@@ -54,6 +57,8 @@ interface MoreLayoutProps {
 
 export default async function AskMeLayout({ children }: MoreLayoutProps) {
   return (
-    <div className="flex flex-col gap-6">{children}</div>
+    <AssistantProvider>
+      <div className="flex flex-col gap-6">{children}</div>
+    </AssistantProvider>
   );
 }

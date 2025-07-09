@@ -1,5 +1,5 @@
 import { supportedLanguages } from '@/config/language';
-import { fetchData } from '@/lib/fetch';
+import { fetchData } from '@/lib/core/fetch';
 import { Project } from '@/components/project-list';
 import { ProjectsContent } from '@/components/projects-content';
 import { ProjectsShell } from '@/components/shell';

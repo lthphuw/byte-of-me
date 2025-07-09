@@ -20,10 +20,12 @@
     "@langchain/mistralai": "^0.2.1",
     "@langchain/pinecone": "^0.2.0",
     "@pinecone-database/pinecone": "^6.1.1",
+    "@t3-oss/env-core": "^0.13.8",
     "@types/pg": "^8.15.4",
     "dotenv": "^17.0.1",
     "html-to-text": "^9.0.5",
     "langchain": "^0.3.29",
+    "nanoid": "^5.1.5",
     "pg": "^8.16.3",
     "uuid": "^11.1.0",
     "zod": "^3.25.67"

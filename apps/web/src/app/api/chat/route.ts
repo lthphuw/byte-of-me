@@ -1,11 +1,19 @@
 import { NextRequest } from 'next/server';
-import { answer, deleteCheckpoint } from '@ai/interface/services';
+import { answer, deleteCheckpoint } from '@ai/index';
 
-
-
-
+import {
+  applyRateLimit,
+  rateLimitChatPerDay,
+  rateLimitChatPerMinute,
+} from '@/lib/core';
 
 export async function POST(req: NextRequest) {
+  const [perMin, perDate] = await Promise.all([
+    applyRateLimit(rateLimitChatPerMinute, req),
+    applyRateLimit(rateLimitChatPerDay, req),
+  ]);
+  if (perMin || perDate) return perMin || perDate;
+
   const { question, history, stream, thread_id } = await req.json();
 
   if (!question) {
@@ -42,6 +50,7 @@ export async function POST(req: NextRequest) {
   }
 
   const result = await answer(question, { history, thread_id });
+
   return Response.json(result);
 }
 
@@ -56,10 +65,8 @@ export async function DELETE(req: NextRequest) {
 
   try {
     const res = await deleteCheckpoint(thread_id);
-    console.log('[delete-checkpoint-result] result: ', res);
     return new Response(JSON.stringify({ success: true }));
   } catch (err) {
-    console.error('[delete-checkpoint-error]', err);
     return new Response(
       JSON.stringify({ error: 'Failed to delete checkpoint' }),
       {

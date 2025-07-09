@@ -20,7 +20,7 @@
     },
     "askMe": {
       "title": "Posez-moi n'importe quoi",
-      "description": "Discutez avec un assistant IA formé à partir de mes vraies données. Posez des questions sur mes compétences, mes projets, mon expérience professionnelle ou tout ce qui vous intéresse !"
+      "description": "Discutez avec un assistant IA basé sur une pipeline RAG. Les réponses proviennent de mes données réelles, traitées via une recherche vectorielle et un LLM — idéal pour explorer mes compétences, projets et expériences."
     }
   },
   "global": {

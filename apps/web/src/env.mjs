@@ -28,6 +28,11 @@ export const env = createEnv({
     RATE_LIMIT_CHAT_PER_DAY: z.coerce.number().default(15),
 
     TURNSTILE_SECRET_KEY: z.string().default(''),
+
+    NODE_ENV: z
+      .enum(['development', 'production'])
+      .optional()
+      .default('development'),
   },
 
   client: {
@@ -35,7 +40,10 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: z.string().url().min(1),
     NEXT_PUBLIC_GA_ID: z.string().default(''),
     NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().default(''),
-    NEXT_PUBLIC_ENV: z.enum(["development", "production"]),
+    NEXT_PUBLIC_ENV: z
+      .enum(['development', 'production'])
+      .optional()
+      .default('development'),
   },
 
   runtimeEnv: {
@@ -64,6 +72,7 @@ export const env = createEnv({
     RATE_LIMIT_CHAT_PER_MIN: process.env.RATE_LIMIT_CHAT_PER_MIN,
     RATE_LIMIT_CHAT_PER_DAY: process.env.RATE_LIMIT_CHAT_PER_DAY,
     TURNSTILE_SECRET_KEY: process.env.TURNSTILE_SECRET_KEY,
+    NODE_ENV: process.env.NODE_ENV,
 
     // Client
     NEXT_CACHE: process.env.NEXT_CACHE,

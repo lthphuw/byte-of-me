@@ -1,4 +1,3 @@
-import { ChatIcon } from '@/components/chat-icon';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
 
@@ -14,7 +13,6 @@ export default async function HomeLayout({ children }: HomeLayoutProps) {
       <div className="container grid flex-1 gap-12">
         <main className="flex w-full flex-1 flex-col">{children}</main>
       </div>
-      <ChatIcon />
       <SiteFooter className="border-t" />
     </div>
   );

@@ -20,7 +20,7 @@
     },
     "askMe": {
       "title": "Hỏi tôi bất cứ điều gì",
-      "description": "Trò chuyện với trợ lý AI được huấn luyện bằng thông tin thật của tôi. Hỏi về kỹ năng, dự án, kinh nghiệm làm việc hoặc bất kỳ điều gì bạn tò mò!"
+      "description": "Đặt câu hỏi cho trợ lý AI được xây dựng bằng pipeline RAG. Dữ liệu từ chính portfolio của tôi được xử lý bằng vector search và LLM — phù hợp để khám phá kinh nghiệm, dự án và kỹ năng lập trình của tôi."
     }
   },
   "global": {

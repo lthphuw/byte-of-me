@@ -3,6 +3,7 @@
 import { useTheme } from 'next-themes';
 
 import { useIsMobile } from '@/hooks/use-is-mobile';
+
 import { ClickSpark } from './click-spark';
 import { NightOfStars } from './night-of-stars';
 

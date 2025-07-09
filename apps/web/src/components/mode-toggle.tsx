@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import {
   FloatingPortal,
   autoUpdate,
@@ -13,14 +14,12 @@ import {
 } from '@floating-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
-import { useState } from 'react';
 
-import { Icons } from '@/components/icons';
-import { Button } from '@/components/ui/button';
 import { iconSwicthVariants, itemVariants } from '@/config/anim';
-import { useTranslations } from '@/hooks/use-translations';
 import { cn } from '@/lib/utils';
-
+import { useTranslations } from '@/hooks/use-translations';
+import { Button } from '@/components/ui/button';
+import { Icons } from '@/components/icons';
 
 export function ModeToggle() {
   const t = useTranslations('global.modeToggle');

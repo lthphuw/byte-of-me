@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { fetchState } from '@ai/interface/services';
+import { fetchState } from '@ai/index';
 
 export async function GET(req: NextRequest) {
   const thread_id = req.nextUrl.searchParams.get('thread_id');
@@ -10,6 +10,13 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  const history = await fetchState(thread_id);
-  return Response.json({ history });
+  try {
+    const history = await fetchState(thread_id);
+
+    return Response.json({ history });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: 'Failed to fetch history' }), {
+      status: 500,
+    });
+  }
 }

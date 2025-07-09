@@ -1,4 +1,4 @@
-import { env } from '../../config';
+import { env } from '../../env.mjs';
 import { ApiResponse, FetchOptions } from '../../types/api';
 
 export async function fetchData<T>(

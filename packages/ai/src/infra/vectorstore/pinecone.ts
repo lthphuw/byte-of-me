@@ -1,6 +1,6 @@
 import { PineconeStore } from '@langchain/pinecone';
 import { Pinecone } from '@pinecone-database/pinecone';
-import { env } from '../../config';
+import { env } from '../../env.mjs';
 import { embeddings } from '../embedding/text-embedding-004';
 
 const pinecone = new Pinecone({

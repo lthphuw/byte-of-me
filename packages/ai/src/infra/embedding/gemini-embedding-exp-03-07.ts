@@ -1,6 +1,6 @@
 import { TaskType } from '@google/generative-ai';
 import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
-import { env } from '../../config';
+import { env } from '../../env.mjs';
 
 // https://ai.google.dev/gemini-api/docs/models#text-embedding
 //

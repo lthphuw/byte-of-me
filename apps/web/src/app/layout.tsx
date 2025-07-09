@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
 
-
 import '@/styles/globals.css';
 import '../../node_modules/flag-icons/css/flag-icons.min.css';
 

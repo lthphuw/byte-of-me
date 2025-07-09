@@ -2,7 +2,7 @@ import remarkParse from 'remark-parse';
 import { unified } from 'unified';
 import { visit } from 'unist-util-visit';
 
-import { slugify } from './slugify';
+import { slugify } from '../slugify';
 
 export interface TocItem {
   id: string;

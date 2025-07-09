@@ -20,7 +20,7 @@
     },
     "askMe": {
       "title": "Ask Me Anything",
-      "description": "Chat with an AI assistant trained on my real data. Ask about my skills, projects, work experience, or anything you're curious about!"
+      "description": "Ask questions to an AI assistant powered by a RAG pipeline. It's built with real data from my portfolio, vector search, and LLM responses — ideal for exploring my experience, projects, and tech skills."
     }
   },
   "global": {
@@ -171,7 +171,7 @@
     "navigation": "Footer Navigation",
     "license": "Licensed under",
     "rights": "All rights reserved."
-  }, 
+  },
   "chat": {
     "Ask Phu's Assistant": "Ask Phu's Assistant",
     "Asking": "Asking",

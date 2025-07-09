@@ -1,19 +1,20 @@
 'use client';
 
-import { toast } from '@/components/ui/use-toast';
-import { chatThreadId } from '@/config/local-storage';
-import { useLocalStorage } from '@/hooks/use-local-storage';
-import { useMounted } from '@/hooks/use-mounted';
-import { generateId } from '@/hooks/utils';
-import { Message } from '@/types/message';
 import React, {
   ReactNode,
   createContext,
   useCallback,
   useContext,
   useEffect,
-  useState
+  useState,
 } from 'react';
+
+import { Message } from '@/types/message';
+import { chatThreadId } from '@/config/local-storage';
+import { useLocalStorage } from '@/hooks/use-local-storage';
+import { useMounted } from '@/hooks/use-mounted';
+import { generateId } from '@/hooks/utils';
+import { toast } from '@/components/ui/use-toast';
 
 interface AssistantContextValue {
   threadId: string | null;
@@ -37,7 +38,6 @@ interface AssistantProviderProps {
 export const AssistantProvider: React.FC<AssistantProviderProps> = ({
   children,
 }) => {
-
   const [threadId, setThreadId] = useState<string | null>(null);
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [value, setStorageValue, removeStorageValue] = useLocalStorage({
@@ -127,15 +127,14 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
           });
 
           if (!res.ok) {
-            const text = await res.text();
+            const resp = await res.json();
             if (res.status === 429) {
-              console.log("Set rate limit to true: ", true);
               setIsRateLimited(true);
 
               toast({
                 title: 'Rate Limit Exceeded',
                 description:
-                  text ||
+                  resp.error ||
                   'You are sending messages too fast. Please wait a moment.',
               });
 
@@ -146,7 +145,7 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
               });
               return;
             }
-            throw new Error(text || 'Failed to fetch streamed response');
+            throw new Error(resp.error || 'Failed to fetch streamed response');
           }
 
           if (!res.body) throw new Error('No response stream');
@@ -171,7 +170,9 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
           toast({
             title: 'Oops! Something went wrong.',
             description:
-              typeof err === 'string' ? err : err.message ?? 'Unknown error',
+              typeof err === 'string'
+                ? err
+                : (err.message || err.error) ?? 'Unknown error',
           });
           append({
             role: 'assistant',
@@ -231,7 +232,15 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
   );
 
   return (
-    <AssistantContext.Provider value={{ threadId, isRateLimited, fetchHistory, clearHistory, sendMessage }} >
+    <AssistantContext.Provider
+      value={{
+        threadId,
+        isRateLimited,
+        fetchHistory,
+        clearHistory,
+        sendMessage,
+      }}
+    >
       {children}
     </AssistantContext.Provider>
   );
@@ -240,9 +249,7 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
 export const useAssistant = () => {
   const context = useContext(AssistantContext);
   if (!context) {
-    throw new Error(
-      'useAssistant must be used within an AssistantProvider'
-    );
+    throw new Error('useAssistant must be used within an AssistantProvider');
   }
   return context;
 };

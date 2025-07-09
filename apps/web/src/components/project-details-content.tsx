@@ -1,10 +1,10 @@
 'use client';
 
+import { useMemo, useRef } from 'react';
 import { Link } from '@/i18n/navigation';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import rangeParser from 'parse-numeric-range';
-import { useMemo, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -13,10 +13,10 @@ import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import { Pluggable } from 'unified';
 
-import { FloatingToc, TocItem } from '@/components/floating-toc';
+import { cn } from '@/lib/utils';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useWindowScroll } from '@/hooks/use-window-scroll';
-import { cn } from '@/lib/utils';
+import { FloatingToc, TocItem } from '@/components/floating-toc';
 
 import { Icons } from './icons';
 import { Button } from './ui/button';
@@ -92,50 +92,50 @@ export function ProjectDetailsContent({
             components={
               !isMobile
                 ? {
-                  code({ children, className, node, ref, ...rest }) {
-                    const match = /language-(\w+)/.exec(className || '');
-                    const hasMeta = node?.data?.meta;
+                    code({ children, className, node, ref, ...rest }) {
+                      const match = /language-(\w+)/.exec(className || '');
+                      const hasMeta = node?.data?.meta;
 
-                    const applyHighlights = (lineNumber: number) => {
-                      if (hasMeta && node.data) {
-                        const RE = /{([\d,-]+)}/;
-                        const metadata =
-                          node.data.meta?.replace(/\s/g, '') || '';
-                        const strlineNumbers = RE?.test(metadata)
-                          ? RE?.exec(metadata)?.[1]
-                          : '0';
+                      const applyHighlights = (lineNumber: number) => {
+                        if (hasMeta && node.data) {
+                          const RE = /{([\d,-]+)}/;
+                          const metadata =
+                            node.data.meta?.replace(/\s/g, '') || '';
+                          const strlineNumbers = RE?.test(metadata)
+                            ? RE?.exec(metadata)?.[1]
+                            : '0';
 
-                        const highlightLines = rangeParser(
-                          strlineNumbers || ''
-                        );
-                        return highlightLines.includes(lineNumber)
-                          ? { 'data-highlight': true }
-                          : {};
-                      }
-                      return {};
-                    };
+                          const highlightLines = rangeParser(
+                            strlineNumbers || ''
+                          );
+                          return highlightLines.includes(lineNumber)
+                            ? { 'data-highlight': true }
+                            : {};
+                        }
+                        return {};
+                      };
 
-                    return match ? (
-                      <SyntaxHighlighter
-                        {...rest}
-                        ref={ref as any}
-                        style={oneDark}
-                        showLineNumbers
-                        PreTag="div"
-                        language={match[1]}
-                        lineProps={applyHighlights as any}
-                        useInlineStyles={true}
-                        customStyle={{ maxWidth: '100%', overflowX: 'auto' }}
-                      >
-                        {String(children).replace(/\n$/, '')}
-                      </SyntaxHighlighter>
-                    ) : (
-                      <code {...rest} className={className}>
-                        {children}
-                      </code>
-                    );
-                  },
-                }
+                      return match ? (
+                        <SyntaxHighlighter
+                          {...rest}
+                          ref={ref as any}
+                          style={oneDark}
+                          showLineNumbers
+                          PreTag="div"
+                          language={match[1]}
+                          lineProps={applyHighlights as any}
+                          useInlineStyles={true}
+                          customStyle={{ maxWidth: '100%', overflowX: 'auto' }}
+                        >
+                          {String(children).replace(/\n$/, '')}
+                        </SyntaxHighlighter>
+                      ) : (
+                        <code {...rest} className={className}>
+                          {children}
+                        </code>
+                      );
+                    },
+                  }
                 : {}
             }
           >

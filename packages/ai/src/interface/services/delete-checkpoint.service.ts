@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { env } from '../../config';
+import { env } from '../../env.mjs';
 
 const pool = new Pool({
   connectionString: process.env.DIRECT_DATABASE_URL!,

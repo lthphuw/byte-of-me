@@ -1,5 +1,5 @@
 import { supportedLanguages } from '@/config/language';
-import { fetchData } from '@/lib/fetch';
+import { fetchData } from '@/lib/core/fetch';
 import ExperienceTimeline, {
   CompanyExperience,
 } from '@/components/experience-timeline';

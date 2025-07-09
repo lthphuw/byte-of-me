@@ -1,19 +1,21 @@
+// https://github.com/cloudflare/turnstile-demo-workers/blob/main/src/index.mjs
 import { NextRequest, NextResponse } from 'next/server';
 
 import { env } from '@/env.mjs';
 
-const SECRET_KEY = env.TURNSTILE_SECRET_KEY;
+const SECRET_KEY = env.TURNSTILE_SECRET_KEY as string;
 
 export async function POST(request: NextRequest) {
   try {
     const { message, token } = await request.json();
-    if (env.NEXT_PUBLIC_ENV !== 'production') {
+
+    if (env.NODE_ENV !== 'production') {
       return NextResponse.json({
         success: true,
         message: 'Verified',
       });
     }
-    
+
     // Early check for missing CAPTCHA token
     if (!token) {
       return NextResponse.json(
