@@ -38,7 +38,6 @@ export const env = createEnv({
 
   client: {
     NEXT_CACHE: z.coerce.number().default(86400),
-    NEXT_PUBLIC_APP_URL: z.string().url().min(1),
     NEXT_PUBLIC_GA_ID: z.string().default(''),
     NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().default(''),
     NEXT_PUBLIC_ENV: z
@@ -77,7 +76,6 @@ export const env = createEnv({
 
     // Client
     NEXT_CACHE: process.env.NEXT_CACHE,
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
     NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
     NEXT_PUBLIC_ENV: process.env.NEXT_PUBLIC_ENV,

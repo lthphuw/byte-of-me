@@ -1,19 +1,15 @@
-// app/contexts/GlobalContext.tsx
 'use client';
 
 import React, { ReactNode, createContext, useContext } from 'react';
-import { GoogleAnalytics } from '@next/third-parties/google';
 
-import { env } from '@/env.mjs';
 import { Toaster } from '@/components/ui/toaster';
-import { Analytics } from '@/components/analytics';
 import { BackgroundWrapper } from '@/components/background-wrapper';
 import { ChatIcon } from '@/components/chat-icon';
-import { SpeedInsights } from '@/components/speed-insight';
+import { Integrations } from '@/components/intergations';
 import { TailwindIndicator } from '@/components/tailwind-indicator';
 import { ThemeProvider } from '@/components/theme-provider';
 
-interface GlobalContextType {}
+type GlobalContextType = object;
 
 const GlobalContext = createContext<GlobalContextType | null>(null);
 
@@ -25,14 +21,23 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   return (
     <GlobalContext.Provider value={{}}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        {/* Global background layout */}
         <BackgroundWrapper />
+
+        {/* Main content */}
         {children}
-        <Analytics />
-        <SpeedInsights />
-        <Toaster />
-        <TailwindIndicator />
-        <GoogleAnalytics gaId={`${env.NEXT_PUBLIC_GA_ID}`} />
+
+        {/* Floating chat icon (mobile) */}
         <ChatIcon />
+
+        {/* Toast notifications */}
+        <Toaster />
+
+        {/* Show current Tailwind breakpoint (dev only) */}
+        {process.env.NODE_ENV !== 'production' && <TailwindIndicator />}
+
+        {/* Analytics & monitoring tools */}
+        <Integrations />
       </ThemeProvider>
     </GlobalContext.Provider>
   );
@@ -41,7 +46,7 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
 export const useGlobal = () => {
   const context = useContext(GlobalContext);
   if (!context) {
-    throw new Error('useGlobal must be used within an GlobalProvider');
+    throw new Error('useGlobal must be used within a GlobalProvider');
   }
   return context;
 };

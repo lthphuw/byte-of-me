@@ -2,8 +2,8 @@ import { Metadata, Viewport } from 'next';
 import { Inter as FontSans } from 'next/font/google';
 import localFont from 'next/font/local';
 import { notFound } from 'next/navigation';
+import { GlobalProvider } from '@/contexts/global';
 import { routing } from '@/i18n/routing';
-import { GlobalProvider } from '@/providers/global';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 

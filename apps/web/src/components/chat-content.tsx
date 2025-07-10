@@ -1,7 +1,7 @@
 'use client';
 
-import { useAssistant } from '@/providers/assistant';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useAssistant } from '@/contexts/assistant';
 
 import { useMounted } from '@/hooks/use-mounted';
 import { useWindowScroll } from '@/hooks/use-window-scroll';
@@ -12,7 +12,7 @@ import { ChatTitle } from './chat-title';
 import Loading from './loading';
 
 export type Message = {
-  role: 'user' | 'assistant' | 'system';
+  role: 'user' | 'assistant';
   content: string;
 };
 
@@ -34,6 +34,8 @@ export default function ChatContent() {
       behavior: 'smooth',
     });
   }, [messages]);
+
+  // Fetch chat history
   useEffect(() => {
     if (!mounted || !threadId) return;
 
@@ -45,24 +47,27 @@ export default function ChatContent() {
     })();
   }, [mounted, threadId, fetchHistory]);
 
-  const handleSend = async (question: string) => {
-    // Scroll window to top
-    scrollTo({ x: 0, y: 0 });
-    setLoading(true);
+  const handleSend = useCallback(
+    async (question: string) => {
+      // Scroll window to top
+      scrollTo({ x: 0, y: 0 });
+      setLoading(true);
 
-    await sendMessage(
-      question,
-      (msg) => setMessages((prev) => [...prev, msg]),
-      (partial) =>
-        setMessages((prev) =>
-          prev.map((msg, i) =>
-            i === prev.length - 1 ? { ...msg, ...partial } : msg
+      await sendMessage(
+        question,
+        (msg) => setMessages((prev) => [...prev, msg]),
+        (partial) =>
+          setMessages((prev) =>
+            prev.map((msg, i) =>
+              i === prev.length - 1 ? { ...msg, ...partial } : msg
+            )
           )
-        )
-    );
+      );
 
-    setLoading(false);
-  };
+      setLoading(false);
+    },
+    [sendMessage]
+  );
 
   const handleClearChat = useCallback(async () => {
     setGlobalLoading(true);

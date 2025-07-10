@@ -57,19 +57,6 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
     setThreadId(stored);
   }, [mounted]);
 
-  const fetchHistory = useCallback(async (): Promise<Message[]> => {
-    if (!threadId) return [];
-
-    try {
-      const res = await fetch(`/api/chat/history?thread_id=${threadId}`);
-      const data = await res.json();
-      return Array.isArray(data.history) ? data.history : [];
-    } catch (err) {
-      console.error('Error loading server history:', err);
-      return [];
-    }
-  }, [threadId]);
-
   const clearHistory = useCallback(async () => {
     if (!threadId) return;
 
@@ -100,6 +87,25 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
       removeStorageValue();
     }
   }, [threadId]);
+
+  const fetchHistory = useCallback(async (): Promise<Message[]> => {
+    if (!threadId) return [];
+
+    try {
+      const res = await fetch(`/api/chat/history?thread_id=${threadId}`);
+      const data = await res.json();
+      return Array.isArray(data.history) ? data.history : [];
+    } catch (err: any) {
+      await clearHistory();
+      toast({
+        title: 'Oops! Fetching chat history got wrong...',
+        description:
+          typeof err === 'string' ? err : err.message ?? 'Unknown error',
+      });
+
+      return [];
+    }
+  }, [threadId, clearHistory]);
 
   const sendMessage = useCallback(
     async (

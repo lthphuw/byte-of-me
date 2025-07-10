@@ -1,8 +1,8 @@
 'use client';
 
+import { useCallback, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { useCallback, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
@@ -10,8 +10,8 @@ import remarkGfm from 'remark-gfm';
 import { Pluggable } from 'unified';
 
 import { defaultSpring, iconSwicthVariants } from '@/config/anim';
-import { useClipboard } from '@/hooks/use-clipboard';
 import { cn } from '@/lib/utils';
+import { useClipboard } from '@/hooks/use-clipboard';
 
 import { Icons } from './icons';
 import {
@@ -22,7 +22,7 @@ import {
 } from './ui/tooltip';
 
 export interface ChatMessageProps {
-  role: 'user' | 'assistant' | 'system';
+  role: 'user' | 'assistant';
   content: string;
 }
 
@@ -46,10 +46,10 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
         className={cn(
           'prose dark:prose-invert px-3 py-2 text-sm',
           isSystem
-            ? 'w-full min-w-full'
+            ? 'w-full min-w-full px-0'
             : isUser
-              ? 'bg-neutral-200 dark:bg-neutral-dark shadow-md rounded-tl-3xl rounded-tr-3xl rounded-bl-3xl rounded-br-lg max-w-[80%]'
-              : 'bg-zinc-100 dark:bg-zinc-800 rounded-xl shadow-sm max-w-[85%]'
+            ? 'bg-neutral-200 dark:bg-neutral-dark shadow-md rounded-tl-3xl rounded-tr-3xl rounded-bl-3xl rounded-br-lg max-w-[80%]'
+            : 'bg-zinc-100 dark:bg-zinc-800 rounded-xl shadow-sm max-w-[85%]'
         )}
       >
         <ReactMarkdown

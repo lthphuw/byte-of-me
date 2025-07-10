@@ -2,7 +2,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAssistant } from '@/providers/assistant';
+import { useAssistant } from '@/contexts/assistant';
 import { FloatingPortal } from '@floating-ui/react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';

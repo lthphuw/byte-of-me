@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { AssistantProvider } from '@/providers/assistant';
+import { AssistantProvider } from '@/contexts/assistant';
 import { getTranslations } from 'next-intl/server';
 
 import { host } from '@/config/host';
