@@ -53,7 +53,6 @@ const itemVariants: Variants = {
 export const ProjectItem: FC<ProjectItemProps> = ({
   index,
   project,
-  onViewDetails,
   ...motionProps
 }) => {
   const t = useTranslations('project');
@@ -184,7 +183,7 @@ export const ProjectList: FC<ProjectListProps> = ({ isLoading, projects }) => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 md:px-8 py-12">
       {projects.map((project, index) => (
         <ProjectItem index={index} project={project} key={project.id} />
       ))}

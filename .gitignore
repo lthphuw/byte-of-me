@@ -60,5 +60,6 @@ yarn-error.log*
 # Monorepo Packages
 # =====================
 packages/db/node_modules
-packages/db/prisma/seed.ts
+packages/db/prisma
+packages/db/prisma/data
 packages/ai/node_modules

@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-interface HomeShellProps extends React.HTMLAttributes<HTMLDivElement> {}
-interface AboutShellProps extends React.HTMLAttributes<HTMLDivElement> {}
+type HomeShellProps = React.HTMLAttributes<HTMLDivElement>
+type AboutShellProps = React.HTMLAttributes<HTMLDivElement>
 
 export function HomeShell({ children, className, ...props }: HomeShellProps) {
   return (
@@ -25,7 +25,7 @@ export function AboutShell({ children, className, ...props }: AboutShellProps) {
   return (
     <section
       className={cn(
-        'mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 sm:px-6 z-20 sm:pt-32',
+        'mx-auto  px-4 pb-16 pt-20 sm:px-6 z-20 sm:pt-32',
         className
       )}
       {...props}

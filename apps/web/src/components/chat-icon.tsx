@@ -24,7 +24,7 @@ export function ChatIcon({ className, style }: ChatIconProps) {
       <Link
         href="/ask-me"
         className={cn(
-          'fixed bottom-12 right-3 z-[9999]',
+          'fixed bottom-12 right-1 z-[9999]',
           'group pointer-events-auto',
           className
         )}
@@ -34,7 +34,7 @@ export function ChatIcon({ className, style }: ChatIconProps) {
         <div className="absolute inset-0 animate-ping-3 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 opacity-40 scale-100 group-hover:scale-105 transition-transform" />
 
         {/* Main button */}
-        <div className="relative h-10 w-10 rounded-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-indigo-500 shadow-lg text-white hover:scale-105 active:scale-95 transition-all duration-200">
+        <div className="relative h-12 w-12 rounded-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-indigo-500 shadow-lg text-white hover:scale-105 active:scale-95 transition-all duration-200">
           <Icons.chat className="w-5 h-5" />
         </div>
       </Link>
