@@ -1,27 +1,22 @@
-// components/chat/chat-input.tsx
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAssistant } from '@/contexts/assistant';
 import { FloatingPortal } from '@floating-ui/react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useTurnstile } from '@/hooks/use-turnstile';
 import { verifyCaptcha } from '@/lib/core/verify-capcha';
 import { cn } from '@/lib/utils';
-import { useTurnstile } from '@/hooks/use-turnstile';
 
 import { Icons } from './icons';
 import { Button } from './ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from './ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { toast } from './ui/use-toast';
 
 const dangerousKeywords = ['ignore', 'system prompt', 'bypass', 'secret'];
+const MAX_MESSAGE_LENGTH = 200; // Define max length constant
 
 export type ChatInputProps = {
   clearChat: () => void;
@@ -54,6 +49,12 @@ export default function ChatInput({
   const handleSend = async () => {
     const message = input.trim();
     if (!message || loading) return;
+
+    // Check message length on submit
+    if (message.length > MAX_MESSAGE_LENGTH) {
+      toast({ title: 'Message too long', description: `Please keep your message under ${MAX_MESSAGE_LENGTH} characters.` });
+      return;
+    }
 
     if (dangerousKeywords.some((k) => message.toLowerCase().includes(k))) {
       toast({ title: 'Invalid input detected' });
@@ -94,6 +95,7 @@ export default function ChatInput({
     }
   }, [input]);
 
+
   return (
     <>
       <motion.form
@@ -112,7 +114,6 @@ export default function ChatInput({
         <textarea
           ref={textareaRef}
           value={input}
-          maxLength={50}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           rows={2}
@@ -174,7 +175,7 @@ export default function ChatInput({
             className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-lg w-full max-w-sm"
           >
             <h2 className="text-lg font-semibold text-center mb-4 text-neutral-800 dark:text-neutral-100">
-              Please complete CAPTCHA
+              {'Please complete CAPTCHA'}
             </h2>
             <div ref={captchaRef} />
             <div className="mt-4 text-center">
@@ -182,7 +183,7 @@ export default function ChatInput({
                 className="text-sm text-neutral-500 hover:underline"
                 onClick={() => setShowCaptchaModal(false)}
               >
-                Cancel
+                {'Cancel'}
               </button>
             </div>
           </motion.div>
