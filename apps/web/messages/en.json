@@ -21,6 +21,10 @@
     "askMe": {
       "title": "Ask Me Anything",
       "description": "Ask questions to an AI assistant powered by a RAG pipeline. It's built with real data from my portfolio, vector search, and LLM responses — ideal for exploring my experience, projects, and tech skills."
+    },
+    "cv": {
+      "title": "Curriculum vitae",
+      "description": "Curriculum vitae detailing my education, skills, projects, and experiences."
     }
   },
   "global": {
@@ -49,8 +53,25 @@
         "Hobbies": "Hobbies",
         "More": "More",
         "Let's talk": "Let's talk",
-        "Ask me": "Ask Me"
+        "Ask me": "Ask Me",
+        "CV": "CV"
       }
+    },
+    "footer": {
+      "home": "Home",
+      "builtBy": "Built by",
+      "openSource": "Open source on",
+      "links": "Quick Links",
+      "about": "About",
+      "projects": "Projects",
+      "experience": "Experience",
+      "cv": "CV",
+      "contact": "Contact",
+      "connect": "Connect",
+      "email": "Email",
+      "navigation": "Footer Navigation",
+      "license": "Licensed under",
+      "rights": "All rights reserved."
     }
   },
   "notFound": {
@@ -156,21 +177,6 @@
   "contact": {
     "Connect With Me": "Connect With Me",
     "Reach out, let's code the future!": "Reach out, let's code the future!"
-  },
-  "footer": {
-    "home": "Home",
-    "builtBy": "Built by",
-    "openSource": "Open source on",
-    "links": "Quick Links",
-    "about": "About",
-    "projects": "Projects",
-    "experience": "Experience",
-    "contact": "Contact",
-    "connect": "Connect",
-    "email": "Email",
-    "navigation": "Footer Navigation",
-    "license": "Licensed under",
-    "rights": "All rights reserved."
   },
   "chat": {
     "Ask Phu's Assistant": "Ask Phu's Assistant",

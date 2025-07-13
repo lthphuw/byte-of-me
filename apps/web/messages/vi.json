@@ -21,6 +21,10 @@
     "askMe": {
       "title": "Hỏi tôi bất cứ điều gì",
       "description": "Đặt câu hỏi cho trợ lý AI được xây dựng bằng pipeline RAG. Dữ liệu từ chính portfolio của tôi được xử lý bằng vector search và LLM — phù hợp để khám phá kinh nghiệm, dự án và kỹ năng lập trình của tôi."
+    },
+    "cv": {
+      "title": "Curriculum vitae",
+      "description": "Curriculum vitae détaillant ma formation, mes compétences, mes projets et mes expériences."
     }
   },
   "global": {
@@ -49,8 +53,25 @@
         "Hobbies": "Sở thích",
         "More": "Thêm",
         "Let's talk": "Liên lạc",
-        "Ask me": "Hỏi về tôi"
+        "Ask me": "Hỏi về tôi",
+        "CV": "CV"
       }
+    },
+    "footer": {
+      "home": "Trang chủ",
+      "builtBy": "Xây dựng bởi",
+      "openSource": "Mã nguồn mở trên",
+      "links": "Liên kết nhanh",
+      "about": "Giới thiệu",
+      "projects": "Dự án",
+      "experience": "Kinh nghiệm",
+      "cv": "CV",
+      "contact": "Liên hệ",
+      "connect": "Kết nối",
+      "email": "Email",
+      "navigation": "Điều hướng chân trang",
+      "license": "Được cấp phép theo",
+      "rights": "Bản quyền thuộc về tác giả."
     }
   },
   "notFound": {
@@ -163,21 +184,6 @@
   "contact": {
     "Connect With Me": "Kết nối với tôi",
     "Reach out, let's code the future!": "Hãy liên hệ, cùng tôi kiến tạo tương lai qua từng dòng code!"
-  },
-  "footer": {
-    "home": "Trang chủ",
-    "builtBy": "Xây dựng bởi",
-    "openSource": "Mã nguồn mở trên",
-    "links": "Liên kết nhanh",
-    "about": "Giới thiệu",
-    "projects": "Dự án",
-    "experience": "Kinh nghiệm",
-    "contact": "Liên hệ",
-    "connect": "Kết nối",
-    "email": "Email",
-    "navigation": "Điều hướng chân trang",
-    "license": "Được cấp phép theo",
-    "rights": "Bản quyền thuộc về tác giả."
   },
   "chat": {
     "Ask Phu's Assistant": "Hỏi trợ lý AI của Phú",

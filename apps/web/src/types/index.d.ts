@@ -1,5 +1,9 @@
 import { Icons } from '@/components/icons';
 
+
+
+
+
 export type FlagType = 'vi' | 'en' | 'fr';
 
 export type BaseSelectItem = {
@@ -45,6 +49,9 @@ export type SiteConfig = {
 
 export type GlobalConfig = {
   header: {
+    nav: MainNavItem[];
+  };
+  footer: {
     nav: MainNavItem[];
   };
 };

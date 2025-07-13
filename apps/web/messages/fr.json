@@ -21,6 +21,10 @@
     "askMe": {
       "title": "Posez-moi n'importe quoi",
       "description": "Discutez avec un assistant IA basé sur une pipeline RAG. Les réponses proviennent de mes données réelles, traitées via une recherche vectorielle et un LLM — idéal pour explorer mes compétences, projets et expériences."
+    },
+    "cv": {
+      "title": "Sơ yếu lý lịch",
+      "description": "Sơ yếu lý lịch bao gồm học vấn, kỹ năng, dự án và kinh nghiệm của tôi."
     }
   },
   "global": {
@@ -49,9 +53,26 @@
         "Hobbies": "Passe-temps",
         "More": "Plus",
         "Let's talk": "Parlons-en",
-        "Ask me": "Me poser une question"
+        "Ask me": "Me poser une question",
+        "CV": "CV"
       }
     }
+  },
+  "footer": {
+    "home": "Accueil",
+    "builtBy": "Construit par",
+    "openSource": "Open source sur",
+    "links": "Liens rapides",
+    "about": "À propos",
+    "projects": "Projets",
+    "experience": "Expérience",
+    "cv": "CV",
+    "contact": "Contact",
+    "connect": "Connectez-vous",
+    "email": "Email",
+    "navigation": "Navigation du pied de page",
+    "license": "Sous licence",
+    "rights": "Tous droits réservés."
   },
   "notFound": {
     "404 - Page Not Found": "404 - Page non trouvée",
@@ -163,21 +184,6 @@
   "contact": {
     "Connect With Me": "Connectons-nous",
     "Reach out, let's code the future!": "Contactez-moi, construisons le futur ensemble!"
-  },
-  "footer": {
-    "home": "Accueil",
-    "builtBy": "Construit par",
-    "openSource": "Open source sur",
-    "links": "Liens rapides",
-    "about": "À propos",
-    "projects": "Projets",
-    "experience": "Expérience",
-    "contact": "Contact",
-    "connect": "Connectez-vous",
-    "email": "Email",
-    "navigation": "Navigation du pied de page",
-    "license": "Sous licence",
-    "rights": "Tous droits réservés."
   },
   "chat": {
     "Ask Phu's Assistant": "Demandez à l’assistant de Phu",

@@ -115,7 +115,6 @@ export function SiteHeader() {
   return (
     <>
       <motion.header
-        layout
         variants={headerVariants}
         animate={{
           width: isCompact ? compactWidth : '100%',

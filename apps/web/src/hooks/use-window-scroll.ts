@@ -1,6 +1,7 @@
 // @see https://github.com/mantinedev/mantine
 // packages/@mantine/hooks/src/use-window-scroll/use-window-scroll.ts
 import { useEffect, useState } from 'react';
+import { throttle } from 'lodash';
 
 import { useWindowEvent } from './use-window-event';
 
@@ -38,19 +39,29 @@ function scrollTo({ x, y }: Partial<UseWindowScrollPosition>) {
     window.scrollTo(scrollOptions);
   }
 }
+export function useWindowScroll(
+  throttleMs: number = 100
+): UseWindowScrollReturnValue {
+  const [position, setPosition] = useState<UseWindowScrollPosition>(
+    getScrollPosition()
+  );
 
-export function useWindowScroll(): UseWindowScrollReturnValue {
-  const [position, setPosition] = useState<UseWindowScrollPosition>({
-    x: 0,
-    y: 0,
-  });
+  // Throttled handler for scroll and resize events
+  const handleUpdate = throttle(() => {
+    setPosition(getScrollPosition());
+  }, throttleMs);
 
-  useWindowEvent('scroll', () => setPosition(getScrollPosition()));
-  useWindowEvent('resize', () => setPosition(getScrollPosition()));
+  // Attach throttled handlers to scroll and resize events
+  useWindowEvent('scroll', handleUpdate);
+  useWindowEvent('resize', handleUpdate);
 
+  // Set initial position on mount
   useEffect(() => {
     setPosition(getScrollPosition());
-  }, []);
+    return () => {
+      handleUpdate.cancel(); // Clean up throttle on unmount
+    };
+  }, []); // Empty dependency array since getScrollPosition doesn't depend on props/state
 
   return [position, scrollTo] as const;
 }

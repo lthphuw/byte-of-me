@@ -7,12 +7,13 @@ import { getTranslations } from 'next-intl/server';
 import { fetchData } from '@/lib/core/fetch';
 import { cn, ensureValidUrl } from '@/lib/utils';
 
+import { globalConfig } from '@/config/global';
 import { Icons } from './icons';
 
-interface SiteFooterProps extends React.HTMLAttributes<HTMLElement> {}
+type SiteFooterProps = React.HTMLAttributes<HTMLElement>
 
 export async function SiteFooter({ className }: SiteFooterProps) {
-  const t = await getTranslations('footer');
+  const t = await getTranslations('global.footer');
   const me = await fetchData<User>('me');
 
   return (
@@ -40,30 +41,15 @@ export async function SiteFooter({ className }: SiteFooterProps) {
           className="flex items-center md:items-start gap-2 md:gap-6"
           aria-label={t('navigation')}
         >
-          <Link
-            href="/about"
-            className="text-sm md:text-base hover:text-blue-400"
-          >
-            {t('about')}
-          </Link>
-          <Link
-            href="/experience"
-            className="text-sm md:text-base hover:text-blue-400"
-          >
-            {t('experience')}
-          </Link>
-          <Link
-            href="/projects"
-            className="text-sm md:text-base hover:text-blue-400"
-          >
-            {t('projects')}
-          </Link>
-          <Link
-            href="/contact"
-            className="text-sm md:text-base hover:text-blue-400"
-          >
-            {t('contact')}
-          </Link>
+          {
+            globalConfig.footer.nav.map(it => (
+              <Link
+                href={it.href}
+                className="text-sm md:text-base hover:text-blue-400"
+              >
+                {t(it.title as never)}
+              </Link>))
+          }
         </nav>
 
         {/* Social Media and License */}

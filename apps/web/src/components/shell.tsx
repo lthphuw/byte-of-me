@@ -25,7 +25,7 @@ export function AboutShell({ children, className, ...props }: AboutShellProps) {
   return (
     <section
       className={cn(
-        'mx-auto  px-4 pb-16 pt-20 sm:px-6 z-20 sm:pt-32',
+        'mx-auto w-full px-4 pb-16 pt-20 sm:px-6 z-20 sm:pt-32',
         className
       )}
       {...props}
@@ -122,6 +122,25 @@ export function MoreShell({ children, className, ...props }: AboutShellProps) {
 }
 
 export function ContactShell({
+  children,
+  className,
+  ...props
+}: AboutShellProps) {
+  return (
+    <section
+      className={cn(
+        'mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 z-20 sm:px-6 sm:pt-32',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </section>
+  );
+}
+
+
+export function CVShell({
   children,
   className,
   ...props
