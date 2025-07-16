@@ -1,8 +1,10 @@
-const { fontFamily } = require('tailwindcss/defaultTheme');
-const plugin = require('tailwindcss/plugin');
+import { fontFamily } from 'tailwindcss/defaultTheme';
+import plugin from 'tailwindcss/plugin';
+import tailwindcssAnimate from 'tailwindcss-animate';
+import tailwindTypography from '@tailwindcss/typography';
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
     './src/app/**/*.{ts,tsx}',
     './src/components/**/*.{ts,tsx}',
@@ -91,8 +93,8 @@ module.exports = {
     },
   },
   plugins: [
-    require('tailwindcss-animate'),
-    require('@tailwindcss/typography'),
+    tailwindcssAnimate,
+    tailwindTypography,
     plugin(({ addUtilities }) => {
       addUtilities({
         '.container-bg': {

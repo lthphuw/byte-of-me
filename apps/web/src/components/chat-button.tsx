@@ -13,7 +13,9 @@ export interface ChatButtonProps {
 export function ChatButton({ className, style }: ChatButtonProps) {
   return (
     <Link href={'/ask-me'}>
-      <GradientText className={cn(className)}>Ask me anything</GradientText>
+      <GradientText className={cn(className)} style={style}>
+        Ask me anything
+      </GradientText>
     </Link>
   );
 }

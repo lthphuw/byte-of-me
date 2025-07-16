@@ -1,6 +1,6 @@
-import { CVShell } from '@/components/shell';
-import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
+import { CVShell } from '@/components/shell';
 
 export default function ContactLoading() {
   return (

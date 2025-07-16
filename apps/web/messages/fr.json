@@ -56,23 +56,23 @@
         "Ask me": "Me poser une question",
         "CV": "CV"
       }
+    },
+    "footer": {
+      "home": "Accueil",
+      "builtBy": "Construit par",
+      "openSource": "Open source sur",
+      "links": "Liens rapides",
+      "about": "À propos",
+      "projects": "Projets",
+      "experience": "Expérience",
+      "cv": "CV",
+      "contact": "Contact",
+      "connect": "Connectez-vous",
+      "email": "Email",
+      "navigation": "Navigation du pied de page",
+      "license": "Sous licence",
+      "rights": "Tous droits réservés."
     }
-  },
-  "footer": {
-    "home": "Accueil",
-    "builtBy": "Construit par",
-    "openSource": "Open source sur",
-    "links": "Liens rapides",
-    "about": "À propos",
-    "projects": "Projets",
-    "experience": "Expérience",
-    "cv": "CV",
-    "contact": "Contact",
-    "connect": "Connectez-vous",
-    "email": "Email",
-    "navigation": "Navigation du pied de page",
-    "license": "Sous licence",
-    "rights": "Tous droits réservés."
   },
   "notFound": {
     "404 - Page Not Found": "404 - Page non trouvée",

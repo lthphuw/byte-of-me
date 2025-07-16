@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 interface GradientTextProps {
   children: ReactNode;
   className?: string;
+  style?: React.CSSProperties;
   colors?: string[];
   animationSpeed?: number;
   showBorder?: boolean;
@@ -14,6 +15,7 @@ export default function GradientText({
   colors = ['#ffaa40', '#9c40ff', '#ffaa40'],
   animationSpeed = 8,
   showBorder = false,
+  style = {},
 }: GradientTextProps) {
   const gradientStyle = {
     backgroundImage: `linear-gradient(to right, ${colors.join(', ')})`,
@@ -23,6 +25,7 @@ export default function GradientText({
   return (
     <div
       className={`relative mx-auto flex max-w-fit flex-row items-center justify-center rounded-[1.25rem] font-medium backdrop-blur transition-shadow duration-500 cursor-pointer ${className}`}
+      style={style}
     >
       {showBorder && (
         <div

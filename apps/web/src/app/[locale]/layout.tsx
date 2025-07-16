@@ -14,12 +14,14 @@ import { cn } from '@/lib/utils';
 const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',
+  preload: true,
 });
 
 // Font files can be colocated inside of `pages`
 const fontHeading = localFont({
   src: '../../assets/fonts/CalSans-SemiBold.woff2',
   variable: '--font-heading',
+  preload: true,
 });
 
 export async function generateMetadata({

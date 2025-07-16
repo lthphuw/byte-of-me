@@ -29,7 +29,7 @@ const SHADOW_TRANSITION_THRESHOLD = 10;
 const COMPACT_CHAT_BUTTON_X_OFFSET = 200;
 
 export function SiteHeader() {
-  const [{ y: scrollY }] = useWindowScroll();
+  const [{ y: scrollY }] = useWindowScroll(200);
   const { dimensions: headerDimensions, ref: mainNavRef } =
     useElementDimensions<HTMLDivElement>();
   const { width: headerWidth } = headerDimensions ?? {};
@@ -173,16 +173,15 @@ export function SiteHeader() {
           layout
           variants={controlVariants}
           animate={isCompact ? 'compact' : 'full'}
-          className={cn(
-            'flex items-center gap-2 rounded-2xl justify-end',
-            isCompact ? 'py-1 px-2 md:py-3 md:px-4' : 'md:px-4'
-          )}
-          style={{
-            height: isCompact ? COMPACT_HEIGHT : DEFAULT_HEIGHT,
-          }}
+          className={cn('flex items-center gap-2 rounded-2xl justify-end')}
           transition={transitionConfig}
         >
-          <ChatButton />
+          <ChatButton
+            className={isCompact ? 'py-1 px-2 md:py-3 md:px-4' : 'md:px-4'}
+            style={{
+              height: isCompact ? COMPACT_HEIGHT : DEFAULT_HEIGHT,
+            }}
+          />
         </motion.button>
       </motion.div>
 

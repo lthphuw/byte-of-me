@@ -59,11 +59,11 @@ interface ImageStackProps {
 
 export default function ImageStack({
   randomRotation = false,
-  sensitivity = 200,
   cardDimensions = { width: 208, height: 208 },
   cardsData = [],
   animationConfig = { stiffness: 260, damping: 20 },
   sendToBackOnClick = false,
+  sensitivity = 200,
   setSelectedCard,
 }: ImageStackProps) {
   const isMobile = useIsMobile();
@@ -99,53 +99,88 @@ export default function ImageStack({
         perspective: 600,
       }}
     >
-      {cards.map((card, index) => {
-        const randomRotate = randomRotation ? randomRotateList[index] : 0;
-        const [isLoaded, setIsLoaded] = useState(false);
-
-        return (
-          <CardRotate
-            key={card.id}
-            onSendToBack={() => sendToBack(card.id)}
-            sensitivity={sensitivity}
-          >
-            <motion.div
-              className="relative rounded-2xl overflow-hidden border-4 border-slate-600 dark:border-slate-300  bg-muted"
-              onClick={() => sendToBackOnClick && sendToBack(card.id)}
-              animate={{
-                rotateZ: (cards.length - index - 1) * 4 + randomRotate,
-                scale: 1 + index * 0.06 - cards.length * 0.06,
-                transformOrigin: '90% 90%',
-              }}
-              initial={true}
-              transition={{
-                type: 'spring',
-                stiffness: animationConfig.stiffness,
-                damping: animationConfig.damping,
-              }}
-              style={{
-                width: cardDimensions.width,
-                height: cardDimensions.height,
-              }}
-            >
-              {!isLoaded && (
-                <Skeleton className="absolute inset-0 w-full h-full z-0" />
-              )}
-
-              <Image
-                src={card.src}
-                alt={card.alt ?? `card-${card.id}`}
-                className="w-full h-full object-cover pointer-events-none z-10"
-                onLoad={() => setIsLoaded(true)}
-                quality={
-                  isMobile ? (index === 0 ? 75 : 25) : index === 0 ? 100 : 50
-                }
-                fill
-              />
-            </motion.div>
-          </CardRotate>
-        );
-      })}
+      {cards.map((card, index) => (
+        <ImageCard
+          key={card.id}
+          card={card}
+          index={index}
+          sensitivity={sensitivity}
+          cardsLength={cards.length}
+          randomRotate={randomRotation ? randomRotateList[index] : 0}
+          cardDimensions={cardDimensions}
+          sendToBack={sendToBack}
+          sendToBackOnClick={sendToBackOnClick}
+          animationConfig={animationConfig}
+          isMobile={isMobile}
+        />
+      ))}
     </div>
+  );
+}
+interface ImageCardProps {
+  card: { id: string; src: string; alt?: string };
+  index: number;
+  cardsLength: number;
+  randomRotate: number;
+  cardDimensions: { width: number; height: number };
+  sendToBack: (id: string) => void;
+  sendToBackOnClick: boolean;
+  animationConfig: { stiffness: number; damping: number };
+  isMobile: boolean;
+  sensitivity: number;
+}
+
+function ImageCard({
+  card,
+  index,
+  cardsLength,
+  randomRotate,
+  cardDimensions,
+  sendToBack,
+  sendToBackOnClick,
+  animationConfig,
+  isMobile,
+  sensitivity,
+}: ImageCardProps) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  return (
+    <CardRotate
+      key={card.id}
+      onSendToBack={() => sendToBack(card.id)}
+      sensitivity={sensitivity}
+    >
+      <motion.div
+        className="relative rounded-2xl overflow-hidden border-4 border-slate-600 dark:border-slate-300 bg-muted"
+        onClick={() => sendToBackOnClick && sendToBack(card.id)}
+        animate={{
+          rotateZ: (cardsLength - index - 1) * 4 + randomRotate,
+          scale: 1 + index * 0.06 - cardsLength * 0.06,
+          transformOrigin: '90% 90%',
+        }}
+        transition={{
+          type: 'spring',
+          stiffness: animationConfig.stiffness,
+          damping: animationConfig.damping,
+        }}
+        style={{
+          width: cardDimensions.width,
+          height: cardDimensions.height,
+        }}
+      >
+        {!isLoaded && (
+          <Skeleton className="absolute inset-0 w-full h-full z-0" />
+        )}
+        <Image
+          src={card.src}
+          alt={card.alt ?? `card-${card.id}`}
+          className="w-full h-full object-cover pointer-events-none z-10"
+          onLoad={() => setIsLoaded(true)}
+          quality={isMobile ? 75 : 100}
+          fill
+          priority
+        />
+      </motion.div>
+    </CardRotate>
   );
 }

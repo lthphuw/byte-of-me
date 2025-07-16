@@ -182,8 +182,8 @@ export const NightOfStars: React.FC<NightOfStarsProps> = ({
 
     // Handle resize
     const resize = () => {
-      const width = container.clientWidth;
-      const height = container.clientHeight;
+      const width = container.scrollWidth;
+      const height = container.scrollHeight;
       renderer.setSize(width, height);
       camera.perspective({ aspect: gl.canvas.width / gl.canvas.height });
     };

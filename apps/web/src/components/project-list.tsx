@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+import React, { FC } from 'react';
 import { Link } from '@/i18n/navigation';
 import { HTMLMotionProps, Variants, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import React, { FC } from 'react';
 
 import { cn } from '@/lib/utils';
+
 import { Icons } from './icons';
 import Loading from './loading';
 import { Badge } from './ui/badge';
@@ -80,7 +82,9 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
       >
         <div className="container-bg min-w-[160px] rounded-2xl border-none p-1 text-sm shadow-md dark:shadow-[0_4px_10px_rgba(255,255,255,0.05)]">
           <div className="flex h-full flex-col items-stretch gap-3 p-6 rounded-2xl">
-            <h2 className="text-lg font-semibold line-clamp-3 mb-2">{project.title}</h2>
+            <h2 className="text-lg font-semibold line-clamp-3 mb-2">
+              {project.title}
+            </h2>
 
             <div className="flex gap-2 flex-wrap">
               {project.techstacks.map((tech, index) => (
@@ -99,7 +103,7 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
             </div>
 
             <p className="text-sm line-clamp-3">
-              {project.description || "No description"}
+              {project.description || 'No description'}
             </p>
 
             {project.liveLink && (
@@ -116,26 +120,27 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
               </div>
             )}
 
-            {Array.isArray(project.coauthors) && project.coauthors.length > 0 && (
-              <div className="flex flex-row flex-wrap gap-2">
-                <span className="font-medium">
-                  {`Co-author${project.coauthors.length > 1 ? 's' : ''}:`}
-                </span>
-                {project.coauthors.map((it, index) => (
-                  <React.Fragment key={it.email}>
-                    <a
-                      href={`mailto:${it.email}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      {it.fullname}
-                    </a>
-                    {index < project.coauthors.length - 1 && <span>,</span>}
-                  </React.Fragment>
-                ))}
-              </div>
-            )}
+            {Array.isArray(project.coauthors) &&
+              project.coauthors.length > 0 && (
+                <div className="flex flex-row flex-wrap gap-2">
+                  <span className="font-medium">
+                    {`Co-author${project.coauthors.length > 1 ? 's' : ''}:`}
+                  </span>
+                  {project.coauthors.map((it, index) => (
+                    <React.Fragment key={it.email}>
+                      <a
+                        href={`mailto:${it.email}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {it.fullname}
+                      </a>
+                      {index < project.coauthors.length - 1 && <span>,</span>}
+                    </React.Fragment>
+                  ))}
+                </div>
+              )}
 
             <div className="w-full space-y-2 text-sm mt-auto md:self-end">
               <div className="mt-2 flex flex-col items-stretch gap-4 md:flex-row md:flex-nowrap">
@@ -174,8 +179,6 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
 
 export const ProjectList: FC<ProjectListProps> = ({ isLoading, projects }) => {
   const t = useTranslations('project');
-
-  console.log('ProjectList props:', { isLoading, projects }); // Debug log
 
   if (isLoading) {
     return <LoadingState />;

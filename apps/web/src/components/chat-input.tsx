@@ -1,18 +1,23 @@
 'use client';
 
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAssistant } from '@/contexts/assistant';
 import { FloatingPortal } from '@floating-ui/react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useTurnstile } from '@/hooks/use-turnstile';
 import { verifyCaptcha } from '@/lib/core/verify-capcha';
 import { cn } from '@/lib/utils';
+import { useTurnstile } from '@/hooks/use-turnstile';
 
 import { Icons } from './icons';
 import { Button } from './ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip';
 import { toast } from './ui/use-toast';
 
 const dangerousKeywords = ['ignore', 'system prompt', 'bypass', 'secret'];
@@ -52,7 +57,10 @@ export default function ChatInput({
 
     // Check message length on submit
     if (message.length > MAX_MESSAGE_LENGTH) {
-      toast({ title: 'Message too long', description: `Please keep your message under ${MAX_MESSAGE_LENGTH} characters.` });
+      toast({
+        title: 'Message too long',
+        description: `Please keep your message under ${MAX_MESSAGE_LENGTH} characters.`,
+      });
       return;
     }
 
@@ -94,7 +102,6 @@ export default function ChatInput({
       textarea.style.height = `${textarea.scrollHeight}px`;
     }
   }, [input]);
-
 
   return (
     <>

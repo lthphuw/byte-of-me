@@ -127,7 +127,10 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
       );
     }
 
-    setShowedItems(filteredProjects);
+    // Sort and set showed items
+    setShowedItems(
+      filteredProjects.sort((a, b) => a.title.localeCompare(b.title))
+    );
     setIsLoading(false);
   }, [debouncedQuery, selectedTag, selectedTechstack, fuse, projects]);
 

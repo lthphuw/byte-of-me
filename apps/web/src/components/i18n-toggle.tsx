@@ -1,8 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { usePathname, useRouter } from '@/i18n/navigation';
-import { FlagType } from '@/types';
+import { useCallback, useState } from 'react';
+import { Link, usePathname } from '@/i18n/navigation';
 import {
   FloatingPortal,
   autoUpdate,
@@ -36,12 +35,10 @@ const flagVariants = {
 export function I18NToggle() {
   const t = useTranslations('global.i18nToggle');
   const locale = useLocale();
-  const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState<FlagType>(locale);
 
-  const FlagComponent = Flags[currentLang];
+  const FlagComponent = Flags[locale];
 
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,
@@ -58,19 +55,9 @@ export function I18NToggle() {
     useRole(context),
   ]);
 
-  const changeLanguage = useCallback(
-    (newLang: FlagType) => {
-      setCurrentLang(newLang);
-      setIsOpen(false);
-      router.replace(pathname, { locale: newLang });
-    },
-    [router, pathname]
-  );
-
-  // Sync currentLang with locale changes
-  useEffect(() => {
-    setCurrentLang(locale);
-  }, [locale]);
+  const handleLanguageChange = useCallback(() => {
+    setIsOpen(false);
+  }, []);
 
   return (
     <>
@@ -89,7 +76,7 @@ export function I18NToggle() {
           <motion.span className="relative size-6">
             <AnimatePresence initial={false}>
               <motion.div
-                key={currentLang}
+                key={locale}
                 variants={flagVariants}
                 initial="initial"
                 animate="animate"
@@ -106,7 +93,7 @@ export function I18NToggle() {
               </motion.div>
             </AnimatePresence>
           </motion.span>
-          <span className="sr-only ">{t('Toggle language')}</span>
+          <span className="sr-only">{t('Toggle language')}</span>
         </motion.div>
       </Button>
 
@@ -141,21 +128,33 @@ export function I18NToggle() {
                       initial="hidden"
                       animate="visible"
                       exit="exit"
-                      onClick={() => changeLanguage(lang)}
                       className={cn(
-                        'flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
-                        lang === locale
-                          ? 'bg-muted text-primary'
-                          : 'text-muted-foreground hover:bg-muted'
+                        'flex cursor-pointer items-center gap-2 text-sm transition-colors'
                       )}
                     >
-                      <span className="relative size-5 flex items-center justify-center">
-                        <Flag className="size-5 fi" />
-                      </span>
-                      <span>
-                        {t(languageNames[lang])}{' '}
-                        <span className="uppercase tracking-wide">{lang}</span>
-                      </span>
+                      <Link
+                        href={pathname}
+                        locale={lang}
+                        onClick={handleLanguageChange}
+                        className={cn(
+                          'flex items-center gap-2 rounded-md px-3 py-2 w-full',
+                          {
+                            'bg-muted text-primary': lang === locale,
+                            'text-muted-foreground hover:bg-muted':
+                              lang !== locale,
+                          }
+                        )}
+                      >
+                        <span className="relative size-5 flex items-center justify-center">
+                          <Flag className="size-5 fi" />
+                        </span>
+                        <span>
+                          {t(languageNames[lang])}{' '}
+                          <span className="uppercase tracking-wide">
+                            {lang}
+                          </span>
+                        </span>
+                      </Link>
                     </motion.li>
                   );
                 })}

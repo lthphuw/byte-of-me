@@ -4,13 +4,13 @@ import { User } from '@db/index';
 import { Facebook, Github, Linkedin, Mail } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
+import { globalConfig } from '@/config/global';
 import { fetchData } from '@/lib/core/fetch';
 import { cn, ensureValidUrl } from '@/lib/utils';
 
-import { globalConfig } from '@/config/global';
 import { Icons } from './icons';
 
-type SiteFooterProps = React.HTMLAttributes<HTMLElement>
+type SiteFooterProps = React.HTMLAttributes<HTMLElement>;
 
 export async function SiteFooter({ className }: SiteFooterProps) {
   const t = await getTranslations('global.footer');
@@ -41,15 +41,15 @@ export async function SiteFooter({ className }: SiteFooterProps) {
           className="flex items-center md:items-start gap-2 md:gap-6"
           aria-label={t('navigation')}
         >
-          {
-            globalConfig.footer.nav.map(it => (
-              <Link
-                href={it.href}
-                className="text-sm md:text-base hover:text-blue-400"
-              >
-                {t(it.title as never)}
-              </Link>))
-          }
+          {globalConfig.footer.nav.map((it) => (
+            <Link
+              key={it.href}
+              href={it.href}
+              className="text-sm md:text-base hover:text-blue-400"
+            >
+              {t(it.title as never)}
+            </Link>
+          ))}
         </nav>
 
         {/* Social Media and License */}

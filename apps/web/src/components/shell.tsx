@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-type HomeShellProps = React.HTMLAttributes<HTMLDivElement>
-type AboutShellProps = React.HTMLAttributes<HTMLDivElement>
+type HomeShellProps = React.HTMLAttributes<HTMLDivElement>;
+type AboutShellProps = React.HTMLAttributes<HTMLDivElement>;
 
 export function HomeShell({ children, className, ...props }: HomeShellProps) {
   return (
@@ -139,12 +139,7 @@ export function ContactShell({
   );
 }
 
-
-export function CVShell({
-  children,
-  className,
-  ...props
-}: AboutShellProps) {
+export function CVShell({ children, className, ...props }: AboutShellProps) {
   return (
     <section
       className={cn(
