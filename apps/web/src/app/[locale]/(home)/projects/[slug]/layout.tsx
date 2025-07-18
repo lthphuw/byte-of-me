@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ...siteConfig.keywords,
   ]);
 
-  const keywords = Array.from(keywordSet);
+  const keywords = Array.from(keywordSet).map(key => key.toLowerCase());
 
   const fallbackDescription = 'A project built with modern technologies.';
 

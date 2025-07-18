@@ -25,7 +25,7 @@ export async function generateMetadata({
       'CV',
       'Resume',
       ...siteConfig.keywords,
-    ],
+    ].map(key => key.toLowerCase()),
     alternates: {
       canonical: url,
       languages: {

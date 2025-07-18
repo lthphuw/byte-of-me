@@ -1,8 +1,10 @@
 // next.config.js
-const createNextIntlPlugin = require('next-intl/plugin');
+
+import { PrismaPlugin } from '@prisma/nextjs-monorepo-workaround-plugin';
+import createNextIntlPlugin from 'next-intl/plugin';
+import pino from 'pino';
+
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
-const { PrismaPlugin } = require('@prisma/nextjs-monorepo-workaround-plugin');
-const pino = require('pino');
 
 const logger = (defaultConfig) =>
   pino({
@@ -14,9 +16,7 @@ const logger = (defaultConfig) =>
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    instrumentationHook: true,
     webpackMemoryOptimizations: true,
-    serverActions: true,
   },
   turbopack: {
     resolveExtensions: ['.mdx', '.tsx', '.ts', '.jsx', '.js', '.mjs', '.json'],
@@ -35,7 +35,7 @@ const nextConfig = {
   },
 };
 
-module.exports = {
+export default {
   ...withNextIntl(nextConfig),
   logger,
 };

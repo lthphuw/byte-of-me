@@ -67,6 +67,7 @@
       "experience": "Expérience",
       "cv": "CV",
       "contact": "Contact",
+      "Anything about me": "Tout sur moi",
       "connect": "Connectez-vous",
       "email": "Email",
       "navigation": "Navigation du pied de page",
@@ -98,7 +99,11 @@
     "Send": "Envoyer",
     "Error Details": "Détails de l'erreur",
     "Copy Error": "Copier l'erreur",
-    "Copied!": "Copié !"
+    "Copied!": "Copié !",
+    "missingQuestion": "Vous n'avez pas saisi de question. Veuillez réessayer.",
+    "invalidInput": "Votre question peut contenir du contenu inapproprié. Veuillez vérifier et réessayer.",
+    "missingThreadId": "Identifiant de conversation introuvable. Veuillez actualiser la page et réessayer.",
+    "failedToDelete": "Une erreur s'est produite lors de la suppression de la conversation. Veuillez réessayer plus tard ou actualiser la page."
   },
   "home": {
     "See my work": "Voir mon travail",

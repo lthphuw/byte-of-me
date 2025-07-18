@@ -1,6 +1,8 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { answer, deleteCheckpoint } from '@ai/index';
+import { getLocale, getTranslations } from 'next-intl/server';
 
+import { dangerousKeywords } from '@/config/models';
 import {
   applyRateLimit,
   rateLimitChatPerDay,
@@ -14,12 +16,29 @@ export async function POST(req: NextRequest) {
   ]);
   if (perMin || perDate) return perMin || perDate;
 
-  const { question, history, stream, thread_id } = await req.json();
+  const t = await getTranslations('error');
+
+  const { question, llm, embedding, history, stream, thread_id } =
+    await req.json();
 
   if (!question) {
-    return new Response(JSON.stringify({ error: 'Missing question' }), {
-      status: 400,
-    });
+    return NextResponse.json(
+      { success: false, error: t('missingQuestion') },
+      { status: 400 }
+    );
+  }
+
+  const normalizedMessage = question.toLowerCase().replace(/[^a-z\s]/g, '');
+  const words = normalizedMessage.split(/\s+/);
+  const hasDangerousInput = words.some((kw: string) =>
+    dangerousKeywords.has(kw)
+  );
+
+  if (hasDangerousInput) {
+    return NextResponse.json(
+      { success: false, error: t('invalidInput') },
+      { status: 400 }
+    );
   }
 
   if (stream) {
@@ -28,6 +47,8 @@ export async function POST(req: NextRequest) {
       stream: true,
       history,
       thread_id,
+      llm,
+      embedding,
     });
 
     const streamBody = new ReadableStream<Uint8Array>({
@@ -51,31 +72,32 @@ export async function POST(req: NextRequest) {
 
   const result = await answer(question, { history, thread_id });
 
-  return Response.json(result);
+  return NextResponse.json(result);
 }
 
 export async function DELETE(req: NextRequest) {
+  const t = await getTranslations('error');
+
   const { thread_id } = await req.json();
 
   if (!thread_id) {
-    return new Response(JSON.stringify({ error: 'Missing thread_id' }), {
-      status: 400,
-    });
+    return NextResponse.json(
+      { success: false, error: t('missingThreadId') },
+      { status: 400 }
+    );
   }
 
   try {
     const res = await deleteCheckpoint(thread_id);
     if (res.success) {
-      return new Response(JSON.stringify({ success: true }));
+      return NextResponse.json({ success: true });
     } else {
-      return new Response(JSON.stringify({ success: false, error: res.error }));
+      return NextResponse.json({ success: false, error: res.error });
     }
   } catch {
-    return new Response(
-      JSON.stringify({ error: 'Failed to delete checkpoint' }),
-      {
-        status: 500,
-      }
+    return NextResponse.json(
+      { success: false, error: t('failedToDelete') },
+      { status: 500 }
     );
   }
 }

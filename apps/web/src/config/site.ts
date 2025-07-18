@@ -16,9 +16,12 @@ export const siteConfig: SiteConfig = {
     // Myself
     'Byte of me',
     'byte-of-me',
+    'hoang phu',
     'Phu',
     'Phú',
     'phu-lth',
+    'phulth',
+    'Phu Luong Thanh Hoang',
     'Phu - Luong Thanh Hoang',
     'Lương Thanh Hoàng Phú',
     'Luong Thanh Hoang Phu',

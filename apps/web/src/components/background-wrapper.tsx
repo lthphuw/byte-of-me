@@ -10,7 +10,7 @@ export function BackgroundWrapper() {
   const { resolvedTheme } = useTheme();
   const isMobile = useIsMobile();
   return (
-    <div className="absolute opacity-80 inset-0 z-[10]">
+    <div className="absolute max-w-full overflow-hidden opacity-80 inset-0 z-[10]">
       <NightOfStars
         backgroundMode={resolvedTheme as any}
         particleCount={2000}

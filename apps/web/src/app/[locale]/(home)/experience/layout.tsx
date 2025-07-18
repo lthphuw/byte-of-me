@@ -22,7 +22,7 @@ export async function generateMetadata({
       'Kinh nghiệm việc làm',
       'Experience',
       ...siteConfig.keywords,
-    ],
+    ].map(key => key.toLowerCase()),
     alternates: {
       canonical: url,
       languages: {

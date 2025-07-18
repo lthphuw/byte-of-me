@@ -10,7 +10,7 @@ import { env } from '../../env.mjs';
 //
 // Rate limits:	1,500 requests per minute
 export const embeddings = new GoogleGenerativeAIEmbeddings({
-  model: 'text-embedding-004', 
+  model: 'text-embedding-004',
   taskType: TaskType.RETRIEVAL_DOCUMENT,
   title: 'Document title',
   apiKey: env.GOOGLE_API_KEY,

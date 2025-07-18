@@ -6,28 +6,12 @@ import { turnstileSecretKey } from '@/config/turnstile';
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, token } = await request.json();
+    const { token } = await request.json();
 
     // Early check for missing CAPTCHA token
     if (!token) {
       return NextResponse.json(
         { success: false, error: 'Missing CAPTCHA token' },
-        { status: 400 }
-      );
-    }
-
-    // Simple prompt injection filter (word-based)
-    const dangerousKeywords = ['ignore', 'system prompt', 'bypass', 'secret'];
-    const normalizedMessage = message.toLowerCase().replace(/[^a-z\s]/g, '');
-    const words = normalizedMessage.split(/\s+/);
-
-    const hasDangerousInput = dangerousKeywords.some((kw) =>
-      words.includes(kw)
-    );
-
-    if (hasDangerousInput) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid input detected' },
         { status: 400 }
       );
     }

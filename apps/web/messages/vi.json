@@ -68,6 +68,7 @@
       "cv": "CV",
       "contact": "Liên hệ",
       "connect": "Kết nối",
+      "Anything about me": "Mọi thứ về mình",
       "email": "Email",
       "navigation": "Điều hướng chân trang",
       "license": "Được cấp phép theo",
@@ -98,7 +99,11 @@
     "Send": "Gửi",
     "Error Details": "Chi tiết lỗi",
     "Copy Error": "Sao chép lỗi",
-    "Copied!": "Đã sao chép!"
+    "Copied!": "Đã sao chép!",
+    "missingQuestion": "Bạn chưa nhập câu hỏi. Vui lòng thử lại.",
+    "invalidInput": "Câu hỏi có thể chứa nội dung không phù hợp. Vui lòng kiểm tra và thử lại.",
+    "missingThreadId": "Không tìm thấy mã phiên trò chuyện. Vui lòng tải lại trang và thử lại.",
+    "failedToDelete": "Đã xảy ra lỗi khi xoá phiên trò chuyện. Vui lòng thử lại sau hoặc tải lại trang."
   },
   "home": {
     "See my work": "Xem dự án của tôi",

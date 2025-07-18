@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 import { verifyCaptcha } from '@/lib/core/verify-capcha';
 import { cn } from '@/lib/utils';
 import { useTurnstile } from '@/hooks/use-turnstile';
+import { ModelSelector } from '@/components/model-selector';
 
 import { Icons } from './icons';
 import { Button } from './ui/button';
@@ -20,7 +21,6 @@ import {
 } from './ui/tooltip';
 import { toast } from './ui/use-toast';
 
-const dangerousKeywords = ['ignore', 'system prompt', 'bypass', 'secret'];
 const MAX_MESSAGE_LENGTH = 200; // Define max length constant
 
 export type ChatInputProps = {
@@ -37,11 +37,12 @@ export default function ChatInput({
   className,
 }: ChatInputProps) {
   const t = useTranslations('chat');
-  const { threadId, isRateLimited } = useAssistant();
+  const { threadId, isRateLimited, llm, setLLM, embedding, setEmbedding } = useAssistant();
 
   const [input, setInput] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [showCaptchaModal, setShowCaptchaModal] = useState(false);
+
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { captchaRef } = useTurnstile({
@@ -51,7 +52,7 @@ export default function ChatInput({
     },
   });
 
-  const handleSend = async () => {
+  const handleSend = useCallback(async () => {
     const message = input.trim();
     if (!message || loading) return;
 
@@ -61,11 +62,6 @@ export default function ChatInput({
         title: 'Message too long',
         description: `Please keep your message under ${MAX_MESSAGE_LENGTH} characters.`,
       });
-      return;
-    }
-
-    if (dangerousKeywords.some((k) => message.toLowerCase().includes(k))) {
-      toast({ title: 'Invalid input detected' });
       return;
     }
 
@@ -82,8 +78,11 @@ export default function ChatInput({
     } else {
       toast({ title: result.error || 'CAPTCHA verification failed' });
       window.turnstile?.reset();
+
+      // Reload the page
+      setTimeout(() => location.reload(), 1000);
     }
-  };
+  }, [input, captchaToken]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -129,32 +128,43 @@ export default function ChatInput({
           className="w-full resize-none border-none h-10 outline-none bg-transparent text-neutral-800 dark:text-neutral-100 text-lg placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
         />
 
-        <div className="mt-2 flex gap-3 justify-end">
-          <TooltipProvider delayDuration={300}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="icon"
-                  onClick={clearChat}
-                  disabled={!threadId}
-                  aria-label="Clear chat"
-                >
-                  <Icons.trash />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent sideOffset={4} side="top">
-                <p>{t('Clear chat')}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+        <div className="mt-2 flex gap-3 justify-between">
+          <div className="flex items-center">
+            <ModelSelector
+              llm={llm}
+              setLLM={setLLM}
+              embedding={embedding}
+              setEmbedding={setEmbedding}
+            />
+          </div>
 
-          <Button
-            variant="default"
-            type="submit"
-            disabled={loading || !input.trim() || isRateLimited}
-          >
-            {loading ? `${t('Asking')}...` : t('Ask')}
-          </Button>
+          <div className="flex gap-2 md:gap-4 items-center">
+            <TooltipProvider delayDuration={300}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="icon"
+                    onClick={clearChat}
+                    disabled={!threadId}
+                    aria-label="Clear chat"
+                  >
+                    <Icons.trash />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent sideOffset={4} side="top">
+                  <p>{t('Clear chat')}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <Button
+              variant="default"
+              type="submit"
+              disabled={loading || !input.trim() || isRateLimited}
+            >
+              {loading ? `${t('Asking')}...` : t('Ask')}
+            </Button>
+          </div>
         </div>
       </motion.form>
 

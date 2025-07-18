@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Code,
+  Component,
   Contact,
   Copy,
   CreditCard,
@@ -163,4 +164,5 @@ export const Icons = {
   coding: Code,
   chat: MessageSquareText,
   file: FileText,
+  component: Component,
 };

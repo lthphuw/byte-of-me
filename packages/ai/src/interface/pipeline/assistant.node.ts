@@ -1,7 +1,8 @@
-import { llm } from '../../infra/llm/gemini';
-import { getVectorStore } from '../../infra/vectorstore/pinecone';
+import { llm } from '@ai/infra/llm/gemini';
+import { getVectorStore } from '@ai/infra/vectorstore/pinecone';
 import { assistantPrompt } from '../prompts/assistant';
 import { StateAnnotation } from './assistant.annotation';
+import { Role } from '@ai/types/role';
 
 // graph nodes
 export const retrieve = async (state: typeof StateAnnotation.State) => {
@@ -27,8 +28,8 @@ export const generate = async (state: typeof StateAnnotation.State) => {
     answer: response.content,
     history: [
       ...state.history,
-      { role: 'user', content: state.question },
-      { role: 'assistant', content: response.content },
+      { role: Role.User, content: state.question },
+      { role: Role.Assistant, content: response.content },
     ],
   };
 };

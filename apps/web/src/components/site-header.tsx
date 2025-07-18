@@ -19,7 +19,7 @@ const SCROLL_THRESHOLD = 50;
 const COMPACT_BORDER_RADIUS = 16;
 const COMPACT_TOP_OFFSET = 32;
 const COMPACT_X_OFFSET = 48;
-const COMPACT_WIDTH_OFFSET = 38; // Padding of header content
+const COMPACT_WIDTH_OFFSET = 48; // extra width of header content, avoid to collapse the text
 const COMPACT_HEIGHT = 56;
 const DEFAULT_HEIGHT = 64;
 const COMPACT_PADDING = '12px 16px';
@@ -69,16 +69,10 @@ export function SiteHeader() {
     [isCompact, compactWidth]
   );
 
-  const transitionConfig: Transition = isMobile
-    ? {
-        type: 'spring',
-        bounce: 0.25,
-        visualDuration: 0.4,
-      }
-    : {
-        duration: 0.4,
-        ease: 'easeOut',
-      };
+  const transitionConfig: Transition = {
+    type: 'spring',
+    stiffness: 100,
+  };
 
   const headerVariants: Variants = {
     compact: {
@@ -128,7 +122,13 @@ export function SiteHeader() {
           'fixed left-0 top-0 pl-2 z-50 w-full appearance-none overflow-hidden will-change-[width,transform] [-webkit-appearance:none]',
           isCompact && 'mr-auto pl-0 container-bg'
         )}
-        transition={transitionConfig}
+        transition={{
+          top: transitionConfig,
+          left: transitionConfig,
+          borderRadius: transitionConfig,
+          boxShadow: transitionConfig,
+          width: { type: 'tween', ease: 'easeInOut', duration: 0.3 },
+        }}
       >
         <motion.div
           layout

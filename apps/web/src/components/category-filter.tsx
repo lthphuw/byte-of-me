@@ -29,14 +29,14 @@ export function CategoryFilter({
       <div className="md:hidden flex gap-3">
         <FilterSelect
           items={techstacks}
-          selectedFilter={selectedTechstack || ''}
-          setSelectedFilter={setSelectedTechstack}
+          selectedId={selectedTechstack || ''}
+          onSelect={setSelectedTechstack}
         />
 
         <FilterSelect
           items={tags}
-          selectedFilter={selectedTag || ''}
-          setSelectedFilter={setSelectedTag}
+          selectedId={selectedTag || ''}
+          onSelect={setSelectedTag}
         />
       </div>
 

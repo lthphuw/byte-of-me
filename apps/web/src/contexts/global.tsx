@@ -7,7 +7,7 @@ import { BackgroundWrapper } from '@/components/background-wrapper';
 import { ChatIcon } from '@/components/chat-icon';
 import { Integrations } from '@/components/intergations';
 import { TailwindIndicator } from '@/components/tailwind-indicator';
-import { ThemeProvider } from '@/components/theme-provider';
+import { Theme } from '@/contexts/theme';
 
 type GlobalContextType = object;
 
@@ -20,7 +20,7 @@ interface GlobalProviderProps {
 export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   return (
     <GlobalContext.Provider value={{}}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <Theme attribute="class" defaultTheme="system" enableSystem>
         {/* Global background layout */}
         <BackgroundWrapper />
 
@@ -38,7 +38,7 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
 
         {/* Analytics & monitoring tools */}
         <Integrations />
-      </ThemeProvider>
+      </Theme>
     </GlobalContext.Provider>
   );
 };

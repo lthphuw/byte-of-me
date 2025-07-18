@@ -1,14 +1,17 @@
 import { nanoid } from 'nanoid';
 
-import { checkpointer } from '../../infra/checkpointer/postgres';
+import { checkpointer } from '@ai/infra/checkpointer/postgres';
 import { graph } from '../pipeline/assistant.graph';
+import { RoleType } from '@ai/types/role';
 
 export async function answer(
   question: string,
   options: {
     stream?: boolean;
-    history?: Array<{ role: 'user' | 'assistant'; content: string }>;
+    history?: Array<{ role: RoleType; content: string }>;
     thread_id?: string;
+    llm?: string;
+    embedding?: string;
   } = {},
 ): Promise<any> {
   let history = options.history;

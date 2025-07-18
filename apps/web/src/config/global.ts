@@ -60,16 +60,16 @@ export const globalConfig: GlobalConfig = {
       //   href: '/more',
       // },
       // {
-      //   title: 'Ask me',
-      //   href: '/ask-me',
-      // },
-      // {
       //   title: 'cv',
       //   href: '/cv',
       // },
       {
         title: 'contact',
         href: '/contact',
+      },
+      {
+        title: 'Anything about me',
+        href: '/ask-me',
       },
     ],
   },

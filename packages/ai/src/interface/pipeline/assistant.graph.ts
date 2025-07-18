@@ -1,5 +1,5 @@
 import { StateGraph } from '@langchain/langgraph';
-import { checkpointer } from '../../infra/checkpointer/postgres';
+import { checkpointer } from '@ai/infra/checkpointer/postgres';
 import { generate, retrieve,  } from './assistant.node';
 import { StateAnnotation } from './assistant.annotation';
 

@@ -1,4 +1,3 @@
-// components/SiteFooter.tsx
 import { Link } from '@/i18n/navigation';
 import { User } from '@db/index';
 import { Facebook, Github, Linkedin, Mail } from 'lucide-react';
@@ -25,20 +24,22 @@ export async function SiteFooter({ className }: SiteFooterProps) {
             <Icons.logo />
           </Link>
 
-          <h2 className="text-center text-sm md:text-left">
-            {t('builtBy')}{' '}
+          <h2 className="flex  gap-1text-center text-sm md:text-left">
+            <span className={"hidden md:inline-block"}>
+              {t('builtBy')}
+            </span>
             <a
               href={`mailto:${me.email}`}
               className="font-medium underline underline-offset-4 hover:text-blue-400"
             >
-              {me.name || 'lthphuw'}
+              {[me.firstName ?? '',  me.lastName ?? ''].join(" ") || 'lthphuw'}
             </a>
           </h2>
         </div>
 
         {/* Navigation Links */}
         <nav
-          className="flex items-center md:items-start gap-2 md:gap-6"
+          className="flex flex-wrap justify-center items-center md:items-start gap-2 md:gap-6"
           aria-label={t('navigation')}
         >
           {globalConfig.footer.nav.map((it) => (

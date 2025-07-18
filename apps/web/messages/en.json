@@ -66,6 +66,7 @@
       "projects": "Projects",
       "experience": "Experience",
       "cv": "CV",
+      "Anything about me": "Anything about me",
       "contact": "Contact",
       "connect": "Connect",
       "email": "Email",
@@ -98,7 +99,11 @@
     "Send": "Send",
     "Error Details": "Error Details",
     "Copy Error": "Copy Error",
-    "Copied!": "Copied!"
+    "Copied!": "Copied!",
+    "missingQuestion": "You haven't entered a question. Please try again.",
+    "invalidInput": "Your question may contain inappropriate content. Please check and try again.",
+    "missingThreadId": "Missing conversation ID. Please refresh the page and try again.",
+    "failedToDelete": "Something went wrong while deleting the conversation. Please try again later or refresh the page."
   },
   "home": {
     "See my work": "See my work",

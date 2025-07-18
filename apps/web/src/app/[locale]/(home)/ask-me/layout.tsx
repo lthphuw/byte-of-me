@@ -18,12 +18,18 @@ export async function generateMetadata({
     title: t('title'),
     description: t('description'),
     keywords: [
-      'RAG',
-      'Chat Bot',
-      'Assistant',
-      'Ask me anthing',
+      'ai',
+      'chat',
+      'ai chat',
+      'chat bot',
+      'rag',
+      "phu's assistant",
+      'chat assistant',
+      'assistant',
+      'anything',
+      'ask me anything',
       ...siteConfig.keywords,
-    ],
+    ].map(key => key.toLowerCase()),
     alternates: {
       canonical: url,
       languages: {

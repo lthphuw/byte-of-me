@@ -26,8 +26,12 @@ interface AssistantContextValue {
     question: string,
     append: (msg: Message) => void,
     updateLast: (partial: Partial<Message>) => void,
-    options?: { stream?: boolean }
+    options?: { stream?: boolean; llm?: string; embedding?: string }
   ) => Promise<void>;
+  llm: string;
+  setLLM: (llm: string) => void;
+  embedding: string;
+  setEmbedding: (embedd: string) => void;
 }
 
 const AssistantContext = createContext<AssistantContextValue | null>(null);
@@ -44,6 +48,10 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
   const [value, setStorageValue, removeStorageValue] = useLocalStorage({
     key: chatThreadId,
   });
+
+  const [llm, setLLM] = useState<string>('gemini-2.0-flash');
+  const [embedding, setEmbedding] = useState<string>('text-embedding-004');
+
   const mounted = useMounted();
 
   useEffect(() => {
@@ -112,17 +120,21 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
       question: string,
       append: (msg: Message) => void,
       updateLast: (partial: Partial<Message>) => void,
-      options: { stream?: boolean } = { stream: true }
+      options: { stream?: boolean; llm?: string; embedding?: string } = {
+        stream: true,
+      }
     ) => {
       if (!threadId || !question.trim()) return;
 
       append({ role: 'user', content: question });
-      setIsRateLimited(false); // reset trước khi gửi
+      setIsRateLimited(false);
 
       const payload = {
         question,
         stream: options.stream,
         thread_id: threadId,
+        llm: options.llm ?? llm,
+        embedding: options.embedding ?? embedding,
       };
 
       if (options.stream) {
@@ -233,7 +245,7 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
         }
       }
     },
-    [threadId]
+    [threadId, embedding, llm]
   );
 
   return (
@@ -244,6 +256,10 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
         fetchHistory,
         clearHistory,
         sendMessage,
+        llm,
+        setLLM,
+        embedding,
+        setEmbedding,
       }}
     >
       {children}
