@@ -4,18 +4,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAssistant } from '@/contexts/assistant';
 import { AnimatePresence, motion } from 'framer-motion';
 
-
-
 import { useMounted } from '@/hooks/use-mounted';
 import { useWindowScroll } from '@/hooks/use-window-scroll';
-
-
 
 import ChatInput from './chat-input';
 import { ChatMessage } from './chat-message';
 import { ChatTitle } from './chat-title';
 import Loading from './loading';
-
 
 export type Message = {
   role: 'user' | 'assistant';
@@ -88,10 +83,10 @@ export default function ChatContent() {
         {globalLoading ? (
           <Loading />
         ) : messages.length === 0 ? (
-            <ChatTitle
-              invoke={handleSend}
-              className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-            />
+          <ChatTitle
+            invoke={handleSend}
+            className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+          />
         ) : (
           <motion.div
             key="chat-messages"

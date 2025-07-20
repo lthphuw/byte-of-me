@@ -22,7 +22,7 @@ export async function generateMetadata({
       'Projects',
       'Side Projects',
       ...siteConfig.keywords,
-    ].map(key => key.toLowerCase()),
+    ].map((key) => key.toLowerCase()),
     alternates: {
       canonical: url,
       languages: {

@@ -1,19 +1,26 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { FloatingPortal, ReferenceType, autoUpdate, flip, offset, shift, size, useClick, useDismiss, useFloating, useInteractions, useRole } from '@floating-ui/react';
+import {
+  FloatingPortal,
+  ReferenceType,
+  autoUpdate,
+  flip,
+  offset,
+  shift,
+  size,
+  useClick,
+  useDismiss,
+  useFloating,
+  useInteractions,
+  useRole,
+} from '@floating-ui/react';
 import { Variants, motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-
-
 import { itemVariants } from '@/config/anim';
 import { cn } from '@/lib/utils';
-
-
-
-
 
 interface DropdownOption {
   id: string;
@@ -44,7 +51,6 @@ export const FilterSelect: React.FC<FilterSelectProps> = ({
   zIndex = 40,
   renderInBody = true,
   equalWidth = false,
-
 }) => {
   const t = useTranslations('global.search');
   const [isOpen, setIsOpen] = useState(false);
@@ -159,7 +165,9 @@ export const FilterSelect: React.FC<FilterSelectProps> = ({
           >
             <p className="text-sm sm:text-base line-clamp-1">{item.label}</p>
             {item.desc && (
-              <p className="text-xs sm:text-sm opacity-90 line-clamp-2">{item.desc}</p>
+              <p className="text-xs sm:text-sm opacity-90 line-clamp-2">
+                {item.desc}
+              </p>
             )}
           </motion.li>
         ))}

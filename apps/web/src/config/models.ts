@@ -1,4 +1,9 @@
-export const dangerousKeywords = new Set<string>(['ignore', 'system prompt', 'bypass', 'secret']);
+export const dangerousKeywords = new Set<string>([
+  'ignore',
+  'system prompt',
+  'bypass',
+  'secret',
+]);
 
 export const llmModels = [
   {

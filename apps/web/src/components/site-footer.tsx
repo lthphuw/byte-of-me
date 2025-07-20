@@ -24,15 +24,13 @@ export async function SiteFooter({ className }: SiteFooterProps) {
             <Icons.logo />
           </Link>
 
-          <h2 className="flex  gap-1text-center text-sm md:text-left">
-            <span className={"hidden md:inline-block"}>
-              {t('builtBy')}
-            </span>
+          <h2 className="flex gap-1 text-center text-sm md:text-left">
+            <span className={'hidden md:inline-block'}>{t('builtBy')}</span>
             <a
               href={`mailto:${me.email}`}
               className="font-medium underline underline-offset-4 hover:text-blue-400"
             >
-              {[me.firstName ?? '',  me.lastName ?? ''].join(" ") || 'lthphuw'}
+              {[me.firstName ?? '', me.lastName ?? ''].join(' ') || 'lthphuw'}
             </a>
           </h2>
         </div>

@@ -6,6 +6,12 @@ import { HTMLMotionProps, Variants, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 
 import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 import { Icons } from './icons';
 import Loading from './loading';
@@ -65,9 +71,15 @@ const EmptyState: FC<{ t: any }> = ({ t }) => (
   </div>
 );
 
+const MAX_BADGES = 2;
+
 export const ProjectItem: FC<ProjectItemProps> = React.memo(
   ({ index, project, ...motionProps }) => {
     const t = useTranslations('project');
+    const visibleTechstacks = project.techstacks.slice(0, MAX_BADGES);
+    const remainingTechstacks = project.techstacks.length - MAX_BADGES;
+    const visibleTags = project.tags.slice(0, MAX_BADGES);
+    const remainingTags = project.tags.length - MAX_BADGES;
 
     return (
       <motion.div
@@ -82,24 +94,61 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
       >
         <div className="container-bg min-w-[160px] rounded-2xl border-none p-1 text-sm shadow-md dark:shadow-[0_4px_10px_rgba(255,255,255,0.05)]">
           <div className="flex h-full flex-col items-stretch gap-3 p-6 rounded-2xl">
-            <h2 className="text-lg font-semibold line-clamp-3 mb-2">
+            <h2 className="text-lg font-semibold line-clamp-2 mb-2">
               {project.title}
             </h2>
 
-            <div className="flex gap-2 flex-wrap">
-              {project.techstacks.map((tech, index) => (
+            {/* Tech Stacks */}
+            <div className="flex gap-2 flex-wrap items-center">
+              {visibleTechstacks.map((tech, index) => (
                 <Link key={index} href={'#'}>
                   <Badge variant={'secondary'}>{tech.name}</Badge>
                 </Link>
               ))}
+
+              {remainingTechstacks > 0 && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Badge variant={'secondary'}>
+                        +{remainingTechstacks} more
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {project.techstacks.slice(MAX_BADGES).map((tech) => (
+                        <span key={tech.id} className="block">
+                          {tech.name}
+                        </span>
+                      ))}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </div>
 
-            <div className="flex gap-2 flex-wrap">
-              {project.tags.map((tag, index) => (
+            {/* Tags */}
+            <div className="flex gap-2 flex-wrap items-center">
+              {visibleTags.map((tag, index) => (
                 <Link key={index} href={'#'}>
                   <Badge variant={'outline'}>{tag.name}</Badge>
                 </Link>
               ))}
+              {remainingTags > 0 && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Badge variant={'outline'}>+{remainingTags} more</Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {project.tags.slice(MAX_BADGES).map((tag) => (
+                        <span key={tag.id} className="block">
+                          {tag.name}
+                        </span>
+                      ))}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </div>
 
             <p className="text-sm line-clamp-3">

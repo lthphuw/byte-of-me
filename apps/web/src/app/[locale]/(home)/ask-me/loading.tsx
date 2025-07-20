@@ -1,11 +1,11 @@
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { HobbiesShell } from '@/components/shell';
+import { AskMeShell } from '@/components/shell';
 
-export default function HobbiesLoading() {
+export default function AskMeLoading() {
   return (
-    <HobbiesShell>
+    <AskMeShell>
       <Skeleton className={cn('size-full')} />
-    </HobbiesShell>
+    </AskMeShell>
   );
 }

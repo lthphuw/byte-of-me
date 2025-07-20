@@ -8,7 +8,7 @@
   "scripts": {
     "check-types": "tsc --noEmit",
     "dev": "next dev --turbopack",
-    "build": "next build  --turbopack --experimental-debug-memory-usage",
+    "build": "next build  --turbopack --experimental-debug-memory-usage --debug",
     "turbo": "next dev --turbo",
     "start": "next start --turbopack",
     "preview": "next build  --turbopack && next start --turbopack",

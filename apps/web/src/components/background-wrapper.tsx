@@ -19,7 +19,7 @@ export function BackgroundWrapper() {
         speed={0.1}
         meteorSpeed={0.5}
         alphaParticles={true}
-        particleBaseSize={isMobile ? 35 : 50}
+        particleBaseSize={isMobile ? 50 : 75}
         meteorBaseSize={100}
         sizeRandomness={0.7}
         cameraDistance={25}

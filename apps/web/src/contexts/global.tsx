@@ -1,13 +1,13 @@
 'use client';
 
 import React, { ReactNode, createContext, useContext } from 'react';
+import { Theme } from '@/contexts/theme';
 
 import { Toaster } from '@/components/ui/toaster';
 import { BackgroundWrapper } from '@/components/background-wrapper';
 import { ChatIcon } from '@/components/chat-icon';
 import { Integrations } from '@/components/intergations';
 import { TailwindIndicator } from '@/components/tailwind-indicator';
-import { Theme } from '@/contexts/theme';
 
 type GlobalContextType = object;
 

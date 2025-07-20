@@ -37,12 +37,12 @@ export default function ChatInput({
   className,
 }: ChatInputProps) {
   const t = useTranslations('chat');
-  const { threadId, isRateLimited, llm, setLLM, embedding, setEmbedding } = useAssistant();
+  const { threadId, isRateLimited, llm, setLLM, embedding, setEmbedding } =
+    useAssistant();
 
   const [input, setInput] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [showCaptchaModal, setShowCaptchaModal] = useState(false);
-
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { captchaRef } = useTurnstile({

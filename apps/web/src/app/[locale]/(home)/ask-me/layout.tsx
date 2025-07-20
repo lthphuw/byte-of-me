@@ -29,7 +29,7 @@ export async function generateMetadata({
       'anything',
       'ask me anything',
       ...siteConfig.keywords,
-    ].map(key => key.toLowerCase()),
+    ].map((key) => key.toLowerCase()),
     alternates: {
       canonical: url,
       languages: {

@@ -40,7 +40,7 @@ export async function generateMetadata({
       template: '%s | Byte of me',
     },
     description: t('description'),
-    keywords: siteConfig.keywords.map(key => key.toLowerCase()),
+    keywords: siteConfig.keywords.map((key) => key.toLowerCase()),
     authors: [{ name: 'lthphuw', url: host }],
     creator: 'lthphuw',
     applicationName: `${t('title')} | Byte of me`,

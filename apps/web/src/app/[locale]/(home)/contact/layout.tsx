@@ -24,7 +24,7 @@ export async function generateMetadata({
       'Liên lạc',
       'Contact',
       ...siteConfig.keywords,
-    ].map(key => key.toLowerCase()),
+    ].map((key) => key.toLowerCase()),
     alternates: {
       canonical: url,
       languages: {
