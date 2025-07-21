@@ -1,12 +1,12 @@
-import { llm } from '@ai/infra/llm/gemini';
 import { getVectorStore } from '@ai/infra/vectorstore/pinecone';
-import { assistantPrompt } from '../prompts/assistant';
+import { assistantPrompt } from '../prompts/assistant-v2';
 import { StateAnnotation } from './assistant.annotation';
-import { Role } from '@ai/types/role';
+import { getLLM } from '@ai/infra/llm';
+import { Role } from '@ai/enums/role';
 
 // graph nodes
 export const retrieve = async (state: typeof StateAnnotation.State) => {
-  const vectorStore = await getVectorStore();
+  const vectorStore = await getVectorStore(state.embedding);
   const docs = await vectorStore.similaritySearch(state.question, 4);
   return { context: docs };
 };
@@ -22,6 +22,7 @@ export const generate = async (state: typeof StateAnnotation.State) => {
     })),
   });
 
+  const llm = getLLM(state.llm);
   const response = await llm.invoke(messages);
 
   return {

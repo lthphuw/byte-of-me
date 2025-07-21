@@ -35,7 +35,7 @@ import {
   Newspaper,
   Pizza,
   Plus,
-  Settings,
+  Settings, Sparkles,
   SunMedium,
   Swords,
   Trash,
@@ -165,4 +165,5 @@ export const Icons = {
   chat: MessageSquareText,
   file: FileText,
   component: Component,
+  sparkles: Sparkles,
 };

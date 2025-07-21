@@ -3,6 +3,8 @@ import { nanoid } from 'nanoid';
 import { checkpointer } from '@ai/infra/checkpointer/postgres';
 import { graph } from '../pipeline/assistant.graph';
 import { RoleType } from '@ai/types/role';
+import { EmbeddingModelName } from '@ai/types/embedding';
+import { LLMModelName } from '@ai/types/llm';
 
 export async function answer(
   question: string,
@@ -10,10 +12,11 @@ export async function answer(
     stream?: boolean;
     history?: Array<{ role: RoleType; content: string }>;
     thread_id?: string;
-    llm?: string;
-    embedding?: string;
+    llm?: LLMModelName;
+    embedding?: EmbeddingModelName;
   } = {},
 ): Promise<any> {
+  const { stream, llm, embedding } = options;
   let history = options.history;
   const thread_id = options.thread_id || nanoid(16);
 
@@ -27,10 +30,12 @@ export async function answer(
   const config = {
     configurable: {
       thread_id,
+      ...(llm && { llm }),
+      ...(embedding && { embedding }),
     },
   };
 
-  if (!options.stream) {
+  if (!stream) {
     const result = await graph.invoke({ question, history }, config);
     return {
       answer: result.answer,
@@ -38,7 +43,7 @@ export async function answer(
     };
   }
 
-  const stream = await graph.stream(
+  const streamResult = await graph.stream(
     { question, history },
     {
       streamMode: 'messages',
@@ -47,7 +52,7 @@ export async function answer(
   );
 
   async function* generator() {
-    for await (const [msg] of stream) {
+    for await (const [msg] of streamResult) {
       const content = (msg?.content ?? '') as string;
       if (content) yield { content };
     }

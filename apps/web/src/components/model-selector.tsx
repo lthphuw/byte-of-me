@@ -4,12 +4,12 @@ import { useCallback, useState } from 'react';
 import {
   FloatingPortal,
   useClick,
-  useDismiss,
   useFloating,
   useInteractions,
   useRole,
 } from '@floating-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 import { embeddingModels, llmModels } from '@/config/models';
 import { useIsMobile } from '@/hooks/use-is-mobile';
@@ -31,6 +31,7 @@ export function ModelSelector({
   embedding,
   setEmbedding,
 }: ModelSelectorProps) {
+  const t = useTranslations('chat.model');
   const [open, setOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
   const isMobile = useIsMobile();
@@ -85,12 +86,15 @@ export function ModelSelector({
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
                 transition={{ duration: 0.2, ease: 'easeOut' }}
-                className="relative w-full max-w-72 md:max-w-md flex flex-col gap-3 rounded-xl border bg-white dark:bg-zinc-900 p-6 shadow-lg"
+                className="relative w-full max-w-72 md:max-w-2xl flex flex-col gap-3 rounded-xl border bg-white dark:bg-zinc-900 p-6 shadow-lg"
               >
                 <h3 className={'font-semibold'}>Choose models</h3>
 
                 <FilterSelect
-                  items={llmModels}
+                  items={llmModels.map((it) => ({
+                    ...it,
+                    desc: t(`desc.${it.id.replace(".", "")}` as never),
+                  }))}
                   selectedId={llm}
                   onSelect={setLLM}
                   useAllOption={false}
@@ -99,7 +103,10 @@ export function ModelSelector({
                 />
 
                 <FilterSelect
-                  items={embeddingModels}
+                  items={embeddingModels.map((it) => ({
+                    ...it,
+                    desc: t(`desc.${it.id.replace(".", "")}` as never),
+                  }))}
                   selectedId={embedding}
                   onSelect={setEmbedding}
                   useAllOption={false}

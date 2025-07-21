@@ -26,6 +26,8 @@ interface DropdownOption {
   id: string;
   label: string;
   desc?: string;
+  disabled?: boolean;
+  disableReason?: string;
 }
 
 interface FilterSelectProps {
@@ -155,18 +157,41 @@ export const FilterSelect: React.FC<FilterSelectProps> = ({
             animate="visible"
             exit="exit"
             whileTap={{ scale: 0.97 }}
-            onClick={() => handleSelect(item.id)}
+            onClick={() => !item.disabled && handleSelect(item.id)}
             className={cn(
               'flex flex-col gap-1 cursor-pointer items-stretch rounded-md px-3 py-3 text-sm transition-colors min-h-[48px]',
               selectedId === item.id
                 ? 'bg-muted text-primary'
-                : 'text-muted-foreground hover:bg-muted'
+                : 'text-muted-foreground hover:bg-muted',
+              item.disabled && 'pointer-events-none'
             )}
           >
-            <p className="text-sm sm:text-base line-clamp-1">{item.label}</p>
+            <p
+              className={cn(
+                'text-sm sm:text-base line-clamp-1',
+                item.disabled && 'line-through'
+              )}
+            >
+              {item.label}
+            </p>
             {item.desc && (
-              <p className="text-xs sm:text-sm opacity-90 line-clamp-2">
+              <p
+                className={cn(
+                  'text-xs sm:text-sm opacity-90 line-clamp-2',
+                  item.disabled && 'line-through'
+                )}
+              >
                 {item.desc}
+              </p>
+            )}
+
+            {item.disableReason && (
+              <p
+                className={cn(
+                  'text-xs sm:text-sm opacity-90 line-clamp-2 font-bold'
+                )}
+              >
+                {item.disableReason}
               </p>
             )}
           </motion.li>

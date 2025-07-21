@@ -196,6 +196,15 @@
     "Ask": "Hỏi",
     "Clear chat": "Xoá hội thoại",
     "Ask something": "Hỏi bất cứ điều gì",
-    "Copy": "Sao chép"
+    "Copy": "Sao chép",
+    "model": {
+      "desc": {
+        "gemini-20-flash": "LLM nhẹ và nhanh của Google, phù hợp cho các tương tác thời gian thực",
+        "gemini-20-flash-lite": "Phiên bản rút gọn, tốc độ cao hơn của Gemini Flash cho các tác vụ yêu cầu độ trễ thấp",
+        "gemini-25-flash": "Phiên bản cải tiến của Gemini 2.5 với khả năng phản hồi nhanh cho các tác vụ tương tác",
+        "jina-embedding-v3": "Mô hình embedding đa ngôn ngữ, tối ưu cho tốc độ và khả năng truy xuất dữ liệu dày đặc",
+        "text-embedding-004": "Mô hình embedding tiếng Anh chất lượng cao dành cho tìm kiếm ngữ nghĩa"
+      }
+    }
   }
 }

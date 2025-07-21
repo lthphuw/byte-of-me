@@ -56,7 +56,6 @@ export default function ChatInput({
     const message = input.trim();
     if (!message || loading) return;
 
-    // Check message length on submit
     if (message.length > MAX_MESSAGE_LENGTH) {
       toast({
         title: 'Message too long',
@@ -78,11 +77,9 @@ export default function ChatInput({
     } else {
       toast({ title: result.error || 'CAPTCHA verification failed' });
       window.turnstile?.reset();
-
-      // Reload the page
       setTimeout(() => location.reload(), 1000);
     }
-  }, [input, captchaToken]);
+  }, [input, captchaToken, loading]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

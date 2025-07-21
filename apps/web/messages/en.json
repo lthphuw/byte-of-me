@@ -189,6 +189,17 @@
     "Ask": "Ask",
     "Clear chat": "Clear chat",
     "Ask something": "Ask something",
-    "Copy": "Copy"
+    "Copy": "Copy",
+    "model": {
+      "desc": {
+        "gemini-20-flash": "Fast lightweight LLM by Google, optimized for real-time interactions",
+        "gemini-20-flash-lite": "Smaller, even faster version of Gemini Flash for low-latency tasks",
+        "gemini-25-flash": "Updated fast-response model for interactive tasks, part of Gemini 2.5 series",
+        "jina-embedding-v3": "Multilingual embedding model optimized for speed and dense retrieval",
+        "text-embedding-004": "High-quality English embedding model for semantic search and retrieval"
+      }
+    }
+
+
   }
 }

@@ -11,9 +11,9 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const history = await fetchState(thread_id);
+    const res = await fetchState(thread_id);
 
-    return Response.json({ history });
+    return Response.json({ history: res.history });
   } catch {
     return new Response(JSON.stringify({ error: 'Failed to fetch history' }), {
       status: 500,

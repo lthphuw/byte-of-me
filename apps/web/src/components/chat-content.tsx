@@ -6,6 +6,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import { useMounted } from '@/hooks/use-mounted';
 import { useWindowScroll } from '@/hooks/use-window-scroll';
+import FeatureCallout from '@/components/feature-callout';
+import { Icons } from '@/components/icons';
 
 import ChatInput from './chat-input';
 import { ChatMessage } from './chat-message';
@@ -110,6 +112,25 @@ export default function ChatContent() {
         clearChat={handleClearChat}
         onSend={handleSend}
         loading={loading}
+      />
+
+      <FeatureCallout
+        title={"New Features"}
+        description={
+          <p className="text-sm leading-relaxed flex flex-wrap gap-x-1">
+            <span className="inline-flex">
+              You can now choose from multiple Gemini models and embeddings.
+              Click the
+            </span>
+            <span className="inline-flex items-center gap-1 font-medium">
+              <Icons.component className="h-[1em] w-[1em]" />
+              Models
+            </span>
+            <span className="inline-flex">
+              button in the bottom-left corner to explore.
+            </span>
+          </p>
+        }
       />
     </div>
   );

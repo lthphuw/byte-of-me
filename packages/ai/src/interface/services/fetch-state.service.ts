@@ -1,14 +1,24 @@
 import { checkpointer } from '@ai/infra/checkpointer/postgres';
 import { RoleType } from '@ai/types/role';
+import { EmbeddingModelName } from '@ai/types/embedding';
+import { LLMModelName } from '@ai/types/llm';
 
 export async function fetchState(thread_id: string) {
   const state = await checkpointer.get({
     configurable: { thread_id },
   });
 
-  const messages = state?.channel_values?.history as
-    | Array<{ role: RoleType; content: string }>
-    | undefined;
+  const messages = state?.channel_values?.history as Array<{ role: RoleType; content: string }> | undefined;
+  const llm = state?.channel_values?.llm as LLMModelName | undefined;
+  const embedding = state?.channel_values?.embedding as EmbeddingModelName | undefined;
+  const question = state?.channel_values?.question as string | undefined;
+  const answer = state?.channel_values?.answer as string | undefined;
 
-  return messages ?? [];
+  return {
+    history: messages ?? [],
+    llm,
+    embedding,
+    question,
+    answer,
+  };
 }

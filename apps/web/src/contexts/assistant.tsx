@@ -7,6 +7,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 
@@ -40,6 +41,8 @@ interface AssistantProviderProps {
   children: ReactNode;
 }
 
+const COOLDOWN_MS = 5000;
+
 export const AssistantProvider: React.FC<AssistantProviderProps> = ({
   children,
 }) => {
@@ -51,6 +54,7 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
 
   const [llm, setLLM] = useState<string>('gemini-2.0-flash');
   const [embedding, setEmbedding] = useState<string>('text-embedding-004');
+  const lastSentRef = useRef<number>(0);
 
   const mounted = useMounted();
 
@@ -124,6 +128,19 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
         stream: true,
       }
     ) => {
+      const now = Date.now();
+      if (now - lastSentRef.current < COOLDOWN_MS) {
+        const secondsLeft = Math.ceil(
+          (COOLDOWN_MS - (now - lastSentRef.current)) / 1000
+        );
+
+        toast({
+          title: 'Please wait',
+          description: `You can send a message again in ${secondsLeft} second(s).`,
+        });
+        return;
+      }
+
       if (!threadId || !question.trim()) return;
 
       append({ role: 'user', content: question });
@@ -184,6 +201,8 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
 
             updateLast({ content });
           }
+
+          lastSentRef.current = Date.now();
         } catch (err: any) {
           toast({
             title: 'Oops! Something went wrong.',
@@ -230,6 +249,8 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
             role: 'assistant',
             content: data.answer || 'No answer',
           });
+
+          lastSentRef.current = Date.now();
         } catch (err) {
           toast({
             title: 'Oops! Something went wrong.',

@@ -1,5 +1,5 @@
 import { env } from '../../env.mjs';
-import { ApiResponse, FetchOptions } from '../../types/api';
+import { ApiResponse, FetchOptions } from '@ai/types/api';
 
 export async function fetchData<T>(
   endpoint: string,
