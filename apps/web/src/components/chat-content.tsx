@@ -115,20 +115,13 @@ export default function ChatContent() {
       />
 
       <FeatureCallout
-        title={"New Features"}
+        title={'New Features'}
         description={
           <p className="text-sm leading-relaxed flex flex-wrap gap-x-1">
-            <span className="inline-flex">
-              You can now choose from multiple Gemini models and embeddings.
-              Click the
-            </span>
-            <span className="inline-flex items-center gap-1 font-medium">
-              <Icons.component className="h-[1em] w-[1em]" />
-              Models
-            </span>
-            <span className="inline-flex">
-              button in the bottom-left corner to explore.
-            </span>
+            You can now choose from multiple Gemini models and embeddings by
+            clicking the button in the{' '}
+            <span className={'italic font-semibold'}>bottom-left corner</span>{' '}
+            to explore.
           </p>
         }
       />

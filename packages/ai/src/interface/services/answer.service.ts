@@ -5,6 +5,8 @@ import { graph } from '../pipeline/assistant.graph';
 import { RoleType } from '@ai/types/role';
 import { EmbeddingModelName } from '@ai/types/embedding';
 import { LLMModelName } from '@ai/types/llm';
+import { EmbeddingModel } from '@ai/enums/embedding';
+import { LLMModel } from '@ai/enums/llm';
 
 export async function answer(
   question: string,
@@ -25,6 +27,8 @@ export async function answer(
       configurable: { thread_id },
     });
     history = (previous?.channel_values?.history as any[] | undefined) ?? [];
+
+    history = history.slice(-5);
   }
 
   const config = {
@@ -35,8 +39,17 @@ export async function answer(
     },
   };
 
+  const initialState = {
+    question,
+    history: history ?? [],
+    context: [],
+    answer: '',
+    embedding: embedding ?? EmbeddingModel.TextEmbedding004,
+    llm: llm ?? LLMModel.Gemini20Flash,
+  };
+
   if (!stream) {
-    const result = await graph.invoke({ question, history }, config);
+    const result = await graph.invoke(initialState, config);
     return {
       answer: result.answer,
       thread_id,
@@ -44,7 +57,7 @@ export async function answer(
   }
 
   const streamResult = await graph.stream(
-    { question, history },
+    initialState,
     {
       streamMode: 'messages',
       ...config,

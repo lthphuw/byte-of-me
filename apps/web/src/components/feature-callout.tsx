@@ -57,12 +57,19 @@ export default function FeatureCallout({
                       'drop-shadow(0 0 4px rgba(255,255,255,0.6))',
                       'drop-shadow(0 0 0px rgba(255,255,255,0))',
                     ],
+                    color: [
+                      '#ff6b6b',
+                      '#ff9f43',
+                      '#4ecdc4',
+                      '#45b7d1',
+                      '#ff6b6b',
+                    ],
                   }}
                   transition={{
                     repeat: Infinity,
-                    duration: 2.5,
+                    duration: 4,
                     ease: 'easeInOut',
-                    delay: 0.5,
+                    times: [0, 0.25, 0.5, 0.75, 1],
                   }}
                 >
                   <Icons.sparkles className="w-4 h-4" />

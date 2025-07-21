@@ -93,7 +93,7 @@ export function ModelSelector({
                 <FilterSelect
                   items={llmModels.map((it) => ({
                     ...it,
-                    desc: t(`desc.${it.id.replace(".", "")}` as never),
+                    desc: t(`desc.${it.id.replace('.', '')}` as never),
                   }))}
                   selectedId={llm}
                   onSelect={setLLM}
@@ -105,7 +105,7 @@ export function ModelSelector({
                 <FilterSelect
                   items={embeddingModels.map((it) => ({
                     ...it,
-                    desc: t(`desc.${it.id.replace(".", "")}` as never),
+                    desc: t(`desc.${it.id.replace('.', '')}` as never),
                   }))}
                   selectedId={embedding}
                   onSelect={setEmbedding}

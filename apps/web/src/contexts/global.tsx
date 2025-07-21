@@ -4,7 +4,6 @@ import React, { ReactNode, createContext, useContext } from 'react';
 import { Theme } from '@/contexts/theme';
 
 import { Toaster } from '@/components/ui/toaster';
-import { BackgroundWrapper } from '@/components/background-wrapper';
 import { ChatIcon } from '@/components/chat-icon';
 import { Integrations } from '@/components/intergations';
 import { TailwindIndicator } from '@/components/tailwind-indicator';
@@ -21,9 +20,6 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   return (
     <GlobalContext.Provider value={{}}>
       <Theme attribute="class" defaultTheme="system" enableSystem>
-        {/* Global background layout */}
-        <BackgroundWrapper />
-
         {/* Main content */}
         {children}
 

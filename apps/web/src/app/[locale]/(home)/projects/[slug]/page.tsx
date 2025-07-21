@@ -43,7 +43,7 @@ export async function generateStaticParams() {
     );
   } catch (err) {
     console.error('generateStaticParams error:', err);
-    return []; // fallback an toàn
+    return [];
   }
 }
 
