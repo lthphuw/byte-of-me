@@ -1,12 +1,17 @@
 import { nanoid } from 'nanoid';
 
-import { checkpointer } from '@ai/infra/checkpointer/postgres';
+import { checkpointer } from '@ai/infra/checkpointer/postgres.checkpoint';
 import { graph } from '../pipeline/assistant.graph';
 import { RoleType } from '@ai/types/role';
 import { EmbeddingModelName } from '@ai/types/embedding';
 import { LLMModelName } from '@ai/types/llm';
 import { EmbeddingModel } from '@ai/enums/embedding';
 import { LLMModel } from '@ai/enums/llm';
+import { RerankerModel } from '@ai/enums/reranker';
+import { RerankerModelName } from '@ai/types/reranker';
+import {logger as _logger} from '@logger/logger';
+
+const logger = _logger("chat");
 
 export async function answer(
   question: string,
@@ -16,9 +21,14 @@ export async function answer(
     thread_id?: string;
     llm?: LLMModelName;
     embedding?: EmbeddingModelName;
+    reranker?: RerankerModelName;
   } = {},
 ): Promise<any> {
-  const { stream, llm, embedding } = options;
+  logger.debug("Chat with options", {
+    config: options,
+  })
+
+  const { stream, llm, embedding, reranker } = options;
   let history = options.history;
   const thread_id = options.thread_id || nanoid(16);
 
@@ -30,7 +40,6 @@ export async function answer(
 
     history = history.slice(-5);
   }
-
   const config = {
     configurable: {
       thread_id,
@@ -46,6 +55,7 @@ export async function answer(
     answer: '',
     embedding: embedding ?? EmbeddingModel.TextEmbedding004,
     llm: llm ?? LLMModel.Gemini20Flash,
+    reranker: Object.values(RerankerModel).includes(reranker as RerankerModel) ? reranker : null,
   };
 
   if (!stream) {

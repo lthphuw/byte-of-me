@@ -37,7 +37,7 @@ export default function ChatInput({
   className,
 }: ChatInputProps) {
   const t = useTranslations('chat');
-  const { threadId, isRateLimited, llm, setLLM, embedding, setEmbedding } =
+  const { threadId, isRateLimited, llm, setLLM, embedding, setEmbedding, reranker, setReranker } =
     useAssistant();
 
   const [input, setInput] = useState('');
@@ -132,6 +132,8 @@ export default function ChatInput({
               setLLM={setLLM}
               embedding={embedding}
               setEmbedding={setEmbedding}
+              reranker={reranker}
+              setReranker={setReranker}
             />
           </div>
 

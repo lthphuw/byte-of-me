@@ -11,7 +11,7 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 
-import { embeddingModels, llmModels } from '@/config/models';
+import { embeddingModels, llmModels, rerankerModels } from '@/config/models';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useLockBody } from '@/hooks/use-lock-body';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,8 @@ export interface ModelSelectorProps {
   setLLM: (llm: string) => void;
   embedding: string;
   setEmbedding: (embedding: string) => void;
+  reranker: string;
+  setReranker: (reranker: string) => void;
 }
 
 export function ModelSelector({
@@ -30,6 +32,8 @@ export function ModelSelector({
   setLLM,
   embedding,
   setEmbedding,
+  reranker,
+  setReranker,
 }: ModelSelectorProps) {
   const t = useTranslations('chat.model');
   const [open, setOpen] = useState(false);
@@ -109,6 +113,18 @@ export function ModelSelector({
                   }))}
                   selectedId={embedding}
                   onSelect={setEmbedding}
+                  useAllOption={false}
+                  renderInBody={false}
+                  equalWidth={true}
+                />
+
+                <FilterSelect
+                  items={rerankerModels.map((it) => ({
+                    ...it,
+                    desc: t(`desc.${it.id.replace('.', '')}` as never),
+                  }))}
+                  selectedId={reranker}
+                  onSelect={setReranker}
                   useAllOption={false}
                   renderInBody={false}
                   equalWidth={true}

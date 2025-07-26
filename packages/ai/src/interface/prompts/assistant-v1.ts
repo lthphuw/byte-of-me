@@ -1,7 +1,4 @@
-import {
-  ChatPromptTemplate,
-  MessagesPlaceholder,
-} from '@langchain/core/prompts';
+import { ChatPromptTemplate, MessagesPlaceholder } from '@langchain/core/prompts';
 
 export const assistantPrompt = ChatPromptTemplate.fromMessages([
   [

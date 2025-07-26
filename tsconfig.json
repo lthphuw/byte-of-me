@@ -18,7 +18,8 @@
     "paths": {
       "@/*": ["apps/web/src/*"],
       "@db/*": ["packages/db/src/*"],
-      "@ai/*": ["packages/ai/src/*"]
+      "@ai/*": ["packages/ai/src/*"],
+      "@logger/*": ["packages/logger/src/*"]
     },
     "strictNullChecks": true,
     "plugins": [

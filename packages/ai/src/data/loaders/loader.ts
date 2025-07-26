@@ -2,7 +2,7 @@ import { Education, Experience, Project, TechStack, User } from '@db/index';
 import { Document } from '@langchain/core/documents';
 import { convert } from 'html-to-text';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { fetchData } from '@ai/infra/fetch/fetch';
+import { fetchData } from '@ai/libs/fetch/fetch';
 
 const translations: { [index: string]: any } = {
   en: {

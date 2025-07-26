@@ -1,4 +1,4 @@
-import { checkpointer } from '@ai/infra/checkpointer/postgres';
+import { checkpointer } from '@ai/infra/checkpointer/postgres.checkpoint';
 import { RoleType } from '@ai/types/role';
 import { EmbeddingModelName } from '@ai/types/embedding';
 import { LLMModelName } from '@ai/types/llm';

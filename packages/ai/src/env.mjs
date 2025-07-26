@@ -1,10 +1,15 @@
 import { createEnv } from '@t3-oss/env-core';
 import * as dotenv from 'dotenv';
 import { z } from 'zod';
+
 dotenv.config();
 
 export const env = createEnv({
   server: {
+    MODEL_TOP_K_INITIAL_DOCS: z.number().optional().default(15),
+    MODEL_TOP_K_DOCS: z.number().optional().default(4),
+    MODEL_TEMPERATURE: z.number().optional().default(.4),
+
     // Database (Postgres) for LangGraph checkpoint
     DIRECT_DATABASE_URL: z.string().url(),
 
@@ -15,11 +20,12 @@ export const env = createEnv({
     PINECONE_NAMESPACE_1024: z.string(),
     PINECONE_INDEX_1024: z.string(),
 
-    MODEL_TEMPERATURE: z.number().optional().default(.4),
-
     // Google Gemini models
     GEMINI_API_KEY: z.string(),
     GOOGLE_API_KEY: z.string(),
+
+    // Re-ranker models
+    COHERE_API_KEY: z.string(),
 
     // Jina Embedding Models
     JINA_API_KEY: z.string(),
@@ -35,7 +41,11 @@ export const env = createEnv({
   },
 
   runtimeEnv: {
+    MODEL_TOP_K_INITIAL_DOCS: process.env.MODEL_TOP_K_INITIAL_DOCS,
+    MODEL_TOP_K_DOCS: process.env.MODEL_TOP_K_DOCS,
     MODEL_TEMPERATURE: process.env.MODEL_TEMPERATURE,
+
+    COHERE_API_KEY: process.env.COHERE_API_KEY,
 
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
     GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,

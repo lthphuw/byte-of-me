@@ -4,19 +4,36 @@ import createMiddleware from 'next-intl/middleware';
 import { host } from './config/host';
 import { env } from './env.mjs';
 import { routing } from './i18n/routing';
+import { logger } from '@logger/logger';
 
 const isProd = env.NEXT_PUBLIC_ENV === 'production';
 const allowedOrigins = [host];
 
 export default async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, search } = request.nextUrl;
+  const method = request.method;
+  const origin = request.headers.get('origin');
+  const requestHeaders = Object.fromEntries(request.headers.entries());
+
+  // Log incoming request
+  logger().info('Incoming request', {
+    method,
+    url: `${pathname}${search}`,
+    origin,
+    headers: requestHeaders,
+  });
 
   // Handle /api/chat (with or without locale prefix)
   if (pathname === '/api/chat' || pathname.match(/\/[a-z]{2}\/api\/chat/)) {
     // CORS
-    const origin = request.headers.get('origin');
     if (isProd && origin && !allowedOrigins.includes(origin)) {
-      return new NextResponse('Forbidden', { status: 403 });
+      logger().warn('Forbidden request due to invalid origin', { origin });
+      const response = new NextResponse('Forbidden', { status: 403 });
+      logger().info('Response sent', {
+        status: 403,
+        headers: Object.fromEntries(response.headers.entries()),
+      });
+      return response;
     }
 
     // Preflight
@@ -34,20 +51,38 @@ export default async function middleware(request: NextRequest) {
         'Content-Type, Authorization'
       );
       response.headers.set('Access-Control-Allow-Credentials', 'true');
+      logger().info('Response sent (preflight)', {
+        status: 204,
+        headers: Object.fromEntries(response.headers.entries()),
+      });
       return response;
     }
-    const response = NextResponse.next();
 
+    const response = NextResponse.next();
+    logger().info('Response sent', {
+      status: response.status,
+      headers: Object.fromEntries(response.headers.entries()),
+    });
     return response;
   }
 
   // Skip all other /api/* routes
   if (pathname.startsWith('/api/')) {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    logger().debug('Response sent (skipped API route)', {
+      status: response.status,
+      headers: Object.fromEntries(response.headers.entries()),
+    });
+    return response;
   }
 
   // Apply next-intl for non-API routes
-  return createMiddleware(routing)(request);
+  const response = await createMiddleware(routing)(request);
+  logger().debug('Response sent (next-intl)', {
+    status: response.status,
+    headers: Object.fromEntries(response.headers.entries()),
+  });
+  return response;
 }
 
 export const config = {

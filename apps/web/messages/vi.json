@@ -203,7 +203,10 @@
         "gemini-20-flash-lite": "Phiên bản rút gọn, tốc độ cao hơn của Gemini Flash cho các tác vụ yêu cầu độ trễ thấp",
         "gemini-25-flash": "Phiên bản cải tiến của Gemini 2.5 với khả năng phản hồi nhanh cho các tác vụ tương tác",
         "jina-embedding-v3": "Mô hình embedding đa ngôn ngữ, tối ưu cho tốc độ và khả năng truy xuất dữ liệu dày đặc",
-        "text-embedding-004": "Mô hình embedding tiếng Anh chất lượng cao dành cho tìm kiếm ngữ nghĩa"
+        "text-embedding-004": "Mô hình embedding tiếng Anh chất lượng cao dành cho tìm kiếm ngữ nghĩa",
+        "no-reranker": "Không áp dụng re-rank. Tài liệu được chọn dựa hoàn toàn vào độ tương đồng vector.",
+        "cohere-rerank-v35": "Không áp dụng re-rank. Tài liệu được chọn dựa hoàn toàn vào độ tương đồng vector."
+
       }
     }
   }

@@ -57,12 +57,15 @@
     </a>
   </p>
 </div>
-
 ## About the Project
 
-**Byte of Me** is a full-stack portfolio showcasing my projects, skills, and experiences.
-It features an AI assistant powered by a Retrieval-Augmented Generation (RAG) pipeline using [**LangChain
-**](https://langchain-ai.github.io/langgraph/), with support for the following models:
+**Byte of Me** is a full-stack developer portfolio that highlights my projects, skills, and experience.
+It includes an AI assistant built on a Retrieval-Augmented Generation (RAG) pipeline using [**LangGraph**](https://langchain-ai.github.io/langgraph/), part of the LangChain ecosystem.
+
+The system supports multiple language models and embedding providers.
+
+![RAG Pipeline](images/RAG_pipeline.jpg)
+_RAG Pipeline_
 
 ### Language Models (LLMs)
 
@@ -78,6 +81,9 @@ It features an AI assistant powered by a Retrieval-Augmented Generation (RAG) pi
 ### Vector Store
 
 - [**Pinecone**](https://www.pinecone.io/) for semantic search
+
+### Reranker
+- [**Cohere Rerank 3.5**](https://cohere.com/blog/rerank-3pt5)
 
 ### Memory + History
 

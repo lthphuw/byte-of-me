@@ -24,13 +24,6 @@ export function getIndentifier(request: NextRequest): string {
   const ip = forwarded
     ? forwarded.split(',')[0]?.trim()
     : realIp || (request as any).ip || 'anonymous';
-
-  console.log('IP headers:', {
-    'x-forwarded-for': forwarded,
-    'x-real-ip': realIp,
-    'request.ip': (request as any).ip,
-    resolvedIp: ip,
-  });
   return ip;
 }
 

@@ -4,19 +4,6 @@ import { z } from 'zod';
 
 export const env = createEnv({
   server: {
-    GEMINI_API_KEY: z.string().min(1),
-    GOOGLE_API_KEY: z.string().min(1),
-
-    PINECONE_API_KEY: z.string().min(1),
-    PINECONE_NAMESPACE_768: z.string().min(1),
-    PINECONE_INDEX_768: z.string().min(1),
-    PINECONE_NAMESPACE_1024: z.string().min(1),
-    PINECONE_INDEX_1024: z.string().min(1),
-
-    JINA_API_KEY: z.string(),
-
-    CHECKPOINTER_SCHEMA: z.string().min(1),
-
     PRISMA_CACHE_SWR: z.coerce.number().default(86400),
     PRISMA_CACHE_TTL: z.coerce.number().default(86400),
 
@@ -53,19 +40,6 @@ export const env = createEnv({
   },
 
   runtimeEnv: {
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-    GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
-
-    JINA_API_KEY: process.env.JINA_API_KEY,
-
-    PINECONE_API_KEY: process.env.PINECONE_API_KEY,
-    PINECONE_INDEX_768: process.env.PINECONE_INDEX_768,
-    PINECONE_NAMESPACE_768: process.env.PINECONE_NAMESPACE_768,
-    PINECONE_INDEX_1024: process.env.PINECONE_INDEX_1024,
-    PINECONE_NAMESPACE_1024: process.env.PINECONE_NAMESPACE_1024,
-
-    CHECKPOINTER_SCHEMA: process.env.CHECKPOINTER_SCHEMA,
-
     PRISMA_CACHE_SWR: process.env.PRISMA_CACHE_SWR,
     PRISMA_CACHE_TTL: process.env.PRISMA_CACHE_TTL,
 

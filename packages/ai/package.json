@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@langchain/cohere": "^0.3.4",
     "@langchain/community": "^0.3.49",
     "@langchain/core": "^0.3.62",
     "@langchain/google-genai": "^0.2.14",

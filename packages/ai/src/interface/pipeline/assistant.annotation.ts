@@ -3,6 +3,7 @@ import { Annotation } from '@langchain/langgraph';
 import { RoleType } from '@ai/types/role';
 import { EmbeddingModelName } from '@ai/types/embedding';
 import { LLMModelName } from '@ai/types/llm';
+import { RerankerModelName } from '@ai/types/reranker';
 
 // annotation
 export const StateAnnotation = Annotation.Root({
@@ -12,4 +13,5 @@ export const StateAnnotation = Annotation.Root({
   answer: Annotation<string>(),
   embedding: Annotation<EmbeddingModelName>(),
   llm: Annotation<LLMModelName>(),
+  reranker: Annotation<RerankerModelName | null>(),
 });

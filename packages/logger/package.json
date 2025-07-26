@@ -1,0 +1,11 @@
+{
+  "name": "@repo/logger",
+  "version": "1.0.0",
+  "scripts": {},
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1"
+  }
+}

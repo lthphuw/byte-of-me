@@ -1,4 +1,4 @@
-import { getVectorStore } from '@ai/infra/vectorstore/pinecone';
+import { getVectorStore } from '@ai/infra/vectorstore/pinecone.vectorstore';
 import { fetchAndBuildDocuments } from '../loaders/loader';
 import { EmbeddingModelName } from '@ai/types/embedding';
 import { EmbeddingModel } from '@ai/enums/embedding';

@@ -2,16 +2,8 @@
 
 import { PrismaPlugin } from '@prisma/nextjs-monorepo-workaround-plugin';
 import createNextIntlPlugin from 'next-intl/plugin';
-import pino from 'pino';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
-
-const logger = (defaultConfig) =>
-  pino({
-    ...defaultConfig,
-    messageKey: 'message',
-    mixin: () => ({ name: 'byte-of-me' }),
-  });
 
 const nextConfig = {
   reactStrictMode: true,
@@ -37,5 +29,4 @@ const nextConfig = {
 
 export default {
   ...withNextIntl(nextConfig),
-  logger,
 };

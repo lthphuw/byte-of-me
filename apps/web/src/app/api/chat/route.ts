@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { answer, deleteCheckpoint } from '@ai/index';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { logger } from '@logger/index';
+import { getTranslations } from 'next-intl/server';
 
 import { dangerousKeywords } from '@/config/models';
 import {
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest) {
 
   const t = await getTranslations('error');
 
-  const { question, llm, embedding, history, stream, thread_id } =
+  const { question, llm, embedding, reranker,  history, stream, thread_id } =
     await req.json();
 
   if (!question) {
@@ -49,6 +50,7 @@ export async function POST(req: NextRequest) {
       thread_id,
       llm,
       embedding,
+      reranker,
     });
 
     const streamBody = new ReadableStream<Uint8Array>({
@@ -70,7 +72,13 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const result = await answer(question, { history, thread_id });
+  const result = await answer(question, {
+    history,
+    thread_id,
+    llm,
+    embedding,
+    reranker,
+  });
 
   return NextResponse.json(result);
 }

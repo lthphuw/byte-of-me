@@ -29,10 +29,14 @@ interface AssistantContextValue {
     updateLast: (partial: Partial<Message>) => void,
     options?: { stream?: boolean; llm?: string; embedding?: string }
   ) => Promise<void>;
+
+  // Model selection
   llm: string;
   setLLM: (llm: string) => void;
   embedding: string;
   setEmbedding: (embedd: string) => void;
+  reranker: string;
+  setReranker: (reranker: string) => void;
 }
 
 const AssistantContext = createContext<AssistantContextValue | null>(null);
@@ -54,6 +58,7 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
 
   const [llm, setLLM] = useState<string>('gemini-2.0-flash');
   const [embedding, setEmbedding] = useState<string>('text-embedding-004');
+  const [reranker, setReranker] = useState<string>('no-reranker');
   const lastSentRef = useRef<number>(0);
 
   const mounted = useMounted();
@@ -124,7 +129,7 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
       question: string,
       append: (msg: Message) => void,
       updateLast: (partial: Partial<Message>) => void,
-      options: { stream?: boolean; llm?: string; embedding?: string } = {
+      options: { stream?: boolean; } = {
         stream: true,
       }
     ) => {
@@ -150,8 +155,9 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
         question,
         stream: options.stream,
         thread_id: threadId,
-        llm: options.llm ?? llm,
-        embedding: options.embedding ?? embedding,
+        llm,
+        embedding,
+        reranker,
       };
 
       if (options.stream) {
@@ -266,7 +272,7 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
         }
       }
     },
-    [threadId, embedding, llm]
+    [threadId, embedding, llm, reranker]
   );
 
   return (
@@ -281,6 +287,8 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
         setLLM,
         embedding,
         setEmbedding,
+        reranker,
+        setReranker,
       }}
     >
       {children}

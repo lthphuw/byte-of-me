@@ -49,3 +49,16 @@ export const embeddingModels: LLMModel[] = [
     disabled: false,
   },
 ];
+
+export const rerankerModels: LLMModel[] = [
+  {
+    id: 'no-reranker',
+    label: 'No reranker',
+    desc: '',
+  },
+  {
+    id: 'cohere-rerank-v3.5',
+    label: 'Cohere Rerank-v3.5',
+    desc: 'Cohere Rerank v3.5 ranks documents by relevance to a query across 100+ languages, boosting RAG and search performance.',
+  },
+];
