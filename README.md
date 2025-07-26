@@ -57,6 +57,7 @@
     </a>
   </p>
 </div>
+
 ## About the Project
 
 **Byte of Me** is a full-stack developer portfolio that highlights my projects, skills, and experience.
@@ -134,7 +135,7 @@ _Try asking: "What projects has Phu built?" or "What is Phu’s tech stack?"_
   ```
 - Open `http://localhost:3000` in your browser.
 
-5. **Deploy to Vercel** (optional):
+5. **Deploy to Vercel**:
 
 - Push your code to GitHub.
 - Connect your repository to Vercel via the Vercel dashboard.
