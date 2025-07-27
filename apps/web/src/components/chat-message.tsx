@@ -48,7 +48,7 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
           isSystem
             ? 'w-full min-w-full px-0'
             : isUser
-            ? 'bg-neutral-200 dark:bg-neutral-dark shadow-md rounded-tl-3xl rounded-tr-3xl rounded-bl-3xl rounded-br-lg max-w-[80%]'
+            ? 'bg-neutral-200 shadow-md dark:bg-neutral-dark dark:shadow-2xl rounded-tl-3xl rounded-tr-3xl rounded-bl-3xl rounded-br-lg max-w-[80%]'
             : 'bg-zinc-100 dark:bg-zinc-800 rounded-xl shadow-sm max-w-[85%]'
         )}
       >

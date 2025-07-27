@@ -17,6 +17,8 @@ import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useMounted } from '@/hooks/use-mounted';
 import { generateId } from '@/hooks/utils';
 import { toast } from '@/components/ui/use-toast';
+import { LLMModel } from '@ai/enums/llm';
+import { EmbeddingModel } from '@ai/enums/embedding';
 
 interface AssistantContextValue {
   threadId: string | null;
@@ -56,8 +58,8 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
     key: chatThreadId,
   });
 
-  const [llm, setLLM] = useState<string>('gemini-2.0-flash');
-  const [embedding, setEmbedding] = useState<string>('text-embedding-004');
+  const [llm, setLLM] = useState<string>(LLMModel.Gemini20Flash);
+  const [embedding, setEmbedding] = useState<string>(EmbeddingModel.JinaEmbeddingV3);
   const [reranker, setReranker] = useState<string>('no-reranker');
   const lastSentRef = useRef<number>(0);
 
