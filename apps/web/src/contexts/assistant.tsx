@@ -10,6 +10,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { EmbeddingModel } from '@ai/enums/embedding';
+import { LLMModel } from '@ai/enums/llm';
+import { RerankerModel } from '@ai/enums/reranker';
+import { useLocale } from 'next-intl';
 
 import { Message } from '@/types/message';
 import { chatThreadId } from '@/config/local-storage';
@@ -17,8 +21,6 @@ import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useMounted } from '@/hooks/use-mounted';
 import { generateId } from '@/hooks/utils';
 import { toast } from '@/components/ui/use-toast';
-import { LLMModel } from '@ai/enums/llm';
-import { EmbeddingModel } from '@ai/enums/embedding';
 
 interface AssistantContextValue {
   threadId: string | null;
@@ -52,6 +54,7 @@ const COOLDOWN_MS = 5000;
 export const AssistantProvider: React.FC<AssistantProviderProps> = ({
   children,
 }) => {
+  const locale = useLocale();
   const [threadId, setThreadId] = useState<string | null>(null);
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [value, setStorageValue, removeStorageValue] = useLocalStorage({
@@ -59,8 +62,14 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
   });
 
   const [llm, setLLM] = useState<string>(LLMModel.Gemini20Flash);
-  const [embedding, setEmbedding] = useState<string>(EmbeddingModel.JinaEmbeddingV3);
-  const [reranker, setReranker] = useState<string>('no-reranker');
+  const [embedding, setEmbedding] = useState<string>(
+    locale === 'en'
+      ? EmbeddingModel.TextEmbedding004
+      : EmbeddingModel.JinaEmbeddingV3
+  );
+  const [reranker, setReranker] = useState<string>(
+    RerankerModel.CohereRerankV35
+  );
   const lastSentRef = useRef<number>(0);
 
   const mounted = useMounted();
@@ -131,7 +140,7 @@ export const AssistantProvider: React.FC<AssistantProviderProps> = ({
       question: string,
       append: (msg: Message) => void,
       updateLast: (partial: Partial<Message>) => void,
-      options: { stream?: boolean; } = {
+      options: { stream?: boolean } = {
         stream: true,
       }
     ) => {

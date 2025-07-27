@@ -25,7 +25,11 @@ export const importOrder = [
 export const importOrderSeparation = false;
 export const importOrderSortSpecifiers = true;
 export const importOrderBuiltinModulesToTop = true;
-export const importOrderParserPlugins = ['typescript', 'jsx', 'decorators-legacy'];
+export const importOrderParserPlugins = [
+  'typescript',
+  'jsx',
+  'decorators-legacy',
+];
 export const importOrderMergeDuplicateImports = true;
 export const importOrderCombineTypeAndValueImports = true;
 export const plugins = ['@ianvs/prettier-plugin-sort-imports'];

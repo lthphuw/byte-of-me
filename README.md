@@ -130,6 +130,7 @@ _Try asking: "What projects has Phu built?" or "What is Phu’s tech stack?"_
   - [AI Assistant (packages/ai)](packages/ai/README.md)
   - [Database (packages/db)](packages/db/README.md)
   - [Logger (packages/logger)](packages/logger/README.md)
+
 4. **Run the Development Server**:
 
 - From the root directory:
@@ -146,24 +147,24 @@ _Try asking: "What projects has Phu built?" or "What is Phu’s tech stack?"_
 
 ## Techstack
 
-| Technology                                                                                                        | Purpose                              |
-  |-------------------------------------------------------------------------------------------------------------------|--------------------------------------|
-| [**Next.js**](https://nextjs.org/)                                                                                | Frontend framework       |
-| [**Tailwind CSS**](https://tailwindcss.com/docs)                                                                  | Utility-first styling                |
-| [**Framer Motion**](https://www.framer.com/motion/)                                                               | UI animations and transitions        |
-| [**Radix UI**](https://www.radix-ui.com/)                                                                         | Accessible UI primitives             |
-| [**React Bits**](https://github.com/DavidHDev/react-bits)                                                         | UI components                        |
-| [**Prisma**](https://www.prisma.io/docs)                                                                          | ORM for PostgreSQL                   |
-| [**Supabase**](https://supabase.com/docs)                                                                         | Auth and storage backend             |
-| [**Pinecone**](https://www.pinecone.io/)                                                                          | Vector database for RAG              |
-| [**LangChain.js**](https://langchain-ai.github.io/langgraph/)                                                     | RAG pipeline framework               |
-| [**PostgresSaver**](https://github.com/langchain-ai/langgraphjs/tree/main/libs/checkpoint-postgres)               | Save conversation state              |
-| [**Google Gemini 2.0 / 2.5 Flash**](https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/gemini) | Fast LLMs for chat                   |
-| [**text-embedding-004**](https://ai.google.dev/gemini-api/docs/models#text-embedding)                             | English embedding model              |
-| [**Jina Embedding v3**](https://docs.jina.ai/embeddings/jina-embeddings-v3/)                                      | Multilingual embedding               |
-| [**Cohere Reranker**](https://docs.cohere.com/docs/rerank-overview)                                               | Reranking retrieved documents        |
-| [**Vercel**](https://vercel.com/docs)                                                                             | Hosting and deployment               |
-| [**Cloudflare Turnstile**](https://www.cloudflare.com/products/turnstile/)                                        | CAPTCHA for bot protection           |
+| Technology                                                                                                        | Purpose                               |
+  |-------------------------------------------------------------------------------------------------------------------|---------------------------------------|
+| [**Next.js**](https://nextjs.org/)                                                                                | Frontend framework                    |
+| [**Tailwind CSS**](https://tailwindcss.com/docs)                                                                  | Utility-first styling                 |
+| [**Framer Motion**](https://www.framer.com/motion/)                                                               | UI animations and transitions         |
+| [**Radix UI**](https://www.radix-ui.com/)                                                                         | Accessible UI primitives              |
+| [**React Bits**](https://github.com/DavidHDev/react-bits)                                                         | UI components                         |
+| [**Prisma**](https://www.prisma.io/docs)                                                                          | ORM for PostgreSQL                    |
+| [**Supabase**](https://supabase.com/docs)                                                                         | Auth and storage backend              |
+| [**Pinecone**](https://www.pinecone.io/)                                                                          | Vector database for RAG               |
+| [**LangChain.js**](https://langchain-ai.github.io/langgraph/)                                                     | RAG pipeline framework                |
+| [**PostgresSaver**](https://github.com/langchain-ai/langgraphjs/tree/main/libs/checkpoint-postgres)               | Save conversation state               |
+| [**Google Gemini 2.0 / 2.5 Flash**](https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/gemini) | Fast LLMs for chat                    |
+| [**text-embedding-004**](https://ai.google.dev/gemini-api/docs/models#text-embedding)                             | English embedding model               |
+| [**Jina Embedding v3**](https://docs.jina.ai/embeddings/jina-embeddings-v3/)                                      | Multilingual embedding                |
+| [**Cohere Reranker**](https://docs.cohere.com/docs/rerank-overview)                                               | Reranking retrieved documents         |
+| [**Vercel**](https://vercel.com/docs)                                                                             | Hosting and deployment                |
+| [**Cloudflare Turnstile**](https://www.cloudflare.com/products/turnstile/)                                        | CAPTCHA for bot protection            |
 | [**Upstash**](https://upstash.com)                                                                                | Redis-based rate limiting and caching |
 
 ## Contributing

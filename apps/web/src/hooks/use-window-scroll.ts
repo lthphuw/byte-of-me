@@ -39,6 +39,7 @@ function scrollTo({ x, y }: Partial<UseWindowScrollPosition>) {
     window.scrollTo(scrollOptions);
   }
 }
+
 export function useWindowScroll(
   throttleMs: number = 100
 ): UseWindowScrollReturnValue {

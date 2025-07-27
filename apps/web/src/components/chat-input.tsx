@@ -37,8 +37,16 @@ export default function ChatInput({
   className,
 }: ChatInputProps) {
   const t = useTranslations('chat');
-  const { threadId, isRateLimited, llm, setLLM, embedding, setEmbedding, reranker, setReranker } =
-    useAssistant();
+  const {
+    threadId,
+    isRateLimited,
+    llm,
+    setLLM,
+    embedding,
+    setEmbedding,
+    reranker,
+    setReranker,
+  } = useAssistant();
 
   const [input, setInput] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@logger/logger';
 import createMiddleware from 'next-intl/middleware';
 
 import { host } from './config/host';
 import { env } from './env.mjs';
 import { routing } from './i18n/routing';
-import { logger } from '@logger/logger';
 
 const isProd = env.NEXT_PUBLIC_ENV === 'production';
 const allowedOrigins = [host];

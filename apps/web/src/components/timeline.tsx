@@ -30,6 +30,7 @@ export interface TimelineProps {
   className?: string;
   style?: React.CSSProperties;
 }
+
 export function TimelineItem({
   timeline,
   title,

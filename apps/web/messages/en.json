@@ -200,8 +200,11 @@
         "no-reranker": "No re-ranking applied. Top documents are selected based only on vector similarity.",
         "cohere-rerank-v35": "Cohere Rerank v3.5 ranks documents by relevance to a query across 100+ languages, boosting RAG and search performance."
       }
+    },
+    "examples": {
+      "example1": "What technologies does Phu use for backend development?",
+      "example2": "Tell me about one of Phu's personal projects.",
+      "example3": "What is Phu's experience with AI?"
     }
-
-
   }
 }

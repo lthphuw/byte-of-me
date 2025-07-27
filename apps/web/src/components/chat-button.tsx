@@ -10,6 +10,7 @@ export interface ChatButtonProps {
   className?: string;
   style?: React.CSSProperties;
 }
+
 export function ChatButton({ className, style }: ChatButtonProps) {
   return (
     <Link href={'/ask-me'}>

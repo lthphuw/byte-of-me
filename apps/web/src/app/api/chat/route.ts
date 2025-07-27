@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { answer, deleteCheckpoint } from '@ai/index';
-import { logger } from '@logger/index';
 import { getTranslations } from 'next-intl/server';
 
 import { dangerousKeywords } from '@/config/models';
@@ -19,7 +18,7 @@ export async function POST(req: NextRequest) {
 
   const t = await getTranslations('error');
 
-  const { question, llm, embedding, reranker,  history, stream, thread_id } =
+  const { question, llm, embedding, reranker, history, stream, thread_id } =
     await req.json();
 
   if (!question) {

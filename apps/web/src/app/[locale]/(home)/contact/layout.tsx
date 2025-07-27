@@ -51,6 +51,7 @@ export async function generateMetadata({
     },
   };
 }
+
 interface ContactLayoutProps {
   children?: React.ReactNode;
 }

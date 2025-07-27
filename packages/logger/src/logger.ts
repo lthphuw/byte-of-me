@@ -102,4 +102,4 @@ export const logger = (namespace: string = 'byte-of-me'): Logger => {
     _cache.set(namespace, new Logger(namespace));
   }
   return _cache.get(namespace) || new Logger(namespace);
-}
+};

@@ -122,9 +122,7 @@ export default async function RootLocaleLayout({
         )}
       >
         <NextIntlClientProvider>
-          <GlobalProvider>
-            {children}
-          </GlobalProvider>
+          <GlobalProvider>{children}</GlobalProvider>
         </NextIntlClientProvider>
       </body>
     </html>

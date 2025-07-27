@@ -38,6 +38,7 @@ export function I18NToggle() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
+  console.log('Locale: ', locale);
   const FlagComponent = Flags[locale];
 
   const { refs, floatingStyles, context } = useFloating({

@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "es2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -16,10 +20,18 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["apps/web/src/*"],
-      "@db/*": ["packages/db/src/*"],
-      "@ai/*": ["packages/ai/src/*"],
-      "@logger/*": ["packages/logger/src/*"]
+      "@/*": [
+        "apps/web/src/*"
+      ],
+      "@db/*": [
+        "packages/db/src/*"
+      ],
+      "@ai/*": [
+        "packages/ai/src/*"
+      ],
+      "@logger/*": [
+        "packages/logger/src/*"
+      ]
     },
     "strictNullChecks": true,
     "plugins": [

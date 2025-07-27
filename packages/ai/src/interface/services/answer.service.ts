@@ -9,9 +9,9 @@ import { EmbeddingModel } from '@ai/enums/embedding';
 import { LLMModel } from '@ai/enums/llm';
 import { RerankerModel } from '@ai/enums/reranker';
 import { RerankerModelName } from '@ai/types/reranker';
-import {logger as _logger} from '@logger/logger';
+import { logger as _logger } from '@logger/logger';
 
-const logger = _logger("chat");
+const logger = _logger('chat');
 
 export async function answer(
   question: string,
@@ -24,9 +24,9 @@ export async function answer(
     reranker?: RerankerModelName;
   } = {},
 ): Promise<any> {
-  logger.debug("Chat with options", {
+  logger.debug('Chat with options', {
     config: options,
-  })
+  });
 
   const { stream, llm, embedding, reranker } = options;
   let history = options.history;

@@ -22,11 +22,11 @@ export async function fetchAndBuildDocuments(): Promise<Document[]> {
   try {
     // Fetch all data in parallel with error handling
     const [me, experiences, educations, techstacks, projects] = await Promise.all([
-      fetchData<User>('me', {locale: 'en'}).catch(() => null),
-      fetchData<Experience[]>('me/experiences', {locale: 'en'}).catch(() => []),
-      fetchData<Education[]>('me/educations', {locale: 'en'}).catch(() => []),
-      fetchData<TechStack[]>('me/techstacks', {locale: 'en'}).catch(() => []),
-      fetchData<Project[]>('me/projects', {locale: 'en'}).catch(() => []),
+      fetchData<User>('me', { locale: 'en' }).catch(() => null),
+      fetchData<Experience[]>('me/experiences', { locale: 'en' }).catch(() => []),
+      fetchData<Education[]>('me/educations', { locale: 'en' }).catch(() => []),
+      fetchData<TechStack[]>('me/techstacks', { locale: 'en' }).catch(() => []),
+      fetchData<Project[]>('me/projects', { locale: 'en' }).catch(() => []),
     ]);
 
     // === Profile ===
@@ -130,7 +130,7 @@ export async function fetchAndBuildDocuments(): Promise<Document[]> {
               r.tasks
                 ?.map((t: string) => t.toLowerCase().match(/\b(cryptography|grpc|react|next\.js|ssr|csr|isr|redis|mongodb|component|api)\b/g))
                 .flat()
-                .filter(Boolean) || []
+                .filter(Boolean) || [],
             )
             .join(', ')
         }`,
@@ -168,7 +168,7 @@ export async function fetchAndBuildDocuments(): Promise<Document[]> {
                   r.tasks
                     ?.map((t: string) => t.toLowerCase().match(/\b(cryptography|grpc|react|next\.js|ssr|csr|isr|redis|mongodb|component|api)\b/g))
                     .flat()
-                    .filter(Boolean) || []
+                    .filter(Boolean) || [],
                 ) || []),
             ].filter(Boolean),
           },
@@ -244,13 +244,14 @@ export async function fetchAndBuildDocuments(): Promise<Document[]> {
         techs && `Technologies:\n${techs}`,
         tags && `Tags:\n${tags}`,
         `=== End of Phu's Project ===`,
+
         // Embed metadata in content
         `=== Metadata ===`,
         `Source: project`,
         `Document Type: project`,
         `Title: ${project.title || 'Unknown'}`,
         `Name: Phu`,
-        `Keywords: Phu, project, side project, ${project.title}, ${tags.split(', ').join(', ')}, ${techs.split(', ').join(', ')}`,
+        `Keywords: Phu, project, side project, personal project, ${project.title}, ${tags.split(', ').join(', ')}, ${techs.split(', ').join(', ')}`,
       ]
         .filter(Boolean)
         .join('\n\n');

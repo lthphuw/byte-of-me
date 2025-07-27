@@ -1,6 +1,5 @@
-import { Document } from '@langchain/core/documents';
 import { getVectorStore } from '@ai/infra/vectorstore/pinecone.vectorstore';
-import { assistantPrompt } from '../prompts/assistant-v2';
+import { assistantPrompt } from '../prompts/assistant-v3';
 import { getLLM } from '@ai/infra/chat';
 import { Role } from '@ai/enums/role';
 import { EmbeddingModel } from '@ai/enums/embedding';
@@ -23,10 +22,10 @@ export const retrieve = async (state: typeof StateAnnotation.State) => {
     const vectorStore = await getVectorStore(embedding);
 
     const docs = await vectorStore.similaritySearch(state.question,
-      state.reranker ? env.MODEL_TOP_K_INITIAL_DOCS : env.MODEL_TOP_K_DOCS
+      state.reranker ? env.MODEL_TOP_K_INITIAL_DOCS : env.MODEL_TOP_K_DOCS,
     );
 
-    logger.debug('Retrieved documents', { documentCount: docs.length });
+    logger.debug('Retrieved documents by similarity', { documentCount: docs.length, documents: docs });
     return {
       context: docs.map(doc => ({
         pageContent: doc.pageContent,
@@ -80,12 +79,21 @@ export const generate = async (state: typeof StateAnnotation.State) => {
       throw new Error('Missing required state: context, question, or llm');
     }
 
-    const contextText = state.context.map((doc) => {
+    const contextText = state.context.map((doc, index) => {
       const metadataStr = JSON.stringify(doc.metadata, null, 2);
-      return `Content: ${doc.pageContent}\nMetadata: ${metadataStr}`;
+      return `
+      --- Information ${index} ---
+        - Content: ${doc.pageContent}
+        - Metadata / Additional data: ${metadataStr}
+      --- End of Information ${index} ---
+      `;
     }).join('\n\n');
 
-    logger.debug('Formatting messages for LLM', { question: state.question, contextLength: contextText.length });
+    logger.debug('Formatting messages for LLM', {
+      question: state.question,
+      contextLength: contextText.length,
+      context: contextText,
+    });
     const messages = await assistantPrompt.formatMessages({
       context: contextText,
       question: state.question,

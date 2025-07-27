@@ -6,9 +6,9 @@ dotenv.config();
 
 export const env = createEnv({
   server: {
-    MODEL_TOP_K_INITIAL_DOCS: z.number().optional().default(15),
-    MODEL_TOP_K_DOCS: z.number().optional().default(4),
-    MODEL_TEMPERATURE: z.number().optional().default(.4),
+    MODEL_TOP_K_INITIAL_DOCS: z.number().optional().default(15), // Initial number of documents to retrieve
+    MODEL_TOP_K_DOCS: z.number().optional().default(4), // Final number of documents after re-ranking
+    MODEL_TEMPERATURE: z.number().optional().default(0.4), // Temperature for LLM generation
 
     // Database (Postgres) for LangGraph checkpoint
     DIRECT_DATABASE_URL: z.string().url(),
@@ -41,9 +41,9 @@ export const env = createEnv({
   },
 
   runtimeEnv: {
-    MODEL_TOP_K_INITIAL_DOCS: process.env.MODEL_TOP_K_INITIAL_DOCS,
-    MODEL_TOP_K_DOCS: process.env.MODEL_TOP_K_DOCS,
-    MODEL_TEMPERATURE: process.env.MODEL_TEMPERATURE,
+    MODEL_TOP_K_INITIAL_DOCS: Number(process.env.MODEL_TOP_K_INITIAL_DOCS),
+    MODEL_TOP_K_DOCS: Number(process.env.MODEL_TOP_K_DOCS),
+    MODEL_TEMPERATURE: Number(process.env.MODEL_TEMPERATURE),
 
     COHERE_API_KEY: process.env.COHERE_API_KEY,
 

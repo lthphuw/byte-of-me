@@ -206,8 +206,12 @@
         "text-embedding-004": "Mô hình embedding tiếng Anh chất lượng cao dành cho tìm kiếm ngữ nghĩa",
         "no-reranker": "Không áp dụng re-rank. Tài liệu được chọn dựa hoàn toàn vào độ tương đồng vector.",
         "cohere-rerank-v35": "Không áp dụng re-rank. Tài liệu được chọn dựa hoàn toàn vào độ tương đồng vector."
-
       }
+    },
+    "examples": {
+      "example1": "Phú sử dụng công nghệ nào cho phát triển backend?",
+      "example2": "Hãy kể cho tôi về một trong những dự án cá nhân của Phú.",
+      "example3": "Phú có kinh nghiệm gì với trí tuệ nhân tạo (AI)?"
     }
   }
 }

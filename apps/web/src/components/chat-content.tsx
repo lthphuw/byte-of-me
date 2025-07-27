@@ -6,8 +6,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import { useMounted } from '@/hooks/use-mounted';
 import { useWindowScroll } from '@/hooks/use-window-scroll';
-import FeatureCallout from '@/components/feature-callout';
-import { Icons } from '@/components/icons';
 
 import ChatInput from './chat-input';
 import { ChatMessage } from './chat-message';

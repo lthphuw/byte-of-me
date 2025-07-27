@@ -33,9 +33,9 @@ export function ChatTitle({ invoke, className }: ChatTitleProps) {
   const isMobile = useIsMobile();
 
   const examplePrompts = [
-    'What technologies does Phu use for backend development?',
-    "Tell me about one of Phu's personal projects.",
-    "What is Phu's experience with AI?",
+    t('examples.example1'),
+    t('examples.example2'),
+    t('examples.example3'),
   ];
 
   return (

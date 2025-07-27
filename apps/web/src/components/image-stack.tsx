@@ -117,6 +117,7 @@ export default function ImageStack({
     </div>
   );
 }
+
 interface ImageCardProps {
   card: { id: string; src: string; alt?: string };
   index: number;
