@@ -5,18 +5,18 @@ import { Link } from '@/i18n/navigation';
 import { HTMLMotionProps, Variants, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 
+
+
 import { cn } from '@/lib/utils';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
+
 
 import { Icons } from './icons';
 import Loading from './loading';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
+
 
 export interface Project {
   id: string;
@@ -102,7 +102,7 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
             <div className="flex gap-2 flex-wrap items-center">
               {visibleTechstacks.map((tech, index) => (
                 <Link key={index} href={'#'}>
-                  <Badge variant={'secondary'}>{tech.name}</Badge>
+                  <Badge>{tech.name}</Badge>
                 </Link>
               ))}
 
@@ -110,8 +110,11 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <Badge variant={'secondary'}>
-                        +{remainingTechstacks} more
+                      <Badge
+                        className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums"
+                        variant="outline"
+                      >
+                        +{remainingTechstacks}
                       </Badge>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -133,11 +136,17 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
                   <Badge variant={'outline'}>{tag.name}</Badge>
                 </Link>
               ))}
+
               {remainingTags > 0 && (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <Badge variant={'outline'}>+{remainingTags} more</Badge>
+                      <Badge
+                        className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums"
+                        variant="outline"
+                      >
+                        +{remainingTags}
+                      </Badge>
                     </TooltipTrigger>
                     <TooltipContent>
                       {project.tags.slice(MAX_BADGES).map((tag) => (

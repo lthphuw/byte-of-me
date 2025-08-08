@@ -9,6 +9,7 @@ import { cn, ensureValidUrl } from '@/lib/utils';
 
 import { Icons } from './icons';
 
+
 type SiteFooterProps = React.HTMLAttributes<HTMLElement>;
 
 export async function SiteFooter({ className }: SiteFooterProps) {

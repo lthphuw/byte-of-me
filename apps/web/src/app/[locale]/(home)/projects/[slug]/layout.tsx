@@ -6,6 +6,10 @@ import { host } from '@/config/host';
 import { siteConfig } from '@/config/site';
 import { fetchData } from '@/lib/core/fetch';
 
+
+
+
+
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
 };

@@ -6,6 +6,10 @@ import { FloatingToc } from '@/components/floating-toc';
 import { TechGroup, TechStack } from '@/components/tech-stack';
 import { Timeline, TimelineItemProps } from '@/components/timeline';
 
+
+
+
+
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
@@ -42,7 +46,7 @@ export default function AboutContent({
             {sectionTitles.aboutMe}
           </h2>
           <div
-            className="article-text text-sm md:text-md flex flex-col gap-3"
+            className="text-sm md:text-md flex flex-col gap-3"
             dangerouslySetInnerHTML={{ __html: user.aboutMe || '' }}
           />
         </motion.section>

@@ -7,6 +7,10 @@ import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
 import { dbCachingConfig, revalidateTime } from '@/config/revalidate';
 
+
+
+
+
 // https://nextjs.org/docs/app/api-reference/file-conventions/route#dynamic-route-segments
 export async function GET(
   req: NextRequest,

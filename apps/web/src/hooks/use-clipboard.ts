@@ -2,6 +2,10 @@
 // packages/@mantine/hooks/src/use-clipboard/use-clipboard.ts
 import { useState } from 'react';
 
+
+
+
+
 export interface UseClipboardOptions {
   /** Time in ms after which the copied state will reset, `2000` by default */
   timeout?: number;

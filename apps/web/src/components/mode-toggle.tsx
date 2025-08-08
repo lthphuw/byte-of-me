@@ -51,54 +51,51 @@ export function ModeToggle() {
       <Button
         ref={refs.setReference}
         {...getReferenceProps()}
-        variant="icon"
-        size="sm"
-        className="relative size-9 px-0 focus-visible:outline-none"
+        variant="link"
+        size="icon"
+        className="relative px-0 focus-visible:outline-none"
       >
         <motion.span
-          whileTap={{ scale: 0.8 }}
-          whileHover={{ scale: 1.2 }}
+          whileHover={{ scale: 1.1 }}
           className="absolute inset-0 flex items-center justify-center"
         >
-          <motion.span className="relative size-6">
-            <AnimatePresence initial={false}>
-              {resolvedTheme === 'light' ? (
-                <motion.div
-                  key="sun"
-                  variants={iconSwicthVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={{
-                    type: 'spring',
-                    stiffness: 150,
-                    damping: 15,
-                    duration: 0.2,
-                  }}
-                  className="absolute inset-0"
-                >
-                  <Icons.sun className="size-6" />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="moon"
-                  variants={iconSwicthVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={{
-                    type: 'spring',
-                    stiffness: 150,
-                    damping: 15,
-                    duration: 0.2,
-                  }}
-                  className="absolute inset-0"
-                >
-                  <Icons.moon className="size-6" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.span>
+          <AnimatePresence initial={false}>
+            {resolvedTheme === 'light' ? (
+              <motion.div
+                key="sun"
+                variants={iconSwicthVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{
+                  type: 'spring',
+                  stiffness: 150,
+                  damping: 15,
+                  duration: 0.2,
+                }}
+                className="flex items-center justify-center w-full h-full"
+              >
+                <Icons.sun className="!size-6" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="moon"
+                variants={iconSwicthVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{
+                  type: 'spring',
+                  stiffness: 150,
+                  damping: 15,
+                  duration: 0.2,
+                }}
+                className="flex items-center justify-center w-full h-full"
+              >
+                <Icons.moon className="!size-6" />
+              </motion.div>
+            )}
+          </AnimatePresence>
           <span className="sr-only">{t('Toggle theme')}</span>
         </motion.span>
       </Button>

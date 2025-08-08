@@ -12,6 +12,10 @@ import { siteConfig } from '@/config/site';
 import { calculateDuration, formatDate } from '@/lib/core';
 import { CompanyExperience } from '@/components/experience-timeline';
 
+
+
+
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const locale = searchParams.get('locale') || 'en';

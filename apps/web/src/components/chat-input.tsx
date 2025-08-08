@@ -21,6 +21,7 @@ import {
 } from './ui/tooltip';
 import { toast } from './ui/use-toast';
 
+
 const MAX_MESSAGE_LENGTH = 200; // Define max length constant
 
 export type ChatInputProps = {
@@ -150,10 +151,10 @@ export default function ChatInput({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant="icon"
                     onClick={clearChat}
                     disabled={!threadId}
                     aria-label="Clear chat"
+                    size={'icon'}
                   >
                     <Icons.trash />
                   </Button>

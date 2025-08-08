@@ -2,20 +2,11 @@
 
 import { useCallback, useState } from 'react';
 import { Link, usePathname } from '@/i18n/navigation';
-import {
-  FloatingPortal,
-  autoUpdate,
-  flip,
-  offset,
-  shift,
-  useClick,
-  useDismiss,
-  useFloating,
-  useInteractions,
-  useRole,
-} from '@floating-ui/react';
+import { FloatingPortal, autoUpdate, flip, offset, shift, useClick, useDismiss, useFloating, useInteractions, useRole } from '@floating-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLocale } from 'next-intl';
+
+
 
 import { itemVariants } from '@/config/anim';
 import { languageNames, supportedLanguages } from '@/config/language';
@@ -23,7 +14,10 @@ import { cn } from '@/lib/utils';
 import { useTranslations } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
 
+
+
 import { Flags } from './flag';
+
 
 // Define flag animation variants
 const flagVariants = {
@@ -65,13 +59,12 @@ export function I18NToggle() {
       <Button
         ref={refs.setReference}
         {...getReferenceProps()}
-        variant="icon"
-        size="sm"
-        className="relative size-9 px-0 focus:outline-none"
+        variant="link"
+        size="icon"
+        className="relative size-8 px-0 focus:outline-none"
       >
         <motion.div
-          whileHover={{ scale: 1.2 }}
-          whileTap={{ scale: 0.8 }}
+          whileHover={{ scale: 1.1 }}
           className="absolute inset-0 flex items-center justify-center"
         >
           <motion.span className="relative size-6">

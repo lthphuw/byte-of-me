@@ -25,7 +25,9 @@ export default function ExperienceItem({
       viewport={{ once: true }}
       className="mb-8"
     >
-      <h3 className="text-xl font-semibold">{position}</h3>
+      <h3 className="scroll-m-20 text-xl font-semibold tracking-tight">
+        {position}
+      </h3>
       <p className="text-sm text-gray-500">
         {company} • {location} • {duration}
       </p>

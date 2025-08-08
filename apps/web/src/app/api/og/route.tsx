@@ -2,6 +2,10 @@ import { ImageResponse } from 'next/og';
 
 import { host } from '@/config/host';
 
+
+
+
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

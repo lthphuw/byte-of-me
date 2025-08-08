@@ -8,6 +8,10 @@ import { host } from '@/config/host';
 import { sitemapConfig } from '@/config/sitemap';
 import { fetchData } from '@/lib/core/fetch';
 
+
+
+
+
 async function getDynamicRoutes(): Promise<string[]> {
   const projects = await fetchData<Project[]>('me/projects');
   return projects.map((project) => `/projects/${project.id}`);

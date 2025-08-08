@@ -10,6 +10,10 @@ import { AboutShell } from '@/components/shell';
 import { TechGroup } from '@/components/tech-stack';
 import { TimelineItemProps } from '@/components/timeline';
 
+
+
+
+
 export function generateStaticParams() {
   return supportedLanguages.map((lang) => ({ locale: lang }));
 }

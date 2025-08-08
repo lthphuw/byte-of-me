@@ -8,6 +8,10 @@ import { ChatIcon } from '@/components/chat-icon';
 import { Integrations } from '@/components/intergations';
 import { TailwindIndicator } from '@/components/tailwind-indicator';
 
+
+
+
+
 type GlobalContextType = object;
 
 const GlobalContext = createContext<GlobalContextType | null>(null);

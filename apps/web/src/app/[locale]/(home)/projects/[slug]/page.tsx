@@ -8,6 +8,10 @@ import { extractToc } from '@/lib/core/markdown';
 import { ProjectDetailsContent } from '@/components/project-details-content';
 import { ProjectDetailsShell } from '@/components/shell';
 
+
+
+
+
 type Props = {
   params: Promise<{ slug: string }>;
 };

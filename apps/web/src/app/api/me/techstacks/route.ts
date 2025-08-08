@@ -8,6 +8,10 @@ import { supportedLanguages } from '@/config/language';
 import { dbCachingConfig, revalidateTime } from '@/config/revalidate';
 import { siteConfig } from '@/config/site';
 
+
+
+
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const locale = searchParams.get('locale') || 'en';

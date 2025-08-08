@@ -3,6 +3,10 @@
 // packages/@mantine/hooks/src/use-window-event/use-window-event.ts
 import { useEffect } from 'react';
 
+
+
+
+
 export function useWindowEvent<K extends string>(
   type: K,
   listener: K extends keyof WindowEventMap

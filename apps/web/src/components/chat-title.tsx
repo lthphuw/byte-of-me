@@ -55,7 +55,7 @@ export function ChatTitle({ invoke, className }: ChatTitleProps) {
         variants={itemVariants}
       >
         <Icons.logo size={isMobile ? 32 : 48} />
-        <h1 className="text-xl md:text-2xl font-semibold">
+        <h1 className="scroll-m-20 text-center text-xl md:text-2xl font-extrabold tracking-tight text-balance">
           {t("Ask Phu's Assistant")}
         </h1>
       </motion.div>
@@ -72,7 +72,7 @@ export function ChatTitle({ invoke, className }: ChatTitleProps) {
           {examplePrompts.map((q, i) => (
             <motion.li
               key={i}
-              className="container-bg cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-md shadow-md dark:shadow-[0_2px_4px_rgba(255,255,255,0.04)]"
+              className="container-bg text-muted-foreground cursor-pointer px-3 py-1 md:px-4 md:py-2 rounded-md shadow-md dark:shadow-[0_2px_4px_rgba(255,255,255,0.04)]"
               onClick={() => invoke(q)}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

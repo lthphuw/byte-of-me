@@ -70,7 +70,7 @@ export function ProfileBanner({ images }: ProfileBannerProps) {
       </div>
 
       {caption && (
-        <figcaption className="article-text text-sm italic">
+        <figcaption className="text-sm text-muted-foreground italic">
           {caption}
         </figcaption>
       )}

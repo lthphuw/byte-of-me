@@ -18,6 +18,10 @@ import { Button } from '@/components/ui/button';
 import { FilterSelect } from '@/components/filter-select';
 import { Icons } from '@/components/icons';
 
+
+
+
+
 export interface ModelSelectorProps {
   llm: string;
   setLLM: (llm: string) => void;
@@ -131,7 +135,7 @@ export function ModelSelector({
                 />
 
                 <Button
-                  variant={'icon'}
+                  size={'icon'}
                   onClick={onClose}
                   className={'absolute top-[16px] right-[0px]'}
                 >

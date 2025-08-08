@@ -12,6 +12,10 @@ import { ProfileBanner } from '@/components/profile-banner';
 import { ProfileQuote } from '@/components/profile-quote';
 import { HomeShell } from '@/components/shell';
 
+
+
+
+
 export function generateStaticParams() {
   return supportedLanguages.map((lang) => ({ locale: lang }));
 }
@@ -27,7 +31,7 @@ export default async function HomePage() {
         <GreetingWriter text={user.greeting || ''} />
 
         {/* Tagline */}
-        <h2 className="article-text mb-2 text-muted-foreground md:text-lg">
+        <h2 className="mb-2 scroll-m-20 pb-2 text-base md:text-xl font-semibold tracking-tight first:mt-0 text-muted-foreground">
           {user?.tagLine || ''}
         </h2>
 

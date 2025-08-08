@@ -4,6 +4,10 @@ import { getTranslations } from 'next-intl/server';
 import { host } from '@/config/host';
 import { siteConfig } from '@/config/site';
 
+
+
+
+
 export async function generateMetadata({
   params,
 }: {

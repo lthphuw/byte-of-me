@@ -8,6 +8,10 @@ import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
 import { dbCachingConfig, revalidateTime } from '@/config/revalidate';
 
+
+
+
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const locale = searchParams.get('locale') || 'en';

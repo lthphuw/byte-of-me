@@ -3,9 +3,12 @@ import { getTranslations } from 'next-intl/server';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { FuzzyNotFound } from '@/components/fuzzy-not-found';
 import GoBackButton from '@/components/go-back';
 import { Icons } from '@/components/icons';
+
+
+
+
 
 export default async function NotFound() {
   const t = await getTranslations('notFound');
@@ -14,7 +17,9 @@ export default async function NotFound() {
       <div className="container flex items-center justify-center min-h-screen px-6 py-12 mx-auto">
         <div className="w-full">
           <div className="flex flex-col gap-2 md:gap-4  items-stretch md:items-center max-w-lg mx-auto text-center">
-            <FuzzyNotFound />
+            <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
+              404
+            </h1>
             <h1 className="mt-2 text-xl font-bold text-gray-800 dark:text-white">
               {t('Oops! Page not found')}
             </h1>

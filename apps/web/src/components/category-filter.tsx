@@ -5,6 +5,7 @@ import { BaseSelectItem } from '@/types';
 import { Button } from '@/components/ui/button';
 
 import { FilterSelect } from './filter-select';
+import { Separator } from '@/components/ui/separator';
 
 interface CategoryFilterProps {
   techstacks: BaseSelectItem[];
@@ -50,7 +51,7 @@ export function CategoryFilter({
           />
         </div>
 
-        <div className="min-h-[1em] w-[2.5px] self-stretch opacity-20 rounded-md bg-slate-800 dark:bg-slate-800 dark:opacity-100 shadow-xl"></div>
+        <Separator orientation="vertical" />
 
         <div className="flex-1 flex flex-wrap gap-2">
           <SingleCategoryFilter

@@ -11,7 +11,7 @@ const TechStack: React.FC<{ techs: string[] }> = ({ techs }) => {
     <div className="flex flex-wrap gap-2">
       {techs.map((tech, idx) => (
         <Link key={idx} href={'#'} className="inline-block">
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant={'secondary'} className="text-xs">
             {tech}
           </Badge>
         </Link>
@@ -74,7 +74,6 @@ export default function ExperienceTimeline({
                 fallbackSrc="/images/experiences/placeholder.png"
                 fallbackText="?"
                 size={40}
-                className="rounded-lg"
               />
             </div>
             <div className="flex-1 gap-2">
