@@ -5,9 +5,9 @@ import { FloatingPortal } from '@floating-ui/react';
 
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-is-mobile';
+import { Button } from '@/components/ui/button';
 
 import { Icons } from './icons';
-import { Button } from '@/components/ui/button';
 
 export interface ChatIconProps {
   className?: string;

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMemo } from 'react';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import { MainNavItem } from '@/types';
@@ -20,10 +21,9 @@ import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useTranslations } from '@/hooks/use-translations';
+import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons';
 import { MobileNav } from '@/components/mobile-nav';
-import { Button } from '@/components/ui/button';
-import { useMemo } from 'react';
 
 interface MainNavProps {
   items: MainNavItem[];
@@ -54,7 +54,7 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
     const segment = useSelectedLayoutSegment();
     const [showMobileMenu, setShowMobileMenu] = React.useState(false);
     const [originPosition, setOriginPosition] = React.useState({ x: 0, y: 0 });
-    const navItems = useMemo(() => items.filter(it => !it.onlyMobile), []);
+    const navItems = useMemo(() => items.filter((it) => !it.onlyMobile), []);
 
     const { refs, floatingStyles, context } = useFloating({
       open: showMobileMenu,
@@ -120,9 +120,7 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
                   item.disabled && 'cursor-not-allowed opacity-80'
                 )}
               >
-                <Button variant={'ghost'}>
-                  {t(item.title)}
-                </Button>
+                <Button variant={'ghost'}>{t(item.title)}</Button>
               </Link>
             ))}
           </nav>

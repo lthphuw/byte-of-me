@@ -21,7 +21,6 @@ export function generateStaticParams() {
 export default async function AboutPage() {
   const t = await getTranslations('about');
 
-  // Fetch all data concurrently
   const [user, educations, techstacks] = await Promise.all([
     fetchData<User>('me'),
     fetchData<Education[]>('me/educations'),

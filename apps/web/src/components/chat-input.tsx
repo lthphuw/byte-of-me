@@ -2,13 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAssistant } from '@/contexts/assistant';
-import { FloatingPortal } from '@floating-ui/react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 
-import { verifyCaptcha } from '@/lib/core/verify-capcha';
 import { cn } from '@/lib/utils';
-import { useTurnstile } from '@/hooks/use-turnstile';
 import { ModelSelector } from '@/components/model-selector';
 
 import { Icons } from './icons';
@@ -154,6 +151,7 @@ export default function ChatInput({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
+                    variant={'ghost'}
                     onClick={clearChat}
                     disabled={!threadId}
                     aria-label="Clear chat"

@@ -28,7 +28,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  // Tags & techstacks (avoid type casting from any)
   const tags = Array.isArray((project as any)?.tags)
     ? (project as any).tags.map((t: any) => t.name)
     : [];

@@ -74,7 +74,7 @@ export function SiteHeader() {
     type: 'spring',
     stiffness: 100,
     mass: 0.6,
-    damping: 10
+    damping: 10,
   };
 
   const headerVariants: Variants = {

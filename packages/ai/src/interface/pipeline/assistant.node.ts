@@ -1,5 +1,5 @@
 import { getVectorStore } from '@ai/infra/vectorstore/pinecone.vectorstore';
-import { assistantPrompt } from '../prompts/assistant-v3';
+import { assistantPrompt } from '../prompts/assistant-v4';
 import { getLLM } from '@ai/infra/chat';
 import { Role } from '@ai/enums/role';
 import { EmbeddingModel } from '@ai/enums/embedding';
@@ -9,7 +9,6 @@ import { logger as _logger } from '@logger/logger';
 import { rerankers } from '@ai/infra/reranker';
 import { env } from '@ai/env.mjs';
 
-// Create a named logger for the assistant graph
 const logger = _logger('assistant-graph');
 
 export const retrieve = async (state: typeof StateAnnotation.State) => {
@@ -79,21 +78,27 @@ export const generate = async (state: typeof StateAnnotation.State) => {
       throw new Error('Missing required state: context, question, or llm');
     }
 
-    const contextText = state.context.map((doc, index) => {
-      const metadataStr = JSON.stringify(doc.metadata, null, 2);
-      return `
-      --- Information ${index} ---
-        - Content: ${doc.pageContent}
-        - Metadata / Additional data: ${metadataStr}
-      --- End of Information ${index} ---
-      `;
-    }).join('\n\n');
+    const contextText = state.context
+      .sort((a, b) => (b.metadata.relevanceScore || 0) - (a.metadata.relevanceScore || 0)) // Sắp xếp theo relevanceScore giảm dần (nếu rerank đã làm, có thể bỏ)
+      .map((doc, index) => {
+        const selectedMetadata = {
+          id: doc.metadata.id,
+          source: doc.metadata.source,
+          type: doc.metadata.type,
+          relevanceScore: doc.metadata.relevanceScore,
+          keywords: doc.metadata.keywords?.join(', '),
+        };
+        const metadataStr = JSON.stringify(selectedMetadata);
 
-    logger.debug('Formatting messages for LLM', {
-      question: state.question,
-      contextLength: contextText.length,
-      context: contextText,
-    });
+        return `
+    <document id="${index + 1}" relevance="${selectedMetadata.relevanceScore || 'N/A'}">
+      <content>${doc.pageContent.trim().replace(/\n+/g, ' ')}</content> // Loại bỏ newline thừa, thay bằng space
+      <metadata>${metadataStr}</metadata>
+    </document>
+    `;
+      })
+      .join('\n\n');
+
     const messages = await assistantPrompt.formatMessages({
       context: contextText,
       question: state.question,
@@ -101,6 +106,11 @@ export const generate = async (state: typeof StateAnnotation.State) => {
         type: msg.role,
         content: msg.content,
       })),
+    });
+
+    logger.debug('Formatting messages for LLM', {
+      question: state.question,
+      messages: messages,
     });
 
     const llm = getLLM(state.llm);

@@ -1,11 +1,10 @@
 'use client';
 
+import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { motion } from 'framer-motion';
 
-import AvatarWithFallback from './ui/avatar-with-fallback';
 import { Badge } from './ui/badge';
-import Image from 'next/image';
 
 const TechStack: React.FC<{ techs: string[] }> = ({ techs }) => {
   return (

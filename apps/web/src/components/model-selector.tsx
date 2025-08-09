@@ -135,9 +135,10 @@ export function ModelSelector({
                 />
 
                 <Button
+                  variant={'ghost'}
                   size={'icon'}
                   onClick={onClose}
-                  className={'absolute top-[16px] right-[0px]'}
+                  className={'absolute top-[16px] right-[16px]'}
                 >
                   <Icons.close />
                 </Button>

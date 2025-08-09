@@ -75,7 +75,7 @@ export function ContactContent() {
         ].map((item, index) => (
           <motion.div
             whileHover={{
-              scale: 1.05
+              scale: 1.05,
             }}
             id={index.toString()}
             key={item.href}
@@ -88,7 +88,9 @@ export function ContactContent() {
                 className="flex flex-col items-center justify-center gap-4 w-full h-full px-4 py-4"
               >
                 {item.icon}
-                <p className="scroll-m-20 text-base font-semibold tracking-tight">{item.label}</p>
+                <p className="scroll-m-20 text-base font-semibold tracking-tight">
+                  {item.label}
+                </p>
               </Link>
             </div>
           </motion.div>

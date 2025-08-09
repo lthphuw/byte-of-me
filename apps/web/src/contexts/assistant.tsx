@@ -13,7 +13,6 @@ import React, {
 import { EmbeddingModel } from '@ai/enums/embedding';
 import { LLMModel } from '@ai/enums/llm';
 import { RerankerModel } from '@ai/enums/reranker';
-import { useLocale } from 'next-intl';
 
 import { Message } from '@/types/message';
 import { chatThreadId } from '@/config/local-storage';
@@ -54,18 +53,16 @@ const COOLDOWN_MS = 5000;
 export const AssistantProvider: React.FC<AssistantProviderProps> = ({
   children,
 }) => {
-  const locale = useLocale();
+  // const locale = useLocale();
   const [threadId, setThreadId] = useState<string | null>(null);
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [value, setStorageValue, removeStorageValue] = useLocalStorage({
     key: chatThreadId,
   });
 
-  const [llm, setLLM] = useState<string>(LLMModel.Gemini20Flash);
+  const [llm, setLLM] = useState<string>(LLMModel.Gemini25Flash);
   const [embedding, setEmbedding] = useState<string>(
-    locale === 'en'
-      ? EmbeddingModel.TextEmbedding004
-      : EmbeddingModel.JinaEmbeddingV3
+    EmbeddingModel.JinaEmbeddingV3
   );
   const [reranker, setReranker] = useState<string>(
     RerankerModel.CohereRerankV35

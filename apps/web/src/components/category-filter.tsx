@@ -3,9 +3,9 @@
 import { BaseSelectItem } from '@/types';
 
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 
 import { FilterSelect } from './filter-select';
-import { Separator } from '@/components/ui/separator';
 
 interface CategoryFilterProps {
   techstacks: BaseSelectItem[];

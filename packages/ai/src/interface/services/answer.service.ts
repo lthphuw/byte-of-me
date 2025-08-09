@@ -48,6 +48,7 @@ export async function answer(
     },
   };
 
+  console.log('>>> History: ', history);
   const initialState = {
     question,
     history: history ?? [],

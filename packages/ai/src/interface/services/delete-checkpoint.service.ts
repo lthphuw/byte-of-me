@@ -13,19 +13,25 @@ export async function deleteCheckpoint(thread_id: string) {
 
     // Delete from checkpoint_writes
     await client.query(
-      `DELETE FROM ${env.CHECKPOINTER_SCHEMA}.checkpoint_writes WHERE thread_id = $1`,
+      `DELETE
+       FROM ${env.CHECKPOINTER_SCHEMA}.checkpoint_writes
+       WHERE thread_id = $1`,
       [thread_id],
     );
 
     // Delete from checkpoint_blobs
     await client.query(
-      `DELETE FROM ${env.CHECKPOINTER_SCHEMA}.checkpoint_blobs WHERE thread_id = $1`,
+      `DELETE
+       FROM ${env.CHECKPOINTER_SCHEMA}.checkpoint_blobs
+       WHERE thread_id = $1`,
       [thread_id],
     );
 
     // Delete from checkpoints
     const res = await client.query(
-      `DELETE FROM ${env.CHECKPOINTER_SCHEMA}.checkpoints WHERE thread_id = $1`,
+      `DELETE
+       FROM ${env.CHECKPOINTER_SCHEMA}.checkpoints
+       WHERE thread_id = $1`,
       [thread_id],
     );
 
