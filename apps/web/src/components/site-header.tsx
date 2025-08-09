@@ -73,6 +73,8 @@ export function SiteHeader() {
   const transitionConfig: Transition = {
     type: 'spring',
     stiffness: 100,
+    mass: 0.6,
+    damping: 10
   };
 
   const headerVariants: Variants = {

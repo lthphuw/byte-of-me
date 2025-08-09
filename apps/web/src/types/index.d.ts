@@ -13,7 +13,9 @@ export type NavItem = {
   disabled?: boolean;
 };
 
-export type MainNavItem = NavItem;
+export type MainNavItem = NavItem & {
+  onlyMobile?: boolean;
+};
 
 export type SidebarNavItem = {
   title: string;

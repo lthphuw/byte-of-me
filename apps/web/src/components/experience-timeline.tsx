@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 
 import AvatarWithFallback from './ui/avatar-with-fallback';
 import { Badge } from './ui/badge';
+import Image from 'next/image';
 
 const TechStack: React.FC<{ techs: string[] }> = ({ techs }) => {
   return (
@@ -68,12 +69,12 @@ export default function ExperienceTimeline({
             className="flex flex-col sm:flex-row items-start gap-4"
           >
             <div className="flex-shrink-0">
-              <AvatarWithFallback
+              <Image
                 src={company.logoUrl}
                 alt={company.company}
-                fallbackSrc="/images/experiences/placeholder.png"
-                fallbackText="?"
-                size={40}
+                width={40}
+                height={40}
+                className={`aspect-square size-full object-cover`}
               />
             </div>
             <div className="flex-1 gap-2">

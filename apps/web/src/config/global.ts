@@ -32,6 +32,11 @@ export const globalConfig: GlobalConfig = {
       //   href: '/cv',
       // },
       {
+        title: 'Anything about me',
+        href: '/ask-me',
+        onlyMobile: true,
+      },
+      {
         title: "Let's talk",
         href: '/contact',
       },

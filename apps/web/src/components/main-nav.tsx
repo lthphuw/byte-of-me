@@ -22,6 +22,8 @@ import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useTranslations } from '@/hooks/use-translations';
 import { Icons } from '@/components/icons';
 import { MobileNav } from '@/components/mobile-nav';
+import { Button } from '@/components/ui/button';
+import { useMemo } from 'react';
 
 interface MainNavProps {
   items: MainNavItem[];
@@ -52,8 +54,9 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
     const segment = useSelectedLayoutSegment();
     const [showMobileMenu, setShowMobileMenu] = React.useState(false);
     const [originPosition, setOriginPosition] = React.useState({ x: 0, y: 0 });
+    const navItems = useMemo(() => items.filter(it => !it.onlyMobile), []);
 
-    const { update, refs, floatingStyles, context } = useFloating({
+    const { refs, floatingStyles, context } = useFloating({
       open: showMobileMenu,
       onOpenChange: setShowMobileMenu,
       strategy: 'fixed',
@@ -102,22 +105,24 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
         )}
 
         {/* Desktop Navigation */}
-        {!isMobile && items.length > 0 && (
-          <nav className="flex gap-6">
-            {items.map((item, index) => (
+        {!isMobile && navItems.length > 0 && (
+          <nav className="flex">
+            {navItems.map((item, index) => (
               <Link
                 key={index}
                 href={item.disabled ? '#' : item.href}
                 locale={locale}
                 className={cn(
-                  'flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm',
+                  'flex items-center text-lg font-medium transition-colors hover:text-foreground/80 ',
                   item.href.startsWith(`/${segment}`)
-                    ? 'text-foreground'
+                    ? 'text-foreground font-semibold'
                     : 'text-foreground/60',
                   item.disabled && 'cursor-not-allowed opacity-80'
                 )}
               >
-                {t(item.title)}
+                <Button variant={'ghost'}>
+                  {t(item.title)}
+                </Button>
               </Link>
             ))}
           </nav>

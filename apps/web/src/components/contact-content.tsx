@@ -39,10 +39,10 @@ export function ContactContent() {
     >
       {/* Header */}
       <motion.div variants={itemVariants} className="text-center mb-10">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
           {t('Connect With Me')}
         </h1>
-        <p className="mt-2 text-base text-gray-600 dark:text-gray-400">
+        <p className="mt-2 text-base md:text-xl text-muted-foreground border-b pb-2">
           {t("Reach out, let's code the future!")}
         </p>
       </motion.div>
@@ -74,6 +74,9 @@ export function ContactContent() {
           },
         ].map((item, index) => (
           <motion.div
+            whileHover={{
+              scale: 1.05
+            }}
             id={index.toString()}
             key={item.href}
             variants={itemVariants}
@@ -85,7 +88,7 @@ export function ContactContent() {
                 className="flex flex-col items-center justify-center gap-4 w-full h-full px-4 py-4"
               >
                 {item.icon}
-                <p className="text-base font-semibold">{item.label}</p>
+                <p className="scroll-m-20 text-base font-semibold tracking-tight">{item.label}</p>
               </Link>
             </div>
           </motion.div>
