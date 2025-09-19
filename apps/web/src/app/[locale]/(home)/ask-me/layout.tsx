@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { AssistantProvider } from '@/contexts/assistant';
 import { getTranslations } from 'next-intl/server';
 
 import { host } from '@/config/host';
@@ -67,8 +66,6 @@ interface MoreLayoutProps {
 
 export default async function AskMeLayout({ children }: MoreLayoutProps) {
   return (
-    <AssistantProvider>
       <div className="flex flex-col gap-6">{children}</div>
-    </AssistantProvider>
   );
 }

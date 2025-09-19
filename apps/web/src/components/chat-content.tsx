@@ -1,8 +1,9 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAssistant } from '@/contexts/assistant';
+import { useCallback, useEffect, useRef } from 'react';
+import { useAssistantStore } from '@/stores/assistant';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useShallow } from 'zustand/react/shallow';
 
 import { useMounted } from '@/hooks/use-mounted';
 import { useWindowScroll } from '@/hooks/use-window-scroll';
@@ -18,11 +19,23 @@ export type Message = {
 };
 
 export default function ChatContent() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [globalLoading, setGlobalLoading] = useState(false);
-
-  const { threadId, fetchHistory, clearHistory, sendMessage } = useAssistant();
+  const {
+    threadId,
+    fetchHistory,
+    sendMessage,
+    messages,
+    isHistoryLoading,
+    isLoading,
+  } = useAssistantStore(
+    useShallow((state) => ({
+      threadId: state.threadId,
+      fetchHistory: state.fetchHistory,
+      sendMessage: state.sendMessage,
+      messages: state.messages,
+      isHistoryLoading: state.isHistoryLoading,
+      isLoading: state.isLoading,
+    }))
+  );
   const mounted = useMounted();
   const [, scrollTo] = useWindowScroll();
 
@@ -41,46 +54,23 @@ export default function ChatContent() {
     if (!mounted || !threadId) return;
 
     (async () => {
-      setGlobalLoading(true);
-      const history = await fetchHistory();
-      setMessages(history);
-      setGlobalLoading(false);
+      await fetchHistory();
     })();
   }, [mounted, threadId, fetchHistory]);
 
   const handleSend = useCallback(
-    async (question: string) => {
+    async (query: string) => {
       // Scroll window to top
       scrollTo({ x: 0, y: 0 });
-      setLoading(true);
-
-      await sendMessage(
-        question,
-        (msg) => setMessages((prev) => [...prev, msg]),
-        (partial) =>
-          setMessages((prev) =>
-            prev.map((msg, i) =>
-              i === prev.length - 1 ? { ...msg, ...partial } : msg
-            )
-          )
-      );
-
-      setLoading(false);
+      await sendMessage(query);
     },
     [sendMessage]
   );
 
-  const handleClearChat = useCallback(async () => {
-    setGlobalLoading(true);
-    await clearHistory();
-    setMessages([]);
-    setGlobalLoading(false);
-  }, [clearHistory]);
-
   return (
     <div className="relative w-full mx-auto flex flex-col h-[80vh]">
       <AnimatePresence mode="wait">
-        {globalLoading ? (
+        {isHistoryLoading ? (
           <Loading />
         ) : messages.length === 0 ? (
           <ChatTitle
@@ -98,31 +88,19 @@ export default function ChatContent() {
             className="flex-1 space-y-4 px-4 py-6 overflow-y-auto"
           >
             {messages.map((msg, i) => (
-              <ChatMessage key={i} content={msg.content} role={msg.role} />
+              <ChatMessage
+                key={i}
+                content={msg.content}
+                role={msg.role}
+                isLast={i == messages.length - 1}
+              />
             ))}
-            {loading && <Loading />}
+            {isLoading && <Loading />}
           </motion.div>
         )}
       </AnimatePresence>
 
-      <ChatInput
-        className="justify-end mt-auto"
-        clearChat={handleClearChat}
-        onSend={handleSend}
-        loading={loading}
-      />
-
-      {/*<FeatureCallout*/}
-      {/*  title={'New Features'}*/}
-      {/*  description={*/}
-      {/*    <p className="text-sm leading-relaxed flex flex-wrap gap-x-1">*/}
-      {/*      You can now choose from multiple Gemini models and embeddings by*/}
-      {/*      clicking the button in the{' '}*/}
-      {/*      <span className={'italic font-semibold'}>bottom-left corner</span>{' '}*/}
-      {/*      to explore.*/}
-      {/*    </p>*/}
-      {/*  }*/}
-      {/*/>*/}
+      <ChatInput className="justify-end mt-auto" onSend={handleSend} />
     </div>
   );
 }

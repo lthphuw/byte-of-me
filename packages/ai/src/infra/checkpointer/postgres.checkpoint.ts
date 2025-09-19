@@ -8,4 +8,5 @@ export const checkpointer = PostgresSaver.fromConnString(
   },
 );
 
+
 await checkpointer.setup();

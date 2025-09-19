@@ -78,7 +78,8 @@
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "unified": "^11.0.5",
-    "zod": "^3.21.4"
+    "zod": "^3.21.4",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.1",

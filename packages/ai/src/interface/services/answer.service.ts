@@ -18,7 +18,7 @@ export async function answer(
   options: {
     stream?: boolean;
     history?: Array<{ role: RoleType; content: string }>;
-    thread_id?: string;
+    threadId?: string;
     llm?: LLMModelName;
     embedding?: EmbeddingModelName;
     reranker?: RerankerModelName;
@@ -30,11 +30,11 @@ export async function answer(
 
   const { stream, llm, embedding, reranker } = options;
   let history = options.history;
-  const thread_id = options.thread_id || nanoid(16);
+  const threadId = options.threadId || nanoid(16);
 
-  if (!history && thread_id) {
+  if (!history && threadId) {
     const previous = await checkpointer.get({
-      configurable: { thread_id },
+      configurable: { thread_id: threadId },
     });
     history = (previous?.channel_values?.history as any[] | undefined) ?? [];
 
@@ -42,7 +42,7 @@ export async function answer(
   }
   const config = {
     configurable: {
-      thread_id,
+      thread_id: threadId,
       ...(llm && { llm }),
       ...(embedding && { embedding }),
     },
@@ -63,7 +63,7 @@ export async function answer(
     const result = await graph.invoke(initialState, config);
     return {
       answer: result.answer,
-      thread_id,
+      threadId,
     };
   }
 
