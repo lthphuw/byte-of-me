@@ -3,9 +3,9 @@ import { RoleType } from '@ai/types/role';
 import { EmbeddingModelName } from '@ai/types/embedding';
 import { LLMModelName } from '@ai/types/llm';
 
-export async function fetchState(thread_id: string) {
+export async function fetchState(threadId: string) {
   const state = await checkpointer.get({
-    configurable: { thread_id },
+    configurable: { thread_id: threadId },
   });
 
   const messages = state?.channel_values?.history as Array<{ role: RoleType; content: string }> | undefined;

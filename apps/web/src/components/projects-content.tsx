@@ -1,11 +1,11 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import Fuse from 'fuse.js';
-import { debounce } from 'lodash';
 
+import { useDebounce } from '@/hooks/use-debounce';
 import { CategoryFilter } from '@/components/category-filter';
 import { SearchBar, SearchItem } from '@/components/search-bar';
 
@@ -25,121 +25,77 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [previewItems, setPreviewItems] = useState<SearchItem[]>([]);
-  const [showedItems, setShowedItems] = useState<Project[]>(projects);
-  const [searchQuery, setSearchQuery] = useState<string>(
-    searchParams.get('q') || ''
-  );
-  const [debouncedQuery, setDebouncedQuery] = useState<string>(
-    searchParams.get('q') || ''
-  );
-  const [selectedTag, setSelectedTag] = useState<string>(
-    searchParams.get('tag') || ''
-  );
-  const [selectedTechstack, setSelectedTechstack] = useState<string>(
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const [selectedTag, setSelectedTag] = useState(searchParams.get('tag') || '');
+  const [selectedTechstack, setSelectedTechstack] = useState(
     searchParams.get('tech') || ''
   );
-  const [isLoading, setIsLoading] = useState(false);
 
-  // Initialize fuzzy search
+  const debouncedQuery = useDebounce(searchQuery, 400);
+
+  // Init fuzzy search
   const fuse = useMemo(() => new Fuse(projects, fuseOptions), [projects]);
 
   // Extract unique techstacks and tags
   const techstacks = useMemo(() => {
-    const set = new Set<string>();
+    const seen = new Set<string>();
     return projects
-      .flatMap((proj) => proj.techstacks)
-      .filter((it) => !set.has(it.id) && set.add(it.id))
-      .map((it) => ({ id: it.id, label: it.name }));
+      .flatMap((p) => p.techstacks)
+      .filter((t) => !seen.has(t.id) && seen.add(t.id))
+      .map((t) => ({ id: t.id, label: t.name }));
   }, [projects]);
 
   const tags = useMemo(() => {
-    const set = new Set<string>();
+    const seen = new Set<string>();
     return projects
-      .flatMap((proj) => proj.tags)
-      .filter((it) => !set.has(it.id) && set.add(it.id))
-      .map((it) => ({ id: it.id, label: it.name }));
+      .flatMap((p) => p.tags)
+      .filter((t) => !seen.has(t.id) && seen.add(t.id))
+      .map((t) => ({ id: t.id, label: t.name }));
   }, [projects]);
 
-  // Debounced search handler
-  const debouncedSearch = useMemo(
-    () =>
-      debounce((query: string) => {
-        setDebouncedQuery(query);
-      }, 500),
-    []
-  );
+  // Filter & search logic in one memo
+  const { showedItems, previewItems } = useMemo(() => {
+    let filtered = projects;
+    let preview: SearchItem[] = [];
 
-  // Handle search query change
-  const handleSearchQueryChange = useCallback(
-    (query: string) => {
-      setSearchQuery(query);
-      setIsLoading(true);
-      debouncedSearch(query);
-    },
-    [debouncedSearch]
-  );
+    if (debouncedQuery.trim()) {
+      const results = fuse.search(debouncedQuery);
+      filtered = results.map((r) => r.item);
+      preview = results.slice(0, 5).map((res) => ({
+        id: res.item.id,
+        label: res.item.title,
+        desc: res.item.description || '',
+      }));
+    }
 
-  // Update URL parameters
-  const updateUrlParams = useCallback(() => {
+    if (selectedTag) {
+      filtered = filtered.filter((p) =>
+        p.tags.some((tag) => tag.id === selectedTag)
+      );
+    }
+
+    if (selectedTechstack) {
+      filtered = filtered.filter((p) =>
+        p.techstacks.some((tech) => tech.id === selectedTechstack)
+      );
+    }
+
+    return {
+      showedItems: filtered.sort((a, b) => a.title.localeCompare(b.title)),
+      previewItems: preview,
+    };
+  }, [projects, debouncedQuery, selectedTag, selectedTechstack, fuse]);
+
+  // Sync URL parameters when filters change
+  useEffect(() => {
     const params = new URLSearchParams();
     if (searchQuery) params.set('q', searchQuery);
     if (selectedTechstack) params.set('tech', selectedTechstack);
     if (selectedTag) params.set('tag', selectedTag);
+
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [searchQuery, selectedTechstack, selectedTag, pathname, router]);
 
-  // Sync URL parameters when filters change
-  useEffect(() => {
-    updateUrlParams();
-  }, [searchQuery, selectedTechstack, selectedTag, updateUrlParams]);
-
-  // Filter projects based on query, tag, and techstack
-  useEffect(() => {
-    let filteredProjects = projects;
-
-    // Apply search query filter
-    if (debouncedQuery.trim()) {
-      const fuzzyItems = fuse.search(debouncedQuery);
-      filteredProjects = fuzzyItems.map((it) => it.item);
-      setPreviewItems(
-        fuzzyItems.slice(0, 5).map((res) => ({
-          id: res.item.id,
-          label: res.item.title,
-          desc: res.item.description || '',
-        }))
-      );
-    } else {
-      setPreviewItems([]);
-    }
-
-    // Apply tag filter
-    if (selectedTag) {
-      filteredProjects = filteredProjects.filter((project) =>
-        project.tags.some((tag) => tag.id === selectedTag)
-      );
-    }
-
-    // Apply techstack filter
-    if (selectedTechstack) {
-      filteredProjects = filteredProjects.filter((project) =>
-        project.techstacks.some((tech) => tech.id === selectedTechstack)
-      );
-    }
-
-    // Sort and set showed items
-    setShowedItems(
-      filteredProjects.sort((a, b) => a.title.localeCompare(b.title))
-    );
-    setIsLoading(false);
-  }, [debouncedQuery, selectedTag, selectedTechstack, fuse, projects]);
-
-  // Cleanup debounce on unmount
-  useEffect(() => {
-    return () => {
-      debouncedSearch.cancel();
-    };
-  }, [debouncedSearch]);
 
   return (
     <div className="container w-full px-0 py-8">
@@ -148,9 +104,10 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
           <SearchBar
             previewItems={previewItems}
             searchQuery={searchQuery}
-            setSearchQuery={handleSearchQueryChange}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
+            setSearchQuery={setSearchQuery}
+            isLoading={searchQuery !== debouncedQuery}
+            setIsLoading={() => {
+            }}
           />
           <CategoryFilter
             techstacks={techstacks}
@@ -161,7 +118,10 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
             selectedTechstack={selectedTechstack}
           />
         </div>
-        <ProjectList isLoading={isLoading} projects={showedItems} />
+        <ProjectList
+          isLoading={searchQuery !== debouncedQuery}
+          projects={showedItems}
+        />
       </div>
     </div>
   );

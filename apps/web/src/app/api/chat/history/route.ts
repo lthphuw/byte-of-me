@@ -2,16 +2,16 @@ import { NextRequest } from 'next/server';
 import { fetchState } from '@ai/index';
 
 export async function GET(req: NextRequest) {
-  const thread_id = req.nextUrl.searchParams.get('thread_id');
+  const threadId = req.nextUrl.searchParams.get('threadId');
 
-  if (!thread_id) {
-    return new Response(JSON.stringify({ error: 'Missing thread_id' }), {
+  if (!threadId) {
+    return new Response(JSON.stringify({ error: 'Missing threadId' }), {
       status: 400,
     });
   }
 
   try {
-    const res = await fetchState(thread_id);
+    const res = await fetchState(threadId);
 
     return Response.json({ history: res.history });
   } catch {

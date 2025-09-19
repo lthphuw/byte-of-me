@@ -3,15 +3,11 @@
 import { useCallback, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import rehypeSlug from 'rehype-slug';
-import remarkGfm from 'remark-gfm';
-import { Pluggable } from 'unified';
 
 import { defaultSpring, iconSwicthVariants } from '@/config/anim';
 import { cn } from '@/lib/utils';
 import { useClipboard } from '@/hooks/use-clipboard';
+import { MessageContent } from '@/components/message-content';
 
 import { Icons } from './icons';
 import {
@@ -24,9 +20,10 @@ import {
 export interface ChatMessageProps {
   role: 'user' | 'assistant';
   content: string;
+  isLast: boolean;
 }
 
-export function ChatMessage({ role, content }: ChatMessageProps) {
+export function ChatMessage({ role, content, isLast }: ChatMessageProps) {
   const t = useTranslations('chat');
   const { copy, copied } = useClipboard({ timeout: 2000 });
   const isUser = useMemo(() => role === 'user', []);
@@ -52,23 +49,7 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
             : 'bg-zinc-100 dark:bg-zinc-800 rounded-xl shadow-sm max-w-[85%]'
         )}
       >
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeRaw as Pluggable, rehypeSlug]}
-          components={{
-            ul: ({ children }) => (
-              <ul className="list-disc pl-6 mb-2">{children}</ul>
-            ),
-            ol: ({ children }) => (
-              <ol className="list-decimal pl-6 mb-2">{children}</ol>
-            ),
-            li: ({ children }) => (
-              <li className="leading-tight mb-2">{children}</li>
-            ),
-          }}
-        >
-          {content}
-        </ReactMarkdown>
+        <MessageContent role={role} content={content} isLast={isLast} />
       </section>
 
       {/* Action bar*/}
