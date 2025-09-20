@@ -11,12 +11,8 @@ import { chatThreadId } from '@/config/local-storage';
 import { generateId } from '@/hooks/utils';
 import { toast } from '@/components/ui/use-toast';
 
-
-
-
-
 const COOLDOWN_MS = 5000;
-
+const CHAT_THREAD_ID_PREFIX = 'byte-of-me-chat-';
 interface AssistantState {
   threadId: string | null;
   isRateLimited: boolean;
@@ -96,7 +92,7 @@ export const useAssistantStore = create<AssistantState>()(
           });
         } finally {
           set({
-            threadId: generateId('byte-of-me-chat-'),
+            threadId: generateId(CHAT_THREAD_ID_PREFIX),
             messages: [],
             isHistoryLoading: false,
           });
@@ -105,7 +101,12 @@ export const useAssistantStore = create<AssistantState>()(
 
       fetchHistory: async () => {
         const { threadId, clearHistory } = get();
-        if (!threadId) return;
+        if (!threadId) {
+          set({
+            threadId: generateId(CHAT_THREAD_ID_PREFIX),
+          });
+          return;
+        }
 
         try {
           set({ isHistoryLoading: true });
@@ -139,8 +140,10 @@ export const useAssistantStore = create<AssistantState>()(
           });
           return;
         }
-
-        if (!threadId || !question.trim()) return;
+        if (!threadId) {
+          set({ threadId: generateId(CHAT_THREAD_ID_PREFIX) });
+        }
+        if (!question.trim()) return;
 
         // Append user message
         set({ messages: [...messages, { role: 'user', content: question }] });
@@ -243,7 +246,7 @@ export const useAssistantStore = create<AssistantState>()(
     {
       name: chatThreadId,
       partialize: (state) => ({
-        threadId: state.threadId ?? generateId('byte-of-me-chat-'),
+        threadId: state.threadId ?? generateId(CHAT_THREAD_ID_PREFIX),
         llm: state.llm,
         embedding: state.embedding,
         reranker: state.reranker,
