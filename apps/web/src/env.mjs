@@ -1,10 +1,5 @@
-/* eslint-disable no-undef */
 import { createEnv } from '@t3-oss/env-nextjs';
 import { z } from 'zod';
-
-
-
-
 
 export const env = createEnv({
   server: {
@@ -26,6 +21,18 @@ export const env = createEnv({
     RATE_LIMIT_CHAT_PER_DAY: z.coerce.number().default(15),
 
     TURNSTILE_SECRET_KEY: z.string().default(''),
+
+    NEXTAUTH_URL: z.string(),
+    NEXTAUTH_SECRET: z.string(),
+
+    SENDGRID_API_KEY: z.string(),
+
+    // GITHUB_CLIENT_ID: z.string(),
+    // GITHUB_CLIENT_SECRET: z.string(),
+
+    SMTP_FROM: z.string(),
+    SENDGRID_SIGN_IN_TEMPLATE: z.string(),
+    SENDGRID_ACTIVATION_TEMPLATE: z.string(),
 
     NODE_ENV: z
       .enum(['development', 'production'])
@@ -62,6 +69,18 @@ export const env = createEnv({
     RATE_LIMIT_CHAT_PER_DAY: process.env.RATE_LIMIT_CHAT_PER_DAY,
     TURNSTILE_SECRET_KEY: process.env.TURNSTILE_SECRET_KEY,
     NODE_ENV: process.env.NODE_ENV,
+
+    SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
+
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+
+    // GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+    // GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+
+    SMTP_FROM: process.env.SMTP_FROM,
+    SENDGRID_SIGN_IN_TEMPLATE: process.env.SENDGRID_SIGN_IN_TEMPLATE,
+    SENDGRID_ACTIVATION_TEMPLATE: process.env.SENDGRID_ACTIVATION_TEMPLATE,
 
     // Client
     NEXT_CACHE: process.env.NEXT_CACHE,

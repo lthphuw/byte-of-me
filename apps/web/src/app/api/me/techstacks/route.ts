@@ -1,11 +1,9 @@
-import { unstable_cache } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { FlagType } from '@/types';
 import { prisma } from '@db/client';
 
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
-import { dbCachingConfig, revalidateTime } from '@/config/revalidate';
 import { siteConfig } from '@/config/site';
 
 
@@ -26,15 +24,9 @@ export async function GET(req: NextRequest) {
   try {
     const email = siteConfig.email;
 
-    const user = await unstable_cache(
-      async () =>
-        await prisma.user.findUnique({
-          cacheStrategy: dbCachingConfig,
-          where: { email },
-        }),
-      ['me-simple'],
-      { revalidate: revalidateTime, tags: ['me-simple'] }
-    )();
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
 
     if (!user) {
       return NextResponse.json(
@@ -43,18 +35,9 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const techstacks = await unstable_cache(
-      async () =>
-        await prisma.techStack.findMany({
-          cacheStrategy: dbCachingConfig,
-          where: { userId: user.id },
-          include: {
-            translations: { where: { language: locale } },
-          },
-        }),
-      ['techstacks'],
-      { revalidate: revalidateTime, tags: ['techstacks'] }
-    )();
+    const techstacks = await prisma.techStack.findMany({
+      where: { userId: user.id },
+    });
 
     return NextResponse.json(
       { data: techstacks } as ApiResponse<typeof techstacks>,

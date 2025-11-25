@@ -5,7 +5,7 @@
       "vitest"
     ],
     "module": "esnext",
-    "target": "es2017",
+    "target": "ES2023",
     "moduleResolution": "node"
   },
   "paths": {

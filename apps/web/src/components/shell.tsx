@@ -6,30 +6,13 @@ import { cn } from '@/lib/utils';
 
 
 
-type HomeShellProps = React.HTMLAttributes<HTMLDivElement>;
-type AboutShellProps = React.HTMLAttributes<HTMLDivElement>;
+type ShellProps = React.HTMLAttributes<HTMLDivElement>;
 
-export function HomeShell({ children, className, ...props }: HomeShellProps) {
-  return (
-    <>
-      <section
-        className={cn(
-          'mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 pb-16 pt-20 sm:px-6 sm:pt-32 z-20',
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </section>
-    </>
-  );
-}
-
-export function AboutShell({ children, className, ...props }: AboutShellProps) {
+function ShellBase({ children, className, ...props }: ShellProps) {
   return (
     <section
       className={cn(
-        'mx-auto w-full px-4 pb-16 pt-20 sm:px-6 z-20 sm:pt-32',
+        'mx-auto w-full px-4 pb-16 pt-20 sm:px-6 sm:pt-32 z-20',
         className
       )}
       {...props}
@@ -39,134 +22,101 @@ export function AboutShell({ children, className, ...props }: AboutShellProps) {
   );
 }
 
-export function ExperienceShell({
-  children,
-  className,
-  ...props
-}: AboutShellProps) {
+export function HomeShell({ className, ...props }: ShellProps) {
   return (
-    <section
-      className={cn(
-        'mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 z-20 sm:px-6 sm:pt-32',
-        className
-      )}
+    <ShellBase
+      className={cn('flex max-w-3xl flex-col gap-8', className)}
       {...props}
-    >
-      {children}
-    </section>
+    />
   );
 }
 
-export function ProjectsShell({
-  children,
-  className,
-  ...props
-}: AboutShellProps) {
+export function AboutShell({ className, ...props }: ShellProps) {
   return (
-    <section
-      className={cn(
-        'mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 sm:px-6 z-20 sm:pt-32',
-        className
-      )}
+    <ShellBase
+      className={cn('max-w-3xl', className)}
       {...props}
-    >
-      {children}
-    </section>
+    />
   );
 }
 
-export function ProjectDetailsShell({
-  children,
-  className,
-  ...props
-}: AboutShellProps) {
+export function ExperienceShell({ className, ...props }: ShellProps) {
   return (
-    <section
-      className={cn(
-        'mx-auto flex w-full  max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 sm:px-6 z-20 sm:pt-32',
-        className
-      )}
+    <ShellBase
+      className={cn('flex max-w-5xl flex-col gap-8', className)}
       {...props}
-    >
-      {children}
-    </section>
+    />
   );
 }
 
-export function HobbiesShell({
-  children,
-  className,
-  ...props
-}: AboutShellProps) {
+export function ProjectsShell({ className, ...props }: ShellProps) {
   return (
-    <section
-      className={cn(
-        'mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 z-20 sm:px-6 sm:pt-32',
-        className
-      )}
+    <ShellBase
+      className={cn('flex max-w-5xl flex-col gap-8', className)}
       {...props}
-    >
-      {children}
-    </section>
+    />
   );
 }
 
-export function MoreShell({ children, className, ...props }: AboutShellProps) {
+export function ProjectDetailsShell({ className, ...props }: ShellProps) {
   return (
-    <section
-      className={cn(
-        'mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 z-20 sm:px-6 sm:pt-32',
-        className
-      )}
+    <ShellBase
+      className={cn('flex max-w-5xl flex-col gap-8', className)}
       {...props}
-    >
-      {children}
-    </section>
+    />
   );
 }
 
-export function ContactShell({
-  children,
-  className,
-  ...props
-}: AboutShellProps) {
+export function HobbiesShell({ className, ...props }: ShellProps) {
   return (
-    <section
-      className={cn(
-        'mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 z-20 sm:px-6 sm:pt-32',
-        className
-      )}
+    <ShellBase
+      className={cn('flex max-w-5xl flex-col gap-8', className)}
       {...props}
-    >
-      {children}
-    </section>
+    />
   );
 }
 
-export function CVShell({ children, className, ...props }: AboutShellProps) {
+export function MoreShell({ className, ...props }: ShellProps) {
   return (
-    <section
-      className={cn(
-        'mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 z-20 sm:px-6 sm:pt-32',
-        className
-      )}
+    <ShellBase
+      className={cn('flex max-w-5xl flex-col gap-8', className)}
       {...props}
-    >
-      {children}
-    </section>
+    />
   );
 }
 
-export function AskMeShell({ children, className, ...props }: AboutShellProps) {
+export function ContactShell({ className, ...props }: ShellProps) {
   return (
-    <section
-      className={cn(
-        'mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-20 z-20 sm:px-6 sm:pt-32',
-        className
-      )}
+    <ShellBase
+      className={cn('flex max-w-5xl flex-col gap-8', className)}
       {...props}
-    >
-      {children}
-    </section>
+    />
+  );
+}
+
+export function CVShell({ className, ...props }: ShellProps) {
+  return (
+    <ShellBase
+      className={cn('flex max-w-5xl flex-col gap-8', className)}
+      {...props}
+    />
+  );
+}
+
+export function AskMeShell({ className, ...props }: ShellProps) {
+  return (
+    <ShellBase
+      className={cn('flex max-w-5xl flex-col gap-8', className)}
+      {...props}
+    />
+  );
+}
+
+export function DashboardShell({ className, ...props }: ShellProps) {
+  return (
+    <ShellBase
+      className={cn('flex max-w-5xl flex-col gap-8', className)}
+      {...props}
+    />
   );
 }
