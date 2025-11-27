@@ -1,11 +1,7 @@
-import { unstable_cache } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
-import { FlagType } from '@/types';
 import { prisma } from '@db/client';
 
 import { ApiResponse } from '@/types/api';
-import { supportedLanguages } from '@/config/language';
-import { dbCachingConfig, revalidateTime } from '@/config/revalidate';
 import { siteConfig } from '@/config/site';
 
 
@@ -13,37 +9,15 @@ import { siteConfig } from '@/config/site';
 
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const locale = searchParams.get('locale') || 'en';
-
-  if (!supportedLanguages.includes(locale as FlagType)) {
-    return NextResponse.json(
-      { error: 'Invalid or unsupported locale' } as ApiResponse<never>,
-      { status: 400 }
-    );
-  }
-
   try {
     const email = siteConfig.email;
 
-    const user = await unstable_cache(
-      async () => {
-        return await prisma.user.findUnique({
-          cacheStrategy: dbCachingConfig,
-          where: { email },
-          include: {
-            translations: { where: { language: locale } },
-            bannerImages: {
-              include: {
-                translations: { where: { language: locale } },
-              },
-            },
-          },
-        });
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: {
+        bannerImages: {},
       },
-      ['me', locale],
-      { revalidate: revalidateTime, tags: ['me', `me-${locale}`] }
-    )();
+    });
 
     if (!user) {
       return NextResponse.json(
@@ -58,16 +32,10 @@ export async function GET(req: NextRequest) {
       firstName: user.firstName,
       lastName: user.lastName,
       birthdate: user.birthdate,
-      greeting:
-        user.translations?.find((t) => t.field === 'greeting')?.value ||
-        user.greeting,
-      bio: user.translations?.find((t) => t.field === 'bio')?.value || user.bio,
-      aboutMe:
-        user.translations?.find((t) => t.field === 'aboutMe')?.value ||
-        user.aboutMe,
-      tagLine:
-        user.translations?.find((t) => t.field === 'tagLine')?.value ||
-        user.tagLine,
+      greeting: user.greeting,
+      bio: user.bio,
+      aboutMe: user.aboutMe,
+      tagLine: user.tagLine,
       email: user.email,
       // phoneNumber: user.phoneNumber,
       linkedIn: user.linkedIn,
@@ -79,17 +47,13 @@ export async function GET(req: NextRequest) {
       // stackOverflow: user.stackOverflow,
       // image: user.image,
       // imageCaption: user.translations.find(t => t.field === 'imageCaption')?.value || user.imageCaption,
-      quote:
-        user.translations?.find((t) => t.field === 'quote')?.value ||
-        user.quote,
+      quote: user.quote,
       // createdAt: user.createdAt?.toISOString(),
       // updatedAt: user.updatedAt?.toISOString(),
       bannerImages: user.bannerImages?.map((img) => ({
         id: img.id,
         src: img.src,
-        caption:
-          img.translations?.find((t) => t.field === 'caption')?.value ||
-          img.caption,
+        caption: img.caption,
       })),
     };
 

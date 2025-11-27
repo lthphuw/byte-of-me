@@ -1,7 +1,6 @@
 import { Project, prisma } from '@db/index';
 
 import { supportedLanguages } from '@/config/language';
-import { dbCachingConfig } from '@/config/revalidate';
 import { siteConfig } from '@/config/site';
 import { fetchData, fetchREADMEData } from '@/lib/core/fetch';
 import { extractToc } from '@/lib/core/markdown';
@@ -18,15 +17,14 @@ type Props = {
 
 export async function getAllProjectSlugs() {
   const email = siteConfig.email;
+
   const user = await prisma.user.findUnique({
-    cacheStrategy: dbCachingConfig,
     where: { email },
   });
 
   if (!user) return [];
 
   const projects = await prisma.project.findMany({
-    cacheStrategy: dbCachingConfig,
     where: { userId: user.id },
     select: { id: true },
   });

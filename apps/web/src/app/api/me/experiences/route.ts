@@ -1,13 +1,12 @@
-// app/api/experiences/route.ts
-
-import { unstable_cache } from 'next/cache';
+ 
 import { NextRequest, NextResponse } from 'next/server';
 import { FlagType } from '@/types';
 import { prisma } from '@db/client';
 
+
+
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
-import { dbCachingConfig, revalidateTime } from '@/config/revalidate';
 import { siteConfig } from '@/config/site';
 import { calculateDuration, formatDate } from '@/lib/core';
 import { CompanyExperience } from '@/components/experience-timeline';
@@ -30,15 +29,9 @@ export async function GET(req: NextRequest) {
   try {
     const email = siteConfig.email;
 
-    const user = await unstable_cache(
-      async () =>
-        await prisma.user.findUnique({
-          cacheStrategy: dbCachingConfig,
-          where: { email },
-        }),
-      ['simple-me', locale],
-      { revalidate: revalidateTime, tags: ['simple-me', `simple-me-${locale}`] }
-    )();
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
 
     if (!user) {
       return NextResponse.json(
@@ -47,56 +40,33 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const experiences = await unstable_cache(
-      async () =>
-        await prisma.experience.findMany({
-          cacheStrategy: dbCachingConfig,
-          where: { userId: user.id },
-          include: {
-            roles: { include: { tasks: true } },
-            techstacks: { include: { techstack: true } },
-            translations: { where: { language: locale } },
-          },
-        }),
-      ['experiences', locale],
-      {
-        revalidate: revalidateTime,
-        tags: ['experiences', `experiences-${locale}`],
-      }
-    )();
+    const experiences = await prisma.experience.findMany({
+      where: { userId: user.id },
+      include: {
+        roles: { include: { tasks: true } },
+        techstacks: { include: { techstack: true } },
+      },
+    });
 
-    const translatedExperiences: CompanyExperience[] = experiences.map(
-      (exp) => {
-        const translations = exp.translations.reduce(
-          (acc, t) => ({ ...acc, [t.field]: t.value }),
-          {} as Record<string, string>
-        );
+    const cleanExperiences: CompanyExperience[] = experiences.map((exp) => ({
+      id: exp.id,
+      company: exp.company,
+      logoUrl: exp.logoUrl,
+      techStack: exp.techstacks.map((ts) => ts.techstack.name),
 
-        return {
-          id: exp.id,
-          company: translations.company || exp.company,
-          logoUrl: exp.logoUrl,
-          techStack: exp.techstacks.map((ts) => ts.techstack.name),
-          roles: exp.roles.map((role) => ({
-            title: translations[`role_title_${role.title}`] || role.title,
-            from: formatDate(role?.startDate),
-            to: role.endDate ? formatDate(role?.endDate) : 'Present',
-            duration: calculateDuration(role.startDate, role.endDate),
-            location: exp.location || 'Unknown',
-            type: exp.type || 'Unknown',
-            tasks: role.tasks.map(
-              (task, idx) =>
-                translations[`task_${role.title}_${idx}`] ||
-                task.content ||
-                'No task description'
-            ),
-          })),
-        };
-      }
-    );
+      roles: exp.roles.map((role) => ({
+        title: role.title,
+        from: formatDate(role.startDate),
+        to: role.endDate ? formatDate(role.endDate) : 'Present',
+        duration: calculateDuration(role.startDate, role.endDate),
+        location: exp.location || 'Unknown',
+        type: exp.type || 'Unknown',
+        tasks: role.tasks.map((task) => task.content || 'No task description'),
+      })),
+    }));
 
     return NextResponse.json(
-      { data: translatedExperiences } as ApiResponse<CompanyExperience[]>,
+      { data: cleanExperiences } as ApiResponse<CompanyExperience[]>,
       { status: 200 }
     );
   } catch (error) {
@@ -105,7 +75,5 @@ export async function GET(req: NextRequest) {
       { error: 'Internal server error' } as ApiResponse<never>,
       { status: 500 }
     );
-  } finally {
-    // await prisma.$disconnect();
   }
 }

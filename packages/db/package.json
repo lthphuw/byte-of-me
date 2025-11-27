@@ -10,7 +10,7 @@
     "prisma:migrate-12-07-2025": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/data/migrations/migration-12-07-2025.ts"
   },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/data/seed.ts"
   },
   "devDependencies": {
     "dotenv": "^16.6.0",

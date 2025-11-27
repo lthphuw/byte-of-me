@@ -11,7 +11,12 @@
     "build": "turbo run build",
     "generate": "pnpm --filter @repo/db generate",
     "lint": "pnpm --filter web lint",
+    "lint:fix": "pnpm --filter web lint:fix",
     "format": "pnpm --filter web format"
   },
-  "packageManager": "pnpm@10.12.4"
+  "packageManager": "pnpm@10.12.4",
+  "devDependencies": {
+    "@commitlint/cli": "^17.8.1",
+    "@commitlint/config-conventional": "^17.8.1"
+  }
 }

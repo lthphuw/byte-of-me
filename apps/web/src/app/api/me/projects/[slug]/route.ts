@@ -1,11 +1,9 @@
-import { unstable_cache } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { FlagType } from '@/types';
 import { prisma } from '@db/client';
 
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
-import { dbCachingConfig, revalidateTime } from '@/config/revalidate';
 
 
 
@@ -29,23 +27,13 @@ export async function GET(
   }
 
   try {
-    const project = await unstable_cache(
-      async () =>
-        await prisma.project.findUnique({
-          cacheStrategy: dbCachingConfig,
-          where: { id: slug },
-          include: {
-            tags: { include: { tag: true } },
-            techstacks: { include: { techstack: true } },
-            translations: { where: { language: locale } },
-          },
-        }),
-      ['project', slug, locale],
-      {
-        revalidate: revalidateTime,
-        tags: ['project', `project-${slug}`, `project-${slug}-${locale}`],
-      }
-    )();
+    const project = await prisma.project.findUnique({
+      where: { id: slug },
+      include: {
+        tags: { include: { tag: true } },
+        techstacks: { include: { techstack: true } },
+      },
+    });
 
     if (!project) {
       return NextResponse.json(
@@ -54,16 +42,11 @@ export async function GET(
       );
     }
 
-    const translations = project.translations?.reduce(
-      (acc, t) => ({ ...acc, [t.field]: t.value }),
-      {} as Record<string, string>
-    );
-
     const result = {
       id: project.id,
       userId: project.userId,
-      title: translations['title'] || project.title,
-      description: translations['description'] || project.description,
+      title: project.title,
+      description: project.description,
       githubLink: project.githubLink,
       liveLink: project.liveLink,
       startDate: project.startDate,
