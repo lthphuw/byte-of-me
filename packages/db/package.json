@@ -1,27 +1,21 @@
 {
   "name": "@repo/db",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "generate": "pnpm db:generate",
-    "db:generate": "npx prisma generate --no-engine",
-    "db:migrate": "npx prisma migrate dev --skip-generate",
-    "db:deploy": "npx prisma migrate deploy",
-    "postinstall": "prisma generate --no-engine",
-    "prisma:migrate-12-07-2025": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/data/migrations/migration-12-07-2025.ts"
-  },
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/data/seed.ts"
+    "generate": "prisma generate"
   },
   "devDependencies": {
+    "@types/node": "^18.19.130",
     "dotenv": "^16.6.0",
-    "prisma": "^6.10.1",
-    "ts-node": "^10.9.2"
+    "prisma": "^7.0.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
+    "typescript": "5.8.3"
   },
   "dependencies": {
-    "@prisma/adapter-neon": "^6.10.1",
-    "@prisma/adapter-pg": "^6.10.1",
-    "@prisma/client": "^6.10.1",
-    "@prisma/extension-accelerate": "^2.0.1"
+    "@prisma/adapter-pg": "^7.0.1",
+    "@prisma/client": "^7.0.0"
   },
   "exports": {
     ".": "./src/index.ts",

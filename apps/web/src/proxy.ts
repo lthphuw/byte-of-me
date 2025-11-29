@@ -9,7 +9,7 @@ import { routing } from './i18n/routing';
 const isProd = env.NEXT_PUBLIC_ENV === 'production';
 const allowedOrigins = [host];
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const method = request.method;
   const origin = request.headers.get('origin');
