@@ -19,6 +19,7 @@ export default async function ProfilePage() {
       image: true,
       bio: true,
       aboutMe: true,
+      greeting: true,
       tagLine: true,
       quote: true,
       linkedIn: true,

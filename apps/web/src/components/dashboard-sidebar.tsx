@@ -1,25 +1,20 @@
 'use client';
 
-import { Link, usePathname } from '@/i18n/navigation';
+import { Link, usePathname,  } from '@/i18n/navigation';
 import { Briefcase, Code2, FileText, GraduationCap, Image, LayoutDashboard, LogOut, Tags, UserCircle } from 'lucide-react';
 import { User } from 'next-auth';
 import { signOut } from 'next-auth/react';
 
-
-
 import { UserAvatar } from '@/components/user-avatar';
-
-
-
-
+import { useLocale } from 'next-intl';
 
 const navItems = [
-  { href: '/dashboard', label: 'Tổng quan', icon: LayoutDashboard },
-  { href: '/dashboard/profile', label: 'Thông tin cá nhân', icon: UserCircle },
+  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+  { href: '/dashboard/profile', label: 'Personal Information', icon: UserCircle },
   { href: '/dashboard/banner', label: 'Banner Images', icon: Image },
-  { href: '/dashboard/education', label: 'Học vấn', icon: GraduationCap },
-  { href: '/dashboard/experience', label: 'Kinh nghiệm', icon: Briefcase },
-  { href: '/dashboard/projects', label: 'Dự án', icon: Code2 },
+  { href: '/dashboard/education', label: 'Education', icon: GraduationCap },
+  { href: '/dashboard/experience', label: 'Experience', icon: Briefcase },
+  { href: '/dashboard/projects', label: 'Projects', icon: Code2 },
   { href: '/dashboard/tech-stack', label: 'Tech Stack', icon: Tags },
   { href: '/dashboard/blogs', label: 'Blogs', icon: FileText },
 ];
@@ -30,6 +25,7 @@ interface DashboardSidebarProps {
 
 export function DashboardSidebar({ user }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const locale = useLocale();
 
   return (
     <aside className="fixed inset-y-0 left-0 z-50 w-64 border-r bg-background">
@@ -45,7 +41,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
             <UserAvatar user={user} className="h-12 w-12" />
             <div>
               <p className="font-medium">{user.name || user.email}</p>
-              <p className="text-sm text-muted-foreground">Quản trị viên</p>
+              <p className="text-sm text-muted-foreground">Administrator</p>
             </div>
           </div>
         </div>
@@ -54,7 +50,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
         <nav className="flex-1 space-y-1 p-4">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+            const isActive = pathname === item.href;
 
             return (
               <Link
@@ -75,17 +71,17 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
 
         {/* Logout */}
         <div className="border-t p-4">
-            <button
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-              onClick={(event) => {
-                event.preventDefault()
-                signOut({
-                  callbackUrl: `${window.location.origin}/auth/login`,
-                })}}
-            >
-              <LogOut className="h-5 w-5" />
-              Đăng xuất
-            </button>
+          <button
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+            onClick={(event) => {
+              event.preventDefault()
+              signOut({
+                callbackUrl: `${window.location.origin}/${locale}/auth/login`,
+              })}}
+          >
+            <LogOut className="h-5 w-5" />
+            Logout
+          </button>
         </div>
       </div>
     </aside>

@@ -1,5 +1,3 @@
-// next.config.js
-
 import { PrismaPlugin } from '@prisma/nextjs-monorepo-workaround-plugin';
 import createNextIntlPlugin from 'next-intl/plugin';
 
@@ -9,6 +7,9 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
     webpackMemoryOptimizations: true,
+    serverActions: {
+      bodySizeLimit: '3mb',
+    },
   },
   turbopack: {
     resolveExtensions: ['.mdx', '.tsx', '.ts', '.jsx', '.js', '.mjs', '.json'],
