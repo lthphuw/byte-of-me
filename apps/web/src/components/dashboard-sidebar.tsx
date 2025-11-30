@@ -1,22 +1,38 @@
 'use client';
 
-import { Link, usePathname,  } from '@/i18n/navigation';
-import { Briefcase, Code2, FileText, GraduationCap, Image, LayoutDashboard, LogOut, Tags, UserCircle } from 'lucide-react';
+import { Link, usePathname } from '@/i18n/navigation';
+import {
+  Briefcase,
+  Code2,
+  FileText,
+  GraduationCap,
+  Image,
+  Languages,
+  LayoutDashboard,
+  LogOut,
+  Tags,
+  UserCircle,
+} from 'lucide-react';
 import { User } from 'next-auth';
 import { signOut } from 'next-auth/react';
+import { useLocale } from 'next-intl';
 
 import { UserAvatar } from '@/components/user-avatar';
-import { useLocale } from 'next-intl';
 
 const navItems = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
-  { href: '/dashboard/profile', label: 'Personal Information', icon: UserCircle },
+  {
+    href: '/dashboard/profile',
+    label: 'Personal Information',
+    icon: UserCircle,
+  },
   { href: '/dashboard/banner', label: 'Banner Images', icon: Image },
   { href: '/dashboard/education', label: 'Education', icon: GraduationCap },
   { href: '/dashboard/experience', label: 'Experience', icon: Briefcase },
   { href: '/dashboard/projects', label: 'Projects', icon: Code2 },
   { href: '/dashboard/tech-stack', label: 'Tech Stack', icon: Tags },
   { href: '/dashboard/blogs', label: 'Blogs', icon: FileText },
+  { href: '/dashboard/translations', label: 'Translations', icon: Languages },
 ];
 
 interface DashboardSidebarProps {

@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { Project } from '@db/index';
 import { getTranslations } from 'next-intl/server';
 
 import { host } from '@/config/host';
 import { siteConfig } from '@/config/site';
 import { fetchData } from '@/lib/core/fetch';
+import { Project } from '@/components/project-list';
 
 
 

@@ -10,7 +10,7 @@ export function generateStaticParams() {
 }
 
 export default async function ExperiencesPage() {
-  const experiences = await fetchData<CompanyExperience[]>('me/experiences');
+  const experiences = await fetchData<CompanyExperience[]>('me/experience');
 
   return (
     <ExperienceShell>
