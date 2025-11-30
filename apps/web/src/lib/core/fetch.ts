@@ -1,6 +1,3 @@
-import { Locale } from 'next-intl';
-import { getLocale } from 'next-intl/server';
-
 import { ApiResponse } from '@/types/api';
 import { host } from '@/config/host';
 import { revalidateTime } from '@/config/revalidate';
@@ -8,22 +5,29 @@ import { revalidateTime } from '@/config/revalidate';
 import { resolveRelativeImages } from './markdown';
 
 export type FetchOptions = {
-  locale?: Locale;
   cache?: RequestCache;
+  params?: Record<string, string>;
 };
 
 export async function fetchData<T>(
   endpoint: string,
-  { locale, cache }: FetchOptions = { cache: 'force-cache' }
+  { cache = 'force-cache', params }: FetchOptions = {}
 ): Promise<T> {
-  const curLocale = await getLocale();
-  const api = `${host}/api/${endpoint}?locale=${locale ?? curLocale}`;
+  let api = `${host}/api/${endpoint}`;
+
+  if (params) {
+    const searchParams = new URLSearchParams();
+    for (const [key, value] of Object.entries(params)) {
+      searchParams.append(key, value);
+    }
+    api += `?${searchParams.toString()}`;
+  }
 
   const resp = await fetch(api, {
     cache,
     next: {
       revalidate: revalidateTime,
-      tags: [`${endpoint}-${locale}`],
+      tags: [`${endpoint}`],
     },
   });
 

@@ -1,21 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import { Delete, Edit, Trash } from 'lucide-react';
-
-
+import Image from 'next/image';
+import { Edit, Trash } from 'lucide-react';
 
 import { addBanner, deleteBanner, updateBanner } from '@/lib/actions/banner';
-import { FileHelper } from '@/lib/core/file';
+import { FileHelper } from '@/lib/core/file-helper';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import Image from 'next/image';
-
-
 
 interface Banner {
   id: string;

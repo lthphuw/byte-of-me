@@ -1,5 +1,5 @@
 import { Link } from '@/i18n/navigation';
-import { User } from '@db/index';
+import { Prisma } from '@repo/db/generated/prisma/client';
 import { getTranslations } from 'next-intl/server';
 
 import { supportedLanguages } from '@/config/language';
@@ -12,17 +12,23 @@ import { ProfileBanner } from '@/components/profile-banner';
 import { ProfileQuote } from '@/components/profile-quote';
 import { HomeShell } from '@/components/shell';
 
-
-
-
-
 export function generateStaticParams() {
   return supportedLanguages.map((lang) => ({ locale: lang }));
 }
 
 export default async function HomePage() {
   const t = await getTranslations('home');
-  const user = await fetchData<User>('me');
+  const user = await fetchData<
+    Prisma.UserGetPayload<{
+      include: {
+        bannerImages: true;
+      };
+    }>
+  >('me', {
+    params: {
+      bannerImages: 'true',
+    },
+  });
 
   return (
     <HomeShell>
@@ -36,7 +42,7 @@ export default async function HomePage() {
         </h2>
 
         <ProfileBanner
-          images={((user as any)?.bannerImages).map((it: any) => ({
+          images={(user.bannerImages || []).map((it: any) => ({
             ...it,
             alt: it.caption,
           }))}

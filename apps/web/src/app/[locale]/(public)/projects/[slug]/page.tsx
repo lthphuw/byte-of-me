@@ -1,10 +1,11 @@
-import { Project, prisma } from '@db/index';
+import { prisma } from '@db/client';
 
 import { supportedLanguages } from '@/config/language';
 import { siteConfig } from '@/config/site';
 import { fetchData, fetchREADMEData } from '@/lib/core/fetch';
 import { extractToc } from '@/lib/core/markdown';
 import { ProjectDetailsContent } from '@/components/project-details-content';
+import { Project } from '@/components/project-list';
 import { ProjectDetailsShell } from '@/components/shell';
 
 

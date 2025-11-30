@@ -2,10 +2,13 @@ import { prisma as db } from '@db/client';
 import { logger } from '@logger/logger';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import mail from '@sendgrid/mail';
-import { NextAuthOptions } from "next-auth"
+import { NextAuthOptions } from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
 
 import { env } from '@/env.mjs';
+
+
+
 
 
 mail.setApiKey(env.SENDGRID_API_KEY);
@@ -49,7 +52,10 @@ export const authOptions: NextAuthOptions = {
           });
         } catch (err: any) {
           // SendGrid error formatting is different
-          logger('next-auth').error('sendgrid_error', err?.response?.body || err);
+          logger('next-auth').error(
+            'sendgrid_error',
+            err?.response?.body || err
+          );
           throw new Error('Unable to send verification email');
         }
       },
@@ -57,8 +63,12 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-    async session({ session, token  }) {
-      console.log(`Session callback called: ${JSON.stringify(session)} ${JSON.stringify(token)} `);
+    async session({ session, token }) {
+      console.log(
+        `Session callback called: ${JSON.stringify(session)} ${JSON.stringify(
+          token
+        )} `
+      );
       if (token && session.user) {
         session.user.id = token.id as string;
         session.user.name = token.name;
@@ -99,14 +109,14 @@ export const authOptions: NextAuthOptions = {
   },
 
   logger: {
-    error(code, ...message) {
-      logger('next-auth').error(code, message);
-    },
-    warn(code, ...message) {
-      logger('next-auth').warn(code, message);
-    },
-    debug(code, ...message) {
-      logger('next-auth').debug(code, message);
-    },
+    // error(code, ...message) {
+    //   logger('next-auth').error(code, message);
+    // },
+    // warn(code, ...message) {
+    //   logger('next-auth').warn(code, message);
+    // },
+    // debug(code, ...message) {
+    //   logger('next-auth').debug(code, message);
+    // },
   },
 };

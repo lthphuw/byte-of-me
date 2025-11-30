@@ -1,14 +1,11 @@
 'use client';
 
+import { User } from '@repo/db/generated/prisma/client';
 import { motion } from 'framer-motion';
 
 import { FloatingToc } from '@/components/floating-toc';
 import { TechGroup, TechStack } from '@/components/tech-stack';
 import { Timeline, TimelineItemProps } from '@/components/timeline';
-
-
-
-
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
@@ -16,7 +13,7 @@ const fadeInUp = {
 };
 
 type AboutContentProps = {
-  user: { id: string; name: string | null; aboutMe: string | null } | null;
+  user: User;
   techGroups: TechGroup[];
   educationItems: TimelineItemProps[];
   tocItems: { href: string; label: string }[];
@@ -30,7 +27,6 @@ export default function AboutContent({
   tocItems,
   sectionTitles,
 }: AboutContentProps) {
-  if (!user) return <p>Loading...</p>;
 
   return (
     <div className="relative flex justify-center px-4 md:px-8 py-12">

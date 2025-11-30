@@ -1,29 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextRequest, NextResponse } from 'next/server';
-import { FlagType } from '@/types';
+import { NextResponse } from 'next/server';
 import { prisma } from '@db/client';
 
 
 
 import { ApiResponse } from '@/types/api';
-import { supportedLanguages } from '@/config/language';
 import { siteConfig } from '@/config/site';
 
 
 
 
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const locale = searchParams.get('locale') || 'en';
-
-  if (!supportedLanguages.includes(locale as FlagType)) {
-    return NextResponse.json(
-      { error: 'Invalid or unsupported locale' } as ApiResponse<never>,
-      { status: 400 }
-    );
-  }
-
+export async function GET() {
   try {
     const email = siteConfig.email;
 
@@ -71,10 +59,9 @@ export async function GET(req: NextRequest) {
       })),
     }));
 
-    return NextResponse.json(
-      { data: res } as ApiResponse<any[]>,
-      { status: 200 }
-    );
+    return NextResponse.json({ data: res } as ApiResponse<any[]>, {
+      status: 200,
+    });
   } catch (error) {
     console.error('Error fetching user projects:', error);
     return NextResponse.json(

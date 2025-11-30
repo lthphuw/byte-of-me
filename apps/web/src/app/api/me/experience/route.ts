@@ -3,36 +3,18 @@ import { prisma } from '@db/client';
 
 import { ApiResponse } from '@/types/api';
 import { siteConfig } from '@/config/site';
+import { CompanyExperience } from '@/components/experience-timeline';
+
+
+
+
 
 export async function GET(req: NextRequest) {
   try {
     const queryParams = req.nextUrl.searchParams;
-
     const email = siteConfig.email;
-
     const user = await prisma.user.findUnique({
       where: { email },
-      include: {
-        ...(queryParams.has('bannerImages', 'true')
-          ? {
-              bannerImages: true,
-            }
-          : {}),
-        ...(queryParams.has('educations', 'true')
-          ? {
-              educations: {
-                include: {
-                  subItems: true,
-                },
-              },
-            }
-          : {}),
-        ...(queryParams.has('techstacks', 'true')
-          ? {
-              techstacks: true,
-            }
-          : {}),
-      },
     });
 
     if (!user) {
@@ -42,16 +24,23 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ data: user } as ApiResponse<any>, {
-      status: 200,
+    const experiences = await prisma.experience.findMany({
+      where: { userId: user.id },
+      include: {
+        roles: { include: { tasks: true } },
+        techstacks: { include: { techstack: true } },
+      },
     });
+
+    return NextResponse.json(
+      { data: experiences } as ApiResponse<CompanyExperience[]>,
+      { status: 200 }
+    );
   } catch (error) {
-    console.error('Error fetching user:', error);
+    console.error('Error fetching user experiences:', error);
     return NextResponse.json(
       { error: 'Internal server error' } as ApiResponse<never>,
       { status: 500 }
     );
-  } finally {
-    // await prisma.$disconnect();
   }
 }
