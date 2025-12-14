@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 
+import { auth } from '@/lib/auth';
+
 import { host } from './config/host';
 import { env } from './env.mjs';
 import { routing } from './i18n/routing';
@@ -8,78 +10,66 @@ import { routing } from './i18n/routing';
 const isProd = env.NEXT_PUBLIC_ENV === 'production';
 const allowedOrigins = [host];
 
-export default async function proxy(request: NextRequest) {
-  const { pathname, search } = request.nextUrl;
-  // const method = request.method;
-  const origin = request.headers.get('origin');
-  // const requestHeaders = Object.fromEntries(request.headers.entries());
+const intlMiddleware = createMiddleware(routing);
 
-  // // Log incoming request
-  // logger().info('Incoming request', {
-  //   method,
-  //   url: `${pathname}${search}`,
-  //   origin,
-  //   headers: requestHeaders,
-  // });
+export default auth(async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+  const origin = req.headers.get('origin');
 
-  // Handle /api/chat (with or without locale prefix)
+  // 1) /api/chat – xử lý CORS + proxy
   if (pathname === '/api/chat' || pathname.match(/\/[a-z]{2}\/api\/chat/)) {
-    // CORS
+    // CORS check
     if (isProd && origin && !allowedOrigins.includes(origin)) {
-      // logger().warn('Forbidden request due to invalid origin', { origin });
-      // logger().info('Response sent', {
-      //   status: 403,
-      //   headers: Object.fromEntries(response.headers.entries()),
-      // });
       return new NextResponse('Forbidden', { status: 403 });
     }
 
-    // Preflight
-    if (request.method === 'OPTIONS') {
-      const response = new NextResponse(null, { status: 204 });
-      if (origin) {
-        response.headers.set('Access-Control-Allow-Origin', origin);
-      }
-      response.headers.set(
+    // OPTIONS preflight
+    if (req.method === 'OPTIONS') {
+      const res = new NextResponse(null, { status: 204 });
+      if (origin) res.headers.set('Access-Control-Allow-Origin', origin);
+      res.headers.set(
         'Access-Control-Allow-Methods',
-        'GET, POST, PUT, DELETE, OPTIONS'
+        'GET, POST, PUT, DELETE, OPTIONS',
       );
-      response.headers.set(
+      res.headers.set(
         'Access-Control-Allow-Headers',
-        'Content-Type, Authorization'
+        'Content-Type, Authorization',
       );
-      response.headers.set('Access-Control-Allow-Credentials', 'true');
-      // logger().info('Response sent (preflight)', {
-      //   status: 204,
-      //   headers: Object.fromEntries(response.headers.entries()),
-      // });
-      return response;
+      res.headers.set('Access-Control-Allow-Credentials', 'true');
+      return res;
     }
 
-    const response = NextResponse.next();
-    // logger().info('Response sent', {
-    //   status: response.status,
-    //   headers: Object.fromEntries(response.headers.entries()),
-    // });
-    return response;
+    return NextResponse.next();
   }
 
-  // Skip all other /api/* routes
+  // 2) Bỏ qua các route API khác
   if (pathname.startsWith('/api/')) {
-    const response = NextResponse.next();
-    // logger().debug('Response sent (skipped API route)', {
-    //   status: response.status,
-    //   headers: Object.fromEntries(response.headers.entries()),
-    // });
-    return response;
+    return NextResponse.next();
   }
 
-  return createMiddleware(routing)(request);
-}
+  // 3) next-intl middleware
+  const intlResponse = intlMiddleware(req);
+  if (intlResponse) return intlResponse;
 
+  // 4) Protected routes – auth middleware (req.auth được inject bởi auth wrapper)
+  const protectedRoutes = ['/dashboard'];
+  if (protectedRoutes.some((r) => pathname.startsWith(r))) {
+    if (!req.auth) {
+      return NextResponse.redirect(
+        new URL('/auth/login', req.nextUrl.origin),
+      );
+    }
+  }
+
+  return NextResponse.next();
+});
+
+// ==========================
+//  Matcher
+// ==========================
 export const config = {
   matcher: [
-    '/((?!_next|_vercel|.*\\..*).*)', // Non-static routes
-    '/api/chat', // Include /api/chat
+    '/((?!_next|_vercel|.*\\..*).*)',
+    '/api/chat',
   ],
 };

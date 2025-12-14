@@ -1,4 +1,3 @@
-// app/dashboard/tech-stack/components/tech-stack-manager.tsx
 'use client';
 
 import { useState } from 'react';
@@ -30,13 +29,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
-
-interface TechStack {
-  id: string;
-  name: string;
-  logo?: string | null;
-  group: string;
-}
+import { TechStack } from '@repo/db/generated/prisma/client';
 
 export function TechStackManager({
   initialTechStacks,
@@ -52,6 +45,7 @@ export function TechStackManager({
   const [isAdding, setIsAdding] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
+    slug: '',
     name: '',
     group: '',
     logo: '',
@@ -78,6 +72,7 @@ export function TechStackManager({
     setSelectedTechStack(null);
     setIsAdding(false);
     setFormData({
+      slug: '',
       name: '',
       group: '',
       logo: '',
@@ -93,6 +88,7 @@ export function TechStackManager({
       }
 
       const data = {
+        slug: formData.slug,
         name: formData.name,
         group: formData.group,
         logo: logoBase64 || null,
@@ -158,6 +154,7 @@ export function TechStackManager({
   const openEditDialog = (techStack: TechStack) => {
     setSelectedTechStack(techStack);
     setFormData({
+      slug: techStack.slug,
       name: techStack.name,
       group: techStack.group,
       logo: techStack.logo || '',
@@ -190,6 +187,7 @@ export function TechStackManager({
           <TableHeader>
             <TableRow>
               <TableHead>Logo</TableHead>
+              <TableHead>Slug</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Group</TableHead>
               <TableHead className="w-[100px]">Actions</TableHead>
@@ -209,6 +207,7 @@ export function TechStackManager({
                     '-'
                   )}
                 </TableCell>
+                <TableCell>{tech.slug}</TableCell>
                 <TableCell>{tech.name}</TableCell>
                 <TableCell>{tech.group}</TableCell>
                 <TableCell className="flex gap-2">
@@ -252,6 +251,15 @@ export function TechStackManager({
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="slug">Slug</Label>
+              <Input
+                id="slug"
+                name="slug"
+                value={formData.slug}
+                onChange={handleInputChange}
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
               <Input

@@ -1,21 +1,24 @@
 import { MetadataRoute } from 'next';
 import { getPathname } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
-import { Project } from '@db/index';
+import { prisma } from '@db/client';
 import { Locale } from 'next-intl';
 
 import { host } from '@/config/host';
 import { sitemapConfig } from '@/config/sitemap';
-import { fetchData } from '@/lib/core/fetch';
 
 
 
 
 
 async function getDynamicRoutes(): Promise<string[]> {
-  const projects = await fetchData<Project[]>('me/projects');
-  return projects.map((project) => `/projects/${project.id}`);
+  const projects = await prisma.project.findMany({
+    select: { id: true },
+  });
+
+  return projects.map((p) => `/projects/${p.id}`);
 }
+
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = Object.keys(sitemapConfig);

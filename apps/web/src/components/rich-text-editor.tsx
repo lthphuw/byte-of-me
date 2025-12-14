@@ -1,123 +1,140 @@
+import * as React from 'react';
+import { useMemo } from 'react';
 import { Editor, EditorState, RichUtils } from 'draft-js';
+import { stateToHTML } from 'draft-js-export-html';
+import DOMPurify from 'isomorphic-dompurify';
 
 import { Button } from '@/components/ui/button';
+import { CopyButton } from '@/components/copy-button';
 
 
 
 
+
+type ToolbarItem =
+  | 'H1'
+  | 'H2'
+  | 'H3'
+  | 'UL'
+  | 'OL'
+  | 'Bold'
+  | 'Italic'
+  | 'Underline';
+
+const DEFAULT_TOOLBAR: ToolbarItem[] = [
+  'H1',
+  'H2',
+  'H3',
+  'UL',
+  'OL',
+  'Bold',
+  'Italic',
+  'Underline',
+];
 
 export interface RichTextEditorProps {
   editorState: EditorState;
-  onChange: (newState: EditorState) => void;
-  handleKeyCommand: (
-    command: string,
-    state: EditorState
-  ) => 'handled' | 'not-handled';
-  keyBindingFn: (e: React.KeyboardEvent) => string | null;
+  onChange: (state: EditorState) => void;
   placeholder?: string;
   editorRef?: React.RefObject<Editor | null>;
-  toolbarConfig?: string[]; // To customize toolbar buttons
+  toolbarConfig?: ToolbarItem[];
 }
 
 export function RichTextEditor({
-  editorState,
-  onChange,
-  handleKeyCommand,
-  keyBindingFn,
-  placeholder,
-  editorRef,
-  toolbarConfig = ['H1', 'H2', 'UL', 'OL', 'Bold', 'Italic', 'Underline'],
-}: RichTextEditorProps) {
+                                 editorState,
+                                 onChange,
+                                 placeholder,
+                                 editorRef,
+                                 toolbarConfig = DEFAULT_TOOLBAR,
+                               }: RichTextEditorProps) {
   const toggleBlockType = (blockType: string) => {
     onChange(RichUtils.toggleBlockType(editorState, blockType));
   };
 
-  const toggleInlineStyle = (inlineStyle: string) => {
-    onChange(RichUtils.toggleInlineStyle(editorState, inlineStyle));
+  const toggleInlineStyle = (style: string) => {
+    onChange(RichUtils.toggleInlineStyle(editorState, style));
   };
+
+  const handleKeyCommand = (
+    command: string,
+    state: EditorState
+  ) => {
+    const newState = RichUtils.handleKeyCommand(state, command);
+    if (newState) {
+      onChange(newState);
+      return 'handled';
+    }
+    return 'not-handled';
+  };
+
+  const cleanHtml = useMemo(() => {
+    const contentState = editorState.getCurrentContent();
+
+    if (!contentState.hasText()) return;
+
+    const html = stateToHTML(contentState);
+    return DOMPurify.sanitize(html);
+  }, [editorState]);
+
 
   return (
     <div className="border rounded-md p-2">
-      <div className="flex space-x-2 mb-2">
+      <div className="flex flex-wrap items-center gap-2 mb-2">
         {toolbarConfig.includes('H1') && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => toggleBlockType('header-one')}
-          >
+          <Button size="sm" variant="outline" onClick={() => toggleBlockType('header-one')}>
             H1
           </Button>
         )}
+
         {toolbarConfig.includes('H2') && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => toggleBlockType('header-two')}
-          >
+          <Button size="sm" variant="outline" onClick={() => toggleBlockType('header-two')}>
             H2
           </Button>
         )}
+
         {toolbarConfig.includes('H3') && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => toggleBlockType('header-three')}
-          >
+          <Button size="sm" variant="outline" onClick={() => toggleBlockType('header-three')}>
             H3
           </Button>
         )}
+
         {toolbarConfig.includes('UL') && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => toggleBlockType('unordered-list-item')}
-          >
+          <Button size="sm" variant="outline" onClick={() => toggleBlockType('unordered-list-item')}>
             UL
           </Button>
         )}
+
         {toolbarConfig.includes('OL') && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => toggleBlockType('ordered-list-item')}
-          >
+          <Button size="sm" variant="outline" onClick={() => toggleBlockType('ordered-list-item')}>
             OL
           </Button>
         )}
+
         {toolbarConfig.includes('Bold') && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => toggleInlineStyle('BOLD')}
-          >
+          <Button size="sm" variant="outline" onClick={() => toggleInlineStyle('BOLD')}>
             Bold
           </Button>
         )}
+
         {toolbarConfig.includes('Italic') && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => toggleInlineStyle('ITALIC')}
-          >
+          <Button size="sm" variant="outline" onClick={() => toggleInlineStyle('ITALIC')}>
             Italic
           </Button>
         )}
+
         {toolbarConfig.includes('Underline') && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => toggleInlineStyle('UNDERLINE')}
-          >
+          <Button size="sm" variant="outline" onClick={() => toggleInlineStyle('UNDERLINE')}>
             Underline
           </Button>
         )}
+         <CopyButton className={'ml-auto flex self-center'} content={cleanHtml || ''} />
       </div>
+
       <Editor
         ref={editorRef}
         editorState={editorState}
         onChange={onChange}
         handleKeyCommand={handleKeyCommand}
-        keyBindingFn={keyBindingFn}
         placeholder={placeholder}
       />
     </div>

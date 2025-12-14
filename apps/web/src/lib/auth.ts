@@ -1,94 +1,74 @@
-import { prisma as db } from '@db/client';
-import { logger } from '@logger/logger';
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import mail from '@sendgrid/mail';
-import { NextAuthOptions } from 'next-auth';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import { prisma } from '@db/client';
+import NextAuth from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
 
 import { env } from '@/env.mjs';
 
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(prisma),
 
-
-
-
-mail.setApiKey(env.SENDGRID_API_KEY);
-
-export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(db),
   session: {
     strategy: 'jwt',
   },
+
   pages: {
     signIn: '/auth/login',
   },
 
   providers: [
     EmailProvider({
-      from: env.SMTP_FROM,
-
-      async sendVerificationRequest({ identifier, url, provider }) {
-        // fetch user exactly once, minimal fields
-        const user = await db.user.findUnique({
-          where: { email: identifier },
-          select: { email: true },
-        });
-
-        const templateId = user
-          ? env.SENDGRID_SIGN_IN_TEMPLATE
-          : env.SENDGRID_ACTIVATION_TEMPLATE;
-
-        if (!templateId) {
-          throw new Error('Missing SendGrid template id');
-        }
-
-        try {
-          await mail.send({
-            to: identifier,
-            from: provider.from as string,
-            templateId,
-            dynamicTemplateData: {
-              url,
-            },
-          });
-        } catch (err: any) {
-          // SendGrid error formatting is different
-          logger('next-auth').error(
-            'sendgrid_error',
-            err?.response?.body || err
-          );
-          throw new Error('Unable to send verification email');
-        }
+      server: {
+        host: env.SMTP_HOST,
+        port: Number(env.SMTP_PORT),
+        auth: {
+          user: env.SMTP_USER,
+          pass: env.SMTP_PASS,
+        },
       },
+      from: env.SMTP_FROM,
+      //   async sendVerificationRequest({ identifier, url, provider }) {
+      //     const { host } = new URL(url);
+      //
+      //     const transporter = nodemailer.createTransport(provider.server);
+      //
+      //     const result = await transporter.sendMail({
+      //       to: identifier,
+      //       from: provider.from,
+      //       subject: `Sign in to ${host}`,
+      //       text: `Sign in to ${host}\n${url}`,
+      //       html: `
+      //         <p>Sign in to <strong>${host}</strong></p>
+      //         <p><a href="${url}">Click here to sign in</a></p>
+      //         <p>If you did not request this email, you can ignore it.</p>
+      //       `.trim(),
+      //     });
+      //
+      //     console.log("Magic Link:", url);
+      //
+      //     const failed = [...result.rejected, ...result.pending].filter(Boolean);
+      //     if (failed.length > 0)
+      //       throw new Error(`Email (${failed.join(", ")}) could not be sent`);
+      //   },
     }),
   ],
 
   callbacks: {
-    async session({ session, token }) {
-      console.log(
-        `Session callback called: ${JSON.stringify(session)} ${JSON.stringify(
-          token
-        )} `
-      );
-      if (token && session.user) {
-        session.user.id = token.id as string;
-        session.user.name = token.name;
-        session.user.email = token.email;
-        session.user.image = token.picture;
-      }
-      return session;
-    },
-
     async jwt({ token, user }) {
-      console.log(`JWT callback called: ${token} ${user}`);
-      // If just signed in (first time), user object exists
+      // New user logging in
       if (user) {
         token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.picture = user.image;
         return token;
       }
 
-      // Find user in DB once per JWT load
-      const dbUser = await db.user.findUnique({
-        where: { email: token.email! },
+      // Existing user
+      if (!token.email) return token;
+
+      const dbUser = await prisma.user.findUnique({
+        where: { email: token.email },
         select: {
           id: true,
           name: true,
@@ -99,24 +79,22 @@ export const authOptions: NextAuthOptions = {
 
       if (!dbUser) return token;
 
-      return {
-        id: dbUser.id,
-        name: dbUser.name,
-        email: dbUser.email,
-        picture: dbUser.image,
-      };
+      token.id = dbUser.id;
+      token.name = dbUser.name;
+      token.email = dbUser.email;
+      token.picture = dbUser.image;
+
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+        session.user.image = token.picture as string;
+      }
+      return session;
     },
   },
-
-  logger: {
-    // error(code, ...message) {
-    //   logger('next-auth').error(code, message);
-    // },
-    // warn(code, ...message) {
-    //   logger('next-auth').warn(code, message);
-    // },
-    // debug(code, ...message) {
-    //   logger('next-auth').debug(code, message);
-    // },
-  },
-};
+});

@@ -1,6 +1,6 @@
 import { Link } from '@/i18n/navigation';
-import { getTranslations } from 'next-intl/server';
 
+import { getTranslations } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import GoBackButton from '@/components/go-back';

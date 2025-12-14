@@ -16,10 +16,10 @@ import {
   useRole,
 } from '@floating-ui/react';
 import { AnimatePresence, Variants, motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
 
 import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/use-debounce';
+import { useTranslations } from '@/hooks/use-translations';
 import { Input } from '@/components/ui/input';
 
 import { Icons } from './icons';
@@ -55,13 +55,13 @@ const itemVariants: Variants = {
 };
 
 export function SearchBar({
-  searchQuery,
-  setSearchQuery,
-  previewItems = [],
-  isLoading,
-  setIsLoading,
-  onItemSelect,
-}: SearchBarProps) {
+                            searchQuery,
+                            setSearchQuery,
+                            previewItems = [],
+                            isLoading,
+                            setIsLoading,
+                            onItemSelect,
+                          }: SearchBarProps) {
   const t = useTranslations('global.search');
   const debouncedQuery = useDebounce(searchQuery, 400);
 
@@ -126,23 +126,20 @@ export function SearchBar({
             initial="hidden"
             animate="visible"
             exit="exit"
-            onClick={() => onItemSelect?.(item)}
             className={cn(
-              'flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
+              'flex cursor-pointer flex-col gap-1 rounded-md px-3 py-2 text-sm transition-colors',
               'hover:bg-gray-100 hover:text-gray-900',
               'focus:bg-gray-100 focus:text-gray-900 focus:outline-none'
             )}
           >
-            <Link
-              href={`/projects/${item.id}`}
-              className="tracking-wide font-medium line-clamp-1"
-            >
-              {labelParts}
+            <Link href={`/projects/${item.id}`} className="block">
+              <div className="tracking-wide font-medium line-clamp-1">
+                {labelParts}
+              </div>
               {descParts && (
-                <>
-                  <span className="mx-1">|</span>
+                <div className="text-sm text-gray-500 line-clamp-1">
                   {descParts}
-                </>
+                </div>
               )}
             </Link>
           </motion.div>
@@ -150,6 +147,17 @@ export function SearchBar({
       }),
     [previewItems, debouncedQuery, onItemSelect]
   );
+
+  const rightIcon = isLoading ? (
+    <Icons.spinner className="animate-spin h-4 w-4 text-gray-500" />
+  ) : searchQuery ? (
+    <button
+      onClick={() => setSearchQuery('')}
+      className="text-gray-500 hover:text-gray-700"
+    >
+      <Icons.close className="h-4 w-4" />
+    </button>
+  ) : null;
 
   return (
     <motion.div layout="position" className="relative mb-6">
@@ -170,11 +178,9 @@ export function SearchBar({
           }}
           className="px-10 py-3 h-full w-full rounded-xl"
         />
-        {isLoading && (
-          <div className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2">
-            <Icons.spinner className="animate-spin h-4 w-4 text-gray-500" />
-          </div>
-        )}
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
+          {rightIcon}
+        </div>
       </div>
 
       {/* Preview Result list */}

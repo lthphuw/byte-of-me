@@ -1,7 +1,7 @@
 import * as z from 'zod';
 
 export const profileSchema = z.object({
-  name: z.string().min(2, 'Tên phải có ít nhất 2 ký tự'),
+  name: z.string().min(2),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   email: z.string().email().optional(),

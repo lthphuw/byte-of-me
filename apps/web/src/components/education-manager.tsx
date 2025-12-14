@@ -1,7 +1,9 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Editor, EditorState, RichUtils, getDefaultKeyBinding } from 'draft-js';
+import Image from 'next/image';
+import { Prisma } from '@repo/db/generated/prisma/client';
+import { Editor, EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 import { stateFromHTML } from 'draft-js-import-html';
 import { Plus, Trash } from 'lucide-react';
@@ -24,16 +26,15 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-
-import 'draft-js/dist/Draft.css';
-import Image from 'next/image';
-import { Prisma } from '@repo/db/generated/prisma/client';
-
 import { RichTextEditor } from '@/components/rich-text-editor';
+import { FileHelper } from '@/lib/core/file-helper';
+import { TrashButton } from '@/components/trash-button';
+import { educationSchema } from '@/lib/validations/education';
 
 type Education = Prisma.EducationGetPayload<{
   include: { subItems: true };
 }>;
+type EducationSubItem = Pick<Education['subItems'][0], 'title' | 'message'>;
 
 export function EducationManager({
   initialEducations,
@@ -50,7 +51,7 @@ export function EducationManager({
     timeline: '',
     title: '',
     icon: '',
-    subItems: [] as { title: string; message: string }[],
+    subItems: [] as EducationSubItem[],
   });
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [subEditorStates, setSubEditorStates] = useState<EditorState[]>([]);
@@ -91,26 +92,6 @@ export function EducationManager({
     setSubEditorStates(updatedStates);
   };
 
-  const handleKeyCommand = (command: string, state: EditorState) => {
-    const newState = RichUtils.handleKeyCommand(state, command);
-    if (newState) {
-      setEditorState(newState);
-      return 'handled';
-    }
-    return 'not-handled';
-  };
-
-  const mapKeyToEditorCommand = (e: React.KeyboardEvent): string | null => {
-    if (e.keyCode === 9) {
-      const newEditorState = RichUtils.onTab(e, editorState, 4);
-      if (newEditorState !== editorState) {
-        setEditorState(newEditorState);
-      }
-      return null;
-    }
-    return getDefaultKeyBinding(e);
-  };
-
   const handleSubEditorChange = (index: number, newState: EditorState) => {
     const updatedStates = [...subEditorStates];
     updatedStates[index] = newState;
@@ -119,52 +100,68 @@ export function EducationManager({
 
   const handleSubmit = async () => {
     try {
-      let iconBase64 = formData.icon;
+      let iconBase64 = formData.icon || null;
+
       if (iconFile) {
-        iconBase64 = await fileToBase64(iconFile);
+        iconBase64 = await FileHelper.fileToBase64(iconFile);
       }
 
       const messageHTML = stateToHTML(editorState.getCurrentContent());
 
-      const subItemsWithHTML = formData.subItems.map((sub, index) => ({
-        ...sub,
+      const subItems = formData.subItems.map((sub, index) => ({
+        title: sub.title,
         message: stateToHTML(subEditorStates[index].getCurrentContent()),
       }));
 
-      const data = {
+      const input = {
         timeline: formData.timeline,
         title: formData.title,
         message: messageHTML,
         icon: iconBase64,
-        subItems: subItemsWithHTML,
+        subItems,
       };
+
+      const parsed = educationSchema.safeParse(input);
+
+      if (!parsed.success) {
+        toast({
+          title: 'Validation error',
+          description: parsed.error.errors[0]?.message,
+          variant: 'destructive',
+        });
+        return;
+      }
 
       let updatedEducation;
       if (selectedEducation) {
         updatedEducation = await updateEducation({
           id: selectedEducation.id,
-          ...data,
+          ...parsed.data,
         });
       } else {
-        updatedEducation = await addEducation(data);
+        updatedEducation = await addEducation(parsed.data);
       }
 
-      if (updatedEducation) {
-        const updatedList = selectedEducation
-          ? educations.map((edu) =>
-              edu.id === selectedEducation.id ? updatedEducation : edu
-            )
-          : [...educations, updatedEducation];
-
-        setEducations(updatedList);
-        toast({
-          title: 'Success',
-          description: `Education ${
-            selectedEducation ? 'updated' : 'added'
-          } successfully`,
-        });
-        resetForm();
+      if (!updatedEducation) {
+        return;
       }
+
+      setEducations((prev) =>
+        selectedEducation
+          ? prev.map((e) =>
+            e.id === updatedEducation.id ? updatedEducation : e
+          )
+          : [...prev, updatedEducation]
+      );
+
+      toast({
+        title: 'Success',
+        description: selectedEducation
+          ? 'Education updated successfully'
+          : 'Education added successfully',
+      });
+
+      resetForm();
     } catch (error) {
       toast({
         title: 'Error',
@@ -243,15 +240,6 @@ export function EducationManager({
     setIconFile(null);
   };
 
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
   return (
     <div className="space-y-6">
       <Button onClick={openAddDialog}>Add New Education</Button>
@@ -288,28 +276,24 @@ export function EducationManager({
               />
               <p className="text-sm">Subitems: {education.subItems.length}</p>
             </CardContent>
-            <Button
-              size="icon"
-              variant="destructive"
+            <TrashButton
               className="absolute top-2 right-2"
-              onClick={(e) => {
-                e.stopPropagation();
+              removeFunc={() => {
                 setDeleteConfirmId(education.id);
               }}
-            >
-              <Trash className="h-4 w-4" />
-            </Button>
+            />
           </Card>
         ))}
       </div>
 
       <Dialog open={!!selectedEducation || isAdding} onOpenChange={resetForm}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {selectedEducation ? 'Edit' : 'Add'} Education
             </DialogTitle>
           </DialogHeader>
+
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -342,8 +326,6 @@ export function EducationManager({
               <RichTextEditor
                 editorState={editorState}
                 onChange={setEditorState}
-                handleKeyCommand={handleKeyCommand}
-                keyBindingFn={mapKeyToEditorCommand}
                 placeholder="Enter message..."
                 editorRef={editorRef}
               />
@@ -375,52 +357,26 @@ export function EducationManager({
               {formData.subItems.map((sub, index) => (
                 <Card key={index} className="p-4 relative">
                   <div className="space-y-2">
-                    <Input
-                      placeholder="Subitem Title"
-                      value={sub.title}
-                      onChange={(e) =>
-                        updateSubItemTitle(index, e.target.value)
-                      }
-                    />
+                    <div className='flex items-center gap-2'>
+                      <Input
+                        className='flex-1'
+                        placeholder="Subitem Title"
+                        value={sub.title}
+                        onChange={(e) =>
+                          updateSubItemTitle(index, e.target.value)
+                        }
+                      />
+                      <TrashButton className={''} removeFunc={() => deleteSubItem(index)}/>
+                    </div>
+
                     <RichTextEditor
                       editorState={subEditorStates[index]}
                       onChange={(newState) =>
                         handleSubEditorChange(index, newState)
                       }
-                      handleKeyCommand={(command, state) => {
-                        const newState = RichUtils.handleKeyCommand(
-                          state,
-                          command
-                        );
-                        if (newState) {
-                          handleSubEditorChange(index, newState);
-                          return 'handled';
-                        }
-                        return 'not-handled';
-                      }}
-                      keyBindingFn={(e) => {
-                        if (e.keyCode === 9) {
-                          const state = subEditorStates[index];
-                          const newState = RichUtils.onTab(e, state, 4);
-                          if (newState !== state) {
-                            handleSubEditorChange(index, newState);
-                          }
-                          return null;
-                        }
-                        return getDefaultKeyBinding(e);
-                      }}
                       placeholder="Enter subitem message..."
-                      toolbarConfig={['H3', 'Bold', 'Italic', 'UL', 'OL']} // Customized for subitems
                     />
                   </div>
-
-                  <Button
-                    className="absolute top-2 right-2"
-                    size="icon"
-                    onClick={() => deleteSubItem(index)}
-                  >
-                    <Trash className={`h-4 w-4 text-destructive`} />
-                  </Button>
                 </Card>
               ))}
 

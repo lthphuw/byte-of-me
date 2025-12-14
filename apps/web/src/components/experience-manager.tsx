@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { EditorState, RichUtils, getDefaultKeyBinding } from 'draft-js';
+import { EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 import { stateFromHTML } from 'draft-js-import-html';
 import { CalendarIcon, Plus, Trash } from 'lucide-react';
@@ -38,6 +38,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { RichTextEditor } from '@/components/rich-text-editor';
+import { TrashButton } from '@/components/trash-button';
 
 type Experience = Prisma.ExperienceGetPayload<{
   include: {
@@ -149,26 +150,6 @@ export function ExperienceManager({
       (_, i) => i !== taskIndex
     );
     setRoleEditorStates(updatedStates);
-  };
-
-  const handleKeyCommand = (command: string, state: EditorState) => {
-    const newState = RichUtils.handleKeyCommand(state, command);
-    if (newState) {
-      setDescriptionState(newState);
-      return 'handled';
-    }
-    return 'not-handled';
-  };
-
-  const mapKeyToEditorCommand = (e: React.KeyboardEvent): string | null => {
-    if (e.keyCode === 9) {
-      const newState = RichUtils.onTab(e, descriptionState, 4);
-      if (newState !== descriptionState) {
-        setDescriptionState(newState);
-      }
-      return null;
-    }
-    return getDefaultKeyBinding(e);
   };
 
   const handleTaskEditorChange = (
@@ -372,17 +353,13 @@ export function ExperienceManager({
                 }`}
               </p>
             </CardContent>
-            <Button
-              size="icon"
-              variant="destructive"
+
+            <TrashButton
               className="absolute top-2 right-2"
-              onClick={(e) => {
-                e.stopPropagation();
+              removeFunc={() => {
                 setDeleteConfirmId(experience.id);
               }}
-            >
-              <Trash className={'w-4 h-4'} />
-            </Button>
+            />
           </Card>
         ))}
       </div>
@@ -450,8 +427,6 @@ export function ExperienceManager({
               <RichTextEditor
                 editorState={descriptionState}
                 onChange={setDescriptionState}
-                handleKeyCommand={handleKeyCommand}
-                keyBindingFn={mapKeyToEditorCommand}
                 placeholder="Enter description..."
               />
             </div>
@@ -580,49 +555,13 @@ export function ExperienceManager({
                                 newState
                               )
                             }
-                            handleKeyCommand={(command, state) => {
-                              const newState = RichUtils.handleKeyCommand(
-                                state,
-                                command
-                              );
-                              if (newState) {
-                                handleTaskEditorChange(
-                                  roleIndex,
-                                  taskIndex,
-                                  newState
-                                );
-                                return 'handled';
-                              }
-                              return 'not-handled';
-                            }}
-                            keyBindingFn={(e) => {
-                              if (e.keyCode === 9) {
-                                const state =
-                                  roleEditorStates[roleIndex].tasks[taskIndex];
-                                const newState = RichUtils.onTab(e, state, 4);
-                                if (newState !== state) {
-                                  handleTaskEditorChange(
-                                    roleIndex,
-                                    taskIndex,
-                                    newState
-                                  );
-                                }
-                                return null;
-                              }
-                              return getDefaultKeyBinding(e);
-                            }}
                             placeholder="Enter task content..."
-                            toolbarConfig={['UL', 'OL', 'Bold', 'Italic']}
                           />
 
-                          <Button
-                            size="icon"
-                            variant="destructive"
-                            className="absolute top-2 right-2"
-                            onClick={() => deleteTask(roleIndex, taskIndex)}
-                          >
-                            <Trash className={'w-4 h-4'} />
-                          </Button>
+                          <TrashButton
+                            className="absolute top-2 right-8"
+                            removeFunc={() => deleteTask(roleIndex, taskIndex)}
+                          />
                         </div>
                       ))}
                       <Button
@@ -633,14 +572,11 @@ export function ExperienceManager({
                       </Button>
                     </div>
                   </div>
-                  <Button
-                    size="icon"
-                    variant="destructive"
+
+                  <TrashButton
                     className="absolute top-2 right-2"
-                    onClick={() => deleteRole(roleIndex)}
-                  >
-                    <Trash className={'w-4 h-4'} />
-                  </Button>
+                    removeFunc={() => deleteRole(roleIndex)}
+                  />
                 </Card>
               ))}
 

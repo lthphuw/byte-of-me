@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Prisma, Project, Tag } from '@repo/db/generated/prisma/client';
+import { Prisma, Tag } from '@repo/db/generated/prisma/client';
 import { format } from 'date-fns';
-import { EditorState, RichUtils, getDefaultKeyBinding } from 'draft-js';
+import { EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 import { stateFromHTML } from 'draft-js-import-html';
 import { CalendarIcon, Trash } from 'lucide-react';
@@ -43,6 +43,11 @@ type Blog = Prisma.BlogGetPayload<{
     tags: { include: { tag: true } };
     project: true;
   };
+}>;
+
+
+type Project = Prisma.BlogGetPayload<{
+  select: { id: true, title: true },
 }>;
 
 export function BlogManager({
@@ -199,26 +204,6 @@ export function BlogManager({
     setNewTagName('');
   };
 
-  const handleKeyCommand = (command: string, state: EditorState) => {
-    const newState = RichUtils.handleKeyCommand(state, command);
-    if (newState) {
-      setContentState(newState);
-      return 'handled';
-    }
-    return 'not-handled';
-  };
-
-  const mapKeyToEditorCommand = (e: React.KeyboardEvent): string | null => {
-    if (e.keyCode === 9) {
-      const newState = RichUtils.onTab(e, contentState, 4);
-      if (newState !== contentState) {
-        setContentState(newState);
-      }
-      return null;
-    }
-    return getDefaultKeyBinding(e);
-  };
-
   return (
     <div className="space-y-6">
       <Button onClick={openAddDialog}>Add New Blog</Button>
@@ -290,8 +275,6 @@ export function BlogManager({
               <RichTextEditor
                 editorState={contentState}
                 onChange={setContentState}
-                handleKeyCommand={handleKeyCommand}
-                keyBindingFn={mapKeyToEditorCommand}
                 placeholder="Enter content..."
               />
             </div>

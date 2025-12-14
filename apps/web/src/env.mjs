@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 export const env = createEnv({
   server: {
+    HOST: z.string(),
     PRISMA_CACHE_SWR: z.coerce.number().default(86400),
     PRISMA_CACHE_TTL: z.coerce.number().default(86400),
 
@@ -13,7 +14,7 @@ export const env = createEnv({
     REDIS_URL: z.string().default(''),
 
     DATABASE_URL: z.string().min(1),
-    DIRECT_DATABASE_URL: z.string().min(1),
+    DIRECT_URL: z.string().min(1),
 
     NEXT_EMAIL: z.string().email().default('lthphuw@gmail.com'),
 
@@ -22,17 +23,14 @@ export const env = createEnv({
 
     TURNSTILE_SECRET_KEY: z.string().default(''),
 
-    NEXTAUTH_URL: z.string(),
-    NEXTAUTH_SECRET: z.string(),
+    AUTH_URL: z.string(),
+    AUTH_SECRET: z.string(),
 
-    SENDGRID_API_KEY: z.string(),
-
-    // GITHUB_CLIENT_ID: z.string(),
-    // GITHUB_CLIENT_SECRET: z.string(),
-
+    SMTP_HOST: z.string(),
+    SMTP_PORT: z.string(),
+    SMTP_USER: z.string(),
+    SMTP_PASS: z.string(),
     SMTP_FROM: z.string(),
-    SENDGRID_SIGN_IN_TEMPLATE: z.string(),
-    SENDGRID_ACTIVATION_TEMPLATE: z.string(),
 
     NODE_ENV: z
       .enum(['development', 'production'])
@@ -51,6 +49,7 @@ export const env = createEnv({
   },
 
   runtimeEnv: {
+    HOST: process.env.HOST,
     PRISMA_CACHE_SWR: process.env.PRISMA_CACHE_SWR,
     PRISMA_CACHE_TTL: process.env.PRISMA_CACHE_TTL,
 
@@ -61,7 +60,7 @@ export const env = createEnv({
     REDIS_URL: process.env.REDIS_URL,
 
     DATABASE_URL: process.env.DATABASE_URL,
-    DIRECT_DATABASE_URL: process.env.DIRECT_DATABASE_URL,
+    DIRECT_URL: process.env.DIRECT_URL,
 
     NEXT_EMAIL: process.env.NEXT_EMAIL,
 
@@ -70,17 +69,19 @@ export const env = createEnv({
     TURNSTILE_SECRET_KEY: process.env.TURNSTILE_SECRET_KEY,
     NODE_ENV: process.env.NODE_ENV,
 
-    SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
+    // SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
 
-    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    AUTH_URL: process.env.AUTH_URL,
+    AUTH_SECRET: process.env.AUTH_SECRET,
 
     // GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     // GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
 
     SMTP_FROM: process.env.SMTP_FROM,
-    SENDGRID_SIGN_IN_TEMPLATE: process.env.SENDGRID_SIGN_IN_TEMPLATE,
-    SENDGRID_ACTIVATION_TEMPLATE: process.env.SENDGRID_ACTIVATION_TEMPLATE,
+    SMTP_HOST: process.env.SMTP_HOST,
+    SMTP_PORT: process.env.SMTP_PORT,
+    SMTP_USER: process.env.SMTP_USER,
+    SMTP_PASS: process.env.SMTP_PASS,
 
     // Client
     NEXT_CACHE: process.env.NEXT_CACHE,

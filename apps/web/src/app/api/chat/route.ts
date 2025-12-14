@@ -1,35 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { answer, deleteCheckpoint } from '@ai/index';
-import { getTranslations } from 'next-intl/server';
 
 import { dangerousKeywords } from '@/config/models';
-import {
-  applyRateLimit,
-  rateLimitChatPerDay,
-  rateLimitChatPerMinute,
-} from '@/lib/core';
+import { getTranslations } from '@/lib/i18n';
 
 
 
 
 
 export async function POST(req: NextRequest) {
-  let perMin, perDate;
-
-  try {
-    [perMin, perDate] = await Promise.all([
-      applyRateLimit(rateLimitChatPerMinute, req),
-      applyRateLimit(rateLimitChatPerDay, req),
-    ]);
-  } catch (err) {
-    console.error('Rate limit failed:', err);
-
-    perMin = null;
-    perDate = null;
-  }
-
-  if (perMin || perDate) return perMin || perDate;
-
   const t = await getTranslations('error');
 
   const { question, llm, embedding, reranker, history, stream, threadId } =

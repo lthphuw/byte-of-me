@@ -1,21 +1,19 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
 
-import { defaultSpring, iconSwicthVariants } from '@/config/anim';
 import { cn } from '@/lib/utils';
-import { useClipboard } from '@/hooks/use-clipboard';
+import { useTranslations } from '@/hooks/use-translations';
+import { CopyButton } from '@/components/copy-button';
 import { MessageContent } from '@/components/message-content';
 
-import { Icons } from './icons';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from './ui/tooltip';
+
 
 export interface ChatMessageProps {
   role: 'user' | 'assistant';
@@ -25,11 +23,8 @@ export interface ChatMessageProps {
 
 export function ChatMessage({ role, content, isLast }: ChatMessageProps) {
   const t = useTranslations('chat');
-  const { copy, copied } = useClipboard({ timeout: 2000 });
   const isUser = useMemo(() => role === 'user', []);
   const isSystem = useMemo(() => !isUser, [isUser]);
-
-  const onCopy = useCallback(() => copy(content), [content]);
 
   return (
     <div
@@ -62,36 +57,7 @@ export function ChatMessage({ role, content, isLast }: ChatMessageProps) {
         <TooltipProvider delayDuration={300}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="relative size-4">
-                <AnimatePresence initial={false}>
-                  {copied ? (
-                    <motion.button
-                      key="check"
-                      variants={iconSwicthVariants}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                      transition={defaultSpring}
-                      className="absolute inset-0"
-                    >
-                      <Icons.check size={16} />
-                    </motion.button>
-                  ) : (
-                    <motion.button
-                      key="copy"
-                      variants={iconSwicthVariants}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                      transition={defaultSpring}
-                      onClick={onCopy}
-                      className="absolute inset-0"
-                    >
-                      <Icons.copy size={16} />
-                    </motion.button>
-                  )}
-                </AnimatePresence>
-              </div>
+              <CopyButton content={content} />
             </TooltipTrigger>
             <TooltipContent sideOffset={4} side="bottom">
               <p>{t('Copy')}</p>

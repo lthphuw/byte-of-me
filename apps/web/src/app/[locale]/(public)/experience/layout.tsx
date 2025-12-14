@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
 
 import { host } from '@/config/host';
 import { siteConfig } from '@/config/site';
+import { getTranslations } from '@/lib/i18n';
 
 
 

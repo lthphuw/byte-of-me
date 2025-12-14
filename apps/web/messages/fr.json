@@ -188,8 +188,11 @@
     "Back to projects": "Retour aux projets"
   },
   "contact": {
-    "Connect With Me": "Connectons-nous",
-    "Reach out, let's code the future!": "Contactez-moi, construisons le futur ensemble!"
+    "Let’s work together": "Travaillons ensemble",
+    "Feel free to reach out through any channel": "N’hésitez pas à me contacter par le moyen qui vous convient",
+    "Send me an email": "M’envoyer un e-mail",
+    "LinkedIn": "LinkedIn",
+    "GitHub": "GitHub"
   },
   "chat": {
     "Ask Phu's Assistant": "Demandez à l’assistant de Phu",

@@ -1,14 +1,17 @@
 'use client';
 
 import Image from 'next/image';
-import { Link } from '@/i18n/navigation';
+import { BaseComponentProps } from '@/types';
 import { Prisma } from '@repo/db/generated/prisma/client';
 import { motion } from 'framer-motion';
 
 import { DateHelper } from '@/lib/core/date-helper';
 import { RichText } from '@/components/rich-text';
+import { TechstacksProject } from '@/components/techstacks-project';
 
-import { Badge } from './ui/badge';
+
+
+
 
 export type CompanyExperience = Prisma.ExperienceGetPayload<{
   include: {
@@ -25,59 +28,74 @@ export type CompanyExperience = Prisma.ExperienceGetPayload<{
   };
 }>;
 
-interface ExperienceTimelineProps {
+export type ExperienceTimelineProps = BaseComponentProps & {
   experienceData: CompanyExperience[];
-  className?: string;
-  style?: React.CSSProperties;
-}
+};
 
 export default function ExperienceTimeline({
-  experienceData,
-  className,
-  style,
-}: ExperienceTimelineProps) {
+                                             experienceData,
+                                             className,
+                                             style,
+                                           }: ExperienceTimelineProps) {
   return (
     <section
       className={`mx-auto max-w-4xl px-4 py-12 md:py-16 ${className}`}
       style={style}
     >
-      <div
-        className="relative space-y-12 before:absolute before:left-6 before:top-0 before:bottom-0 before:w-0.5 before:bg-border md:before:left-6">
+      <div className="space-y-14">
         {experienceData.map((company, idx) => (
           <motion.div
             key={idx}
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{
-              ease: 'easeOut',
-              duration: 0.4,
-              delay: idx * 0.3,
-            }}
-            className="flex items-start gap-6 relative"
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="relative flex gap-x-6"
           >
-            <div className="flex-shrink-0 relative w-12 h-12 z-10 bg-background rounded-full p-1 shadow-md">
-              <Image
-                src={company.logoUrl}
-                alt={company.company}
-                className="aspect-square size-full object-center object-contain rounded-full"
-                fill
-              />
+            {/* Avatar + line */}
+            <div className="relative flex flex-col items-center shrink-0">
+                <motion.span
+                  initial={{ scaleY: 0 }}
+                  whileInView={{ scaleY: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, ease: 'easeOut' }}
+                  className="absolute top-6 bottom-0 rounded-3xl w-[2px] origin-top bg-border/70 last:hidden"
+                />
+
+                {/* Avatar */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.25, ease: 'easeOut' }}
+                  className="relative z-10 flex size-10 items-center justify-center rounded-full bg-background"
+                >
+                    <Image
+                      src={company.logoUrl}
+                      alt={company.company}
+                      fill
+                      className="rounded-full object-contain"
+                    />
+                </motion.div>
             </div>
-            <div className="flex-1 space-y-2">
-              <h3 className="text-xl font-semibold tracking-tight sm:text-2xl">
+
+            {/* Content */}
+            <div className="flex-1 pb-2">
+              <h3 className="text-lg md:text-xl font-semibold tracking-tight">
                 {company.company}
               </h3>
-              <TechStack
-                techs={company.techstacks.map((it) => it.techstack.name)}
+
+              <TechstacksProject
+                techs={company.techstacks.map(it => it.techstack)}
               />
-              <div className="mt-4 space-y-6">
+
+              <div className="mt-5 space-y-6">
                 {company.roles.map((role, rIdx) => (
-                  <div key={rIdx} className="pl-0 md:pl-2">
-                    <p className="font-medium text-base sm:text-lg">
+                  <div key={rIdx} className="space-y-1">
+                    <p className="text-base md:text-lg font-medium">
                       {role.title}
                     </p>
-                    <p className="text-sm text-muted-foreground">
+
+                    <p className="text-xs md:text-sm text-muted-foreground">
                       {DateHelper.formatDate(role.startDate)} –{' '}
                       {DateHelper.formatDate(role.endDate)} (
                       {DateHelper.calculateDuration(
@@ -86,7 +104,8 @@ export default function ExperienceTimeline({
                       )}
                       ) • {company.location} • {company.type}
                     </p>
-                    <ul className="mt-3 list-disc pl-5 text-sm sm:text-base space-y-1">
+
+                    <ul className="mt-3 space-y-1.5 pl-4 text-sm md:text-base list-disc marker:text-muted-foreground">
                       {role.tasks.map((task, tIdx) => (
                         <li key={tIdx}>
                           <RichText html={task.content || ''} />
@@ -101,19 +120,5 @@ export default function ExperienceTimeline({
         ))}
       </div>
     </section>
-  );
-}
-
-function TechStack({ techs }: { techs: string[] }) {
-  return (
-    <div className="flex flex-wrap gap-2">
-      {techs.map((tech, idx) => (
-        <Link key={idx} href={'#'} className="inline-block">
-          <Badge variant={'secondary'} className="text-xs px-2 py-1">
-            {tech}
-          </Badge>
-        </Link>
-      ))}
-    </div>
   );
 }

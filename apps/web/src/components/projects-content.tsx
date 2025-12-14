@@ -14,28 +14,20 @@ import { Project, ProjectList } from './project-list';
 interface ProjectsContentProps {
   projects: Project[];
 }
-
 const fuseOptions = {
   keys: ['title', 'description', 'techstacks.name', 'tags.name'],
   threshold: 0.4,
 };
-
 export function ProjectsContent({ projects }: ProjectsContentProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-  const [selectedTag, setSelectedTag] = useState(searchParams.get('tag') || '');
-  const [selectedTechstack, setSelectedTechstack] = useState(
-    searchParams.get('tech') || ''
-  );
-
+  const [selectedTags, setSelectedTags] = useState<string[]>(searchParams.getAll('tag'));
+  const [selectedTechstacks, setSelectedTechstacks] = useState<string[]>(searchParams.getAll('tech'));
   const debouncedQuery = useDebounce(searchQuery, 400);
-
   // Init fuzzy search
   const fuse = useMemo(() => new Fuse(projects, fuseOptions), [projects]);
-
   // Extract unique techstacks and tags
   const techstacks = useMemo(() => {
     const seen = new Set<string>();
@@ -44,7 +36,6 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
       .filter((t) => !seen.has(t.id) && seen.add(t.id))
       .map((t) => ({ id: t.id, label: t.name }));
   }, [projects]);
-
   const tags = useMemo(() => {
     const seen = new Set<string>();
     return projects
@@ -52,12 +43,10 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
       .filter((t) => !seen.has(t.id) && seen.add(t.id))
       .map((t) => ({ id: t.id, label: t.name }));
   }, [projects]);
-
   // Filter & search logic in one memo
   const { showedItems, previewItems } = useMemo(() => {
     let filtered = projects;
     let preview: SearchItem[] = [];
-
     if (debouncedQuery.trim()) {
       const results = fuse.search(debouncedQuery);
       filtered = results.map((r) => r.item);
@@ -67,62 +56,53 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
         desc: res.item.description || '',
       }));
     }
-
-    if (selectedTag) {
+    if (selectedTags.length > 0) {
       filtered = filtered.filter((p) =>
-        p.tags.some((tag) => tag.id === selectedTag)
+        selectedTags.some((selectedTag) => p.tags.some((tag) => tag.id === selectedTag))
       );
     }
-
-    if (selectedTechstack) {
+    if (selectedTechstacks.length > 0) {
       filtered = filtered.filter((p) =>
-        p.techstacks.some((tech) => tech.id === selectedTechstack)
+        selectedTechstacks.some((selectedTech) => p.techstacks.some((tech) => tech.id === selectedTech))
       );
     }
-
     return {
       showedItems: filtered.sort((a, b) => a.title.localeCompare(b.title)),
       previewItems: preview,
     };
-  }, [projects, debouncedQuery, selectedTag, selectedTechstack, fuse]);
-
+  }, [projects, debouncedQuery, selectedTags, selectedTechstacks, fuse]);
   // Sync URL parameters when filters change
   useEffect(() => {
     const params = new URLSearchParams();
     if (searchQuery) params.set('q', searchQuery);
-    if (selectedTechstack) params.set('tech', selectedTechstack);
-    if (selectedTag) params.set('tag', selectedTag);
-
+    selectedTechstacks.forEach((tech) => params.append('tech', tech));
+    selectedTags.forEach((tag) => params.append('tag', tag));
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [searchQuery, selectedTechstack, selectedTag, pathname, router]);
-
-
+  }, [searchQuery, selectedTechstacks, selectedTags, pathname, router]);
   return (
-    <div className="container w-full px-0 py-8">
-      <div className="flex flex-col items-stretch gap-8">
-        <div className="md:col-span-1 md:sticky md:top-4 md:h-fit">
-          <SearchBar
-            previewItems={previewItems}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            isLoading={searchQuery !== debouncedQuery}
-            setIsLoading={() => {
-            }}
-          />
-          <CategoryFilter
-            techstacks={techstacks}
-            tags={tags}
-            setSelectedTechstack={setSelectedTechstack}
-            setSelectedTag={setSelectedTag}
-            selectedTag={selectedTag}
-            selectedTechstack={selectedTechstack}
-          />
-        </div>
-        <ProjectList
+    <div className="container px-4 py-8 md:px-6 flex flex-col items-stretch gap-6 md:gap-8">
+      <div className="md:sticky md:top-4 md:h-fit mb-8 md:mb-0">
+        <SearchBar
+          previewItems={previewItems}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
           isLoading={searchQuery !== debouncedQuery}
-          projects={showedItems}
+          setIsLoading={() => {
+          }}
+        />
+        <CategoryFilter
+          techstacks={techstacks}
+          tags={tags}
+          setSelectedTags={setSelectedTags}
+          setSelectedTechstacks={setSelectedTechstacks}
+          selectedTags={selectedTags}
+          selectedTechstacks={selectedTechstacks}
         />
       </div>
+      <ProjectList
+        isLoading={searchQuery !== debouncedQuery}
+        projects={showedItems}
+      />
     </div>
   );
 }

@@ -1,23 +1,19 @@
-import Image from 'next/image';
 import { Prisma } from '@repo/db/generated/prisma/client';
 import DOMPurify from 'isomorphic-dompurify';
-import { getTranslations } from 'next-intl/server';
 
-
-import { supportedLanguages } from '@/config/language';
 import { fetchData } from '@/lib/core/fetch';
+import { getTranslations } from '@/lib/i18n';
 import AboutContent from '@/components/about-content';
 import { AboutShell } from '@/components/shell';
-import { TechGroup } from '@/components/tech-stack';
+import { TechGroup } from '@/components/tech-stack-experience';
 import { TimelineItemProps } from '@/components/timeline';
 
 
-export function generateStaticParams() {
-  return supportedLanguages.map((lang) => ({ locale: lang }));
-}
+
+
 
 export default async function AboutPage() {
-  const t = await getTranslations('about');
+  const t = await getTranslations();
 
   const user = await fetchData<Prisma.UserGetPayload<{
     include: {
@@ -31,13 +27,15 @@ export default async function AboutPage() {
   }>>('me', {
     params: {
       educations: 'true',
-      techstacks: 'true,'
+      techstacks: 'true',
     }
   });
 
   if (!user) {
     return null;
   }
+
+  console.log(`Techstack: ${JSON.stringify(user, null, 2)}`);
 
   // Techstacks
   const techGroups: TechGroup[] = (user.techstacks || []).reduce((groups, tech) => {
@@ -47,6 +45,7 @@ export default async function AboutPage() {
       groups.push(group);
     }
     group.items.push({
+      id: tech.id,
       name: tech.name,
       logo: tech.logo || '',
     });
@@ -59,25 +58,23 @@ export default async function AboutPage() {
       subItems: true
     }
   }>) => ({
-    timeline: edu.timeline,
-    title: edu.title,
-    message: DOMPurify.sanitize(edu.message || ''),
-    icon: edu.icon ? (
-      <Image src={edu.icon} alt="" width={32} height={32} />
-    ) : undefined,
+    timeline: t(edu.timeline),
+    title: t(edu.title),
+    message: t(DOMPurify.sanitize(edu.message || '')),
+    icon: edu.icon || '',
     username: '',
     subItems:
       Array.isArray(edu.subItems) ?
       edu.subItems?.map((sub: any) => ({
         title: sub.title,
-        message: DOMPurify.sanitize(sub.message),
+        message: t(DOMPurify.sanitize(sub.message)),
       })) : [],
   }));
 
   const tocItems = [
-    { href: '#aboutme', label: t('section.About me') },
-    { href: '#education', label: t('section.Education') },
-    { href: '#skills', label: t('section.Skills / Tech Stack') },
+    { href: '#aboutme', label: t('about.section.About me') },
+    { href: '#education', label: t('about.section.Education') },
+    { href: '#skills', label: t('about.section.Skills / Tech Stack') },
   ];
 
   return (
@@ -88,9 +85,9 @@ export default async function AboutPage() {
         educationItems={educationItems}
         tocItems={tocItems}
         sectionTitles={{
-          aboutMe: t('section.About me'),
-          education: t('section.Education'),
-          skills: t('section.Skills / Tech Stack'),
+          aboutMe: t('about.section.About me'),
+          education: t('about.section.Education'),
+          skills: t('about.section.Skills / Tech Stack'),
         }}
       />
     </AboutShell>
