@@ -1,15 +1,17 @@
-import { supportedLanguages } from '@/config/language';
+import { fetchData } from '@/lib/core/fetch';
 import { ContactContent } from '@/components/contact-content';
 import { ContactShell } from '@/components/shell';
 
-export function generateStaticParams() {
-  return supportedLanguages.map((lang) => ({ locale: lang }));
-}
+export default async function ContactPage() {
+  const contact: any = await fetchData('me/contact');
 
-export default function ContactPage() {
   return (
     <ContactShell>
-      <ContactContent />
+      <ContactContent
+        linkedIn={contact?.linkedIn}
+        email={contact?.email}
+        github={contact?.github}
+      />
     </ContactShell>
   );
 }

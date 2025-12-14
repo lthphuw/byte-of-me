@@ -4,12 +4,14 @@ import { revalidatePath } from 'next/cache';
 import { prisma } from '@db/client';
 
 import { getCurrentUser } from '@/lib/session';
+import { Prisma } from '@repo/db/generated/prisma/client';
 
 
 
 
 
 export async function addProject(data: {
+  slug: string;
   title: string;
   description?: string;
   githubLink?: string | null;
@@ -19,13 +21,20 @@ export async function addProject(data: {
   techStackIds: string[];
   tagIds: string[];
   coauthorIds: string[];
-}) {
-  try {
+}): Promise<Prisma.ProjectGetPayload<{
+  include: {
+    techstacks: { include: { techstack: true } };
+    tags: { include: { tag: true } };
+    coauthors: { include: { coauthor: true } };
+    blogs: true;
+  };
+}>>  {
     const user = await getCurrentUser();
     if (!user) throw new Error('Unauthorized');
 
     const created = await prisma.project.create({
       data: {
+        slug: data.slug,
         userId: user.id,
         title: data.title,
         description: data.description,
@@ -53,9 +62,6 @@ export async function addProject(data: {
 
     revalidatePath('/dashboard/projects');
     return created;
-  } catch (error: any) {
-    return null;
-  }
 }
 
 export async function updateProject(data: {
@@ -69,8 +75,14 @@ export async function updateProject(data: {
   techStackIds: string[];
   tagIds: string[];
   coauthorIds: string[];
-}) {
-  try {
+}): Promise<Prisma.ProjectGetPayload<{
+  include: {
+    techstacks: { include: { techstack: true } };
+    tags: { include: { tag: true } };
+    coauthors: { include: { coauthor: true } };
+    blogs: true;
+  };
+}>> {
     const user = await getCurrentUser();
     if (!user) throw new Error('Unauthorized');
 
@@ -112,9 +124,6 @@ export async function updateProject(data: {
 
     revalidatePath('/dashboard/projects');
     return updated;
-  } catch (error: any) {
-    return null;
-  }
 }
 
 export async function deleteProject(id: string) {

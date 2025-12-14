@@ -1,13 +1,25 @@
-import { useTranslations as staticTranslator } from 'next-intl';
+'use client';
 
-export function useTranslations(namespace: string) {
-  const t = staticTranslator(namespace as any);
+import { useTranslations as useNextIntlTranslations } from 'next-intl';
 
-  return (key: string, fallback?: string): string => {
+import { NextIntlRawTranslator, TranslatorFunc } from '@/types/i18n';
+
+export function useTranslations(namespace?: string): TranslatorFunc {
+  const t = useNextIntlTranslations(
+    namespace as any
+  ) as unknown as NextIntlRawTranslator;
+
+  return (sourceText: string): string => {
     try {
-      return t(key as never);
-    } catch (error) {
-      return fallback ?? key;
+      const translated = t.raw(sourceText as any);
+
+      if (!translated || translated === sourceText) {
+        return sourceText;
+      }
+
+      return translated;
+    } catch {
+      return sourceText;
     }
   };
 }

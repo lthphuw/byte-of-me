@@ -2053,13 +2053,13 @@ export const AccountScalarFieldEnum = {
   type: 'type',
   provider: 'provider',
   providerAccountId: 'providerAccountId',
-  refreshToken: 'refreshToken',
-  accessToken: 'accessToken',
-  expiresAt: 'expiresAt',
-  tokenType: 'tokenType',
+  refresh_token: 'refresh_token',
+  access_token: 'access_token',
+  expires_at: 'expires_at',
+  token_type: 'token_type',
   scope: 'scope',
-  idToken: 'idToken',
-  sessionState: 'sessionState'
+  id_token: 'id_token',
+  session_state: 'session_state'
 } as const
 
 export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum]
@@ -2125,6 +2125,7 @@ export type EducationSubItemScalarFieldEnum = (typeof EducationSubItemScalarFiel
 export const TechStackScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  slug: 'slug',
   logo: 'logo',
   group: 'group',
   userId: 'userId',
@@ -2194,6 +2195,7 @@ export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof Task
 
 export const ProjectScalarFieldEnum = {
   id: 'id',
+  slug: 'slug',
   userId: 'userId',
   title: 'title',
   description: 'description',
@@ -2244,6 +2246,7 @@ export type BlogScalarFieldEnum = (typeof BlogScalarFieldEnum)[keyof typeof Blog
 
 export const TagScalarFieldEnum = {
   id: 'id',
+  slug: 'slug',
   name: 'name',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

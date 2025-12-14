@@ -1,8 +1,11 @@
 import { redirect } from 'next/navigation';
 
-import { authOptions } from '@/lib/auth';
 import { getCurrentUser } from '@/lib/session';
 import { DashboardSidebar } from '@/components/dashboard-sidebar';
+
+
+
+
 
 export default async function DashboardLayout({
   children,
@@ -12,7 +15,7 @@ export default async function DashboardLayout({
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect(authOptions?.pages?.signIn || '/login');
+    redirect('/auth/login');
   }
 
   return (

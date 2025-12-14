@@ -10,6 +10,7 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '3mb',
     },
+    serverExternalPackages: [],
   },
   turbopack: {
     resolveExtensions: ['.mdx', '.tsx', '.ts', '.jsx', '.js', '.mjs', '.json'],

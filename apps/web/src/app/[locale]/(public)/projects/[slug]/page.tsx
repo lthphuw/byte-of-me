@@ -1,7 +1,3 @@
-import { prisma } from '@db/client';
-
-import { supportedLanguages } from '@/config/language';
-import { siteConfig } from '@/config/site';
 import { fetchData, fetchREADMEData } from '@/lib/core/fetch';
 import { extractToc } from '@/lib/core/markdown';
 import { ProjectDetailsContent } from '@/components/project-details-content';
@@ -15,40 +11,6 @@ import { ProjectDetailsShell } from '@/components/shell';
 type Props = {
   params: Promise<{ slug: string }>;
 };
-
-export async function getAllProjectSlugs() {
-  const email = siteConfig.email;
-
-  const user = await prisma.user.findUnique({
-    where: { email },
-  });
-
-  if (!user) return [];
-
-  const projects = await prisma.project.findMany({
-    where: { userId: user.id },
-    select: { id: true },
-  });
-
-  return projects.map((proj) => proj.id.toString());
-}
-
-export async function generateStaticParams() {
-  try {
-    const ids = await getAllProjectSlugs();
-    if (!ids) return [];
-
-    return supportedLanguages.flatMap((locale) =>
-      ids.map((id) => ({
-        locale,
-        slug: id.toString(),
-      }))
-    );
-  } catch (err) {
-    console.error('generateStaticParams error:', err);
-    return [];
-  }
-}
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params;

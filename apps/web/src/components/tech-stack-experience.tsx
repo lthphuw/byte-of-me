@@ -1,11 +1,13 @@
 'use client';
 
 import Image from 'next/image';
+import { Link } from '@/i18n/navigation';
 import { Variants, motion } from 'framer-motion';
 
 export interface TechItem {
+  id: string;
   name: string;
-  logo: string; // image src
+  logo: string;
 }
 
 export interface TechGroup {
@@ -19,33 +21,33 @@ export interface TechStackProps {
   style?: React.CSSProperties;
 }
 
-export function TechStack({ groups, className, style }: TechStackProps) {
-  const groupVariants: Variants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: [0.4, 0, 0.2, 1],
-        delay: i * 0.1,
-      },
-    }),
-  };
+const groupVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.4, 0, 0.2, 1],
+      delay: i * 0.1,
+    },
+  }),
+};
 
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: (j: number) => ({
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.4,
-        ease: [0.4, 0, 0.2, 1],
-        delay: j * 0.05,
-      },
-    }),
-  };
+const itemVariants: Variants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: (j: number) => ({
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      ease: [0.4, 0, 0.2, 1],
+      delay: j * 0.05,
+    },
+  }),
+};
 
+export function TechStackExperience({ groups, className, style }: TechStackProps) {
   return (
     <div
       className={`w-full mx-auto grid gap-6 grid-cols-1 md:grid-cols-2 ${className}`}
@@ -78,17 +80,19 @@ export function TechStack({ groups, className, style }: TechStackProps) {
                     whileHover={{ y: -4, transition: { duration: 0.2 } }}
                     className="flex flex-col items-center cursor-pointer px-1 py-2 w-[100px] group rounded-md"
                   >
-                    <div className="relative w-12 h-12 sm:w-14 sm:h-14 mb-2">
-                      <Image
-                        src={item.logo}
-                        alt={item.name}
-                        fill
-                        className="object-contain transition-transform duration-300"
-                      />
-                    </div>
-                    <span className="text-xs sm:text-sm text-center text-gray-700 dark:text-gray-300 font-medium">
+                    <Link href={`/projects?tech=${item.id}`}>
+                      <div className="relative w-12 h-12 sm:w-14 sm:h-14 mb-2">
+                        <Image
+                          src={item.logo}
+                          alt={item.name}
+                          fill
+                          className="object-contain object-center transition-transform duration-300"
+                        />
+                      </div>
+                      <span className="text-xs sm:text-sm text-center text-gray-700 dark:text-gray-300 font-medium">
                       {item.name}
                     </span>
+                    </Link>
                   </motion.div>
                 ))}
               </div>

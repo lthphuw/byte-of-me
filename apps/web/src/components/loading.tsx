@@ -39,13 +39,13 @@ export default function Loading({
         ],
         [
           selector,
-          { pathLength: 0, pathOffset: 1, stroke: strok, eColor },
+          { pathLength: 0, pathOffset: 1, stroke: strokeColor },
           {
             duration: 0.4,
             ease: 'linear',
           } as Transition,
         ],
-        [selector, { stroke: 'none' }, , { duration: 0 } as Transition],
+        [selector, { stroke: 'none' }, { duration: 0 } as Transition],
       ];
 
       while (true) {

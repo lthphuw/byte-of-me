@@ -180,9 +180,12 @@
     "Failed to load project list": "Failed to load project list Please try again",
     "Back to projects": "Back to projects"
   },
-  "contact": {
-    "Connect With Me": "Connect With Me",
-    "Reach out, let's code the future!": "Reach out, let's code the future!"
+  "contact":{
+    "Let’s work together": "Let’s work together",
+    "Feel free to reach out through any channel": "Feel free to reach out through any channel",
+    "Send me an email": "Send me an email",
+    "LinkedIn": "LinkedIn",
+    "GitHub": "GitHub"
   },
   "chat": {
     "Ask Phu's Assistant": "Ask Phu's Assistant",

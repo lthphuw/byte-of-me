@@ -1,8 +1,8 @@
-import { FlagType } from '@/types';
+import { LocaleType } from '@/types';
 
-export const supportedLanguages: FlagType[] = ['en', 'vi', 'fr'];
+export const supportedLanguages: LocaleType[] = ['en', 'vi', 'fr'];
 
-export const languageNames: Record<FlagType, string> = {
+export const languageNames: Record<LocaleType, string> = {
   en: 'English',
   vi: 'Vietnamese',
   fr: 'French',

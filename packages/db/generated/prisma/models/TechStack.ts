@@ -27,6 +27,7 @@ export type AggregateTechStack = {
 export type TechStackMinAggregateOutputType = {
   id: string | null
   name: string | null
+  slug: string | null
   logo: string | null
   group: string | null
   userId: string | null
@@ -37,6 +38,7 @@ export type TechStackMinAggregateOutputType = {
 export type TechStackMaxAggregateOutputType = {
   id: string | null
   name: string | null
+  slug: string | null
   logo: string | null
   group: string | null
   userId: string | null
@@ -47,6 +49,7 @@ export type TechStackMaxAggregateOutputType = {
 export type TechStackCountAggregateOutputType = {
   id: number
   name: number
+  slug: number
   logo: number
   group: number
   userId: number
@@ -59,6 +62,7 @@ export type TechStackCountAggregateOutputType = {
 export type TechStackMinAggregateInputType = {
   id?: true
   name?: true
+  slug?: true
   logo?: true
   group?: true
   userId?: true
@@ -69,6 +73,7 @@ export type TechStackMinAggregateInputType = {
 export type TechStackMaxAggregateInputType = {
   id?: true
   name?: true
+  slug?: true
   logo?: true
   group?: true
   userId?: true
@@ -79,6 +84,7 @@ export type TechStackMaxAggregateInputType = {
 export type TechStackCountAggregateInputType = {
   id?: true
   name?: true
+  slug?: true
   logo?: true
   group?: true
   userId?: true
@@ -162,6 +168,7 @@ export type TechStackGroupByArgs<ExtArgs extends runtime.Types.Extensions.Intern
 export type TechStackGroupByOutputType = {
   id: string
   name: string
+  slug: string
   logo: string | null
   group: string
   userId: string
@@ -193,6 +200,7 @@ export type TechStackWhereInput = {
   NOT?: Prisma.TechStackWhereInput | Prisma.TechStackWhereInput[]
   id?: Prisma.StringFilter<"TechStack"> | string
   name?: Prisma.StringFilter<"TechStack"> | string
+  slug?: Prisma.StringFilter<"TechStack"> | string
   logo?: Prisma.StringNullableFilter<"TechStack"> | string | null
   group?: Prisma.StringFilter<"TechStack"> | string
   userId?: Prisma.StringFilter<"TechStack"> | string
@@ -206,6 +214,7 @@ export type TechStackWhereInput = {
 export type TechStackOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   logo?: Prisma.SortOrderInput | Prisma.SortOrder
   group?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -219,6 +228,7 @@ export type TechStackOrderByWithRelationInput = {
 export type TechStackWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   name?: string
+  slug?: string
   AND?: Prisma.TechStackWhereInput | Prisma.TechStackWhereInput[]
   OR?: Prisma.TechStackWhereInput[]
   NOT?: Prisma.TechStackWhereInput | Prisma.TechStackWhereInput[]
@@ -230,11 +240,12 @@ export type TechStackWhereUniqueInput = Prisma.AtLeast<{
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   projects?: Prisma.TechStackOnProjectsListRelationFilter
   experiences?: Prisma.TechStackOnExperiencesListRelationFilter
-}, "id" | "name">
+}, "id" | "name" | "slug">
 
 export type TechStackOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   logo?: Prisma.SortOrderInput | Prisma.SortOrder
   group?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -251,6 +262,7 @@ export type TechStackScalarWhereWithAggregatesInput = {
   NOT?: Prisma.TechStackScalarWhereWithAggregatesInput | Prisma.TechStackScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"TechStack"> | string
   name?: Prisma.StringWithAggregatesFilter<"TechStack"> | string
+  slug?: Prisma.StringWithAggregatesFilter<"TechStack"> | string
   logo?: Prisma.StringNullableWithAggregatesFilter<"TechStack"> | string | null
   group?: Prisma.StringWithAggregatesFilter<"TechStack"> | string
   userId?: Prisma.StringWithAggregatesFilter<"TechStack"> | string
@@ -261,6 +273,7 @@ export type TechStackScalarWhereWithAggregatesInput = {
 export type TechStackCreateInput = {
   id?: string
   name: string
+  slug: string
   logo?: string | null
   group: string
   createdAt?: Date | string
@@ -273,6 +286,7 @@ export type TechStackCreateInput = {
 export type TechStackUncheckedCreateInput = {
   id?: string
   name: string
+  slug: string
   logo?: string | null
   group: string
   userId: string
@@ -285,6 +299,7 @@ export type TechStackUncheckedCreateInput = {
 export type TechStackUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   group?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -297,6 +312,7 @@ export type TechStackUpdateInput = {
 export type TechStackUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   group?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -309,6 +325,7 @@ export type TechStackUncheckedUpdateInput = {
 export type TechStackCreateManyInput = {
   id?: string
   name: string
+  slug: string
   logo?: string | null
   group: string
   userId: string
@@ -319,6 +336,7 @@ export type TechStackCreateManyInput = {
 export type TechStackUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   group?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -328,6 +346,7 @@ export type TechStackUpdateManyMutationInput = {
 export type TechStackUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   group?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -348,6 +367,7 @@ export type TechStackOrderByRelationAggregateInput = {
 export type TechStackCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   logo?: Prisma.SortOrder
   group?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -358,6 +378,7 @@ export type TechStackCountOrderByAggregateInput = {
 export type TechStackMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   logo?: Prisma.SortOrder
   group?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -368,6 +389,7 @@ export type TechStackMaxOrderByAggregateInput = {
 export type TechStackMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   logo?: Prisma.SortOrder
   group?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -453,6 +475,7 @@ export type TechStackUpdateOneRequiredWithoutExperiencesNestedInput = {
 export type TechStackCreateWithoutUserInput = {
   id?: string
   name: string
+  slug: string
   logo?: string | null
   group: string
   createdAt?: Date | string
@@ -464,6 +487,7 @@ export type TechStackCreateWithoutUserInput = {
 export type TechStackUncheckedCreateWithoutUserInput = {
   id?: string
   name: string
+  slug: string
   logo?: string | null
   group: string
   createdAt?: Date | string
@@ -504,6 +528,7 @@ export type TechStackScalarWhereInput = {
   NOT?: Prisma.TechStackScalarWhereInput | Prisma.TechStackScalarWhereInput[]
   id?: Prisma.StringFilter<"TechStack"> | string
   name?: Prisma.StringFilter<"TechStack"> | string
+  slug?: Prisma.StringFilter<"TechStack"> | string
   logo?: Prisma.StringNullableFilter<"TechStack"> | string | null
   group?: Prisma.StringFilter<"TechStack"> | string
   userId?: Prisma.StringFilter<"TechStack"> | string
@@ -514,6 +539,7 @@ export type TechStackScalarWhereInput = {
 export type TechStackCreateWithoutProjectsInput = {
   id?: string
   name: string
+  slug: string
   logo?: string | null
   group: string
   createdAt?: Date | string
@@ -525,6 +551,7 @@ export type TechStackCreateWithoutProjectsInput = {
 export type TechStackUncheckedCreateWithoutProjectsInput = {
   id?: string
   name: string
+  slug: string
   logo?: string | null
   group: string
   userId: string
@@ -552,6 +579,7 @@ export type TechStackUpdateToOneWithWhereWithoutProjectsInput = {
 export type TechStackUpdateWithoutProjectsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   group?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -563,6 +591,7 @@ export type TechStackUpdateWithoutProjectsInput = {
 export type TechStackUncheckedUpdateWithoutProjectsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   group?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -574,6 +603,7 @@ export type TechStackUncheckedUpdateWithoutProjectsInput = {
 export type TechStackCreateWithoutExperiencesInput = {
   id?: string
   name: string
+  slug: string
   logo?: string | null
   group: string
   createdAt?: Date | string
@@ -585,6 +615,7 @@ export type TechStackCreateWithoutExperiencesInput = {
 export type TechStackUncheckedCreateWithoutExperiencesInput = {
   id?: string
   name: string
+  slug: string
   logo?: string | null
   group: string
   userId: string
@@ -612,6 +643,7 @@ export type TechStackUpdateToOneWithWhereWithoutExperiencesInput = {
 export type TechStackUpdateWithoutExperiencesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   group?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -623,6 +655,7 @@ export type TechStackUpdateWithoutExperiencesInput = {
 export type TechStackUncheckedUpdateWithoutExperiencesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   group?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -634,6 +667,7 @@ export type TechStackUncheckedUpdateWithoutExperiencesInput = {
 export type TechStackCreateManyUserInput = {
   id?: string
   name: string
+  slug: string
   logo?: string | null
   group: string
   createdAt?: Date | string
@@ -643,6 +677,7 @@ export type TechStackCreateManyUserInput = {
 export type TechStackUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   group?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -654,6 +689,7 @@ export type TechStackUpdateWithoutUserInput = {
 export type TechStackUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   group?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -665,6 +701,7 @@ export type TechStackUncheckedUpdateWithoutUserInput = {
 export type TechStackUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   group?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -714,6 +751,7 @@ export type TechStackCountOutputTypeCountExperiencesArgs<ExtArgs extends runtime
 export type TechStackSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  slug?: boolean
   logo?: boolean
   group?: boolean
   userId?: boolean
@@ -728,6 +766,7 @@ export type TechStackSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type TechStackSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  slug?: boolean
   logo?: boolean
   group?: boolean
   userId?: boolean
@@ -739,6 +778,7 @@ export type TechStackSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
 export type TechStackSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  slug?: boolean
   logo?: boolean
   group?: boolean
   userId?: boolean
@@ -750,6 +790,7 @@ export type TechStackSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
 export type TechStackSelectScalar = {
   id?: boolean
   name?: boolean
+  slug?: boolean
   logo?: boolean
   group?: boolean
   userId?: boolean
@@ -757,7 +798,7 @@ export type TechStackSelectScalar = {
   updatedAt?: boolean
 }
 
-export type TechStackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "logo" | "group" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["techStack"]>
+export type TechStackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "logo" | "group" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["techStack"]>
 export type TechStackInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   projects?: boolean | Prisma.TechStack$projectsArgs<ExtArgs>
@@ -781,6 +822,7 @@ export type $TechStackPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
+    slug: string
     logo: string | null
     group: string
     userId: string
@@ -1214,6 +1256,7 @@ export interface Prisma__TechStackClient<T, Null = never, ExtArgs extends runtim
 export interface TechStackFieldRefs {
   readonly id: Prisma.FieldRef<"TechStack", 'String'>
   readonly name: Prisma.FieldRef<"TechStack", 'String'>
+  readonly slug: Prisma.FieldRef<"TechStack", 'String'>
   readonly logo: Prisma.FieldRef<"TechStack", 'String'>
   readonly group: Prisma.FieldRef<"TechStack", 'String'>
   readonly userId: Prisma.FieldRef<"TechStack", 'String'>

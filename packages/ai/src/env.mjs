@@ -11,7 +11,7 @@ export const env = createEnv({
     MODEL_TEMPERATURE: z.number().optional().default(0.4), // Temperature for LLM generation
 
     // Database (Postgres) for LangGraph checkpoint
-    DIRECT_DATABASE_URL: z.string().url(),
+    DIRECT_URL: z.string().url(),
 
     // Pinecone vectorstore
     PINECONE_API_KEY: z.string(),
@@ -60,7 +60,7 @@ export const env = createEnv({
 
     CHECKPOINTER_SCHEMA: process.env.CHECKPOINTER_SCHEMA,
     HOST: process.env.HOST,
-    DIRECT_DATABASE_URL: process.env.DIRECT_DATABASE_URL,
+    DIRECT_URL: process.env.DIRECT_URL,
 
     NODE_ENV: process.env.NODE_ENV,
   },

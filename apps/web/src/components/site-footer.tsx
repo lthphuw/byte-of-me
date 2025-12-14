@@ -1,10 +1,10 @@
 import { Link } from '@/i18n/navigation';
-import { User } from '@db/index';
+import { User } from '@repo/db/generated/prisma/client';
 import { Facebook, Github, Linkedin, Mail } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
 
 import { globalConfig } from '@/config/global';
 import { fetchData } from '@/lib/core/fetch';
+import { getTranslations } from '@/lib/i18n';
 import { cn, ensureValidUrl } from '@/lib/utils';
 
 import { Icons } from './icons';
@@ -54,7 +54,7 @@ export async function SiteFooter({ className }: SiteFooterProps) {
 
         {/* Social Media and License */}
         <div className="flex flex-col items-center md:items-end gap-2">
-          <h3 className="text-lg font-semibold">{t('connect')}</h3>
+          {/*<h3 className="text-lg font-semibold">{t('connect')}</h3>*/}
           <div className="flex gap-4">
             {me.github && (
               <a

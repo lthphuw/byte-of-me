@@ -4,8 +4,15 @@ import { User } from '@repo/db/generated/prisma/client';
 import { motion } from 'framer-motion';
 
 import { FloatingToc } from '@/components/floating-toc';
-import { TechGroup, TechStack } from '@/components/tech-stack';
+import {
+  TechGroup,
+  TechStackExperience,
+} from '@/components/tech-stack-experience';
 import { Timeline, TimelineItemProps } from '@/components/timeline';
+
+
+
+
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
@@ -90,7 +97,7 @@ export default function AboutContent({
           <h2 className="text-xl md:text-3xl font-bold mb-4">
             {sectionTitles.skills}
           </h2>
-          <TechStack groups={techGroups} />
+          <TechStackExperience groups={techGroups} />
         </motion.section>
 
         <FloatingToc items={tocItems} />

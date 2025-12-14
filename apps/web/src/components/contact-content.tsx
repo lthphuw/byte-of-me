@@ -2,8 +2,8 @@
 
 import { Link } from '@/i18n/navigation';
 import { Variants, motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
 
+import { useTranslations } from '@/hooks/use-translations';
 import { Icons } from '@/components/icons';
 
 
@@ -14,88 +14,163 @@ const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.15 },
+    transition: { duration: 0.25, staggerChildren: 0.1 },
   },
 };
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 12 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+    transition: { duration: 0.25, ease: 'easeOut' },
   },
 };
 
-export function ContactContent() {
+export type ContactContentProps = {
+  email?: string;
+  linkedIn?: string;
+  github?: string;
+};
+
+export function ContactContent({
+                                 email,
+                                 linkedIn,
+                                 github,
+                               }: ContactContentProps) {
   const t = useTranslations('contact');
 
+  const contacts = [
+    email && {
+      href: `mailto:${email}`,
+      label: 'Email',
+      description: email,
+      icon: Icons.email,
+    },
+    linkedIn && {
+      href: linkedIn,
+      label: 'LinkedIn',
+      description: t('LinkedIn'),
+      icon: Icons.linkedin,
+    },
+    github && {
+      href: github,
+      label: 'GitHub',
+      description: t('GitHub'),
+      icon: Icons.github,
+    },
+  ].filter(Boolean) as {
+    href: string;
+    label: string;
+    description: string;
+    icon: React.ComponentType<{ size?: number }>;
+  }[];
+
+  if (contacts.length === 0) return null;
+
   return (
-    <motion.div
-      className="w-full max-w-md mx-auto mt-12 md:mt-16"
+    <motion.section
       variants={containerVariants}
       initial="hidden"
       animate="visible"
+      className="
+        h-[82.5vh]
+        flex
+        items-center
+        justify-center
+        px-4
+      "
     >
-      {/* Header */}
-      <motion.div variants={itemVariants} className="text-center mb-10">
-        <h1 className="scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
-          {t('Connect With Me')}
-        </h1>
-        <p className="mt-2 text-base md:text-xl text-muted-foreground border-b pb-2">
-          {t("Reach out, let's code the future!")}
-        </p>
-      </motion.div>
+      <div className="w-full max-w-md space-y-8">
+        {/* Header */}
+        <motion.div
+          variants={itemVariants}
+          className="text-center space-y-2"
+        >
+          <h1 className="text-2xl md:text-4xl font-semibold tracking-tight">
+            {t("Let’s work together")}
+          </h1>
+          <p className="text-sm md:text-base text-muted-foreground">
+            {t('Feel free to reach out through any channel')}
+          </p>
+        </motion.div>
 
-      <motion.div
-        variants={containerVariants}
-        className="grid grid-cols-2 gap-4 md:gap-10"
-      >
-        {[
-          {
-            href: 'mailto:lthphuw@gmail.com',
-            icon: <Icons.email size={48} />,
-            label: 'Email',
-          },
-          {
-            href: 'https://linkedin.com/in/phu-lth',
-            icon: <Icons.linkedin size={48} />,
-            label: 'Linkedin',
-          },
-          {
-            href: 'https://github.com/lthphuw',
-            icon: <Icons.github size={48} />,
-            label: 'Github',
-          },
-          {
-            href: 'https://www.facebook.com/lthphu2011',
-            icon: <Icons.facebook size={48} />,
-            label: 'Facebook',
-          },
-        ].map((item, index) => (
-          <motion.div
-            whileHover={{
-              scale: 1.05,
-            }}
-            id={index.toString()}
-            key={item.href}
-            variants={itemVariants}
-          >
-            <div className="container-bg cursor-pointer px-4 py-2 md:py-4 w-full min-h-[97px] md:w-[216px] md:min-h-[184px] flex flex-col justify-center align-center rounded-xl gap-4 shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)]">
-              <Link
-                href={item.href}
-                target="_blank"
-                className="flex flex-col items-center justify-center gap-4 w-full h-full px-4 py-4"
-              >
-                {item.icon}
-                <p className="scroll-m-20 text-base font-semibold tracking-tight">
-                  {item.label}
-                </p>
-              </Link>
-            </div>
-          </motion.div>
-        ))}
-      </motion.div>
-    </motion.div>
+        {/* Contact items */}
+        <motion.div
+          variants={containerVariants}
+          className="grid grid-cols-1 gap-3"
+        >
+          {contacts.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <motion.div key={item.href} variants={itemVariants}>
+                <Link
+                  href={item.href}
+                  target="_blank"
+                  className="
+                    group
+                    flex
+                    items-center
+                    gap-4
+                    rounded-lg
+                    border
+                    border-border
+                    px-4
+                    py-3
+                    transition
+                    hover:bg-muted/50
+                    focus:outline-none
+                    focus-visible:ring-2
+                    focus-visible:ring-ring
+                  "
+                >
+                  {/* Icon */}
+                  <div
+                    className="
+                      flex
+                      size-10
+                      items-center
+                      justify-center
+                      rounded-md
+                      border
+                      border-border
+                      text-muted-foreground
+                      transition
+                      group-hover:-translate-y-0.5
+                      group-hover:text-foreground
+                    "
+                  >
+                    <Icon size={18} />
+                  </div>
+
+                  {/* Text */}
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">
+                      {item.label}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {item.description}
+                    </span>
+                  </div>
+
+                  <span
+                    className="
+                      ml-auto
+                      text-xs
+                      text-muted-foreground
+                      transition
+                      opacity-60
+                    "
+                  >
+                    ↗
+                  </span>
+                </Link>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      </div>
+    </motion.section>
   );
 }

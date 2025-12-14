@@ -1,12 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
 import { useIsMobile } from '@/hooks/use-is-mobile';
-
-import { Skeleton } from './ui/skeleton';
+import Image from '@/components/image';
 
 interface CardRotateProps {
   children: React.ReactNode;
@@ -143,8 +141,6 @@ function ImageCard({
   isMobile,
   sensitivity,
 }: ImageCardProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
-
   return (
     <CardRotate
       key={card.id}
@@ -169,17 +165,13 @@ function ImageCard({
           height: cardDimensions.height,
         }}
       >
-        {!isLoaded && (
-          <Skeleton className="absolute inset-0 w-full h-full z-0" />
-        )}
         <Image
           src={card.src}
           alt={card.alt ?? `card-${card.id}`}
-          className="w-full h-full object-cover pointer-events-none z-10"
-          onLoad={() => setIsLoaded(true)}
-          quality={isMobile ? 75 : 100}
           fill
-          priority
+          quality={isMobile ? 75 : 100}
+          priority={index === cardsLength - 1}
+          className="object-cover pointer-events-none z-10"
         />
       </motion.div>
     </CardRotate>

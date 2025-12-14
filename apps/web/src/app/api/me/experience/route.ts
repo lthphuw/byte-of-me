@@ -1,17 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@db/client';
 
 import { ApiResponse } from '@/types/api';
 import { siteConfig } from '@/config/site';
 import { CompanyExperience } from '@/components/experience-timeline';
 
-
-
-
-
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const queryParams = req.nextUrl.searchParams;
     const email = siteConfig.email;
     const user = await prisma.user.findUnique({
       where: { email },
@@ -37,7 +32,6 @@ export async function GET(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error fetching user experiences:', error);
     return NextResponse.json(
       { error: 'Internal server error' } as ApiResponse<never>,
       { status: 500 }

@@ -10,6 +10,7 @@ import { getCurrentUser } from '@/lib/session';
 
 
 export async function addTechStack(data: {
+  slug: string;
   name: string;
   group: string;
   logo?: string | null;
@@ -20,6 +21,7 @@ export async function addTechStack(data: {
 
     const created = await prisma.techStack.create({
       data: {
+        slug: data.slug,
         userId: user.id,
         name: data.name,
         group: data.group,

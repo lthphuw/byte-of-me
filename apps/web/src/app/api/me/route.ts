@@ -3,10 +3,16 @@ import { prisma } from '@db/client';
 
 import { ApiResponse } from '@/types/api';
 import { siteConfig } from '@/config/site';
+import { getTranslations, translateDeep } from '@/lib/i18n';
+
+
+
+
 
 export async function GET(req: NextRequest) {
   try {
     const queryParams = req.nextUrl.searchParams;
+    const locale = queryParams.get('locale') || 'en';
 
     const email = siteConfig.email;
 
@@ -42,7 +48,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ data: user } as ApiResponse<any>, {
+    const t = await getTranslations();
+    return NextResponse.json({ data: translateDeep(user, t) } as ApiResponse<any>, {
       status: 200,
     });
   } catch (error) {

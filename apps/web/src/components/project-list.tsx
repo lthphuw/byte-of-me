@@ -3,11 +3,11 @@
 import React, { FC } from 'react';
 import { Link } from '@/i18n/navigation';
 import { HTMLMotionProps, Variants, motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
 
 
 
 import { cn } from '@/lib/utils';
+import { useTranslations } from '@/hooks/use-translations';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 

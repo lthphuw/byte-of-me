@@ -39,6 +39,7 @@ import {
 } from '@/components/ui/popover';
 import { useToast } from '@/components/ui/use-toast';
 import { RichTextEditor } from '@/components/rich-text-editor';
+import { TrashButton } from '@/components/trash-button';
 
 type Project = Prisma.ProjectGetPayload<{
   include: {
@@ -66,6 +67,7 @@ export function ProjectManager({
   const [isAdding, setIsAdding] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
+    slug: '',
     title: '',
     githubLink: '',
     liveLink: '',
@@ -101,8 +103,6 @@ export function ProjectManager({
 
   const addNewTag = () => {
     if (newTagName.trim()) {
-      // In real implementation, create new tag via action and refresh list
-      // For now, simulate
       toast({ title: 'Info', description: 'New tag added (simulate)' });
       setNewTagName('');
     }
@@ -117,7 +117,6 @@ export function ProjectManager({
 
   const addNewCoauthor = () => {
     if (newCoauthor.fullname.trim()) {
-      // In real implementation, create new coauthor via action
       toast({ title: 'Info', description: 'New coauthor added (simulate)' });
       setNewCoauthor({ fullname: '', email: '' });
     }
@@ -128,6 +127,7 @@ export function ProjectManager({
       const descriptionHTML = stateToHTML(descriptionState.getCurrentContent());
 
       const data = {
+        slug: formData.slug,
         title: formData.title,
         description: descriptionHTML,
         githubLink: formData.githubLink || null,
@@ -139,7 +139,7 @@ export function ProjectManager({
         coauthorIds: formData.coauthorIds,
       };
 
-      let updatedProject;
+      let updatedProject: Project;
       if (selectedProject) {
         updatedProject = await updateProject({
           id: selectedProject.id,
@@ -199,6 +199,7 @@ export function ProjectManager({
   const openEditDialog = (project: Project) => {
     setSelectedProject(project);
     setFormData({
+      slug: project.slug,
       title: project.title,
       githubLink: project.githubLink || '',
       liveLink: project.liveLink || '',
@@ -229,6 +230,7 @@ export function ProjectManager({
     setSelectedProject(null);
     setIsAdding(false);
     setFormData({
+      slug: '',
       title: '',
       githubLink: '',
       liveLink: '',
@@ -297,17 +299,13 @@ export function ProjectManager({
               </p>
               <p className="text-sm">Blogs: {project.blogs.length}</p>
             </CardContent>
-            <Button
-              size="icon"
-              variant="destructive"
+
+            <TrashButton
               className="absolute top-2 right-2"
-              onClick={(e) => {
-                e.stopPropagation();
+              removeFunc={() => {
                 setDeleteConfirmId(project.id);
               }}
-            >
-              <Trash className="h-4 w-4" />
-            </Button>
+            />
           </Card>
         ))}
       </div>
@@ -335,8 +333,7 @@ export function ProjectManager({
                 editorState={descriptionState}
                 onChange={setDescriptionState}
                 placeholder="Enter description..."
-                handleKeyCommand={handleKeyCommand}
-                keyBindingFn={mapKeyToEditorCommand}
+
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
