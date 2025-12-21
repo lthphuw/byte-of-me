@@ -15,10 +15,10 @@ import {
   useInteractions,
   useRole,
 } from '@floating-ui/react';
-import { AnimatePresence, Variants, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
+import { itemVariants } from '@/config/anim';
 import { cn } from '@/lib/utils';
-import { useDebounce } from '@/hooks/use-debounce';
 import { useTranslations } from '@/hooks/use-translations';
 import { Input } from '@/components/ui/input';
 
@@ -32,40 +32,20 @@ export interface SearchItem {
 
 export interface SearchBarProps {
   searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  onItemSelect?: (item: SearchItem) => void;
+  setSearchQuery: (v: string) => void;
   previewItems?: SearchItem[];
   isLoading: boolean;
-  setIsLoading: (flag: boolean) => void;
 }
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.05,
-      type: 'spring',
-      stiffness: 130,
-      damping: 10,
-    },
-  }),
-  exit: { opacity: 0, y: 10 },
-};
 
 export function SearchBar({
                             searchQuery,
                             setSearchQuery,
                             previewItems = [],
                             isLoading,
-                            setIsLoading,
-                            onItemSelect,
                           }: SearchBarProps) {
   const t = useTranslations('global.search');
-  const debouncedQuery = useDebounce(searchQuery, 400);
 
-  const isOpen = previewItems.length > 0 && !!debouncedQuery;
+  const isOpen = previewItems.length > 0 && !!searchQuery;
 
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,
@@ -73,7 +53,7 @@ export function SearchBar({
     strategy: 'absolute',
     placement: 'bottom-start',
     middleware: [
-      offset(12),
+      offset(8),
       flip(),
       shift(),
       size({
@@ -110,12 +90,13 @@ export function SearchBar({
     );
   };
 
+
   const renderedItems = useMemo(
     () =>
       previewItems.map((item, index) => {
-        const labelParts = highlightText(item.label, debouncedQuery);
+        const labelParts = highlightText(item.label, searchQuery);
         const descParts = item.desc
-          ? highlightText(item.desc, debouncedQuery)
+          ? highlightText(item.desc, searchQuery)
           : null;
 
         return (
@@ -128,8 +109,8 @@ export function SearchBar({
             exit="exit"
             className={cn(
               'flex cursor-pointer flex-col gap-1 rounded-md px-3 py-2 text-sm transition-colors',
-              'hover:bg-gray-100 hover:text-gray-900',
-              'focus:bg-gray-100 focus:text-gray-900 focus:outline-none'
+              'hover:bg-gray-800',
+              'focus:bg-gray-800 focus:outline-none'
             )}
           >
             <Link href={`/projects/${item.id}`} className="block">
@@ -145,45 +126,35 @@ export function SearchBar({
           </motion.div>
         );
       }),
-    [previewItems, debouncedQuery, onItemSelect]
+    [previewItems, searchQuery]
   );
 
-  const rightIcon = isLoading ? (
-    <Icons.spinner className="animate-spin h-4 w-4 text-gray-500" />
-  ) : searchQuery ? (
-    <button
-      onClick={() => setSearchQuery('')}
-      className="text-gray-500 hover:text-gray-700"
-    >
-      <Icons.close className="h-4 w-4" />
-    </button>
-  ) : null;
 
   return (
     <motion.div layout="position" className="relative mb-6">
-      {/* Input */}
       <div
-        className="container-bg shadow-lg dark:shadow-[0_2px_12px_rgba(255,255,255,0.05)] rounded-xl overflow-hidden w-full"
         ref={refs.setReference}
         {...getReferenceProps()}
+        className="relative"
       >
-        <Icons.folderSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+        <Icons.folderSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
         <Input
-          type="text"
-          placeholder={`${t('Search projects')}...`}
           value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            setIsLoading(true);
-          }}
-          className="px-10 py-3 h-full w-full rounded-xl"
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={`${t('Search projects')}...`}
+          className="pl-10 pr-9"
         />
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
-          {rightIcon}
+        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+          {isLoading ? (
+            <Icons.spinner className="h-4 w-4 animate-spin" />
+          ) : searchQuery ? (
+            <button onClick={() => setSearchQuery('')}>
+              <Icons.close className="h-4 w-4" />
+            </button>
+          ) : null}
         </div>
       </div>
 
-      {/* Preview Result list */}
       <FloatingPortal>
         <AnimatePresence>
           {isOpen && (
@@ -193,15 +164,12 @@ export function SearchBar({
               {...getFloatingProps()}
             >
               <motion.div
-                initial={{ opacity: 0.3, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ type: 'spring', stiffness: 130, damping: 10 }}
-                className={'container-bg shadow-lg'}
-              >
-                <div className="mt-0 min-w-[160px] rounded-md p-1 text-sm">
-                  {renderedItems}
-                </div>
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 4 }}
+                className={'container-bg shadow-lg rounded-md p-2'}
+            >
+                {renderedItems}
               </motion.div>
             </div>
           )}

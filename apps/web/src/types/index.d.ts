@@ -2,11 +2,7 @@ import { CSSProperties } from 'react';
 
 import { Icons } from '@/components/icons';
 
-
-
-
-
-export type LocaleType = 'vi' | 'en' | 'fr';
+export type LocaleType = 'vi' | 'en';
 export type FlagType = LocaleType;
 
 export type BaseSelectItem = {

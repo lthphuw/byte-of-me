@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
 import { useIsMobile } from '@/hooks/use-is-mobile';
-import Image from '@/components/image';
+import { Image } from '@/components/image';
 
 interface CardRotateProps {
   children: React.ReactNode;

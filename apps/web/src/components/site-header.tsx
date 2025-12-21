@@ -1,18 +1,18 @@
 'use client';
 
 import { CSSProperties } from 'react';
+import { useElementSize, useWindowScroll } from '@mantine/hooks';
 import { motion, type Transition } from 'framer-motion';
 import { useTheme } from 'next-themes';
 
 import { globalConfig } from '@/config/global';
 import { cn } from '@/lib/utils';
-import { useElementDimensions } from '@/hooks/use-element-dimension';
-import { useWindowScroll } from '@/hooks/use-window-scroll';
 
 import { ChatButton } from './chat-button';
 import { I18NToggle } from './i18n-toggle';
 import { MainNav } from './main-nav';
 import { ModeToggle } from './mode-toggle';
+
 
 const SCROLL_THRESHOLD = 50;
 const COMPACT_BORDER_RADIUS = 16;
@@ -34,12 +34,10 @@ const TRANSITION: Transition = {
 };
 
 export function SiteHeader() {
-  const [{ y: scrollY }] = useWindowScroll(200);
-  const { dimensions, ref: mainNavRef } =
-    useElementDimensions<HTMLDivElement>();
+  const [{ y: scrollY }] = useWindowScroll();
+  const { width: headerWidth, ref: mainNavRef } = useElementSize();
   const { resolvedTheme } = useTheme();
 
-  const headerWidth = dimensions?.width;
   const isCompact = scrollY >= SCROLL_THRESHOLD;
   const compactWidth = headerWidth
     ? `calc(${headerWidth}px + ${COMPACT_WIDTH_OFFSET}px)`

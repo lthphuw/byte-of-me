@@ -1,10 +1,4 @@
-// @see https://usehooks.com/useLockBodyScroll.
-// hooks/use-lock-body.ts
 import { useLayoutEffect } from 'react';
-
-
-
-
 
 export function useLockBody(enabled?: boolean) {
   useLayoutEffect(() => {
