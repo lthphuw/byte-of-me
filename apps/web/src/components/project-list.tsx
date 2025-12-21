@@ -6,6 +6,7 @@ import { HTMLMotionProps, Variants, motion } from 'framer-motion';
 
 
 
+import { projectItemVariants } from '@/config/anim';
 import { cn } from '@/lib/utils';
 import { useTranslations } from '@/hooks/use-translations';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -89,7 +90,7 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
         initial="hidden"
         animate="visible"
         exit=" exit"
-        variants={itemVariants}
+        variants={projectItemVariants}
         {...motionProps}
       >
         <div className="container-bg min-w-[160px] rounded-2xl border-none p-1 text-sm shadow-md dark:shadow-[0_4px_10px_rgba(255,255,255,0.05)]">

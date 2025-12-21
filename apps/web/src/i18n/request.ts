@@ -6,6 +6,7 @@ import { env } from '@/env.mjs';
 
 import { routing } from './routing';
 
+
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
   const locale = hasLocale(routing.locales, requested)
@@ -44,7 +45,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
     })(),
   ]);
 
-  // Merge: static → dynamic (dynamic override static)
   const messages = {
     ...staticResult,
     ...dynamicResult,

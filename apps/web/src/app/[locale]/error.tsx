@@ -3,9 +3,9 @@
 // Error boundaries must be Client Components
 import { useCallback, useEffect, useMemo } from 'react';
 import { Link } from '@/i18n/navigation';
+import { useClipboard } from '@mantine/hooks';
 
 import { cn, prettyStringify } from '@/lib/utils';
-import { useClipboard } from '@/hooks/use-clipboard';
 import { useTranslations } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
 import GoBackButton from '@/components/go-back';

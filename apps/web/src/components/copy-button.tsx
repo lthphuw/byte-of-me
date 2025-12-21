@@ -2,11 +2,11 @@
 
 import { useCallback } from 'react';
 import { BaseComponentProps } from '@/types';
+import { useClipboard } from '@mantine/hooks';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { defaultSpring, iconSwicthVariants } from '@/config/anim';
 import { cn } from '@/lib/utils';
-import { useClipboard } from '@/hooks/use-clipboard';
 import { Icons } from '@/components/icons';
 
 
@@ -16,7 +16,7 @@ import { Icons } from '@/components/icons';
 export type CopyButtonProps = BaseComponentProps & {
   copyTimeout?: number;
   content: string;
-}
+};
 
 export function CopyButton({copyTimeout = 2000 , content, className, style}:CopyButtonProps) {
   const { copy, copied } = useClipboard({ timeout: copyTimeout });

@@ -2,11 +2,9 @@
 
 import { useCallback, useEffect, useRef } from 'react';
 import { useAssistantStore } from '@/stores/assistant';
+import { useMounted, useWindowScroll } from '@mantine/hooks';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useShallow } from 'zustand/react/shallow';
-
-import { useMounted } from '@/hooks/use-mounted';
-import { useWindowScroll } from '@/hooks/use-window-scroll';
 
 import ChatInput from './chat-input';
 import { ChatMessage } from './chat-message';

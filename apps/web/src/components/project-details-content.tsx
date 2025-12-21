@@ -2,6 +2,7 @@
 
 import { useMemo, useRef } from 'react';
 import { Link } from '@/i18n/navigation';
+import { useWindowScroll } from '@mantine/hooks';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import rangeParser from 'parse-numeric-range';
 import ReactMarkdown from 'react-markdown';
@@ -15,7 +16,6 @@ import { Pluggable } from 'unified';
 import { cn } from '@/lib/utils';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useTranslations } from '@/hooks/use-translations';
-import { useWindowScroll } from '@/hooks/use-window-scroll';
 import { FloatingToc, TocItem } from '@/components/floating-toc';
 
 import { Icons } from './icons';

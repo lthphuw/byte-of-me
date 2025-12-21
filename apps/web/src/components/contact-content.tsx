@@ -74,7 +74,7 @@ export function ContactContent({
       initial="hidden"
       animate="visible"
       className="
-        h-[82.5vh]
+        h-[50vh]
         flex
         items-center
         justify-center

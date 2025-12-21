@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useMounted } from '@mantine/hooks';
 
 import { cn } from '@/lib/utils';
-import { useMounted } from '@/hooks/use-mounted';
 
 import ImageStack from './image-stack';
 
