@@ -16,6 +16,7 @@ import { Variants, motion } from 'framer-motion';
 import { useLocale } from 'next-intl';
 
 import { iconOpenCloseVariants } from '@/config/anim';
+import { Routes } from '@/config/global';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-is-mobile';
@@ -88,7 +89,7 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
         {/* Desktop Logo */}
         {!isMobile && (
           <Link
-            href="/"
+            href={Routes.Homepage}
             locale={locale}
             className="flex items-center space-x-2"
           >

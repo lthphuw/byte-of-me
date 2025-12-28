@@ -72,7 +72,7 @@
     "lodash-move": "^1.1.1",
     "lucide-react": "^0.522.0",
     "nanoid": "^5.1.5",
-    "next": "16.0.10",
+    "next": "16.1.0",
     "next-auth": "5.0.0-beta.30",
     "next-intl": "^4.6.0",
     "next-themes": "^0.2.1",

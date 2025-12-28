@@ -10,6 +10,7 @@ import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import { Pluggable } from 'unified';
 
+import { Routes } from '@/config/global';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useTranslations } from '@/hooks/use-translations';
 import { FloatingToc, TocItem } from '@/components/floating-toc';
@@ -31,7 +32,7 @@ export function ProjectDetailsContent({
     <>
       <div className="relative max-w-full flex flex-col gap-4 md:gap-6 justify-center px-4 lg:px-8 py-12 overflow-x-hidden">
         <Link
-          href="/projects"
+          href={Routes.Projects}
           className="flex items-center gap-3 px-0 justify-start"
         >
           <Icons.arrowLeft />

@@ -210,5 +210,22 @@
       "example2": "Tell me about one of Phu's personal projects.",
       "example3": "What is Phu's experience with AI?"
     }
+  },
+  "homepage": {
+    "My story": "My story",
+    "More about my journey": "More about my journey",
+
+    "Selected projects": "Selected projects",
+    "A few things I’ve built recently": "A few things I’ve built recently",
+
+    "View project": "View project",
+    "View all projects": "View all projects",
+
+    "Have an idea in mind?": "Have an idea in mind?",
+    "Always interested in thoughtful projects and good collaboration.": "Always interested in thoughtful projects and good collaboration.",
+
+    "Let’s work together": "Let’s work together",
+    "Email me": "Email me",
+    "Contact details": "Contact details"
   }
 }

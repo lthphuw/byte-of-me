@@ -11,9 +11,11 @@ export const profileSchema = z.object({
   bio: z.string(),
   aboutMe: z.string(),
   quote: z.string().optional(),
+  quoteAuthor: z.string().optional(),
   linkedIn: z.string().url().or(z.literal('')).optional(),
   github: z.string().url().or(z.literal('')).optional(),
   twitter: z.string().url().or(z.literal('')).optional(),
   portfolio: z.string().url().or(z.literal('')).optional(),
-  image: z.string().optional(),
 });
+
+export type ProfileSchema = z.infer<typeof profileSchema>;

@@ -6,7 +6,6 @@ import { revalidateTime } from '@/config/revalidate';
 
 import { resolveRelativeImages } from './markdown';
 
-
 export type FetchOptions = {
   cache?: RequestCache;
   params?: Record<string, string>;
@@ -14,7 +13,7 @@ export type FetchOptions = {
 
 export async function fetchData<T>(
   endpoint: string,
-  { cache = 'no-cache', params }: FetchOptions = {}
+  { cache = 'force-cache', params }: FetchOptions = {}
 ): Promise<T> {
   const locale = await getLocale();
   const searchParams = new URLSearchParams();

@@ -13,19 +13,18 @@ async function main() {
       lastName: 'Luong',
       email: 'lthphuw@gmail.com',
       github: 'https://github.com/mockuser1201',
+      greeting: 'Hello',
+      tagLine: 'My name is Phu',
       portfolio: 'https://mock-portfolio.example.com',
       bio: 'A passionate fullstack developer building scalable web applications and exploring AI integration.',
       quote: 'Build things that matter.',
+      quoteAuthor: 'ABC',
       image: 'https://avatars.githubusercontent.com/u/1?v=4',
       bannerImages: {
         create: [
           { src: '/images/banners/banner-1.jpeg', caption: 'A scenic mountain view captured during a hiking trip.' },
           { src: '/images/banners/banner-2.jpeg', caption: 'Urban skyline at dusk from a rooftop.' },
           { src: '/images/banners/banner-3.jpeg', caption: 'Abstract digital art representing data flow.' },
-          { src: '/images/banners/banner-4.jpeg', caption: 'Coffee and laptop setup during a productive coding session.' },
-          { src: '/images/banners/banner-5.jpeg', caption: 'Sunset over the ocean waves.' },
-          { src: '/images/banners/banner-6.jpeg', caption: 'Night city lights reflecting on water.' },
-          { src: '/images/banners/banner-7.jpeg', caption: 'Minimalist workspace with multiple monitors.' },
         ],
       },
     },
@@ -89,10 +88,9 @@ async function main() {
     prisma.tag.upsert({ where: { slug: 'dashboard' }, update: {}, create: { name: 'Dashboard', slug: 'dashboard' } }),
     prisma.tag.upsert({ where: { slug: 'authentication' }, update: {}, create: { name: 'Authentication', slug: 'authentication' } }),
     prisma.tag.upsert({ where: { slug: 'ecommerce' }, update: {}, create: { name: 'E-commerce', slug: 'ecommerce' } }),
-    prisma.tag.upsert({ where: { slug: 'mobile' }, update: {}, create: { name: 'Mobile', slug: 'mobile' } }),
   ]);
 
-  const [tagReact, tagNext, tagPrisma, tagPortfolio, tagAI, tagML, tagFullstack, tagOSS, tagRAG, tagTS, tagDashboard, tagAuth, tagEcommerce, tagMobile] = tags;
+  const [tagReact, tagNext, tagPrisma, tagPortfolio, tagAI, tagML, tagFullstack, tagOSS, tagRAG, tagTS, tagDashboard, tagAuth, tagEcommerce,] = tags;
 
   // --- PROJECTS ---
   const projects = await Promise.all([
@@ -130,54 +128,6 @@ async function main() {
         liveLink: null,
         techstacks: { create: [{ techstack: { connect: { id: nestjs!.id } } }, { techstack: { connect: { id: react!.id } } }, { techstack: { connect: { id: docker!.id } } }] },
         tags: { create: [{ tag: { connect: { id: tagFullstack.id } } }, { tag: { connect: { id: tagOSS.id } } }] },
-      },
-    }),
-    prisma.project.create({
-      data: {
-        userId: user.id,
-        title: 'Project Delta – AI Image Classifier',
-        slug: 'project-delta',
-        description: 'Machine learning experiment for classifying and detecting objects in images using deep learning models.',
-        githubLink: 'https://github.com/mockuser1201/project-delta',
-        liveLink: null,
-        techstacks: { create: [{ techstack: { connect: { id: python!.id } } }, { techstack: { connect: { id: tensorflow!.id } } }] },
-        tags: { create: [{ tag: { connect: { id: tagAI.id } } }, { tag: { connect: { id: tagML.id } } }] },
-      },
-    }),
-    prisma.project.create({
-      data: {
-        userId: user.id,
-        title: 'Project Epsilon – E-commerce Platform',
-        slug: 'project-epsilon',
-        description: 'Full-featured online store with cart, checkout, payment integration, and admin panel.',
-        githubLink: 'https://github.com/mockuser1201/project-epsilon',
-        liveLink: 'https://project-epsilon.example.com',
-        techstacks: { create: [{ techstack: { connect: { id: nextjs!.id } } }, { techstack: { connect: { id: postgres!.id } } }, { techstack: { connect: { id: tailwind!.id } } }] },
-        tags: { create: [{ tag: { connect: { id: tagEcommerce.id } } }, { tag: { connect: { id: tagFullstack.id } } }] },
-      },
-    }),
-    prisma.project.create({
-      data: {
-        userId: user.id,
-        title: 'Project Zeta – Authentication System',
-        slug: 'project-zeta',
-        description: 'Secure user authentication service with JWT, OAuth2, and role-based access control.',
-        githubLink: 'https://github.com/mockuser1201/project-zeta',
-        liveLink: null,
-        techstacks: { create: [{ techstack: { connect: { id: nestjs!.id } } }, { techstack: { connect: { id: prismaTech!.id } } }] },
-        tags: { create: [{ tag: { connect: { id: tagAuth.id } } }] },
-      },
-    }),
-    prisma.project.create({
-      data: {
-        userId: user.id,
-        title: 'Project Eta – Mobile-Friendly Blog Engine',
-        slug: 'project-eta',
-        description: 'Lightweight blogging platform optimized for mobile with markdown support and SEO.',
-        githubLink: 'https://github.com/mockuser1201/project-eta',
-        liveLink: 'https://project-eta.example.com',
-        techstacks: { create: [{ techstack: { connect: { id: nextjs!.id } } }, { techstack: { connect: { id: ts!.id } } }] },
-        tags: { create: [{ tag: { connect: { id: tagMobile.id } } }, { tag: { connect: { id: tagOSS.id } } }] },
       },
     }),
   ]);
