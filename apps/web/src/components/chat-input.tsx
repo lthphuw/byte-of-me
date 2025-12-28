@@ -1,11 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAssistant } from '@/contexts/assistant';
+import { useAssistantStore } from '@/stores/assistant';
 import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
 
 import { cn } from '@/lib/utils';
+import { useTranslations } from '@/hooks/use-translations';
 import { ModelSelector } from '@/components/model-selector';
 
 import { Icons } from './icons';
@@ -18,20 +18,15 @@ import {
 } from './ui/tooltip';
 import { toast } from './ui/use-toast';
 
-
 const MAX_MESSAGE_LENGTH = 200; // Define max length constant
 
 export type ChatInputProps = {
-  clearChat: () => void;
   onSend: (message: string) => void;
-  loading?: boolean;
   className?: string;
 };
 
 export default function ChatInput({
-  clearChat,
   onSend,
-  loading,
   className,
 }: ChatInputProps) {
   const t = useTranslations('chat');
@@ -44,23 +39,17 @@ export default function ChatInput({
     setEmbedding,
     reranker,
     setReranker,
-  } = useAssistant();
+    isLoading,
+    clearHistory,
+  } = useAssistantStore();
 
   const [input, setInput] = useState('');
-  // const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  // const [showCaptchaModal, setShowCaptchaModal] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  // const { captchaRef } = useTurnstile({
-  //   onVerify: (token) => {
-  //     setCaptchaToken(token);
-  //     setShowCaptchaModal(false);
-  //   },
-  // });
 
   const handleSend = useCallback(async () => {
     const message = input.trim();
-    if (!message || loading) return;
+    if (!message || isLoading) return;
 
     if (message.length > MAX_MESSAGE_LENGTH) {
       toast({
@@ -69,26 +58,10 @@ export default function ChatInput({
       });
       return;
     }
-    //
-    // if (!captchaToken) {
-    //   setShowCaptchaModal(true);
-    //   return;
-    // }
 
     onSend(message);
     setInput('');
-
-    // const result = await verifyCaptcha(message, captchaToken);
-    // if (result.success) {
-    //   onSend(message);
-    //   setInput('');
-    //   window.turnstile?.reset();
-    // } else {
-    //   toast({ title: result.error || 'CAPTCHA verification failed' });
-    //   window.turnstile?.reset();
-    //   setTimeout(() => location.reload(), 1000);
-    // }
-  }, [input, loading]);
+  }, [input, isLoading]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -152,7 +125,7 @@ export default function ChatInput({
                 <TooltipTrigger asChild>
                   <Button
                     variant={'ghost'}
-                    onClick={clearChat}
+                    onClick={clearHistory}
                     disabled={!threadId}
                     aria-label="Clear chat"
                     size={'icon'}
@@ -169,52 +142,13 @@ export default function ChatInput({
             <Button
               variant="default"
               type="submit"
-              disabled={loading || !input.trim() || isRateLimited}
+              disabled={isLoading || !input.trim() || isRateLimited}
             >
-              {loading ? `${t('Asking')}...` : t('Ask')}
+              {isLoading ? `${t('Asking')}...` : t('Ask')}
             </Button>
           </div>
         </div>
       </motion.form>
-
-      {/*/!* Turnstile Cloudflare Widget *!/*/}
-      {/*<FloatingPortal>*/}
-      {/*  <motion.div*/}
-      {/*    initial={{ opacity: 0, zIndex: -50 }}*/}
-      {/*    animate={{*/}
-      {/*      opacity: showCaptchaModal ? 1 : 0,*/}
-      {/*      zIndex: showCaptchaModal ? 50 : -50,*/}
-      {/*    }}*/}
-      {/*    transition={{ duration: 0.3 }}*/}
-      {/*    className={cn(*/}
-      {/*      'fixed inset-0 flex items-center justify-center bg-black/50',*/}
-      {/*      !showCaptchaModal && 'hidden'*/}
-      {/*    )}*/}
-      {/*  >*/}
-      {/*    <motion.div*/}
-      {/*      initial={{ scale: 0.7, opacity: 0 }}*/}
-      {/*      animate={{*/}
-      {/*        scale: showCaptchaModal ? 1 : 0.7,*/}
-      {/*        opacity: showCaptchaModal ? 1 : 0,*/}
-      {/*      }}*/}
-      {/*      transition={{ duration: 0.3 }}*/}
-      {/*      className="bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-lg w-full max-w-sm"*/}
-      {/*    >*/}
-      {/*      <h2 className="text-lg font-semibold text-center mb-4 text-neutral-800 dark:text-neutral-100">*/}
-      {/*        {'Please complete CAPTCHA'}*/}
-      {/*      </h2>*/}
-      {/*      <div ref={captchaRef} />*/}
-      {/*      <div className="mt-4 text-center">*/}
-      {/*        <button*/}
-      {/*          className="text-sm text-neutral-500 hover:underline"*/}
-      {/*          onClick={() => setShowCaptchaModal(false)}*/}
-      {/*        >*/}
-      {/*          {'Cancel'}*/}
-      {/*        </button>*/}
-      {/*      </div>*/}
-      {/*    </motion.div>*/}
-      {/*  </motion.div>*/}
-      {/*</FloatingPortal>*/}
     </>
   );
 }

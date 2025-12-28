@@ -1,47 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { unstable_cache } from 'next/cache';
-import { NextRequest, NextResponse } from 'next/server';
-import { FlagType } from '@/types';
+import { NextResponse } from 'next/server';
 import { prisma } from '@db/client';
-import { Project } from '@db/index';
 
 
 
 import { ApiResponse } from '@/types/api';
-import { supportedLanguages } from '@/config/language';
-import { dbCachingConfig, revalidateTime } from '@/config/revalidate';
 import { siteConfig } from '@/config/site';
 
 
 
 
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const locale = searchParams.get('locale') || 'en';
-
-  if (!supportedLanguages.includes(locale as FlagType)) {
-    return NextResponse.json(
-      { error: 'Invalid or unsupported locale' } as ApiResponse<never>,
-      { status: 400 }
-    );
-  }
-
+export async function GET() {
   try {
     const email = siteConfig.email;
 
-    const user = await unstable_cache(
-      async () =>
-        await prisma.user.findUnique({
-          cacheStrategy: dbCachingConfig,
-          where: { email },
-        }),
-      ['user-simple', locale],
-      {
-        revalidate: revalidateTime,
-        tags: ['user-simple', `user-simple-${locale}`],
-      }
-    )();
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
 
     if (!user) {
       return NextResponse.json(
@@ -50,64 +26,47 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const projects = await unstable_cache(
-      async () =>
-        await prisma.project.findMany({
-          cacheStrategy: dbCachingConfig,
-          where: { userId: user.id },
-          include: {
-            tags: { include: { tag: true } },
-            techstacks: { include: { techstack: true } },
-            coauthors: { include: { coauthor: true } },
-            translations: { where: { language: locale } },
-          },
-        }),
-      ['projects', locale],
-      { revalidate: revalidateTime, tags: ['projects', `projects-${locale}`] }
-    )();
-
-    const translatedProjects: any[] = projects.map((proj) => {
-      const translations = proj.translations?.reduce(
-        (acc, t) => ({ ...acc, [t.field]: t.value }),
-        {} as Record<string, string>
-      );
-
-      return {
-        id: proj.id,
-        userId: proj.userId,
-        title: translations['title'] || proj.title,
-        description: translations['description'] || proj.description,
-        githubLink: proj.githubLink,
-        liveLink: proj.liveLink,
-        startDate: proj.startDate,
-        endDate: proj.endDate,
-        coauthors: proj.coauthors.map((it) => ({
-          id: it.coauthor.id,
-          fullname: it.coauthor.fullname,
-          email: it.coauthor.email,
-        })),
-        tags: proj.tags.map((ts) => ({
-          id: ts.tag.id,
-          name: ts.tag.name,
-        })),
-        techstacks: proj.techstacks.map((ts) => ({
-          id: ts.techstack.id,
-          name: ts.techstack.name,
-        })),
-      };
+    const projects = await prisma.project.findMany({
+      where: { userId: user.id },
+      include: {
+        tags: { include: { tag: true } },
+        techstacks: { include: { techstack: true } },
+        coauthors: { include: { coauthor: true } },
+      },
     });
 
-    return NextResponse.json(
-      { data: translatedProjects } as ApiResponse<Project[]>,
-      { status: 200 }
-    );
+    const res = projects.map((proj) => ({
+      id: proj.id,
+      userId: proj.userId,
+      title: proj.title,
+      description: proj.description,
+      githubLink: proj.githubLink,
+      liveLink: proj.liveLink,
+      startDate: proj.startDate,
+      endDate: proj.endDate,
+      coauthors: proj.coauthors.map((it: any) => ({
+        id: it.coauthor.id,
+        fullname: it.coauthor.fullname,
+        email: it.coauthor.email,
+      })),
+      tags: proj.tags.map((ts: any) => ({
+        id: ts.tag.id,
+        name: ts.tag.name,
+      })),
+      techstacks: proj.techstacks.map((ts: any) => ({
+        id: ts.techstack.id,
+        name: ts.techstack.name,
+      })),
+    }));
+
+    return NextResponse.json({ data: res } as ApiResponse<any[]>, {
+      status: 200,
+    });
   } catch (error) {
     console.error('Error fetching user projects:', error);
     return NextResponse.json(
       { error: 'Internal server error' } as ApiResponse<never>,
       { status: 500 }
     );
-  } finally {
-    // await prisma.$disconnect();
   }
 }

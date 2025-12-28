@@ -2,8 +2,8 @@
 
 import { useMemo, useRef } from 'react';
 import { Link } from '@/i18n/navigation';
+import { useWindowScroll } from '@mantine/hooks';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useTranslations } from 'next-intl';
 import rangeParser from 'parse-numeric-range';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -13,9 +13,10 @@ import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import { Pluggable } from 'unified';
 
+import { Routes } from '@/config/global';
 import { cn } from '@/lib/utils';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { useWindowScroll } from '@/hooks/use-window-scroll';
+import { useTranslations } from '@/hooks/use-translations';
 import { FloatingToc, TocItem } from '@/components/floating-toc';
 
 import { Icons } from './icons';
@@ -56,7 +57,7 @@ export function ProjectDetailsContent({
         )}
       >
         {
-          <Link href="/projects">
+          <Link href={Routes.Projects}>
             <Button
               variant={isMobile ? 'link' : 'ghost'}
               className={cn('flex gap-2 items-center px-4 py-2 rounded-full')}
@@ -82,7 +83,7 @@ export function ProjectDetailsContent({
       >
         <article
           className="article-text prose dark:prose-invert max-w-full break-words overflow-x-hidden
-          [&_pre]:whitespace-pre-wrap [&_pre]:break-words 
+          [&_pre]:whitespace-pre-wrap [&_pre]:break-words
           [&_img]:max-w-full [&_img]:h-auto
           sm:max-w-[100vw] sm:overflow-x-auto"
         >

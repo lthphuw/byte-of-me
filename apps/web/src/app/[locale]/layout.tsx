@@ -5,14 +5,13 @@ import { notFound } from 'next/navigation';
 import { GlobalProvider } from '@/contexts/global';
 import { routing } from '@/i18n/routing';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { getTranslations } from 'next-intl/server';
 
 import { host } from '@/config/host';
 import { siteConfig } from '@/config/site';
+import { getTranslations } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 
-
-
+import 'draft-js/dist/Draft.css';
 
 
 const fontSans = FontSans({
@@ -21,7 +20,7 @@ const fontSans = FontSans({
   preload: true,
 });
 
-// Font files can be colocated inside of `pages`
+// Font files can be colocated inside `pages`
 const fontHeading = localFont({
   src: '../../assets/fonts/CalSans-SemiBold.woff2',
   variable: '--font-heading',

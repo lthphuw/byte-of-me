@@ -1,28 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { answer, deleteCheckpoint } from '@ai/index';
-import { getTranslations } from 'next-intl/server';
 
 import { dangerousKeywords } from '@/config/models';
-import {
-  applyRateLimit,
-  rateLimitChatPerDay,
-  rateLimitChatPerMinute,
-} from '@/lib/core';
+import { getTranslations } from '@/lib/i18n';
 
 
 
 
 
 export async function POST(req: NextRequest) {
-  const [perMin, perDate] = await Promise.all([
-    applyRateLimit(rateLimitChatPerMinute, req),
-    applyRateLimit(rateLimitChatPerDay, req),
-  ]);
-  if (perMin || perDate) return perMin || perDate;
-
   const t = await getTranslations('error');
 
-  const { question, llm, embedding, reranker, history, stream, thread_id } =
+  const { question, llm, embedding, reranker, history, stream, threadId } =
     await req.json();
 
   if (!question) {
@@ -50,7 +39,7 @@ export async function POST(req: NextRequest) {
     const generator = await answer(question, {
       stream: true,
       history,
-      thread_id,
+      threadId,
       llm,
       embedding,
       reranker,
@@ -77,7 +66,7 @@ export async function POST(req: NextRequest) {
 
   const result = await answer(question, {
     history,
-    thread_id,
+    threadId,
     llm,
     embedding,
     reranker,
@@ -89,9 +78,9 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const t = await getTranslations('error');
 
-  const { thread_id } = await req.json();
+  const { threadId } = await req.json();
 
-  if (!thread_id) {
+  if (!threadId) {
     return NextResponse.json(
       { success: false, error: t('missingThreadId') },
       { status: 400 }
@@ -99,7 +88,7 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
-    const res = await deleteCheckpoint(thread_id);
+    const res = await deleteCheckpoint(threadId);
     if (res.success) {
       return NextResponse.json({ success: true });
     } else {

@@ -1,14 +1,11 @@
 import { Link } from '@/i18n/navigation';
-import { getTranslations } from 'next-intl/server';
 
+import { Routes } from '@/config/global';
+import { getTranslations } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import GoBackButton from '@/components/go-back';
 import { Icons } from '@/components/icons';
-
-
-
-
 
 export default async function NotFound() {
   const t = await getTranslations('notFound');
@@ -31,7 +28,7 @@ export default async function NotFound() {
 
             <div className="flex flex-col flex-wrap gap-4 mt-2 md:flex-row">
               <GoBackButton> {t('Go back')}</GoBackButton>
-              <Link href="/">
+              <Link href={Routes.Homepage}>
                 <Button
                   variant="secondary"
                   className={cn(

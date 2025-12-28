@@ -43,3 +43,19 @@ export const iconSwicthVariants = {
   animate: { opacity: 1, scale: 1, rotate: 0 },
   exit: { opacity: 0, scale: 0.8, rotate: -90 },
 };
+
+export const projectItemVariants: Variants = {
+  hidden: { opacity: 0, y: 10, x: 10, rotate: -3 },
+  visible: (i: number) => ({
+    rotate: 0,
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.1,
+      type: 'spring' as const,
+      stiffness: 100,
+      damping: 10,
+    },
+  }),
+  exit: { opacity: 0 },
+};

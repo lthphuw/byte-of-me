@@ -180,9 +180,12 @@
     "Failed to load project list": "Failed to load project list Please try again",
     "Back to projects": "Back to projects"
   },
-  "contact": {
-    "Connect With Me": "Connect With Me",
-    "Reach out, let's code the future!": "Reach out, let's code the future!"
+  "contact":{
+    "Let’s work together": "Let’s work together",
+    "Feel free to reach out through any channel": "Feel free to reach out through any channel",
+    "Send me an email": "Send me an email",
+    "LinkedIn": "LinkedIn",
+    "GitHub": "GitHub"
   },
   "chat": {
     "Ask Phu's Assistant": "Ask Phu's Assistant",
@@ -207,5 +210,22 @@
       "example2": "Tell me about one of Phu's personal projects.",
       "example3": "What is Phu's experience with AI?"
     }
+  },
+  "homepage": {
+    "My story": "My story",
+    "More about my journey": "More about my journey",
+
+    "Selected projects": "Selected projects",
+    "A few things I’ve built recently": "A few things I’ve built recently",
+
+    "View project": "View project",
+    "View all projects": "View all projects",
+
+    "Have an idea in mind?": "Have an idea in mind?",
+    "Always interested in thoughtful projects and good collaboration.": "Always interested in thoughtful projects and good collaboration.",
+
+    "Let’s work together": "Let’s work together",
+    "Email me": "Email me",
+    "Contact details": "Contact details"
   }
 }

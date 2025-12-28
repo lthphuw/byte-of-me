@@ -1,49 +1,46 @@
-import { unstable_cache } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
-import { FlagType } from '@/types';
 import { prisma } from '@db/client';
 
 import { ApiResponse } from '@/types/api';
-import { supportedLanguages } from '@/config/language';
-import { dbCachingConfig, revalidateTime } from '@/config/revalidate';
 import { siteConfig } from '@/config/site';
-
-
-
-
+import { getTranslations, translateDeep } from '@/lib/i18n';
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const locale = searchParams.get('locale') || 'en';
-
-  if (!supportedLanguages.includes(locale as FlagType)) {
-    return NextResponse.json(
-      { error: 'Invalid or unsupported locale' } as ApiResponse<never>,
-      { status: 400 }
-    );
-  }
-
   try {
+    const queryParams = req.nextUrl.searchParams;
+    const locale = queryParams.get('locale') || 'en';
+
     const email = siteConfig.email;
 
-    const user = await unstable_cache(
-      async () => {
-        return await prisma.user.findUnique({
-          cacheStrategy: dbCachingConfig,
-          where: { email },
-          include: {
-            translations: { where: { language: locale } },
-            bannerImages: {
-              include: {
-                translations: { where: { language: locale } },
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: {
+        ...(queryParams.has('bannerImages', 'true')
+          ? {
+              bannerImages: true,
+            }
+          : {}),
+        ...(queryParams.has('educations', 'true')
+          ? {
+              educations: {
+                include: {
+                  subItems: true,
+                },
               },
-            },
-          },
-        });
+            }
+          : {}),
+        ...(queryParams.has('projects', 'true')
+          ? {
+              projects: true,
+            }
+          : {}),
+        ...(queryParams.has('techstacks', 'true')
+          ? {
+              techstacks: true,
+            }
+          : {}),
       },
-      ['me', locale],
-      { revalidate: revalidateTime, tags: ['me', `me-${locale}`] }
-    )();
+    });
 
     if (!user) {
       return NextResponse.json(
@@ -52,50 +49,13 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const translatedUser = {
-      id: user.id,
-      name: user.name,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      birthdate: user.birthdate,
-      greeting:
-        user.translations?.find((t) => t.field === 'greeting')?.value ||
-        user.greeting,
-      bio: user.translations?.find((t) => t.field === 'bio')?.value || user.bio,
-      aboutMe:
-        user.translations?.find((t) => t.field === 'aboutMe')?.value ||
-        user.aboutMe,
-      tagLine:
-        user.translations?.find((t) => t.field === 'tagLine')?.value ||
-        user.tagLine,
-      email: user.email,
-      // phoneNumber: user.phoneNumber,
-      linkedIn: user.linkedIn,
-      facebook: user.facebook,
-      github: user.github,
-      // leetCode: user.leetCode,
-      // twitter: user.twitter,
-      // portfolio: user.portfolio,
-      // stackOverflow: user.stackOverflow,
-      // image: user.image,
-      // imageCaption: user.translations.find(t => t.field === 'imageCaption')?.value || user.imageCaption,
-      quote:
-        user.translations?.find((t) => t.field === 'quote')?.value ||
-        user.quote,
-      // createdAt: user.createdAt?.toISOString(),
-      // updatedAt: user.updatedAt?.toISOString(),
-      bannerImages: user.bannerImages?.map((img) => ({
-        id: img.id,
-        src: img.src,
-        caption:
-          img.translations?.find((t) => t.field === 'caption')?.value ||
-          img.caption,
-      })),
-    };
-
-    return NextResponse.json({ data: translatedUser } as ApiResponse<any>, {
-      status: 200,
-    });
+    const t = await getTranslations();
+    return NextResponse.json(
+      { data: translateDeep(user, t) } as ApiResponse<any>,
+      {
+        status: 200,
+      }
+    );
   } catch (error) {
     console.error('Error fetching user:', error);
     return NextResponse.json(

@@ -1,19 +1,12 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import rehypeSlug from 'rehype-slug';
-import remarkGfm from 'remark-gfm';
-import { Pluggable } from 'unified';
+import { useMemo } from 'react';
 
-import { defaultSpring, iconSwicthVariants } from '@/config/anim';
 import { cn } from '@/lib/utils';
-import { useClipboard } from '@/hooks/use-clipboard';
+import { useTranslations } from '@/hooks/use-translations';
+import { CopyButton } from '@/components/copy-button';
+import { MessageContent } from '@/components/message-content';
 
-import { Icons } from './icons';
 import {
   Tooltip,
   TooltipContent,
@@ -21,18 +14,17 @@ import {
   TooltipTrigger,
 } from './ui/tooltip';
 
+
 export interface ChatMessageProps {
   role: 'user' | 'assistant';
   content: string;
+  isLast: boolean;
 }
 
-export function ChatMessage({ role, content }: ChatMessageProps) {
+export function ChatMessage({ role, content, isLast }: ChatMessageProps) {
   const t = useTranslations('chat');
-  const { copy, copied } = useClipboard({ timeout: 2000 });
   const isUser = useMemo(() => role === 'user', []);
   const isSystem = useMemo(() => !isUser, [isUser]);
-
-  const onCopy = useCallback(() => copy(content), [content]);
 
   return (
     <div
@@ -52,23 +44,7 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
             : 'bg-zinc-100 dark:bg-zinc-800 rounded-xl shadow-sm max-w-[85%]'
         )}
       >
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeRaw as Pluggable, rehypeSlug]}
-          components={{
-            ul: ({ children }) => (
-              <ul className="list-disc pl-6 mb-2">{children}</ul>
-            ),
-            ol: ({ children }) => (
-              <ol className="list-decimal pl-6 mb-2">{children}</ol>
-            ),
-            li: ({ children }) => (
-              <li className="leading-tight mb-2">{children}</li>
-            ),
-          }}
-        >
-          {content}
-        </ReactMarkdown>
+        <MessageContent role={role} content={content} isLast={isLast} />
       </section>
 
       {/* Action bar*/}
@@ -81,36 +57,7 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
         <TooltipProvider delayDuration={300}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="relative size-4">
-                <AnimatePresence initial={false}>
-                  {copied ? (
-                    <motion.button
-                      key="check"
-                      variants={iconSwicthVariants}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                      transition={defaultSpring}
-                      className="absolute inset-0"
-                    >
-                      <Icons.check size={16} />
-                    </motion.button>
-                  ) : (
-                    <motion.button
-                      key="copy"
-                      variants={iconSwicthVariants}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                      transition={defaultSpring}
-                      onClick={onCopy}
-                      className="absolute inset-0"
-                    >
-                      <Icons.copy size={16} />
-                    </motion.button>
-                  )}
-                </AnimatePresence>
-              </div>
+              <CopyButton content={content} />
             </TooltipTrigger>
             <TooltipContent sideOffset={4} side="bottom">
               <p>{t('Copy')}</p>

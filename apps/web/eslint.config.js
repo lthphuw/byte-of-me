@@ -9,6 +9,8 @@ export default [
     rules: {
       'no-console': 'warn',
       'no-unused-vars': 'warn',
+      'no-empty-object-type': 'off',
+      "@typescript-eslint/no-explicit-any": "off",
     },
     languageOptions: {
       parserOptions: {},

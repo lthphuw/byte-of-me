@@ -4,12 +4,13 @@ import * as React from 'react';
 import { Link } from '@/i18n/navigation';
 import { MainNavItem } from '@/types';
 import { AnimatePresence, Variants, motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
 
 import { itemVariants } from '@/config/anim';
+import { Routes } from '@/config/global';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
 import { useLockBody } from '@/hooks/use-lock-body';
+import { useTranslations } from '@/hooks/use-translations';
 import { Icons } from '@/components/icons';
 
 
@@ -137,7 +138,7 @@ export const MobileNav = React.forwardRef<HTMLDivElement, MobileNavProps>(
                 }}
               >
                 <Link
-                  href="/"
+                  href={Routes.Homepage}
                   onClick={handleClose}
                   className="flex items-center space-x-2"
                 >

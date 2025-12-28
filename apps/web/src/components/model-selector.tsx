@@ -9,11 +9,11 @@ import {
   useRole,
 } from '@floating-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
 
 import { embeddingModels, llmModels, rerankerModels } from '@/config/models';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useLockBody } from '@/hooks/use-lock-body';
+import { useTranslations } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
 import { FilterSelect } from '@/components/filter-select';
 import { Icons } from '@/components/icons';

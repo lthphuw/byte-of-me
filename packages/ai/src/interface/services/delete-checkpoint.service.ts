@@ -2,7 +2,7 @@ import { Pool } from 'pg';
 import { env } from '../../env.mjs';
 
 const pool = new Pool({
-  connectionString: process.env.DIRECT_DATABASE_URL!,
+  connectionString: env.DIRECT_URL!,
 });
 
 export async function deleteCheckpoint(thread_id: string) {

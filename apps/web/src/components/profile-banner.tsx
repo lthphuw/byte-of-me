@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useMounted } from '@mantine/hooks';
 
 import { cn } from '@/lib/utils';
-import { useMounted } from '@/hooks/use-mounted';
 
 import ImageStack from './image-stack';
 
@@ -22,18 +22,21 @@ export function ProfileBanner({ images }: ProfileBannerProps) {
   const mounted = useMounted();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [cardWidth, setCardWidth] = useState(0);
-
+  const [cardWidth, setCardWidth] = useState<number | null>(null);
   const defaultImage = images.at(-1);
-  const [selectedImage, setSelectedImage] = useState(defaultImage?.id ?? '');
-  const [caption, setCaption] = useState(defaultImage?.caption ?? '');
 
-  // Update width based on container resize
+  const [selectedImage, setSelectedImage] = useState(
+    defaultImage?.id ?? ''
+  );
+
+  const caption =
+    images.find((img) => img.id === selectedImage)?.caption ??
+    images[0]?.caption ??
+    '';
+
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) {
-      return;
-    }
+    if (!container) return;
 
     const observer = new ResizeObserver(([entry]) => {
       const usableWidth = entry.contentRect.width;
@@ -43,34 +46,42 @@ export function ProfileBanner({ images }: ProfileBannerProps) {
     observer.observe(container);
     return () => observer.disconnect();
   }, []);
-
-  // Update caption based on selected image
-  useEffect(() => {
-    const found = images.find((img) => img.id === selectedImage);
-    setCaption(found?.caption ?? images[0]?.caption ?? '');
-  }, [selectedImage, images]);
-
   return (
     <figure
       ref={containerRef}
-      className="flex w-full flex-col items-start gap-4 md:gap-6 overflow-visible"
+      className="flex w-full flex-col items-start gap-4 md:gap-6"
     >
-      <div className={cn('relative w-full', !mounted && 'hidden')}>
-        <ImageStack
-          randomRotation={false}
-          sensitivity={200}
-          sendToBackOnClick
-          cardDimensions={{
-            width: cardWidth,
-            height: Math.floor((cardWidth * 2) / 3),
-          }}
-          cardsData={images}
-          setSelectedCard={setSelectedImage}
-        />
+      {/* Layout reservation */}
+      <div
+        className="relative w-full overflow-visible"
+        style={{
+          aspectRatio: '5 / 4',
+          maxWidth: 720,
+        }}
+      >
+        {mounted && cardWidth && (
+          <ImageStack
+            randomRotation={false}
+            sensitivity={100}
+            sendToBackOnClick
+            cardDimensions={{
+              width: cardWidth,
+              height: Math.floor((cardWidth * 4) / 5),
+            }}
+            cardsData={images}
+            setSelectedCard={setSelectedImage}
+          />
+        )}
       </div>
 
       {caption && (
-        <figcaption className="text-sm text-muted-foreground italic">
+        <figcaption
+          className={cn(
+            'text-sm italic text-muted-foreground',
+            'min-h-[2.5em]',
+            'line-clamp-2'
+          )}
+        >
           {caption}
         </figcaption>
       )}

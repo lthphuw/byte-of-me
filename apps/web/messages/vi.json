@@ -188,8 +188,11 @@
     "Back to projects": "Quay lại dự án"
   },
   "contact": {
-    "Connect With Me": "Kết nối với tôi",
-    "Reach out, let's code the future!": "Hãy liên hệ, cùng tôi kiến tạo tương lai qua từng dòng code!"
+    "Let’s work together": "Hãy cùng hợp tác",
+    "Feel free to reach out through any channel": "Bạn có thể liên hệ với tôi qua bất kỳ kênh nào",
+    "Send me an email": "Gửi email cho tôi",
+    "LinkedIn": "LinkedIn",
+    "GitHub": "GitHub"
   },
   "chat": {
     "Ask Phu's Assistant": "Hỏi trợ lý AI của Phú",
@@ -214,5 +217,22 @@
       "example2": "Hãy kể cho tôi về một trong những dự án cá nhân của Phú.",
       "example3": "Phú có kinh nghiệm gì với trí tuệ nhân tạo (AI)?"
     }
+  },
+  "homepage": {
+    "My story": "Hành trình của tôi",
+    "More about my journey": "Tìm hiểu thêm về tôi",
+
+    "Selected projects": "Các dự án tiêu biểu",
+    "A few things I’ve built recently": "Một vài sản phẩm tôi đã thực hiện gần đây",
+
+    "View project": "Xem chi tiết dự án",
+    "View all projects": "Xem tất cả dự án",
+
+    "Have an idea in mind?": "Bạn đang ấp ủ một ý tưởng?",
+    "Always interested in thoughtful projects and good collaboration": "Luôn hứng thú với những dự án được làm chỉn chu và sự hợp tác tốt.",
+
+    "Let’s work together": "Cùng nhau hợp tác",
+    "Email me": "Liên hệ qua email",
+    "Contact details": "Thông tin liên hệ"
   }
 }

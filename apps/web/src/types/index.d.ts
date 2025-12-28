@@ -1,6 +1,9 @@
+import { CSSProperties } from 'react';
+
 import { Icons } from '@/components/icons';
 
-export type FlagType = 'vi' | 'en' | 'fr';
+export type LocaleType = 'vi' | 'en';
+export type FlagType = LocaleType;
 
 export type BaseSelectItem = {
   id: string;
@@ -53,3 +56,8 @@ export type GlobalConfig = {
     nav: MainNavItem[];
   };
 };
+
+export type BaseComponentProps = {
+  className?: string;
+  style?: CSSProperties;
+}

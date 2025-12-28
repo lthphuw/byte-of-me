@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { useMemo } from 'react';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import { MainNavItem } from '@/types';
@@ -17,6 +16,7 @@ import { Variants, motion } from 'framer-motion';
 import { useLocale } from 'next-intl';
 
 import { iconOpenCloseVariants } from '@/config/anim';
+import { Routes } from '@/config/global';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-is-mobile';
@@ -52,9 +52,11 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
     const isMobile = useIsMobile();
     const t = useTranslations('global.header.nav');
     const segment = useSelectedLayoutSegment();
+
     const [showMobileMenu, setShowMobileMenu] = React.useState(false);
     const [originPosition, setOriginPosition] = React.useState({ x: 0, y: 0 });
-    const navItems = useMemo(() => items.filter((it) => !it.onlyMobile), []);
+
+    const navItems = items.filter((it) => !it.onlyMobile);
 
     const { refs, floatingStyles, context } = useFloating({
       open: showMobileMenu,
@@ -71,8 +73,9 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
     const iconRef = React.useRef<SVGSVGElement | null>(null);
 
     const handleToggleMenu = React.useCallback(() => {
-      if (iconRef.current) {
-        const rect = iconRef.current.getBoundingClientRect();
+      const icon = iconRef.current;
+      if (icon) {
+        const rect = icon.getBoundingClientRect();
         setOriginPosition({
           x: rect.left + rect.width / 2,
           y: rect.top + rect.height / 2,
@@ -86,7 +89,7 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
         {/* Desktop Logo */}
         {!isMobile && (
           <Link
-            href="/"
+            href={Routes.Homepage}
             locale={locale}
             className="flex items-center space-x-2"
           >
@@ -107,26 +110,31 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
         {/* Desktop Navigation */}
         {!isMobile && navItems.length > 0 && (
           <nav className="flex">
-            {navItems.map((item, index) => (
-              <Link
-                key={index}
-                href={item.disabled ? '#' : item.href}
-                locale={locale}
-                className={cn(
-                  'flex items-center text-lg font-medium transition-colors hover:text-foreground/80 ',
-                  item.href.startsWith(`/${segment}`)
-                    ? 'text-foreground font-semibold'
-                    : 'text-foreground/60',
-                  item.disabled && 'cursor-not-allowed opacity-80'
-                )}
-              >
-                <Button variant={'ghost'}>{t(item.title)}</Button>
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const isActive =
+                item.href && item.href.startsWith(`/${segment}`);
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.disabled ? '#' : item.href}
+                  locale={locale}
+                  className={cn(
+                    'flex items-center text-lg font-medium transition-colors hover:text-foreground/80',
+                    isActive
+                      ? 'text-foreground font-semibold'
+                      : 'text-foreground/60',
+                    item.disabled && 'cursor-not-allowed opacity-80'
+                  )}
+                >
+                  <Button variant="ghost">{t(item.title)}</Button>
+                </Link>
+              );
+            })}
           </nav>
         )}
 
-        {/* Mobile Menu Toggle and Portal */}
+        {/* Mobile Menu */}
         {isMobile && (
           <>
             <motion.button
