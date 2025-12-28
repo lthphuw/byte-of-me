@@ -5,15 +5,12 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { Link } from '@/i18n/navigation';
 import { useClipboard } from '@mantine/hooks';
 
+import { Routes } from '@/config/global';
 import { cn, prettyStringify } from '@/lib/utils';
 import { useTranslations } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
 import GoBackButton from '@/components/go-back';
 import { Icons } from '@/components/icons';
-
-
-
-
 
 export default function Error({
   error,
@@ -55,7 +52,7 @@ export default function Error({
 
           <div className="flex flex-col flex-wrap gap-4 mt-2 md:flex-row">
             <GoBackButton>{t('Go back')}</GoBackButton>
-            <Link href="/">
+            <Link href={Routes.Homepage}>
               <Button
                 variant="secondary"
                 className={cn(

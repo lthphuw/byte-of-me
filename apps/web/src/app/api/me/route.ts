@@ -5,10 +5,6 @@ import { ApiResponse } from '@/types/api';
 import { siteConfig } from '@/config/site';
 import { getTranslations, translateDeep } from '@/lib/i18n';
 
-
-
-
-
 export async function GET(req: NextRequest) {
   try {
     const queryParams = req.nextUrl.searchParams;
@@ -33,6 +29,11 @@ export async function GET(req: NextRequest) {
               },
             }
           : {}),
+        ...(queryParams.has('projects', 'true')
+          ? {
+              projects: true,
+            }
+          : {}),
         ...(queryParams.has('techstacks', 'true')
           ? {
               techstacks: true,
@@ -49,9 +50,12 @@ export async function GET(req: NextRequest) {
     }
 
     const t = await getTranslations();
-    return NextResponse.json({ data: translateDeep(user, t) } as ApiResponse<any>, {
-      status: 200,
-    });
+    return NextResponse.json(
+      { data: translateDeep(user, t) } as ApiResponse<any>,
+      {
+        status: 200,
+      }
+    );
   } catch (error) {
     console.error('Error fetching user:', error);
     return NextResponse.json(

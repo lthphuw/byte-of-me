@@ -13,6 +13,7 @@ import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import { Pluggable } from 'unified';
 
+import { Routes } from '@/config/global';
 import { cn } from '@/lib/utils';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useTranslations } from '@/hooks/use-translations';
@@ -56,7 +57,7 @@ export function ProjectDetailsContent({
         )}
       >
         {
-          <Link href="/projects">
+          <Link href={Routes.Projects}>
             <Button
               variant={isMobile ? 'link' : 'ghost'}
               className={cn('flex gap-2 items-center px-4 py-2 rounded-full')}

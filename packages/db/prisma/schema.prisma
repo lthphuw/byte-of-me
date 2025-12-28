@@ -33,6 +33,7 @@ model User {
   image         String?
   imageCaption  String?   @db.Text
   quote         String?   @db.Text
+  quoteAuthor   String?   @db.Text
   bio           String?   @db.Text
   aboutMe       String?   @db.Text
   emailVerified DateTime?

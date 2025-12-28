@@ -1,60 +1,29 @@
 'use client';
 
-import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import * as z from 'zod';
 
 import { saveProfile } from '@/lib/actions/profile';
-import { FileHelper } from '@/lib/core/file-helper';
-import { profileSchema } from '@/lib/validations/profile';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ProfileSchema, profileSchema } from '@/lib/validations/profile';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 
-
-
-
-
-type ProfileFormValues = z.infer<typeof profileSchema>;
-
-interface ProfileFormProps {
-  user: ProfileFormValues & { id: string };
+interface ProfileManagerProps {
+  user: ProfileSchema & { id: string };
 }
 
-export function ProfileForm({ user }: ProfileFormProps) {
+export function ProfileManager({ user }: ProfileManagerProps) {
   const { toast } = useToast();
 
-  const form = useForm<ProfileFormValues>({
+  const form = useForm<ProfileSchema>({
     resolver: zodResolver(profileSchema),
     defaultValues: user,
   });
 
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-
-  // When user selects image
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setAvatarFile(file);
-
-    try {
-      const base64 = await FileHelper.fileToBase64(file);
-      form.setValue('image', base64, { shouldDirty: true });
-      toast({ title: 'Avatar updated (not saved yet)' });
-    } catch (err: any) {
-      toast({
-        title: `Failed to load image: ${err.message}`,
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const onSubmit = async (data: ProfileFormValues) => {
+  const onSubmit = async (data: ProfileSchema) => {
     const res = await saveProfile(data);
     if (res.success) {
       toast({ title: 'Success', description: 'Profile updated successfully!' });
@@ -64,31 +33,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-      {/* Avatar Upload */}
-      <div className="flex items-center gap-6">
-        <Avatar className="h-24 w-24">
-          <AvatarImage
-            src={
-              avatarFile
-                ? URL.createObjectURL(avatarFile) // instant preview
-                : form.watch('image') || user.image || ''
-            }
-          />
-          <AvatarFallback>{user.name?.[0] || 'U'}</AvatarFallback>
-        </Avatar>
-
-        <div className="space-y-1">
-          <Label htmlFor="avatar">Avatar</Label>
-          <Input
-            id="avatar"
-            type="file"
-            accept="image/*"
-            onChange={handleAvatarChange}
-          />
-        </div>
-      </div>
-
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 overflow-y-auto max-h-full">
       {/* Basic Info */}
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-2">
@@ -125,6 +70,12 @@ export function ProfileForm({ user }: ProfileFormProps) {
         <Label>Quote</Label>
         <Textarea rows={3} {...form.register('quote')} />
       </div>
+
+      <div className="space-y-2">
+        <Label>Quote author</Label>
+        <Input placeholder="ABC" {...form.register('quoteAuthor')} />
+      </div>
+
 
       {/* Bio */}
       {/*<div className="space-y-2">*/}

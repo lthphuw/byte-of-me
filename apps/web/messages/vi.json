@@ -217,5 +217,22 @@
       "example2": "Hãy kể cho tôi về một trong những dự án cá nhân của Phú.",
       "example3": "Phú có kinh nghiệm gì với trí tuệ nhân tạo (AI)?"
     }
+  },
+  "homepage": {
+    "My story": "Hành trình của tôi",
+    "More about my journey": "Tìm hiểu thêm về tôi",
+
+    "Selected projects": "Các dự án tiêu biểu",
+    "A few things I’ve built recently": "Một vài sản phẩm tôi đã thực hiện gần đây",
+
+    "View project": "Xem chi tiết dự án",
+    "View all projects": "Xem tất cả dự án",
+
+    "Have an idea in mind?": "Bạn đang ấp ủ một ý tưởng?",
+    "Always interested in thoughtful projects and good collaboration": "Luôn hứng thú với những dự án được làm chỉn chu và sự hợp tác tốt.",
+
+    "Let’s work together": "Cùng nhau hợp tác",
+    "Email me": "Liên hệ qua email",
+    "Contact details": "Thông tin liên hệ"
   }
 }

@@ -1,44 +1,37 @@
 import { GlobalConfig } from '@/types';
 
+export enum Routes {
+  Homepage = '/',
+  About = '/about',
+  Experience = '/experience',
+  Projects = '/projects',
+  Chat = '/ask-me',
+  Contact = '/contact',
+}
+
 export const globalConfig: GlobalConfig = {
   header: {
     nav: [
       {
         title: 'About',
-        href: '/about',
+        href: Routes.About,
       },
       {
         title: 'Experience',
-        href: '/experience',
+        href: Routes.Experience,
       },
       {
         title: 'Projects',
-        href: '/projects',
+        href: Routes.Projects,
       },
-      // {
-      //   title: 'Hobbies',
-      //   href: '/hobbies',
-      // },
-      // {
-      //   title: 'More',
-      //   href: '/more',
-      // },
-      // {
-      //   title: 'Ask me',
-      //   href: '/ask-me',
-      // },
-      // {
-      //   title: 'CV',
-      //   href: '/cv',
-      // },
       {
         title: 'Anything about me',
-        href: '/ask-me',
+        href: Routes.Chat,
         onlyMobile: true,
       },
       {
         title: "Let's talk",
-        href: '/contact',
+        href: Routes.Contact,
       },
     ],
   },
@@ -46,35 +39,23 @@ export const globalConfig: GlobalConfig = {
     nav: [
       {
         title: 'about',
-        href: '/about',
+        href: Routes.About,
       },
       {
         title: 'experience',
-        href: '/experience',
+        href: Routes.Experience,
       },
       {
         title: 'projects',
-        href: '/projects',
+        href: Routes.Projects,
       },
-      // {
-      //   title: 'Hobbies',
-      //   href: '/hobbies',
-      // },
-      // {
-      //   title: 'More',
-      //   href: '/more',
-      // },
-      // {
-      //   title: 'cv',
-      //   href: '/cv',
-      // },
       {
         title: 'contact',
-        href: '/contact',
+        href: Routes.Contact,
       },
       {
         title: 'Anything about me',
-        href: '/ask-me',
+        href: Routes.Chat,
       },
     ],
   },

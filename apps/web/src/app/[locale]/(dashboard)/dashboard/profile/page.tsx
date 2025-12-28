@@ -1,6 +1,11 @@
-import { getCurrentUser } from '@/lib/session';
 import { prisma } from '@db/client';
-import { ProfileForm } from '@/components/profile-form';
+
+import { getCurrentUser } from '@/lib/session';
+import { ProfileManager } from '@/components/profile-form';
+
+
+
+
 
 export const metadata = { title: 'Thông tin cá nhân' };
 
@@ -36,7 +41,7 @@ export default async function ProfilePage() {
         <p className="text-muted-foreground">Cập nhật hồ sơ cá nhân và các liên kết mạng xã hội</p>
       </div>
 
-      <ProfileForm user={userData as any} />
+      <ProfileManager user={userData as any} />
     </div>
   );
 }

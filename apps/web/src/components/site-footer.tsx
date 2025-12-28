@@ -2,7 +2,7 @@ import { Link } from '@/i18n/navigation';
 import { User } from '@repo/db/generated/prisma/client';
 import { Facebook, Github, Linkedin, Mail } from 'lucide-react';
 
-import { globalConfig } from '@/config/global';
+import { Routes, globalConfig } from '@/config/global';
 import { fetchData } from '@/lib/core/fetch';
 import { getTranslations } from '@/lib/i18n';
 import { cn, ensureValidUrl } from '@/lib/utils';
@@ -21,7 +21,7 @@ export async function SiteFooter({ className }: SiteFooterProps) {
       <div className="container max-w-[100%] mx-auto px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
         {/* Logo and Credit */}
         <div className="flex flex-col items-center md:items-start gap-2">
-          <Link href="/" aria-label={t('home')}>
+          <Link href={Routes.Homepage} aria-label={t('home')}>
             <Icons.logo />
           </Link>
 
