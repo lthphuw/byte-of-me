@@ -26,12 +26,19 @@ export async function GET(req: NextRequest) {
                 include: {
                   subItems: true,
                 },
+                orderBy: {
+                  createdAt: 'desc',
+                },
               },
             }
           : {}),
         ...(queryParams.has('projects', 'true')
           ? {
-              projects: true,
+              projects: {
+                orderBy: {
+                  createdAt: 'desc',
+                },
+              },
             }
           : {}),
         ...(queryParams.has('techstacks', 'true')

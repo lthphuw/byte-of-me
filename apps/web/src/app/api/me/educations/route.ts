@@ -7,9 +7,6 @@ import { supportedLanguages } from '@/config/language';
 import { siteConfig } from '@/config/site';
 
 
-
-
-
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const locale = searchParams.get('locale') || 'en';
@@ -37,8 +34,12 @@ export async function GET(req: NextRequest) {
     const educations = await prisma.education.findMany({
       where: { userId: user.id },
       include: {
-        subItems: {},
+        subItems: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
+
     });
 
     const translatedEducations = educations.map((edu) => ({
