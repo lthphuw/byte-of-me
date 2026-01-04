@@ -3,7 +3,7 @@ import { prisma } from '@db/client';
 
 import { ApiResponse } from '@/types/api';
 import { siteConfig } from '@/config/site';
-import { CompanyExperience } from '@/components/experience-timeline';
+import { CompanyExperience } from '@/components/experience-content';
 
 export async function GET() {
   try {

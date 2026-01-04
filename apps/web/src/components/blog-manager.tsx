@@ -41,6 +41,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { RichText } from '@/components/rich-text';
 import { RichTextEditor } from '@/components/rich-text-editor';
 import { SubmitButton } from '@/components/submit-button';
+import { TrashButton } from '@/components/trash-button';
 
 type Blog = Prisma.BlogGetPayload<{
   include: {
@@ -244,17 +245,14 @@ export function BlogManager({
                 Tags: {blog.tags.map((t) => t.tag.name).join(', ')}
               </p>
             </CardContent>
-            <Button
-              size="icon"
-              variant="destructive"
+
+            <TrashButton
               className="absolute top-2 right-2"
               onClick={(e) => {
                 e.stopPropagation();
                 setDeleteConfirmId(blog.id);
               }}
-            >
-              <Trash className="h-4 w-4" />
-            </Button>
+            />
           </Card>
         ))}
       </div>

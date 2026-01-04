@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 import { stateFromHTML } from 'draft-js-import-html';
-import { CalendarIcon, Plus, Trash } from 'lucide-react';
+import { CalendarIcon, Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,6 +39,7 @@ import {
 } from '@/components/ui/popover';
 import { RichTextEditor } from '@/components/rich-text-editor';
 import { TrashButton } from '@/components/trash-button';
+import { SubmitButton } from '@/components/submit-button';
 
 type Experience = Prisma.ExperienceGetPayload<{
   include: {
@@ -89,6 +90,7 @@ export function ExperienceManager({
   >([]);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -171,6 +173,7 @@ export function ExperienceManager({
 
   const handleSubmit = async () => {
     try {
+      setIsSubmitting(true);
       let logoBase64 = formData.logoUrl;
       if (logoFile) {
         logoBase64 = await FileHelper.fileToBase64(logoFile);
@@ -229,6 +232,9 @@ export function ExperienceManager({
         description: 'Failed to save experience',
         variant: 'destructive',
       });
+    }
+    finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -356,10 +362,12 @@ export function ExperienceManager({
 
             <TrashButton
               className="absolute top-2 right-2"
-              removeFunc={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setDeleteConfirmId(experience.id);
               }}
             />
+
           </Card>
         ))}
       </div>
@@ -372,7 +380,7 @@ export function ExperienceManager({
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <fieldset disabled={isSubmitting} className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="company">Company</Label>
                 <Input
@@ -391,7 +399,7 @@ export function ExperienceManager({
                   onChange={handleInputChange}
                 />
               </div>
-            </div>
+            </fieldset>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="type">Type</Label>
@@ -560,7 +568,7 @@ export function ExperienceManager({
 
                           <TrashButton
                             className="absolute top-2 right-8"
-                            removeFunc={() => deleteTask(roleIndex, taskIndex)}
+                            onClick={() => deleteTask(roleIndex, taskIndex)}
                           />
                         </div>
                       ))}
@@ -575,7 +583,7 @@ export function ExperienceManager({
 
                   <TrashButton
                     className="absolute top-2 right-2"
-                    removeFunc={() => deleteRole(roleIndex)}
+                    onClick={() => deleteRole(roleIndex)}
                   />
                 </Card>
               ))}
@@ -589,7 +597,7 @@ export function ExperienceManager({
             <Button variant="outline" onClick={resetForm}>
               Cancel
             </Button>
-            <Button onClick={handleSubmit}>Save</Button>
+            <SubmitButton loading={isSubmitting} onClick={handleSubmit}>Save</SubmitButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -611,9 +619,9 @@ export function ExperienceManager({
             <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDelete}>
+            <SubmitButton loading={isSubmitting} variant="destructive" onClick={handleDelete}>
               Delete
-            </Button>
+            </SubmitButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>

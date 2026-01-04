@@ -6,7 +6,7 @@ import { getTranslations } from '@/lib/i18n';
 import { AboutContent } from '@/components/about-content';
 import { AboutShell } from '@/components/shell';
 import { TechGroup } from '@/components/tech-stack-group';
-import { TimelineItemProps } from '@/components/timeline';
+import { EducationTimelineItemProps } from '@/components/timeline';
 
 export default async function AboutPage() {
   const t = await getTranslations();
@@ -52,7 +52,7 @@ export default async function AboutPage() {
   );
 
   // Educations
-  const educationItems: TimelineItemProps[] = (user.educations || []).map(
+  const educationItems: EducationTimelineItemProps[] = (user.educations || []).map(
     (
       edu: Prisma.EducationGetPayload<{
         include: {

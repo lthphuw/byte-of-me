@@ -1,15 +1,15 @@
 import { Trash } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { Button, ButtonProps } from '@/components/ui/button';
 
 export type TrashButtonProps = BaseComponentProps & {
-  removeFunc?: () => void;
+  onClick?: ButtonProps['onClick'];
   disabled?: boolean;
 };
 
 export function TrashButton({
-                              removeFunc,
+                              onClick,
                               className,
                               style,
                               disabled,
@@ -20,7 +20,7 @@ export function TrashButton({
       variant="ghost"
       size="icon"
       disabled={disabled}
-      onClick={removeFunc}
+      onClick={onClick}
       style={style}
       className={cn(
         `

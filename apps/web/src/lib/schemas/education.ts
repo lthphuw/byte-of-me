@@ -10,7 +10,7 @@ export const educationSchema = z.object({
   timeline: z
     .string()
     .trim()
-    .min(1, 'Timeline is required')
+    .min(1, 'EducationTimeline is required')
     .max(100),
 
   title: z
