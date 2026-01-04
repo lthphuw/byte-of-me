@@ -1,5 +1,14 @@
 import * as z from 'zod';
 
+const optionalUrl = z
+  .string()
+  .trim()
+  .optional()
+  .or(z.literal(''))
+  .refine((val) => !val || /^https?:\/\//.test(val), {
+    message: 'URL must start with http:// or https://',
+  });
+
 export const profileSchema = z.object({
   name: z.string().min(2),
   firstName: z.string().optional(),
@@ -12,10 +21,10 @@ export const profileSchema = z.object({
   aboutMe: z.string(),
   quote: z.string().optional(),
   quoteAuthor: z.string().optional(),
-  linkedIn: z.string().url().or(z.literal('')).optional(),
-  github: z.string().url().or(z.literal('')).optional(),
-  twitter: z.string().url().or(z.literal('')).optional(),
-  portfolio: z.string().url().or(z.literal('')).optional(),
+  linkedIn: optionalUrl,
+  github: optionalUrl,
+  twitter: optionalUrl,
+  portfolio: optionalUrl,
 });
 
 export type ProfileSchema = z.infer<typeof profileSchema>;

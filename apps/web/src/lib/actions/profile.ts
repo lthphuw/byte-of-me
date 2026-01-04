@@ -4,8 +4,8 @@ import { revalidatePath } from 'next/cache';
 import { prisma } from '@db/client';
 import * as z from 'zod';
 
+import { profileSchema } from '@/lib/schemas/profile';
 import { getCurrentUser } from '@/lib/session';
-import { profileSchema } from '@/lib/validations/profile';
 
 export async function saveProfile(data: z.infer<typeof profileSchema>) {
   try {

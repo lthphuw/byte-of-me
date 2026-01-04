@@ -1,16 +1,9 @@
 import { z } from 'zod';
 
 export const educationSubItemSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(1, 'Sub item title is required')
-    .max(200),
+  title: z.string().trim().min(1, 'Sub item title is required').max(200),
 
-  message: z
-    .string()
-    .trim()
-    .min(1, 'Sub item message is required'),
+  message: z.string().trim().min(1, 'Sub item message is required'),
 });
 
 export const educationSchema = z.object({

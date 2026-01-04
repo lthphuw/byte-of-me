@@ -2,17 +2,19 @@
 
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { usePathname, useRouter } from '@/i18n/navigation';
 import { useDebouncedValue } from '@mantine/hooks';
+import { Tag, TechStack } from '@repo/db/generated/prisma/client';
 import Fuse from 'fuse.js';
 
 import { CategoryFilter } from '@/components/category-filter';
 import { SearchBar, SearchItem } from '@/components/search-bar';
 
-import { Project, ProjectList } from './project-list';
+import { ProjectList, ProjectProps } from './project-list';
 
 interface ProjectsContentProps {
-  projects: Project[];
+  projects: ProjectProps[];
+  tags: Tag[];
+  techStacks: TechStack[];
 }
 
 const fuseOptions = {
@@ -22,13 +24,13 @@ const fuseOptions = {
   minMatchCharLength: 2,
 };
 
-export function ProjectsContent({ projects }: ProjectsContentProps) {
-  const router = useRouter();
-  const pathname = usePathname();
+export function ProjectsContent({
+  projects,
+  techStacks,
+  tags,
+}: ProjectsContentProps) {
   const searchParams = useSearchParams();
-
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-
   const [debouncedQuery] = useDebouncedValue(searchQuery, 300);
   const isTyping = searchQuery !== debouncedQuery;
 
@@ -36,27 +38,11 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
     searchParams.getAll('tag')
   );
   const [selectedTechstacks, setSelectedTechstacks] = useState<string[]>(
-    searchParams.getAll('tech')
+    searchParams.getAll('tech,stack')
   );
 
   const fuse = useMemo(() => {
     return new Fuse(projects, fuseOptions);
-  }, [projects]);
-
-  const techstacks = useMemo(() => {
-    const seen = new Set<string>();
-    return projects
-      .flatMap((p) => p.techstacks)
-      .filter((t) => !seen.has(t.id) && seen.add(t.id))
-      .map((t) => ({ id: t.id, label: t.name }));
-  }, [projects]);
-
-  const tags = useMemo(() => {
-    const seen = new Set<string>();
-    return projects
-      .flatMap((p) => p.tags)
-      .filter((t) => !seen.has(t.id) && seen.add(t.id))
-      .map((t) => ({ id: t.id, label: t.name }));
   }, [projects]);
 
   const { showedItems, previewItems } = useMemo(() => {
@@ -68,6 +54,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
       filtered = results.map((r) => r.item);
       preview = results.slice(0, 5).map((r) => ({
         id: r.item.id,
+        slug: r.item.slug,
         label: r.item.title,
         desc: r.item.description || '',
       }));
@@ -75,20 +62,20 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
 
     if (selectedTags.length > 0) {
       filtered = filtered.filter((p) =>
-        selectedTags.some((id) => p.tags.some((t) => t.id === id))
+        selectedTags.some((slug) => p.tags.some((t) => t.tag.slug === slug))
       );
     }
 
     if (selectedTechstacks.length > 0) {
       filtered = filtered.filter((p) =>
-        selectedTechstacks.some((id) => p.techstacks.some((t) => t.id === id))
+        selectedTechstacks.some((slug) =>
+          p.techstacks.some((t) => t.techstack.slug === slug)
+        )
       );
     }
 
     return {
-      showedItems: filtered.sort((a, b) =>
-        a.title.localeCompare(b.title),
-      ),
+      showedItems: filtered.sort((a, b) => a.title.localeCompare(b.title)),
       previewItems: preview,
     };
   }, [projects, debouncedQuery, selectedTags, selectedTechstacks, fuse]);
@@ -104,8 +91,14 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
         />
 
         <CategoryFilter
-          techstacks={techstacks}
-          tags={tags}
+          techstacks={techStacks?.map((it) => ({
+            id: it.slug || it.id,
+            label: it.name,
+          }))}
+          tags={tags?.map((it) => ({
+            id: it.slug || it.id,
+            label: it.name,
+          }))}
           selectedTags={selectedTags}
           selectedTechstacks={selectedTechstacks}
           setSelectedTags={setSelectedTags}
@@ -113,10 +106,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
         />
       </div>
 
-      <ProjectList
-        isLoading={isTyping}
-        projects={showedItems}
-      />
+      <ProjectList isLoading={isTyping} projects={showedItems} />
     </div>
   );
 }

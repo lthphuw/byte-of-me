@@ -1,7 +1,7 @@
 import { Trash } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+
 import { cn } from '@/lib/utils';
-import { BaseComponentProps } from '@/types';
+import { Button } from '@/components/ui/button';
 
 export type TrashButtonProps = BaseComponentProps & {
   removeFunc?: () => void;

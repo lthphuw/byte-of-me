@@ -1,12 +1,6 @@
-import { fetchData, fetchREADMEData } from '@/lib/core/fetch';
-import { extractToc } from '@/lib/core/markdown';
+import { fetchData } from '@/lib/core/fetch';
 import { ProjectDetailsContent } from '@/components/project-details-content';
-import { Project } from '@/components/project-list';
 import { ProjectDetailsShell } from '@/components/shell';
-
-
-
-
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -14,27 +8,11 @@ type Props = {
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params;
-
-  const project = await fetchData<Project>(`me/projects/${slug}`);
-  if (!project?.githubLink) {
-    return 'Project or GitHub URL not found.';
-  }
-
-  const readme = await fetchREADMEData(project.githubLink);
-  if (!readme) {
-    return `README.md not found for ${project.githubLink}`;
-  }
-
-  const tocItems = extractToc(readme)
-    .filter((item) => item.depth === 2)
-    .map((item) => ({
-      href: `#${item.id}`,
-      label: item.text,
-    }));
+  const project: any = await fetchData(`me/projects/${slug}`);
 
   return (
     <ProjectDetailsShell>
-      <ProjectDetailsContent tocItems={tocItems} readme={readme} />
+      <ProjectDetailsContent project={project} />
     </ProjectDetailsShell>
   );
 }

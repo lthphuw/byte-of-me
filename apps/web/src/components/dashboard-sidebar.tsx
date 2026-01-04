@@ -4,6 +4,7 @@ import { Link, usePathname } from '@/i18n/navigation';
 import {
   Briefcase,
   Code2,
+  ExternalLink,
   FileText,
   GraduationCap,
   Image,
@@ -17,20 +18,20 @@ import { User } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import { useLocale } from 'next-intl';
 
-import { UserAvatar } from '@/components/user-avatar';
+import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
   {
     href: '/dashboard/profile',
-    label: 'Personal Information',
+    label: 'Personal information',
     icon: UserCircle,
   },
-  { href: '/dashboard/banner', label: 'Banner Images', icon: Image },
+  { href: '/dashboard/banner', label: 'Banner images', icon: Image },
   { href: '/dashboard/education', label: 'Education', icon: GraduationCap },
   { href: '/dashboard/experience', label: 'Experience', icon: Briefcase },
   { href: '/dashboard/projects', label: 'Projects', icon: Code2 },
-  { href: '/dashboard/tech-stack', label: 'Tech Stack', icon: Tags },
+  { href: '/dashboard/tech-stack', label: 'Tech stack', icon: Tags },
   { href: '/dashboard/blogs', label: 'Blogs', icon: FileText },
   { href: '/dashboard/translations', label: 'Translations', icon: Languages },
 ];
@@ -44,58 +45,65 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
   const locale = useLocale();
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-50 w-64 border-r bg-background">
+    <aside className="sticky top-0 z-40 h-screen w-[255px] shrink-0 border-r bg-background">
       <div className="flex h-full flex-col">
-        {/* Header */}
-        <div className="border-b p-6">
-          <h2 className="text-2xl font-bold tracking-tight">Byte of me</h2>
+        {/* ================= BRAND ================= */}
+        <div className="border-b px-6 py-5">
+          <h1 className="text-lg font-semibold tracking-tight">
+            Byte of me
+          </h1>
         </div>
 
-        {/* User Info */}
-        <div className="px-6 py-4 border-b">
-          <div className="flex items-center gap-3">
-            <UserAvatar user={user} className="h-12 w-12" />
-            <div>
-              <p className="font-medium">{user.name || user.email}</p>
-              <p className="text-sm text-muted-foreground">Administrator</p>
-            </div>
-          </div>
-        </div>
+        {/* ================= NAV ================= */}
+        <nav className="flex-1 overflow-y-auto px-3 py-4">
+          <ul className="space-y-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
 
-        {/* Navigation */}
-        <nav className="flex-1 space-y-1 p-4">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                }`}
-              >
-                <Icon className="h-5 w-5" />
-                {item.label}
-              </Link>
-            );
-          })}
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
+                      isActive
+                        ? 'bg-muted font-medium text-foreground'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                    )}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" />
+                    <span className="truncate">{item.label}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
         </nav>
 
-        {/* Logout */}
-        <div className="border-t p-4">
+        {/* ================= FOOTER ================= */}
+        <div className="space-y-1 border-t p-3">
+          {/* View public site */}
+          <Link
+            target={'_blank'}
+            href="/"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <ExternalLink className="h-4 w-4" />
+            View public site
+          </Link>
+
+          {/* Logout */}
           <button
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-            onClick={(event) => {
-              event.preventDefault()
+            type="button"
+            onClick={() =>
               signOut({
                 callbackUrl: `${window.location.origin}/${locale}/auth/login`,
-              })}}
+              })
+            }
+            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
-            <LogOut className="h-5 w-5" />
+            <LogOut className="h-4 w-4" />
             Logout
           </button>
         </div>

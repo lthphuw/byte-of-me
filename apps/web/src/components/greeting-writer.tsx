@@ -1,14 +1,8 @@
-import { BaseComponentProps } from '@/types';
-
 import { cn } from '@/lib/utils';
-
-
-
-
 
 export type GreetingWriterProps = BaseComponentProps & {
   text?: string;
-}
+};
 
 export function GreetingWriter({ text = "Hi, I'm Phu.", className, style }: GreetingWriterProps) {
   return (

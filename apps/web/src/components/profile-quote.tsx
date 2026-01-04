@@ -1,16 +1,11 @@
-import { BaseComponentProps } from '@/types';
 import { Quote } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
-
-
-
-
 export type ProfileQuoteProps = BaseComponentProps & {
   quote: string;
   author?: string | null;
-}
+};
 
 export function ProfileQuote({ quote, author, className, style }: ProfileQuoteProps) {
   return (

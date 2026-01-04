@@ -3,236 +3,181 @@
     "title": "Lương Thanh Hoàng Phú",
     "description": "Đam mê, kinh nghiệm, dự án và sở thích — tất cả được lưu giữ, từng byte một.",
     "about": {
-      "title": "Về bản thân tôi",
-      "description": "Tôi chia sẻ về bản thân mình — từ thông tin cơ bản, quá trình học vấn cho đến những công nghệ tôi đã sử dụng."
+      "title": "Về tôi",
+      "description": "Giới thiệu tổng quan về bản thân tôi — từ nền tảng, quá trình học tập cho đến những công nghệ tôi đã làm việc."
     },
     "experience": {
       "title": "Kinh nghiệm làm việc",
-      "description": "Tổng quan về kinh nghiệm thực tế của tôi trong các vai trò và dự án khác nhau."
+      "description": "Tóm tắt kinh nghiệm thực tế của tôi qua các vai trò và dự án khác nhau."
     },
     "projects": {
-      "title": "Dự án cá nhân",
-      "description": "Tổng hợp các dự án mà tôi đã thực hiện, từ học tập đến thực tế."
+      "title": "Dự án",
+      "description": "Tổng hợp các dự án tôi đã thực hiện, từ học thuật đến ứng dụng thực tế."
     },
     "contact": {
       "title": "Liên hệ",
-      "description": "Thông tin liên lạc nếu bạn muốn kết nối hoặc cộng tác với tôi."
+      "description": "Thông tin liên lạc nếu bạn muốn kết nối, trao đổi hoặc hợp tác cùng tôi."
     },
     "askMe": {
       "title": "Hỏi tôi bất cứ điều gì",
-      "description": "Đặt câu hỏi cho trợ lý AI được xây dựng bằng pipeline RAG. Dữ liệu từ chính portfolio của tôi được xử lý bằng vector search và LLM — phù hợp để khám phá kinh nghiệm, dự án và kỹ năng lập trình của tôi."
+      "description": "Đặt câu hỏi cho trợ lý AI được xây dựng trên pipeline RAG, sử dụng dữ liệu thực từ portfolio của tôi kết hợp tìm kiếm vector và mô hình ngôn ngữ lớn — phù hợp để khám phá kinh nghiệm, dự án và kỹ năng kỹ thuật."
     },
     "cv": {
-      "title": "Curriculum vitae",
-      "description": "Curriculum vitae détaillant ma formation, mes compétences, mes projets et mes expériences."
+      "title": "Curriculum Vitae",
+      "description": "CV tổng hợp quá trình học tập, kỹ năng, dự án và kinh nghiệm làm việc của tôi."
     }
   },
   "global": {
-    "Table of Content": "Mục lục",
+    "tableOfContent": "Mục lục",
     "i18nToggle": {
-      "Toggle language": "Chuyển đổi ngôn ngữ",
-      "Vietnamese": "Tiếng Việt",
-      "English": "Tiếng Anh",
-      "French": "Tiếng Pháp"
+      "toggleLanguage": "Chuyển đổi ngôn ngữ",
+      "vietnamese": "Tiếng Việt",
+      "english": "Tiếng Anh",
+      "french": "Tiếng Pháp"
     },
     "modeToggle": {
-      "Toggle theme": "Chuyển đổi chủ đề",
-      "Light": "Sáng",
-      "Dark": "Tối",
-      "System": "Hệ thống"
+      "toggleTheme": "Chuyển đổi giao diện",
+      "light": "Sáng",
+      "dark": "Tối",
+      "system": "Theo hệ thống"
     },
     "search": {
-      "Search projects": "Tìm kiếm dự án",
-      "All": "Tất cả"
+      "searchProjects": "Tìm kiếm dự án",
+      "all": "Tất cả"
     },
     "header": {
       "nav": {
-        "About": "Giới thiệu",
-        "Experience": "Kinh nghiệm",
-        "Projects": "Dự án",
-        "Hobbies": "Sở thích",
-        "More": "Thêm",
-        "Let's talk": "Liên lạc",
-        "Ask me": "Hỏi về tôi",
-        "Anything about me": "Mọi thứ về mình",
-        "CV": "CV"
+        "about": "Giới thiệu",
+        "experience": "Kinh nghiệm",
+        "projects": "Dự án",
+        "hobbies": "Sở thích",
+        "more": "Thêm",
+        "letsTalk": "Liên hệ",
+        "askMe": "Hỏi tôi",
+        "anythingAboutMe": "Mọi thứ về tôi",
+        "cv": "CV"
       }
     },
     "footer": {
       "home": "Trang chủ",
       "builtBy": "Xây dựng bởi",
-      "openSource": "Mã nguồn mở trên",
+      "openSource": "Mã nguồn mở tại",
       "links": "Liên kết nhanh",
       "about": "Giới thiệu",
       "projects": "Dự án",
       "experience": "Kinh nghiệm",
       "cv": "CV",
+      "anythingAboutMe": "Mọi thứ về tôi",
       "contact": "Liên hệ",
       "connect": "Kết nối",
-      "Anything about me": "Mọi thứ về mình",
       "email": "Email",
       "navigation": "Điều hướng chân trang",
-      "license": "Được cấp phép theo",
-      "rights": "Bản quyền thuộc về tác giả."
+      "license": "Cấp phép theo",
+      "rights": "Mọi quyền được bảo lưu."
     }
   },
   "notFound": {
-    "404 - Page Not Found": "404 - Không tìm thấy trang",
-    "Oops! Page not found": "Rất tiếc! Không tìm thấy trang",
-    "Sorry, we couldn’t find that page": "Xin lỗi, tôi không thể tìm thấy trang bạn yêu cầu",
-    "Please check the URL or go back home": "Vui lòng kiểm tra lại đường dẫn hoặc quay về trang chủ",
-    "Go back": "Quay lại",
-    "Home": "Trang chủ",
-    "About me": "Giới thiệu",
-    "Learn more about my background and journey": "Tìm hiểu thêm về hành trình và kinh nghiệm của tôi",
-    "See my work": "Xem dự án",
-    "Check out the projects I've built": "Khám phá những dự án mà tôi đã thực hiện",
-    "Contact": "Liên hệ",
-    "Reach out for collaboration or questions": "Liên hệ với tôi nếu bạn có câu hỏi hoặc muốn hợp tác",
-    "Explore": "Khám phá"
+    "pageNotFound404": "404 — Không tìm thấy trang",
+    "oopsPageNotFound": "Rất tiếc! Trang không tồn tại",
+    "sorryWeCouldntFindThatPage": "Xin lỗi, chúng tôi không thể tìm thấy trang bạn yêu cầu",
+    "pleaseCheckTheUrlOrGoBackHome": "Vui lòng kiểm tra lại đường dẫn hoặc quay về trang chủ",
+    "goBack": "Quay lại",
+    "home": "Trang chủ",
+    "aboutMe": "Giới thiệu",
+    "learnMoreAboutMyBackgroundAndJourney": "Tìm hiểu thêm về hành trình và kinh nghiệm của tôi",
+    "seeMyWork": "Xem dự án",
+    "checkOutTheProjectsIveBuilt": "Khám phá các dự án tôi đã thực hiện",
+    "contact": "Liên hệ",
+    "reachOutForCollaborationOrQuestions": "Liên hệ với tôi nếu bạn có câu hỏi hoặc mong muốn hợp tác",
+    "explore": "Khám phá"
   },
   "error": {
-    "Something went wrong!": "Đã xảy ra lỗi!",
-    "Go back": "Quay lại",
-    "Home": "Trang chủ",
-    "Report for me": "Báo cáo lỗi cho tôi",
-    "Report for me about this error": "Báo cáo về lỗi này cho tôi",
-    "Send": "Gửi",
-    "Error Details": "Chi tiết lỗi",
-    "Copy Error": "Sao chép lỗi",
-    "Copied!": "Đã sao chép!",
+    "somethingWentWrong": "Đã xảy ra lỗi!",
+    "goBack": "Quay lại",
+    "home": "Trang chủ",
+    "reportForMe": "Báo cáo lỗi",
+    "reportForMeAboutThisError": "Gửi báo cáo chi tiết về lỗi này",
+    "send": "Gửi",
+    "errorDetails": "Chi tiết lỗi",
+    "copyError": "Sao chép lỗi",
+    "copied": "Đã sao chép!",
     "missingQuestion": "Bạn chưa nhập câu hỏi. Vui lòng thử lại.",
-    "invalidInput": "Câu hỏi có thể chứa nội dung không phù hợp. Vui lòng kiểm tra và thử lại.",
-    "missingThreadId": "Không tìm thấy mã phiên trò chuyện. Vui lòng tải lại trang và thử lại.",
-    "failedToDelete": "Đã xảy ra lỗi khi xoá phiên trò chuyện. Vui lòng thử lại sau hoặc tải lại trang."
-  },
-  "home": {
-    "See my work": "Xem dự án của tôi",
-    "README": "README",
-    "greeting": "Chào, tôi là Phú",
-    "tagline": "Lập trình, sự nghiệp, sở thích — từng byte một",
-    "bannerAlt": "Chụp tại Bảo tàng Lịch sử Quân sự Việt Nam, bức tranh năm 2024 này có tiêu đề “Sống bám đá, chết hoá đá” — “Sống bám vào đá, chết hóa thành đá”",
-    "bannerCaption": "Chụp tại Bảo tàng Lịch sử Quân sự Việt Nam, bức tranh năm 2024 này có tiêu đề “Sống bám đá, chết hoá đá” — “Sống bám vào đá, chết hóa thành đá”",
-    "quote": "Tôi thích học hỏi những điều mới và có hứng thú mạnh mẽ với các dự án mã nguồn mở, nơi tôi thường tìm thấy những ý tưởng hữu ích và các phương pháp hay nhất Những trải nghiệm này giúp tôi xây dựng các giải pháp tốt hơn và hiệu quả hơn Đối với tôi, sự phát triển không chỉ đến từ công việc—mà còn từ việc tự khám phá và học tập không ngừng Đó là điều thực sự thúc đẩy sự phát triển của tôi"
+    "invalidInput": "Nội dung câu hỏi có thể không phù hợp. Vui lòng kiểm tra và thử lại.",
+    "missingThreadId": "Không tìm thấy mã cuộc trò chuyện. Vui lòng tải lại trang.",
+    "failedToDelete": "Không thể xoá cuộc trò chuyện. Vui lòng thử lại sau hoặc tải lại trang."
   },
   "about": {
     "section": {
-      "About me": "Giới thiệu",
-      "Education": "Học vấn",
-      "Skills / Tech Stack": "Công nghệ đã sử dụng"
-    },
-    "aboutMe": "Tôi là một lập trình viên full-stack (junior), chủ yếu tập trung vào phát triển backend Tôi thích xây dựng các hệ thống hiệu suất cao, có khả năng mở rộng và có kinh nghiệm thực tế với Golang, Nodejs và Python Mặc dù trọng tâm chính là backend, tôi cũng đã làm việc với các công nghệ frontend như Reactjs và Nextjs Tôi có kinh nghiệm nghiên cứu và phát triển các mô hình AI, và luôn háo hức học hỏi và phát triển qua các dự án thực tế\n\nTrong tương lai, tôi hướng đến việc nâng cao chuyên môn trong thiết kế hệ thống, hệ thống phân tán và tích hợp AI — xây dựng phần mềm đáng tin cậy, hiệu quả và thông minh ở quy mô lớn",
-    "education": {
-      "bachelorTitle": "Cử nhân Khoa học (Chương trình Tài năng) ngành Công nghệ Thông tin",
-      "bachelorMessage": "Trường Đại học Khoa học Tự nhiên - ĐHQG-HCM, TP Hồ Chí Minh, Việt Nam",
-      "bachelorLogoAlt": "Logo ĐH KHTN",
-      "highSchoolTitle": "Bằng Tốt nghiệp Trung học Phổ thông",
-      "highSchoolMessage": "Trường THPT Phan Châu Trinh, Đà Nẵng",
-      "highSchoolLogoAlt": "Trường THPT",
-      "academicPerformanceTitle": "Thành tích học tập",
-      "academicPerformanceMessage": "Tốt nghiệp với GPA 867/10",
-      "publishedPaperTitle": "Công bố bài báo tại CV4DC 2024",
-      "publishedPaperMessagePart1": "Công bố bài báo tại",
-      "publishedPaperLinkText": "Hội thảo về Computer Vision for Developing Countries (CV4DC) tại ACCV 2024",
-      "publishedPaperTitleText": "Phát hiện bất thường trong hình ảnh y khoa dựa trên mô hình Ngôn ngữ-Tầm nhìn",
-      "publishedPaperOral": "Thuyết trình",
-      "publishedPaperViewLink": "Xem bài báo",
-      "publishedPaperAuthors": "Tác giả: Lương Thanh Hoàng Phú, Vũ Văn Thái, và PGS TS Lý Quốc Ngọc",
-      "thesisScoreTitle": "Điểm luận văn",
-      "thesisScoreMessage": "Điểm luận văn: 10/10 (Xuất sắc)",
-      "researchAwardTitle": "Giải thưởng Sinh viên Nghiên cứu Xuất sắc",
-      "researchAwardMessage": "Được trao giải vì xuất sắc trong nghiên cứu khoa học",
-      "entranceExamTitle": "Top 6 Thí sinh có điểm thi đầu vào cao nhất",
-      "entranceExamMessage": "Xếp trong top 6 thí sinh có điểm thi đầu vào cao nhất năm 2020",
-      "aiChallengeTitle": "Thách thức AI 2023 (TPHCM)",
-      "aiChallengeMessage": "Giải khuyến khích"
+      "aboutMe": "Giới thiệu",
+      "education": "Học vấn",
+      "skillsTechStack": "Công nghệ & kỹ năng"
     },
     "techStack": {
       "frameworksTitle": "Frameworks",
       "librariesTitle": "Thư viện",
       "programmingLanguagesTitle": "Ngôn ngữ lập trình",
-      "databaseTitle": "Cơ sở dữ liệu",
-      "gin": "Gin",
-      "grpc": "gRPC",
-      "nodejs": "Nodejs",
-      "fastapi": "FastAPI",
-      "nextjs": "Nextjs",
-      "reactjs": "Reactjs",
-      "framerMotion": "Framer Motion",
-      "floatingUi": "Floating UI",
-      "go": "Go",
-      "python": "Python",
-      "typescript": "TypeScript",
-      "javascript": "JavaScript",
-      "mongodb": "MongoDB",
-      "postgresql": "PostgreSQL",
-      "cache": "Redis",
-      "reactBit": "React Bits"
+      "databaseTitle": "Cơ sở dữ liệu"
     }
   },
   "project": {
-    "Details": "Chi tiết",
-    "GitHub": "GitHub",
-    "All": "Tất cả",
-    "There are no projects yet": "Hiện chưa có dự án nào",
-    "No projects match your search": "Không tìm thấy dự án nào phù hợp với từ khóa",
-    "Loading project list": "Đang tải danh sách dự án",
-    "Failed to load project list": "Không thể tải danh sách dự án. Vui lòng thử lại",
-    "No projects match the selected filters": "Không có dự án nào phù hợp với bộ lọc đã chọn",
-    "No projects match your current search and filters": "Không tìm thấy dự án nào phù hợp với từ khóa và bộ lọc hiện tại",
-    "You've reached the end of the project list": "Bạn đã xem hết tất cả dự án",
-    "Clear filters": "Xóa bộ lọc",
-    "Clear search": "Xóa từ khóa tìm kiếm",
-    "No Projects Yet": "Chưa có dự án",
-    "You can start by creating a new project": "Bạn có thể bắt đầu bằng cách tạo một dự án mới",
-    "Back to projects": "Quay lại dự án"
+    "details": "Chi tiết",
+    "gitHub": "GitHub",
+    "all": "Tất cả",
+    "thereAreNoProjectsYet": "Hiện chưa có dự án nào",
+    "noProjectsMatchYourSearch": "Không tìm thấy dự án phù hợp với từ khoá",
+    "loadingProjectList": "Đang tải danh sách dự án",
+    "failedToLoadProjectList": "Không thể tải danh sách dự án. Vui lòng thử lại.",
+    "noProjectsMatchSelectedFilters": "Không có dự án nào phù hợp với bộ lọc đã chọn",
+    "noProjectsMatchCurrentSearchAndFilters": "Không tìm thấy dự án phù hợp với tìm kiếm và bộ lọc hiện tại",
+    "youveReachedTheEndOfTheProjectList": "Bạn đã xem hết tất cả dự án",
+    "clearFilters": "Xoá bộ lọc",
+    "clearSearch": "Xoá tìm kiếm",
+    "noProjectsYet": "Chưa có dự án",
+    "youCanStartByCreatingANewProject": "Bạn có thể bắt đầu bằng cách tạo một dự án mới",
+    "backToProjects": "Quay lại danh sách dự án"
   },
   "contact": {
-    "Let’s work together": "Hãy cùng hợp tác",
-    "Feel free to reach out through any channel": "Bạn có thể liên hệ với tôi qua bất kỳ kênh nào",
-    "Send me an email": "Gửi email cho tôi",
-    "LinkedIn": "LinkedIn",
-    "GitHub": "GitHub"
+    "letsWorkTogether": "Cùng nhau hợp tác",
+    "feelFreeToReachOutThroughAnyChannel": "Bạn có thể liên hệ với tôi qua bất kỳ kênh nào",
+    "sendMeAnEmail": "Gửi email cho tôi",
+    "linkedIn": "LinkedIn",
+    "gitHub": "GitHub"
   },
   "chat": {
-    "Ask Phu's Assistant": "Hỏi trợ lý AI của Phú",
-    "Asking": "Đang hỏi",
-    "Ask": "Hỏi",
-    "Clear chat": "Xoá hội thoại",
-    "Ask something": "Hỏi bất cứ điều gì",
-    "Copy": "Sao chép",
+    "askPhusAssistant": "Hỏi trợ lý AI của Phú",
+    "asking": "Đang hỏi",
+    "ask": "Hỏi",
+    "clearChat": "Xoá hội thoại",
+    "askSomething": "Hỏi bất cứ điều gì",
+    "copy": "Sao chép",
     "model": {
       "desc": {
-        "gemini-20-flash": "LLM nhẹ và nhanh của Google, phù hợp cho các tương tác thời gian thực",
-        "gemini-20-flash-lite": "Phiên bản rút gọn, tốc độ cao hơn của Gemini Flash cho các tác vụ yêu cầu độ trễ thấp",
-        "gemini-25-flash": "Phiên bản cải tiến của Gemini 2.5 với khả năng phản hồi nhanh cho các tác vụ tương tác",
-        "jina-embedding-v3": "Mô hình embedding đa ngôn ngữ, tối ưu cho tốc độ và khả năng truy xuất dữ liệu dày đặc",
-        "text-embedding-004": "Mô hình embedding tiếng Anh chất lượng cao dành cho tìm kiếm ngữ nghĩa",
-        "no-reranker": "Không áp dụng re-rank. Tài liệu được chọn dựa hoàn toàn vào độ tương đồng vector.",
-        "cohere-rerank-v35": "Không áp dụng re-rank. Tài liệu được chọn dựa hoàn toàn vào độ tương đồng vector."
+        "gemini20Flash": "Mô hình ngôn ngữ nhẹ và nhanh của Google, tối ưu cho tương tác thời gian thực",
+        "gemini20FlashLite": "Phiên bản gọn nhẹ hơn, độ trễ thấp cho các tác vụ nhanh",
+        "gemini25Flash": "Phiên bản Gemini 2.5 cải tiến với khả năng phản hồi nhanh",
+        "jinaEmbeddingV3": "Mô hình embedding đa ngôn ngữ, tối ưu cho truy xuất nhanh và chính xác",
+        "textEmbedding004": "Mô hình embedding tiếng Anh chất lượng cao cho tìm kiếm ngữ nghĩa",
+        "noReranker": "Không áp dụng re-rank. Kết quả dựa hoàn toàn trên độ tương đồng vector.",
+        "cohereRerankV35": "Mô hình re-rank của Cohere, giúp sắp xếp tài liệu theo mức độ liên quan."
       }
     },
     "examples": {
-      "example1": "Phú sử dụng công nghệ nào cho phát triển backend?",
-      "example2": "Hãy kể cho tôi về một trong những dự án cá nhân của Phú.",
-      "example3": "Phú có kinh nghiệm gì với trí tuệ nhân tạo (AI)?"
+      "example1": "Phú sử dụng những công nghệ nào cho backend?",
+      "example2": "Hãy giới thiệu một dự án cá nhân tiêu biểu của Phú.",
+      "example3": "Phú có kinh nghiệm gì trong lĩnh vực AI?"
     }
   },
   "homepage": {
-    "My story": "Hành trình của tôi",
-    "More about my journey": "Tìm hiểu thêm về tôi",
-
-    "Selected projects": "Các dự án tiêu biểu",
-    "A few things I’ve built recently": "Một vài sản phẩm tôi đã thực hiện gần đây",
-
-    "View project": "Xem chi tiết dự án",
-    "View all projects": "Xem tất cả dự án",
-
-    "Have an idea in mind?": "Bạn đang ấp ủ một ý tưởng?",
-    "Always interested in thoughtful projects and good collaboration": "Luôn hứng thú với những dự án được làm chỉn chu và sự hợp tác tốt.",
-
-    "Let’s work together": "Cùng nhau hợp tác",
-    "Email me": "Liên hệ qua email",
-    "Contact details": "Thông tin liên hệ"
+    "myStory": "Hành trình của tôi",
+    "moreAboutMyJourney": "Tìm hiểu thêm về hành trình của tôi",
+    "selectedProjects": "Dự án tiêu biểu",
+    "aFewThingsIveBuiltRecently": "Một vài sản phẩm tôi đã thực hiện gần đây",
+    "viewProject": "Xem dự án",
+    "viewAllProjects": "Xem tất cả dự án",
+    "haveAnIdeaInMind": "Bạn đang có một ý tưởng?",
+    "alwaysInterestedInThoughtfulProjectsAndGoodCollaboration": "Tôi luôn hứng thú với những dự án được đầu tư nghiêm túc và sự hợp tác chất lượng.",
+    "letsWorkTogether": "Cùng hợp tác",
+    "emailMe": "Liên hệ qua email",
+    "contactDetails": "Thông tin liên hệ"
   }
 }

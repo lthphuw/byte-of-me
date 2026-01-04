@@ -5,11 +5,6 @@ import { prisma } from '@db/client';
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';
 
-
-
-
-
-// https://nextjs.org/docs/app/api-reference/file-conventions/route#dynamic-route-segments
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
@@ -28,8 +23,9 @@ export async function GET(
 
   try {
     const project = await prisma.project.findUnique({
-      where: { id: slug },
+      where: { slug: slug },
       include: {
+        blogs: true,
         tags: { include: { tag: true } },
         techstacks: { include: { techstack: true } },
       },
@@ -51,14 +47,9 @@ export async function GET(
       liveLink: project.liveLink,
       startDate: project.startDate,
       endDate: project.endDate,
-      tags: project.tags.map((t) => ({
-        id: t.tag.id,
-        name: t.tag.name,
-      })),
-      techstacks: project.techstacks.map((t) => ({
-        id: t.techstack.id,
-        name: t.techstack.name,
-      })),
+      blogs: project.blogs,
+      tags: project.tags,
+      techstacks: project.techstacks,
     };
 
     return NextResponse.json({ data: result } as ApiResponse<typeof result>, {

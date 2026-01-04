@@ -7,12 +7,10 @@ import { motion } from 'framer-motion';
 import { Routes } from '@/config/global';
 import { useTranslations } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
+import { EmptyProject } from '@/components/empty-project';
 import { GreetingWriter } from '@/components/greeting-writer';
 import { ProfileQuote } from '@/components/profile-quote';
-
-
-
-
+import { RichText } from '@/components/rich-text';
 
 export interface HomepageContentProps {
   user: Prisma.UserGetPayload<{
@@ -66,7 +64,7 @@ export function HomepageContent({ user }: HomepageContentProps) {
         <div className="space-y-4 md:space-y-6">
           <div className="space-y-3 md:space-y-4">
             <h2 className="text-xs md:text-sm uppercase tracking-widest text-muted-foreground">
-              {t('homepage.My story')}
+              {t('homepage.myStory')}
             </h2>
 
             <p className="text-sm md:text-base leading-relaxed">
@@ -76,7 +74,7 @@ export function HomepageContent({ user }: HomepageContentProps) {
 
           <Link href={Routes.About} className="inline-block">
             <Button variant="link" className="p-0 text-sm md:text-base">
-              {t('homepage.More about my journey')}
+              {t('homepage.moreAboutMyJourney')}
             </Button>
           </Link>
         </div>
@@ -100,23 +98,29 @@ export function HomepageContent({ user }: HomepageContentProps) {
         <div className="flex flex-col gap-3 md:gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-1 md:space-y-2">
             <h2 className="text-xl md:text-3xl font-semibold">
-              {t('homepage.Selected projects')}
+              {t('homepage.selectedProjects')}
             </h2>
 
             <p className="text-xs md:text-sm text-muted-foreground">
-              {t('homepage.A few things I’ve built recently')}
+              {t('homepage.aFewThingsIveBuiltRecently')}
             </p>
           </div>
 
           <Link href={Routes.Projects}>
             <Button variant="link" className="p-0 text-sm md:text-base">
-              {t('homepage.View all projects')}
+              {t('homepage.viewAllProjects')}
             </Button>
           </Link>
         </div>
 
         <div className="grid gap-4 md:gap-6 md:grid-cols-2">
-          {projects.map(project => (
+          {
+            !projects?.length ?
+              (
+                <EmptyProject className="col-span-full" />
+              )
+              :
+              projects.map(project => (
             <article
               key={project.id}
               className="
@@ -130,16 +134,17 @@ export function HomepageContent({ user }: HomepageContentProps) {
                 {project.title}
               </h3>
 
-              <p className="mt-2 text-xs md:text-sm text-muted-foreground leading-relaxed line-clamp-3 flex-grow">
-                {project.description}
-              </p>
+              <RichText
+                className="mt-2 text-xs md:text-sm text-muted-foreground leading-relaxed line-clamp-3 flex-grow"
+                html={project.description}
+              />
 
               <Link
                 href={`/projects/${project.slug}`}
                 className="mt-3 md:mt-4 self-start"
               >
                 <Button variant="ghost" size="sm">
-                  {t('homepage.View project')}
+                  {t('homepage.viewProject')}
                 </Button>
               </Link>
             </article>
@@ -161,27 +166,27 @@ export function HomepageContent({ user }: HomepageContentProps) {
         transition={{ duration: 0.5, ease: 'easeOut', delay: 0.2 }}
       >
         <h2 className="text-xl md:text-3xl font-semibold">
-          {t('homepage.Have an idea in mind?')}
+          {t('homepage.haveAnIdeaInMind')}
         </h2>
 
         <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
-          {t('homepage.Always interested in thoughtful projects and good collaboration')}
+          {t('homepage.alwaysInterestedInThoughtfulProjectsAndGoodCollaboration')}
         </p>
 
         <div className="flex items-stretch flex-col md:flex-row justify-center gap-3 md:gap-4 flex-wrap pt-2">
           <a
             href={`mailto:${user.email}?subject=${encodeURIComponent(
-              t('homepage.Let’s work together')
+              t('homepage.letsWorkTogether'),
             )}`}
           >
             <Button size="lg" className="h-11 md:h-12 w-full">
-              {t('homepage.Email me')}
+              {t('homepage.emailMe')}
             </Button>
           </a>
 
           <Link href={Routes.Contact}>
             <Button size="lg" variant="outline" className="h-11 md:h-12 w-full">
-              {t('homepage.Contact details')}
+              {t('homepage.contactDetails')}
             </Button>
           </Link>
         </div>

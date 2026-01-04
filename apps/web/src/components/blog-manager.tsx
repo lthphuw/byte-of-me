@@ -9,6 +9,7 @@ import { stateFromHTML } from 'draft-js-import-html';
 import { CalendarIcon, Trash } from 'lucide-react';
 
 import { addBlog, deleteBlog, updateBlog } from '@/lib/actions/blog';
+import { blogSchema } from '@/lib/schemas/blog';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,8 +36,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
+import { RichText } from '@/components/rich-text';
 import { RichTextEditor } from '@/components/rich-text-editor';
+import { SubmitButton } from '@/components/submit-button';
 
 type Blog = Prisma.BlogGetPayload<{
   include: {
@@ -45,9 +49,8 @@ type Blog = Prisma.BlogGetPayload<{
   };
 }>;
 
-
-type Project = Prisma.BlogGetPayload<{
-  select: { id: true, title: true },
+type Project = Prisma.ProjectGetPayload<{
+  select: { id: true; title: true };
 }>;
 
 export function BlogManager({
@@ -71,8 +74,8 @@ export function BlogManager({
     projectId: '',
     tagIds: [] as string[],
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [contentState, setContentState] = useState(EditorState.createEmpty());
-  const [newTagName, setNewTagName] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -96,16 +99,9 @@ export function BlogManager({
     setFormData({ ...formData, tagIds: updatedIds });
   };
 
-  const addNewTag = () => {
-    if (newTagName.trim()) {
-      // Simulate or call action to create new tag
-      toast({ title: 'Info', description: 'New tag added (simulate)' });
-      setNewTagName('');
-    }
-  };
-
   const handleSubmit = async () => {
     try {
+      setIsSubmitting(true);
       const contentHTML = stateToHTML(contentState.getCurrentContent());
 
       const data = {
@@ -116,6 +112,17 @@ export function BlogManager({
         projectId: formData.projectId || null,
         tagIds: formData.tagIds,
       };
+      const parsed = blogSchema.safeParse(data);
+
+      if (!parsed.success) {
+        toast({
+          title: 'Validation error',
+          description: parsed.error.errors[0]?.message,
+          variant: 'destructive',
+        });
+        setIsSubmitting(false);
+        return;
+      }
 
       let updatedBlog;
       if (selectedBlog) {
@@ -146,12 +153,15 @@ export function BlogManager({
         description: 'Failed to save blog',
         variant: 'destructive',
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleDelete = async () => {
     if (!deleteConfirmId) return;
     try {
+      setIsSubmitting(true);
       const success = await deleteBlog(deleteConfirmId);
       if (success) {
         setBlogs(blogs.filter((blog) => blog.id !== deleteConfirmId));
@@ -165,6 +175,8 @@ export function BlogManager({
         variant: 'destructive',
       });
       setDeleteConfirmId(null);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -201,7 +213,6 @@ export function BlogManager({
       tagIds: [],
     });
     setContentState(EditorState.createEmpty());
-    setNewTagName('');
   };
 
   return (
@@ -219,10 +230,12 @@ export function BlogManager({
               <CardTitle>{blog.title}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p
-                className="text-sm truncate"
-                dangerouslySetInnerHTML={{ __html: blog.content }}
+              <RichText
+                className="text-sm truncate line-clamp-3"
+                html={blog.content}
               />
+
+              <Separator className="my-4" />
               <p className="text-sm">Slug: {blog.slug}</p>
               <p className="text-sm">
                 Published: {format(new Date(blog.publishedDate), 'PPP')}
@@ -251,7 +264,7 @@ export function BlogManager({
           <DialogHeader>
             <DialogTitle>{selectedBlog ? 'Edit' : 'Add'} Blog</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <fieldset disabled={isSubmitting} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="title">Title</Label>
               <Input
@@ -271,7 +284,7 @@ export function BlogManager({
               />
             </div>
             <div className="space-y-2">
-              <Label>Content (Rich Text)</Label>
+              <Label>Content</Label>
               <RichTextEditor
                 editorState={contentState}
                 onChange={setContentState}
@@ -342,21 +355,13 @@ export function BlogManager({
                   </div>
                 ))}
               </div>
-              <div className="flex gap-2 mt-2">
-                <Input
-                  placeholder="New tag name"
-                  value={newTagName}
-                  onChange={(e) => setNewTagName(e.target.value)}
-                />
-                <Button onClick={addNewTag}>Add New Tag</Button>
-              </div>
             </div>
-          </div>
+          </fieldset>
           <DialogFooter>
             <Button variant="outline" onClick={resetForm}>
               Cancel
             </Button>
-            <Button onClick={handleSubmit}>Save</Button>
+            <SubmitButton loading={isSubmitting} onClick={handleSubmit}>Save</SubmitButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -378,9 +383,9 @@ export function BlogManager({
             <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDelete}>
+            <SubmitButton loading={isSubmitting} variant="destructive" onClick={handleDelete}>
               Delete
-            </Button>
+            </SubmitButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
+import { Project } from '@repo/db/generated/prisma/client';
 
 import { host } from '@/config/host';
 import { siteConfig } from '@/config/site';
 import { fetchData } from '@/lib/core/fetch';
 import { getTranslations } from '@/lib/i18n';
-import { Project } from '@/components/project-list';
 
 
 
@@ -22,18 +22,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const project = await fetchData<Project>(`me/projects/${slug}`);
   if (!project) {
     return {
-      title: 'Project not found | Byte of me',
+      title: 'Project not found',
       description:
         'The project you’re looking for does not exist or has been removed.',
     };
   }
 
   const tags = Array.isArray((project as any)?.tags)
-    ? (project as any).tags.map((t: any) => t.name)
+    ? (project as any).tags.map((t: any) => t.tag.name)
     : [];
 
   const techstacks = Array.isArray((project as any)?.techstacks)
-    ? (project as any).techstacks.map((t: any) => t.name)
+    ? (project as any).techstacks.map((t: any) => t.techstack.name)
     : [];
 
   // De-duplicate keywords

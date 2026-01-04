@@ -5,12 +5,7 @@ import NextImage, { ImageProps as NextImageProps } from 'next/image';
 import { IMAGE_PLACEHOLDER } from '@/config/image-placeholder';
 import { cn } from '@/lib/utils';
 
-
-
-
-
-export interface ImageProps extends NextImageProps {
-}
+export type ImageProps = NextImageProps;
 
 export function Image({
   className,

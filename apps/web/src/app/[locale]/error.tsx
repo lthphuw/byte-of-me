@@ -47,11 +47,11 @@ export default function Error({
           </h1>
 
           <h1 className="mt-2 text-xl font-bold text-gray-800 dark:text-white">
-            {t('Something went wrong!')}
+            {t('somethingWentWrong')}
           </h1>
 
           <div className="flex flex-col flex-wrap gap-4 mt-2 md:flex-row">
-            <GoBackButton>{t('Go back')}</GoBackButton>
+            <GoBackButton>{t('goBack')}</GoBackButton>
             <Link href={Routes.Homepage}>
               <Button
                 variant="secondary"
@@ -59,7 +59,7 @@ export default function Error({
                   'w-full gap-1 py-3 text-lg md:w-auto md:py-2 md:text-base shadow-md'
                 )}
               >
-                <span>{t('Home')}</span>
+                <span>{t('home')}</span>
               </Button>
             </Link>
           </div>
@@ -67,7 +67,7 @@ export default function Error({
 
         <div className="flex flex-col items-center w-full max-w-2xl gap-4 mx-auto mt-8 p-6 rounded-lg shadow-xl bg-gray-100 dark:bg-gray-900">
           <h3 className="text-lg font-medium text-gray-700 dark:text-gray-200">
-            {t('Error Details')}
+            {t('errorDetails')}
           </h3>
           <div className="w-full text-left p-4 bg-gray-200 dark:bg-gray-800 rounded-md">
             <p className="text-sm text-gray-600 dark:text-gray-300">
@@ -86,7 +86,7 @@ export default function Error({
               onClick={handleCopyError}
             >
               <Icons.copy className="w-4 h-4" />
-              {copied ? t('Copied!') : t('Copy Error')}
+              {copied ? t('copied!') : t('copyError')}
             </Button>
 
             <Link href={'mailto:lthphuw@gmail.com'} target="_blank">
@@ -96,7 +96,7 @@ export default function Error({
                 onClick={handleCopyError}
               >
                 <Icons.report className="w-4 h-4" />
-                {t('Report for me')}
+                {t('reportForMe')}
               </Button>
             </Link>
           </div>

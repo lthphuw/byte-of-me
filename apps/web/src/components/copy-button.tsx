@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback } from 'react';
-import { BaseComponentProps } from '@/types';
 import { useClipboard } from '@mantine/hooks';
 import { AnimatePresence, motion } from 'framer-motion';
 

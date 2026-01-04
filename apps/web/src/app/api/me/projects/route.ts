@@ -1,15 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from 'next/server';
 import { prisma } from '@db/client';
 
-
-
 import { ApiResponse } from '@/types/api';
 import { siteConfig } from '@/config/site';
-
-
-
-
 
 export async function GET() {
   try {
@@ -32,6 +25,7 @@ export async function GET() {
         tags: { include: { tag: true } },
         techstacks: { include: { techstack: true } },
         coauthors: { include: { coauthor: true } },
+        blogs: true,
       },
     });
 
@@ -39,24 +33,16 @@ export async function GET() {
       id: proj.id,
       userId: proj.userId,
       title: proj.title,
+      slug: proj.slug,
       description: proj.description,
       githubLink: proj.githubLink,
       liveLink: proj.liveLink,
       startDate: proj.startDate,
       endDate: proj.endDate,
-      coauthors: proj.coauthors.map((it: any) => ({
-        id: it.coauthor.id,
-        fullname: it.coauthor.fullname,
-        email: it.coauthor.email,
-      })),
-      tags: proj.tags.map((ts: any) => ({
-        id: ts.tag.id,
-        name: ts.tag.name,
-      })),
-      techstacks: proj.techstacks.map((ts: any) => ({
-        id: ts.techstack.id,
-        name: ts.techstack.name,
-      })),
+      blogs: proj.blogs,
+      coauthors: proj.coauthors,
+      tags: proj.tags,
+      techstacks: proj.techstacks,
     }));
 
     return NextResponse.json({ data: res } as ApiResponse<any[]>, {

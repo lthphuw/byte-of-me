@@ -18,6 +18,7 @@
     }
   },
   "include": [
+    "src/types",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",

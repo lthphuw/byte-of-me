@@ -119,9 +119,9 @@ export function ModeToggle() {
                 )}
               >
                 {[
-                  { theme: 'light', icon: Icons.sun, label: t('Light') },
-                  { theme: 'dark', icon: Icons.moon, label: t('Dark') },
-                  { theme: 'system', icon: Icons.laptop, label: t('System') },
+                  { theme: 'light', icon: Icons.sun, label: t('light') },
+                  { theme: 'dark', icon: Icons.moon, label: t('dark') },
+                  { theme: 'system', icon: Icons.laptop, label: t('system') },
                 ].map((item, index) => (
                   <motion.li
                     key={item.theme}
