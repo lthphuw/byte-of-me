@@ -12,7 +12,7 @@ export interface SubItem {
   icon?: ReactNode;
 }
 
-export interface TimelineItemProps {
+export interface EducationTimelineItemProps {
   timeline: string | Date;
   title: ReactNode;
   message: ReactNode;
@@ -24,14 +24,14 @@ export interface TimelineItemProps {
   style?: React.CSSProperties;
 }
 
-export interface TimelineProps {
+export interface EducationTimelineProps {
   title?: string;
-  items: TimelineItemProps[];
+  items: EducationTimelineItemProps[];
   className?: string;
   style?: React.CSSProperties;
 }
 
-export function TimelineItem({
+export function EducationTimelineItem({
                                timeline,
                                title,
                                message,
@@ -41,8 +41,8 @@ export function TimelineItem({
                                subItems = [],
                                className,
                                style,
-                             }: TimelineItemProps) {
-  const displayTimeline =
+                             }: EducationTimelineItemProps) {
+  const displayEducationTimeline =
     typeof timeline === 'string'
       ? timeline
       : timeline.toLocaleDateString();
@@ -56,12 +56,12 @@ export function TimelineItem({
     >
       <div className="my-2 first:mt-0">
         <h3 className="text-sm md:text-base font-semibold uppercase tracking-wide text-muted-foreground">
-          {displayTimeline}
+          {displayEducationTimeline}
         </h3>
       </div>
 
       <div className={`flex gap-x-4 ${className}`} style={style}>
-        {/* Timeline rail */}
+        {/* EducationTimeline rail */}
         <div className="relative flex flex-col items-center">
           <motion.span
             initial={{ scaleY: 0 }}
@@ -155,13 +155,13 @@ export function TimelineItem({
 }
 
 
-export function Timeline({ title, items, className, style }: TimelineProps) {
+export function EducationTimeline({ title, items, className, style }: EducationTimelineProps) {
   return (
     <div className={`flex flex-col gap-3 ${className}`} style={style}>
       {title && <h2 className="text-xl md:text-2xl font-bold">{title}</h2>}
       <div className="space-y-4">
         {items.map((item, index) => (
-          <TimelineItem key={index} {...item} />
+          <EducationTimelineItem key={index} {...item} />
         ))}
       </div>
     </div>

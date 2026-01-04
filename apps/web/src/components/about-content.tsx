@@ -7,7 +7,7 @@ import { GraduationCap, Layers, User as UserIcon } from 'lucide-react';
 import { useTranslations } from '@/hooks/use-translations';
 import { RichText } from '@/components/rich-text';
 import { TechGroup, TechStackGroup } from '@/components/tech-stack-group';
-import { Timeline, TimelineItemProps } from '@/components/timeline';
+import { EducationTimeline, EducationTimelineItemProps } from '@/components/timeline';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 24 },
@@ -21,7 +21,7 @@ const fadeInUp = {
 type AboutContentProps = {
   user: User;
   techGroups: TechGroup[];
-  educationItems: TimelineItemProps[];
+  educationItems: EducationTimelineItemProps[];
 };
 
 export function AboutContent({
@@ -71,28 +71,18 @@ export function AboutContent({
             </div>
           </div>
 
-          <Timeline
+          <EducationTimeline
             items={educationItems.map((item) => ({
               ...item,
               message: (
-                <div
-                  className="prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{
-                    __html: item.message as string,
-                  }}
-                />
+                <RichText html={item.message as string} />
               ),
               subItems:
                 item.subItems &&
                 item.subItems.map((sub) => ({
                   title: sub.title,
                   message: (
-                    <div
-                      className="prose prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{
-                        __html: sub.message as string,
-                      }}
-                    />
+                    <RichText html={sub.message as string} />
                   ),
                 })),
             }))}

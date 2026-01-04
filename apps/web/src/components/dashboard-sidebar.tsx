@@ -3,7 +3,7 @@
 import { Link, usePathname } from '@/i18n/navigation';
 import {
   Briefcase,
-  Code2,
+  Code2, DatabaseZap,
   ExternalLink,
   FileText,
   GraduationCap,
@@ -19,6 +19,8 @@ import { signOut } from 'next-auth/react';
 import { useLocale } from 'next-intl';
 
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { clearCache } from '@/lib/actions/revalidate';
 
 const navItems = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
@@ -83,6 +85,16 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
 
         {/* ================= FOOTER ================= */}
         <div className="space-y-1 border-t p-3">
+          {/* View public site */}
+          <Button
+            variant={'ghost'}
+            className="flex self-stretch w-full gap-3 rounded-md justify-start"
+            onClick={() => clearCache()}
+          >
+            <DatabaseZap className={'size-4'}/>
+            Clear all caches
+          </Button>
+
           {/* View public site */}
           <Link
             target={'_blank'}

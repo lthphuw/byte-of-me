@@ -30,6 +30,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { RichTextEditor } from '@/components/rich-text-editor';
 import { TrashButton } from '@/components/trash-button';
+import { SubmitButton } from '@/components/submit-button';
 
 type Education = Prisma.EducationGetPayload<{
   include: { subItems: true };
@@ -58,6 +59,7 @@ export function EducationManager({
   const [iconFile, setIconFile] = useState<File | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const editorRef = useRef<Editor>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -100,6 +102,7 @@ export function EducationManager({
 
   const handleSubmit = async () => {
     try {
+      setIsSubmitting(true);
       let iconBase64 = formData.icon || null;
 
       if (iconFile) {
@@ -168,6 +171,8 @@ export function EducationManager({
         description: 'Failed to save education',
         variant: 'destructive',
       });
+    } finally {
+      setIsSubmitting(false)
     }
   };
 
@@ -278,7 +283,7 @@ export function EducationManager({
             </CardContent>
             <TrashButton
               className="absolute top-2 right-2"
-              removeFunc={() => {
+              onClick={() => {
                 setDeleteConfirmId(education.id);
               }}
             />
@@ -295,10 +300,10 @@ export function EducationManager({
           </DialogHeader>
 
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <fieldset disabled={isSubmitting} className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className={'font-bold'} htmlFor="timeline">
-                  Timeline
+                  EducationTimeline
                 </Label>
                 <Input
                   id="timeline"
@@ -319,7 +324,7 @@ export function EducationManager({
                   onChange={handleInputChange}
                 />
               </div>
-            </div>
+            </fieldset>
 
             <div className="space-y-2">
               <Label className={'font-bold'}>Message</Label>
@@ -366,7 +371,7 @@ export function EducationManager({
                           updateSubItemTitle(index, e.target.value)
                         }
                       />
-                      <TrashButton className={''} removeFunc={() => deleteSubItem(index)}/>
+                      <TrashButton className={''} onClick={() => deleteSubItem(index)}/>
                     </div>
 
                     <RichTextEditor
@@ -390,7 +395,7 @@ export function EducationManager({
             <Button variant="outline" onClick={resetForm}>
               Cancel
             </Button>
-            <Button onClick={handleSubmit}>Save</Button>
+            <SubmitButton loading={isSubmitting} onClick={handleSubmit}>Save</SubmitButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -412,9 +417,9 @@ export function EducationManager({
             <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
               No
             </Button>
-            <Button variant="destructive" onClick={handleDelete}>
+            <SubmitButton loading={isSubmitting} variant="destructive" onClick={handleDelete}>
               Yes
-            </Button>
+            </SubmitButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>

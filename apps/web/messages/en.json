@@ -172,5 +172,8 @@
     "letsWorkTogether": "Let’s work together",
     "emailMe": "Email me",
     "contactDetails": "Contact details"
+  },
+  "experience": {
+    "updating": "Updating..."
   }
 }

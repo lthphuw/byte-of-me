@@ -1,7 +1,7 @@
 import { fetchData } from '@/lib/core/fetch';
-import ExperienceTimeline, {
+import ExperienceContent, {
   CompanyExperience,
-} from '@/components/experience-timeline';
+} from '@/components/experience-content';
 import { ExperienceShell } from '@/components/shell';
 
 export default async function ExperiencesPage() {
@@ -9,7 +9,7 @@ export default async function ExperiencesPage() {
 
   return (
     <ExperienceShell>
-      <ExperienceTimeline experienceData={experiences} />
+      <ExperienceContent experienceData={experiences} />
     </ExperienceShell>
   );
 }

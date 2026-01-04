@@ -196,7 +196,10 @@ export function ProjectManager({
             </CardContent>
             <TrashButton
               className="absolute top-2 right-2"
-              removeFunc={() => setDeleteConfirmId(project.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setDeleteConfirmId(project.id);
+              }}
             />
           </Card>
         ))}

@@ -7,10 +7,9 @@ import { motion } from 'framer-motion';
 import { DateHelper } from '@/lib/core/date-helper';
 import { RichText } from '@/components/rich-text';
 import { TechstacksProject } from '@/components/techstacks-project';
-
-
-
-
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Building2, FolderCode } from 'lucide-react';
+import { useTranslations } from '@/hooks/use-translations';
 
 export type CompanyExperience = Prisma.ExperienceGetPayload<{
   include: {
@@ -27,22 +26,23 @@ export type CompanyExperience = Prisma.ExperienceGetPayload<{
   };
 }>;
 
-export type ExperienceTimelineProps = BaseComponentProps & {
+export type ExperienceContentProps = BaseComponentProps & {
   experienceData: CompanyExperience[];
 };
 
-export default function ExperienceTimeline({
+export default function ExperienceContent({
                                              experienceData,
                                              className,
                                              style,
-                                           }: ExperienceTimelineProps) {
+                                           }: ExperienceContentProps) {
+  const t = useTranslations('experience');
   return (
     <section
       className={`mx-auto max-w-4xl px-4 py-12 md:py-16 ${className}`}
       style={style}
     >
       <div className="space-y-14">
-        {experienceData.map((company, idx) => (
+        {experienceData?.length ? experienceData.map((company, idx) => (
           <motion.div
             key={idx}
             initial={{ opacity: 0, y: 24 }}
@@ -116,7 +116,16 @@ export default function ExperienceTimeline({
               </div>
             </div>
           </motion.div>
-        ))}
+        )) :
+          <Empty className={className} style={style}>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Building2 />
+              </EmptyMedia>
+              <EmptyTitle>{t('updating')}</EmptyTitle>
+            </EmptyHeader>
+          </Empty>
+        }
       </div>
     </section>
   );

@@ -14,26 +14,16 @@ export function RichText({ html, className, style }: RichTextProps) {
   return (
     <span
       className={cn(
-        'text-neutral-200 font-normal leading-7',
-
-        '[&_h1]:text-neutral-100 [&_h1]:text-2xl [&_h1]:font-semibold',
-        '[&_h2]:text-neutral-100 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:mt-6',
-        '[&_h3]:text-neutral-100 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-4',
+        // base
+        'font-normal leading-7',
 
         // paragraph
-        '[&_p]:my-3',
+        '[&_p]:my-3 [&_p]:text-neutral-800 dark:[&_p]:text-neutral-200',
 
-        // links
-        '[&_a]:text-neutral-300 hover:[&_a]:text-white',
-
-        // lists
-        '[&_li]:marker:text-neutral-500',
-
-        // code
-        '[&_code]:text-neutral-100 [&_code]:bg-white/5 [&_code]:px-1 [&_code]:rounded',
-
-        // blockquote
-        '[&_blockquote]:border-l-2 [&_blockquote]:border-neutral-500 [&_blockquote]:pl-4 [&_blockquote]:text-neutral-300',
+        // headings
+        '[&_h1]:text-neutral-900 dark:[&_h1]:text-neutral-100 [&_h1]:text-2xl [&_h1]:font-semibold',
+        '[&_h2]:text-neutral-900 dark:[&_h2]:text-neutral-100 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:mt-6',
+        '[&_h3]:text-neutral-900 dark:[&_h3]:text-neutral-100 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-4',
 
         className
       )}
