@@ -2,81 +2,93 @@
 
 import { User } from '@repo/db/generated/prisma/client';
 import { motion } from 'framer-motion';
+import { GraduationCap, Layers, User as UserIcon } from 'lucide-react';
 
-import { FloatingToc } from '@/components/floating-toc';
-import {
-  TechGroup,
-  TechStackExperience,
-} from '@/components/tech-stack-experience';
+import { useTranslations } from '@/hooks/use-translations';
+import { RichText } from '@/components/rich-text';
+import { TechGroup, TechStackGroup } from '@/components/tech-stack-group';
 import { Timeline, TimelineItemProps } from '@/components/timeline';
 
-
-
-
-
 const fadeInUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: 'easeOut' },
+  },
+} as any;
 
 type AboutContentProps = {
   user: User;
   techGroups: TechGroup[];
   educationItems: TimelineItemProps[];
-  tocItems: { href: string; label: string }[];
-  sectionTitles: { aboutMe: string; education: string; skills: string };
 };
 
-export default function AboutContent({
+export function AboutContent({
   user,
   techGroups,
   educationItems,
-  tocItems,
-  sectionTitles,
 }: AboutContentProps) {
+  const t = useTranslations();
 
   return (
     <div className="relative flex justify-center px-4 md:px-8 py-12">
-      <div className="max-w-4xl w-full space-y-12">
+      <div className="relative w-full max-w-4xl space-y-16">
+        {/* ABOUT ME */}
         <motion.section
           id="aboutme"
           variants={fadeInUp}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
+          className="space-y-4"
         >
-          <h2 className="text-xl md:text-3xl font-bold mb-4">
-            {sectionTitles.aboutMe}
-          </h2>
-          <div
-            className="text-sm md:text-md flex flex-col gap-3"
-            dangerouslySetInnerHTML={{ __html: user.aboutMe || '' }}
-          />
+          <div className="flex items-center gap-2">
+            <UserIcon className="size-4 md:size-6" />
+            <h2 className="text-xl md:text-3xl font-bold">
+              {t('about.section.aboutMe')}
+            </h2>
+          </div>
+
+          <RichText html={user.aboutMe} />
         </motion.section>
 
+        {/* EDUCATION */}
         <motion.section
           id="education"
           variants={fadeInUp}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
+          className="space-y-6"
         >
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <GraduationCap className="size-4 md:size-6" />
+              <h2 className="text-xl md:text-3xl font-bold">
+                {t('about.section.education')}
+              </h2>
+            </div>
+          </div>
+
           <Timeline
-            title={sectionTitles.education}
             items={educationItems.map((item) => ({
               ...item,
               message: (
                 <div
-                  dangerouslySetInnerHTML={{ __html: item.message as string }}
+                  className="prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{
+                    __html: item.message as string,
+                  }}
                 />
               ),
-              icon: item.icon,
               subItems:
                 item.subItems &&
                 item.subItems.map((sub) => ({
                   title: sub.title,
                   message: (
                     <div
+                      className="prose prose-sm max-w-none"
                       dangerouslySetInnerHTML={{
                         __html: sub.message as string,
                       }}
@@ -87,20 +99,26 @@ export default function AboutContent({
           />
         </motion.section>
 
+        {/* SKILLS */}
         <motion.section
           id="skills"
           variants={fadeInUp}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
+          className="space-y-6"
         >
-          <h2 className="text-xl md:text-3xl font-bold mb-4">
-            {sectionTitles.skills}
-          </h2>
-          <TechStackExperience groups={techGroups} />
-        </motion.section>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <Layers className="size-4 md:size-6" />
+              <h2 className="text-xl md:text-3xl font-bold">
+                {t('about.section.skillsTechStack')}
+              </h2>
+            </div>
+          </div>
 
-        <FloatingToc items={tocItems} />
+          <TechStackGroup groups={techGroups} />
+        </motion.section>
       </div>
     </div>
   );

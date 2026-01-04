@@ -1,10 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { NextRequest, NextResponse } from 'next/server';
 import { FlagType } from '@/types';
 import { prisma } from '@db/client';
-
-
 
 import { ApiResponse } from '@/types/api';
 import { supportedLanguages } from '@/config/language';

@@ -18,16 +18,16 @@ export default async function NotFound() {
               404
             </h1>
             <h1 className="mt-2 text-xl font-bold text-gray-800 dark:text-white">
-              {t('Oops! Page not found')}
+              {t('oopsPageNotFound')}
             </h1>
             <p className="text-gray-900 dark:text-gray-400">
-              {`${t('Sorry, we couldn’t find that page')}. ${t(
-                'Please check the URL or go back home'
+              {`${t('sorryWeCouldntFindThatPage')}. ${t(
+                'pleaseCheckTheUrlOrGoBackHome'
               )}.`}
             </p>
 
             <div className="flex flex-col flex-wrap gap-4 mt-2 md:flex-row">
-              <GoBackButton> {t('Go back')}</GoBackButton>
+              <GoBackButton> {t('goBack')}</GoBackButton>
               <Link href={Routes.Homepage}>
                 <Button
                   variant="secondary"
@@ -35,7 +35,7 @@ export default async function NotFound() {
                     'w-full gap-1 py-3 text-lg md:w-auto md:py-2 md:text-base shadow-md'
                   )}
                 >
-                  <span>{t('Home')}</span>
+                  <span>{t('home')}</span>
                 </Button>
               </Link>
             </div>
@@ -45,23 +45,23 @@ export default async function NotFound() {
             {[
               {
                 href: '/about',
-                title: t('About me'),
-                desc: t('Learn more about my background and journey') + '.',
-                link: t('Explore'),
+                title: t('aboutMe'),
+                desc: t('learnMoreAboutMyBackgroundAndJourney'),
+                link: t('explore'),
                 icon: <Icons.page />,
               },
               {
                 href: '/projects',
-                title: t('See my work'),
-                desc: t("Check out the projects I've built") + '.',
-                link: t('Explore'),
+                title: t('seeMyWork'),
+                desc: t('checkOutTheProjectsIveBuilt'),
+                link: t('explore'),
                 icon: <Icons.project />,
               },
               {
                 href: '/contact',
-                title: t('Contact'),
-                desc: t('Reach out for collaboration or questions') + '.',
-                link: t('Explore'),
+                title: t('contact'),
+                desc: t('reachOutForCollaborationOrQuestions') + '.',
+                link: t('explore'),
                 icon: <Icons.contact />,
               },
             ].map(({ icon, href, title, desc, link }) => (

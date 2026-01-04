@@ -1,74 +1,49 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import React, { FC } from 'react';
 import { Link } from '@/i18n/navigation';
-import { HTMLMotionProps, Variants, motion } from 'framer-motion';
-
-
+import { Prisma } from '@repo/db/generated/prisma/client';
+import { HTMLMotionProps, motion } from 'framer-motion';
 
 import { projectItemVariants } from '@/config/anim';
+import { Routes } from '@/config/global';
 import { cn } from '@/lib/utils';
 import { useTranslations } from '@/hooks/use-translations';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { EmptyProject } from '@/components/empty-project';
+import { RichText } from '@/components/rich-text';
 
 import { Icons } from './icons';
 import Loading from './loading';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 
-
-export interface Project {
-  id: string;
-  title: string;
-  description?: string | null;
-  article?: string | null;
-  githubLink?: string | null;
-  liveLink?: string | null;
-  startDate?: Date | null;
-  endDate?: Date | null;
-  techstacks: { name: string; id: string }[];
-  coauthors: { fullname: string; email: string }[];
-  tags: { name: string; id: string }[];
-}
+export type ProjectProps = Prisma.ProjectGetPayload<{
+  include: {
+    tags: { include: { tag: true } };
+    techstacks: { include: { techstack: true } };
+    coauthors: { include: { coauthor: true } };
+    blogs: true;
+  };
+}>;
 
 interface ProjectItemProps extends HTMLMotionProps<'div'> {
   index?: number;
-  project: Project;
-  onViewDetails?: (project: Project) => void;
+  project: ProjectProps;
+  onViewDetails?: (project: ProjectProps) => void;
 }
 
 interface ProjectListProps {
-  projects: Project[];
+  projects: ProjectProps[];
   isLoading?: boolean;
 }
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.1,
-      type: 'spring',
-      stiffness: 130,
-      damping: 10,
-    },
-  }),
-  exit: { opacity: 0, y: 10 },
-};
 
 const LoadingState: FC = () => (
   <div className="flex items-center gap-2 justify-center">
     <Loading />
-  </div>
-);
-
-const EmptyState: FC<{ t: any }> = ({ t }) => (
-  <div className="flex items-center gap-2 justify-center">
-    <Icons.scanSearch width={32} height={32} />
-    <span className="text-lg">{t('There are no projects yet')}</span>
   </div>
 );
 
@@ -102,8 +77,8 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
             {/* Tech Stacks */}
             <div className="flex gap-2 flex-wrap items-center">
               {visibleTechstacks.map((tech, index) => (
-                <Link key={index} href={'#'}>
-                  <Badge>{tech.name}</Badge>
+                <Link key={index} href={`${Routes.Projects}?techstack=${tech.techstack.slug}`}>
+                  <Badge>{tech.techstack.name}</Badge>
                 </Link>
               ))}
 
@@ -120,8 +95,8 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
                     </TooltipTrigger>
                     <TooltipContent>
                       {project.techstacks.slice(MAX_BADGES).map((tech) => (
-                        <span key={tech.id} className="block">
-                          {tech.name}
+                        <span key={tech.techstack.id} className="block">
+                          {tech.techstack.name}
                         </span>
                       ))}
                     </TooltipContent>
@@ -133,8 +108,8 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
             {/* Tags */}
             <div className="flex gap-2 flex-wrap items-center">
               {visibleTags.map((tag, index) => (
-                <Link key={index} href={'#'}>
-                  <Badge variant={'outline'}>{tag.name}</Badge>
+                <Link key={index} href={`${Routes.Projects}?tag=${tag.tag.slug}`}>
+                  <Badge variant={'outline'}>{tag.tag.name}</Badge>
                 </Link>
               ))}
 
@@ -151,8 +126,8 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
                     </TooltipTrigger>
                     <TooltipContent>
                       {project.tags.slice(MAX_BADGES).map((tag) => (
-                        <span key={tag.id} className="block">
-                          {tag.name}
+                        <span key={tag.tag.id} className="block">
+                          {tag.tag.name}
                         </span>
                       ))}
                     </TooltipContent>
@@ -161,21 +136,23 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
               )}
             </div>
 
-            <p className="text-sm line-clamp-3">
-              {project.description || 'No description'}
-            </p>
+            <RichText className="text-sm line-clamp-3" html={project.description || 'No description'} />
+
+            {/*<p className="text-sm line-clamp-3">*/}
+            {/*  {project.description || 'No description'}*/}
+            {/*</p>*/}
 
             {project.liveLink && (
               <div>
                 <span className="font-medium">Live: </span>
-                <a
+                <Link
                   href={project.liveLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline"
                 >
                   {project.liveLink}
-                </a>
+                </Link>
               </div>
             )}
 
@@ -186,14 +163,14 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
                     {`Co-author${project.coauthors.length > 1 ? 's' : ''}:`}
                   </span>
                   {project.coauthors.map((it, index) => (
-                    <React.Fragment key={it.email}>
+                    <React.Fragment key={it.coauthor.email}>
                       <a
-                        href={`mailto:${it.email}`}
+                        href={`mailto:${it.coauthor.email}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"
                       >
-                        {it.fullname}
+                        {it.coauthor.fullname}
                       </a>
                       {index < project.coauthors.length - 1 && <span>,</span>}
                     </React.Fragment>
@@ -204,18 +181,19 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
             <div className="w-full space-y-2 text-sm mt-auto md:self-end">
               <div className="mt-2 flex flex-col items-stretch gap-4 md:flex-row md:flex-nowrap">
                 <Link
-                  href={project.article ?? `/projects/${project.id}`}
-                  className="w-full md:w-1/2"
+                  href={`${Routes.Projects}/${project.slug}`}
+                  className={cn('w-full md:w-1/2', project.blogs?.length && project.slug ? '' : 'pointer-events-none opacity-75')}
                 >
                   <Button className="w-full gap-2 py-3 text-lg md:py-2 md:text-base">
                     <Icons.article />
-                    <span className="line-clamp-1">{t('Details')}</span>
+                    <span className="line-clamp-1">{t('details')}</span>
                   </Button>
                 </Link>
+
                 <Link
                   href={project.githubLink ?? '#'}
                   target="_blank"
-                  className="w-full md:w-1/2"
+                  className={cn('w-full md:w-1/2', project.githubLink ? '' : 'pointer-events-none opacity-75')}
                 >
                   <Button
                     variant="secondary"
@@ -224,7 +202,7 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
                     )}
                   >
                     <Icons.github />
-                    <span>{t('GitHub')}</span>
+                    <span>{t('gitHub')}</span>
                   </Button>
                 </Link>
               </div>
@@ -237,14 +215,12 @@ export const ProjectItem: FC<ProjectItemProps> = React.memo(
 );
 
 export const ProjectList: FC<ProjectListProps> = ({ isLoading, projects }) => {
-  const t = useTranslations('project');
-
   if (isLoading) {
     return <LoadingState />;
   }
 
   if (!Array.isArray(projects) || projects.length === 0) {
-    return <EmptyState t={t} />;
+    return <EmptyProject />;
   }
 
   return (

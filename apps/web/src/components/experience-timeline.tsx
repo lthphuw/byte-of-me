@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { BaseComponentProps } from '@/types';
 import { Prisma } from '@repo/db/generated/prisma/client';
 import { motion } from 'framer-motion';
 

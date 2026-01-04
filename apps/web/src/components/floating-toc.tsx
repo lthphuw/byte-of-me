@@ -25,14 +25,15 @@ import {
   TooltipTrigger,
 } from './ui/tooltip';
 
-export interface TocItem {
+export type TocItem = {
   href: string;
   label: string;
-}
+};
 
-interface FloatingTocProps {
+export type FloatingTocProps = {
   items: TocItem[];
-}
+  onItemClick?: () => void;
+};
 
 const panelVariants: Variants = {
   hidden: { opacity: 0, x: 30 },
@@ -54,7 +55,7 @@ const panelVariants: Variants = {
   },
 };
 
-export function FloatingToc({ items }: FloatingTocProps) {
+export function FloatingToc({ items, onItemClick }: FloatingTocProps) {
   const t = useTranslations('global');
   const { resolvedTheme: theme } = useTheme();
   const [open, setOpen] = useState(false);
@@ -95,6 +96,7 @@ export function FloatingToc({ items }: FloatingTocProps) {
                 <div className="flex flex-col items-center justify-center">
                   {items.map((item, index) => (
                     <Link
+                      onClick={onItemClick}
                       key={index}
                       href={item.href}
                       className="my-1.5 h-6 w-6 flex items-center justify-center text-sm hover:text-blue-600 transition-colors duration-200 italic"
@@ -109,7 +111,7 @@ export function FloatingToc({ items }: FloatingTocProps) {
 
             <TooltipContent sideOffset={16} side="top">
               <div>
-                <p>{t('Table of Content')}</p>
+                <p>{t('tableOfContent')}</p>
               </div>
             </TooltipContent>
           </Tooltip>
@@ -144,7 +146,7 @@ export function FloatingToc({ items }: FloatingTocProps) {
                 className="w-56 md:w-72 max-h-[80vh] overflow-y-auto px-4 py-5"
               >
                 <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-900 dark:text-gray-100 mb-4">
-                  {t('Table of Content')}
+                  {t('tableOfContent')}
                 </h3>
                 <ul className="space-y-3 text-sm">
                   {items.map((item, i) => (

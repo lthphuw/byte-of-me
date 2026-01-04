@@ -13,24 +13,24 @@ export const globalConfig: GlobalConfig = {
   header: {
     nav: [
       {
-        title: 'About',
+        title: 'about',
         href: Routes.About,
       },
       {
-        title: 'Experience',
+        title: 'experience',
         href: Routes.Experience,
       },
       {
-        title: 'Projects',
+        title: 'projects',
         href: Routes.Projects,
       },
       {
-        title: 'Anything about me',
+        title: 'anythingAboutMe',
         href: Routes.Chat,
         onlyMobile: true,
       },
       {
-        title: "Let's talk",
+        title: 'letsTalk',
         href: Routes.Contact,
       },
     ],
@@ -54,7 +54,7 @@ export const globalConfig: GlobalConfig = {
         href: Routes.Contact,
       },
       {
-        title: 'Anything about me',
+        title: 'anythingAboutMe',
         href: Routes.Chat,
       },
     ],

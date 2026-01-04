@@ -28,34 +28,34 @@
     }
   },
   "global": {
-    "Table of Content": "Table of Content",
+    "tableOfContent": "Table of Content",
     "i18nToggle": {
-      "Toggle language": "Toggle language",
-      "Vietnamese": "Vietnamese",
-      "English": "English",
-      "French": "French"
+      "toggleLanguage": "Toggle language",
+      "vietnamese": "Vietnamese",
+      "english": "English",
+      "french": "French"
     },
     "modeToggle": {
-      "Toggle theme": "Toggle theme",
-      "Light": "Light",
-      "Dark": "Dark",
-      "System": "System"
+      "toggleTheme": "Toggle theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
     },
     "search": {
-      "Search projects": "Search projects",
-      "All": "All"
+      "searchProjects": "Search projects",
+      "all": "All"
     },
     "header": {
       "nav": {
-        "About": "About",
-        "Experience": "Experience",
-        "Projects": "Projects",
-        "Hobbies": "Hobbies",
-        "More": "More",
-        "Let's talk": "Let's talk",
-        "Ask me": "Ask Me",
-        "Anything about me": "Anything about me",
-        "CV": "CV"
+        "about": "About",
+        "experience": "Experience",
+        "projects": "Projects",
+        "hobbies": "Hobbies",
+        "more": "More",
+        "letsTalk": "Let's talk",
+        "askMe": "Ask Me",
+        "anythingAboutMe": "Anything about me",
+        "cv": "CV"
       }
     },
     "footer": {
@@ -67,7 +67,7 @@
       "projects": "Projects",
       "experience": "Experience",
       "cv": "CV",
-      "Anything about me": "Anything about me",
+      "anythingAboutMe": "Anything about me",
       "contact": "Contact",
       "connect": "Connect",
       "email": "Email",
@@ -77,132 +77,81 @@
     }
   },
   "notFound": {
-    "404 - Page Not Found": "404 - Page Not Found",
-    "Oops! Page not found": "Oops! Page not found",
-    "Sorry, we couldn’t find that page": "Sorry, we couldn’t find that page",
-    "Please check the URL or go back home": "Please check the URL or go back home",
-    "Go back": "Go back",
-    "Home": "Home",
-    "About me": "About me",
-    "Learn more about my background and journey": "Learn more about my background and journey",
-    "See my work": "See my work",
-    "Check out the projects I've built": "Check out the projects I've built",
-    "Contact": "Contact",
-    "Reach out for collaboration or questions": "Reach out for collaboration or questions",
-    "Explore": "Explore"
+    "pageNotFound404": "404 - Page Not Found",
+    "oopsPageNotFound": "Oops! Page not found",
+    "sorryWeCouldntFindThatPage": "Sorry, we couldn’t find that page",
+    "pleaseCheckTheUrlOrGoBackHome": "Please check the URL or go back home",
+    "goBack": "Go back",
+    "home": "Home",
+    "aboutMe": "About me",
+    "learnMoreAboutMyBackgroundAndJourney": "Learn more about my background and journey",
+    "seeMyWork": "See my work",
+    "checkOutTheProjectsIveBuilt": "Check out the projects I've built",
+    "contact": "Contact",
+    "reachOutForCollaborationOrQuestions": "Reach out for collaboration or questions",
+    "explore": "Explore"
   },
   "error": {
-    "Something went wrong!": "Something went wrong!",
-    "Go back": "Go back",
-    "Home": "Home",
-    "Report for me": "Report this error",
-    "Report for me about this error": "Send a report about this error",
-    "Send": "Send",
-    "Error Details": "Error Details",
-    "Copy Error": "Copy Error",
-    "Copied!": "Copied!",
+    "somethingWentWrong": "Something went wrong!",
+    "goBack": "Go back",
+    "home": "Home",
+    "reportForMe": "Report this error",
+    "reportForMeAboutThisError": "Send a report about this error",
+    "send": "Send",
+    "errorDetails": "Error Details",
+    "copyError": "Copy Error",
+    "copied": "Copied!",
     "missingQuestion": "You haven't entered a question. Please try again.",
     "invalidInput": "Your question may contain inappropriate content. Please check and try again.",
     "missingThreadId": "Missing conversation ID. Please refresh the page and try again.",
     "failedToDelete": "Something went wrong while deleting the conversation. Please try again later or refresh the page."
   },
-  "home": {
-    "See my work": "See my work",
-    "README": "README",
-    "greeting": "Hi, I'm Phu",
-    "tagline": "Code, career, controller — one byte at a time",
-    "bannerAlt": "Taken at the Vietnam Military History Museum, this 2024 painting is titled “Sống bám đá, chết hoá đá” — “Cling to rocks in life, turn to stone in death”",
-    "bannerCaption": "Taken at the Vietnam Military History Museum, this 2024 painting is titled “Sống bám đá, chết hoá đá” — “Cling to rocks in life, turn to stone in death”",
-    "quote": "I enjoy learning new things and have a strong interest in open - source projects, where I often discover useful ideas and best practicesThese experiences help me build better and more efficient solutions For me, growth doesn’t just come from work—it also comes from self - exploration and continuous learningThat’s what truly drives my development"
-  },
   "about": {
     "section": {
-      "About me": "About me",
-      "Education": "Education",
-      "Skills / Tech Stack": "Skills / Tech Stack"
-    },
-    "aboutMe": "I'm a junior full-stack developer, primarily focused on backend development I enjoy building scalable, high-performance systems and have hands-on experience with Golang, Nodejs, and Python While my main focus is backend, I’ve also worked with frontend technologies like Reactjs and Nextjs I have experience in researching and developing AI models, and I'm always eager to learn and grow through real-world projects\n\nIn the future, I aim to deepen my expertise in system design, distributed systems, and AI integration — building reliable, efficient, and intelligent software at scale",
-    "education": {
-      "bachelorTitle": "Bachelor of Science (Honors Program) in Information Technology",
-      "bachelorMessage": "University of Science - VNUHCM, Ho Chi Minh City, Vietnam",
-      "bachelorLogoAlt": "HCMUS Logo",
-      "highSchoolTitle": "High School Diploma",
-      "highSchoolMessage": "Phan Chau Trinh High School, Da Nang",
-      "highSchoolLogoAlt": "High School",
-      "academicPerformanceTitle": "Academic Performance",
-      "academicPerformanceMessage": "Graduated with a GPA of 867/10",
-      "publishedPaperTitle": "Published Paper at CV4DC 2024",
-      "publishedPaperMessagePart1": "Published paper at",
-      "publishedPaperLinkText": "Workshop on Computer Vision for Developing Countries (CV4DC) at ACCV 2024",
-      "publishedPaperTitleText": "Abnormality Detection in Medical Image Based on Visual-Language Model",
-      "publishedPaperOral": "Oral",
-      "publishedPaperViewLink": "View Paper",
-      "publishedPaperAuthors": "Authors: Hoang-Phu Thanh-Luong, Van-Thai Vu, and Prof Quoc-Ngoc Ly (mentor)",
-      "thesisScoreTitle": "Thesis Score",
-      "thesisScoreMessage": "Thesis Score: 10/10 (Excellent)",
-      "researchAwardTitle": "Outstanding Student Research Award",
-      "researchAwardMessage": "Awarded for excellence in scientific research",
-      "entranceExamTitle": "Top 6 Highest Entrance Exam Scorers",
-      "entranceExamMessage": "Ranked in the top 6 highest entrance exam scorers in 2020",
-      "aiChallengeTitle": "AI Challenge 2023 (HCMC)",
-      "aiChallengeMessage": "Consolation prize"
+      "aboutMe": "About me",
+      "education": "Education",
+      "skillsTechStack": "Skills / Tech Stack"
     },
     "techStack": {
       "frameworksTitle": "Frameworks",
       "librariesTitle": "Libraries",
       "programmingLanguagesTitle": "Programming Languages",
-      "databaseTitle": "Database",
-      "gin": "Gin",
-      "grpc": "gRPC",
-      "nodejs": "NodeJS",
-      "fastapi": "FastAPI",
-      "nextjs": "NextJS",
-      "reactjs": "ReactJS",
-      "framerMotion": "Framer Motion",
-      "floatingUi": "Floating UI",
-      "go": "Go",
-      "python": "Python",
-      "typescript": "TypeScript",
-      "javascript": "Javascript",
-      "mongodb": "MongoDB",
-      "postgresql": "Postgresql",
-      "cache": "Cache",
-      "reactBit": "React Bits"
+      "databaseTitle": "Database"
     }
   },
   "project": {
-    "Details": "Details",
-    "GitHub": "GitHub",
-    "All": "All",
-    "There are no projects yet": "There are no projects yet",
-    "No projects match your search": "No projects match your search",
-    "Loading project list": "Loading project list",
-    "Failed to load project list": "Failed to load project list Please try again",
-    "Back to projects": "Back to projects"
+    "details": "Details",
+    "gitHub": "GitHub",
+    "all": "All",
+    "thereAreNoProjectsYet": "There are no projects yet",
+    "noProjectsMatchYourSearch": "No projects match your search",
+    "loadingProjectList": "Loading project list",
+    "failedToLoadProjectList": "Failed to load project list Please try again",
+    "backToProjects": "Back to projects"
   },
-  "contact":{
-    "Let’s work together": "Let’s work together",
-    "Feel free to reach out through any channel": "Feel free to reach out through any channel",
-    "Send me an email": "Send me an email",
-    "LinkedIn": "LinkedIn",
-    "GitHub": "GitHub"
+  "contact": {
+    "letsWorkTogether": "Let’s work together",
+    "feelFreeToReachOutThroughAnyChannel": "Feel free to reach out through any channel",
+    "sendMeAnEmail": "Send me an email",
+    "linkedIn": "LinkedIn",
+    "gitHub": "GitHub"
   },
   "chat": {
-    "Ask Phu's Assistant": "Ask Phu's Assistant",
-    "Asking": "Asking",
-    "Ask": "Ask",
-    "Clear chat": "Clear chat",
-    "Ask something": "Ask something",
-    "Copy": "Copy",
+    "askPhusAssistant": "Ask Phu's Assistant",
+    "asking": "Asking",
+    "ask": "Ask",
+    "clearChat": "Clear chat",
+    "askSomething": "Ask something",
+    "copy": "Copy",
     "model": {
       "desc": {
-        "gemini-20-flash": "Fast lightweight LLM by Google, optimized for real-time interactions",
-        "gemini-20-flash-lite": "Smaller, even faster version of Gemini Flash for low-latency tasks",
-        "gemini-25-flash": "Updated fast-response model for interactive tasks, part of Gemini 2.5 series",
-        "jina-embedding-v3": "Multilingual embedding model optimized for speed and dense retrieval",
-        "text-embedding-004": "High-quality English embedding model for semantic search and retrieval",
-        "no-reranker": "No re-ranking applied. Top documents are selected based only on vector similarity.",
-        "cohere-rerank-v35": "Cohere Rerank v3.5 ranks documents by relevance to a query across 100+ languages, boosting RAG and search performance."
+        "gemini20Flash": "Fast lightweight LLM by Google, optimized for real-time interactions",
+        "gemini20FlashLite": "Smaller, even faster version of Gemini Flash for low-latency tasks",
+        "gemini25Flash": "Updated fast-response model for interactive tasks, part of Gemini 2.5 series",
+        "jinaEmbeddingV3": "Multilingual embedding model optimized for speed and dense retrieval",
+        "textEmbedding004": "High-quality English embedding model for semantic search and retrieval",
+        "noReranker": "No re-ranking applied. Top documents are selected based only on vector similarity.",
+        "cohereRerankV35": "Cohere Rerank v3.5 ranks documents by relevance to a query across 100+ languages, boosting RAG and search performance."
       }
     },
     "examples": {
@@ -212,20 +161,16 @@
     }
   },
   "homepage": {
-    "My story": "My story",
-    "More about my journey": "More about my journey",
-
-    "Selected projects": "Selected projects",
-    "A few things I’ve built recently": "A few things I’ve built recently",
-
-    "View project": "View project",
-    "View all projects": "View all projects",
-
-    "Have an idea in mind?": "Have an idea in mind?",
-    "Always interested in thoughtful projects and good collaboration.": "Always interested in thoughtful projects and good collaboration.",
-
-    "Let’s work together": "Let’s work together",
-    "Email me": "Email me",
-    "Contact details": "Contact details"
+    "myStory": "My story",
+    "moreAboutMyJourney": "More about my journey",
+    "selectedProjects": "Selected projects",
+    "aFewThingsIveBuiltRecently": "A few things I’ve built recently",
+    "viewProject": "View project",
+    "viewAllProjects": "View all projects",
+    "haveAnIdeaInMind": "Have an idea in mind?",
+    "alwaysInterestedInThoughtfulProjectsAndGoodCollaboration": "Always interested in thoughtful projects and good collaboration.",
+    "letsWorkTogether": "Let’s work together",
+    "emailMe": "Email me",
+    "contactDetails": "Contact details"
   }
 }

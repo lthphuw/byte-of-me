@@ -1,7 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { TechStack } from '@repo/db/generated/prisma/client';
 import { Pencil, Search, Trash2 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 
 import {
   addTechStack,
@@ -9,6 +12,7 @@ import {
   updateTechStack,
 } from '@/lib/actions/tech-stack';
 import { FileHelper } from '@/lib/core/file-helper';
+import { TechStackForm, techStackSchema } from '@/lib/schemas/tech-stack';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -29,7 +33,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
-import { TechStack } from '@repo/db/generated/prisma/client';
+import { SubmitButton } from '@/components/submit-button';
 
 export function TechStackManager({
   initialTechStacks,
@@ -37,20 +41,30 @@ export function TechStackManager({
   initialTechStacks: TechStack[];
 }) {
   const { toast } = useToast();
-  const [techStacks, setTechStacks] = useState<TechStack[]>(initialTechStacks);
+
+  const [techStacks, setTechStacks] = useState(initialTechStacks);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTechStack, setSelectedTechStack] = useState<TechStack | null>(
     null
   );
-  const [isAdding, setIsAdding] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    slug: '',
-    name: '',
-    group: '',
-    logo: '',
-  });
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting, errors },
+  } = useForm<TechStackForm>({
+    resolver: zodResolver(techStackSchema),
+    defaultValues: {
+      slug: '',
+      name: '',
+      group: '',
+      logo: null,
+    },
+  });
 
   const filteredTechStacks = techStacks.filter(
     (tech) =>
@@ -58,69 +72,68 @@ export function TechStackManager({
       tech.group.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      setLogoFile(e.target.files[0]);
-    }
-  };
-
-  const resetForm = () => {
+  const openAddDialog = () => {
     setSelectedTechStack(null);
-    setIsAdding(false);
-    setFormData({
-      slug: '',
-      name: '',
-      group: '',
-      logo: '',
+    reset();
+    setLogoFile(null);
+    setIsDialogOpen(true);
+  };
+
+  const openEditDialog = (tech: TechStack) => {
+    setSelectedTechStack(tech);
+    reset({
+      slug: tech.slug,
+      name: tech.name,
+      group: tech.group,
+      logo: tech.logo,
     });
     setLogoFile(null);
+    setIsDialogOpen(true);
   };
 
-  const handleSubmit = async () => {
+  const closeDialog = () => {
+    setIsDialogOpen(false);
+    setSelectedTechStack(null);
+    reset();
+    setLogoFile(null);
+  };
+  const onSubmit = async (values: TechStackForm) => {
     try {
-      let logoBase64 = formData.logo;
+      let logoBase64 = values.logo;
+
       if (logoFile) {
         logoBase64 = await FileHelper.fileToBase64(logoFile);
       }
 
-      const data = {
-        slug: formData.slug,
-        name: formData.name,
-        group: formData.group,
+      const payload = {
+        ...values,
         logo: logoBase64 || null,
       };
 
-      let updatedTech;
-      if (selectedTechStack) {
-        updatedTech = await updateTechStack({
-          id: selectedTechStack.id,
-          ...data,
-        });
-      } else {
-        updatedTech = await addTechStack(data);
-      }
+      const updatedTech = selectedTechStack
+        ? await updateTechStack({
+            id: selectedTechStack.id,
+            ...payload,
+          })
+        : await addTechStack(payload);
 
-      if (updatedTech) {
-        const updatedList = selectedTechStack
-          ? techStacks.map((tech) =>
-              tech.id === selectedTechStack.id ? updatedTech : tech
-            )
-          : [...techStacks, updatedTech];
+      setTechStacks((prev) =>
+        updatedTech
+          ? selectedTechStack
+            ? prev.map((t) => (t.id === updatedTech.id ? updatedTech : t))
+            : [...prev, updatedTech]
+          : prev
+      );
 
-        setTechStacks(updatedList);
-        toast({
-          title: 'Success',
-          description: `Tech stack ${
-            selectedTechStack ? 'updated' : 'added'
-          } successfully`,
-        });
-        resetForm();
-      }
-    } catch (error) {
+      toast({
+        title: 'Success',
+        description: `Tech stack ${
+          selectedTechStack ? 'updated' : 'added'
+        } successfully`,
+      });
+
+      closeDialog();
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to save tech stack',
@@ -131,44 +144,22 @@ export function TechStackManager({
 
   const handleDelete = async () => {
     if (!deleteConfirmId) return;
+
     try {
-      const success = await deleteTechStack(deleteConfirmId);
-      if (success) {
-        setTechStacks(techStacks.filter((tech) => tech.id !== deleteConfirmId));
-        toast({
-          title: 'Success',
-          description: 'Tech stack deleted successfully',
-        });
-        setDeleteConfirmId(null);
-      }
-    } catch (error) {
+      await deleteTechStack(deleteConfirmId);
+      setTechStacks((prev) => prev.filter((t) => t.id !== deleteConfirmId));
       toast({
-        title: 'Error',
-        description: 'Failed to delete tech stack',
-        variant: 'destructive',
+        title: 'Deleted',
+        description: 'Tech stack deleted successfully',
       });
+    } finally {
       setDeleteConfirmId(null);
     }
   };
 
-  const openEditDialog = (techStack: TechStack) => {
-    setSelectedTechStack(techStack);
-    setFormData({
-      slug: techStack.slug,
-      name: techStack.name,
-      group: techStack.group,
-      logo: techStack.logo || '',
-    });
-    setLogoFile(null);
-  };
-
-  const openAddDialog = () => {
-    resetForm();
-    setIsAdding(true);
-  };
-
   return (
     <div className="space-y-6">
+      {/* Search */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -179,9 +170,10 @@ export function TechStackManager({
             className="pl-10"
           />
         </div>
-        <Button onClick={openAddDialog}>Add New Tech Stack</Button>
+        <Button onClick={openAddDialog}>Add Tech</Button>
       </div>
 
+      {/* Table */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -190,7 +182,7 @@ export function TechStackManager({
               <TableHead>Slug</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Group</TableHead>
-              <TableHead className="w-[100px]">Actions</TableHead>
+              <TableHead className="w-[90px]" />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -198,11 +190,7 @@ export function TechStackManager({
               <TableRow key={tech.id}>
                 <TableCell>
                   {tech.logo ? (
-                    <img
-                      src={tech.logo}
-                      alt={tech.name}
-                      className="w-8 h-8 object-contain"
-                    />
+                    <img src={tech.logo} className="h-6 w-6" />
                   ) : (
                     '-'
                   )}
@@ -210,17 +198,17 @@ export function TechStackManager({
                 <TableCell>{tech.slug}</TableCell>
                 <TableCell>{tech.name}</TableCell>
                 <TableCell>{tech.group}</TableCell>
-                <TableCell className="flex gap-2">
+                <TableCell className="flex gap-1">
                   <Button
-                    variant="ghost"
                     size="icon"
+                    variant="ghost"
                     onClick={() => openEditDialog(tech)}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
                   <Button
-                    variant="ghost"
                     size="icon"
+                    variant="ghost"
                     onClick={() => setDeleteConfirmId(tech.id)}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -228,102 +216,79 @@ export function TechStackManager({
                 </TableCell>
               </TableRow>
             ))}
-            {filteredTechStacks.length === 0 && (
-              <TableRow>
-                <TableCell
-                  colSpan={4}
-                  className="text-center text-muted-foreground"
-                >
-                  No tech stacks found
-                </TableCell>
-              </TableRow>
-            )}
           </TableBody>
         </Table>
       </div>
 
-      {/* Add/Edit Dialog */}
-      <Dialog open={!!selectedTechStack || isAdding} onOpenChange={resetForm}>
+      {/* Add / Edit Dialog */}
+      <Dialog
+        open={isDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) closeDialog();
+        }}
+      >
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {selectedTechStack ? 'Edit' : 'Add'} Tech Stack
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="slug">Slug</Label>
-              <Input
-                id="slug"
-                name="slug"
-                value={formData.slug}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="group">Group</Label>
-              <Input
-                id="group"
-                name="group"
-                value={formData.group}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="logo">Logo</Label>
-              <Input
-                id="logo"
-                type="file"
-                accept="image/*"
-                onChange={handleLogoChange}
-              />
-              {formData.logo && (
-                <img
-                  src={formData.logo}
-                  alt="Logo Preview"
-                  className="w-16 h-16 object-contain"
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <fieldset disabled={isSubmitting} className="space-y-4">
+              <DialogHeader>
+                <DialogTitle>
+                  {selectedTechStack ? 'Edit' : 'Add'} Tech Stack
+                </DialogTitle>
+              </DialogHeader>
+
+              {['slug', 'name', 'group'].map((field) => (
+                <div key={field} className="space-y-1">
+                  <Label>{field}</Label>
+                  <Input {...register(field as any)} />
+                  {errors[field as keyof typeof errors] && (
+                    <p className="text-xs text-destructive">
+                      {errors[field as keyof typeof errors]?.message}
+                    </p>
+                  )}
+                </div>
+              ))}
+
+              <div className="space-y-1">
+                <Label>Logo</Label>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)}
                 />
-              )}
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={resetForm}>
-              Cancel
-            </Button>
-            <Button onClick={handleSubmit}>Save</Button>
-          </DialogFooter>
+              </div>
+
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={closeDialog}>
+                  Cancel
+                </Button>
+                <SubmitButton loading={isSubmitting}>Save</SubmitButton>
+              </DialogFooter>
+            </fieldset>
+          </form>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Dialog */}
       <Dialog
         open={!!deleteConfirmId}
         onOpenChange={() => setDeleteConfirmId(null)}
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirm Deletion</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this tech stack? This action
-              cannot be undone.
-            </DialogDescription>
+            <DialogTitle>Confirm delete</DialogTitle>
+            <DialogDescription>This action cannot be undone.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDelete}>
+            <SubmitButton
+              loading={false}
+              variant="destructive"
+              onClick={handleDelete}
+            >
               Delete
-            </Button>
+            </SubmitButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>

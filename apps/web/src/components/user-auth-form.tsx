@@ -6,11 +6,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 
-import { cn } from '@/lib/utils';
 import {
   UserAuthLoginSchema,
   userAuthLoginSchema,
-} from '@/lib/validations/user-auth-login';
+} from '@/lib/schemas/user-auth-login';
+import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
 import {
   Form,

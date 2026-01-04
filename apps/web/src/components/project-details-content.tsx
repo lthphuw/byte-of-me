@@ -1,151 +1,154 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useState } from 'react';
 import { Link } from '@/i18n/navigation';
-import { useWindowScroll } from '@mantine/hooks';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import rangeParser from 'parse-numeric-range';
-import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import rehypeRaw from 'rehype-raw';
-import rehypeSlug from 'rehype-slug';
-import remarkGfm from 'remark-gfm';
-import { Pluggable } from 'unified';
+import { Prisma } from '@repo/db/generated/prisma/client';
+import { SlashIcon } from 'lucide-react';
 
 import { Routes } from '@/config/global';
+import { extractToc } from '@/lib/core/markdown';
 import { cn } from '@/lib/utils';
-import { useMediaQuery } from '@/hooks/use-media-query';
-import { useTranslations } from '@/hooks/use-translations';
-import { FloatingToc, TocItem } from '@/components/floating-toc';
+import { Badge } from '@/components/ui/badge';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { Card } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { BlogContent } from '@/components/blog-content';
+import { FloatingToc } from '@/components/floating-toc';
 
-import { Icons } from './icons';
-import { Button } from './ui/button';
+export type Project = Prisma.ProjectGetPayload<{
+  include: {
+    blogs: true;
+    techstacks: {
+      include: { techstack: true };
+    };
+    tags: {
+      include: { tag: true };
+    };
+  };
+}>;
 
-export interface ProjectDetailsContentProps {
-  readme: string;
-  tocItems: TocItem[];
-}
+export type ProjectDetailsContentProps = BaseComponentProps & {
+  project: Project;
+};
 
 export function ProjectDetailsContent({
-  readme,
-  tocItems,
+  project,
+  className,
 }: ProjectDetailsContentProps) {
-  const isMobile = useMediaQuery('only screen and (max-width : 768px)');
-  const t = useTranslations('project');
-  const [position] = useWindowScroll();
-  const compactBack = useMemo(() => position.y > 30, [position]);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start end', 'end start'],
-  });
-  const x = useTransform(scrollYProgress, [0, 0.15], [32, 0]);
+  const [activeBlogId, setActiveBlogId] = useState(project.blogs?.[0]?.id);
 
   return (
-    <>
-      <motion.div
-        style={{ x }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        className={cn(
-          'fixed top-24 left-8 md:left-[80px] md:top-36 z-10',
-          compactBack && 'left-2 top-32 md:left-[80px]',
-          isMobile && compactBack && 'hidden'
-        )}
-      >
-        {
-          <Link href={Routes.Projects}>
-            <Button
-              variant={isMobile ? 'link' : 'ghost'}
-              className={cn('flex gap-2 items-center px-4 py-2 rounded-full')}
-            >
-              <Icons.arrowLeft size={32 * (isMobile ? 0.75 : 1)} />
+    <div
+      className={cn(
+        'space-y-6 container mx-auto px-4 sm:px-6 lg:px-8',
+        className
+      )}
+    >
+      {/* Breadcrumb */}
+      <Breadcrumb>
+        <BreadcrumbList className="flex flex-wrap">
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href={Routes.Homepage}>Home</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon className="h-4 w-4" />
+          </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href={Routes.Projects}>Projects</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon className="h-4 w-4" />
+          </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbPage>{project.title}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
-              <motion.span
-                className={cn(
-                  'text-base whitespace-nowrap',
-                  compactBack && 'hidden'
-                )}
-              >
-                {t('Back to projects')}
-              </motion.span>
-            </Button>
-          </Link>
-        }
-      </motion.div>
+      {/* Header */}
+      <div className="space-y-3">
+        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
+          {project.title}
+        </h1>
 
-      <div
-        ref={containerRef}
-        className="relative mt-12 max-w-full flex flex-col gap-4 md:gap-6 justify-center px-4 lg:px-8 py-12 overflow-x-hidden"
-      >
-        <article
-          className="article-text prose dark:prose-invert max-w-full break-words overflow-x-hidden
-          [&_pre]:whitespace-pre-wrap [&_pre]:break-words
-          [&_img]:max-w-full [&_img]:h-auto
-          sm:max-w-[100vw] sm:overflow-x-auto"
-        >
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw as Pluggable, rehypeSlug]}
-            components={
-              !isMobile
-                ? {
-                    code({ children, className, node, ref, ...rest }) {
-                      const match = /language-(\w+)/.exec(className || '');
-                      const hasMeta = node?.data?.meta;
+        {/* Tech stacks */}
+        <div className="flex flex-wrap gap-2">
+          {project.techstacks.map((t) => (
+            <Badge key={t.techstack.id} variant="secondary">
+              {t.techstack.name}
+            </Badge>
+          ))}
+        </div>
 
-                      const applyHighlights = (lineNumber: number) => {
-                        if (hasMeta && node.data) {
-                          const RE = /{([\d,-]+)}/;
-                          const metadata =
-                            node.data.meta?.replace(/\s/g, '') || '';
-                          const strlineNumbers = RE?.test(metadata)
-                            ? RE?.exec(metadata)?.[1]
-                            : '0';
-
-                          const highlightLines = rangeParser(
-                            strlineNumbers || ''
-                          );
-                          return highlightLines.includes(lineNumber)
-                            ? { 'data-highlight': true }
-                            : {};
-                        }
-                        return {};
-                      };
-
-                      return match ? (
-                        <SyntaxHighlighter
-                          {...rest}
-                          ref={ref as any}
-                          style={oneDark}
-                          showLineNumbers
-                          PreTag="div"
-                          language={match[1]}
-                          lineProps={applyHighlights as any}
-                          useInlineStyles={true}
-                          customStyle={{ maxWidth: '100%', overflowX: 'auto' }}
-                        >
-                          {String(children).replace(/\n$/, '')}
-                        </SyntaxHighlighter>
-                      ) : (
-                        <code {...rest} className={className}>
-                          {children}
-                        </code>
-                      );
-                    },
-                  }
-                : {}
-            }
-          >
-            {readme}
-          </ReactMarkdown>
-        </article>
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2">
+          {project.tags.map((t) => (
+            <Badge key={t.tag.id} variant="outline">
+              #{t.tag.name}
+            </Badge>
+          ))}
+        </div>
       </div>
 
-      <FloatingToc items={tocItems} />
-    </>
+      <Separator />
+
+      {/* Blogs */}
+      <Tabs
+        value={activeBlogId}
+        onValueChange={setActiveBlogId}
+        className="space-y-4"
+      >
+        <TabsList className="flex flex-wrap justify-start overflow-x-auto pb-2">
+          {project.blogs.map((blog) => (
+            <TabsTrigger
+              key={blog.id}
+              value={blog.id}
+              className="flex-shrink-0"
+            >
+              {blog.title}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        {project.blogs?.map((blog) => {
+          const toc = extractToc(blog.content ?? '')
+            .filter((item) => item.depth === 2)
+            .map((item) => ({
+              href: `#${item.id}`,
+              label: item.text,
+            }));
+
+          return (
+            <TabsContent key={blog.id} value={blog.id} className="relative">
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4 lg:gap-8">
+                {/* Content */}
+                <Card className="p-4 sm:p-6">
+                  <BlogContent content={blog.content ?? ''} tocItems={toc} />
+                </Card>
+
+                {/* TOC */}
+                {toc.length > 0 && (
+                  <div className="hidden lg:block sticky top-20 self-start">
+                    <FloatingToc items={toc} />
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+          );
+        })}
+      </Tabs>
+    </div>
   );
 }

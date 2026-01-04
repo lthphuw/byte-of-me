@@ -6,13 +6,15 @@ import { Prisma } from '@repo/db/generated/prisma/client';
 import { Editor, EditorState } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 import { stateFromHTML } from 'draft-js-import-html';
-import { Plus, Trash } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 import {
   addEducation,
   deleteEducation,
   updateEducation,
 } from '@/lib/actions/education';
+import { FileHelper } from '@/lib/core/file-helper';
+import { educationSchema } from '@/lib/schemas/education';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -27,9 +29,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { RichTextEditor } from '@/components/rich-text-editor';
-import { FileHelper } from '@/lib/core/file-helper';
 import { TrashButton } from '@/components/trash-button';
-import { educationSchema } from '@/lib/validations/education';
 
 type Education = Prisma.EducationGetPayload<{
   include: { subItems: true };
