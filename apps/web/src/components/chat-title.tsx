@@ -56,7 +56,7 @@ export function ChatTitle({ invoke, className }: ChatTitleProps) {
       >
         <Icons.logo size={isMobile ? 32 : 48} />
         <h1 className="scroll-m-20 text-center text-xl md:text-2xl font-extrabold tracking-tight text-balance">
-          {t("Ask Phu's Assistant")}
+          {t('askPhusAssistant')}
         </h1>
       </motion.div>
 

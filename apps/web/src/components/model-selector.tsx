@@ -101,7 +101,7 @@ export function ModelSelector({
                 <FilterSelect
                   items={llmModels.map((it) => ({
                     ...it,
-                    desc: t(`desc.${it.id.replace('.', '')}` as never),
+                    desc: t(`desc.${it.id.replaceAll('.', '').replaceAll('-', '')}` as never),
                   }))}
                   selectedId={llm}
                   onSelect={setLLM}
@@ -113,7 +113,7 @@ export function ModelSelector({
                 <FilterSelect
                   items={embeddingModels.map((it) => ({
                     ...it,
-                    desc: t(`desc.${it.id.replace('.', '')}` as never),
+                    desc: t(`desc.${it.id.replaceAll('.', '').replaceAll('-', '')}` as never),
                   }))}
                   selectedId={embedding}
                   onSelect={setEmbedding}
@@ -125,7 +125,7 @@ export function ModelSelector({
                 <FilterSelect
                   items={rerankerModels.map((it) => ({
                     ...it,
-                    desc: t(`desc.${it.id.replace('.', '')}` as never),
+                    desc: t(`desc.${it.id.replaceAll('.', '').replaceAll('-', '')}` as never),
                   }))}
                   selectedId={reranker}
                   onSelect={setReranker}

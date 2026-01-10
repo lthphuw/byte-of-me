@@ -9,13 +9,11 @@ import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import { Pluggable } from 'unified';
-
 import { cn } from '@/lib/utils';
-import { useMediaQuery } from '@/hooks/use-media-query';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { FloatingToc, TocItem } from '@/components/floating-toc';
-
 import { Button } from './ui/button';
+import {useIsMobile} from '@/hooks/use-is-mobile';
 
 export type BlogContentProps = BaseComponentProps & {
   content: string;
@@ -28,7 +26,7 @@ export function BlogContent({
   className,
   style,
 }: BlogContentProps) {
-  const isMobile = useMediaQuery('only screen and (max-width : 768px)');
+  const isMobile = useIsMobile();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isTocOpen, setIsTocOpen] = useState(false);
 

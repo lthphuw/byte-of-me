@@ -6,10 +6,6 @@ import { Variants, motion } from 'framer-motion';
 import { useTranslations } from '@/hooks/use-translations';
 import { Icons } from '@/components/icons';
 
-
-
-
-
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -50,13 +46,13 @@ export function ContactContent({
     linkedIn && {
       href: linkedIn,
       label: 'LinkedIn',
-      description: t('LinkedIn'),
+      description: t('linkedIn'),
       icon: Icons.linkedin,
     },
     github && {
       href: github,
       label: 'GitHub',
-      description: t('GitHub'),
+      description: t('gitHub'),
       icon: Icons.github,
     },
   ].filter(Boolean) as {

@@ -145,13 +145,13 @@
     "copy": "Copy",
     "model": {
       "desc": {
-        "gemini20Flash": "Fast lightweight LLM by Google, optimized for real-time interactions",
-        "gemini20FlashLite": "Smaller, even faster version of Gemini Flash for low-latency tasks",
-        "gemini25Flash": "Updated fast-response model for interactive tasks, part of Gemini 2.5 series",
-        "jinaEmbeddingV3": "Multilingual embedding model optimized for speed and dense retrieval",
-        "textEmbedding004": "High-quality English embedding model for semantic search and retrieval",
-        "noReranker": "No re-ranking applied. Top documents are selected based only on vector similarity.",
-        "cohereRerankV35": "Cohere Rerank v3.5 ranks documents by relevance to a query across 100+ languages, boosting RAG and search performance."
+        "gemini20flash": "Fast lightweight LLM by Google, optimized for real-time interactions",
+        "gemini20flashlite": "Smaller, even faster version of Gemini Flash for low-latency tasks",
+        "gemini25flash": "Updated fast-response model for interactive tasks, part of Gemini 2.5 series",
+        "jinaembeddingv3": "Multilingual embedding model optimized for speed and dense retrieval",
+        "textembedding004": "High-quality English embedding model for semantic search and retrieval",
+        "noreranker": "No re-ranking applied. Top documents are selected based only on vector similarity.",
+        "coherererankv35": "Cohere Rerank v3.5 ranks documents by relevance to a query across 100+ languages, boosting RAG and search performance."
       }
     },
     "examples": {

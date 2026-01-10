@@ -4,7 +4,6 @@ import React, { ReactNode, createContext, useContext } from 'react';
 import { Theme } from '@/contexts/theme';
 
 import { Toaster } from '@/components/ui/toaster';
-import { ChatIcon } from '@/components/chat-icon';
 import { Integrations } from '@/components/intergations';
 import { TailwindIndicator } from '@/components/tailwind-indicator';
 
@@ -28,7 +27,7 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
         {children}
 
         {/* Floating chat icon (mobile) */}
-        <ChatIcon />
+        {/*<ChatIcon />*/}
 
         {/* Toast notifications */}
         <Toaster />

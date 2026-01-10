@@ -152,13 +152,13 @@
     "copy": "Sao chép",
     "model": {
       "desc": {
-        "gemini20Flash": "Mô hình ngôn ngữ nhẹ và nhanh của Google, tối ưu cho tương tác thời gian thực",
-        "gemini20FlashLite": "Phiên bản gọn nhẹ hơn, độ trễ thấp cho các tác vụ nhanh",
-        "gemini25Flash": "Phiên bản Gemini 2.5 cải tiến với khả năng phản hồi nhanh",
-        "jinaEmbeddingV3": "Mô hình embedding đa ngôn ngữ, tối ưu cho truy xuất nhanh và chính xác",
-        "textEmbedding004": "Mô hình embedding tiếng Anh chất lượng cao cho tìm kiếm ngữ nghĩa",
-        "noReranker": "Không áp dụng re-rank. Kết quả dựa hoàn toàn trên độ tương đồng vector.",
-        "cohereRerankV35": "Mô hình re-rank của Cohere, giúp sắp xếp tài liệu theo mức độ liên quan."
+        "gemini20flash": "Mô hình ngôn ngữ nhẹ và nhanh của Google, tối ưu cho tương tác thời gian thực",
+        "gemini20flashlite": "Phiên bản gọn nhẹ hơn, độ trễ thấp cho các tác vụ nhanh",
+        "gemini25flash": "Phiên bản Gemini 2.5 cải tiến với khả năng phản hồi nhanh",
+        "jinaembeddingv3": "Mô hình embedding đa ngôn ngữ, tối ưu cho truy xuất nhanh và chính xác",
+        "textembedding004": "Mô hình embedding tiếng Anh chất lượng cao cho tìm kiếm ngữ nghĩa",
+        "noreranker": "Không áp dụng re-rank. Kết quả dựa hoàn toàn trên độ tương đồng vector.",
+        "coherererankv35": "Mô hình re-rank của Cohere, giúp sắp xếp tài liệu theo mức độ liên quan."
       }
     },
     "examples": {

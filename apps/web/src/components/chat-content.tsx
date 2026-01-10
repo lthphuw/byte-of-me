@@ -11,11 +11,6 @@ import { ChatMessage } from './chat-message';
 import { ChatTitle } from './chat-title';
 import Loading from './loading';
 
-export type Message = {
-  role: 'user' | 'assistant';
-  content: string;
-};
-
 export default function ChatContent() {
   const {
     threadId,
