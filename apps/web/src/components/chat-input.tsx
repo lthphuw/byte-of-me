@@ -18,7 +18,7 @@ import {
 } from './ui/tooltip';
 import { toast } from './ui/use-toast';
 
-const MAX_MESSAGE_LENGTH = 200; // Define max length constant
+const MAX_MESSAGE_LENGTH = 200;
 
 export type ChatInputProps = {
   onSend: (message: string) => void;
@@ -102,7 +102,7 @@ export default function ChatInput({
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           rows={2}
-          placeholder={`${t('Ask something')}...`}
+          placeholder={`${t('askSomething')}...`}
           aria-label="Chat input"
           className="w-full resize-none border-none h-10 outline-none bg-transparent text-neutral-800 dark:text-neutral-100 text-lg placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
         />
@@ -144,7 +144,7 @@ export default function ChatInput({
               type="submit"
               disabled={isLoading || !input.trim() || isRateLimited}
             >
-              {isLoading ? `${t('Asking')}...` : t('Ask')}
+              {isLoading ? `${t('asking')}...` : t('ask')}
             </Button>
           </div>
         </div>

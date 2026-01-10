@@ -25,14 +25,13 @@ export const globalConfig: GlobalConfig = {
         href: Routes.Projects,
       },
       {
-        title: 'anythingAboutMe',
-        href: Routes.Chat,
-        onlyMobile: true,
-      },
-      {
         title: 'letsTalk',
         href: Routes.Contact,
       },
+      // {
+      //   title: 'anythingAboutMe',
+      //   href: Routes.Chat,
+      // },
     ],
   },
   footer: {
@@ -53,10 +52,10 @@ export const globalConfig: GlobalConfig = {
         title: 'contact',
         href: Routes.Contact,
       },
-      {
-        title: 'anythingAboutMe',
-        href: Routes.Chat,
-      },
+      // {
+      //   title: 'anythingAboutMe',
+      //   href: Routes.Chat,
+      // },
     ],
   },
 };

@@ -19,7 +19,6 @@ import { iconOpenCloseVariants } from '@/config/anim';
 import { Routes } from '@/config/global';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useTranslations } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons';
@@ -49,7 +48,6 @@ const logoAnimVariants: Variants = {
 const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
   ({ items, children, minimized = false }, ref) => {
     const locale = useLocale();
-    const isMobile = useIsMobile();
     const t = useTranslations('global.header.nav');
     const segment = useSelectedLayoutSegment();
 
@@ -85,31 +83,28 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
     }, []);
 
     return (
-      <div ref={ref} className="flex gap-6 md:gap-10">
-        {/* Desktop Logo */}
-        {!isMobile && (
-          <Link
-            href={Routes.Homepage}
-            locale={locale}
-            className="flex items-center space-x-2"
+      <div ref={ref} className="flex items-center gap-6 md:gap-10">
+        <Link
+          href={Routes.Homepage}
+          locale={locale}
+          className="hidden md:flex items-center space-x-2"
+        >
+          <motion.div
+            initial="initial"
+            animate={minimized ? 'minimized' : 'initial'}
+            variants={logoAnimVariants}
+            className="flex items-center gap-2 will-change-transform"
           >
-            <motion.div
-              initial="initial"
-              animate={minimized ? 'minimized' : 'initial'}
-              variants={logoAnimVariants}
-              className="flex items-center gap-2 will-change-transform"
-            >
-              <Icons.logo />
-              <span className="hidden font-bold sm:inline-block">
-                {siteConfig.name}
-              </span>
-            </motion.div>
-          </Link>
-        )}
+            <Icons.logo />
+            <span className="hidden font-bold sm:inline-block">
+              {siteConfig.name}
+            </span>
+          </motion.div>
+        </Link>
 
         {/* Desktop Navigation */}
-        {!isMobile && navItems.length > 0 && (
-          <nav className="flex">
+        {navItems.length > 0 && (
+          <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
               const isActive =
                 item.href && item.href.startsWith(`/${segment}`);
@@ -120,66 +115,70 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
                   href={item.disabled ? '#' : item.href}
                   locale={locale}
                   className={cn(
-                    'flex items-center text-lg font-medium transition-colors hover:text-foreground/80',
-                    isActive
-                      ? 'text-foreground font-semibold'
-                      : 'text-foreground/60',
+                    'flex items-center transition-colors',
                     item.disabled && 'cursor-not-allowed opacity-80'
                   )}
                 >
-                  <Button variant="ghost">{t(item.title)}</Button>
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      'text-md font-medium',
+                      isActive
+                        ? 'text-foreground font-semibold'
+                        : 'text-foreground/60 hover:text-foreground/80'
+                    )}
+                  >
+                    {t(item.title)}
+                  </Button>
                 </Link>
               );
             })}
           </nav>
         )}
 
-        {/* Mobile Menu */}
-        {isMobile && (
-          <>
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={handleToggleMenu}
-              ref={refs.setReference}
-              {...getReferenceProps()}
-              className="relative flex items-center space-x-2 md:hidden"
+        {/* Mobile Menu Button */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={handleToggleMenu}
+          ref={refs.setReference}
+          {...getReferenceProps()}
+          className="flex items-center gap-2 md:hidden"
+        >
+          <motion.span className="relative size-6">
+            <motion.div
+              variants={iconOpenCloseVariants}
+              animate={showMobileMenu ? 'open' : 'closed'}
             >
-              <motion.span className="relative size-6">
-                <motion.div
-                  variants={iconOpenCloseVariants}
-                  animate={showMobileMenu ? 'open' : 'closed'}
-                >
-                  <Icons.close
-                    ref={iconRef}
-                    className="absolute inset-0 size-6"
-                  />
-                </motion.div>
-                <motion.div
-                  variants={iconOpenCloseVariants}
-                  animate={showMobileMenu ? 'closed' : 'open'}
-                >
-                  <Icons.logo className="absolute inset-0 size-6" />
-                </motion.div>
-              </motion.span>
-              <span className="font-bold">Menu</span>
-            </motion.button>
+              <Icons.close
+                ref={iconRef}
+                className="absolute inset-0 size-6"
+              />
+            </motion.div>
+            <motion.div
+              variants={iconOpenCloseVariants}
+              animate={showMobileMenu ? 'closed' : 'open'}
+            >
+              <Icons.logo className="absolute inset-0 size-6" />
+            </motion.div>
+          </motion.span>
+          <span className="font-bold">Menu</span>
+        </motion.button>
 
-            <FloatingPortal>
-              <MobileNav
-                isOpen={showMobileMenu}
-                onOpenChange={setShowMobileMenu}
-                originPosition={originPosition}
-                items={items}
-                ref={refs.setFloating}
-                style={floatingStyles}
-                {...getFloatingProps()}
-              >
-                {children}
-              </MobileNav>
-            </FloatingPortal>
-          </>
-        )}
+        {/* Mobile Floating Menu */}
+        <FloatingPortal>
+          <MobileNav
+            isOpen={showMobileMenu}
+            onOpenChange={setShowMobileMenu}
+            originPosition={originPosition}
+            items={items}
+            ref={refs.setFloating}
+            style={floatingStyles}
+            {...getFloatingProps()}
+          >
+            {children}
+          </MobileNav>
+        </FloatingPortal>
       </div>
     );
   }

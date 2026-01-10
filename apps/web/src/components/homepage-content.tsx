@@ -31,14 +31,17 @@ export function HomepageContent({ user }: HomepageContentProps) {
 
   return (
     <main
+      id="home"
       className="
-        mx-auto max-w-6xl
-        px-4 md:px-8
-        py-14 md:py-20
-        space-y-16 md:space-y-28
-      "
+    mx-auto max-w-6xl
+    px-4 md:px-8
+    py-14 md:py-20
+    space-y-16 md:space-y-28
+  "
     >
+      {/* HERO / GREETING */}
       <motion.section
+        id="hero"
         className="max-w-3xl mx-auto space-y-5 md:space-y-8"
         variants={sectionVariants}
         initial="initial"
@@ -53,7 +56,9 @@ export function HomepageContent({ user }: HomepageContentProps) {
         </p>
       </motion.section>
 
+      {/* ABOUT / MY STORY */}
       <motion.section
+        id="about"
         className="grid gap-10 md:gap-14 md:grid-cols-2 items-start"
         variants={sectionVariants}
         initial="initial"
@@ -63,7 +68,10 @@ export function HomepageContent({ user }: HomepageContentProps) {
       >
         <div className="space-y-4 md:space-y-6">
           <div className="space-y-3 md:space-y-4">
-            <h2 className="text-xs md:text-sm uppercase tracking-widest text-muted-foreground">
+            <h2
+              id="about-heading"
+              className="text-xs md:text-sm uppercase tracking-widest text-muted-foreground"
+            >
               {t('homepage.myStory')}
             </h2>
 
@@ -87,7 +95,9 @@ export function HomepageContent({ user }: HomepageContentProps) {
         </div>
       </motion.section>
 
+      {/* SELECTED PROJECTS */}
       <motion.section
+        id="projects"
         className="space-y-8 md:space-y-12"
         variants={sectionVariants}
         initial="initial"
@@ -97,7 +107,10 @@ export function HomepageContent({ user }: HomepageContentProps) {
       >
         <div className="flex flex-col gap-3 md:gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-1 md:space-y-2">
-            <h2 className="text-xl md:text-3xl font-semibold">
+            <h2
+              id="projects-heading"
+              className="text-xl md:text-3xl font-semibold"
+            >
               {t('homepage.selectedProjects')}
             </h2>
 
@@ -114,51 +127,51 @@ export function HomepageContent({ user }: HomepageContentProps) {
         </div>
 
         <div className="grid gap-4 md:gap-6 md:grid-cols-2">
-          {
-            !projects?.length ?
-              (
-                <EmptyProject className="col-span-full" />
-              )
-              :
-              projects.map(project => (
-            <article
-              key={project.id}
-              className="
-                rounded-xl border border-border
-                p-4 md:p-6
-                flex flex-col h-full
-                transition hover:border-foreground/40
-              "
-            >
-              <h3 className="text-base md:text-lg font-medium">
-                {project.title}
-              </h3>
-
-              <RichText
-                className="mt-2 text-xs md:text-sm text-muted-foreground leading-relaxed line-clamp-3 flex-grow"
-                html={project.description}
-              />
-
-              <Link
-                href={`/projects/${project.slug}`}
-                className="mt-3 md:mt-4 self-start"
+          {!projects?.length ? (
+            <EmptyProject className="col-span-full" />
+          ) : (
+            projects.map(project => (
+              <article
+                key={project.id}
+                className="
+              rounded-xl border border-border
+              p-4 md:p-6
+              flex flex-col h-full
+              transition hover:border-foreground/40
+            "
               >
-                <Button variant="ghost" size="sm">
-                  {t('homepage.viewProject')}
-                </Button>
-              </Link>
-            </article>
-          ))}
+                <h3 className="text-base md:text-lg font-medium">
+                  {project.title}
+                </h3>
+
+                <RichText
+                  className="mt-2 text-xs md:text-sm text-muted-foreground leading-relaxed line-clamp-3 flex-grow"
+                  html={project.description}
+                />
+
+                <Link
+                  href={`/projects/${project.slug}`}
+                  className="mt-3 md:mt-4 self-start"
+                >
+                  <Button variant="link" size="sm" className={'pl-0'}>
+                    {t('homepage.viewProject')}
+                  </Button>
+                </Link>
+              </article>
+            ))
+          )}
         </div>
       </motion.section>
 
+      {/* CONTACT CTA */}
       <motion.section
+        id="contact-cta"
         className="
-          rounded-2xl border border-border
-          p-6 md:p-10 lg:p-14
-          text-center
-          space-y-4 md:space-y-6
-        "
+      rounded-2xl border border-border
+      p-6 md:p-10 lg:p-14
+      text-center
+      space-y-4 md:space-y-6
+    "
         variants={sectionVariants}
         initial="initial"
         whileInView="animate"

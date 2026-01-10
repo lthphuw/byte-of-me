@@ -8,11 +8,9 @@ import { useTheme } from 'next-themes';
 import { globalConfig } from '@/config/global';
 import { cn } from '@/lib/utils';
 
-import { ChatButton } from './chat-button';
 import { I18NToggle } from './i18n-toggle';
 import { MainNav } from './main-nav';
 import { ModeToggle } from './mode-toggle';
-
 
 const SCROLL_THRESHOLD = 50;
 const COMPACT_BORDER_RADIUS = 16;
@@ -24,7 +22,6 @@ const DEFAULT_HEIGHT = 64;
 const COMPACT_PADDING = '12px 16px';
 const DEFAULT_PADDING = '16px';
 const SHADOW_TRANSITION_THRESHOLD = 10;
-const COMPACT_CHAT_BUTTON_X_OFFSET = 200;
 
 const TRANSITION: Transition = {
   type: 'spring',
@@ -105,28 +102,6 @@ export function SiteHeader() {
           />
         </motion.div>
       </motion.header>
-
-      {/* Chat button */}
-      <motion.div
-        layout
-        className={cn(
-          'hidden md:block fixed top-0 right-32 bg-transparent md:right-32 z-50 space-x-2 appearance-none [-webkit-appearance:none]',
-          isCompact && 'ml-auto pl-0 gradient-bg'
-        )}
-        animate={{
-          right: isCompact ? COMPACT_CHAT_BUTTON_X_OFFSET : 132,
-          top: isCompact ? COMPACT_TOP_OFFSET : 0,
-          borderRadius: isCompact ? COMPACT_BORDER_RADIUS : 1,
-        }}
-        transition={TRANSITION}
-      >
-        <ChatButton
-          className={isCompact ? 'py-1 px-2 md:py-3 md:px-4' : 'md:px-4'}
-          style={{
-            height: isCompact ? COMPACT_HEIGHT : DEFAULT_HEIGHT,
-          }}
-        />
-      </motion.div>
 
       {/* Controllers */}
       <motion.div
