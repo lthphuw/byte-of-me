@@ -80,7 +80,7 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
           language: 'en',
           title: '',
           description: '',
-          content: '',
+          content: '<p></p>',
         },
       ],
     },
@@ -109,17 +109,22 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
         initialData.translations?.length > 0
           ? initialData.translations.map((it) => ({
               ...it,
-              content:
-                typeof it.content === 'string'
-                  ? JSON.parse(it.content)
-                  : it.content,
+              content: it.content ? (
+                typeof it.content === 'string' ? (
+                  JSON.parse(it.content)
+                ) : (
+                  it.content
+                )
+              ) : (
+                <p></p>
+              ),
             }))
           : [
               {
                 language: 'en',
                 title: '',
                 description: '',
-                content: '',
+                content: <p></p>,
               },
             ],
     });

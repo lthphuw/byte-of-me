@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-
-import './tiptap.css';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { Color } from '@tiptap/extension-color';
 import Heading from '@tiptap/extension-heading';
 import Highlight from '@tiptap/extension-highlight';
@@ -19,6 +18,9 @@ import Typography from '@tiptap/extension-typography';
 import Underline from '@tiptap/extension-underline';
 import { EditorContent, Extension, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import javascript from 'highlight.js/lib/languages/javascript';
+import typescript from 'highlight.js/lib/languages/typescript';
+import { createLowlight } from 'lowlight';
 
 import { cn } from '@/lib/utils';
 import { TipTapFloatingMenu } from '@/components/tiptap/extensions/floating-menu';
@@ -27,8 +29,13 @@ import { ImageExtension } from '@/components/tiptap/extensions/image';
 import { ImagePlaceholder } from '@/components/tiptap/extensions/image-placeholder';
 import SearchAndReplace from '@/components/tiptap/extensions/search-and-replace';
 
+import './tiptap.css';
 import { EditorToolbar } from './toolbars/editor-toolbar';
 
+const lowlight = createLowlight();
+
+lowlight.register('js', javascript);
+lowlight.register('ts', typescript);
 
 const CustomHeading = Heading.extend({
   addAttributes() {
@@ -45,10 +52,13 @@ const CustomHeading = Heading.extend({
   },
 });
 
-// 1. Export the base extensions here so your other modules don't break
 export const extensions = [
   StarterKit.configure({
-    heading: false, // We use CustomHeading instead
+    heading: false,
+    codeBlock: false,
+  }),
+  CodeBlockLowlight.configure({
+    lowlight,
   }),
   CustomHeading,
   Placeholder.configure({
@@ -74,7 +84,11 @@ type RichTextEditorProps = {
   onChange?: (value: any) => void;
 };
 
-export function RichTextEditor({ className, value, onChange }: RichTextEditorProps) {
+export function RichTextEditor({
+  className,
+  value,
+  onChange,
+}: RichTextEditorProps) {
   const [items, setItems] = useState<any[]>([]);
 
   const editor = useEditor({
@@ -97,7 +111,12 @@ export function RichTextEditor({ className, value, onChange }: RichTextEditorPro
   if (!editor) return null;
 
   return (
-    <div className={cn('flex flex-col w-full border bg-card relative overflow-hidden', className)}>
+    <div
+      className={cn(
+        'flex flex-col w-full border bg-card relative overflow-hidden',
+        className
+      )}
+    >
       <EditorToolbar editor={editor} />
 
       <div className="flex flex-row h-[600px]">
@@ -123,12 +142,11 @@ export function RichTextEditor({ className, value, onChange }: RichTextEditorPro
                   el?.scrollIntoView({ behavior: 'smooth' });
                 }}
                 className={cn(
-                  "text-xs text-left px-4 py-1 hover:text-primary transition-all border-l-2 -ml-[1px] border-transparent hover:border-primary",
-                  item.active && "text-primary border-primary",
-                  item.level === 1 && "font-bold text-sm",
-                  item.level === 2 && "ml-2 font-semibold",
-                  item.level === 3 && "ml-4  font-normal text-muted-foreground",
-
+                  'text-xs text-left px-4 py-1 hover:text-primary transition-all border-l-2 -ml-[1px] border-transparent hover:border-primary',
+                  item.active && 'text-primary border-primary',
+                  item.level === 1 && 'font-bold text-sm',
+                  item.level === 2 && 'ml-2 font-semibold',
+                  item.level === 3 && 'ml-4  font-normal text-muted-foreground'
                 )}
               >
                 {item.textContent}

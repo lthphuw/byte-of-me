@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -70,7 +69,7 @@ export function ProfileManager({
       ...values,
       translations: values.translations.map((t) => ({
         ...t,
-        aboutMe: t.aboutMe ? JSON.stringify(t.aboutMe) : null,
+        aboutMe: t.aboutMe ? JSON.stringify(t.aboutMe) : '<p></p>',
       })),
       socialLinks: values.socialLinks.map((s, i) => ({ ...s, sortOrder: i })),
     });
@@ -85,7 +84,7 @@ export function ProfileManager({
       translations:
         user.userProfile?.translations?.map((t: any) => ({
           ...t,
-          aboutMe: t.aboutMe ? JSON.parse(t.aboutMe) : null,
+          aboutMe: t.aboutMe ? JSON.parse(t.aboutMe) : '<p></p>',
         })) || [],
     });
 
@@ -101,7 +100,7 @@ export function ProfileManager({
       translations:
         user.userProfile?.translations?.map((t: any) => ({
           ...t,
-          aboutMe: t.aboutMe ? JSON.parse(t.aboutMe) : null,
+          aboutMe: t.aboutMe ? JSON.parse(t.aboutMe) : '<p></p>',
         })) || [],
     });
   }, [user]);

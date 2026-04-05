@@ -4,7 +4,8 @@ import { generateHTML } from '@tiptap/html';
 import DOMPurify from 'isomorphic-dompurify';
 
 import { cn } from '@/lib/utils';
-import { extensions } from '@/components/tiptap/rich-text-editor';
+
+import { extensions } from './tiptap/rich-text-editor';
 
 export type RichTextProps = {
   content?: string | any;
@@ -20,11 +21,13 @@ export function RichText({ content, className, style }: RichTextProps) {
   try {
     const json = typeof content === 'string' ? JSON.parse(content) : content;
     htmlContent = generateHTML(json, extensions);
-  } catch (e) {
+  } catch {
     htmlContent = typeof content === 'string' ? content : '';
   }
-
-  const sanitizedHtml = DOMPurify.sanitize(htmlContent);
+  console.log(htmlContent);
+  const sanitizedHtml = DOMPurify.sanitize(htmlContent, {
+    FORBID_ATTR: ['style'],
+  });
 
   return (
     <div
@@ -33,12 +36,21 @@ export function RichText({ content, className, style }: RichTextProps) {
 
         'prose prose-neutral dark:prose-invert max-w-none',
 
+        // Typography
         '[&_p]:my-3',
-        '[&_h1]:text-2xl [&_h1]:font-semibold [&_h1]:mt-6 [&_h1]:text-neutral-900 dark:[&_h1]:text-neutral-100',
-        '[&_h2]:text-xl [&_h2]:font-semibold [&_h2]:mt-5 [&_h2]:text-neutral-900 dark:[&_h2]:text-neutral-100',
+        '[&_h1]:text-2xl [&_h1]:font-semibold [&_h1]:mt-6',
+        '[&_h2]:text-xl [&_h2]:font-semibold [&_h2]:mt-5',
         '[&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3',
         '[&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3',
-        '[&_li::marker]:text-neutral-400',
+
+        'prose-code:bg-transparent prose-code:text-inherit',
+
+        // CODE BLOCK
+        '[&_pre]:!bg-neutral-900 [&_pre]:!text-neutral-100',
+        'dark:[&_pre]:!bg-neutral-950',
+        '[&_pre]:p-4 [&_pre]:rounded-xl [&_pre]:overflow-x-auto',
+
+        '[&_pre_code]:!bg-transparent [&_pre_code]:!text-inherit [&_pre_code]:p-0',
 
         className
       )}
