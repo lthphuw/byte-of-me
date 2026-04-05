@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import { Education } from '@/models/education';
+
 import { RichText } from '@/components/rich-text';
+
 import { AchievementItem } from './achievement-item';
 
 export function EducationItem({
@@ -18,8 +20,8 @@ export function EducationItem({
           <Image
             src={edu.logo.url}
             alt={edu.title}
-            width={36}
-            height={36}
+            width={48}
+            height={48}
             className="rounded-md object-contain"
           />
         )}
@@ -27,9 +29,7 @@ export function EducationItem({
           <h3 className="font-semibold text-lg">{edu.title}</h3>
           <p className="text-sm text-muted-foreground">
             {new Date(edu.startDate).getFullYear()} -{' '}
-            {edu.endDate
-              ? new Date(edu.endDate).getFullYear()
-              : 'Present'}
+            {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
           </p>
         </div>
       </div>
@@ -38,7 +38,7 @@ export function EducationItem({
 
       {/* Achievements */}
       {edu.achievements.length > 0 && (
-        <div className="pl-2 space-y-2 border-l md:pl-4 md:space-y-3">
+        <div className="pl-2 space-y-2 border-l-2 border-muted md:pl-4 md:space-y-3">
           {edu.achievements.map((a) => (
             <AchievementItem
               key={a.id}

@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 
+import { cn } from '@/lib/utils';
 import {
   Carousel,
   CarouselContent,
@@ -40,6 +41,7 @@ export function AchievementImages({
       {/* Mobile */}
       <div className="block md:hidden relative">
         <Carousel
+          className=""
           setApi={(api) => {
             if (!api) return;
             api.on('select', () => {
@@ -47,9 +49,15 @@ export function AchievementImages({
             });
           }}
         >
-          <CarouselContent>
+          <CarouselContent className="-ml-3">
             {images.map((img: any, i: number) => (
-              <CarouselItem key={img.id}>
+              <CarouselItem
+                key={img.id}
+                className={cn(
+                  'pl-3',
+                  images.length === 1 ? 'basis-full' : 'basis-[90%]'
+                )}
+              >
                 <button
                   onClick={() => onOpenGallery(urls, i)}
                   className="relative w-full aspect-[4/3] rounded-xl overflow-hidden"
@@ -67,7 +75,7 @@ export function AchievementImages({
 
           {/* Dots */}
           {images.length > 1 && (
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 bg-black/40 px-2.5 py-1.5 rounded-full">
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 bg-black/40 px-2.5 py-1.5 rounded-full items-center">
               {images.map((_: any, i: number) => (
                 <div
                   key={i}
