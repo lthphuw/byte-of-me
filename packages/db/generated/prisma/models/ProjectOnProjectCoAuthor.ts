@@ -25,47 +25,47 @@ export type AggregateProjectOnProjectCoAuthor = {
 }
 
 export type ProjectOnProjectCoAuthorMinAggregateOutputType = {
-  projectId: string | null
-  coauthorId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  projectId: string | null
+  coauthorId: string | null
 }
 
 export type ProjectOnProjectCoAuthorMaxAggregateOutputType = {
-  projectId: string | null
-  coauthorId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  projectId: string | null
+  coauthorId: string | null
 }
 
 export type ProjectOnProjectCoAuthorCountAggregateOutputType = {
-  projectId: number
-  coauthorId: number
   createdAt: number
   updatedAt: number
+  projectId: number
+  coauthorId: number
   _all: number
 }
 
 
 export type ProjectOnProjectCoAuthorMinAggregateInputType = {
-  projectId?: true
-  coauthorId?: true
   createdAt?: true
   updatedAt?: true
+  projectId?: true
+  coauthorId?: true
 }
 
 export type ProjectOnProjectCoAuthorMaxAggregateInputType = {
-  projectId?: true
-  coauthorId?: true
   createdAt?: true
   updatedAt?: true
+  projectId?: true
+  coauthorId?: true
 }
 
 export type ProjectOnProjectCoAuthorCountAggregateInputType = {
-  projectId?: true
-  coauthorId?: true
   createdAt?: true
   updatedAt?: true
+  projectId?: true
+  coauthorId?: true
   _all?: true
 }
 
@@ -142,10 +142,10 @@ export type ProjectOnProjectCoAuthorGroupByArgs<ExtArgs extends runtime.Types.Ex
 }
 
 export type ProjectOnProjectCoAuthorGroupByOutputType = {
-  projectId: string
-  coauthorId: string
   createdAt: Date
   updatedAt: Date
+  projectId: string
+  coauthorId: string
   _count: ProjectOnProjectCoAuthorCountAggregateOutputType | null
   _min: ProjectOnProjectCoAuthorMinAggregateOutputType | null
   _max: ProjectOnProjectCoAuthorMaxAggregateOutputType | null
@@ -170,19 +170,19 @@ export type ProjectOnProjectCoAuthorWhereInput = {
   AND?: Prisma.ProjectOnProjectCoAuthorWhereInput | Prisma.ProjectOnProjectCoAuthorWhereInput[]
   OR?: Prisma.ProjectOnProjectCoAuthorWhereInput[]
   NOT?: Prisma.ProjectOnProjectCoAuthorWhereInput | Prisma.ProjectOnProjectCoAuthorWhereInput[]
-  projectId?: Prisma.StringFilter<"ProjectOnProjectCoAuthor"> | string
-  coauthorId?: Prisma.StringFilter<"ProjectOnProjectCoAuthor"> | string
   createdAt?: Prisma.DateTimeFilter<"ProjectOnProjectCoAuthor"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProjectOnProjectCoAuthor"> | Date | string
+  projectId?: Prisma.StringFilter<"ProjectOnProjectCoAuthor"> | string
+  coauthorId?: Prisma.StringFilter<"ProjectOnProjectCoAuthor"> | string
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   coauthor?: Prisma.XOR<Prisma.CoauthorScalarRelationFilter, Prisma.CoauthorWhereInput>
 }
 
 export type ProjectOnProjectCoAuthorOrderByWithRelationInput = {
-  projectId?: Prisma.SortOrder
-  coauthorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  projectId?: Prisma.SortOrder
+  coauthorId?: Prisma.SortOrder
   project?: Prisma.ProjectOrderByWithRelationInput
   coauthor?: Prisma.CoauthorOrderByWithRelationInput
 }
@@ -192,19 +192,19 @@ export type ProjectOnProjectCoAuthorWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ProjectOnProjectCoAuthorWhereInput | Prisma.ProjectOnProjectCoAuthorWhereInput[]
   OR?: Prisma.ProjectOnProjectCoAuthorWhereInput[]
   NOT?: Prisma.ProjectOnProjectCoAuthorWhereInput | Prisma.ProjectOnProjectCoAuthorWhereInput[]
-  projectId?: Prisma.StringFilter<"ProjectOnProjectCoAuthor"> | string
-  coauthorId?: Prisma.StringFilter<"ProjectOnProjectCoAuthor"> | string
   createdAt?: Prisma.DateTimeFilter<"ProjectOnProjectCoAuthor"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProjectOnProjectCoAuthor"> | Date | string
+  projectId?: Prisma.StringFilter<"ProjectOnProjectCoAuthor"> | string
+  coauthorId?: Prisma.StringFilter<"ProjectOnProjectCoAuthor"> | string
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   coauthor?: Prisma.XOR<Prisma.CoauthorScalarRelationFilter, Prisma.CoauthorWhereInput>
 }, "projectId_coauthorId">
 
 export type ProjectOnProjectCoAuthorOrderByWithAggregationInput = {
-  projectId?: Prisma.SortOrder
-  coauthorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  projectId?: Prisma.SortOrder
+  coauthorId?: Prisma.SortOrder
   _count?: Prisma.ProjectOnProjectCoAuthorCountOrderByAggregateInput
   _max?: Prisma.ProjectOnProjectCoAuthorMaxOrderByAggregateInput
   _min?: Prisma.ProjectOnProjectCoAuthorMinOrderByAggregateInput
@@ -214,10 +214,10 @@ export type ProjectOnProjectCoAuthorScalarWhereWithAggregatesInput = {
   AND?: Prisma.ProjectOnProjectCoAuthorScalarWhereWithAggregatesInput | Prisma.ProjectOnProjectCoAuthorScalarWhereWithAggregatesInput[]
   OR?: Prisma.ProjectOnProjectCoAuthorScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ProjectOnProjectCoAuthorScalarWhereWithAggregatesInput | Prisma.ProjectOnProjectCoAuthorScalarWhereWithAggregatesInput[]
-  projectId?: Prisma.StringWithAggregatesFilter<"ProjectOnProjectCoAuthor"> | string
-  coauthorId?: Prisma.StringWithAggregatesFilter<"ProjectOnProjectCoAuthor"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProjectOnProjectCoAuthor"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ProjectOnProjectCoAuthor"> | Date | string
+  projectId?: Prisma.StringWithAggregatesFilter<"ProjectOnProjectCoAuthor"> | string
+  coauthorId?: Prisma.StringWithAggregatesFilter<"ProjectOnProjectCoAuthor"> | string
 }
 
 export type ProjectOnProjectCoAuthorCreateInput = {
@@ -228,10 +228,10 @@ export type ProjectOnProjectCoAuthorCreateInput = {
 }
 
 export type ProjectOnProjectCoAuthorUncheckedCreateInput = {
-  projectId: string
-  coauthorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  projectId: string
+  coauthorId: string
 }
 
 export type ProjectOnProjectCoAuthorUpdateInput = {
@@ -242,17 +242,17 @@ export type ProjectOnProjectCoAuthorUpdateInput = {
 }
 
 export type ProjectOnProjectCoAuthorUncheckedUpdateInput = {
-  projectId?: Prisma.StringFieldUpdateOperationsInput | string
-  coauthorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  coauthorId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ProjectOnProjectCoAuthorCreateManyInput = {
-  projectId: string
-  coauthorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  projectId: string
+  coauthorId: string
 }
 
 export type ProjectOnProjectCoAuthorUpdateManyMutationInput = {
@@ -261,10 +261,10 @@ export type ProjectOnProjectCoAuthorUpdateManyMutationInput = {
 }
 
 export type ProjectOnProjectCoAuthorUncheckedUpdateManyInput = {
-  projectId?: Prisma.StringFieldUpdateOperationsInput | string
-  coauthorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  coauthorId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ProjectOnProjectCoAuthorListRelationFilter = {
@@ -283,24 +283,24 @@ export type ProjectOnProjectCoAuthorProjectIdCoauthorIdCompoundUniqueInput = {
 }
 
 export type ProjectOnProjectCoAuthorCountOrderByAggregateInput = {
-  projectId?: Prisma.SortOrder
-  coauthorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  projectId?: Prisma.SortOrder
+  coauthorId?: Prisma.SortOrder
 }
 
 export type ProjectOnProjectCoAuthorMaxOrderByAggregateInput = {
-  projectId?: Prisma.SortOrder
-  coauthorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  projectId?: Prisma.SortOrder
+  coauthorId?: Prisma.SortOrder
 }
 
 export type ProjectOnProjectCoAuthorMinOrderByAggregateInput = {
-  projectId?: Prisma.SortOrder
-  coauthorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  projectId?: Prisma.SortOrder
+  coauthorId?: Prisma.SortOrder
 }
 
 export type ProjectOnProjectCoAuthorCreateNestedManyWithoutProjectInput = {
@@ -394,9 +394,9 @@ export type ProjectOnProjectCoAuthorCreateWithoutProjectInput = {
 }
 
 export type ProjectOnProjectCoAuthorUncheckedCreateWithoutProjectInput = {
-  coauthorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  coauthorId: string
 }
 
 export type ProjectOnProjectCoAuthorCreateOrConnectWithoutProjectInput = {
@@ -429,10 +429,10 @@ export type ProjectOnProjectCoAuthorScalarWhereInput = {
   AND?: Prisma.ProjectOnProjectCoAuthorScalarWhereInput | Prisma.ProjectOnProjectCoAuthorScalarWhereInput[]
   OR?: Prisma.ProjectOnProjectCoAuthorScalarWhereInput[]
   NOT?: Prisma.ProjectOnProjectCoAuthorScalarWhereInput | Prisma.ProjectOnProjectCoAuthorScalarWhereInput[]
-  projectId?: Prisma.StringFilter<"ProjectOnProjectCoAuthor"> | string
-  coauthorId?: Prisma.StringFilter<"ProjectOnProjectCoAuthor"> | string
   createdAt?: Prisma.DateTimeFilter<"ProjectOnProjectCoAuthor"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProjectOnProjectCoAuthor"> | Date | string
+  projectId?: Prisma.StringFilter<"ProjectOnProjectCoAuthor"> | string
+  coauthorId?: Prisma.StringFilter<"ProjectOnProjectCoAuthor"> | string
 }
 
 export type ProjectOnProjectCoAuthorCreateWithoutCoauthorInput = {
@@ -442,9 +442,9 @@ export type ProjectOnProjectCoAuthorCreateWithoutCoauthorInput = {
 }
 
 export type ProjectOnProjectCoAuthorUncheckedCreateWithoutCoauthorInput = {
-  projectId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  projectId: string
 }
 
 export type ProjectOnProjectCoAuthorCreateOrConnectWithoutCoauthorInput = {
@@ -474,9 +474,9 @@ export type ProjectOnProjectCoAuthorUpdateManyWithWhereWithoutCoauthorInput = {
 }
 
 export type ProjectOnProjectCoAuthorCreateManyProjectInput = {
-  coauthorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  coauthorId: string
 }
 
 export type ProjectOnProjectCoAuthorUpdateWithoutProjectInput = {
@@ -486,21 +486,21 @@ export type ProjectOnProjectCoAuthorUpdateWithoutProjectInput = {
 }
 
 export type ProjectOnProjectCoAuthorUncheckedUpdateWithoutProjectInput = {
-  coauthorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  coauthorId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ProjectOnProjectCoAuthorUncheckedUpdateManyWithoutProjectInput = {
-  coauthorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  coauthorId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ProjectOnProjectCoAuthorCreateManyCoauthorInput = {
-  projectId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  projectId: string
 }
 
 export type ProjectOnProjectCoAuthorUpdateWithoutCoauthorInput = {
@@ -510,54 +510,54 @@ export type ProjectOnProjectCoAuthorUpdateWithoutCoauthorInput = {
 }
 
 export type ProjectOnProjectCoAuthorUncheckedUpdateWithoutCoauthorInput = {
-  projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type ProjectOnProjectCoAuthorUncheckedUpdateManyWithoutCoauthorInput = {
-  projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
 
 export type ProjectOnProjectCoAuthorSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  projectId?: boolean
-  coauthorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  projectId?: boolean
+  coauthorId?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   coauthor?: boolean | Prisma.CoauthorDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["projectOnProjectCoAuthor"]>
 
 export type ProjectOnProjectCoAuthorSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  projectId?: boolean
-  coauthorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  projectId?: boolean
+  coauthorId?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   coauthor?: boolean | Prisma.CoauthorDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["projectOnProjectCoAuthor"]>
 
 export type ProjectOnProjectCoAuthorSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  projectId?: boolean
-  coauthorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  projectId?: boolean
+  coauthorId?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   coauthor?: boolean | Prisma.CoauthorDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["projectOnProjectCoAuthor"]>
 
 export type ProjectOnProjectCoAuthorSelectScalar = {
-  projectId?: boolean
-  coauthorId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  projectId?: boolean
+  coauthorId?: boolean
 }
 
-export type ProjectOnProjectCoAuthorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"projectId" | "coauthorId" | "createdAt" | "updatedAt", ExtArgs["result"]["projectOnProjectCoAuthor"]>
+export type ProjectOnProjectCoAuthorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"createdAt" | "updatedAt" | "projectId" | "coauthorId", ExtArgs["result"]["projectOnProjectCoAuthor"]>
 export type ProjectOnProjectCoAuthorInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   coauthor?: boolean | Prisma.CoauthorDefaultArgs<ExtArgs>
@@ -578,10 +578,10 @@ export type $ProjectOnProjectCoAuthorPayload<ExtArgs extends runtime.Types.Exten
     coauthor: Prisma.$CoauthorPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    projectId: string
-    coauthorId: string
     createdAt: Date
     updatedAt: Date
+    projectId: string
+    coauthorId: string
   }, ExtArgs["result"]["projectOnProjectCoAuthor"]>
   composites: {}
 }
@@ -665,8 +665,8 @@ export interface ProjectOnProjectCoAuthorDelegate<ExtArgs extends runtime.Types.
    * // Get first 10 ProjectOnProjectCoAuthors
    * const projectOnProjectCoAuthors = await prisma.projectOnProjectCoAuthor.findMany({ take: 10 })
    * 
-   * // Only select the `projectId`
-   * const projectOnProjectCoAuthorWithProjectIdOnly = await prisma.projectOnProjectCoAuthor.findMany({ select: { projectId: true } })
+   * // Only select the `createdAt`
+   * const projectOnProjectCoAuthorWithCreatedAtOnly = await prisma.projectOnProjectCoAuthor.findMany({ select: { createdAt: true } })
    * 
    */
   findMany<T extends ProjectOnProjectCoAuthorFindManyArgs>(args?: Prisma.SelectSubset<T, ProjectOnProjectCoAuthorFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectOnProjectCoAuthorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -710,9 +710,9 @@ export interface ProjectOnProjectCoAuthorDelegate<ExtArgs extends runtime.Types.
    *   ]
    * })
    * 
-   * // Create many ProjectOnProjectCoAuthors and only return the `projectId`
-   * const projectOnProjectCoAuthorWithProjectIdOnly = await prisma.projectOnProjectCoAuthor.createManyAndReturn({
-   *   select: { projectId: true },
+   * // Create many ProjectOnProjectCoAuthors and only return the `createdAt`
+   * const projectOnProjectCoAuthorWithCreatedAtOnly = await prisma.projectOnProjectCoAuthor.createManyAndReturn({
+   *   select: { createdAt: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -801,9 +801,9 @@ export interface ProjectOnProjectCoAuthorDelegate<ExtArgs extends runtime.Types.
    *   ]
    * })
    * 
-   * // Update zero or more ProjectOnProjectCoAuthors and only return the `projectId`
-   * const projectOnProjectCoAuthorWithProjectIdOnly = await prisma.projectOnProjectCoAuthor.updateManyAndReturn({
-   *   select: { projectId: true },
+   * // Update zero or more ProjectOnProjectCoAuthors and only return the `createdAt`
+   * const projectOnProjectCoAuthorWithCreatedAtOnly = await prisma.projectOnProjectCoAuthor.updateManyAndReturn({
+   *   select: { createdAt: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -1007,10 +1007,10 @@ export interface Prisma__ProjectOnProjectCoAuthorClient<T, Null = never, ExtArgs
  * Fields of the ProjectOnProjectCoAuthor model
  */
 export interface ProjectOnProjectCoAuthorFieldRefs {
-  readonly projectId: Prisma.FieldRef<"ProjectOnProjectCoAuthor", 'String'>
-  readonly coauthorId: Prisma.FieldRef<"ProjectOnProjectCoAuthor", 'String'>
   readonly createdAt: Prisma.FieldRef<"ProjectOnProjectCoAuthor", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ProjectOnProjectCoAuthor", 'DateTime'>
+  readonly projectId: Prisma.FieldRef<"ProjectOnProjectCoAuthor", 'String'>
+  readonly coauthorId: Prisma.FieldRef<"ProjectOnProjectCoAuthor", 'String'>
 }
     
 

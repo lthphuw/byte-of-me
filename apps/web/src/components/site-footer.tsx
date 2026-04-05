@@ -1,9 +1,9 @@
 import { Link } from '@/i18n/navigation';
-import { User } from '@repo/db/generated/prisma/client';
-import { Facebook, Github, Linkedin, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
-import { Routes, globalConfig } from '@/config/global';
-import { fetchData } from '@/lib/core/fetch';
+import { globalConfig, Routes } from '@/config/global';
+import { siteConfig } from '@/config/site';
+import { getUserInfoForFooter } from '@/lib/actions/public/get-user-info-for-footer';
 import { getTranslations } from '@/lib/i18n';
 import { cn, ensureValidUrl } from '@/lib/utils';
 
@@ -13,30 +13,41 @@ import { Icons } from './icons';
 type SiteFooterProps = React.HTMLAttributes<HTMLElement>;
 
 export async function SiteFooter({ className }: SiteFooterProps) {
-  const t = await getTranslations('global.footer');
-  const me = await fetchData<User>('me');
+  const [t, resp] = await Promise.all([
+    getTranslations('global.footer'),
+    getUserInfoForFooter(siteConfig.email),
+  ]);
+
+  if (!resp.success) return null;
+
+  const { profile, socialLinks } = resp.data;
+
+  const githubLink = socialLinks.find((it) => it.platform === 'github');
+  const linkedInLink = socialLinks.find((it) => it.platform === 'linkedIn');
+
+  const fullName = [profile.firstName, profile.lastName]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <footer className={cn('py-8 relative z-20', className)}>
       <div className="container max-w-[100%] mx-auto px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
-        {/* Logo and Credit */}
         <div className="flex flex-col items-center md:items-start gap-2">
           <Link href={Routes.Homepage} aria-label={t('home')}>
             <Icons.logo />
           </Link>
 
           <h2 className="flex gap-1 text-center text-sm md:text-left">
-            <span className={'hidden md:inline-block'}>{t('builtBy')}</span>
+            <span className="hidden md:inline-block">{t('builtBy')}</span>
             <a
-              href={`mailto:${me.email}`}
+              href={`mailto:${profile.email}`}
               className="font-medium underline underline-offset-4 hover:text-blue-400"
             >
-              {[me.firstName ?? '', me.lastName ?? ''].join(' ') || 'lthphuw'}
+              {fullName}
             </a>
           </h2>
         </div>
 
-        {/* Navigation Links */}
         <nav
           className="flex flex-wrap justify-center items-center md:items-start gap-2 md:gap-6"
           aria-label={t('navigation')}
@@ -52,47 +63,34 @@ export async function SiteFooter({ className }: SiteFooterProps) {
           ))}
         </nav>
 
-        {/* Social Media and License */}
         <div className="flex flex-col items-center md:items-end gap-2">
-          {/*<h3 className="text-lg font-semibold">{t('connect')}</h3>*/}
           <div className="flex gap-4">
-            {me.github && (
+            {githubLink && (
               <a
-                href={ensureValidUrl(me.github)}
+                href={ensureValidUrl(githubLink.url)}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
                 className="hover:text-blue-400"
               >
-                <Github size={20} />
+                <Icons.github size={20} />
               </a>
             )}
 
-            {me.linkedIn && (
+            {linkedInLink && (
               <a
-                href={ensureValidUrl(me.linkedIn)}
+                href={ensureValidUrl(linkedInLink.url)}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
                 className="hover:text-blue-400"
               >
-                <Linkedin size={20} />
+                <Icons.linkedin size={20} />
               </a>
             )}
 
-            {me.facebook && (
-              <a
-                href={me.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="hover:text-blue-400"
-              >
-                <Facebook size={20} />
-              </a>
-            )}
             <a
-              href={`mailto:${me.email}`}
+              href={`mailto:${profile.email}`}
               aria-label={t('email')}
               className="hover:text-blue-400"
             >
@@ -100,17 +98,17 @@ export async function SiteFooter({ className }: SiteFooterProps) {
             </a>
           </div>
 
-          <p className="text-sm text-gray-400">
-            {t('license')}{' '}
-            <a
-              href="https://github.com/lthphuw/byte-of-me/blob/main/LICENSE.md"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-blue-400"
-            >
-              MIT
-            </a>
-          </p>
+          {/*<p className="text-sm text-gray-400">*/}
+          {/*  {t('license')}{' '}*/}
+          {/*  <a*/}
+          {/*    href="https://github.com/lthphuw/byte-of-me/blob/main/LICENSE.md"*/}
+          {/*    target="_blank"*/}
+          {/*    rel="noopener noreferrer"*/}
+          {/*    className="hover:text-blue-400"*/}
+          {/*  >*/}
+          {/*    MIT*/}
+          {/*  </a>*/}
+          {/*</p>*/}
         </div>
       </div>
     </footer>

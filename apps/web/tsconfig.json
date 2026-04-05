@@ -1,20 +1,12 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowArbitraryExtensions": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@db/*": [
-        "../../packages/db/src/*"
-      ],
-      "@ai/*": [
-        "../../packages/ai/src/*"
-      ],
-      "@logger/*": [
-        "../../packages/logger/src/*"
-      ]
+      "@/*": ["src/*"]
     }
   },
   "include": [

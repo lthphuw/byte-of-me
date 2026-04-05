@@ -1,39 +1,22 @@
 'use client';
 
-import { useState } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { TechStack } from '@repo/db/generated/prisma/client';
-import { Pencil, Search, Trash2 } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useMemo, useState } from 'react';
+import Image from 'next/image';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 
+import { addTechStack } from '@/lib/actions/dashboard/tech-stack/create-tech-stack';
+import { deleteTechStack } from '@/lib/actions/dashboard/tech-stack/delete-tech-stack';
 import {
-  addTechStack,
-  deleteTechStack,
-  updateTechStack,
-} from '@/lib/actions/tech-stack';
-import { FileHelper } from '@/lib/core/file-helper';
-import { TechStackForm, techStackSchema } from '@/lib/schemas/tech-stack';
+  TechStack,
+  getAllTechStack,
+} from '@/lib/actions/dashboard/tech-stack/get-tech-stacks';
+import { updateTechStack } from '@/lib/actions/dashboard/tech-stack/update-tech-stack';
+import { TechStackFormValues } from '@/lib/schemas/tech-stack.schema';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
-import { SubmitButton } from '@/components/submit-button';
+
+import { TechStackDialog } from './tech-stack-dialog';
 
 export function TechStackManager({
   initialTechStacks,
@@ -41,257 +24,132 @@ export function TechStackManager({
   initialTechStacks: TechStack[];
 }) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const [techStacks, setTechStacks] = useState(initialTechStacks);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTechStack, setSelectedTechStack] = useState<TechStack | null>(
-    null
-  );
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editing, setEditing] = useState<TechStack | null>(null);
+  const [open, setOpen] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { isSubmitting, errors },
-  } = useForm<TechStackForm>({
-    resolver: zodResolver(techStackSchema),
-    defaultValues: {
-      slug: '',
-      name: '',
-      group: '',
-      logo: null,
+  const { data: response } = useQuery({
+    queryKey: ['techStacks'],
+    queryFn: getAllTechStack,
+    initialData: { success: true, data: initialTechStacks },
+  });
+
+  const techStacks = response?.success ? response.data : [];
+
+  const saveMutation = useMutation({
+    mutationFn: (values: TechStackFormValues) =>
+      editing ? updateTechStack(editing.id, values) : addTechStack(values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['techStacks'] });
+      toast({ title: editing ? 'Tech updated' : 'Tech added' });
+      setOpen(false);
     },
   });
 
-  const filteredTechStacks = techStacks.filter(
-    (tech) =>
-      tech.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tech.group.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const deleteMutation = useMutation({
+    mutationFn: deleteTechStack,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['techStacks'] });
+      toast({ title: 'Tech removed' });
+    },
+  });
 
-  const openAddDialog = () => {
-    setSelectedTechStack(null);
-    reset();
-    setLogoFile(null);
-    setIsDialogOpen(true);
+  const grouped = useMemo(() => {
+    return techStacks.reduce<Record<string, TechStack[]>>((acc, item) => {
+      const groupName = item.group || 'Other';
+      if (!acc[groupName]) acc[groupName] = [];
+      acc[groupName].push(item);
+      return acc;
+    }, {});
+  }, [techStacks]);
+
+  const handleOpenEdit = (tech: TechStack) => {
+    setEditing(tech);
+    setOpen(true);
   };
 
-  const openEditDialog = (tech: TechStack) => {
-    setSelectedTechStack(tech);
-    reset({
-      slug: tech.slug,
-      name: tech.name,
-      group: tech.group,
-      logo: tech.logo,
-    });
-    setLogoFile(null);
-    setIsDialogOpen(true);
+  const handleOpenCreate = () => {
+    setEditing(null);
+    setOpen(true);
   };
 
-  const closeDialog = () => {
-    setIsDialogOpen(false);
-    setSelectedTechStack(null);
-    reset();
-    setLogoFile(null);
-  };
-  const onSubmit = async (values: TechStackForm) => {
-    try {
-      let logoBase64 = values.logo;
-
-      if (logoFile) {
-        logoBase64 = await FileHelper.fileToBase64(logoFile);
-      }
-
-      const payload = {
-        ...values,
-        logo: logoBase64 || null,
-      };
-
-      const updatedTech = selectedTechStack
-        ? await updateTechStack({
-            id: selectedTechStack.id,
-            ...payload,
-          })
-        : await addTechStack(payload);
-
-      setTechStacks((prev) =>
-        updatedTech
-          ? selectedTechStack
-            ? prev.map((t) => (t.id === updatedTech.id ? updatedTech : t))
-            : [...prev, updatedTech]
-          : prev
-      );
-
-      toast({
-        title: 'Success',
-        description: `Tech stack ${
-          selectedTechStack ? 'updated' : 'added'
-        } successfully`,
-      });
-
-      closeDialog();
-    } catch {
-      toast({
-        title: 'Error',
-        description: 'Failed to save tech stack',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!deleteConfirmId) return;
-
-    try {
-      await deleteTechStack(deleteConfirmId);
-      setTechStacks((prev) => prev.filter((t) => t.id !== deleteConfirmId));
-      toast({
-        title: 'Deleted',
-        description: 'Tech stack deleted successfully',
-      });
-    } finally {
-      setDeleteConfirmId(null);
-    }
+  const handleSubmit = async (values: TechStackFormValues) => {
+    await saveMutation.mutateAsync(values);
   };
 
   return (
-    <div className="space-y-6">
-      {/* Search */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search by name or group..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <Button onClick={openAddDialog}>Add Tech</Button>
+    <div className="space-y-8">
+      <div className="flex justify-end">
+        <Button onClick={handleOpenCreate} size="sm">
+          <Plus className="mr-2 h-4 w-4" /> Add TechStack
+        </Button>
       </div>
 
-      {/* Table */}
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Logo</TableHead>
-              <TableHead>Slug</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Group</TableHead>
-              <TableHead className="w-[90px]" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredTechStacks.map((tech) => (
-              <TableRow key={tech.id}>
-                <TableCell>
-                  {tech.logo ? (
-                    <img src={tech.logo} className="h-6 w-6" />
-                  ) : (
-                    '-'
+      <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+        {Object.entries(grouped).map(([group, items]) => (
+          <div
+            key={group}
+            className="space-y-3 break-inside-avoid border-2 border-dashed rounded-md p-4"
+          >
+            <h3 className="text-base font-semibold">{group}</h3>
+
+            {items.map((tech) => (
+              <div
+                key={tech.id}
+                className="flex p-2 gap-2 justify-between border-dashed border rounded-md items-center"
+              >
+                <div className="flex gap-2 items-center">
+                  {tech.logo?.url && (
+                    <Image
+                      src={tech.logo.url}
+                      alt={tech.name}
+                      width={32}
+                      height={32}
+                    />
                   )}
-                </TableCell>
-                <TableCell>{tech.slug}</TableCell>
-                <TableCell>{tech.name}</TableCell>
-                <TableCell>{tech.group}</TableCell>
-                <TableCell className="flex gap-1">
+                  <div className={'flex flex-col gap-2'}>
+                    <p className={'text-sm'}>{tech.name}</p>
+                    <p className={'text-sm text-muted-foreground'}>
+                      {tech.slug}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-1">
                   <Button
+                    variant={'ghost'}
                     size="icon"
-                    variant="ghost"
-                    onClick={() => openEditDialog(tech)}
+                    onClick={() => handleOpenEdit(tech)}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
+
                   <Button
+                    variant={'ghost'}
                     size="icon"
-                    variant="ghost"
-                    onClick={() => setDeleteConfirmId(tech.id)}
+                    onClick={() => deleteMutation.mutate(tech.id)}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    {deleteMutation.isPending ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <Trash2 />
+                    )}
                   </Button>
-                </TableCell>
-              </TableRow>
+                </div>
+              </div>
             ))}
-          </TableBody>
-        </Table>
+          </div>
+        ))}
       </div>
 
-      {/* Add / Edit Dialog */}
-      <Dialog
-        open={isDialogOpen}
-        onOpenChange={(open) => {
-          if (!open) closeDialog();
-        }}
-      >
-        <DialogContent>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <fieldset disabled={isSubmitting} className="space-y-4">
-              <DialogHeader>
-                <DialogTitle>
-                  {selectedTechStack ? 'Edit' : 'Add'} Tech Stack
-                </DialogTitle>
-              </DialogHeader>
-
-              {['slug', 'name', 'group'].map((field) => (
-                <div key={field} className="space-y-1">
-                  <Label>{field}</Label>
-                  <Input {...register(field as any)} />
-                  {errors[field as keyof typeof errors] && (
-                    <p className="text-xs text-destructive">
-                      {errors[field as keyof typeof errors]?.message}
-                    </p>
-                  )}
-                </div>
-              ))}
-
-              <div className="space-y-1">
-                <Label>Logo</Label>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setLogoFile(e.target.files?.[0] ?? null)}
-                />
-              </div>
-
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={closeDialog}>
-                  Cancel
-                </Button>
-                <SubmitButton loading={isSubmitting}>Save</SubmitButton>
-              </DialogFooter>
-            </fieldset>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Dialog */}
-      <Dialog
-        open={!!deleteConfirmId}
-        onOpenChange={() => setDeleteConfirmId(null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm delete</DialogTitle>
-            <DialogDescription>This action cannot be undone.</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
-              Cancel
-            </Button>
-            <SubmitButton
-              loading={false}
-              variant="destructive"
-              onClick={handleDelete}
-            >
-              Delete
-            </SubmitButton>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <TechStackDialog
+        open={open}
+        onOpenChange={setOpen}
+        initialData={editing}
+        onSubmit={handleSubmit}
+        loading={saveMutation.isPending}
+      />
     </div>
   );
 }

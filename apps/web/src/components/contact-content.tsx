@@ -2,9 +2,14 @@
 
 import { Link } from '@/i18n/navigation';
 import { Variants, motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
-import { useTranslations } from '@/hooks/use-translations';
+import { ContactForm } from '@/components/contact-form';
 import { Icons } from '@/components/icons';
+
+
+
+
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -24,12 +29,14 @@ const itemVariants: Variants = {
 };
 
 export type ContactContentProps = {
+  userId: string;
   email?: string;
   linkedIn?: string;
   github?: string;
 };
 
 export function ContactContent({
+                                 userId,
                                  email,
                                  linkedIn,
                                  github,
@@ -70,7 +77,6 @@ export function ContactContent({
       initial="hidden"
       animate="visible"
       className="
-        h-[50vh]
         flex
         items-center
         justify-center
@@ -80,6 +86,7 @@ export function ContactContent({
       <div className="w-full max-w-md space-y-8">
         {/* Header */}
         <motion.div
+          id={"contact-info"}
           variants={itemVariants}
           className="text-center space-y-2"
         >
@@ -165,6 +172,21 @@ export function ContactContent({
               </motion.div>
             );
           })}
+        </motion.div>
+
+        <motion.div
+          id={"contact-send-message"} variants={itemVariants} className="pt-6">
+          <div className="text-center text-xs text-muted-foreground mb-4">
+            {t('or')}
+          </div>
+
+          <div className="rounded-lg border border-border p-4 space-y-4">
+            <p className="text-sm font-medium text-center">
+              {t('sendMeADirectMessage')}
+            </p>
+
+            <ContactForm userId={userId} />
+          </div>
         </motion.div>
       </div>
     </motion.section>

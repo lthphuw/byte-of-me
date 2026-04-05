@@ -12,7 +12,7 @@ function ShellBase({ children, className, ...props }: ShellProps) {
   return (
     <section
       className={cn(
-        'mx-auto w-full px-4 pb-16 pt-20 sm:px-6 sm:pt-32 z-20',
+        'mx-auto w-full pb-16 pt-20 sm:px-6 sm:pt-32 z-20',
         className
       )}
       {...props}
@@ -50,6 +50,24 @@ export function ExperienceShell({ className, ...props }: ShellProps) {
 }
 
 export function ProjectsShell({ className, ...props }: ShellProps) {
+  return (
+    <ShellBase
+      className={cn('flex max-w-5xl flex-col gap-8', className)}
+      {...props}
+    />
+  );
+}
+
+export function BlogsShell({ className, ...props }: ShellProps) {
+  return (
+    <ShellBase
+      className={cn('flex max-w-5xl flex-col gap-8', className)}
+      {...props}
+    />
+  );
+}
+
+export function BlogDetailsShell({ className, ...props }: ShellProps) {
   return (
     <ShellBase
       className={cn('flex max-w-5xl flex-col gap-8', className)}

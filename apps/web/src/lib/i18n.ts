@@ -22,30 +22,10 @@ export async function getTranslations(namespace?: string): ServerTranslator {
   };
 }
 
-export function translateDeep(
-  value: any,
-  t: (key: string) => string
-): any {
-  if (Array.isArray(value)) {
-    return value.map((v) => translateDeep(v, t));
-  }
-
-  if (value && typeof value === 'object') {
-    return Object.fromEntries(
-      Object.entries(value).map(([k, v]) => [
-        k,
-        translateDeep(v, t),
-      ])
-    );
-  }
-
-  if (typeof value === 'string') {
-    try {
-      return t(value);
-    } catch {
-      return value;
-    }
-  }
-
-  return value;
+export function getTranslatedContent<T extends { language: string }>(translations: T[], locale: string): T {
+  return (
+    translations.find((t) => t.language === locale) ||
+    translations.find((t) => t.language === 'en') ||
+    translations[0]
+  );
 }

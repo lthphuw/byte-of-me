@@ -26,3 +26,14 @@ export function stripHtml(html: string): string {
   div.innerHTML = html;
   return div.textContent || div.innerText || '';
 }
+
+export function formatImageSize(bytes: number) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return (
+    parseFloat((bytes / Math.pow(k, i)).toFixed(1)) +
+    ' ' +
+    ['Bytes', 'KB', 'MB'][i]
+  );
+}

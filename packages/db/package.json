@@ -1,12 +1,22 @@
 {
-  "name": "@repo/db",
-  "version": "1.0.0",
+  "name": "@byte-of-me/db",
+  "version": "0.0.0",
   "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
-    "generate": "prisma generate"
+    "generate": "prisma generate",
+    "build": "swc src -d dist --strip-leading-paths",
+    "types": "tsc --emitDeclarationOnly --declaration --skipLibCheck || echo 'Ignoring Prisma type errors...'",
+    "clean": "rm -rf dist"
   },
   "devDependencies": {
-    "@types/node": "^18.19.130",
+    "@prisma/client-runtime-utils": "^7.5.0",
+    "@swc/cli": "^0.8.0",
+    "@swc/core": "^1.15.18",
+    "@types/node": "^25.5.0",
     "dotenv": "^16.6.0",
     "prisma": "^7.0.0",
     "ts-node": "^10.9.2",
@@ -14,11 +24,8 @@
     "typescript": "5.8.3"
   },
   "dependencies": {
+    "@byte-of-me/logger": "workspace:*",
     "@prisma/adapter-pg": "^7.0.1",
     "@prisma/client": "^7.0.0"
-  },
-  "exports": {
-    ".": "./src/index.ts",
-    "./client": "./src/client.ts"
   }
 }

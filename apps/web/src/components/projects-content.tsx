@@ -1,112 +1,115 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useDebouncedValue } from '@mantine/hooks';
-import { Tag, TechStack } from '@repo/db/generated/prisma/client';
-import Fuse from 'fuse.js';
+import { useState } from 'react';
+import { Project } from '@/models/project';
+import { Tag } from '@/models/tag';
+import { TechStack } from '@/models/tech-stack';
+import { useQuery } from '@tanstack/react-query';
 
-import { CategoryFilter } from '@/components/category-filter';
-import { SearchBar, SearchItem } from '@/components/search-bar';
-
-import { ProjectList, ProjectProps } from './project-list';
+import { PaginatedData } from '@/types/api/paginated.type';
+import { getPaginatedPublicProjects } from '@/lib/actions/public/get-public-projects';
+import { EmptyProject } from '@/components/empty-project';
+import Loading from '@/components/loading';
+import { Pagination } from '@/components/pagination';
+import { ProjectCard } from '@/components/project-card';
+import { ProjectFilter } from '@/components/project-filter';
 
 interface ProjectsContentProps {
-  projects: ProjectProps[];
+  initProjects: PaginatedData<Project>;
   tags: Tag[];
   techStacks: TechStack[];
 }
 
-const fuseOptions = {
-  keys: ['title', 'description', 'techstacks.name', 'tags.name'],
-  threshold: 0.4,
-  ignoreLocation: true,
-  minMatchCharLength: 2,
-};
-
 export function ProjectsContent({
-  projects,
+  initProjects,
   techStacks,
   tags,
 }: ProjectsContentProps) {
-  const searchParams = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-  const [debouncedQuery] = useDebouncedValue(searchQuery, 300);
-  const isTyping = searchQuery !== debouncedQuery;
+  const [page, setPage] = useState(1);
+  const [filters, setFilters] = useState({
+    tagSlugs: [] as string[],
+    techStackSlugs: [] as string[],
+    search: '',
+  });
 
-  const [selectedTags, setSelectedTags] = useState<string[]>(
-    searchParams.getAll('tag')
-  );
-  const [selectedTechstacks, setSelectedTechstacks] = useState<string[]>(
-    searchParams.getAll('tech,stack')
-  );
+  const { data, isLoading, isPlaceholderData } = useQuery({
+    queryKey: ['public-projects', page, filters],
+    queryFn: () => getPaginatedPublicProjects({ ...filters, page, limit: 9 }),
+    placeholderData: (previousData) => previousData,
+    initialData: {
+      success: true,
+      data: initProjects,
+    },
+  });
 
-  const fuse = useMemo(() => {
-    return new Fuse(projects, fuseOptions);
-  }, [projects]);
+  const projects = data?.data?.data || [];
+  const pagination = data?.data?.meta || {
+    currentPage: 1,
+    totalCount: 0,
+    totalPages: 1,
+    hasMore: false,
+  };
 
-  const { showedItems, previewItems } = useMemo(() => {
-    let filtered = projects;
-    let preview: SearchItem[] = [];
+  const toggleTag = (slug: string) => {
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      tagSlugs: prev.tagSlugs.includes(slug)
+        ? prev.tagSlugs.filter((s) => s !== slug)
+        : [...prev.tagSlugs, slug],
+    }));
+  };
 
-    if (debouncedQuery.trim()) {
-      const results = fuse.search(debouncedQuery);
-      filtered = results.map((r) => r.item);
-      preview = results.slice(0, 5).map((r) => ({
-        id: r.item.id,
-        slug: r.item.slug,
-        label: r.item.title,
-        desc: r.item.description || '',
-      }));
-    }
-
-    if (selectedTags.length > 0) {
-      filtered = filtered.filter((p) =>
-        selectedTags.some((slug) => p.tags.some((t) => t.tag.slug === slug))
-      );
-    }
-
-    if (selectedTechstacks.length > 0) {
-      filtered = filtered.filter((p) =>
-        selectedTechstacks.some((slug) =>
-          p.techstacks.some((t) => t.techstack.slug === slug)
-        )
-      );
-    }
-
-    return {
-      showedItems: filtered.sort((a, b) => a.title.localeCompare(b.title)),
-      previewItems: preview,
-    };
-  }, [projects, debouncedQuery, selectedTags, selectedTechstacks, fuse]);
+  const toggleTech = (slug: string) => {
+    setPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      techStackSlugs: prev.techStackSlugs.includes(slug)
+        ? prev.techStackSlugs.filter((s) => s !== slug)
+        : [...prev.techStackSlugs, slug],
+    }));
+  };
 
   return (
     <div className="container px-4 py-8 md:px-6 flex flex-col gap-6 md:gap-8">
-      <div className="md:sticky md:top-4 md:h-fit">
-        <SearchBar
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          previewItems={previewItems}
-          isLoading={isTyping}
-        />
+      <ProjectFilter
+        tags={tags}
+        techStacks={techStacks}
+        value={filters}
+        onChange={(next) => {
+          setPage(1);
+          setFilters(next);
+        }}
+      />
 
-        <CategoryFilter
-          techstacks={techStacks?.map((it) => ({
-            id: it.slug || it.id,
-            label: it.name,
-          }))}
-          tags={tags?.map((it) => ({
-            id: it.slug || it.id,
-            label: it.name,
-          }))}
-          selectedTags={selectedTags}
-          selectedTechstacks={selectedTechstacks}
-          setSelectedTags={setSelectedTags}
-          setSelectedTechstacks={setSelectedTechstacks}
-        />
+      {/* PROJECT GRID */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        {isLoading ? (
+          <div className="col-span-full flex justify-center items-center py-10">
+            <Loading />
+          </div>
+        ) : projects.length === 0 ? (
+          <div className="col-span-full flex justify-center items-center py-10">
+            <EmptyProject message="No projects match your filters" />
+          </div>
+        ) : (
+          projects.map((project) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onTagClick={(slug) => toggleTag(slug)}
+              onTechClick={(slug) => toggleTech(slug)}
+            />
+          ))
+        )}
       </div>
 
-      <ProjectList isLoading={isTyping} projects={showedItems} />
+      {/* PAGINATION */}
+      <Pagination
+        setPage={setPage}
+        pagination={pagination}
+        isPlaceholderData={isPlaceholderData}
+      />
     </div>
   );
 }

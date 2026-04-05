@@ -13,7 +13,7 @@ import {
   Copy,
   CreditCard,
   Dumbbell,
-  Facebook,
+  ExternalLink,
   File,
   FileText,
   FileUser,
@@ -21,12 +21,10 @@ import {
   FolderCog,
   FolderSearch,
   Frown,
-  Github,
   HelpCircle,
   Image,
   Languages,
   Laptop,
-  Linkedin,
   Loader2,
   LucideProps,
   Mail,
@@ -40,7 +38,6 @@ import {
   SunMedium,
   Swords,
   Trash,
-  Twitter,
   User,
   X,
 } from 'lucide-react';
@@ -73,13 +70,10 @@ export const Icons = {
   sun: SunMedium,
   moon: Moon,
   laptop: Laptop,
-  github: Github,
-  twitter: Twitter,
-  linkedin: Linkedin,
-  facebook: Facebook,
   email: Mail,
   check: Check,
   i18n: Languages,
+  externalLink: ExternalLink,
   toc: ({ className, ...props }: LucideProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -167,4 +161,41 @@ export const Icons = {
   file: FileText,
   component: Component,
   sparkles: Sparkles,
+  facebook: (props: LucideProps) => (
+    <RemoteSVG src="/feather/facebook.svg" {...props} />
+  ),
+  linkedin: (props: LucideProps) => (
+    <RemoteSVG src="/feather/linkedin.svg" {...props} />
+  ),
+  github: (props: LucideProps) => (
+    <RemoteSVG src="/feather/github.svg" {...props} />
+  ),
 };
+interface CustomIconProps extends LucideProps {
+  src: string;
+}
+
+const RemoteSVG = ({
+  src,
+  size = 24,
+  className,
+  ref,
+  absoluteStrokeWidth,
+  strokeWidth,
+  color,
+  ...props
+}: CustomIconProps) => (
+  <div
+    className={cn('bg-current shrink-0', className)}
+    style={{
+      width: size,
+      height: size,
+      maskImage: `url(${src})`,
+      WebkitMaskImage: `url(${src})`,
+      maskRepeat: 'no-repeat',
+      WebkitMaskRepeat: 'no-repeat',
+      maskSize: 'contain',
+      WebkitMaskSize: 'contain',
+    }}
+  />
+);

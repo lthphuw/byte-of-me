@@ -1,115 +1,87 @@
 'use client';
 
-import { User } from '@repo/db/generated/prisma/client';
+import { Education } from '@/models/education';
+import { TechStack } from '@/models/tech-stack';
+import { UserProfile } from '@/models/user-profile';
 import { motion } from 'framer-motion';
-import { GraduationCap, Layers, User as UserIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
-import { useTranslations } from '@/hooks/use-translations';
+import { EducationSection } from '@/components/education-section';
 import { RichText } from '@/components/rich-text';
-import { TechGroup, TechStackGroup } from '@/components/tech-stack-group';
-import { EducationTimeline, EducationTimelineItemProps } from '@/components/timeline';
+import { TechStackSection } from '@/components/tech-stack-section';
 
-const fadeInUp = {
-  hidden: { opacity: 0, y: 24 },
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+    },
+  },
+} as const;
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.4, ease: 'easeOut' },
+    transition: { duration: 0.5, ease: 'easeOut' },
   },
-} as any;
+} as const;
 
-type AboutContentProps = {
-  user: User;
-  techGroups: TechGroup[];
-  educationItems: EducationTimelineItemProps[];
+type Props = {
+  userProfile: UserProfile;
+  techStacks: TechStack[];
+  educations: Education[];
 };
 
-export function AboutContent({
-  user,
-  techGroups,
-  educationItems,
-}: AboutContentProps) {
+export function AboutContent({ userProfile, techStacks, educations }: Props) {
   const t = useTranslations();
 
   return (
-    <div className="relative flex justify-center px-4 md:px-8 py-12">
-      <div className="relative w-full max-w-4xl space-y-16">
-        {/* ABOUT ME */}
-        <motion.section
-          id="aboutme"
-          variants={fadeInUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          className="space-y-4"
-        >
-          <div className="flex items-center gap-2">
-            <UserIcon className="size-4 md:size-6" />
-            <h2 className="text-xl md:text-3xl font-bold">
-              {t('about.section.aboutMe')}
+    <div className="flex justify-center px-4 md:px-8 py-12">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-100px' }}
+        className="w-full max-w-4xl space-y-20"
+      >
+        {userProfile.aboutMe && (
+          <motion.section variants={itemVariants} className="space-y-6">
+            <div className="flex items-center gap-4">
+              <h2 className="text-2xl md:text-4xl font-bold tracking-tight">
+                {t('about.section.aboutMe')}
+              </h2>
+            </div>
+            <div className="pl-0 border-l border-border/40 ml-0.5">
+              <RichText content={userProfile.aboutMe} />
+            </div>
+          </motion.section>
+        )}
+
+        <motion.section variants={itemVariants} className="space-y-8">
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight">
+              {t('about.section.education')}
             </h2>
           </div>
-
-          <RichText html={user.aboutMe} />
-        </motion.section>
-
-        {/* EDUCATION */}
-        <motion.section
-          id="education"
-          variants={fadeInUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          className="space-y-6"
-        >
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <GraduationCap className="size-4 md:size-6" />
-              <h2 className="text-xl md:text-3xl font-bold">
-                {t('about.section.education')}
-              </h2>
-            </div>
+          <div className="pl-0">
+            <EducationSection educations={educations} />
           </div>
-
-          <EducationTimeline
-            items={educationItems.map((item) => ({
-              ...item,
-              message: (
-                <RichText html={item.message as string} />
-              ),
-              subItems:
-                item.subItems &&
-                item.subItems.map((sub) => ({
-                  title: sub.title,
-                  message: (
-                    <RichText html={sub.message as string} />
-                  ),
-                })),
-            }))}
-          />
         </motion.section>
 
-        {/* SKILLS */}
-        <motion.section
-          id="skills"
-          variants={fadeInUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          className="space-y-6"
-        >
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <Layers className="size-4 md:size-6" />
-              <h2 className="text-xl md:text-3xl font-bold">
-                {t('about.section.skillsTechStack')}
-              </h2>
-            </div>
+        <motion.section variants={itemVariants} className="space-y-8">
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight">
+              {t('about.section.skillsTechStack')}
+            </h2>
           </div>
-
-          <TechStackGroup groups={techGroups} />
+          <div className="pl-0">
+            <TechStackSection techStacks={techStacks} />
+          </div>
         </motion.section>
-      </div>
+      </motion.div>
     </div>
   );
 }

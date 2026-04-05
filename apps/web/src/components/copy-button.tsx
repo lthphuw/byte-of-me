@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { MouseEvent, useCallback } from 'react';
 import { useClipboard } from '@mantine/hooks';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -8,34 +8,51 @@ import { defaultSpring, iconSwicthVariants } from '@/config/anim';
 import { cn } from '@/lib/utils';
 import { Icons } from '@/components/icons';
 
-
-
-
-
-export type CopyButtonProps = BaseComponentProps & {
+export interface CopyButtonProps {
   copyTimeout?: number;
   content: string;
-};
+  className?: string;
+  style?: React.CSSProperties;
+}
 
-export function CopyButton({copyTimeout = 2000 , content, className, style}:CopyButtonProps) {
+export function CopyButton({
+  copyTimeout = 2000,
+  content,
+  className,
+  style,
+}: CopyButtonProps) {
   const { copy, copied } = useClipboard({ timeout: copyTimeout });
-  const onCopy = useCallback(() => copy(content), [content]);
+
+  const onCopy = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      copy(content);
+    },
+    [copy, content]
+  );
 
   return (
-    <div className={cn('relative size-4', className)} style={style}>
-      <AnimatePresence initial={false}>
+    <div
+      className={cn(
+        'relative flex items-center justify-center size-8 rounded-md bg-white shadow-sm border border-neutral-200 hover:bg-neutral-50 transition-colors',
+        className
+      )}
+      style={style}
+    >
+      <AnimatePresence mode="wait" initial={false}>
         {copied ? (
-          <motion.button
+          <motion.div
             key="check"
             variants={iconSwicthVariants}
             initial="initial"
             animate="animate"
             exit="exit"
             transition={defaultSpring}
-            className="absolute inset-0"
+            className="flex items-center justify-center text-green-600"
           >
-            <Icons.check size={16} />
-          </motion.button>
+            <Icons.check size={14} />
+          </motion.div>
         ) : (
           <motion.button
             key="copy"
@@ -45,12 +62,13 @@ export function CopyButton({copyTimeout = 2000 , content, className, style}:Copy
             exit="exit"
             transition={defaultSpring}
             onClick={onCopy}
-            className="absolute inset-0"
+            className="flex items-center justify-center text-neutral-600 hover:text-neutral-900 focus:outline-none"
+            aria-label="Copy to clipboard"
           >
-            <Icons.copy size={16} />
+            <Icons.copy size={14} />
           </motion.button>
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }

@@ -1,22 +1,15 @@
 'use client';
 
 import { FolderCode } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
-import { useTranslations } from '@/hooks/use-translations';
-import {
-  Empty,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@/components/ui/empty';
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, } from '@/components/ui/empty';
 
+export type EmptyProjectProps = BaseComponentProps & {
+  message?: string;
+};
 
-
-
-
-export type EmptyProjectProps = BaseComponentProps;
-
-export function EmptyProject({ className, style }: EmptyProjectProps) {
+export function EmptyProject({ message, className, style }: EmptyProjectProps) {
   const t = useTranslations();
   return (
     <Empty className={className} style={style}>
@@ -24,7 +17,7 @@ export function EmptyProject({ className, style }: EmptyProjectProps) {
         <EmptyMedia variant="icon">
           <FolderCode />
         </EmptyMedia>
-        <EmptyTitle>{t('project.thereAreNoProjectsYet')}</EmptyTitle>
+        <EmptyTitle>{message ?? t('project.thereAreNoProjectsYet')}</EmptyTitle>
       </EmptyHeader>
     </Empty>
   );

@@ -20,58 +20,76 @@ export type TaskModel = runtime.Types.Result.DefaultSelection<Prisma.$TaskPayloa
 
 export type AggregateTask = {
   _count: TaskCountAggregateOutputType | null
+  _avg: TaskAvgAggregateOutputType | null
+  _sum: TaskSumAggregateOutputType | null
   _min: TaskMinAggregateOutputType | null
   _max: TaskMaxAggregateOutputType | null
 }
 
+export type TaskAvgAggregateOutputType = {
+  sortOrder: number | null
+}
+
+export type TaskSumAggregateOutputType = {
+  sortOrder: number | null
+}
+
 export type TaskMinAggregateOutputType = {
   id: string | null
-  experienceRoleId: string | null
-  content: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  sortOrder: number | null
+  roleId: string | null
 }
 
 export type TaskMaxAggregateOutputType = {
   id: string | null
-  experienceRoleId: string | null
-  content: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  sortOrder: number | null
+  roleId: string | null
 }
 
 export type TaskCountAggregateOutputType = {
   id: number
-  experienceRoleId: number
-  content: number
   createdAt: number
   updatedAt: number
+  sortOrder: number
+  roleId: number
   _all: number
 }
 
 
+export type TaskAvgAggregateInputType = {
+  sortOrder?: true
+}
+
+export type TaskSumAggregateInputType = {
+  sortOrder?: true
+}
+
 export type TaskMinAggregateInputType = {
   id?: true
-  experienceRoleId?: true
-  content?: true
   createdAt?: true
   updatedAt?: true
+  sortOrder?: true
+  roleId?: true
 }
 
 export type TaskMaxAggregateInputType = {
   id?: true
-  experienceRoleId?: true
-  content?: true
   createdAt?: true
   updatedAt?: true
+  sortOrder?: true
+  roleId?: true
 }
 
 export type TaskCountAggregateInputType = {
   id?: true
-  experienceRoleId?: true
-  content?: true
   createdAt?: true
   updatedAt?: true
+  sortOrder?: true
+  roleId?: true
   _all?: true
 }
 
@@ -113,6 +131,18 @@ export type TaskAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: TaskAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: TaskSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: TaskMinAggregateInputType
@@ -143,17 +173,21 @@ export type TaskGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: TaskCountAggregateInputType | true
+  _avg?: TaskAvgAggregateInputType
+  _sum?: TaskSumAggregateInputType
   _min?: TaskMinAggregateInputType
   _max?: TaskMaxAggregateInputType
 }
 
 export type TaskGroupByOutputType = {
   id: string
-  experienceRoleId: string
-  content: string
   createdAt: Date
   updatedAt: Date
+  sortOrder: number
+  roleId: string
   _count: TaskCountAggregateOutputType | null
+  _avg: TaskAvgAggregateOutputType | null
+  _sum: TaskSumAggregateOutputType | null
   _min: TaskMinAggregateOutputType | null
   _max: TaskMaxAggregateOutputType | null
 }
@@ -178,20 +212,22 @@ export type TaskWhereInput = {
   OR?: Prisma.TaskWhereInput[]
   NOT?: Prisma.TaskWhereInput | Prisma.TaskWhereInput[]
   id?: Prisma.StringFilter<"Task"> | string
-  experienceRoleId?: Prisma.StringFilter<"Task"> | string
-  content?: Prisma.StringFilter<"Task"> | string
   createdAt?: Prisma.DateTimeFilter<"Task"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Task"> | Date | string
-  experienceRole?: Prisma.XOR<Prisma.ExperienceRoleScalarRelationFilter, Prisma.ExperienceRoleWhereInput>
+  sortOrder?: Prisma.IntFilter<"Task"> | number
+  roleId?: Prisma.StringFilter<"Task"> | string
+  role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>
+  translations?: Prisma.TaskTranslationListRelationFilter
 }
 
 export type TaskOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  experienceRoleId?: Prisma.SortOrder
-  content?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  experienceRole?: Prisma.ExperienceRoleOrderByWithRelationInput
+  sortOrder?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
+  role?: Prisma.RoleOrderByWithRelationInput
+  translations?: Prisma.TaskTranslationOrderByRelationAggregateInput
 }
 
 export type TaskWhereUniqueInput = Prisma.AtLeast<{
@@ -199,22 +235,25 @@ export type TaskWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.TaskWhereInput | Prisma.TaskWhereInput[]
   OR?: Prisma.TaskWhereInput[]
   NOT?: Prisma.TaskWhereInput | Prisma.TaskWhereInput[]
-  experienceRoleId?: Prisma.StringFilter<"Task"> | string
-  content?: Prisma.StringFilter<"Task"> | string
   createdAt?: Prisma.DateTimeFilter<"Task"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Task"> | Date | string
-  experienceRole?: Prisma.XOR<Prisma.ExperienceRoleScalarRelationFilter, Prisma.ExperienceRoleWhereInput>
+  sortOrder?: Prisma.IntFilter<"Task"> | number
+  roleId?: Prisma.StringFilter<"Task"> | string
+  role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>
+  translations?: Prisma.TaskTranslationListRelationFilter
 }, "id">
 
 export type TaskOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  experienceRoleId?: Prisma.SortOrder
-  content?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
   _count?: Prisma.TaskCountOrderByAggregateInput
+  _avg?: Prisma.TaskAvgOrderByAggregateInput
   _max?: Prisma.TaskMaxOrderByAggregateInput
   _min?: Prisma.TaskMinOrderByAggregateInput
+  _sum?: Prisma.TaskSumOrderByAggregateInput
 }
 
 export type TaskScalarWhereWithAggregatesInput = {
@@ -222,65 +261,69 @@ export type TaskScalarWhereWithAggregatesInput = {
   OR?: Prisma.TaskScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TaskScalarWhereWithAggregatesInput | Prisma.TaskScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Task"> | string
-  experienceRoleId?: Prisma.StringWithAggregatesFilter<"Task"> | string
-  content?: Prisma.StringWithAggregatesFilter<"Task"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Task"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Task"> | Date | string
+  sortOrder?: Prisma.IntWithAggregatesFilter<"Task"> | number
+  roleId?: Prisma.StringWithAggregatesFilter<"Task"> | string
 }
 
 export type TaskCreateInput = {
   id?: string
-  content: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  experienceRole: Prisma.ExperienceRoleCreateNestedOneWithoutTasksInput
+  sortOrder?: number
+  role: Prisma.RoleCreateNestedOneWithoutTasksInput
+  translations?: Prisma.TaskTranslationCreateNestedManyWithoutTaskInput
 }
 
 export type TaskUncheckedCreateInput = {
   id?: string
-  experienceRoleId: string
-  content: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  sortOrder?: number
+  roleId: string
+  translations?: Prisma.TaskTranslationUncheckedCreateNestedManyWithoutTaskInput
 }
 
 export type TaskUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  experienceRole?: Prisma.ExperienceRoleUpdateOneRequiredWithoutTasksNestedInput
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  role?: Prisma.RoleUpdateOneRequiredWithoutTasksNestedInput
+  translations?: Prisma.TaskTranslationUpdateManyWithoutTaskNestedInput
 }
 
 export type TaskUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  experienceRoleId?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  roleId?: Prisma.StringFieldUpdateOperationsInput | string
+  translations?: Prisma.TaskTranslationUncheckedUpdateManyWithoutTaskNestedInput
 }
 
 export type TaskCreateManyInput = {
   id?: string
-  experienceRoleId: string
-  content: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  sortOrder?: number
+  roleId: string
 }
 
 export type TaskUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type TaskUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  experienceRoleId?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  roleId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TaskListRelationFilter = {
@@ -295,108 +338,137 @@ export type TaskOrderByRelationAggregateInput = {
 
 export type TaskCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  experienceRoleId?: Prisma.SortOrder
-  content?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
+}
+
+export type TaskAvgOrderByAggregateInput = {
+  sortOrder?: Prisma.SortOrder
 }
 
 export type TaskMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  experienceRoleId?: Prisma.SortOrder
-  content?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
 }
 
 export type TaskMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  experienceRoleId?: Prisma.SortOrder
-  content?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
 }
 
-export type TaskCreateNestedManyWithoutExperienceRoleInput = {
-  create?: Prisma.XOR<Prisma.TaskCreateWithoutExperienceRoleInput, Prisma.TaskUncheckedCreateWithoutExperienceRoleInput> | Prisma.TaskCreateWithoutExperienceRoleInput[] | Prisma.TaskUncheckedCreateWithoutExperienceRoleInput[]
-  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutExperienceRoleInput | Prisma.TaskCreateOrConnectWithoutExperienceRoleInput[]
-  createMany?: Prisma.TaskCreateManyExperienceRoleInputEnvelope
+export type TaskSumOrderByAggregateInput = {
+  sortOrder?: Prisma.SortOrder
+}
+
+export type TaskScalarRelationFilter = {
+  is?: Prisma.TaskWhereInput
+  isNot?: Prisma.TaskWhereInput
+}
+
+export type TaskCreateNestedManyWithoutRoleInput = {
+  create?: Prisma.XOR<Prisma.TaskCreateWithoutRoleInput, Prisma.TaskUncheckedCreateWithoutRoleInput> | Prisma.TaskCreateWithoutRoleInput[] | Prisma.TaskUncheckedCreateWithoutRoleInput[]
+  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutRoleInput | Prisma.TaskCreateOrConnectWithoutRoleInput[]
+  createMany?: Prisma.TaskCreateManyRoleInputEnvelope
   connect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
 }
 
-export type TaskUncheckedCreateNestedManyWithoutExperienceRoleInput = {
-  create?: Prisma.XOR<Prisma.TaskCreateWithoutExperienceRoleInput, Prisma.TaskUncheckedCreateWithoutExperienceRoleInput> | Prisma.TaskCreateWithoutExperienceRoleInput[] | Prisma.TaskUncheckedCreateWithoutExperienceRoleInput[]
-  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutExperienceRoleInput | Prisma.TaskCreateOrConnectWithoutExperienceRoleInput[]
-  createMany?: Prisma.TaskCreateManyExperienceRoleInputEnvelope
+export type TaskUncheckedCreateNestedManyWithoutRoleInput = {
+  create?: Prisma.XOR<Prisma.TaskCreateWithoutRoleInput, Prisma.TaskUncheckedCreateWithoutRoleInput> | Prisma.TaskCreateWithoutRoleInput[] | Prisma.TaskUncheckedCreateWithoutRoleInput[]
+  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutRoleInput | Prisma.TaskCreateOrConnectWithoutRoleInput[]
+  createMany?: Prisma.TaskCreateManyRoleInputEnvelope
   connect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
 }
 
-export type TaskUpdateManyWithoutExperienceRoleNestedInput = {
-  create?: Prisma.XOR<Prisma.TaskCreateWithoutExperienceRoleInput, Prisma.TaskUncheckedCreateWithoutExperienceRoleInput> | Prisma.TaskCreateWithoutExperienceRoleInput[] | Prisma.TaskUncheckedCreateWithoutExperienceRoleInput[]
-  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutExperienceRoleInput | Prisma.TaskCreateOrConnectWithoutExperienceRoleInput[]
-  upsert?: Prisma.TaskUpsertWithWhereUniqueWithoutExperienceRoleInput | Prisma.TaskUpsertWithWhereUniqueWithoutExperienceRoleInput[]
-  createMany?: Prisma.TaskCreateManyExperienceRoleInputEnvelope
+export type TaskUpdateManyWithoutRoleNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskCreateWithoutRoleInput, Prisma.TaskUncheckedCreateWithoutRoleInput> | Prisma.TaskCreateWithoutRoleInput[] | Prisma.TaskUncheckedCreateWithoutRoleInput[]
+  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutRoleInput | Prisma.TaskCreateOrConnectWithoutRoleInput[]
+  upsert?: Prisma.TaskUpsertWithWhereUniqueWithoutRoleInput | Prisma.TaskUpsertWithWhereUniqueWithoutRoleInput[]
+  createMany?: Prisma.TaskCreateManyRoleInputEnvelope
   set?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
   disconnect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
   delete?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
   connect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
-  update?: Prisma.TaskUpdateWithWhereUniqueWithoutExperienceRoleInput | Prisma.TaskUpdateWithWhereUniqueWithoutExperienceRoleInput[]
-  updateMany?: Prisma.TaskUpdateManyWithWhereWithoutExperienceRoleInput | Prisma.TaskUpdateManyWithWhereWithoutExperienceRoleInput[]
+  update?: Prisma.TaskUpdateWithWhereUniqueWithoutRoleInput | Prisma.TaskUpdateWithWhereUniqueWithoutRoleInput[]
+  updateMany?: Prisma.TaskUpdateManyWithWhereWithoutRoleInput | Prisma.TaskUpdateManyWithWhereWithoutRoleInput[]
   deleteMany?: Prisma.TaskScalarWhereInput | Prisma.TaskScalarWhereInput[]
 }
 
-export type TaskUncheckedUpdateManyWithoutExperienceRoleNestedInput = {
-  create?: Prisma.XOR<Prisma.TaskCreateWithoutExperienceRoleInput, Prisma.TaskUncheckedCreateWithoutExperienceRoleInput> | Prisma.TaskCreateWithoutExperienceRoleInput[] | Prisma.TaskUncheckedCreateWithoutExperienceRoleInput[]
-  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutExperienceRoleInput | Prisma.TaskCreateOrConnectWithoutExperienceRoleInput[]
-  upsert?: Prisma.TaskUpsertWithWhereUniqueWithoutExperienceRoleInput | Prisma.TaskUpsertWithWhereUniqueWithoutExperienceRoleInput[]
-  createMany?: Prisma.TaskCreateManyExperienceRoleInputEnvelope
+export type TaskUncheckedUpdateManyWithoutRoleNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskCreateWithoutRoleInput, Prisma.TaskUncheckedCreateWithoutRoleInput> | Prisma.TaskCreateWithoutRoleInput[] | Prisma.TaskUncheckedCreateWithoutRoleInput[]
+  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutRoleInput | Prisma.TaskCreateOrConnectWithoutRoleInput[]
+  upsert?: Prisma.TaskUpsertWithWhereUniqueWithoutRoleInput | Prisma.TaskUpsertWithWhereUniqueWithoutRoleInput[]
+  createMany?: Prisma.TaskCreateManyRoleInputEnvelope
   set?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
   disconnect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
   delete?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
   connect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
-  update?: Prisma.TaskUpdateWithWhereUniqueWithoutExperienceRoleInput | Prisma.TaskUpdateWithWhereUniqueWithoutExperienceRoleInput[]
-  updateMany?: Prisma.TaskUpdateManyWithWhereWithoutExperienceRoleInput | Prisma.TaskUpdateManyWithWhereWithoutExperienceRoleInput[]
+  update?: Prisma.TaskUpdateWithWhereUniqueWithoutRoleInput | Prisma.TaskUpdateWithWhereUniqueWithoutRoleInput[]
+  updateMany?: Prisma.TaskUpdateManyWithWhereWithoutRoleInput | Prisma.TaskUpdateManyWithWhereWithoutRoleInput[]
   deleteMany?: Prisma.TaskScalarWhereInput | Prisma.TaskScalarWhereInput[]
 }
 
-export type TaskCreateWithoutExperienceRoleInput = {
-  id?: string
-  content: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
+export type TaskCreateNestedOneWithoutTranslationsInput = {
+  create?: Prisma.XOR<Prisma.TaskCreateWithoutTranslationsInput, Prisma.TaskUncheckedCreateWithoutTranslationsInput>
+  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutTranslationsInput
+  connect?: Prisma.TaskWhereUniqueInput
 }
 
-export type TaskUncheckedCreateWithoutExperienceRoleInput = {
-  id?: string
-  content: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
+export type TaskUpdateOneRequiredWithoutTranslationsNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskCreateWithoutTranslationsInput, Prisma.TaskUncheckedCreateWithoutTranslationsInput>
+  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutTranslationsInput
+  upsert?: Prisma.TaskUpsertWithoutTranslationsInput
+  connect?: Prisma.TaskWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TaskUpdateToOneWithWhereWithoutTranslationsInput, Prisma.TaskUpdateWithoutTranslationsInput>, Prisma.TaskUncheckedUpdateWithoutTranslationsInput>
 }
 
-export type TaskCreateOrConnectWithoutExperienceRoleInput = {
+export type TaskCreateWithoutRoleInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sortOrder?: number
+  translations?: Prisma.TaskTranslationCreateNestedManyWithoutTaskInput
+}
+
+export type TaskUncheckedCreateWithoutRoleInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sortOrder?: number
+  translations?: Prisma.TaskTranslationUncheckedCreateNestedManyWithoutTaskInput
+}
+
+export type TaskCreateOrConnectWithoutRoleInput = {
   where: Prisma.TaskWhereUniqueInput
-  create: Prisma.XOR<Prisma.TaskCreateWithoutExperienceRoleInput, Prisma.TaskUncheckedCreateWithoutExperienceRoleInput>
+  create: Prisma.XOR<Prisma.TaskCreateWithoutRoleInput, Prisma.TaskUncheckedCreateWithoutRoleInput>
 }
 
-export type TaskCreateManyExperienceRoleInputEnvelope = {
-  data: Prisma.TaskCreateManyExperienceRoleInput | Prisma.TaskCreateManyExperienceRoleInput[]
+export type TaskCreateManyRoleInputEnvelope = {
+  data: Prisma.TaskCreateManyRoleInput | Prisma.TaskCreateManyRoleInput[]
   skipDuplicates?: boolean
 }
 
-export type TaskUpsertWithWhereUniqueWithoutExperienceRoleInput = {
+export type TaskUpsertWithWhereUniqueWithoutRoleInput = {
   where: Prisma.TaskWhereUniqueInput
-  update: Prisma.XOR<Prisma.TaskUpdateWithoutExperienceRoleInput, Prisma.TaskUncheckedUpdateWithoutExperienceRoleInput>
-  create: Prisma.XOR<Prisma.TaskCreateWithoutExperienceRoleInput, Prisma.TaskUncheckedCreateWithoutExperienceRoleInput>
+  update: Prisma.XOR<Prisma.TaskUpdateWithoutRoleInput, Prisma.TaskUncheckedUpdateWithoutRoleInput>
+  create: Prisma.XOR<Prisma.TaskCreateWithoutRoleInput, Prisma.TaskUncheckedCreateWithoutRoleInput>
 }
 
-export type TaskUpdateWithWhereUniqueWithoutExperienceRoleInput = {
+export type TaskUpdateWithWhereUniqueWithoutRoleInput = {
   where: Prisma.TaskWhereUniqueInput
-  data: Prisma.XOR<Prisma.TaskUpdateWithoutExperienceRoleInput, Prisma.TaskUncheckedUpdateWithoutExperienceRoleInput>
+  data: Prisma.XOR<Prisma.TaskUpdateWithoutRoleInput, Prisma.TaskUncheckedUpdateWithoutRoleInput>
 }
 
-export type TaskUpdateManyWithWhereWithoutExperienceRoleInput = {
+export type TaskUpdateManyWithWhereWithoutRoleInput = {
   where: Prisma.TaskScalarWhereInput
-  data: Prisma.XOR<Prisma.TaskUpdateManyMutationInput, Prisma.TaskUncheckedUpdateManyWithoutExperienceRoleInput>
+  data: Prisma.XOR<Prisma.TaskUpdateManyMutationInput, Prisma.TaskUncheckedUpdateManyWithoutRoleInput>
 }
 
 export type TaskScalarWhereInput = {
@@ -404,99 +476,183 @@ export type TaskScalarWhereInput = {
   OR?: Prisma.TaskScalarWhereInput[]
   NOT?: Prisma.TaskScalarWhereInput | Prisma.TaskScalarWhereInput[]
   id?: Prisma.StringFilter<"Task"> | string
-  experienceRoleId?: Prisma.StringFilter<"Task"> | string
-  content?: Prisma.StringFilter<"Task"> | string
   createdAt?: Prisma.DateTimeFilter<"Task"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Task"> | Date | string
+  sortOrder?: Prisma.IntFilter<"Task"> | number
+  roleId?: Prisma.StringFilter<"Task"> | string
 }
 
-export type TaskCreateManyExperienceRoleInput = {
+export type TaskCreateWithoutTranslationsInput = {
   id?: string
-  content: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  sortOrder?: number
+  role: Prisma.RoleCreateNestedOneWithoutTasksInput
 }
 
-export type TaskUpdateWithoutExperienceRoleInput = {
+export type TaskUncheckedCreateWithoutTranslationsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sortOrder?: number
+  roleId: string
+}
+
+export type TaskCreateOrConnectWithoutTranslationsInput = {
+  where: Prisma.TaskWhereUniqueInput
+  create: Prisma.XOR<Prisma.TaskCreateWithoutTranslationsInput, Prisma.TaskUncheckedCreateWithoutTranslationsInput>
+}
+
+export type TaskUpsertWithoutTranslationsInput = {
+  update: Prisma.XOR<Prisma.TaskUpdateWithoutTranslationsInput, Prisma.TaskUncheckedUpdateWithoutTranslationsInput>
+  create: Prisma.XOR<Prisma.TaskCreateWithoutTranslationsInput, Prisma.TaskUncheckedCreateWithoutTranslationsInput>
+  where?: Prisma.TaskWhereInput
+}
+
+export type TaskUpdateToOneWithWhereWithoutTranslationsInput = {
+  where?: Prisma.TaskWhereInput
+  data: Prisma.XOR<Prisma.TaskUpdateWithoutTranslationsInput, Prisma.TaskUncheckedUpdateWithoutTranslationsInput>
+}
+
+export type TaskUpdateWithoutTranslationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  role?: Prisma.RoleUpdateOneRequiredWithoutTasksNestedInput
 }
 
-export type TaskUncheckedUpdateWithoutExperienceRoleInput = {
+export type TaskUncheckedUpdateWithoutTranslationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  roleId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
-export type TaskUncheckedUpdateManyWithoutExperienceRoleInput = {
+export type TaskCreateManyRoleInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sortOrder?: number
+}
+
+export type TaskUpdateWithoutRoleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  translations?: Prisma.TaskTranslationUpdateManyWithoutTaskNestedInput
 }
 
+export type TaskUncheckedUpdateWithoutRoleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  translations?: Prisma.TaskTranslationUncheckedUpdateManyWithoutTaskNestedInput
+}
+
+export type TaskUncheckedUpdateManyWithoutRoleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+
+/**
+ * Count Type TaskCountOutputType
+ */
+
+export type TaskCountOutputType = {
+  translations: number
+}
+
+export type TaskCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  translations?: boolean | TaskCountOutputTypeCountTranslationsArgs
+}
+
+/**
+ * TaskCountOutputType without action
+ */
+export type TaskCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskCountOutputType
+   */
+  select?: Prisma.TaskCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * TaskCountOutputType without action
+ */
+export type TaskCountOutputTypeCountTranslationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskTranslationWhereInput
+}
 
 
 export type TaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  experienceRoleId?: boolean
-  content?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  experienceRole?: boolean | Prisma.ExperienceRoleDefaultArgs<ExtArgs>
+  sortOrder?: boolean
+  roleId?: boolean
+  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
+  translations?: boolean | Prisma.Task$translationsArgs<ExtArgs>
+  _count?: boolean | Prisma.TaskCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["task"]>
 
 export type TaskSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  experienceRoleId?: boolean
-  content?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  experienceRole?: boolean | Prisma.ExperienceRoleDefaultArgs<ExtArgs>
+  sortOrder?: boolean
+  roleId?: boolean
+  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["task"]>
 
 export type TaskSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  experienceRoleId?: boolean
-  content?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  experienceRole?: boolean | Prisma.ExperienceRoleDefaultArgs<ExtArgs>
+  sortOrder?: boolean
+  roleId?: boolean
+  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["task"]>
 
 export type TaskSelectScalar = {
   id?: boolean
-  experienceRoleId?: boolean
-  content?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  sortOrder?: boolean
+  roleId?: boolean
 }
 
-export type TaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "experienceRoleId" | "content" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
+export type TaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "sortOrder" | "roleId", ExtArgs["result"]["task"]>
 export type TaskInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  experienceRole?: boolean | Prisma.ExperienceRoleDefaultArgs<ExtArgs>
+  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
+  translations?: boolean | Prisma.Task$translationsArgs<ExtArgs>
+  _count?: boolean | Prisma.TaskCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TaskIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  experienceRole?: boolean | Prisma.ExperienceRoleDefaultArgs<ExtArgs>
+  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
 }
 export type TaskIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  experienceRole?: boolean | Prisma.ExperienceRoleDefaultArgs<ExtArgs>
+  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
 }
 
 export type $TaskPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Task"
   objects: {
-    experienceRole: Prisma.$ExperienceRolePayload<ExtArgs>
+    role: Prisma.$RolePayload<ExtArgs>
+    translations: Prisma.$TaskTranslationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    experienceRoleId: string
-    content: string
     createdAt: Date
     updatedAt: Date
+    sortOrder: number
+    roleId: string
   }, ExtArgs["result"]["task"]>
   composites: {}
 }
@@ -891,7 +1047,8 @@ readonly fields: TaskFieldRefs;
  */
 export interface Prisma__TaskClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  experienceRole<T extends Prisma.ExperienceRoleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ExperienceRoleDefaultArgs<ExtArgs>>): Prisma.Prisma__ExperienceRoleClient<runtime.Types.Result.GetResult<Prisma.$ExperienceRolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  role<T extends Prisma.RoleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RoleDefaultArgs<ExtArgs>>): Prisma.Prisma__RoleClient<runtime.Types.Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  translations<T extends Prisma.Task$translationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Task$translationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskTranslationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -922,10 +1079,10 @@ export interface Prisma__TaskClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface TaskFieldRefs {
   readonly id: Prisma.FieldRef<"Task", 'String'>
-  readonly experienceRoleId: Prisma.FieldRef<"Task", 'String'>
-  readonly content: Prisma.FieldRef<"Task", 'String'>
   readonly createdAt: Prisma.FieldRef<"Task", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Task", 'DateTime'>
+  readonly sortOrder: Prisma.FieldRef<"Task", 'Int'>
+  readonly roleId: Prisma.FieldRef<"Task", 'String'>
 }
     
 
@@ -1319,6 +1476,30 @@ export type TaskDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Limit how many Tasks to delete.
    */
   limit?: number
+}
+
+/**
+ * Task.translations
+ */
+export type Task$translationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskTranslation
+   */
+  select?: Prisma.TaskTranslationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskTranslation
+   */
+  omit?: Prisma.TaskTranslationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskTranslationInclude<ExtArgs> | null
+  where?: Prisma.TaskTranslationWhereInput
+  orderBy?: Prisma.TaskTranslationOrderByWithRelationInput | Prisma.TaskTranslationOrderByWithRelationInput[]
+  cursor?: Prisma.TaskTranslationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskTranslationScalarFieldEnum | Prisma.TaskTranslationScalarFieldEnum[]
 }
 
 /**

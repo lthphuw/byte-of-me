@@ -1,27 +1,20 @@
-import { Prisma } from '@repo/db/generated/prisma/client';
-
-import { fetchData } from '@/lib/core/fetch';
+import { getUserProfileWithRecentProjects } from '@/lib/actions/public/get-user-profile-with-recent-projects';
 import { HomepageContent } from '@/components/homepage-content';
 import { HomeShell } from '@/components/shell';
 
 export default async function HomePage() {
-  const user = await fetchData<
-    Prisma.UserGetPayload<{
-      include: {
-        bannerImages: true;
-        projects: true;
-      };
-    }>
-  >('me', {
-    params: {
-      bannerImages: 'true',
-      projects: 'true',
-    },
-  });
+  const res = await getUserProfileWithRecentProjects();
+  if (!res.success) {
+    return (
+      <HomeShell>
+        <div className="p-4">Failed to load homepage content.</div>
+      </HomeShell>
+    );
+  }
 
   return (
     <HomeShell>
-      <HomepageContent user={user} />
+      <HomepageContent {...res.data} />
     </HomeShell>
   );
 }

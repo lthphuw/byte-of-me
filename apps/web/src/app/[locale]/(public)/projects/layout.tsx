@@ -32,7 +32,6 @@ export async function generateMetadata({
       languages: {
         vi: `${siteConfig.url}/vi/projects`,
         en: `${siteConfig.url}/en/projects`,
-        fr: `${siteConfig.url}/fr/projects`,
       },
     },
     openGraph: {
@@ -40,15 +39,14 @@ export async function generateMetadata({
       description: t('description'),
       url,
       type: 'website',
-      locale: locale === 'vi' ? 'vi_VN' : locale === 'fr' ? 'fr_FR' : 'en_US',
+      locale: locale === 'vi' ? 'vi_VN' : 'en_US',
       siteName: 'Byte of me',
-      images: [`${siteConfig.url}/images/avatars/HaNoi2024.jpeg`],
     },
     twitter: {
       card: 'summary_large_image',
       title: `${t('title')} | ${siteConfig.name}`,
       description: t('description'),
-      images: [`${siteConfig.url}/images/avatars/HaNoi2024.jpeg`],
+
       creator: '@lthphuw',
     },
   };

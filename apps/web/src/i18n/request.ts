@@ -1,11 +1,10 @@
-import { Translation } from '@repo/db/generated/prisma/client';
+import deepmerge from 'deepmerge';
 import { hasLocale } from 'next-intl';
 import { getRequestConfig } from 'next-intl/server';
 
-import { env } from '@/env.mjs';
+import { getAllTranslations } from '@/lib/actions/dashboard/translation/get-all-translations';
 
 import { routing } from './routing';
-
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
@@ -13,45 +12,109 @@ export default getRequestConfig(async ({ requestLocale }) => {
     ? requested
     : routing.defaultLocale;
 
-  // Load static & dynamic song song
-  const [staticResult, dynamicResult] = await Promise.all([
-    // Static
+  const [staticMessages, dynamicMessages] = await Promise.all([
+    // Static JSON
     (async () => {
       try {
         const mod = await import(`../../messages/${locale}.json`);
         return mod.default ?? {};
-      } catch (_) {
+      } catch (err) {
+        console.error('[i18n] Static load error:', err);
         return {};
       }
     })(),
 
-    // Dynamic
+    // Dynamic DB
     (async () => {
       try {
-        const res = await fetch(`${env.HOST}/api/translations?lang=${locale}`, {
-          cache: 'no-store',
-        });
+        const res = await getAllTranslations(locale);
+        if (!res.success) return {};
 
-        if (!res.ok) return {};
+        const result: Record<string, any> = {};
 
-        const data: Translation[] = await res.json();
-        return data.reduce((acc, item) => {
-          acc[item.sourceText] = item.translated;
-          return acc;
-        }, {} as Record<string, string>);
-      } catch (_) {
+        for (const item of res.data) {
+          setDeep(result, item.sourceText, item.translated);
+        }
+
+        return result;
+      } catch (err) {
+        console.error('[i18n] Dynamic load error:', err);
         return {};
       }
     })(),
   ]);
 
-  const messages = {
-    ...staticResult,
-    ...dynamicResult,
-  };
+  const messages = deepmerge(staticMessages, dynamicMessages);
 
   return {
     locale,
     messages,
+
+    formats: {
+      dateTime: {
+        short: {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        },
+
+        medium: {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        },
+
+        long: {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        },
+
+        precise: {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        },
+      },
+
+      number: {
+        precise: {
+          maximumFractionDigits: 5,
+        },
+      },
+
+      list: {
+        enumeration: {
+          style: 'long',
+          type: 'conjunction',
+        },
+      },
+    },
   };
 });
+
+
+function setDeep(obj: Record<string, any>, path: string, value: string) {
+  const keys = path.split('.');
+  let current = obj;
+
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+
+    if (i === keys.length - 1) {
+      current[key] = value;
+    } else {
+      current[key] = current[key] ?? {};
+      current = current[key];
+    }
+  }
+}

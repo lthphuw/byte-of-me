@@ -1,13 +1,8 @@
-// components/GoBackButton.tsx
 'use client';
 
 import { useRouter } from '@/i18n/navigation';
 
 import { Button } from '@/components/ui/button';
-
-
-
-
 
 export default function GoBackButton({
   children,

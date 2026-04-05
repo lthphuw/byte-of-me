@@ -3,23 +3,29 @@ import { z } from 'zod';
 
 export const env = createEnv({
   server: {
-    HOST: z.string(),
     PRISMA_CACHE_SWR: z.coerce.number().default(86400),
     PRISMA_CACHE_TTL: z.coerce.number().default(86400),
 
     DATABASE_URL: z.string().min(1),
     DIRECT_URL: z.string().min(1),
 
-    NEXT_EMAIL: z.string().email().default('lthphuw@gmail.com'),
+    EMAIL: z.string().email().default('lthphuw@gmail.com'),
 
     AUTH_URL: z.string(),
     AUTH_SECRET: z.string(),
 
-    SMTP_HOST: z.string(),
-    SMTP_PORT: z.string(),
-    SMTP_USER: z.string(),
-    SMTP_PASS: z.string(),
-    SMTP_FROM: z.string(),
+    EMAIL_SERVER_HOST: z.string(),
+    EMAIL_SERVER_PORT: z.coerce.number(),
+    EMAIL_SERVER_USER: z.string(),
+    EMAIL_SERVER_PASSWORD: z.string(),
+    EMAIL_FROM: z.string(),
+
+    SUPABASE_S3_STORAGE_REGION: z.string(),
+    SUPABASE_S3_STORAGE_ENDPOINT: z.string(),
+    SUPABASE_S3_STORAGE_PUBLIC_ENDPOINT: z.string(),
+    SUPABASE_S3_STORAGE_ACCESS_KEY: z.string(),
+    SUPABASE_S3_STORAGE_SECRET_KEY: z.string(),
+    SUPABASE_S3_STORAGE_BUCKET: z.string().default('byte-of-me'),
 
     NODE_ENV: z
       .enum(['development', 'production'])
@@ -28,8 +34,8 @@ export const env = createEnv({
   },
 
   client: {
-    NEXT_CACHE: z.coerce.number().default(86400),
     NEXT_PUBLIC_GA_ID: z.string().default(''),
+    NEXT_PUBLIC_AUTHOR_EMAIL: z.string().default('lthphuw@gmail.com'),
     NEXT_PUBLIC_ENV: z
       .enum(['development', 'production'])
       .optional()
@@ -37,25 +43,30 @@ export const env = createEnv({
   },
 
   runtimeEnv: {
-    HOST: process.env.HOST,
-
     DATABASE_URL: process.env.DATABASE_URL,
     DIRECT_URL: process.env.DIRECT_URL,
 
-    NEXT_EMAIL: process.env.NEXT_EMAIL,
+    EMAIL: process.env.EMAIL,
     NODE_ENV: process.env.NODE_ENV,
 
     AUTH_URL: process.env.AUTH_URL,
     AUTH_SECRET: process.env.AUTH_SECRET,
 
-    SMTP_FROM: process.env.SMTP_FROM,
-    SMTP_HOST: process.env.SMTP_HOST,
-    SMTP_PORT: process.env.SMTP_PORT,
-    SMTP_USER: process.env.SMTP_USER,
-    SMTP_PASS: process.env.SMTP_PASS,
+    EMAIL_FROM: process.env.EMAIL_FROM,
+    EMAIL_SERVER_HOST: process.env.EMAIL_SERVER_HOST,
+    EMAIL_SERVER_PORT: process.env.EMAIL_SERVER_PORT,
+    EMAIL_SERVER_USER: process.env.EMAIL_SERVER_USER,
+    EMAIL_SERVER_PASSWORD: process.env.EMAIL_SERVER_PASSWORD,
+
+    SUPABASE_S3_STORAGE_REGION: process.env.SUPABASE_S3_STORAGE_REGION,
+    SUPABASE_S3_STORAGE_ENDPOINT: process.env.SUPABASE_S3_STORAGE_ENDPOINT,
+    SUPABASE_S3_STORAGE_PUBLIC_ENDPOINT:
+      process.env.SUPABASE_S3_STORAGE_PUBLIC_ENDPOINT,
+    SUPABASE_S3_STORAGE_ACCESS_KEY: process.env.SUPABASE_S3_STORAGE_ACCESS_KEY,
+    SUPABASE_S3_STORAGE_SECRET_KEY: process.env.SUPABASE_S3_STORAGE_SECRET_KEY,
+    SUPABASE_S3_STORAGE_BUCKET: process.env.SUPABASE_S3_STORAGE_BUCKET,
 
     // Client
-    NEXT_CACHE: process.env.NEXT_CACHE,
     NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
     NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
     NEXT_PUBLIC_ENV: process.env.NEXT_PUBLIC_ENV,

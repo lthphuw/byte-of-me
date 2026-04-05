@@ -1,10 +1,17 @@
 {
   "compilerOptions": {
+    "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "node",
-    "target": "ES2023",
-    "strict": true,
+    "moduleResolution": "Bundler",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist",
+    "rootDir": "./",
+    "strict": false,
+    "skipLibCheck": true,
     "esModuleInterop": true,
-    "ignoreDeprecations": "6.0"
-  }
+    "noImplicitAny": false
+  },
+  "include": ["src/**/*", "generated/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

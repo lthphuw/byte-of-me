@@ -1,132 +1,135 @@
 'use client';
 
 import Image from 'next/image';
-import { Prisma } from '@repo/db/generated/prisma/client';
-import { motion } from 'framer-motion';
+import { Company } from '@/models/company';
+import { format } from 'date-fns';
+import { Briefcase } from 'lucide-react';
 
-import { DateHelper } from '@/lib/core/date-helper';
-import { RichText } from '@/components/rich-text';
-import { TechstacksProject } from '@/components/techstacks-project';
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
-import { Building2, FolderCode } from 'lucide-react';
-import { useTranslations } from '@/hooks/use-translations';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
+import { Separator } from '@/components/ui/separator';
 
-export type CompanyExperience = Prisma.ExperienceGetPayload<{
-  include: {
-    roles: {
-      include: {
-        tasks: true;
-      };
-    };
-    techstacks: {
-      include: {
-        techstack: true;
-      };
-    };
-  };
-}>;
+export interface ExperienceContentProps {
+  companies: Company[];
+}
 
-export type ExperienceContentProps = BaseComponentProps & {
-  experienceData: CompanyExperience[];
-};
+export function ExperienceContent({ companies }: ExperienceContentProps) {
+  if (!companies || companies.length === 0) {
+    return (
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <Briefcase />
+          </EmptyMedia>
+          <EmptyTitle>Updating experience...</EmptyTitle>
+        </EmptyHeader>
+        <EmptyDescription>
+          The professional log is being refreshed. Please check back in a moment.
+        </EmptyDescription>
+      </Empty>
+    );
+  }
 
-export default function ExperienceContent({
-                                             experienceData,
-                                             className,
-                                             style,
-                                           }: ExperienceContentProps) {
-  const t = useTranslations('experience');
   return (
-    <section
-      className={`mx-auto max-w-4xl px-4 py-12 md:py-16 ${className}`}
-      style={style}
-    >
-      <div className="space-y-14">
-        {experienceData?.length ? experienceData.map((company, idx) => (
-          <motion.div
-            key={idx}
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="relative flex gap-x-6"
-          >
-            {/* Avatar + line */}
-            <div className="relative flex flex-col items-center shrink-0">
-                <motion.span
-                  initial={{ scaleY: 0 }}
-                  whileInView={{ scaleY: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, ease: 'easeOut' }}
-                  className="absolute top-6 bottom-0 rounded-3xl w-[2px] origin-top bg-border/70 last:hidden"
+    <div className="space-y-6">
+      {companies.map((company) => (
+        <Card key={company.id} className="border-muted">
+          <CardContent className="p-4 md:p-6 space-y-4">
+            {/* Company Header */}
+            <div className="flex items-start gap-4">
+              {company.logo?.url ? (
+                <Image
+                  src={company.logo.url}
+                  alt={company.company}
+                  width={48}
+                  height={48}
+                  className="rounded-md object-contain border bg-background"
                 />
+              ) : (
+                <div className="w-12 h-12 rounded-md bg-muted flex items-center justify-center">
+                  <Briefcase className="w-5 h-5 text-muted-foreground" />
+                </div>
+              )}
 
-                {/* Avatar */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.85 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.25, ease: 'easeOut' }}
-                  className="relative z-10 flex size-10 items-center justify-center rounded-full bg-background"
-                >
-                    <Image
-                      src={company.logoUrl}
-                      alt={company.company}
-                      fill
-                      className="rounded-full object-contain"
-                    />
-                </motion.div>
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1">
+                  <h3 className="font-semibold text-base md:text-lg truncate">
+                    {company.company}
+                  </h3>
+
+                  <span className="text-xs text-muted-foreground">
+                    {format(new Date(company.startDate), 'MMM yyyy')} -{' '}
+                    {company.endDate
+                      ? format(new Date(company.endDate), 'MMM yyyy')
+                      : 'Present'}
+                  </span>
+                </div>
+
+                <p className="text-sm text-muted-foreground">
+                  {company.location}
+                </p>
+              </div>
             </div>
 
-            {/* Content */}
-            <div className="flex-1 pb-2">
-              <h3 className="text-lg md:text-xl font-semibold tracking-tight">
-                {company.company}
-              </h3>
+            {/* Description */}
+            {company.description && (
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {company.description}
+              </p>
+            )}
 
-              <TechstacksProject
-                techs={company.techstacks.map(it => it.techstack)}
-              />
+            {/* Roles */}
+            {company.roles?.length > 0 && (
+              <div className="space-y-4">
+                <Separator />
 
-              <div className="mt-5 space-y-6">
-                {company.roles.map((role, rIdx) => (
-                  <div key={rIdx} className="space-y-1">
-                    <p className="text-base md:text-lg font-medium">
-                      {role.title}
-                    </p>
+                {company.roles.map((role) => (
+                  <div key={role.id} className="space-y-2">
+                    {/* Role Header */}
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1">
+                      <h4 className="font-medium text-sm md:text-base">
+                        {role.title || 'Untitled Role'}
+                      </h4>
 
-                    <p className="text-xs md:text-sm text-muted-foreground">
-                      {DateHelper.formatDate(role.startDate)} –{' '}
-                      {DateHelper.formatDate(role.endDate)} (
-                      {DateHelper.calculateDuration(
-                        role.startDate,
-                        role.endDate,
-                      )}
-                      ) • {company.location} • {company.type}
-                    </p>
+                      <span className="text-xs text-muted-foreground">
+                        {role.startDate
+                          ? format(new Date(role.startDate), 'MMM yyyy')
+                          : ''}
+                        {' - '}
+                        {role.endDate
+                          ? format(new Date(role.endDate), 'MMM yyyy')
+                          : 'Present'}
+                      </span>
+                    </div>
 
-                    <ul className="mt-3 space-y-1.5 pl-4 text-sm md:text-base list-disc marker:text-muted-foreground">
-                      {role.tasks.map((task, tIdx) => (
-                        <li key={tIdx}>
-                          <RichText html={task.content || ''} />
-                        </li>
-                      ))}
-                    </ul>
+                    {/* Role Description */}
+                    {role.description && (
+                      <p className="text-sm text-muted-foreground">
+                        {role.description}
+                      </p>
+                    )}
+
+                    {/* Tasks */}
+                    {role.tasks?.length > 0 && (
+                      <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+                        {role.tasks.map((task) => (
+                          <li key={task.id}>{task.content}</li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 ))}
               </div>
-            </div>
-          </motion.div>
-        )) :
-          <Empty className={className} style={style}>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <Building2 />
-              </EmptyMedia>
-              <EmptyTitle>{t('updating')}</EmptyTitle>
-            </EmptyHeader>
-          </Empty>
-        }
-      </div>
-    </section>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 }

@@ -1,27 +1,31 @@
 # @packages/db
 
-## How to run
+## Reset db
 
-### Docker
-
-```bash
-docker compose up -d
-```
+Docs: https://www.prisma.io/docs/cli/migrate
 
 ```bash
-docker compose down  # To stop
-docker compose down -v # To stop and remove volumes
-```
-### Prisma
-
-```bash
-npx prisma generate
+# Create a migration from schema changes, apply it, and trigger generators
 npx prisma migrate dev --name init
+
+# Reset your database and apply all migrations (all data will be lost)
+npx prisma migrate reset --force
+
+# Generate
+npx prisma generate
+
+# Seed db
 npx prisma db seed
 ```
 
-Start prisma studio
-
+# Enable prisma studio
 ```bash
-npx prisma studio --config ./prisma.config.ts
+npx prisma studio --port 7777
+```
+
+
+## Deploy
+```
+npx prisma migrate deploy
+npx prisma db seed
 ```

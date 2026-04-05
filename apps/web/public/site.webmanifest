@@ -1,7 +1,7 @@
 {
-  "name": "Byte of me | Lương Thanh Hoàng Phú",
+  "name": "Byte of me | Phú Lương",
   "short_name": "Byte of me",
-  "description": "The personal space of Luong Thanh Hoang Phu — where I share insights on web development, frontend technologies, and my journey as a fullstack software engineer.",
+  "description": "The personal space of Phu Luong — where I share insights on web development, frontend technologies, and my journey as a fullstack software engineer.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

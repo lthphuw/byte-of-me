@@ -11,7 +11,7 @@ export const siteConfig: SiteConfig = {
   links: {
     github: 'https://github.com/lthphuw',
   },
-  email: process.env.NEXT_EMAIL || 'lthphuw@gmail.com',
+  email: process.env.NEXT_PUBLIC_AUTHOR_EMAIL || 'lthphuw@gmail.com',
   keywords: [
     // Myself
     'Byte of me',
@@ -23,8 +23,8 @@ export const siteConfig: SiteConfig = {
     'phulth',
     'Phu Luong Thanh Hoang',
     'Phu - Luong Thanh Hoang',
-    'Lương Thanh Hoàng Phú',
-    'Luong Thanh Hoang Phu',
+    'Phú Lương',
+    'Phu Luong',
     'lthphuw',
 
     // Role

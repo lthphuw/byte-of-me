@@ -60,7 +60,7 @@ yarn-error.log*
 # Monorepo Packages
 # =====================
 packages/db/node_modules
-packages/db/prisma/migrations
-packages/ai/node_modules
 
 .idea
+
+dist/

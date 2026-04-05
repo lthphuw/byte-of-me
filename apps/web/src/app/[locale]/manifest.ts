@@ -27,10 +27,10 @@ const icons: MetadataRoute.Manifest['icons'] = [
 
 const manifests: Record<string, MetadataRoute.Manifest> = {
   vi: {
-    name: 'Byte of me | Lương Thanh Hoàng Phú',
+    name: 'Byte of me | Phú Lương',
     short_name: 'Byte of me',
     description:
-      'Không gian cá nhân của Lương Thanh Hoàng Phú — nơi mình chia sẻ góc nhìn về phát triển web, công nghệ frontend và hành trình làm kỹ sư phần mềm fullstack.',
+      'Không gian cá nhân của Phú Lương — nơi mình chia sẻ góc nhìn về phát triển web, công nghệ frontend và hành trình làm kỹ sư phần mềm fullstack.',
     start_url: '/vi/',
     scope: '/vi/',
     display: 'standalone',
@@ -42,10 +42,10 @@ const manifests: Record<string, MetadataRoute.Manifest> = {
     icons,
   },
   en: {
-    name: 'Byte of me | Luong Thanh Hoang Phu',
+    name: 'Byte of me | Phu Luong',
     short_name: 'Byte of me',
     description:
-      'The personal space of Luong Thanh Hoang Phu — where I share insights on web development, frontend technologies, and my journey as a fullstack software engineer.',
+      'The personal space of Phu Luong — where I share insights on web development, frontend technologies, and my journey as a fullstack software engineer.',
     start_url: '/en/',
     scope: '/en/',
     display: 'standalone',
@@ -57,10 +57,10 @@ const manifests: Record<string, MetadataRoute.Manifest> = {
     icons,
   },
   fr: {
-    name: 'Byte of me | Luong Thanh Hoang Phu',
+    name: 'Byte of me | Phu Luong',
     short_name: 'Byte of me',
     description:
-      'L’espace personnel de Luong Thanh Hoang Phu — où je partage mes idées sur le développement web, les technologies frontend, et mon parcours en tant qu’ingénieur logiciel fullstack.',
+      'L’espace personnel de Phu Luong — où je partage mes idées sur le développement web, les technologies frontend, et mon parcours en tant qu’ingénieur logiciel fullstack.',
     start_url: '/fr/',
     scope: '/fr/',
     display: 'standalone',

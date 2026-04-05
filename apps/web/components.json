@@ -10,6 +10,7 @@
     "cssVariables": true,
     "prefix": ""
   },
+  "iconLibrary": "lucide",
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils",
@@ -17,5 +18,8 @@
     "lib": "@/lib",
     "hooks": "@/hooks"
   },
-  "iconLibrary": "lucide"
+  "registries": {
+    "@shadcnblocks": "https://shadcnblocks.com/r/{name}.json",
+    "@shadcn-editor": "https://shadcn-editor.vercel.app/r/{name}.json"
+  }
 }
