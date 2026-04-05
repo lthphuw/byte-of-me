@@ -26,19 +26,25 @@ export type AggregateCoauthor = {
 
 export type CoauthorMinAggregateOutputType = {
   id: string | null
-  fullname: string | null
+  createdAt: Date | null
+  updatedAt: Date | null
+  fullName: string | null
   email: string | null
 }
 
 export type CoauthorMaxAggregateOutputType = {
   id: string | null
-  fullname: string | null
+  createdAt: Date | null
+  updatedAt: Date | null
+  fullName: string | null
   email: string | null
 }
 
 export type CoauthorCountAggregateOutputType = {
   id: number
-  fullname: number
+  createdAt: number
+  updatedAt: number
+  fullName: number
   email: number
   _all: number
 }
@@ -46,19 +52,25 @@ export type CoauthorCountAggregateOutputType = {
 
 export type CoauthorMinAggregateInputType = {
   id?: true
-  fullname?: true
+  createdAt?: true
+  updatedAt?: true
+  fullName?: true
   email?: true
 }
 
 export type CoauthorMaxAggregateInputType = {
   id?: true
-  fullname?: true
+  createdAt?: true
+  updatedAt?: true
+  fullName?: true
   email?: true
 }
 
 export type CoauthorCountAggregateInputType = {
   id?: true
-  fullname?: true
+  createdAt?: true
+  updatedAt?: true
+  fullName?: true
   email?: true
   _all?: true
 }
@@ -137,7 +149,9 @@ export type CoauthorGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 
 export type CoauthorGroupByOutputType = {
   id: string
-  fullname: string
+  createdAt: Date
+  updatedAt: Date
+  fullName: string
   email: string | null
   _count: CoauthorCountAggregateOutputType | null
   _min: CoauthorMinAggregateOutputType | null
@@ -164,14 +178,18 @@ export type CoauthorWhereInput = {
   OR?: Prisma.CoauthorWhereInput[]
   NOT?: Prisma.CoauthorWhereInput | Prisma.CoauthorWhereInput[]
   id?: Prisma.StringFilter<"Coauthor"> | string
-  fullname?: Prisma.StringFilter<"Coauthor"> | string
+  createdAt?: Prisma.DateTimeFilter<"Coauthor"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Coauthor"> | Date | string
+  fullName?: Prisma.StringFilter<"Coauthor"> | string
   email?: Prisma.StringNullableFilter<"Coauthor"> | string | null
   projects?: Prisma.ProjectOnProjectCoAuthorListRelationFilter
 }
 
 export type CoauthorOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  fullname?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  fullName?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   projects?: Prisma.ProjectOnProjectCoAuthorOrderByRelationAggregateInput
 }
@@ -181,14 +199,18 @@ export type CoauthorWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.CoauthorWhereInput | Prisma.CoauthorWhereInput[]
   OR?: Prisma.CoauthorWhereInput[]
   NOT?: Prisma.CoauthorWhereInput | Prisma.CoauthorWhereInput[]
-  fullname?: Prisma.StringFilter<"Coauthor"> | string
+  createdAt?: Prisma.DateTimeFilter<"Coauthor"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Coauthor"> | Date | string
+  fullName?: Prisma.StringFilter<"Coauthor"> | string
   email?: Prisma.StringNullableFilter<"Coauthor"> | string | null
   projects?: Prisma.ProjectOnProjectCoAuthorListRelationFilter
 }, "id">
 
 export type CoauthorOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  fullname?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  fullName?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.CoauthorCountOrderByAggregateInput
   _max?: Prisma.CoauthorMaxOrderByAggregateInput
@@ -200,53 +222,69 @@ export type CoauthorScalarWhereWithAggregatesInput = {
   OR?: Prisma.CoauthorScalarWhereWithAggregatesInput[]
   NOT?: Prisma.CoauthorScalarWhereWithAggregatesInput | Prisma.CoauthorScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Coauthor"> | string
-  fullname?: Prisma.StringWithAggregatesFilter<"Coauthor"> | string
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"Coauthor"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Coauthor"> | Date | string
+  fullName?: Prisma.StringWithAggregatesFilter<"Coauthor"> | string
   email?: Prisma.StringNullableWithAggregatesFilter<"Coauthor"> | string | null
 }
 
 export type CoauthorCreateInput = {
   id?: string
-  fullname: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  fullName: string
   email?: string | null
   projects?: Prisma.ProjectOnProjectCoAuthorCreateNestedManyWithoutCoauthorInput
 }
 
 export type CoauthorUncheckedCreateInput = {
   id?: string
-  fullname: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  fullName: string
   email?: string | null
   projects?: Prisma.ProjectOnProjectCoAuthorUncheckedCreateNestedManyWithoutCoauthorInput
 }
 
 export type CoauthorUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  fullname?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projects?: Prisma.ProjectOnProjectCoAuthorUpdateManyWithoutCoauthorNestedInput
 }
 
 export type CoauthorUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  fullname?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projects?: Prisma.ProjectOnProjectCoAuthorUncheckedUpdateManyWithoutCoauthorNestedInput
 }
 
 export type CoauthorCreateManyInput = {
   id?: string
-  fullname: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  fullName: string
   email?: string | null
 }
 
 export type CoauthorUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  fullname?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CoauthorUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  fullname?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -257,19 +295,25 @@ export type CoauthorScalarRelationFilter = {
 
 export type CoauthorCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  fullname?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  fullName?: Prisma.SortOrder
   email?: Prisma.SortOrder
 }
 
 export type CoauthorMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  fullname?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  fullName?: Prisma.SortOrder
   email?: Prisma.SortOrder
 }
 
 export type CoauthorMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  fullname?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
+  fullName?: Prisma.SortOrder
   email?: Prisma.SortOrder
 }
 
@@ -289,13 +333,17 @@ export type CoauthorUpdateOneRequiredWithoutProjectsNestedInput = {
 
 export type CoauthorCreateWithoutProjectsInput = {
   id?: string
-  fullname: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  fullName: string
   email?: string | null
 }
 
 export type CoauthorUncheckedCreateWithoutProjectsInput = {
   id?: string
-  fullname: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  fullName: string
   email?: string | null
 }
 
@@ -317,13 +365,17 @@ export type CoauthorUpdateToOneWithWhereWithoutProjectsInput = {
 
 export type CoauthorUpdateWithoutProjectsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  fullname?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CoauthorUncheckedUpdateWithoutProjectsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  fullname?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -360,7 +412,9 @@ export type CoauthorCountOutputTypeCountProjectsArgs<ExtArgs extends runtime.Typ
 
 export type CoauthorSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  fullname?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  fullName?: boolean
   email?: boolean
   projects?: boolean | Prisma.Coauthor$projectsArgs<ExtArgs>
   _count?: boolean | Prisma.CoauthorCountOutputTypeDefaultArgs<ExtArgs>
@@ -368,23 +422,29 @@ export type CoauthorSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
 
 export type CoauthorSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  fullname?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  fullName?: boolean
   email?: boolean
 }, ExtArgs["result"]["coauthor"]>
 
 export type CoauthorSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  fullname?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  fullName?: boolean
   email?: boolean
 }, ExtArgs["result"]["coauthor"]>
 
 export type CoauthorSelectScalar = {
   id?: boolean
-  fullname?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  fullName?: boolean
   email?: boolean
 }
 
-export type CoauthorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fullname" | "email", ExtArgs["result"]["coauthor"]>
+export type CoauthorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "fullName" | "email", ExtArgs["result"]["coauthor"]>
 export type CoauthorInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   projects?: boolean | Prisma.Coauthor$projectsArgs<ExtArgs>
   _count?: boolean | Prisma.CoauthorCountOutputTypeDefaultArgs<ExtArgs>
@@ -399,7 +459,9 @@ export type $CoauthorPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    fullname: string
+    createdAt: Date
+    updatedAt: Date
+    fullName: string
     email: string | null
   }, ExtArgs["result"]["coauthor"]>
   composites: {}
@@ -826,7 +888,9 @@ export interface Prisma__CoauthorClient<T, Null = never, ExtArgs extends runtime
  */
 export interface CoauthorFieldRefs {
   readonly id: Prisma.FieldRef<"Coauthor", 'String'>
-  readonly fullname: Prisma.FieldRef<"Coauthor", 'String'>
+  readonly createdAt: Prisma.FieldRef<"Coauthor", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"Coauthor", 'DateTime'>
+  readonly fullName: Prisma.FieldRef<"Coauthor", 'String'>
   readonly email: Prisma.FieldRef<"Coauthor", 'String'>
 }
     

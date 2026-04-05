@@ -1,152 +1,106 @@
 'use client';
 
-import { useState } from 'react';
-import {
-  FloatingPortal,
-  autoUpdate,
-  offset,
-  useClick,
-  useDismiss,
-  useFloating,
-  useFocus,
-  useInteractions,
-  useRole,
-} from '@floating-ui/react';
+import * as React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 
 import { iconSwicthVariants, itemVariants } from '@/config/anim';
 import { cn } from '@/lib/utils';
-import { useTranslations } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Icons } from '@/components/icons';
 
 export function ModeToggle() {
   const t = useTranslations('global.modeToggle');
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const [open, setOpen] = useState(false);
 
-  const { refs, floatingStyles, context } = useFloating({
-    open,
-    onOpenChange: setOpen,
-    strategy: 'absolute',
-    placement: 'bottom-end',
-    middleware: [offset(4)],
-    whileElementsMounted: autoUpdate,
-  });
-
-  const click = useClick(context);
-  const focus = useFocus(context);
-  const dismiss = useDismiss(context);
-  const role = useRole(context);
-  const { getReferenceProps, getFloatingProps } = useInteractions([
-    click,
-    focus,
-    dismiss,
-    role,
-  ]);
+  const items = [
+    { value: 'light', icon: Icons.sun, label: t('light') },
+    { value: 'dark', icon: Icons.moon, label: t('dark') },
+    { value: 'system', icon: Icons.laptop, label: t('system') },
+  ];
 
   return (
-    <>
-      <Button
-        ref={refs.setReference}
-        {...getReferenceProps()}
-        variant="link"
-        size="icon"
-        className="relative px-0 focus-visible:outline-none"
-      >
-        <motion.span
-          whileHover={{ scale: 1.1 }}
-          className="absolute inset-0 flex items-center justify-center"
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative size-10 p-0 focus-visible:ring-1 overflow-hidden"
         >
-          <AnimatePresence initial={false}>
-            {resolvedTheme === 'light' ? (
-              <motion.div
-                key="sun"
-                variants={iconSwicthVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{
-                  type: 'spring',
-                  stiffness: 150,
-                  damping: 15,
-                  duration: 0.2,
-                }}
-                className="flex items-center justify-center w-full h-full"
-              >
-                <Icons.sun className="!size-6" />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="moon"
-                variants={iconSwicthVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={{
-                  type: 'spring',
-                  stiffness: 150,
-                  damping: 15,
-                  duration: 0.2,
-                }}
-                className="flex items-center justify-center w-full h-full"
-              >
-                <Icons.moon className="!size-6" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-          <span className="sr-only">{t('Toggle theme')}</span>
-        </motion.span>
-      </Button>
+          <div className="relative">
+            <AnimatePresence mode="wait" initial={true}>
+              {resolvedTheme === 'light' ? (
+                <motion.div
+                  key="sun"
+                  variants={iconSwicthVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ type: 'spring', stiffness: 150, damping: 15 }}
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <Icons.sun size={28} />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="moon"
+                  variants={iconSwicthVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ type: 'spring', stiffness: 150, damping: 15 }}
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <Icons.moon size={28} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
-      <FloatingPortal>
-        <AnimatePresence>
-          {open && (
-            <nav
-              ref={refs.setFloating}
-              style={{ ...floatingStyles, zIndex: 60 }}
-              {...getFloatingProps()}
+          <span className="sr-only">{t('toggleTheme')}</span>
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent
+        align="end"
+        className="min-w-[160px] z-50 overflow-hidden space-y-1 bg-popover rounded-md border border-muted/50 shadow-lg"
+      >
+        {items.map((item, index) => {
+          const isActive = theme === item.value;
+          const Icon = item.icon;
+
+          return (
+            <DropdownMenuItem
+              key={item.value}
+              onClick={() => setTheme(item.value)}
+              className={cn(
+                'cursor-pointer flex items-center gap-2',
+                isActive && 'bg-accent text-accent-foreground font-medium'
+              )}
+              asChild
             >
-              <motion.ul
-                initial={{ opacity: 0.3, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ type: 'spring', stiffness: 130, damping: 10 }}
-                className={cn(
-                  'container-bg',
-                  'mt-0 min-w-[140px] rounded-md p-1 shadow-2xl'
-                )}
+              <motion.div
+                custom={index}
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="flex w-full items-center"
               >
-                {[
-                  { theme: 'light', icon: Icons.sun, label: t('light') },
-                  { theme: 'dark', icon: Icons.moon, label: t('dark') },
-                  { theme: 'system', icon: Icons.laptop, label: t('system') },
-                ].map((item, index) => (
-                  <motion.li
-                    key={item.theme}
-                    custom={index}
-                    variants={itemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    onClick={() => setTheme(item.theme)}
-                    className={cn(
-                      'flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors',
-                      theme === item.theme
-                        ? 'bg-muted text-primary'
-                        : 'text-muted-foreground hover:bg-muted'
-                    )}
-                  >
-                    <item.icon className="mr-2 size-4" />
-                    <span>{item.label}</span>
-                  </motion.li>
-                ))}
-              </motion.ul>
-            </nav>
-          )}
-        </AnimatePresence>
-      </FloatingPortal>
-    </>
+                <Icon className="size-4 mr-2" />
+                <span>{item.label}</span>
+              </motion.div>
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

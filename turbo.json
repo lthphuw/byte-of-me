@@ -1,23 +1,52 @@
 {
-  "$schema": "https://turborepo.com/schema.json",
+  "$schema": "https://turborepo.dev/schema.json",
   "tasks": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**"
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+      "env": [
+        "NODE_ENV",
+        "DATABASE_URL",
+        "DIRECT_URL",
+        "AUTH_URL",
+        "AUTH_SECRET",
+        "CHECKPOINTER_SCHEMA",
+        "EMAIL_SERVER_HOST",
+        "EMAIL_SERVER_PORT",
+        "EMAIL_SERVER_USER",
+        "EMAIL_SERVER_PASSWORD",
+        "EMAIL_FROM",
+        "SUPABASE_S3_STORAGE_REGION",
+        "SUPABASE_S3_STORAGE_ENDPOINT",
+        "SUPABASE_S3_STORAGE_PUBLIC_ENDPOINT",
+        "SUPABASE_S3_STORAGE_ACCESS_KEY",
+        "SUPABASE_S3_STORAGE_SECRET_KEY",
+        "SUPABASE_S3_STORAGE_BUCKET",
+        "EMAIL"
       ]
     },
-    "check-types": {
-      "dependsOn": [
-        "^check-types"
-      ]
+    "db:migrate:dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:migrate:deploy": {
+      "cache": false
+    },
+    "db:push": {
+      "cache": false
+    },
+    "db:seed": {
+      "cache": false
     },
     "dev": {
-      "persistent": true,
+      "cache": false,
+      "persistent": true
+    },
+    "generate": {
+      "dependsOn": ["^generate"],
       "cache": false
-    }
+    },
+    "lint": {}
   }
 }

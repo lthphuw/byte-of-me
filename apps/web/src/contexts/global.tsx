@@ -5,6 +5,7 @@ import { Theme } from '@/contexts/theme';
 
 import { Toaster } from '@/components/ui/toaster';
 import { Integrations } from '@/components/intergations';
+import Providers from '@/components/provider';
 import { TailwindIndicator } from '@/components/tailwind-indicator';
 
 
@@ -22,14 +23,11 @@ interface GlobalProviderProps {
 export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   return (
     <GlobalContext.Provider value={{}}>
+      <Providers>
       <Theme attribute="class" defaultTheme="system" enableSystem>
         {/* Main content */}
         {children}
 
-        {/* Floating chat icon (mobile) */}
-        {/*<ChatIcon />*/}
-
-        {/* Toast notifications */}
         <Toaster />
 
         {/* Show current Tailwind breakpoint (dev only) */}
@@ -38,6 +36,7 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
         {/* Analytics & monitoring tools */}
         <Integrations />
       </Theme>
+      </Providers>
     </GlobalContext.Provider>
   );
 };

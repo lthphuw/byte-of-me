@@ -3,5 +3,6 @@ interface AuthLayoutProps {
 }
 
 export default async function AuthLayout({ children }: AuthLayoutProps) {
+
   return <>{children}</>;
 }

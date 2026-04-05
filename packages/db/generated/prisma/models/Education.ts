@@ -20,76 +20,94 @@ export type EducationModel = runtime.Types.Result.DefaultSelection<Prisma.$Educa
 
 export type AggregateEducation = {
   _count: EducationCountAggregateOutputType | null
+  _avg: EducationAvgAggregateOutputType | null
+  _sum: EducationSumAggregateOutputType | null
   _min: EducationMinAggregateOutputType | null
   _max: EducationMaxAggregateOutputType | null
 }
 
+export type EducationAvgAggregateOutputType = {
+  sortOrder: number | null
+}
+
+export type EducationSumAggregateOutputType = {
+  sortOrder: number | null
+}
+
 export type EducationMinAggregateOutputType = {
   id: string | null
-  userId: string | null
-  timeline: string | null
-  title: string | null
-  message: string | null
-  icon: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  sortOrder: number | null
+  startDate: Date | null
+  endDate: Date | null
+  logoId: string | null
+  userId: string | null
 }
 
 export type EducationMaxAggregateOutputType = {
   id: string | null
-  userId: string | null
-  timeline: string | null
-  title: string | null
-  message: string | null
-  icon: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  sortOrder: number | null
+  startDate: Date | null
+  endDate: Date | null
+  logoId: string | null
+  userId: string | null
 }
 
 export type EducationCountAggregateOutputType = {
   id: number
-  userId: number
-  timeline: number
-  title: number
-  message: number
-  icon: number
   createdAt: number
   updatedAt: number
+  sortOrder: number
+  startDate: number
+  endDate: number
+  logoId: number
+  userId: number
   _all: number
 }
 
 
+export type EducationAvgAggregateInputType = {
+  sortOrder?: true
+}
+
+export type EducationSumAggregateInputType = {
+  sortOrder?: true
+}
+
 export type EducationMinAggregateInputType = {
   id?: true
-  userId?: true
-  timeline?: true
-  title?: true
-  message?: true
-  icon?: true
   createdAt?: true
   updatedAt?: true
+  sortOrder?: true
+  startDate?: true
+  endDate?: true
+  logoId?: true
+  userId?: true
 }
 
 export type EducationMaxAggregateInputType = {
   id?: true
-  userId?: true
-  timeline?: true
-  title?: true
-  message?: true
-  icon?: true
   createdAt?: true
   updatedAt?: true
+  sortOrder?: true
+  startDate?: true
+  endDate?: true
+  logoId?: true
+  userId?: true
 }
 
 export type EducationCountAggregateInputType = {
   id?: true
-  userId?: true
-  timeline?: true
-  title?: true
-  message?: true
-  icon?: true
   createdAt?: true
   updatedAt?: true
+  sortOrder?: true
+  startDate?: true
+  endDate?: true
+  logoId?: true
+  userId?: true
   _all?: true
 }
 
@@ -131,6 +149,18 @@ export type EducationAggregateArgs<ExtArgs extends runtime.Types.Extensions.Inte
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: EducationAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: EducationSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: EducationMinAggregateInputType
@@ -161,20 +191,24 @@ export type EducationGroupByArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   _count?: EducationCountAggregateInputType | true
+  _avg?: EducationAvgAggregateInputType
+  _sum?: EducationSumAggregateInputType
   _min?: EducationMinAggregateInputType
   _max?: EducationMaxAggregateInputType
 }
 
 export type EducationGroupByOutputType = {
   id: string
-  userId: string
-  timeline: string
-  title: string
-  message: string | null
-  icon: string | null
   createdAt: Date
   updatedAt: Date
+  sortOrder: number
+  startDate: Date
+  endDate: Date | null
+  logoId: string | null
+  userId: string
   _count: EducationCountAggregateOutputType | null
+  _avg: EducationAvgAggregateOutputType | null
+  _sum: EducationSumAggregateOutputType | null
   _min: EducationMinAggregateOutputType | null
   _max: EducationMaxAggregateOutputType | null
 }
@@ -199,28 +233,32 @@ export type EducationWhereInput = {
   OR?: Prisma.EducationWhereInput[]
   NOT?: Prisma.EducationWhereInput | Prisma.EducationWhereInput[]
   id?: Prisma.StringFilter<"Education"> | string
-  userId?: Prisma.StringFilter<"Education"> | string
-  timeline?: Prisma.StringFilter<"Education"> | string
-  title?: Prisma.StringFilter<"Education"> | string
-  message?: Prisma.StringNullableFilter<"Education"> | string | null
-  icon?: Prisma.StringNullableFilter<"Education"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Education"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Education"> | Date | string
+  sortOrder?: Prisma.IntFilter<"Education"> | number
+  startDate?: Prisma.DateTimeFilter<"Education"> | Date | string
+  endDate?: Prisma.DateTimeNullableFilter<"Education"> | Date | string | null
+  logoId?: Prisma.StringNullableFilter<"Education"> | string | null
+  userId?: Prisma.StringFilter<"Education"> | string
+  logo?: Prisma.XOR<Prisma.MediaNullableScalarRelationFilter, Prisma.MediaWhereInput> | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  subItems?: Prisma.EducationSubItemListRelationFilter
+  achievements?: Prisma.EducationAchievementListRelationFilter
+  translations?: Prisma.EducationTranslationListRelationFilter
 }
 
 export type EducationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
-  timeline?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  message?: Prisma.SortOrderInput | Prisma.SortOrder
-  icon?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  logoId?: Prisma.SortOrderInput | Prisma.SortOrder
+  userId?: Prisma.SortOrder
+  logo?: Prisma.MediaOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
-  subItems?: Prisma.EducationSubItemOrderByRelationAggregateInput
+  achievements?: Prisma.EducationAchievementOrderByRelationAggregateInput
+  translations?: Prisma.EducationTranslationOrderByRelationAggregateInput
 }
 
 export type EducationWhereUniqueInput = Prisma.AtLeast<{
@@ -228,29 +266,33 @@ export type EducationWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.EducationWhereInput | Prisma.EducationWhereInput[]
   OR?: Prisma.EducationWhereInput[]
   NOT?: Prisma.EducationWhereInput | Prisma.EducationWhereInput[]
-  userId?: Prisma.StringFilter<"Education"> | string
-  timeline?: Prisma.StringFilter<"Education"> | string
-  title?: Prisma.StringFilter<"Education"> | string
-  message?: Prisma.StringNullableFilter<"Education"> | string | null
-  icon?: Prisma.StringNullableFilter<"Education"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Education"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Education"> | Date | string
+  sortOrder?: Prisma.IntFilter<"Education"> | number
+  startDate?: Prisma.DateTimeFilter<"Education"> | Date | string
+  endDate?: Prisma.DateTimeNullableFilter<"Education"> | Date | string | null
+  logoId?: Prisma.StringNullableFilter<"Education"> | string | null
+  userId?: Prisma.StringFilter<"Education"> | string
+  logo?: Prisma.XOR<Prisma.MediaNullableScalarRelationFilter, Prisma.MediaWhereInput> | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  subItems?: Prisma.EducationSubItemListRelationFilter
+  achievements?: Prisma.EducationAchievementListRelationFilter
+  translations?: Prisma.EducationTranslationListRelationFilter
 }, "id">
 
 export type EducationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
-  timeline?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  message?: Prisma.SortOrderInput | Prisma.SortOrder
-  icon?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  logoId?: Prisma.SortOrderInput | Prisma.SortOrder
+  userId?: Prisma.SortOrder
   _count?: Prisma.EducationCountOrderByAggregateInput
+  _avg?: Prisma.EducationAvgOrderByAggregateInput
   _max?: Prisma.EducationMaxOrderByAggregateInput
   _min?: Prisma.EducationMinOrderByAggregateInput
+  _sum?: Prisma.EducationSumOrderByAggregateInput
 }
 
 export type EducationScalarWhereWithAggregatesInput = {
@@ -258,93 +300,96 @@ export type EducationScalarWhereWithAggregatesInput = {
   OR?: Prisma.EducationScalarWhereWithAggregatesInput[]
   NOT?: Prisma.EducationScalarWhereWithAggregatesInput | Prisma.EducationScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Education"> | string
-  userId?: Prisma.StringWithAggregatesFilter<"Education"> | string
-  timeline?: Prisma.StringWithAggregatesFilter<"Education"> | string
-  title?: Prisma.StringWithAggregatesFilter<"Education"> | string
-  message?: Prisma.StringNullableWithAggregatesFilter<"Education"> | string | null
-  icon?: Prisma.StringNullableWithAggregatesFilter<"Education"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Education"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Education"> | Date | string
+  sortOrder?: Prisma.IntWithAggregatesFilter<"Education"> | number
+  startDate?: Prisma.DateTimeWithAggregatesFilter<"Education"> | Date | string
+  endDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Education"> | Date | string | null
+  logoId?: Prisma.StringNullableWithAggregatesFilter<"Education"> | string | null
+  userId?: Prisma.StringWithAggregatesFilter<"Education"> | string
 }
 
 export type EducationCreateInput = {
   id?: string
-  timeline: string
-  title: string
-  message?: string | null
-  icon?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  sortOrder: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  logo?: Prisma.MediaCreateNestedOneWithoutEducationInput
   user: Prisma.UserCreateNestedOneWithoutEducationsInput
-  subItems?: Prisma.EducationSubItemCreateNestedManyWithoutEducationInput
+  achievements?: Prisma.EducationAchievementCreateNestedManyWithoutEducationInput
+  translations?: Prisma.EducationTranslationCreateNestedManyWithoutEducationInput
 }
 
 export type EducationUncheckedCreateInput = {
   id?: string
-  userId: string
-  timeline: string
-  title: string
-  message?: string | null
-  icon?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  subItems?: Prisma.EducationSubItemUncheckedCreateNestedManyWithoutEducationInput
+  sortOrder: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  logoId?: string | null
+  userId: string
+  achievements?: Prisma.EducationAchievementUncheckedCreateNestedManyWithoutEducationInput
+  translations?: Prisma.EducationTranslationUncheckedCreateNestedManyWithoutEducationInput
 }
 
 export type EducationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  timeline?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  logo?: Prisma.MediaUpdateOneWithoutEducationNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutEducationsNestedInput
-  subItems?: Prisma.EducationSubItemUpdateManyWithoutEducationNestedInput
+  achievements?: Prisma.EducationAchievementUpdateManyWithoutEducationNestedInput
+  translations?: Prisma.EducationTranslationUpdateManyWithoutEducationNestedInput
 }
 
 export type EducationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  timeline?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  subItems?: Prisma.EducationSubItemUncheckedUpdateManyWithoutEducationNestedInput
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  logoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  achievements?: Prisma.EducationAchievementUncheckedUpdateManyWithoutEducationNestedInput
+  translations?: Prisma.EducationTranslationUncheckedUpdateManyWithoutEducationNestedInput
 }
 
 export type EducationCreateManyInput = {
   id?: string
-  userId: string
-  timeline: string
-  title: string
-  message?: string | null
-  icon?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  sortOrder: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  logoId?: string | null
+  userId: string
 }
 
 export type EducationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  timeline?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type EducationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  timeline?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  logoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type EducationListRelationFilter = {
@@ -359,35 +404,43 @@ export type EducationOrderByRelationAggregateInput = {
 
 export type EducationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
-  timeline?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  message?: Prisma.SortOrder
-  icon?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrder
+  logoId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
+}
+
+export type EducationAvgOrderByAggregateInput = {
+  sortOrder?: Prisma.SortOrder
 }
 
 export type EducationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
-  timeline?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  message?: Prisma.SortOrder
-  icon?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrder
+  logoId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
 }
 
 export type EducationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
-  timeline?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  message?: Prisma.SortOrder
-  icon?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrder
+  logoId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
+}
+
+export type EducationSumOrderByAggregateInput = {
+  sortOrder?: Prisma.SortOrder
 }
 
 export type EducationScalarRelationFilter = {
@@ -437,40 +490,98 @@ export type EducationUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.EducationScalarWhereInput | Prisma.EducationScalarWhereInput[]
 }
 
-export type EducationCreateNestedOneWithoutSubItemsInput = {
-  create?: Prisma.XOR<Prisma.EducationCreateWithoutSubItemsInput, Prisma.EducationUncheckedCreateWithoutSubItemsInput>
-  connectOrCreate?: Prisma.EducationCreateOrConnectWithoutSubItemsInput
+export type EducationCreateNestedOneWithoutTranslationsInput = {
+  create?: Prisma.XOR<Prisma.EducationCreateWithoutTranslationsInput, Prisma.EducationUncheckedCreateWithoutTranslationsInput>
+  connectOrCreate?: Prisma.EducationCreateOrConnectWithoutTranslationsInput
   connect?: Prisma.EducationWhereUniqueInput
 }
 
-export type EducationUpdateOneRequiredWithoutSubItemsNestedInput = {
-  create?: Prisma.XOR<Prisma.EducationCreateWithoutSubItemsInput, Prisma.EducationUncheckedCreateWithoutSubItemsInput>
-  connectOrCreate?: Prisma.EducationCreateOrConnectWithoutSubItemsInput
-  upsert?: Prisma.EducationUpsertWithoutSubItemsInput
+export type EducationUpdateOneRequiredWithoutTranslationsNestedInput = {
+  create?: Prisma.XOR<Prisma.EducationCreateWithoutTranslationsInput, Prisma.EducationUncheckedCreateWithoutTranslationsInput>
+  connectOrCreate?: Prisma.EducationCreateOrConnectWithoutTranslationsInput
+  upsert?: Prisma.EducationUpsertWithoutTranslationsInput
   connect?: Prisma.EducationWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.EducationUpdateToOneWithWhereWithoutSubItemsInput, Prisma.EducationUpdateWithoutSubItemsInput>, Prisma.EducationUncheckedUpdateWithoutSubItemsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EducationUpdateToOneWithWhereWithoutTranslationsInput, Prisma.EducationUpdateWithoutTranslationsInput>, Prisma.EducationUncheckedUpdateWithoutTranslationsInput>
+}
+
+export type EducationCreateNestedOneWithoutAchievementsInput = {
+  create?: Prisma.XOR<Prisma.EducationCreateWithoutAchievementsInput, Prisma.EducationUncheckedCreateWithoutAchievementsInput>
+  connectOrCreate?: Prisma.EducationCreateOrConnectWithoutAchievementsInput
+  connect?: Prisma.EducationWhereUniqueInput
+}
+
+export type EducationUpdateOneRequiredWithoutAchievementsNestedInput = {
+  create?: Prisma.XOR<Prisma.EducationCreateWithoutAchievementsInput, Prisma.EducationUncheckedCreateWithoutAchievementsInput>
+  connectOrCreate?: Prisma.EducationCreateOrConnectWithoutAchievementsInput
+  upsert?: Prisma.EducationUpsertWithoutAchievementsInput
+  connect?: Prisma.EducationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EducationUpdateToOneWithWhereWithoutAchievementsInput, Prisma.EducationUpdateWithoutAchievementsInput>, Prisma.EducationUncheckedUpdateWithoutAchievementsInput>
+}
+
+export type EducationCreateNestedManyWithoutLogoInput = {
+  create?: Prisma.XOR<Prisma.EducationCreateWithoutLogoInput, Prisma.EducationUncheckedCreateWithoutLogoInput> | Prisma.EducationCreateWithoutLogoInput[] | Prisma.EducationUncheckedCreateWithoutLogoInput[]
+  connectOrCreate?: Prisma.EducationCreateOrConnectWithoutLogoInput | Prisma.EducationCreateOrConnectWithoutLogoInput[]
+  createMany?: Prisma.EducationCreateManyLogoInputEnvelope
+  connect?: Prisma.EducationWhereUniqueInput | Prisma.EducationWhereUniqueInput[]
+}
+
+export type EducationUncheckedCreateNestedManyWithoutLogoInput = {
+  create?: Prisma.XOR<Prisma.EducationCreateWithoutLogoInput, Prisma.EducationUncheckedCreateWithoutLogoInput> | Prisma.EducationCreateWithoutLogoInput[] | Prisma.EducationUncheckedCreateWithoutLogoInput[]
+  connectOrCreate?: Prisma.EducationCreateOrConnectWithoutLogoInput | Prisma.EducationCreateOrConnectWithoutLogoInput[]
+  createMany?: Prisma.EducationCreateManyLogoInputEnvelope
+  connect?: Prisma.EducationWhereUniqueInput | Prisma.EducationWhereUniqueInput[]
+}
+
+export type EducationUpdateManyWithoutLogoNestedInput = {
+  create?: Prisma.XOR<Prisma.EducationCreateWithoutLogoInput, Prisma.EducationUncheckedCreateWithoutLogoInput> | Prisma.EducationCreateWithoutLogoInput[] | Prisma.EducationUncheckedCreateWithoutLogoInput[]
+  connectOrCreate?: Prisma.EducationCreateOrConnectWithoutLogoInput | Prisma.EducationCreateOrConnectWithoutLogoInput[]
+  upsert?: Prisma.EducationUpsertWithWhereUniqueWithoutLogoInput | Prisma.EducationUpsertWithWhereUniqueWithoutLogoInput[]
+  createMany?: Prisma.EducationCreateManyLogoInputEnvelope
+  set?: Prisma.EducationWhereUniqueInput | Prisma.EducationWhereUniqueInput[]
+  disconnect?: Prisma.EducationWhereUniqueInput | Prisma.EducationWhereUniqueInput[]
+  delete?: Prisma.EducationWhereUniqueInput | Prisma.EducationWhereUniqueInput[]
+  connect?: Prisma.EducationWhereUniqueInput | Prisma.EducationWhereUniqueInput[]
+  update?: Prisma.EducationUpdateWithWhereUniqueWithoutLogoInput | Prisma.EducationUpdateWithWhereUniqueWithoutLogoInput[]
+  updateMany?: Prisma.EducationUpdateManyWithWhereWithoutLogoInput | Prisma.EducationUpdateManyWithWhereWithoutLogoInput[]
+  deleteMany?: Prisma.EducationScalarWhereInput | Prisma.EducationScalarWhereInput[]
+}
+
+export type EducationUncheckedUpdateManyWithoutLogoNestedInput = {
+  create?: Prisma.XOR<Prisma.EducationCreateWithoutLogoInput, Prisma.EducationUncheckedCreateWithoutLogoInput> | Prisma.EducationCreateWithoutLogoInput[] | Prisma.EducationUncheckedCreateWithoutLogoInput[]
+  connectOrCreate?: Prisma.EducationCreateOrConnectWithoutLogoInput | Prisma.EducationCreateOrConnectWithoutLogoInput[]
+  upsert?: Prisma.EducationUpsertWithWhereUniqueWithoutLogoInput | Prisma.EducationUpsertWithWhereUniqueWithoutLogoInput[]
+  createMany?: Prisma.EducationCreateManyLogoInputEnvelope
+  set?: Prisma.EducationWhereUniqueInput | Prisma.EducationWhereUniqueInput[]
+  disconnect?: Prisma.EducationWhereUniqueInput | Prisma.EducationWhereUniqueInput[]
+  delete?: Prisma.EducationWhereUniqueInput | Prisma.EducationWhereUniqueInput[]
+  connect?: Prisma.EducationWhereUniqueInput | Prisma.EducationWhereUniqueInput[]
+  update?: Prisma.EducationUpdateWithWhereUniqueWithoutLogoInput | Prisma.EducationUpdateWithWhereUniqueWithoutLogoInput[]
+  updateMany?: Prisma.EducationUpdateManyWithWhereWithoutLogoInput | Prisma.EducationUpdateManyWithWhereWithoutLogoInput[]
+  deleteMany?: Prisma.EducationScalarWhereInput | Prisma.EducationScalarWhereInput[]
 }
 
 export type EducationCreateWithoutUserInput = {
   id?: string
-  timeline: string
-  title: string
-  message?: string | null
-  icon?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  subItems?: Prisma.EducationSubItemCreateNestedManyWithoutEducationInput
+  sortOrder: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  logo?: Prisma.MediaCreateNestedOneWithoutEducationInput
+  achievements?: Prisma.EducationAchievementCreateNestedManyWithoutEducationInput
+  translations?: Prisma.EducationTranslationCreateNestedManyWithoutEducationInput
 }
 
 export type EducationUncheckedCreateWithoutUserInput = {
   id?: string
-  timeline: string
-  title: string
-  message?: string | null
-  icon?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  subItems?: Prisma.EducationSubItemUncheckedCreateNestedManyWithoutEducationInput
+  sortOrder: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  logoId?: string | null
+  achievements?: Prisma.EducationAchievementUncheckedCreateNestedManyWithoutEducationInput
+  translations?: Prisma.EducationTranslationUncheckedCreateNestedManyWithoutEducationInput
 }
 
 export type EducationCreateOrConnectWithoutUserInput = {
@@ -504,115 +615,279 @@ export type EducationScalarWhereInput = {
   OR?: Prisma.EducationScalarWhereInput[]
   NOT?: Prisma.EducationScalarWhereInput | Prisma.EducationScalarWhereInput[]
   id?: Prisma.StringFilter<"Education"> | string
-  userId?: Prisma.StringFilter<"Education"> | string
-  timeline?: Prisma.StringFilter<"Education"> | string
-  title?: Prisma.StringFilter<"Education"> | string
-  message?: Prisma.StringNullableFilter<"Education"> | string | null
-  icon?: Prisma.StringNullableFilter<"Education"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Education"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Education"> | Date | string
+  sortOrder?: Prisma.IntFilter<"Education"> | number
+  startDate?: Prisma.DateTimeFilter<"Education"> | Date | string
+  endDate?: Prisma.DateTimeNullableFilter<"Education"> | Date | string | null
+  logoId?: Prisma.StringNullableFilter<"Education"> | string | null
+  userId?: Prisma.StringFilter<"Education"> | string
 }
 
-export type EducationCreateWithoutSubItemsInput = {
+export type EducationCreateWithoutTranslationsInput = {
   id?: string
-  timeline: string
-  title: string
-  message?: string | null
-  icon?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  sortOrder: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  logo?: Prisma.MediaCreateNestedOneWithoutEducationInput
   user: Prisma.UserCreateNestedOneWithoutEducationsInput
+  achievements?: Prisma.EducationAchievementCreateNestedManyWithoutEducationInput
 }
 
-export type EducationUncheckedCreateWithoutSubItemsInput = {
+export type EducationUncheckedCreateWithoutTranslationsInput = {
   id?: string
-  userId: string
-  timeline: string
-  title: string
-  message?: string | null
-  icon?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  sortOrder: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  logoId?: string | null
+  userId: string
+  achievements?: Prisma.EducationAchievementUncheckedCreateNestedManyWithoutEducationInput
 }
 
-export type EducationCreateOrConnectWithoutSubItemsInput = {
+export type EducationCreateOrConnectWithoutTranslationsInput = {
   where: Prisma.EducationWhereUniqueInput
-  create: Prisma.XOR<Prisma.EducationCreateWithoutSubItemsInput, Prisma.EducationUncheckedCreateWithoutSubItemsInput>
+  create: Prisma.XOR<Prisma.EducationCreateWithoutTranslationsInput, Prisma.EducationUncheckedCreateWithoutTranslationsInput>
 }
 
-export type EducationUpsertWithoutSubItemsInput = {
-  update: Prisma.XOR<Prisma.EducationUpdateWithoutSubItemsInput, Prisma.EducationUncheckedUpdateWithoutSubItemsInput>
-  create: Prisma.XOR<Prisma.EducationCreateWithoutSubItemsInput, Prisma.EducationUncheckedCreateWithoutSubItemsInput>
+export type EducationUpsertWithoutTranslationsInput = {
+  update: Prisma.XOR<Prisma.EducationUpdateWithoutTranslationsInput, Prisma.EducationUncheckedUpdateWithoutTranslationsInput>
+  create: Prisma.XOR<Prisma.EducationCreateWithoutTranslationsInput, Prisma.EducationUncheckedCreateWithoutTranslationsInput>
   where?: Prisma.EducationWhereInput
 }
 
-export type EducationUpdateToOneWithWhereWithoutSubItemsInput = {
+export type EducationUpdateToOneWithWhereWithoutTranslationsInput = {
   where?: Prisma.EducationWhereInput
-  data: Prisma.XOR<Prisma.EducationUpdateWithoutSubItemsInput, Prisma.EducationUncheckedUpdateWithoutSubItemsInput>
+  data: Prisma.XOR<Prisma.EducationUpdateWithoutTranslationsInput, Prisma.EducationUncheckedUpdateWithoutTranslationsInput>
 }
 
-export type EducationUpdateWithoutSubItemsInput = {
+export type EducationUpdateWithoutTranslationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  timeline?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  logo?: Prisma.MediaUpdateOneWithoutEducationNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutEducationsNestedInput
+  achievements?: Prisma.EducationAchievementUpdateManyWithoutEducationNestedInput
 }
 
-export type EducationUncheckedUpdateWithoutSubItemsInput = {
+export type EducationUncheckedUpdateWithoutTranslationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  timeline?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  logoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  achievements?: Prisma.EducationAchievementUncheckedUpdateManyWithoutEducationNestedInput
+}
+
+export type EducationCreateWithoutAchievementsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sortOrder: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  logo?: Prisma.MediaCreateNestedOneWithoutEducationInput
+  user: Prisma.UserCreateNestedOneWithoutEducationsInput
+  translations?: Prisma.EducationTranslationCreateNestedManyWithoutEducationInput
+}
+
+export type EducationUncheckedCreateWithoutAchievementsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sortOrder: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  logoId?: string | null
+  userId: string
+  translations?: Prisma.EducationTranslationUncheckedCreateNestedManyWithoutEducationInput
+}
+
+export type EducationCreateOrConnectWithoutAchievementsInput = {
+  where: Prisma.EducationWhereUniqueInput
+  create: Prisma.XOR<Prisma.EducationCreateWithoutAchievementsInput, Prisma.EducationUncheckedCreateWithoutAchievementsInput>
+}
+
+export type EducationUpsertWithoutAchievementsInput = {
+  update: Prisma.XOR<Prisma.EducationUpdateWithoutAchievementsInput, Prisma.EducationUncheckedUpdateWithoutAchievementsInput>
+  create: Prisma.XOR<Prisma.EducationCreateWithoutAchievementsInput, Prisma.EducationUncheckedCreateWithoutAchievementsInput>
+  where?: Prisma.EducationWhereInput
+}
+
+export type EducationUpdateToOneWithWhereWithoutAchievementsInput = {
+  where?: Prisma.EducationWhereInput
+  data: Prisma.XOR<Prisma.EducationUpdateWithoutAchievementsInput, Prisma.EducationUncheckedUpdateWithoutAchievementsInput>
+}
+
+export type EducationUpdateWithoutAchievementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  logo?: Prisma.MediaUpdateOneWithoutEducationNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutEducationsNestedInput
+  translations?: Prisma.EducationTranslationUpdateManyWithoutEducationNestedInput
+}
+
+export type EducationUncheckedUpdateWithoutAchievementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  logoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  translations?: Prisma.EducationTranslationUncheckedUpdateManyWithoutEducationNestedInput
+}
+
+export type EducationCreateWithoutLogoInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sortOrder: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  user: Prisma.UserCreateNestedOneWithoutEducationsInput
+  achievements?: Prisma.EducationAchievementCreateNestedManyWithoutEducationInput
+  translations?: Prisma.EducationTranslationCreateNestedManyWithoutEducationInput
+}
+
+export type EducationUncheckedCreateWithoutLogoInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sortOrder: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  userId: string
+  achievements?: Prisma.EducationAchievementUncheckedCreateNestedManyWithoutEducationInput
+  translations?: Prisma.EducationTranslationUncheckedCreateNestedManyWithoutEducationInput
+}
+
+export type EducationCreateOrConnectWithoutLogoInput = {
+  where: Prisma.EducationWhereUniqueInput
+  create: Prisma.XOR<Prisma.EducationCreateWithoutLogoInput, Prisma.EducationUncheckedCreateWithoutLogoInput>
+}
+
+export type EducationCreateManyLogoInputEnvelope = {
+  data: Prisma.EducationCreateManyLogoInput | Prisma.EducationCreateManyLogoInput[]
+  skipDuplicates?: boolean
+}
+
+export type EducationUpsertWithWhereUniqueWithoutLogoInput = {
+  where: Prisma.EducationWhereUniqueInput
+  update: Prisma.XOR<Prisma.EducationUpdateWithoutLogoInput, Prisma.EducationUncheckedUpdateWithoutLogoInput>
+  create: Prisma.XOR<Prisma.EducationCreateWithoutLogoInput, Prisma.EducationUncheckedCreateWithoutLogoInput>
+}
+
+export type EducationUpdateWithWhereUniqueWithoutLogoInput = {
+  where: Prisma.EducationWhereUniqueInput
+  data: Prisma.XOR<Prisma.EducationUpdateWithoutLogoInput, Prisma.EducationUncheckedUpdateWithoutLogoInput>
+}
+
+export type EducationUpdateManyWithWhereWithoutLogoInput = {
+  where: Prisma.EducationScalarWhereInput
+  data: Prisma.XOR<Prisma.EducationUpdateManyMutationInput, Prisma.EducationUncheckedUpdateManyWithoutLogoInput>
 }
 
 export type EducationCreateManyUserInput = {
   id?: string
-  timeline: string
-  title: string
-  message?: string | null
-  icon?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  sortOrder: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  logoId?: string | null
 }
 
 export type EducationUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  timeline?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  subItems?: Prisma.EducationSubItemUpdateManyWithoutEducationNestedInput
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  logo?: Prisma.MediaUpdateOneWithoutEducationNestedInput
+  achievements?: Prisma.EducationAchievementUpdateManyWithoutEducationNestedInput
+  translations?: Prisma.EducationTranslationUpdateManyWithoutEducationNestedInput
 }
 
 export type EducationUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  timeline?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  subItems?: Prisma.EducationSubItemUncheckedUpdateManyWithoutEducationNestedInput
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  logoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  achievements?: Prisma.EducationAchievementUncheckedUpdateManyWithoutEducationNestedInput
+  translations?: Prisma.EducationTranslationUncheckedUpdateManyWithoutEducationNestedInput
 }
 
 export type EducationUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  timeline?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  logoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type EducationCreateManyLogoInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sortOrder: number
+  startDate: Date | string
+  endDate?: Date | string | null
+  userId: string
+}
+
+export type EducationUpdateWithoutLogoInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  user?: Prisma.UserUpdateOneRequiredWithoutEducationsNestedInput
+  achievements?: Prisma.EducationAchievementUpdateManyWithoutEducationNestedInput
+  translations?: Prisma.EducationTranslationUpdateManyWithoutEducationNestedInput
+}
+
+export type EducationUncheckedUpdateWithoutLogoInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  achievements?: Prisma.EducationAchievementUncheckedUpdateManyWithoutEducationNestedInput
+  translations?: Prisma.EducationTranslationUncheckedUpdateManyWithoutEducationNestedInput
+}
+
+export type EducationUncheckedUpdateManyWithoutLogoInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
@@ -621,11 +896,13 @@ export type EducationUncheckedUpdateManyWithoutUserInput = {
  */
 
 export type EducationCountOutputType = {
-  subItems: number
+  achievements: number
+  translations: number
 }
 
 export type EducationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  subItems?: boolean | EducationCountOutputTypeCountSubItemsArgs
+  achievements?: boolean | EducationCountOutputTypeCountAchievementsArgs
+  translations?: boolean | EducationCountOutputTypeCountTranslationsArgs
 }
 
 /**
@@ -641,88 +918,105 @@ export type EducationCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ex
 /**
  * EducationCountOutputType without action
  */
-export type EducationCountOutputTypeCountSubItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.EducationSubItemWhereInput
+export type EducationCountOutputTypeCountAchievementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EducationAchievementWhereInput
+}
+
+/**
+ * EducationCountOutputType without action
+ */
+export type EducationCountOutputTypeCountTranslationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EducationTranslationWhereInput
 }
 
 
 export type EducationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  userId?: boolean
-  timeline?: boolean
-  title?: boolean
-  message?: boolean
-  icon?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  sortOrder?: boolean
+  startDate?: boolean
+  endDate?: boolean
+  logoId?: boolean
+  userId?: boolean
+  logo?: boolean | Prisma.Education$logoArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  subItems?: boolean | Prisma.Education$subItemsArgs<ExtArgs>
+  achievements?: boolean | Prisma.Education$achievementsArgs<ExtArgs>
+  translations?: boolean | Prisma.Education$translationsArgs<ExtArgs>
   _count?: boolean | Prisma.EducationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["education"]>
 
 export type EducationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  userId?: boolean
-  timeline?: boolean
-  title?: boolean
-  message?: boolean
-  icon?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  sortOrder?: boolean
+  startDate?: boolean
+  endDate?: boolean
+  logoId?: boolean
+  userId?: boolean
+  logo?: boolean | Prisma.Education$logoArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["education"]>
 
 export type EducationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  userId?: boolean
-  timeline?: boolean
-  title?: boolean
-  message?: boolean
-  icon?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  sortOrder?: boolean
+  startDate?: boolean
+  endDate?: boolean
+  logoId?: boolean
+  userId?: boolean
+  logo?: boolean | Prisma.Education$logoArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["education"]>
 
 export type EducationSelectScalar = {
   id?: boolean
-  userId?: boolean
-  timeline?: boolean
-  title?: boolean
-  message?: boolean
-  icon?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  sortOrder?: boolean
+  startDate?: boolean
+  endDate?: boolean
+  logoId?: boolean
+  userId?: boolean
 }
 
-export type EducationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "timeline" | "title" | "message" | "icon" | "createdAt" | "updatedAt", ExtArgs["result"]["education"]>
+export type EducationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "sortOrder" | "startDate" | "endDate" | "logoId" | "userId", ExtArgs["result"]["education"]>
 export type EducationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  logo?: boolean | Prisma.Education$logoArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  subItems?: boolean | Prisma.Education$subItemsArgs<ExtArgs>
+  achievements?: boolean | Prisma.Education$achievementsArgs<ExtArgs>
+  translations?: boolean | Prisma.Education$translationsArgs<ExtArgs>
   _count?: boolean | Prisma.EducationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EducationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  logo?: boolean | Prisma.Education$logoArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type EducationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  logo?: boolean | Prisma.Education$logoArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $EducationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Education"
   objects: {
+    logo: Prisma.$MediaPayload<ExtArgs> | null
     user: Prisma.$UserPayload<ExtArgs>
-    subItems: Prisma.$EducationSubItemPayload<ExtArgs>[]
+    achievements: Prisma.$EducationAchievementPayload<ExtArgs>[]
+    translations: Prisma.$EducationTranslationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    userId: string
-    timeline: string
-    title: string
-    message: string | null
-    icon: string | null
     createdAt: Date
     updatedAt: Date
+    sortOrder: number
+    startDate: Date
+    endDate: Date | null
+    logoId: string | null
+    userId: string
   }, ExtArgs["result"]["education"]>
   composites: {}
 }
@@ -1117,8 +1411,10 @@ readonly fields: EducationFieldRefs;
  */
 export interface Prisma__EducationClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  logo<T extends Prisma.Education$logoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Education$logoArgs<ExtArgs>>): Prisma.Prisma__MediaClient<runtime.Types.Result.GetResult<Prisma.$MediaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  subItems<T extends Prisma.Education$subItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Education$subItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EducationSubItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  achievements<T extends Prisma.Education$achievementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Education$achievementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EducationAchievementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  translations<T extends Prisma.Education$translationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Education$translationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EducationTranslationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1149,13 +1445,13 @@ export interface Prisma__EducationClient<T, Null = never, ExtArgs extends runtim
  */
 export interface EducationFieldRefs {
   readonly id: Prisma.FieldRef<"Education", 'String'>
-  readonly userId: Prisma.FieldRef<"Education", 'String'>
-  readonly timeline: Prisma.FieldRef<"Education", 'String'>
-  readonly title: Prisma.FieldRef<"Education", 'String'>
-  readonly message: Prisma.FieldRef<"Education", 'String'>
-  readonly icon: Prisma.FieldRef<"Education", 'String'>
   readonly createdAt: Prisma.FieldRef<"Education", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Education", 'DateTime'>
+  readonly sortOrder: Prisma.FieldRef<"Education", 'Int'>
+  readonly startDate: Prisma.FieldRef<"Education", 'DateTime'>
+  readonly endDate: Prisma.FieldRef<"Education", 'DateTime'>
+  readonly logoId: Prisma.FieldRef<"Education", 'String'>
+  readonly userId: Prisma.FieldRef<"Education", 'String'>
 }
     
 
@@ -1552,27 +1848,70 @@ export type EducationDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * Education.subItems
+ * Education.logo
  */
-export type Education$subItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Education$logoArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the EducationSubItem
+   * Select specific fields to fetch from the Media
    */
-  select?: Prisma.EducationSubItemSelect<ExtArgs> | null
+  select?: Prisma.MediaSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the EducationSubItem
+   * Omit specific fields from the Media
    */
-  omit?: Prisma.EducationSubItemOmit<ExtArgs> | null
+  omit?: Prisma.MediaOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.EducationSubItemInclude<ExtArgs> | null
-  where?: Prisma.EducationSubItemWhereInput
-  orderBy?: Prisma.EducationSubItemOrderByWithRelationInput | Prisma.EducationSubItemOrderByWithRelationInput[]
-  cursor?: Prisma.EducationSubItemWhereUniqueInput
+  include?: Prisma.MediaInclude<ExtArgs> | null
+  where?: Prisma.MediaWhereInput
+}
+
+/**
+ * Education.achievements
+ */
+export type Education$achievementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EducationAchievement
+   */
+  select?: Prisma.EducationAchievementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EducationAchievement
+   */
+  omit?: Prisma.EducationAchievementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EducationAchievementInclude<ExtArgs> | null
+  where?: Prisma.EducationAchievementWhereInput
+  orderBy?: Prisma.EducationAchievementOrderByWithRelationInput | Prisma.EducationAchievementOrderByWithRelationInput[]
+  cursor?: Prisma.EducationAchievementWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.EducationSubItemScalarFieldEnum | Prisma.EducationSubItemScalarFieldEnum[]
+  distinct?: Prisma.EducationAchievementScalarFieldEnum | Prisma.EducationAchievementScalarFieldEnum[]
+}
+
+/**
+ * Education.translations
+ */
+export type Education$translationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EducationTranslation
+   */
+  select?: Prisma.EducationTranslationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EducationTranslation
+   */
+  omit?: Prisma.EducationTranslationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EducationTranslationInclude<ExtArgs> | null
+  where?: Prisma.EducationTranslationWhereInput
+  orderBy?: Prisma.EducationTranslationOrderByWithRelationInput | Prisma.EducationTranslationOrderByWithRelationInput[]
+  cursor?: Prisma.EducationTranslationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EducationTranslationScalarFieldEnum | Prisma.EducationTranslationScalarFieldEnum[]
 }
 
 /**

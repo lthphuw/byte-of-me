@@ -175,14 +175,14 @@ export type VerificationTokenOrderByWithRelationInput = {
 }
 
 export type VerificationTokenWhereUniqueInput = Prisma.AtLeast<{
-  token?: string
   identifier_token?: Prisma.VerificationTokenIdentifierTokenCompoundUniqueInput
   AND?: Prisma.VerificationTokenWhereInput | Prisma.VerificationTokenWhereInput[]
   OR?: Prisma.VerificationTokenWhereInput[]
   NOT?: Prisma.VerificationTokenWhereInput | Prisma.VerificationTokenWhereInput[]
   identifier?: Prisma.StringFilter<"VerificationToken"> | string
+  token?: Prisma.StringFilter<"VerificationToken"> | string
   expires?: Prisma.DateTimeFilter<"VerificationToken"> | Date | string
-}, "token" | "identifier_token">
+}, "identifier_token">
 
 export type VerificationTokenOrderByWithAggregationInput = {
   identifier?: Prisma.SortOrder

@@ -1,161 +1,120 @@
 'use client';
 
-import { useCallback, useState } from 'react';
 import { Link, usePathname } from '@/i18n/navigation';
-import { FloatingPortal, autoUpdate, flip, offset, shift, useClick, useDismiss, useFloating, useInteractions, useRole } from '@floating-ui/react';
+import { LocaleType } from '@/types';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useLocale } from 'next-intl';
-
-
+import { useLocale, useTranslations } from 'next-intl';
 
 import { itemVariants } from '@/config/anim';
 import { languageNames, supportedLanguages } from '@/config/language';
 import { cn } from '@/lib/utils';
-import { useTranslations } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
-
-
-import { Flags } from './flag';
-
-
-// Define flag animation variants
 const flagVariants = {
-  initial: { opacity: 0, scale: 0.8, y: 5 },
+  initial: { opacity: 0, scale: 0.9, y: 8 },
   animate: { opacity: 1, scale: 1, y: 0 },
-  exit: { opacity: 0, scale: 0.8, y: -5 },
+  exit: { opacity: 0, scale: 0.9, y: -8 },
+};
+
+export const Flags: Record<LocaleType, any> = {
+  vi: (props: any) => (
+    <span className={cn('fi fi-vn border border-muted/20', props.className)} />
+  ),
+  en: (props: any) => (
+    <span className={cn('fi fi-gb border border-muted/20', props.className)} />
+  ),
 };
 
 export function I18NToggle() {
   const t = useTranslations('global.i18nToggle');
-  const locale = useLocale();
+  const locale = useLocale() as LocaleType;
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
 
-  const FlagComponent = Flags[locale];
-
-  const { refs, floatingStyles, context } = useFloating({
-    open: isOpen,
-    onOpenChange: setIsOpen,
-    strategy: 'absolute',
-    placement: 'bottom-end',
-    middleware: [offset(4), flip(), shift()],
-    whileElementsMounted: autoUpdate,
-  });
-
-  const { getReferenceProps, getFloatingProps } = useInteractions([
-    useClick(context),
-    useDismiss(context),
-    useRole(context),
-  ]);
-
-  const handleLanguageChange = useCallback(() => {
-    setIsOpen(false);
-  }, []);
+  const CurrentFlag = Flags[locale];
 
   return (
-    <>
-      <Button
-        ref={refs.setReference}
-        {...getReferenceProps()}
-        variant="link"
-        size="icon"
-        className="relative size-8 px-0 focus:outline-none"
-      >
-        <motion.div
-          whileHover={{ scale: 1.1 }}
-          className="absolute inset-0 flex items-center justify-center"
+    <DropdownMenu modal={false}>
+      {' '}
+      {/* CRITICAL: Stops the body from shifting/padding right */}
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative size-10 flex items-center justify-center focus-visible:ring-0 focus-visible:bg-accent"
         >
-          <motion.span className="relative size-6">
-            <AnimatePresence initial={false}>
+          {/* Wrapping in a div with defined dimensions ensures the button
+             doesn't collapse or change size during the AnimatePresence swap.
+          */}
+          <div className="relative size-6 flex items-center justify-center overflow-hidden rounded-sm">
+            <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={locale}
                 variants={flagVariants}
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                transition={{
-                  type: 'spring',
-                  stiffness: 150,
-                  damping: 15,
-                  duration: 0.2,
-                }}
+                transition={{ type: 'spring', stiffness: 260, damping: 20 }}
                 className="absolute inset-0 flex items-center justify-center"
               >
-                <FlagComponent className="size-6 fi" />
+                <CurrentFlag className="size-full object-cover shadow-sm" />
               </motion.div>
             </AnimatePresence>
-          </motion.span>
-          <span className="sr-only">{t('Toggle language')}</span>
-        </motion.div>
-      </Button>
+          </div>
+          <span className="sr-only">{t('toggleLanguage')}</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        sideOffset={8}
+        className="min-w-[180px] p-1.5 overflow-hidden space-y-1 bg-popover rounded-md border border-muted/50 shadow-lg"
+      >
+        {supportedLanguages.map((lang, index) => {
+          const ItemFlag = Flags[lang];
+          const isActive = lang === locale;
 
-      <FloatingPortal>
-        <AnimatePresence>
-          {isOpen && (
-            <nav
-              ref={refs.setFloating}
-              style={{
-                ...floatingStyles,
-                zIndex: 60,
-              }}
-              {...getFloatingProps()}
+          return (
+            <motion.div
+              custom={index}
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="flex w-full items-center"
             >
-              <motion.ul
-                initial={{ opacity: 0.3, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ type: 'spring', stiffness: 130, damping: 10 }}
-                className={cn(
-                  'mt-0 min-w-[160px] rounded-md p-1 shadow-2xl overflow-hidden',
-                  'container-bg'
-                )}
-              >
-                {supportedLanguages.map((lang, index) => {
-                  const Flag = Flags[lang];
-                  return (
-                    <motion.li
-                      key={lang}
-                      custom={index}
-                      variants={itemVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className={cn(
-                        'flex cursor-pointer items-center gap-2 text-sm transition-colors'
-                      )}
-                    >
-                      <Link
-                        href={pathname}
-                        locale={lang}
-                        onClick={handleLanguageChange}
-                        className={cn(
-                          'flex items-center gap-2 rounded-md px-3 py-2 w-full',
-                          {
-                            'bg-muted text-primary': lang === locale,
-                            'text-muted-foreground hover:bg-muted':
-                              lang !== locale,
-                          }
-                        )}
-                      >
-                        <span className="relative size-5 flex items-center justify-center">
-                          <Flag className="size-5 fi" />
-                        </span>
-                        <span>
-                          {t(languageNames[lang])}{' '}
-                          <span className="uppercase tracking-wide">
-                            {lang}
-                          </span>
-                        </span>
-                      </Link>
-                    </motion.li>
-                  );
-                })}
-              </motion.ul>
-            </nav>
-          )}
-        </AnimatePresence>
-      </FloatingPortal>
-    </>
+              <DropdownMenuItem key={lang} asChild>
+                <Link
+                  href={pathname}
+                  locale={lang}
+                  className={cn(
+                    'flex w-full items-center gap-3 px-2 py-2 rounded-md transition-colors cursor-pointer',
+                    isActive
+                      ? 'bg-accent text-accent-foreground font-medium'
+                      : 'hover:bg-muted/50'
+                  )}
+                >
+                  <div className="size-5 shrink-0 overflow-hidden rounded-[2px] border border-muted/30">
+                    <ItemFlag className="size-full object-cover" />
+                  </div>
+                  <div className="flex flex-1 items-center justify-between">
+                    <span className="text-sm">
+                      {t(languageNames[lang] as any)}
+                    </span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-30">
+                      {lang}
+                    </span>
+                  </div>
+                </Link>
+              </DropdownMenuItem>
+            </motion.div>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

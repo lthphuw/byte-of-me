@@ -4,22 +4,13 @@ import * as React from 'react';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import { MainNavItem } from '@/types';
-import {
-  FloatingPortal,
-  autoUpdate,
-  offset,
-  useFloating,
-  useFocus,
-  useInteractions,
-} from '@floating-ui/react';
 import { Variants, motion } from 'framer-motion';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { iconOpenCloseVariants } from '@/config/anim';
 import { Routes } from '@/config/global';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
-import { useTranslations } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons';
 import { MobileNav } from '@/components/mobile-nav';
@@ -45,45 +36,33 @@ const logoAnimVariants: Variants = {
   },
 };
 
-const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
+export const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
   ({ items, children, minimized = false }, ref) => {
     const locale = useLocale();
     const t = useTranslations('global.header.nav');
     const segment = useSelectedLayoutSegment();
 
-    const [showMobileMenu, setShowMobileMenu] = React.useState(false);
+    const [open, setOpen] = React.useState(false);
     const [originPosition, setOriginPosition] = React.useState({ x: 0, y: 0 });
+
+    const triggerRef = React.useRef<HTMLButtonElement | null>(null);
 
     const navItems = items.filter((it) => !it.onlyMobile);
 
-    const { refs, floatingStyles, context } = useFloating({
-      open: showMobileMenu,
-      onOpenChange: setShowMobileMenu,
-      strategy: 'fixed',
-      middleware: [offset({ mainAxis: 10, crossAxis: 10 })],
-      whileElementsMounted: autoUpdate,
-    });
-
-    const { getReferenceProps, getFloatingProps } = useInteractions([
-      useFocus(context),
-    ]);
-
-    const iconRef = React.useRef<SVGSVGElement | null>(null);
-
     const handleToggleMenu = React.useCallback(() => {
-      const icon = iconRef.current;
-      if (icon) {
-        const rect = icon.getBoundingClientRect();
+      if (triggerRef.current) {
+        const rect = triggerRef.current.getBoundingClientRect();
         setOriginPosition({
           x: rect.left + rect.width / 2,
           y: rect.top + rect.height / 2,
         });
       }
-      setShowMobileMenu((prev) => !prev);
+      setOpen((prev) => !prev);
     }, []);
 
     return (
       <div ref={ref} className="flex items-center gap-6 md:gap-10">
+        {/* Logo */}
         <Link
           href={Routes.Homepage}
           locale={locale}
@@ -106,8 +85,7 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
         {navItems.length > 0 && (
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
-              const isActive =
-                item.href && item.href.startsWith(`/${segment}`);
+              const isActive = item.href && item.href.startsWith(`/${segment}`);
 
               return (
                 <Link
@@ -128,7 +106,7 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
                         : 'text-foreground/60 hover:text-foreground/80'
                     )}
                   >
-                    {t(item.title)}
+                    {t(item.title as any)}
                   </Button>
                 </Link>
               );
@@ -136,54 +114,45 @@ const MainNav = React.forwardRef<HTMLDivElement, MainNavProps>(
           </nav>
         )}
 
-        {/* Mobile Menu Button */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={handleToggleMenu}
-          ref={refs.setReference}
-          {...getReferenceProps()}
-          className="flex items-center gap-2 md:hidden"
-        >
-          <motion.span className="relative size-6">
-            <motion.div
-              variants={iconOpenCloseVariants}
-              animate={showMobileMenu ? 'open' : 'closed'}
-            >
-              <Icons.close
-                ref={iconRef}
-                className="absolute inset-0 size-6"
-              />
-            </motion.div>
-            <motion.div
-              variants={iconOpenCloseVariants}
-              animate={showMobileMenu ? 'closed' : 'open'}
-            >
-              <Icons.logo className="absolute inset-0 size-6" />
-            </motion.div>
-          </motion.span>
-          <span className="font-bold">Menu</span>
-        </motion.button>
+        {/* Mobile Navigation */}
+        <div className="md:hidden relative z-[10000]">
+          <motion.button
+            ref={triggerRef}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={handleToggleMenu}
+            className="flex items-center gap-2"
+          >
+            <motion.span className="relative size-6">
+              <motion.div
+                variants={iconOpenCloseVariants}
+                animate={open ? 'open' : 'closed'}
+              >
+                <Icons.close className="absolute inset-0 size-6" />
+              </motion.div>
+              <motion.div
+                variants={iconOpenCloseVariants}
+                animate={open ? 'closed' : 'open'}
+              >
+                <Icons.logo className="absolute inset-0 size-6" />
+              </motion.div>
+            </motion.span>
 
-        {/* Mobile Floating Menu */}
-        <FloatingPortal>
+            <span className="font-bold">Byte Of Me</span>
+          </motion.button>
+
           <MobileNav
-            isOpen={showMobileMenu}
-            onOpenChange={setShowMobileMenu}
+            isOpen={open}
+            onOpenChange={setOpen}
             originPosition={originPosition}
             items={items}
-            ref={refs.setFloating}
-            style={floatingStyles}
-            {...getFloatingProps()}
           >
             {children}
           </MobileNav>
-        </FloatingPortal>
+        </div>
       </div>
     );
   }
 );
 
 MainNav.displayName = 'MainNav';
-
-export { MainNav };

@@ -4,10 +4,10 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { Link } from '@/i18n/navigation';
 import { useClipboard } from '@mantine/hooks';
+import { useTranslations } from 'next-intl';
 
 import { Routes } from '@/config/global';
 import { cn, prettyStringify } from '@/lib/utils';
-import { useTranslations } from '@/hooks/use-translations';
 import { Button } from '@/components/ui/button';
 import GoBackButton from '@/components/go-back';
 import { Icons } from '@/components/icons';
@@ -86,7 +86,7 @@ export default function Error({
               onClick={handleCopyError}
             >
               <Icons.copy className="w-4 h-4" />
-              {copied ? t('copied!') : t('copyError')}
+              {copied ? t('copied') : t('copyError')}
             </Button>
 
             <Link href={'mailto:lthphuw@gmail.com'} target="_blank">
@@ -96,7 +96,7 @@ export default function Error({
                 onClick={handleCopyError}
               >
                 <Icons.report className="w-4 h-4" />
-                {t('reportForMe')}
+              {t('reportForMe')}
               </Button>
             </Link>
           </div>

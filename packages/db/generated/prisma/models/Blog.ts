@@ -20,82 +20,106 @@ export type BlogModel = runtime.Types.Result.DefaultSelection<Prisma.$BlogPayloa
 
 export type AggregateBlog = {
   _count: BlogCountAggregateOutputType | null
+  _avg: BlogAvgAggregateOutputType | null
+  _sum: BlogSumAggregateOutputType | null
   _min: BlogMinAggregateOutputType | null
   _max: BlogMaxAggregateOutputType | null
 }
 
+export type BlogAvgAggregateOutputType = {
+  readingTime: number | null
+}
+
+export type BlogSumAggregateOutputType = {
+  readingTime: number | null
+}
+
 export type BlogMinAggregateOutputType = {
   id: string | null
-  userId: string | null
-  projectId: string | null
-  title: string | null
-  content: string | null
-  slug: string | null
-  publishedDate: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  slug: string | null
+  publishedDate: Date | null
+  isPublished: boolean | null
+  userId: string | null
+  projectId: string | null
+  readingTime: number | null
+  coverImageId: string | null
 }
 
 export type BlogMaxAggregateOutputType = {
   id: string | null
-  userId: string | null
-  projectId: string | null
-  title: string | null
-  content: string | null
-  slug: string | null
-  publishedDate: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  slug: string | null
+  publishedDate: Date | null
+  isPublished: boolean | null
+  userId: string | null
+  projectId: string | null
+  readingTime: number | null
+  coverImageId: string | null
 }
 
 export type BlogCountAggregateOutputType = {
   id: number
-  userId: number
-  projectId: number
-  title: number
-  content: number
-  slug: number
-  publishedDate: number
   createdAt: number
   updatedAt: number
+  slug: number
+  publishedDate: number
+  isPublished: number
+  userId: number
+  projectId: number
+  readingTime: number
+  coverImageId: number
   _all: number
 }
 
 
+export type BlogAvgAggregateInputType = {
+  readingTime?: true
+}
+
+export type BlogSumAggregateInputType = {
+  readingTime?: true
+}
+
 export type BlogMinAggregateInputType = {
   id?: true
-  userId?: true
-  projectId?: true
-  title?: true
-  content?: true
-  slug?: true
-  publishedDate?: true
   createdAt?: true
   updatedAt?: true
+  slug?: true
+  publishedDate?: true
+  isPublished?: true
+  userId?: true
+  projectId?: true
+  readingTime?: true
+  coverImageId?: true
 }
 
 export type BlogMaxAggregateInputType = {
   id?: true
-  userId?: true
-  projectId?: true
-  title?: true
-  content?: true
-  slug?: true
-  publishedDate?: true
   createdAt?: true
   updatedAt?: true
+  slug?: true
+  publishedDate?: true
+  isPublished?: true
+  userId?: true
+  projectId?: true
+  readingTime?: true
+  coverImageId?: true
 }
 
 export type BlogCountAggregateInputType = {
   id?: true
-  userId?: true
-  projectId?: true
-  title?: true
-  content?: true
-  slug?: true
-  publishedDate?: true
   createdAt?: true
   updatedAt?: true
+  slug?: true
+  publishedDate?: true
+  isPublished?: true
+  userId?: true
+  projectId?: true
+  readingTime?: true
+  coverImageId?: true
   _all?: true
 }
 
@@ -137,6 +161,18 @@ export type BlogAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: BlogAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: BlogSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: BlogMinAggregateInputType
@@ -167,21 +203,26 @@ export type BlogGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: BlogCountAggregateInputType | true
+  _avg?: BlogAvgAggregateInputType
+  _sum?: BlogSumAggregateInputType
   _min?: BlogMinAggregateInputType
   _max?: BlogMaxAggregateInputType
 }
 
 export type BlogGroupByOutputType = {
   id: string
-  userId: string
-  projectId: string | null
-  title: string
-  content: string
-  slug: string
-  publishedDate: Date
   createdAt: Date
   updatedAt: Date
+  slug: string
+  publishedDate: Date | null
+  isPublished: boolean
+  userId: string
+  projectId: string | null
+  readingTime: number | null
+  coverImageId: string | null
   _count: BlogCountAggregateOutputType | null
+  _avg: BlogAvgAggregateOutputType | null
+  _sum: BlogSumAggregateOutputType | null
   _min: BlogMinAggregateOutputType | null
   _max: BlogMaxAggregateOutputType | null
 }
@@ -206,65 +247,89 @@ export type BlogWhereInput = {
   OR?: Prisma.BlogWhereInput[]
   NOT?: Prisma.BlogWhereInput | Prisma.BlogWhereInput[]
   id?: Prisma.StringFilter<"Blog"> | string
-  userId?: Prisma.StringFilter<"Blog"> | string
-  projectId?: Prisma.StringNullableFilter<"Blog"> | string | null
-  title?: Prisma.StringFilter<"Blog"> | string
-  content?: Prisma.StringFilter<"Blog"> | string
-  slug?: Prisma.StringFilter<"Blog"> | string
-  publishedDate?: Prisma.DateTimeFilter<"Blog"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Blog"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Blog"> | Date | string
+  slug?: Prisma.StringFilter<"Blog"> | string
+  publishedDate?: Prisma.DateTimeNullableFilter<"Blog"> | Date | string | null
+  isPublished?: Prisma.BoolFilter<"Blog"> | boolean
+  userId?: Prisma.StringFilter<"Blog"> | string
+  projectId?: Prisma.StringNullableFilter<"Blog"> | string | null
+  readingTime?: Prisma.IntNullableFilter<"Blog"> | number | null
+  coverImageId?: Prisma.StringNullableFilter<"Blog"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
+  coverImage?: Prisma.XOR<Prisma.MediaNullableScalarRelationFilter, Prisma.MediaWhereInput> | null
+  translations?: Prisma.BlogTranslationListRelationFilter
   tags?: Prisma.BlogTagListRelationFilter
+  interactions?: Prisma.InteractionListRelationFilter
+  comments?: Prisma.CommentListRelationFilter
+  pageViews?: Prisma.PageViewListRelationFilter
+  blogViewLogs?: Prisma.BlogStatisticLogListRelationFilter
 }
 
 export type BlogOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
-  projectId?: Prisma.SortOrderInput | Prisma.SortOrder
-  title?: Prisma.SortOrder
-  content?: Prisma.SortOrder
-  slug?: Prisma.SortOrder
-  publishedDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  publishedDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  isPublished?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
+  projectId?: Prisma.SortOrderInput | Prisma.SortOrder
+  readingTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  coverImageId?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   project?: Prisma.ProjectOrderByWithRelationInput
+  coverImage?: Prisma.MediaOrderByWithRelationInput
+  translations?: Prisma.BlogTranslationOrderByRelationAggregateInput
   tags?: Prisma.BlogTagOrderByRelationAggregateInput
+  interactions?: Prisma.InteractionOrderByRelationAggregateInput
+  comments?: Prisma.CommentOrderByRelationAggregateInput
+  pageViews?: Prisma.PageViewOrderByRelationAggregateInput
+  blogViewLogs?: Prisma.BlogStatisticLogOrderByRelationAggregateInput
 }
 
 export type BlogWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   slug?: string
+  projectId?: string
   AND?: Prisma.BlogWhereInput | Prisma.BlogWhereInput[]
   OR?: Prisma.BlogWhereInput[]
   NOT?: Prisma.BlogWhereInput | Prisma.BlogWhereInput[]
-  userId?: Prisma.StringFilter<"Blog"> | string
-  projectId?: Prisma.StringNullableFilter<"Blog"> | string | null
-  title?: Prisma.StringFilter<"Blog"> | string
-  content?: Prisma.StringFilter<"Blog"> | string
-  publishedDate?: Prisma.DateTimeFilter<"Blog"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Blog"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Blog"> | Date | string
+  publishedDate?: Prisma.DateTimeNullableFilter<"Blog"> | Date | string | null
+  isPublished?: Prisma.BoolFilter<"Blog"> | boolean
+  userId?: Prisma.StringFilter<"Blog"> | string
+  readingTime?: Prisma.IntNullableFilter<"Blog"> | number | null
+  coverImageId?: Prisma.StringNullableFilter<"Blog"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
+  coverImage?: Prisma.XOR<Prisma.MediaNullableScalarRelationFilter, Prisma.MediaWhereInput> | null
+  translations?: Prisma.BlogTranslationListRelationFilter
   tags?: Prisma.BlogTagListRelationFilter
-}, "id" | "slug">
+  interactions?: Prisma.InteractionListRelationFilter
+  comments?: Prisma.CommentListRelationFilter
+  pageViews?: Prisma.PageViewListRelationFilter
+  blogViewLogs?: Prisma.BlogStatisticLogListRelationFilter
+}, "id" | "slug" | "projectId">
 
 export type BlogOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
-  projectId?: Prisma.SortOrderInput | Prisma.SortOrder
-  title?: Prisma.SortOrder
-  content?: Prisma.SortOrder
-  slug?: Prisma.SortOrder
-  publishedDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  publishedDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  isPublished?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
+  projectId?: Prisma.SortOrderInput | Prisma.SortOrder
+  readingTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  coverImageId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.BlogCountOrderByAggregateInput
+  _avg?: Prisma.BlogAvgOrderByAggregateInput
   _max?: Prisma.BlogMaxOrderByAggregateInput
   _min?: Prisma.BlogMinOrderByAggregateInput
+  _sum?: Prisma.BlogSumOrderByAggregateInput
 }
 
 export type BlogScalarWhereWithAggregatesInput = {
@@ -272,100 +337,127 @@ export type BlogScalarWhereWithAggregatesInput = {
   OR?: Prisma.BlogScalarWhereWithAggregatesInput[]
   NOT?: Prisma.BlogScalarWhereWithAggregatesInput | Prisma.BlogScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Blog"> | string
-  userId?: Prisma.StringWithAggregatesFilter<"Blog"> | string
-  projectId?: Prisma.StringNullableWithAggregatesFilter<"Blog"> | string | null
-  title?: Prisma.StringWithAggregatesFilter<"Blog"> | string
-  content?: Prisma.StringWithAggregatesFilter<"Blog"> | string
-  slug?: Prisma.StringWithAggregatesFilter<"Blog"> | string
-  publishedDate?: Prisma.DateTimeWithAggregatesFilter<"Blog"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Blog"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Blog"> | Date | string
+  slug?: Prisma.StringWithAggregatesFilter<"Blog"> | string
+  publishedDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Blog"> | Date | string | null
+  isPublished?: Prisma.BoolWithAggregatesFilter<"Blog"> | boolean
+  userId?: Prisma.StringWithAggregatesFilter<"Blog"> | string
+  projectId?: Prisma.StringNullableWithAggregatesFilter<"Blog"> | string | null
+  readingTime?: Prisma.IntNullableWithAggregatesFilter<"Blog"> | number | null
+  coverImageId?: Prisma.StringNullableWithAggregatesFilter<"Blog"> | string | null
 }
 
 export type BlogCreateInput = {
   id?: string
-  title: string
-  content: string
-  slug: string
-  publishedDate?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  readingTime?: number | null
   user: Prisma.UserCreateNestedOneWithoutBlogsInput
-  project?: Prisma.ProjectCreateNestedOneWithoutBlogsInput
+  project?: Prisma.ProjectCreateNestedOneWithoutBlogInput
+  coverImage?: Prisma.MediaCreateNestedOneWithoutBlogsInput
+  translations?: Prisma.BlogTranslationCreateNestedManyWithoutBlogInput
   tags?: Prisma.BlogTagCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutBlogInput
 }
 
 export type BlogUncheckedCreateInput = {
   id?: string
-  userId: string
-  projectId?: string | null
-  title: string
-  content: string
-  slug: string
-  publishedDate?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  userId: string
+  projectId?: string | null
+  readingTime?: number | null
+  coverImageId?: string | null
+  translations?: Prisma.BlogTranslationUncheckedCreateNestedManyWithoutBlogInput
   tags?: Prisma.BlogTagUncheckedCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutBlogInput
 }
 
 export type BlogUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  publishedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneRequiredWithoutBlogsNestedInput
-  project?: Prisma.ProjectUpdateOneWithoutBlogsNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutBlogNestedInput
+  coverImage?: Prisma.MediaUpdateOneWithoutBlogsNestedInput
+  translations?: Prisma.BlogTranslationUpdateManyWithoutBlogNestedInput
   tags?: Prisma.BlogTagUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUpdateManyWithoutBlogNestedInput
 }
 
 export type BlogUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  publishedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  translations?: Prisma.BlogTranslationUncheckedUpdateManyWithoutBlogNestedInput
   tags?: Prisma.BlogTagUncheckedUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUncheckedUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutBlogNestedInput
 }
 
 export type BlogCreateManyInput = {
   id?: string
-  userId: string
-  projectId?: string | null
-  title: string
-  content: string
-  slug: string
-  publishedDate?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  userId: string
+  projectId?: string | null
+  readingTime?: number | null
+  coverImageId?: string | null
 }
 
 export type BlogUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  publishedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type BlogUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  publishedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type BlogListRelationFilter = {
@@ -378,40 +470,56 @@ export type BlogOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type BlogNullableScalarRelationFilter = {
+  is?: Prisma.BlogWhereInput | null
+  isNot?: Prisma.BlogWhereInput | null
+}
+
 export type BlogCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
-  projectId?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  content?: Prisma.SortOrder
-  slug?: Prisma.SortOrder
-  publishedDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  publishedDate?: Prisma.SortOrder
+  isPublished?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
+  projectId?: Prisma.SortOrder
+  readingTime?: Prisma.SortOrder
+  coverImageId?: Prisma.SortOrder
+}
+
+export type BlogAvgOrderByAggregateInput = {
+  readingTime?: Prisma.SortOrder
 }
 
 export type BlogMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
-  projectId?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  content?: Prisma.SortOrder
-  slug?: Prisma.SortOrder
-  publishedDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  publishedDate?: Prisma.SortOrder
+  isPublished?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
+  projectId?: Prisma.SortOrder
+  readingTime?: Prisma.SortOrder
+  coverImageId?: Prisma.SortOrder
 }
 
 export type BlogMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
-  projectId?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  content?: Prisma.SortOrder
-  slug?: Prisma.SortOrder
-  publishedDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  publishedDate?: Prisma.SortOrder
+  isPublished?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
+  projectId?: Prisma.SortOrder
+  readingTime?: Prisma.SortOrder
+  coverImageId?: Prisma.SortOrder
+}
+
+export type BlogSumOrderByAggregateInput = {
+  readingTime?: Prisma.SortOrder
 }
 
 export type BlogScalarRelationFilter = {
@@ -461,46 +569,64 @@ export type BlogUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.BlogScalarWhereInput | Prisma.BlogScalarWhereInput[]
 }
 
-export type BlogCreateNestedManyWithoutProjectInput = {
-  create?: Prisma.XOR<Prisma.BlogCreateWithoutProjectInput, Prisma.BlogUncheckedCreateWithoutProjectInput> | Prisma.BlogCreateWithoutProjectInput[] | Prisma.BlogUncheckedCreateWithoutProjectInput[]
-  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutProjectInput | Prisma.BlogCreateOrConnectWithoutProjectInput[]
-  createMany?: Prisma.BlogCreateManyProjectInputEnvelope
-  connect?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
+export type BlogCreateNestedOneWithoutProjectInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutProjectInput, Prisma.BlogUncheckedCreateWithoutProjectInput>
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutProjectInput
+  connect?: Prisma.BlogWhereUniqueInput
 }
 
-export type BlogUncheckedCreateNestedManyWithoutProjectInput = {
-  create?: Prisma.XOR<Prisma.BlogCreateWithoutProjectInput, Prisma.BlogUncheckedCreateWithoutProjectInput> | Prisma.BlogCreateWithoutProjectInput[] | Prisma.BlogUncheckedCreateWithoutProjectInput[]
-  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutProjectInput | Prisma.BlogCreateOrConnectWithoutProjectInput[]
-  createMany?: Prisma.BlogCreateManyProjectInputEnvelope
-  connect?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
+export type BlogUncheckedCreateNestedOneWithoutProjectInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutProjectInput, Prisma.BlogUncheckedCreateWithoutProjectInput>
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutProjectInput
+  connect?: Prisma.BlogWhereUniqueInput
 }
 
-export type BlogUpdateManyWithoutProjectNestedInput = {
-  create?: Prisma.XOR<Prisma.BlogCreateWithoutProjectInput, Prisma.BlogUncheckedCreateWithoutProjectInput> | Prisma.BlogCreateWithoutProjectInput[] | Prisma.BlogUncheckedCreateWithoutProjectInput[]
-  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutProjectInput | Prisma.BlogCreateOrConnectWithoutProjectInput[]
-  upsert?: Prisma.BlogUpsertWithWhereUniqueWithoutProjectInput | Prisma.BlogUpsertWithWhereUniqueWithoutProjectInput[]
-  createMany?: Prisma.BlogCreateManyProjectInputEnvelope
-  set?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
-  disconnect?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
-  delete?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
-  connect?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
-  update?: Prisma.BlogUpdateWithWhereUniqueWithoutProjectInput | Prisma.BlogUpdateWithWhereUniqueWithoutProjectInput[]
-  updateMany?: Prisma.BlogUpdateManyWithWhereWithoutProjectInput | Prisma.BlogUpdateManyWithWhereWithoutProjectInput[]
-  deleteMany?: Prisma.BlogScalarWhereInput | Prisma.BlogScalarWhereInput[]
+export type BlogUpdateOneWithoutProjectNestedInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutProjectInput, Prisma.BlogUncheckedCreateWithoutProjectInput>
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutProjectInput
+  upsert?: Prisma.BlogUpsertWithoutProjectInput
+  disconnect?: Prisma.BlogWhereInput | boolean
+  delete?: Prisma.BlogWhereInput | boolean
+  connect?: Prisma.BlogWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BlogUpdateToOneWithWhereWithoutProjectInput, Prisma.BlogUpdateWithoutProjectInput>, Prisma.BlogUncheckedUpdateWithoutProjectInput>
 }
 
-export type BlogUncheckedUpdateManyWithoutProjectNestedInput = {
-  create?: Prisma.XOR<Prisma.BlogCreateWithoutProjectInput, Prisma.BlogUncheckedCreateWithoutProjectInput> | Prisma.BlogCreateWithoutProjectInput[] | Prisma.BlogUncheckedCreateWithoutProjectInput[]
-  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutProjectInput | Prisma.BlogCreateOrConnectWithoutProjectInput[]
-  upsert?: Prisma.BlogUpsertWithWhereUniqueWithoutProjectInput | Prisma.BlogUpsertWithWhereUniqueWithoutProjectInput[]
-  createMany?: Prisma.BlogCreateManyProjectInputEnvelope
-  set?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
-  disconnect?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
-  delete?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
-  connect?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
-  update?: Prisma.BlogUpdateWithWhereUniqueWithoutProjectInput | Prisma.BlogUpdateWithWhereUniqueWithoutProjectInput[]
-  updateMany?: Prisma.BlogUpdateManyWithWhereWithoutProjectInput | Prisma.BlogUpdateManyWithWhereWithoutProjectInput[]
-  deleteMany?: Prisma.BlogScalarWhereInput | Prisma.BlogScalarWhereInput[]
+export type BlogUncheckedUpdateOneWithoutProjectNestedInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutProjectInput, Prisma.BlogUncheckedCreateWithoutProjectInput>
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutProjectInput
+  upsert?: Prisma.BlogUpsertWithoutProjectInput
+  disconnect?: Prisma.BlogWhereInput | boolean
+  delete?: Prisma.BlogWhereInput | boolean
+  connect?: Prisma.BlogWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BlogUpdateToOneWithWhereWithoutProjectInput, Prisma.BlogUpdateWithoutProjectInput>, Prisma.BlogUncheckedUpdateWithoutProjectInput>
+}
+
+export type BlogCreateNestedOneWithoutTranslationsInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutTranslationsInput, Prisma.BlogUncheckedCreateWithoutTranslationsInput>
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutTranslationsInput
+  connect?: Prisma.BlogWhereUniqueInput
+}
+
+export type BlogUpdateOneRequiredWithoutTranslationsNestedInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutTranslationsInput, Prisma.BlogUncheckedCreateWithoutTranslationsInput>
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutTranslationsInput
+  upsert?: Prisma.BlogUpsertWithoutTranslationsInput
+  connect?: Prisma.BlogWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BlogUpdateToOneWithWhereWithoutTranslationsInput, Prisma.BlogUpdateWithoutTranslationsInput>, Prisma.BlogUncheckedUpdateWithoutTranslationsInput>
+}
+
+export type BlogCreateNestedOneWithoutBlogViewLogsInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutBlogViewLogsInput, Prisma.BlogUncheckedCreateWithoutBlogViewLogsInput>
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutBlogViewLogsInput
+  connect?: Prisma.BlogWhereUniqueInput
+}
+
+export type BlogUpdateOneRequiredWithoutBlogViewLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutBlogViewLogsInput, Prisma.BlogUncheckedCreateWithoutBlogViewLogsInput>
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutBlogViewLogsInput
+  upsert?: Prisma.BlogUpsertWithoutBlogViewLogsInput
+  connect?: Prisma.BlogWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BlogUpdateToOneWithWhereWithoutBlogViewLogsInput, Prisma.BlogUpdateWithoutBlogViewLogsInput>, Prisma.BlogUncheckedUpdateWithoutBlogViewLogsInput>
 }
 
 export type BlogCreateNestedOneWithoutTagsInput = {
@@ -517,28 +643,130 @@ export type BlogUpdateOneRequiredWithoutTagsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.BlogUpdateToOneWithWhereWithoutTagsInput, Prisma.BlogUpdateWithoutTagsInput>, Prisma.BlogUncheckedUpdateWithoutTagsInput>
 }
 
+export type BlogCreateNestedManyWithoutCoverImageInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutCoverImageInput, Prisma.BlogUncheckedCreateWithoutCoverImageInput> | Prisma.BlogCreateWithoutCoverImageInput[] | Prisma.BlogUncheckedCreateWithoutCoverImageInput[]
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutCoverImageInput | Prisma.BlogCreateOrConnectWithoutCoverImageInput[]
+  createMany?: Prisma.BlogCreateManyCoverImageInputEnvelope
+  connect?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
+}
+
+export type BlogUncheckedCreateNestedManyWithoutCoverImageInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutCoverImageInput, Prisma.BlogUncheckedCreateWithoutCoverImageInput> | Prisma.BlogCreateWithoutCoverImageInput[] | Prisma.BlogUncheckedCreateWithoutCoverImageInput[]
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutCoverImageInput | Prisma.BlogCreateOrConnectWithoutCoverImageInput[]
+  createMany?: Prisma.BlogCreateManyCoverImageInputEnvelope
+  connect?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
+}
+
+export type BlogUpdateManyWithoutCoverImageNestedInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutCoverImageInput, Prisma.BlogUncheckedCreateWithoutCoverImageInput> | Prisma.BlogCreateWithoutCoverImageInput[] | Prisma.BlogUncheckedCreateWithoutCoverImageInput[]
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutCoverImageInput | Prisma.BlogCreateOrConnectWithoutCoverImageInput[]
+  upsert?: Prisma.BlogUpsertWithWhereUniqueWithoutCoverImageInput | Prisma.BlogUpsertWithWhereUniqueWithoutCoverImageInput[]
+  createMany?: Prisma.BlogCreateManyCoverImageInputEnvelope
+  set?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
+  disconnect?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
+  delete?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
+  connect?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
+  update?: Prisma.BlogUpdateWithWhereUniqueWithoutCoverImageInput | Prisma.BlogUpdateWithWhereUniqueWithoutCoverImageInput[]
+  updateMany?: Prisma.BlogUpdateManyWithWhereWithoutCoverImageInput | Prisma.BlogUpdateManyWithWhereWithoutCoverImageInput[]
+  deleteMany?: Prisma.BlogScalarWhereInput | Prisma.BlogScalarWhereInput[]
+}
+
+export type BlogUncheckedUpdateManyWithoutCoverImageNestedInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutCoverImageInput, Prisma.BlogUncheckedCreateWithoutCoverImageInput> | Prisma.BlogCreateWithoutCoverImageInput[] | Prisma.BlogUncheckedCreateWithoutCoverImageInput[]
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutCoverImageInput | Prisma.BlogCreateOrConnectWithoutCoverImageInput[]
+  upsert?: Prisma.BlogUpsertWithWhereUniqueWithoutCoverImageInput | Prisma.BlogUpsertWithWhereUniqueWithoutCoverImageInput[]
+  createMany?: Prisma.BlogCreateManyCoverImageInputEnvelope
+  set?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
+  disconnect?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
+  delete?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
+  connect?: Prisma.BlogWhereUniqueInput | Prisma.BlogWhereUniqueInput[]
+  update?: Prisma.BlogUpdateWithWhereUniqueWithoutCoverImageInput | Prisma.BlogUpdateWithWhereUniqueWithoutCoverImageInput[]
+  updateMany?: Prisma.BlogUpdateManyWithWhereWithoutCoverImageInput | Prisma.BlogUpdateManyWithWhereWithoutCoverImageInput[]
+  deleteMany?: Prisma.BlogScalarWhereInput | Prisma.BlogScalarWhereInput[]
+}
+
+export type BlogCreateNestedOneWithoutInteractionsInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutInteractionsInput, Prisma.BlogUncheckedCreateWithoutInteractionsInput>
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutInteractionsInput
+  connect?: Prisma.BlogWhereUniqueInput
+}
+
+export type BlogUpdateOneWithoutInteractionsNestedInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutInteractionsInput, Prisma.BlogUncheckedCreateWithoutInteractionsInput>
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutInteractionsInput
+  upsert?: Prisma.BlogUpsertWithoutInteractionsInput
+  disconnect?: Prisma.BlogWhereInput | boolean
+  delete?: Prisma.BlogWhereInput | boolean
+  connect?: Prisma.BlogWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BlogUpdateToOneWithWhereWithoutInteractionsInput, Prisma.BlogUpdateWithoutInteractionsInput>, Prisma.BlogUncheckedUpdateWithoutInteractionsInput>
+}
+
+export type BlogCreateNestedOneWithoutCommentsInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutCommentsInput, Prisma.BlogUncheckedCreateWithoutCommentsInput>
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutCommentsInput
+  connect?: Prisma.BlogWhereUniqueInput
+}
+
+export type BlogUpdateOneWithoutCommentsNestedInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutCommentsInput, Prisma.BlogUncheckedCreateWithoutCommentsInput>
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutCommentsInput
+  upsert?: Prisma.BlogUpsertWithoutCommentsInput
+  disconnect?: Prisma.BlogWhereInput | boolean
+  delete?: Prisma.BlogWhereInput | boolean
+  connect?: Prisma.BlogWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BlogUpdateToOneWithWhereWithoutCommentsInput, Prisma.BlogUpdateWithoutCommentsInput>, Prisma.BlogUncheckedUpdateWithoutCommentsInput>
+}
+
+export type BlogCreateNestedOneWithoutPageViewsInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutPageViewsInput, Prisma.BlogUncheckedCreateWithoutPageViewsInput>
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutPageViewsInput
+  connect?: Prisma.BlogWhereUniqueInput
+}
+
+export type BlogUpdateOneWithoutPageViewsNestedInput = {
+  create?: Prisma.XOR<Prisma.BlogCreateWithoutPageViewsInput, Prisma.BlogUncheckedCreateWithoutPageViewsInput>
+  connectOrCreate?: Prisma.BlogCreateOrConnectWithoutPageViewsInput
+  upsert?: Prisma.BlogUpsertWithoutPageViewsInput
+  disconnect?: Prisma.BlogWhereInput | boolean
+  delete?: Prisma.BlogWhereInput | boolean
+  connect?: Prisma.BlogWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BlogUpdateToOneWithWhereWithoutPageViewsInput, Prisma.BlogUpdateWithoutPageViewsInput>, Prisma.BlogUncheckedUpdateWithoutPageViewsInput>
+}
+
 export type BlogCreateWithoutUserInput = {
   id?: string
-  title: string
-  content: string
-  slug: string
-  publishedDate?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  project?: Prisma.ProjectCreateNestedOneWithoutBlogsInput
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  readingTime?: number | null
+  project?: Prisma.ProjectCreateNestedOneWithoutBlogInput
+  coverImage?: Prisma.MediaCreateNestedOneWithoutBlogsInput
+  translations?: Prisma.BlogTranslationCreateNestedManyWithoutBlogInput
   tags?: Prisma.BlogTagCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutBlogInput
 }
 
 export type BlogUncheckedCreateWithoutUserInput = {
   id?: string
-  projectId?: string | null
-  title: string
-  content: string
-  slug: string
-  publishedDate?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  projectId?: string | null
+  readingTime?: number | null
+  coverImageId?: string | null
+  translations?: Prisma.BlogTranslationUncheckedCreateNestedManyWithoutBlogInput
   tags?: Prisma.BlogTagUncheckedCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutBlogInput
 }
 
 export type BlogCreateOrConnectWithoutUserInput = {
@@ -572,38 +800,51 @@ export type BlogScalarWhereInput = {
   OR?: Prisma.BlogScalarWhereInput[]
   NOT?: Prisma.BlogScalarWhereInput | Prisma.BlogScalarWhereInput[]
   id?: Prisma.StringFilter<"Blog"> | string
-  userId?: Prisma.StringFilter<"Blog"> | string
-  projectId?: Prisma.StringNullableFilter<"Blog"> | string | null
-  title?: Prisma.StringFilter<"Blog"> | string
-  content?: Prisma.StringFilter<"Blog"> | string
-  slug?: Prisma.StringFilter<"Blog"> | string
-  publishedDate?: Prisma.DateTimeFilter<"Blog"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Blog"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Blog"> | Date | string
+  slug?: Prisma.StringFilter<"Blog"> | string
+  publishedDate?: Prisma.DateTimeNullableFilter<"Blog"> | Date | string | null
+  isPublished?: Prisma.BoolFilter<"Blog"> | boolean
+  userId?: Prisma.StringFilter<"Blog"> | string
+  projectId?: Prisma.StringNullableFilter<"Blog"> | string | null
+  readingTime?: Prisma.IntNullableFilter<"Blog"> | number | null
+  coverImageId?: Prisma.StringNullableFilter<"Blog"> | string | null
 }
 
 export type BlogCreateWithoutProjectInput = {
   id?: string
-  title: string
-  content: string
-  slug: string
-  publishedDate?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  readingTime?: number | null
   user: Prisma.UserCreateNestedOneWithoutBlogsInput
+  coverImage?: Prisma.MediaCreateNestedOneWithoutBlogsInput
+  translations?: Prisma.BlogTranslationCreateNestedManyWithoutBlogInput
   tags?: Prisma.BlogTagCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutBlogInput
 }
 
 export type BlogUncheckedCreateWithoutProjectInput = {
   id?: string
-  userId: string
-  title: string
-  content: string
-  slug: string
-  publishedDate?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  userId: string
+  readingTime?: number | null
+  coverImageId?: string | null
+  translations?: Prisma.BlogTranslationUncheckedCreateNestedManyWithoutBlogInput
   tags?: Prisma.BlogTagUncheckedCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutBlogInput
 }
 
 export type BlogCreateOrConnectWithoutProjectInput = {
@@ -611,49 +852,263 @@ export type BlogCreateOrConnectWithoutProjectInput = {
   create: Prisma.XOR<Prisma.BlogCreateWithoutProjectInput, Prisma.BlogUncheckedCreateWithoutProjectInput>
 }
 
-export type BlogCreateManyProjectInputEnvelope = {
-  data: Prisma.BlogCreateManyProjectInput | Prisma.BlogCreateManyProjectInput[]
-  skipDuplicates?: boolean
-}
-
-export type BlogUpsertWithWhereUniqueWithoutProjectInput = {
-  where: Prisma.BlogWhereUniqueInput
+export type BlogUpsertWithoutProjectInput = {
   update: Prisma.XOR<Prisma.BlogUpdateWithoutProjectInput, Prisma.BlogUncheckedUpdateWithoutProjectInput>
   create: Prisma.XOR<Prisma.BlogCreateWithoutProjectInput, Prisma.BlogUncheckedCreateWithoutProjectInput>
+  where?: Prisma.BlogWhereInput
 }
 
-export type BlogUpdateWithWhereUniqueWithoutProjectInput = {
-  where: Prisma.BlogWhereUniqueInput
+export type BlogUpdateToOneWithWhereWithoutProjectInput = {
+  where?: Prisma.BlogWhereInput
   data: Prisma.XOR<Prisma.BlogUpdateWithoutProjectInput, Prisma.BlogUncheckedUpdateWithoutProjectInput>
 }
 
-export type BlogUpdateManyWithWhereWithoutProjectInput = {
-  where: Prisma.BlogScalarWhereInput
-  data: Prisma.XOR<Prisma.BlogUpdateManyMutationInput, Prisma.BlogUncheckedUpdateManyWithoutProjectInput>
+export type BlogUpdateWithoutProjectInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  user?: Prisma.UserUpdateOneRequiredWithoutBlogsNestedInput
+  coverImage?: Prisma.MediaUpdateOneWithoutBlogsNestedInput
+  translations?: Prisma.BlogTranslationUpdateManyWithoutBlogNestedInput
+  tags?: Prisma.BlogTagUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUpdateManyWithoutBlogNestedInput
+}
+
+export type BlogUncheckedUpdateWithoutProjectInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  translations?: Prisma.BlogTranslationUncheckedUpdateManyWithoutBlogNestedInput
+  tags?: Prisma.BlogTagUncheckedUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUncheckedUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutBlogNestedInput
+}
+
+export type BlogCreateWithoutTranslationsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  readingTime?: number | null
+  user: Prisma.UserCreateNestedOneWithoutBlogsInput
+  project?: Prisma.ProjectCreateNestedOneWithoutBlogInput
+  coverImage?: Prisma.MediaCreateNestedOneWithoutBlogsInput
+  tags?: Prisma.BlogTagCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutBlogInput
+}
+
+export type BlogUncheckedCreateWithoutTranslationsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  userId: string
+  projectId?: string | null
+  readingTime?: number | null
+  coverImageId?: string | null
+  tags?: Prisma.BlogTagUncheckedCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutBlogInput
+}
+
+export type BlogCreateOrConnectWithoutTranslationsInput = {
+  where: Prisma.BlogWhereUniqueInput
+  create: Prisma.XOR<Prisma.BlogCreateWithoutTranslationsInput, Prisma.BlogUncheckedCreateWithoutTranslationsInput>
+}
+
+export type BlogUpsertWithoutTranslationsInput = {
+  update: Prisma.XOR<Prisma.BlogUpdateWithoutTranslationsInput, Prisma.BlogUncheckedUpdateWithoutTranslationsInput>
+  create: Prisma.XOR<Prisma.BlogCreateWithoutTranslationsInput, Prisma.BlogUncheckedCreateWithoutTranslationsInput>
+  where?: Prisma.BlogWhereInput
+}
+
+export type BlogUpdateToOneWithWhereWithoutTranslationsInput = {
+  where?: Prisma.BlogWhereInput
+  data: Prisma.XOR<Prisma.BlogUpdateWithoutTranslationsInput, Prisma.BlogUncheckedUpdateWithoutTranslationsInput>
+}
+
+export type BlogUpdateWithoutTranslationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  user?: Prisma.UserUpdateOneRequiredWithoutBlogsNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutBlogNestedInput
+  coverImage?: Prisma.MediaUpdateOneWithoutBlogsNestedInput
+  tags?: Prisma.BlogTagUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUpdateManyWithoutBlogNestedInput
+}
+
+export type BlogUncheckedUpdateWithoutTranslationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.BlogTagUncheckedUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUncheckedUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutBlogNestedInput
+}
+
+export type BlogCreateWithoutBlogViewLogsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  readingTime?: number | null
+  user: Prisma.UserCreateNestedOneWithoutBlogsInput
+  project?: Prisma.ProjectCreateNestedOneWithoutBlogInput
+  coverImage?: Prisma.MediaCreateNestedOneWithoutBlogsInput
+  translations?: Prisma.BlogTranslationCreateNestedManyWithoutBlogInput
+  tags?: Prisma.BlogTagCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewCreateNestedManyWithoutBlogInput
+}
+
+export type BlogUncheckedCreateWithoutBlogViewLogsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  userId: string
+  projectId?: string | null
+  readingTime?: number | null
+  coverImageId?: string | null
+  translations?: Prisma.BlogTranslationUncheckedCreateNestedManyWithoutBlogInput
+  tags?: Prisma.BlogTagUncheckedCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutBlogInput
+}
+
+export type BlogCreateOrConnectWithoutBlogViewLogsInput = {
+  where: Prisma.BlogWhereUniqueInput
+  create: Prisma.XOR<Prisma.BlogCreateWithoutBlogViewLogsInput, Prisma.BlogUncheckedCreateWithoutBlogViewLogsInput>
+}
+
+export type BlogUpsertWithoutBlogViewLogsInput = {
+  update: Prisma.XOR<Prisma.BlogUpdateWithoutBlogViewLogsInput, Prisma.BlogUncheckedUpdateWithoutBlogViewLogsInput>
+  create: Prisma.XOR<Prisma.BlogCreateWithoutBlogViewLogsInput, Prisma.BlogUncheckedCreateWithoutBlogViewLogsInput>
+  where?: Prisma.BlogWhereInput
+}
+
+export type BlogUpdateToOneWithWhereWithoutBlogViewLogsInput = {
+  where?: Prisma.BlogWhereInput
+  data: Prisma.XOR<Prisma.BlogUpdateWithoutBlogViewLogsInput, Prisma.BlogUncheckedUpdateWithoutBlogViewLogsInput>
+}
+
+export type BlogUpdateWithoutBlogViewLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  user?: Prisma.UserUpdateOneRequiredWithoutBlogsNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutBlogNestedInput
+  coverImage?: Prisma.MediaUpdateOneWithoutBlogsNestedInput
+  translations?: Prisma.BlogTranslationUpdateManyWithoutBlogNestedInput
+  tags?: Prisma.BlogTagUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUpdateManyWithoutBlogNestedInput
+}
+
+export type BlogUncheckedUpdateWithoutBlogViewLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  translations?: Prisma.BlogTranslationUncheckedUpdateManyWithoutBlogNestedInput
+  tags?: Prisma.BlogTagUncheckedUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUncheckedUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutBlogNestedInput
 }
 
 export type BlogCreateWithoutTagsInput = {
   id?: string
-  title: string
-  content: string
-  slug: string
-  publishedDate?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  readingTime?: number | null
   user: Prisma.UserCreateNestedOneWithoutBlogsInput
-  project?: Prisma.ProjectCreateNestedOneWithoutBlogsInput
+  project?: Prisma.ProjectCreateNestedOneWithoutBlogInput
+  coverImage?: Prisma.MediaCreateNestedOneWithoutBlogsInput
+  translations?: Prisma.BlogTranslationCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutBlogInput
 }
 
 export type BlogUncheckedCreateWithoutTagsInput = {
   id?: string
-  userId: string
-  projectId?: string | null
-  title: string
-  content: string
-  slug: string
-  publishedDate?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  userId: string
+  projectId?: string | null
+  readingTime?: number | null
+  coverImageId?: string | null
+  translations?: Prisma.BlogTranslationUncheckedCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutBlogInput
 }
 
 export type BlogCreateOrConnectWithoutTagsInput = {
@@ -674,118 +1129,484 @@ export type BlogUpdateToOneWithWhereWithoutTagsInput = {
 
 export type BlogUpdateWithoutTagsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  publishedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneRequiredWithoutBlogsNestedInput
-  project?: Prisma.ProjectUpdateOneWithoutBlogsNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutBlogNestedInput
+  coverImage?: Prisma.MediaUpdateOneWithoutBlogsNestedInput
+  translations?: Prisma.BlogTranslationUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUpdateManyWithoutBlogNestedInput
 }
 
 export type BlogUncheckedUpdateWithoutTagsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  publishedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  translations?: Prisma.BlogTranslationUncheckedUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUncheckedUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutBlogNestedInput
+}
+
+export type BlogCreateWithoutCoverImageInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  readingTime?: number | null
+  user: Prisma.UserCreateNestedOneWithoutBlogsInput
+  project?: Prisma.ProjectCreateNestedOneWithoutBlogInput
+  translations?: Prisma.BlogTranslationCreateNestedManyWithoutBlogInput
+  tags?: Prisma.BlogTagCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutBlogInput
+}
+
+export type BlogUncheckedCreateWithoutCoverImageInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  userId: string
+  projectId?: string | null
+  readingTime?: number | null
+  translations?: Prisma.BlogTranslationUncheckedCreateNestedManyWithoutBlogInput
+  tags?: Prisma.BlogTagUncheckedCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutBlogInput
+}
+
+export type BlogCreateOrConnectWithoutCoverImageInput = {
+  where: Prisma.BlogWhereUniqueInput
+  create: Prisma.XOR<Prisma.BlogCreateWithoutCoverImageInput, Prisma.BlogUncheckedCreateWithoutCoverImageInput>
+}
+
+export type BlogCreateManyCoverImageInputEnvelope = {
+  data: Prisma.BlogCreateManyCoverImageInput | Prisma.BlogCreateManyCoverImageInput[]
+  skipDuplicates?: boolean
+}
+
+export type BlogUpsertWithWhereUniqueWithoutCoverImageInput = {
+  where: Prisma.BlogWhereUniqueInput
+  update: Prisma.XOR<Prisma.BlogUpdateWithoutCoverImageInput, Prisma.BlogUncheckedUpdateWithoutCoverImageInput>
+  create: Prisma.XOR<Prisma.BlogCreateWithoutCoverImageInput, Prisma.BlogUncheckedCreateWithoutCoverImageInput>
+}
+
+export type BlogUpdateWithWhereUniqueWithoutCoverImageInput = {
+  where: Prisma.BlogWhereUniqueInput
+  data: Prisma.XOR<Prisma.BlogUpdateWithoutCoverImageInput, Prisma.BlogUncheckedUpdateWithoutCoverImageInput>
+}
+
+export type BlogUpdateManyWithWhereWithoutCoverImageInput = {
+  where: Prisma.BlogScalarWhereInput
+  data: Prisma.XOR<Prisma.BlogUpdateManyMutationInput, Prisma.BlogUncheckedUpdateManyWithoutCoverImageInput>
+}
+
+export type BlogCreateWithoutInteractionsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  readingTime?: number | null
+  user: Prisma.UserCreateNestedOneWithoutBlogsInput
+  project?: Prisma.ProjectCreateNestedOneWithoutBlogInput
+  coverImage?: Prisma.MediaCreateNestedOneWithoutBlogsInput
+  translations?: Prisma.BlogTranslationCreateNestedManyWithoutBlogInput
+  tags?: Prisma.BlogTagCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutBlogInput
+}
+
+export type BlogUncheckedCreateWithoutInteractionsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  userId: string
+  projectId?: string | null
+  readingTime?: number | null
+  coverImageId?: string | null
+  translations?: Prisma.BlogTranslationUncheckedCreateNestedManyWithoutBlogInput
+  tags?: Prisma.BlogTagUncheckedCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutBlogInput
+}
+
+export type BlogCreateOrConnectWithoutInteractionsInput = {
+  where: Prisma.BlogWhereUniqueInput
+  create: Prisma.XOR<Prisma.BlogCreateWithoutInteractionsInput, Prisma.BlogUncheckedCreateWithoutInteractionsInput>
+}
+
+export type BlogUpsertWithoutInteractionsInput = {
+  update: Prisma.XOR<Prisma.BlogUpdateWithoutInteractionsInput, Prisma.BlogUncheckedUpdateWithoutInteractionsInput>
+  create: Prisma.XOR<Prisma.BlogCreateWithoutInteractionsInput, Prisma.BlogUncheckedCreateWithoutInteractionsInput>
+  where?: Prisma.BlogWhereInput
+}
+
+export type BlogUpdateToOneWithWhereWithoutInteractionsInput = {
+  where?: Prisma.BlogWhereInput
+  data: Prisma.XOR<Prisma.BlogUpdateWithoutInteractionsInput, Prisma.BlogUncheckedUpdateWithoutInteractionsInput>
+}
+
+export type BlogUpdateWithoutInteractionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  user?: Prisma.UserUpdateOneRequiredWithoutBlogsNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutBlogNestedInput
+  coverImage?: Prisma.MediaUpdateOneWithoutBlogsNestedInput
+  translations?: Prisma.BlogTranslationUpdateManyWithoutBlogNestedInput
+  tags?: Prisma.BlogTagUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUpdateManyWithoutBlogNestedInput
+}
+
+export type BlogUncheckedUpdateWithoutInteractionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  translations?: Prisma.BlogTranslationUncheckedUpdateManyWithoutBlogNestedInput
+  tags?: Prisma.BlogTagUncheckedUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutBlogNestedInput
+}
+
+export type BlogCreateWithoutCommentsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  readingTime?: number | null
+  user: Prisma.UserCreateNestedOneWithoutBlogsInput
+  project?: Prisma.ProjectCreateNestedOneWithoutBlogInput
+  coverImage?: Prisma.MediaCreateNestedOneWithoutBlogsInput
+  translations?: Prisma.BlogTranslationCreateNestedManyWithoutBlogInput
+  tags?: Prisma.BlogTagCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutBlogInput
+}
+
+export type BlogUncheckedCreateWithoutCommentsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  userId: string
+  projectId?: string | null
+  readingTime?: number | null
+  coverImageId?: string | null
+  translations?: Prisma.BlogTranslationUncheckedCreateNestedManyWithoutBlogInput
+  tags?: Prisma.BlogTagUncheckedCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutBlogInput
+  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutBlogInput
+}
+
+export type BlogCreateOrConnectWithoutCommentsInput = {
+  where: Prisma.BlogWhereUniqueInput
+  create: Prisma.XOR<Prisma.BlogCreateWithoutCommentsInput, Prisma.BlogUncheckedCreateWithoutCommentsInput>
+}
+
+export type BlogUpsertWithoutCommentsInput = {
+  update: Prisma.XOR<Prisma.BlogUpdateWithoutCommentsInput, Prisma.BlogUncheckedUpdateWithoutCommentsInput>
+  create: Prisma.XOR<Prisma.BlogCreateWithoutCommentsInput, Prisma.BlogUncheckedCreateWithoutCommentsInput>
+  where?: Prisma.BlogWhereInput
+}
+
+export type BlogUpdateToOneWithWhereWithoutCommentsInput = {
+  where?: Prisma.BlogWhereInput
+  data: Prisma.XOR<Prisma.BlogUpdateWithoutCommentsInput, Prisma.BlogUncheckedUpdateWithoutCommentsInput>
+}
+
+export type BlogUpdateWithoutCommentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  user?: Prisma.UserUpdateOneRequiredWithoutBlogsNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutBlogNestedInput
+  coverImage?: Prisma.MediaUpdateOneWithoutBlogsNestedInput
+  translations?: Prisma.BlogTranslationUpdateManyWithoutBlogNestedInput
+  tags?: Prisma.BlogTagUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUpdateManyWithoutBlogNestedInput
+}
+
+export type BlogUncheckedUpdateWithoutCommentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  translations?: Prisma.BlogTranslationUncheckedUpdateManyWithoutBlogNestedInput
+  tags?: Prisma.BlogTagUncheckedUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUncheckedUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutBlogNestedInput
+}
+
+export type BlogCreateWithoutPageViewsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  readingTime?: number | null
+  user: Prisma.UserCreateNestedOneWithoutBlogsInput
+  project?: Prisma.ProjectCreateNestedOneWithoutBlogInput
+  coverImage?: Prisma.MediaCreateNestedOneWithoutBlogsInput
+  translations?: Prisma.BlogTranslationCreateNestedManyWithoutBlogInput
+  tags?: Prisma.BlogTagCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutBlogInput
+}
+
+export type BlogUncheckedCreateWithoutPageViewsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  userId: string
+  projectId?: string | null
+  readingTime?: number | null
+  coverImageId?: string | null
+  translations?: Prisma.BlogTranslationUncheckedCreateNestedManyWithoutBlogInput
+  tags?: Prisma.BlogTagUncheckedCreateNestedManyWithoutBlogInput
+  interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutBlogInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutBlogInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutBlogInput
+}
+
+export type BlogCreateOrConnectWithoutPageViewsInput = {
+  where: Prisma.BlogWhereUniqueInput
+  create: Prisma.XOR<Prisma.BlogCreateWithoutPageViewsInput, Prisma.BlogUncheckedCreateWithoutPageViewsInput>
+}
+
+export type BlogUpsertWithoutPageViewsInput = {
+  update: Prisma.XOR<Prisma.BlogUpdateWithoutPageViewsInput, Prisma.BlogUncheckedUpdateWithoutPageViewsInput>
+  create: Prisma.XOR<Prisma.BlogCreateWithoutPageViewsInput, Prisma.BlogUncheckedCreateWithoutPageViewsInput>
+  where?: Prisma.BlogWhereInput
+}
+
+export type BlogUpdateToOneWithWhereWithoutPageViewsInput = {
+  where?: Prisma.BlogWhereInput
+  data: Prisma.XOR<Prisma.BlogUpdateWithoutPageViewsInput, Prisma.BlogUncheckedUpdateWithoutPageViewsInput>
+}
+
+export type BlogUpdateWithoutPageViewsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  user?: Prisma.UserUpdateOneRequiredWithoutBlogsNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutBlogNestedInput
+  coverImage?: Prisma.MediaUpdateOneWithoutBlogsNestedInput
+  translations?: Prisma.BlogTranslationUpdateManyWithoutBlogNestedInput
+  tags?: Prisma.BlogTagUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUpdateManyWithoutBlogNestedInput
+}
+
+export type BlogUncheckedUpdateWithoutPageViewsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  translations?: Prisma.BlogTranslationUncheckedUpdateManyWithoutBlogNestedInput
+  tags?: Prisma.BlogTagUncheckedUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUncheckedUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutBlogNestedInput
 }
 
 export type BlogCreateManyUserInput = {
   id?: string
-  projectId?: string | null
-  title: string
-  content: string
-  slug: string
-  publishedDate?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  projectId?: string | null
+  readingTime?: number | null
+  coverImageId?: string | null
 }
 
 export type BlogUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  publishedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  project?: Prisma.ProjectUpdateOneWithoutBlogsNestedInput
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  project?: Prisma.ProjectUpdateOneWithoutBlogNestedInput
+  coverImage?: Prisma.MediaUpdateOneWithoutBlogsNestedInput
+  translations?: Prisma.BlogTranslationUpdateManyWithoutBlogNestedInput
   tags?: Prisma.BlogTagUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUpdateManyWithoutBlogNestedInput
 }
 
 export type BlogUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  publishedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  translations?: Prisma.BlogTranslationUncheckedUpdateManyWithoutBlogNestedInput
   tags?: Prisma.BlogTagUncheckedUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUncheckedUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutBlogNestedInput
 }
 
 export type BlogUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  publishedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  coverImageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
-export type BlogCreateManyProjectInput = {
+export type BlogCreateManyCoverImageInput = {
   id?: string
-  userId: string
-  title: string
-  content: string
-  slug: string
-  publishedDate?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  slug: string
+  publishedDate?: Date | string | null
+  isPublished?: boolean
+  userId: string
+  projectId?: string | null
+  readingTime?: number | null
 }
 
-export type BlogUpdateWithoutProjectInput = {
+export type BlogUpdateWithoutCoverImageInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  publishedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneRequiredWithoutBlogsNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutBlogNestedInput
+  translations?: Prisma.BlogTranslationUpdateManyWithoutBlogNestedInput
   tags?: Prisma.BlogTagUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUpdateManyWithoutBlogNestedInput
 }
 
-export type BlogUncheckedUpdateWithoutProjectInput = {
+export type BlogUncheckedUpdateWithoutCoverImageInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  publishedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  translations?: Prisma.BlogTranslationUncheckedUpdateManyWithoutBlogNestedInput
   tags?: Prisma.BlogTagUncheckedUpdateManyWithoutBlogNestedInput
+  interactions?: Prisma.InteractionUncheckedUpdateManyWithoutBlogNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutBlogNestedInput
+  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutBlogNestedInput
+  blogViewLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutBlogNestedInput
 }
 
-export type BlogUncheckedUpdateManyWithoutProjectInput = {
+export type BlogUncheckedUpdateManyWithoutCoverImageInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  publishedDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  readingTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 
@@ -794,11 +1615,21 @@ export type BlogUncheckedUpdateManyWithoutProjectInput = {
  */
 
 export type BlogCountOutputType = {
+  translations: number
   tags: number
+  interactions: number
+  comments: number
+  pageViews: number
+  blogViewLogs: number
 }
 
 export type BlogCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  translations?: boolean | BlogCountOutputTypeCountTranslationsArgs
   tags?: boolean | BlogCountOutputTypeCountTagsArgs
+  interactions?: boolean | BlogCountOutputTypeCountInteractionsArgs
+  comments?: boolean | BlogCountOutputTypeCountCommentsArgs
+  pageViews?: boolean | BlogCountOutputTypeCountPageViewsArgs
+  blogViewLogs?: boolean | BlogCountOutputTypeCountBlogViewLogsArgs
 }
 
 /**
@@ -814,81 +1645,136 @@ export type BlogCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
 /**
  * BlogCountOutputType without action
  */
+export type BlogCountOutputTypeCountTranslationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BlogTranslationWhereInput
+}
+
+/**
+ * BlogCountOutputType without action
+ */
 export type BlogCountOutputTypeCountTagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.BlogTagWhereInput
+}
+
+/**
+ * BlogCountOutputType without action
+ */
+export type BlogCountOutputTypeCountInteractionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InteractionWhereInput
+}
+
+/**
+ * BlogCountOutputType without action
+ */
+export type BlogCountOutputTypeCountCommentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CommentWhereInput
+}
+
+/**
+ * BlogCountOutputType without action
+ */
+export type BlogCountOutputTypeCountPageViewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PageViewWhereInput
+}
+
+/**
+ * BlogCountOutputType without action
+ */
+export type BlogCountOutputTypeCountBlogViewLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BlogStatisticLogWhereInput
 }
 
 
 export type BlogSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  userId?: boolean
-  projectId?: boolean
-  title?: boolean
-  content?: boolean
-  slug?: boolean
-  publishedDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  slug?: boolean
+  publishedDate?: boolean
+  isPublished?: boolean
+  userId?: boolean
+  projectId?: boolean
+  readingTime?: boolean
+  coverImageId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   project?: boolean | Prisma.Blog$projectArgs<ExtArgs>
+  coverImage?: boolean | Prisma.Blog$coverImageArgs<ExtArgs>
+  translations?: boolean | Prisma.Blog$translationsArgs<ExtArgs>
   tags?: boolean | Prisma.Blog$tagsArgs<ExtArgs>
+  interactions?: boolean | Prisma.Blog$interactionsArgs<ExtArgs>
+  comments?: boolean | Prisma.Blog$commentsArgs<ExtArgs>
+  pageViews?: boolean | Prisma.Blog$pageViewsArgs<ExtArgs>
+  blogViewLogs?: boolean | Prisma.Blog$blogViewLogsArgs<ExtArgs>
   _count?: boolean | Prisma.BlogCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["blog"]>
 
 export type BlogSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  userId?: boolean
-  projectId?: boolean
-  title?: boolean
-  content?: boolean
-  slug?: boolean
-  publishedDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  slug?: boolean
+  publishedDate?: boolean
+  isPublished?: boolean
+  userId?: boolean
+  projectId?: boolean
+  readingTime?: boolean
+  coverImageId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   project?: boolean | Prisma.Blog$projectArgs<ExtArgs>
+  coverImage?: boolean | Prisma.Blog$coverImageArgs<ExtArgs>
 }, ExtArgs["result"]["blog"]>
 
 export type BlogSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  userId?: boolean
-  projectId?: boolean
-  title?: boolean
-  content?: boolean
-  slug?: boolean
-  publishedDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  slug?: boolean
+  publishedDate?: boolean
+  isPublished?: boolean
+  userId?: boolean
+  projectId?: boolean
+  readingTime?: boolean
+  coverImageId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   project?: boolean | Prisma.Blog$projectArgs<ExtArgs>
+  coverImage?: boolean | Prisma.Blog$coverImageArgs<ExtArgs>
 }, ExtArgs["result"]["blog"]>
 
 export type BlogSelectScalar = {
   id?: boolean
-  userId?: boolean
-  projectId?: boolean
-  title?: boolean
-  content?: boolean
-  slug?: boolean
-  publishedDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  slug?: boolean
+  publishedDate?: boolean
+  isPublished?: boolean
+  userId?: boolean
+  projectId?: boolean
+  readingTime?: boolean
+  coverImageId?: boolean
 }
 
-export type BlogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "projectId" | "title" | "content" | "slug" | "publishedDate" | "createdAt" | "updatedAt", ExtArgs["result"]["blog"]>
+export type BlogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "slug" | "publishedDate" | "isPublished" | "userId" | "projectId" | "readingTime" | "coverImageId", ExtArgs["result"]["blog"]>
 export type BlogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   project?: boolean | Prisma.Blog$projectArgs<ExtArgs>
+  coverImage?: boolean | Prisma.Blog$coverImageArgs<ExtArgs>
+  translations?: boolean | Prisma.Blog$translationsArgs<ExtArgs>
   tags?: boolean | Prisma.Blog$tagsArgs<ExtArgs>
+  interactions?: boolean | Prisma.Blog$interactionsArgs<ExtArgs>
+  comments?: boolean | Prisma.Blog$commentsArgs<ExtArgs>
+  pageViews?: boolean | Prisma.Blog$pageViewsArgs<ExtArgs>
+  blogViewLogs?: boolean | Prisma.Blog$blogViewLogsArgs<ExtArgs>
   _count?: boolean | Prisma.BlogCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type BlogIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   project?: boolean | Prisma.Blog$projectArgs<ExtArgs>
+  coverImage?: boolean | Prisma.Blog$coverImageArgs<ExtArgs>
 }
 export type BlogIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   project?: boolean | Prisma.Blog$projectArgs<ExtArgs>
+  coverImage?: boolean | Prisma.Blog$coverImageArgs<ExtArgs>
 }
 
 export type $BlogPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -896,18 +1782,25 @@ export type $BlogPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     project: Prisma.$ProjectPayload<ExtArgs> | null
+    coverImage: Prisma.$MediaPayload<ExtArgs> | null
+    translations: Prisma.$BlogTranslationPayload<ExtArgs>[]
     tags: Prisma.$BlogTagPayload<ExtArgs>[]
+    interactions: Prisma.$InteractionPayload<ExtArgs>[]
+    comments: Prisma.$CommentPayload<ExtArgs>[]
+    pageViews: Prisma.$PageViewPayload<ExtArgs>[]
+    blogViewLogs: Prisma.$BlogStatisticLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    userId: string
-    projectId: string | null
-    title: string
-    content: string
-    slug: string
-    publishedDate: Date
     createdAt: Date
     updatedAt: Date
+    slug: string
+    publishedDate: Date | null
+    isPublished: boolean
+    userId: string
+    projectId: string | null
+    readingTime: number | null
+    coverImageId: string | null
   }, ExtArgs["result"]["blog"]>
   composites: {}
 }
@@ -1304,7 +2197,13 @@ export interface Prisma__BlogClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   project<T extends Prisma.Blog$projectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Blog$projectArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  coverImage<T extends Prisma.Blog$coverImageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Blog$coverImageArgs<ExtArgs>>): Prisma.Prisma__MediaClient<runtime.Types.Result.GetResult<Prisma.$MediaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  translations<T extends Prisma.Blog$translationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Blog$translationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlogTranslationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tags<T extends Prisma.Blog$tagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Blog$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlogTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  interactions<T extends Prisma.Blog$interactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Blog$interactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InteractionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  comments<T extends Prisma.Blog$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Blog$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pageViews<T extends Prisma.Blog$pageViewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Blog$pageViewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PageViewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  blogViewLogs<T extends Prisma.Blog$blogViewLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Blog$blogViewLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlogStatisticLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1335,14 +2234,15 @@ export interface Prisma__BlogClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface BlogFieldRefs {
   readonly id: Prisma.FieldRef<"Blog", 'String'>
-  readonly userId: Prisma.FieldRef<"Blog", 'String'>
-  readonly projectId: Prisma.FieldRef<"Blog", 'String'>
-  readonly title: Prisma.FieldRef<"Blog", 'String'>
-  readonly content: Prisma.FieldRef<"Blog", 'String'>
-  readonly slug: Prisma.FieldRef<"Blog", 'String'>
-  readonly publishedDate: Prisma.FieldRef<"Blog", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Blog", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Blog", 'DateTime'>
+  readonly slug: Prisma.FieldRef<"Blog", 'String'>
+  readonly publishedDate: Prisma.FieldRef<"Blog", 'DateTime'>
+  readonly isPublished: Prisma.FieldRef<"Blog", 'Boolean'>
+  readonly userId: Prisma.FieldRef<"Blog", 'String'>
+  readonly projectId: Prisma.FieldRef<"Blog", 'String'>
+  readonly readingTime: Prisma.FieldRef<"Blog", 'Int'>
+  readonly coverImageId: Prisma.FieldRef<"Blog", 'String'>
 }
     
 
@@ -1758,6 +2658,49 @@ export type Blog$projectArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 }
 
 /**
+ * Blog.coverImage
+ */
+export type Blog$coverImageArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Media
+   */
+  select?: Prisma.MediaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Media
+   */
+  omit?: Prisma.MediaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MediaInclude<ExtArgs> | null
+  where?: Prisma.MediaWhereInput
+}
+
+/**
+ * Blog.translations
+ */
+export type Blog$translationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BlogTranslation
+   */
+  select?: Prisma.BlogTranslationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BlogTranslation
+   */
+  omit?: Prisma.BlogTranslationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlogTranslationInclude<ExtArgs> | null
+  where?: Prisma.BlogTranslationWhereInput
+  orderBy?: Prisma.BlogTranslationOrderByWithRelationInput | Prisma.BlogTranslationOrderByWithRelationInput[]
+  cursor?: Prisma.BlogTranslationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BlogTranslationScalarFieldEnum | Prisma.BlogTranslationScalarFieldEnum[]
+}
+
+/**
  * Blog.tags
  */
 export type Blog$tagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1779,6 +2722,102 @@ export type Blog$tagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   take?: number
   skip?: number
   distinct?: Prisma.BlogTagScalarFieldEnum | Prisma.BlogTagScalarFieldEnum[]
+}
+
+/**
+ * Blog.interactions
+ */
+export type Blog$interactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Interaction
+   */
+  select?: Prisma.InteractionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Interaction
+   */
+  omit?: Prisma.InteractionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InteractionInclude<ExtArgs> | null
+  where?: Prisma.InteractionWhereInput
+  orderBy?: Prisma.InteractionOrderByWithRelationInput | Prisma.InteractionOrderByWithRelationInput[]
+  cursor?: Prisma.InteractionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InteractionScalarFieldEnum | Prisma.InteractionScalarFieldEnum[]
+}
+
+/**
+ * Blog.comments
+ */
+export type Blog$commentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Comment
+   */
+  select?: Prisma.CommentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Comment
+   */
+  omit?: Prisma.CommentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CommentInclude<ExtArgs> | null
+  where?: Prisma.CommentWhereInput
+  orderBy?: Prisma.CommentOrderByWithRelationInput | Prisma.CommentOrderByWithRelationInput[]
+  cursor?: Prisma.CommentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CommentScalarFieldEnum | Prisma.CommentScalarFieldEnum[]
+}
+
+/**
+ * Blog.pageViews
+ */
+export type Blog$pageViewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PageView
+   */
+  select?: Prisma.PageViewSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PageView
+   */
+  omit?: Prisma.PageViewOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageViewInclude<ExtArgs> | null
+  where?: Prisma.PageViewWhereInput
+  orderBy?: Prisma.PageViewOrderByWithRelationInput | Prisma.PageViewOrderByWithRelationInput[]
+  cursor?: Prisma.PageViewWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PageViewScalarFieldEnum | Prisma.PageViewScalarFieldEnum[]
+}
+
+/**
+ * Blog.blogViewLogs
+ */
+export type Blog$blogViewLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BlogStatisticLog
+   */
+  select?: Prisma.BlogStatisticLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BlogStatisticLog
+   */
+  omit?: Prisma.BlogStatisticLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlogStatisticLogInclude<ExtArgs> | null
+  where?: Prisma.BlogStatisticLogWhereInput
+  orderBy?: Prisma.BlogStatisticLogOrderByWithRelationInput | Prisma.BlogStatisticLogOrderByWithRelationInput[]
+  cursor?: Prisma.BlogStatisticLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BlogStatisticLogScalarFieldEnum | Prisma.BlogStatisticLogScalarFieldEnum[]
 }
 
 /**

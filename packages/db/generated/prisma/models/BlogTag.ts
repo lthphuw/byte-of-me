@@ -25,47 +25,47 @@ export type AggregateBlogTag = {
 }
 
 export type BlogTagMinAggregateOutputType = {
-  blogId: string | null
-  tagId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  blogId: string | null
+  tagId: string | null
 }
 
 export type BlogTagMaxAggregateOutputType = {
-  blogId: string | null
-  tagId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  blogId: string | null
+  tagId: string | null
 }
 
 export type BlogTagCountAggregateOutputType = {
-  blogId: number
-  tagId: number
   createdAt: number
   updatedAt: number
+  blogId: number
+  tagId: number
   _all: number
 }
 
 
 export type BlogTagMinAggregateInputType = {
-  blogId?: true
-  tagId?: true
   createdAt?: true
   updatedAt?: true
+  blogId?: true
+  tagId?: true
 }
 
 export type BlogTagMaxAggregateInputType = {
-  blogId?: true
-  tagId?: true
   createdAt?: true
   updatedAt?: true
+  blogId?: true
+  tagId?: true
 }
 
 export type BlogTagCountAggregateInputType = {
-  blogId?: true
-  tagId?: true
   createdAt?: true
   updatedAt?: true
+  blogId?: true
+  tagId?: true
   _all?: true
 }
 
@@ -142,10 +142,10 @@ export type BlogTagGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 export type BlogTagGroupByOutputType = {
-  blogId: string
-  tagId: string
   createdAt: Date
   updatedAt: Date
+  blogId: string
+  tagId: string
   _count: BlogTagCountAggregateOutputType | null
   _min: BlogTagMinAggregateOutputType | null
   _max: BlogTagMaxAggregateOutputType | null
@@ -170,19 +170,19 @@ export type BlogTagWhereInput = {
   AND?: Prisma.BlogTagWhereInput | Prisma.BlogTagWhereInput[]
   OR?: Prisma.BlogTagWhereInput[]
   NOT?: Prisma.BlogTagWhereInput | Prisma.BlogTagWhereInput[]
-  blogId?: Prisma.StringFilter<"BlogTag"> | string
-  tagId?: Prisma.StringFilter<"BlogTag"> | string
   createdAt?: Prisma.DateTimeFilter<"BlogTag"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BlogTag"> | Date | string
+  blogId?: Prisma.StringFilter<"BlogTag"> | string
+  tagId?: Prisma.StringFilter<"BlogTag"> | string
   blog?: Prisma.XOR<Prisma.BlogScalarRelationFilter, Prisma.BlogWhereInput>
   tag?: Prisma.XOR<Prisma.TagScalarRelationFilter, Prisma.TagWhereInput>
 }
 
 export type BlogTagOrderByWithRelationInput = {
-  blogId?: Prisma.SortOrder
-  tagId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  blogId?: Prisma.SortOrder
+  tagId?: Prisma.SortOrder
   blog?: Prisma.BlogOrderByWithRelationInput
   tag?: Prisma.TagOrderByWithRelationInput
 }
@@ -192,19 +192,19 @@ export type BlogTagWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.BlogTagWhereInput | Prisma.BlogTagWhereInput[]
   OR?: Prisma.BlogTagWhereInput[]
   NOT?: Prisma.BlogTagWhereInput | Prisma.BlogTagWhereInput[]
-  blogId?: Prisma.StringFilter<"BlogTag"> | string
-  tagId?: Prisma.StringFilter<"BlogTag"> | string
   createdAt?: Prisma.DateTimeFilter<"BlogTag"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BlogTag"> | Date | string
+  blogId?: Prisma.StringFilter<"BlogTag"> | string
+  tagId?: Prisma.StringFilter<"BlogTag"> | string
   blog?: Prisma.XOR<Prisma.BlogScalarRelationFilter, Prisma.BlogWhereInput>
   tag?: Prisma.XOR<Prisma.TagScalarRelationFilter, Prisma.TagWhereInput>
 }, "blogId_tagId">
 
 export type BlogTagOrderByWithAggregationInput = {
-  blogId?: Prisma.SortOrder
-  tagId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  blogId?: Prisma.SortOrder
+  tagId?: Prisma.SortOrder
   _count?: Prisma.BlogTagCountOrderByAggregateInput
   _max?: Prisma.BlogTagMaxOrderByAggregateInput
   _min?: Prisma.BlogTagMinOrderByAggregateInput
@@ -214,10 +214,10 @@ export type BlogTagScalarWhereWithAggregatesInput = {
   AND?: Prisma.BlogTagScalarWhereWithAggregatesInput | Prisma.BlogTagScalarWhereWithAggregatesInput[]
   OR?: Prisma.BlogTagScalarWhereWithAggregatesInput[]
   NOT?: Prisma.BlogTagScalarWhereWithAggregatesInput | Prisma.BlogTagScalarWhereWithAggregatesInput[]
-  blogId?: Prisma.StringWithAggregatesFilter<"BlogTag"> | string
-  tagId?: Prisma.StringWithAggregatesFilter<"BlogTag"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"BlogTag"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"BlogTag"> | Date | string
+  blogId?: Prisma.StringWithAggregatesFilter<"BlogTag"> | string
+  tagId?: Prisma.StringWithAggregatesFilter<"BlogTag"> | string
 }
 
 export type BlogTagCreateInput = {
@@ -228,10 +228,10 @@ export type BlogTagCreateInput = {
 }
 
 export type BlogTagUncheckedCreateInput = {
-  blogId: string
-  tagId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  blogId: string
+  tagId: string
 }
 
 export type BlogTagUpdateInput = {
@@ -242,17 +242,17 @@ export type BlogTagUpdateInput = {
 }
 
 export type BlogTagUncheckedUpdateInput = {
-  blogId?: Prisma.StringFieldUpdateOperationsInput | string
-  tagId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  blogId?: Prisma.StringFieldUpdateOperationsInput | string
+  tagId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type BlogTagCreateManyInput = {
-  blogId: string
-  tagId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  blogId: string
+  tagId: string
 }
 
 export type BlogTagUpdateManyMutationInput = {
@@ -261,10 +261,10 @@ export type BlogTagUpdateManyMutationInput = {
 }
 
 export type BlogTagUncheckedUpdateManyInput = {
-  blogId?: Prisma.StringFieldUpdateOperationsInput | string
-  tagId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  blogId?: Prisma.StringFieldUpdateOperationsInput | string
+  tagId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type BlogTagListRelationFilter = {
@@ -283,24 +283,24 @@ export type BlogTagBlogIdTagIdCompoundUniqueInput = {
 }
 
 export type BlogTagCountOrderByAggregateInput = {
-  blogId?: Prisma.SortOrder
-  tagId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  blogId?: Prisma.SortOrder
+  tagId?: Prisma.SortOrder
 }
 
 export type BlogTagMaxOrderByAggregateInput = {
-  blogId?: Prisma.SortOrder
-  tagId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  blogId?: Prisma.SortOrder
+  tagId?: Prisma.SortOrder
 }
 
 export type BlogTagMinOrderByAggregateInput = {
-  blogId?: Prisma.SortOrder
-  tagId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  blogId?: Prisma.SortOrder
+  tagId?: Prisma.SortOrder
 }
 
 export type BlogTagCreateNestedManyWithoutBlogInput = {
@@ -394,9 +394,9 @@ export type BlogTagCreateWithoutBlogInput = {
 }
 
 export type BlogTagUncheckedCreateWithoutBlogInput = {
-  tagId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  tagId: string
 }
 
 export type BlogTagCreateOrConnectWithoutBlogInput = {
@@ -429,10 +429,10 @@ export type BlogTagScalarWhereInput = {
   AND?: Prisma.BlogTagScalarWhereInput | Prisma.BlogTagScalarWhereInput[]
   OR?: Prisma.BlogTagScalarWhereInput[]
   NOT?: Prisma.BlogTagScalarWhereInput | Prisma.BlogTagScalarWhereInput[]
-  blogId?: Prisma.StringFilter<"BlogTag"> | string
-  tagId?: Prisma.StringFilter<"BlogTag"> | string
   createdAt?: Prisma.DateTimeFilter<"BlogTag"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BlogTag"> | Date | string
+  blogId?: Prisma.StringFilter<"BlogTag"> | string
+  tagId?: Prisma.StringFilter<"BlogTag"> | string
 }
 
 export type BlogTagCreateWithoutTagInput = {
@@ -442,9 +442,9 @@ export type BlogTagCreateWithoutTagInput = {
 }
 
 export type BlogTagUncheckedCreateWithoutTagInput = {
-  blogId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  blogId: string
 }
 
 export type BlogTagCreateOrConnectWithoutTagInput = {
@@ -474,9 +474,9 @@ export type BlogTagUpdateManyWithWhereWithoutTagInput = {
 }
 
 export type BlogTagCreateManyBlogInput = {
-  tagId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  tagId: string
 }
 
 export type BlogTagUpdateWithoutBlogInput = {
@@ -486,21 +486,21 @@ export type BlogTagUpdateWithoutBlogInput = {
 }
 
 export type BlogTagUncheckedUpdateWithoutBlogInput = {
-  tagId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tagId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type BlogTagUncheckedUpdateManyWithoutBlogInput = {
-  tagId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tagId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type BlogTagCreateManyTagInput = {
-  blogId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  blogId: string
 }
 
 export type BlogTagUpdateWithoutTagInput = {
@@ -510,54 +510,54 @@ export type BlogTagUpdateWithoutTagInput = {
 }
 
 export type BlogTagUncheckedUpdateWithoutTagInput = {
-  blogId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  blogId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type BlogTagUncheckedUpdateManyWithoutTagInput = {
-  blogId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  blogId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
 
 export type BlogTagSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  blogId?: boolean
-  tagId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  blogId?: boolean
+  tagId?: boolean
   blog?: boolean | Prisma.BlogDefaultArgs<ExtArgs>
   tag?: boolean | Prisma.TagDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["blogTag"]>
 
 export type BlogTagSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  blogId?: boolean
-  tagId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  blogId?: boolean
+  tagId?: boolean
   blog?: boolean | Prisma.BlogDefaultArgs<ExtArgs>
   tag?: boolean | Prisma.TagDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["blogTag"]>
 
 export type BlogTagSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  blogId?: boolean
-  tagId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  blogId?: boolean
+  tagId?: boolean
   blog?: boolean | Prisma.BlogDefaultArgs<ExtArgs>
   tag?: boolean | Prisma.TagDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["blogTag"]>
 
 export type BlogTagSelectScalar = {
-  blogId?: boolean
-  tagId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  blogId?: boolean
+  tagId?: boolean
 }
 
-export type BlogTagOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"blogId" | "tagId" | "createdAt" | "updatedAt", ExtArgs["result"]["blogTag"]>
+export type BlogTagOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"createdAt" | "updatedAt" | "blogId" | "tagId", ExtArgs["result"]["blogTag"]>
 export type BlogTagInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   blog?: boolean | Prisma.BlogDefaultArgs<ExtArgs>
   tag?: boolean | Prisma.TagDefaultArgs<ExtArgs>
@@ -578,10 +578,10 @@ export type $BlogTagPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     tag: Prisma.$TagPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    blogId: string
-    tagId: string
     createdAt: Date
     updatedAt: Date
+    blogId: string
+    tagId: string
   }, ExtArgs["result"]["blogTag"]>
   composites: {}
 }
@@ -665,8 +665,8 @@ export interface BlogTagDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    * // Get first 10 BlogTags
    * const blogTags = await prisma.blogTag.findMany({ take: 10 })
    * 
-   * // Only select the `blogId`
-   * const blogTagWithBlogIdOnly = await prisma.blogTag.findMany({ select: { blogId: true } })
+   * // Only select the `createdAt`
+   * const blogTagWithCreatedAtOnly = await prisma.blogTag.findMany({ select: { createdAt: true } })
    * 
    */
   findMany<T extends BlogTagFindManyArgs>(args?: Prisma.SelectSubset<T, BlogTagFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlogTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -710,9 +710,9 @@ export interface BlogTagDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    *   ]
    * })
    * 
-   * // Create many BlogTags and only return the `blogId`
-   * const blogTagWithBlogIdOnly = await prisma.blogTag.createManyAndReturn({
-   *   select: { blogId: true },
+   * // Create many BlogTags and only return the `createdAt`
+   * const blogTagWithCreatedAtOnly = await prisma.blogTag.createManyAndReturn({
+   *   select: { createdAt: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -801,9 +801,9 @@ export interface BlogTagDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    *   ]
    * })
    * 
-   * // Update zero or more BlogTags and only return the `blogId`
-   * const blogTagWithBlogIdOnly = await prisma.blogTag.updateManyAndReturn({
-   *   select: { blogId: true },
+   * // Update zero or more BlogTags and only return the `createdAt`
+   * const blogTagWithCreatedAtOnly = await prisma.blogTag.updateManyAndReturn({
+   *   select: { createdAt: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -1007,10 +1007,10 @@ export interface Prisma__BlogTagClient<T, Null = never, ExtArgs extends runtime.
  * Fields of the BlogTag model
  */
 export interface BlogTagFieldRefs {
-  readonly blogId: Prisma.FieldRef<"BlogTag", 'String'>
-  readonly tagId: Prisma.FieldRef<"BlogTag", 'String'>
   readonly createdAt: Prisma.FieldRef<"BlogTag", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"BlogTag", 'DateTime'>
+  readonly blogId: Prisma.FieldRef<"BlogTag", 'String'>
+  readonly tagId: Prisma.FieldRef<"BlogTag", 'String'>
 }
     
 

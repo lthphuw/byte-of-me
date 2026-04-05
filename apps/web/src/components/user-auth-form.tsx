@@ -3,13 +3,13 @@
 import * as React from 'react';
 import { useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 
+import { signIn } from '@/lib/actions/auth/sign-in';
 import {
   UserAuthLoginSchema,
   userAuthLoginSchema,
-} from '@/lib/schemas/user-auth-login';
+} from '@/lib/schemas/user-auth-login.schema';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
 import {
@@ -23,10 +23,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
 import { Icons } from '@/components/icons';
-
-
-
-
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -45,18 +41,22 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   } = form;
 
   const searchParams = useSearchParams();
-
+  const fromParam = searchParams?.get('from');
   async function onSubmit(data: UserAuthLoginSchema) {
-    const signInResult = await signIn('email', {
-      email: data.email.toLowerCase(),
-      redirect: false,
-      callbackUrl: searchParams?.get('from') || '/dashboard',
-    });
+    const email = data.email.toLowerCase();
+    const callbackUrl =
+      !fromParam || fromParam.includes('/auth/login')
+        ? '/dashboard'
+        : fromParam;
+    const signInResult = await signIn(
+      email,
+      callbackUrl,
+    );
 
-    if (!signInResult?.ok) {
+    if (!signInResult.success) {
       toast({
         title: 'Something went wrong.',
-        description: 'Your sign in request failed. Please try again.',
+        description: signInResult.errorMsg || 'Failed to send login link. Please try again.',
         variant: 'destructive',
       });
       return;
@@ -64,7 +64,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
     toast({
       title: 'Check your email',
-      description: 'We sent you a login link. Be sure to check your spam too.',
+      description: `We sent you a login link to ${email}. Be sure to check your spam too.`,
     });
   }
 
@@ -106,6 +106,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             {isSubmitting && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
+
             Sign In with Email
           </button>
         </form>

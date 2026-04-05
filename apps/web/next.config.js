@@ -1,10 +1,18 @@
 import { PrismaPlugin } from '@prisma/nextjs-monorepo-workaround-plugin';
 import createNextIntlPlugin from 'next-intl/plugin';
 
-const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
-
 const nextConfig = {
   reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ovkdfmeangyqrozdithl.storage.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/**',
+      },
+    ],
+  },
 
   experimental: {
     serverActions: {
@@ -13,15 +21,7 @@ const nextConfig = {
   },
 
   turbopack: {
-    resolveExtensions: [
-      '.mdx',
-      '.tsx',
-      '.ts',
-      '.jsx',
-      '.js',
-      '.mjs',
-      '.json',
-    ],
+    resolveExtensions: ['.mdx', '.tsx', '.ts', '.jsx', '.js', '.mjs', '.json'],
   },
 
   webpack: (config, { isServer, nextRuntime }) => {
@@ -31,5 +31,20 @@ const nextConfig = {
     return config;
   },
 };
+const withNextIntl = createNextIntlPlugin({
+  experimental: {
+    createMessagesDeclaration: ['./messages/en.json', './messages/vi.json'],
+    messages: {
+      format: 'json',
+      locales: 'infer',
+      path: './messages',
+
+      precompile: true,
+    },
+  },
+  extract: {
+    sourceLocale: 'en',
+  },
+});
 
 export default withNextIntl(nextConfig);

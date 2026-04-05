@@ -17,6 +17,7 @@
   "packageManager": "pnpm@10.12.4",
   "devDependencies": {
     "@commitlint/cli": "^17.8.1",
-    "@commitlint/config-conventional": "^17.8.1"
+    "@commitlint/config-conventional": "^17.8.1",
+    "turbo": "2.9.3"
   }
 }

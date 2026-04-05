@@ -4,6 +4,10 @@ import { host } from '@/config/host';
 import { siteConfig } from '@/config/site';
 import { getTranslations } from '@/lib/i18n';
 
+
+
+
+
 export async function generateMetadata({
   params,
 }: {
@@ -30,7 +34,6 @@ export async function generateMetadata({
       languages: {
         vi: `${siteConfig.url}/vi/contact`,
         en: `${siteConfig.url}/en/contact`,
-        fr: `${siteConfig.url}/fr/contact`,
       },
     },
     openGraph: {
@@ -38,15 +41,14 @@ export async function generateMetadata({
       description: t('description'),
       url,
       type: 'website',
-      locale: locale === 'vi' ? 'vi_VN' : locale === 'fr' ? 'fr_FR' : 'en_US',
+      locale: locale === 'vi' ? 'vi_VN' : 'en_US',
       siteName: 'Byte of me',
-      images: [`${siteConfig.url}/images/avatars/HaNoi2024.jpeg`],
     },
     twitter: {
       card: 'summary_large_image',
       title: `${t('title')} | ${siteConfig.name}`,
       description: t('description'),
-      images: [`${siteConfig.url}/images/avatars/HaNoi2024.jpeg`],
+
       creator: '@lthphuw',
     },
   };

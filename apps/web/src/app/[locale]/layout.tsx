@@ -4,14 +4,16 @@ import localFont from 'next/font/local';
 import { notFound } from 'next/navigation';
 import { GlobalProvider } from '@/contexts/global';
 import { routing } from '@/i18n/routing';
-import { NextIntlClientProvider, hasLocale } from 'next-intl';
+import { hasLocale, NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
 
 import { host } from '@/config/host';
 import { siteConfig } from '@/config/site';
 import { getTranslations } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 
-import 'draft-js/dist/Draft.css';
+
+// export const dynamic = 'force-static';
 
 
 const fontSans = FontSans({
@@ -54,23 +56,21 @@ export async function generateMetadata({
       languages: {
         vi: `${siteConfig.url}/vi`,
         en: `${siteConfig.url}/en`,
-        fr: `${siteConfig.url}/fr`,
       },
     },
     openGraph: {
       type: 'website',
-      locale: locale === 'vi' ? 'vi_VN' : locale === 'fr' ? 'fr_FR' : 'en_US',
+      locale: locale === 'vi' ? 'vi_VN' : 'en_US',
       url: siteConfig.url,
       title: `${t('title')} | Byte of me`,
       description: t('description'),
       siteName: 'Byte of me',
-      images: [`${siteConfig.url}/images/avatars/HaNoi2024.jpeg`],
+
     },
     twitter: {
       card: 'summary_large_image',
       title: `${t('title')} | Byte of me`,
       description: t('description'),
-      images: [`${siteConfig.url}/images/avatars/HaNoi2024.jpeg`],
       creator: '@lthphuw',
     },
     icons: {
@@ -102,7 +102,7 @@ export const viewport: Viewport = {
   ],
 };
 
-export default async function RootLocaleLayout({
+export default async function LocaleLayout({
   children,
   params,
 }: {
@@ -113,10 +113,11 @@ export default async function RootLocaleLayout({
   if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
+  const messages = await getMessages();
+
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <head />
       <body
         className={cn(
           'relative min-h-screen bg-transparent font-sans antialiased',
@@ -124,7 +125,7 @@ export default async function RootLocaleLayout({
           fontHeading.variable
         )}
       >
-        <NextIntlClientProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <GlobalProvider>{children}</GlobalProvider>
         </NextIntlClientProvider>
       </body>

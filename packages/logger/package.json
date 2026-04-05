@@ -1,11 +1,24 @@
 {
-  "name": "@repo/logger",
-  "version": "1.0.0",
-  "scripts": {},
+  "name": "@byte-of-me/logger",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts"
   },
+  "scripts": {
+    "dev": "swc src -d dist --strip-leading-paths -w",
+    "build": "swc src -d dist --strip-leading-paths && pnpm types",
+    "types": "tsc --skipLibCheck --declaration --emitDeclarationOnly --esModuleInterop --declarationDir dist --rootDir src",
+    "prepublishOnly": "cd ../../ && turbo run build"
+  },
   "dependencies": {
     "chalk": "^5.4.1"
+  },
+  "devDependencies": {
+    "@swc/cli": "^0.8.0",
+    "@swc/core": "^1.15.18",
+    "@types/node": "^25.5.0",
+    "typescript": "5.9.2"
   }
 }

@@ -18,11 +18,6 @@ export { Prisma }
 export * as $Enums from './enums.ts'
 export * from './enums.ts';
 /**
- * Model User
- * 
- */
-export type User = Prisma.UserModel
-/**
  * Model Account
  * 
  */
@@ -38,20 +33,50 @@ export type Session = Prisma.SessionModel
  */
 export type VerificationToken = Prisma.VerificationTokenModel
 /**
- * Model UserBannerImage
+ * Model User
  * 
  */
-export type UserBannerImage = Prisma.UserBannerImageModel
+export type User = Prisma.UserModel
+/**
+ * Model SocialLink
+ * 
+ */
+export type SocialLink = Prisma.SocialLinkModel
+/**
+ * Model UserProfile
+ * 
+ */
+export type UserProfile = Prisma.UserProfileModel
+/**
+ * Model UserProfileTranslation
+ * 
+ */
+export type UserProfileTranslation = Prisma.UserProfileTranslationModel
 /**
  * Model Education
  * 
  */
 export type Education = Prisma.EducationModel
 /**
- * Model EducationSubItem
+ * Model EducationTranslation
  * 
  */
-export type EducationSubItem = Prisma.EducationSubItemModel
+export type EducationTranslation = Prisma.EducationTranslationModel
+/**
+ * Model EducationAchievement
+ * 
+ */
+export type EducationAchievement = Prisma.EducationAchievementModel
+/**
+ * Model EducationAchievementTranslation
+ * 
+ */
+export type EducationAchievementTranslation = Prisma.EducationAchievementTranslationModel
+/**
+ * Model AchievementOnMedias
+ * 
+ */
+export type AchievementOnMedias = Prisma.AchievementOnMediasModel
 /**
  * Model TechStack
  * 
@@ -63,30 +88,50 @@ export type TechStack = Prisma.TechStackModel
  */
 export type TechStackOnProjects = Prisma.TechStackOnProjectsModel
 /**
- * Model TechStackOnExperiences
+ * Model TechStackOnCompanies
  * 
  */
-export type TechStackOnExperiences = Prisma.TechStackOnExperiencesModel
+export type TechStackOnCompanies = Prisma.TechStackOnCompaniesModel
 /**
- * Model Experience
+ * Model Company
  * 
  */
-export type Experience = Prisma.ExperienceModel
+export type Company = Prisma.CompanyModel
 /**
- * Model ExperienceRole
+ * Model CompanyTranslation
  * 
  */
-export type ExperienceRole = Prisma.ExperienceRoleModel
+export type CompanyTranslation = Prisma.CompanyTranslationModel
+/**
+ * Model Role
+ * 
+ */
+export type Role = Prisma.RoleModel
+/**
+ * Model RoleTranslation
+ * 
+ */
+export type RoleTranslation = Prisma.RoleTranslationModel
 /**
  * Model Task
  * 
  */
 export type Task = Prisma.TaskModel
 /**
+ * Model TaskTranslation
+ * 
+ */
+export type TaskTranslation = Prisma.TaskTranslationModel
+/**
  * Model Project
  * 
  */
 export type Project = Prisma.ProjectModel
+/**
+ * Model ProjectTranslation
+ * 
+ */
+export type ProjectTranslation = Prisma.ProjectTranslationModel
 /**
  * Model ProjectOnProjectCoAuthor
  * 
@@ -103,22 +148,62 @@ export type Coauthor = Prisma.CoauthorModel
  */
 export type Blog = Prisma.BlogModel
 /**
+ * Model BlogTranslation
+ * 
+ */
+export type BlogTranslation = Prisma.BlogTranslationModel
+/**
+ * Model BlogStatisticLog
+ * 
+ */
+export type BlogStatisticLog = Prisma.BlogStatisticLogModel
+/**
  * Model Tag
  * 
  */
 export type Tag = Prisma.TagModel
+/**
+ * Model TagTranslation
+ * 
+ */
+export type TagTranslation = Prisma.TagTranslationModel
 /**
  * Model BlogTag
  * 
  */
 export type BlogTag = Prisma.BlogTagModel
 /**
- * Model TagsOnProjects
+ * Model ProjectTag
  * 
  */
-export type TagsOnProjects = Prisma.TagsOnProjectsModel
+export type ProjectTag = Prisma.ProjectTagModel
 /**
  * Model Translation
  * 
  */
 export type Translation = Prisma.TranslationModel
+/**
+ * Model Media
+ * 
+ */
+export type Media = Prisma.MediaModel
+/**
+ * Model Interaction
+ * 
+ */
+export type Interaction = Prisma.InteractionModel
+/**
+ * Model Comment
+ * 
+ */
+export type Comment = Prisma.CommentModel
+/**
+ * Model PageView
+ * 
+ */
+export type PageView = Prisma.PageViewModel
+/**
+ * Model ContactMessage
+ * 
+ */
+export type ContactMessage = Prisma.ContactMessageModel

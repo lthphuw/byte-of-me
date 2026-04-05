@@ -26,70 +26,70 @@ export type AggregateTranslation = {
 
 export type TranslationMinAggregateOutputType = {
   id: string | null
-  sourceText: string | null
-  translated: string | null
-  language: string | null
-  resourceType: string | null
-  resourceId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  language: string | null
+  sourceText: string | null
+  translated: string | null
+  resourceType: string | null
+  resourceId: string | null
 }
 
 export type TranslationMaxAggregateOutputType = {
   id: string | null
-  sourceText: string | null
-  translated: string | null
-  language: string | null
-  resourceType: string | null
-  resourceId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  language: string | null
+  sourceText: string | null
+  translated: string | null
+  resourceType: string | null
+  resourceId: string | null
 }
 
 export type TranslationCountAggregateOutputType = {
   id: number
-  sourceText: number
-  translated: number
-  language: number
-  resourceType: number
-  resourceId: number
   createdAt: number
   updatedAt: number
+  language: number
+  sourceText: number
+  translated: number
+  resourceType: number
+  resourceId: number
   _all: number
 }
 
 
 export type TranslationMinAggregateInputType = {
   id?: true
-  sourceText?: true
-  translated?: true
-  language?: true
-  resourceType?: true
-  resourceId?: true
   createdAt?: true
   updatedAt?: true
+  language?: true
+  sourceText?: true
+  translated?: true
+  resourceType?: true
+  resourceId?: true
 }
 
 export type TranslationMaxAggregateInputType = {
   id?: true
-  sourceText?: true
-  translated?: true
-  language?: true
-  resourceType?: true
-  resourceId?: true
   createdAt?: true
   updatedAt?: true
+  language?: true
+  sourceText?: true
+  translated?: true
+  resourceType?: true
+  resourceId?: true
 }
 
 export type TranslationCountAggregateInputType = {
   id?: true
-  sourceText?: true
-  translated?: true
-  language?: true
-  resourceType?: true
-  resourceId?: true
   createdAt?: true
   updatedAt?: true
+  language?: true
+  sourceText?: true
+  translated?: true
+  resourceType?: true
+  resourceId?: true
   _all?: true
 }
 
@@ -167,13 +167,13 @@ export type TranslationGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
 
 export type TranslationGroupByOutputType = {
   id: string
-  sourceText: string
-  translated: string
-  language: string
-  resourceType: string | null
-  resourceId: string | null
   createdAt: Date
   updatedAt: Date
+  language: string
+  sourceText: string
+  translated: string
+  resourceType: string | null
+  resourceId: string | null
   _count: TranslationCountAggregateOutputType | null
   _min: TranslationMinAggregateOutputType | null
   _max: TranslationMaxAggregateOutputType | null
@@ -199,24 +199,24 @@ export type TranslationWhereInput = {
   OR?: Prisma.TranslationWhereInput[]
   NOT?: Prisma.TranslationWhereInput | Prisma.TranslationWhereInput[]
   id?: Prisma.StringFilter<"Translation"> | string
-  sourceText?: Prisma.StringFilter<"Translation"> | string
-  translated?: Prisma.StringFilter<"Translation"> | string
-  language?: Prisma.StringFilter<"Translation"> | string
-  resourceType?: Prisma.StringNullableFilter<"Translation"> | string | null
-  resourceId?: Prisma.StringNullableFilter<"Translation"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Translation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Translation"> | Date | string
+  language?: Prisma.StringFilter<"Translation"> | string
+  sourceText?: Prisma.StringFilter<"Translation"> | string
+  translated?: Prisma.StringFilter<"Translation"> | string
+  resourceType?: Prisma.StringNullableFilter<"Translation"> | string | null
+  resourceId?: Prisma.StringNullableFilter<"Translation"> | string | null
 }
 
 export type TranslationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  sourceText?: Prisma.SortOrder
-  translated?: Prisma.SortOrder
-  language?: Prisma.SortOrder
-  resourceType?: Prisma.SortOrderInput | Prisma.SortOrder
-  resourceId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  language?: Prisma.SortOrder
+  sourceText?: Prisma.SortOrder
+  translated?: Prisma.SortOrder
+  resourceType?: Prisma.SortOrderInput | Prisma.SortOrder
+  resourceId?: Prisma.SortOrderInput | Prisma.SortOrder
 }
 
 export type TranslationWhereUniqueInput = Prisma.AtLeast<{
@@ -225,24 +225,24 @@ export type TranslationWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.TranslationWhereInput | Prisma.TranslationWhereInput[]
   OR?: Prisma.TranslationWhereInput[]
   NOT?: Prisma.TranslationWhereInput | Prisma.TranslationWhereInput[]
-  sourceText?: Prisma.StringFilter<"Translation"> | string
-  translated?: Prisma.StringFilter<"Translation"> | string
-  language?: Prisma.StringFilter<"Translation"> | string
-  resourceType?: Prisma.StringNullableFilter<"Translation"> | string | null
-  resourceId?: Prisma.StringNullableFilter<"Translation"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Translation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Translation"> | Date | string
+  language?: Prisma.StringFilter<"Translation"> | string
+  sourceText?: Prisma.StringFilter<"Translation"> | string
+  translated?: Prisma.StringFilter<"Translation"> | string
+  resourceType?: Prisma.StringNullableFilter<"Translation"> | string | null
+  resourceId?: Prisma.StringNullableFilter<"Translation"> | string | null
 }, "id" | "sourceText_language">
 
 export type TranslationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  sourceText?: Prisma.SortOrder
-  translated?: Prisma.SortOrder
-  language?: Prisma.SortOrder
-  resourceType?: Prisma.SortOrderInput | Prisma.SortOrder
-  resourceId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  language?: Prisma.SortOrder
+  sourceText?: Prisma.SortOrder
+  translated?: Prisma.SortOrder
+  resourceType?: Prisma.SortOrderInput | Prisma.SortOrder
+  resourceId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.TranslationCountOrderByAggregateInput
   _max?: Prisma.TranslationMaxOrderByAggregateInput
   _min?: Prisma.TranslationMinOrderByAggregateInput
@@ -253,90 +253,90 @@ export type TranslationScalarWhereWithAggregatesInput = {
   OR?: Prisma.TranslationScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TranslationScalarWhereWithAggregatesInput | Prisma.TranslationScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Translation"> | string
-  sourceText?: Prisma.StringWithAggregatesFilter<"Translation"> | string
-  translated?: Prisma.StringWithAggregatesFilter<"Translation"> | string
-  language?: Prisma.StringWithAggregatesFilter<"Translation"> | string
-  resourceType?: Prisma.StringNullableWithAggregatesFilter<"Translation"> | string | null
-  resourceId?: Prisma.StringNullableWithAggregatesFilter<"Translation"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Translation"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Translation"> | Date | string
+  language?: Prisma.StringWithAggregatesFilter<"Translation"> | string
+  sourceText?: Prisma.StringWithAggregatesFilter<"Translation"> | string
+  translated?: Prisma.StringWithAggregatesFilter<"Translation"> | string
+  resourceType?: Prisma.StringNullableWithAggregatesFilter<"Translation"> | string | null
+  resourceId?: Prisma.StringNullableWithAggregatesFilter<"Translation"> | string | null
 }
 
 export type TranslationCreateInput = {
   id?: string
-  sourceText: string
-  translated: string
-  language: string
-  resourceType?: string | null
-  resourceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  language: string
+  sourceText: string
+  translated: string
+  resourceType?: string | null
+  resourceId?: string | null
 }
 
 export type TranslationUncheckedCreateInput = {
   id?: string
-  sourceText: string
-  translated: string
-  language: string
-  resourceType?: string | null
-  resourceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  language: string
+  sourceText: string
+  translated: string
+  resourceType?: string | null
+  resourceId?: string | null
 }
 
 export type TranslationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceText?: Prisma.StringFieldUpdateOperationsInput | string
-  translated?: Prisma.StringFieldUpdateOperationsInput | string
-  language?: Prisma.StringFieldUpdateOperationsInput | string
-  resourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  resourceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceText?: Prisma.StringFieldUpdateOperationsInput | string
+  translated?: Prisma.StringFieldUpdateOperationsInput | string
+  resourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resourceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceText?: Prisma.StringFieldUpdateOperationsInput | string
-  translated?: Prisma.StringFieldUpdateOperationsInput | string
-  language?: Prisma.StringFieldUpdateOperationsInput | string
-  resourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  resourceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceText?: Prisma.StringFieldUpdateOperationsInput | string
+  translated?: Prisma.StringFieldUpdateOperationsInput | string
+  resourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resourceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationCreateManyInput = {
   id?: string
-  sourceText: string
-  translated: string
-  language: string
-  resourceType?: string | null
-  resourceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  language: string
+  sourceText: string
+  translated: string
+  resourceType?: string | null
+  resourceId?: string | null
 }
 
 export type TranslationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceText?: Prisma.StringFieldUpdateOperationsInput | string
-  translated?: Prisma.StringFieldUpdateOperationsInput | string
-  language?: Prisma.StringFieldUpdateOperationsInput | string
-  resourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  resourceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceText?: Prisma.StringFieldUpdateOperationsInput | string
+  translated?: Prisma.StringFieldUpdateOperationsInput | string
+  resourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resourceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceText?: Prisma.StringFieldUpdateOperationsInput | string
-  translated?: Prisma.StringFieldUpdateOperationsInput | string
-  language?: Prisma.StringFieldUpdateOperationsInput | string
-  resourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  resourceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  language?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceText?: Prisma.StringFieldUpdateOperationsInput | string
+  translated?: Prisma.StringFieldUpdateOperationsInput | string
+  resourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resourceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TranslationSourceTextLanguageCompoundUniqueInput = {
@@ -346,97 +346,97 @@ export type TranslationSourceTextLanguageCompoundUniqueInput = {
 
 export type TranslationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  sourceText?: Prisma.SortOrder
-  translated?: Prisma.SortOrder
-  language?: Prisma.SortOrder
-  resourceType?: Prisma.SortOrder
-  resourceId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  language?: Prisma.SortOrder
+  sourceText?: Prisma.SortOrder
+  translated?: Prisma.SortOrder
+  resourceType?: Prisma.SortOrder
+  resourceId?: Prisma.SortOrder
 }
 
 export type TranslationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  sourceText?: Prisma.SortOrder
-  translated?: Prisma.SortOrder
-  language?: Prisma.SortOrder
-  resourceType?: Prisma.SortOrder
-  resourceId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  language?: Prisma.SortOrder
+  sourceText?: Prisma.SortOrder
+  translated?: Prisma.SortOrder
+  resourceType?: Prisma.SortOrder
+  resourceId?: Prisma.SortOrder
 }
 
 export type TranslationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  sourceText?: Prisma.SortOrder
-  translated?: Prisma.SortOrder
-  language?: Prisma.SortOrder
-  resourceType?: Prisma.SortOrder
-  resourceId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  language?: Prisma.SortOrder
+  sourceText?: Prisma.SortOrder
+  translated?: Prisma.SortOrder
+  resourceType?: Prisma.SortOrder
+  resourceId?: Prisma.SortOrder
 }
 
 
 
 export type TranslationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  sourceText?: boolean
-  translated?: boolean
-  language?: boolean
-  resourceType?: boolean
-  resourceId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  language?: boolean
+  sourceText?: boolean
+  translated?: boolean
+  resourceType?: boolean
+  resourceId?: boolean
 }, ExtArgs["result"]["translation"]>
 
 export type TranslationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  sourceText?: boolean
-  translated?: boolean
-  language?: boolean
-  resourceType?: boolean
-  resourceId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  language?: boolean
+  sourceText?: boolean
+  translated?: boolean
+  resourceType?: boolean
+  resourceId?: boolean
 }, ExtArgs["result"]["translation"]>
 
 export type TranslationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  sourceText?: boolean
-  translated?: boolean
-  language?: boolean
-  resourceType?: boolean
-  resourceId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  language?: boolean
+  sourceText?: boolean
+  translated?: boolean
+  resourceType?: boolean
+  resourceId?: boolean
 }, ExtArgs["result"]["translation"]>
 
 export type TranslationSelectScalar = {
   id?: boolean
-  sourceText?: boolean
-  translated?: boolean
-  language?: boolean
-  resourceType?: boolean
-  resourceId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  language?: boolean
+  sourceText?: boolean
+  translated?: boolean
+  resourceType?: boolean
+  resourceId?: boolean
 }
 
-export type TranslationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sourceText" | "translated" | "language" | "resourceType" | "resourceId" | "createdAt" | "updatedAt", ExtArgs["result"]["translation"]>
+export type TranslationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "language" | "sourceText" | "translated" | "resourceType" | "resourceId", ExtArgs["result"]["translation"]>
 
 export type $TranslationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Translation"
   objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    sourceText: string
-    translated: string
-    language: string
-    resourceType: string | null
-    resourceId: string | null
     createdAt: Date
     updatedAt: Date
+    language: string
+    sourceText: string
+    translated: string
+    resourceType: string | null
+    resourceId: string | null
   }, ExtArgs["result"]["translation"]>
   composites: {}
 }
@@ -861,13 +861,13 @@ export interface Prisma__TranslationClient<T, Null = never, ExtArgs extends runt
  */
 export interface TranslationFieldRefs {
   readonly id: Prisma.FieldRef<"Translation", 'String'>
-  readonly sourceText: Prisma.FieldRef<"Translation", 'String'>
-  readonly translated: Prisma.FieldRef<"Translation", 'String'>
-  readonly language: Prisma.FieldRef<"Translation", 'String'>
-  readonly resourceType: Prisma.FieldRef<"Translation", 'String'>
-  readonly resourceId: Prisma.FieldRef<"Translation", 'String'>
   readonly createdAt: Prisma.FieldRef<"Translation", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Translation", 'DateTime'>
+  readonly language: Prisma.FieldRef<"Translation", 'String'>
+  readonly sourceText: Prisma.FieldRef<"Translation", 'String'>
+  readonly translated: Prisma.FieldRef<"Translation", 'String'>
+  readonly resourceType: Prisma.FieldRef<"Translation", 'String'>
+  readonly resourceId: Prisma.FieldRef<"Translation", 'String'>
 }
     
 

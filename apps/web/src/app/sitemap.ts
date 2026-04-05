@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getPathname } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
-import { prisma } from '@db/client';
+import { prisma } from '@byte-of-me/db';
 import { Locale } from 'next-intl';
 
 import { host } from '@/config/host';

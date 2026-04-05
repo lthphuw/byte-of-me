@@ -5,13 +5,18 @@ export enum Routes {
   About = '/about',
   Experience = '/experience',
   Projects = '/projects',
-  Chat = '/ask-me',
+  Blogs = '/blogs',
   Contact = '/contact',
 }
 
 export const globalConfig: GlobalConfig = {
   header: {
     nav: [
+      {
+        title: 'home',
+        href: Routes.Homepage,
+        onlyMobile: true,
+      },
       {
         title: 'about',
         href: Routes.About,
@@ -25,13 +30,13 @@ export const globalConfig: GlobalConfig = {
         href: Routes.Projects,
       },
       {
+        title: 'blogs',
+        href: Routes.Blogs,
+      },
+      {
         title: 'letsTalk',
         href: Routes.Contact,
       },
-      // {
-      //   title: 'anythingAboutMe',
-      //   href: Routes.Chat,
-      // },
     ],
   },
   footer: {
@@ -49,13 +54,13 @@ export const globalConfig: GlobalConfig = {
         href: Routes.Projects,
       },
       {
+        title: 'blogs',
+        href: Routes.Blogs,
+      },
+      {
         title: 'contact',
         href: Routes.Contact,
       },
-      // {
-      //   title: 'anythingAboutMe',
-      //   href: Routes.Chat,
-      // },
     ],
   },
 };

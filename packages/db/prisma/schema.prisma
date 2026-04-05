@@ -11,48 +11,8 @@ datasource db {
 }
 
 // ===============================
-// USER & AUTHENTICATION
+// AUTHENTICATION (Authjs)
 // ===============================
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  firstName     String?
-  lastName      String?
-  birthdate     String?
-  greeting      String?   @db.Text
-  tagLine       String?   @db.Text
-  email         String?   @unique
-  phoneNumber   String?   @unique
-  linkedIn      String?   @unique
-  facebook      String?   @unique
-  github        String?   @unique
-  leetCode      String?   @unique
-  twitter       String?   @unique
-  portfolio     String?   @unique
-  stackOverflow String?   @unique
-  image         String?
-  imageCaption  String?   @db.Text
-  quote         String?   @db.Text
-  quoteAuthor   String?   @db.Text
-  bio           String?   @db.Text
-  aboutMe       String?   @db.Text
-  emailVerified DateTime?
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
-
-  // Relations
-  accounts     Account[]
-  sessions     Session[]
-  blogs        Blog[]
-  educations   Education[]
-  experiences  Experience[]
-  projects     Project[]
-  bannerImages UserBannerImage[]
-  techstacks   TechStack[]
-
-  @@map("users")
-}
-
 model Account {
   id                String  @id @default(cuid())
   userId            String  @map("user_id")
@@ -69,7 +29,7 @@ model Account {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([provider, providerAccountId], map: "uq_accounts_provider_providerAccountId")
+  @@unique([provider, providerAccountId])
   @@map("accounts")
 }
 
@@ -85,7 +45,7 @@ model Session {
 
 model VerificationToken {
   identifier String
-  token      String   @unique
+  token      String
   expires    DateTime
 
   @@unique([identifier, token])
@@ -93,277 +53,736 @@ model VerificationToken {
 }
 
 // ===============================
-// USER PROFILE COMPONENTS
+// USER
 // ===============================
-model UserBannerImage {
+
+model User {
   id        String   @id @default(cuid())
-  userId    String
-  src       String
-  caption   String
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role String @default("USER")
 
-  @@map("user_banner_images")
+  // NextAuth
+  email         String    @unique
+  emailVerified DateTime? @map("email_verified")
+
+  accounts Account[]
+  sessions Session[]
+
+  // Relations
+  userProfile       UserProfile?
+  socialLinks       SocialLink[]
+  blogs             Blog[]
+  educations        Education[]
+  workExperiences   Company[]
+  projects          Project[]
+  techStacks        TechStack[]
+  media             Media[]
+  interactions      Interaction[]
+  comments          Comment[]
+  contactMessages   ContactMessage[]
+  pageViews         PageView[]
+  blogStatisticLogs BlogStatisticLog[]
+
+  @@map("users")
+}
+
+model SocialLink {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  platform  String
+  url       String
+  sortOrder Int    @default(0) @map("sort_order")
+
+  // mediaId String? @map("media_id")
+  // image   Media?  @relation(fields: [mediaId], references: [id])
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([userId, platform])
+  @@map("social_links")
+}
+
+model UserProfile {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  birthdate DateTime? @map("birthdate")
+
+  userId String @unique @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  translations UserProfileTranslation[]
+
+  @@map("user_profiles")
+}
+
+model UserProfileTranslation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  language String
+
+  displayName String? @map("display_name")
+  firstName   String? @map("first_name")
+  middleName  String? @map("middle_name")
+  lastName    String? @map("last_name")
+  greeting    String? @db.Text
+  tagLine     String? @map("tag_line") @db.Text
+  quote       String? @db.Text
+  quoteAuthor String? @map("quote_author")
+  bio         String? @db.Text
+  aboutMe     String? @map("about_me") @db.Text
+
+  userProfileId String      @map("user_profile_id")
+  userProfile   UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([userProfileId, language])
+  @@map("user_profile_translations")
 }
 
 // ===============================
 // EDUCATION
 // ===============================
+
 model Education {
   id        String   @id @default(cuid())
-  userId    String
-  timeline  String
-  title     String
-  message   String?  @db.Text
-  icon      String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user     User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  subItems EducationSubItem[]
+  sortOrder Int
+  startDate DateTime  @map("start_date")
+  endDate   DateTime? @map("end_date")
+
+  logoId String? @map("logo_id")
+  logo   Media?  @relation(fields: [logoId], references: [id], onDelete: Cascade)
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  achievements EducationAchievement[]
+  translations EducationTranslation[]
 
   @@index([userId], map: "idx_educations_user_id")
   @@map("educations")
 }
 
-model EducationSubItem {
-  id          String   @id @default(cuid())
-  educationId String
+model EducationTranslation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  language String
+
   title       String
-  message     String?  @db.Text
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  description String? @db.Text
 
-  education Education @relation(fields: [educationId], references: [id], onDelete: Cascade)
+  educationId String    @map("education_id")
+  education   Education @relation(fields: [educationId], references: [id], onDelete: Cascade)
 
-  @@index([educationId], map: "idx_education_sub_items_education_id")
-  @@map("education_sub_items")
+  @@unique([educationId, language])
+  @@map("education_translations")
+}
+
+model EducationAchievement {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  sortOrder Int @default(0) @map("sort_order")
+
+  educationId String    @map("education_id")
+  education   Education @relation(fields: [educationId], references: [id], onDelete: Cascade)
+
+  translations EducationAchievementTranslation[]
+  images       AchievementOnMedias[]
+
+  @@index([educationId], map: "idx_education_achievement_education_id")
+  @@map("education_achievements")
+}
+
+model EducationAchievementTranslation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  language String
+
+  title   String
+  content String? @db.Text
+
+  educationAchievementId String               @map("education_achievement_id")
+  educationAchievement   EducationAchievement @relation(fields: [educationAchievementId], references: [id], onDelete: Cascade)
+
+  @@unique([educationAchievementId, language])
+  @@map("education_achievement_translations")
+}
+
+model AchievementOnMedias {
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  mediaId String @map("media_id")
+  media   Media  @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  educationAchievementId String               @map("education_achievement_id")
+  educationAchievement   EducationAchievement @relation(fields: [educationAchievementId], references: [id], onDelete: Cascade)
+
+  @@id([educationAchievementId, mediaId])
+  @@index([mediaId], map: "idx_achievement_medias")
+  @@map("achievement_medias")
 }
 
 // ===============================
 // TECH STACKS
 // ===============================
+
 model TechStack {
   id        String   @id @default(cuid())
-  name      String   @unique
-  slug      String   @unique
-  logo      String?
-  group     String
-  userId    String
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user        User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  projects    TechStackOnProjects[]
-  experiences TechStackOnExperiences[]
+  name      String @unique
+  slug      String @unique
+  group     String
+  sortOrder Int    @default(0) @map("sort_order")
+
+  logoId String? @map("logo_id")
+  logo   Media?  @relation(fields: [logoId], references: [id], onDelete: Cascade)
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  projects  TechStackOnProjects[]
+  companies TechStackOnCompanies[]
 
   @@map("tech_stacks")
 }
 
 model TechStackOnProjects {
-  projectId   String
-  techstackId String
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  techstack TechStack @relation(fields: [techstackId], references: [id], onDelete: Cascade)
+  projectId String  @map("project_id")
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  @@id([projectId, techstackId])
-  @@index([techstackId], map: "idx_project_tech_stacks_techstack_id")
+  techStackId String    @map("tech_stack_id")
+  techStack   TechStack @relation(fields: [techStackId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, techStackId])
+  @@index([techStackId], map: "idx_project_tech_stacks_tech_stack_id")
   @@map("project_tech_stacks")
 }
 
-model TechStackOnExperiences {
-  experienceId String
-  techstackId  String
+model TechStackOnCompanies {
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  experience Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
-  techstack  TechStack  @relation(fields: [techstackId], references: [id], onDelete: Cascade)
+  companyId String  @map("company_id")
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  @@id([techstackId, experienceId])
-  @@map("experience_tech_stacks")
+  techStackId String    @map("tech_stack_id")
+  techStack   TechStack @relation(fields: [techStackId], references: [id], onDelete: Cascade)
+
+  @@id([techStackId, companyId])
+  @@map("company_tech_stacks")
 }
 
 // ===============================
-// EXPERIENCE
+// WORK EXPERIENCE
 // ===============================
-model Experience {
-  id          String   @id @default(cuid())
-  userId      String
-  company     String
-  logoUrl     String
-  location    String
-  type        String
-  description String?  @db.Text
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
 
-  user       User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  roles      ExperienceRole[]
-  techstacks TechStackOnExperiences[]
+model Company {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@index([userId], map: "idx_experiences_user_id")
-  @@map("experiences")
+  company  String
+  location String
+
+  startDate DateTime  @map("start_date")
+  endDate   DateTime? @map("end_date")
+
+  logoId String? @map("logo_id")
+  logo   Media?  @relation(fields: [logoId], references: [id], onDelete: Cascade)
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  roles      Role[]
+  techStacks TechStackOnCompanies[]
+
+  translations CompanyTranslation[]
+
+  @@index([userId], map: "idx_companies_user_id")
+  @@map("companies")
 }
 
-model ExperienceRole {
-  id           String    @id @default(cuid())
-  experienceId String
-  title        String
-  startDate    DateTime
-  endDate      DateTime?
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
+model CompanyTranslation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  experience Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
-  tasks      Task[]
+  language String
 
-  @@index([experienceId], map: "idx_experience_roles_experience_id")
-  @@map("experience_roles")
+  description String? @db.Text
+
+  companyId String  @map("company_id")
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, language])
+  @@map("company_translations")
+}
+
+model Role {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  startDate DateTime? @map("start_date")
+  endDate   DateTime? @map("end_date")
+
+  companyId String  @map("company_id")
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  tasks        Task[]
+  translations RoleTranslation[]
+
+  @@index([companyId], map: "idx_roles_company_id")
+  @@map("roles")
+}
+
+model RoleTranslation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  language String
+
+  title       String
+  description String? @db.Text
+
+  roleId String @map("role_id")
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, language], map: "uidx_role_translation_role_id_language")
+  @@map("role_translations")
 }
 
 model Task {
-  id               String   @id @default(cuid())
-  experienceRoleId String   @map("experience_role_id")
-  content          String   @db.Text
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @updatedAt @map("updated_at")
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  sortOrder Int      @default(0) @map("sort_order")
 
-  experienceRole ExperienceRole @relation(fields: [experienceRoleId], references: [id], onDelete: Cascade)
+  roleId String @map("role_id")
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
-  @@index([experienceRoleId], map: "idx_tasks_experience_role_id")
+  translations TaskTranslation[]
+
+  @@index([roleId], map: "idx_tasks_role_id")
   @@map("tasks")
+}
+
+model TaskTranslation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  language String
+
+  content String @db.Text
+
+  taskId String @map("task_id")
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, language])
+  @@map("task_translations")
 }
 
 // ===============================
 // PROJECTS & BLOGS
 // ===============================
-model Project {
-  id          String    @id @default(cuid())
-  slug        String    @unique
-  userId      String
-  title       String
-  description String?   @db.Text
-  githubLink  String?
-  liveLink    String?
-  startDate   DateTime?
-  endDate     DateTime?
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  user       User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  techstacks TechStackOnProjects[]
-  tags       TagsOnProjects[]
-  blogs      Blog[]
-  coauthors  ProjectOnProjectCoAuthor[]
+model Project {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  slug        String    @unique
+  githubLink  String?   @map("github_link")
+  liveLink    String?   @map("live_link")
+  startDate   DateTime? @map("start_date")
+  endDate     DateTime? @map("end_date")
+  isPublished Boolean   @default(false) @map("is_published")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  translations ProjectTranslation[]
+  techStacks   TechStackOnProjects[]
+  tags         ProjectTag[]
+
+  blog Blog?
+
+  coauthors    ProjectOnProjectCoAuthor[]
+  interactions Interaction[]
+  comments     Comment[]
+  pageViews    PageView[]
 
   @@index([userId], map: "idx_projects_user_id")
   @@map("projects")
 }
 
-model ProjectOnProjectCoAuthor {
-  projectId  String
-  coauthorId String   @map("coauthor_id")
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
+model ProjectTranslation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  project  Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  coauthor Coauthor @relation(fields: [coauthorId], references: [id], onDelete: Cascade)
+  language String
+
+  title       String
+  description String? @db.Text
+
+  projectId String  @map("project_id")
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, language])
+  @@map("project_translations")
+}
+
+model ProjectOnProjectCoAuthor {
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  projectId String  @map("project_id")
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  coauthorId String   @map("coauthor_id")
+  coauthor   Coauthor @relation(fields: [coauthorId], references: [id], onDelete: Cascade)
 
   @@id([projectId, coauthorId])
   @@index([coauthorId], map: "idx_project_coauthor_coauthor_id")
-  @@map("project_coauthor")
+  @@map("project_coauthors")
 }
 
 model Coauthor {
-  id       String                     @id @default(cuid())
-  fullname String
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  fullName String  @map("full_name")
   email    String?
+
   projects ProjectOnProjectCoAuthor[]
 
   @@map("coauthors")
 }
 
 model Blog {
-  id            String   @id @default(cuid())
-  userId        String
-  projectId     String?
-  title         String
-  content       String   @db.Text
-  slug          String   @unique
-  publishedDate DateTime @default(now())
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  project Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  tags    BlogTag[]
+  slug          String    @unique
+  publishedDate DateTime? @default(now()) @map("published_date")
+  isPublished   Boolean   @default(false) @map("is_published")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  projectId String?  @unique @map("project_id")
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  readingTime Int? @map("reading_time")
+
+  coverImageId String? @map("cover_image_id")
+  coverImage   Media?  @relation(fields: [coverImageId], references: [id], onDelete: SetNull)
+
+  translations BlogTranslation[]
+  tags         BlogTag[]
+  interactions Interaction[]
+  comments     Comment[]
+  pageViews    PageView[]
+  blogViewLogs BlogStatisticLog[]
 
   @@index([userId], map: "idx_blogs_user_id")
+  @@index([isPublished, publishedDate(sort: Desc)], map: "idx_blogs_published_feed")
+  @@index([isPublished, publishedDate], map: "idx_blogs_publish_scheduler")
   @@map("blogs")
+}
+
+model BlogTranslation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  language String
+
+  title       String
+  description String? @db.Text
+  content     String  @db.Text
+
+  blogId String @map("blog_id")
+  blog   Blog   @relation(fields: [blogId], references: [id], onDelete: Cascade)
+
+  @@unique([blogId, language])
+  @@map("blog_translations")
+}
+
+model BlogStatisticLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+
+  blogId String @map("blog_id")
+  blog   Blog   @relation(fields: [blogId], references: [id], onDelete: Cascade)
+
+  readingTime Int? @map("reading_time") // in seconds
+
+  isAnonymous Boolean @default(true) @map("is_anonymous")
+  viewerId    String? @map("viewer_id")
+  viewer      User?   @relation(fields: [viewerId], references: [id])
+
+  referrer   String? @db.Text
+  deviceType String? @map("device_type") // e.g., "mobile", "desktop", "tablet"
+  browser    String? // e.g., "Chrome", "Safari"
+
+  countryCode String? @map("country_code") // e.g., "US", "VN", "GB"
+
+  @@index([blogId], map: "idx_blog_view_logs_blog_id")
+  @@index([blogId, createdAt(sort: Desc)], map: "idx_blog_logs_time_series")
+  @@index([blogId, deviceType], map: "idx_blog_logs_device")
+  @@index([blogId, countryCode], map: "idx_blog_logs_country")
+  @@map("blog_view_logs")
 }
 
 // ===============================
 // TAGS
 // ===============================
+
 model Tag {
   id        String   @id @default(cuid())
-  slug      String   @unique
-  name      String   @unique
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  blogs    BlogTag[]
-  projects TagsOnProjects[]
+  slug         String           @unique
+  translations TagTranslation[]
+  blogs        BlogTag[]
+  projects     ProjectTag[]
 
   @@map("tags")
 }
 
-model BlogTag {
-  blogId    String
-  tagId     String
+model TagTranslation {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  blog Blog @relation(fields: [blogId], references: [id], onDelete: Cascade)
-  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  language String
+
+  name String @unique
+
+  tagId String @map("tag_id")
+  tag   Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([tagId, language])
+  @@map("tag_translations")
+}
+
+model BlogTag {
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  blogId String @map("blog_id")
+  blog   Blog   @relation(fields: [blogId], references: [id], onDelete: Cascade)
+
+  tagId String @map("tag_id")
+  tag   Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([blogId, tagId])
   @@index([tagId], map: "idx_blog_tags_tag_id")
   @@map("blog_tags")
 }
 
-model TagsOnProjects {
-  projectId String
-  tagId     String
+model ProjectTag {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  projectId String  @map("project_id")
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  tagId String @map("tag_id")
+  tag   Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([projectId, tagId])
   @@index([tagId], map: "idx_project_tag_tag_id")
-  @@map("project_tag")
+  @@map("project_tags")
 }
 
 // ===============================
 // TRANSLATIONS
 // ===============================
-model Translation {
-  id           String   @id @default(cuid())
-  sourceText   String   @db.Text // Original text
-  translated   String   @db.Text // Translated value
-  language     String // "vi", "en", ...
-  resourceType String? // "project", "blog", etc.
-  resourceId   String? // Optional foreign key id
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
 
-  @@unique([sourceText, language], map: "uq_translations_sourceText_language")
+model Translation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  language     String
+  sourceText   String  @map("source_text") @db.Text
+  translated   String  @db.Text
+  resourceType String? @map("resource_type")
+  resourceId   String? @map("resource_id")
+
+  @@unique([sourceText, language], map: "uq_translations_source_text_language")
   @@index([resourceType, resourceId], map: "idx_translations_resource")
   @@map("translations")
+}
+
+// ===============================
+// MEDIA
+// ===============================
+
+model Media {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  fileName String @map("file_name")
+  fileKey  String @unique @map("file_key")
+  mimeType String @map("mime_type")
+  size     Int
+  provider String
+  bucket   String
+  url      String
+
+  userId String? @map("user_id")
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // socialLinks         SocialLink[]
+  companies           Company[]
+  techStacks          TechStack[]
+  education           Education[]
+  educationAchiements AchievementOnMedias[]
+  blogs               Blog[]
+
+  @@map("media")
+}
+
+// ===============================
+// INTERACTIONS (Likes, Shares, etc.)
+// ===============================
+
+model Interaction {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Loại tương tác (VD: "LIKE", "HEART", "CLAP", "SHARE")
+  type String
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Tương tác có thể thuộc về Blog hoặc Project
+  blogId String? @map("blog_id")
+  blog   Blog?   @relation(fields: [blogId], references: [id], onDelete: Cascade)
+
+  projectId String?  @map("project_id")
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, blogId, type], map: "uq_user_blog_interaction")
+  @@unique([userId, projectId, type], map: "uq_user_project_interaction")
+  @@index([blogId], map: "idx_interactions_blog_id")
+  @@index([projectId], map: "idx_interactions_project_id")
+  @@map("interactions")
+}
+
+// ===============================
+// COMMENTS
+// ===============================
+model Comment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  content   String  @db.Text
+  isDeleted Boolean @default(false) @map("is_deleted")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Comment có thể thuộc về Blog hoặc Project
+  blogId String? @map("blog_id")
+  blog   Blog?   @relation(fields: [blogId], references: [id], onDelete: Cascade)
+
+  projectId String?  @map("project_id")
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Hỗ trợ Nested Comments (Trả lời comment)
+  parentId String?   @map("parent_id")
+  parent   Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("CommentToComment")
+
+  @@index([blogId], map: "idx_comments_blog_id")
+  @@index([projectId], map: "idx_comments_project_id")
+  @@index([parentId], map: "idx_comments_parent_id")
+  @@map("comments")
+}
+
+// ===============================
+// TRAFFIC / ANALYTICS
+// ===============================
+
+model PageView {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+
+  path String // URL endpoint (VD: "/projects/my-app", "/blogs/hello-world")
+
+  // Lưu trữ hashed IP hoặc session_id để đếm "Unique Visitors" mà không vi phạm GDPR
+  visitorId String? @map("visitor_id")
+  userAgent String? @map("user_agent")
+  referer   String?
+
+  // Liên kết tùy chọn để dễ dàng query số lượng view của 1 bài cụ thể
+  blogId String? @map("blog_id")
+  blog   Blog?   @relation(fields: [blogId], references: [id], onDelete: Cascade)
+
+  projectId String?  @map("project_id")
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+
+  @@index([path], map: "idx_page_views_path")
+  @@index([blogId], map: "idx_page_views_blog_id")
+  @@index([projectId], map: "idx_page_views_project_id")
+  @@map("page_views")
+}
+
+// ===============================
+// CONTACT
+// ===============================
+model ContactMessage {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+
+  name    String
+  email   String
+  subject String?
+  message String  @db.Text
+
+  isRead    Boolean @default(false) @map("is_read")
+  isReplied Boolean @default(false) @map("is_replied")
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([email], map: "idx_contact_email")
+  @@map("contact_messages")
 }

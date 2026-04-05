@@ -1,30 +1,26 @@
 {
   "metadata": {
-    "title": "Lương Thanh Hoàng Phú",
-    "description": "Đam mê, kinh nghiệm, dự án và sở thích — tất cả được lưu giữ, từng byte một.",
+    "title": "Phú Lương",
+    "description": "Nơi lưu giữ đam mê và kinh nghiệm cá nhân — từng byte một.",
     "about": {
       "title": "Về tôi",
-      "description": "Giới thiệu tổng quan về bản thân tôi — từ nền tảng, quá trình học tập cho đến những công nghệ tôi đã làm việc."
+      "description": "Giới thiệu ngắn gọn về bản thân, học vấn và các công nghệ tôi sử dụng."
     },
     "experience": {
-      "title": "Kinh nghiệm làm việc",
-      "description": "Tóm tắt kinh nghiệm thực tế của tôi qua các vai trò và dự án khác nhau."
+      "title": "Kinh nghiệm",
+      "description": "Các cột mốc và công việc tôi đã từng đảm nhận."
     },
     "projects": {
       "title": "Dự án",
-      "description": "Tổng hợp các dự án tôi đã thực hiện, từ học thuật đến ứng dụng thực tế."
+      "description": "Những sản phẩm cá nhân tôi đã xây dựng."
     },
     "contact": {
       "title": "Liên hệ",
-      "description": "Thông tin liên lạc nếu bạn muốn kết nối, trao đổi hoặc hợp tác cùng tôi."
+      "description": "Kết nối với tôi để hợp tác."
     },
-    "askMe": {
-      "title": "Hỏi tôi bất cứ điều gì",
-      "description": "Đặt câu hỏi cho trợ lý AI được xây dựng trên pipeline RAG, sử dụng dữ liệu thực từ portfolio của tôi kết hợp tìm kiếm vector và mô hình ngôn ngữ lớn — phù hợp để khám phá kinh nghiệm, dự án và kỹ năng kỹ thuật."
-    },
-    "cv": {
-      "title": "Curriculum Vitae",
-      "description": "CV tổng hợp quá trình học tập, kỹ năng, dự án và kinh nghiệm làm việc của tôi."
+    "blogs": {
+      "title": "Blog",
+      "description": "Ghi chép kiến thức và những chia sẻ nhỏ về lập trình."
     }
   },
   "global": {
@@ -47,9 +43,11 @@
     },
     "header": {
       "nav": {
+        "home": "Trang chủ",
         "about": "Giới thiệu",
         "experience": "Kinh nghiệm",
         "projects": "Dự án",
+        "blogs": "Bài viết",
         "hobbies": "Sở thích",
         "more": "Thêm",
         "letsTalk": "Liên hệ",
@@ -66,6 +64,7 @@
       "about": "Giới thiệu",
       "projects": "Dự án",
       "experience": "Kinh nghiệm",
+      "blogs": "Bài viết",
       "cv": "CV",
       "anythingAboutMe": "Mọi thứ về tôi",
       "contact": "Liên hệ",
@@ -136,36 +135,28 @@
     "youCanStartByCreatingANewProject": "Bạn có thể bắt đầu bằng cách tạo một dự án mới",
     "backToProjects": "Quay lại danh sách dự án"
   },
+  "blog": {
+    "details": "Chi tiết",
+    "all": "Tất cả",
+    "thereAreNoBlogsYet": "Hiện chưa có bài viết nào",
+    "noBlogsMatchYourSearch": "Không tìm thấy bài viết phù hợp với từ khoá",
+    "loadingBlogList": "Đang tải danh sách bài viết",
+    "failedToLoadBlogList": "Không thể tải danh sách bài viết. Vui lòng thử lại."
+  },
+  "blogDetails": {
+    "failedToLoadBlog": "Không thể tải bài viết",
+    "readingTime": "{time} phút đọc",
+    "relatedProject": "Dự án liên quan",
+    "viewProject": "Xem dự án"
+  },
   "contact": {
     "letsWorkTogether": "Cùng nhau hợp tác",
     "feelFreeToReachOutThroughAnyChannel": "Bạn có thể liên hệ với tôi qua bất kỳ kênh nào",
     "sendMeAnEmail": "Gửi email cho tôi",
     "linkedIn": "LinkedIn",
-    "gitHub": "GitHub"
-  },
-  "chat": {
-    "askPhusAssistant": "Hỏi trợ lý AI của Phú",
-    "asking": "Đang hỏi",
-    "ask": "Hỏi",
-    "clearChat": "Xoá hội thoại",
-    "askSomething": "Hỏi bất cứ điều gì",
-    "copy": "Sao chép",
-    "model": {
-      "desc": {
-        "gemini20flash": "Mô hình ngôn ngữ nhẹ và nhanh của Google, tối ưu cho tương tác thời gian thực",
-        "gemini20flashlite": "Phiên bản gọn nhẹ hơn, độ trễ thấp cho các tác vụ nhanh",
-        "gemini25flash": "Phiên bản Gemini 2.5 cải tiến với khả năng phản hồi nhanh",
-        "jinaembeddingv3": "Mô hình embedding đa ngôn ngữ, tối ưu cho truy xuất nhanh và chính xác",
-        "textembedding004": "Mô hình embedding tiếng Anh chất lượng cao cho tìm kiếm ngữ nghĩa",
-        "noreranker": "Không áp dụng re-rank. Kết quả dựa hoàn toàn trên độ tương đồng vector.",
-        "coherererankv35": "Mô hình re-rank của Cohere, giúp sắp xếp tài liệu theo mức độ liên quan."
-      }
-    },
-    "examples": {
-      "example1": "Phú sử dụng những công nghệ nào cho backend?",
-      "example2": "Hãy giới thiệu một dự án cá nhân tiêu biểu của Phú.",
-      "example3": "Phú có kinh nghiệm gì trong lĩnh vực AI?"
-    }
+    "gitHub": "GitHub",
+    "or": "Hoặc là",
+    "sendMeADirectMessage": "Để lại tin nhắn"
   },
   "homepage": {
     "myStory": "Hành trình của tôi",

@@ -1,178 +1,228 @@
 'use client';
 
-import { useState } from 'react';
+import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ContentState, EditorState, convertFromHTML } from 'draft-js';
-import { stateToHTML } from 'draft-js-export-html';
-import { useForm } from 'react-hook-form';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Globe2, Languages, Plus, RotateCcw } from 'lucide-react';
+import { useFieldArray, useForm } from 'react-hook-form';
 
-import { saveProfile } from '@/lib/actions/profile';
-import { ProfileSchema, profileSchema } from '@/lib/schemas/profile';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import {
+  UserProfileWithTranslations,
+  getUserProfileWithTranslations,
+} from '@/lib/actions/dashboard/user/get-user-profile-with-translations';
+import { saveProfile } from '@/lib/actions/dashboard/user/save-profile';
+import { ProfileFormValues, profileSchema } from '@/lib/schemas/profile.schema';
+import { Button } from '@/components/ui/button';
+import { Form } from '@/components/ui/form';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
-import { RichTextEditor } from '@/components/rich-text-editor';
-import { SubmitButton } from '@/components/submit-button';
+import { CommonSectionManager } from '@/components/common-section-manager';
+import { Icons } from '@/components/icons';
+import { SocialLinksSection } from '@/components/social-link-section-manager';
 
-interface ProfileManagerProps {
-  user: ProfileSchema & { id: string };
-}
+import { ProfileTranslationCard } from './profile-translation-card';
 
-export function ProfileManager({ user }: ProfileManagerProps) {
+export function ProfileManager({
+  initUser,
+}: {
+  initUser: UserProfileWithTranslations;
+}) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState<string>();
 
-  // ===== ABOUT ME EDITOR STATE =====
-  const [about, setAbout] = useState(() => {
-    if (!user.aboutMe) {
-      return EditorState.createEmpty();
-    }
-
-    const blocksFromHTML = convertFromHTML(user.aboutMe);
-    const contentState = ContentState.createFromBlockArray(
-      blocksFromHTML.contentBlocks,
-      blocksFromHTML.entityMap,
-    );
-
-    return EditorState.createWithContent(contentState);
+  const { data } = useQuery({
+    queryKey: ['userProfile', initUser.id],
+    queryFn: getUserProfileWithTranslations,
+    initialData: { success: true, data: initUser },
   });
 
-  const {
-    register,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = useForm<ProfileSchema>({
+  const user = data?.data;
+
+  const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: user,
+    defaultValues: { socialLinks: [], translations: [] },
   });
 
-  const onSubmit = async (data: ProfileSchema) => {
-    const res = await saveProfile({
-      ...data,
-      aboutMe: stateToHTML(about.getCurrentContent()),
-    });
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: 'translations',
+  });
 
-    if (res.success) {
-      toast({
-        title: 'Success',
-        description: 'Profile updated successfully',
-      });
-    } else {
+  const mutation = useMutation({
+    mutationFn: saveProfile,
+    onSuccess: () => {
+      toast({ title: 'Saved' });
+      queryClient.invalidateQueries({ queryKey: ['userProfile', initUser.id] });
+    },
+    onError: (err: any) => {
       toast({
         title: 'Error',
-        description: res.error,
+        description: err?.message,
         variant: 'destructive',
       });
-    }
+    },
+  });
+
+  const onSubmit = (values: ProfileFormValues) => {
+    mutation.mutate({
+      ...values,
+      translations: values.translations.map((t) => ({
+        ...t,
+        aboutMe: t.aboutMe ? JSON.stringify(t.aboutMe) : null,
+      })),
+      socialLinks: values.socialLinks.map((s, i) => ({ ...s, sortOrder: i })),
+    });
   };
 
+  const handleReset = () => {
+    if (!user) return;
+
+    form.reset({
+      birthdate: user.userProfile?.birthdate,
+      socialLinks: user.socialLinks ?? [],
+      translations:
+        user.userProfile?.translations?.map((t: any) => ({
+          ...t,
+          aboutMe: t.aboutMe ? JSON.parse(t.aboutMe) : null,
+        })) || [],
+    });
+
+    toast({ title: 'Reset' });
+  };
+
+  useEffect(() => {
+    if (!user) return;
+
+    form.reset({
+      birthdate: user.userProfile?.birthdate,
+      socialLinks: user.socialLinks ?? [],
+      translations:
+        user.userProfile?.translations?.map((t: any) => ({
+          ...t,
+          aboutMe: t.aboutMe ? JSON.parse(t.aboutMe) : null,
+        })) || [],
+    });
+  }, [user]);
+
+  useEffect(() => {
+    if (fields.length > 0) setActiveTab(fields[0].id);
+  }, [fields]);
+
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="relative space-y-10"
-    >
-      <fieldset disabled={isSubmitting} className="space-y-10">
-        {/* ================= BASIC INFO ================= */}
-        <section className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Full name</Label>
-              <Input {...register('name')} />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Email</Label>
-              <Input type="email" {...register('email')} />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Phone number</Label>
-              <Input {...register('phoneNumber')} />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Tagline</Label>
-              <Input {...register('tagLine')} />
-            </div>
-
-            <div className="space-y-2 md:col-span-2">
-              <Label>Greeting</Label>
-              <Input {...register('greeting')} />
-            </div>
-          </div>
-        </section>
-
-        {/* ================= ABOUT ================= */}
-        <section className="space-y-6">
-          <header>
-            <h2 className="text-lg font-semibold">About</h2>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="max-w-4xl mx-auto space-y-10 pb-24"
+      >
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-xl font-semibold">Profile Settings</h2>
             <p className="text-sm text-muted-foreground">
-              Short description and detailed introduction
+              Manage your profile content and languages
             </p>
-          </header>
-
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Short bio</Label>
-              <Textarea rows={3} {...register('bio')} />
-            </div>
-
-            <div className="space-y-2">
-              <Label>About me</Label>
-              <RichTextEditor
-                editorState={about}
-                onChange={setAbout}
-                placeholder="Enter description..."
-              />
-            </div>
           </div>
-        </section>
 
-        {/* ================= QUOTE ================= */}
-        <section className="space-y-6">
-          <header>
-            <h2 className="text-lg font-semibold">Quote</h2>
-            <p className="text-sm text-muted-foreground">
-              Optional quote displayed on your profile
-            </p>
-          </header>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2 md:col-span-2">
-              <Label>Quote</Label>
-              <Textarea rows={3} {...register('quote')} />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Author</Label>
-              <Input {...register('quoteAuthor')} />
-            </div>
-          </div>
-        </section>
-
-        {/* ================= SOCIAL LINKS ================= */}
-        <section className="space-y-6">
-          <header>
-            <h2 className="text-lg font-semibold">Social links</h2>
-            <p className="text-sm text-muted-foreground">
-              Public links visible on your profile
-            </p>
-          </header>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <Input placeholder="LinkedIn URL" {...register('linkedIn')} />
-            <Input placeholder="GitHub URL" {...register('github')} />
-            <Input placeholder="Twitter / X URL" {...register('twitter')} />
-            <Input placeholder="Portfolio URL" {...register('portfolio')} />
-          </div>
-        </section>
-
-        <div className="flex justify-end">
-          <SubmitButton loading={isSubmitting} size="lg">
-            Save changes
-          </SubmitButton>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleReset}
+          >
+            <RotateCcw className="w-4 h-4 mr-2" />
+            Reset
+          </Button>
         </div>
-      </fieldset>
-    </form>
+
+        {/* Translations */}
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Globe2 className="w-4 h-4" />
+              <span className="text-sm font-medium">Translations</span>
+            </div>
+
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() =>
+                append({
+                  language: '',
+                  displayName: '',
+                  aboutMe: null,
+                })
+              }
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              Add Language <Languages />
+            </Button>
+          </div>
+
+          {fields.length === 0 ? (
+            <div className="text-center border rounded-lg py-10">
+              <p className="text-sm text-muted-foreground mb-3">
+                No translations yet
+              </p>
+              <Button
+                onClick={() => {
+                  append({
+                    language: '',
+                    displayName: '',
+                  });
+                }}
+              >
+                Add your first language
+              </Button>
+            </div>
+          ) : (
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList>
+                {fields.map((field, index) => {
+                  const lang = form.watch(`translations.${index}.language`);
+                  const name = form.watch(`translations.${index}.displayName`);
+
+                  return (
+                    <TabsTrigger key={field.id} value={field.id}>
+                      {lang
+                        ? `${lang.toUpperCase()} • ${name || '...'}`
+                        : 'New'}
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+
+              {fields.map((field, index) => (
+                <TabsContent key={field.id} value={field.id}>
+                  <ProfileTranslationCard
+                    form={form}
+                    index={index}
+                    onRemove={() => remove(index)}
+                  />
+                </TabsContent>
+              ))}
+            </Tabs>
+          )}
+        </div>
+
+        <CommonSectionManager form={form} />
+        <SocialLinksSection form={form} />
+
+        {/* Sticky Footer */}
+        <div className="fixed bottom-0 left-0 right-0 p-8 flex justify-end gap-2">
+          <Button variant="ghost" onClick={handleReset}>
+            Reset
+          </Button>
+          <Button type="submit" disabled={mutation.isPending}>
+            {mutation.isPending && (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            )}{' '}
+            Save
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }
