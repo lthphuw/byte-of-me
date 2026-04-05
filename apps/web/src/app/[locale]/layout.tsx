@@ -6,6 +6,7 @@ import { GlobalProvider } from '@/contexts/global';
 import { routing } from '@/i18n/routing';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
+import { Analytics } from '@vercel/analytics/next';
 
 import { host } from '@/config/host';
 import { siteConfig } from '@/config/site';
@@ -128,6 +129,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <GlobalProvider>{children}</GlobalProvider>
         </NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );
