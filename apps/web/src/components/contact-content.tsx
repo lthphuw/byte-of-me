@@ -7,10 +7,6 @@ import { useTranslations } from 'next-intl';
 import { ContactForm } from '@/components/contact-form';
 import { Icons } from '@/components/icons';
 
-
-
-
-
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -36,11 +32,11 @@ export type ContactContentProps = {
 };
 
 export function ContactContent({
-                                 userId,
-                                 email,
-                                 linkedIn,
-                                 github,
-                               }: ContactContentProps) {
+  userId,
+  email,
+  linkedIn,
+  github,
+}: ContactContentProps) {
   const t = useTranslations('contact');
 
   const contacts = [
@@ -86,7 +82,7 @@ export function ContactContent({
       <div className="w-full max-w-md space-y-8">
         {/* Header */}
         <motion.div
-          id={"contact-info"}
+          id={'contact-info'}
           variants={itemVariants}
           className="text-center space-y-2"
         >
@@ -149,9 +145,7 @@ export function ContactContent({
 
                   {/* Text */}
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium">
-                      {item.label}
-                    </span>
+                    <span className="text-sm font-medium">{item.label}</span>
                     <span className="text-xs text-muted-foreground">
                       {item.description}
                     </span>
@@ -175,7 +169,10 @@ export function ContactContent({
         </motion.div>
 
         <motion.div
-          id={"contact-send-message"} variants={itemVariants} className="pt-6">
+          id={'contact-send-message'}
+          variants={itemVariants}
+          className="pt-6"
+        >
           <div className="text-center text-xs text-muted-foreground mb-4">
             {t('or')}
           </div>

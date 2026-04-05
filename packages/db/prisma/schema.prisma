@@ -745,12 +745,10 @@ model PageView {
 
   path String // URL endpoint (VD: "/projects/my-app", "/blogs/hello-world")
 
-  // Lưu trữ hashed IP hoặc session_id để đếm "Unique Visitors" mà không vi phạm GDPR
   visitorId String? @map("visitor_id")
   userAgent String? @map("user_agent")
   referer   String?
 
-  // Liên kết tùy chọn để dễ dàng query số lượng view của 1 bài cụ thể
   blogId String? @map("blog_id")
   blog   Blog?   @relation(fields: [blogId], references: [id], onDelete: Cascade)
 

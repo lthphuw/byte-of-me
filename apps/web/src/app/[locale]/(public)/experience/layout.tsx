@@ -4,10 +4,6 @@ import { host } from '@/config/host';
 import { siteConfig } from '@/config/site';
 import { getTranslations } from '@/lib/i18n';
 
-
-
-
-
 export async function generateMetadata({
   params,
 }: {

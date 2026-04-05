@@ -25,8 +25,9 @@ export async function getUserProfileWithRecentProjects(): Promise<
               include: { translations: true },
             },
             projects: {
+              where: { isPublished: true },
               include: { translations: true },
-              orderBy: { createdAt: 'desc' },
+              orderBy: { updatedAt: 'desc' },
               take: 3,
             },
           },

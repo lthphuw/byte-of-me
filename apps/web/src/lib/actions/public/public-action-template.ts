@@ -6,10 +6,6 @@ import { getLocale } from 'next-intl/server';
 import { env } from '@/env.mjs';
 import { ApiActionResponse } from '@/types/api/api-action.type';
 
-
-
-
-
 export type PublicActionContext = {
   locale: string;
   email: string;

@@ -4,7 +4,7 @@ import localFont from 'next/font/local';
 import { notFound } from 'next/navigation';
 import { GlobalProvider } from '@/contexts/global';
 import { routing } from '@/i18n/routing';
-import { hasLocale, NextIntlClientProvider } from 'next-intl';
+import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { Analytics } from '@vercel/analytics/next';
 
@@ -12,10 +12,6 @@ import { host } from '@/config/host';
 import { siteConfig } from '@/config/site';
 import { getTranslations } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
-
-
-// export const dynamic = 'force-static';
-
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -66,7 +62,6 @@ export async function generateMetadata({
       title: `${t('title')} | Byte of me`,
       description: t('description'),
       siteName: 'Byte of me',
-
     },
     twitter: {
       card: 'summary_large_image',
@@ -115,7 +110,6 @@ export default async function LocaleLayout({
     notFound();
   }
   const messages = await getMessages();
-
 
   return (
     <html lang={locale} suppressHydrationWarning>

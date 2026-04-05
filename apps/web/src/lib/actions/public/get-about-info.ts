@@ -12,8 +12,13 @@ import {
   withPublicActionHandler,
 } from './public-action-template';
 
-
-export async function getAboutInfo(): Promise<ApiActionResponse<{ userProfile: UserProfile; techStacks: TechStack[]; educations: Education[] }>> {
+export async function getAboutInfo(): Promise<
+  ApiActionResponse<{
+    userProfile: UserProfile;
+    techStacks: TechStack[];
+    educations: Education[];
+  }>
+> {
   return handlePublicAction('getAboutInfo', async () => {
     const data = await withPublicActionHandler(
       'getAboutInfo',

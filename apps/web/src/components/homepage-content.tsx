@@ -56,7 +56,6 @@ export function HomepageContent({
       {/* ABOUT / MY STORY */}
       <motion.section
         id="about"
-        // Conditional grid layout: If no quote, use 1 column and center it
         className={`grid gap-10 md:gap-14 items-start ${
           hasQuote ? 'md:grid-cols-2' : 'max-w-3xl mx-auto grid-cols-1'
         }`}

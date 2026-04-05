@@ -11,10 +11,9 @@ import {
   withPublicActionHandler,
 } from './public-action-template';
 
-
-export async function getUserInfoForFooter(
-  email: string
-): Promise<ApiActionResponse<{ profile: UserProfile; socialLinks: SocialLink[]  }>> {
+export async function getUserInfoForFooter(): Promise<
+  ApiActionResponse<{ profile: UserProfile; socialLinks: SocialLink[] }>
+> {
   return handlePublicAction('getUserInfoForFooter', async () => {
     const data = await withPublicActionHandler(
       'getUserInfoForFooter',

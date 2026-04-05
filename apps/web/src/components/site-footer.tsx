@@ -1,21 +1,19 @@
 import { Link } from '@/i18n/navigation';
 import { Mail } from 'lucide-react';
 
-import { globalConfig, Routes } from '@/config/global';
-import { siteConfig } from '@/config/site';
+import { Routes, globalConfig } from '@/config/global';
 import { getUserInfoForFooter } from '@/lib/actions/public/get-user-info-for-footer';
 import { getTranslations } from '@/lib/i18n';
 import { cn, ensureValidUrl } from '@/lib/utils';
 
 import { Icons } from './icons';
 
-
 type SiteFooterProps = React.HTMLAttributes<HTMLElement>;
 
 export async function SiteFooter({ className }: SiteFooterProps) {
   const [t, resp] = await Promise.all([
     getTranslations('global.footer'),
-    getUserInfoForFooter(siteConfig.email),
+    getUserInfoForFooter(),
   ]);
 
   if (!resp.success) return null;

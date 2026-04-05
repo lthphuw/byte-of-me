@@ -2,10 +2,6 @@ import { ImageResponse } from 'next/og';
 
 import { host } from '@/config/host';
 
-
-
-
-
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -30,7 +26,7 @@ export async function GET(request: Request) {
           }}
         >
           <img
-            src={`${host}/images/avatars/HaNoi2024.jpeg`}
+            src={`${host}/images/og/og.jpeg`}
             width={160}
             height={160}
             style={{ borderRadius: '50%', marginBottom: '40px' }}

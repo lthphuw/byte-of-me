@@ -9,6 +9,7 @@ export default async function ContactPage() {
   }
 
   const socialLinks = resp.data.socialLinks || [];
+  const userId = socialLinks?.[0]?.userId;
 
   const githubLink = socialLinks.find((it) => it.platform === 'github')?.url;
   const linkedInLink = socialLinks.find(
@@ -16,7 +17,6 @@ export default async function ContactPage() {
   )?.url;
   const emailLink = socialLinks.find((it) => it.platform === 'email')?.url;
 
-  const userId = socialLinks[0].userId;
   return (
     <ContactShell>
       <ContactContent
