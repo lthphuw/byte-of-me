@@ -169,6 +169,12 @@ declare const messages: {
   },
   "experience": {
     "updating": "Updating..."
+  },
+  "components": {
+    "expandableText": {
+      "showLess": "Show less",
+      "showMore": "Show more"
+    }
   }
 };
 export default messages;

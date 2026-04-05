@@ -176,6 +176,12 @@ declare const messages: {
   },
   "experience": {
     "updating": "Đang cập nhật..."
+  },
+  "components": {
+    "expandableText": {
+      "showLess": "Thu gọn",
+      "showMore": "Xem thêm"
+    }
   }
 };
 export default messages;

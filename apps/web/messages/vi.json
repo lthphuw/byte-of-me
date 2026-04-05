@@ -173,5 +173,11 @@
   },
   "experience": {
     "updating": "Đang cập nhật..."
+  },
+  "components": {
+    "expandableText": {
+      "showLess": "Thu gọn",
+      "showMore": "Xem thêm"
+    }
   }
 }

@@ -54,7 +54,7 @@ export function AboutContent({ userProfile, techStacks, educations }: Props) {
                 {t('about.section.aboutMe')}
               </h2>
             </div>
-            <div className="pl-0 border-l border-border/40 ml-0.5">
+            <div className="pl-0 ml-0.5">
               <RichText content={userProfile.aboutMe} />
             </div>
           </motion.section>
