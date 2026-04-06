@@ -76,7 +76,9 @@ export function ContactContent({
         flex
         items-center
         justify-center
-        px-4
+        px-0
+        md:px-6
+        py-8
       "
     >
       <div className="w-full max-w-md space-y-8">

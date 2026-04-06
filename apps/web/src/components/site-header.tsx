@@ -15,7 +15,7 @@ import { ModeToggle } from './mode-toggle';
 const SCROLL_THRESHOLD = 50;
 const COMPACT_BORDER_RADIUS = 16;
 const COMPACT_TOP_OFFSET = 32;
-const COMPACT_X_OFFSET = 48;
+const COMPACT_X_OFFSET = 32;
 const COMPACT_WIDTH_OFFSET = 48;
 const COMPACT_HEIGHT = 56;
 const DEFAULT_HEIGHT = 64;
@@ -40,7 +40,8 @@ export function SiteHeader() {
     ? `calc(${headerWidth}px + ${COMPACT_WIDTH_OFFSET}px)`
     : '100%';
 
-  const shadowOpacity = (Math.min(scrollY / SHADOW_TRANSITION_THRESHOLD, 1) * 0.1);
+  const shadowOpacity =
+    Math.min(scrollY / SHADOW_TRANSITION_THRESHOLD, 1) * 0.1;
 
   const boxShadow = (() => {
     const color = resolvedTheme === 'dark' ? '255,255,255' : '0,0,0';

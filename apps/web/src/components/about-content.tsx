@@ -39,7 +39,7 @@ export function AboutContent({ userProfile, techStacks, educations }: Props) {
   const t = useTranslations();
 
   return (
-    <div className="flex justify-center px-4 md:px-8 py-12">
+    <div className="flex justify-center px-0 md:px-8 py-8">
       <motion.div
         variants={containerVariants}
         initial="hidden"

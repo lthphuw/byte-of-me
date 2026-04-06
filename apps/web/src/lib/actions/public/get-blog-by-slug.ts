@@ -1,3 +1,5 @@
+'use server';
+
 import { Blog } from '@/models/blog';
 import { Project } from '@/models/project';
 

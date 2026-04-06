@@ -5,7 +5,7 @@ import { AboutShell } from '@/components/shell';
 export default function AboutLoading() {
   return (
     <AboutShell>
-      <div className="flex w-full flex-col gap-8  px-4 md:px-8 py-12">
+      <div className="flex w-full flex-col gap-8  px-0 md:px-8 py-12">
         <Skeleton className={cn('w-full h-20')} />
         <Skeleton className={cn('w-full h-12')} />
 

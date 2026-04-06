@@ -32,6 +32,7 @@ export function RichText({ content, className, style }: RichTextProps) {
   return (
     <div
       className={cn(
+        'break-words [word-break:break-word] [overflow-wrap:anywhere]',
         'font-normal leading-7 text-neutral-800 dark:text-neutral-200',
 
         'prose prose-neutral dark:prose-invert max-w-none',

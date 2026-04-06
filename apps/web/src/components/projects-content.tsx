@@ -71,7 +71,7 @@ export function ProjectsContent({
   };
 
   return (
-    <div className="container px-4 py-8 md:px-6 flex flex-col gap-6 md:gap-8">
+    <div className="container px-0 py-8 md:px-6 flex flex-col gap-6 md:gap-8">
       <ProjectFilter
         tags={tags}
         techStacks={techStacks}

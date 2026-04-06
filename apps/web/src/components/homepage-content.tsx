@@ -35,7 +35,7 @@ export function HomepageContent({
   return (
     <main
       id="home"
-      className="mx-auto max-w-6xl px-4 md:px-8 py-14 md:py-20 space-y-16 md:space-y-28"
+      className="mx-auto max-w-6xl px-0 md:px-8 py-14 md:py-20 space-y-16 md:space-y-28"
     >
       {/* HERO / GREETING */}
       <motion.section

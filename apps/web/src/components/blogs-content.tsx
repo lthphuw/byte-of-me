@@ -19,10 +19,7 @@ interface BlogsContentProps {
   tags: Tag[];
 }
 
-export function BlogsContent({
-  initBlogs,
-  tags,
-}: BlogsContentProps) {
+export function BlogsContent({ initBlogs, tags }: BlogsContentProps) {
   const t = useTranslations();
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState({
@@ -58,9 +55,8 @@ export function BlogsContent({
     }));
   };
 
-
   return (
-    <div className="container px-4 py-8 md:px-6 flex flex-col gap-6 md:gap-8">
+    <div className="container px-0 py-8 md:px-6 flex flex-col gap-6 md:gap-8">
       <BlogFilter
         tags={tags}
         value={filters}
