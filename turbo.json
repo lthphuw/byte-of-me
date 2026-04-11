@@ -11,7 +11,6 @@
         "DIRECT_URL",
         "AUTH_URL",
         "AUTH_SECRET",
-        "CHECKPOINTER_SCHEMA",
         "EMAIL_SERVER_HOST",
         "EMAIL_SERVER_PORT",
         "EMAIL_SERVER_USER",
@@ -23,7 +22,8 @@
         "SUPABASE_S3_STORAGE_ACCESS_KEY",
         "SUPABASE_S3_STORAGE_SECRET_KEY",
         "SUPABASE_S3_STORAGE_BUCKET",
-        "EMAIL"
+        "EMAIL",
+        "AUTHOR_ID"
       ]
     },
     "db:migrate:dev": {
