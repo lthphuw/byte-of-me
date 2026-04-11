@@ -151,7 +151,7 @@ export type AchievementOnMediasGroupByOutputType = {
   _max: AchievementOnMediasMaxAggregateOutputType | null
 }
 
-type GetAchievementOnMediasGroupByPayload<T extends AchievementOnMediasGroupByArgs> = Prisma.PrismaPromise<
+export type GetAchievementOnMediasGroupByPayload<T extends AchievementOnMediasGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<AchievementOnMediasGroupByOutputType, T['by']> &
       {
@@ -1207,6 +1207,11 @@ export type AchievementOnMediasFindManyArgs<ExtArgs extends runtime.Types.Extens
    * Skip the first `n` AchievementOnMedias.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of AchievementOnMedias.
+   */
   distinct?: Prisma.AchievementOnMediasScalarFieldEnum | Prisma.AchievementOnMediasScalarFieldEnum[]
 }
 

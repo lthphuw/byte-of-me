@@ -227,7 +227,7 @@ export type BlogStatisticLogGroupByOutputType = {
   _max: BlogStatisticLogMaxAggregateOutputType | null
 }
 
-type GetBlogStatisticLogGroupByPayload<T extends BlogStatisticLogGroupByArgs> = Prisma.PrismaPromise<
+export type GetBlogStatisticLogGroupByPayload<T extends BlogStatisticLogGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BlogStatisticLogGroupByOutputType, T['by']> &
       {
@@ -1491,6 +1491,11 @@ export type BlogStatisticLogFindManyArgs<ExtArgs extends runtime.Types.Extension
    * Skip the first `n` BlogStatisticLogs.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of BlogStatisticLogs.
+   */
   distinct?: Prisma.BlogStatisticLogScalarFieldEnum | Prisma.BlogStatisticLogScalarFieldEnum[]
 }
 

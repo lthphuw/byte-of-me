@@ -1,4 +1,4 @@
-import { TagManager } from '@/components/tag-manager';
+import { TagManager } from '@/widgets/tag-manager/ui';
 
 export const metadata = { title: 'Tags' };
 

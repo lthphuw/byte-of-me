@@ -3,14 +3,13 @@
 // Error boundaries must be Client Components
 import { useCallback, useEffect, useMemo } from 'react';
 import { Link } from '@/i18n/navigation';
+import { Routes } from '@/shared/config/global';
+import { cn, prettyStringify } from '@/shared/lib/utils';
+import { Button } from '@/shared/ui/button';
+import GoBackButton from '@/shared/ui/go-back';
+import { Icons } from '@/shared/ui/icons';
 import { useClipboard } from '@mantine/hooks';
 import { useTranslations } from 'next-intl';
-
-import { Routes } from '@/config/global';
-import { cn, prettyStringify } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import GoBackButton from '@/components/go-back';
-import { Icons } from '@/components/icons';
 
 export default function Error({
   error,
@@ -96,7 +95,7 @@ export default function Error({
                 onClick={handleCopyError}
               >
                 <Icons.report className="w-4 h-4" />
-              {t('reportForMe')}
+                {t('reportForMe')}
               </Button>
             </Link>
           </div>

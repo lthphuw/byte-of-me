@@ -1,20 +1,15 @@
-import { getUserProfileWithRecentProjects } from '@/lib/actions/public/get-user-profile-with-recent-projects';
-import { HomepageContent } from '@/components/homepage-content';
-import { HomeShell } from '@/components/shell';
+import { LocaleType } from '@/shared/types';
+import { HomepageContent } from '@/widgets/homepage-content/ui';
+import { setRequestLocale } from 'next-intl/server';
 
-export default async function HomePage() {
-  const res = await getUserProfileWithRecentProjects();
-  if (!res.success) {
-    return (
-      <HomeShell>
-        <div className="p-4">Failed to load homepage content.</div>
-      </HomeShell>
-    );
-  }
+interface HomePageProps {
+  params: Promise<{ locale: string }>;
+}
 
-  return (
-    <HomeShell>
-      <HomepageContent {...res.data} />
-    </HomeShell>
-  );
+export default async function HomePage({ params }: HomePageProps) {
+  const { locale } = await params;
+
+  setRequestLocale(locale as LocaleType);
+
+  return <HomepageContent />;
 }

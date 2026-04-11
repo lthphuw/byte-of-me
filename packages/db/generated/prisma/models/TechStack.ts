@@ -220,7 +220,7 @@ export type TechStackGroupByOutputType = {
   _max: TechStackMaxAggregateOutputType | null
 }
 
-type GetTechStackGroupByPayload<T extends TechStackGroupByArgs> = Prisma.PrismaPromise<
+export type GetTechStackGroupByPayload<T extends TechStackGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<TechStackGroupByOutputType, T['by']> &
       {
@@ -1697,6 +1697,11 @@ export type TechStackFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Skip the first `n` TechStacks.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of TechStacks.
+   */
   distinct?: Prisma.TechStackScalarFieldEnum | Prisma.TechStackScalarFieldEnum[]
 }
 

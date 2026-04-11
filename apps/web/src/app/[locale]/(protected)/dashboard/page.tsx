@@ -1,8 +1,8 @@
-import { getDashboardStats } from '@/lib/actions/dashboard/statistic/get-dashboard-stats';
-import { getUserProfile } from '@/lib/actions/dashboard/user/get-user-profile';
-import { Separator } from '@/components/ui/separator';
-import { ContactMessageGallery } from '@/components/contact-message-gallery';
-import { StatsGrid } from '@/components/stats-grid';
+import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
+import { getDashboardStats } from '@/features/dashboard/dashboard-stats/lib/get-dashboard-stats';
+import { StatsGrid } from '@/features/dashboard/dashboard-stats/ui/stats-grid';
+import { Separator } from '@/shared/ui/separator';
+import { ContactMessageGallery } from '@/widgets/contact-message-gallery/ui/contact-message-gallery';
 
 export default async function DashboardPage() {
   const [user, statsResponse] = await Promise.all([

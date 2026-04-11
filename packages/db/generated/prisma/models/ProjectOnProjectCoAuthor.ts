@@ -151,7 +151,7 @@ export type ProjectOnProjectCoAuthorGroupByOutputType = {
   _max: ProjectOnProjectCoAuthorMaxAggregateOutputType | null
 }
 
-type GetProjectOnProjectCoAuthorGroupByPayload<T extends ProjectOnProjectCoAuthorGroupByArgs> = Prisma.PrismaPromise<
+export type GetProjectOnProjectCoAuthorGroupByPayload<T extends ProjectOnProjectCoAuthorGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ProjectOnProjectCoAuthorGroupByOutputType, T['by']> &
       {
@@ -1207,6 +1207,11 @@ export type ProjectOnProjectCoAuthorFindManyArgs<ExtArgs extends runtime.Types.E
    * Skip the first `n` ProjectOnProjectCoAuthors.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of ProjectOnProjectCoAuthors.
+   */
   distinct?: Prisma.ProjectOnProjectCoAuthorScalarFieldEnum | Prisma.ProjectOnProjectCoAuthorScalarFieldEnum[]
 }
 

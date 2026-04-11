@@ -206,7 +206,7 @@ export type SocialLinkGroupByOutputType = {
   _max: SocialLinkMaxAggregateOutputType | null
 }
 
-type GetSocialLinkGroupByPayload<T extends SocialLinkGroupByArgs> = Prisma.PrismaPromise<
+export type GetSocialLinkGroupByPayload<T extends SocialLinkGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<SocialLinkGroupByOutputType, T['by']> &
       {
@@ -1250,6 +1250,11 @@ export type SocialLinkFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Skip the first `n` SocialLinks.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of SocialLinks.
+   */
   distinct?: Prisma.SocialLinkScalarFieldEnum | Prisma.SocialLinkScalarFieldEnum[]
 }
 

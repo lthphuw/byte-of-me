@@ -1,21 +1,22 @@
-import { getCompanies } from '@/lib/actions/public/get-companies';
-import { ExperienceContent } from '@/components/experience-content';
-import { ExperienceShell } from '@/components/shell';
+import { routing } from '@/i18n/routing';
+import { LocaleType } from '@/shared/types';
+import { ExperienceContent } from '@/widgets/experience-content/ui/experience-content';
+import { setRequestLocale } from 'next-intl/server';
 
-export default async function ExperiencesPage() {
-  const companiesResp = await getCompanies();
+interface ExperiencesPageProps {
+  params: Promise<{ locale: string }>;
+}
 
-  if (!companiesResp.success) {
-    return (
-      <ExperienceShell>
-        <div className="p-4">Failed to load experience data.</div>
-      </ExperienceShell>
-    );
-  }
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
-  return (
-    <ExperienceShell>
-      <ExperienceContent companies={companiesResp.data}/>
-    </ExperienceShell>
-  );
+export default async function ExperiencesPage({
+  params,
+}: ExperiencesPageProps) {
+  const { locale } = await params;
+
+  setRequestLocale(locale as LocaleType);
+
+  return <ExperienceContent />;
 }

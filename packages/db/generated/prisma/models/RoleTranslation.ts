@@ -172,7 +172,7 @@ export type RoleTranslationGroupByOutputType = {
   _max: RoleTranslationMaxAggregateOutputType | null
 }
 
-type GetRoleTranslationGroupByPayload<T extends RoleTranslationGroupByArgs> = Prisma.PrismaPromise<
+export type GetRoleTranslationGroupByPayload<T extends RoleTranslationGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<RoleTranslationGroupByOutputType, T['by']> &
       {
@@ -1198,6 +1198,11 @@ export type RoleTranslationFindManyArgs<ExtArgs extends runtime.Types.Extensions
    * Skip the first `n` RoleTranslations.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of RoleTranslations.
+   */
   distinct?: Prisma.RoleTranslationScalarFieldEnum | Prisma.RoleTranslationScalarFieldEnum[]
 }
 

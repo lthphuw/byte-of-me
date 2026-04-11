@@ -2,16 +2,23 @@ import { Metadata, Viewport } from 'next';
 import { Inter as FontSans } from 'next/font/google';
 import localFont from 'next/font/local';
 import { notFound } from 'next/navigation';
-import { GlobalProvider } from '@/contexts/global';
 import { routing } from '@/i18n/routing';
-import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { host } from '@/shared/config/host';
+import { siteConfig } from '@/shared/config/site';
+import { cn } from '@/shared/lib/utils';
 import { Analytics } from '@vercel/analytics/next';
+import { NextIntlClientProvider, hasLocale } from 'next-intl';
+import {
+  getMessages,
+  getTranslations,
+  setRequestLocale,
+} from 'next-intl/server';
 
-import { host } from '@/config/host';
-import { siteConfig } from '@/config/site';
-import { getTranslations } from '@/lib/i18n';
-import { cn } from '@/lib/utils';
+import { GlobalProvider } from '@/app/providers/global-provider';
+
+
+
+
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -19,20 +26,29 @@ const fontSans = FontSans({
   preload: true,
 });
 
-// Font files can be colocated inside `pages`
 const fontHeading = localFont({
-  src: '../../assets/fonts/CalSans-SemiBold.woff2',
+  src: '../assets/fonts/CalSans-SemiBold.woff2',
   variable: '--font-heading',
   preload: true,
 });
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
-  const t = await getTranslations('metadata');
   const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+
+  setRequestLocale(locale);
+
+  const t = await getTranslations('metadata');
   const url = `${host}/${locale}`;
 
   return {
@@ -106,9 +122,13 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+
   if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
+
+  setRequestLocale(locale);
+
   const messages = await getMessages();
 
   return (

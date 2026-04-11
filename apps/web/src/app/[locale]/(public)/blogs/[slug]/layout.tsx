@@ -1,8 +1,7 @@
 import { Metadata } from 'next';
-
-import { host } from '@/config/host';
-import { siteConfig } from '@/config/site';
-import { getBlogBySlug } from '@/lib/actions/public/get-blog-by-slug';
+import { getPublicBlogBySlug } from '@/entities/blog/api/get-public-blog-by-slug';
+import { host } from '@/shared/config/host';
+import { siteConfig } from '@/shared/config/site';
 
 export async function generateMetadata({
   params,
@@ -10,7 +9,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const { data: blog, success } = await getBlogBySlug(slug);
+  const { data: blog, success } = await getPublicBlogBySlug(slug);
 
   const url = `${host}/${locale}/blogs/${slug}`;
   if (!success) {

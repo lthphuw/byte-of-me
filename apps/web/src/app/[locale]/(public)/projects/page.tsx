@@ -1,42 +1,20 @@
-import { getTranslations } from 'next-intl/server';
+import { routing } from '@/i18n/routing';
+import { LocaleType } from '@/shared/types';
+import { ProjectsContent } from '@/widgets/projects-content/ui/projects-content';
+import { setRequestLocale } from 'next-intl/server';
 
-import { getDataForProjectsPage } from '@/lib/actions/public/get-data-for-projects-page';
-import { getPaginatedPublicProjects } from '@/lib/actions/public/get-public-projects';
-import { ProjectsContent } from '@/components/projects-content';
-import { ProjectsShell } from '@/components/shell';
+interface ProjectsPageProps {
+  params: Promise<{ locale: string }>;
+}
 
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
+export default async function ProjectsPage({ params }: ProjectsPageProps) {
+  const { locale } = await params;
 
+  setRequestLocale(locale as LocaleType);
 
-
-export default async function ProjectsPage() {
-  const t = await getTranslations('project');
-
-  const [dataResp, projectsResp] = await Promise.all([
-    getDataForProjectsPage(),
-    getPaginatedPublicProjects({
-      page: 1,
-      limit: 12,
-    }),
-  ]);
-
-  if (!dataResp.success || !projectsResp.success) {
-    return (
-      <ProjectsShell>
-        <div className="p-4">
-          <p className="text-red-500">{t('failedToLoadProjectList')}</p>
-        </div>
-      </ProjectsShell>
-    );
-  }
-
-  return (
-    <ProjectsShell>
-      <ProjectsContent
-        initProjects={projectsResp.data}
-        techStacks={dataResp.data.techStacks}
-        tags={dataResp.data.tags}
-      />
-    </ProjectsShell>
-  );
+  return <ProjectsContent />;
 }

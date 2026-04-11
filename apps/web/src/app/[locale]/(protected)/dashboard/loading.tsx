@@ -1,4 +1,4 @@
-import Loading from '@/components/loading';
+import Loading from '@/shared/ui/loading';
 
 export default function HomeLoading() {
   return (

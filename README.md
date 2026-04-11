@@ -43,7 +43,7 @@
 
 ---
 
-## About the Project
+## About the PublicProject
 **Byte of Me** is a high-performance developer portfolio designed to showcase technical expertise, blogs, and projects. It utilizes a modern monorepo architecture to separate concerns between the frontend, database logic, and storage services.
 
 ### Core Features
@@ -79,7 +79,8 @@
     Visit `http://localhost:3000` to see the site in action.
 
 5.  **Deployment**:
-    The project is optimized for **Vercel**. Ensure all environment variables from the sub-modules are mapped in your Vercel project settings.
+    The projectSchema is optimized for **Vercel**. Ensure all environment variables from the sub-modules are mapped in
+    your Vercel projectSchema settings.
 
 ## License
 Licensed under the [MIT License](./LICENSE.md).

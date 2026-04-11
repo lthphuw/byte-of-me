@@ -228,7 +228,7 @@ export type UserProfileTranslationGroupByOutputType = {
   _max: UserProfileTranslationMaxAggregateOutputType | null
 }
 
-type GetUserProfileTranslationGroupByPayload<T extends UserProfileTranslationGroupByArgs> = Prisma.PrismaPromise<
+export type GetUserProfileTranslationGroupByPayload<T extends UserProfileTranslationGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<UserProfileTranslationGroupByOutputType, T['by']> &
       {
@@ -1478,6 +1478,11 @@ export type UserProfileTranslationFindManyArgs<ExtArgs extends runtime.Types.Ext
    * Skip the first `n` UserProfileTranslations.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of UserProfileTranslations.
+   */
   distinct?: Prisma.UserProfileTranslationScalarFieldEnum | Prisma.UserProfileTranslationScalarFieldEnum[]
 }
 

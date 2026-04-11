@@ -1,15 +1,10 @@
 import { MetadataRoute } from 'next';
 import { getPathname } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
+import { host } from '@/shared/config/host';
+import { sitemapConfig } from '@/shared/config/sitemap';
 import { prisma } from '@byte-of-me/db';
 import { Locale } from 'next-intl';
-
-import { host } from '@/config/host';
-import { sitemapConfig } from '@/config/sitemap';
-
-
-
-
 
 async function getDynamicRoutes(): Promise<string[]> {
   const projects = await prisma.project.findMany({

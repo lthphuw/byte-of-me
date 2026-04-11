@@ -1,11 +1,7 @@
+import React from 'react';
 import { redirect } from 'next/navigation';
-
-import { getAuthenticatedUser } from '@/lib/auth/session';
-import { SiteFooter } from '@/components/site-footer';
-
-
-
-
+import { getAuthenticatedUser } from '@/features/auth/lib/session';
+import { PublicSiteFooter } from '@/widgets/public-site-footer/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,11 +16,12 @@ export default async function AuthLayout({ children }: AuthLayoutProps) {
   }
 
   return (
-    <div className="flex relative min-h-screen flex-col overflow-hidden">
-      <div className="container grid flex-1 gap-12">
-        <main className="flex w-full flex-1 flex-col">{children}</main>
+    <div className="flex h-screen flex-col overflow-hidden">
+      <div className="container relative flex flex-1 flex-col">
+        <main className="flex flex-1 flex-col">{children}</main>
       </div>
-      <SiteFooter className="border-t" />
+
+      <PublicSiteFooter/>
     </div>
   );
 }

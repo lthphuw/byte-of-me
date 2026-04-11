@@ -151,7 +151,7 @@ export type TechStackOnCompaniesGroupByOutputType = {
   _max: TechStackOnCompaniesMaxAggregateOutputType | null
 }
 
-type GetTechStackOnCompaniesGroupByPayload<T extends TechStackOnCompaniesGroupByArgs> = Prisma.PrismaPromise<
+export type GetTechStackOnCompaniesGroupByPayload<T extends TechStackOnCompaniesGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<TechStackOnCompaniesGroupByOutputType, T['by']> &
       {
@@ -1207,6 +1207,11 @@ export type TechStackOnCompaniesFindManyArgs<ExtArgs extends runtime.Types.Exten
    * Skip the first `n` TechStackOnCompanies.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of TechStackOnCompanies.
+   */
   distinct?: Prisma.TechStackOnCompaniesScalarFieldEnum | Prisma.TechStackOnCompaniesScalarFieldEnum[]
 }
 

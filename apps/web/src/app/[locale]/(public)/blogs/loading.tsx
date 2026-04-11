@@ -1,10 +1,10 @@
-import { cn } from '@/lib/utils';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ProjectsShell } from '@/components/shell';
+import { cn } from '@/shared/lib/utils';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { BlogsShell } from '@/widgets/blogs-content/ui';
 
-export default function ProjectsLoading() {
+export default function BlogsLoading() {
   return (
-    <ProjectsShell>
+    <BlogsShell>
       <div className="container flex flex-col items-stretch mx-auto px-4 py-8">
         <Skeleton className={cn('w-full h-16')} />
         <Skeleton className={cn('mt-4 w-full h-10')} />
@@ -22,6 +22,6 @@ export default function ProjectsLoading() {
           )}
         </div>
       </div>
-    </ProjectsShell>
+    </BlogsShell>
   );
 }

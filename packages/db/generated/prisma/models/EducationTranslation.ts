@@ -172,7 +172,7 @@ export type EducationTranslationGroupByOutputType = {
   _max: EducationTranslationMaxAggregateOutputType | null
 }
 
-type GetEducationTranslationGroupByPayload<T extends EducationTranslationGroupByArgs> = Prisma.PrismaPromise<
+export type GetEducationTranslationGroupByPayload<T extends EducationTranslationGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<EducationTranslationGroupByOutputType, T['by']> &
       {
@@ -1198,6 +1198,11 @@ export type EducationTranslationFindManyArgs<ExtArgs extends runtime.Types.Exten
    * Skip the first `n` EducationTranslations.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of EducationTranslations.
+   */
   distinct?: Prisma.EducationTranslationScalarFieldEnum | Prisma.EducationTranslationScalarFieldEnum[]
 }
 

@@ -10,12 +10,11 @@
     }
   },
   "include": [
-    "src/types",
+    "src/shared/types",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    ".contentlayer/generated",
     "next.config.js"
   ],
   "exclude": [

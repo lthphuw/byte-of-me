@@ -158,7 +158,7 @@ export type CoauthorGroupByOutputType = {
   _max: CoauthorMaxAggregateOutputType | null
 }
 
-type GetCoauthorGroupByPayload<T extends CoauthorGroupByArgs> = Prisma.PrismaPromise<
+export type GetCoauthorGroupByPayload<T extends CoauthorGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<CoauthorGroupByOutputType, T['by']> &
       {
@@ -1088,6 +1088,11 @@ export type CoauthorFindManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Skip the first `n` Coauthors.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Coauthors.
+   */
   distinct?: Prisma.CoauthorScalarFieldEnum | Prisma.CoauthorScalarFieldEnum[]
 }
 

@@ -146,6 +146,10 @@
   "blogDetails": {
     "failedToLoadBlog": "Không thể tải bài viết",
     "readingTime": "{time} phút đọc",
+    "blogNotFoundTitle": "Không tìm thấy bài viết",
+    "blogNotFoundDescription": "Rất tiếc, bài viết bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
+    "backToBlogs": "Quay lại danh sách blog",
+    "goHome": "Về trang chủ",
     "relatedProject": "Dự án liên quan",
     "viewProject": "Xem dự án"
   },
@@ -165,6 +169,7 @@
     "aFewThingsIveBuiltRecently": "Một vài sản phẩm tôi đã thực hiện gần đây",
     "viewProject": "Xem dự án",
     "viewAllProjects": "Xem tất cả dự án",
+    "thereAreNoProjectsYet": "Hiện chưa có dự án nào",
     "haveAnIdeaInMind": "Bạn đang có một ý tưởng?",
     "alwaysInterestedInThoughtfulProjectsAndGoodCollaboration": "Tôi luôn hứng thú với những dự án được đầu tư nghiêm túc và sự hợp tác chất lượng.",
     "letsWorkTogether": "Cùng hợp tác",
