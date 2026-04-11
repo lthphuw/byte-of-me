@@ -1,8 +1,5 @@
-import deepmerge from 'deepmerge';
 import { hasLocale } from 'next-intl';
 import { getRequestConfig } from 'next-intl/server';
-
-import { getAllTranslations } from '@/lib/actions/dashboard/translation/get-all-translations';
 
 import { routing } from './routing';
 
@@ -12,7 +9,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     ? requested
     : routing.defaultLocale;
 
-  const [staticMessages, dynamicMessages] = await Promise.all([
+  const [staticMessages] = await Promise.all([
     // Static JSON
     (async () => {
       try {
@@ -23,28 +20,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
         return {};
       }
     })(),
-
-    // Dynamic DB
-    (async () => {
-      try {
-        const res = await getAllTranslations(locale);
-        if (!res.success) return {};
-
-        const result: Record<string, any> = {};
-
-        for (const item of res.data) {
-          setDeep(result, item.sourceText, item.translated);
-        }
-
-        return result;
-      } catch (err) {
-        console.error('[i18n] Dynamic load error:', err);
-        return {};
-      }
-    })(),
   ]);
 
-  const messages = deepmerge(staticMessages, dynamicMessages);
+  const messages = staticMessages;
 
   return {
     locale,

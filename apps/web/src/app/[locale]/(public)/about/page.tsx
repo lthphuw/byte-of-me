@@ -1,21 +1,19 @@
-import { getAboutInfo } from '@/lib/actions/public/get-about-info';
-import { AboutContent } from '@/components/about-content';
-import { AboutShell } from '@/components/shell';
+import { routing } from '@/i18n/routing';
+import { LocaleType } from '@/shared/types';
+import { AboutContent } from '@/widgets/about-content/ui';
+import { setRequestLocale } from 'next-intl/server';
 
-export default async function AboutPage() {
-  const res = await getAboutInfo();
-  if (!res.success) {
-    return;
-  }
-  const { userProfile, techStacks = [], educations = [] } = res.data;
+interface AboutPageProps {
+  params: Promise<{ locale: string }>;
+}
 
-  return (
-    <AboutShell>
-      <AboutContent
-        userProfile={userProfile}
-        techStacks={techStacks}
-        educations={educations}
-      />
-    </AboutShell>
-  );
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+export default async function AboutPage({ params }: AboutPageProps) {
+  const { locale } = await params;
+
+  setRequestLocale(locale as LocaleType);
+
+  return <AboutContent />;
 }

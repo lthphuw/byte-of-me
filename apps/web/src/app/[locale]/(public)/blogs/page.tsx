@@ -1,33 +1,20 @@
-import { getTranslations } from 'next-intl/server';
+import { routing } from '@/i18n/routing';
+import { LocaleType } from '@/shared/types';
+import { BlogsContent } from '@/widgets/blogs-content/ui/blogs-content';
+import { setRequestLocale } from 'next-intl/server';
 
-import { getDataForBlogsPage } from '@/lib/actions/public/get-data-for-blogs-page';
-import { getPaginatedPublicBlogs } from '@/lib/actions/public/get-paginated-public-blogs';
-import { BlogsContent } from '@/components/blogs-content';
-import { BlogsShell } from '@/components/shell';
+interface BlogsPageProps {
+  params: Promise<{ locale: string }>;
+}
 
-export default async function BlogsPage() {
-  const t = await getTranslations('blog');
-  const [blogsResp, dataResp] = await Promise.all([
-    getPaginatedPublicBlogs({
-      page: 1,
-      limit: 9,
-    }),
-    getDataForBlogsPage(),
-  ]);
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
-  if (!dataResp.success || !blogsResp.success) {
-    return (
-      <BlogsShell>
-        <div className="p-4">
-          <p className="text-red-500">{t('failedToLoadBlogList')}</p>
-        </div>
-      </BlogsShell>
-    );
-  }
+export default async function BlogsPage({ params }: BlogsPageProps) {
+  const { locale } = await params;
 
-  return (
-    <BlogsShell>
-      <BlogsContent initBlogs={blogsResp.data} tags={dataResp.data.tags} />
-    </BlogsShell>
-  );
+  setRequestLocale(locale as LocaleType);
+
+  return <BlogsContent />;
 }

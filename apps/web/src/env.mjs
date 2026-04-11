@@ -3,13 +3,11 @@ import { z } from 'zod';
 
 export const env = createEnv({
   server: {
-    PRISMA_CACHE_SWR: z.coerce.number().default(86400),
-    PRISMA_CACHE_TTL: z.coerce.number().default(86400),
-
     DATABASE_URL: z.string().min(1),
     DIRECT_URL: z.string().min(1),
 
     EMAIL: z.string().email().default('lthphuw@gmail.com'),
+    AUTHOR_ID: z.string(),
 
     AUTH_URL: z.string(),
     AUTH_SECRET: z.string(),
@@ -47,6 +45,7 @@ export const env = createEnv({
     DIRECT_URL: process.env.DIRECT_URL,
 
     EMAIL: process.env.EMAIL,
+    AUTHOR_ID: process.env.AUTHOR_ID,
     NODE_ENV: process.env.NODE_ENV,
 
     AUTH_URL: process.env.AUTH_URL,

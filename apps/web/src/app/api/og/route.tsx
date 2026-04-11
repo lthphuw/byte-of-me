@@ -1,6 +1,5 @@
 import { ImageResponse } from 'next/og';
-
-import { host } from '@/config/host';
+import { host } from '@/shared/config/host';
 
 export async function GET(request: Request) {
   try {

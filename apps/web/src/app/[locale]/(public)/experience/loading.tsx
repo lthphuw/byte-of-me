@@ -1,6 +1,6 @@
-import { cn } from '@/lib/utils';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ExperienceShell } from '@/components/shell';
+import { cn } from '@/shared/lib/utils';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { ExperienceShell } from '@/widgets/experience-content/ui/experience-shell';
 
 export default function ExperienceLoading() {
   return (

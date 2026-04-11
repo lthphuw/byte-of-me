@@ -1,8 +1,7 @@
 import { Metadata } from 'next';
-
-import { host } from '@/config/host';
-import { siteConfig } from '@/config/site';
-import { getTranslations } from '@/lib/i18n';
+import { host } from '@/shared/config/host';
+import { siteConfig } from '@/shared/config/site';
+import { getTranslations } from 'next-intl/server';
 
 export async function generateMetadata({
   params,

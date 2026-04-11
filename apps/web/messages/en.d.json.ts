@@ -142,6 +142,10 @@ declare const messages: {
   "blogDetails": {
     "failedToLoadBlog": "Failed to load blog",
     "readingTime": "{time} min read",
+    "blogNotFoundTitle": "Blog Post Not Found",
+    "blogNotFoundDescription": "Sorry, the article you are looking for doesn't exist or has been moved.",
+    "backToBlogs": "Back to blogs",
+    "goHome": "Go to homepage",
     "relatedProject": "Related Project",
     "viewProject": "View project"
   },
@@ -161,6 +165,7 @@ declare const messages: {
     "aFewThingsIveBuiltRecently": "A few things I’ve built recently",
     "viewProject": "View project",
     "viewAllProjects": "View all projects",
+    "thereAreNoProjectsYet": "There are no projects yet",
     "haveAnIdeaInMind": "Have an idea in mind?",
     "alwaysInterestedInThoughtfulProjectsAndGoodCollaboration": "Always interested in thoughtful projects and good collaboration.",
     "letsWorkTogether": "Let’s work together",

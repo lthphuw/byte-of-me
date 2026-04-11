@@ -1,30 +1,20 @@
-import { getContacts } from '@/lib/actions/public/get-contacts';
-import { ContactContent } from '@/components/contact-content';
-import { ContactShell } from '@/components/shell';
+import { routing } from '@/i18n/routing';
+import { LocaleType } from '@/shared/types';
+import { ContactContent } from '@/widgets/contact-content/ui';
+import { setRequestLocale } from 'next-intl/server';
 
-export default async function ContactPage() {
-  const resp = await getContacts();
-  if (!resp.success) {
-    return <div>Error loading contact information.</div>;
-  }
+interface ContactPageProps {
+  params: Promise<{ locale: string }>;
+}
 
-  const socialLinks = resp.data.socialLinks || [];
-  const userId = socialLinks?.[0]?.userId;
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
-  const githubLink = socialLinks.find((it) => it.platform === 'github')?.url;
-  const linkedInLink = socialLinks.find(
-    (it) => it.platform === 'linkedIn'
-  )?.url;
-  const emailLink = socialLinks.find((it) => it.platform === 'email')?.url;
+export default async function ContactPage({ params }: ContactPageProps) {
+  const { locale } = await params;
 
-  return (
-    <ContactShell>
-      <ContactContent
-        userId={userId}
-        linkedIn={linkedInLink}
-        email={emailLink}
-        github={githubLink}
-      />
-    </ContactShell>
-  );
+  setRequestLocale(locale as LocaleType);
+
+  return <ContactContent />;
 }

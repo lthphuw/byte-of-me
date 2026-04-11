@@ -1,6 +1,6 @@
-import { cn } from '@/lib/utils';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ContactShell } from '@/components/shell';
+import { cn } from '@/shared/lib/utils';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { ContactShell } from '@/widgets/contact-content/ui/contact-shell';
 
 export default function ContactLoading() {
   return (

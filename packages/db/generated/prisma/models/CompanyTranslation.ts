@@ -165,7 +165,7 @@ export type CompanyTranslationGroupByOutputType = {
   _max: CompanyTranslationMaxAggregateOutputType | null
 }
 
-type GetCompanyTranslationGroupByPayload<T extends CompanyTranslationGroupByArgs> = Prisma.PrismaPromise<
+export type GetCompanyTranslationGroupByPayload<T extends CompanyTranslationGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<CompanyTranslationGroupByOutputType, T['by']> &
       {
@@ -1163,6 +1163,11 @@ export type CompanyTranslationFindManyArgs<ExtArgs extends runtime.Types.Extensi
    * Skip the first `n` CompanyTranslations.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of CompanyTranslations.
+   */
   distinct?: Prisma.CompanyTranslationScalarFieldEnum | Prisma.CompanyTranslationScalarFieldEnum[]
 }
 
