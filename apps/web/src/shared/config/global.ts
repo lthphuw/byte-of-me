@@ -1,4 +1,4 @@
-import { GlobalConfig } from '@/shared/types';
+import type { GlobalConfig } from '@/shared/types';
 
 export enum Routes {
   Homepage = '/',

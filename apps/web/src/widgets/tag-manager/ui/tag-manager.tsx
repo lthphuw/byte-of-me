@@ -1,6 +1,10 @@
 'use client';
 
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
+
 import { createTag, deleteTag, updateTag } from '@/entities/tag';
 import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
 import {
@@ -17,9 +21,6 @@ import { Button } from '@/shared/ui/button';
 import { Empty, EmptyDescription, EmptyHeader } from '@/shared/ui/empty';
 import Loading from '@/shared/ui/loading';
 import { Pagination } from '@/shared/ui/pagination';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { TagDialog } from './tag-dialog';
 
@@ -81,13 +82,13 @@ export function TagManager() {
             setOpen(true);
           }}
         >
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="mr-2 h-4 w-4" />
           Add Tag
         </Button>
       </div>
 
       {/* Improved Grid Layout */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start">
+      <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {isLoading ? (
           <div className="col-span-full flex items-center justify-center py-20">
             <Loading />
@@ -105,18 +106,18 @@ export function TagManager() {
           tags.map((tag: any) => (
             <div
               key={tag.id}
-              className="border rounded-lg p-3 flex justify-between items-center bg-card shadow-sm hover:shadow-md transition-shadow h-16"
+              className="bg-card flex h-16 items-center justify-between rounded-lg border p-3 shadow-sm transition-shadow hover:shadow-md"
             >
-              <div className="min-w-0 flex-1 mr-2">
-                <p className="font-medium text-sm truncate">
+              <div className="mr-2 min-w-0 flex-1">
+                <p className="truncate text-sm font-medium">
                   {tag.translations?.[0]?.name || tag.slug}
                 </p>
-                <p className="text-[10px] text-muted-foreground truncate uppercase tracking-wider">
+                <p className="text-muted-foreground truncate text-[10px] uppercase tracking-wider">
                   {tag.slug}
                 </p>
               </div>
 
-              <div className="flex gap-0.5 shrink-0">
+              <div className="flex shrink-0 gap-0.5">
                 <Button
                   size="icon"
                   variant="ghost"
@@ -126,15 +127,15 @@ export function TagManager() {
                     setOpen(true);
                   }}
                 >
-                  <Pencil className="w-3.5 h-3.5" />
+                  <Pencil className="h-3.5 w-3.5" />
                 </Button>
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                  className="text-destructive hover:bg-destructive/10 h-8 w-8"
                   onClick={() => setTagToDelete(tag.id)}
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>
             </div>

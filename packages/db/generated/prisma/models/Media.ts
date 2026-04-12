@@ -267,7 +267,7 @@ export type MediaWhereInput = {
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   companies?: Prisma.CompanyListRelationFilter
   techStacks?: Prisma.TechStackListRelationFilter
-  education?: Prisma.EducationListRelationFilter
+  educationSchema?: Prisma.EducationListRelationFilter
   educationAchiements?: Prisma.AchievementOnMediasListRelationFilter
   blogs?: Prisma.BlogListRelationFilter
 }
@@ -287,7 +287,7 @@ export type MediaOrderByWithRelationInput = {
   user?: Prisma.UserOrderByWithRelationInput
   companies?: Prisma.CompanyOrderByRelationAggregateInput
   techStacks?: Prisma.TechStackOrderByRelationAggregateInput
-  education?: Prisma.EducationOrderByRelationAggregateInput
+  educationSchema?: Prisma.EducationOrderByRelationAggregateInput
   educationAchiements?: Prisma.AchievementOnMediasOrderByRelationAggregateInput
   blogs?: Prisma.BlogOrderByRelationAggregateInput
 }
@@ -310,7 +310,7 @@ export type MediaWhereUniqueInput = Prisma.AtLeast<{
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   companies?: Prisma.CompanyListRelationFilter
   techStacks?: Prisma.TechStackListRelationFilter
-  education?: Prisma.EducationListRelationFilter
+  educationSchema?: Prisma.EducationListRelationFilter
   educationAchiements?: Prisma.AchievementOnMediasListRelationFilter
   blogs?: Prisma.BlogListRelationFilter
 }, "id" | "fileKey">
@@ -365,7 +365,7 @@ export type MediaCreateInput = {
   user?: Prisma.UserCreateNestedOneWithoutMediaInput
   companies?: Prisma.CompanyCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutLogoInput
-  education?: Prisma.EducationCreateNestedManyWithoutLogoInput
+  educationSchema?: Prisma.EducationCreateNestedManyWithoutLogoInput
   educationAchiements?: Prisma.AchievementOnMediasCreateNestedManyWithoutMediaInput
   blogs?: Prisma.BlogCreateNestedManyWithoutCoverImageInput
 }
@@ -384,7 +384,7 @@ export type MediaUncheckedCreateInput = {
   userId?: string | null
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutLogoInput
-  education?: Prisma.EducationUncheckedCreateNestedManyWithoutLogoInput
+  educationSchema?: Prisma.EducationUncheckedCreateNestedManyWithoutLogoInput
   educationAchiements?: Prisma.AchievementOnMediasUncheckedCreateNestedManyWithoutMediaInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutCoverImageInput
 }
@@ -403,7 +403,7 @@ export type MediaUpdateInput = {
   user?: Prisma.UserUpdateOneWithoutMediaNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutLogoNestedInput
-  education?: Prisma.EducationUpdateManyWithoutLogoNestedInput
+  educationSchema?: Prisma.EducationUpdateManyWithoutLogoNestedInput
   educationAchiements?: Prisma.AchievementOnMediasUpdateManyWithoutMediaNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutCoverImageNestedInput
 }
@@ -422,7 +422,7 @@ export type MediaUncheckedUpdateInput = {
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutLogoNestedInput
-  education?: Prisma.EducationUncheckedUpdateManyWithoutLogoNestedInput
+  educationSchema?: Prisma.EducationUncheckedUpdateManyWithoutLogoNestedInput
   educationAchiements?: Prisma.AchievementOnMediasUncheckedUpdateManyWithoutMediaNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutCoverImageNestedInput
 }
@@ -580,20 +580,20 @@ export type MediaUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.MediaScalarWhereInput | Prisma.MediaScalarWhereInput[]
 }
 
-export type MediaCreateNestedOneWithoutEducationInput = {
-  create?: Prisma.XOR<Prisma.MediaCreateWithoutEducationInput, Prisma.MediaUncheckedCreateWithoutEducationInput>
-  connectOrCreate?: Prisma.MediaCreateOrConnectWithoutEducationInput
+export type MediaCreateNestedOneWithoutEducationSchemaInput = {
+  create?: Prisma.XOR<Prisma.MediaCreateWithoutEducationSchemaInput, Prisma.MediaUncheckedCreateWithoutEducationSchemaInput>
+  connectOrCreate?: Prisma.MediaCreateOrConnectWithoutEducationSchemaInput
   connect?: Prisma.MediaWhereUniqueInput
 }
 
-export type MediaUpdateOneWithoutEducationNestedInput = {
-  create?: Prisma.XOR<Prisma.MediaCreateWithoutEducationInput, Prisma.MediaUncheckedCreateWithoutEducationInput>
-  connectOrCreate?: Prisma.MediaCreateOrConnectWithoutEducationInput
-  upsert?: Prisma.MediaUpsertWithoutEducationInput
+export type MediaUpdateOneWithoutEducationSchemaNestedInput = {
+  create?: Prisma.XOR<Prisma.MediaCreateWithoutEducationSchemaInput, Prisma.MediaUncheckedCreateWithoutEducationSchemaInput>
+  connectOrCreate?: Prisma.MediaCreateOrConnectWithoutEducationSchemaInput
+  upsert?: Prisma.MediaUpsertWithoutEducationSchemaInput
   disconnect?: Prisma.MediaWhereInput | boolean
   delete?: Prisma.MediaWhereInput | boolean
   connect?: Prisma.MediaWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.MediaUpdateToOneWithWhereWithoutEducationInput, Prisma.MediaUpdateWithoutEducationInput>, Prisma.MediaUncheckedUpdateWithoutEducationInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MediaUpdateToOneWithWhereWithoutEducationSchemaInput, Prisma.MediaUpdateWithoutEducationSchemaInput>, Prisma.MediaUncheckedUpdateWithoutEducationSchemaInput>
 }
 
 export type MediaCreateNestedOneWithoutEducationAchiementsInput = {
@@ -671,7 +671,7 @@ export type MediaCreateWithoutUserInput = {
   url: string
   companies?: Prisma.CompanyCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutLogoInput
-  education?: Prisma.EducationCreateNestedManyWithoutLogoInput
+  educationSchema?: Prisma.EducationCreateNestedManyWithoutLogoInput
   educationAchiements?: Prisma.AchievementOnMediasCreateNestedManyWithoutMediaInput
   blogs?: Prisma.BlogCreateNestedManyWithoutCoverImageInput
 }
@@ -689,7 +689,7 @@ export type MediaUncheckedCreateWithoutUserInput = {
   url: string
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutLogoInput
-  education?: Prisma.EducationUncheckedCreateNestedManyWithoutLogoInput
+  educationSchema?: Prisma.EducationUncheckedCreateNestedManyWithoutLogoInput
   educationAchiements?: Prisma.AchievementOnMediasUncheckedCreateNestedManyWithoutMediaInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutCoverImageInput
 }
@@ -737,7 +737,7 @@ export type MediaScalarWhereInput = {
   userId?: Prisma.StringNullableFilter<"Media"> | string | null
 }
 
-export type MediaCreateWithoutEducationInput = {
+export type MediaCreateWithoutEducationSchemaInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -755,7 +755,7 @@ export type MediaCreateWithoutEducationInput = {
   blogs?: Prisma.BlogCreateNestedManyWithoutCoverImageInput
 }
 
-export type MediaUncheckedCreateWithoutEducationInput = {
+export type MediaUncheckedCreateWithoutEducationSchemaInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -773,23 +773,23 @@ export type MediaUncheckedCreateWithoutEducationInput = {
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutCoverImageInput
 }
 
-export type MediaCreateOrConnectWithoutEducationInput = {
+export type MediaCreateOrConnectWithoutEducationSchemaInput = {
   where: Prisma.MediaWhereUniqueInput
-  create: Prisma.XOR<Prisma.MediaCreateWithoutEducationInput, Prisma.MediaUncheckedCreateWithoutEducationInput>
+  create: Prisma.XOR<Prisma.MediaCreateWithoutEducationSchemaInput, Prisma.MediaUncheckedCreateWithoutEducationSchemaInput>
 }
 
-export type MediaUpsertWithoutEducationInput = {
-  update: Prisma.XOR<Prisma.MediaUpdateWithoutEducationInput, Prisma.MediaUncheckedUpdateWithoutEducationInput>
-  create: Prisma.XOR<Prisma.MediaCreateWithoutEducationInput, Prisma.MediaUncheckedCreateWithoutEducationInput>
+export type MediaUpsertWithoutEducationSchemaInput = {
+  update: Prisma.XOR<Prisma.MediaUpdateWithoutEducationSchemaInput, Prisma.MediaUncheckedUpdateWithoutEducationSchemaInput>
+  create: Prisma.XOR<Prisma.MediaCreateWithoutEducationSchemaInput, Prisma.MediaUncheckedCreateWithoutEducationSchemaInput>
   where?: Prisma.MediaWhereInput
 }
 
-export type MediaUpdateToOneWithWhereWithoutEducationInput = {
+export type MediaUpdateToOneWithWhereWithoutEducationSchemaInput = {
   where?: Prisma.MediaWhereInput
-  data: Prisma.XOR<Prisma.MediaUpdateWithoutEducationInput, Prisma.MediaUncheckedUpdateWithoutEducationInput>
+  data: Prisma.XOR<Prisma.MediaUpdateWithoutEducationSchemaInput, Prisma.MediaUncheckedUpdateWithoutEducationSchemaInput>
 }
 
-export type MediaUpdateWithoutEducationInput = {
+export type MediaUpdateWithoutEducationSchemaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -807,7 +807,7 @@ export type MediaUpdateWithoutEducationInput = {
   blogs?: Prisma.BlogUpdateManyWithoutCoverImageNestedInput
 }
 
-export type MediaUncheckedUpdateWithoutEducationInput = {
+export type MediaUncheckedUpdateWithoutEducationSchemaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -839,7 +839,7 @@ export type MediaCreateWithoutEducationAchiementsInput = {
   user?: Prisma.UserCreateNestedOneWithoutMediaInput
   companies?: Prisma.CompanyCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutLogoInput
-  education?: Prisma.EducationCreateNestedManyWithoutLogoInput
+  educationSchema?: Prisma.EducationCreateNestedManyWithoutLogoInput
   blogs?: Prisma.BlogCreateNestedManyWithoutCoverImageInput
 }
 
@@ -857,7 +857,7 @@ export type MediaUncheckedCreateWithoutEducationAchiementsInput = {
   userId?: string | null
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutLogoInput
-  education?: Prisma.EducationUncheckedCreateNestedManyWithoutLogoInput
+  educationSchema?: Prisma.EducationUncheckedCreateNestedManyWithoutLogoInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutCoverImageInput
 }
 
@@ -891,7 +891,7 @@ export type MediaUpdateWithoutEducationAchiementsInput = {
   user?: Prisma.UserUpdateOneWithoutMediaNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutLogoNestedInput
-  education?: Prisma.EducationUpdateManyWithoutLogoNestedInput
+  educationSchema?: Prisma.EducationUpdateManyWithoutLogoNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutCoverImageNestedInput
 }
 
@@ -909,7 +909,7 @@ export type MediaUncheckedUpdateWithoutEducationAchiementsInput = {
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutLogoNestedInput
-  education?: Prisma.EducationUncheckedUpdateManyWithoutLogoNestedInput
+  educationSchema?: Prisma.EducationUncheckedUpdateManyWithoutLogoNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutCoverImageNestedInput
 }
 
@@ -926,7 +926,7 @@ export type MediaCreateWithoutTechStacksInput = {
   url: string
   user?: Prisma.UserCreateNestedOneWithoutMediaInput
   companies?: Prisma.CompanyCreateNestedManyWithoutLogoInput
-  education?: Prisma.EducationCreateNestedManyWithoutLogoInput
+  educationSchema?: Prisma.EducationCreateNestedManyWithoutLogoInput
   educationAchiements?: Prisma.AchievementOnMediasCreateNestedManyWithoutMediaInput
   blogs?: Prisma.BlogCreateNestedManyWithoutCoverImageInput
 }
@@ -944,7 +944,7 @@ export type MediaUncheckedCreateWithoutTechStacksInput = {
   url: string
   userId?: string | null
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutLogoInput
-  education?: Prisma.EducationUncheckedCreateNestedManyWithoutLogoInput
+  educationSchema?: Prisma.EducationUncheckedCreateNestedManyWithoutLogoInput
   educationAchiements?: Prisma.AchievementOnMediasUncheckedCreateNestedManyWithoutMediaInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutCoverImageInput
 }
@@ -978,7 +978,7 @@ export type MediaUpdateWithoutTechStacksInput = {
   url?: Prisma.StringFieldUpdateOperationsInput | string
   user?: Prisma.UserUpdateOneWithoutMediaNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutLogoNestedInput
-  education?: Prisma.EducationUpdateManyWithoutLogoNestedInput
+  educationSchema?: Prisma.EducationUpdateManyWithoutLogoNestedInput
   educationAchiements?: Prisma.AchievementOnMediasUpdateManyWithoutMediaNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutCoverImageNestedInput
 }
@@ -996,7 +996,7 @@ export type MediaUncheckedUpdateWithoutTechStacksInput = {
   url?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutLogoNestedInput
-  education?: Prisma.EducationUncheckedUpdateManyWithoutLogoNestedInput
+  educationSchema?: Prisma.EducationUncheckedUpdateManyWithoutLogoNestedInput
   educationAchiements?: Prisma.AchievementOnMediasUncheckedUpdateManyWithoutMediaNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutCoverImageNestedInput
 }
@@ -1014,7 +1014,7 @@ export type MediaCreateWithoutCompaniesInput = {
   url: string
   user?: Prisma.UserCreateNestedOneWithoutMediaInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutLogoInput
-  education?: Prisma.EducationCreateNestedManyWithoutLogoInput
+  educationSchema?: Prisma.EducationCreateNestedManyWithoutLogoInput
   educationAchiements?: Prisma.AchievementOnMediasCreateNestedManyWithoutMediaInput
   blogs?: Prisma.BlogCreateNestedManyWithoutCoverImageInput
 }
@@ -1032,7 +1032,7 @@ export type MediaUncheckedCreateWithoutCompaniesInput = {
   url: string
   userId?: string | null
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutLogoInput
-  education?: Prisma.EducationUncheckedCreateNestedManyWithoutLogoInput
+  educationSchema?: Prisma.EducationUncheckedCreateNestedManyWithoutLogoInput
   educationAchiements?: Prisma.AchievementOnMediasUncheckedCreateNestedManyWithoutMediaInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutCoverImageInput
 }
@@ -1066,7 +1066,7 @@ export type MediaUpdateWithoutCompaniesInput = {
   url?: Prisma.StringFieldUpdateOperationsInput | string
   user?: Prisma.UserUpdateOneWithoutMediaNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutLogoNestedInput
-  education?: Prisma.EducationUpdateManyWithoutLogoNestedInput
+  educationSchema?: Prisma.EducationUpdateManyWithoutLogoNestedInput
   educationAchiements?: Prisma.AchievementOnMediasUpdateManyWithoutMediaNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutCoverImageNestedInput
 }
@@ -1084,7 +1084,7 @@ export type MediaUncheckedUpdateWithoutCompaniesInput = {
   url?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutLogoNestedInput
-  education?: Prisma.EducationUncheckedUpdateManyWithoutLogoNestedInput
+  educationSchema?: Prisma.EducationUncheckedUpdateManyWithoutLogoNestedInput
   educationAchiements?: Prisma.AchievementOnMediasUncheckedUpdateManyWithoutMediaNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutCoverImageNestedInput
 }
@@ -1103,7 +1103,7 @@ export type MediaCreateWithoutBlogsInput = {
   user?: Prisma.UserCreateNestedOneWithoutMediaInput
   companies?: Prisma.CompanyCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutLogoInput
-  education?: Prisma.EducationCreateNestedManyWithoutLogoInput
+  educationSchema?: Prisma.EducationCreateNestedManyWithoutLogoInput
   educationAchiements?: Prisma.AchievementOnMediasCreateNestedManyWithoutMediaInput
 }
 
@@ -1121,7 +1121,7 @@ export type MediaUncheckedCreateWithoutBlogsInput = {
   userId?: string | null
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutLogoInput
-  education?: Prisma.EducationUncheckedCreateNestedManyWithoutLogoInput
+  educationSchema?: Prisma.EducationUncheckedCreateNestedManyWithoutLogoInput
   educationAchiements?: Prisma.AchievementOnMediasUncheckedCreateNestedManyWithoutMediaInput
 }
 
@@ -1155,7 +1155,7 @@ export type MediaUpdateWithoutBlogsInput = {
   user?: Prisma.UserUpdateOneWithoutMediaNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutLogoNestedInput
-  education?: Prisma.EducationUpdateManyWithoutLogoNestedInput
+  educationSchema?: Prisma.EducationUpdateManyWithoutLogoNestedInput
   educationAchiements?: Prisma.AchievementOnMediasUpdateManyWithoutMediaNestedInput
 }
 
@@ -1173,7 +1173,7 @@ export type MediaUncheckedUpdateWithoutBlogsInput = {
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutLogoNestedInput
-  education?: Prisma.EducationUncheckedUpdateManyWithoutLogoNestedInput
+  educationSchema?: Prisma.EducationUncheckedUpdateManyWithoutLogoNestedInput
   educationAchiements?: Prisma.AchievementOnMediasUncheckedUpdateManyWithoutMediaNestedInput
 }
 
@@ -1203,7 +1203,7 @@ export type MediaUpdateWithoutUserInput = {
   url?: Prisma.StringFieldUpdateOperationsInput | string
   companies?: Prisma.CompanyUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutLogoNestedInput
-  education?: Prisma.EducationUpdateManyWithoutLogoNestedInput
+  educationSchema?: Prisma.EducationUpdateManyWithoutLogoNestedInput
   educationAchiements?: Prisma.AchievementOnMediasUpdateManyWithoutMediaNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutCoverImageNestedInput
 }
@@ -1221,7 +1221,7 @@ export type MediaUncheckedUpdateWithoutUserInput = {
   url?: Prisma.StringFieldUpdateOperationsInput | string
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutLogoNestedInput
-  education?: Prisma.EducationUncheckedUpdateManyWithoutLogoNestedInput
+  educationSchema?: Prisma.EducationUncheckedUpdateManyWithoutLogoNestedInput
   educationAchiements?: Prisma.AchievementOnMediasUncheckedUpdateManyWithoutMediaNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutCoverImageNestedInput
 }
@@ -1247,7 +1247,7 @@ export type MediaUncheckedUpdateManyWithoutUserInput = {
 export type MediaCountOutputType = {
   companies: number
   techStacks: number
-  education: number
+  educationSchema: number
   educationAchiements: number
   blogs: number
 }
@@ -1255,7 +1255,7 @@ export type MediaCountOutputType = {
 export type MediaCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   companies?: boolean | MediaCountOutputTypeCountCompaniesArgs
   techStacks?: boolean | MediaCountOutputTypeCountTechStacksArgs
-  education?: boolean | MediaCountOutputTypeCountEducationArgs
+  educationSchema?: boolean | MediaCountOutputTypeCountEducationSchemaArgs
   educationAchiements?: boolean | MediaCountOutputTypeCountEducationAchiementsArgs
   blogs?: boolean | MediaCountOutputTypeCountBlogsArgs
 }
@@ -1287,7 +1287,7 @@ export type MediaCountOutputTypeCountTechStacksArgs<ExtArgs extends runtime.Type
 /**
  * MediaCountOutputType without action
  */
-export type MediaCountOutputTypeCountEducationArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type MediaCountOutputTypeCountEducationSchemaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.EducationWhereInput
 }
 
@@ -1321,7 +1321,7 @@ export type MediaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   user?: boolean | Prisma.Media$userArgs<ExtArgs>
   companies?: boolean | Prisma.Media$companiesArgs<ExtArgs>
   techStacks?: boolean | Prisma.Media$techStacksArgs<ExtArgs>
-  education?: boolean | Prisma.Media$educationArgs<ExtArgs>
+  educationSchema?: boolean | Prisma.Media$educationSchemaArgs<ExtArgs>
   educationAchiements?: boolean | Prisma.Media$educationAchiementsArgs<ExtArgs>
   blogs?: boolean | Prisma.Media$blogsArgs<ExtArgs>
   _count?: boolean | Prisma.MediaCountOutputTypeDefaultArgs<ExtArgs>
@@ -1376,7 +1376,7 @@ export type MediaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   user?: boolean | Prisma.Media$userArgs<ExtArgs>
   companies?: boolean | Prisma.Media$companiesArgs<ExtArgs>
   techStacks?: boolean | Prisma.Media$techStacksArgs<ExtArgs>
-  education?: boolean | Prisma.Media$educationArgs<ExtArgs>
+  educationSchema?: boolean | Prisma.Media$educationSchemaArgs<ExtArgs>
   educationAchiements?: boolean | Prisma.Media$educationAchiementsArgs<ExtArgs>
   blogs?: boolean | Prisma.Media$blogsArgs<ExtArgs>
   _count?: boolean | Prisma.MediaCountOutputTypeDefaultArgs<ExtArgs>
@@ -1394,7 +1394,7 @@ export type $MediaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     user: Prisma.$UserPayload<ExtArgs> | null
     companies: Prisma.$CompanyPayload<ExtArgs>[]
     techStacks: Prisma.$TechStackPayload<ExtArgs>[]
-    education: Prisma.$EducationPayload<ExtArgs>[]
+    educationSchema: Prisma.$EducationPayload<ExtArgs>[]
     educationAchiements: Prisma.$AchievementOnMediasPayload<ExtArgs>[]
     blogs: Prisma.$BlogPayload<ExtArgs>[]
   }
@@ -1807,7 +1807,7 @@ export interface Prisma__MediaClient<T, Null = never, ExtArgs extends runtime.Ty
   user<T extends Prisma.Media$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Media$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   companies<T extends Prisma.Media$companiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Media$companiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   techStacks<T extends Prisma.Media$techStacksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Media$techStacksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TechStackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  education<T extends Prisma.Media$educationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Media$educationArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EducationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  educationSchema<T extends Prisma.Media$educationSchemaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Media$educationSchemaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EducationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   educationAchiements<T extends Prisma.Media$educationAchiementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Media$educationAchiementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AchievementOnMediasPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   blogs<T extends Prisma.Media$blogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Media$blogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -2318,9 +2318,9 @@ export type Media$techStacksArgs<ExtArgs extends runtime.Types.Extensions.Intern
 }
 
 /**
- * Media.education
+ * Media.educationSchema
  */
-export type Media$educationArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Media$educationSchemaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Education
    */

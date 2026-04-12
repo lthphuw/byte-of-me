@@ -1,5 +1,6 @@
-import { Media } from '@/entities/media/model/types';
-import { Prisma } from 'node_modules/@byte-of-me/db/generated/prisma/client';
+import type { Prisma } from 'node_modules/@byte-of-me/db/generated/prisma/client';
+
+import type { Media } from '@/entities/media/model/types';
 
 export type AdminTechStack = Prisma.TechStackGetPayload<{
   include: {

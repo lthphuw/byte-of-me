@@ -184,7 +184,7 @@ model EducationTranslation {
   description String? @db.Text
 
   educationId String    @map("education_id")
-  education   Education @relation(fields: [educationId], references: [id], onDelete: Cascade)
+  educationSchema   Education @relation(fields: [educationId], references: [id], onDelete: Cascade)
 
   @@unique([educationId, language])
   @@map("education_translations")
@@ -198,7 +198,7 @@ model EducationAchievement {
   sortOrder Int @default(0) @map("sort_order")
 
   educationId String    @map("education_id")
-  education   Education @relation(fields: [educationId], references: [id], onDelete: Cascade)
+  educationSchema   Education @relation(fields: [educationId], references: [id], onDelete: Cascade)
 
   translations EducationAchievementTranslation[]
   images       AchievementOnMedias[]
@@ -668,7 +668,7 @@ model Media {
   // socialLinks         SocialLink[]
   companies           Company[]
   techStacks          TechStack[]
-  education           Education[]
+  educationSchema           Education[]
   educationAchiements AchievementOnMedias[]
   blogs               Blog[]
 

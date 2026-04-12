@@ -1,8 +1,9 @@
-import * as React from 'react';
-import type { toggleVariants } from '@/shared/ui/toggle';
 import { CaretDownIcon, ListBulletIcon } from '@radix-ui/react-icons';
 import type { Editor } from '@tiptap/react';
 import type { VariantProps } from 'class-variance-authority';
+import * as React from 'react';
+
+import type { toggleVariants } from '@/shared/ui/toggle';
 
 import type { FormatAction } from '../../types';
 import { ToolbarSection } from '../toolbar-section';

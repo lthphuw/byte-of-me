@@ -1,4 +1,4 @@
-import { Extension, type Editor as CoreEditor, type Range } from '@tiptap/core';
+import { type Editor as CoreEditor, Extension, type Range } from '@tiptap/core';
 import type { Node as PMNode } from '@tiptap/pm/model';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet, type EditorView } from '@tiptap/pm/view';

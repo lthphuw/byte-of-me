@@ -1,14 +1,16 @@
 'use client';
 
+import type {Variants } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
+import { createPortal } from 'react-dom';
+
 import { Link } from '@/i18n/navigation';
 import { itemVariants } from '@/shared/config/anim';
 import { useLockBody } from '@/shared/hooks/use-lock-body';
 import { cn } from '@/shared/lib/utils';
-import { MainNavItem } from '@/shared/types';
-import { AnimatePresence, Variants, motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
-import { createPortal } from 'react-dom';
+import type { MainNavItem } from '@/shared/types';
 
 interface PublicHeaderMobileNavProps
   extends React.ComponentProps<typeof motion.div> {
@@ -65,7 +67,7 @@ export const PublicHeaderMobileNav = ({
 
           {/* Menu */}
           <motion.div
-            className="fixed z-[9999] rounded-2xl shadow-2xl container-bg md:hidden"
+            className="container-bg fixed z-[9999] rounded-2xl shadow-2xl md:hidden"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -78,7 +80,7 @@ export const PublicHeaderMobileNav = ({
               transformOrigin: `${originPosition.x}px ${originPosition.y}px`,
             }}
           >
-            <div className="grid gap-6 p-4 text-popover-foreground">
+            <div className="text-popover-foreground grid gap-6 p-4">
               <nav className="grid gap-2 text-sm">
                 {items.map((item, index) => (
                   <motion.div key={item.href + index} variants={itemVariants}>

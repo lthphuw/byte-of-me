@@ -1,8 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
-import { AdminEducation } from '@/entities/education';
+import { useState } from 'react';
+
+import type { AdminEducation } from '@/entities/education';
 import { createEducation } from '@/entities/education/api/create-education';
 import { deleteEducation } from '@/entities/education/api/delete-education';
 import { getAllAdminEducations } from '@/entities/education/api/get-all-admin-educations';
@@ -11,8 +14,6 @@ import type { EducationFormValues } from '@/entities/education/schemas/education
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/ui/use-toast';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 
 import { EducationDialog } from './education-dialog';
 
@@ -50,7 +51,7 @@ export function EducationManager({
     },
 
     onError: () =>
-      toast({ title: 'Error saving education', variant: 'destructive' }),
+      toast({ title: 'Error saving educationSchema', variant: 'destructive' }),
   });
 
   // Delete
@@ -63,7 +64,10 @@ export function EducationManager({
     },
 
     onError: () =>
-      toast({ title: 'Error deleting education', variant: 'destructive' }),
+      toast({
+        title: 'Error deleting educationSchema',
+        variant: 'destructive',
+      }),
   });
 
   // Handlers
@@ -90,7 +94,8 @@ export function EducationManager({
       {/* List */}
       <div className="space-y-4">
         {educations.map((edu) => {
-          const title = edu.translations?.[0]?.title || 'Untitled education';
+          const title =
+            edu.translations?.[0]?.title || 'Untitled educationSchema';
 
           const dateRange = `${formatDate(edu.startDate)} - ${
             edu.endDate ? formatDate(edu.endDate) : 'Present'
@@ -99,12 +104,12 @@ export function EducationManager({
           return (
             <div
               key={edu.id}
-              className="group flex items-center justify-between bg-card border rounded-xl p-4 hover:border-primary/50 transition-all hover:shadow-sm"
+              className="bg-card hover:border-primary/50 group flex items-center justify-between rounded-xl border p-4 transition-all hover:shadow-sm"
             >
               {/* Left */}
               <div className="flex items-center gap-4">
                 {/* Logo */}
-                <div className="h-12 w-12 flex items-center justify-center bg-muted rounded-lg overflow-hidden p-2">
+                <div className="bg-muted flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg p-2">
                   {edu.logo?.url ? (
                     <Image
                       src={edu.logo.url}
@@ -114,7 +119,7 @@ export function EducationManager({
                       className="object-contain"
                     />
                   ) : (
-                    <div className="text-xs text-muted-foreground font-bold">
+                    <div className="text-muted-foreground text-xs font-bold">
                       {title.substring(0, 2).toUpperCase()}
                     </div>
                   )}
@@ -123,9 +128,9 @@ export function EducationManager({
                 {/* Info */}
                 <div className="space-y-1">
                   <p className="text-sm font-medium">{title}</p>
-                  <p className="text-xs text-muted-foreground">{dateRange}</p>
+                  <p className="text-muted-foreground text-xs">{dateRange}</p>
 
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="flex flex-wrap gap-2">
                     <Badge variant="secondary" className="text-[10px]">
                       {edu.achievements.length} achievements
                     </Badge>
@@ -134,7 +139,7 @@ export function EducationManager({
               </div>
 
               {/* Actions */}
-              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                 <Button
                   size="icon"
                   variant="ghost"
@@ -147,7 +152,7 @@ export function EducationManager({
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                  className="text-destructive hover:bg-destructive/10 h-8 w-8"
                   disabled={deleteMutation.isPending}
                   onClick={() => {
                     if (confirm(`Delete "${title}"?`)) {
@@ -167,7 +172,7 @@ export function EducationManager({
         })}
 
         {!educations.length && (
-          <div className="text-center text-sm text-muted-foreground py-12">
+          <div className="text-muted-foreground py-12 text-center text-sm">
             No education entries yet.
           </div>
         )}

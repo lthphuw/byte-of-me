@@ -1,15 +1,16 @@
+import { Trash2 } from 'lucide-react';
+
 import { Button } from '@/shared/ui/button';
 import { FormControl, FormField, FormItem, FormLabel } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Separator } from '@/shared/ui/separator';
 import { RichTextEditor } from '@/shared/ui/tiptap/rich-text-editor';
-import { Trash2 } from 'lucide-react';
 
 export function ProfileTranslationCard({ form, index, onRemove }: any) {
   return (
-    <div className="border rounded-xl p-6 space-y-6 bg-background/50">
+    <div className="bg-background/50 space-y-6 rounded-xl border p-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <FormField
           control={form.control}
           name={`translations.${index}.language`}
@@ -24,7 +25,7 @@ export function ProfileTranslationCard({ form, index, onRemove }: any) {
         />
 
         <Button variant="destructive" size="sm" onClick={onRemove}>
-          <Trash2 className="w-4 h-4 mr-2" />
+          <Trash2 className="mr-2 h-4 w-4" />
           Remove
         </Button>
       </div>
@@ -33,7 +34,7 @@ export function ProfileTranslationCard({ form, index, onRemove }: any) {
 
       {/* Identity */}
       <Section title="Identity">
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid gap-4 md:grid-cols-3">
           <Field
             form={form}
             name={`translations.${index}.firstName`}
@@ -54,7 +55,7 @@ export function ProfileTranslationCard({ form, index, onRemove }: any) {
 
       {/* Content */}
       <Section title="Content">
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid gap-4 md:grid-cols-2">
           <Field
             form={form}
             name={`translations.${index}.greeting`}
@@ -70,7 +71,7 @@ export function ProfileTranslationCard({ form, index, onRemove }: any) {
 
       {/* Quote */}
       <Section title="Quote">
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid gap-4 md:grid-cols-2">
           <Field
             form={form}
             name={`translations.${index}.quote`}
@@ -101,7 +102,7 @@ export function ProfileTranslationCard({ form, index, onRemove }: any) {
 function Section({ title, children }: any) {
   return (
     <div className="space-y-3">
-      <p className="text-xs uppercase text-muted-foreground">{title}</p>
+      <p className="text-muted-foreground text-xs uppercase">{title}</p>
       {children}
     </div>
   );

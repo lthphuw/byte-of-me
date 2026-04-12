@@ -1,12 +1,13 @@
 'use client';
 
+import { motion } from 'framer-motion';
+
 import { UserAuthForm } from '@/features/auth/ui';
 import { Link } from '@/i18n/navigation';
 import { Routes } from '@/shared/config/global';
 import { cn } from '@/shared/lib/utils';
 import { buttonVariants } from '@/shared/ui/button';
 import { Icons } from '@/shared/ui/icons';
-import { motion } from 'framer-motion';
 
 export function AuthLogInView() {
   return (
@@ -37,11 +38,11 @@ export function AuthLogInView() {
         className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]"
       >
         <div className="flex flex-col space-y-2 text-center">
-          <Icons.logo className="mx-auto h-8 w-8 mb-2" />
+          <Icons.logo className="mx-auto mb-2 h-8 w-8" />
           <h1 className="text-2xl font-semibold tracking-tight">
             Welcome back
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Enter your email to sign in to your account
           </p>
         </div>

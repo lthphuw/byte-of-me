@@ -1,12 +1,14 @@
 import './styles/index.css';
-import { cn } from '@/shared/lib/utils';
-import { Separator } from '@/shared/ui/separator';
+
 import {
-  EditorContent,
-  EditorContext,
   type Content,
   type Editor,
+  EditorContent,
+  EditorContext,
 } from '@tiptap/react';
+
+import { cn } from '@/shared/lib/utils';
+import { Separator } from '@/shared/ui/separator';
 
 import { LinkBubbleMenu } from './components/bubble-menu/link-bubble-menu';
 import { MeasuredContainer } from './components/measured-container';

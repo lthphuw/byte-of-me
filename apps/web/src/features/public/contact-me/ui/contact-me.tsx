@@ -1,17 +1,18 @@
-import React from 'react';
-import { ContactForm } from '@/features/public/contact-me/ui/form';
 import { getTranslations } from 'next-intl/server';
+import React from 'react';
+
+import { ContactForm } from '@/features/public/contact-me/ui/form';
 
 export async function ContactMe() {
   const t = await getTranslations('contact');
   return (
     <div className="pt-6">
-      <div className="text-center text-xs text-muted-foreground mb-4">
+      <div className="text-muted-foreground mb-4 text-center text-xs">
         {t('or')}
       </div>
 
-      <div className="rounded-lg border border-border p-4 space-y-4">
-        <p className="text-sm font-medium text-center">
+      <div className="border-border space-y-4 rounded-lg border p-4">
+        <p className="text-center text-sm font-medium">
           {t('sendMeADirectMessage')}
         </p>
 

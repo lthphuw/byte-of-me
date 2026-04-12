@@ -1,7 +1,7 @@
 'use client';
 
-import { AdminBlog } from '@/entities/blog';
-import { BlogFormValues } from '@/entities/blog/schemas/blog';
+import type { AdminBlog } from '@/entities/blog';
+import type { BlogFormValues } from '@/entities/blog/schemas/blog';
 import {
   Dialog,
   DialogContent,
@@ -28,7 +28,7 @@ export function BlogDialog({
 }: BlogDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-x-hidden overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-6xl overflow-y-auto overflow-x-hidden">
         <DialogHeader>
           <DialogTitle>{initialData ? 'Edit PublicBlog' : 'Create PublicBlog'}</DialogTitle>
         </DialogHeader>

@@ -13,7 +13,7 @@ export function AboutEducationLoading() {
           <div key={i} className="space-y-4">
             {/* School Header: Logo + Name/Date */}
             <div className="flex items-start gap-4">
-              <Skeleton className="h-12 w-12 rounded-full shrink-0" />
+              <Skeleton className="h-12 w-12 shrink-0 rounded-full" />
               <div className="space-y-2">
                 <Skeleton className="h-6 w-64" />
                 <Skeleton className="h-4 w-24" />
@@ -34,15 +34,15 @@ export function AboutEducationLoading() {
 
             {/* Event/Workshop Title */}
             <div className="pt-2">
-              <Skeleton className="h-6 w-56 mb-2" />
+              <Skeleton className="mb-2 h-6 w-56" />
               <Skeleton className="h-4 w-72" />
             </div>
 
             {/* Images/Carousel Skeleton */}
             <div className="flex gap-4 overflow-hidden">
-              <Skeleton className="h-48 w-full max-w-[320px] rounded-xl shrink-0" />
+              <Skeleton className="h-48 w-full max-w-[320px] shrink-0 rounded-xl" />
               {/* Secondary image visible on PC/larger screens */}
-              <Skeleton className="hidden md:block h-48 w-[200px] rounded-xl shrink-0" />
+              <Skeleton className="hidden h-48 w-[200px] shrink-0 rounded-xl md:block" />
             </div>
           </div>
         ))}

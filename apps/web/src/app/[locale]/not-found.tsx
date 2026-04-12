@@ -1,19 +1,20 @@
+import { getTranslations } from 'next-intl/server';
+
 import { Link } from '@/i18n/navigation';
 import { Routes } from '@/shared/config/global';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import GoBackButton from '@/shared/ui/go-back';
 import { Icons } from '@/shared/ui/icons';
-import { getTranslations } from 'next-intl/server';
 
 export default async function NotFound() {
   const t = await getTranslations('notFound');
   return (
     <section className="relative z-30">
-      <div className="container flex items-center justify-center min-h-screen px-6 py-12 mx-auto">
+      <div className="container mx-auto flex min-h-screen items-center justify-center px-6 py-12">
         <div className="w-full">
-          <div className="flex flex-col gap-2 md:gap-4  items-stretch md:items-center max-w-lg mx-auto text-center">
-            <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
+          <div className="mx-auto flex max-w-lg flex-col  items-stretch gap-2 text-center md:items-center md:gap-4">
+            <h1 className="scroll-m-20 text-balance text-center text-4xl font-extrabold tracking-tight">
               404
             </h1>
             <h1 className="mt-2 text-xl font-bold text-gray-800 dark:text-white">
@@ -25,7 +26,7 @@ export default async function NotFound() {
               )}.`}
             </p>
 
-            <div className="flex flex-col flex-wrap gap-4 mt-2 md:flex-row">
+            <div className="mt-2 flex flex-col flex-wrap gap-4 md:flex-row">
               <GoBackButton> {t('goBack')}</GoBackButton>
               <Link href={Routes.Homepage}>
                 <Button
@@ -40,7 +41,7 @@ export default async function NotFound() {
             </div>
           </div>
 
-          <div className="grid w-full max-w-6xl grid-cols-1 gap-8 mx-auto mt-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mx-auto mt-8 grid w-full max-w-6xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {[
               {
                 href: '/about',
@@ -66,16 +67,16 @@ export default async function NotFound() {
             ].map(({ icon, href, title, desc, link }) => (
               <div
                 key={href}
-                className="p-6 rounded-lg gap-2 flex flex-col shadow-xl duration-300 transition-all dura hover:shadow-2xl bg-gray-100 dark:bg-gray-900"
+                className="dura flex flex-col gap-2 rounded-lg bg-gray-100 p-6 shadow-xl transition-all duration-300 hover:shadow-2xl dark:bg-gray-900"
               >
                 {icon}
-                <h3 className="mt-4 font-medium text-md text-gray-700 dark:text-gray-200">
+                <h3 className="text-md mt-4 font-medium text-gray-700 dark:text-gray-200">
                   {title}
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400">{desc}</p>
                 <Link
                   href={href}
-                  className="inline-flex gap-2 transition-all items-center font-semibold mt-auto text-sm hover:underline"
+                  className="mt-auto inline-flex items-center gap-2 text-sm font-semibold transition-all hover:underline"
                 >
                   <span>{link}</span>
                   <Icons.arrowRight />

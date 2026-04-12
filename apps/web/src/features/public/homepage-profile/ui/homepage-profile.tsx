@@ -1,14 +1,15 @@
+import { Route } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
+
 import {
+  getPublicUserProfile,
   Greeting,
   ProfileQuote,
-  getPublicUserProfile,
 } from '@/entities/user-profile';
 import { ProfileSectionMotion } from '@/features/public/homepage-profile/ui/profile-section-motion';
 import { Link } from '@/i18n/navigation';
 import { Routes } from '@/shared/config/global';
 import { Button } from '@/shared/ui/button';
-import { Route } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
 
 import { HomepageProfileEmpty } from './homepage-profile-empty';
 
@@ -29,10 +30,10 @@ export async function HomepageProfile() {
       <ProfileSectionMotion>
         <section
           id="hero"
-          className="max-w-3xl mx-auto space-y-5 md:space-y-8 text-left"
+          className="mx-auto max-w-3xl space-y-5 text-left md:space-y-8"
         >
           <Greeting text={profile.greeting || ''} />
-          <p className="text-base md:text-xl text-muted-foreground">
+          <p className="text-muted-foreground text-base md:text-xl">
             {profile.tagLine}
           </p>
         </section>
@@ -42,17 +43,17 @@ export async function HomepageProfile() {
       <ProfileSectionMotion delay={0.1}>
         <section
           id="about"
-          className={`grid gap-10 md:gap-14 items-start ${
-            hasQuote ? 'md:grid-cols-2' : 'max-w-3xl mx-auto grid-cols-1'
+          className={`grid items-start gap-10 md:gap-14 ${
+            hasQuote ? 'md:grid-cols-2' : 'mx-auto max-w-3xl grid-cols-1'
           }`}
         >
           <div className="space-y-6 md:space-y-8">
             <div className="space-y-4 md:space-y-5">
-              <h2 className="text-xs md:text-sm uppercase tracking-[0.2em] text-muted-foreground font-semibold">
+              <h2 className="text-muted-foreground text-xs font-semibold uppercase tracking-[0.2em] md:text-sm">
                 {t('myStory')}
               </h2>
 
-              <div className="text-sm md:text-base leading-relaxed text-muted-foreground">
+              <div className="text-muted-foreground text-sm leading-relaxed md:text-base">
                 {profile.bio}
               </div>
             </div>
@@ -61,7 +62,7 @@ export async function HomepageProfile() {
               <Link href={Routes.About}>
                 <Button
                   variant="link"
-                  className="p-0 h-auto text-sm md:text-base group"
+                  className="group h-auto p-0 text-sm md:text-base"
                 >
                   {t('moreAboutMyJourney')} <Route className="ml-2 h-4 w-4" />
                 </Button>

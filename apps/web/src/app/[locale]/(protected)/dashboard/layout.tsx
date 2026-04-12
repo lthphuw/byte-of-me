@@ -11,7 +11,7 @@ export default async function DashboardLayout({
       <DashboardSidebar />
 
       {/* Main content */}
-      <div className="flex flex-1 flex-col overflow-hidden bg-muted/40">
+      <div className="bg-muted/40 flex flex-1 flex-col overflow-hidden">
         <main className="container relative py-6 lg:py-8">
           <div className="mx-auto w-full min-w-0">{children}</div>
         </main>

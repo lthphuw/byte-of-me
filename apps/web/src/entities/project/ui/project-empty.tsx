@@ -1,8 +1,9 @@
 'use client';
 
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/ui/empty';
 import { LayoutGrid, SearchX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/ui/empty';
 
 export type ProjectEmptyProps = BaseComponentProps & {
   isSearch?: boolean;
@@ -20,9 +21,9 @@ export function ProjectEmpty({
       <EmptyHeader>
         <EmptyMedia variant="icon">
           {isSearch ? (
-            <SearchX className="size-10 text-muted-foreground" />
+            <SearchX className="text-muted-foreground size-10" />
           ) : (
-            <LayoutGrid className="size-10 text-muted-foreground" />
+            <LayoutGrid className="text-muted-foreground size-10" />
           )}
         </EmptyMedia>
         <EmptyTitle className="text-muted-foreground">

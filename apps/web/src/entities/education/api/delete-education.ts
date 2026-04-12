@@ -1,9 +1,10 @@
 'use server';
 
-import { requireUser } from '@/features/auth/lib/session';
-import { ApiResponse } from '@/shared/types/api/api-response.type';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
+
+import { requireUser } from '@/features/auth/lib/session';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function deleteEducation(id: string): Promise<ApiResponse<any>> {
   try {
@@ -27,7 +28,7 @@ export async function deleteEducation(id: string): Promise<ApiResponse<any>> {
     logger.error(`Delete education error: ${error.message}`);
     return {
       success: false,
-      errorMsg: error.message || 'Failed to delete education',
+      errorMsg: error.message || 'Failed to delete educationSchema',
     };
   }
 }

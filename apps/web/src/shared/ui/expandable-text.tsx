@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useEffect, useRef, useState } from 'react';
 
 type ExpandableTextProps = {
   content: string;
@@ -45,7 +45,7 @@ export function ExpandableText({
     <div>
       <article
         ref={textRef}
-        className="text-sm text-muted-foreground leading-relaxed break-words overflow-hidden"
+        className="text-muted-foreground overflow-hidden break-words text-sm leading-relaxed"
         style={
           expanded
             ? {}
@@ -62,7 +62,7 @@ export function ExpandableText({
       {isOverflowing && (
         <button
           onClick={() => setExpanded((prev) => !prev)}
-          className="mt-1 text-xs text-primary hover:underline"
+          className="text-primary mt-1 text-xs hover:underline"
         >
           {expanded ? t('showLess') : t('showMore')}
         </button>

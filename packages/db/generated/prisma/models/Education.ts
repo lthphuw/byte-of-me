@@ -316,10 +316,10 @@ export type EducationCreateInput = {
   sortOrder: number
   startDate: Date | string
   endDate?: Date | string | null
-  logo?: Prisma.MediaCreateNestedOneWithoutEducationInput
+  logo?: Prisma.MediaCreateNestedOneWithoutEducationSchemaInput
   user: Prisma.UserCreateNestedOneWithoutEducationsInput
-  achievements?: Prisma.EducationAchievementCreateNestedManyWithoutEducationInput
-  translations?: Prisma.EducationTranslationCreateNestedManyWithoutEducationInput
+  achievements?: Prisma.EducationAchievementCreateNestedManyWithoutEducationSchemaInput
+  translations?: Prisma.EducationTranslationCreateNestedManyWithoutEducationSchemaInput
 }
 
 export type EducationUncheckedCreateInput = {
@@ -331,8 +331,8 @@ export type EducationUncheckedCreateInput = {
   endDate?: Date | string | null
   logoId?: string | null
   userId: string
-  achievements?: Prisma.EducationAchievementUncheckedCreateNestedManyWithoutEducationInput
-  translations?: Prisma.EducationTranslationUncheckedCreateNestedManyWithoutEducationInput
+  achievements?: Prisma.EducationAchievementUncheckedCreateNestedManyWithoutEducationSchemaInput
+  translations?: Prisma.EducationTranslationUncheckedCreateNestedManyWithoutEducationSchemaInput
 }
 
 export type EducationUpdateInput = {
@@ -342,10 +342,10 @@ export type EducationUpdateInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  logo?: Prisma.MediaUpdateOneWithoutEducationNestedInput
+  logo?: Prisma.MediaUpdateOneWithoutEducationSchemaNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutEducationsNestedInput
-  achievements?: Prisma.EducationAchievementUpdateManyWithoutEducationNestedInput
-  translations?: Prisma.EducationTranslationUpdateManyWithoutEducationNestedInput
+  achievements?: Prisma.EducationAchievementUpdateManyWithoutEducationSchemaNestedInput
+  translations?: Prisma.EducationTranslationUpdateManyWithoutEducationSchemaNestedInput
 }
 
 export type EducationUncheckedUpdateInput = {
@@ -357,8 +357,8 @@ export type EducationUncheckedUpdateInput = {
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   logoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  achievements?: Prisma.EducationAchievementUncheckedUpdateManyWithoutEducationNestedInput
-  translations?: Prisma.EducationTranslationUncheckedUpdateManyWithoutEducationNestedInput
+  achievements?: Prisma.EducationAchievementUncheckedUpdateManyWithoutEducationSchemaNestedInput
+  translations?: Prisma.EducationTranslationUncheckedUpdateManyWithoutEducationSchemaNestedInput
 }
 
 export type EducationCreateManyInput = {
@@ -567,9 +567,9 @@ export type EducationCreateWithoutUserInput = {
   sortOrder: number
   startDate: Date | string
   endDate?: Date | string | null
-  logo?: Prisma.MediaCreateNestedOneWithoutEducationInput
-  achievements?: Prisma.EducationAchievementCreateNestedManyWithoutEducationInput
-  translations?: Prisma.EducationTranslationCreateNestedManyWithoutEducationInput
+  logo?: Prisma.MediaCreateNestedOneWithoutEducationSchemaInput
+  achievements?: Prisma.EducationAchievementCreateNestedManyWithoutEducationSchemaInput
+  translations?: Prisma.EducationTranslationCreateNestedManyWithoutEducationSchemaInput
 }
 
 export type EducationUncheckedCreateWithoutUserInput = {
@@ -580,8 +580,8 @@ export type EducationUncheckedCreateWithoutUserInput = {
   startDate: Date | string
   endDate?: Date | string | null
   logoId?: string | null
-  achievements?: Prisma.EducationAchievementUncheckedCreateNestedManyWithoutEducationInput
-  translations?: Prisma.EducationTranslationUncheckedCreateNestedManyWithoutEducationInput
+  achievements?: Prisma.EducationAchievementUncheckedCreateNestedManyWithoutEducationSchemaInput
+  translations?: Prisma.EducationTranslationUncheckedCreateNestedManyWithoutEducationSchemaInput
 }
 
 export type EducationCreateOrConnectWithoutUserInput = {
@@ -631,9 +631,9 @@ export type EducationCreateWithoutTranslationsInput = {
   sortOrder: number
   startDate: Date | string
   endDate?: Date | string | null
-  logo?: Prisma.MediaCreateNestedOneWithoutEducationInput
+  logo?: Prisma.MediaCreateNestedOneWithoutEducationSchemaInput
   user: Prisma.UserCreateNestedOneWithoutEducationsInput
-  achievements?: Prisma.EducationAchievementCreateNestedManyWithoutEducationInput
+  achievements?: Prisma.EducationAchievementCreateNestedManyWithoutEducationSchemaInput
 }
 
 export type EducationUncheckedCreateWithoutTranslationsInput = {
@@ -645,7 +645,7 @@ export type EducationUncheckedCreateWithoutTranslationsInput = {
   endDate?: Date | string | null
   logoId?: string | null
   userId: string
-  achievements?: Prisma.EducationAchievementUncheckedCreateNestedManyWithoutEducationInput
+  achievements?: Prisma.EducationAchievementUncheckedCreateNestedManyWithoutEducationSchemaInput
 }
 
 export type EducationCreateOrConnectWithoutTranslationsInput = {
@@ -671,9 +671,9 @@ export type EducationUpdateWithoutTranslationsInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  logo?: Prisma.MediaUpdateOneWithoutEducationNestedInput
+  logo?: Prisma.MediaUpdateOneWithoutEducationSchemaNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutEducationsNestedInput
-  achievements?: Prisma.EducationAchievementUpdateManyWithoutEducationNestedInput
+  achievements?: Prisma.EducationAchievementUpdateManyWithoutEducationSchemaNestedInput
 }
 
 export type EducationUncheckedUpdateWithoutTranslationsInput = {
@@ -685,7 +685,7 @@ export type EducationUncheckedUpdateWithoutTranslationsInput = {
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   logoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  achievements?: Prisma.EducationAchievementUncheckedUpdateManyWithoutEducationNestedInput
+  achievements?: Prisma.EducationAchievementUncheckedUpdateManyWithoutEducationSchemaNestedInput
 }
 
 export type EducationCreateWithoutAchievementsInput = {
@@ -695,9 +695,9 @@ export type EducationCreateWithoutAchievementsInput = {
   sortOrder: number
   startDate: Date | string
   endDate?: Date | string | null
-  logo?: Prisma.MediaCreateNestedOneWithoutEducationInput
+  logo?: Prisma.MediaCreateNestedOneWithoutEducationSchemaInput
   user: Prisma.UserCreateNestedOneWithoutEducationsInput
-  translations?: Prisma.EducationTranslationCreateNestedManyWithoutEducationInput
+  translations?: Prisma.EducationTranslationCreateNestedManyWithoutEducationSchemaInput
 }
 
 export type EducationUncheckedCreateWithoutAchievementsInput = {
@@ -709,7 +709,7 @@ export type EducationUncheckedCreateWithoutAchievementsInput = {
   endDate?: Date | string | null
   logoId?: string | null
   userId: string
-  translations?: Prisma.EducationTranslationUncheckedCreateNestedManyWithoutEducationInput
+  translations?: Prisma.EducationTranslationUncheckedCreateNestedManyWithoutEducationSchemaInput
 }
 
 export type EducationCreateOrConnectWithoutAchievementsInput = {
@@ -735,9 +735,9 @@ export type EducationUpdateWithoutAchievementsInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  logo?: Prisma.MediaUpdateOneWithoutEducationNestedInput
+  logo?: Prisma.MediaUpdateOneWithoutEducationSchemaNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutEducationsNestedInput
-  translations?: Prisma.EducationTranslationUpdateManyWithoutEducationNestedInput
+  translations?: Prisma.EducationTranslationUpdateManyWithoutEducationSchemaNestedInput
 }
 
 export type EducationUncheckedUpdateWithoutAchievementsInput = {
@@ -749,7 +749,7 @@ export type EducationUncheckedUpdateWithoutAchievementsInput = {
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   logoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  translations?: Prisma.EducationTranslationUncheckedUpdateManyWithoutEducationNestedInput
+  translations?: Prisma.EducationTranslationUncheckedUpdateManyWithoutEducationSchemaNestedInput
 }
 
 export type EducationCreateWithoutLogoInput = {
@@ -760,8 +760,8 @@ export type EducationCreateWithoutLogoInput = {
   startDate: Date | string
   endDate?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutEducationsInput
-  achievements?: Prisma.EducationAchievementCreateNestedManyWithoutEducationInput
-  translations?: Prisma.EducationTranslationCreateNestedManyWithoutEducationInput
+  achievements?: Prisma.EducationAchievementCreateNestedManyWithoutEducationSchemaInput
+  translations?: Prisma.EducationTranslationCreateNestedManyWithoutEducationSchemaInput
 }
 
 export type EducationUncheckedCreateWithoutLogoInput = {
@@ -772,8 +772,8 @@ export type EducationUncheckedCreateWithoutLogoInput = {
   startDate: Date | string
   endDate?: Date | string | null
   userId: string
-  achievements?: Prisma.EducationAchievementUncheckedCreateNestedManyWithoutEducationInput
-  translations?: Prisma.EducationTranslationUncheckedCreateNestedManyWithoutEducationInput
+  achievements?: Prisma.EducationAchievementUncheckedCreateNestedManyWithoutEducationSchemaInput
+  translations?: Prisma.EducationTranslationUncheckedCreateNestedManyWithoutEducationSchemaInput
 }
 
 export type EducationCreateOrConnectWithoutLogoInput = {
@@ -819,9 +819,9 @@ export type EducationUpdateWithoutUserInput = {
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  logo?: Prisma.MediaUpdateOneWithoutEducationNestedInput
-  achievements?: Prisma.EducationAchievementUpdateManyWithoutEducationNestedInput
-  translations?: Prisma.EducationTranslationUpdateManyWithoutEducationNestedInput
+  logo?: Prisma.MediaUpdateOneWithoutEducationSchemaNestedInput
+  achievements?: Prisma.EducationAchievementUpdateManyWithoutEducationSchemaNestedInput
+  translations?: Prisma.EducationTranslationUpdateManyWithoutEducationSchemaNestedInput
 }
 
 export type EducationUncheckedUpdateWithoutUserInput = {
@@ -832,8 +832,8 @@ export type EducationUncheckedUpdateWithoutUserInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   logoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  achievements?: Prisma.EducationAchievementUncheckedUpdateManyWithoutEducationNestedInput
-  translations?: Prisma.EducationTranslationUncheckedUpdateManyWithoutEducationNestedInput
+  achievements?: Prisma.EducationAchievementUncheckedUpdateManyWithoutEducationSchemaNestedInput
+  translations?: Prisma.EducationTranslationUncheckedUpdateManyWithoutEducationSchemaNestedInput
 }
 
 export type EducationUncheckedUpdateManyWithoutUserInput = {
@@ -864,8 +864,8 @@ export type EducationUpdateWithoutLogoInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutEducationsNestedInput
-  achievements?: Prisma.EducationAchievementUpdateManyWithoutEducationNestedInput
-  translations?: Prisma.EducationTranslationUpdateManyWithoutEducationNestedInput
+  achievements?: Prisma.EducationAchievementUpdateManyWithoutEducationSchemaNestedInput
+  translations?: Prisma.EducationTranslationUpdateManyWithoutEducationSchemaNestedInput
 }
 
 export type EducationUncheckedUpdateWithoutLogoInput = {
@@ -876,8 +876,8 @@ export type EducationUncheckedUpdateWithoutLogoInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  achievements?: Prisma.EducationAchievementUncheckedUpdateManyWithoutEducationNestedInput
-  translations?: Prisma.EducationTranslationUncheckedUpdateManyWithoutEducationNestedInput
+  achievements?: Prisma.EducationAchievementUncheckedUpdateManyWithoutEducationSchemaNestedInput
+  translations?: Prisma.EducationTranslationUncheckedUpdateManyWithoutEducationSchemaNestedInput
 }
 
 export type EducationUncheckedUpdateManyWithoutLogoInput = {

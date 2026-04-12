@@ -1,13 +1,14 @@
 'use server';
 
-import { Media } from '@/entities/media/model/types';
+import { prisma } from '@byte-of-me/db';
+
+import type { Media } from '@/entities/media/model/types';
 import { requireUser } from '@/features/auth/lib/session';
-import { ApiResponse } from '@/shared/types/api/api-response.type';
-import {
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
+import type {
   PaginatedData,
   PaginatedParams,
 } from '@/shared/types/api/paginated-api.type';
-import { prisma } from '@byte-of-me/db';
 
 export async function getPaginatedMedia(
   pagination: PaginatedParams

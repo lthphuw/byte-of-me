@@ -1,16 +1,17 @@
-import * as React from 'react';
-import { cn } from '@/shared/lib/utils';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Typography } from '@tiptap/extension-typography';
 import { Placeholder, Selection } from '@tiptap/extensions';
 import {
-  useEditor,
   type Content,
   type Editor,
+  useEditor,
   type UseEditorOptions,
 } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
+import * as React from 'react';
 import { toast } from 'sonner';
+
+import { cn } from '@/shared/lib/utils';
 
 import {
   CodeBlockLowlight,

@@ -4,7 +4,7 @@ export function HomepageProfileLoading() {
   return (
     <div className="space-y-16 md:space-y-28">
       {/* HERO SECTION SKELETON */}
-      <div className="max-w-3xl mx-auto space-y-5 md:space-y-8 text-left">
+      <div className="mx-auto max-w-3xl space-y-5 text-left md:space-y-8">
         {/* GreetingWriter Skeleton */}
         <Skeleton className="h-10 w-48 md:h-14 md:w-80" />
         <div className="space-y-3">
@@ -14,7 +14,7 @@ export function HomepageProfileLoading() {
       </div>
 
       {/* ABOUT / MY STORY SKELETON */}
-      <div className="grid gap-10 md:gap-14 items-start md:grid-cols-2">
+      <div className="grid items-start gap-10 md:grid-cols-2 md:gap-14">
         {/* Left Column (Bio) */}
         <div className="space-y-6 md:space-y-8">
           <div className="space-y-4 md:space-y-5">
@@ -32,7 +32,7 @@ export function HomepageProfileLoading() {
 
         {/* Right Column (Quote/Image Placeholder) */}
         <div className="hidden md:block">
-          <Skeleton className="aspect-square w-full max-w-[300px] rounded-2xl mx-auto" />
+          <Skeleton className="mx-auto aspect-square w-full max-w-[300px] rounded-2xl" />
         </div>
       </div>
     </div>

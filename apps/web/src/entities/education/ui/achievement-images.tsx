@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+
 import { cn } from '@/shared/lib/utils';
 import { Carousel, CarouselContent, CarouselItem } from '@/shared/ui/carousel';
 import { ScrollArea, ScrollBar } from '@/shared/ui/scroll-area';
@@ -18,13 +19,13 @@ export function AchievementImages({
   return (
     <>
       {/* Desktop */}
-      <ScrollArea className="hidden md:block max-w-full pb-2">
+      <ScrollArea className="hidden max-w-full pb-2 md:block">
         <div className="flex w-max space-x-4">
           {images.map((img: any, i: number) => (
             <button
               key={img.id}
               onClick={() => onOpenGallery(urls, i)}
-              className="relative w-40 aspect-[4/3] rounded-md overflow-hidden shrink-0"
+              className="relative aspect-[4/3] w-40 shrink-0 overflow-hidden rounded-md"
             >
               <Image src={img.url} alt={title} fill className="object-cover" />
             </button>
@@ -34,7 +35,7 @@ export function AchievementImages({
       </ScrollArea>
 
       {/* Mobile */}
-      <div className="block md:hidden relative">
+      <div className="relative block md:hidden">
         <Carousel
           className=""
           setApi={(api) => {
@@ -55,7 +56,7 @@ export function AchievementImages({
               >
                 <button
                   onClick={() => onOpenGallery(urls, i)}
-                  className="relative w-full aspect-[4/3] rounded-xl overflow-hidden"
+                  className="relative aspect-[4/3] w-full overflow-hidden rounded-xl"
                 >
                   <Image
                     src={img.url}
@@ -70,14 +71,14 @@ export function AchievementImages({
 
           {/* Dots */}
           {images.length > 1 && (
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 bg-black/40 px-2.5 py-1.5 rounded-full items-center">
+            <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1.5">
               {images.map((_: any, i: number) => (
                 <div
                   key={i}
                   className={`rounded-full ${
                     i === currentSlide
-                      ? 'w-2 h-2 bg-white'
-                      : 'w-1.5 h-1.5 bg-white/50'
+                      ? 'h-2 w-2 bg-white'
+                      : 'h-1.5 w-1.5 bg-white/50'
                   }`}
                 />
               ))}

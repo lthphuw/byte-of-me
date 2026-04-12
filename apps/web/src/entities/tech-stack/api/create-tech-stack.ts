@@ -1,8 +1,9 @@
 'use server';
 
-import { TechStackFormValues } from '@/entities/tech-stack/schemas/tech-stack';
-import { requireUser } from '@/features/auth/lib/session';
 import { prisma } from '@byte-of-me/db';
+
+import type { TechStackFormValues } from '@/entities/tech-stack/schemas/tech-stack';
+import { requireUser } from '@/features/auth/lib/session';
 
 export async function addTechStack(data: TechStackFormValues) {
   try {

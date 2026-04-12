@@ -1,5 +1,6 @@
-import { Skeleton } from '@/shared/ui/skeleton';
 import { Plus } from 'lucide-react';
+
+import { Skeleton } from '@/shared/ui/skeleton';
 
 export interface ProjectFilterSectionProps {
   title: string;
@@ -20,7 +21,7 @@ export function ProjectFilterSection({
 }: ProjectFilterSectionProps) {
   return (
     <div className="space-y-3">
-      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+      <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">
         {title}
       </p>
 
@@ -31,7 +32,7 @@ export function ProjectFilterSection({
             <Skeleton className="h-6 w-24 rounded-full" />
             <Skeleton className="h-6 w-20 rounded-full" />
             <Skeleton className="h-6 w-14 rounded-full" />
-            <Skeleton className="h-6 w-22 rounded-full" />
+            <Skeleton className="w-22 h-6 rounded-full" />
           </>
         ) : (
           children
@@ -47,9 +48,9 @@ export function ProjectFilterSection({
         {hasMore && !isFetchingNextPage && !isLoading && (
           <button
             onClick={onLoadMore}
-            className="inline-flex items-center gap-1 px-2 h-6 text-[11px] font-medium text-primary hover:underline transition-all"
+            className="text-primary inline-flex h-6 items-center gap-1 px-2 text-[11px] font-medium transition-all hover:underline"
           >
-            <Plus className="w-3 h-3" />
+            <Plus className="h-3 w-3" />
             See more
           </button>
         )}

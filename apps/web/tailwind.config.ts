@@ -1,7 +1,7 @@
 import tailwindTypography from '@tailwindcss/typography';
-import tailwindcssAnimate from 'tailwindcss-animate';
 import { fontFamily } from 'tailwindcss/defaultTheme';
 import plugin from 'tailwindcss/plugin';
+import tailwindcssAnimate from 'tailwindcss-animate';
 
 
 

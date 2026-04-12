@@ -1,6 +1,8 @@
 'use client';
 
+import { Check, ChevronDown, ImageIcon, Loader2, Plus, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
+
 import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import { cn } from '@/shared/lib/utils';
@@ -14,7 +16,6 @@ import {
 } from '@/shared/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { ScrollArea } from '@/shared/ui/scroll-area';
-import { Check, ChevronDown, ImageIcon, Loader2, Plus, X } from 'lucide-react';
 
 interface MediaMultiSelectProps {
   value?: string[];
@@ -50,14 +51,14 @@ export function MediaMultiSelect({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="w-full justify-between min-h-[56px] px-3 border-2 border-dashed hover:border-primary hover:bg-primary/5 transition-all"
+          className="hover:border-primary hover:bg-primary/5 min-h-[56px] w-full justify-between border-2 border-dashed px-3 transition-all"
         >
-          <div className="flex items-center gap-2 flex-wrap py-1">
+          <div className="flex flex-wrap items-center gap-2 py-1">
             {selectedMedia.length > 0 ? (
               selectedMedia.slice(0, 3).map((media) => (
                 <div
                   key={media.id}
-                  className="h-10 w-10 rounded overflow-hidden border bg-background shrink-0"
+                  className="bg-background h-10 w-10 shrink-0 overflow-hidden rounded border"
                 >
                   <img
                     src={media.url}
@@ -67,29 +68,29 @@ export function MediaMultiSelect({
                 </div>
               ))
             ) : (
-              <div className="h-10 w-10 rounded bg-muted flex items-center justify-center border shrink-0">
-                <ImageIcon className="h-5 w-5 text-muted-foreground/40" />
+              <div className="bg-muted flex h-10 w-10 shrink-0 items-center justify-center rounded border">
+                <ImageIcon className="text-muted-foreground/40 h-5 w-5" />
               </div>
             )}
 
-            <div className="flex flex-col items-start text-left ml-2">
+            <div className="ml-2 flex flex-col items-start text-left">
               <span className="text-sm font-medium">
                 {value.length > 0 ? `${value.length} selected` : 'Select Media'}
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-muted-foreground text-xs">
                 {value.length > 3
                   ? `+ ${value.length - 3} more`
                   : 'Click to manage'}
               </span>
             </div>
           </div>
-          <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
+          <ChevronDown className="text-muted-foreground h-4 w-4 shrink-0" />
         </Button>
       </PopoverTrigger>
 
       <PopoverContent className="w-[420px] p-0 shadow-xl" align="start">
-        <div className="p-3 border-b bg-muted/30 flex justify-between items-center">
-          <span className="text-xs font-bold uppercase text-muted-foreground">
+        <div className="bg-muted/30 flex items-center justify-between border-b p-3">
+          <span className="text-muted-foreground text-xs font-bold uppercase">
             Library
           </span>
           <div className="flex gap-2">
@@ -97,7 +98,7 @@ export function MediaMultiSelect({
               <Button
                 size="sm"
                 variant="ghost"
-                className="text-xs h-7 px-2 hover:text-destructive"
+                className="hover:text-destructive h-7 px-2 text-xs"
                 onClick={() => onChange([])}
               >
                 Clear All
@@ -105,7 +106,7 @@ export function MediaMultiSelect({
             )}
             <Dialog open={isUploadOpen} onOpenChange={setIsUploadOpen}>
               <DialogTrigger asChild>
-                <Button size="sm" className="h-7 px-2 text-[10px] gap-1">
+                <Button size="sm" className="h-7 gap-1 px-2 text-[10px]">
                   <Plus className="h-3 w-3" /> Upload
                 </Button>
               </DialogTrigger>
@@ -125,12 +126,12 @@ export function MediaMultiSelect({
         </div>
 
         {selectedMedia.length > 0 && (
-          <ScrollArea className="max-h-24 border-b bg-background">
-            <div className="p-3 flex gap-2 flex-wrap">
+          <ScrollArea className="bg-background max-h-24 border-b">
+            <div className="flex flex-wrap gap-2 p-3">
               {selectedMedia.map((media) => (
                 <div
                   key={media.id}
-                  className="relative h-12 w-12 rounded overflow-hidden border group"
+                  className="group relative h-12 w-12 overflow-hidden rounded border"
                 >
                   <img
                     src={media.url}
@@ -140,9 +141,9 @@ export function MediaMultiSelect({
                   <button
                     type="button"
                     onClick={() => toggleSelect(media.id)}
-                    className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100"
                   >
-                    <X className="w-4 h-4 text-white" />
+                    <X className="h-4 w-4 text-white" />
                   </button>
                 </div>
               ))}
@@ -154,7 +155,7 @@ export function MediaMultiSelect({
           <div className="p-3">
             {isLoading ? (
               <div className="flex h-40 flex-col items-center justify-center gap-2">
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                <Loader2 className="text-primary h-6 w-6 animate-spin" />
               </div>
             ) : (
               <div className="grid grid-cols-4 gap-2">
@@ -174,12 +175,12 @@ export function MediaMultiSelect({
                     >
                       <img
                         src={media.url}
-                        className="object-cover w-full h-full"
+                        className="h-full w-full object-cover"
                         alt={media.fileName}
                       />
                       {isSelected && (
-                        <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                          <div className="bg-primary text-white rounded-full p-0.5">
+                        <div className="bg-primary/20 absolute inset-0 flex items-center justify-center">
+                          <div className="bg-primary rounded-full p-0.5 text-white">
                             <Check className="h-3 w-3" />
                           </div>
                         </div>
@@ -193,7 +194,7 @@ export function MediaMultiSelect({
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full mt-4"
+                className="mt-4 w-full"
                 onClick={() => fetchNextPage()}
                 disabled={isFetchingNextPage}
               >

@@ -1,9 +1,10 @@
 'use client';
 
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/ui/empty';
 import { LibraryBig, SearchX } from 'lucide-react';
 // Better icons
 import { useTranslations } from 'next-intl';
+
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/ui/empty';
 
 export type EmptyBlogProps = BaseComponentProps & {
   isSearch?: boolean;

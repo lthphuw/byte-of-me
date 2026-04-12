@@ -1,5 +1,6 @@
-import { getAllPublicTechStacks } from '@/entities/tech-stack';
 import { getTranslations } from 'next-intl/server';
+
+import { getAllPublicTechStacks } from '@/entities/tech-stack';
 
 import { TechStackSection } from './tech-stack-section';
 
@@ -15,7 +16,7 @@ export async function AboutTechStack() {
   return (
     <section className="space-y-8">
       <div className="flex items-center gap-4">
-        <h2 className="text-2xl md:text-4xl font-bold tracking-tight">
+        <h2 className="text-2xl font-bold tracking-tight md:text-4xl">
           {t('about.section.skillsTechStack')}
         </h2>
       </div>

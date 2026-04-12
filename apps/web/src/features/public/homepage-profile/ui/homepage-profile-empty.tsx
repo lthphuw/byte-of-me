@@ -1,13 +1,14 @@
+import { UserCircle2 } from 'lucide-react';
+
 import { Link } from '@/i18n/navigation';
 import { Routes } from '@/shared/config/global';
 import { Button } from '@/shared/ui/button';
-import { UserCircle2 } from 'lucide-react';
 
 export function HomepageProfileEmpty() {
   return (
-    <section className="flex flex-col items-center justify-center py-20 text-center space-y-6">
+    <section className="flex flex-col items-center justify-center space-y-6 py-20 text-center">
       <div className="bg-muted rounded-full p-6">
-        <UserCircle2 className="w-12 h-12 text-muted-foreground/50" />
+        <UserCircle2 className="text-muted-foreground/50 h-12 w-12" />
       </div>
 
       <div className="max-w-sm space-y-2">

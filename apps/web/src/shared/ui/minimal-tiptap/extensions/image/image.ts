@@ -4,13 +4,13 @@ import {
 } from '@tiptap/extension-image';
 import type { Attrs } from '@tiptap/pm/model';
 import { ReplaceStep } from '@tiptap/pm/transform';
-import { ReactNodeViewRenderer, type Editor } from '@tiptap/react';
+import { type Editor,ReactNodeViewRenderer } from '@tiptap/react';
 
 import {
-  filterFiles,
-  randomId,
   type FileError,
   type FileValidationOptions,
+  filterFiles,
+  randomId,
 } from '../../utils';
 import { ImageViewBlock } from './components/image-view-block';
 

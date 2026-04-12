@@ -1,8 +1,8 @@
-import { Media } from '@/entities/media/model/types';
-import { PublicProject } from '@/entities/project/model/types';
-import { PublicTag } from '@/entities/tag/model/types';
+import type { Media } from '@/entities/media/model/types';
+import type { PublicProject } from '@/entities/project/model/types';
+import type { PublicTag } from '@/entities/tag/model/types';
 
-import { Prisma } from '../../../../../../packages/db/generated/prisma/client';
+import type { Prisma } from '../../../../../../packages/db/generated/prisma/client';
 
 export type AdminBlog = Prisma.BlogGetPayload<{
   include: {

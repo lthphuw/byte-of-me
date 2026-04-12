@@ -1,5 +1,6 @@
-import { getPaginatedPublicTechStacks } from '@/entities/tech-stack/api/get-paginated-public-tech-stacks';
 import { useInfiniteQuery } from '@tanstack/react-query';
+
+import { getPaginatedPublicTechStacks } from '@/entities/tech-stack/api/get-paginated-public-tech-stacks';
 
 export function useTechStackInfiniteQuery(limit: number = 12) {
   return useInfiniteQuery({

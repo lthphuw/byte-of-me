@@ -1,6 +1,7 @@
-import { LocaleType } from '@/shared/types';
-import { HomepageContent } from '@/widgets/homepage-content/ui';
 import { setRequestLocale } from 'next-intl/server';
+
+import type { LocaleType } from '@/shared/types';
+import { HomepageContent } from '@/widgets/homepage-content/ui';
 
 interface HomePageProps {
   params: Promise<{ locale: string }>;

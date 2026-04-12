@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+
 import { EducationItem } from '@/entities/education';
-import { PublicEducation } from '@/entities/education/model/types';
+import type { PublicEducation } from '@/entities/education/model/types';
 
 import { EducationImageGallery } from './education-image-gallery';
 

@@ -1,2 +1,2 @@
-export * from './about-shell';
 export * from './about-content';
+export * from './about-shell';

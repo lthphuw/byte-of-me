@@ -1,11 +1,12 @@
 'use client';
 
+import './tiptap-lite.css';
+
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 
-import './tiptap-lite.css';
 import { cn } from '@/shared/lib/utils';
 
 
@@ -49,11 +50,11 @@ export function RichTextEditorLite({ value, onChange, className }: Props) {
   return (
     <div className={cn('w-full', className)}>
       {/* Minimal toolbar */}
-      <div className="flex gap-2 mb-2">
+      <div className="mb-2 flex gap-2">
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className="text-xs px-2 py-1 border rounded"
+          className="rounded border px-2 py-1 text-xs"
         >
           Bold
         </button>
@@ -61,7 +62,7 @@ export function RichTextEditorLite({ value, onChange, className }: Props) {
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className="text-xs px-2 py-1 border rounded"
+          className="rounded border px-2 py-1 text-xs"
         >
           Italic
         </button>
@@ -74,7 +75,7 @@ export function RichTextEditorLite({ value, onChange, className }: Props) {
               editor.chain().focus().setLink({ href: url }).run();
             }
           }}
-          className="text-xs px-2 py-1 border rounded"
+          className="rounded border px-2 py-1 text-xs"
         >
           Link
         </button>

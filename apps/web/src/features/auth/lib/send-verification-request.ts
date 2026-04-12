@@ -1,7 +1,8 @@
-import { signInTemplate } from '@/features/auth/lib/templates/sign-in-template';
-import { siteConfig } from '@/shared/config/site';
 import { logger } from '@byte-of-me/logger';
 import nodemailer from 'nodemailer';
+
+import { signInTemplate } from '@/features/auth/lib/templates/sign-in-template';
+import { siteConfig } from '@/shared/config/site';
 
 export async function sendVerificationRequest({
   identifier,

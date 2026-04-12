@@ -1,10 +1,14 @@
 'use client';
 
-import * as React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useSearchParams } from 'next/navigation';
+import * as React from 'react';
+import { useForm } from 'react-hook-form';
+
 import { logIn } from '@/features/auth/lib/log-in';
+import type {
+  UserAuthLoginFormValues} from '@/features/auth/schemas/user-auth-login.schema';
 import {
-  UserAuthLoginFormValues,
   userAuthLoginSchema,
 } from '@/features/auth/schemas/user-auth-login.schema';
 import { cn } from '@/shared/lib/utils';
@@ -20,8 +24,6 @@ import {
 import { Icons } from '@/shared/ui/icons';
 import { Input } from '@/shared/ui/input';
 import { toast } from '@/shared/ui/use-toast';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 

@@ -1,6 +1,8 @@
 'use client';
 
+import { ChevronDown } from 'lucide-react';
 import React, { useState } from 'react';
+
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import {
@@ -10,7 +12,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/shared/ui/drawer';
-import { ChevronDown } from 'lucide-react';
 
 interface MobileToolbarGroupProps {
   label: string;

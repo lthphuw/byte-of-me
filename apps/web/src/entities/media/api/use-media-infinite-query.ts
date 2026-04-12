@@ -1,5 +1,6 @@
-import { getPaginatedMedia } from '@/entities/media/api/get-paginated-media';
 import { useInfiniteQuery } from '@tanstack/react-query';
+
+import { getPaginatedMedia } from '@/entities/media/api/get-paginated-media';
 
 export function useMediaInfiniteQuery(limit: number = 12) {
   return useInfiniteQuery({

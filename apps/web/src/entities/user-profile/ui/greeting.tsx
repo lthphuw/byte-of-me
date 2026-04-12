@@ -1,6 +1,7 @@
 'use client';
 
-import { CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
+
 import { cn } from '@/shared/lib/utils';
 
 export interface GreetingProps {

@@ -1,7 +1,8 @@
 'use server';
 
-import { BlogFormValues } from '@/entities/blog/schemas/blog';
 import { prisma } from '@byte-of-me/db';
+
+import type { BlogFormValues } from '@/entities/blog/schemas/blog';
 
 export async function updateBlog(id: string, data: BlogFormValues) {
   return await prisma.$transaction(async (tx) => {

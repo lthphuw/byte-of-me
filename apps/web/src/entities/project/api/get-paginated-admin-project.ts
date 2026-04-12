@@ -1,10 +1,11 @@
 'use server';
 
-import { AdminProject } from '@/entities/project/model/types';
-import { requireUser } from '@/features/auth/lib/session';
-import { ApiResponse } from '@/shared/types/api/api-response.type';
-import { PaginatedData } from '@/shared/types/api/paginated-api.type';
 import { prisma } from '@byte-of-me/db';
+
+import type { AdminProject } from '@/entities/project/model/types';
+import { requireUser } from '@/features/auth/lib/session';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
+import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
 export async function getPaginatedAdminProject(
   page: number = 1,

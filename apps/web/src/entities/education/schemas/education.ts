@@ -25,7 +25,7 @@ export const educationAchievementSchema = z.object({
   imageIds: z.array(z.string()),
 });
 
-export const education = z.object({
+export const educationSchema = z.object({
   id: z.string().optional(),
 
   sortOrder: z.number(),
@@ -38,4 +38,4 @@ export const education = z.object({
   achievements: z.array(educationAchievementSchema),
 });
 
-export type EducationFormValues = z.infer<typeof education>;
+export type EducationFormValues = z.infer<typeof educationSchema>;

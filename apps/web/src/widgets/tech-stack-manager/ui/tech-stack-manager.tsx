@@ -1,17 +1,18 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
-import { AdminTechStack } from '@/entities/tech-stack';
+import { useMemo, useState } from 'react';
+
+import type { AdminTechStack } from '@/entities/tech-stack';
 import { addTechStack } from '@/entities/tech-stack/api/create-tech-stack';
 import { deleteTechStack } from '@/entities/tech-stack/api/delete-tech-stack';
 import { getAllAdminTechStack } from '@/entities/tech-stack/api/get-all-admin-tech-stacks';
 import { updateTechStack } from '@/entities/tech-stack/api/update-tech-stack';
-import { TechStackFormValues } from '@/entities/tech-stack/schemas/tech-stack';
+import type { TechStackFormValues } from '@/entities/tech-stack/schemas/tech-stack';
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/ui/use-toast';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 
 import { TechStackDialog } from './tech-stack-dialog';
 
@@ -83,20 +84,20 @@ export function TechStackManager({
         </Button>
       </div>
 
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+      <div className="columns-1 gap-6 space-y-6 md:columns-2 lg:columns-3">
         {Object.entries(grouped).map(([group, items]) => (
           <div
             key={group}
-            className="space-y-3 break-inside-avoid border-2 border-dashed rounded-md p-4"
+            className="break-inside-avoid space-y-3 rounded-md border-2 border-dashed p-4"
           >
             <h3 className="text-base font-semibold">{group}</h3>
 
             {items.map((tech) => (
               <div
                 key={tech.id}
-                className="flex p-2 gap-2 justify-between border-dashed border rounded-md items-center"
+                className="flex items-center justify-between gap-2 rounded-md border border-dashed p-2"
               >
-                <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-2">
                   {tech.logo?.url && (
                     <Image
                       src={tech.logo.url}
@@ -107,7 +108,7 @@ export function TechStackManager({
                   )}
                   <div className={'flex flex-col gap-2'}>
                     <p className={'text-sm'}>{tech.name}</p>
-                    <p className={'text-sm text-muted-foreground'}>
+                    <p className={'text-muted-foreground text-sm'}>
                       {tech.slug}
                     </p>
                   </div>

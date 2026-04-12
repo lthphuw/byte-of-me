@@ -1,8 +1,9 @@
 'use server';
 
-import { requireUser } from '@/features/auth/lib/session';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
+
+import { requireUser } from '@/features/auth/lib/session';
 
 export async function deleteTag(id: string) {
   try {

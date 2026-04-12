@@ -1,10 +1,11 @@
 'use server';
 
-import { EducationFormValues } from '@/entities/education/schemas/education';
-import { requireUser } from '@/features/auth/lib/session';
-import { ApiResponse } from '@/shared/types/api/api-response.type';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
+
+import type { EducationFormValues } from '@/entities/education/schemas/education';
+import { requireUser } from '@/features/auth/lib/session';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function createEducation(
   values: EducationFormValues
@@ -59,7 +60,7 @@ export async function createEducation(
     logger.error(`Create education error: ${error.message}`);
     return {
       success: false,
-      errorMsg: error.message || 'Failed to create education',
+      errorMsg: error.message || 'Failed to create educationSchema',
     };
   }
 }

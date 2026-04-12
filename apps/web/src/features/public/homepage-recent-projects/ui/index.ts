@@ -1,2 +1,2 @@
-export * from './homepage-recent-projects-loading';
 export * from './homepage-recent-projects';
+export * from './homepage-recent-projects-loading';

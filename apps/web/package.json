@@ -14,8 +14,8 @@
     "start": "next start",
     "preview": "pnpm build && pnpm start",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,md}\"",
-    "lint": "eslint src --max-warnings=0",
-    "lint:fix": "eslint src --ext .ts,.tsx --fix"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

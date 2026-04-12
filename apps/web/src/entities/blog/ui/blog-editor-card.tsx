@@ -1,11 +1,12 @@
+import { format } from 'date-fns';
+import { Calendar, Eye, EyeOff, Pencil, Trash2 } from 'lucide-react';
 import Image from 'next/image';
-import { AdminBlog } from '@/entities/blog';
+
+import type { AdminBlog } from '@/entities/blog';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/shared/ui/card';
 import { ImagePlaceholder } from '@/shared/ui/image-placeholder';
-import { format } from 'date-fns';
-import { Calendar, Eye, EyeOff, Pencil, Trash2 } from 'lucide-react';
 
 interface BlogCardProps {
   blog: AdminBlog;
@@ -18,7 +19,7 @@ export function BlogEditorCard({ blog, onEdit, onDelete }: BlogCardProps) {
   const coverImageUrl = blog.coverImage?.url;
 
   return (
-    <Card className="overflow-hidden flex flex-col h-full hover:shadow-md transition-all group border-muted-foreground/10">
+    <Card className="border-muted-foreground/10 group flex h-full flex-col overflow-hidden transition-all hover:shadow-md">
       {/* Aspect Ratio Container for Image */}
       <div className="relative aspect-video w-full overflow-hidden border-b">
         {coverImageUrl ? (
@@ -33,46 +34,46 @@ export function BlogEditorCard({ blog, onEdit, onDelete }: BlogCardProps) {
           <ImagePlaceholder text="No Cover" />
         )}
 
-        <div className="absolute top-2 right-2">
+        <div className="absolute right-2 top-2">
           <Badge
             variant={blog.isPublished ? 'default' : 'secondary'}
-            className="backdrop-blur-md bg-opacity-80 font-medium"
+            className="bg-opacity-80 font-medium backdrop-blur-md"
           >
             {blog.isPublished ? (
               <>
-                <Eye className="w-3 h-3 mr-1" /> Published
+                <Eye className="mr-1 h-3 w-3" /> Published
               </>
             ) : (
               <>
-                <EyeOff className="w-3 h-3 mr-1" /> Draft
+                <EyeOff className="mr-1 h-3 w-3" /> Draft
               </>
             )}
           </Badge>
         </div>
       </div>
 
-      <CardHeader className="p-4 pb-2 space-y-1">
-        <h3 className="font-bold leading-tight line-clamp-2 min-h-[2.5rem] group-hover:text-primary transition-colors">
+      <CardHeader className="space-y-1 p-4 pb-2">
+        <h3 className="group-hover:text-primary line-clamp-2 min-h-[2.5rem] font-bold leading-tight transition-colors">
           {mainTranslation?.title || 'Untitled PublicBlog'}
         </h3>
-        <p className="text-[11px] text-muted-foreground font-mono truncate bg-muted/50 w-fit px-1 rounded">
+        <p className="text-muted-foreground bg-muted/50 w-fit truncate rounded px-1 font-mono text-[11px]">
           /{blog.slug}
         </p>
       </CardHeader>
 
-      <CardContent className="p-4 pt-0 flex-grow">
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+      <CardContent className="flex-grow p-4 pt-0">
+        <p className="text-muted-foreground mb-4 line-clamp-2 text-sm">
           {mainTranslation?.description ||
             'No description provided for this blog post.'}
         </p>
 
         {/* Render Tags if they exist */}
-        <div className="flex flex-wrap gap-1.5 mt-auto">
+        <div className="mt-auto flex flex-wrap gap-1.5">
           {blog.tags?.map((t: any) => (
             <Badge
               key={t.tagId}
               variant="outline"
-              className="text-[10px] py-0 px-2 font-normal"
+              className="px-2 py-0 text-[10px] font-normal"
             >
               {(t.tag?.translations?.[0] as any)?.name || t.tag?.id}
             </Badge>
@@ -80,10 +81,10 @@ export function BlogEditorCard({ blog, onEdit, onDelete }: BlogCardProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="p-3 border-t bg-muted/5 flex items-center justify-between">
+      <CardFooter className="bg-muted/5 flex items-center justify-between border-t p-3">
         {blog.publishedDate && (
-          <div className="flex items-center text-muted-foreground text-[11px]">
-            <Calendar className="w-3.5 h-3.5 mr-1" />
+          <div className="text-muted-foreground flex items-center text-[11px]">
+            <Calendar className="mr-1 h-3.5 w-3.5" />
             {format(new Date(blog.publishedDate), 'MMM dd, yyyy')}
           </div>
         )}
@@ -92,18 +93,18 @@ export function BlogEditorCard({ blog, onEdit, onDelete }: BlogCardProps) {
           <Button
             size="icon"
             variant="ghost"
-            className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+            className="hover:bg-primary/10 hover:text-primary h-8 w-8"
             onClick={() => onEdit(blog)}
           >
-            <Pencil className="w-4 h-4" />
+            <Pencil className="h-4 w-4" />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
+            className="hover:bg-destructive/10 hover:text-destructive h-8 w-8"
             onClick={() => onDelete(blog.id)}
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="h-4 w-4" />
           </Button>
         </div>
       </CardFooter>

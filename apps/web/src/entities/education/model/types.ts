@@ -1,6 +1,6 @@
-import { Media } from '@/entities/media/model/types';
+import type { Media } from '@/entities/media/model/types';
 
-import { Prisma } from '../../../../../../packages/db/generated/prisma/client';
+import type { Prisma } from '../../../../../../packages/db/generated/prisma/client';
 
 export type AdminEducation = Prisma.EducationGetPayload<{
   include: {

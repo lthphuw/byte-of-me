@@ -1,18 +1,20 @@
 'use client';
 
-import * as React from 'react';
+import type {Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useSelectedLayoutSegment } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
+import * as React from 'react';
+
 import { Link } from '@/i18n/navigation';
 import { iconOpenCloseVariants } from '@/shared/config/anim';
 import { Routes } from '@/shared/config/global';
 import { siteConfig } from '@/shared/config/site';
 import { cn } from '@/shared/lib/utils';
-import { MainNavItem } from '@/shared/types';
+import type { MainNavItem } from '@/shared/types';
 import { Button } from '@/shared/ui/button';
 import { Icons } from '@/shared/ui/icons';
 import { PublicHeaderMobileNav } from '@/widgets/public-site-header/ui/public-header-mobile-nav';
-import { Variants, motion } from 'framer-motion';
-import { useLocale, useTranslations } from 'next-intl';
 
 interface MainNavProps {
   items: MainNavItem[];
@@ -65,7 +67,7 @@ export const PublicHeaderMainNav = React.forwardRef<HTMLDivElement, MainNavProps
         <Link
           href={Routes.Homepage}
           locale={locale}
-          className="hidden md:flex items-center space-x-2"
+          className="hidden items-center space-x-2 md:flex"
         >
           <motion.div
             initial="initial"
@@ -82,7 +84,7 @@ export const PublicHeaderMainNav = React.forwardRef<HTMLDivElement, MainNavProps
 
         {/* Desktop Navigation */}
         {navItems.length > 0 && (
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden items-center gap-1 md:flex">
             {navItems.map((item) => {
               const isActive = item.href && item.href.startsWith(`/${segment}`);
 
@@ -114,7 +116,7 @@ export const PublicHeaderMainNav = React.forwardRef<HTMLDivElement, MainNavProps
         )}
 
         {/* Mobile Navigation */}
-        <div className="md:hidden relative z-[10000]">
+        <div className="relative z-[10000] md:hidden">
           <motion.button
             ref={triggerRef}
             whileHover={{ scale: 1.05 }}

@@ -1,9 +1,11 @@
-import { ProfileFormValues } from '@/entities/user-profile/schemas/user-profile';
+import { Plus, Trash2 } from 'lucide-react';
+import type {UseFormReturn } from 'react-hook-form';
+import { useFieldArray } from 'react-hook-form';
+
+import type { ProfileFormValues } from '@/entities/user-profile/schemas/user-profile';
 import { Button } from '@/shared/ui/button';
 import { FormControl, FormField, FormItem } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
-import { Plus, Trash2 } from 'lucide-react';
-import { UseFormReturn, useFieldArray } from 'react-hook-form';
 
 export function SocialLinksSection({
   form,
@@ -18,10 +20,10 @@ export function SocialLinksSection({
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold">Social Links</h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Add your social profiles
           </p>
         </div>
@@ -38,7 +40,7 @@ export function SocialLinksSection({
             })
           }
         >
-          <Plus className="w-4 h-4 mr-1" />
+          <Plus className="mr-1 h-4 w-4" />
           Add Link
         </Button>
       </div>
@@ -46,8 +48,8 @@ export function SocialLinksSection({
       {/* Content */}
       <div className="space-y-3">
         {fields.length === 0 && (
-          <div className="text-center border rounded-lg py-8">
-            <p className="text-sm text-muted-foreground mb-3">
+          <div className="rounded-lg border py-8 text-center">
+            <p className="text-muted-foreground mb-3 text-sm">
               No social links yet
             </p>
             <Button
@@ -61,7 +63,7 @@ export function SocialLinksSection({
         {fields.map((field, index) => (
           <div
             key={field.id}
-            className="flex items-center gap-3 border rounded-lg p-3 bg-background/50"
+            className="bg-background/50 flex items-center gap-3 rounded-lg border p-3"
           >
             {/* Platform */}
             <div className="w-32">
@@ -103,7 +105,7 @@ export function SocialLinksSection({
                 if (confirm('Remove this link?')) remove(index);
               }}
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         ))}

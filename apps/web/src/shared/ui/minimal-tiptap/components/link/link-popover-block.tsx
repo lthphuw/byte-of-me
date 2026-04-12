@@ -1,10 +1,11 @@
-import * as React from 'react';
-import { Separator } from '@/shared/ui/separator';
 import {
   CopyIcon,
   ExternalLinkIcon,
   LinkBreak2Icon,
 } from '@radix-ui/react-icons';
+import * as React from 'react';
+
+import { Separator } from '@/shared/ui/separator';
 
 import { ToolbarButton } from '../toolbar-button';
 

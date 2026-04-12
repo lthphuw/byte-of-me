@@ -1,13 +1,14 @@
 'use server';
 
-import { PublicTechStack } from '@/entities/tech-stack/model/types';
+import { prisma } from '@byte-of-me/db';
+
+import type { PublicTechStack } from '@/entities/tech-stack/model/types';
 import {
   handlePublicAction,
   withPublicActionHandler,
 } from '@/shared/api/public-action-template';
-import { PaginatedData, PaginatedParams } from '@/shared/types/api';
-import { ApiResponse } from '@/shared/types/api/api-response.type';
-import { prisma } from '@byte-of-me/db';
+import type { PaginatedData, PaginatedParams } from '@/shared/types/api';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getPaginatedPublicTechStacks(
   pagination: PaginatedParams

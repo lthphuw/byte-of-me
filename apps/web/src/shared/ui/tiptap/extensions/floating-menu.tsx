@@ -1,16 +1,5 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useDebounce } from '@/shared/hooks/use-debounce';
-import { cn } from '@/shared/lib/utils';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from '@/shared/ui/command';
-import { ScrollArea } from '@/shared/ui/scroll-area';
 import type { Editor } from '@tiptap/core';
 import { FloatingMenu } from '@tiptap/react/menus';
 import {
@@ -30,6 +19,18 @@ import {
   Quote,
   TextQuote,
 } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { useDebounce } from '@/shared/hooks/use-debounce';
+import { cn } from '@/shared/lib/utils';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from '@/shared/ui/command';
+import { ScrollArea } from '@/shared/ui/scroll-area';
 
 interface CommandItemType {
   title: string;
@@ -337,10 +338,10 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
       //   },
       // } as any}
     >
-      <Command role="listbox" ref={commandRef} className="z-50 w-72 overflow-hidden rounded-lg border bg-popover shadow-lg">
+      <Command role="listbox" ref={commandRef} className="bg-popover z-50 w-72 overflow-hidden rounded-lg border shadow-lg">
         <ScrollArea className="max-h-[330px]">
           <CommandList>
-            <CommandEmpty className="py-3 text-center text-sm text-muted-foreground">
+            <CommandEmpty className="text-muted-foreground py-3 text-center text-sm">
               No results found
             </CommandEmpty>
 
@@ -348,7 +349,7 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
               <CommandGroup
                 key={`${group.group}-${groupIndex}`}
                 heading={
-                  <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                  <div className="text-muted-foreground px-2 py-1.5 text-xs font-medium">
                     {group.group}
                   </div>
                 }
@@ -375,18 +376,18 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
                       }}
                       tabIndex={flatIndex === selectedIndex ? 0 : -1}
                     >
-                      <div className="flex h-9 w-9 items-center justify-center rounded-md border bg-background">
+                      <div className="bg-background flex h-9 w-9 items-center justify-center rounded-md border">
                         <item.icon className="h-4 w-4" />
                       </div>
                       <div className="flex flex-1 flex-col">
                         <span className="text-sm font-medium">
                           {item.title}
                         </span>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-muted-foreground text-xs">
                           {item.description}
                         </span>
                       </div>
-                      <kbd className="ml-auto flex h-5 items-center rounded bg-muted px-1.5 text-xs text-muted-foreground">
+                      <kbd className="bg-muted text-muted-foreground ml-auto flex h-5 items-center rounded px-1.5 text-xs">
                         ↵
                       </kbd>
                     </CommandItem>

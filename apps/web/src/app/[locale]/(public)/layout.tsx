@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation';
-import { routing } from '@/i18n/routing';
-import { LocaleType } from '@/shared/types';
-import { PublicSiteFooter } from '@/widgets/public-site-footer/ui';
-import { PublicSiteHeader } from '@/widgets/public-site-header/ui/public-site-header';
 import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
+
+import { routing } from '@/i18n/routing';
+import type { LocaleType } from '@/shared/types';
+import { PublicSiteFooter } from '@/widgets/public-site-footer/ui';
+import { PublicSiteHeader } from '@/widgets/public-site-header/ui/public-site-header';
 
 interface PublicLayoutProps {
   children?: React.ReactNode;
@@ -28,7 +29,7 @@ export default async function PublicLayout({
   setRequestLocale(locale as LocaleType);
 
   return (
-    <div className="flex relative min-h-screen flex-col overflow-hidden">
+    <div className="relative flex min-h-screen flex-col overflow-hidden">
       <PublicSiteHeader />
       <div className="container grid flex-1 gap-12">
         <main className="flex w-full flex-1 flex-col">{children}</main>

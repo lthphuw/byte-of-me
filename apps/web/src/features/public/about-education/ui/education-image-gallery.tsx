@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import Image from 'next/image';
+import { useEffect } from 'react';
+
 import { Button } from '@/shared/ui/button';
 import { Dialog, DialogContent } from '@/shared/ui/dialog';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 export function EducationImageGallery({
   images,
@@ -31,12 +32,12 @@ export function EducationImageGallery({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-screen h-[100dvh] max-w-none p-0 bg-black border-none">
+      <DialogContent className="h-[100dvh] w-screen max-w-none border-none bg-black p-0">
         {/* Close */}
         <Button
           variant="ghost"
           size="icon"
-          className="absolute top-4 right-4 z-30 text-white"
+          className="absolute right-4 top-4 z-30 text-white"
           onClick={() => onOpenChange(false)}
         >
           <X />
@@ -44,7 +45,7 @@ export function EducationImageGallery({
 
         {/* Image */}
         {images[index] && (
-          <div className="relative w-full h-full">
+          <div className="relative h-full w-full">
             <Image src={images[index]} alt="" fill className="object-contain" />
           </div>
         )}

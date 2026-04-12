@@ -1,10 +1,11 @@
 'use client';
 
+import { BoldIcon } from 'lucide-react';
 import React from 'react';
+
 import { cn } from '@/shared/lib/utils';
 import { Button, type ButtonProps } from '@/shared/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
-import { BoldIcon } from 'lucide-react';
 
 import { useToolbar } from './toolbar-provider';
 
@@ -44,7 +45,7 @@ const BoldToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
 				</TooltipTrigger>
 				<TooltipContent>
 					<span>Bold</span>
-					<span className="ml-1 text-xs text-gray-11">(cmd + b)</span>
+					<span className="text-gray-11 ml-1 text-xs">(cmd + b)</span>
 				</TooltipContent>
 			</Tooltip>
 		);

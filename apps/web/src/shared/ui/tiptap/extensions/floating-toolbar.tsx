@@ -1,12 +1,13 @@
 'use client';
 
+import { type Editor } from '@tiptap/react';
+import { BubbleMenu } from '@tiptap/react/menus';
 import { useEffect } from 'react';
+
 import { useMediaQuery } from '@/shared/hooks/use-media-query';
 import { ScrollArea, ScrollBar } from '@/shared/ui/scroll-area';
 import { Separator } from '@/shared/ui/separator';
 import { TooltipProvider } from '@/shared/ui/tooltip';
-import { type Editor } from '@tiptap/react';
-import { BubbleMenu } from '@tiptap/react/menus';
 
 import { AlignmentTooolbar } from '../toolbars/alignment';
 import { BlockquoteToolbar } from '../toolbars/blockquote';
@@ -56,29 +57,29 @@ export function FloatingToolbar({ editor }: { editor: Editor | null }) {
             return editor.isEditable && editor.isFocused;
           }}
           editor={editor}
-          className="w-full min-w-full mx-0 shadow-sm border rounded-sm bg-background"
+          className="bg-background mx-0 w-full min-w-full rounded-sm border shadow-sm"
         >
           <ToolbarProvider editor={editor}>
-            <ScrollArea className="h-fit py-0.5 w-full">
-              <div className="flex items-center px-2 gap-0.5">
+            <ScrollArea className="h-fit w-full py-0.5">
+              <div className="flex items-center gap-0.5 px-2">
                 <div className="flex items-center gap-0.5 p-1">
                   {/* Primary formatting */}
                   <BoldToolbar />
                   <ItalicToolbar />
                   <UnderlineToolbar />
-                  <Separator orientation="vertical" className="h-6 mx-1" />
+                  <Separator orientation="vertical" className="mx-1 h-6" />
 
                   {/* Structure controls */}
                   <HeadingsToolbar />
                   <BulletListToolbar />
                   <OrderedListToolbar />
-                  <Separator orientation="vertical" className="h-6 mx-1" />
+                  <Separator orientation="vertical" className="mx-1 h-6" />
 
                   {/* Rich formatting */}
                   <ColorHighlightToolbar />
                   <LinkToolbar />
                   <ImagePlaceholderToolbar />
-                  <Separator orientation="vertical" className="h-6 mx-1" />
+                  <Separator orientation="vertical" className="mx-1 h-6" />
 
                   {/* Additional controls */}
                   <AlignmentTooolbar />

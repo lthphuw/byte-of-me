@@ -1,15 +1,16 @@
 'use client';
 
 // Error boundaries must be Client Components
+import { useClipboard } from '@mantine/hooks';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo } from 'react';
+
 import { Link } from '@/i18n/navigation';
 import { Routes } from '@/shared/config/global';
 import { cn, prettyStringify } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import GoBackButton from '@/shared/ui/go-back';
 import { Icons } from '@/shared/ui/icons';
-import { useClipboard } from '@mantine/hooks';
-import { useTranslations } from 'next-intl';
 
 export default function Error({
   error,
@@ -38,10 +39,10 @@ export default function Error({
     console.error(error);
   }, [error]);
   return (
-    <section className="relative container flex items-center justify-center min-h-screen px-6 py-12 mx-auto z-20">
+    <section className="container relative z-20 mx-auto flex min-h-screen items-center justify-center px-6 py-12">
       <div className="w-full">
-        <div className="flex flex-col gap-2 md:gap-4 items-stretch md:items-center max-w-lg mx-auto text-center">
-          <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
+        <div className="mx-auto flex max-w-lg flex-col items-stretch gap-2 text-center md:items-center md:gap-4">
+          <h1 className="scroll-m-20 text-balance text-center text-4xl font-extrabold tracking-tight">
             Error
           </h1>
 
@@ -49,7 +50,7 @@ export default function Error({
             {t('somethingWentWrong')}
           </h1>
 
-          <div className="flex flex-col flex-wrap gap-4 mt-2 md:flex-row">
+          <div className="mt-2 flex flex-col flex-wrap gap-4 md:flex-row">
             <GoBackButton>{t('goBack')}</GoBackButton>
             <Link href={Routes.Homepage}>
               <Button
@@ -64,16 +65,16 @@ export default function Error({
           </div>
         </div>
 
-        <div className="flex flex-col items-center w-full max-w-2xl gap-4 mx-auto mt-8 p-6 rounded-lg shadow-xl bg-gray-100 dark:bg-gray-900">
+        <div className="mx-auto mt-8 flex w-full max-w-2xl flex-col items-center gap-4 rounded-lg bg-gray-100 p-6 shadow-xl dark:bg-gray-900">
           <h3 className="text-lg font-medium text-gray-700 dark:text-gray-200">
             {t('errorDetails')}
           </h3>
-          <div className="w-full text-left p-4 bg-gray-200 dark:bg-gray-800 rounded-md">
+          <div className="w-full rounded-md bg-gray-200 p-4 text-left dark:bg-gray-800">
             <p className="text-sm text-gray-600 dark:text-gray-300">
               <strong>Message:</strong> {error.message}
             </p>
             {error.digest && (
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                 <strong>Digest:</strong> {error.digest}
               </p>
             )}
@@ -84,7 +85,7 @@ export default function Error({
               className="flex items-center gap-2"
               onClick={handleCopyError}
             >
-              <Icons.copy className="w-4 h-4" />
+              <Icons.copy className="h-4 w-4" />
               {copied ? t('copied') : t('copyError')}
             </Button>
 
@@ -94,7 +95,7 @@ export default function Error({
                 className="flex items-center gap-2"
                 onClick={handleCopyError}
               >
-                <Icons.report className="w-4 h-4" />
+                <Icons.report className="h-4 w-4" />
                 {t('reportForMe')}
               </Button>
             </Link>

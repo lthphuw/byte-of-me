@@ -1,4 +1,5 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
+
 import { getPublicBlogBySlug } from '@/entities/blog/api/get-public-blog-by-slug';
 import { host } from '@/shared/config/host';
 import { siteConfig } from '@/shared/config/site';

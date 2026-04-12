@@ -1,14 +1,14 @@
 'use server';
 
-import { Media } from '@/entities/media/model/types';
-import { requireUser } from '@/features/auth/lib/session';
-import { supabaseStorage } from '@/shared/api/s3-storage-api';
-import { generateFriendlyId } from '@/shared/lib/uuid';
-import { ApiResponse } from '@/shared/types/api/api-response.type';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
+import type { Media } from '@/entities/media/model/types';
 import { env } from '@/env.mjs';
+import { requireUser } from '@/features/auth/lib/session';
+import { supabaseStorage } from '@/shared/api/s3-storage-api';
+import { generateFriendlyId } from '@/shared/lib/uuid';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function uploadMedia(
   files: File[]

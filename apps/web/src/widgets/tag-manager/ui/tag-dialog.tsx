@@ -1,7 +1,11 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { TagFormValues, tagSchema } from '@/entities/tag/schemas/tag';
+import { useFieldArray, useForm } from 'react-hook-form';
+
+import type { TagFormValues} from '@/entities/tag/schemas/tag';
+import { tagSchema } from '@/entities/tag/schemas/tag';
 import { Button } from '@/shared/ui/button';
 import {
   Dialog,
@@ -10,8 +14,6 @@ import {
   DialogTitle,
 } from '@/shared/ui/dialog';
 import { Input } from '@/shared/ui/input';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useFieldArray, useForm } from 'react-hook-form';
 
 export function TagDialog({
   open,
@@ -73,7 +75,7 @@ export function TagDialog({
 
           {/* Translations */}
           <div className="space-y-3">
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <p className="text-sm font-medium">Translations</p>
               <Button
                 type="button"
@@ -88,7 +90,7 @@ export function TagDialog({
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                className="flex gap-2 items-center border rounded-lg p-2"
+                className="flex items-center gap-2 rounded-lg border p-2"
               >
                 <Input
                   {...form.register(`translations.${index}.language`)}

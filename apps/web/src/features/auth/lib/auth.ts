@@ -1,12 +1,12 @@
-import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
-import { sendVerificationRequest } from '@/features/auth/lib/send-verification-request';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import NextAuth from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
 
+import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
 import { env } from '@/env.mjs';
+import { sendVerificationRequest } from '@/features/auth/lib/send-verification-request';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),

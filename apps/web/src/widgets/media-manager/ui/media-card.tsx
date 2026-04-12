@@ -1,12 +1,13 @@
-import * as React from 'react';
+import { FileIcon, Trash2 } from 'lucide-react';
 import Image from 'next/image';
-import { Media } from '@/entities/media/model/types';
+import * as React from 'react';
+
+import type { Media } from '@/entities/media/model/types';
 import { cn, formatImageSize } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
 import { CopyButton } from '@/shared/ui/copy-button';
 import { Icons } from '@/shared/ui/icons';
-import { FileIcon, Trash2 } from 'lucide-react';
 
 export interface MediaCardProps {
   media: Media;
@@ -45,8 +46,8 @@ export function MediaCard({
               sizes="(max-width: 768px) 50vw, 20vw"
             />
           ) : (
-            <div className="flex h-full items-center justify-center bg-muted/50">
-              <FileIcon className="h-10 w-10 text-muted-foreground/50" />
+            <div className="bg-muted/50 flex h-full items-center justify-center">
+              <FileIcon className="text-muted-foreground/50 h-10 w-10" />
             </div>
           )}
 

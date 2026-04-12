@@ -1,6 +1,7 @@
+import { getTranslations } from 'next-intl/server';
+
 import { getAllPublicEducations } from '@/entities/education';
 import { EducationSection } from '@/features/public/about-education/ui/education-section';
-import { getTranslations } from 'next-intl/server';
 
 export async function AboutEducation() {
   const t = await getTranslations();
@@ -13,7 +14,7 @@ export async function AboutEducation() {
   return (
     <section className="space-y-8">
       <div className="flex items-center gap-4">
-        <h2 className="text-2xl md:text-4xl font-bold tracking-tight">
+        <h2 className="text-2xl font-bold tracking-tight md:text-4xl">
           {t('about.section.education')}
         </h2>
       </div>

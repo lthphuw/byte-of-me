@@ -1,18 +1,24 @@
 'use client';
 
+import { Languages, Trash, X } from 'lucide-react';
 import { useEffect } from 'react';
+import {
+  type Control,
+  useFieldArray,
+  type UseFormWatch,
+} from 'react-hook-form';
+
+import type { EducationFormValues } from '@/entities/education/schemas/education';
 import { MediaMultiSelect } from '@/features/dashboard/media-library/ui/media-multi-select';
 import { Button } from '@/shared/ui/button';
 import { FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
-import { Languages, Trash, X } from 'lucide-react';
-import { Control, UseFormWatch, useFieldArray } from 'react-hook-form';
 
-interface Props {
+interface EducationAchievementItemFieldProps {
   index: number;
-  control: Control<any>;
-  watch: UseFormWatch<any>;
+  control: Control<EducationFormValues>;
+  watch: UseFormWatch<EducationFormValues>;
   remove: (index: number) => void;
   tab: string | undefined;
   setTab: (val: string) => void;
@@ -25,7 +31,7 @@ export function EducationAchievementItemField({
   remove,
   tab,
   setTab,
-}: Props) {
+}: EducationAchievementItemFieldProps) {
   const {
     fields,
     append: appendTranslation,
@@ -42,15 +48,15 @@ export function EducationAchievementItemField({
   }, [fields, tab, setTab]);
 
   return (
-    <div className="p-4 pt-8 border rounded-lg space-y-4 relative">
+    <div className="relative space-y-4 rounded-lg border p-4 pt-8">
       <Button
         type="button"
         size="icon"
         variant="ghost"
-        className="absolute top-2 right-2"
+        className="absolute right-2 top-2"
         onClick={() => remove(index)}
       >
-        <X className="w-4 h-4" />
+        <X className="h-4 w-4" />
       </Button>
 
       <FormField
@@ -62,7 +68,7 @@ export function EducationAchievementItemField({
             <Input
               type="number"
               className="w-full"
-              value={Number(field.value) ?? 0}
+              value={Number(field.value)}
               onChange={(e) => {
                 const val = e.target.value === '' ? 0 : Number(e.target.value);
                 field.onChange(val);
@@ -88,7 +94,7 @@ export function EducationAchievementItemField({
       />
 
       <Tabs value={tab} onValueChange={setTab}>
-        <div className={'flex w-full justify-between align-middle mb-2'}>
+        <div className={'mb-2 flex w-full justify-between align-middle'}>
           <TabsList>
             {fields.map((f, i) => {
               const lang = watch(

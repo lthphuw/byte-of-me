@@ -1,6 +1,10 @@
 'use client';
 
+import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
+import { useTheme } from 'next-themes';
 import * as React from 'react';
+
 import { iconSwicthVariants, itemVariants } from '@/shared/config/anim';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
@@ -11,9 +15,6 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
 import { Icons } from '@/shared/ui/icons';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
-import { useTheme } from 'next-themes';
 
 export function ColorSchemeModeToggle() {
   const t = useTranslations('global.modeToggle');
@@ -31,7 +32,7 @@ export function ColorSchemeModeToggle() {
         <Button
           variant="ghost"
           size="icon"
-          className="relative size-10 p-0 focus-visible:ring-1 overflow-hidden"
+          className="relative size-10 overflow-hidden p-0 focus-visible:ring-1"
         >
           <div className="relative">
             <AnimatePresence mode="wait" initial={true}>
@@ -69,7 +70,7 @@ export function ColorSchemeModeToggle() {
 
       <DropdownMenuContent
         align="end"
-        className="min-w-[160px] z-50 overflow-hidden space-y-1 bg-popover rounded-md border border-muted/50 shadow-lg"
+        className="bg-popover border-muted/50 z-50 min-w-[160px] space-y-1 overflow-hidden rounded-md border shadow-lg"
       >
         {items.map((item, index) => {
           const isActive = theme === item.value;
@@ -93,7 +94,7 @@ export function ColorSchemeModeToggle() {
                 exit="exit"
                 className="flex w-full items-center"
               >
-                <Icon className="size-4 mr-2" />
+                <Icon className="mr-2 size-4" />
                 <span>{item.label}</span>
               </motion.div>
             </DropdownMenuItem>

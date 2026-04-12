@@ -1,12 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { cn } from '@/shared/lib/utils';
-import { TipTapFloatingMenu } from '@/shared/ui/tiptap/extensions/floating-menu';
-import { FloatingToolbar } from '@/shared/ui/tiptap/extensions/floating-toolbar';
-import { ImageExtension } from '@/shared/ui/tiptap/extensions/image';
-import { ImagePlaceholder } from '@/shared/ui/tiptap/extensions/image-placeholder';
-import SearchAndReplace from '@/shared/ui/tiptap/extensions/search-and-replace';
+import './tiptap.css';
+
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { Color } from '@tiptap/extension-color';
 import Heading from '@tiptap/extension-heading';
@@ -22,13 +17,21 @@ import TextAlign from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import Typography from '@tiptap/extension-typography';
 import Underline from '@tiptap/extension-underline';
-import { EditorContent, Extension, useEditor } from '@tiptap/react';
+import type { Extension} from '@tiptap/react';
+import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import javascript from 'highlight.js/lib/languages/javascript';
 import typescript from 'highlight.js/lib/languages/typescript';
 import { createLowlight } from 'lowlight';
+import { useState } from 'react';
 
-import './tiptap.css';
+import { cn } from '@/shared/lib/utils';
+import { TipTapFloatingMenu } from '@/shared/ui/tiptap/extensions/floating-menu';
+import { FloatingToolbar } from '@/shared/ui/tiptap/extensions/floating-toolbar';
+import { ImageExtension } from '@/shared/ui/tiptap/extensions/image';
+import { ImagePlaceholder } from '@/shared/ui/tiptap/extensions/image-placeholder';
+import SearchAndReplace from '@/shared/ui/tiptap/extensions/search-and-replace';
+
 import { EditorToolbar } from './toolbars/editor-toolbar';
 
 const lowlight = createLowlight();
@@ -118,19 +121,19 @@ export function RichTextEditor({
     >
       <EditorToolbar editor={editor} />
 
-      <div className="flex flex-row h-[600px]">
+      <div className="flex h-[600px] flex-row">
         {/* Editor Side */}
-        <div className="flex-1 overflow-y-auto relative p-4 sm:p-6 border-r">
+        <div className="relative flex-1 overflow-y-auto border-r p-4 sm:p-6">
           <FloatingToolbar editor={editor} />
           <TipTapFloatingMenu editor={editor} />
           <EditorContent editor={editor} />
         </div>
 
-        <aside className="hidden lg:block w-64 p-6 bg-muted/10 overflow-y-auto">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-4">
+        <aside className="bg-muted/10 hidden w-64 overflow-y-auto p-6 lg:block">
+          <p className="text-muted-foreground mb-4 text-[10px] font-bold uppercase tracking-widest">
             Table of Contents
           </p>
-          <div className="flex flex-col gap-2 border-l border-muted-foreground/20">
+          <div className="border-muted-foreground/20 flex flex-col gap-2 border-l">
             {items.map((item) => (
               <button
                 key={item.id}

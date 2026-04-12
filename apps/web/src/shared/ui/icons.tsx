@@ -1,4 +1,5 @@
-import { cn } from '@/shared/lib/utils';
+import type {
+  LucideProps} from 'lucide-react';
 import {
   AlertTriangle,
   ArrowLeft,
@@ -27,7 +28,6 @@ import {
   Languages,
   Laptop,
   Loader2,
-  LucideProps,
   Mail,
   Moon,
   MoreVertical,
@@ -42,6 +42,8 @@ import {
   User,
   X,
 } from 'lucide-react';
+
+import { cn } from '@/shared/lib/utils';
 
 export const Icons = {
   logo: Fingerprint,

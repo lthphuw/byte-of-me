@@ -1,8 +1,9 @@
 'use server';
 
-import { BlogFormValues } from '@/entities/blog/schemas/blog';
-import { requireUser } from '@/features/auth/lib/session';
 import { prisma } from '@byte-of-me/db';
+
+import type { BlogFormValues } from '@/entities/blog/schemas/blog';
+import { requireUser } from '@/features/auth/lib/session';
 
 export async function createBlog(data: BlogFormValues) {
   const session = await requireUser();

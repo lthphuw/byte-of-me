@@ -1,9 +1,10 @@
 'use client';
 
-import { Dispatch, SetStateAction } from 'react';
-import { Media } from '@/entities/media/model/types';
+import type { Dispatch, SetStateAction } from 'react';
+
+import type { Media } from '@/entities/media/model/types';
 import { cn } from '@/shared/lib/utils';
-import { PaginatedMetadata } from '@/shared/types/api/paginated-api.type';
+import type { PaginatedMetadata } from '@/shared/types/api/paginated-api.type';
 import { Pagination } from '@/shared/ui/pagination';
 import { MediaCard } from '@/widgets/media-manager/ui/media-card';
 

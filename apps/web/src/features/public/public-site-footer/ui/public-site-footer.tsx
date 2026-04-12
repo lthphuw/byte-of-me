@@ -1,10 +1,11 @@
-import { getPublicInfoForFooter } from '@/features/public/public-site-footer/lib';
-import { Link } from '@/i18n/navigation';
-import { Routes, globalConfig } from '@/shared/config/global';
-import { cn, ensureValidUrl } from '@/shared/lib/utils';
-import { Icons } from '@/shared/ui/icons';
 import { Mail } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+
+import { getPublicInfoForFooter } from '@/features/public/public-site-footer/lib';
+import { Link } from '@/i18n/navigation';
+import { globalConfig,Routes } from '@/shared/config/global';
+import { cn, ensureValidUrl } from '@/shared/lib/utils';
+import { Icons } from '@/shared/ui/icons';
 
 
 
@@ -27,8 +28,8 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
 
   return (
     <footer className={cn('py-8 relative z-20', className)}>
-      <div className="container max-w-[100%] mx-auto px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
-        <div className="flex flex-col items-center md:items-start gap-2">
+      <div className="container mx-auto flex max-w-[100%] flex-col items-center justify-between gap-6 px-4 md:flex-row md:px-12">
+        <div className="flex flex-col items-center gap-2 md:items-start">
           <Link href={Routes.Homepage} aria-label={t('home')}>
             <Icons.logo />
           </Link>
@@ -45,21 +46,21 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
         </div>
 
         <nav
-          className="flex flex-wrap justify-center items-center md:items-start gap-2 md:gap-6"
+          className="flex flex-wrap items-center justify-center gap-2 md:items-start md:gap-6"
           aria-label={t('navigation')}
         >
           {globalConfig.footer.nav.map((it) => (
             <Link
               key={it.href}
               href={it.href}
-              className="text-sm md:text-base hover:text-blue-400"
+              className="text-sm hover:text-blue-400 md:text-base"
             >
               {t(it.title as never)}
             </Link>
           ))}
         </nav>
 
-        <div className="flex flex-col items-center md:items-end gap-2">
+        <div className="flex flex-col items-center gap-2 md:items-end">
           <div className="flex gap-4">
             {githubLink && (
               <a

@@ -7,8 +7,8 @@ interface ProjectCardSkeletonProps {
 
 export function ProjectCardSkeleton({ compact }: ProjectCardSkeletonProps) {
   return (
-    <Card className="rounded-2xl flex flex-col h-full border border-border/50">
-      <CardContent className="p-5 flex flex-col gap-4 flex-1">
+    <Card className="border-border/50 flex h-full flex-col rounded-2xl border">
+      <CardContent className="flex flex-1 flex-col gap-4 p-5">
         {/* TITLE & DATE SECTION */}
         <div className="flex flex-col gap-1">
           {/* Title - text-lg matches height approx 28px */}
@@ -44,7 +44,7 @@ export function ProjectCardSkeleton({ compact }: ProjectCardSkeletonProps) {
       </CardContent>
 
       {/* FOOTER - Buttons aligned to end */}
-      <CardFooter className="p-5 pt-0 flex gap-2 justify-end">
+      <CardFooter className="flex justify-end gap-2 p-5 pt-0">
         {/* GitHub Button Skeleton */}
         <Skeleton className="h-9 w-24 rounded-md" />
         {/* Live Button Skeleton */}

@@ -1,9 +1,13 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
-import { AdminTechStack } from '@/entities/tech-stack';
+import { useForm } from 'react-hook-form';
+
+import type { AdminTechStack } from '@/entities/tech-stack';
+import type {
+  TechStackFormValues} from '@/entities/tech-stack/schemas/tech-stack';
 import {
-  TechStackFormValues,
   techStackSchema,
 } from '@/entities/tech-stack/schemas/tech-stack';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
@@ -24,8 +28,6 @@ import {
 } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { SubmitButton } from '@/shared/ui/submit-button';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 
 export function TechStackDialog({
   open,

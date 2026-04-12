@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+
 import { HomepageContactCta } from '@/features/public/homepage-cta';
 import {
   HomepageProfile,
@@ -17,7 +18,7 @@ export async function HomepageContent() {
     <HomepageShell>
       <main
         id="home"
-        className="mx-auto max-w-6xl px-0 md:px-8 py-14 md:py-20 space-y-16 md:space-y-28"
+        className="mx-auto max-w-6xl space-y-16 px-0 py-14 md:space-y-28 md:px-8 md:py-20"
       >
         <HomepageSectionMotion delay={0.1}>
           <Suspense fallback={<HomepageProfileLoading />}>

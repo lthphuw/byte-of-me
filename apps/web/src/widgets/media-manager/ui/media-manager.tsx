@@ -1,6 +1,8 @@
 'use client';
 
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
+
 import { useMediaLibrary } from '@/entities/media/api/use-media-library';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import { Button } from '@/shared/ui/button';
@@ -14,7 +16,6 @@ import {
 import Loading from '@/shared/ui/loading';
 import { MediaLibrary } from '@/widgets/media-manager/ui/media-library';
 import { MediaLibraryEmpty } from '@/widgets/media-manager/ui/media-library-empty';
-import { Plus } from 'lucide-react';
 
 export function MediaManager() {
   const [page, setPage] = useState(1);
@@ -29,7 +30,7 @@ export function MediaManager() {
       <header className="flex items-center justify-between">
         <section>
           <h2 className="text-2xl font-bold tracking-tight">Media Library</h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Manage your digital assets and uploads.
           </p>
         </section>

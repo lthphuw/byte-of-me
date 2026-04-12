@@ -1,4 +1,4 @@
-import { SiteConfig } from '@/shared/types';
+import type { SiteConfig } from '@/shared/types';
 
 import { host } from './host';
 

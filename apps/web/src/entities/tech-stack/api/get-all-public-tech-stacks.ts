@@ -1,12 +1,13 @@
 'use server';
 
-import { PublicTechStack } from '@/entities/tech-stack/model/types';
+import { prisma } from '@byte-of-me/db';
+
+import type { PublicTechStack } from '@/entities/tech-stack/model/types';
 import {
   handlePublicAction,
   withPublicActionHandler,
 } from '@/shared/api/public-action-template';
-import { ApiResponse } from '@/shared/types/api/api-response.type';
-import { prisma } from '@byte-of-me/db';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getAllPublicTechStacks(): Promise<
   ApiResponse<{

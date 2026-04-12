@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+
 import { ExpandableText } from '@/shared/ui/expandable-text';
 
 import { AchievementImages } from './achievement-images';

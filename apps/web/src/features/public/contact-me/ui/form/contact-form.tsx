@@ -1,10 +1,14 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransition } from 'react';
+import { useForm } from 'react-hook-form';
+
 import { sendContactMessage } from '@/entities/contact-message/api/send-contact-message';
+import type {
+  ContactMessageFormValues} from '@/entities/contact-message/schemas';
 import {
-  ContactMessageFormValues,
-  contactMessage,
+  contactMessage
 } from '@/entities/contact-message/schemas';
 import { Button } from '@/shared/ui/button';
 import {
@@ -19,8 +23,6 @@ import { Icons } from '@/shared/ui/icons';
 import { Input } from '@/shared/ui/input';
 import { RichTextEditorLite } from '@/shared/ui/tiptap/rich-text-editor-lite';
 import { useToast } from '@/shared/ui/use-toast';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 
 export function ContactForm() {
   const [isPending, startTransition] = useTransition();
@@ -66,7 +68,7 @@ export function ContactForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="max-w-4xl mx-auto space-y-4"
+        className="mx-auto max-w-4xl space-y-4"
       >
         {/* Name */}
         <FormField
@@ -123,7 +125,7 @@ export function ContactForm() {
           name="message"
           render={({ field }) => (
             <FormItem>
-              <div className="flex justify-between items-center">
+              <div className="flex items-center justify-between">
                 <FormLabel className="flex items-center gap-1">
                   Message <span className="text-destructive">*</span>
                 </FormLabel>

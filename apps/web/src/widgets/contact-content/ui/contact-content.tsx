@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+
 import { ContactInfos } from '@/features/public/contact-infos/ui/contact-infos';
 import { ContactInfosLoading } from '@/features/public/contact-infos/ui/contact-infos-loading';
 import { ContactMe } from '@/features/public/contact-me/ui/contact-me';

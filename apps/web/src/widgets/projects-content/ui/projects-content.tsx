@@ -1,14 +1,15 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+
 import { getPaginatedPublicProjects } from '@/entities/project/api/get-paginated-public-projects';
-import { PublicProject } from '@/entities/project/model/types';
+import type { PublicProject } from '@/entities/project/model/types';
 import { ProjectCard, ProjectCardSkeleton, ProjectEmpty, } from '@/entities/project/ui';
 import { ProjectFilters } from '@/features/public/project-filters/ui/project-filters';
-import { PaginatedData } from '@/shared/types/api/paginated-api.type';
+import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 import { Pagination } from '@/shared/ui/pagination';
 import { ProjectsShell } from '@/widgets/projects-content/ui/projects-shell';
-import { useQuery } from '@tanstack/react-query';
 
 interface ProjectsContentProps {
   initProjects?: PaginatedData<PublicProject>;
@@ -70,7 +71,7 @@ export function ProjectsContent({
 
   return (
     <ProjectsShell>
-      <div className="container px-0 py-8 md:px-6 flex flex-col gap-6 md:gap-8">
+      <div className="container flex flex-col gap-6 px-0 py-8 md:gap-8 md:px-6">
         <ProjectFilters
           value={filters}
           onChange={(next) => {
@@ -80,19 +81,19 @@ export function ProjectsContent({
         />
 
         {/* PROJECT GRID */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
           {isLoading || (isFetching && !isPlaceholderData)? (
             Array.from({ length: 3 }).map((_, i) => (
               <ProjectCardSkeleton key={i} />
             ))
           ) : projects.length === 0 ? (
-            <div className="col-span-full flex justify-center items-center py-10">
+            <div className="col-span-full flex items-center justify-center py-10">
               <ProjectEmpty isSearch={hasActiveFilters}/>
             </div>
           ) : (
             <div
               className={`contents transition-opacity duration-200 ${
-                isPlaceholderData ? 'opacity-50 pointer-events-none' : 'opacity-100'
+                isPlaceholderData ? 'pointer-events-none opacity-50' : 'opacity-100'
               }`}
             >
               {projects.map((project) => (

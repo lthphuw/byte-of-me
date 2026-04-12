@@ -1,6 +1,7 @@
 'use client';
 
-import { Variants, motion } from 'framer-motion';
+import type { Variants} from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -50,7 +51,7 @@ export function ContactHeaderMotion({
       initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="text-center space-y-2"
+      className="space-y-2 text-center"
     >
       {children}
     </motion.div>

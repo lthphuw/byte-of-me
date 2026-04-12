@@ -1,14 +1,17 @@
 'use client';
 
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
-import { AdminBlog } from '@/entities/blog';
+
+import type { AdminBlog } from '@/entities/blog';
 import { createBlog } from '@/entities/blog/api/create-blog';
 import { deleteBlog } from '@/entities/blog/api/delete-blog';
 import { getPaginatedAdminBlog } from '@/entities/blog/api/get-paginated-admin-blogs';
 import { updateBlog } from '@/entities/blog/api/update-blog';
-import { BlogFormValues } from '@/entities/blog/schemas/blog';
+import type { BlogFormValues } from '@/entities/blog/schemas/blog';
 import { BlogEditorCard } from '@/entities/blog/ui/blog-editor-card';
-import { PaginatedData } from '@/shared/types/api/paginated-api.type';
+import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,8 +26,6 @@ import { Button } from '@/shared/ui/button';
 import { Empty, EmptyDescription, EmptyHeader } from '@/shared/ui/empty';
 import Loading from '@/shared/ui/loading';
 import { Pagination } from '@/shared/ui/pagination';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
 
 import { BlogDialog } from './blog-dialog';
 
@@ -80,12 +81,12 @@ export function BlogManager({ initData }: BlogManagerProps) {
             setOpen(true);
           }}
         >
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="mr-2 h-4 w-4" />
           New Blog
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {isLoading ? (
           <div className="col-span-full flex justify-center py-20">
             <Loading />

@@ -216,7 +216,7 @@ export type EducationAchievementWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"EducationAchievement"> | Date | string
   sortOrder?: Prisma.IntFilter<"EducationAchievement"> | number
   educationId?: Prisma.StringFilter<"EducationAchievement"> | string
-  education?: Prisma.XOR<Prisma.EducationScalarRelationFilter, Prisma.EducationWhereInput>
+  educationSchema?: Prisma.XOR<Prisma.EducationScalarRelationFilter, Prisma.EducationWhereInput>
   translations?: Prisma.EducationAchievementTranslationListRelationFilter
   images?: Prisma.AchievementOnMediasListRelationFilter
 }
@@ -227,7 +227,7 @@ export type EducationAchievementOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   educationId?: Prisma.SortOrder
-  education?: Prisma.EducationOrderByWithRelationInput
+  educationSchema?: Prisma.EducationOrderByWithRelationInput
   translations?: Prisma.EducationAchievementTranslationOrderByRelationAggregateInput
   images?: Prisma.AchievementOnMediasOrderByRelationAggregateInput
 }
@@ -241,7 +241,7 @@ export type EducationAchievementWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"EducationAchievement"> | Date | string
   sortOrder?: Prisma.IntFilter<"EducationAchievement"> | number
   educationId?: Prisma.StringFilter<"EducationAchievement"> | string
-  education?: Prisma.XOR<Prisma.EducationScalarRelationFilter, Prisma.EducationWhereInput>
+  educationSchema?: Prisma.XOR<Prisma.EducationScalarRelationFilter, Prisma.EducationWhereInput>
   translations?: Prisma.EducationAchievementTranslationListRelationFilter
   images?: Prisma.AchievementOnMediasListRelationFilter
 }, "id">
@@ -275,7 +275,7 @@ export type EducationAchievementCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sortOrder?: number
-  education: Prisma.EducationCreateNestedOneWithoutAchievementsInput
+  educationSchema: Prisma.EducationCreateNestedOneWithoutAchievementsInput
   translations?: Prisma.EducationAchievementTranslationCreateNestedManyWithoutEducationAchievementInput
   images?: Prisma.AchievementOnMediasCreateNestedManyWithoutEducationAchievementInput
 }
@@ -295,7 +295,7 @@ export type EducationAchievementUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  education?: Prisma.EducationUpdateOneRequiredWithoutAchievementsNestedInput
+  educationSchema?: Prisma.EducationUpdateOneRequiredWithoutAchievementsNestedInput
   translations?: Prisma.EducationAchievementTranslationUpdateManyWithoutEducationAchievementNestedInput
   images?: Prisma.AchievementOnMediasUpdateManyWithoutEducationAchievementNestedInput
 }
@@ -380,45 +380,45 @@ export type EducationAchievementScalarRelationFilter = {
   isNot?: Prisma.EducationAchievementWhereInput
 }
 
-export type EducationAchievementCreateNestedManyWithoutEducationInput = {
-  create?: Prisma.XOR<Prisma.EducationAchievementCreateWithoutEducationInput, Prisma.EducationAchievementUncheckedCreateWithoutEducationInput> | Prisma.EducationAchievementCreateWithoutEducationInput[] | Prisma.EducationAchievementUncheckedCreateWithoutEducationInput[]
-  connectOrCreate?: Prisma.EducationAchievementCreateOrConnectWithoutEducationInput | Prisma.EducationAchievementCreateOrConnectWithoutEducationInput[]
-  createMany?: Prisma.EducationAchievementCreateManyEducationInputEnvelope
+export type EducationAchievementCreateNestedManyWithoutEducationSchemaInput = {
+  create?: Prisma.XOR<Prisma.EducationAchievementCreateWithoutEducationSchemaInput, Prisma.EducationAchievementUncheckedCreateWithoutEducationSchemaInput> | Prisma.EducationAchievementCreateWithoutEducationSchemaInput[] | Prisma.EducationAchievementUncheckedCreateWithoutEducationSchemaInput[]
+  connectOrCreate?: Prisma.EducationAchievementCreateOrConnectWithoutEducationSchemaInput | Prisma.EducationAchievementCreateOrConnectWithoutEducationSchemaInput[]
+  createMany?: Prisma.EducationAchievementCreateManyEducationSchemaInputEnvelope
   connect?: Prisma.EducationAchievementWhereUniqueInput | Prisma.EducationAchievementWhereUniqueInput[]
 }
 
-export type EducationAchievementUncheckedCreateNestedManyWithoutEducationInput = {
-  create?: Prisma.XOR<Prisma.EducationAchievementCreateWithoutEducationInput, Prisma.EducationAchievementUncheckedCreateWithoutEducationInput> | Prisma.EducationAchievementCreateWithoutEducationInput[] | Prisma.EducationAchievementUncheckedCreateWithoutEducationInput[]
-  connectOrCreate?: Prisma.EducationAchievementCreateOrConnectWithoutEducationInput | Prisma.EducationAchievementCreateOrConnectWithoutEducationInput[]
-  createMany?: Prisma.EducationAchievementCreateManyEducationInputEnvelope
+export type EducationAchievementUncheckedCreateNestedManyWithoutEducationSchemaInput = {
+  create?: Prisma.XOR<Prisma.EducationAchievementCreateWithoutEducationSchemaInput, Prisma.EducationAchievementUncheckedCreateWithoutEducationSchemaInput> | Prisma.EducationAchievementCreateWithoutEducationSchemaInput[] | Prisma.EducationAchievementUncheckedCreateWithoutEducationSchemaInput[]
+  connectOrCreate?: Prisma.EducationAchievementCreateOrConnectWithoutEducationSchemaInput | Prisma.EducationAchievementCreateOrConnectWithoutEducationSchemaInput[]
+  createMany?: Prisma.EducationAchievementCreateManyEducationSchemaInputEnvelope
   connect?: Prisma.EducationAchievementWhereUniqueInput | Prisma.EducationAchievementWhereUniqueInput[]
 }
 
-export type EducationAchievementUpdateManyWithoutEducationNestedInput = {
-  create?: Prisma.XOR<Prisma.EducationAchievementCreateWithoutEducationInput, Prisma.EducationAchievementUncheckedCreateWithoutEducationInput> | Prisma.EducationAchievementCreateWithoutEducationInput[] | Prisma.EducationAchievementUncheckedCreateWithoutEducationInput[]
-  connectOrCreate?: Prisma.EducationAchievementCreateOrConnectWithoutEducationInput | Prisma.EducationAchievementCreateOrConnectWithoutEducationInput[]
-  upsert?: Prisma.EducationAchievementUpsertWithWhereUniqueWithoutEducationInput | Prisma.EducationAchievementUpsertWithWhereUniqueWithoutEducationInput[]
-  createMany?: Prisma.EducationAchievementCreateManyEducationInputEnvelope
+export type EducationAchievementUpdateManyWithoutEducationSchemaNestedInput = {
+  create?: Prisma.XOR<Prisma.EducationAchievementCreateWithoutEducationSchemaInput, Prisma.EducationAchievementUncheckedCreateWithoutEducationSchemaInput> | Prisma.EducationAchievementCreateWithoutEducationSchemaInput[] | Prisma.EducationAchievementUncheckedCreateWithoutEducationSchemaInput[]
+  connectOrCreate?: Prisma.EducationAchievementCreateOrConnectWithoutEducationSchemaInput | Prisma.EducationAchievementCreateOrConnectWithoutEducationSchemaInput[]
+  upsert?: Prisma.EducationAchievementUpsertWithWhereUniqueWithoutEducationSchemaInput | Prisma.EducationAchievementUpsertWithWhereUniqueWithoutEducationSchemaInput[]
+  createMany?: Prisma.EducationAchievementCreateManyEducationSchemaInputEnvelope
   set?: Prisma.EducationAchievementWhereUniqueInput | Prisma.EducationAchievementWhereUniqueInput[]
   disconnect?: Prisma.EducationAchievementWhereUniqueInput | Prisma.EducationAchievementWhereUniqueInput[]
   delete?: Prisma.EducationAchievementWhereUniqueInput | Prisma.EducationAchievementWhereUniqueInput[]
   connect?: Prisma.EducationAchievementWhereUniqueInput | Prisma.EducationAchievementWhereUniqueInput[]
-  update?: Prisma.EducationAchievementUpdateWithWhereUniqueWithoutEducationInput | Prisma.EducationAchievementUpdateWithWhereUniqueWithoutEducationInput[]
-  updateMany?: Prisma.EducationAchievementUpdateManyWithWhereWithoutEducationInput | Prisma.EducationAchievementUpdateManyWithWhereWithoutEducationInput[]
+  update?: Prisma.EducationAchievementUpdateWithWhereUniqueWithoutEducationSchemaInput | Prisma.EducationAchievementUpdateWithWhereUniqueWithoutEducationSchemaInput[]
+  updateMany?: Prisma.EducationAchievementUpdateManyWithWhereWithoutEducationSchemaInput | Prisma.EducationAchievementUpdateManyWithWhereWithoutEducationSchemaInput[]
   deleteMany?: Prisma.EducationAchievementScalarWhereInput | Prisma.EducationAchievementScalarWhereInput[]
 }
 
-export type EducationAchievementUncheckedUpdateManyWithoutEducationNestedInput = {
-  create?: Prisma.XOR<Prisma.EducationAchievementCreateWithoutEducationInput, Prisma.EducationAchievementUncheckedCreateWithoutEducationInput> | Prisma.EducationAchievementCreateWithoutEducationInput[] | Prisma.EducationAchievementUncheckedCreateWithoutEducationInput[]
-  connectOrCreate?: Prisma.EducationAchievementCreateOrConnectWithoutEducationInput | Prisma.EducationAchievementCreateOrConnectWithoutEducationInput[]
-  upsert?: Prisma.EducationAchievementUpsertWithWhereUniqueWithoutEducationInput | Prisma.EducationAchievementUpsertWithWhereUniqueWithoutEducationInput[]
-  createMany?: Prisma.EducationAchievementCreateManyEducationInputEnvelope
+export type EducationAchievementUncheckedUpdateManyWithoutEducationSchemaNestedInput = {
+  create?: Prisma.XOR<Prisma.EducationAchievementCreateWithoutEducationSchemaInput, Prisma.EducationAchievementUncheckedCreateWithoutEducationSchemaInput> | Prisma.EducationAchievementCreateWithoutEducationSchemaInput[] | Prisma.EducationAchievementUncheckedCreateWithoutEducationSchemaInput[]
+  connectOrCreate?: Prisma.EducationAchievementCreateOrConnectWithoutEducationSchemaInput | Prisma.EducationAchievementCreateOrConnectWithoutEducationSchemaInput[]
+  upsert?: Prisma.EducationAchievementUpsertWithWhereUniqueWithoutEducationSchemaInput | Prisma.EducationAchievementUpsertWithWhereUniqueWithoutEducationSchemaInput[]
+  createMany?: Prisma.EducationAchievementCreateManyEducationSchemaInputEnvelope
   set?: Prisma.EducationAchievementWhereUniqueInput | Prisma.EducationAchievementWhereUniqueInput[]
   disconnect?: Prisma.EducationAchievementWhereUniqueInput | Prisma.EducationAchievementWhereUniqueInput[]
   delete?: Prisma.EducationAchievementWhereUniqueInput | Prisma.EducationAchievementWhereUniqueInput[]
   connect?: Prisma.EducationAchievementWhereUniqueInput | Prisma.EducationAchievementWhereUniqueInput[]
-  update?: Prisma.EducationAchievementUpdateWithWhereUniqueWithoutEducationInput | Prisma.EducationAchievementUpdateWithWhereUniqueWithoutEducationInput[]
-  updateMany?: Prisma.EducationAchievementUpdateManyWithWhereWithoutEducationInput | Prisma.EducationAchievementUpdateManyWithWhereWithoutEducationInput[]
+  update?: Prisma.EducationAchievementUpdateWithWhereUniqueWithoutEducationSchemaInput | Prisma.EducationAchievementUpdateWithWhereUniqueWithoutEducationSchemaInput[]
+  updateMany?: Prisma.EducationAchievementUpdateManyWithWhereWithoutEducationSchemaInput | Prisma.EducationAchievementUpdateManyWithWhereWithoutEducationSchemaInput[]
   deleteMany?: Prisma.EducationAchievementScalarWhereInput | Prisma.EducationAchievementScalarWhereInput[]
 }
 
@@ -450,7 +450,7 @@ export type EducationAchievementUpdateOneRequiredWithoutImagesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EducationAchievementUpdateToOneWithWhereWithoutImagesInput, Prisma.EducationAchievementUpdateWithoutImagesInput>, Prisma.EducationAchievementUncheckedUpdateWithoutImagesInput>
 }
 
-export type EducationAchievementCreateWithoutEducationInput = {
+export type EducationAchievementCreateWithoutEducationSchemaInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -459,7 +459,7 @@ export type EducationAchievementCreateWithoutEducationInput = {
   images?: Prisma.AchievementOnMediasCreateNestedManyWithoutEducationAchievementInput
 }
 
-export type EducationAchievementUncheckedCreateWithoutEducationInput = {
+export type EducationAchievementUncheckedCreateWithoutEducationSchemaInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -468,30 +468,30 @@ export type EducationAchievementUncheckedCreateWithoutEducationInput = {
   images?: Prisma.AchievementOnMediasUncheckedCreateNestedManyWithoutEducationAchievementInput
 }
 
-export type EducationAchievementCreateOrConnectWithoutEducationInput = {
+export type EducationAchievementCreateOrConnectWithoutEducationSchemaInput = {
   where: Prisma.EducationAchievementWhereUniqueInput
-  create: Prisma.XOR<Prisma.EducationAchievementCreateWithoutEducationInput, Prisma.EducationAchievementUncheckedCreateWithoutEducationInput>
+  create: Prisma.XOR<Prisma.EducationAchievementCreateWithoutEducationSchemaInput, Prisma.EducationAchievementUncheckedCreateWithoutEducationSchemaInput>
 }
 
-export type EducationAchievementCreateManyEducationInputEnvelope = {
-  data: Prisma.EducationAchievementCreateManyEducationInput | Prisma.EducationAchievementCreateManyEducationInput[]
+export type EducationAchievementCreateManyEducationSchemaInputEnvelope = {
+  data: Prisma.EducationAchievementCreateManyEducationSchemaInput | Prisma.EducationAchievementCreateManyEducationSchemaInput[]
   skipDuplicates?: boolean
 }
 
-export type EducationAchievementUpsertWithWhereUniqueWithoutEducationInput = {
+export type EducationAchievementUpsertWithWhereUniqueWithoutEducationSchemaInput = {
   where: Prisma.EducationAchievementWhereUniqueInput
-  update: Prisma.XOR<Prisma.EducationAchievementUpdateWithoutEducationInput, Prisma.EducationAchievementUncheckedUpdateWithoutEducationInput>
-  create: Prisma.XOR<Prisma.EducationAchievementCreateWithoutEducationInput, Prisma.EducationAchievementUncheckedCreateWithoutEducationInput>
+  update: Prisma.XOR<Prisma.EducationAchievementUpdateWithoutEducationSchemaInput, Prisma.EducationAchievementUncheckedUpdateWithoutEducationSchemaInput>
+  create: Prisma.XOR<Prisma.EducationAchievementCreateWithoutEducationSchemaInput, Prisma.EducationAchievementUncheckedCreateWithoutEducationSchemaInput>
 }
 
-export type EducationAchievementUpdateWithWhereUniqueWithoutEducationInput = {
+export type EducationAchievementUpdateWithWhereUniqueWithoutEducationSchemaInput = {
   where: Prisma.EducationAchievementWhereUniqueInput
-  data: Prisma.XOR<Prisma.EducationAchievementUpdateWithoutEducationInput, Prisma.EducationAchievementUncheckedUpdateWithoutEducationInput>
+  data: Prisma.XOR<Prisma.EducationAchievementUpdateWithoutEducationSchemaInput, Prisma.EducationAchievementUncheckedUpdateWithoutEducationSchemaInput>
 }
 
-export type EducationAchievementUpdateManyWithWhereWithoutEducationInput = {
+export type EducationAchievementUpdateManyWithWhereWithoutEducationSchemaInput = {
   where: Prisma.EducationAchievementScalarWhereInput
-  data: Prisma.XOR<Prisma.EducationAchievementUpdateManyMutationInput, Prisma.EducationAchievementUncheckedUpdateManyWithoutEducationInput>
+  data: Prisma.XOR<Prisma.EducationAchievementUpdateManyMutationInput, Prisma.EducationAchievementUncheckedUpdateManyWithoutEducationSchemaInput>
 }
 
 export type EducationAchievementScalarWhereInput = {
@@ -510,7 +510,7 @@ export type EducationAchievementCreateWithoutTranslationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sortOrder?: number
-  education: Prisma.EducationCreateNestedOneWithoutAchievementsInput
+  educationSchema: Prisma.EducationCreateNestedOneWithoutAchievementsInput
   images?: Prisma.AchievementOnMediasCreateNestedManyWithoutEducationAchievementInput
 }
 
@@ -544,7 +544,7 @@ export type EducationAchievementUpdateWithoutTranslationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  education?: Prisma.EducationUpdateOneRequiredWithoutAchievementsNestedInput
+  educationSchema?: Prisma.EducationUpdateOneRequiredWithoutAchievementsNestedInput
   images?: Prisma.AchievementOnMediasUpdateManyWithoutEducationAchievementNestedInput
 }
 
@@ -562,7 +562,7 @@ export type EducationAchievementCreateWithoutImagesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sortOrder?: number
-  education: Prisma.EducationCreateNestedOneWithoutAchievementsInput
+  educationSchema: Prisma.EducationCreateNestedOneWithoutAchievementsInput
   translations?: Prisma.EducationAchievementTranslationCreateNestedManyWithoutEducationAchievementInput
 }
 
@@ -596,7 +596,7 @@ export type EducationAchievementUpdateWithoutImagesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  education?: Prisma.EducationUpdateOneRequiredWithoutAchievementsNestedInput
+  educationSchema?: Prisma.EducationUpdateOneRequiredWithoutAchievementsNestedInput
   translations?: Prisma.EducationAchievementTranslationUpdateManyWithoutEducationAchievementNestedInput
 }
 
@@ -609,14 +609,14 @@ export type EducationAchievementUncheckedUpdateWithoutImagesInput = {
   translations?: Prisma.EducationAchievementTranslationUncheckedUpdateManyWithoutEducationAchievementNestedInput
 }
 
-export type EducationAchievementCreateManyEducationInput = {
+export type EducationAchievementCreateManyEducationSchemaInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   sortOrder?: number
 }
 
-export type EducationAchievementUpdateWithoutEducationInput = {
+export type EducationAchievementUpdateWithoutEducationSchemaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -625,7 +625,7 @@ export type EducationAchievementUpdateWithoutEducationInput = {
   images?: Prisma.AchievementOnMediasUpdateManyWithoutEducationAchievementNestedInput
 }
 
-export type EducationAchievementUncheckedUpdateWithoutEducationInput = {
+export type EducationAchievementUncheckedUpdateWithoutEducationSchemaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -634,7 +634,7 @@ export type EducationAchievementUncheckedUpdateWithoutEducationInput = {
   images?: Prisma.AchievementOnMediasUncheckedUpdateManyWithoutEducationAchievementNestedInput
 }
 
-export type EducationAchievementUncheckedUpdateManyWithoutEducationInput = {
+export type EducationAchievementUncheckedUpdateManyWithoutEducationSchemaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -687,7 +687,7 @@ export type EducationAchievementSelect<ExtArgs extends runtime.Types.Extensions.
   updatedAt?: boolean
   sortOrder?: boolean
   educationId?: boolean
-  education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
+  educationSchema?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
   translations?: boolean | Prisma.EducationAchievement$translationsArgs<ExtArgs>
   images?: boolean | Prisma.EducationAchievement$imagesArgs<ExtArgs>
   _count?: boolean | Prisma.EducationAchievementCountOutputTypeDefaultArgs<ExtArgs>
@@ -699,7 +699,7 @@ export type EducationAchievementSelectCreateManyAndReturn<ExtArgs extends runtim
   updatedAt?: boolean
   sortOrder?: boolean
   educationId?: boolean
-  education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
+  educationSchema?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["educationAchievement"]>
 
 export type EducationAchievementSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -708,7 +708,7 @@ export type EducationAchievementSelectUpdateManyAndReturn<ExtArgs extends runtim
   updatedAt?: boolean
   sortOrder?: boolean
   educationId?: boolean
-  education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
+  educationSchema?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["educationAchievement"]>
 
 export type EducationAchievementSelectScalar = {
@@ -721,22 +721,22 @@ export type EducationAchievementSelectScalar = {
 
 export type EducationAchievementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "sortOrder" | "educationId", ExtArgs["result"]["educationAchievement"]>
 export type EducationAchievementInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
+  educationSchema?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
   translations?: boolean | Prisma.EducationAchievement$translationsArgs<ExtArgs>
   images?: boolean | Prisma.EducationAchievement$imagesArgs<ExtArgs>
   _count?: boolean | Prisma.EducationAchievementCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EducationAchievementIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
+  educationSchema?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
 }
 export type EducationAchievementIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
+  educationSchema?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
 }
 
 export type $EducationAchievementPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "EducationAchievement"
   objects: {
-    education: Prisma.$EducationPayload<ExtArgs>
+    educationSchema: Prisma.$EducationPayload<ExtArgs>
     translations: Prisma.$EducationAchievementTranslationPayload<ExtArgs>[]
     images: Prisma.$AchievementOnMediasPayload<ExtArgs>[]
   }
@@ -1140,7 +1140,7 @@ readonly fields: EducationAchievementFieldRefs;
  */
 export interface Prisma__EducationAchievementClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  education<T extends Prisma.EducationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EducationDefaultArgs<ExtArgs>>): Prisma.Prisma__EducationClient<runtime.Types.Result.GetResult<Prisma.$EducationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  educationSchema<T extends Prisma.EducationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EducationDefaultArgs<ExtArgs>>): Prisma.Prisma__EducationClient<runtime.Types.Result.GetResult<Prisma.$EducationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   translations<T extends Prisma.EducationAchievement$translationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EducationAchievement$translationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EducationAchievementTranslationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   images<T extends Prisma.EducationAchievement$imagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EducationAchievement$imagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AchievementOnMediasPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**

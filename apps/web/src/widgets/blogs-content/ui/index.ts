@@ -1,2 +1,2 @@
-export * from './blogs-shell';
 export * from './blogs-content';
+export * from './blogs-shell';

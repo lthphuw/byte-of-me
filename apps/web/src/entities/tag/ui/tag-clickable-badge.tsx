@@ -1,6 +1,6 @@
 'use client';
 
-import { PublicTag } from '@/entities/tag/model/types';
+import type { PublicTag } from '@/entities/tag/model/types';
 import { cn } from '@/shared/lib/utils';
 import { Badge } from '@/shared/ui/badge';
 

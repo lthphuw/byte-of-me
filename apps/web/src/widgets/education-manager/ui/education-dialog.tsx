@@ -1,9 +1,13 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Languages, Plus, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+
 import {
-  EducationFormValues,
-  education,
+  type EducationFormValues,
+  educationSchema,
 } from '@/entities/education/schemas/education';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import { Button } from '@/shared/ui/button';
@@ -26,9 +30,6 @@ import { Icons } from '@/shared/ui/icons';
 import { Input } from '@/shared/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { EducationAchievementItemField } from '@/widgets/education-manager/ui/education-achievement-item-field';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Languages, Plus, Trash } from 'lucide-react';
-import { useFieldArray, useForm } from 'react-hook-form';
 
 interface EducationDialogProps {
   open: boolean;
@@ -46,7 +47,7 @@ export function EducationDialog({
   loading,
 }: EducationDialogProps) {
   const form = useForm<EducationFormValues>({
-    resolver: zodResolver(education),
+    resolver: zodResolver(educationSchema),
     defaultValues: {
       sortOrder: 0,
       startDate: new Date(),
@@ -121,7 +122,7 @@ export function EducationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {initialData ? 'Edit PublicEducation' : 'Add PublicEducation'}
@@ -174,13 +175,13 @@ export function EducationDialog({
             </div>
 
             <div className="space-y-4 border-t pt-4">
-              <div className="flex justify-between items-center">
+              <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium">Translations</h3>
               </div>
 
               <Tabs value={educationTab} onValueChange={setEducationTab}>
                 <div
-                  className={'flex w-full justify-between align-middle mb-2'}
+                  className={'mb-2 flex w-full justify-between align-middle'}
                 >
                   <TabsList>
                     {educationTranslations.map((f, i) => {
@@ -245,7 +246,7 @@ export function EducationDialog({
                     />
 
                     <Button
-                      className={'w-full mt-2'}
+                      className={'mt-2 w-full'}
                       type="button"
                       size="sm"
                       variant="outline"
@@ -259,7 +260,7 @@ export function EducationDialog({
             </div>
 
             <div className="space-y-4 border-t pt-4">
-              <div className="flex justify-between items-center">
+              <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium">Achievements</h3>
 
                 <Button
@@ -276,7 +277,7 @@ export function EducationDialog({
                     })
                   }
                 >
-                  <Plus className="w-3 h-3 mr-2" />
+                  <Plus className="mr-2 h-3 w-3" />
                   Add
                 </Button>
               </div>

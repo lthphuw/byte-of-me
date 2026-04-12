@@ -1,5 +1,6 @@
-import React from 'react';
 import { redirect } from 'next/navigation';
+import React from 'react';
+
 import { getAuthenticatedUser } from '@/features/auth/lib/session';
 import { PublicSiteFooter } from '@/widgets/public-site-footer/ui';
 

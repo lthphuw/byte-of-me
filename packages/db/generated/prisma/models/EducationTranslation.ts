@@ -198,7 +198,7 @@ export type EducationTranslationWhereInput = {
   title?: Prisma.StringFilter<"EducationTranslation"> | string
   description?: Prisma.StringNullableFilter<"EducationTranslation"> | string | null
   educationId?: Prisma.StringFilter<"EducationTranslation"> | string
-  education?: Prisma.XOR<Prisma.EducationScalarRelationFilter, Prisma.EducationWhereInput>
+  educationSchema?: Prisma.XOR<Prisma.EducationScalarRelationFilter, Prisma.EducationWhereInput>
 }
 
 export type EducationTranslationOrderByWithRelationInput = {
@@ -209,7 +209,7 @@ export type EducationTranslationOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   educationId?: Prisma.SortOrder
-  education?: Prisma.EducationOrderByWithRelationInput
+  educationSchema?: Prisma.EducationOrderByWithRelationInput
 }
 
 export type EducationTranslationWhereUniqueInput = Prisma.AtLeast<{
@@ -224,7 +224,7 @@ export type EducationTranslationWhereUniqueInput = Prisma.AtLeast<{
   title?: Prisma.StringFilter<"EducationTranslation"> | string
   description?: Prisma.StringNullableFilter<"EducationTranslation"> | string | null
   educationId?: Prisma.StringFilter<"EducationTranslation"> | string
-  education?: Prisma.XOR<Prisma.EducationScalarRelationFilter, Prisma.EducationWhereInput>
+  educationSchema?: Prisma.XOR<Prisma.EducationScalarRelationFilter, Prisma.EducationWhereInput>
 }, "id" | "educationId_language">
 
 export type EducationTranslationOrderByWithAggregationInput = {
@@ -260,7 +260,7 @@ export type EducationTranslationCreateInput = {
   language: string
   title: string
   description?: string | null
-  education: Prisma.EducationCreateNestedOneWithoutTranslationsInput
+  educationSchema: Prisma.EducationCreateNestedOneWithoutTranslationsInput
 }
 
 export type EducationTranslationUncheckedCreateInput = {
@@ -280,7 +280,7 @@ export type EducationTranslationUpdateInput = {
   language?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  education?: Prisma.EducationUpdateOneRequiredWithoutTranslationsNestedInput
+  educationSchema?: Prisma.EducationUpdateOneRequiredWithoutTranslationsNestedInput
 }
 
 export type EducationTranslationUncheckedUpdateInput = {
@@ -367,49 +367,49 @@ export type EducationTranslationMinOrderByAggregateInput = {
   educationId?: Prisma.SortOrder
 }
 
-export type EducationTranslationCreateNestedManyWithoutEducationInput = {
-  create?: Prisma.XOR<Prisma.EducationTranslationCreateWithoutEducationInput, Prisma.EducationTranslationUncheckedCreateWithoutEducationInput> | Prisma.EducationTranslationCreateWithoutEducationInput[] | Prisma.EducationTranslationUncheckedCreateWithoutEducationInput[]
-  connectOrCreate?: Prisma.EducationTranslationCreateOrConnectWithoutEducationInput | Prisma.EducationTranslationCreateOrConnectWithoutEducationInput[]
-  createMany?: Prisma.EducationTranslationCreateManyEducationInputEnvelope
+export type EducationTranslationCreateNestedManyWithoutEducationSchemaInput = {
+  create?: Prisma.XOR<Prisma.EducationTranslationCreateWithoutEducationSchemaInput, Prisma.EducationTranslationUncheckedCreateWithoutEducationSchemaInput> | Prisma.EducationTranslationCreateWithoutEducationSchemaInput[] | Prisma.EducationTranslationUncheckedCreateWithoutEducationSchemaInput[]
+  connectOrCreate?: Prisma.EducationTranslationCreateOrConnectWithoutEducationSchemaInput | Prisma.EducationTranslationCreateOrConnectWithoutEducationSchemaInput[]
+  createMany?: Prisma.EducationTranslationCreateManyEducationSchemaInputEnvelope
   connect?: Prisma.EducationTranslationWhereUniqueInput | Prisma.EducationTranslationWhereUniqueInput[]
 }
 
-export type EducationTranslationUncheckedCreateNestedManyWithoutEducationInput = {
-  create?: Prisma.XOR<Prisma.EducationTranslationCreateWithoutEducationInput, Prisma.EducationTranslationUncheckedCreateWithoutEducationInput> | Prisma.EducationTranslationCreateWithoutEducationInput[] | Prisma.EducationTranslationUncheckedCreateWithoutEducationInput[]
-  connectOrCreate?: Prisma.EducationTranslationCreateOrConnectWithoutEducationInput | Prisma.EducationTranslationCreateOrConnectWithoutEducationInput[]
-  createMany?: Prisma.EducationTranslationCreateManyEducationInputEnvelope
+export type EducationTranslationUncheckedCreateNestedManyWithoutEducationSchemaInput = {
+  create?: Prisma.XOR<Prisma.EducationTranslationCreateWithoutEducationSchemaInput, Prisma.EducationTranslationUncheckedCreateWithoutEducationSchemaInput> | Prisma.EducationTranslationCreateWithoutEducationSchemaInput[] | Prisma.EducationTranslationUncheckedCreateWithoutEducationSchemaInput[]
+  connectOrCreate?: Prisma.EducationTranslationCreateOrConnectWithoutEducationSchemaInput | Prisma.EducationTranslationCreateOrConnectWithoutEducationSchemaInput[]
+  createMany?: Prisma.EducationTranslationCreateManyEducationSchemaInputEnvelope
   connect?: Prisma.EducationTranslationWhereUniqueInput | Prisma.EducationTranslationWhereUniqueInput[]
 }
 
-export type EducationTranslationUpdateManyWithoutEducationNestedInput = {
-  create?: Prisma.XOR<Prisma.EducationTranslationCreateWithoutEducationInput, Prisma.EducationTranslationUncheckedCreateWithoutEducationInput> | Prisma.EducationTranslationCreateWithoutEducationInput[] | Prisma.EducationTranslationUncheckedCreateWithoutEducationInput[]
-  connectOrCreate?: Prisma.EducationTranslationCreateOrConnectWithoutEducationInput | Prisma.EducationTranslationCreateOrConnectWithoutEducationInput[]
-  upsert?: Prisma.EducationTranslationUpsertWithWhereUniqueWithoutEducationInput | Prisma.EducationTranslationUpsertWithWhereUniqueWithoutEducationInput[]
-  createMany?: Prisma.EducationTranslationCreateManyEducationInputEnvelope
+export type EducationTranslationUpdateManyWithoutEducationSchemaNestedInput = {
+  create?: Prisma.XOR<Prisma.EducationTranslationCreateWithoutEducationSchemaInput, Prisma.EducationTranslationUncheckedCreateWithoutEducationSchemaInput> | Prisma.EducationTranslationCreateWithoutEducationSchemaInput[] | Prisma.EducationTranslationUncheckedCreateWithoutEducationSchemaInput[]
+  connectOrCreate?: Prisma.EducationTranslationCreateOrConnectWithoutEducationSchemaInput | Prisma.EducationTranslationCreateOrConnectWithoutEducationSchemaInput[]
+  upsert?: Prisma.EducationTranslationUpsertWithWhereUniqueWithoutEducationSchemaInput | Prisma.EducationTranslationUpsertWithWhereUniqueWithoutEducationSchemaInput[]
+  createMany?: Prisma.EducationTranslationCreateManyEducationSchemaInputEnvelope
   set?: Prisma.EducationTranslationWhereUniqueInput | Prisma.EducationTranslationWhereUniqueInput[]
   disconnect?: Prisma.EducationTranslationWhereUniqueInput | Prisma.EducationTranslationWhereUniqueInput[]
   delete?: Prisma.EducationTranslationWhereUniqueInput | Prisma.EducationTranslationWhereUniqueInput[]
   connect?: Prisma.EducationTranslationWhereUniqueInput | Prisma.EducationTranslationWhereUniqueInput[]
-  update?: Prisma.EducationTranslationUpdateWithWhereUniqueWithoutEducationInput | Prisma.EducationTranslationUpdateWithWhereUniqueWithoutEducationInput[]
-  updateMany?: Prisma.EducationTranslationUpdateManyWithWhereWithoutEducationInput | Prisma.EducationTranslationUpdateManyWithWhereWithoutEducationInput[]
+  update?: Prisma.EducationTranslationUpdateWithWhereUniqueWithoutEducationSchemaInput | Prisma.EducationTranslationUpdateWithWhereUniqueWithoutEducationSchemaInput[]
+  updateMany?: Prisma.EducationTranslationUpdateManyWithWhereWithoutEducationSchemaInput | Prisma.EducationTranslationUpdateManyWithWhereWithoutEducationSchemaInput[]
   deleteMany?: Prisma.EducationTranslationScalarWhereInput | Prisma.EducationTranslationScalarWhereInput[]
 }
 
-export type EducationTranslationUncheckedUpdateManyWithoutEducationNestedInput = {
-  create?: Prisma.XOR<Prisma.EducationTranslationCreateWithoutEducationInput, Prisma.EducationTranslationUncheckedCreateWithoutEducationInput> | Prisma.EducationTranslationCreateWithoutEducationInput[] | Prisma.EducationTranslationUncheckedCreateWithoutEducationInput[]
-  connectOrCreate?: Prisma.EducationTranslationCreateOrConnectWithoutEducationInput | Prisma.EducationTranslationCreateOrConnectWithoutEducationInput[]
-  upsert?: Prisma.EducationTranslationUpsertWithWhereUniqueWithoutEducationInput | Prisma.EducationTranslationUpsertWithWhereUniqueWithoutEducationInput[]
-  createMany?: Prisma.EducationTranslationCreateManyEducationInputEnvelope
+export type EducationTranslationUncheckedUpdateManyWithoutEducationSchemaNestedInput = {
+  create?: Prisma.XOR<Prisma.EducationTranslationCreateWithoutEducationSchemaInput, Prisma.EducationTranslationUncheckedCreateWithoutEducationSchemaInput> | Prisma.EducationTranslationCreateWithoutEducationSchemaInput[] | Prisma.EducationTranslationUncheckedCreateWithoutEducationSchemaInput[]
+  connectOrCreate?: Prisma.EducationTranslationCreateOrConnectWithoutEducationSchemaInput | Prisma.EducationTranslationCreateOrConnectWithoutEducationSchemaInput[]
+  upsert?: Prisma.EducationTranslationUpsertWithWhereUniqueWithoutEducationSchemaInput | Prisma.EducationTranslationUpsertWithWhereUniqueWithoutEducationSchemaInput[]
+  createMany?: Prisma.EducationTranslationCreateManyEducationSchemaInputEnvelope
   set?: Prisma.EducationTranslationWhereUniqueInput | Prisma.EducationTranslationWhereUniqueInput[]
   disconnect?: Prisma.EducationTranslationWhereUniqueInput | Prisma.EducationTranslationWhereUniqueInput[]
   delete?: Prisma.EducationTranslationWhereUniqueInput | Prisma.EducationTranslationWhereUniqueInput[]
   connect?: Prisma.EducationTranslationWhereUniqueInput | Prisma.EducationTranslationWhereUniqueInput[]
-  update?: Prisma.EducationTranslationUpdateWithWhereUniqueWithoutEducationInput | Prisma.EducationTranslationUpdateWithWhereUniqueWithoutEducationInput[]
-  updateMany?: Prisma.EducationTranslationUpdateManyWithWhereWithoutEducationInput | Prisma.EducationTranslationUpdateManyWithWhereWithoutEducationInput[]
+  update?: Prisma.EducationTranslationUpdateWithWhereUniqueWithoutEducationSchemaInput | Prisma.EducationTranslationUpdateWithWhereUniqueWithoutEducationSchemaInput[]
+  updateMany?: Prisma.EducationTranslationUpdateManyWithWhereWithoutEducationSchemaInput | Prisma.EducationTranslationUpdateManyWithWhereWithoutEducationSchemaInput[]
   deleteMany?: Prisma.EducationTranslationScalarWhereInput | Prisma.EducationTranslationScalarWhereInput[]
 }
 
-export type EducationTranslationCreateWithoutEducationInput = {
+export type EducationTranslationCreateWithoutEducationSchemaInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -418,7 +418,7 @@ export type EducationTranslationCreateWithoutEducationInput = {
   description?: string | null
 }
 
-export type EducationTranslationUncheckedCreateWithoutEducationInput = {
+export type EducationTranslationUncheckedCreateWithoutEducationSchemaInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -427,30 +427,30 @@ export type EducationTranslationUncheckedCreateWithoutEducationInput = {
   description?: string | null
 }
 
-export type EducationTranslationCreateOrConnectWithoutEducationInput = {
+export type EducationTranslationCreateOrConnectWithoutEducationSchemaInput = {
   where: Prisma.EducationTranslationWhereUniqueInput
-  create: Prisma.XOR<Prisma.EducationTranslationCreateWithoutEducationInput, Prisma.EducationTranslationUncheckedCreateWithoutEducationInput>
+  create: Prisma.XOR<Prisma.EducationTranslationCreateWithoutEducationSchemaInput, Prisma.EducationTranslationUncheckedCreateWithoutEducationSchemaInput>
 }
 
-export type EducationTranslationCreateManyEducationInputEnvelope = {
-  data: Prisma.EducationTranslationCreateManyEducationInput | Prisma.EducationTranslationCreateManyEducationInput[]
+export type EducationTranslationCreateManyEducationSchemaInputEnvelope = {
+  data: Prisma.EducationTranslationCreateManyEducationSchemaInput | Prisma.EducationTranslationCreateManyEducationSchemaInput[]
   skipDuplicates?: boolean
 }
 
-export type EducationTranslationUpsertWithWhereUniqueWithoutEducationInput = {
+export type EducationTranslationUpsertWithWhereUniqueWithoutEducationSchemaInput = {
   where: Prisma.EducationTranslationWhereUniqueInput
-  update: Prisma.XOR<Prisma.EducationTranslationUpdateWithoutEducationInput, Prisma.EducationTranslationUncheckedUpdateWithoutEducationInput>
-  create: Prisma.XOR<Prisma.EducationTranslationCreateWithoutEducationInput, Prisma.EducationTranslationUncheckedCreateWithoutEducationInput>
+  update: Prisma.XOR<Prisma.EducationTranslationUpdateWithoutEducationSchemaInput, Prisma.EducationTranslationUncheckedUpdateWithoutEducationSchemaInput>
+  create: Prisma.XOR<Prisma.EducationTranslationCreateWithoutEducationSchemaInput, Prisma.EducationTranslationUncheckedCreateWithoutEducationSchemaInput>
 }
 
-export type EducationTranslationUpdateWithWhereUniqueWithoutEducationInput = {
+export type EducationTranslationUpdateWithWhereUniqueWithoutEducationSchemaInput = {
   where: Prisma.EducationTranslationWhereUniqueInput
-  data: Prisma.XOR<Prisma.EducationTranslationUpdateWithoutEducationInput, Prisma.EducationTranslationUncheckedUpdateWithoutEducationInput>
+  data: Prisma.XOR<Prisma.EducationTranslationUpdateWithoutEducationSchemaInput, Prisma.EducationTranslationUncheckedUpdateWithoutEducationSchemaInput>
 }
 
-export type EducationTranslationUpdateManyWithWhereWithoutEducationInput = {
+export type EducationTranslationUpdateManyWithWhereWithoutEducationSchemaInput = {
   where: Prisma.EducationTranslationScalarWhereInput
-  data: Prisma.XOR<Prisma.EducationTranslationUpdateManyMutationInput, Prisma.EducationTranslationUncheckedUpdateManyWithoutEducationInput>
+  data: Prisma.XOR<Prisma.EducationTranslationUpdateManyMutationInput, Prisma.EducationTranslationUncheckedUpdateManyWithoutEducationSchemaInput>
 }
 
 export type EducationTranslationScalarWhereInput = {
@@ -466,7 +466,7 @@ export type EducationTranslationScalarWhereInput = {
   educationId?: Prisma.StringFilter<"EducationTranslation"> | string
 }
 
-export type EducationTranslationCreateManyEducationInput = {
+export type EducationTranslationCreateManyEducationSchemaInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -475,7 +475,7 @@ export type EducationTranslationCreateManyEducationInput = {
   description?: string | null
 }
 
-export type EducationTranslationUpdateWithoutEducationInput = {
+export type EducationTranslationUpdateWithoutEducationSchemaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -484,7 +484,7 @@ export type EducationTranslationUpdateWithoutEducationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
-export type EducationTranslationUncheckedUpdateWithoutEducationInput = {
+export type EducationTranslationUncheckedUpdateWithoutEducationSchemaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -493,7 +493,7 @@ export type EducationTranslationUncheckedUpdateWithoutEducationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
-export type EducationTranslationUncheckedUpdateManyWithoutEducationInput = {
+export type EducationTranslationUncheckedUpdateManyWithoutEducationSchemaInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -512,7 +512,7 @@ export type EducationTranslationSelect<ExtArgs extends runtime.Types.Extensions.
   title?: boolean
   description?: boolean
   educationId?: boolean
-  education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
+  educationSchema?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["educationTranslation"]>
 
 export type EducationTranslationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -523,7 +523,7 @@ export type EducationTranslationSelectCreateManyAndReturn<ExtArgs extends runtim
   title?: boolean
   description?: boolean
   educationId?: boolean
-  education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
+  educationSchema?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["educationTranslation"]>
 
 export type EducationTranslationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -534,7 +534,7 @@ export type EducationTranslationSelectUpdateManyAndReturn<ExtArgs extends runtim
   title?: boolean
   description?: boolean
   educationId?: boolean
-  education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
+  educationSchema?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["educationTranslation"]>
 
 export type EducationTranslationSelectScalar = {
@@ -549,19 +549,19 @@ export type EducationTranslationSelectScalar = {
 
 export type EducationTranslationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "language" | "title" | "description" | "educationId", ExtArgs["result"]["educationTranslation"]>
 export type EducationTranslationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
+  educationSchema?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
 }
 export type EducationTranslationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
+  educationSchema?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
 }
 export type EducationTranslationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  education?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
+  educationSchema?: boolean | Prisma.EducationDefaultArgs<ExtArgs>
 }
 
 export type $EducationTranslationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "EducationTranslation"
   objects: {
-    education: Prisma.$EducationPayload<ExtArgs>
+    educationSchema: Prisma.$EducationPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -965,7 +965,7 @@ readonly fields: EducationTranslationFieldRefs;
  */
 export interface Prisma__EducationTranslationClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  education<T extends Prisma.EducationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EducationDefaultArgs<ExtArgs>>): Prisma.Prisma__EducationClient<runtime.Types.Result.GetResult<Prisma.$EducationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  educationSchema<T extends Prisma.EducationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EducationDefaultArgs<ExtArgs>>): Prisma.Prisma__EducationClient<runtime.Types.Result.GetResult<Prisma.$EducationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

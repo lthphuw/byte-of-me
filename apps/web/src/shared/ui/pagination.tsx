@@ -1,7 +1,8 @@
-import { Dispatch, SetStateAction } from 'react';
-import { PaginatedMetadata } from '@/shared/types/api/paginated-api.type';
-import { Button } from '@/shared/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import type { Dispatch, SetStateAction } from 'react';
+
+import type { PaginatedMetadata } from '@/shared/types/api/paginated-api.type';
+import { Button } from '@/shared/ui/button';
 
 export interface PaginationProps {
   pagination?: PaginatedMetadata;
@@ -17,7 +18,7 @@ export function Pagination({
 
   return (
     <footer className="flex items-center justify-between border-t pt-4">
-      <p className="text-xs text-muted-foreground font-medium">
+      <p className="text-muted-foreground text-xs font-medium">
         Page {page} of {pagination?.totalPages || 1}
       </p>
       <div className="flex items-center gap-2">
@@ -27,7 +28,7 @@ export function Pagination({
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1 || isPlaceholderData}
         >
-          <ChevronLeft className="h-4 w-4 mr-1" /> Previous
+          <ChevronLeft className="mr-1 h-4 w-4" /> Previous
         </Button>
         <Button
           variant="outline"
@@ -35,7 +36,7 @@ export function Pagination({
           onClick={() => setPage((prev) => prev + 1)}
           disabled={!pagination?.hasMore || isPlaceholderData}
         >
-          Next <ChevronRight className="h-4 w-4 ml-1" />
+          Next <ChevronRight className="ml-1 h-4 w-4" />
         </Button>
       </div>
     </footer>

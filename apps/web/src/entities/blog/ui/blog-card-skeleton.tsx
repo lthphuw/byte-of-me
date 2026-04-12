@@ -3,7 +3,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 
 export function BlogCardSkeleton() {
   return (
-    <Card className="flex flex-col overflow-hidden border-2 h-full">
+    <Card className="flex h-full flex-col overflow-hidden border-2">
       {/* Cover Image Area */}
       <Skeleton className="aspect-video w-full rounded-none" />
 
@@ -36,7 +36,7 @@ export function BlogCardSkeleton() {
         </div>
       </CardContent>
 
-      <CardFooter className="border-t bg-muted/30 p-4">
+      <CardFooter className="bg-muted/30 border-t p-4">
         <Skeleton className="h-5 w-24" />
       </CardFooter>
     </Card>

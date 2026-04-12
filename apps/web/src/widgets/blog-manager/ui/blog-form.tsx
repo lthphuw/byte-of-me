@@ -1,9 +1,15 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
+import { Languages, Trash } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { AdminBlog } from '@/entities/blog';
-import { BlogFormValues, blogFormSchema } from '@/entities/blog/schemas/blog';
+import { useFieldArray, useForm } from 'react-hook-form';
+
+import type { AdminBlog } from '@/entities/blog';
+import type {BlogFormValues } from '@/entities/blog/schemas/blog';
+import { blogFormSchema } from '@/entities/blog/schemas/blog';
 import { getPaginatedAdminProject } from '@/entities/project/api/get-paginated-admin-project';
 import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
@@ -30,10 +36,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { Textarea } from '@/shared/ui/textarea';
 import { RichTextEditor } from '@/shared/ui/tiptap/rich-text-editor';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
-import { Languages, Trash } from 'lucide-react';
-import { useFieldArray, useForm } from 'react-hook-form';
 
 import Loading from '../../../shared/ui/loading';
 
@@ -136,7 +138,7 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-4">
             <FormField
               control={form.control}
@@ -250,7 +252,7 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
 
         {/* Translations Section */}
         <div className="space-y-4 border-t pt-4">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Content Translations</h3>
             <Button
               type="button"
@@ -265,7 +267,7 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
                 })
               }
             >
-              Add Language <Languages className="ml-2 w-4 h-4" />
+              Add Language <Languages className="ml-2 h-4 w-4" />
             </Button>
           </div>
 
@@ -285,9 +287,9 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
               <TabsContent
                 key={f.id}
                 value={f.id}
-                className="space-y-4 animate-in fade-in duration-300"
+                className="animate-in fade-in space-y-4 duration-300"
               >
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                   <FormField
                     control={form.control}
                     name={`translations.${i}.language`}
@@ -343,7 +345,7 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
                     <FormItem>
                       <FormLabel>Body Content</FormLabel>
                       <FormControl>
-                        <div className="border rounded-md">
+                        <div className="rounded-md border">
                           <RichTextEditor
                             value={field.value}
                             onChange={field.onChange}
@@ -362,14 +364,14 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
                   variant="outline"
                   onClick={() => remove(i)}
                 >
-                  <Trash className="mr-2 w-4 h-4" /> Remove Translation
+                  <Trash className="mr-2 h-4 w-4" /> Remove Translation
                 </Button>
               </TabsContent>
             ))}
           </Tabs>
         </div>
 
-        <div className="flex justify-end gap-4 pt-6 border-t">
+        <div className="flex justify-end gap-4 border-t pt-6">
           <Button
             type="submit"
             size="lg"

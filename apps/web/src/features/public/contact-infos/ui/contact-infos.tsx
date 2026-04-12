@@ -1,5 +1,8 @@
+import { getTranslations } from 'next-intl/server';
 import React from 'react';
+
 import { getAllPublicContacts } from '@/entities/social-link/api/get-all-public-contacts';
+import { env } from '@/env.mjs';
 import {
   ContactHeaderMotion,
   ContactItemMotion,
@@ -7,9 +10,6 @@ import {
 } from '@/features/public/contact-infos/ui/contact-motions';
 import { Link } from '@/i18n/navigation';
 import { Icons } from '@/shared/ui/icons';
-import { getTranslations } from 'next-intl/server';
-
-import { env } from '@/env.mjs';
 
 export async function ContactInfos() {
   const t = await getTranslations('contact');
@@ -60,10 +60,10 @@ export async function ContactInfos() {
     <div className="w-full max-w-md space-y-8">
       {/* Header */}
       <ContactHeaderMotion id="contact-info">
-        <h1 className="text-2xl md:text-4xl font-semibold tracking-tight">
+        <h1 className="text-2xl font-semibold tracking-tight md:text-4xl">
           {t('letsWorkTogether')}
         </h1>
-        <p className="text-sm md:text-base text-muted-foreground">
+        <p className="text-muted-foreground text-sm md:text-base">
           {t('feelFreeToReachOutThroughAnyChannel')}
         </p>
       </ContactHeaderMotion>
@@ -77,18 +77,18 @@ export async function ContactInfos() {
               <Link
                 href={item.href}
                 target="_blank"
-                className="group flex items-center gap-4 rounded-lg border border-border px-4 py-3 transition hover:bg-muted/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="border-border hover:bg-muted/50 focus-visible:ring-ring group flex items-center gap-4 rounded-lg border px-4 py-3 transition focus:outline-none focus-visible:ring-2"
               >
-                <div className="flex size-10 items-center justify-center rounded-md border border-border text-muted-foreground transition group-hover:-translate-y-0.5 group-hover:text-foreground">
+                <div className="border-border text-muted-foreground group-hover:text-foreground flex size-10 items-center justify-center rounded-md border transition group-hover:-translate-y-0.5">
                   <Icon size={18} />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm font-medium">{item.label}</span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-muted-foreground text-xs">
                     {item.description}
                   </span>
                 </div>
-                <span className="ml-auto text-xs text-muted-foreground transition opacity-60">
+                <span className="text-muted-foreground ml-auto text-xs opacity-60 transition">
                   ↗
                 </span>
               </Link>

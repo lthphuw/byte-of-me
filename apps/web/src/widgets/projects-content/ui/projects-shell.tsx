@@ -1,6 +1,8 @@
 import * as React from 'react';
+
 import { cn } from '@/shared/lib/utils';
-import { ShellBase, ShellProps } from '@/shared/ui/shell';
+import type { ShellProps } from '@/shared/ui/shell';
+import { ShellBase } from '@/shared/ui/shell';
 
 export function ProjectsShell({ className, ...props }: ShellProps) {
   return (

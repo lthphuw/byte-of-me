@@ -1,10 +1,10 @@
 import { Plugin, PluginKey } from '@tiptap/pm/state';
-import { Extension, type Editor } from '@tiptap/react';
+import { type Editor,Extension } from '@tiptap/react';
 
 import {
-  filterFiles,
   type FileError,
   type FileValidationOptions,
+  filterFiles,
 } from '../../utils';
 
 type FileHandlePluginOptions = {

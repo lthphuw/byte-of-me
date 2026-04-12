@@ -1,7 +1,12 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { MessageSquare, Search, X } from 'lucide-react';
 import { useState } from 'react';
-import { AdminContactMessage } from '@/entities/contact-message';
+import { useDebounce } from 'use-debounce';
+
+import type { AdminContactMessage } from '@/entities/contact-message';
 import { getPaginatedContactMessages } from '@/entities/contact-message/api/get-paginated-contacts';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader } from '@/shared/ui/card';
@@ -17,10 +22,6 @@ import { Pagination } from '@/shared/ui/pagination';
 import { RichText } from '@/shared/ui/rich-text';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
-import { MessageSquare, Search, X } from 'lucide-react';
-import { useDebounce } from 'use-debounce';
 
 export function ContactMessageGallery() {
   const [page, setPage] = useState(1);
@@ -46,24 +47,24 @@ export function ContactMessageGallery() {
     <div className="space-y-6">
       <div className="flex items-center justify-between border-b pb-4">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-primary" />
+          <h2 className="flex items-center gap-2 text-xl font-semibold tracking-tight">
+            <MessageSquare className="text-primary h-5 w-5" />
             Recent Inquiries
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Direct messages from your portfolio contact form.
           </p>
         </div>
 
         {!isLoading && (
-          <div className="hidden md:block px-3 py-1 bg-muted rounded-full text-[10px] font-bold uppercase tracking-tighter text-muted-foreground">
+          <div className="bg-muted text-muted-foreground hidden rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-tighter md:block">
             {meta?.totalCount || 0} Messages
           </div>
         )}
       </div>
 
-      <div className="relative group max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+      <div className="group relative max-w-md">
+        <Search className="text-muted-foreground group-focus-within:text-primary absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transition-colors" />
         <Input
           placeholder="Search messages..."
           value={search}
@@ -71,12 +72,12 @@ export function ContactMessageGallery() {
             setPage(1);
             setSearch(e.target.value);
           }}
-          className="pl-9 bg-background/50 rounded-xl border-dashed focus:border-solid transition-all"
+          className="bg-background/50 rounded-xl border-dashed pl-9 transition-all focus:border-solid"
         />
         {search && (
           <button
             onClick={() => setSearch('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground absolute right-3 top-1/2 -translate-y-1/2"
           >
             <X className="h-4 w-4" />
           </button>
@@ -85,36 +86,36 @@ export function ContactMessageGallery() {
 
       {/* Gallery */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-[160px] rounded-xl" />
           ))}
         </div>
       ) : messages.length === 0 ? (
-        <div className="text-center text-muted-foreground py-10">
+        <div className="text-muted-foreground py-10 text-center">
           No messages found
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {messages.map((msg) => (
             <Card
               key={msg.id}
-              className="rounded-2xl cursor-pointer hover:border-primary/50 transition-colors group"
+              className="hover:border-primary/50 group cursor-pointer rounded-2xl transition-colors"
               onClick={() => setSelectedMessage(msg)}
             >
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <div className="font-semibold group-hover:text-primary transition-colors">
+                  <div className="group-hover:text-primary font-semibold transition-colors">
                     {msg.name}
                   </div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-muted-foreground text-xs">
                     {format(new Date(msg.createdAt), 'dd/MM/yyyy')}
                   </div>
                 </div>
-                <div className="text-sm text-muted-foreground truncate italic">
+                <div className="text-muted-foreground truncate text-sm italic">
                   {msg.subject || 'No Subject'}
                 </div>
-                <div className="text-xs text-muted-foreground truncate">
+                <div className="text-muted-foreground truncate text-xs">
                   {msg.email}
                 </div>
               </CardHeader>
@@ -122,10 +123,10 @@ export function ContactMessageGallery() {
               <CardContent>
                 <div className="relative">
                   <RichText
-                    className="text-sm line-clamp-3"
+                    className="line-clamp-3 text-sm"
                     content={msg.message}
                   />
-                  <div className="mt-4 text-[10px] text-primary font-medium uppercase tracking-wider hover:underline">
+                  <div className="text-primary mt-4 text-[10px] font-medium uppercase tracking-wider hover:underline">
                     Click to read more
                   </div>
                 </div>
@@ -151,7 +152,7 @@ export function ContactMessageGallery() {
           {selectedMessage && (
             <>
               <DialogHeader>
-                <div className="flex justify-between items-start pr-6">
+                <div className="flex items-start justify-between pr-6">
                   <div>
                     <DialogTitle className="text-xl">
                       {selectedMessage.name}
@@ -160,7 +161,7 @@ export function ContactMessageGallery() {
                       {selectedMessage.email}
                     </DialogDescription>
                   </div>
-                  <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+                  <div className="text-muted-foreground bg-muted rounded px-2 py-1 text-xs">
                     {format(new Date(selectedMessage.createdAt), 'PPP p')}
                   </div>
                 </div>
@@ -168,19 +169,19 @@ export function ContactMessageGallery() {
 
               <div className="mt-4 space-y-4">
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                  <h4 className="text-muted-foreground mb-1 text-xs font-bold uppercase tracking-widest">
                     Subject
                   </h4>
-                  <p className="font-medium text-foreground">
+                  <p className="text-foreground font-medium">
                     {selectedMessage.subject || 'No subject provided'}
                   </p>
                 </div>
 
                 <div className="pt-4">
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
+                  <h4 className="text-muted-foreground mb-2 text-xs font-bold uppercase tracking-widest">
                     Message
                   </h4>
-                  <ScrollArea className="h-[40vh] w-full rounded-md border p-4 bg-muted/30">
+                  <ScrollArea className="bg-muted/30 h-[40vh] w-full rounded-md border p-4">
                     <RichText content={selectedMessage.message} />
                   </ScrollArea>
                 </div>

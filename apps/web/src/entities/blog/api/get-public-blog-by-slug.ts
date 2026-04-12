@@ -1,14 +1,15 @@
 'use server';
 
-import { PublicBlog } from '@/entities/blog/model/types';
-import { PublicProject } from '@/entities/project/model/types';
+import { prisma } from '@byte-of-me/db';
+
+import type { PublicBlog } from '@/entities/blog/model/types';
+import type { PublicProject } from '@/entities/project/model/types';
 import {
   handlePublicAction,
   withPublicActionHandler,
 } from '@/shared/api/public-action-template';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
-import { ApiResponse } from '@/shared/types/api/api-response.type';
-import { prisma } from '@byte-of-me/db';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getPublicBlogBySlug(
   slug: string

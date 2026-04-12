@@ -1,9 +1,5 @@
 'use client';
 
-import { logOut } from '@/features/auth/lib/log-out';
-import { Link } from '@/i18n/navigation';
-import { purgeEntireCache } from '@/shared/lib/revalidate';
-import { useToast } from '@/shared/ui/use-toast';
 import {
   Briefcase,
   Code2,
@@ -20,6 +16,11 @@ import {
   Wallpaper,
 } from 'lucide-react';
 
+import { logOut } from '@/features/auth/lib/log-out';
+import { Link } from '@/i18n/navigation';
+import { purgeEntireCache } from '@/shared/lib/revalidate';
+import { useToast } from '@/shared/ui/use-toast';
+
 import { DashboardNavItems } from './dashboard-nav-items';
 
 const navItems = [
@@ -35,7 +36,7 @@ const navItems = [
   },
   { href: '/dashboard/media', label: 'Media', icon: Image },
   {
-    href: '/dashboard/education',
+    href: '/dashboard/educationSchema',
     label: 'Education',
     icon: GraduationCap,
   },
@@ -51,7 +52,7 @@ export  function DashboardSidebar() {
   const toast = useToast();
 
   return (
-    <aside className="sticky top-0 z-40 h-screen w-[255px] shrink-0 border-r bg-background">
+    <aside className="bg-background sticky top-0 z-40 h-screen w-[255px] shrink-0 border-r">
       <div className="flex h-full flex-col">
         <div className="border-b px-6 py-5">
           <h1 className="text-lg font-semibold tracking-tight">Byte of me</h1>
@@ -82,7 +83,7 @@ export  function DashboardSidebar() {
           >
             <button
               type="submit"
-              className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="text-muted-foreground hover:bg-muted hover:text-foreground flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors"
             >
               <DatabaseZap className="size-4" />
               Clear all caches
@@ -92,7 +93,7 @@ export  function DashboardSidebar() {
           <Link
             target="_blank"
             href="/apps/web/public"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className="text-muted-foreground hover:bg-muted hover:text-foreground flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors"
           >
             <ExternalLink className="h-4 w-4" />
             View public site
@@ -101,7 +102,7 @@ export  function DashboardSidebar() {
           <form action={logOut}>
             <button
               type="submit"
-              className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="text-muted-foreground hover:bg-muted hover:text-foreground flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors"
             >
               <LogOut className="h-4 w-4" />
               Logout

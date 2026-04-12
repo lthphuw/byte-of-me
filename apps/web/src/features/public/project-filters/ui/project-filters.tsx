@@ -1,6 +1,9 @@
 'use client';
 
+import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useDebounce } from 'use-debounce';
+
 import { TagClickableBadge, useTagInfiniteQuery } from '@/entities/tag';
 import {
   TechStackClickableBadge,
@@ -9,8 +12,6 @@ import {
 import { ProjectFilterSection } from '@/features/public/project-filters/ui/project-filter-section';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
-import { X } from 'lucide-react';
-import { useDebounce } from 'use-debounce';
 
 export interface FilterValues {
   tagSlugs: string[];
@@ -69,7 +70,7 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
     value.tagSlugs.length || value.techStackSlugs.length || value.search;
 
   return (
-    <div className="flex flex-col gap-6 border rounded-xl p-4 md:p-5 bg-card">
+    <div className="bg-card flex flex-col gap-6 rounded-xl border p-4 md:p-5">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-bold tracking-tight">Filters</h2>
         {hasFilters && (
@@ -78,7 +79,7 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
             onClick={() =>
               onChange({ tagSlugs: [], techStackSlugs: [], search: '' })
             }
-            className="h-8 px-2 text-xs text-muted-foreground"
+            className="text-muted-foreground h-8 px-2 text-xs"
           >
             Reset
           </Button>
@@ -94,7 +95,7 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
         />
         {search && (
           <X
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 cursor-pointer text-muted-foreground"
+            className="text-muted-foreground absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer"
             onClick={() => setSearch('')}
           />
         )}

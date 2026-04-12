@@ -1,14 +1,15 @@
 'use client';
 
-import React, { ReactNode, createContext, useContext } from 'react';
-import { Toaster } from '@/shared/ui/toaster';
 import { GoogleAnalytics as NextGoogleAnalytics } from '@next/third-parties/google';
 import { SpeedInsights as VercelSpeedInsights } from '@vercel/speed-insights/next';
+import type { ReactNode} from 'react';
+import React, { createContext, useContext } from 'react';
 
-import { env } from '@/env.mjs';
 import { TailwindIndicator } from '@/app/providers/_components';
 import { TanStackQueryProvider } from '@/app/providers/tan-stack-query-provider';
 import { ThemeProvider } from '@/app/providers/theme-provider';
+import { env } from '@/env.mjs';
+import { Toaster } from '@/shared/ui/toaster';
 
 
 

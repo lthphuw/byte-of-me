@@ -1,10 +1,11 @@
 'use client';
 
+import { Strikethrough } from 'lucide-react';
 import React from 'react';
+
 import { cn } from '@/shared/lib/utils';
 import { Button, type ButtonProps } from '@/shared/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
-import { Strikethrough } from 'lucide-react';
 
 import { useToolbar } from './toolbar-provider';
 
@@ -35,7 +36,7 @@ const StrikeThroughToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
         </TooltipTrigger>
         <TooltipContent>
           <span>Strikethrough</span>
-          <span className="ml-1 text-xs text-gray-11">(cmd + shift + x)</span>
+          <span className="text-gray-11 ml-1 text-xs">(cmd + shift + x)</span>
         </TooltipContent>
       </Tooltip>
     );

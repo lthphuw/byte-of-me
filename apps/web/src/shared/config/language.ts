@@ -1,4 +1,4 @@
-import { LocaleType } from '@/shared/types';
+import type { LocaleType } from '@/shared/types';
 
 export const supportedLanguages: LocaleType[] = ['en', 'vi'];
 

@@ -1,9 +1,10 @@
 'use client';
 
+import { ImageIcon, Loader2, X } from 'lucide-react';
 import { useState } from 'react';
+
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/ui/use-toast';
-import { ImageIcon, Loader2, X } from 'lucide-react';
 
 export interface ImageUploadProps {
   uploadFiles: (files: File[]) => Promise<any>;
@@ -61,7 +62,7 @@ export function ImageUpload({ uploadFiles }: ImageUploadProps) {
   return (
     <div className="space-y-4">
       <div
-        className="border-2 border-dashed rounded-xl p-8 text-center hover:bg-primary/5 cursor-pointer"
+        className="hover:bg-primary/5 cursor-pointer rounded-xl border-2 border-dashed p-8 text-center"
         onDrop={(e) => {
           e.preventDefault();
           handleFiles(e.dataTransfer.files);
@@ -69,7 +70,7 @@ export function ImageUpload({ uploadFiles }: ImageUploadProps) {
         onDragOver={(e) => e.preventDefault()}
         onClick={() => document.getElementById('file-upload')?.click()}
       >
-        <ImageIcon className="mx-auto h-10 w-10 text-muted-foreground" />
+        <ImageIcon className="text-muted-foreground mx-auto h-10 w-10" />
         <p className="mt-2 text-sm">Click or drag images here</p>
         <input
           id="file-upload"
@@ -85,9 +86,9 @@ export function ImageUpload({ uploadFiles }: ImageUploadProps) {
         {files.map((file, idx) => (
           <div
             key={idx}
-            className="flex items-center justify-between p-2 border rounded-md bg-muted/30"
+            className="bg-muted/30 flex items-center justify-between rounded-md border p-2"
           >
-            <span className="text-xs truncate max-w-[200px]">{file.name}</span>
+            <span className="max-w-[200px] truncate text-xs">{file.name}</span>
             <Button
               variant="ghost"
               size="icon"

@@ -1,7 +1,7 @@
-import { PublicTag } from '@/entities/tag/model/types';
-import { PublicTechStack } from '@/entities/tech-stack/model/types';
+import type { PublicTag } from '@/entities/tag/model/types';
+import type { PublicTechStack } from '@/entities/tech-stack/model/types';
 
-import { Prisma } from '../../../../../../packages/db/generated/prisma/client';
+import type { Prisma } from '../../../../../../packages/db/generated/prisma/client';
 
 export type AdminProject = Prisma.ProjectGetPayload<{
   include: {

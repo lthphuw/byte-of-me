@@ -9,7 +9,7 @@ export function AboutMeLoading() {
       </div>
 
       {/* RichText Content Skeleton */}
-      <div className="pl-0 ml-0.5 space-y-3">
+      <div className="ml-0.5 space-y-3 pl-0">
         <Skeleton className="h-5 w-full" />
         <Skeleton className="h-5 w-[95%]" />
         <Skeleton className="h-5 w-[98%]" />

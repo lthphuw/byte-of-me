@@ -1,6 +1,7 @@
 'use client';
 
-import { PublicTechStack, TechStackBadge } from '@/entities/tech-stack';
+import type { PublicTechStack} from '@/entities/tech-stack';
+import { TechStackBadge } from '@/entities/tech-stack';
 
 export function TechStackSection({
   techStacks,
@@ -17,10 +18,10 @@ export function TechStackSection({
   );
 
   return (
-    <div className="grid md:grid-cols-2 gap-6">
+    <div className="grid gap-6 md:grid-cols-2">
       {Object.entries(grouped).map(([group, items]) => (
-        <div key={group} className="rounded-xl border p-5 space-y-4">
-          <h3 className="text-sm font-medium text-muted-foreground">{group}</h3>
+        <div key={group} className="space-y-4 rounded-xl border p-5">
+          <h3 className="text-muted-foreground text-sm font-medium">{group}</h3>
 
           <div className="flex flex-wrap gap-3">
             {items.map((tech) => (

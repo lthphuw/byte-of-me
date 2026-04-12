@@ -1,8 +1,10 @@
 'use client';
 
+import { Check, ChevronDown, ImageIcon, Loader2, Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
+
 import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media';
-import { Media } from '@/entities/media/model/types';
+import type { Media } from '@/entities/media/model/types';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
@@ -15,7 +17,6 @@ import {
 } from '@/shared/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { ScrollArea } from '@/shared/ui/scroll-area';
-import { Check, ChevronDown, ImageIcon, Loader2, Plus } from 'lucide-react';
 
 interface MediaSelectProps {
   value?: string | null;
@@ -40,10 +41,10 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="w-full justify-between h-14 px-3 border-2 border-dashed hover:border-primary hover:bg-primary/5 transition-all"
+          className="hover:border-primary hover:bg-primary/5 h-14 w-full justify-between border-2 border-dashed px-3 transition-all"
         >
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="h-10 w-10 rounded overflow-hidden border bg-background shrink-0 flex items-center justify-center">
+            <div className="bg-background flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded border">
               {selectedMedia ? (
                 <img
                   src={selectedMedia.url}
@@ -51,27 +52,27 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
                   alt="Selected"
                 />
               ) : (
-                <ImageIcon className="h-5 w-5 text-muted-foreground/40" />
+                <ImageIcon className="text-muted-foreground/40 h-5 w-5" />
               )}
             </div>
-            <div className="flex flex-col items-start text-left truncate">
-              <span className="text-sm font-medium truncate w-full">
+            <div className="flex flex-col items-start truncate text-left">
+              <span className="w-full truncate text-sm font-medium">
                 {selectedMedia ? selectedMedia.fileName : 'Select Media'}
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-muted-foreground text-xs">
                 {selectedMedia
                   ? 'Click to change'
                   : 'Upload or choose from library'}
               </span>
             </div>
           </div>
-          <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
+          <ChevronDown className="text-muted-foreground h-4 w-4 shrink-0" />
         </Button>
       </PopoverTrigger>
 
       <PopoverContent className="w-[400px] p-0 shadow-xl" align="start">
-        <div className="p-3 border-b bg-muted/30 flex justify-between items-center">
-          <span className="text-xs font-bold uppercase text-muted-foreground">
+        <div className="bg-muted/30 flex items-center justify-between border-b p-3">
+          <span className="text-muted-foreground text-xs font-bold uppercase">
             Library
           </span>
           <Dialog open={isUploadOpen} onOpenChange={setIsUploadOpen}>
@@ -79,7 +80,7 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
               <Button
                 size="sm"
                 variant="ghost"
-                className="h-8 gap-1 text-xs text-primary"
+                className="text-primary h-8 gap-1 text-xs"
               >
                 <Plus className="h-3 w-3" /> Upload
               </Button>
@@ -123,12 +124,12 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
                   >
                     <img
                       src={media.url}
-                      className="object-cover w-full h-full"
+                      className="h-full w-full object-cover"
                       alt={media.fileName}
                     />
                     {value === media.id && (
-                      <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                        <Check className="h-5 w-5 text-primary" />
+                      <div className="bg-primary/20 absolute inset-0 flex items-center justify-center">
+                        <Check className="text-primary h-5 w-5" />
                       </div>
                     )}
                   </button>
@@ -140,12 +141,12 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full mt-4"
+                className="mt-4 w-full"
                 onClick={() => fetchNextPage()}
                 disabled={isFetchingNextPage}
               >
                 {isFetchingNextPage ? (
-                  <Loader2 className="animate-spin h-4 w-4" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   'Show more'
                 )}

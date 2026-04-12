@@ -1,11 +1,12 @@
+import { CaretDownIcon, CheckIcon } from '@radix-ui/react-icons';
+import type { Editor } from '@tiptap/react';
+import type { VariantProps } from 'class-variance-authority';
 import * as React from 'react';
+
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import type { toggleVariants } from '@/shared/ui/toggle';
 import { ToggleGroup, ToggleGroupItem } from '@/shared/ui/toggle-group';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
-import { CaretDownIcon, CheckIcon } from '@radix-ui/react-icons';
-import type { Editor } from '@tiptap/react';
-import type { VariantProps } from 'class-variance-authority';
 
 import { useTheme } from '../../hooks/use-theme';
 import { ToolbarButton } from '../toolbar-button';

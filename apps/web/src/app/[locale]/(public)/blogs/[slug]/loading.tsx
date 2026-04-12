@@ -6,8 +6,8 @@ import { BlogDetailsShell } from '@/widgets/blog-details/ui/blog-shells';
 export default function BlogDetailsLoading() {
   return (
     <BlogDetailsShell>
-      <div className="flex flex-col items-center w-full md:px-8 py-8 md:py-12 min-w-0 overflow-hidden">
-        <div className="w-full max-w-3xl min-w-0">
+      <div className="flex w-full min-w-0 flex-col items-center overflow-hidden py-8 md:px-8 md:py-12">
+        <div className="w-full min-w-0 max-w-3xl">
           {/* TITLE SKELETON */}
           <div className="space-y-2">
             <Skeleton className="h-10 w-full md:h-12" />
@@ -21,21 +21,21 @@ export default function BlogDetailsLoading() {
           </div>
 
           {/* METADATA SKELETON (Date, Reading Time) */}
-          <div className="flex items-center gap-4 mt-6">
+          <div className="mt-6 flex items-center gap-4">
             <Skeleton className="h-4 w-24" />
             <Skeleton className="h-4 w-24" />
           </div>
 
           {/* TAGS SKELETON */}
-          <div className="flex flex-wrap gap-2 mt-6">
+          <div className="mt-6 flex flex-wrap gap-2">
             <Skeleton className="h-6 w-16 rounded-full" />
             <Skeleton className="h-6 w-20 rounded-full" />
             <Skeleton className="h-6 w-14 rounded-full" />
           </div>
 
           {/* COVER IMAGE SKELETON */}
-          <div className="mt-8 mb-10">
-            <Skeleton className="w-full aspect-video rounded-xl" />
+          <div className="mb-10 mt-8">
+            <Skeleton className="aspect-video w-full rounded-xl" />
           </div>
 
           {/* CONTENT SKELETON (Rich Text Mockup) */}
@@ -43,7 +43,7 @@ export default function BlogDetailsLoading() {
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-3/4" />
-            <div className="pt-4 space-y-4">
+            <div className="space-y-4 pt-4">
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-4 w-5/6" />
               <Skeleton className="h-4 w-full" />
@@ -53,8 +53,8 @@ export default function BlogDetailsLoading() {
           {/* PROJECT CARD SKELETON */}
           <div className="mt-10">
             <Separator className="my-10" />
-            <Skeleton className="h-4 w-32 mb-4" /> {/* Label */}
-            <Card className="p-4 overflow-hidden">
+            <Skeleton className="mb-4 h-4 w-32" /> {/* Label */}
+            <Card className="overflow-hidden p-4">
               <div className="space-y-3">
                 <Skeleton className="h-5 w-40" /> {/* Project Title */}
                 <Skeleton className="h-3 w-full" /> {/* Project Desc line 1 */}

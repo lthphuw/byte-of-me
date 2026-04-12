@@ -1,12 +1,14 @@
 'use client';
 
-import { MouseEvent, useCallback } from 'react';
+import { useClipboard } from '@mantine/hooks';
+import { AnimatePresence, motion } from 'framer-motion';
+import type { MouseEvent} from 'react';
+import { useCallback } from 'react';
+
 import { defaultSpring, iconSwicthVariants } from '@/shared/config/anim';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { Icons } from '@/shared/ui/icons';
-import { useClipboard } from '@mantine/hooks';
-import { AnimatePresence, motion } from 'framer-motion';
 
 export interface CopyButtonProps {
   copyTimeout?: number;

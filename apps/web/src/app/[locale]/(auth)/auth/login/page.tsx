@@ -1,4 +1,5 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
+
 import { AuthLogInView } from '@/widgets/auth-log-in-view/ui';
 
 export const metadata: Metadata = {

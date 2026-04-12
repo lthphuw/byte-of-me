@@ -1,11 +1,17 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Globe2, Languages, Plus, RotateCcw } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { AdminUserProfile } from '@/entities/user-profile';
+import { useFieldArray, useForm } from 'react-hook-form';
+
+import type { AdminUserProfile } from '@/entities/user-profile';
 import { getAdminUserProfile } from '@/entities/user-profile/api/get-user-profile-with-translations';
 import { saveProfile } from '@/entities/user-profile/api/save-profile';
+import type {
+  ProfileFormValues} from '@/entities/user-profile/schemas/user-profile';
 import {
-  ProfileFormValues,
   userProfileSchema,
 } from '@/entities/user-profile/schemas/user-profile';
 import { Button } from '@/shared/ui/button';
@@ -15,10 +21,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { useToast } from '@/shared/ui/use-toast';
 import { SocialLinksSection } from '@/widgets/user-profile-manager/social-link-section-manager';
 import { UserProfileSectionManager } from '@/widgets/user-profile-manager/ui/user-profile-section-manager';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Globe2, Languages, Plus, RotateCcw } from 'lucide-react';
-import { useFieldArray, useForm } from 'react-hook-form';
 
 import { ProfileTranslationCard } from './profile-translation-card';
 
@@ -111,13 +113,13 @@ export function ProfileManager({ initUser }: { initUser: AdminUserProfile }) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="max-w-4xl mx-auto space-y-10 pb-24"
+        className="mx-auto max-w-4xl space-y-10 pb-24"
       >
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold">Profile Settings</h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Manage your profile content and languages
             </p>
           </div>
@@ -128,16 +130,16 @@ export function ProfileManager({ initUser }: { initUser: AdminUserProfile }) {
             size="sm"
             onClick={handleReset}
           >
-            <RotateCcw className="w-4 h-4 mr-2" />
+            <RotateCcw className="mr-2 h-4 w-4" />
             Reset
           </Button>
         </div>
 
         {/* Translations */}
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Globe2 className="w-4 h-4" />
+          <div className="flex items-center justify-between">
+            <div className="text-muted-foreground flex items-center gap-2">
+              <Globe2 className="h-4 w-4" />
               <span className="text-sm font-medium">Translations</span>
             </div>
 
@@ -153,14 +155,14 @@ export function ProfileManager({ initUser }: { initUser: AdminUserProfile }) {
                 })
               }
             >
-              <Plus className="w-4 h-4 mr-1" />
+              <Plus className="mr-1 h-4 w-4" />
               Add Language <Languages />
             </Button>
           </div>
 
           {fields.length === 0 ? (
-            <div className="text-center border rounded-lg py-10">
-              <p className="text-sm text-muted-foreground mb-3">
+            <div className="rounded-lg border py-10 text-center">
+              <p className="text-muted-foreground mb-3 text-sm">
                 No translations yet
               </p>
               <Button
@@ -208,7 +210,7 @@ export function ProfileManager({ initUser }: { initUser: AdminUserProfile }) {
         <SocialLinksSection form={form} />
 
         {/* Sticky Footer */}
-        <div className="fixed bottom-0 left-0 right-0 p-8 flex justify-end gap-2">
+        <div className="fixed bottom-0 left-0 right-0 flex justify-end gap-2 p-8">
           <Button variant="ghost" onClick={handleReset}>
             Reset
           </Button>

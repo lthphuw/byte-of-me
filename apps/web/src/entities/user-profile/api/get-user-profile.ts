@@ -1,14 +1,14 @@
 'use server';
 
-import { PublicUserProfile } from '@/entities/user-profile/model/types';
-import { requireUser } from '@/features/auth/lib/session';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
-import { ApiResponse } from '@/shared/types/api/api-response.type';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { getLocale } from 'next-intl/server';
 
+import type { PublicUserProfile } from '@/entities/user-profile/model/types';
 import { env } from '@/env.mjs';
+import { requireUser } from '@/features/auth/lib/session';
+import { getTranslatedContent } from '@/shared/lib/i18n-utils';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getUserProfile(): Promise<
   ApiResponse<PublicUserProfile>

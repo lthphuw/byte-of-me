@@ -1,7 +1,8 @@
+import type { Editor } from '@tiptap/core';
+
 import { ScrollArea, ScrollBar } from '@/shared/ui/scroll-area';
 import { Separator } from '@/shared/ui/separator';
 import { TooltipProvider } from '@/shared/ui/tooltip';
-import { Editor } from '@tiptap/core';
 
 import { AlignmentTooolbar } from './alignment';
 import { BlockquoteToolbar } from './blockquote';
@@ -25,7 +26,7 @@ import { UndoToolbar } from './undo';
 
 export const EditorToolbar = ({ editor }: { editor: Editor }) => {
   return (
-    <div className="sticky top-0 z-20 w-full border-b bg-background hidden sm:block">
+    <div className="bg-background sticky top-0 z-20 hidden w-full border-b sm:block">
       <ToolbarProvider editor={editor}>
         <TooltipProvider>
           <ScrollArea className="h-fit py-0.5">

@@ -1,7 +1,8 @@
+import { getTranslations } from 'next-intl/server';
+
 import { Link } from '@/i18n/navigation';
 import { Routes } from '@/shared/config/global';
 import { Button } from '@/shared/ui/button';
-import { getTranslations } from 'next-intl/server';
 
 export async function HomepageContactCta() {
   const t = await getTranslations('homepage');
@@ -9,22 +10,22 @@ export async function HomepageContactCta() {
   return (
     <section
       id="contact-cta"
-      className="rounded-2xl border bg-card/50 p-6 md:p-10 lg:p-14 text-center space-y-4 md:space-y-6"
+      className="bg-card/50 space-y-4 rounded-2xl border p-6 text-center md:space-y-6 md:p-10 lg:p-14"
     >
-      <h2 className="text-xl md:text-3xl font-semibold">
+      <h2 className="text-xl font-semibold md:text-3xl">
         {t('haveAnIdeaInMind')}
       </h2>
-      <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
+      <p className="text-muted-foreground mx-auto max-w-xl text-sm md:text-base">
         {t('alwaysInterestedInThoughtfulProjectsAndGoodCollaboration')}
       </p>
-      <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2">
+      <div className="flex flex-col justify-center gap-3 pt-2 sm:flex-row">
         <Link href={`${Routes.Contact}#contact-send-message`}>
-          <Button size="lg" className="w-full sm:w-auto px-8">
+          <Button size="lg" className="w-full px-8 sm:w-auto">
             {t('emailMe')}
           </Button>
         </Link>
         <Link href={`${Routes.Contact}#contact-info`}>
-          <Button size="lg" variant="outline" className="w-full sm:w-auto px-8">
+          <Button size="lg" variant="outline" className="w-full px-8 sm:w-auto">
             {t('contactDetails')}
           </Button>
         </Link>

@@ -23,7 +23,7 @@ export function AboutTechStackLoading() {
           2 columns on md/desktop (like image_2).
           Matched padding/gap structure of your cards.
         */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {/*
             Generating 8 skeleton cards to represent the common categories
             shown (Language, Database, Frontend, Backend, etc.).
@@ -31,7 +31,7 @@ export function AboutTechStackLoading() {
           {[...Array(8)].map((_, cardIndex) => (
             <Card
               key={cardIndex}
-              className="p-6 border border-border/50 bg-background/50"
+              className="border-border/50 bg-background/50 border p-6"
             >
               <div className="space-y-5">
                 {/* Category Title Skeleton (e.g., "Language") */}
@@ -50,7 +50,7 @@ export function AboutTechStackLoading() {
                       return (
                         <Skeleton
                           key={pillIndex}
-                          className={`h-10 ${widthClass} rounded-md border border-border`}
+                          className={`h-10 ${widthClass} border-border rounded-md border`}
                         />
                       );
                     }
