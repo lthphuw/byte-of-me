@@ -37,7 +37,7 @@ export function EducationItem({
 
       {/* Achievements */}
       {edu.achievements.length > 0 && (
-        <div className="pl-2 space-y-2 border-l-2 border-muted md:pl-4 md:space-y-3">
+        <div className="pl-3 space-y-3 border-l-[3px]  border-muted md:pl-4">
           {edu.achievements.map((a) => (
             <AchievementItem
               key={a.id}

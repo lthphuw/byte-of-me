@@ -126,18 +126,20 @@ declare const messages: {
     "gitHub": "GitHub",
     "all": "All",
     "thereAreNoProjectsYet": "There are no projects yet",
-    "noProjectsMatchYourSearch": "No projects match your search",
     "loadingProjectList": "Loading project list",
     "failedToLoadProjectList": "Failed to load project list Please try again",
-    "backToProjects": "Back to projects"
+    "backToProjects": "Back to projects",
+    "noProjectsFound": "No projects have been added yet.",
+    "noProjectsMatchYourSearch": "No projects match your current filters or search query."
   },
   "blog": {
     "details": "Details",
     "all": "All",
     "thereAreNoBlogsYet": "There are no blogs yet",
-    "noBlogsMatchYourSearch": "No blogs match your search",
     "loadingBlogList": "Loading blog list",
-    "failedToLoadBlogList": "Failed to load blog list. Please try again"
+    "failedToLoadBlogList": "Failed to load blog list. Please try again",
+    "noBlogsFound": "No blogs found yet. Stay tuned for future posts!",
+    "noBlogsMatchYourSearch": "No blogs match your current search or filters."
   },
   "blogDetails": {
     "failedToLoadBlog": "Failed to load blog",

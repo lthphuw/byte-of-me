@@ -3,11 +3,7 @@
 import { useState } from 'react';
 import { getPaginatedPublicProjects } from '@/entities/project/api/get-paginated-public-projects';
 import { PublicProject } from '@/entities/project/model/types';
-import {
-  ProjectCard,
-  ProjectCardSkeleton,
-  ProjectEmpty,
-} from '@/entities/project/ui';
+import { ProjectCard, ProjectCardSkeleton, ProjectEmpty, } from '@/entities/project/ui';
 import { ProjectFilters } from '@/features/public/project-filters/ui/project-filters';
 import { PaginatedData } from '@/shared/types/api/paginated-api.type';
 import { Pagination } from '@/shared/ui/pagination';
@@ -27,6 +23,10 @@ export function ProjectsContent({
     techStackSlugs: [] as string[],
     search: '',
   });
+  const hasActiveFilters =
+    filters.search.length > 0 ||
+    filters.tagSlugs.length > 0 ||
+    filters.techStackSlugs.length > 0;
 
   const { data, isLoading, isFetching, isPlaceholderData } = useQuery({
     queryKey: ['projects', page, filters],
@@ -87,7 +87,7 @@ export function ProjectsContent({
             ))
           ) : projects.length === 0 ? (
             <div className="col-span-full flex justify-center items-center py-10">
-              <ProjectEmpty message="No projects match your filters" />
+              <ProjectEmpty isSearch={hasActiveFilters}/>
             </div>
           ) : (
             <div

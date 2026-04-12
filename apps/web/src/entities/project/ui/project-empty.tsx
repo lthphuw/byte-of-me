@@ -1,23 +1,33 @@
 'use client';
 
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/ui/empty';
-import { FolderCode } from 'lucide-react';
+import { LayoutGrid, SearchX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-export type ProjectEmtpyProps = BaseComponentProps & {
-  message?: string;
+export type ProjectEmptyProps = BaseComponentProps & {
+  isSearch?: boolean;
 };
 
-export function ProjectEmpty({ message, className, style }: ProjectEmtpyProps) {
-  const t = useTranslations();
+export function ProjectEmpty({
+  isSearch,
+  className,
+  style,
+}: ProjectEmptyProps) {
+  const t = useTranslations('project');
 
   return (
     <Empty className={className} style={style}>
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <FolderCode />
+          {isSearch ? (
+            <SearchX className="size-10 text-muted-foreground" />
+          ) : (
+            <LayoutGrid className="size-10 text-muted-foreground" />
+          )}
         </EmptyMedia>
-        <EmptyTitle>{message ?? t('project.thereAreNoProjectsYet')}</EmptyTitle>
+        <EmptyTitle className="text-muted-foreground">
+          {isSearch ? t('noProjectsMatchYourSearch') : t('noProjectsFound')}
+        </EmptyTitle>
       </EmptyHeader>
     </Empty>
   );

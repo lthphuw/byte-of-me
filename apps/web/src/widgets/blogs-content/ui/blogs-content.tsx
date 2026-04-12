@@ -5,7 +5,7 @@ import { getPaginatedPublicBlogs } from '@/entities/blog/api/get-paginated-publi
 import { PublicBlog } from '@/entities/blog/model/types';
 import { BlogCardSkeleton } from '@/entities/blog/ui';
 import { BlogCard } from '@/entities/blog/ui/blog-card';
-import { EmptyBlog } from '@/entities/blog/ui/empty-blog';
+import { BlogEmpty } from '@/entities/blog/ui/blog-empty';
 import { BlogFilters } from '@/features/public/blog-filters/ui/blog-filters';
 import { PaginatedData } from '@/shared/types/api/paginated-api.type';
 import { Pagination } from '@/shared/ui/pagination';
@@ -42,7 +42,8 @@ export function BlogsContent({ initBlogs }: BlogsContentProps) {
     totalPages: 1,
     hasMore: false,
   };
-
+  const hasActiveFilters =
+    filters.search.length > 0 || filters.tagSlugs.length > 0;
   const toggleTag = (slug: string) => {
     setPage(1);
     setFilters((prev) => ({
@@ -72,7 +73,7 @@ export function BlogsContent({ initBlogs }: BlogsContentProps) {
             ))
           ) : blogs.length === 0 ? (
             <div className="col-span-full flex justify-center items-center py-10">
-              <EmptyBlog message={t('blog.noBlogsMatchYourSearch')} />
+              <BlogEmpty isSearch={hasActiveFilters} />
             </div>
           ) : (
             <div

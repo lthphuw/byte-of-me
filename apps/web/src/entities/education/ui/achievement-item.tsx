@@ -16,7 +16,7 @@ export function AchievementItem({
   const urls = a.images.map((i: any) => i.url);
 
   return (
-    <div className="space-y-[6px] md:space-y-2">
+    <div className="space-y-1 md:space-y-2">
       <h4 className="font-medium">{a.title}</h4>
 
       {a.content && <ExpandableText content={a.content} />}

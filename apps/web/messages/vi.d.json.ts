@@ -126,7 +126,6 @@ declare const messages: {
     "gitHub": "GitHub",
     "all": "Tất cả",
     "thereAreNoProjectsYet": "Hiện chưa có dự án nào",
-    "noProjectsMatchYourSearch": "Không tìm thấy dự án phù hợp với từ khoá",
     "loadingProjectList": "Đang tải danh sách dự án",
     "failedToLoadProjectList": "Không thể tải danh sách dự án. Vui lòng thử lại.",
     "noProjectsMatchSelectedFilters": "Không có dự án nào phù hợp với bộ lọc đã chọn",
@@ -136,15 +135,18 @@ declare const messages: {
     "clearSearch": "Xoá tìm kiếm",
     "noProjectsYet": "Chưa có dự án",
     "youCanStartByCreatingANewProject": "Bạn có thể bắt đầu bằng cách tạo một dự án mới",
-    "backToProjects": "Quay lại danh sách dự án"
+    "backToProjects": "Quay lại danh sách dự án",
+    "noProjectsFound": "Chưa có dự án nào được thêm vào.",
+    "noProjectsMatchYourSearch": "Không tìm thấy dự án nào khớp với bộ lọc của bạn."
   },
   "blog": {
     "details": "Chi tiết",
     "all": "Tất cả",
     "thereAreNoBlogsYet": "Hiện chưa có bài viết nào",
-    "noBlogsMatchYourSearch": "Không tìm thấy bài viết phù hợp với từ khoá",
     "loadingBlogList": "Đang tải danh sách bài viết",
-    "failedToLoadBlogList": "Không thể tải danh sách bài viết. Vui lòng thử lại."
+    "failedToLoadBlogList": "Không thể tải danh sách bài viết. Vui lòng thử lại.",
+    "noBlogsFound": "Chưa có bài viết nào. Hãy quay lại sau nhé!",
+    "noBlogsMatchYourSearch": "Không tìm thấy bài viết nào khớp với tìm kiếm của bạn."
   },
   "blogDetails": {
     "failedToLoadBlog": "Không thể tải bài viết",
