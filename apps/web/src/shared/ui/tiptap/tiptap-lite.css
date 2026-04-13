@@ -386,17 +386,37 @@
     padding: var(--editor-spacing-8) var(--editor-spacing-4);
   }
 
-  .ProseMirror h1 { font-size: 2rem; }
-  .ProseMirror h2 { font-size: 1.75rem; }
-  .ProseMirror h3 { font-size: 1.5rem; }
-  .ProseMirror h4 { font-size: 1.25rem; }
-  .ProseMirror p { font-size: 1rem; }
+  .ProseMirror h1 {
+    font-size: 2rem;
+  }
+
+  .ProseMirror h2 {
+    font-size: 1.75rem;
+  }
+
+  .ProseMirror h3 {
+    font-size: 1.5rem;
+  }
+
+  .ProseMirror h4 {
+    font-size: 1.25rem;
+  }
+
+  .ProseMirror p {
+    font-size: 1rem;
+  }
 }
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Print Styles */

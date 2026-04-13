@@ -1,6 +1,6 @@
-import type { Media } from '@/entities/media/model/types';
+import type { Prisma } from 'node_modules/@byte-of-me/db/generated/prisma/client';
 
-import type { Prisma } from '../../../../../../packages/db/generated/prisma/client';
+import type { Media } from '@/shared/types/models';
 
 export type AdminEducation = Prisma.EducationGetPayload<{
   include: {
@@ -14,7 +14,6 @@ export type AdminEducation = Prisma.EducationGetPayload<{
     };
   };
 }>;
-
 
 export interface PublicEducationAchievement {
   id: string;

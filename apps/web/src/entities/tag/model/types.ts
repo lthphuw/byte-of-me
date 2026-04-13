@@ -1,17 +1,11 @@
 import type { Prisma } from 'node_modules/@byte-of-me/db/generated/prisma/client';
 
+import type { Tag } from '@/shared/types/models';
+
 export type AdminTag = Prisma.TagGetPayload<{
   include: {
     translations: true;
   };
 }>;
 
-
-export interface PublicTag {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-
-  name: string;
-  slug: string;
-}
+export type PublicTag = Tag;

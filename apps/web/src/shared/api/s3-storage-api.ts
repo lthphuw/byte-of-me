@@ -1,10 +1,6 @@
 import { Storage } from '@byte-of-me/storage';
 
-import { env } from '@/env.mjs';
-
-
-
-
+import { env } from '@/shared/config/env';
 
 export const supabaseStorage = new Storage({
   region: env.SUPABASE_S3_STORAGE_REGION,

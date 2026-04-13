@@ -120,4 +120,4 @@ export const ToolbarSection: React.FC<ToolbarSectionProps> = ({
   );
 };
 
-export default ToolbarSection
+export default ToolbarSection;

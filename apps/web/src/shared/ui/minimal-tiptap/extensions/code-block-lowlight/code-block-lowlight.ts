@@ -19,4 +19,4 @@ export const CodeBlockLowlight = TiptapCodeBlockLowlight.extend({
   },
 });
 
-export default CodeBlockLowlight
+export default CodeBlockLowlight;

@@ -49,4 +49,4 @@ const ImageEditDialog = ({ editor, size, variant }: ImageEditDialogProps) => {
   );
 };
 
-export { ImageEditDialog }
+export { ImageEditDialog };

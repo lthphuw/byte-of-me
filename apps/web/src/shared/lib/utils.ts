@@ -1,7 +1,7 @@
 import { type ClassValue,clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import { env } from '@/env.mjs';
+import { env } from '@/shared/config/env';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -36,6 +36,6 @@ export function formatImageSize(bytes: number) {
  */
 export async function delay(ms: number) {
   if (env.NODE_ENV !== 'production') {
-    await (new Promise((resolve) => setTimeout(resolve, ms)));
+    await new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

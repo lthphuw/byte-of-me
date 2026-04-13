@@ -1,13 +1,14 @@
 import * as React from 'react';
 
 import { cn } from '@/shared/lib/utils';
-import type { ButtonProps } from '@/shared/ui/button';
-import { Button } from '@/shared/ui/button';
+import { Button, type ButtonProps } from '@/shared/ui/button';
 import { Icons } from '@/shared/ui/icons';
 
-export type SubmitButtonProps = BaseComponentProps &
+export type SubmitButtonProps =
   ButtonProps & {
     loading?: boolean;
+    className?: string;
+    style?: React.CSSProperties;
   };
 
 export function SubmitButton({

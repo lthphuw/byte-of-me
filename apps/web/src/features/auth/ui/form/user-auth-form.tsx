@@ -6,11 +6,11 @@ import * as React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { logIn } from '@/features/auth/lib/log-in';
-import type {
-  UserAuthLoginFormValues} from '@/features/auth/schemas/user-auth-login.schema';
 import {
+  type UserAuthLoginFormValues,
   userAuthLoginSchema,
 } from '@/features/auth/schemas/user-auth-login.schema';
+import { toast } from '@/shared/hooks/use-toast';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import {
@@ -23,7 +23,6 @@ import {
 } from '@/shared/ui/form';
 import { Icons } from '@/shared/ui/icons';
 import { Input } from '@/shared/ui/input';
-import { toast } from '@/shared/ui/use-toast';
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -49,15 +48,14 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       !fromParam || fromParam.includes('/auth/login')
         ? '/dashboard'
         : fromParam;
-    const signInResult = await logIn(
-      email,
-      callbackUrl,
-    );
+    const signInResult = await logIn(email, callbackUrl);
 
     if (!signInResult.success) {
       toast({
         title: 'Something went wrong.',
-        description: signInResult.errorMsg || 'Failed to send login link. Please try again.',
+        description:
+          signInResult.errorMsg ||
+          'Failed to send login link. Please try again.',
         variant: 'destructive',
       });
       return;
@@ -99,14 +97,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             )}
           />
 
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-          >
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
-
             Sign In with Email
           </Button>
         </form>

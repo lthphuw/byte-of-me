@@ -11,4 +11,4 @@ export const HorizontalRule = TiptapHorizontalRule.extend({
   },
 });
 
-export default HorizontalRule
+export default HorizontalRule;

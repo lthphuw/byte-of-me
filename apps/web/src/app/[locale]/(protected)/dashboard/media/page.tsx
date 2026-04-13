@@ -1,4 +1,4 @@
-import { MediaManager } from '@/widgets/media-manager/ui/media-manager';
+import { MediaManager } from '@/widgets/dashboard/media-manager/ui/media-manager';
 
 export const metadata = { title: 'Banner Images' };
 

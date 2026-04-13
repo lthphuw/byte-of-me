@@ -44,43 +44,79 @@
 ---
 
 ## About the PublicProject
-**Byte of Me** is a high-performance developer portfolio designed to showcase technical expertise, blogs, and projects. It utilizes a modern monorepo architecture to separate concerns between the frontend, database logic, and storage services.
+
+**Byte of Me** is a high-performance developer portfolio designed to showcase technical expertise, blogs, and projects.
+It utilizes a modern monorepo architecture to separate concerns between the frontend, database logic, and storage
+services.
 
 ### Core Features
-*   **Data Management:** Powered by **Prisma** (PostgreSQL) and **Supabase** for both database hosting and S3-compatible object storage.
-*   **Authentication:** Robust session management and security via **Auth.js**.
-*   **State Management:** Efficient data fetching and caching using **TanStack Query & Mutation**.
-*   **UI/UX:** Built with **shadcn/ui** and Tailwind CSS, featuring full dark/light mode support and mobile responsiveness.
-*   **Global Reach:** Native support for Internationalization (i18n) and multi-language toggling.
+
+* **Data Management:** Powered by **Prisma** (PostgreSQL) and **Supabase** for both database hosting and S3-compatible
+  object storage.
+* **Authentication:** Robust session management and security via **Auth.js**.
+* **State Management:** Efficient data fetching and caching using **TanStack Query & Mutation**.
+* **UI/UX:** Built with **shadcn/ui** and Tailwind CSS, featuring full dark/light mode support and mobile
+  responsiveness.
+* **Global Reach:** Native support for Internationalization (i18n) and multi-language toggling.
+
+## Pages
+
+### Public Pages
+
+*SEO-optimized and pre-rendered (SSG).*
+
+* **Homepage**: Professional summary and hero section.
+* **About**: Personal bio, Education and tech stacks.
+* **Experience**: Career timeline and professional history *(In Development)*.
+* **Projects**: Full-stack portfolio showcase with filtering.
+* **Blogs**: Technical article listing with pagination.
+* **Blog Details**: Dynamic article view with multi-language support.
+* **Contact**: Inquiry form and social links.
+
+### Dashboard (CMS)
+
+*Secure administrative management (SSR).*
+
+* **Statistics**: Overview of content.
+* **Media**: Asset management (Supabase Storage / S3).
+* **User Profile**: Identity and account settings.
+* **Education**: Academic history and thesis details.
+* **Blog**: CRUD for articles.
+* **Tag**: Taxonomy management for cross-linking content.
+* **Tech Stack**: Centralized skill and icon library.
+* **Company**: Work history management *(In Development)*.
+* **Project**: CRUD for projects *(In Development)*.
+* **Translation**: Multi-language content orchestration *(In Development)*.
 
 ## Setup Instructions
 
-1.  **Clone the Repository**:
-    ```bash
-    git clone [https://github.com/lthphuw/byte-of-me.git](https://github.com/lthphuw/byte-of-me.git)
-    cd byte-of-me
-    ```
+1. **Clone the Repository**:
+   ```bash
+   git clone [https://github.com/lthphuw/byte-of-me.git](https://github.com/lthphuw/byte-of-me.git)
+   cd byte-of-me
+   ```
 
-2.  **Install Dependencies**:
-    ```bash
-    pnpm install
-    ```
+2. **Install Dependencies**:
+   ```bash
+   pnpm install
+   ```
 
-3.  **Set Up Environment Variables**:
-    Configure your `.env` files in the following locations based on the provided examples:
-    *   `apps/web`: Frontend and Auth.js variables.
-    *   `packages/db`: Prisma and Supabase connection strings.
-    *   `packages/storage`: S3/Supabase storage credentials.
+3. **Set Up Environment Variables**:
+   Configure your `.env` files in the following locations based on the provided examples:
+  * `apps/web`: Frontend and Auth.js variables.
+  * `packages/db`: Prisma and Supabase connection strings.
+  * `packages/storage`: S3/Supabase storage credentials.
 
-4.  **Run Development Mode**:
-    ```bash
-    pnpm dev
-    ```
-    Visit `http://localhost:3000` to see the site in action.
+4. **Run Development Mode**:
+   ```bash
+   pnpm dev
+   ```
+   Visit `http://localhost:3000` to see the site in action.
 
-5.  **Deployment**:
-    The projectSchema is optimized for **Vercel**. Ensure all environment variables from the sub-modules are mapped in
-    your Vercel projectSchema settings.
+5. **Deployment**:
+   The projectSchema is optimized for **Vercel**. Ensure all environment variables from the sub-modules are mapped in
+   your Vercel projectSchema settings.
 
 ## License
+
 Licensed under the [MIT License](./LICENSE.md).

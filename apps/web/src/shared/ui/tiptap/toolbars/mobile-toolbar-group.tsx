@@ -34,7 +34,7 @@ export const MobileToolbarGroup = ({
         <Button
           variant="ghost"
           size="sm"
-          className={cn("h-8 w-max gap-1 px-3 font-normal", className)}
+          className={cn('h-8 w-max gap-1 px-3 font-normal', className)}
         >
           {label}
           <ChevronDown className="h-4 w-4" />
@@ -50,7 +50,7 @@ export const MobileToolbarGroup = ({
               ? React.cloneElement(child, { closeDrawer } as {
                   closeDrawer: () => void;
                 })
-              : child,
+              : child
           )}
         </div>
       </DrawerContent>
@@ -70,8 +70,8 @@ export const MobileToolbarItem = ({
 }) => (
   <button
     className={cn(
-      "flex w-full items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-accent",
-      active && "bg-accent",
+      'flex w-full items-center rounded-md px-4 py-2 text-sm transition-colors hover:bg-accent',
+      active && 'bg-accent'
     )}
     onClick={(e) => {
       onClick?.(e);

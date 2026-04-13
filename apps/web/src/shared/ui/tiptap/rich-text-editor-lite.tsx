@@ -9,10 +9,6 @@ import StarterKit from '@tiptap/starter-kit';
 
 import { cn } from '@/shared/lib/utils';
 
-
-
-
-
 type Props = {
   value?: string;
   onChange?: (value: string) => void;

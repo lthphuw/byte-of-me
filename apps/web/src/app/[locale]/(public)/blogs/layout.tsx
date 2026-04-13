@@ -47,8 +47,6 @@ interface BlogsLayoutProps {
   children?: React.ReactNode;
 }
 
-export default async function BlogsLayout({
-  children,
-}: BlogsLayoutProps) {
+export default async function BlogsLayout({ children }: BlogsLayoutProps) {
   return <div className="flex flex-col gap-6">{children}</div>;
 }

@@ -5,11 +5,11 @@ import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { sendContactMessage } from '@/entities/contact-message/api/send-contact-message';
-import type {
-  ContactMessageFormValues} from '@/entities/contact-message/schemas';
 import {
-  contactMessage
+  contactMessage,
+  type ContactMessageFormValues,
 } from '@/entities/contact-message/schemas';
+import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/ui/button';
 import {
   Form,
@@ -22,7 +22,6 @@ import {
 import { Icons } from '@/shared/ui/icons';
 import { Input } from '@/shared/ui/input';
 import { RichTextEditorLite } from '@/shared/ui/tiptap/rich-text-editor-lite';
-import { useToast } from '@/shared/ui/use-toast';
 
 export function ContactForm() {
   const [isPending, startTransition] = useTransition();

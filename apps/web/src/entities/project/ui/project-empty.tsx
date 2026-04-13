@@ -5,9 +5,12 @@ import { useTranslations } from 'next-intl';
 
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/ui/empty';
 
-export type ProjectEmptyProps = BaseComponentProps & {
+
+export interface ProjectEmptyProps {
   isSearch?: boolean;
-};
+  className?: string;
+  style?: React.CSSProperties;
+}
 
 export function ProjectEmpty({
   isSearch,

@@ -2,13 +2,12 @@
 
 import { GoogleAnalytics as NextGoogleAnalytics } from '@next/third-parties/google';
 import { SpeedInsights as VercelSpeedInsights } from '@vercel/speed-insights/next';
-import type { ReactNode} from 'react';
-import React, { createContext, useContext } from 'react';
+import React, { createContext, type ReactNode,useContext } from 'react';
 
 import { TailwindIndicator } from '@/app/providers/_components';
 import { TanStackQueryProvider } from '@/app/providers/tan-stack-query-provider';
 import { ThemeProvider } from '@/app/providers/theme-provider';
-import { env } from '@/env.mjs';
+import { env } from '@/shared/config/env';
 import { Toaster } from '@/shared/ui/toaster';
 
 

@@ -1,8 +1,7 @@
 'use client';
 
-import type {
-  InitialConfigType} from '@lexical/react/LexicalComposer';
 import {
+  type InitialConfigType,
   LexicalComposer,
 } from '@lexical/react/LexicalComposer';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';

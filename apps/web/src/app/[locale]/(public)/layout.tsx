@@ -4,8 +4,8 @@ import { setRequestLocale } from 'next-intl/server';
 
 import { routing } from '@/i18n/routing';
 import type { LocaleType } from '@/shared/types';
-import { PublicSiteFooter } from '@/widgets/public-site-footer/ui';
-import { PublicSiteHeader } from '@/widgets/public-site-header/ui/public-site-header';
+import { PublicSiteFooter } from '@/widgets/public/public-site-footer/ui';
+import { PublicSiteHeader } from '@/widgets/public/public-site-header/ui/public-site-header';
 
 interface PublicLayoutProps {
   children?: React.ReactNode;

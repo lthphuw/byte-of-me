@@ -1,4 +1,4 @@
-import { env } from '@/env.mjs';
+import { env } from '@/shared/config/env';
 
 export function TailwindIndicator() {
   if (env.NEXT_PUBLIC_ENV === 'production') return null;

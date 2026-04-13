@@ -38,7 +38,6 @@ export function MediaMultiSelect({
 
   const selectedMedia = allMedia.filter((m) => value.includes(m?.id));
 
-
   const toggleSelect = (id: string) => {
     const nextValue = value.includes(id)
       ? value.filter((v) => v !== id)

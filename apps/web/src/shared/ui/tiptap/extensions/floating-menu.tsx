@@ -43,131 +43,132 @@ interface CommandItemType {
 
 type CommandGroupType = {
   group: string;
-  items: Omit<CommandItemType, "group">[];
+  items: Omit<CommandItemType, 'group'>[];
 };
 
 const groups: CommandGroupType[] = [
   {
-    group: "Basic blocks",
+    group: 'Basic blocks',
     items: [
       {
-        title: "Text",
-        description: "Just start writing with plain text",
+        title: 'Text',
+        description: 'Just start writing with plain text',
         icon: ChevronRight,
-        keywords: "paragraph text",
+        keywords: 'paragraph text',
         command: (editor) => editor.chain().focus().clearNodes().run(),
       },
       {
-        title: "Heading 1",
-        description: "Large section heading",
+        title: 'Heading 1',
+        description: 'Large section heading',
         icon: Heading1,
-        keywords: "h1 title header",
+        keywords: 'h1 title header',
         command: (editor) =>
           editor.chain().focus().toggleHeading({ level: 1 }).run(),
       },
       {
-        title: "Heading 2",
-        description: "Medium section heading",
+        title: 'Heading 2',
+        description: 'Medium section heading',
         icon: Heading2,
-        keywords: "h2 subtitle",
+        keywords: 'h2 subtitle',
         command: (editor) =>
           editor.chain().focus().toggleHeading({ level: 2 }).run(),
       },
       {
-        title: "Heading 3",
-        description: "Small section heading",
+        title: 'Heading 3',
+        description: 'Small section heading',
         icon: Heading3,
-        keywords: "h3 subheader",
+        keywords: 'h3 subheader',
         command: (editor) =>
           editor.chain().focus().toggleHeading({ level: 3 }).run(),
       },
       {
-        title: "Bullet List",
-        description: "Create a simple bullet list",
+        title: 'Bullet List',
+        description: 'Create a simple bullet list',
         icon: List,
-        keywords: "unordered ul bullets",
+        keywords: 'unordered ul bullets',
         command: (editor) => editor.chain().focus().toggleBulletList().run(),
       },
       {
-        title: "Numbered List",
-        description: "Create a ordered list",
+        title: 'Numbered List',
+        description: 'Create a ordered list',
         icon: ListOrdered,
-        keywords: "numbered ol",
+        keywords: 'numbered ol',
         command: (editor) => editor.chain().focus().toggleOrderedList().run(),
       },
       {
-        title: "Code Block",
-        description: "Capture code snippets",
+        title: 'Code Block',
+        description: 'Capture code snippets',
         icon: Code2,
-        keywords: "code snippet pre",
+        keywords: 'code snippet pre',
         command: (editor) => editor.chain().focus().toggleCodeBlock().run(),
       },
       {
-        title: "Image",
-        description: "Insert an image",
+        title: 'Image',
+        description: 'Insert an image',
         icon: ImageIcon,
-        keywords: "image picture photo",
-        command: (editor) => editor.chain().focus().insertImagePlaceholder().run(),
+        keywords: 'image picture photo',
+        command: (editor) =>
+          editor.chain().focus().insertImagePlaceholder().run(),
       },
       {
-        title: "Horizontal Rule",
-        description: "Add a horizontal divider",
+        title: 'Horizontal Rule',
+        description: 'Add a horizontal divider',
         icon: Minus,
-        keywords: "horizontal rule divider",
+        keywords: 'horizontal rule divider',
         command: (editor) => editor.chain().focus().setHorizontalRule().run(),
       },
     ],
   },
   {
-    group: "Inline",
+    group: 'Inline',
     items: [
       {
-        title: "Quote",
-        description: "Capture a quotation",
+        title: 'Quote',
+        description: 'Capture a quotation',
         icon: Quote,
-        keywords: "blockquote cite",
+        keywords: 'blockquote cite',
         command: (editor) => editor.chain().focus().toggleBlockquote().run(),
       },
       {
-        title: "Code",
-        description: "Inline code snippet",
+        title: 'Code',
+        description: 'Inline code snippet',
         icon: CodeSquare,
-        keywords: "code inline",
+        keywords: 'code inline',
         command: (editor) => editor.chain().focus().toggleCode().run(),
       },
       {
-        title: "Blockquote",
-        description: "Block quote",
+        title: 'Blockquote',
+        description: 'Block quote',
         icon: TextQuote,
-        keywords: "blockquote quote",
+        keywords: 'blockquote quote',
         command: (editor) => editor.chain().focus().toggleBlockquote().run(),
       },
     ],
   },
   {
-    group: "Alignment",
+    group: 'Alignment',
     items: [
       {
-        title: "Align Left",
-        description: "Align text to the left",
+        title: 'Align Left',
+        description: 'Align text to the left',
         icon: AlignLeft,
-        keywords: "align left",
-        command: (editor) => editor.chain().focus().setTextAlign("left").run(),
+        keywords: 'align left',
+        command: (editor) => editor.chain().focus().setTextAlign('left').run(),
       },
       {
-        title: "Align Center",
-        description: "Center align text",
+        title: 'Align Center',
+        description: 'Center align text',
         icon: AlignCenter,
-        keywords: "align center",
+        keywords: 'align center',
         command: (editor) =>
-          editor.chain().focus().setTextAlign("center").run(),
+          editor.chain().focus().setTextAlign('center').run(),
       },
       {
-        title: "Align Right",
-        description: "Align text to the right",
+        title: 'Align Right',
+        description: 'Align text to the right',
         icon: AlignRight,
-        keywords: "align right",
-        command: (editor) => editor.chain().focus().setTextAlign("right").run(),
+        keywords: 'align right',
+        command: (editor) => editor.chain().focus().setTextAlign('right').run(),
       },
     ],
   },
@@ -175,7 +176,7 @@ const groups: CommandGroupType[] = [
 
 export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 300);
   const commandRef = useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -188,9 +189,15 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
           ...group,
           items: group.items.filter(
             (item) =>
-              item.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-              item.description.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-              item.keywords.toLowerCase().includes(debouncedSearch.toLowerCase())
+              item.title
+                .toLowerCase()
+                .includes(debouncedSearch.toLowerCase()) ||
+              item.description
+                .toLowerCase()
+                .includes(debouncedSearch.toLowerCase()) ||
+              item.keywords
+                .toLowerCase()
+                .includes(debouncedSearch.toLowerCase())
           ),
         }))
         .filter((group) => group.items.length > 0),
@@ -221,10 +228,10 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
 
         commandFn(editor);
       } catch (error) {
-        console.error("Error executing command:", error);
+        console.error('Error executing command:', error);
       } finally {
         setIsOpen(false);
-        setSearch("");
+        setSearch('');
         setSelectedIndex(-1);
       }
     },
@@ -241,7 +248,7 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
       };
 
       switch (e.key) {
-        case "ArrowDown":
+        case 'ArrowDown':
           preventDefault();
           setSelectedIndex((prev) => {
             if (prev === -1) return 0;
@@ -249,7 +256,7 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
           });
           break;
 
-        case "ArrowUp":
+        case 'ArrowUp':
           preventDefault();
           setSelectedIndex((prev) => {
             if (prev === -1) return flatFilteredItems.length - 1;
@@ -257,7 +264,7 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
           });
           break;
 
-        case "Enter":
+        case 'Enter':
           preventDefault();
           const targetIndex = selectedIndex === -1 ? 0 : selectedIndex;
           if (flatFilteredItems[targetIndex]) {
@@ -265,7 +272,7 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
           }
           break;
 
-        case "Escape":
+        case 'Escape':
           preventDefault();
           setIsOpen(false);
           setSelectedIndex(-1);
@@ -281,10 +288,10 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
     const element = editor.view.dom;
     const handleEditorKeyDown = (e: Event) => handleKeyDown(e as KeyboardEvent);
 
-    element.addEventListener("keydown", handleEditorKeyDown);
+    element.addEventListener('keydown', handleEditorKeyDown);
 
     return () => {
-      element.removeEventListener("keydown", handleEditorKeyDown);
+      element.removeEventListener('keydown', handleEditorKeyDown);
     };
   }, [handleKeyDown, editor]);
 
@@ -309,13 +316,13 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
         const currentLineText = $from.parent.textBetween(
           0,
           $from.parentOffset,
-          "\n",
-          " "
+          '\n',
+          ' '
         );
 
         const isSlashCommand =
-          currentLineText.startsWith("/") &&
-          $from.parent.type.name !== "codeBlock" &&
+          currentLineText.startsWith('/') &&
+          $from.parent.type.name !== 'codeBlock' &&
           $from.parentOffset === currentLineText.length;
 
         if (!isSlashCommand) {
@@ -338,7 +345,11 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
       //   },
       // } as any}
     >
-      <Command role="listbox" ref={commandRef} className="bg-popover z-50 w-72 overflow-hidden rounded-lg border shadow-lg">
+      <Command
+        role="listbox"
+        ref={commandRef}
+        className="bg-popover z-50 w-72 overflow-hidden rounded-lg border shadow-lg"
+      >
         <ScrollArea className="max-h-[330px]">
           <CommandList>
             <CommandEmpty className="text-muted-foreground py-3 text-center text-sm">
@@ -367,8 +378,8 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
                       value={`${group.group}-${item.title}`}
                       onSelect={() => executeCommand(item.command)}
                       className={cn(
-                        "gap-3 aria-selected:bg-accent/50",
-                        flatIndex === selectedIndex ? "bg-accent/50" : ""
+                        'gap-3 aria-selected:bg-accent/50',
+                        flatIndex === selectedIndex ? 'bg-accent/50' : ''
                       )}
                       aria-selected={flatIndex === selectedIndex}
                       ref={(el) => {

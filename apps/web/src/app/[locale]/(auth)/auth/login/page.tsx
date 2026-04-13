@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { AuthLogInView } from '@/widgets/auth-log-in-view/ui';
+import { AuthLogInView } from '@/widgets/auth/auth-log-in-view/ui';
 
 export const metadata: Metadata = {
   title: 'Login',
@@ -8,7 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function LoginPage() {
-  return (
-    <AuthLogInView/>
-  );
+  return <AuthLogInView />;
 }

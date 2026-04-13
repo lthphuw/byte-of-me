@@ -1,16 +1,17 @@
 'use client';
 
 import { LibraryBig, SearchX } from 'lucide-react';
-// Better icons
 import { useTranslations } from 'next-intl';
 
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/ui/empty';
 
-export type EmptyBlogProps = BaseComponentProps & {
+export interface BlogEmptyProps {
   isSearch?: boolean;
-};
+  className?: string;
+  style?: React.CSSProperties;
+}
 
-export function BlogEmpty({ isSearch, className, style }: EmptyBlogProps) {
+export function BlogEmpty({ isSearch, className, style }: BlogEmptyProps) {
   const t = useTranslations('blog');
   return (
     <Empty className={className} style={style}>

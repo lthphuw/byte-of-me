@@ -2,8 +2,7 @@
 
 import { useClipboard } from '@mantine/hooks';
 import { AnimatePresence, motion } from 'framer-motion';
-import type { MouseEvent} from 'react';
-import { useCallback } from 'react';
+import { type MouseEvent,useCallback } from 'react';
 
 import { defaultSpring, iconSwicthVariants } from '@/shared/config/anim';
 import { cn } from '@/shared/lib/utils';

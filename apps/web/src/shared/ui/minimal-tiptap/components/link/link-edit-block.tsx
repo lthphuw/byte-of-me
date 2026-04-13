@@ -20,36 +20,36 @@ export const LinkEditBlock = ({
   defaultText,
   className,
 }: LinkEditorProps) => {
-  const formRef = React.useRef<HTMLDivElement>(null)
-  const [url, setUrl] = React.useState(defaultUrl || "")
-  const [text, setText] = React.useState(defaultText || "")
-  const [isNewTab, setIsNewTab] = React.useState(defaultIsNewTab || false)
+  const formRef = React.useRef<HTMLDivElement>(null);
+  const [url, setUrl] = React.useState(defaultUrl || '');
+  const [text, setText] = React.useState(defaultText || '');
+  const [isNewTab, setIsNewTab] = React.useState(defaultIsNewTab || false);
 
   const handleSave = React.useCallback(
     (e: React.FormEvent) => {
-      e.preventDefault()
+      e.preventDefault();
       if (formRef.current) {
         const isValid = Array.from(
-          formRef.current.querySelectorAll("input")
-        ).every((input) => input.checkValidity())
+          formRef.current.querySelectorAll('input')
+        ).every((input) => input.checkValidity());
 
         if (isValid) {
-          onSave(url, text, isNewTab)
+          onSave(url, text, isNewTab);
         } else {
-          formRef.current.querySelectorAll("input").forEach((input) => {
+          formRef.current.querySelectorAll('input').forEach((input) => {
             if (!input.checkValidity()) {
-              input.reportValidity()
+              input.reportValidity();
             }
-          })
+          });
         }
       }
     },
     [onSave, url, text, isNewTab]
-  )
+  );
 
   return (
     <div ref={formRef}>
-      <div className={cn("space-y-4", className)}>
+      <div className={cn('space-y-4', className)}>
         <div className="space-y-1">
           <Label>URL</Label>
           <Input
@@ -83,9 +83,9 @@ export const LinkEditBlock = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-LinkEditBlock.displayName = "LinkEditBlock"
+LinkEditBlock.displayName = 'LinkEditBlock';
 
-export default LinkEditBlock
+export default LinkEditBlock;

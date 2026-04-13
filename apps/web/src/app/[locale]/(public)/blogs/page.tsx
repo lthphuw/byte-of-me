@@ -2,7 +2,7 @@ import { setRequestLocale } from 'next-intl/server';
 
 import { routing } from '@/i18n/routing';
 import type { LocaleType } from '@/shared/types';
-import { BlogsContent } from '@/widgets/blogs-content/ui/blogs-content';
+import { BlogsContent } from '@/widgets/public/blogs-content/ui/blogs-content';
 
 interface BlogsPageProps {
   params: Promise<{ locale: string }>;

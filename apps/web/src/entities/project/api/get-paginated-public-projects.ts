@@ -3,10 +3,16 @@
 import { prisma } from '@byte-of-me/db';
 
 import type { PublicProject } from '@/entities/project/model/types';
-import { handlePublicAction, withPublicActionHandler, } from '@/shared/api/public-action-template';
+import {
+  handlePublicAction,
+  withPublicActionHandler,
+} from '@/shared/api/public-action-template';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
-import type { PaginatedData, PaginatedParams, } from '@/shared/types/api/paginated-api.type';
+import type {
+  PaginatedData,
+  PaginatedParams,
+} from '@/shared/types/api/paginated-api.type';
 
 export type GetPublicProjectsParams = PaginatedParams & {
   tagSlugs?: string[];
@@ -18,10 +24,9 @@ export async function getPaginatedPublicProjects(
   params: GetPublicProjectsParams
 ): Promise<ApiResponse<PaginatedData<PublicProject>>> {
   return handlePublicAction('getPaginatedPublicProjects', async () => {
-
     return await withPublicActionHandler(
       'getPaginatedPublicProjects',
-      async ({ userId, locale,  }) => {
+      async ({ userId, locale }) => {
         // await delay(5000);
 
         const {
@@ -43,7 +48,7 @@ export async function getPaginatedPublicProjects(
         if (tagSlugs.length > 0) {
           tagSlugs.forEach((slug) => {
             where.AND.push({
-              tags: { some: { tag: { slug } } }
+              tags: { some: { tag: { slug } } },
             });
           });
         }
@@ -51,7 +56,7 @@ export async function getPaginatedPublicProjects(
         if (techStackSlugs.length > 0) {
           techStackSlugs.forEach((slug) => {
             where.AND.push({
-              techStacks: { some: { techStack: { slug } } }
+              techStacks: { some: { techStack: { slug } } },
             });
           });
         }

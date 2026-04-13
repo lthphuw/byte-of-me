@@ -1,7 +1,6 @@
 'use client';
 
-import type { PublicTechStack} from '@/entities/tech-stack';
-import { TechStackBadge } from '@/entities/tech-stack';
+import { type PublicTechStack,TechStackBadge } from '@/entities/tech-stack';
 
 export function TechStackSection({
   techStacks,

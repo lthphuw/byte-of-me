@@ -48,7 +48,7 @@ export const ActionWrapper = ({
   </div>
 );
 
-ActionWrapper.displayName = "ActionWrapper"
+ActionWrapper.displayName = 'ActionWrapper';
 
 export const ActionButton = ({
   icon,
@@ -61,8 +61,8 @@ export const ActionButton = ({
       <Button
         variant="ghost"
         className={cn(
-          "text-muted-foreground hover:text-foreground relative flex h-7 w-7 flex-row rounded-none p-0",
-          "bg-transparent hover:bg-transparent",
+          'text-muted-foreground hover:text-foreground relative flex h-7 w-7 flex-row rounded-none p-0',
+          'bg-transparent hover:bg-transparent',
           className
         )}
         {...props}
@@ -72,64 +72,64 @@ export const ActionButton = ({
     </TooltipTrigger>
     <TooltipContent side="bottom">{tooltip}</TooltipContent>
   </Tooltip>
-)
+);
 
-ActionButton.displayName = "ActionButton"
+ActionButton.displayName = 'ActionButton';
 
-type ActionKey = "onView" | "onDownload" | "onCopy" | "onCopyLink"
+type ActionKey = 'onView' | 'onDownload' | 'onCopy' | 'onCopyLink';
 
 const ActionItems: Array<{
-  key: ActionKey
-  icon: React.ReactNode
-  tooltip: string
-  isLink?: boolean
+  key: ActionKey;
+  icon: React.ReactNode;
+  tooltip: string;
+  isLink?: boolean;
 }> = [
   {
-    key: "onView",
+    key: 'onView',
     icon: <SizeIcon />,
-    tooltip: "View image",
+    tooltip: 'View image',
   },
   {
-    key: "onDownload",
+    key: 'onDownload',
     icon: <DownloadIcon />,
-    tooltip: "Download image",
+    tooltip: 'Download image',
   },
   {
-    key: "onCopy",
+    key: 'onCopy',
     icon: <ClipboardCopyIcon />,
-    tooltip: "Copy image to clipboard",
+    tooltip: 'Copy image to clipboard',
   },
   {
-    key: "onCopyLink",
+    key: 'onCopyLink',
     icon: <Link2Icon />,
-    tooltip: "Copy image link",
+    tooltip: 'Copy image link',
     isLink: true,
   },
-]
+];
 
 export const ImageActions: React.FC<ImageActionsProps> = ({
   shouldMerge = false,
   isLink = false,
   ...actions
 }) => {
-  const [isOpen, setIsOpen] = React.useState(false)
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const handleAction = React.useCallback(
     (e: React.MouseEvent, action: (() => void) | undefined) => {
-      e.preventDefault()
-      e.stopPropagation()
-      action?.()
+      e.preventDefault();
+      e.stopPropagation();
+      action?.();
     },
     []
-  )
+  );
 
   const filteredActions = React.useMemo(
     () => ActionItems.filter((item) => isLink || !item.isLink),
     [isLink]
-  )
+  );
 
   return (
-    <ActionWrapper className={cn({ "opacity-100": isOpen })}>
+    <ActionWrapper className={cn({ 'opacity-100': isOpen })}>
       {shouldMerge ? (
         <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
@@ -164,7 +164,7 @@ export const ImageActions: React.FC<ImageActionsProps> = ({
         ))
       )}
     </ActionWrapper>
-  )
-}
+  );
+};
 
-ImageActions.displayName = "ImageActions"
+ImageActions.displayName = 'ImageActions';

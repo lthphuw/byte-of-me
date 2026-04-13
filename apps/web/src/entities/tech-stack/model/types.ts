@@ -1,6 +1,6 @@
 import type { Prisma } from 'node_modules/@byte-of-me/db/generated/prisma/client';
 
-import type { Media } from '@/entities/media/model/types';
+import type { TechStack } from '@/shared/types/models';
 
 export type AdminTechStack = Prisma.TechStackGetPayload<{
   include: {
@@ -8,15 +8,4 @@ export type AdminTechStack = Prisma.TechStackGetPayload<{
   };
 }>;
 
-export interface PublicTechStack {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-
-  name: string;
-  slug: string;
-  group: string;
-  sortOrder: number;
-  logo: Maybe<Media>;
-  userId: string;
-};
+export type PublicTechStack = TechStack

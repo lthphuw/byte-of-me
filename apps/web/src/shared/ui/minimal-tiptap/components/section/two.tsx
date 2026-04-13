@@ -30,77 +30,77 @@ interface TextStyle extends FormatAction {
 
 const formatActions: TextStyle[] = [
   {
-    value: "bold",
-    label: "Bold",
+    value: 'bold',
+    label: 'Bold',
     icon: <FontBoldIcon className="size-5" />,
     action: (editor) => editor.chain().focus().toggleBold().run(),
-    isActive: (editor) => editor.isActive("bold"),
+    isActive: (editor) => editor.isActive('bold'),
     canExecute: (editor) =>
       editor.can().chain().focus().toggleBold().run() &&
-      !editor.isActive("codeBlock"),
-    shortcuts: ["mod", "B"],
+      !editor.isActive('codeBlock'),
+    shortcuts: ['mod', 'B'],
   },
   {
-    value: "italic",
-    label: "Italic",
+    value: 'italic',
+    label: 'Italic',
     icon: <FontItalicIcon className="size-5" />,
     action: (editor) => editor.chain().focus().toggleItalic().run(),
-    isActive: (editor) => editor.isActive("italic"),
+    isActive: (editor) => editor.isActive('italic'),
     canExecute: (editor) =>
       editor.can().chain().focus().toggleItalic().run() &&
-      !editor.isActive("codeBlock"),
-    shortcuts: ["mod", "I"],
+      !editor.isActive('codeBlock'),
+    shortcuts: ['mod', 'I'],
   },
   {
-    value: "underline",
-    label: "Underline",
+    value: 'underline',
+    label: 'Underline',
     icon: <UnderlineIcon className="size-5" />,
     action: (editor) => editor.chain().focus().toggleUnderline().run(),
-    isActive: (editor) => editor.isActive("underline"),
+    isActive: (editor) => editor.isActive('underline'),
     canExecute: (editor) =>
       editor.can().chain().focus().toggleUnderline().run() &&
-      !editor.isActive("codeBlock"),
-    shortcuts: ["mod", "U"],
+      !editor.isActive('codeBlock'),
+    shortcuts: ['mod', 'U'],
   },
   {
-    value: "strikethrough",
-    label: "Strikethrough",
+    value: 'strikethrough',
+    label: 'Strikethrough',
     icon: <StrikethroughIcon className="size-5" />,
     action: (editor) => editor.chain().focus().toggleStrike().run(),
-    isActive: (editor) => editor.isActive("strike"),
+    isActive: (editor) => editor.isActive('strike'),
     canExecute: (editor) =>
       editor.can().chain().focus().toggleStrike().run() &&
-      !editor.isActive("codeBlock"),
-    shortcuts: ["mod", "shift", "S"],
+      !editor.isActive('codeBlock'),
+    shortcuts: ['mod', 'shift', 'S'],
   },
   {
-    value: "code",
-    label: "Code",
+    value: 'code',
+    label: 'Code',
     icon: <CodeIcon className="size-5" />,
     action: (editor) => editor.chain().focus().toggleCode().run(),
-    isActive: (editor) => editor.isActive("code"),
+    isActive: (editor) => editor.isActive('code'),
     canExecute: (editor) =>
       editor.can().chain().focus().toggleCode().run() &&
-      !editor.isActive("codeBlock"),
-    shortcuts: ["mod", "E"],
+      !editor.isActive('codeBlock'),
+    shortcuts: ['mod', 'E'],
   },
   {
-    value: "clearFormatting",
-    label: "Clear formatting",
+    value: 'clearFormatting',
+    label: 'Clear formatting',
     icon: <TextNoneIcon className="size-5" />,
     action: (editor) => editor.chain().focus().unsetAllMarks().run(),
     isActive: () => false,
     canExecute: (editor) =>
       editor.can().chain().focus().unsetAllMarks().run() &&
-      !editor.isActive("codeBlock"),
-    shortcuts: ["mod", "\\"],
+      !editor.isActive('codeBlock'),
+    shortcuts: ['mod', '\\'],
   },
-]
+];
 
 interface SectionTwoProps extends VariantProps<typeof toggleVariants> {
-  editor: Editor
-  activeActions?: TextStyleAction[]
-  mainActionCount?: number
+  editor: Editor;
+  activeActions?: TextStyleAction[];
+  mainActionCount?: number;
 }
 
 export const SectionTwo: React.FC<SectionTwoProps> = ({
@@ -122,9 +122,9 @@ export const SectionTwo: React.FC<SectionTwoProps> = ({
       size={size}
       variant={variant}
     />
-  )
-}
+  );
+};
 
-SectionTwo.displayName = "SectionTwo"
+SectionTwo.displayName = 'SectionTwo';
 
-export default SectionTwo
+export default SectionTwo;

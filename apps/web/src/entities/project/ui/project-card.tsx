@@ -36,7 +36,6 @@ export function ProjectCard({
               ? ` - ${new Date(project.endDate).getFullYear()}`
               : ''}
           </p>
-
         </div>
 
         {/* DESCRIPTION */}
@@ -44,24 +43,26 @@ export function ProjectCard({
           {project.description}
         </p>
 
-        {
-          !compact &&
-        <div className="flex flex-wrap gap-1.5">
-          {project.techStacks.map((tech) => (
-            <TechStackClickableBadge key={tech.id} tech={tech} onClick={onTechClick} />
-          ))}
-        </div>
-        }
+        {!compact && (
+          <div className="flex flex-wrap gap-1.5">
+            {project.techStacks.map((tech) => (
+              <TechStackClickableBadge
+                key={tech.id}
+                tech={tech}
+                onClick={onTechClick}
+              />
+            ))}
+          </div>
+        )}
 
         {/* TAGS */}
-        {
-          !compact &&
-        <div className="flex flex-wrap gap-1.5">
-          {project.tags.map((tag) => (
-            <TagClickableBadge key={tag.id} tag={tag} onClick={onTagClick} />
-          ))}
-        </div>
-        }
+        {!compact && (
+          <div className="flex flex-wrap gap-1.5">
+            {project.tags.map((tag) => (
+              <TagClickableBadge key={tag.id} tag={tag} onClick={onTagClick} />
+            ))}
+          </div>
+        )}
       </CardContent>
 
       {/* FOOTER */}
@@ -69,7 +70,7 @@ export function ProjectCard({
         {project.githubLink && (
           <Button size="sm" variant="outline" asChild>
             <Link href={project.githubLink} target="_blank">
-              <Icons.github size={20}/> GitHub
+              <Icons.github size={20} /> GitHub
             </Link>
           </Button>
         )}
@@ -77,7 +78,7 @@ export function ProjectCard({
         {project.liveLink && (
           <Button size="sm" asChild>
             <Link href={project.liveLink} target="_blank">
-              <Icons.externalLink/> Live
+              <Icons.externalLink /> Live
             </Link>
           </Button>
         )}

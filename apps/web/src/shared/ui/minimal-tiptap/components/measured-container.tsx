@@ -15,19 +15,19 @@ export const MeasuredContainer = <T extends React.ElementType>({
   style = {},
   ...props
 }: MeasuredContainerProps<T> & React.ComponentProps<T>) => {
-  const innerRef = React.useRef<HTMLElement>(null)
-  const rect = useContainerSize(innerRef.current)
+  const innerRef = React.useRef<HTMLElement>(null);
+  const rect = useContainerSize(innerRef.current);
 
   const customStyle = {
     [`--${name}-width`]: `${rect.width}px`,
     [`--${name}-height`]: `${rect.height}px`,
-  }
+  };
 
   return (
     <Component {...props} ref={innerRef} style={{ ...customStyle, ...style }}>
       {children}
     </Component>
-  )
-}
+  );
+};
 
-MeasuredContainer.displayName = "MeasuredContainer"
+MeasuredContainer.displayName = 'MeasuredContainer';

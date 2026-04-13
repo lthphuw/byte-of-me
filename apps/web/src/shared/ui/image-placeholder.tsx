@@ -2,7 +2,6 @@ import { ImageIcon } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
 
-
 interface ImagePlaceholderProps {
   className?: string;
   text?: string;

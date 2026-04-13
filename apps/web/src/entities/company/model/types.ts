@@ -1,4 +1,4 @@
-import type { Media } from '@/entities/media/model/types';
+import type { Media } from '@/shared/types/models';
 
 export interface PublicTask {
   id: string;

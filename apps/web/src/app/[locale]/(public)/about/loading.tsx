@@ -1,6 +1,6 @@
 import { cn } from '@/shared/lib/utils';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { AboutShell } from '@/widgets/about-content/ui';
+import { AboutShell } from '@/widgets/public/about-content/ui';
 
 export default function AboutLoading() {
   return (

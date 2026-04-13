@@ -25,54 +25,54 @@ interface ColorPalette {
 
 const COLORS: ColorPalette[] = [
   {
-    label: "Palette 1",
-    inverse: "hsl(var(--background))",
+    label: 'Palette 1',
+    inverse: 'hsl(var(--background))',
     colors: [
-      { cssVar: "hsl(var(--foreground))", label: "Default" },
-      { cssVar: "var(--mt-accent-bold-blue)", label: "Bold blue" },
-      { cssVar: "var(--mt-accent-bold-teal)", label: "Bold teal" },
-      { cssVar: "var(--mt-accent-bold-green)", label: "Bold green" },
-      { cssVar: "var(--mt-accent-bold-orange)", label: "Bold orange" },
-      { cssVar: "var(--mt-accent-bold-red)", label: "Bold red" },
-      { cssVar: "var(--mt-accent-bold-purple)", label: "Bold purple" },
+      { cssVar: 'hsl(var(--foreground))', label: 'Default' },
+      { cssVar: 'var(--mt-accent-bold-blue)', label: 'Bold blue' },
+      { cssVar: 'var(--mt-accent-bold-teal)', label: 'Bold teal' },
+      { cssVar: 'var(--mt-accent-bold-green)', label: 'Bold green' },
+      { cssVar: 'var(--mt-accent-bold-orange)', label: 'Bold orange' },
+      { cssVar: 'var(--mt-accent-bold-red)', label: 'Bold red' },
+      { cssVar: 'var(--mt-accent-bold-purple)', label: 'Bold purple' },
     ],
   },
   {
-    label: "Palette 2",
-    inverse: "hsl(var(--background))",
+    label: 'Palette 2',
+    inverse: 'hsl(var(--background))',
     colors: [
-      { cssVar: "var(--mt-accent-gray)", label: "Gray" },
-      { cssVar: "var(--mt-accent-blue)", label: "Blue" },
-      { cssVar: "var(--mt-accent-teal)", label: "Teal" },
-      { cssVar: "var(--mt-accent-green)", label: "Green" },
-      { cssVar: "var(--mt-accent-orange)", label: "Orange" },
-      { cssVar: "var(--mt-accent-red)", label: "Red" },
-      { cssVar: "var(--mt-accent-purple)", label: "Purple" },
+      { cssVar: 'var(--mt-accent-gray)', label: 'Gray' },
+      { cssVar: 'var(--mt-accent-blue)', label: 'Blue' },
+      { cssVar: 'var(--mt-accent-teal)', label: 'Teal' },
+      { cssVar: 'var(--mt-accent-green)', label: 'Green' },
+      { cssVar: 'var(--mt-accent-orange)', label: 'Orange' },
+      { cssVar: 'var(--mt-accent-red)', label: 'Red' },
+      { cssVar: 'var(--mt-accent-purple)', label: 'Purple' },
     ],
   },
   {
-    label: "Palette 3",
-    inverse: "hsl(var(--foreground))",
+    label: 'Palette 3',
+    inverse: 'hsl(var(--foreground))',
     colors: [
-      { cssVar: "hsl(var(--background))", label: "White", darkLabel: "Black" },
-      { cssVar: "var(--mt-accent-blue-subtler)", label: "Blue subtle" },
-      { cssVar: "var(--mt-accent-teal-subtler)", label: "Teal subtle" },
-      { cssVar: "var(--mt-accent-green-subtler)", label: "Green subtle" },
-      { cssVar: "var(--mt-accent-yellow-subtler)", label: "Yellow subtle" },
-      { cssVar: "var(--mt-accent-red-subtler)", label: "Red subtle" },
-      { cssVar: "var(--mt-accent-purple-subtler)", label: "Purple subtle" },
+      { cssVar: 'hsl(var(--background))', label: 'White', darkLabel: 'Black' },
+      { cssVar: 'var(--mt-accent-blue-subtler)', label: 'Blue subtle' },
+      { cssVar: 'var(--mt-accent-teal-subtler)', label: 'Teal subtle' },
+      { cssVar: 'var(--mt-accent-green-subtler)', label: 'Green subtle' },
+      { cssVar: 'var(--mt-accent-yellow-subtler)', label: 'Yellow subtle' },
+      { cssVar: 'var(--mt-accent-red-subtler)', label: 'Red subtle' },
+      { cssVar: 'var(--mt-accent-purple-subtler)', label: 'Purple subtle' },
     ],
   },
-]
+];
 
 const MemoizedColorButton = React.memo<{
-  color: ColorItem
-  isSelected: boolean
-  inverse: string
-  onClick: (value: string) => void
+  color: ColorItem;
+  isSelected: boolean;
+  inverse: string;
+  onClick: (value: string) => void;
 }>(({ color, isSelected, inverse, onClick }) => {
-  const isDarkMode = useTheme()
-  const label = isDarkMode && color.darkLabel ? color.darkLabel : color.label
+  const isDarkMode = useTheme();
+  const label = isDarkMode && color.darkLabel ? color.darkLabel : color.label;
 
   return (
     <Tooltip>
@@ -84,8 +84,8 @@ const MemoizedColorButton = React.memo<{
           aria-label={label}
           style={{ backgroundColor: color.cssVar }}
           onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-            e.preventDefault()
-            onClick(color.cssVar)
+            e.preventDefault();
+            onClick(color.cssVar);
           }}
         >
           {isSelected && (
@@ -100,22 +100,22 @@ const MemoizedColorButton = React.memo<{
         <p>{label}</p>
       </TooltipContent>
     </Tooltip>
-  )
-})
+  );
+});
 
-MemoizedColorButton.displayName = "MemoizedColorButton"
+MemoizedColorButton.displayName = 'MemoizedColorButton';
 
 const MemoizedColorPicker = React.memo<{
-  palette: ColorPalette
-  selectedColor: string
-  inverse: string
-  onColorChange: (value: string) => void
+  palette: ColorPalette;
+  selectedColor: string;
+  inverse: string;
+  onColorChange: (value: string) => void;
 }>(({ palette, selectedColor, inverse, onColorChange }) => (
   <ToggleGroup
     type="single"
     value={selectedColor}
     onValueChange={(value: string) => {
-      if (value) onColorChange(value)
+      if (value) onColorChange(value);
     }}
     className="gap-1.5"
   >
@@ -129,12 +129,12 @@ const MemoizedColorPicker = React.memo<{
       />
     ))}
   </ToggleGroup>
-))
+));
 
-MemoizedColorPicker.displayName = "MemoizedColorPicker"
+MemoizedColorPicker.displayName = 'MemoizedColorPicker';
 
 interface SectionThreeProps extends VariantProps<typeof toggleVariants> {
-  editor: Editor
+  editor: Editor;
 }
 
 export const SectionThree: React.FC<SectionThreeProps> = ({
@@ -143,31 +143,31 @@ export const SectionThree: React.FC<SectionThreeProps> = ({
   variant,
 }) => {
   const color =
-    editor.getAttributes("textStyle")?.color || "hsl(var(--foreground))"
-  const [selectedColor, setSelectedColor] = React.useState(color)
+    editor.getAttributes('textStyle')?.color || 'hsl(var(--foreground))';
+  const [selectedColor, setSelectedColor] = React.useState(color);
 
   const handleColorChange = React.useCallback(
     (value: string) => {
-      setSelectedColor(value)
+      setSelectedColor(value);
       if (editor.state.storedMarks) {
-        const textStyleMarkType = editor.schema.marks.textStyle
+        const textStyleMarkType = editor.schema.marks.textStyle;
         if (textStyleMarkType) {
           editor.view.dispatch(
             editor.state.tr.removeStoredMark(textStyleMarkType)
-          )
+          );
         }
       }
 
       setTimeout(() => {
-        editor.chain().setColor(value).run()
-      }, 0)
+        editor.chain().setColor(value).run();
+      }, 0);
     },
     [editor]
-  )
+  );
 
   React.useEffect(() => {
-    setSelectedColor(color)
-  }, [color])
+    setSelectedColor(color);
+  }, [color]);
 
   return (
     <Popover>
@@ -213,9 +213,9 @@ export const SectionThree: React.FC<SectionThreeProps> = ({
         </div>
       </PopoverContent>
     </Popover>
-  )
-}
+  );
+};
 
-SectionThree.displayName = "SectionThree"
+SectionThree.displayName = 'SectionThree';
 
-export default SectionThree
+export default SectionThree;

@@ -3,7 +3,7 @@ import { logger } from '@byte-of-me/logger';
 import { unstable_cache } from 'next/cache';
 import { getLocale } from 'next-intl/server';
 
-import { env } from '@/env.mjs';
+import { env } from '@/shared/config/env';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export type PublicActionContext = {
@@ -30,7 +30,7 @@ export async function withPublicActionHandler<TData>(
   const context: PublicActionContext = { locale, email, userId };
 
   if (!prisma) {
-    throw new Error("Can not find prisma...");
+    throw new Error('Can not find prisma...');
   }
 
   if (options.cache) {

@@ -79,8 +79,8 @@ const formatActions: TextStyle[] = [
 ];
 
 interface SectionOneProps extends VariantProps<typeof toggleVariants> {
-  editor: Editor
-  activeLevels?: Level[]
+  editor: Editor;
+  activeLevels?: Level[];
 }
 
 export const SectionOne: React.FC<SectionOneProps> = ({
@@ -95,28 +95,28 @@ export const SectionOne: React.FC<SectionOneProps> = ({
         (action) => !action.level || activeLevels.includes(action.level)
       ),
     [activeLevels]
-  )
+  );
 
   const handleStyleChange = React.useCallback(
     (level?: Level) => {
       if (level) {
-        editor.chain().focus().toggleHeading({ level }).run()
+        editor.chain().focus().toggleHeading({ level }).run();
       } else {
-        editor.chain().focus().setParagraph().run()
+        editor.chain().focus().setParagraph().run();
       }
     },
     [editor]
-  )
+  );
 
   const renderMenuItem = React.useCallback(
     ({ label, element: Element, level, className, shortcuts }: TextStyle) => (
       <DropdownMenuItem
         key={label}
         onClick={() => handleStyleChange(level)}
-        className={cn("flex flex-row items-center justify-between gap-4", {
-          "bg-accent": level
-            ? editor.isActive("heading", { level })
-            : editor.isActive("paragraph"),
+        className={cn('flex flex-row items-center justify-between gap-4', {
+          'bg-accent': level
+            ? editor.isActive('heading', { level })
+            : editor.isActive('paragraph'),
         })}
         aria-label={label}
       >
@@ -125,17 +125,17 @@ export const SectionOne: React.FC<SectionOneProps> = ({
       </DropdownMenuItem>
     ),
     [editor, handleStyleChange]
-  )
+  );
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <ToolbarButton
-          isActive={editor.isActive("heading")}
+          isActive={editor.isActive('heading')}
           tooltip="Text styles"
           aria-label="Text styles"
-          pressed={editor.isActive("heading")}
-          disabled={editor.isActive("codeBlock")}
+          pressed={editor.isActive('heading')}
+          disabled={editor.isActive('codeBlock')}
           size={size}
           variant={variant}
           className="gap-0"
@@ -148,9 +148,9 @@ export const SectionOne: React.FC<SectionOneProps> = ({
         {filteredActions.map(renderMenuItem)}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
-}
+  );
+};
 
-SectionOne.displayName = "SectionOne"
+SectionOne.displayName = 'SectionOne';
 
-export default SectionOne
+export default SectionOne;

@@ -23,41 +23,41 @@ interface InsertElement extends FormatAction {
 
 const formatActions: InsertElement[] = [
   {
-    value: "codeBlock",
-    label: "Code block",
+    value: 'codeBlock',
+    label: 'Code block',
     icon: <CodeIcon className="size-5" />,
     action: (editor) => editor.chain().focus().toggleCodeBlock().run(),
-    isActive: (editor) => editor.isActive("codeBlock"),
+    isActive: (editor) => editor.isActive('codeBlock'),
     canExecute: (editor) =>
       editor.can().chain().focus().toggleCodeBlock().run(),
-    shortcuts: ["mod", "alt", "C"],
+    shortcuts: ['mod', 'alt', 'C'],
   },
   {
-    value: "blockquote",
-    label: "Blockquote",
+    value: 'blockquote',
+    label: 'Blockquote',
     icon: <QuoteIcon className="size-5" />,
     action: (editor) => editor.chain().focus().toggleBlockquote().run(),
-    isActive: (editor) => editor.isActive("blockquote"),
+    isActive: (editor) => editor.isActive('blockquote'),
     canExecute: (editor) =>
       editor.can().chain().focus().toggleBlockquote().run(),
-    shortcuts: ["mod", "shift", "B"],
+    shortcuts: ['mod', 'shift', 'B'],
   },
   {
-    value: "horizontalRule",
-    label: "Divider",
+    value: 'horizontalRule',
+    label: 'Divider',
     icon: <DividerHorizontalIcon className="size-5" />,
     action: (editor) => editor.chain().focus().setHorizontalRule().run(),
     isActive: () => false,
     canExecute: (editor) =>
       editor.can().chain().focus().setHorizontalRule().run(),
-    shortcuts: ["mod", "alt", "-"],
+    shortcuts: ['mod', 'alt', '-'],
   },
-]
+];
 
 interface SectionFiveProps extends VariantProps<typeof toggleVariants> {
-  editor: Editor
-  activeActions?: InsertElementAction[]
-  mainActionCount?: number
+  editor: Editor;
+  activeActions?: InsertElementAction[];
+  mainActionCount?: number;
 }
 
 export const SectionFive: React.FC<SectionFiveProps> = ({
@@ -87,9 +87,9 @@ export const SectionFive: React.FC<SectionFiveProps> = ({
         variant={variant}
       />
     </>
-  )
-}
+  );
+};
 
-SectionFive.displayName = "SectionFive"
+SectionFive.displayName = 'SectionFive';
 
-export default SectionFive
+export default SectionFive;

@@ -49,9 +49,9 @@ const getRegex = (
   caseSensitive: boolean
 ): RegExp => {
   const escapedString = disableRegex
-    ? searchString.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")
+    ? searchString.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
     : searchString;
-  return new RegExp(escapedString, caseSensitive ? "gu" : "gui");
+  return new RegExp(escapedString, caseSensitive ? 'gu' : 'gui');
 };
 
 interface ProcessedSearches {
@@ -76,7 +76,7 @@ function processSearches(
 
   doc.descendants((node, pos) => {
     if (node.isText) {
-      textNodesWithPosition.push({ text: node.text || "", pos });
+      textNodesWithPosition.push({ text: node.text || '', pos });
     }
   });
 
@@ -204,7 +204,8 @@ const selectNext = (editor: CoreEditor) => {
     (editor.storage as any).searchAndReplace.selectedResult += 1;
   }
 
-  const result = results[(editor.storage as any).searchAndReplace.selectedResult];
+  const result =
+    results[(editor.storage as any).searchAndReplace.selectedResult];
   if (!result) return;
 
   const { from } = result;
@@ -216,7 +217,7 @@ const selectNext = (editor: CoreEditor) => {
       .domAtPos(from)
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      .node.scrollIntoView({ behavior: "smooth", block: "center" });
+      .node.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 };
 
@@ -230,12 +231,14 @@ const selectPrevious = (editor: CoreEditor) => {
   const { selectedResult } = (editor.storage as any).searchAndReplace;
 
   if (selectedResult <= 0) {
-    (editor.storage as any).searchAndReplace.selectedResult = results.length - 1;
+    (editor.storage as any).searchAndReplace.selectedResult =
+      results.length - 1;
   } else {
     (editor.storage as any).searchAndReplace.selectedResult -= 1;
   }
 
-  const { from } = results[(editor.storage as any).searchAndReplace.selectedResult];
+  const { from } =
+    results[(editor.storage as any).searchAndReplace.selectedResult];
 
   const view: EditorView | undefined = editor.view;
 
@@ -244,12 +247,12 @@ const selectPrevious = (editor: CoreEditor) => {
       .domAtPos(from)
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      .node.scrollIntoView({ behavior: "smooth", block: "center" });
+      .node.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 };
 
 export const searchAndReplacePluginKey = new PluginKey(
-  "searchAndReplacePlugin"
+  'searchAndReplacePlugin'
 );
 
 export interface SearchAndReplaceOptions {
@@ -273,22 +276,22 @@ export const SearchAndReplace = Extension.create<
   SearchAndReplaceOptions,
   SearchAndReplaceStorage
 >({
-  name: "searchAndReplace",
+  name: 'searchAndReplace',
 
   addOptions() {
     return {
-      searchResultClass: " bg-yellow-200",
-      selectedResultClass: "bg-yellow-500",
+      searchResultClass: ' bg-yellow-200',
+      selectedResultClass: 'bg-yellow-500',
       disableRegex: true,
     };
   },
 
   addStorage() {
     return {
-      searchTerm: "",
-      replaceTerm: "",
+      searchTerm: '',
+      replaceTerm: '',
       results: [],
-      lastSearchTerm: "",
+      lastSearchTerm: '',
       selectedResult: 0,
       lastSelectedResult: 0,
       caseSensitive: false,
@@ -315,7 +318,8 @@ export const SearchAndReplace = Extension.create<
       replace:
         () =>
         ({ editor, state, dispatch }) => {
-          const { replaceTerm, results } = (editor.storage as any).searchAndReplace;
+          const { replaceTerm, results } = (editor.storage as any)
+            .searchAndReplace;
 
           replace(replaceTerm, results, { state, dispatch });
 
@@ -324,7 +328,8 @@ export const SearchAndReplace = Extension.create<
       replaceAll:
         () =>
         ({ editor, tr, dispatch }) => {
-          const { replaceTerm, results } = (editor.storage as any).searchAndReplace;
+          const { replaceTerm, results } = (editor.storage as any)
+            .searchAndReplace;
 
           replaceAll(replaceTerm, results, { tr, dispatch });
 
@@ -347,7 +352,8 @@ export const SearchAndReplace = Extension.create<
       setCaseSensitive:
         (caseSensitive: boolean) =>
         ({ editor }) => {
-          (editor.storage as any).searchAndReplace.caseSensitive = caseSensitive;
+          (editor.storage as any).searchAndReplace.caseSensitive =
+            caseSensitive;
 
           return false;
         },
@@ -384,7 +390,8 @@ export const SearchAndReplace = Extension.create<
               lastSelectedResult,
               caseSensitive,
               lastCaseSensitiveState,
-            } = (editor.storage as any).searchAndReplace as SearchAndReplaceStorage;
+            } = (editor.storage as any)
+              .searchAndReplace as SearchAndReplaceStorage;
 
             if (
               !docChanged &&

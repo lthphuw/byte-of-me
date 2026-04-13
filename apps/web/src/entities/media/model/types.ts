@@ -1,13 +1,4 @@
-export interface Media {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
+import type { Media } from '@/shared/types/models';
 
-  fileName: string;
-  fileKey: string;
-  mimeType: string;
-  size: number;
-  provider: string;
-  bucket: string;
-  url: string;
-}
+export type AdminMedia = Media;
+export type PublicMedia = Media;

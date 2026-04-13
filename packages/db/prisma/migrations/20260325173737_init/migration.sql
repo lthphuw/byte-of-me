@@ -5,5 +5,8 @@
 
 */
 -- AlterTable
-ALTER TABLE "educations" ADD COLUMN     "sortOrder" INTEGER NOT NULL,
-ALTER COLUMN "logo_id" DROP NOT NULL;
+ALTER TABLE "educations"
+  ADD COLUMN "sortOrder" INTEGER NOT NULL,
+ALTER
+COLUMN "logo_id" DROP
+NOT NULL;

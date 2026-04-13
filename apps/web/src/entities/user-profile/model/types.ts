@@ -11,7 +11,6 @@ export type AdminUserProfile = Prisma.UserGetPayload<{
   };
 }>;
 
-
 export interface PublicUserProfile {
   role?: string;
   email?: string;

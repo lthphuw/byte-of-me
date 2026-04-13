@@ -8,4 +8,5 @@
 ALTER TABLE "user_profile_translations" DROP COLUMN "birth_date";
 
 -- AlterTable
-ALTER TABLE "user_profiles" ADD COLUMN     "birth_date" TEXT;
+ALTER TABLE "user_profiles"
+  ADD COLUMN "birth_date" TEXT;

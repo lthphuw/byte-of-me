@@ -1,4 +1,4 @@
-import { DashboardSidebar } from '@/widgets/dashboard-sidebar/ui/dashboard-sidebar';
+import { DashboardSidebar } from '@/widgets/dashboard/dashboard-sidebar/ui/dashboard-sidebar';
 
 export default async function DashboardLayout({
   children,

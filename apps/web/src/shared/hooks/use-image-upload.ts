@@ -28,7 +28,7 @@ export function useImageUpload({ onUpload }: UseImageUploadProps = {}) {
       // In a real implementation, this would be the URL from the server
       return localUrl;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Upload failed";
+      const errorMessage = err instanceof Error ? err.message : 'Upload failed';
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -56,7 +56,7 @@ export function useImageUpload({ onUpload }: UseImageUploadProps = {}) {
           URL.revokeObjectURL(localUrl);
           setPreviewUrl(null);
           setFileName(null);
-          return console.error(err)
+          return console.error(err);
         }
       }
     },
@@ -71,7 +71,7 @@ export function useImageUpload({ onUpload }: UseImageUploadProps = {}) {
     setFileName(null);
     previewRef.current = null;
     if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      fileInputRef.current.value = '';
     }
     setError(null);
   }, [previewUrl]);

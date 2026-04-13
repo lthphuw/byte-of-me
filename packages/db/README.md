@@ -19,12 +19,13 @@ npx prisma db seed
 ```
 
 # Enable prisma studio
+
 ```bash
 npx prisma studio --port 7777
 ```
 
-
 ## Deploy
+
 ```
 npx prisma migrate deploy
 npx prisma db seed

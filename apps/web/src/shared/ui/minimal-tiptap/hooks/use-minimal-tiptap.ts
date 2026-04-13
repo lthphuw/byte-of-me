@@ -190,8 +190,8 @@ const createExtensions = ({
 
 export const useMinimalTiptapEditor = ({
   value,
-  output = "html",
-  placeholder = "",
+  output = 'html',
+  placeholder = '',
   editorClassName,
   throttleDelay = 0,
   onUpdate,
@@ -202,45 +202,45 @@ export const useMinimalTiptapEditor = ({
   const throttledSetValue = useThrottle(
     (value: Content) => onUpdate?.(value),
     throttleDelay
-  )
+  );
 
   const handleUpdate = React.useCallback(
     (editor: Editor) => throttledSetValue(getOutput(editor, output)),
     [output, throttledSetValue]
-  )
+  );
 
   const handleCreate = React.useCallback(
     (editor: Editor) => {
       if (value && editor.isEmpty) {
-        editor.commands.setContent(value)
+        editor.commands.setContent(value);
       }
     },
     [value]
-  )
+  );
 
   const handleBlur = React.useCallback(
     (editor: Editor) => onBlur?.(getOutput(editor, output)),
     [output, onBlur]
-  )
+  );
 
   const editor = useEditor({
     immediatelyRender: false,
     extensions: createExtensions({ placeholder, uploader }),
     editorProps: {
       attributes: {
-        autocomplete: "off",
-        autocorrect: "off",
-        autocapitalize: "off",
-        class: cn("focus:outline-hidden", editorClassName),
+        autocomplete: 'off',
+        autocorrect: 'off',
+        autocapitalize: 'off',
+        class: cn('focus:outline-hidden', editorClassName),
       },
     },
     onUpdate: ({ editor }) => handleUpdate(editor),
     onCreate: ({ editor }) => handleCreate(editor),
     onBlur: ({ editor }) => handleBlur(editor),
     ...props,
-  })
+  });
 
-  return editor
-}
+  return editor;
+};
 
-export default useMinimalTiptapEditor
+export default useMinimalTiptapEditor;

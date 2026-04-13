@@ -1,2 +1,3 @@
 -- AlterTable
-ALTER TABLE "users" ALTER COLUMN "role" SET DEFAULT 'USER';
+ALTER TABLE "users"
+  ALTER COLUMN "role" SET DEFAULT 'USER';

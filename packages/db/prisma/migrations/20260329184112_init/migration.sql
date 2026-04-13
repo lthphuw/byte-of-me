@@ -5,4 +5,4 @@
 
 */
 -- CreateIndex
-CREATE UNIQUE INDEX "blogs_project_id_key" ON "blogs"("project_id");
+CREATE UNIQUE INDEX "blogs_project_id_key" ON "blogs" ("project_id");

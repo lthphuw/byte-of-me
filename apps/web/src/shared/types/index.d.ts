@@ -1,17 +1,7 @@
-import type { CSSProperties } from 'react';
-
-
-
-
-
 // Global
 declare global {
   type Nullable<T> = T | null;
   type Maybe<T> = T | null | undefined;
-  type BaseComponentProps = {
-    className?: string;
-    style?: CSSProperties;
-  }
 }
 
 export type LocaleType = 'vi' | 'en';

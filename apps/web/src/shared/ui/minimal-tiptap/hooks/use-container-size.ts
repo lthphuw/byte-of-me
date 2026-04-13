@@ -15,12 +15,12 @@ const DEFAULT_RECT: DOMRect = {
 export function useContainerSize(element: HTMLElement | null): DOMRect {
   const [size, setSize] = useState<DOMRect>(
     () => element?.getBoundingClientRect() ?? DEFAULT_RECT
-  )
+  );
 
   const handleResize = useCallback(() => {
-    if (!element) return
+    if (!element) return;
 
-    const newRect = element.getBoundingClientRect()
+    const newRect = element.getBoundingClientRect();
 
     setSize((prevRect) => {
       if (
@@ -29,27 +29,27 @@ export function useContainerSize(element: HTMLElement | null): DOMRect {
         Math.round(prevRect.x) === Math.round(newRect.x) &&
         Math.round(prevRect.y) === Math.round(newRect.y)
       ) {
-        return prevRect
+        return prevRect;
       }
-      return newRect
-    })
-  }, [element])
+      return newRect;
+    });
+  }, [element]);
 
   useEffect(() => {
-    if (!element) return
+    if (!element) return;
 
-    const resizeObserver = new ResizeObserver(handleResize)
-    resizeObserver.observe(element)
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(element);
 
-    window.addEventListener("click", handleResize)
-    window.addEventListener("resize", handleResize)
+    window.addEventListener('click', handleResize);
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      resizeObserver.disconnect()
-      window.removeEventListener("click", handleResize)
-      window.removeEventListener("resize", handleResize)
-    }
-  }, [element, handleResize])
+      resizeObserver.disconnect();
+      window.removeEventListener('click', handleResize);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [element, handleResize]);
 
-  return size
+  return size;
 }

@@ -6,13 +6,7 @@ import { ExpandableText } from '@/shared/ui/expandable-text';
 
 import { AchievementImages } from './achievement-images';
 
-export function AchievementItem({
-  achievement: a,
-  onOpenGallery,
-}: {
-  achievement: any;
-  onOpenGallery: (imgs: string[], i: number) => void;
-}) {
+export function AchievementItem({ achievement: a }: { achievement: any }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const urls = a.images.map((i: any) => i.url);
 
@@ -28,7 +22,6 @@ export function AchievementItem({
         title={a.title}
         currentSlide={currentSlide}
         onSlideChange={setCurrentSlide}
-        onOpenGallery={onOpenGallery}
       />
     </div>
   );

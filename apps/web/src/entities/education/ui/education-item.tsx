@@ -5,13 +5,7 @@ import { RichText } from '@/shared/ui/rich-text';
 
 import { AchievementItem } from './achievement-item';
 
-export function EducationItem({
-  edu,
-  onOpenGallery,
-}: {
-  edu: PublicEducation;
-  onOpenGallery: (imgs: string[], i: number) => void;
-}) {
+export function EducationItem({ edu }: { edu: PublicEducation }) {
   return (
     <div className="space-y-3">
       {/* Header */}
@@ -40,11 +34,7 @@ export function EducationItem({
       {edu.achievements.length > 0 && (
         <div className="border-muted space-y-3 border-l-[3px]  pl-3 md:pl-4">
           {edu.achievements.map((a) => (
-            <AchievementItem
-              key={a.id}
-              achievement={a}
-              onOpenGallery={onOpenGallery}
-            />
+            <AchievementItem key={a.id} achievement={a} />
           ))}
         </div>
       )}

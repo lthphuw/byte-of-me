@@ -1,7 +1,7 @@
 import { Card } from '@/shared/ui/card';
 import { Separator } from '@/shared/ui/separator';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { BlogDetailsShell } from '@/widgets/blog-details/ui/blog-shells';
+import { BlogDetailsShell } from '@/widgets/public/blog-details/ui/blog-shells';
 
 export default function BlogDetailsLoading() {
   return (

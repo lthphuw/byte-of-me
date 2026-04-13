@@ -100,16 +100,16 @@ const FileHandlePlugin = (options: FileHandlePluginOptions) => {
 };
 
 export const FileHandler = Extension.create<
-  Omit<FileHandlePluginOptions, "key" | "editor">
+  Omit<FileHandlePluginOptions, 'key' | 'editor'>
 >({
-  name: "fileHandler",
+  name: 'fileHandler',
 
   addOptions() {
     return {
       allowBase64: false,
       allowedMimeTypes: [],
       maxFileSize: 0,
-    }
+    };
   },
 
   addProseMirrorPlugins() {
@@ -119,6 +119,6 @@ export const FileHandler = Extension.create<
         editor: this.editor,
         ...this.options,
       }),
-    ]
+    ];
   },
-})
+});

@@ -4,17 +4,11 @@ import { Check, ChevronDown, ImageIcon, Loader2, Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media';
-import type { Media } from '@/entities/media/model/types';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import { cn } from '@/shared/lib/utils';
+import type { Media } from '@/shared/types/models';
 import { Button } from '@/shared/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/shared/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, } from '@/shared/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 

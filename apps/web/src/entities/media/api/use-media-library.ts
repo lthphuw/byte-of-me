@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { deleteMedia } from '@/entities/media/api/delete-media';
 import { getPaginatedMedia } from '@/entities/media/api/get-paginated-media';
 import { uploadMedia } from '@/entities/media/api/upload-media';
-import { toast } from '@/shared/ui/use-toast';
+import { toast } from '@/shared/hooks/use-toast';
 
 export function useMediaLibrary(page = 1) {
   const queryClient = useQueryClient();

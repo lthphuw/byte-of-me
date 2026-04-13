@@ -1,7 +1,6 @@
 import { cn } from '@/shared/lib/utils';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { HomepageShell } from '@/widgets/homepage-content/ui/homepage-shell';
-
+import { HomepageShell } from '@/widgets/public/homepage-content/ui/homepage-shell';
 
 export default function HomeLoading() {
   return (

@@ -1,9 +1,9 @@
 import { getPaginatedAdminBlog } from '@/entities/blog/api/get-paginated-admin-blogs';
-import { BlogManager } from '@/widgets/blog-manager/ui/blog-manager';
+import { BlogManager } from '@/widgets/dashboard/blog-manager/ui/blog-manager';
 
 export const metadata = { title: 'Blogs' };
 
-export default async function BlogsPage() {
+export default async function EducationsPage() {
   const resp = await getPaginatedAdminBlog(1, 12);
   if (!resp.success) {
     return null;
@@ -11,7 +11,7 @@ export default async function BlogsPage() {
 
   return (
     <div className="space-y-6">
-      <BlogManager initData={resp.data}/>
+      <BlogManager initData={resp.data} />
     </div>
   );
 }

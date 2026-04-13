@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 
 import { getAuthenticatedUser } from '@/features/auth/lib/session';
-import { PublicSiteFooter } from '@/widgets/public-site-footer/ui';
+import { PublicSiteFooter } from '@/widgets/public/public-site-footer/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +22,7 @@ export default async function AuthLayout({ children }: AuthLayoutProps) {
         <main className="flex flex-1 flex-col">{children}</main>
       </div>
 
-      <PublicSiteFooter/>
+      <PublicSiteFooter />
     </div>
   );
 }

@@ -67,4 +67,4 @@ const LinkEditPopover = ({ editor, size, variant }: LinkEditPopoverProps) => {
   );
 };
 
-export { LinkEditPopover }
+export { LinkEditPopover };

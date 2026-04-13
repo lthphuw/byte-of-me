@@ -2,13 +2,13 @@
 
 import { prisma } from '@byte-of-me/db';
 
-import type { Media } from '@/entities/media/model/types';
 import { requireUser } from '@/features/auth/lib/session';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type {
   PaginatedData,
   PaginatedParams,
 } from '@/shared/types/api/paginated-api.type';
+import type { Media } from '@/shared/types/models';
 
 export async function getPaginatedMedia(
   pagination: PaginatedParams

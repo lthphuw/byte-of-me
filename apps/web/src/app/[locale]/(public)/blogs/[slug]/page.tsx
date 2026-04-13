@@ -5,8 +5,8 @@ import { getPublicBlogBySlug } from '@/entities/blog/api/get-public-blog-by-slug
 import { BlogNotFound } from '@/entities/blog/ui';
 import { routing } from '@/i18n/routing';
 import type { LocaleType } from '@/shared/types';
-import { BlogDetailsShell } from '@/widgets/blog-details/ui';
-import BlogDetails from '@/widgets/blog-details/ui/blog-details';
+import { BlogDetailsShell } from '@/widgets/public/blog-details/ui';
+import BlogDetails from '@/widgets/public/blog-details/ui/blog-details';
 
 export async function generateStaticParams() {
   const blogs = await prisma.blog.findMany({

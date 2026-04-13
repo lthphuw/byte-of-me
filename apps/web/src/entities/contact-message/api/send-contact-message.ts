@@ -3,13 +3,12 @@
 import { prisma } from '@byte-of-me/db';
 import DOMPurify from 'isomorphic-dompurify';
 
-import type {
-  ContactMessageFormValues} from '@/entities/contact-message/schemas/contact-message';
 import {
   contactMessage,
+  type ContactMessageFormValues,
 } from '@/entities/contact-message/schemas/contact-message';
-import { env } from '@/env.mjs';
 import { mailer } from '@/shared/api/mailer';
+import { env } from '@/shared/config/env';
 
 export async function sendContactMessage(values: ContactMessageFormValues) {
   const parsed = contactMessage.safeParse(values);

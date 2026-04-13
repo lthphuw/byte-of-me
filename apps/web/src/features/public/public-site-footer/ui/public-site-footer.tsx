@@ -7,10 +7,6 @@ import { globalConfig,Routes } from '@/shared/config/global';
 import { cn, ensureValidUrl } from '@/shared/lib/utils';
 import { Icons } from '@/shared/ui/icons';
 
-
-
-
-
 type SiteFooterProps = React.HTMLAttributes<HTMLElement>;
 
 export async function PublicSiteFooter({ className }: SiteFooterProps) {
@@ -24,7 +20,6 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
 
   const githubLink = socialLinks.find((it) => it.platform === 'github');
   const linkedInLink = socialLinks.find((it) => it.platform === 'linkedIn');
-
 
   return (
     <footer className={cn('py-8 relative z-20', className)}>

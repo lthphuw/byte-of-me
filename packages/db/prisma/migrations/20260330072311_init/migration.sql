@@ -12,7 +12,8 @@ ALTER TABLE "Session" DROP CONSTRAINT "Session_user_id_fkey";
 
 -- AlterTable
 ALTER TABLE "accounts" DROP COLUMN "createdAt",
-DROP COLUMN "updatedAt";
+DROP
+COLUMN "updatedAt";
 
 -- DropTable
 DROP TABLE "Session";
@@ -21,27 +22,30 @@ DROP TABLE "Session";
 DROP TABLE "VerificationToken";
 
 -- CreateTable
-CREATE TABLE "sessions" (
-    "id" TEXT NOT NULL,
-    "session_token" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
-    "expires" TIMESTAMP(3) NOT NULL,
+CREATE TABLE "sessions"
+(
+  "id"            TEXT         NOT NULL,
+  "session_token" TEXT         NOT NULL,
+  "user_id"       TEXT         NOT NULL,
+  "expires"       TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "sessions_pkey" PRIMARY KEY ("id")
+  CONSTRAINT "sessions_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "verification_tokens" (
-    "identifier" TEXT NOT NULL,
-    "token" TEXT NOT NULL,
-    "expires" TIMESTAMP(3) NOT NULL
+CREATE TABLE "verification_tokens"
+(
+  "identifier" TEXT         NOT NULL,
+  "token"      TEXT         NOT NULL,
+  "expires"    TIMESTAMP(3) NOT NULL
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "sessions_session_token_key" ON "sessions"("session_token");
+CREATE UNIQUE INDEX "sessions_session_token_key" ON "sessions" ("session_token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "verification_tokens_identifier_token_key" ON "verification_tokens"("identifier", "token");
+CREATE UNIQUE INDEX "verification_tokens_identifier_token_key" ON "verification_tokens" ("identifier", "token");
 
 -- AddForeignKey
-ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "sessions"
+  ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE;

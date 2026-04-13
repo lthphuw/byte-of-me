@@ -16,9 +16,5 @@ export default async function ProtectedLayout({
     redirect('/auth/login');
   }
 
-  return (
-    <SessionProvider>
-      {children}
-    </SessionProvider>
-  );
+  return <SessionProvider>{children}</SessionProvider>;
 }

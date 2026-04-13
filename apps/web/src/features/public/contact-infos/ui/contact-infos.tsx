@@ -2,13 +2,13 @@ import { getTranslations } from 'next-intl/server';
 import React from 'react';
 
 import { getAllPublicContacts } from '@/entities/social-link/api/get-all-public-contacts';
-import { env } from '@/env.mjs';
 import {
   ContactHeaderMotion,
   ContactItemMotion,
   ContactListMotion,
 } from '@/features/public/contact-infos/ui/contact-motions';
 import { Link } from '@/i18n/navigation';
+import { env } from '@/shared/config/env';
 import { Icons } from '@/shared/ui/icons';
 
 export async function ContactInfos() {

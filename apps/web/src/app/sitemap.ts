@@ -15,7 +15,6 @@ async function getDynamicRoutes(): Promise<string[]> {
   return projects.map((p) => `/projects/${p.id}`);
 }
 
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = Object.keys(sitemapConfig);
   const dynamicRoutes = await getDynamicRoutes();

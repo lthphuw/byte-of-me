@@ -39,6 +39,6 @@ export const ToolbarButton = ({
   );
 };
 
-ToolbarButton.displayName = "ToolbarButton"
+ToolbarButton.displayName = 'ToolbarButton';
 
-export default ToolbarButton
+export default ToolbarButton;

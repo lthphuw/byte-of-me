@@ -2,7 +2,7 @@ import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
 import { getDashboardStats } from '@/features/dashboard/dashboard-stats/lib/get-dashboard-stats';
 import { StatsGrid } from '@/features/dashboard/dashboard-stats/ui/stats-grid';
 import { Separator } from '@/shared/ui/separator';
-import { ContactMessageGallery } from '@/widgets/contact-message-gallery/ui/contact-message-gallery';
+import { ContactMessageGallery } from '@/widgets/dashboard/contact-message-gallery/ui/contact-message-gallery';
 
 export default async function DashboardPage() {
   const [user, statsResponse] = await Promise.all([
