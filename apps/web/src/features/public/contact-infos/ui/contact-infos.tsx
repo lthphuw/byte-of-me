@@ -1,6 +1,4 @@
-import { getTranslations } from 'next-intl/server';
 import React from 'react';
-
 import { getAllPublicContacts } from '@/entities/social-link/api/get-all-public-contacts';
 import {
   ContactHeaderMotion,
@@ -10,6 +8,8 @@ import {
 import { Link } from '@/i18n/navigation';
 import { env } from '@/shared/config/env';
 import { Icons } from '@/shared/ui/icons';
+
+import { getTranslations } from 'next-intl/server';
 
 export async function ContactInfos() {
   const t = await getTranslations('contact');

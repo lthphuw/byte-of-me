@@ -1,9 +1,9 @@
 'use client';
 
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/ui/empty';
+
 import { LayoutGrid, SearchX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/ui/empty';
 
 
 export interface ProjectEmptyProps {

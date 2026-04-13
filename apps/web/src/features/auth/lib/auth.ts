@@ -1,12 +1,12 @@
+import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
+import { sendVerificationRequest } from '@/features/auth/lib/send-verification-request';
+import { env } from '@/shared/config/env';
+
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import NextAuth from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
-
-import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
-import { sendVerificationRequest } from '@/features/auth/lib/send-verification-request';
-import { env } from '@/shared/config/env';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),

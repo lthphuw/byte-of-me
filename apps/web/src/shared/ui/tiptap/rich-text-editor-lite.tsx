@@ -1,13 +1,13 @@
 'use client';
 
-import './tiptap-lite.css';
+import { cn } from '@/shared/lib/utils';
 
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 
-import { cn } from '@/shared/lib/utils';
+import './tiptap-lite.css';
 
 type Props = {
   value?: string;

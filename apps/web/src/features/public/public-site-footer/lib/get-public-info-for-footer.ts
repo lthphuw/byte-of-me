@@ -1,7 +1,5 @@
 'use server';
 
-import { prisma } from '@byte-of-me/db';
-
 import type { PublicSocialLink } from '@/entities/social-link/model/types';
 import {
   handlePublicAction,
@@ -10,6 +8,8 @@ import {
 import { siteConfig } from '@/shared/config/site';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
+
+import { prisma } from '@byte-of-me/db';
 
 export async function getPublicInfoForFooter(): Promise<
   ApiResponse<{

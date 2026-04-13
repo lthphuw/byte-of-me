@@ -1,8 +1,8 @@
 'use server';
 
-import { prisma } from '@byte-of-me/db';
-
 import { requireUser } from '@/features/auth/lib/session';
+
+import { prisma } from '@byte-of-me/db';
 
 export async function getDashboardStats() {
   try {

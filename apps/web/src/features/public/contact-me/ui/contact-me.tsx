@@ -1,7 +1,7 @@
-import { getTranslations } from 'next-intl/server';
 import React from 'react';
-
 import { ContactForm } from '@/features/public/contact-me/ui/form';
+
+import { getTranslations } from 'next-intl/server';
 
 export async function ContactMe() {
   const t = await getTranslations('contact');

@@ -1,6 +1,12 @@
 'use client';
 
-import './tiptap.css';
+import { useState } from 'react';
+import { cn } from '@/shared/lib/utils';
+import { TipTapFloatingMenu } from '@/shared/ui/tiptap/extensions/floating-menu';
+import { FloatingToolbar } from '@/shared/ui/tiptap/extensions/floating-toolbar';
+import { ImageExtension } from '@/shared/ui/tiptap/extensions/image';
+import { ImagePlaceholder } from '@/shared/ui/tiptap/extensions/image-placeholder';
+import SearchAndReplace from '@/shared/ui/tiptap/extensions/search-and-replace';
 
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { Color } from '@tiptap/extension-color';
@@ -22,16 +28,10 @@ import StarterKit from '@tiptap/starter-kit';
 import javascript from 'highlight.js/lib/languages/javascript';
 import typescript from 'highlight.js/lib/languages/typescript';
 import { createLowlight } from 'lowlight';
-import { useState } from 'react';
-
-import { cn } from '@/shared/lib/utils';
-import { TipTapFloatingMenu } from '@/shared/ui/tiptap/extensions/floating-menu';
-import { FloatingToolbar } from '@/shared/ui/tiptap/extensions/floating-toolbar';
-import { ImageExtension } from '@/shared/ui/tiptap/extensions/image';
-import { ImagePlaceholder } from '@/shared/ui/tiptap/extensions/image-placeholder';
-import SearchAndReplace from '@/shared/ui/tiptap/extensions/search-and-replace';
 
 import { EditorToolbar } from './toolbars/editor-toolbar';
+
+import './tiptap.css';
 
 const lowlight = createLowlight();
 
@@ -135,6 +135,7 @@ export function RichTextEditor({
           <div className="border-muted-foreground/20 flex flex-col gap-2 border-l">
             {items.map((item) => (
               <button
+                type={'button'}
                 key={item.id}
                 onClick={(e) => {
                   e?.preventDefault();

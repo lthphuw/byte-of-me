@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const contactMessage = z.object({
+export const contactMessageSchema = z.object({
   name: z.string().min(2, 'Name is too short').max(100, 'Name is too long'),
 
   email: z.string().email('Invalid email address'),
@@ -17,4 +17,4 @@ export const contactMessage = z.object({
     .max(2000, 'Message is too long'),
 });
 
-export type ContactMessageFormValues = z.infer<typeof contactMessage>;
+export type ContactMessageFormValues = z.infer<typeof contactMessageSchema>;

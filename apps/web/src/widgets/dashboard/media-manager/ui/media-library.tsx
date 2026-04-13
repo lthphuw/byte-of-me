@@ -1,7 +1,6 @@
 'use client';
 
 import type { Dispatch, SetStateAction } from 'react';
-
 import { cn } from '@/shared/lib/utils';
 import type { PaginatedMetadata } from '@/shared/types/api/paginated-api.type';
 import type { Media } from '@/shared/types/models';

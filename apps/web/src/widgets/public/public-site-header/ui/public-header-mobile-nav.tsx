@@ -1,15 +1,15 @@
 'use client';
 
-import { AnimatePresence, motion, type Variants } from 'framer-motion';
-import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-
 import { Link } from '@/i18n/navigation';
 import { itemVariants } from '@/shared/config/anim';
 import { useLockBody } from '@/shared/hooks/use-lock-body';
 import { cn } from '@/shared/lib/utils';
 import type { MainNavItem } from '@/shared/types';
+
+import { AnimatePresence, motion, type Variants } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 interface PublicHeaderMobileNavProps
   extends React.ComponentProps<typeof motion.div> {

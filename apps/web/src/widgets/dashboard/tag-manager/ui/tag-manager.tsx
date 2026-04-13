@@ -1,10 +1,6 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
-
 import { createTag, deleteTag, updateTag } from '@/entities/tag';
 import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
 import {
@@ -21,6 +17,10 @@ import { Button } from '@/shared/ui/button';
 import { Empty, EmptyDescription, EmptyHeader } from '@/shared/ui/empty';
 import Loading from '@/shared/ui/loading';
 import { Pagination } from '@/shared/ui/pagination';
+
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { TagDialog } from './tag-dialog';
 

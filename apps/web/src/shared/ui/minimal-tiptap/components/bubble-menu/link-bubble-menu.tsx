@@ -1,6 +1,7 @@
+import * as React from 'react';
+
 import type { Editor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
-import * as React from 'react';
 
 import type { ShouldShowProps } from '../../types';
 import { LinkEditBlock } from '../link/link-edit-block';
@@ -104,7 +105,7 @@ export const LinkBubbleMenu: React.FC<LinkBubbleMenuProps> = ({ editor }) => {
           defaultText={selectedText}
           defaultIsNewTab={linkAttrs.target === '_blank'}
           onSave={onSetLink}
-          className="bg-popover text-popover-foreground outline-hidden w-full min-w-80 rounded-md border p-4 shadow-md"
+          className="outline-hidden bg-popover text-popover-foreground w-full min-w-80 rounded-md border p-4 shadow-md"
         />
       ) : (
         <LinkPopoverBlock

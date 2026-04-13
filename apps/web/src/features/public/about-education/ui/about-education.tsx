@@ -1,7 +1,7 @@
-import { getTranslations } from 'next-intl/server';
-
 import { getAllPublicEducations } from '@/entities/education';
 import { EducationSection } from '@/features/public/about-education/ui/education-section';
+
+import { getTranslations } from 'next-intl/server';
 
 export async function AboutEducation() {
   const t = await getTranslations();

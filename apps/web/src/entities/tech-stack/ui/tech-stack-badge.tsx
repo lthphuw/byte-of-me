@@ -1,6 +1,6 @@
-import Image from 'next/image';
-
 import type { PublicTechStack } from '@/entities/tech-stack';
+
+import Image from 'next/image';
 
 export interface TechStackBadgeProps {
   tech: PublicTechStack;

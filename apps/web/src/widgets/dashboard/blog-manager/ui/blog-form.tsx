@@ -1,17 +1,13 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
-import { Languages, Trash } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-
 import type { AdminBlog } from '@/entities/blog';
 import {
   blogFormSchema,
   type BlogFormValues,
-} from '@/entities/blog/schemas/blog';
+} from '@/entities/blog/model/blog-schema';
 import { getPaginatedAdminProject } from '@/entities/project/api/get-paginated-admin-project';
 import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
@@ -38,6 +34,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { Textarea } from '@/shared/ui/textarea';
 import { RichTextEditor } from '@/shared/ui/tiptap/rich-text-editor';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
+import { Languages, Trash } from 'lucide-react';
 
 import Loading from '../../../../shared/ui/loading';
 

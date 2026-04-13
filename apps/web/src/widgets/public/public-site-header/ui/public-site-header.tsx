@@ -1,13 +1,13 @@
 'use client';
 
-import { useElementSize, useWindowScroll } from '@mantine/hooks';
-import { motion, type Transition } from 'framer-motion';
-import { useTheme } from 'next-themes';
 import type { CSSProperties } from 'react';
-
 import { globalConfig } from '@/shared/config/global';
 import { cn } from '@/shared/lib/utils';
 import { I18nToggle } from '@/widgets/public/public-site-header/ui/i18n-toggle';
+
+import { useElementSize, useWindowScroll } from '@mantine/hooks';
+import { motion, type Transition } from 'framer-motion';
+import { useTheme } from 'next-themes';
 
 import { ColorSchemeModeToggle } from './color-scheme-mode-toggle';
 import { PublicHeaderMainNav } from './public-header-main-nav';

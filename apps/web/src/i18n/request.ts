@@ -1,3 +1,6 @@
+import { deepMerge } from '@/shared/lib/deep-merge';
+
+import { prisma } from '@byte-of-me/db';
 import { hasLocale } from 'next-intl';
 import { getRequestConfig } from 'next-intl/server';
 
@@ -9,7 +12,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     ? requested
     : routing.defaultLocale;
 
-  const [staticMessages] = await Promise.all([
+  const [staticMessages, dynamicMessages] = await Promise.all([
     // Static JSON
     (async () => {
       try {
@@ -20,9 +23,22 @@ export default getRequestConfig(async ({ requestLocale }) => {
         return {};
       }
     })(),
+
+    (async () => {
+      try {
+        const data = await prisma.translation.findMany({});
+        return data.reduce((acc, item) => {
+          acc[item.sourceText] = item.translated;
+          return acc;
+        }, {} as Record<string, string>);
+      } catch (err) {
+        console.error('[i18n] Dynamic load error:', err);
+        return {};
+      }
+    })(),
   ]);
 
-  const messages = staticMessages;
+  const messages = deepMerge({}, staticMessages, dynamicMessages);
 
   return {
     locale,

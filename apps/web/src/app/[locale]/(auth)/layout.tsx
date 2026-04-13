@@ -1,8 +1,8 @@
-import { redirect } from 'next/navigation';
 import React from 'react';
-
 import { getAuthenticatedUser } from '@/features/auth/lib/session';
 import { PublicSiteFooter } from '@/widgets/public/public-site-footer/ui';
+
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 

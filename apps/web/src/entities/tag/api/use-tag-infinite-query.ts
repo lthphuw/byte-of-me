@@ -1,6 +1,6 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
-
 import { getPaginatedPublicTags } from '@/entities/tag/api/get-paginated-public-tags';
+
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 export function useTagInfiniteQuery(limit: number = 12) {
   return useInfiniteQuery({

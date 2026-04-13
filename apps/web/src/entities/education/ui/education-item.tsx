@@ -1,7 +1,7 @@
-import Image from 'next/image';
-
 import type { PublicEducation } from '@/entities/education/model/types';
 import { RichText } from '@/shared/ui/rich-text';
+
+import Image from 'next/image';
 
 import { AchievementItem } from './achievement-item';
 

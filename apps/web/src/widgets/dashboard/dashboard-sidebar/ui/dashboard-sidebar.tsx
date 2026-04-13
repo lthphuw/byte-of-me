@@ -1,5 +1,10 @@
 'use client';
 
+import { logOut } from '@/features/auth/lib';
+import { Link } from '@/i18n/navigation';
+import { useToast } from '@/shared/hooks/use-toast';
+import { purgeEntireCache } from '@/shared/lib/revalidate';
+
 import {
   Briefcase,
   Code2,
@@ -16,11 +21,6 @@ import {
   Wallpaper,
 } from 'lucide-react';
 
-import { logOut } from '@/features/auth/lib';
-import { Link } from '@/i18n/navigation';
-import { useToast } from '@/shared/hooks/use-toast';
-import { purgeEntireCache } from '@/shared/lib/revalidate';
-
 import { DashboardNavItems } from './dashboard-nav-items';
 
 const navItems = [
@@ -30,13 +30,13 @@ const navItems = [
     icon: Wallpaper,
   },
   {
-    href: '/dashboard/profile',
+    href: '/dashboard/user-profile',
     label: 'Personal information',
     icon: UserCircle,
   },
   { href: '/dashboard/media', label: 'Media', icon: Image },
   {
-    href: '/dashboard/education',
+    href: '/dashboard/educations',
     label: 'Education',
     icon: GraduationCap,
   },

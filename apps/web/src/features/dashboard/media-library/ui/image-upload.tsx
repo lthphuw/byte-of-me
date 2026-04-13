@@ -1,10 +1,10 @@
 'use client';
 
-import { ImageIcon, Loader2, X } from 'lucide-react';
 import { useState } from 'react';
-
 import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/ui/button';
+
+import { ImageIcon, Loader2, X } from 'lucide-react';
 
 export interface ImageUploadProps {
   uploadFiles: (files: File[]) => Promise<any>;

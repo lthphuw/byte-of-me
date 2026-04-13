@@ -1,12 +1,4 @@
-import {
-  ClipboardCopyIcon,
-  DotsHorizontalIcon,
-  DownloadIcon,
-  Link2Icon,
-  SizeIcon,
-} from '@radix-ui/react-icons';
 import * as React from 'react';
-
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import {
@@ -16,6 +8,14 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
+
+import {
+  ClipboardCopyIcon,
+  DotsHorizontalIcon,
+  DownloadIcon,
+  Link2Icon,
+  SizeIcon,
+} from '@radix-ui/react-icons';
 
 interface ImageActionsProps {
   shouldMerge?: boolean;

@@ -1,8 +1,6 @@
 'use client';
 
-import { ChevronDown } from 'lucide-react';
 import React from 'react';
-
 import { useMediaQuery } from '@/shared/hooks/use-media-query';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
@@ -13,6 +11,8 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
+
+import { ChevronDown } from 'lucide-react';
 
 import { MobileToolbarGroup, MobileToolbarItem } from './mobile-toolbar-group';
 import { useToolbar } from './toolbar-provider';

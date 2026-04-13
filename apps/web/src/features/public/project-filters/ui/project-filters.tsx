@@ -1,17 +1,15 @@
 'use client';
 
-import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useDebounce } from 'use-debounce';
-
 import { TagClickableBadge, useTagInfiniteQuery } from '@/entities/tag';
-import {
-  TechStackClickableBadge,
-  useTechStackInfiniteQuery,
-} from '@/entities/tech-stack';
+import { TechStackClickableBadge, useTechStackInfiniteQuery, } from '@/entities/tech-stack';
 import { ProjectFilterSection } from '@/features/public/project-filters/ui/project-filter-section';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
+
+import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useDebounce } from 'use-debounce';
 
 export interface FilterValues {
   tagSlugs: string[];
@@ -25,6 +23,8 @@ export interface ProjectFiltersProps {
 }
 
 export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
+  const t = useTranslations('components.projectFilters');
+
   const [search, setSearch] = useState(value.search);
   const [debounced] = useDebounce(search, 400);
 
@@ -32,7 +32,6 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
     onChange({ ...value, search: debounced });
   }, [debounced]);
 
-  // Infinite Queries
   const {
     data: tagData,
     fetchNextPage: fetchNextTags,
@@ -66,22 +65,28 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
     onChange({ ...value, techStackSlugs: next });
   };
 
+  const handleReset = () => {
+    setSearch('');
+    onChange({ tagSlugs: [], techStackSlugs: [], search: '' });
+  };
+
   const hasFilters =
-    value.tagSlugs.length || value.techStackSlugs.length || value.search;
+    value.tagSlugs.length > 0 ||
+    value.techStackSlugs.length > 0 ||
+    search.length > 0;
 
   return (
     <div className="bg-card flex flex-col gap-6 rounded-xl border p-4 md:p-5">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-bold tracking-tight">Filters</h2>
+      <div className="flex h-8 items-center justify-between">
+        <h2 className="text-sm font-bold tracking-tight">{t('filters')}</h2>
         {hasFilters && (
           <Button
             variant="ghost"
-            onClick={() =>
-              onChange({ tagSlugs: [], techStackSlugs: [], search: '' })
-            }
+            size="sm"
+            onClick={handleReset}
             className="text-muted-foreground h-8 px-2 text-xs"
           >
-            Reset
+            {t('reset')}
           </Button>
         )}
       </div>
@@ -94,14 +99,16 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
           onChange={(e) => setSearch(e.target.value)}
         />
         {search && (
-          <X
-            className="text-muted-foreground absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer"
+          <button
+            type="button"
             onClick={() => setSearch('')}
-          />
+            className="text-muted-foreground absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-transparent"
+          >
+            <X size={14} />
+          </button>
         )}
       </div>
 
-      {/* TAGS SECTION */}
       <ProjectFilterSection
         title="Tags"
         onLoadMore={() => fetchNextTags()}
@@ -109,17 +116,18 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
         isLoading={isLoadingTags}
         isFetchingNextPage={isFetchingTags}
       >
-        {allTags.map((tag) => (
-          <TagClickableBadge
-            key={tag.id}
-            tag={tag}
-            active={value.tagSlugs.includes(tag.slug)}
-            onClick={(slug) => toggleTag(slug)}
-          />
-        ))}
+        <div className="flex min-h-[32px] flex-wrap items-center gap-1.5">
+          {allTags.map((tag) => (
+            <TagClickableBadge
+              key={tag.id}
+              tag={tag}
+              active={value.tagSlugs.includes(tag.slug)}
+              onClick={(slug) => toggleTag(slug)}
+            />
+          ))}
+        </div>
       </ProjectFilterSection>
 
-      {/* TECH STACK SECTION */}
       <ProjectFilterSection
         title="Tech Stack"
         onLoadMore={() => fetchNextTech()}
@@ -127,14 +135,16 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
         isLoading={isLoadingTech}
         isFetchingNextPage={isFetchingTech}
       >
-        {allTechStacks.map((tech) => (
-          <TechStackClickableBadge
-            key={tech.id}
-            tech={tech}
-            active={value.techStackSlugs.includes(tech.slug)}
-            onClick={(slug) => toggleTech(slug)}
-          />
-        ))}
+        <div className="flex min-h-[32px] flex-wrap items-center gap-1.5">
+          {allTechStacks.map((tech) => (
+            <TechStackClickableBadge
+              key={tech.id}
+              tech={tech}
+              active={value.techStackSlugs.includes(tech.slug)}
+              onClick={(slug) => toggleTech(slug)}
+            />
+          ))}
+        </div>
       </ProjectFilterSection>
     </div>
   );

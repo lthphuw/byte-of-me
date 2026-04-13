@@ -1,8 +1,8 @@
-import type { Editor } from '@tiptap/core';
-
 import { ScrollArea, ScrollBar } from '@/shared/ui/scroll-area';
 import { Separator } from '@/shared/ui/separator';
 import { TooltipProvider } from '@/shared/ui/tooltip';
+
+import type { Editor } from '@tiptap/core';
 
 import { AlignmentTooolbar } from './alignment';
 import { BlockquoteToolbar } from './blockquote';

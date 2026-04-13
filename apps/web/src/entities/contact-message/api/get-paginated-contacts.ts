@@ -1,11 +1,11 @@
 'use server';
 
-import { prisma } from '@byte-of-me/db';
-
 import type { AdminContactMessage } from '@/entities/contact-message';
 import { requireUser } from '@/features/auth/lib/session';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
+
+import { prisma } from '@byte-of-me/db';
 
 import type { Prisma } from '../../../../../../packages/db/generated/prisma/client';
 

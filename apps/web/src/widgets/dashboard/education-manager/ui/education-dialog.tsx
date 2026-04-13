@@ -1,14 +1,11 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Languages, Plus, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-
 import {
   type EducationFormValues,
   educationSchema,
-} from '@/entities/education/schemas/education';
+} from '@/entities/education/model/education-schema';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import { Button } from '@/shared/ui/button';
 import { DatePicker } from '@/shared/ui/date-picker';
@@ -30,6 +27,9 @@ import { Icons } from '@/shared/ui/icons';
 import { Input } from '@/shared/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { EducationAchievementItemField } from '@/widgets/dashboard/education-manager/ui/education-achievement-item-field';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Languages, Plus, Trash } from 'lucide-react';
 
 interface EducationDialogProps {
   open: boolean;

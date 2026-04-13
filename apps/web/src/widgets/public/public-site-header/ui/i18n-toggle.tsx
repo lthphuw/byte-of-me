@@ -1,8 +1,5 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
-import { useLocale, useTranslations } from 'next-intl';
-
 import { Link, usePathname } from '@/i18n/navigation';
 import { itemVariants } from '@/shared/config/anim';
 import { languageNames, supportedLanguages } from '@/shared/config/language';
@@ -15,6 +12,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
+
+import { AnimatePresence, motion } from 'framer-motion';
+import { useLocale, useTranslations } from 'next-intl';
 
 const flagVariants = {
   initial: { opacity: 0, scale: 0.9, y: 8 },
@@ -67,7 +67,7 @@ export function I18nToggle() {
       <DropdownMenuContent
         align="end"
         sideOffset={8}
-        className="bg-popover border-muted/50 min-w-[180px] space-y-1 overflow-hidden rounded-md border p-1.5 shadow-lg"
+        className="border-muted/50 bg-popover min-w-[180px] space-y-1 overflow-hidden rounded-md border p-1.5 shadow-lg"
       >
         {supportedLanguages.map((lang, index) => {
           const ItemFlag = Flags[lang];

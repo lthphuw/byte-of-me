@@ -1,4 +1,5 @@
-import './styles/index.css';
+import { cn } from '@/shared/lib/utils';
+import { Separator } from '@/shared/ui/separator';
 
 import {
   type Content,
@@ -6,9 +7,6 @@ import {
   EditorContent,
   EditorContext,
 } from '@tiptap/react';
-
-import { cn } from '@/shared/lib/utils';
-import { Separator } from '@/shared/ui/separator';
 
 import { LinkBubbleMenu } from './components/bubble-menu/link-bubble-menu';
 import { MeasuredContainer } from './components/measured-container';
@@ -22,6 +20,8 @@ import {
   type UseMinimalTiptapEditorProps,
 } from './hooks/use-minimal-tiptap';
 import { useTiptapEditor } from './hooks/use-tiptap-editor';
+
+import './styles/index.css';
 
 export interface MinimalTiptapProps
   extends Omit<UseMinimalTiptapEditorProps, 'onUpdate'> {

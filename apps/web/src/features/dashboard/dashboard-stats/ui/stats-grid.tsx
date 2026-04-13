@@ -1,3 +1,5 @@
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+
 import {
   BookOpen,
   Briefcase,
@@ -8,8 +10,6 @@ import {
   MessageSquare,
   Tag,
 } from 'lucide-react';
-
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 
 export function StatsGrid({ stats }: { stats: any }) {
   const primaryStats = [

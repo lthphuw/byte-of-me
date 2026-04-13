@@ -1,34 +1,23 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
-
-import { sendContactMessage } from '@/entities/contact-message/api/send-contact-message';
-import {
-  contactMessage,
-  type ContactMessageFormValues,
-} from '@/entities/contact-message/schemas';
+import { type ContactMessageFormValues, contactMessageSchema, sendContactMessage, } from '@/entities/contact-message';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/shared/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from '@/shared/ui/form';
 import { Icons } from '@/shared/ui/icons';
 import { Input } from '@/shared/ui/input';
 import { RichTextEditorLite } from '@/shared/ui/tiptap/rich-text-editor-lite';
+
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export function ContactForm() {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
   const form = useForm<ContactMessageFormValues>({
-    resolver: zodResolver(contactMessage),
+    resolver: zodResolver(contactMessageSchema),
     defaultValues: {
       name: '',
       email: '',

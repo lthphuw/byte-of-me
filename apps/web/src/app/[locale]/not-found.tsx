@@ -1,11 +1,11 @@
-import { getTranslations } from 'next-intl/server';
-
 import { Link } from '@/i18n/navigation';
 import { Routes } from '@/shared/config/global';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import GoBackButton from '@/shared/ui/go-back';
 import { Icons } from '@/shared/ui/icons';
+
+import { getTranslations } from 'next-intl/server';
 
 export default async function NotFound() {
   const t = await getTranslations('notFound');

@@ -1,6 +1,3 @@
-import { Route } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
-
 import {
   getPublicUserProfile,
   Greeting,
@@ -10,6 +7,9 @@ import { ProfileSectionMotion } from '@/features/public/homepage-profile/ui/prof
 import { Link } from '@/i18n/navigation';
 import { Routes } from '@/shared/config/global';
 import { Button } from '@/shared/ui/button';
+
+import { Route } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 
 import { HomepageProfileEmpty } from './homepage-profile-empty';
 

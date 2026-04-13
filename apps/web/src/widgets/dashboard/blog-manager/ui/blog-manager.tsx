@@ -1,15 +1,12 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
 import { useState } from 'react';
-
 import type { AdminBlog } from '@/entities/blog';
 import { createBlog } from '@/entities/blog/api/create-blog';
 import { deleteBlog } from '@/entities/blog/api/delete-blog';
 import { getPaginatedAdminBlog } from '@/entities/blog/api/get-paginated-admin-blogs';
 import { updateBlog } from '@/entities/blog/api/update-blog';
-import type { BlogFormValues } from '@/entities/blog/schemas/blog';
+import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import { BlogEditorCard } from '@/entities/blog/ui/blog-editor-card';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 import {
@@ -26,6 +23,9 @@ import { Button } from '@/shared/ui/button';
 import { Empty, EmptyDescription, EmptyHeader } from '@/shared/ui/empty';
 import Loading from '@/shared/ui/loading';
 import { Pagination } from '@/shared/ui/pagination';
+
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus } from 'lucide-react';
 
 import { BlogDialog } from './blog-dialog';
 

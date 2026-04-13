@@ -1,7 +1,8 @@
 'use client';
 
-import { type Editor,useCurrentEditor, useEditorState } from '@tiptap/react';
 import { useMemo } from 'react';
+
+import { type Editor,useCurrentEditor, useEditorState } from '@tiptap/react';
 
 
 

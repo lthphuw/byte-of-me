@@ -1,7 +1,5 @@
 'use server';
 
-import { prisma } from '@byte-of-me/db';
-
 import type { PublicBlog } from '@/entities/blog/model/types';
 import type { PublicProject } from '@/entities/project/model/types';
 import {
@@ -10,6 +8,8 @@ import {
 } from '@/shared/api/public-action-template';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
+
+import { prisma } from '@byte-of-me/db';
 
 export async function getPublicBlogBySlug(
   slug: string

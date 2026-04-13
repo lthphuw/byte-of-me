@@ -1,10 +1,8 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-
-import { type TagFormValues,tagSchema } from '@/entities/tag/schemas/tag';
+import { type TagFormValues,tagSchema } from '@/entities/tag/model/tag-schema';
 import { Button } from '@/shared/ui/button';
 import {
   Dialog,
@@ -13,6 +11,8 @@ import {
   DialogTitle,
 } from '@/shared/ui/dialog';
 import { Input } from '@/shared/ui/input';
+
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export function TagDialog({
   open,

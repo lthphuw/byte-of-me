@@ -1,12 +1,27 @@
-import { Trash2 } from 'lucide-react';
+'use client';
 
+import type { Control, UseFormReturn } from 'react-hook-form';
+import type { ProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
 import { Button } from '@/shared/ui/button';
 import { FormControl, FormField, FormItem, FormLabel } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Separator } from '@/shared/ui/separator';
+import { Textarea } from '@/shared/ui/textarea';
 import { RichTextEditor } from '@/shared/ui/tiptap/rich-text-editor';
 
-export function ProfileTranslationCard({ form, index, onRemove }: any) {
+import { Trash2 } from 'lucide-react';
+
+interface ProfileTranslationCardProps {
+  form: UseFormReturn<ProfileFormValues>;
+  index: number;
+  onRemove: () => void;
+}
+
+export function ProfileTranslationCard({
+  form,
+  index,
+  onRemove,
+}: ProfileTranslationCardProps) {
   return (
     <div className="bg-background/50 space-y-6 rounded-xl border p-6">
       {/* Header */}
@@ -18,13 +33,18 @@ export function ProfileTranslationCard({ form, index, onRemove }: any) {
             <FormItem>
               <FormLabel>Language</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="en, vi..." />
+                <Input {...field} placeholder="en, vi..." className="w-32" />
               </FormControl>
             </FormItem>
           )}
         />
 
-        <Button variant="destructive" size="sm" onClick={onRemove}>
+        <Button
+          type="button"
+          variant="destructive"
+          size="sm"
+          onClick={onRemove}
+        >
           <Trash2 className="mr-2 h-4 w-4" />
           Remove
         </Button>
@@ -36,17 +56,17 @@ export function ProfileTranslationCard({ form, index, onRemove }: any) {
       <Section title="Identity">
         <div className="grid gap-4 md:grid-cols-3">
           <Field
-            form={form}
+            control={form.control}
             name={`translations.${index}.firstName`}
             label="First Name"
           />
           <Field
-            form={form}
+            control={form.control}
             name={`translations.${index}.lastName`}
             label="Last Name"
           />
           <Field
-            form={form}
+            control={form.control}
             name={`translations.${index}.displayName`}
             label="Display Name"
           />
@@ -55,43 +75,90 @@ export function ProfileTranslationCard({ form, index, onRemove }: any) {
 
       {/* Content */}
       <Section title="Content">
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-1">
           <Field
-            form={form}
+            control={form.control}
             name={`translations.${index}.greeting`}
             label="Greeting"
           />
-          <Field
-            form={form}
+
+          <FormField
+            control={form.control}
             name={`translations.${index}.tagLine`}
-            label="Tagline"
+            render={({ field }) => (
+              <FormItem >
+                <FormLabel>Short Bio</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    value={field.value ?? ''}
+                    className="min-h-[80px] resize-none"
+                    placeholder="Short bio..."
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name={`translations.${index}.bio`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Short Bio</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    value={field.value ?? ''}
+                    className="min-h-[80px] resize-none"
+                    placeholder="Short bio..."
+                  />
+                </FormControl>
+              </FormItem>
+            )}
           />
         </div>
       </Section>
 
       {/* Quote */}
       <Section title="Quote">
-        <div className="grid gap-4 md:grid-cols-2">
-          <Field
-            form={form}
+        <div className="grid gap-4">
+          <FormField
+            control={form.control}
             name={`translations.${index}.quote`}
-            label="Quote"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Quote</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    value={field.value ?? ''}
+                    className="min-h-[80px] resize-none"
+                    placeholder="Enter an inspiring quote..."
+                  />
+                </FormControl>
+              </FormItem>
+            )}
           />
           <Field
-            form={form}
+            control={form.control}
             name={`translations.${index}.quoteAuthor`}
             label="Author"
           />
         </div>
       </Section>
 
-      {/* Bio */}
-      <Section title="Bio">
+      {/* About Me (Rich Text) */}
+      <Section title="About Me">
         <FormField
           control={form.control}
           name={`translations.${index}.aboutMe`}
           render={({ field }) => (
-            <RichTextEditor value={field.value} onChange={field.onChange} />
+            <FormItem>
+              <FormControl>
+                <RichTextEditor value={field.value} onChange={field.onChange} />
+              </FormControl>
+            </FormItem>
           )}
         />
       </Section>
@@ -99,22 +166,36 @@ export function ProfileTranslationCard({ form, index, onRemove }: any) {
   );
 }
 
-function Section({ title, children }: any) {
+interface SectionProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+function Section({ title, children }: SectionProps) {
   return (
     <div className="space-y-3">
-      <p className="text-muted-foreground text-xs uppercase">{title}</p>
+      <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider">
+        {title}
+      </p>
       {children}
     </div>
   );
 }
 
-function Field({ form, name, label }: any) {
+interface FieldProps {
+  control: Control<ProfileFormValues>;
+  name: any;
+  label: string;
+  className?: string;
+}
+
+function Field({ control, name, label, className }: FieldProps) {
   return (
     <FormField
-      control={form.control}
+      control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className={className}>
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <Input {...field} value={field.value ?? ''} />

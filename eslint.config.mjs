@@ -6,6 +6,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import tailwind from 'eslint-plugin-tailwindcss';
 import unusedImports from 'eslint-plugin-unused-imports';
+import importAlias from 'eslint-plugin-import-alias';
 import tseslint from 'typescript-eslint';
 import globals from 'globals';
 
@@ -23,7 +24,6 @@ export default [
   },
 
   js.configs.recommended,
-
   ...tseslint.configs.recommended,
 
   {
@@ -41,18 +41,44 @@ export default [
       'unused-imports': unusedImports,
       tailwindcss: tailwind,
       'simple-import-sort': simpleImportSort,
+      'import-alias': importAlias,
     },
     settings: {
       react: {
         version: 'detect',
       },
+      'import/resolver': {
+        typescript: {
+          project: './tsconfig.json',
+        },
+      },
     },
     rules: {
       /* ---------------- IMPORTS ---------------- */
-      'simple-import-sort/imports': 'warn',
+      'simple-import-sort/imports': [
+        'warn',
+        {
+          groups: [
+            ['^react', '^@shared', '^@entities', '^@features', '^@widgets', '^@app', '^@/'],
+            ['^\\u0000'],
+            ['^@?\\w'],
+            ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
+            ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
+            ['^.+\\.s?css$'],
+          ],
+        },
+      ],
       'simple-import-sort/exports': 'warn',
+      'import/no-duplicates': 'error',
 
-      'import/order': 'off',
+      /* ---------------- ALIAS ---------------- */
+      'import-alias/import-alias': [
+        'error',
+        {
+          relativeDepth: 0,
+          aliases: [{ alias: '@', matcher: '^src' }],
+        },
+      ],
 
       /* ---------------- UNUSED ---------------- */
       'no-unused-vars': 'off',
@@ -60,29 +86,20 @@ export default [
       'unused-imports/no-unused-imports': 'warn',
       'unused-imports/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
 
-      /* ---------------- REACT ---------------- */
+      /* ---------------- REACT & HOOKS ---------------- */
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
-
-      /* ---------------- HOOKS ---------------- */
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
 
-      /* ---------------- TS ---------------- */
+      /* ---------------- TS & GENERAL ---------------- */
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/consistent-type-imports': 'warn',
-
-      /* ---------------- GENERAL ---------------- */
       'no-console': ['warn', { allow: ['warn', 'error'] }],
     },
   },
 
-  /* Next.js rules ONLY for web app */
-  {
-    files: ['apps/web/**/*.{ts,tsx}'],
-  },
-
-  /* Tailwind (only where used) */
+  /* Tailwind specific */
   {
     files: ['apps/web/**/*.{ts,tsx}'],
     rules: {
@@ -91,6 +108,7 @@ export default [
     },
   },
 
+  /* Node.js files */
   {
     files: ['**/*.{js,mjs,cjs}'],
     languageOptions: {
@@ -100,6 +118,5 @@ export default [
     },
   },
 
-  /* Prettier LAST */
   prettier,
 ];

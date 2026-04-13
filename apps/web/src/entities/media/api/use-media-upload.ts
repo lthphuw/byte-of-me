@@ -1,7 +1,7 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-
 import { uploadMedia } from '@/entities/media/api/upload-media';
 import { toast } from '@/shared/hooks/use-toast';
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export function useMediaUpload() {
   const queryClient = useQueryClient();

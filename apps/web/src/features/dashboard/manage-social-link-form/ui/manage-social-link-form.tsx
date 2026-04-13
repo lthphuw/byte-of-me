@@ -1,10 +1,10 @@
-import { Plus, Trash2 } from 'lucide-react';
 import { useFieldArray, type UseFormReturn } from 'react-hook-form';
-
-import type { ProfileFormValues } from '@/entities/user-profile/schemas/user-profile';
+import type { ProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
 import { Button } from '@/shared/ui/button';
 import { FormControl, FormField, FormItem } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
+
+import { Plus, Trash2 } from 'lucide-react';
 
 export function SocialLinksSection({
   form,

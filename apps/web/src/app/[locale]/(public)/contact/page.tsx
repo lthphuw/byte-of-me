@@ -1,8 +1,8 @@
-import { setRequestLocale } from 'next-intl/server';
-
 import { routing } from '@/i18n/routing';
 import type { LocaleType } from '@/shared/types';
 import { ContactContent } from '@/widgets/public/contact-content/ui';
+
+import { setRequestLocale } from 'next-intl/server';
 
 interface ContactPageProps {
   params: Promise<{ locale: string }>;

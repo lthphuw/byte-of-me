@@ -1,18 +1,12 @@
 'use client';
 
-import { format } from 'date-fns';
-import {
-  ArrowRight,
-  Calendar,
-  Clock,
-  Layers,
-  Tag as TagIcon,
-} from 'lucide-react';
-import Link from 'next/link';
-
 import type { PublicBlog } from '@/entities/blog/model/types';
 import { Badge } from '@/shared/ui/badge';
 import { Card, CardContent, CardFooter, CardHeader } from '@/shared/ui/card';
+
+import { format } from 'date-fns';
+import { ArrowRight, Calendar, Clock, Layers, Tag as TagIcon, } from 'lucide-react';
+import Link from 'next/link';
 
 interface BlogCardProps {
   blog: PublicBlog;

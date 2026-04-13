@@ -1,22 +1,6 @@
 'use client';
 
-import Image from '@tiptap/extension-image';
-import {
-  type NodeViewProps,
-  NodeViewWrapper,
-  ReactNodeViewRenderer,
-} from '@tiptap/react';
-import {
-  AlignCenter,
-  AlignLeft,
-  AlignRight,
-  ImageIcon,
-  Loader2,
-  MoreVertical,
-  Trash,
-} from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-
 import { uploadMedia } from '@/entities/media/api/upload-media';
 import { useImageUpload } from '@/shared/hooks/use-image-upload';
 import { cn } from '@/shared/lib/utils';
@@ -33,6 +17,22 @@ import {
 } from '@/shared/ui/dropdown-menu';
 import { Input } from '@/shared/ui/input';
 import { Separator } from '@/shared/ui/separator';
+
+import Image from '@tiptap/extension-image';
+import {
+  type NodeViewProps,
+  NodeViewWrapper,
+  ReactNodeViewRenderer,
+} from '@tiptap/react';
+import {
+  AlignCenter,
+  AlignLeft,
+  AlignRight,
+  ImageIcon,
+  Loader2,
+  MoreVertical,
+  Trash,
+} from 'lucide-react';
 
 export const ImageExtension = Image.extend({
   addOptions() {

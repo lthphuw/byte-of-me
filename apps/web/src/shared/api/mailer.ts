@@ -1,6 +1,6 @@
-import nodemailer from 'nodemailer';
-
 import { env } from '@/shared/config/env';
+
+import nodemailer from 'nodemailer';
 
 export const mailer = nodemailer.createTransport({
   host: env.EMAIL_SERVER_HOST,

@@ -1,7 +1,7 @@
-import { Quote } from 'lucide-react';
 import type { CSSProperties } from 'react';
-
 import { cn } from '@/shared/lib/utils';
+
+import { Quote } from 'lucide-react';
 
 export interface ProfileQuoteProps {
   quote: string;

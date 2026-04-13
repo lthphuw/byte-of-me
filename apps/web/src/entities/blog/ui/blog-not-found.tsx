@@ -1,8 +1,8 @@
+import { Button } from '@/shared/ui/button';
+
 import { ArrowLeft, FileQuestion, Search } from 'lucide-react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-
-import { Button } from '@/shared/ui/button';
 
 export async function BlogNotFound() {
   const t = await getTranslations('blogDetails');
@@ -12,9 +12,9 @@ export async function BlogNotFound() {
       {/* Visual Icon Group */}
       <div className="relative mb-6 ">
         <div className="bg-primary/5 absolute -inset-4 rounded-full blur-xl" />
-        <div className="bg-background border-muted-foreground/30 relative flex h-20 w-20 items-center justify-center rounded-2xl border-2 border-dashed">
+        <div className="border-muted-foreground/30 bg-background relative flex h-20 w-20 items-center justify-center rounded-2xl border-2 border-dashed">
           <FileQuestion className="text-muted-foreground/40 h-10 w-10" />
-          <Search className="text-primary bg-background absolute -bottom-1 -right-1 h-6 w-6 rounded-full border p-1 shadow-sm" />
+          <Search className="bg-background text-primary absolute -bottom-1 -right-1 h-6 w-6 rounded-full border p-1 shadow-sm" />
         </div>
       </div>
 

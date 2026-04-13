@@ -1,18 +1,18 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
-import Image from 'next/image';
 import { useMemo, useState } from 'react';
-
 import type { AdminTechStack } from '@/entities/tech-stack';
 import { addTechStack } from '@/entities/tech-stack/api/create-tech-stack';
 import { deleteTechStack } from '@/entities/tech-stack/api/delete-tech-stack';
 import { getAllAdminTechStack } from '@/entities/tech-stack/api/get-all-admin-tech-stacks';
 import { updateTechStack } from '@/entities/tech-stack/api/update-tech-stack';
-import type { TechStackFormValues } from '@/entities/tech-stack/schemas/tech-stack';
+import type { TechStackFormValues } from '@/entities/tech-stack/model/tech-stack-schema';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/ui/button';
+
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
+import Image from 'next/image';
 
 import { TechStackDialog } from './tech-stack-dialog';
 

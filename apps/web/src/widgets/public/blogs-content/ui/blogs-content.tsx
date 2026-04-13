@@ -1,8 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-
 import { getPaginatedPublicBlogs } from '@/entities/blog/api/get-paginated-public-blogs';
 import { BlogCardSkeleton } from '@/entities/blog/ui';
 import { BlogCard } from '@/entities/blog/ui/blog-card';
@@ -10,6 +8,8 @@ import { BlogEmpty } from '@/entities/blog/ui/blog-empty';
 import { BlogFilters } from '@/features/public/blog-filters/ui/blog-filters';
 import { Pagination } from '@/shared/ui/pagination';
 import { BlogsShell } from '@/widgets/public/blogs-content/ui/blogs-shell';
+
+import { useQuery } from '@tanstack/react-query';
 
 interface BlogsContentProps {}
 

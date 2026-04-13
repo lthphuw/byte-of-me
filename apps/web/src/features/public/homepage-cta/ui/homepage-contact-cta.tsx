@@ -1,8 +1,8 @@
-import { getTranslations } from 'next-intl/server';
-
 import { Link } from '@/i18n/navigation';
 import { Routes } from '@/shared/config/global';
 import { Button } from '@/shared/ui/button';
+
+import { getTranslations } from 'next-intl/server';
 
 export async function HomepageContactCta() {
   const t = await getTranslations('homepage');

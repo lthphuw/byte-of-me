@@ -1,5 +1,17 @@
 'use client';
 
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useDebounce } from '@/shared/hooks/use-debounce';
+import { cn } from '@/shared/lib/utils';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from '@/shared/ui/command';
+import { ScrollArea } from '@/shared/ui/scroll-area';
+
 import type { Editor } from '@tiptap/core';
 import { FloatingMenu } from '@tiptap/react/menus';
 import {
@@ -19,18 +31,6 @@ import {
   Quote,
   TextQuote,
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-
-import { useDebounce } from '@/shared/hooks/use-debounce';
-import { cn } from '@/shared/lib/utils';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from '@/shared/ui/command';
-import { ScrollArea } from '@/shared/ui/scroll-area';
 
 interface CommandItemType {
   title: string;

@@ -1,9 +1,9 @@
-import { InfoCircledIcon, TrashIcon } from '@radix-ui/react-icons';
-import { type NodeViewProps,NodeViewWrapper } from '@tiptap/react';
 import * as React from 'react';
 import { Controlled as ControlledZoom } from 'react-medium-image-zoom';
-
 import { cn } from '@/shared/lib/utils';
+
+import { InfoCircledIcon, TrashIcon } from '@radix-ui/react-icons';
+import { type NodeViewProps,NodeViewWrapper } from '@tiptap/react';
 
 import { Spinner } from '../../../components/spinner';
 import { blobUrlToBase64, randomId } from '../../../utils';
@@ -13,6 +13,7 @@ import {
 } from '../hooks/use-drag-resize';
 import { useImageActions } from '../hooks/use-image-actions';
 import type { UploadReturnType } from '../image';
+
 import { ActionButton, ActionWrapper, ImageActions } from './image-actions';
 import { ImageOverlay } from './image-overlay';
 import { ResizeHandle } from './resize-handle';

@@ -1,16 +1,16 @@
 'use client';
 
 // Error boundaries must be Client Components
-import { useClipboard } from '@mantine/hooks';
-import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo } from 'react';
-
 import { Link } from '@/i18n/navigation';
 import { Routes } from '@/shared/config/global';
 import { cn, prettyStringify } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import GoBackButton from '@/shared/ui/go-back';
 import { Icons } from '@/shared/ui/icons';
+
+import { useClipboard } from '@mantine/hooks';
+import { useTranslations } from 'next-intl';
 
 export default function Error({
   error,

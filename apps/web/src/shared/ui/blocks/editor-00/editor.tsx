@@ -1,14 +1,14 @@
 'use client';
 
+import { editorTheme } from '@/shared/ui/editor/themes/editor-theme';
+import { TooltipProvider } from '@/shared/ui/tooltip';
+
 import {
   type InitialConfigType,
   LexicalComposer,
 } from '@lexical/react/LexicalComposer';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import type { EditorState, SerializedEditorState } from 'lexical';
-
-import { editorTheme } from '@/shared/ui/editor/themes/editor-theme';
-import { TooltipProvider } from '@/shared/ui/tooltip';
 
 import { nodes } from './nodes';
 import { Plugins } from './plugins';

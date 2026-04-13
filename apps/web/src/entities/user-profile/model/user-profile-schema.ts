@@ -13,7 +13,7 @@ export const userProfileSchema = z.object({
     .array(
       z.object({
         language: z.string().min(1, 'Language is required'),
-        displayName: z.string().min(1, 'Display name is required'),
+        displayName: z.string().nullable().optional(),
         tagLine: z.string().nullable().optional(),
         greeting: z.string().nullable().optional(),
         firstName: z.string().nullable().optional(),

@@ -1,13 +1,13 @@
 'use client';
 
-import { motion } from 'framer-motion';
-
 import { UserAuthForm } from '@/features/auth/ui';
 import { Link } from '@/i18n/navigation';
 import { Routes } from '@/shared/config/global';
 import { cn } from '@/shared/lib/utils';
 import { buttonVariants } from '@/shared/ui/button';
 import { Icons } from '@/shared/ui/icons';
+
+import { motion } from 'framer-motion';
 
 export function AuthLogInView() {
   return (

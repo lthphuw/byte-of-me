@@ -1,3 +1,5 @@
+import { cn } from '@/shared/lib/utils';
+
 import {
   AlertTriangle,
   ArrowLeft,
@@ -41,8 +43,6 @@ import {
   User,
   X,
 } from 'lucide-react';
-
-import { cn } from '@/shared/lib/utils';
 
 export const Icons = {
   logo: Fingerprint,

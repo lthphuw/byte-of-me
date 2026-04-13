@@ -188,6 +188,16 @@ declare const messages: {
     "expandableText": {
       "showLess": "Thu gọn",
       "showMore": "Xem thêm"
+    },
+    "projectFilters": {
+      "filters": "Bộ lọc",
+      "reset": "Thiết lập lại",
+      "seeMore": "Xem thêm"
+    },
+    "blogFilters": {
+      "filters": "Bộ lọc",
+      "reset": "Thiết lập lại",
+      "seeMore": "Xem thêm"
     }
   }
 };

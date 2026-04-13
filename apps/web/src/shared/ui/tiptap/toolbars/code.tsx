@@ -1,11 +1,11 @@
 'use client';
 
-import { Code2 } from 'lucide-react';
 import React from 'react';
-
 import { cn } from '@/shared/lib/utils';
 import { Button, type ButtonProps } from '@/shared/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
+
+import { Code2 } from 'lucide-react';
 
 import { useToolbar } from './toolbar-provider';
 

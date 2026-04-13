@@ -1,10 +1,6 @@
 'use client';
 
-import { motion, type Variants } from 'framer-motion';
-import { useSelectedLayoutSegment } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
 import * as React from 'react';
-
 import { Link } from '@/i18n/navigation';
 import { iconOpenCloseVariants } from '@/shared/config/anim';
 import { Routes } from '@/shared/config/global';
@@ -14,6 +10,10 @@ import type { MainNavItem } from '@/shared/types';
 import { Button } from '@/shared/ui/button';
 import { Icons } from '@/shared/ui/icons';
 import { PublicHeaderMobileNav } from '@/widgets/public/public-site-header/ui/public-header-mobile-nav';
+
+import { motion, type Variants } from 'framer-motion';
+import { useSelectedLayoutSegment } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface MainNavProps {
   items: MainNavItem[];

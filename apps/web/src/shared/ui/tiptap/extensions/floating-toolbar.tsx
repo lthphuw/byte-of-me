@@ -1,13 +1,13 @@
 'use client';
 
-import { type Editor } from '@tiptap/react';
-import { BubbleMenu } from '@tiptap/react/menus';
 import { useEffect } from 'react';
-
 import { useMediaQuery } from '@/shared/hooks/use-media-query';
 import { ScrollArea, ScrollBar } from '@/shared/ui/scroll-area';
 import { Separator } from '@/shared/ui/separator';
 import { TooltipProvider } from '@/shared/ui/tooltip';
+
+import { type Editor } from '@tiptap/react';
+import { BubbleMenu } from '@tiptap/react/menus';
 
 import { AlignmentTooolbar } from '../toolbars/alignment';
 import { BlockquoteToolbar } from '../toolbars/blockquote';

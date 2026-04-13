@@ -1,19 +1,19 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
-import Image from 'next/image';
 import { useState } from 'react';
-
 import type { AdminEducation } from '@/entities/education';
 import { createEducation } from '@/entities/education/api/create-education';
 import { deleteEducation } from '@/entities/education/api/delete-education';
 import { getAllAdminEducations } from '@/entities/education/api/get-all-admin-educations';
 import { updateEducation } from '@/entities/education/api/update-education';
-import type { EducationFormValues } from '@/entities/education/schemas/education';
+import type { EducationFormValues } from '@/entities/education/model/education-schema';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
+
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
+import Image from 'next/image';
 
 import { EducationDialog } from './education-dialog';
 

@@ -1,5 +1,4 @@
 import { Suspense } from 'react';
-
 import { HomepageContactCta } from '@/features/public/homepage-cta';
 import {
   HomepageProfile,

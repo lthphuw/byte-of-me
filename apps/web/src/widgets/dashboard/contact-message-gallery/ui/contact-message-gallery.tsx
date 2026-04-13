@@ -1,11 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
-import { MessageSquare, Search, X } from 'lucide-react';
 import { useState } from 'react';
-import { useDebounce } from 'use-debounce';
-
 import type { AdminContactMessage } from '@/entities/contact-message';
 import { getPaginatedContactMessages } from '@/entities/contact-message/api/get-paginated-contacts';
 import { Button } from '@/shared/ui/button';
@@ -22,6 +17,11 @@ import { Pagination } from '@/shared/ui/pagination';
 import { RichText } from '@/shared/ui/rich-text';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { Skeleton } from '@/shared/ui/skeleton';
+
+import { useQuery } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { MessageSquare, Search, X } from 'lucide-react';
+import { useDebounce } from 'use-debounce';
 
 export function ContactMessageGallery() {
   const [page, setPage] = useState(1);
@@ -161,7 +161,7 @@ export function ContactMessageGallery() {
                       {selectedMessage.email}
                     </DialogDescription>
                   </div>
-                  <div className="text-muted-foreground bg-muted rounded px-2 py-1 text-xs">
+                  <div className="bg-muted text-muted-foreground rounded px-2 py-1 text-xs">
                     {format(new Date(selectedMessage.createdAt), 'PPP p')}
                   </div>
                 </div>

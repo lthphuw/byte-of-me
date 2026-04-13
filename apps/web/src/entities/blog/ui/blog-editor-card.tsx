@@ -1,12 +1,12 @@
-import { format } from 'date-fns';
-import { Calendar, Eye, EyeOff, Pencil, Trash2 } from 'lucide-react';
-import Image from 'next/image';
-
 import type { AdminBlog } from '@/entities/blog';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/shared/ui/card';
 import { ImagePlaceholder } from '@/shared/ui/image-placeholder';
+
+import { format } from 'date-fns';
+import { Calendar, Eye, EyeOff, Pencil, Trash2 } from 'lucide-react';
+import Image from 'next/image';
 
 interface BlogCardProps {
   blog: AdminBlog;
@@ -56,7 +56,7 @@ export function BlogEditorCard({ blog, onEdit, onDelete }: BlogCardProps) {
         <h3 className="group-hover:text-primary line-clamp-2 min-h-[2.5rem] font-bold leading-tight transition-colors">
           {mainTranslation?.title || 'Untitled PublicBlog'}
         </h3>
-        <p className="text-muted-foreground bg-muted/50 w-fit truncate rounded px-1 font-mono text-[11px]">
+        <p className="bg-muted/50 text-muted-foreground w-fit truncate rounded px-1 font-mono text-[11px]">
           /{blog.slug}
         </p>
       </CardHeader>

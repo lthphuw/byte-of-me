@@ -1,8 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-
 import { getPaginatedPublicProjects } from '@/entities/project/api/get-paginated-public-projects';
 import {
   ProjectCard,
@@ -12,6 +10,8 @@ import {
 import { ProjectFilters } from '@/features/public/project-filters/ui/project-filters';
 import { Pagination } from '@/shared/ui/pagination';
 import { ProjectsShell } from '@/widgets/public/projects-content/ui/projects-shell';
+
+import { useQuery } from '@tanstack/react-query';
 
 export function ProjectsContent() {
   const [page, setPage] = useState(1);

@@ -1,7 +1,5 @@
 'use server';
 
-import { prisma } from '@byte-of-me/db';
-
 import type { PublicProject } from '@/entities/project/model/types';
 import {
   handlePublicAction,
@@ -13,6 +11,8 @@ import type {
   PaginatedData,
   PaginatedParams,
 } from '@/shared/types/api/paginated-api.type';
+
+import { prisma } from '@byte-of-me/db';
 
 export type GetPublicProjectsParams = PaginatedParams & {
   tagSlugs?: string[];

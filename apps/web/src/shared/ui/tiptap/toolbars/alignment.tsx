@@ -1,14 +1,5 @@
 'use client';
 
-import {
-  AlignCenter,
-  AlignJustify,
-  AlignLeft,
-  AlignRight,
-  Check,
-  ChevronDown,
-} from 'lucide-react';
-
 import { useMediaQuery } from '@/shared/hooks/use-media-query';
 import { Button } from '@/shared/ui/button';
 import {
@@ -19,6 +10,15 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
+
+import {
+  AlignCenter,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
+  Check,
+  ChevronDown,
+} from 'lucide-react';
 
 import { MobileToolbarGroup, MobileToolbarItem } from './mobile-toolbar-group';
 import { useToolbar } from './toolbar-provider';

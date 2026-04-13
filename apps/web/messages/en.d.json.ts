@@ -181,6 +181,16 @@ declare const messages: {
     "expandableText": {
       "showLess": "Show less",
       "showMore": "Show more"
+    },
+    "projectFilters": {
+      "filters": "Filters",
+      "reset": "Reset",
+      "seeMore": "See more"
+    },
+    "blogFilters": {
+      "filters": "Filters",
+      "reset": "Reset",
+      "seeMore": "See more"
     }
   }
 };

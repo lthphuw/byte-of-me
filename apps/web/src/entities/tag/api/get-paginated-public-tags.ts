@@ -1,7 +1,5 @@
 'use server';
 
-import { prisma } from '@byte-of-me/db';
-
 import type { PublicTag } from '@/entities/tag/model/types';
 import {
   handlePublicAction,
@@ -10,6 +8,8 @@ import {
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import type { PaginatedData, PaginatedParams } from '@/shared/types/api';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
+
+import { prisma } from '@byte-of-me/db';
 
 export async function getPaginatedPublicTags(
   pagination: PaginatedParams

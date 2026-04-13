@@ -1,13 +1,13 @@
 'use server';
 
-import { prisma } from '@byte-of-me/db';
-
 import type { PublicSocialLink } from '@/entities/social-link/model/types';
 import {
   handlePublicAction,
   withPublicActionHandler,
 } from '@/shared/api/public-action-template';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
+
+import { prisma } from '@byte-of-me/db';
 
 export async function getAllPublicContacts(): Promise<
   ApiResponse<{ socialLinks: PublicSocialLink[] }>

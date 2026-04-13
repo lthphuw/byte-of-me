@@ -1,17 +1,17 @@
 'use server';
 
-import { prisma } from '@byte-of-me/db';
-import DOMPurify from 'isomorphic-dompurify';
-
 import {
-  contactMessage,
   type ContactMessageFormValues,
-} from '@/entities/contact-message/schemas/contact-message';
+  contactMessageSchema,
+} from '@/entities/contact-message/model/contact-message-schema';
 import { mailer } from '@/shared/api/mailer';
 import { env } from '@/shared/config/env';
 
+import { prisma } from '@byte-of-me/db';
+import DOMPurify from 'isomorphic-dompurify';
+
 export async function sendContactMessage(values: ContactMessageFormValues) {
-  const parsed = contactMessage.safeParse(values);
+  const parsed = contactMessageSchema.safeParse(values);
 
   if (!parsed.success) {
     return {

@@ -1,11 +1,11 @@
-import { Mail } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
-
 import { getPublicInfoForFooter } from '@/features/public/public-site-footer/lib';
 import { Link } from '@/i18n/navigation';
 import { globalConfig,Routes } from '@/shared/config/global';
 import { cn, ensureValidUrl } from '@/shared/lib/utils';
 import { Icons } from '@/shared/ui/icons';
+
+import { Mail } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 
 type SiteFooterProps = React.HTMLAttributes<HTMLElement>;
 

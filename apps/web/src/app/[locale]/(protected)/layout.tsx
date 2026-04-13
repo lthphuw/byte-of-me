@@ -1,7 +1,7 @@
+import { getAuthenticatedUser } from '@/features/auth/lib/session';
+
 import { redirect } from 'next/navigation';
 import { SessionProvider } from 'next-auth/react';
-
-import { getAuthenticatedUser } from '@/features/auth/lib/session';
 
 export const dynamic = 'force-dynamic';
 

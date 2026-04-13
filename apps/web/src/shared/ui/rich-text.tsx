@@ -1,10 +1,10 @@
 'use client';
 
-import { generateHTML } from '@tiptap/html';
-import DOMPurify from 'isomorphic-dompurify';
-
 import { cn } from '@/shared/lib/utils';
 import { extensions } from '@/shared/ui/tiptap/rich-text-editor';
+
+import { generateHTML } from '@tiptap/html';
+import DOMPurify from 'isomorphic-dompurify';
 
 export type RichTextProps = {
   content?: string | any;

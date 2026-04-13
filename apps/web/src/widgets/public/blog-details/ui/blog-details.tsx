@@ -1,13 +1,13 @@
-import { Calendar, Clock, FolderCode, Tag as TagIcon } from 'lucide-react';
-import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
-
 import type { PublicBlog } from '@/entities/blog';
 import { Badge } from '@/shared/ui/badge';
 import { Card } from '@/shared/ui/card';
 import { RichText } from '@/shared/ui/rich-text';
 import { Separator } from '@/shared/ui/separator';
 import { BlogDetailsShell } from '@/widgets/public/blog-details/ui/blog-shells';
+
+import { Calendar, Clock, FolderCode, Tag as TagIcon } from 'lucide-react';
+import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 
 export default async function BlogDetails({ blog }: { blog: PublicBlog }) {
   const t = await getTranslations('blogDetails');

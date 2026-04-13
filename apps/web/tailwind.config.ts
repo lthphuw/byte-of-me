@@ -4,9 +4,6 @@ import plugin from 'tailwindcss/plugin';
 import tailwindcssAnimate from 'tailwindcss-animate';
 
 
-
-
-
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -14,7 +11,6 @@ export default {
     './src/entities/**/*.{ts,tsx}',
     './src/widgets/**/*.{ts,tsx}',
     './src/features/**/*.{ts,tsx}',
-    './src/shared/components/**/*.{ts,tsx}',
     './src/shared/ui/**/*.{ts,tsx}',
   ],
   darkMode: ['class'],

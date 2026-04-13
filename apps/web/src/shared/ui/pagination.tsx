@@ -1,8 +1,8 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Dispatch, SetStateAction } from 'react';
-
 import type { PaginatedMetadata } from '@/shared/types/api/paginated-api.type';
 import { Button } from '@/shared/ui/button';
+
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface PaginationProps {
   pagination?: PaginatedMetadata;

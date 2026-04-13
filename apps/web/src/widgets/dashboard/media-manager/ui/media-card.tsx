@@ -1,13 +1,13 @@
-import { FileIcon, Trash2 } from 'lucide-react';
-import Image from 'next/image';
 import * as React from 'react';
-
 import { cn, formatImageSize } from '@/shared/lib/utils';
 import type { Media } from '@/shared/types/models';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
 import { CopyButton } from '@/shared/ui/copy-button';
 import { Icons } from '@/shared/ui/icons';
+
+import { FileIcon, Trash2 } from 'lucide-react';
+import Image from 'next/image';
 
 export interface MediaCardProps {
   media: Media;

@@ -1,7 +1,5 @@
 'use server';
 
-import { prisma } from '@byte-of-me/db';
-
 import type { PublicUserProfile } from '@/entities/user-profile/model/types';
 import {
   handlePublicAction,
@@ -9,6 +7,8 @@ import {
 } from '@/shared/api/public-action-template';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
+
+import { prisma } from '@byte-of-me/db';
 
 export async function getPublicUserProfile(): Promise<
   ApiResponse<PublicUserProfile>

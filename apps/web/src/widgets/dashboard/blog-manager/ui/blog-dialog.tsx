@@ -1,7 +1,7 @@
 'use client';
 
 import type { AdminBlog } from '@/entities/blog';
-import type { BlogFormValues } from '@/entities/blog/schemas/blog';
+import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import {
   Dialog,
   DialogContent,

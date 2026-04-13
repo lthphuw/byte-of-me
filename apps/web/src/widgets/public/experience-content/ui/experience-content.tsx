@@ -1,7 +1,5 @@
 'use client';
 
-import { Briefcase } from 'lucide-react';
-
 import type { PublicCompany } from '@/entities/company/model';
 import {
   Empty,
@@ -11,6 +9,8 @@ import {
   EmptyTitle,
 } from '@/shared/ui/empty';
 import { ExperienceShell } from '@/widgets/public/experience-content/ui/experience-shell';
+
+import { Briefcase } from 'lucide-react';
 
 export function ExperienceContent() {
   const companies: PublicCompany[] = [];

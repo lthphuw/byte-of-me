@@ -1,12 +1,13 @@
-import { Link2Icon } from '@radix-ui/react-icons';
-import type { Editor } from '@tiptap/react';
-import type { VariantProps } from 'class-variance-authority';
 import * as React from 'react';
-
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import type { toggleVariants } from '@/shared/ui/toggle';
 
+import { Link2Icon } from '@radix-ui/react-icons';
+import type { Editor } from '@tiptap/react';
+import type { VariantProps } from 'class-variance-authority';
+
 import { ToolbarButton } from '../toolbar-button';
+
 import { LinkEditBlock } from './link-edit-block';
 
 interface LinkEditPopoverProps extends VariantProps<typeof toggleVariants> {
