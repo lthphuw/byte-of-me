@@ -112,10 +112,10 @@ export const Icons = {
   component: Component,
   sparkles: Sparkles,
   linkedin: (props: LucideProps) => (
-    <RemoteSVG src="/feather/linkedin.svg" {...props} />
+    <RemoteSVG src="/icons/linkedin.svg" {...props} />
   ),
   github: (props: LucideProps) => (
-    <RemoteSVG src="/feather/github.svg" {...props} />
+    <RemoteSVG src="/icons/github.svg" {...props} />
   ),
 };
 interface CustomIconProps extends LucideProps {

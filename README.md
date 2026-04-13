@@ -43,11 +43,9 @@
 
 ---
 
-## About the PublicProject
+## About the Project
 
-**Byte of Me** is a high-performance developer portfolio designed to showcase technical expertise, blogs, and projects.
-It utilizes a modern monorepo architecture to separate concerns between the frontend, database logic, and storage
-services.
+A multilingual portfolio and CMS built with Next.js, featuring static localization via next-intl and dynamic content management through Supabase (PostgreSQL + S3). Secured by Auth.js, the platform includes a public-facing site and a dedicated dashboard for managing localized contents.
 
 ### Core Features
 
@@ -80,13 +78,13 @@ services.
 * **Statistics**: Overview of content.
 * **Media**: Asset management (Supabase Storage / S3).
 * **User Profile**: Identity and account settings.
-* **Education**: Academic history and thesis details.
+* **Education**: Academic history.
 * **Blog**: CRUD for articles.
-* **Tag**: Taxonomy management for cross-linking content.
+* **Tag**: Taxonomy management for content.
 * **Tech Stack**: Centralized skill and icon library.
 * **Company**: Work history management *(In Development)*.
 * **Project**: CRUD for projects *(In Development)*.
-* **Translation**: Multi-language content orchestration *(In Development)*.
+* **Translation**: Multi-language for static content *(In Development)*.
 
 ## Setup Instructions
 

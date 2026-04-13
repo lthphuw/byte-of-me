@@ -17,7 +17,7 @@ export async function ContactContent() {
         </ContactSectionMotion>
 
         <ContactSectionMotion id="contact-send-message">
-            <ContactMe />
+          <ContactMe />
         </ContactSectionMotion>
       </div>
     </ContactShell>
