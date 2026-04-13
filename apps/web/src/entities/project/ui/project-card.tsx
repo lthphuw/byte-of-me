@@ -5,8 +5,9 @@ import { TagClickableBadge } from '@/entities/tag/ui/tag-clickable-badge';
 import { TechStackClickableBadge } from '@/entities/tech-stack/ui/tech-stack-clickable-badge';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardFooter } from '@/shared/ui/card';
-import { Icons } from '@/shared/ui/icons';
+import { Card, CardContent } from '@/shared/ui/card';
+
+import { Code, ExternalLink } from 'lucide-react';
 
 export interface ProjectCardProps {
   project: PublicProject;
@@ -21,68 +22,103 @@ export function ProjectCard({
   onTagClick,
   onTechClick,
 }: ProjectCardProps) {
-  return (
-    <Card className="flex h-full flex-col rounded-2xl">
-      <CardContent className="flex flex-1 flex-col gap-4 p-5">
-        {/* TITLE */}
-        <div className="flex flex-col gap-1">
-          <h3 className="line-clamp-1 text-lg font-semibold">
-            {project.title}
-          </h3>
+  const formatDate = (dateString: string | Date | undefined | null) => {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      year: 'numeric',
+    }).format(date);
+  };
 
-          <p className="text-muted-foreground text-xs">
-            {project.startDate ? new Date(project.startDate).getFullYear() : ''}
-            {project.endDate
-              ? ` - ${new Date(project.endDate).getFullYear()}`
-              : ''}
-          </p>
+  const start = formatDate(project.startDate);
+  const end = project.endDate ? formatDate(project.endDate) : 'Present';
+
+  return (
+    <Card className="border-border/40 bg-card hover:border-border/80 flex h-full flex-col rounded-xl transition-colors">
+      <CardContent className="flex flex-1 flex-col p-5">
+        {/* HEADER */}
+        <div className="mb-3 flex flex-col gap-1">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="line-clamp-1 text-lg font-bold tracking-tight">
+              {project.title}
+            </h3>
+            {/*{!project.endDate && (*/}
+            {/*  <span className="bg-primary/10 text-primary flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">*/}
+            {/*    Active*/}
+            {/*  </span>*/}
+            {/*)}*/}
+          </div>
+
+          <time className="text-muted-foreground/60 text-[11px] font-medium uppercase tracking-wider">
+            {start ? `${start} — ${end}` : 'Ongoing'}
+          </time>
         </div>
 
         {/* DESCRIPTION */}
-        <p className="text-muted-foreground line-clamp-3 text-sm">
+        <p className="text-muted-foreground mb-5 line-clamp-3 text-sm leading-relaxed">
           {project.description}
         </p>
 
+        {/* METADATA */}
         {!compact && (
-          <div className="flex flex-wrap gap-1.5">
-            {project.techStacks.map((tech) => (
-              <TechStackClickableBadge
-                key={tech.id}
-                tech={tech}
-                onClick={onTechClick}
-              />
-            ))}
+          <div className="mt-auto space-y-3">
+            <div className="flex flex-wrap gap-1.5">
+              {project.techStacks.map((tech) => (
+                <TechStackClickableBadge
+                  key={tech.id}
+                  tech={tech}
+                  onClick={onTechClick}
+                />
+              ))}
+            </div>
+
+            <div className="flex flex-wrap gap-1">
+              {project.tags.map((tag) => (
+                <TagClickableBadge
+                  key={tag.id}
+                  tag={tag}
+                  onClick={onTagClick}
+                />
+              ))}
+            </div>
           </div>
         )}
 
-        {/* TAGS */}
-        {!compact && (
-          <div className="flex flex-wrap gap-1.5">
-            {project.tags.map((tag) => (
-              <TagClickableBadge key={tag.id} tag={tag} onClick={onTagClick} />
-            ))}
-          </div>
-        )}
+        {/* ACTIONS */}
+        <div className="mt-5 flex items-center gap-2 border-t pt-5">
+          {project.liveLink && (
+            <Button
+              size="sm"
+              asChild
+              className="h-8 flex-1 rounded-lg text-xs font-semibold"
+            >
+              <Link href={project.liveLink} target="_blank">
+                <ExternalLink className="mr-2" size={14} />
+                Live Demo
+              </Link>
+            </Button>
+          )}
+
+          {project.githubLink && (
+            <Button
+              size="sm"
+              variant="secondary"
+              asChild
+              className={
+                project.liveLink
+                  ? 'h-8 w-8 rounded-lg p-0'
+                  : 'h-8 flex-1 rounded-lg text-xs font-semibold'
+              }
+            >
+              <Link href={project.githubLink} target="_blank">
+                <Code size={16} />
+                {!project.liveLink && <span className="ml-2">GitHub</span>}
+              </Link>
+            </Button>
+          )}
+        </div>
       </CardContent>
-
-      {/* FOOTER */}
-      <CardFooter className="flex justify-end gap-2 p-5 pt-0">
-        {project.githubLink && (
-          <Button size="sm" variant="outline" asChild>
-            <Link href={project.githubLink} target="_blank">
-              <Icons.github size={20} /> GitHub
-            </Link>
-          </Button>
-        )}
-
-        {project.liveLink && (
-          <Button size="sm" asChild>
-            <Link href={project.liveLink} target="_blank">
-              <Icons.externalLink /> Live
-            </Link>
-          </Button>
-        )}
-      </CardFooter>
     </Card>
   );
 }

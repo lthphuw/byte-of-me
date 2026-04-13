@@ -4,7 +4,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import type { AdminUserProfile } from '@/entities/user-profile';
 import { getAdminUserProfile } from '@/entities/user-profile/api/get-user-profile-with-translations';
-import { type ProfileFormValues, userProfileSchema, } from '@/entities/user-profile/model/user-profile-schema';
+import {
+  type ProfileFormValues,
+  userProfileSchema,
+} from '@/entities/user-profile/model/user-profile-schema';
 import { SocialLinksSection } from '@/features/dashboard/manage-social-link-form/ui';
 import { SaveProfileButton } from '@/features/dashboard/update-profile/ui';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -57,7 +60,6 @@ export function UserProfileManager({
     }
   }, []);
 
-  // Use useCallback to prevent identity changes
   const performReset = useCallback(
     (userData: any) => {
       if (!userData) return;
@@ -188,7 +190,7 @@ export function UserProfileManager({
         <UserProfileSectionManager form={form} />
         <SocialLinksSection form={form} />
 
-        <div className="bg-background/80 fixed bottom-0 left-0 right-0 z-50 flex justify-end gap-2 border-t p-8 backdrop-blur-md">
+        <div className="flex justify-end gap-2 border-t p-8 backdrop-blur-md">
           <Button type="button" variant="ghost" onClick={handleManualReset}>
             Reset
           </Button>

@@ -1,4 +1,6 @@
-import { Card, CardContent, CardFooter } from '@/shared/ui/card';
+'use client';
+
+import { Card, CardContent } from '@/shared/ui/card';
 import { Skeleton } from '@/shared/ui/skeleton';
 
 interface ProjectCardSkeletonProps {
@@ -7,49 +9,55 @@ interface ProjectCardSkeletonProps {
 
 export function ProjectCardSkeleton({ compact }: ProjectCardSkeletonProps) {
   return (
-    <Card className="border-border/50 flex h-full flex-col rounded-2xl border">
-      <CardContent className="flex flex-1 flex-col gap-4 p-5">
-        {/* TITLE & DATE SECTION */}
-        <div className="flex flex-col gap-1">
-          {/* Title - text-lg matches height approx 28px */}
-          <Skeleton className="h-7 w-3/4 rounded-md" />
+    <Card className="border-border/40 bg-card flex h-full flex-col rounded-xl">
+      <CardContent className="flex flex-1 flex-col p-5">
+        {/* HEADER SKELETON */}
+        <div className="mb-3 flex flex-col gap-1">
+          <div className="flex items-center justify-between gap-2">
+            {/* Title */}
+            <Skeleton className="h-7 w-2/3 rounded-md" />
+            {/* Active Badge placeholder (optional) */}
+            <Skeleton className="h-4 w-12 rounded-full opacity-50" />
+          </div>
 
-          {/* Year - text-xs matches height approx 16px */}
-          <Skeleton className="h-4 w-20 rounded-md" />
+          {/* Date range */}
+          <Skeleton className="h-3 w-32 rounded-md" />
         </div>
 
-        {/* DESCRIPTION SECTION - line-clamp-3 simulation */}
-        <div className="space-y-2">
+        {/* DESCRIPTION SKELETON */}
+        <div className="mb-5 space-y-2">
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-2/3" />
+          <Skeleton className="h-4 w-3/4" />
         </div>
 
+        {/* METADATA SKELETON */}
         {!compact && (
-          <>
-            {/* TECH STACK BADGES */}
+          <div className="mt-auto space-y-3">
+            {/* Tech Stack Badges */}
             <div className="flex flex-wrap gap-1.5">
-              <Skeleton className="h-6 w-16 rounded-md" />
-              <Skeleton className="h-6 w-20 rounded-md" />
               <Skeleton className="h-6 w-14 rounded-md" />
+              <Skeleton className="h-6 w-20 rounded-md" />
+              <Skeleton className="h-6 w-16 rounded-md" />
             </div>
 
-            {/* TAG BADGES */}
-            <div className="flex flex-wrap gap-1.5">
+            {/* Tag Badges */}
+            <div className="flex flex-wrap gap-1">
+              <Skeleton className="h-5 w-10 rounded-full" />
+              <Skeleton className="h-5 w-14 rounded-full" />
               <Skeleton className="h-5 w-12 rounded-full" />
-              <Skeleton className="h-5 w-16 rounded-full" />
             </div>
-          </>
+          </div>
         )}
-      </CardContent>
 
-      {/* FOOTER - Buttons aligned to end */}
-      <CardFooter className="flex justify-end gap-2 p-5 pt-0">
-        {/* GitHub Button Skeleton */}
-        <Skeleton className="h-9 w-24 rounded-md" />
-        {/* Live Button Skeleton */}
-        <Skeleton className="h-9 w-20 rounded-md" />
-      </CardFooter>
+        {/* ACTIONS SKELETON */}
+        <div className="mt-5 flex items-center gap-2 border-t pt-5">
+          {/* Primary Action Button */}
+          <Skeleton className="h-8 flex-1 rounded-lg" />
+          {/* Secondary/Icon Action Button */}
+          <Skeleton className="h-8 w-8 rounded-lg" />
+        </div>
+      </CardContent>
     </Card>
   );
 }

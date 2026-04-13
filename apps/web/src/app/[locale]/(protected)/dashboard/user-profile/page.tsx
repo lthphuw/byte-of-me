@@ -10,8 +10,6 @@ export default async function UserProfilePage() {
     return null;
   }
   return (
-    <div className="space-y-6">
-      <UserProfileManager initUser={resp.data} />
-    </div>
+    <UserProfileManager initUser={resp.data} />
   );
 }

@@ -24,20 +24,20 @@ export interface Option {
 interface MultiSelectProps {
   options: Option[];
   selected: string[];
-  onChange: (value: string[]) => void;
+  onValueChange: (value: string[]) => void;
   placeholder?: string;
 }
 
 export function MultiSelect({
   options,
-  selected,
-  onChange,
+  selected = [],
+  onValueChange,
   placeholder = 'Select items...',
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);
 
   const handleUnselect = (item: string) => {
-    onChange(selected.filter((i) => i !== item));
+    onValueChange(selected.filter((i) => i !== item));
   };
 
   return (
@@ -93,7 +93,7 @@ export function MultiSelect({
                 <CommandItem
                   key={option.value}
                   onSelect={() => {
-                    onChange(
+                    onValueChange(
                       selected.includes(option.value)
                         ? selected.filter((item) => item !== option.value)
                         : [...selected, option.value]

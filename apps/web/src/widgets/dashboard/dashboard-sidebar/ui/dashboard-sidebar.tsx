@@ -4,108 +4,123 @@ import { logOut } from '@/features/auth/lib';
 import { Link } from '@/i18n/navigation';
 import { useToast } from '@/shared/hooks/use-toast';
 import { purgeEntireCache } from '@/shared/lib/revalidate';
+import { Icons } from '@/shared/ui/icons';
 
-import {
-  Briefcase,
-  Code2,
-  DatabaseZap,
-  ExternalLink,
-  FileText,
-  GraduationCap,
-  Image,
-  Languages,
-  LogOut,
-  Tag,
-  Tags,
-  UserCircle,
-  Wallpaper,
-} from 'lucide-react';
+import { Briefcase, Code2, DatabaseZap, ExternalLink, FileText, GraduationCap, Image as ImageIcon, Languages, LayoutDashboard, LogOut, Tag, Tags, UserCircle } from 'lucide-react';
 
 import { DashboardNavItems } from './dashboard-nav-items';
 
-const navItems = [
+
+// Grouping items to create a better hierarchy
+const menuGroups = [
   {
-    href: '/dashboard',
-    label: 'Dashboard',
-    icon: Wallpaper,
+    label: 'Overview',
+    items: [
+      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { href: '/dashboard/user-profile', label: 'Profile', icon: UserCircle },
+    ],
   },
   {
-    href: '/dashboard/user-profile',
-    label: 'Personal information',
-    icon: UserCircle,
+    label: 'Portfolio Content',
+    items: [
+      { href: '/dashboard/projects', label: 'Projects', icon: Code2 },
+      { href: '/dashboard/blogs', label: 'Blogs', icon: FileText },
+      { href: '/dashboard/media', label: 'Media Library', icon: ImageIcon },
+    ],
   },
-  { href: '/dashboard/media', label: 'Media', icon: Image },
   {
-    href: '/dashboard/educations',
-    label: 'Education',
-    icon: GraduationCap,
+    label: 'Resume Data',
+    items: [
+      { href: '/dashboard/companies', label: 'Companies', icon: Briefcase },
+      {
+        href: '/dashboard/educations',
+        label: 'Education',
+        icon: GraduationCap,
+      },
+      { href: '/dashboard/tech-stacks', label: 'Tech Stacks', icon: Tags },
+    ],
   },
-  { href: '/dashboard/companies', label: 'Companies', icon: Briefcase },
-  { href: '/dashboard/projects', label: 'Projects', icon: Code2 },
-  { href: '/dashboard/tech-stacks', label: 'Tech stack', icon: Tags },
-  { href: '/dashboard/blogs', label: 'Blogs', icon: FileText },
-  { href: '/dashboard/tags', label: 'Tags', icon: Tag },
-  { href: '/dashboard/translations', label: 'Translations', icon: Languages },
+  {
+    label: 'Configuration',
+    items: [
+      { href: '/dashboard/tags', label: 'Tags', icon: Tag },
+      {
+        href: '/dashboard/translations',
+        label: 'Translations',
+        icon: Languages,
+      },
+    ],
+  },
 ];
 
 export function DashboardSidebar() {
-  const toast = useToast();
+  const { toast } = useToast();
+
+  const handleClearCache = async () => {
+    try {
+      await purgeEntireCache();
+      toast({
+        title: 'System updated',
+        description: 'All caches have been cleared successfully.',
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Update failed',
+        description: 'An error occurred while clearing caches.',
+      });
+    }
+  };
 
   return (
-    <aside className="bg-background sticky top-0 z-40 h-screen w-[255px] shrink-0 border-r">
+    <aside className="bg-card border-border/50 sticky top-0 z-40 h-screen w-[260px] shrink-0 border-r">
       <div className="flex h-full flex-col">
-        <div className="border-b px-6 py-5">
-          <h1 className="text-lg font-semibold tracking-tight">Byte of me</h1>
+        {/* Brand Header */}
+        <div className="flex items-center gap-3 px-6 py-7">
+          <div className="flex size-7 items-center justify-center rounded-md">
+            <Icons.logo />
+          </div>
+          <h1 className="text-base font-bold tracking-tight">Byte of Me</h1>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-3 py-4">
-          <DashboardNavItems items={navItems} />
+        {/* Navigation Area */}
+        <nav className="flex-1 space-y-6 overflow-y-auto px-4 py-2">
+          {menuGroups.map((group) => (
+            <div key={group.label} className="space-y-2">
+              <h2 className="text-muted-foreground/60 px-2 text-[10px] font-bold uppercase tracking-wider">
+                {group.label}
+              </h2>
+              <DashboardNavItems items={group.items} />
+            </div>
+          ))}
         </nav>
 
-        <div className="space-y-1 border-t p-3">
-          <form
-            action={() => {
-              purgeEntireCache()
-                .then(() => {
-                  toast.toast({
-                    title: 'Cache cleared',
-                    description: 'All caches have been cleared successfully.',
-                  });
-                })
-                .catch((error) => {
-                  toast.toast({
-                    title: 'Error clearing cache',
-                    description:
-                      'An error occurred while clearing caches. Please try again.',
-                  });
-                });
-            }}
+        {/* Utility & Actions Footer */}
+        <div className="border-border/40 mt-auto space-y-1 border-t p-4">
+          <button
+            onClick={handleClearCache}
+            className="text-muted-foreground hover:bg-muted hover:text-foreground flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all"
           >
-            <button
-              type="submit"
-              className="text-muted-foreground hover:bg-muted hover:text-foreground flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors"
-            >
-              <DatabaseZap className="size-4" />
-              Clear all caches
-            </button>
-          </form>
+            <DatabaseZap className="size-4" />
+            <span>Clear Cache</span>
+          </button>
 
           <Link
             target="_blank"
             href="/apps/web/public"
-            className="text-muted-foreground hover:bg-muted hover:text-foreground flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors"
+            className="text-muted-foreground hover:bg-muted hover:text-foreground flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all"
           >
-            <ExternalLink className="h-4 w-4" />
-            View public site
+            <ExternalLink className="size-4" />
+            <span>View Site</span>
           </Link>
 
-          <form action={logOut}>
+          <form action={logOut} className="pt-2">
             <button
               type="submit"
-              className="text-muted-foreground hover:bg-muted hover:text-foreground flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors"
+              className="hover:bg-muted/80 text-muted-foreground/80 hover:text-foreground flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all"
             >
-              <LogOut className="h-4 w-4" />
-              Logout
+              <LogOut className="size-4" />
+              <span>Sign out</span>
             </button>
           </form>
         </div>

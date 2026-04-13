@@ -8,7 +8,7 @@ import {
   blogFormSchema,
   type BlogFormValues,
 } from '@/entities/blog/model/blog-schema';
-import { getPaginatedAdminProject } from '@/entities/project/api/get-paginated-admin-project';
+import { getPaginatedAdminProjects } from '@/entities/project/api/get-paginated-admin-projects';
 import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import { Button } from '@/shared/ui/button';
@@ -23,6 +23,7 @@ import {
 } from '@/shared/ui/form';
 import { Icons } from '@/shared/ui/icons';
 import { Input } from '@/shared/ui/input';
+import Loading from '@/shared/ui/loading';
 import { MultiSelect } from '@/shared/ui/multi-select';
 import {
   Select,
@@ -39,8 +40,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { Languages, Trash } from 'lucide-react';
 
-import Loading from '../../../../shared/ui/loading';
-
 export interface BlogFormProps {
   initialData?: AdminBlog;
   onSubmit: (data: BlogFormValues) => void;
@@ -55,7 +54,7 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
 
   const { data: projectData, isLoading: isProjectLoading } = useQuery({
     queryKey: ['projects', 1],
-    queryFn: () => getPaginatedAdminProject(1, 100),
+    queryFn: () => getPaginatedAdminProjects(1, 100),
   });
 
   const tags = tagsData?.data?.data || [];
@@ -240,7 +239,7 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
                       <MultiSelect
                         options={tagOptions}
                         selected={field.value || []}
-                        onChange={field.onChange}
+                        onValueChange={field.onChange}
                         placeholder="Select tags..."
                       />
                     </FormControl>

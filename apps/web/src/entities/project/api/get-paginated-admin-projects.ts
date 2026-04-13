@@ -7,7 +7,7 @@ import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
 import { prisma } from '@byte-of-me/db';
 
-export async function getPaginatedAdminProject(
+export async function getPaginatedAdminProjects(
   page: number = 1,
   limit: number = 20
 ): Promise<ApiResponse<PaginatedData<AdminProject>>> {

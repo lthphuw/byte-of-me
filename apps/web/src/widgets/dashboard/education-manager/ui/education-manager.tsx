@@ -17,11 +17,7 @@ import Image from 'next/image';
 
 import { EducationDialog } from './education-dialog';
 
-export function EducationManager({
-  initialData,
-}: {
-  initialData: AdminEducation[];
-}) {
+export function EducationManager() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -32,7 +28,6 @@ export function EducationManager({
   const { data: response } = useQuery({
     queryKey: ['educations'],
     queryFn: getAllAdminEducations,
-    initialData: { success: true, data: initialData },
   });
 
   const educations = response?.success ? response.data : [];

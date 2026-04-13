@@ -2,14 +2,13 @@
 
 import { useState } from 'react';
 import {
-  type AdminBlog,
-  createBlog,
-  deleteBlog,
-  getPaginatedAdminBlog,
-  updateBlog,
+  createProject,
+  deleteProject,
+  getPaginatedAdminProjects,
+  updateProject,
 } from '@/entities';
-import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
-import { BlogEditorCard } from '@/entities/blog/ui/blog-editor-card';
+import type { AdminProject, ProjectFromValues } from '@/entities/project/model';
+import { ProjectEditorCard } from '@/entities/project/ui/project-editor-card';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,45 +27,46 @@ import { Pagination } from '@/shared/ui/pagination';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 
-import { BlogDialog } from './blog-dialog';
+import { ProjectDialog } from './project-dialog';
 
-export function BlogManager() {
+export function ProjectManager() {
   const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
-  const [editing, setEditing] = useState<AdminBlog | null>(null);
+  const [editing, setEditing] = useState<AdminProject | null>(null);
   const [open, setOpen] = useState(false);
-  const [blogToDelete, setBlogToDelete] = useState<string | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
 
   const { data, isLoading, isPlaceholderData } = useQuery({
-    queryKey: ['blogs', page],
-    queryFn: () => getPaginatedAdminBlog(page, 12),
+    queryKey: ['projects', page],
+    queryFn: () => getPaginatedAdminProjects(page, 12),
   });
 
   const saveMutation = useMutation({
-    mutationFn: (data: BlogFormValues) =>
-      editing ? updateBlog(editing.id, data) : createBlog(data),
+    mutationFn: (values: ProjectFromValues) =>
+      editing ? updateProject(editing.id, values) : createProject(values),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
       setOpen(false);
+      setEditing(null);
     },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: deleteBlog,
+    mutationFn: deleteProject,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['blogs'] });
-      setBlogToDelete(null);
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      setProjectToDelete(null);
     },
   });
 
-  const blogs = data?.data?.data || [];
+  const projects = data?.data?.data || [];
   const meta = data?.data?.meta;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Blogs</h2>
+        <h2 className="text-lg font-semibold">Projects</h2>
         <Button
           size="sm"
           onClick={() => {
@@ -75,7 +75,7 @@ export function BlogManager() {
           }}
         >
           <Plus className="mr-2 h-4 w-4" />
-          New Blog
+          New Project
         </Button>
       </div>
 
@@ -84,23 +84,25 @@ export function BlogManager() {
           <div className="col-span-full flex justify-center py-20">
             <Loading />
           </div>
-        ) : blogs.length === 0 ? (
+        ) : projects.length === 0 ? (
           <div className="col-span-full flex justify-center py-20">
             <Empty>
-              <EmptyHeader>No blogs found</EmptyHeader>
-              <EmptyDescription>Create your first blog.</EmptyDescription>
+              <EmptyHeader>No projects found</EmptyHeader>
+              <EmptyDescription>
+                Create your first project to showcase your work.
+              </EmptyDescription>
             </Empty>
           </div>
         ) : (
-          blogs.map((blog) => (
-            <BlogEditorCard
-              key={blog.id}
-              blog={blog}
-              onEdit={(b) => {
-                setEditing(b);
+          projects.map((project) => (
+            <ProjectEditorCard
+              key={project.id}
+              project={project}
+              onEdit={(p) => {
+                setEditing(p);
                 setOpen(true);
               }}
-              onDelete={(id) => setBlogToDelete(id)}
+              onDelete={(id) => setProjectToDelete(id)}
             />
           ))
         )}
@@ -112,32 +114,33 @@ export function BlogManager() {
         isPlaceholderData={isPlaceholderData}
       />
 
-      <BlogDialog
+      <ProjectDialog
         open={open}
-        onOpenChange={setOpen}
+        onOpenChange={(isOpen) => {
+          setOpen(isOpen);
+          if (!isOpen) setEditing(null);
+        }}
         initialData={editing!}
         onSubmit={(values) =>
           saveMutation.mutate({
             ...values,
-            translations:
-              values.translations?.map((t) => ({
-                ...t,
-                content: JSON.stringify(t.content),
-              })) || [],
+            techStackIds: values.techStackIds || [],
+            tagIds: values.tagIds || [],
           })
         }
         loading={saveMutation.isPending}
       />
 
       <AlertDialog
-        open={!!blogToDelete}
-        onOpenChange={() => setBlogToDelete(null)}
+        open={!!projectToDelete}
+        onOpenChange={() => setProjectToDelete(null)}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Blog?</AlertDialogTitle>
+            <AlertDialogTitle>Delete Project?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone.
+              This action cannot be undone. This will permanently delete the
+              project and remove its data from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -147,9 +150,10 @@ export function BlogManager() {
             </AlertDialogCancel>
 
             <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={(e) => {
                 e.preventDefault();
-                if (blogToDelete) deleteMutation.mutate(blogToDelete);
+                if (projectToDelete) deleteMutation.mutate(projectToDelete);
               }}
               disabled={deleteMutation.isPending}
             >

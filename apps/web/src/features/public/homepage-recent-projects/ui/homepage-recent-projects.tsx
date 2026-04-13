@@ -41,7 +41,7 @@ export async function HomepageRecentProjects() {
           </div>
         ) : (
           recentProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} compact />
+            <ProjectCard key={project.id} project={project} />
           ))
         )}
       </div>

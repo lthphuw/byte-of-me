@@ -19,7 +19,28 @@ export async function getPublicRecentProjects(): Promise<
       async ({ userId, locale }) => {
         const projects = await prisma.project.findMany({
           where: { isPublished: true, userId },
-          include: { translations: true },
+          include: {
+            translations: true,
+            techStacks: {
+              include: {
+                techStack: {
+                  include: {
+                    logo: true,
+                  },
+                },
+              },
+            },
+
+            tags: {
+              include: {
+                tag: {
+                  include: {
+                    translations: true,
+                  },
+                },
+              },
+            },
+          },
           orderBy: { updatedAt: 'desc' },
           take: 2,
         });
@@ -35,10 +56,33 @@ export async function getPublicRecentProjects(): Promise<
             githubLink: p.githubLink,
             liveLink: p.liveLink,
             isPublished: p.isPublished,
-            tags: [],
-            techStacks: [],
+            techStacks: p.techStacks.map(({ techStack }) => ({
+              id: techStack.id,
+              createdAt: techStack.createdAt,
+              updatedAt: techStack.updatedAt,
+              name: techStack.name,
+              slug: techStack.slug,
+              group: techStack.group,
+              sortOrder: techStack.sortOrder,
+              logo: techStack.logo || null,
+              userId: techStack.userId,
+            })),
+
+            tags: p.tags.map(({ tag }) => {
+              const t = getTranslatedContent(tag.translations, locale);
+
+              return {
+                id: tag.id,
+                createdAt: tag.createdAt,
+                updatedAt: tag.updatedAt,
+                slug: tag.slug,
+                name: t?.name || '',
+              };
+            }),
           };
         });
+        console.log(`projects: ${recentProjects}`);
+
         return { recentProjects };
       },
       {
