@@ -5,37 +5,25 @@
     </a>
   </h1>
 
-  <p>A full-stack portfolio built with Next.js, powered by Supabase and secured by Auth.js. Features a public showcase and a private dashboard for seamless content management.</p>
+  <p><strong>A multilingual portfolio and personal CMS</strong></p>
+
+  <p>Built with Next.js, Supabase, and Auth.js. This project features a clean public site for visitors and a private dashboard to manage content across different languages easily.</p>
 
   <div style="margin: 20px 0;">
-    <a href="https://nextjs.org/" target="_blank">
-      <img src="https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white&style=flat-square" alt="Next.js" />
-    </a>
-    <a href="https://ui.shadcn.com/" target="_blank">
-      <img src="https://img.shields.io/badge/shadcn/ui-000000?logo=shadcnui&logoColor=fff&style=flat-square" alt="shadcn/ui" />
-    </a>
-    <a href="https://tanstack.com/query" target="_blank">
-      <img src="https://img.shields.io/badge/TanStack_Query-FF4154?logo=react-query&logoColor=fff&style=flat-square" alt="TanStack Query" />
-    </a>
-    <a href="https://authjs.dev/" target="_blank">
-      <img src="https://img.shields.io/badge/Auth.js-000000?logo=nextdotjs&logoColor=white&style=flat-square" alt="Auth.js" />
-    </a>
-    <a href="https://tailwindcss.com/" target="_blank">
-      <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white&style=flat-square" alt="Tailwind CSS" />
-    </a>
-    <a href="https://www.prisma.io/" target="_blank">
-      <img src="https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white&style=flat-square" alt="Prisma" />
-    </a>
-    <a href="https://supabase.com/" target="_blank">
-      <img src="https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=fff&style=flat-square" alt="Supabase" />
-    </a>
+    <img src="https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white&style=flat-square" alt="Next.js" />
+    <img src="https://img.shields.io/badge/shadcn/ui-000000?logo=shadcnui&logoColor=fff&style=flat-square" alt="shadcn/ui" />
+    <img src="https://img.shields.io/badge/TanStack_Query-FF4154?logo=react-query&logoColor=fff&style=flat-square" alt="TanStack Query" />
+    <img src="https://img.shields.io/badge/Auth.js-000000?logo=nextdotjs&logoColor=white&style=flat-square" alt="Auth.js" />
+    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white&style=flat-square" alt="Tailwind CSS" />
+    <img src="https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white&style=flat-square" alt="Prisma" />
+    <img src="https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=fff&style=flat-square" alt="Supabase" />
   </div>
 
   <p>
     <a href="https://github.com/lthphuw/byte-of-me" target="_blank">
       <img src="https://img.shields.io/github/stars/lthphuw/byte-of-me?style=social" alt="GitHub Stars" />
     </a>
-    <a href="https://github.com/lthphuw/byte-of-me/fork" target="_blank" style="margin: 0px 20px;">
+    <a href="https://github.com/lthphuw/byte-of-me/fork" target="_blank" style="margin-left: 10px;">
       <img src="https://img.shields.io/github/forks/lthphuw/byte-of-me?style=social" alt="GitHub Forks" />
     </a>
   </p>
@@ -43,78 +31,73 @@
 
 ---
 
-## About the Project
+## Overview
 
-A multilingual portfolio and CMS built with Next.js, featuring static localization via next-intl and dynamic content management through Supabase (PostgreSQL + S3). Secured by Auth.js, the platform includes a public-facing site and a dedicated dashboard for managing localized contents.
+Byte of Me is a personal website designed to work as both a portfolio and a management tool. It handles multi-language support in two ways: using `next-intl` for fixed UI text (like buttons and menus) and a flexible database setup for dynamic content like blog posts and project descriptions.
 
-### Core Features
+---
 
-* **Data Management:** Powered by **Prisma** (PostgreSQL) and **Supabase** for both database hosting and S3-compatible
-  object storage.
-* **Authentication:** Robust session management and security via **Auth.js**.
-* **State Management:** Efficient data fetching and caching using **TanStack Query & Mutation**.
-* **UI/UX:** Built with **shadcn/ui** and Tailwind CSS, featuring full dark/light mode support and mobile
-  responsiveness.
-* **Global Reach:** Native support for Internationalization (i18n) and multi-language toggling.
+## Main Features
 
-## Pages
+* **Flexible Data**: Uses **Prisma** and **Supabase** (PostgreSQL) to store and manage data reliably.
+* **Easy Storage**: Handles images and files using **Supabase Storage** (S3-compatible).
+* **Secure Login**: Private dashboard access is protected by **Auth.js**.
+* **Smooth Performance**: Uses **TanStack Query** for fast data loading and background updates.
+* **Modern Design**: Built with **shadcn/ui** and **Tailwind CSS**, including a dark mode that matches your system settings.
+* **Multi-language**: Built-in support for switching between languages for all content.
 
-### Public Pages
+---
 
-*SEO-optimized and pre-rendered (SSG).*
+## Project Structure
 
-* **Homepage**: Professional summary and hero section.
-* **About**: Personal bio, Education and tech stacks.
-* **Experience**: Career timeline and professional history *(In Development)*.
-* **Projects**: Full-stack portfolio showcase with filtering.
-* **Blogs**: Technical article listing with pagination.
-* **Blog Details**: Dynamic article view with multi-language support.
-* **Contact**: Inquiry form and social links.
+### Public Site
+* **Home**: A quick intro and summary of what I do.
+* **About**: Bio, education history, and a list of technologies I use.
+* **Projects**: A gallery of my work with filters to find specific types of projects.
+* **Blogs**: Technical articles with pagination and language switching.
+* **Contact**: A simple way to get in touch.
 
 ### Dashboard (CMS)
+* **Stats**: A quick look at how much content is on the site.
+* **Media**: A place to upload and manage images or documents.
+* **Content Management**: Dedicated sections to create, edit, or delete blogs, projects, tags, and work history (with multi-language content).
+* **Translations**: A workspace to manage multi-language text for the entire site (for static content).
 
-*Secure administrative management (SSR).*
+---
 
-* **Statistics**: Overview of content.
-* **Media**: Asset management (Supabase Storage / S3).
-* **User Profile**: Identity and account settings.
-* **Education**: Academic history.
-* **Blog**: CRUD for articles.
-* **Tag**: Taxonomy management for content.
-* **Tech Stack**: Centralized skill and icon library.
-* **Company**: Work history management *(In Development)*.
-* **Project**: CRUD for projects *(In Development)*.
-* **Translation**: Multi-language for static content *(In Development)*.
+## How to Run Locally
 
-## Setup Instructions
+### Prerequisites
+* Node.js (v24.4.1)
+* pnpm (`npm install -g pnpm`)
 
-1. **Clone the Repository**:
-   ```bash
-   git clone [https://github.com/lthphuw/byte-of-me.git](https://github.com/lthphuw/byte-of-me.git)
-   cd byte-of-me
-   ```
+### Setup
 
-2. **Install Dependencies**:
-   ```bash
-   pnpm install
-   ```
+1.  **Clone the project**:
+    ```bash
+    git clone [https://github.com/lthphuw/byte-of-me.git](https://github.com/lthphuw/byte-of-me.git)
+    cd byte-of-me
+    ```
 
-3. **Set Up Environment Variables**:
-   Configure your `.env` files in the following locations based on the provided examples:
-  * `apps/web`: Frontend and Auth.js variables.
-  * `packages/db`: Prisma and Supabase connection strings.
-  * `packages/storage`: S3/Supabase storage credentials.
+2.  **Install dependencies**:
+    ```bash
+    pnpm install
+    ```
 
-4. **Run Development Mode**:
-   ```bash
-   pnpm dev
-   ```
-   Visit `http://localhost:3000` to see the site in action.
+3.  **Environment Variables**:
+    Create your `.env` files based on the `.env.example` files found in:
+  * `apps/web`
+  * `packages/db`
+  * `packages/storage`
 
-5. **Deployment**:
-   The projectSchema is optimized for **Vercel**. Ensure all environment variables from the sub-modules are mapped in
-   your Vercel projectSchema settings.
+4.  **Start developing**:
+    ```bash
+    pnpm dev
+    ```
+    Open `http://localhost:3000` in your browser.
+
+---
 
 ## License
 
-Licensed under the [MIT License](./LICENSE.md).
+This project is licensed under the [MIT License](./LICENSE.md).
