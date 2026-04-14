@@ -30,7 +30,30 @@ const nextConfig = {
     }
     return config;
   },
+  async headers() {
+    return [
+      {
+        source: '/((?!.*dashboard).*)/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=3600, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/:locale/dashboard/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'private, no-cache, no-store, max-age=0, must-revalidate',
+          },
+        ],
+      },
+    ];
+  },
 };
+
 const withNextIntl = createNextIntlPlugin({
   experimental: {
     createMessagesDeclaration: ['./messages/en.json', './messages/vi.json'],

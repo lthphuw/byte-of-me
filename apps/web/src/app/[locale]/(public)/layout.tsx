@@ -7,6 +7,8 @@ import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 
+export const dynamic = 'force-static';
+
 interface PublicLayoutProps {
   children?: React.ReactNode;
   params: Promise<{ locale: string }>;
