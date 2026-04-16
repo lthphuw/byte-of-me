@@ -1,14 +1,12 @@
 'use server';
 
 import {
-  type ContactMessageFormValues,
   contactMessageSchema,
+  type ContactMessageFormValues,
 } from '@/entities/contact-message/model/contact-message-schema';
 import { mailer } from '@/shared/api/mailer';
 import { env } from '@/shared/config/env';
-
 import { prisma } from '@byte-of-me/db';
-import DOMPurify from 'isomorphic-dompurify';
 
 export async function sendContactMessage(values: ContactMessageFormValues) {
   const parsed = contactMessageSchema.safeParse(values);
@@ -33,7 +31,7 @@ export async function sendContactMessage(values: ContactMessageFormValues) {
       },
     });
 
-    const message = DOMPurify.sanitize(data.message);
+    const message = data.message;
     await mailer.sendMail({
       from: `"${data.name}" <${process.env.SMTP_USER}>`,
       replyTo: data.email,

@@ -18,8 +18,9 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '3mb',
     },
-    serverComponentsExternalPackages: ['ua-parser-js', 'jsdom'],
   },
+  serverExternalPackages: ['jsdom', 'html-encoding-sniffer'],
+  transpilePackages: ['@exodus/bytes'],
 
   turbopack: {
     resolveExtensions: ['.mdx', '.tsx', '.ts', '.jsx', '.js', '.mjs', '.json'],

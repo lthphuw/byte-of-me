@@ -4,7 +4,6 @@ import { cn } from '@/shared/lib/utils';
 import { extensions } from '@/shared/ui/tiptap/rich-text-editor';
 
 import { generateHTML } from '@tiptap/html';
-import DOMPurify from 'isomorphic-dompurify';
 
 export type RichTextProps = {
   content?: string | any;
@@ -24,9 +23,6 @@ export function RichText({ content, className, style }: RichTextProps) {
     htmlContent = typeof content === 'string' ? content : '';
   }
 
-  const sanitizedHtml = DOMPurify.sanitize(htmlContent, {
-    FORBID_ATTR: ['style'],
-  });
 
   return (
     <div
@@ -55,7 +51,7 @@ export function RichText({ content, className, style }: RichTextProps) {
         className
       )}
       style={style}
-      dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+      dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   );
 }
