@@ -2,11 +2,18 @@ import { ProjectManager } from '@/widgets/dashboard';
 
 import type { Metadata } from 'next';
 
-
 export const metadata: Metadata = {
   title: 'Projects | Dashboard',
   description: 'Showcase your work and manage project details.',
-  robots: { index: false },
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default async function ProjectsPage() {

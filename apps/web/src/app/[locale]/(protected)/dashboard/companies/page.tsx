@@ -3,7 +3,15 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Experience | Dashboard',
   description: 'Manage your professional work history and company records.',
-  robots: { index: false },
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default async function CompaniesPage() {

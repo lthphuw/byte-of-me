@@ -5,7 +5,15 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Tags | Dashboard',
   description: 'Organize and manage tags for projects and blog posts.',
-  robots: { index: false },
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default async function TagsPage() {

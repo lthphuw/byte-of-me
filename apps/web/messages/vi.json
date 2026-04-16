@@ -147,13 +147,15 @@
   },
   "blogDetails": {
     "failedToLoadBlog": "Không thể tải bài viết",
-    "readingTime": "{time} phút đọc",
     "blogNotFoundTitle": "Không tìm thấy bài viết",
     "blogNotFoundDescription": "Rất tiếc, bài viết bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
     "backToBlogs": "Quay lại danh sách blog",
     "goHome": "Về trang chủ",
     "relatedProject": "Dự án liên quan",
-    "viewProject": "Xem dự án"
+    "viewProject": "Xem dự án",
+    "views": "{count} lượt xem",
+    "avgRead": "Đọc {time}p",
+    "readingTime": "{time} phút đọc"
   },
   "contact": {
     "letsWorkTogether": "Cùng nhau hợp tác",

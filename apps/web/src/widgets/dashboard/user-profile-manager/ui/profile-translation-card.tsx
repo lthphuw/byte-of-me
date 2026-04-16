@@ -1,13 +1,13 @@
 'use client';
 
 import type { Control, UseFormReturn } from 'react-hook-form';
+import type { UserProfileFormValues } from '@/entities';
 import { DeleteButton } from '@/shared/ui/delete-button';
 import { FormControl, FormField, FormItem, FormLabel } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Separator } from '@/shared/ui/separator';
 import { Textarea } from '@/shared/ui/textarea';
 import { RichTextEditor } from '@/shared/ui/tiptap/rich-text-editor';
-import { UserProfileFormValues } from '@/entities';
 
 interface ProfileTranslationCardProps {
   form: UseFormReturn<UserProfileFormValues>;

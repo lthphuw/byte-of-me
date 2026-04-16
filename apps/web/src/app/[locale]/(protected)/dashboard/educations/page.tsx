@@ -6,7 +6,15 @@ export const metadata: Metadata = {
   title: 'Education | Dashboard',
   description:
     'Manage your academic history, certifications, and achievements.',
-  robots: { index: false },
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default async function EducationPage() {
