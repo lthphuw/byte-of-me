@@ -1,12 +1,12 @@
 'use client';
 
-import type { PublicBlog } from '@/entities/blog/model/types';
-import { Badge } from '@/shared/ui/badge';
-import { Card, CardContent, CardFooter, CardHeader } from '@/shared/ui/card';
-
 import { format } from 'date-fns';
 import { ArrowRight, Calendar, Clock, Layers, Tag as TagIcon, } from 'lucide-react';
 import Link from 'next/link';
+
+import type { PublicBlog } from '@/entities/blog/model/types';
+import { Badge } from '@/shared/ui/badge';
+import { Card, CardContent, CardFooter, CardHeader } from '@/shared/ui/card';
 
 interface BlogCardProps {
   blog: PublicBlog;
@@ -15,11 +15,11 @@ interface BlogCardProps {
 
 export function BlogCard({ blog, onTagClick }: BlogCardProps) {
   return (
-    <Card className="hover:border-primary/50 group flex flex-col overflow-hidden border-2 transition-all hover:shadow-xl">
+    <Card className="group flex flex-col overflow-hidden border-2 transition-all hover:border-primary/50 hover:shadow-xl">
       {/* Cover Image Area */}
       <Link
         href={`/blogs/${blog.slug}`}
-        className="bg-muted relative aspect-video overflow-hidden"
+        className="relative aspect-video overflow-hidden bg-muted"
       >
         {blog.coverImage ? (
           <img
@@ -29,7 +29,7 @@ export function BlogCard({ blog, onTagClick }: BlogCardProps) {
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <Layers className="text-muted-foreground/20 h-12 w-12" />
+            <Layers className="h-12 w-12 text-muted-foreground/20" />
           </div>
         )}
 
@@ -48,7 +48,7 @@ export function BlogCard({ blog, onTagClick }: BlogCardProps) {
 
       <CardHeader className="space-y-2 p-4">
         {/* Metadata */}
-        <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-[10px] uppercase tracking-wider">
+        <div className="flex flex-wrap items-center gap-3 text-[10px] uppercase tracking-wider text-muted-foreground">
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
             {blog.publishedDate
@@ -64,13 +64,13 @@ export function BlogCard({ blog, onTagClick }: BlogCardProps) {
         {/* Title & Description */}
         <Link
           href={`/blogs/${blog.slug}`}
-          className="group-hover:text-primary block transition-colors"
+          className="block transition-colors group-hover:text-primary"
         >
           <h3 className="line-clamp-2 text-xl font-bold leading-tight">
             {blog.title}
           </h3>
         </Link>
-        <p className="text-muted-foreground line-clamp-3 text-sm">
+        <p className="line-clamp-3 text-sm text-muted-foreground">
           {blog.description}
         </p>
       </CardHeader>
@@ -85,7 +85,7 @@ export function BlogCard({ blog, onTagClick }: BlogCardProps) {
                 e.preventDefault();
                 onTagClick?.(tag.slug);
               }}
-              className="bg-primary/5 text-primary hover:bg-primary/10 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-medium transition-colors"
+              className="inline-flex items-center gap-1 rounded-full bg-primary/5 px-2.5 py-0.5 text-[10px] font-medium text-primary transition-colors hover:bg-primary/10"
             >
               <TagIcon className="h-2 w-2" />
               {tag.name}
@@ -94,10 +94,10 @@ export function BlogCard({ blog, onTagClick }: BlogCardProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="bg-muted/30 border-t p-4">
+      <CardFooter className="border-t bg-muted/30 p-4">
         <Link
           href={`/blogs/${blog.slug}`}
-          className="text-primary inline-flex items-center gap-2 text-sm font-semibold transition-all hover:gap-3"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-all hover:gap-3"
         >
           Read article
           <ArrowRight className="h-4 w-4" />

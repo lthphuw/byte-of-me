@@ -2,6 +2,8 @@
 
 import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
 import { type ContactMessageFormValues, contactMessageSchema, sendContactMessage, } from '@/entities/contact-message';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/ui/button';
@@ -9,8 +11,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from 
 import { Icons } from '@/shared/ui/icons';
 import { Input } from '@/shared/ui/input';
 import { RichTextEditorLite } from '@/shared/ui/tiptap/rich-text-editor-lite';
-
-import { zodResolver } from '@hookform/resolvers/zod';
 
 export function ContactForm() {
   const [isPending, startTransition] = useTransition();

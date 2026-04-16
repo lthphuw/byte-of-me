@@ -1,10 +1,12 @@
 'use server';
 
-import type { TagFormValues } from '@/entities/tag/model/tag-schema';
-import { requireUser } from '@/features/auth/lib/session';
-
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
+import { revalidateTag } from 'next/cache';
+
+import type { TagFormValues } from '@/entities/tag/model/tag-schema';
+import { CACHE_TAGS } from '@/shared/lib/constants';
+import { requireUser } from '@/shared/lib/session';
 
 export async function createTag(values: TagFormValues) {
   try {
@@ -19,6 +21,8 @@ export async function createTag(values: TagFormValues) {
       },
       include: { translations: true },
     });
+
+    revalidateTag(CACHE_TAGS.TAG, 'max');
 
     return { success: true, data: tag };
   } catch (e: any) {

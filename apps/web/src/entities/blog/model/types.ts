@@ -1,6 +1,6 @@
-import type { Media, Project, Tag } from '@/shared/types/models';
-
 import type { Prisma } from '../../../../../../packages/db/generated/prisma/client';
+
+import type { Media, Project, Tag } from '@/shared/types/models';
 
 export type AdminBlog = Prisma.BlogGetPayload<{
   include: {

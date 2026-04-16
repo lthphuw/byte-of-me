@@ -1,6 +1,6 @@
-import type { SiteConfig } from '@/shared/types';
-
 import { host } from './host';
+
+import type { SiteConfig } from '@/shared/types';
 
 export const siteConfig: SiteConfig = {
   name: 'Byte of me',

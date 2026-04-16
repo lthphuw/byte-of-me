@@ -1,6 +1,8 @@
 'use client';
 
 import * as React from 'react';
+import { Check, ChevronsUpDown, X } from 'lucide-react';
+
 import { cn } from '@/shared/lib/utils';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -13,8 +15,6 @@ import {
   CommandList,
 } from '@/shared/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
-
-import { Check, ChevronsUpDown, X } from 'lucide-react';
 
 export interface Option {
   label: string;
@@ -47,7 +47,7 @@ export function MultiSelect({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="hover:bg-background h-auto min-h-10 w-full justify-between"
+          className="h-auto min-h-10 w-full justify-between hover:bg-background"
         >
           <div className="flex flex-wrap gap-1">
             {selected.length > 0 ? (
@@ -61,7 +61,7 @@ export function MultiSelect({
                   >
                     {option?.label ?? value}
                     <button
-                      className="ring-offset-background focus:ring-ring ml-1 rounded-full outline-none focus:ring-2 focus:ring-offset-2"
+                      className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') handleUnselect(value);
                       }}
@@ -71,7 +71,7 @@ export function MultiSelect({
                       }}
                       onClick={() => handleUnselect(value)}
                     >
-                      <X className="text-muted-foreground hover:text-foreground h-3 w-3" />
+                      <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
                     </button>
                   </Badge>
                 );

@@ -1,3 +1,4 @@
 export * from './project-card';
 export * from './project-card-skeleton';
+export * from './project-editor-card';
 export * from './project-empty';

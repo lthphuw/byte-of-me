@@ -1,3 +1,6 @@
+import { Calendar, Eye, EyeOff } from 'lucide-react';
+import Image from 'next/image';
+
 import type { AdminBlog } from '@/entities/blog';
 import { formatDate } from '@/shared/lib/utils';
 import { Badge } from '@/shared/ui/badge';
@@ -5,9 +8,6 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/shared/ui/card';
 import { DeleteButton } from '@/shared/ui/delete-button';
 import { EditButton } from '@/shared/ui/edit-button';
 import { ImagePlaceholder } from '@/shared/ui/image-placeholder';
-
-import { Calendar, Eye, EyeOff } from 'lucide-react';
-import Image from 'next/image';
 
 interface BlogCardProps {
   blog: AdminBlog;
@@ -21,7 +21,7 @@ export function BlogEditorCard({ blog, onEdit, onDelete, isPending }: BlogCardPr
   const coverImageUrl = blog.coverImage?.url;
 
   return (
-    <Card className="border-muted-foreground/10 group flex h-full flex-col overflow-hidden transition-all hover:shadow-md">
+    <Card className="group flex h-full flex-col overflow-hidden border-muted-foreground/10 transition-all hover:shadow-md">
       {/* Aspect Ratio Container for Image */}
       <div className="relative aspect-video w-full overflow-hidden border-b">
         {coverImageUrl ? (
@@ -55,16 +55,16 @@ export function BlogEditorCard({ blog, onEdit, onDelete, isPending }: BlogCardPr
       </div>
 
       <CardHeader className="space-y-1 p-4 pb-2">
-        <h3 className="group-hover:text-primary line-clamp-2 min-h-[2.5rem] font-bold leading-tight transition-colors">
+        <h3 className="line-clamp-2 min-h-[2.5rem] font-bold leading-tight transition-colors group-hover:text-primary">
           {mainTranslation?.title || 'Untitled PublicBlog'}
         </h3>
-        <p className="bg-muted/50 text-muted-foreground w-fit truncate rounded px-1 font-mono text-[11px]">
+        <p className="w-fit truncate rounded bg-muted/50 px-1 font-mono text-[11px] text-muted-foreground">
           /{blog.slug}
         </p>
       </CardHeader>
 
       <CardContent className="flex-grow p-4 pt-0">
-        <p className="text-muted-foreground mb-4 line-clamp-2 text-sm">
+        <p className="mb-4 line-clamp-2 text-sm text-muted-foreground">
           {mainTranslation?.description ||
             'No description provided for this blog post.'}
         </p>
@@ -82,9 +82,9 @@ export function BlogEditorCard({ blog, onEdit, onDelete, isPending }: BlogCardPr
         </div>
       </CardContent>
 
-      <CardFooter className="bg-muted/5 flex items-center justify-between border-t p-3">
+      <CardFooter className="flex items-center justify-between border-t bg-muted/5 p-3">
         {blog.publishedDate && (
-          <div className="text-muted-foreground flex items-center text-[11px]">
+          <div className="flex items-center text-[11px] text-muted-foreground">
             <Calendar className="mr-1 h-3.5 w-3.5" />
             {formatDate(blog.publishedDate)}
           </div>

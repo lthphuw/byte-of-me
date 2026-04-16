@@ -2,6 +2,13 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
+import { Globe2, Languages, Plus, RotateCcw } from 'lucide-react';
+
+import { ProfileTranslationCard } from './profile-translation-card';
+import { UserProfileSectionManager } from './user-profile-section-manager';
+
 import type { AdminUserProfile } from '@/entities/user-profile';
 import { getAdminUserProfile } from '@/entities/user-profile/api/get-user-profile-with-translations';
 import {
@@ -14,13 +21,6 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/ui/button';
 import { Form } from '@/shared/ui/form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
-import { Globe2, Languages, Plus, RotateCcw } from 'lucide-react';
-
-import { ProfileTranslationCard } from './profile-translation-card';
-import { UserProfileSectionManager } from './user-profile-section-manager';
 
 export function UserProfileManager({
   initUser,
@@ -125,7 +125,7 @@ export function UserProfileManager({
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold">Profile Settings</h2>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               Manage profile and languages
             </p>
           </div>
@@ -142,7 +142,7 @@ export function UserProfileManager({
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="text-muted-foreground flex items-center gap-2 text-sm font-medium">
+            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
               <Globe2 className="h-4 w-4" /> Translations
             </div>
             <Button

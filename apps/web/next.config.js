@@ -19,8 +19,6 @@ const nextConfig = {
       bodySizeLimit: '3mb',
     },
   },
-  serverExternalPackages: ['jsdom', 'html-encoding-sniffer'],
-  transpilePackages: ['@exodus/bytes'],
 
   turbopack: {
     resolveExtensions: ['.mdx', '.tsx', '.ts', '.jsx', '.js', '.mjs', '.json'],
@@ -57,19 +55,18 @@ const nextConfig = {
 };
 
 const withNextIntl = createNextIntlPlugin({
+  requestConfig: './src/shared/i18n/request.ts',
+
   experimental: {
     createMessagesDeclaration: ['./messages/en.json', './messages/vi.json'],
+
     messages: {
       format: 'json',
       locales: 'infer',
       path: './messages',
-
       precompile: true,
     },
-  },
-  extract: {
-    sourceLocale: 'en',
+    srcPath: './src',
   },
 });
-
 export default withNextIntl(nextConfig);

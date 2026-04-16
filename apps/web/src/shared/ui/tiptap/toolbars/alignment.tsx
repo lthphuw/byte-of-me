@@ -1,16 +1,5 @@
 'use client';
 
-import { useMediaQuery } from '@/shared/hooks/use-media-query';
-import { Button } from '@/shared/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/shared/ui/dropdown-menu';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
-
 import {
   AlignCenter,
   AlignJustify,
@@ -22,6 +11,17 @@ import {
 
 import { MobileToolbarGroup, MobileToolbarItem } from './mobile-toolbar-group';
 import { useToolbar } from './toolbar-provider';
+
+import { useMediaQuery } from '@/shared/hooks/use-media-query';
+import { Button } from '@/shared/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/shared/ui/dropdown-menu';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
 
 export const AlignmentTooolbar = () => {
   const { editor } = useToolbar();

@@ -1,6 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus } from 'lucide-react';
+
 import {
   type AdminBlog,
   createBlog,
@@ -25,9 +28,6 @@ import { Button } from '@/shared/ui/button';
 import { Empty, EmptyDescription, EmptyHeader } from '@/shared/ui/empty';
 import Loading from '@/shared/ui/loading';
 import { Pagination } from '@/shared/ui/pagination';
-
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
 
 export function BlogManager() {
   const queryClient = useQueryClient();

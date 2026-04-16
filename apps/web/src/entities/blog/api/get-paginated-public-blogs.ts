@@ -1,5 +1,7 @@
 'use server';
 
+import { prisma } from '@byte-of-me/db';
+
 import type { PublicBlog } from '@/entities/blog/model/types';
 import type { PublicProject } from '@/entities/project/model/types';
 import {
@@ -13,15 +15,13 @@ import type {
   PaginatedParams,
 } from '@/shared/types/api/paginated-api.type';
 
-import { prisma } from '@byte-of-me/db';
-
-export type GetPublicProjectsParams = PaginatedParams & {
+export type GetPublicBlogsParams = PaginatedParams & {
   tagSlugs?: string[];
   search?: string;
 };
 
 export async function getPaginatedPublicBlogs(
-  params: GetPublicProjectsParams
+  params: GetPublicBlogsParams
 ): Promise<ApiResponse<PaginatedData<PublicBlog>>> {
   return handlePublicAction('getPaginatedPublicBlogs', async () => {
     const data = await withPublicActionHandler(

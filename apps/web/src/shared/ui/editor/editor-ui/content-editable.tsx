@@ -1,5 +1,4 @@
 import type { JSX } from 'react';
-
 import { ContentEditable as LexicalContentEditable } from '@lexical/react/LexicalContentEditable';
 
 
@@ -28,7 +27,7 @@ export function ContentEditable({
         <div
           className={
             placeholderClassName ??
-            `text-muted-foreground pointer-events-none absolute left-0 top-0 select-none overflow-hidden text-ellipsis px-8 py-[18px]`
+            `pointer-events-none absolute left-0 top-0 select-none overflow-hidden text-ellipsis px-8 py-[18px] text-muted-foreground`
           }
         >
           {placeholder}

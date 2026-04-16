@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import { cn } from '@/shared/lib/utils';
-import { Button, type ButtonProps } from '@/shared/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
-
 import { Strikethrough } from 'lucide-react';
 
 import { useToolbar } from './toolbar-provider';
+
+import { cn } from '@/shared/lib/utils';
+import { Button, type ButtonProps } from '@/shared/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
 
 const StrikeThroughToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, onClick, children, ...props }, ref) => {

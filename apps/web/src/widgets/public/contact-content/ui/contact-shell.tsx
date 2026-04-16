@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import { cn } from '@/shared/lib/utils';
 import { ShellBase, type ShellProps } from '@/shared/ui/shell';
 

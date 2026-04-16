@@ -1,11 +1,10 @@
 import * as React from 'react';
-
 import type { Editor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
 
-import type { ShouldShowProps } from '../../types';
-import { LinkEditBlock } from '../link/link-edit-block';
-import { LinkPopoverBlock } from '../link/link-popover-block';
+import { LinkEditBlock } from '@/shared/ui/minimal-tiptap/components/link/link-edit-block';
+import { LinkPopoverBlock } from '@/shared/ui/minimal-tiptap/components/link/link-popover-block';
+import type { ShouldShowProps } from '@/shared/ui/minimal-tiptap/types';
 
 interface LinkBubbleMenuProps {
   editor: Editor;
@@ -105,7 +104,7 @@ export const LinkBubbleMenu: React.FC<LinkBubbleMenuProps> = ({ editor }) => {
           defaultText={selectedText}
           defaultIsNewTab={linkAttrs.target === '_blank'}
           onSave={onSetLink}
-          className="outline-hidden bg-popover text-popover-foreground w-full min-w-80 rounded-md border p-4 shadow-md"
+          className="outline-hidden w-full min-w-80 rounded-md border bg-popover p-4 text-popover-foreground shadow-md"
         />
       ) : (
         <LinkPopoverBlock

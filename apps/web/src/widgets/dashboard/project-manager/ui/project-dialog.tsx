@@ -2,6 +2,10 @@
 
 import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
+import { Plus, Trash2 } from 'lucide-react';
+
 import {
   type ProjectFromValues,
   projectSchema,
@@ -28,10 +32,6 @@ import { Input } from '@/shared/ui/input';
 import { MultiSelect } from '@/shared/ui/multi-select';
 // Assuming you have a MultiSelect component
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
-import { Plus, Trash2 } from 'lucide-react';
 
 interface ProjectDialogProps {
   open: boolean;
@@ -266,7 +266,7 @@ export function ProjectDialog({
                   <TabsContent
                     key={field.id}
                     value={field.id}
-                    className="bg-muted/20 space-y-4 rounded-lg border p-4"
+                    className="space-y-4 rounded-lg border bg-muted/20 p-4"
                   >
                     <div className="flex items-center justify-between gap-4">
                       <FormField
@@ -283,7 +283,7 @@ export function ProjectDialog({
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="text-destructive mt-8"
+                        className="mt-8 text-destructive"
                         onClick={() => remove(index)}
                         disabled={fields.length === 1}
                       >

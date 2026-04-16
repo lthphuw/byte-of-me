@@ -1,10 +1,12 @@
 'use server';
 
-import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
-import { requireUser } from '@/features/auth/lib/session';
-
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
+import { revalidateTag } from 'next/cache';
+
+import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
+import { CACHE_TAGS } from '@/shared/lib/constants';
+import { requireUser } from '@/shared/lib/session';
 
 export async function saveProfile(values: UserProfileFormValues) {
   const start = Date.now();
@@ -180,6 +182,8 @@ export async function saveProfile(values: UserProfileFormValues) {
       socialLinks: values.socialLinks.length,
     });
 
+    revalidateTag(CACHE_TAGS.USER, 'max');
+    revalidateTag(CACHE_TAGS.SOCIAL, 'max');
     return { success: true };
   } catch (error: any) {
     logger.error('[PROFILE] Save failed', {

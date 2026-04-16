@@ -1,9 +1,9 @@
 'use server';
 
-import { signIn as nextAuthSignIn } from '@/features/auth/lib/auth';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
-
 import { logger } from '@byte-of-me/logger';
+
+import { signIn as nextAuthSignIn } from '@/shared/lib/auth';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function logIn(
   email: string,

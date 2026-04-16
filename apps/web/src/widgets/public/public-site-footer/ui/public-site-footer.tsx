@@ -1,8 +1,9 @@
 import { Suspense } from 'react';
+
 import {
   PublicSiteFooter as PublicSiteFooterFeature,
   PublicSiteFooterLoading,
-} from '@/features/public/public-site-footer';
+} from '@/features/public';
 
 export function PublicSiteFooter() {
   return (

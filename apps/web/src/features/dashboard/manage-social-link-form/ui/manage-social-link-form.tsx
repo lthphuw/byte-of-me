@@ -1,13 +1,13 @@
 'use client';
 
 import { useFieldArray, type UseFormReturn } from 'react-hook-form';
+import { Plus } from 'lucide-react';
+
 import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
 import { Button } from '@/shared/ui/button';
 import { DeleteButton } from '@/shared/ui/delete-button';
 import { FormControl, FormField, FormItem } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
-
-import { Plus } from 'lucide-react';
 
 export function SocialLinksSection({
   form,
@@ -25,7 +25,7 @@ export function SocialLinksSection({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold">Social Links</h3>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             Add your social profiles
           </p>
         </div>
@@ -51,7 +51,7 @@ export function SocialLinksSection({
       <div className="space-y-3">
         {fields.length === 0 && (
           <div className="rounded-lg border py-8 text-center">
-            <p className="text-muted-foreground mb-3 text-sm">
+            <p className="mb-3 text-sm text-muted-foreground">
               No social links yet
             </p>
             <Button
@@ -65,7 +65,7 @@ export function SocialLinksSection({
         {fields.map((field, index) => (
           <div
             key={field.id}
-            className="bg-background/50 flex items-center gap-3 rounded-lg border p-3"
+            className="flex items-center gap-3 rounded-lg border bg-background/50 p-3"
           >
             {/* Platform */}
             <div className="w-32">

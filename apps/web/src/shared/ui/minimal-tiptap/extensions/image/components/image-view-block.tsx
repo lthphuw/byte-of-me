@@ -1,22 +1,21 @@
 import * as React from 'react';
 import { Controlled as ControlledZoom } from 'react-medium-image-zoom';
-import { cn } from '@/shared/lib/utils';
-
 import { InfoCircledIcon, TrashIcon } from '@radix-ui/react-icons';
 import { type NodeViewProps,NodeViewWrapper } from '@tiptap/react';
-
-import { Spinner } from '../../../components/spinner';
-import { blobUrlToBase64, randomId } from '../../../utils';
-import {
-  type ElementDimensions,
-  useDragResize,
-} from '../hooks/use-drag-resize';
-import { useImageActions } from '../hooks/use-image-actions';
-import type { UploadReturnType } from '../image';
 
 import { ActionButton, ActionWrapper, ImageActions } from './image-actions';
 import { ImageOverlay } from './image-overlay';
 import { ResizeHandle } from './resize-handle';
+
+import { cn } from '@/shared/lib/utils';
+import { Spinner } from '@/shared/ui/minimal-tiptap/components/spinner';
+import {
+  type ElementDimensions,
+  useDragResize,
+} from '@/shared/ui/minimal-tiptap/extensions/image/hooks/use-drag-resize';
+import { useImageActions } from '@/shared/ui/minimal-tiptap/extensions/image/hooks/use-image-actions';
+import type { UploadReturnType } from '@/shared/ui/minimal-tiptap/extensions/image/image';
+import { blobUrlToBase64, randomId } from '@/shared/ui/minimal-tiptap/utils';
 
 const MAX_HEIGHT = 600;
 const MIN_HEIGHT = 120;
@@ -255,8 +254,8 @@ export const ImageViewBlock: React.FC<NodeViewProps> = ({
 
               {imageState.error && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <InfoCircledIcon className="text-destructive size-8" />
-                  <p className="text-muted-foreground mt-2 text-sm">
+                  <InfoCircledIcon className="size-8 text-destructive" />
+                  <p className="mt-2 text-sm text-muted-foreground">
                     Failed to load image
                   </p>
                 </div>

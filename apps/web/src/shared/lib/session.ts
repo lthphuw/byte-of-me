@@ -1,4 +1,4 @@
-import { auth } from '@/features/auth/lib/auth';
+import { auth } from '@/shared/lib/auth';
 
 export async function getAuthenticatedUser() {
   const session = await auth();

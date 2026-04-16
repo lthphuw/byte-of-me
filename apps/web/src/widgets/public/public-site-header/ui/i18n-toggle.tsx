@@ -1,8 +1,11 @@
 'use client';
 
-import { Link, usePathname } from '@/i18n/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useLocale, useTranslations } from 'next-intl';
+
 import { itemVariants } from '@/shared/config/anim';
 import { languageNames, supportedLanguages } from '@/shared/config/language';
+import { Link, usePathname } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import type { LocaleType } from '@/shared/types';
 import { Button } from '@/shared/ui/button';
@@ -12,9 +15,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
-
-import { AnimatePresence, motion } from 'framer-motion';
-import { useLocale, useTranslations } from 'next-intl';
 
 const flagVariants = {
   initial: { opacity: 0, scale: 0.9, y: 8 },
@@ -44,7 +44,7 @@ export function I18nToggle() {
         <Button
           variant="ghost"
           size="icon"
-          className="focus-visible:bg-accent relative flex size-10 items-center justify-center focus-visible:ring-0"
+          className="relative flex size-10 items-center justify-center focus-visible:bg-accent focus-visible:ring-0"
         >
           <div className="relative flex size-6 items-center justify-center overflow-hidden rounded-sm">
             <AnimatePresence mode="wait" initial={false}>
@@ -67,7 +67,7 @@ export function I18nToggle() {
       <DropdownMenuContent
         align="end"
         sideOffset={8}
-        className="border-muted/50 bg-popover min-w-[180px] space-y-1 overflow-hidden rounded-md border p-1.5 shadow-lg"
+        className="min-w-[180px] space-y-1 overflow-hidden rounded-md border border-muted/50 bg-popover p-1.5 shadow-lg"
       >
         {supportedLanguages.map((lang, index) => {
           const ItemFlag = Flags[lang];
@@ -94,7 +94,7 @@ export function I18nToggle() {
                       : 'hover:bg-muted/50'
                   )}
                 >
-                  <div className="border-muted/30 size-5 shrink-0 overflow-hidden rounded-[2px] border">
+                  <div className="size-5 shrink-0 overflow-hidden rounded-[2px] border border-muted/30">
                     <ItemFlag className="size-full object-cover" />
                   </div>
                   <div className="flex flex-1 items-center justify-between">

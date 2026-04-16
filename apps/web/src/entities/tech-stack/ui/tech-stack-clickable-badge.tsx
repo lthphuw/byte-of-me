@@ -1,9 +1,9 @@
 'use client';
 
+import clsx from 'clsx';
+
 import type { PublicTechStack } from '@/entities/tech-stack/model/types';
 import { Badge } from '@/shared/ui/badge';
-
-import clsx from 'clsx';
 
 interface TechStackBadgeProps {
   tech: PublicTechStack;
@@ -21,7 +21,7 @@ export function TechStackClickableBadge({
       variant={active ? 'default' : 'outline'}
       className={clsx(
         'flex cursor-pointer items-center gap-1.5',
-        active && 'ring-primary ring-2'
+        active && 'ring-2 ring-primary'
       )}
       onClick={() => onClick?.(tech.slug)}
     >

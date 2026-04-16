@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { Separator } from '@/shared/ui/separator';
-
 import {
   CopyIcon,
   ExternalLinkIcon,
   LinkBreak2Icon,
 } from '@radix-ui/react-icons';
 
-import { ToolbarButton } from '../toolbar-button';
+import { ToolbarButton } from '@/shared/ui/minimal-tiptap/components/toolbar-button';
+import { Separator } from '@/shared/ui/separator';
 
 interface LinkPopoverBlockProps {
   url: string;
@@ -41,7 +40,7 @@ export const LinkPopoverBlock: React.FC<LinkPopoverBlockProps> = ({
   }, [url]);
 
   return (
-    <div className="bg-background flex overflow-hidden rounded p-2 shadow-lg">
+    <div className="flex overflow-hidden rounded bg-background p-2 shadow-lg">
       <div className="inline-flex items-center gap-1">
         <ToolbarButton tooltip="Edit link" onClick={onEdit}>
           Edit link

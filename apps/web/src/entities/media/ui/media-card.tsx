@@ -1,14 +1,14 @@
 'use client';
 
 import * as React from 'react';
+import { FileIcon } from 'lucide-react';
+import Image from 'next/image';
+
 import { cn, formatImageSize } from '@/shared/lib/utils';
 import type { Media } from '@/shared/types/models';
 import { Card, CardContent } from '@/shared/ui/card';
 import { CopyButton } from '@/shared/ui/copy-button';
 import { DeleteButton } from '@/shared/ui/delete-button';
-
-import { FileIcon } from 'lucide-react';
-import Image from 'next/image';
 
 export interface MediaCardProps {
   media: Media;
@@ -34,7 +34,7 @@ export function MediaCard({
     >
       <CardContent className="h-full p-0">
         {/* Media Container */}
-        <div className="bg-muted relative h-full w-full overflow-hidden">
+        <div className="relative h-full w-full overflow-hidden bg-muted">
           {isImage ? (
             <Image
               src={media.url}
@@ -45,8 +45,8 @@ export function MediaCard({
             />
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-2">
-              <FileIcon className="text-muted-foreground/40 h-10 w-10 transition-transform group-hover:scale-110" />
-              <span className="text-muted-foreground text-[10px] font-medium uppercase tracking-tighter">
+              <FileIcon className="h-10 w-10 text-muted-foreground/40 transition-transform group-hover:scale-110" />
+              <span className="text-[10px] font-medium uppercase tracking-tighter text-muted-foreground">
                 {media.mimeType.split('/')[1] || 'File'}
               </span>
             </div>

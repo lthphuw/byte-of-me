@@ -1,9 +1,9 @@
 'use client';
 
-import { Skeleton } from '@/shared/ui/skeleton';
-
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+
+import { Skeleton } from '@/shared/ui/skeleton';
 
 export interface ProjectFilterSectionProps {
   title: string;
@@ -25,7 +25,7 @@ export function ProjectFilterSection({
   const t = useTranslations('components.projectFilters');
   return (
     <div className="space-y-3">
-      <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
         {title}
       </p>
 
@@ -52,7 +52,7 @@ export function ProjectFilterSection({
         {hasMore && !isFetchingNextPage && !isLoading && (
           <button
             onClick={onLoadMore}
-            className="text-primary inline-flex h-6 items-center gap-1 px-2 text-[11px] font-medium transition-all hover:underline"
+            className="inline-flex h-6 items-center gap-1 px-2 text-[11px] font-medium text-primary transition-all hover:underline"
           >
             <Plus className="h-3 w-3" />
             {t('seeMore')}

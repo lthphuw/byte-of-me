@@ -1,14 +1,15 @@
 'use server';
 
+import { prisma } from '@byte-of-me/db';
+
 import type { PublicProject } from '@/entities/project/model/types';
 import {
   handlePublicAction,
   withPublicActionHandler,
 } from '@/shared/api/public-action-template';
+import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
-
-import { prisma } from '@byte-of-me/db';
 
 export async function getPublicRecentProjects(): Promise<
   ApiResponse<{ recentProjects: PublicProject[] }>
@@ -81,14 +82,13 @@ export async function getPublicRecentProjects(): Promise<
             }),
           };
         });
-        console.log(`projects: ${recentProjects}`);
 
         return { recentProjects };
       },
       {
         cache: true,
         cacheKey: ['user-profile-recent-projects'],
-        cacheTags: ['profile', 'projects'],
+        cacheTags: [CACHE_TAGS.PROJECT],
       }
     );
   });

@@ -1,13 +1,14 @@
 'use server';
 
+import { prisma } from '@byte-of-me/db';
+
 import type { PublicTechStack } from '@/entities/tech-stack/model/types';
 import {
   handlePublicAction,
   withPublicActionHandler,
 } from '@/shared/api/public-action-template';
+import { CACHE_TAGS } from '@/shared/lib/constants';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
-
-import { prisma } from '@byte-of-me/db';
 
 export async function getAllPublicTechStacks(): Promise<
   ApiResponse<{
@@ -40,8 +41,8 @@ export async function getAllPublicTechStacks(): Promise<
       },
       {
         cache: true,
-        cacheKey: ['all-tech-stack-cache'],
-        cacheTags: ['tech-stacks'],
+        cacheKey: [CACHE_TAGS.TECH],
+        cacheTags: [CACHE_TAGS.TECH],
       }
     );
   });

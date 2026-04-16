@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { cn } from '@/shared/lib/utils';
 
-import { getShortcutKey } from '../utils';
+import { cn } from '@/shared/lib/utils';
+import { getShortcutKey } from '@/shared/ui/minimal-tiptap/utils';
 
 export interface ShortcutKeyProps extends React.ComponentProps<'span'> {
   keys: string[];

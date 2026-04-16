@@ -1,15 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useDebounce } from 'use-debounce';
+
 import { TagClickableBadge, useTagInfiniteQuery } from '@/entities/tag';
 import { TechStackClickableBadge, useTechStackInfiniteQuery, } from '@/entities/tech-stack';
 import { ProjectFilterSection } from '@/features/public/project-filters/ui/project-filter-section';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
-
-import { X } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { useDebounce } from 'use-debounce';
 
 export interface FilterValues {
   tagSlugs: string[];
@@ -76,7 +76,7 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
     search.length > 0;
 
   return (
-    <div className="bg-card flex flex-col gap-6 rounded-xl border p-4 md:p-5">
+    <div className="flex flex-col gap-6 rounded-xl border bg-card p-4 md:p-5">
       <div className="flex h-8 items-center justify-between">
         <h2 className="text-sm font-bold tracking-tight">{t('filters')}</h2>
         {hasFilters && (
@@ -84,7 +84,7 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
             variant="ghost"
             size="sm"
             onClick={handleReset}
-            className="text-muted-foreground h-8 px-2 text-xs"
+            className="h-8 px-2 text-xs text-muted-foreground"
           >
             {t('reset')}
           </Button>
@@ -102,7 +102,7 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
           <button
             type="button"
             onClick={() => setSearch('')}
-            className="text-muted-foreground absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-transparent"
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-muted-foreground hover:bg-transparent"
           >
             <X size={14} />
           </button>

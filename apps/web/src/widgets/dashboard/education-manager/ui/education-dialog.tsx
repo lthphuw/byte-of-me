@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Languages, Plus, Trash } from 'lucide-react';
+
 import {
   type EducationFormValues,
   educationSchema,
@@ -27,9 +30,6 @@ import { Icons } from '@/shared/ui/icons';
 import { Input } from '@/shared/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { EducationAchievementItemField } from '@/widgets/dashboard/education-manager/ui/education-achievement-item-field';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Languages, Plus, Trash } from 'lucide-react';
 
 interface EducationDialogProps {
   open: boolean;

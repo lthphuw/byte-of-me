@@ -1,6 +1,12 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus } from 'lucide-react';
+import Image from 'next/image';
+
+import { TechStackDialog } from './tech-stack-dialog';
+
 import type { AdminTechStack } from '@/entities/tech-stack';
 import { addTechStack } from '@/entities/tech-stack/api/create-tech-stack';
 import { deleteTechStack } from '@/entities/tech-stack/api/delete-tech-stack';
@@ -11,12 +17,6 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/ui/button';
 import { DeleteButton } from '@/shared/ui/delete-button';
 import { EditButton } from '@/shared/ui/edit-button';
-
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
-import Image from 'next/image';
-
-import { TechStackDialog } from './tech-stack-dialog';
 
 export function TechStackManager({
   initialTechStacks,
@@ -110,7 +110,7 @@ export function TechStackManager({
                   )}
                   <div className={'flex flex-col gap-2'}>
                     <p className={'text-sm'}>{tech.name}</p>
-                    <p className={'text-muted-foreground text-sm'}>
+                    <p className={'text-sm text-muted-foreground'}>
                       {tech.slug}
                     </p>
                   </div>

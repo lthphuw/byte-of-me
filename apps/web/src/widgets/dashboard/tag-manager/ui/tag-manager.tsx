@@ -1,6 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus, Tag as TagIcon } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { TagDialog } from './tag-dialog';
+
 import { createTag, deleteTag, updateTag } from '@/entities/tag';
 import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
 import {
@@ -19,12 +25,6 @@ import { EditButton } from '@/shared/ui/edit-button';
 import { Empty, EmptyDescription, EmptyHeader } from '@/shared/ui/empty';
 import Loading from '@/shared/ui/loading';
 import { Pagination } from '@/shared/ui/pagination';
-
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, Tag as TagIcon } from 'lucide-react';
-import { toast } from 'sonner';
-
-import { TagDialog } from './tag-dialog';
 
 export function TagManager() {
   const queryClient = useQueryClient();
@@ -79,7 +79,7 @@ export function TagManager() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold">Tags</h2>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-xs text-muted-foreground">
             Categorize your projects and posts
           </p>
         </div>
@@ -93,7 +93,7 @@ export function TagManager() {
         {isLoading ? (
           <div className="flex h-64 flex-col items-center justify-center gap-3">
             <Loading />
-            <p className="text-muted-foreground animate-pulse text-xs">
+            <p className="animate-pulse text-xs text-muted-foreground">
               Fetching tags...
             </p>
           </div>
@@ -119,17 +119,17 @@ export function TagManager() {
             {tags.map((tag: any) => (
               <div
                 key={tag.id}
-                className="bg-card hover:border-primary/50 group flex items-center justify-between rounded-xl border p-3 transition-all hover:shadow-sm"
+                className="group flex items-center justify-between rounded-xl border bg-card p-3 transition-all hover:border-primary/50 hover:shadow-sm"
               >
                 <div className="flex min-w-0 items-center gap-3">
-                  <div className="bg-muted flex h-8 w-8 items-center justify-center rounded-lg">
-                    <TagIcon className="text-muted-foreground h-4 w-4" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
+                    <TagIcon className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">
                       {tag.translations?.[0]?.name || tag.slug}
                     </p>
-                    <p className="text-muted-foreground truncate font-mono text-[10px] uppercase tracking-tighter">
+                    <p className="truncate font-mono text-[10px] uppercase tracking-tighter text-muted-foreground">
                       {tag.slug}
                     </p>
                   </div>
@@ -184,7 +184,7 @@ export function TagManager() {
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This will permanently delete the tag{' '}
-              <span className="text-foreground font-semibold">
+              <span className="font-semibold text-foreground">
                 "{tagToDelete?.slug}"
               </span>
               . This action cannot be undone.

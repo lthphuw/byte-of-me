@@ -1,6 +1,4 @@
 import * as React from 'react';
-import type { toggleVariants } from '@/shared/ui/toggle';
-
 import {
   CaretDownIcon,
   CodeIcon,
@@ -11,10 +9,11 @@ import {
 import type { Editor } from '@tiptap/react';
 import type { VariantProps } from 'class-variance-authority';
 
-import type { FormatAction } from '../../types';
-import { ImageEditDialog } from '../image/image-edit-dialog';
-import { LinkEditPopover } from '../link/link-edit-popover';
-import { ToolbarSection } from '../toolbar-section';
+import { ImageEditDialog } from '@/shared/ui/minimal-tiptap/components/image/image-edit-dialog';
+import { LinkEditPopover } from '@/shared/ui/minimal-tiptap/components/link/link-edit-popover';
+import { ToolbarSection } from '@/shared/ui/minimal-tiptap/components/toolbar-section';
+import type { FormatAction } from '@/shared/ui/minimal-tiptap/types';
+import type { toggleVariants } from '@/shared/ui/toggle';
 
 type InsertElementAction = 'codeBlock' | 'blockquote' | 'horizontalRule';
 interface InsertElement extends FormatAction {

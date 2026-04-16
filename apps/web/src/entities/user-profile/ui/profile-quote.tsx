@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
-import { cn } from '@/shared/lib/utils';
-
 import { Quote } from 'lucide-react';
+
+import { cn } from '@/shared/lib/utils';
 
 export interface ProfileQuoteProps {
   quote: string;
@@ -26,12 +26,12 @@ export function ProfileQuote({
       )}
       style={style}
     >
-      <Quote className="text-primary size-4 rotate-180 opacity-50 md:size-6" />
+      <Quote className="size-4 rotate-180 text-primary opacity-50 md:size-6" />
 
       <p className="">{quote}</p>
 
       {author && (
-        <cite className="text-muted-foreground mt-4 block text-right text-sm not-italic">
+        <cite className="mt-4 block text-right text-sm not-italic text-muted-foreground">
           — {author}
         </cite>
       )}

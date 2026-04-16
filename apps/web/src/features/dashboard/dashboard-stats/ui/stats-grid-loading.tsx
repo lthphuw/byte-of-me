@@ -9,7 +9,7 @@ export function StatsGridLoading() {
         {Array.from({ length: 4 }).map((_, i) => (
           <Card
             key={i}
-            className="bg-card/60 border-none shadow-sm backdrop-blur-md"
+            className="border-none bg-card/60 shadow-sm backdrop-blur-md"
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <Skeleton className="h-3 w-20" />
@@ -28,7 +28,7 @@ export function StatsGridLoading() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="bg-muted/30 flex items-center gap-3 rounded-xl border border-dashed p-4"
+            className="flex items-center gap-3 rounded-xl border border-dashed bg-muted/30 p-4"
           >
             <Skeleton className="h-8 w-8 rounded-lg" />
             <div className="space-y-2">

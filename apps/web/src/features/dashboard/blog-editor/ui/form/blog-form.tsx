@@ -3,6 +3,10 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
+import { Languages, Trash } from 'lucide-react';
+
 import type { AdminBlog } from '@/entities/blog';
 import {
   blogFormSchema,
@@ -35,10 +39,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { Textarea } from '@/shared/ui/textarea';
 import { RichTextEditor } from '@/shared/ui/tiptap/rich-text-editor';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
-import { Languages, Trash } from 'lucide-react';
 
 export interface BlogFormProps {
   initialData?: AdminBlog;
@@ -288,7 +288,7 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
               <TabsContent
                 key={f.id}
                 value={f.id}
-                className="animate-in fade-in space-y-4 duration-300"
+                className="space-y-4 duration-300 animate-in fade-in"
               >
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                   <FormField

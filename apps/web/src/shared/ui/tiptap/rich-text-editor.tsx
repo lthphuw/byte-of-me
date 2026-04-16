@@ -1,13 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { cn } from '@/shared/lib/utils';
-import { TipTapFloatingMenu } from '@/shared/ui/tiptap/extensions/floating-menu';
-import { FloatingToolbar } from '@/shared/ui/tiptap/extensions/floating-toolbar';
-import { ImageExtension } from '@/shared/ui/tiptap/extensions/image';
-import { ImagePlaceholder } from '@/shared/ui/tiptap/extensions/image-placeholder';
-import SearchAndReplace from '@/shared/ui/tiptap/extensions/search-and-replace';
-
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { Color } from '@tiptap/extension-color';
 import Heading from '@tiptap/extension-heading';
@@ -32,6 +25,13 @@ import { createLowlight } from 'lowlight';
 import { EditorToolbar } from './toolbars/editor-toolbar';
 
 import './tiptap.css';
+
+import { cn } from '@/shared/lib/utils';
+import { TipTapFloatingMenu } from '@/shared/ui/tiptap/extensions/floating-menu';
+import { FloatingToolbar } from '@/shared/ui/tiptap/extensions/floating-toolbar';
+import { ImageExtension } from '@/shared/ui/tiptap/extensions/image';
+import { ImagePlaceholder } from '@/shared/ui/tiptap/extensions/image-placeholder';
+import SearchAndReplace from '@/shared/ui/tiptap/extensions/search-and-replace';
 
 const lowlight = createLowlight();
 
@@ -128,11 +128,11 @@ export function RichTextEditor({
           <EditorContent editor={editor} />
         </div>
 
-        <aside className="bg-muted/10 hidden w-64 overflow-y-auto p-6 lg:block">
-          <p className="text-muted-foreground mb-4 text-[10px] font-bold uppercase tracking-widest">
+        <aside className="hidden w-64 overflow-y-auto bg-muted/10 p-6 lg:block">
+          <p className="mb-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
             Table of Contents
           </p>
-          <div className="border-muted-foreground/20 flex flex-col gap-2 border-l">
+          <div className="flex flex-col gap-2 border-l border-muted-foreground/20">
             {items.map((item) => (
               <button
                 type={'button'}

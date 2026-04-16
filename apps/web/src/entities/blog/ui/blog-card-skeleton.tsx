@@ -36,7 +36,7 @@ export function BlogCardSkeleton() {
         </div>
       </CardContent>
 
-      <CardFooter className="bg-muted/30 border-t p-4">
+      <CardFooter className="border-t bg-muted/30 p-4">
         <Skeleton className="h-5 w-24" />
       </CardFooter>
     </Card>

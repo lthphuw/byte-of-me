@@ -14,7 +14,7 @@ export async function DashboardProfile() {
         Welcome back, {userProfile.displayName}! 👋
       </h1>
 
-      <p className="text-muted-foreground text-lg">
+      <p className="text-lg text-muted-foreground">
         Manage your personal portfolio and track your content performance.
       </p>
     </div>

@@ -6,14 +6,14 @@ import type { Attrs } from '@tiptap/pm/model';
 import { ReplaceStep } from '@tiptap/pm/transform';
 import { type Editor,ReactNodeViewRenderer } from '@tiptap/react';
 
+import { ImageViewBlock } from './components/image-view-block';
+
 import {
   type FileError,
   type FileValidationOptions,
   filterFiles,
   randomId,
-} from '../../utils';
-
-import { ImageViewBlock } from './components/image-view-block';
+} from '@/shared/ui/minimal-tiptap/utils';
 
 type ImageAction = 'download' | 'copyImage' | 'copyLink';
 

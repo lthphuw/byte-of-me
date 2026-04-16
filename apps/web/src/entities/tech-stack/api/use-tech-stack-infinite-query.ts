@@ -1,10 +1,11 @@
-import { getPaginatedPublicTechStacks } from '@/entities/tech-stack/api/get-paginated-public-tech-stacks';
-
 import { useInfiniteQuery } from '@tanstack/react-query';
+
+import { getPaginatedPublicTechStacks } from '@/entities/tech-stack/api/get-paginated-public-tech-stacks';
+import { CACHE_TAGS } from '@/shared/lib/constants';
 
 export function useTechStackInfiniteQuery(limit: number = 12) {
   return useInfiniteQuery({
-    queryKey: ['tech-stack', limit],
+    queryKey: [CACHE_TAGS.TECH, limit],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await getPaginatedPublicTechStacks({
         page: pageParam as number,

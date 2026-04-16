@@ -19,7 +19,7 @@ export default async function CompaniesPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-bold tracking-tight">Work Experience</h1>
-        <p className="text-muted-foreground text-lg">
+        <p className="text-lg text-muted-foreground">
           Maintain your professional timeline and details of companies you have
           worked with.
         </p>

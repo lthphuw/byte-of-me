@@ -1,12 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { BlogCard, BlogCardSkeleton, BlogEmpty } from '@/entities';
-import { getPaginatedPublicBlogs } from '@/entities/blog/api/get-paginated-public-blogs';
-import { BlogFilters } from '@/features/public/blog-filters/ui/blog-filters';
+import { useQuery } from '@tanstack/react-query';
+
+import {
+  BlogCard,
+  BlogCardSkeleton,
+  BlogEmpty,
+  getPaginatedPublicBlogs,
+} from '@/entities';
+import { BlogFilters } from '@/features/public';
 import { Pagination } from '@/shared/ui/pagination';
 import { BlogsShell } from '@/widgets/public/blogs-content/ui/blogs-shell';
-import { useQuery } from '@tanstack/react-query';
 
 export function BlogsContent() {
   const [page, setPage] = useState(1);

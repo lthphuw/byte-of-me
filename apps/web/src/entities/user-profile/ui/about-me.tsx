@@ -1,7 +1,7 @@
+import { getTranslations } from 'next-intl/server';
+
 import { getPublicAboutMe } from '@/entities/user-profile/api/get-public-about-me';
 import { RichText } from '@/shared/ui/rich-text';
-
-import { getTranslations } from 'next-intl/server';
 
 export async function AboutMe() {
   const t = await getTranslations();

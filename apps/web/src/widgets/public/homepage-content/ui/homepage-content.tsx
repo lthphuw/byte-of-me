@@ -1,16 +1,15 @@
 import { Suspense } from 'react';
-import { HomepageContactCta } from '@/features/public/homepage-cta';
-import {
-  HomepageProfile,
-  HomepageProfileLoading,
-} from '@/features/public/homepage-profile';
-import {
-  HomepageRecentProjects,
-  HomepageRecentProjectsLoading,
-} from '@/features/public/homepage-recent-projects';
 
 import { HomepageSectionMotion } from './homepage-section-motion';
 import { HomepageShell } from './homepage-shell';
+
+import {
+  HomepageContactCta,
+  HomepageProfile,
+  HomepageProfileLoading,
+  HomepageRecentProjects,
+  HomepageRecentProjectsLoading,
+} from '@/features/public';
 
 export async function HomepageContent() {
   return (

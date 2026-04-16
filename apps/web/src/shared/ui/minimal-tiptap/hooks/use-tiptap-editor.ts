@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-
 import { type Editor,useCurrentEditor, useEditorState } from '@tiptap/react';
 
 

@@ -1,6 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { GraduationCap, Inbox, Plus } from 'lucide-react';
+import Image from 'next/image';
+
+import { EducationDialog } from './education-dialog';
+
 import type { AdminEducation } from '@/entities/education';
 import { createEducation } from '@/entities/education/api/create-education';
 import { deleteEducation } from '@/entities/education/api/delete-education';
@@ -14,12 +20,6 @@ import { Button } from '@/shared/ui/button';
 import { DeleteButton } from '@/shared/ui/delete-button';
 import { EditButton } from '@/shared/ui/edit-button';
 import Loading from '@/shared/ui/loading';
-
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { GraduationCap, Inbox, Plus } from 'lucide-react';
-import Image from 'next/image';
-
-import { EducationDialog } from './education-dialog';
 
 export function EducationManager() {
   const { toast } = useToast();
@@ -77,7 +77,7 @@ export function EducationManager() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold">Education</h2>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             Manage your academic background
           </p>
         </div>
@@ -91,17 +91,17 @@ export function EducationManager() {
         {isLoading ? (
           <div className="flex h-48 flex-col items-center justify-center gap-2">
             <Loading />
-            <p className="text-muted-foreground animate-pulse text-xs">
+            <p className="animate-pulse text-xs text-muted-foreground">
               Loading records...
             </p>
           </div>
         ) : isEmpty ? (
-          <div className="border-muted-foreground/20 flex h-48 flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 text-center">
-            <div className="bg-muted mb-4 flex h-12 w-12 items-center justify-center rounded-full">
-              <Inbox className="text-muted-foreground h-6 w-6" />
+          <div className="flex h-48 flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/20 p-8 text-center">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+              <Inbox className="h-6 w-6 text-muted-foreground" />
             </div>
             <h3 className="font-medium">No education entries</h3>
-            <p className="text-muted-foreground mb-4 text-sm">
+            <p className="mb-4 text-sm text-muted-foreground">
               Start by adding your first academic achievement.
             </p>
             <Button variant="outline" size="sm" onClick={handleCreate}>
@@ -120,10 +120,10 @@ export function EducationManager() {
               return (
                 <div
                   key={edu.id}
-                  className="bg-card hover:border-primary/50 group flex items-center justify-between rounded-xl border p-4 transition-all hover:shadow-md"
+                  className="group flex items-center justify-between rounded-xl border bg-card p-4 transition-all hover:border-primary/50 hover:shadow-md"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="bg-muted relative flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border">
+                    <div className="relative flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-muted">
                       {edu.logo?.url ? (
                         <Image
                           src={edu.logo.url}
@@ -132,13 +132,13 @@ export function EducationManager() {
                           className="object-contain p-2"
                         />
                       ) : (
-                        <GraduationCap className="text-muted-foreground h-6 w-6" />
+                        <GraduationCap className="h-6 w-6 text-muted-foreground" />
                       )}
                     </div>
 
                     <div className="space-y-1">
                       <h4 className="font-semibold leading-none">{title}</h4>
-                      <p className="text-muted-foreground text-xs font-medium">
+                      <p className="text-xs font-medium text-muted-foreground">
                         {dateRange}
                       </p>
                       <div className="flex flex-wrap gap-2 pt-1">

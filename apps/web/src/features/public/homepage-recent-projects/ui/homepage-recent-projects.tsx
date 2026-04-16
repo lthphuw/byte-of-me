@@ -1,10 +1,10 @@
+import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+
 import { getPublicRecentProjects,ProjectEmpty } from '@/entities/project';
 import { ProjectCard } from '@/entities/project/ui/project-card';
 import { Routes } from '@/shared/config/global';
 import { Button } from '@/shared/ui/button';
-
-import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
 
 export async function HomepageRecentProjects() {
   const t = await getTranslations('homepage');
@@ -21,7 +21,7 @@ export async function HomepageRecentProjects() {
           <h2 className="text-xl font-semibold md:text-3xl">
             {t('selectedProjects')}
           </h2>
-          <p className="text-muted-foreground text-xs md:text-sm">
+          <p className="text-xs text-muted-foreground md:text-sm">
             {t('aFewThingsIveBuiltRecently')}
           </p>
         </div>

@@ -1,6 +1,22 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from '@tiptap/extension-image';
+import {
+  type NodeViewProps,
+  NodeViewWrapper,
+  ReactNodeViewRenderer,
+} from '@tiptap/react';
+import {
+  AlignCenter,
+  AlignLeft,
+  AlignRight,
+  ImageIcon,
+  Loader2,
+  MoreVertical,
+  Trash,
+} from 'lucide-react';
+
 import { uploadMedia } from '@/entities/media/api/upload-media';
 import { useImageUpload } from '@/shared/hooks/use-image-upload';
 import { cn } from '@/shared/lib/utils';
@@ -17,22 +33,6 @@ import {
 } from '@/shared/ui/dropdown-menu';
 import { Input } from '@/shared/ui/input';
 import { Separator } from '@/shared/ui/separator';
-
-import Image from '@tiptap/extension-image';
-import {
-  type NodeViewProps,
-  NodeViewWrapper,
-  ReactNodeViewRenderer,
-} from '@tiptap/react';
-import {
-  AlignCenter,
-  AlignLeft,
-  AlignRight,
-  ImageIcon,
-  Loader2,
-  MoreVertical,
-  Trash,
-} from 'lucide-react';
 
 export const ImageExtension = Image.extend({
   addOptions() {
@@ -190,7 +190,7 @@ function TiptapImage(props: NodeViewProps) {
 
         {/* Toolbar */}
         {editor.isEditable && (
-          <div className="bg-background/80 absolute right-2 top-2 flex gap-1 rounded p-1 opacity-0 group-hover:opacity-100">
+          <div className="absolute right-2 top-2 flex gap-1 rounded bg-background/80 p-1 opacity-0 group-hover:opacity-100">
             <Button
               size="icon"
               variant="ghost"
@@ -264,7 +264,7 @@ function TiptapImage(props: NodeViewProps) {
                     />
 
                     {error && (
-                      <p className="text-destructive text-xs">{error}</p>
+                      <p className="text-xs text-destructive">{error}</p>
                     )}
                   </DropdownMenuSubContent>
                 </DropdownMenuSub>

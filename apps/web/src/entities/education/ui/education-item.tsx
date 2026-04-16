@@ -1,9 +1,9 @@
-import type { PublicEducation } from '@/entities/education/model/types';
-import { RichText } from '@/shared/ui/rich-text';
-
 import Image from 'next/image';
 
 import { AchievementItem } from './achievement-item';
+
+import type { PublicEducation } from '@/entities/education/model/types';
+import { RichText } from '@/shared/ui/rich-text';
 
 export function EducationItem({ edu }: { edu: PublicEducation }) {
   return (
@@ -21,7 +21,7 @@ export function EducationItem({ edu }: { edu: PublicEducation }) {
         )}
         <div>
           <h3 className="text-lg font-semibold">{edu.title}</h3>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             {new Date(edu.startDate).getFullYear()} -{' '}
             {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
           </p>
@@ -32,7 +32,7 @@ export function EducationItem({ edu }: { edu: PublicEducation }) {
 
       {/* Achievements */}
       {edu.achievements.length > 0 && (
-        <div className="border-muted space-y-3 border-l-[3px]  pl-3 md:pl-4">
+        <div className="space-y-3 border-l-[3px] border-muted  pl-3 md:pl-4">
           {edu.achievements.map((a) => (
             <AchievementItem key={a.id} achievement={a} />
           ))}

@@ -1,13 +1,13 @@
 'use client';
 
+import { motion } from 'framer-motion';
+
 import { UserAuthForm } from '@/features/auth/ui';
-import { Link } from '@/i18n/navigation';
 import { Routes } from '@/shared/config/global';
+import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import { buttonVariants } from '@/shared/ui/button';
 import { Icons } from '@/shared/ui/icons';
-
-import { motion } from 'framer-motion';
 
 export function AuthLogInView() {
   return (
@@ -42,7 +42,7 @@ export function AuthLogInView() {
           <h1 className="text-2xl font-semibold tracking-tight">
             Welcome back
           </h1>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             Enter your email to sign in to your account
           </p>
         </div>

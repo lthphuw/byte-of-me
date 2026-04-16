@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
+
 import { AboutMe, AboutMeLoading } from '@/entities/user-profile';
-import { AboutEducationLoading } from '@/features/public/about-education/ui';
-import { AboutEducation } from '@/features/public/about-education/ui/about-education';
+import { AboutEducation, AboutEducationLoading } from '@/features/public';
 import {
   AboutTechStack,
   AboutTechStackLoading,

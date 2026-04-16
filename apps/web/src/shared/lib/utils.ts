@@ -1,7 +1,7 @@
-import { env } from '@/shared/config/env';
-
 import { type ClassValue,clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+
+import { env } from '@/shared/config/env';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

@@ -1,6 +1,7 @@
 'use client';
 
 import type { Dispatch, SetStateAction } from 'react';
+
 import { MediaCard } from '@/entities';
 import { cn } from '@/shared/lib/utils';
 import type { PaginatedMetadata } from '@/shared/types/api/paginated-api.type';

@@ -1,9 +1,3 @@
-import { GlobalProvider } from '@/app/providers/global-provider';
-import { routing } from '@/i18n/routing';
-import { host } from '@/shared/config/host';
-import { siteConfig } from '@/shared/config/site';
-import { cn } from '@/shared/lib/utils';
-
 import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
 import { Inter as FontSans } from 'next/font/google';
@@ -15,6 +9,12 @@ import {
   getTranslations,
   setRequestLocale,
 } from 'next-intl/server';
+
+import { GlobalProvider } from '@/app/providers/global-provider';
+import { host } from '@/shared/config/host';
+import { siteConfig } from '@/shared/config/site';
+import { routing } from '@/shared/i18n/routing';
+import { cn } from '@/shared/lib/utils';
 
 
 

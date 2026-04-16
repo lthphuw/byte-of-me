@@ -1,8 +1,8 @@
-import { getAllPublicTechStacks } from '@/entities/tech-stack';
-
 import { getTranslations } from 'next-intl/server';
 
 import { TechStackSection } from './tech-stack-section';
+
+import { getAllPublicTechStacks } from '@/entities/tech-stack';
 
 export async function AboutTechStack() {
   const t = await getTranslations();

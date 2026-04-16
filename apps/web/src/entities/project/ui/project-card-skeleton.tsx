@@ -9,7 +9,7 @@ interface ProjectCardSkeletonProps {
 
 export function ProjectCardSkeleton({ compact }: ProjectCardSkeletonProps) {
   return (
-    <Card className="border-border/40 bg-card flex h-full flex-col rounded-xl">
+    <Card className="flex h-full flex-col rounded-xl border-border/40 bg-card">
       <CardContent className="flex flex-1 flex-col p-5">
         {/* HEADER SKELETON */}
         <div className="mb-3 flex flex-col gap-1">

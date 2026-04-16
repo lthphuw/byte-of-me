@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
 import type { AdminTechStack } from '@/entities/tech-stack';
 import {
   type TechStackFormValues,
@@ -25,8 +27,6 @@ import {
 } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { SubmitButton } from '@/shared/ui/submit-button';
-
-import { zodResolver } from '@hookform/resolvers/zod';
 
 export function TechStackDialog({
   open,

@@ -1,17 +1,17 @@
+import { Route } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
+
+import { HomepageProfileEmpty } from './homepage-profile-empty';
+
 import {
   getPublicUserProfile,
   Greeting,
   ProfileQuote,
 } from '@/entities/user-profile';
 import { ProfileSectionMotion } from '@/features/public/homepage-profile/ui/profile-section-motion';
-import { Link } from '@/i18n/navigation';
 import { Routes } from '@/shared/config/global';
+import { Link } from '@/shared/i18n/navigation';
 import { Button } from '@/shared/ui/button';
-
-import { Route } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
-
-import { HomepageProfileEmpty } from './homepage-profile-empty';
 
 export async function HomepageProfile() {
   const t = await getTranslations('homepage');
@@ -33,7 +33,7 @@ export async function HomepageProfile() {
           className="mx-auto max-w-3xl space-y-5 text-left md:space-y-8"
         >
           <Greeting text={profile.greeting || ''} />
-          <p className="text-muted-foreground text-base md:text-xl">
+          <p className="text-base text-muted-foreground md:text-xl">
             {profile.tagLine}
           </p>
         </section>
@@ -49,11 +49,11 @@ export async function HomepageProfile() {
         >
           <div className="space-y-6 md:space-y-8">
             <div className="space-y-4 md:space-y-5">
-              <h2 className="text-muted-foreground text-xs font-semibold uppercase tracking-[0.2em] md:text-sm">
+              <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground md:text-sm">
                 {t('myStory')}
               </h2>
 
-              <div className="text-muted-foreground text-sm leading-relaxed md:text-base">
+              <div className="text-sm leading-relaxed text-muted-foreground md:text-base">
                 {profile.bio}
               </div>
             </div>

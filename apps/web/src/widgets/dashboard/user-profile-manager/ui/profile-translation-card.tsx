@@ -1,6 +1,7 @@
 'use client';
 
 import type { Control, UseFormReturn } from 'react-hook-form';
+
 import type { UserProfileFormValues } from '@/entities';
 import { DeleteButton } from '@/shared/ui/delete-button';
 import { FormControl, FormField, FormItem, FormLabel } from '@/shared/ui/form';
@@ -21,7 +22,7 @@ export function ProfileTranslationCard({
   onRemove,
 }: ProfileTranslationCardProps) {
   return (
-    <div className="bg-background/50 space-y-6 rounded-xl border p-6">
+    <div className="space-y-6 rounded-xl border bg-background/50 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <FormField
@@ -164,7 +165,7 @@ interface SectionProps {
 function Section({ title, children }: SectionProps) {
   return (
     <div className="space-y-3">
-      <p className="text-muted-foreground text-xs font-bold uppercase tracking-wider">
+      <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
         {title}
       </p>
       {children}

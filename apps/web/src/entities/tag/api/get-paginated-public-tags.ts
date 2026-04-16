@@ -1,15 +1,16 @@
 'use server';
 
+import { prisma } from '@byte-of-me/db';
+
 import type { PublicTag } from '@/entities/tag/model/types';
 import {
   handlePublicAction,
   withPublicActionHandler,
 } from '@/shared/api/public-action-template';
+import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import type { PaginatedData, PaginatedParams } from '@/shared/types/api';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
-
-import { prisma } from '@byte-of-me/db';
 
 export async function getPaginatedPublicTags(
   pagination: PaginatedParams
@@ -61,8 +62,8 @@ export async function getPaginatedPublicTags(
       },
       {
         cache: true,
-        cacheKey: ['tags'],
-        cacheTags: ['tags'],
+        cacheKey: [CACHE_TAGS.TAG],
+        cacheTags: [CACHE_TAGS.TAG],
       }
     );
     return data;

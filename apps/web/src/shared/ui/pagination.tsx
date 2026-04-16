@@ -1,8 +1,8 @@
 import type { Dispatch, SetStateAction } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
 import type { PaginatedMetadata } from '@/shared/types/api/paginated-api.type';
 import { Button } from '@/shared/ui/button';
-
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface PaginationProps {
   pagination?: PaginatedMetadata;
@@ -18,7 +18,7 @@ export function Pagination({
 
   return (
     <footer className="flex items-center justify-between border-t pt-4">
-      <p className="text-muted-foreground text-xs font-medium">
+      <p className="text-xs font-medium text-muted-foreground">
         Page {page} of {pagination?.totalPages || 1}
       </p>
       <div className="flex items-center gap-2">

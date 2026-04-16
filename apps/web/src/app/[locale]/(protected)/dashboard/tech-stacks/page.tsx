@@ -1,7 +1,7 @@
+import type { Metadata } from 'next';
+
 import { getAllAdminTechStack } from '@/entities';
 import { TechStackManager } from '@/widgets/dashboard';
-
-import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Tech Stack | Dashboard',
@@ -24,7 +24,7 @@ export default async function TechStackPage() {
     return (
       <div className="flex h-[400px] flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed">
         <h3 className="text-lg font-semibold">Failed to load tech stack</h3>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Please check your connection or try again later.
         </p>
       </div>
@@ -35,7 +35,7 @@ export default async function TechStackPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-bold tracking-tight">Tech Stack</h1>
-        <p className="text-muted-foreground text-lg">
+        <p className="text-lg text-muted-foreground">
           Maintain the list of technologies, frameworks, and tools you use.
         </p>
       </div>

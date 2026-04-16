@@ -1,8 +1,5 @@
 'use client';
 
-import { editorTheme } from '@/shared/ui/editor/themes/editor-theme';
-import { TooltipProvider } from '@/shared/ui/tooltip';
-
 import {
   type InitialConfigType,
   LexicalComposer,
@@ -12,6 +9,9 @@ import type { EditorState, SerializedEditorState } from 'lexical';
 
 import { nodes } from './nodes';
 import { Plugins } from './plugins';
+
+import { editorTheme } from '@/shared/ui/editor/themes/editor-theme';
+import { TooltipProvider } from '@/shared/ui/tooltip';
 
 const editorConfig: InitialConfigType = {
   namespace: 'Editor',
@@ -34,7 +34,7 @@ export function Editor({
   onSerializedChange?: (editorSerializedState: SerializedEditorState) => void;
 }) {
   return (
-    <div className="bg-background overflow-hidden rounded-lg border shadow">
+    <div className="overflow-hidden rounded-lg border bg-background shadow">
       <LexicalComposer
         initialConfig={{
           ...editorConfig,

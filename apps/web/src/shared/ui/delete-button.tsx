@@ -1,6 +1,6 @@
-import { Button } from '@/shared/ui/button';
-
 import { Loader2, Trash2 } from 'lucide-react';
+
+import { Button } from '@/shared/ui/button';
 
 export interface DeleteButtonProps {
   isSubmitting?: boolean;
@@ -13,7 +13,7 @@ export function DeleteButton({ onClick, isSubmitting }: DeleteButtonProps) {
       type={'button'}
       size="icon"
       variant="ghost"
-      className="hover:text-destructive h-8 w-8"
+      className="h-8 w-8 hover:text-destructive"
       disabled={isSubmitting}
       onClick={onClick}
     >

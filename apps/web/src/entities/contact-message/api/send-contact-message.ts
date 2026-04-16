@@ -1,12 +1,16 @@
 'use server';
 
+import { prisma } from '@byte-of-me/db';
+import { revalidateTag } from 'next/cache';
+
 import {
-  contactMessageSchema,
   type ContactMessageFormValues,
+  contactMessageSchema,
 } from '@/entities/contact-message/model/contact-message-schema';
 import { mailer } from '@/shared/api/mailer';
 import { env } from '@/shared/config/env';
-import { prisma } from '@byte-of-me/db';
+import { CACHE_TAGS } from '@/shared/lib/constants';
+import { sanitizeHtml } from '@/shared/lib/uuid';
 
 export async function sendContactMessage(values: ContactMessageFormValues) {
   const parsed = contactMessageSchema.safeParse(values);
@@ -31,7 +35,7 @@ export async function sendContactMessage(values: ContactMessageFormValues) {
       },
     });
 
-    const message = data.message;
+    const message = sanitizeHtml(data.message);
     await mailer.sendMail({
       from: `"${data.name}" <${process.env.SMTP_USER}>`,
       replyTo: data.email,
@@ -52,6 +56,8 @@ export async function sendContactMessage(values: ContactMessageFormValues) {
         </div>
       `,
     });
+
+    revalidateTag(CACHE_TAGS.CONTACT, 'max');
 
     return { success: true, data: msg };
   } catch (error: any) {

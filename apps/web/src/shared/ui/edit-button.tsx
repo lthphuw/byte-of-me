@@ -1,6 +1,6 @@
-import { Button } from '@/shared/ui/button';
-
 import { Pencil } from 'lucide-react';
+
+import { Button } from '@/shared/ui/button';
 
 export interface EditButtonProps {
   isSubmitting?: boolean;

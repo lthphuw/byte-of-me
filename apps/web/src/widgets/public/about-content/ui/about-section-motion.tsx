@@ -1,7 +1,6 @@
 'use client';
 
 import type { ReactNode } from 'react';
-
 import { motion } from 'framer-motion';
 
 export function AboutSectionMotion({ children }: { children: ReactNode }) {

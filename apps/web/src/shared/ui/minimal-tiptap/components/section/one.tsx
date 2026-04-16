@@ -1,4 +1,8 @@
 import * as React from 'react';
+import { CaretDownIcon, LetterCaseCapitalizeIcon } from '@radix-ui/react-icons';
+import type { Editor } from '@tiptap/react';
+import type { VariantProps } from 'class-variance-authority';
+
 import { cn } from '@/shared/lib/utils';
 import {
   DropdownMenu,
@@ -6,15 +10,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
+import { ShortcutKey } from '@/shared/ui/minimal-tiptap/components/shortcut-key';
+import { ToolbarButton } from '@/shared/ui/minimal-tiptap/components/toolbar-button';
+import type { FormatAction } from '@/shared/ui/minimal-tiptap/types';
 import type { toggleVariants } from '@/shared/ui/toggle';
-
-import { CaretDownIcon, LetterCaseCapitalizeIcon } from '@radix-ui/react-icons';
-import type { Editor } from '@tiptap/react';
-import type { VariantProps } from 'class-variance-authority';
-
-import type { FormatAction } from '../../types';
-import { ShortcutKey } from '../shortcut-key';
-import { ToolbarButton } from '../toolbar-button';
 
 type Level = 1 | 2 | 3 | 4 | 5 | 6;
 interface TextStyle

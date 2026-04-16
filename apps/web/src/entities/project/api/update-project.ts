@@ -1,9 +1,11 @@
 'use server';
 
-import type { ProjectFromValues } from '@/entities/project/model';
-import { requireUser } from '@/features/auth/lib/session';
-
 import { prisma } from '@byte-of-me/db';
+import { revalidateTag } from 'next/cache';
+
+import type { ProjectFromValues } from '@/entities/project/model';
+import { CACHE_TAGS } from '@/shared/lib/constants';
+import { requireUser } from '@/shared/lib/session';
 
 export async function updateProject(id: string, data: ProjectFromValues) {
   await requireUser();
@@ -38,6 +40,8 @@ export async function updateProject(id: string, data: ProjectFromValues) {
       },
     },
   });
+
+  revalidateTag(CACHE_TAGS.PROJECT, 'max');
 
   return project;
 }

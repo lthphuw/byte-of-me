@@ -1,6 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { Check, ChevronDown, ImageIcon, Loader2, Plus, X } from 'lucide-react';
+
 import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import { cn } from '@/shared/lib/utils';
@@ -14,8 +16,6 @@ import {
 } from '@/shared/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { ScrollArea } from '@/shared/ui/scroll-area';
-
-import { Check, ChevronDown, ImageIcon, Loader2, Plus, X } from 'lucide-react';
 
 interface MediaMultiSelectProps {
   value?: string[];
@@ -50,14 +50,14 @@ export function MediaMultiSelect({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="hover:border-primary hover:bg-primary/5 min-h-[56px] w-full justify-between border-2 border-dashed px-3 transition-all"
+          className="min-h-[56px] w-full justify-between border-2 border-dashed px-3 transition-all hover:border-primary hover:bg-primary/5"
         >
           <div className="flex flex-wrap items-center gap-2 py-1">
             {selectedMedia.length > 0 ? (
               selectedMedia.slice(0, 3).map((media) => (
                 <div
                   key={media.id}
-                  className="bg-background h-10 w-10 shrink-0 overflow-hidden rounded border"
+                  className="h-10 w-10 shrink-0 overflow-hidden rounded border bg-background"
                 >
                   <img
                     src={media.url}
@@ -67,8 +67,8 @@ export function MediaMultiSelect({
                 </div>
               ))
             ) : (
-              <div className="bg-muted flex h-10 w-10 shrink-0 items-center justify-center rounded border">
-                <ImageIcon className="text-muted-foreground/40 h-5 w-5" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded border bg-muted">
+                <ImageIcon className="h-5 w-5 text-muted-foreground/40" />
               </div>
             )}
 
@@ -76,20 +76,20 @@ export function MediaMultiSelect({
               <span className="text-sm font-medium">
                 {value.length > 0 ? `${value.length} selected` : 'Select Media'}
               </span>
-              <span className="text-muted-foreground text-xs">
+              <span className="text-xs text-muted-foreground">
                 {value.length > 3
                   ? `+ ${value.length - 3} more`
                   : 'Click to manage'}
               </span>
             </div>
           </div>
-          <ChevronDown className="text-muted-foreground h-4 w-4 shrink-0" />
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
 
       <PopoverContent className="w-[420px] p-0 shadow-xl" align="start">
-        <div className="bg-muted/30 flex items-center justify-between border-b p-3">
-          <span className="text-muted-foreground text-xs font-bold uppercase">
+        <div className="flex items-center justify-between border-b bg-muted/30 p-3">
+          <span className="text-xs font-bold uppercase text-muted-foreground">
             Library
           </span>
           <div className="flex gap-2">
@@ -97,7 +97,7 @@ export function MediaMultiSelect({
               <Button
                 size="sm"
                 variant="ghost"
-                className="hover:text-destructive h-7 px-2 text-xs"
+                className="h-7 px-2 text-xs hover:text-destructive"
                 onClick={() => onChange([])}
               >
                 Clear All
@@ -125,7 +125,7 @@ export function MediaMultiSelect({
         </div>
 
         {selectedMedia.length > 0 && (
-          <ScrollArea className="bg-background max-h-24 border-b">
+          <ScrollArea className="max-h-24 border-b bg-background">
             <div className="flex flex-wrap gap-2 p-3">
               {selectedMedia.map((media) => (
                 <div
@@ -154,7 +154,7 @@ export function MediaMultiSelect({
           <div className="p-3">
             {isLoading ? (
               <div className="flex h-40 flex-col items-center justify-center gap-2">
-                <Loader2 className="text-primary h-6 w-6 animate-spin" />
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
               </div>
             ) : (
               <div className="grid grid-cols-4 gap-2">
@@ -178,8 +178,8 @@ export function MediaMultiSelect({
                         alt={media.fileName}
                       />
                       {isSelected && (
-                        <div className="bg-primary/20 absolute inset-0 flex items-center justify-center">
-                          <div className="bg-primary rounded-full p-0.5 text-white">
+                        <div className="absolute inset-0 flex items-center justify-center bg-primary/20">
+                          <div className="rounded-full bg-primary p-0.5 text-white">
                             <Check className="h-3 w-3" />
                           </div>
                         </div>

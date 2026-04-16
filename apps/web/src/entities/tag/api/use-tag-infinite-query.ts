@@ -1,10 +1,11 @@
-import { getPaginatedPublicTags } from '@/entities/tag/api/get-paginated-public-tags';
-
 import { useInfiniteQuery } from '@tanstack/react-query';
+
+import { getPaginatedPublicTags } from '@/entities/tag/api/get-paginated-public-tags';
+import { CACHE_TAGS } from '@/shared/lib/constants';
 
 export function useTagInfiniteQuery(limit: number = 12) {
   return useInfiniteQuery({
-    queryKey: ['tags', limit],
+    queryKey: [CACHE_TAGS.TAG, limit],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await getPaginatedPublicTags({
         page: pageParam as number,

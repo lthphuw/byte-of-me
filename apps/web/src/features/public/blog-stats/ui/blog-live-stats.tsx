@@ -1,14 +1,14 @@
-import { getBlogStats } from '@/features/public/blog-stats/lib';
-
 import { Eye, Hourglass } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+
+import { getBlogStats } from '@/features/public/blog-stats/lib';
 
 export async function BlogLiveStats({ blogId }: { blogId: string }) {
   const stats = await getBlogStats(blogId);
   const t = await getTranslations('blogDetails');
 
   return (
-    <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-2 text-sm md:text-base">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground md:text-base">
       <div className="flex items-center gap-1.5 whitespace-nowrap">
         <Eye className="h-4 w-4 shrink-0" />
         <span>{t('views', { count: stats.views })}</span>

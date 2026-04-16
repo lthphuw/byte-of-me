@@ -1,6 +1,3 @@
-import { cn } from '@/shared/lib/utils';
-import { Separator } from '@/shared/ui/separator';
-
 import {
   type Content,
   type Editor,
@@ -23,6 +20,9 @@ import { useTiptapEditor } from './hooks/use-tiptap-editor';
 
 import './styles/index.css';
 
+import { cn } from '@/shared/lib/utils';
+import { Separator } from '@/shared/ui/separator';
+
 export interface MinimalTiptapProps
   extends Omit<UseMinimalTiptapEditorProps, 'onUpdate'> {
   value?: Content;
@@ -32,7 +32,7 @@ export interface MinimalTiptapProps
 }
 
 const Toolbar = ({ editor }: { editor: Editor }) => (
-  <div className="border-border flex h-12 shrink-0 overflow-x-auto border-b p-2">
+  <div className="flex h-12 shrink-0 overflow-x-auto border-b border-border p-2">
     <div className="flex w-max items-center gap-px">
       <SectionOne editor={editor} activeLevels={[1, 2, 3, 4, 5, 6]} />
 

@@ -1,7 +1,7 @@
+import type { Metadata } from 'next';
+
 import { getAdminUserProfile } from '@/entities';
 import { UserProfileManager } from '@/widgets/dashboard';
-
-import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Profile Manager | Dashboard',
@@ -26,7 +26,7 @@ export default async function UserProfilePage() {
       <div className="flex h-[400px] items-center justify-center rounded-xl border-2 border-dashed">
         <div className="text-center">
           <h3 className="font-semibold">Profile not found</h3>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             Could not load your profile data at this time.
           </p>
         </div>

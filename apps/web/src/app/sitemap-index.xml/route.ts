@@ -1,7 +1,7 @@
-import { routing } from '@/i18n/routing';
-import { host } from '@/shared/config/host';
-
 import { NextResponse } from 'next/server';
+
+import { host } from '@/shared/config/host';
+import { routing } from '@/shared/i18n/routing';
 
 export async function GET() {
   const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>

@@ -1,12 +1,12 @@
 'use server';
 
-import type { AdminTag } from '@/entities/tag';
-import { requireUser } from '@/features/auth/lib/session';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
-import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
-
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
+
+import type { AdminTag } from '@/entities/tag';
+import { requireUser } from '@/shared/lib/session';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
+import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
 export async function getPaginatedAdminTags(
   page: number = 1,

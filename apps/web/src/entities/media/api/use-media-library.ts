@@ -1,16 +1,17 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
 import { deleteMedia } from '@/entities/media/api/delete-media';
 import { getPaginatedMedia } from '@/entities/media/api/get-paginated-media';
 import { uploadMedia } from '@/entities/media/api/upload-media';
 import { toast } from '@/shared/hooks/use-toast';
-
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { CACHE_TAGS } from '@/shared/lib/constants';
 
 export function useMediaLibrary(page = 1) {
   const queryClient = useQueryClient();
 
   // Fetching
   const query = useQuery({
-    queryKey: ['media', page],
+    queryKey: [CACHE_TAGS.MEDIA, page],
     queryFn: () =>
       getPaginatedMedia({
         page,
@@ -22,7 +23,7 @@ export function useMediaLibrary(page = 1) {
   const upload = useMutation({
     mutationFn: (files: File[]) => uploadMedia(files),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['media'] });
+      queryClient.invalidateQueries({ queryKey: [CACHE_TAGS.MEDIA] });
       toast({ title: 'Upload successful' });
     },
   });
@@ -31,7 +32,7 @@ export function useMediaLibrary(page = 1) {
   const remove = useMutation({
     mutationFn: (id: string) => deleteMedia(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['media'] });
+      queryClient.invalidateQueries({ queryKey: [CACHE_TAGS.MEDIA] });
       toast({ title: 'Media deleted' });
     },
   });

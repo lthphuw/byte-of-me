@@ -1,6 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { Check, ChevronDown, ImageIcon, Loader2, Plus } from 'lucide-react';
+
 import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import { cn } from '@/shared/lib/utils';
@@ -9,8 +11,6 @@ import { Button } from '@/shared/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, } from '@/shared/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { ScrollArea } from '@/shared/ui/scroll-area';
-
-import { Check, ChevronDown, ImageIcon, Loader2, Plus } from 'lucide-react';
 
 interface MediaSelectProps {
   value?: string | null;
@@ -35,10 +35,10 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="hover:border-primary hover:bg-primary/5 h-14 w-full justify-between border-2 border-dashed px-3 transition-all"
+          className="h-14 w-full justify-between border-2 border-dashed px-3 transition-all hover:border-primary hover:bg-primary/5"
         >
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="bg-background flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded border">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded border bg-background">
               {selectedMedia ? (
                 <img
                   src={selectedMedia.url}
@@ -46,27 +46,27 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
                   alt="Selected"
                 />
               ) : (
-                <ImageIcon className="text-muted-foreground/40 h-5 w-5" />
+                <ImageIcon className="h-5 w-5 text-muted-foreground/40" />
               )}
             </div>
             <div className="flex flex-col items-start truncate text-left">
               <span className="w-full truncate text-sm font-medium">
                 {selectedMedia ? selectedMedia.fileName : 'Select Media'}
               </span>
-              <span className="text-muted-foreground text-xs">
+              <span className="text-xs text-muted-foreground">
                 {selectedMedia
                   ? 'Click to change'
                   : 'Upload or choose from library'}
               </span>
             </div>
           </div>
-          <ChevronDown className="text-muted-foreground h-4 w-4 shrink-0" />
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
 
       <PopoverContent className="w-[400px] p-0 shadow-xl" align="start">
-        <div className="bg-muted/30 flex items-center justify-between border-b p-3">
-          <span className="text-muted-foreground text-xs font-bold uppercase">
+        <div className="flex items-center justify-between border-b bg-muted/30 p-3">
+          <span className="text-xs font-bold uppercase text-muted-foreground">
             Library
           </span>
           <Dialog open={isUploadOpen} onOpenChange={setIsUploadOpen}>
@@ -74,7 +74,7 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
               <Button
                 size="sm"
                 variant="ghost"
-                className="text-primary h-8 gap-1 text-xs"
+                className="h-8 gap-1 text-xs text-primary"
               >
                 <Plus className="h-3 w-3" /> Upload
               </Button>
@@ -122,8 +122,8 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
                       alt={media.fileName}
                     />
                     {value === media.id && (
-                      <div className="bg-primary/20 absolute inset-0 flex items-center justify-center">
-                        <Check className="text-primary h-5 w-5" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-primary/20">
+                        <Check className="h-5 w-5 text-primary" />
                       </div>
                     )}
                   </button>

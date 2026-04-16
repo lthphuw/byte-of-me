@@ -31,7 +31,7 @@ export function AboutTechStackLoading() {
           {[...Array(8)].map((_, cardIndex) => (
             <Card
               key={cardIndex}
-              className="border-border/50 bg-background/50 border p-6"
+              className="border border-border/50 bg-background/50 p-6"
             >
               <div className="space-y-5">
                 {/* Category Title Skeleton (e.g., "Language") */}
@@ -50,7 +50,7 @@ export function AboutTechStackLoading() {
                       return (
                         <Skeleton
                           key={pillIndex}
-                          className={`h-10 ${widthClass} border-border rounded-md border`}
+                          className={`h-10 ${widthClass} rounded-md border border-border`}
                         />
                       );
                     }

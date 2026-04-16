@@ -7,11 +7,7 @@ import tailwindcssAnimate from 'tailwindcss-animate';
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
-    './src/app/**/*.{ts,tsx}',
-    './src/entities/**/*.{ts,tsx}',
-    './src/widgets/**/*.{ts,tsx}',
-    './src/features/**/*.{ts,tsx}',
-    './src/shared/ui/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
   ],
   darkMode: ['class'],
   theme: {
@@ -158,8 +154,6 @@ export default {
         },
       });
     }),
-    require('tailwindcss-animate'),
-    require('@tailwindcss/typography'),
   ],
   corePlugins: {
     hyphens: true,

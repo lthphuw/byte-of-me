@@ -1,10 +1,10 @@
-import { deepMerge } from '@/shared/lib/deep-merge';
-
 import { prisma } from '@byte-of-me/db';
 import { hasLocale } from 'next-intl';
 import { getRequestConfig } from 'next-intl/server';
 
 import { routing } from './routing';
+
+import { deepMerge } from '@/shared/lib/deep-merge';
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
@@ -16,7 +16,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     // Static JSON
     (async () => {
       try {
-        const mod = await import(`../../messages/${locale}.json`);
+        const mod = await import(`../../../messages/${locale}.json`);
         return mod.default ?? {};
       } catch (err) {
         console.error('[i18n] Static load error:', err);

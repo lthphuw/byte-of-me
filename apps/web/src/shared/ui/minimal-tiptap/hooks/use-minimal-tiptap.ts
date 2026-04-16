@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { cn } from '@/shared/lib/utils';
-
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Typography } from '@tiptap/extension-typography';
 import { Placeholder, Selection } from '@tiptap/extensions';
@@ -13,6 +11,9 @@ import {
 import { StarterKit } from '@tiptap/starter-kit';
 import { toast } from 'sonner';
 
+import { useThrottle } from './use-throttle';
+
+import { cn } from '@/shared/lib/utils';
 import {
   CodeBlockLowlight,
   Color,
@@ -21,10 +22,8 @@ import {
   Image,
   ResetMarksOnEnter,
   UnsetAllMarks,
-} from '../extensions';
-import { fileToBase64, getOutput, randomId } from '../utils';
-
-import { useThrottle } from './use-throttle';
+} from '@/shared/ui/minimal-tiptap/extensions';
+import { fileToBase64, getOutput, randomId } from '@/shared/ui/minimal-tiptap/utils';
 
 export interface UseMinimalTiptapEditorProps extends UseEditorOptions {
   value?: Content;

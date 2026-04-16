@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { ExpandableText } from '@/shared/ui/expandable-text';
 
 import { AchievementImages } from './achievement-images';
+
+import { ExpandableText } from '@/shared/ui/expandable-text';
 
 export function AchievementItem({ achievement: a }: { achievement: any }) {
   const [currentSlide, setCurrentSlide] = useState(0);

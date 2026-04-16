@@ -1,9 +1,10 @@
 'use client';
 
-import { cn } from '@/shared/lib/utils';
-import { extensions } from '@/shared/ui/tiptap/rich-text-editor';
-
 import { generateHTML } from '@tiptap/html';
+
+import { cn } from '@/shared/lib/utils';
+import { sanitizeHtml } from '@/shared/lib/uuid';
+import { extensions } from '@/shared/ui/tiptap/rich-text-editor';
 
 export type RichTextProps = {
   content?: string | any;
@@ -51,7 +52,7 @@ export function RichText({ content, className, style }: RichTextProps) {
         className
       )}
       style={style}
-      dangerouslySetInnerHTML={{ __html: htmlContent }}
+      dangerouslySetInnerHTML={{ __html: sanitizeHtml(htmlContent) }}
     />
   );
 }

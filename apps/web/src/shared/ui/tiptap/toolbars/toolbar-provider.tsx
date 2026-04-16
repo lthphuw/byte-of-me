@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-
 import type { Editor } from '@tiptap/react';
 
 export interface ToolbarContextProps {

@@ -17,16 +17,16 @@ export function PublicSiteFooterLoading({
         {/* Left */}
         <div className="flex flex-col items-center gap-2 md:items-start">
           {/* Logo */}
-          <div className="bg-muted h-8 w-24 rounded-md" />
+          <div className="h-8 w-24 rounded-md bg-muted" />
 
           {/* Name */}
-          <div className="bg-muted h-4 w-40 rounded-md" />
+          <div className="h-4 w-40 rounded-md bg-muted" />
         </div>
 
         {/* Navigation */}
         <div className="flex flex-wrap items-center justify-center gap-2 md:items-start md:gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-muted h-4 w-16 rounded-md" />
+            <div key={i} className="h-4 w-16 rounded-md bg-muted" />
           ))}
         </div>
 
@@ -34,12 +34,12 @@ export function PublicSiteFooterLoading({
         <div className="flex flex-col items-center gap-2 md:items-end">
           <div className="flex gap-4">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="bg-muted h-5 w-5 rounded-full" />
+              <div key={i} className="h-5 w-5 rounded-full bg-muted" />
             ))}
           </div>
 
           {/* Optional text */}
-          <div className="bg-muted h-3 w-32 rounded-md" />
+          <div className="h-3 w-32 rounded-md bg-muted" />
         </div>
       </div>
     </footer>

@@ -1,15 +1,15 @@
 'use client';
 
+import { Code, ExternalLink } from 'lucide-react';
+import { useLocale } from 'next-intl';
+
 import type { PublicProject } from '@/entities/project/model/types';
 import { TagClickableBadge } from '@/entities/tag/ui/tag-clickable-badge';
 import { TechStackClickableBadge } from '@/entities/tech-stack/ui/tech-stack-clickable-badge';
-import { Link } from '@/i18n/navigation';
+import { Link } from '@/shared/i18n/navigation';
 import { formatDate } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
-
-import { Code, ExternalLink } from 'lucide-react';
-import { useLocale } from 'next-intl';
 
 export interface ProjectCardProps {
   project: PublicProject;
@@ -29,7 +29,7 @@ export function ProjectCard({
   const end = project.endDate ? formatDate(project.endDate) : 'Present';
 
   return (
-    <Card className="border-border/40 bg-card hover:border-border/80 flex h-full flex-col rounded-xl transition-colors">
+    <Card className="flex h-full flex-col rounded-xl border-border/40 bg-card transition-colors hover:border-border/80">
       <CardContent className="flex flex-1 flex-col p-5">
         {/* HEADER */}
         <div className="mb-3 flex flex-col gap-1">
@@ -44,13 +44,13 @@ export function ProjectCard({
             {/*)}*/}
           </div>
 
-          <time className="text-muted-foreground/60 text-[11px] font-medium uppercase tracking-wider">
+          <time className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground/60">
             {start ? `${start} — ${end}` : 'Ongoing'}
           </time>
         </div>
 
         {/* DESCRIPTION */}
-        <p className="text-muted-foreground mb-5 line-clamp-3 text-sm leading-relaxed">
+        <p className="mb-5 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
           {project.description}
         </p>
 

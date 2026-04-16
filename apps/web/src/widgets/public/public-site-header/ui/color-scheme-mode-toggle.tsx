@@ -1,6 +1,10 @@
 'use client';
 
 import * as React from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
+import { useTheme } from 'next-themes';
+
 import { iconSwicthVariants, itemVariants } from '@/shared/config/anim';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
@@ -11,10 +15,6 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
 import { Icons } from '@/shared/ui/icons';
-
-import { AnimatePresence, motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
-import { useTheme } from 'next-themes';
 
 export function ColorSchemeModeToggle() {
   const t = useTranslations('global.modeToggle');
@@ -70,7 +70,7 @@ export function ColorSchemeModeToggle() {
 
       <DropdownMenuContent
         align="end"
-        className="border-muted/50 bg-popover z-50 min-w-[160px] space-y-1 overflow-hidden rounded-md border shadow-lg"
+        className="z-50 min-w-[160px] space-y-1 overflow-hidden rounded-md border border-muted/50 bg-popover shadow-lg"
       >
         {items.map((item, index) => {
           const isActive = theme === item.value;

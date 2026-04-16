@@ -1,4 +1,5 @@
 import type { UseFormReturn } from 'react-hook-form';
+
 import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
 import { DatePicker } from '@/shared/ui/date-picker';
 import { FormControl, FormField, FormItem, FormLabel } from '@/shared/ui/form';
@@ -12,12 +13,12 @@ export function UserProfileSectionManager({
     <div className="space-y-4">
       <div>
         <h3 className="text-sm font-semibold">Common Information</h3>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           General profile settings
         </p>
       </div>
 
-      <div className="bg-background/50 rounded-xl border p-6">
+      <div className="rounded-xl border bg-background/50 p-6">
         <div className="grid gap-6 md:grid-cols-2">
           <FormField
             control={form.control}

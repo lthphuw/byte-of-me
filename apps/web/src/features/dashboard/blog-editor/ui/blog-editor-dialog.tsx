@@ -1,5 +1,7 @@
 'use client';
 
+import { BlogForm } from './form/blog-form';
+
 import type { AdminBlog } from '@/entities/blog';
 import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import {
@@ -8,8 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/ui/dialog';
-
-import { BlogForm } from './form/blog-form';
 
 export interface BlogEditorDialogProps {
   open: boolean;

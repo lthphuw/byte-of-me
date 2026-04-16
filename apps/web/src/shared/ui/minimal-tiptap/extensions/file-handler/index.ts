@@ -5,7 +5,7 @@ import {
   type FileError,
   type FileValidationOptions,
   filterFiles,
-} from '../../utils';
+} from '@/shared/ui/minimal-tiptap/utils';
 
 type FileHandlePluginOptions = {
   key?: PluginKey;

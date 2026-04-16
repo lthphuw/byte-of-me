@@ -1,8 +1,8 @@
-import { Button } from '@/shared/ui/button';
-
 import { ArrowLeft, FileQuestion, Search } from 'lucide-react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
+
+import { Button } from '@/shared/ui/button';
 
 export async function BlogNotFound() {
   const t = await getTranslations('blogDetails');
@@ -11,10 +11,10 @@ export async function BlogNotFound() {
     <div className="flex min-h-[60vh] flex-col items-center justify-center space-y-4 px-4 text-center">
       {/* Visual Icon Group */}
       <div className="relative mb-6 ">
-        <div className="bg-primary/5 absolute -inset-4 rounded-full blur-xl" />
-        <div className="border-muted-foreground/30 bg-background relative flex h-20 w-20 items-center justify-center rounded-2xl border-2 border-dashed">
-          <FileQuestion className="text-muted-foreground/40 h-10 w-10" />
-          <Search className="bg-background text-primary absolute -bottom-1 -right-1 h-6 w-6 rounded-full border p-1 shadow-sm" />
+        <div className="absolute -inset-4 rounded-full bg-primary/5 blur-xl" />
+        <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl border-2 border-dashed border-muted-foreground/30 bg-background">
+          <FileQuestion className="h-10 w-10 text-muted-foreground/40" />
+          <Search className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full border bg-background p-1 text-primary shadow-sm" />
         </div>
       </div>
 
@@ -22,7 +22,7 @@ export async function BlogNotFound() {
       <h2 className="mb-2 text-2xl font-bold tracking-tight">
         {t('blogNotFoundTitle') || 'Article not found'}
       </h2>
-      <p className="text-muted-foreground mb-8 max-w-[350px]">
+      <p className="mb-8 max-w-[350px] text-muted-foreground">
         {t('blogNotFoundDescription') ||
           "The blog post you're looking for might have been moved, deleted, or never existed."}
       </p>

@@ -6,14 +6,14 @@ import {
   DayPicker,
   getDefaultClassNames,
 } from 'react-day-picker';
-import { cn } from '@/shared/lib/utils';
-import { Button, buttonVariants } from '@/shared/ui/button';
-
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
 } from 'lucide-react';
+
+import { cn } from '@/shared/lib/utils';
+import { Button, buttonVariants } from '@/shared/ui/button';
 
 function Calendar({
   className,

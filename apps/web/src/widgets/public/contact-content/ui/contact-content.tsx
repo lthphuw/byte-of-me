@@ -1,9 +1,13 @@
 import React, { Suspense } from 'react';
-import { ContactInfos } from '@/features/public/contact-infos/ui/contact-infos';
-import { ContactInfosLoading } from '@/features/public/contact-infos/ui/contact-infos-loading';
-import { ContactMe } from '@/features/public/contact-me/ui/contact-me';
-import { ContactSectionMotion } from '@/widgets/public/contact-content/ui/contact-section-motion';
-import { ContactShell } from '@/widgets/public/contact-content/ui/contact-shell';
+
+import { ContactSectionMotion } from './contact-section-motion';
+import { ContactShell } from './contact-shell';
+
+import {
+  ContactInfos,
+  ContactInfosLoading,
+  ContactMe,
+} from '@/features/public';
 
 export async function ContactContent() {
   return (

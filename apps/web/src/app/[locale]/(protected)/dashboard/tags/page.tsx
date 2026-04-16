@@ -1,6 +1,6 @@
-import { TagManager } from '@/widgets/dashboard';
-
 import type { Metadata } from 'next';
+
+import { TagManager } from '@/widgets/dashboard';
 
 export const metadata: Metadata = {
   title: 'Tags | Dashboard',
@@ -21,7 +21,7 @@ export default async function TagsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-bold tracking-tight">Tags</h1>
-        <p className="text-muted-foreground text-lg">
+        <p className="text-lg text-muted-foreground">
           Create and manage custom taxonomies to categorize your content.
         </p>
       </div>

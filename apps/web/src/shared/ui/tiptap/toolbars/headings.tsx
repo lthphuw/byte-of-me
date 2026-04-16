@@ -1,6 +1,11 @@
 'use client';
 
 import React from 'react';
+import { ChevronDown } from 'lucide-react';
+
+import { MobileToolbarGroup, MobileToolbarItem } from './mobile-toolbar-group';
+import { useToolbar } from './toolbar-provider';
+
 import { useMediaQuery } from '@/shared/hooks/use-media-query';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
@@ -11,11 +16,6 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
-
-import { ChevronDown } from 'lucide-react';
-
-import { MobileToolbarGroup, MobileToolbarItem } from './mobile-toolbar-group';
-import { useToolbar } from './toolbar-provider';
 
 const levels = [1, 2, 3, 4] as const;
 

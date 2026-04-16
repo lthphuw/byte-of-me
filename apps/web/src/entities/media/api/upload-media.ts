@@ -1,14 +1,16 @@
 'use server';
 
-import { requireUser } from '@/features/auth/lib/session';
+import { prisma } from '@byte-of-me/db';
+import { logger } from '@byte-of-me/logger';
+import { revalidateTag } from 'next/cache';
+
 import { supabaseStorage } from '@/shared/api/s3-storage-api';
 import { env } from '@/shared/config/env';
+import { CACHE_TAGS } from '@/shared/lib/constants';
+import { requireUser } from '@/shared/lib/session';
 import { generateFriendlyId } from '@/shared/lib/uuid';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { Media } from '@/shared/types/models';
-
-import { prisma } from '@byte-of-me/db';
-import { logger } from '@byte-of-me/logger';
 
 export async function uploadMedia(
   files: File[]
@@ -51,6 +53,8 @@ export async function uploadMedia(
     });
 
     const results = await Promise.all(uploadPromises);
+
+    revalidateTag(CACHE_TAGS.MEDIA, 'max');
     return { success: true, data: results };
   } catch (error) {
     logger.error(`Upload error: ${(error as any).message}`);

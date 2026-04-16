@@ -1,8 +1,8 @@
-import { routing } from '@/i18n/routing';
+import { setRequestLocale } from 'next-intl/server';
+
+import { routing } from '@/shared/i18n/routing';
 import type { LocaleType } from '@/shared/types';
 import { ProjectsContent } from '@/widgets/public';
-
-import { setRequestLocale } from 'next-intl/server';
 
 interface ProjectsPageProps {
   params: Promise<{ locale: string }>;

@@ -1,4 +1,6 @@
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
+
 import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
 import {
   DashboardProfile,
@@ -8,8 +10,6 @@ import {
 } from '@/features/dashboard';
 import { Separator } from '@/shared/ui/separator';
 import { ContactMessageGallery } from '@/widgets/dashboard/contact-message-gallery/ui/contact-message-gallery';
-
-import type { Metadata } from 'next';
 
 export async function generateMetadata(): Promise<Metadata> {
   const profileRes = await getUserProfile();
@@ -53,7 +53,7 @@ export default async function DashboardPage() {
           <h2 className="text-2xl font-bold tracking-tight">
             Inbound Messages
           </h2>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             Recent inquiries from your portfolio contact form.
           </p>
         </div>
