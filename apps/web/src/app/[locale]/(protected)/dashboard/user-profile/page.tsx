@@ -7,7 +7,15 @@ export const metadata: Metadata = {
   title: 'Profile Manager | Dashboard',
   description:
     'Update your public profile information, social links, and display settings.',
-  robots: { index: false },
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default async function UserProfilePage() {

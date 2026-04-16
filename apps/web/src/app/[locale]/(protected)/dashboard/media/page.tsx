@@ -5,7 +5,15 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Media Library | Dashboard',
   description: 'Upload and organize your images, banners, and assets.',
-  robots: { index: false },
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default async function MediaPage() {

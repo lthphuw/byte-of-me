@@ -5,7 +5,15 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Blog Management | Dashboard',
   description: 'Write, edit, and publish articles for your portfolio blog.',
-  robots: { index: false },
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default async function BlogsPage() {

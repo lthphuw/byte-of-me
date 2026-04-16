@@ -3,7 +3,15 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Translations | Dashboard',
   description: 'Manage multi-language content and localizations.',
-  robots: { index: false },
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default async function TranslationsPage() {

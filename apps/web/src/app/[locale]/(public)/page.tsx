@@ -1,5 +1,5 @@
 import type { LocaleType } from '@/shared/types';
-import { HomepageContent } from '@/widgets/public/homepage-content/ui';
+import { HomepageContent } from '@/widgets/public';
 
 import { setRequestLocale } from 'next-intl/server';
 

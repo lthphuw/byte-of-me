@@ -2,8 +2,7 @@ import { getPublicBlogBySlug } from '@/entities/blog/api/get-public-blog-by-slug
 import { BlogNotFound } from '@/entities/blog/ui';
 import { routing } from '@/i18n/routing';
 import type { LocaleType } from '@/shared/types';
-import { BlogDetailsShell } from '@/widgets/public/blog-details-content/ui';
-import BlogDetailsContent from '@/widgets/public/blog-details-content/ui/blog-details-content';
+import { BlogDetailsContent, BlogDetailsShell } from '@/widgets/public';
 
 import { prisma } from '@byte-of-me/db';
 import { setRequestLocale } from 'next-intl/server';

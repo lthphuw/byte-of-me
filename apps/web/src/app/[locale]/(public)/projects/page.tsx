@@ -1,6 +1,6 @@
 import { routing } from '@/i18n/routing';
 import type { LocaleType } from '@/shared/types';
-import { ProjectsContent } from '@/widgets/public/projects-content/ui/projects-content';
+import { ProjectsContent } from '@/widgets/public';
 
 import { setRequestLocale } from 'next-intl/server';
 

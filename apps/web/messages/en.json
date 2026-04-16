@@ -140,13 +140,15 @@
   },
   "blogDetails": {
     "failedToLoadBlog": "Failed to load blog",
-    "readingTime": "{time} min read",
     "blogNotFoundTitle": "Blog Post Not Found",
     "blogNotFoundDescription": "Sorry, the article you are looking for doesn't exist or has been moved.",
     "backToBlogs": "Back to blogs",
     "goHome": "Go to homepage",
     "relatedProject": "Related Project",
-    "viewProject": "View project"
+    "viewProject": "View project",
+    "views": "{count, plural, =0 {No views} one {# view} other {# views}}",
+    "avgRead": "{time}m avg. read",
+    "readingTime": "{time} min read"
   },
   "contact": {
     "letsWorkTogether": "Let’s work together",

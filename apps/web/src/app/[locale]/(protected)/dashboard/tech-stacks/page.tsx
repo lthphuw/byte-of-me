@@ -6,7 +6,15 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Tech Stack | Dashboard',
   description: 'Manage your professional technologies and tools.',
-  robots: { index: false },
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default async function TechStackPage() {
