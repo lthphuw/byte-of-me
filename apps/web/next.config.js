@@ -18,6 +18,7 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '3mb',
     },
+    serverComponentsExternalPackages: ['ua-parser-js', 'jsdom'],
   },
 
   turbopack: {
