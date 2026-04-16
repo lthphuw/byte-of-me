@@ -1,3 +1,6 @@
+'use server';
+
+import { getDashboardStats } from '@/features/dashboard/dashboard-stats/lib';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 
 import {
@@ -11,7 +14,13 @@ import {
   Tag,
 } from 'lucide-react';
 
-export function StatsGrid({ stats }: { stats: any }) {
+export async function StatsGrid() {
+  const dataResp = await getDashboardStats();
+  if (!dataResp.success || !dataResp.data) {
+    return null;
+  }
+  const stats = dataResp.data;
+
   const primaryStats = [
     {
       label: 'Messages',

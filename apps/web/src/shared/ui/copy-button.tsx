@@ -35,45 +35,34 @@ export function CopyButton({
 
   return (
     <Button
-      variant="outline"
+      type={'button'}
       size="icon"
+      variant="ghost"
       onClick={handleCopy}
       className={cn(
-        'relative size-8 rounded-md transition-colors duration-200',
-        copied
-          ? 'bg-muted text-muted-foreground border-muted-foreground/20'
-          : 'bg-background text-foreground',
+        'relative h-8 w-8 rounded-md transition-all duration-300',
+        // copied && 'border-green-500/50 bg-green-500/10 text-green-600'
         className
       )}
       style={style}
       aria-label={copied ? 'Copied' : 'Copy to clipboard'}
     >
       <AnimatePresence mode="wait" initial={false}>
-        {copied ? (
-          <motion.div
-            key="check"
-            variants={iconSwicthVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={defaultSpring}
-            className="flex items-center justify-center"
-          >
-            <Icons.check size={14} className="text-muted-foreground" />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="copy"
-            variants={iconSwicthVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={defaultSpring}
-            className="flex items-center justify-center"
-          >
+        <motion.div
+          key={copied ? 'check' : 'copy'}
+          variants={iconSwicthVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={defaultSpring}
+          className="flex items-center justify-center"
+        >
+          {copied ? (
+            <Icons.check size={14} className="stroke-[3]" />
+          ) : (
             <Icons.copy size={14} />
-          </motion.div>
-        )}
+          )}
+        </motion.div>
       </AnimatePresence>
     </Button>
   );

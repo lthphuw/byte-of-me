@@ -1,18 +1,16 @@
 'use client';
 
 import type { Control, UseFormReturn } from 'react-hook-form';
-import type { ProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
-import { Button } from '@/shared/ui/button';
+import { DeleteButton } from '@/shared/ui/delete-button';
 import { FormControl, FormField, FormItem, FormLabel } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Separator } from '@/shared/ui/separator';
 import { Textarea } from '@/shared/ui/textarea';
 import { RichTextEditor } from '@/shared/ui/tiptap/rich-text-editor';
-
-import { Trash2 } from 'lucide-react';
+import { UserProfileFormValues } from '@/entities';
 
 interface ProfileTranslationCardProps {
-  form: UseFormReturn<ProfileFormValues>;
+  form: UseFormReturn<UserProfileFormValues>;
   index: number;
   onRemove: () => void;
 }
@@ -39,15 +37,7 @@ export function ProfileTranslationCard({
           )}
         />
 
-        <Button
-          type="button"
-          variant="destructive"
-          size="sm"
-          onClick={onRemove}
-        >
-          <Trash2 className="mr-2 h-4 w-4" />
-          Remove
-        </Button>
+        <DeleteButton onClick={onRemove}/>
       </div>
 
       <Separator />
@@ -183,7 +173,7 @@ function Section({ title, children }: SectionProps) {
 }
 
 interface FieldProps {
-  control: Control<ProfileFormValues>;
+  control: Control<UserProfileFormValues>;
   name: any;
   label: string;
   className?: string;

@@ -4,10 +4,12 @@ import type { PublicProject } from '@/entities/project/model/types';
 import { TagClickableBadge } from '@/entities/tag/ui/tag-clickable-badge';
 import { TechStackClickableBadge } from '@/entities/tech-stack/ui/tech-stack-clickable-badge';
 import { Link } from '@/i18n/navigation';
+import { formatDate } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
 
 import { Code, ExternalLink } from 'lucide-react';
+import { useLocale } from 'next-intl';
 
 export interface ProjectCardProps {
   project: PublicProject;
@@ -22,16 +24,8 @@ export function ProjectCard({
   onTagClick,
   onTechClick,
 }: ProjectCardProps) {
-  const formatDate = (dateString: string | Date | undefined | null) => {
-    if (!dateString) return null;
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      year: 'numeric',
-    }).format(date);
-  };
-
-  const start = formatDate(project.startDate);
+  const locale = useLocale();
+  const start = formatDate(project.startDate, locale);
   const end = project.endDate ? formatDate(project.endDate) : 'Present';
 
   return (

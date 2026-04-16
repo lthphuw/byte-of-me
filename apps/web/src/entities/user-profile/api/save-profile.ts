@@ -1,12 +1,12 @@
 'use server';
 
-import type { ProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
+import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
 import { requireUser } from '@/features/auth/lib/session';
 
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
-export async function saveProfile(values: ProfileFormValues) {
+export async function saveProfile(values: UserProfileFormValues) {
   const start = Date.now();
 
   try {

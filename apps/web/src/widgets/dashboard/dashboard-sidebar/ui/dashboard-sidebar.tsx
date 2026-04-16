@@ -6,12 +6,24 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { purgeEntireCache } from '@/shared/lib/revalidate';
 import { Icons } from '@/shared/ui/icons';
 
-import { Briefcase, Code2, DatabaseZap, ExternalLink, FileText, GraduationCap, Image as ImageIcon, Languages, LayoutDashboard, LogOut, Tag, Tags, UserCircle } from 'lucide-react';
+import {
+  Briefcase,
+  Code2,
+  DatabaseZap,
+  ExternalLink,
+  FileText,
+  GraduationCap,
+  Image as ImageIcon,
+  Languages,
+  LayoutDashboard,
+  LogOut,
+  Tag,
+  Tags,
+  UserCircle,
+} from 'lucide-react';
 
 import { DashboardNavItems } from './dashboard-nav-items';
 
-
-// Grouping items to create a better hierarchy
 const menuGroups = [
   {
     label: 'Overview',

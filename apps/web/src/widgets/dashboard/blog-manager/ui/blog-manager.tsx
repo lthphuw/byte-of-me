@@ -10,6 +10,7 @@ import {
 } from '@/entities';
 import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import { BlogEditorCard } from '@/entities/blog/ui/blog-editor-card';
+import { BlogEditorDialog } from '@/features/dashboard';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,8 +28,6 @@ import { Pagination } from '@/shared/ui/pagination';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
-
-import { BlogDialog } from './blog-dialog';
 
 export function BlogManager() {
   const queryClient = useQueryClient();
@@ -101,6 +100,7 @@ export function BlogManager() {
                 setOpen(true);
               }}
               onDelete={(id) => setBlogToDelete(id)}
+              isPending={deleteMutation.isPending}
             />
           ))
         )}
@@ -112,7 +112,7 @@ export function BlogManager() {
         isPlaceholderData={isPlaceholderData}
       />
 
-      <BlogDialog
+      <BlogEditorDialog
         open={open}
         onOpenChange={setOpen}
         initialData={editing!}

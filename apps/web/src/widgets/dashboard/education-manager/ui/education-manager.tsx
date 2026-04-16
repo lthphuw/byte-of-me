@@ -8,11 +8,15 @@ import { getAllAdminEducations } from '@/entities/education/api/get-all-admin-ed
 import { updateEducation } from '@/entities/education/api/update-education';
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
 import { useToast } from '@/shared/hooks/use-toast';
+import { formatDate } from '@/shared/lib/utils';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
+import { DeleteButton } from '@/shared/ui/delete-button';
+import { EditButton } from '@/shared/ui/edit-button';
+import Loading from '@/shared/ui/loading';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
+import { GraduationCap, Inbox, Plus } from 'lucide-react';
 import Image from 'next/image';
 
 import { EducationDialog } from './education-dialog';
@@ -24,48 +28,40 @@ export function EducationManager() {
   const [editing, setEditing] = useState<AdminEducation | null>(null);
   const [open, setOpen] = useState(false);
 
-  // Fetch
-  const { data: response } = useQuery({
+  const {
+    data: response,
+    isLoading,
+    isFetching,
+  } = useQuery({
     queryKey: ['educations'],
     queryFn: getAllAdminEducations,
   });
 
   const educations = response?.success ? response.data : [];
+  const isEmpty = !isLoading && educations.length === 0;
 
-  // Save
   const saveMutation = useMutation({
     mutationFn: (values: EducationFormValues) =>
       editing ? updateEducation(editing.id, values) : createEducation(values),
-
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['educations'] });
-      toast({
-        title: editing ? 'PublicEducation updated' : 'PublicEducation created',
-      });
+      toast({ title: editing ? 'Education updated' : 'Education created' });
       setOpen(false);
     },
-
     onError: () =>
-      toast({ title: 'Error saving educationSchema', variant: 'destructive' }),
+      toast({ title: 'Error saving education', variant: 'destructive' }),
   });
 
-  // Delete
   const deleteMutation = useMutation({
     mutationFn: deleteEducation,
-
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['educations'] });
-      toast({ title: 'PublicEducation removed' });
+      toast({ title: 'Education removed' });
     },
-
     onError: () =>
-      toast({
-        title: 'Error deleting educationSchema',
-        variant: 'destructive',
-      }),
+      toast({ title: 'Error deleting education', variant: 'destructive' }),
   });
 
-  // Handlers
   const handleCreate = () => {
     setEditing(null);
     setOpen(true);
@@ -77,103 +73,111 @@ export function EducationManager() {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex justify-end">
-        <Button onClick={handleCreate} size="sm" className="h-9 px-4">
-          <Plus className="mr-2 h-4 w-4" />
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-semibold">Education</h2>
+          <p className="text-muted-foreground text-sm">
+            Manage your academic background
+          </p>
+        </div>
+        <Button onClick={handleCreate} size="sm" className="gap-2">
+          <Plus className="h-4 w-4" />
           Add Education
         </Button>
       </div>
 
-      {/* List */}
-      <div className="space-y-4">
-        {educations.map((edu) => {
-          const title =
-            edu.translations?.[0]?.title || 'Untitled educationSchema';
+      <div className="relative min-h-[200px] space-y-4">
+        {isLoading ? (
+          <div className="flex h-48 flex-col items-center justify-center gap-2">
+            <Loading />
+            <p className="text-muted-foreground animate-pulse text-xs">
+              Loading records...
+            </p>
+          </div>
+        ) : isEmpty ? (
+          <div className="border-muted-foreground/20 flex h-48 flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 text-center">
+            <div className="bg-muted mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+              <Inbox className="text-muted-foreground h-6 w-6" />
+            </div>
+            <h3 className="font-medium">No education entries</h3>
+            <p className="text-muted-foreground mb-4 text-sm">
+              Start by adding your first academic achievement.
+            </p>
+            <Button variant="outline" size="sm" onClick={handleCreate}>
+              Add Your First Entry
+            </Button>
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {educations.map((edu) => {
+              const title =
+                edu.translations?.[0]?.title || 'Untitled Education';
+              const dateRange = `${formatDate(edu.startDate)} — ${
+                edu.endDate ? formatDate(edu.endDate) : 'Present'
+              }`;
 
-          const dateRange = `${formatDate(edu.startDate)} - ${
-            edu.endDate ? formatDate(edu.endDate) : 'Present'
-          }`;
-
-          return (
-            <div
-              key={edu.id}
-              className="bg-card hover:border-primary/50 group flex items-center justify-between rounded-xl border p-4 transition-all hover:shadow-sm"
-            >
-              {/* Left */}
-              <div className="flex items-center gap-4">
-                {/* Logo */}
-                <div className="bg-muted flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg p-2">
-                  {edu.logo?.url ? (
-                    <Image
-                      src={edu.logo.url}
-                      alt={title}
-                      width={40}
-                      height={40}
-                      className="object-contain"
-                    />
-                  ) : (
-                    <div className="text-muted-foreground text-xs font-bold">
-                      {title.substring(0, 2).toUpperCase()}
+              return (
+                <div
+                  key={edu.id}
+                  className="bg-card hover:border-primary/50 group flex items-center justify-between rounded-xl border p-4 transition-all hover:shadow-md"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="bg-muted relative flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border">
+                      {edu.logo?.url ? (
+                        <Image
+                          src={edu.logo.url}
+                          alt={title}
+                          fill
+                          className="object-contain p-2"
+                        />
+                      ) : (
+                        <GraduationCap className="text-muted-foreground h-6 w-6" />
+                      )}
                     </div>
-                  )}
-                </div>
 
-                {/* Info */}
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">{title}</p>
-                  <p className="text-muted-foreground text-xs">{dateRange}</p>
+                    <div className="space-y-1">
+                      <h4 className="font-semibold leading-none">{title}</h4>
+                      <p className="text-muted-foreground text-xs font-medium">
+                        {dateRange}
+                      </p>
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        <Badge
+                          variant="secondary"
+                          className="px-2 py-0 text-[10px]"
+                        >
+                          {edu.achievements.length} Achievements
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
 
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary" className="text-[10px]">
-                      {edu.achievements.length} achievements
-                    </Badge>
+                  <div className="flex items-center gap-2 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
+                    <EditButton onClick={() => handleEdit(edu)} />
+                    <DeleteButton
+                      isSubmitting={deleteMutation.isPending}
+                      onClick={() => {
+                        if (
+                          confirm(`Are you sure you want to delete "${title}"?`)
+                        ) {
+                          deleteMutation.mutate(edu.id);
+                        }
+                      }}
+                    />
                   </div>
                 </div>
-              </div>
+              );
+            })}
+          </div>
+        )}
 
-              {/* Actions */}
-              <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-8 w-8"
-                  onClick={() => handleEdit(edu)}
-                >
-                  <Pencil className="h-3.5 w-3.5" />
-                </Button>
-
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="text-destructive hover:bg-destructive/10 h-8 w-8"
-                  disabled={deleteMutation.isPending}
-                  onClick={() => {
-                    if (confirm(`Delete "${title}"?`)) {
-                      deleteMutation.mutate(edu.id);
-                    }
-                  }}
-                >
-                  {deleteMutation.isPending ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Trash2 className="h-3.5 w-3.5" />
-                  )}
-                </Button>
-              </div>
-            </div>
-          );
-        })}
-
-        {!educations.length && (
-          <div className="text-muted-foreground py-12 text-center text-sm">
-            No education entries yet.
+        {!isLoading && isFetching && (
+          <div className="absolute right-2 top-2">
+            <Loading />
           </div>
         )}
       </div>
 
-      {/* Dialog */}
       <EducationDialog
         open={open}
         onOpenChange={setOpen}
@@ -183,11 +187,4 @@ export function EducationManager() {
       />
     </div>
   );
-}
-
-function formatDate(date: Date) {
-  return new Date(date).toLocaleDateString(undefined, {
-    month: 'short',
-    year: 'numeric',
-  });
 }

@@ -1,15 +1,38 @@
-import { getAllAdminTechStack } from '@/entities/tech-stack/api/get-all-admin-tech-stacks';
-import { TechStackManager } from '@/widgets/dashboard/tech-stack-manager/ui/tech-stack-manager';
+import { getAllAdminTechStack } from '@/entities';
+import { TechStackManager } from '@/widgets/dashboard';
 
-export const metadata = { title: 'Tech Stack' };
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Tech Stack | Dashboard',
+  description: 'Manage your professional technologies and tools.',
+  robots: { index: false },
+};
 
 export default async function TechStackPage() {
   const resp = await getAllAdminTechStack();
 
-  if (!resp.success) {
-    return null;
+  if (!resp.success || !resp.data) {
+    return (
+      <div className="flex h-[400px] flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed">
+        <h3 className="text-lg font-semibold">Failed to load tech stack</h3>
+        <p className="text-muted-foreground text-sm">
+          Please check your connection or try again later.
+        </p>
+      </div>
+    );
   }
+
   return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-bold tracking-tight">Tech Stack</h1>
+        <p className="text-muted-foreground text-lg">
+          Maintain the list of technologies, frameworks, and tools you use.
+        </p>
+      </div>
+
       <TechStackManager initialTechStacks={resp.data} />
+    </div>
   );
 }

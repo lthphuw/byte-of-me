@@ -1,6 +1,6 @@
 import Loading from '@/shared/ui/loading';
 
-export default function HomeLoading() {
+export default function DashboardLoading() {
   return (
     <div className="fixed inset-0 flex items-center justify-center pl-[256px]">
       <Loading size={45} />

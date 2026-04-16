@@ -30,6 +30,19 @@ export function formatImageSize(bytes: number) {
   );
 }
 
+export function formatDate(
+  dateString: string | Date | undefined | null,
+  locale = 'en-US'
+) {
+  if (!dateString) return null;
+  const date = new Date(dateString);
+
+  return new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    year: 'numeric',
+  }).format(date);
+}
+
 /**
  * For debugging
  * @param ms

@@ -9,9 +9,9 @@ import {
   DialogTitle,
 } from '@/shared/ui/dialog';
 
-import { BlogForm } from './blog-form';
+import { BlogForm } from './form/blog-form';
 
-export interface BlogDialogProps {
+export interface BlogEditorDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (value: BlogFormValues) => void;
@@ -19,19 +19,19 @@ export interface BlogDialogProps {
   loading: boolean;
 }
 
-export function BlogDialog({
+export function BlogEditorDialog({
   open,
   onOpenChange,
   initialData,
   onSubmit,
   loading,
-}: BlogDialogProps) {
+}: BlogEditorDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-6xl overflow-y-auto overflow-x-hidden">
+      <DialogContent className="max-h-[80vh] max-w-[1300px] overflow-y-auto overflow-x-hidden">
         <DialogHeader>
           <DialogTitle>
-            {initialData ? 'Edit PublicBlog' : 'Create PublicBlog'}
+            {initialData ? 'Edit Blog' : 'Create Blog'}
           </DialogTitle>
         </DialogHeader>
 

@@ -1,15 +1,20 @@
 import type { PublicBlog } from '@/entities/blog';
+import { formatDate } from '@/shared/lib/utils';
 import { Badge } from '@/shared/ui/badge';
 import { Card } from '@/shared/ui/card';
 import { RichText } from '@/shared/ui/rich-text';
 import { Separator } from '@/shared/ui/separator';
-import { BlogDetailsShell } from '@/widgets/public/blog-details/ui/blog-shells';
+import { BlogDetailsShell } from '@/widgets/public/blog-details-content/ui/blog-shells';
 
 import { Calendar, Clock, FolderCode, Tag as TagIcon } from 'lucide-react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 
-export default async function BlogDetails({ blog }: { blog: PublicBlog }) {
+export default async function BlogDetailsContent({
+  blog,
+}: {
+  blog: PublicBlog;
+}) {
   const t = await getTranslations('blogDetails');
 
   return (
@@ -31,7 +36,7 @@ export default async function BlogDetails({ blog }: { blog: PublicBlog }) {
               <div className="flex shrink-0 items-center gap-1">
                 <Calendar className="h-4 w-4" />
                 <span className="whitespace-nowrap">
-                  {new Date(blog.publishedDate).toLocaleDateString()}
+                  {formatDate(blog.publishedDate)}
                 </span>
               </div>
             )}

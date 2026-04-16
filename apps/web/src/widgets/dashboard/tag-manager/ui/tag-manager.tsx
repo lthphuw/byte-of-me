@@ -14,12 +14,14 @@ import {
   AlertDialogTitle,
 } from '@/shared/ui/alert-dialog';
 import { Button } from '@/shared/ui/button';
+import { DeleteButton } from '@/shared/ui/delete-button';
+import { EditButton } from '@/shared/ui/edit-button';
 import { Empty, EmptyDescription, EmptyHeader } from '@/shared/ui/empty';
 import Loading from '@/shared/ui/loading';
 import { Pagination } from '@/shared/ui/pagination';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Plus, Tag as TagIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { TagDialog } from './tag-dialog';
@@ -30,12 +32,12 @@ export function TagManager() {
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<any>(null);
   const [open, setOpen] = useState(false);
-  const [tagToDelete, setTagToDelete] = useState<string | null>(null);
+  const [tagToDelete, setTagToDelete] = useState<any>(null);
 
-  const { data, isLoading, isPlaceholderData } = useQuery({
+  const { data, isLoading, isFetching, isPlaceholderData } = useQuery({
     queryKey: ['tags', page],
     queryFn: () => getPaginatedAdminTags(page, 12),
-    placeholderData: (previousData) => previousData,
+    placeholderData: (prev) => prev,
   });
 
   const tags = data?.data?.data || [];
@@ -46,24 +48,20 @@ export function TagManager() {
       editing ? updateTag(editing.id, values) : createTag(values),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tags'] });
-      toast.success(
-        editing
-          ? 'PublicTag updated successfully'
-          : 'PublicTag created successfully'
-      );
-      handleClose(); // Reset state properly
+      toast.success(editing ? 'Tag updated' : 'Tag created');
+      handleClose();
     },
-    onError: () => toast.error('Failed to save tagSchema'),
+    onError: () => toast.error('Failed to save tag'),
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteTag,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tags'] });
-      toast.success('PublicTag deleted');
+      toast.success('Tag deleted');
       setTagToDelete(null);
     },
-    onError: () => toast.error('Could not delete tagSchema'),
+    onError: () => toast.error('Could not delete tag'),
   });
 
   const handleClose = () => {
@@ -71,83 +69,102 @@ export function TagManager() {
     setEditing(null);
   };
 
+  const handleEdit = (tag: any) => {
+    setEditing(tag);
+    setOpen(true);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Tags</h2>
-        <Button
-          size="sm"
-          onClick={() => {
-            setEditing(null);
-            setOpen(true);
-          }}
-        >
-          <Plus className="mr-2 h-4 w-4" />
+        <div>
+          <h2 className="text-lg font-semibold">Tags</h2>
+          <p className="text-muted-foreground text-xs">
+            Categorize your projects and posts
+          </p>
+        </div>
+        <Button size="sm" onClick={() => setOpen(true)} className="gap-2">
+          <Plus className="h-4 w-4" />
           Add Tag
         </Button>
       </div>
 
-      {/* Improved Grid Layout */}
-      <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="relative min-h-[300px]">
         {isLoading ? (
-          <div className="col-span-full flex items-center justify-center py-20">
+          <div className="flex h-64 flex-col items-center justify-center gap-3">
             <Loading />
+            <p className="text-muted-foreground animate-pulse text-xs">
+              Fetching tags...
+            </p>
           </div>
         ) : tags.length === 0 ? (
-          <div className="col-span-full flex items-center justify-center py-20">
-            <Empty className="max-w-md text-center">
+          <div className="flex h-64 items-center justify-center rounded-xl border-2 border-dashed">
+            <Empty className="max-w-md">
               <EmptyHeader>No tags found</EmptyHeader>
               <EmptyDescription>
-                Create your first tag to get started.
+                Create tags to organize your content library.
               </EmptyDescription>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-4"
+                onClick={() => setOpen(true)}
+              >
+                Create First Tag
+              </Button>
             </Empty>
           </div>
         ) : (
-          tags.map((tag: any) => (
-            <div
-              key={tag.id}
-              className="bg-card flex h-16 items-center justify-between rounded-lg border p-3 shadow-sm transition-shadow hover:shadow-md"
-            >
-              <div className="mr-2 min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">
-                  {tag.translations?.[0]?.name || tag.slug}
-                </p>
-                <p className="text-muted-foreground truncate text-[10px] uppercase tracking-wider">
-                  {tag.slug}
-                </p>
-              </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {tags.map((tag: any) => (
+              <div
+                key={tag.id}
+                className="bg-card hover:border-primary/50 group flex items-center justify-between rounded-xl border p-3 transition-all hover:shadow-sm"
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="bg-muted flex h-8 w-8 items-center justify-center rounded-lg">
+                    <TagIcon className="text-muted-foreground h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">
+                      {tag.translations?.[0]?.name || tag.slug}
+                    </p>
+                    <p className="text-muted-foreground truncate font-mono text-[10px] uppercase tracking-tighter">
+                      {tag.slug}
+                    </p>
+                  </div>
+                </div>
 
-              <div className="flex shrink-0 gap-0.5">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-8 w-8"
-                  onClick={() => {
-                    setEditing(tag);
-                    setOpen(true);
-                  }}
-                >
-                  <Pencil className="h-3.5 w-3.5" />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="text-destructive hover:bg-destructive/10 h-8 w-8"
-                  onClick={() => setTagToDelete(tag.id)}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
+                <div className="flex shrink-0 gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                  <EditButton onClick={() => handleEdit(tag)} />
+                  <DeleteButton
+                    isSubmitting={
+                      deleteMutation.isPending && tagToDelete?.id === tag.id
+                    }
+                    onClick={() => setTagToDelete(tag)}
+                  />
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
+        )}
+
+        {!isLoading && isFetching && (
+          <div className="absolute -top-12 right-0">
+            <Loading />
+          </div>
         )}
       </div>
 
-      <Pagination
-        pagination={pagination}
-        setPage={setPage}
-        isPlaceholderData={isPlaceholderData}
-      />
+      {pagination && tags.length > 0 && (
+        <div className="pt-4">
+          <Pagination
+            pagination={pagination}
+            setPage={setPage}
+            isPlaceholderData={isPlaceholderData}
+          />
+        </div>
+      )}
 
       <TagDialog
         key={editing?.id || 'new'}
@@ -164,9 +181,13 @@ export function TagManager() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Tag?</AlertDialogTitle>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This cannot be undone.
+              This will permanently delete the tag{' '}
+              <span className="text-foreground font-semibold">
+                "{tagToDelete?.slug}"
+              </span>
+              . This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -177,11 +198,11 @@ export function TagManager() {
               className="bg-destructive hover:bg-destructive/90"
               onClick={(e) => {
                 e.preventDefault();
-                if (tagToDelete) deleteMutation.mutate(tagToDelete);
+                deleteMutation.mutate(tagToDelete.id);
               }}
               disabled={deleteMutation.isPending}
             >
-              {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+              {deleteMutation.isPending ? 'Deleting...' : 'Delete Tag'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

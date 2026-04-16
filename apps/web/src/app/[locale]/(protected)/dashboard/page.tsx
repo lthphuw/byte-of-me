@@ -1,40 +1,59 @@
+import { Suspense } from 'react';
 import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
-import { getDashboardStats } from '@/features/dashboard/dashboard-stats/lib/get-dashboard-stats';
-import { StatsGrid } from '@/features/dashboard/dashboard-stats/ui/stats-grid';
+import {
+  DashboardProfile,
+  DashboardProfileLoading,
+  StatsGrid,
+  StatsGridLoading,
+} from '@/features/dashboard';
 import { Separator } from '@/shared/ui/separator';
 import { ContactMessageGallery } from '@/widgets/dashboard/contact-message-gallery/ui/contact-message-gallery';
 
+import type { Metadata } from 'next';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const profileRes = await getUserProfile();
+  const userName = profileRes.data?.displayName || 'Admin';
+
+  return {
+    title: `Dashboard | Welcome, ${userName}`,
+    description:
+      'Manage your personal portfolio, track engagement stats, and view messages.',
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}
+
 export default async function DashboardPage() {
-  const [user, statsResponse] = await Promise.all([
-    getUserProfile(),
-    getDashboardStats(),
-  ]);
-
-  if (!user.success || !statsResponse.success || !statsResponse.data) {
-    throw new Error('Failed to load dashboard data');
-  }
-
-  const stats = statsResponse.data;
-
   return (
     <div className="space-y-10 pb-10">
-      {/* Header Section */}
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-          Welcome back, {user.data.displayName}! 👋
-        </h1>
-        <p className="text-muted-foreground text-lg">
-          Manage your personal portfolio and track your content performance.
-        </p>
-      </div>
+      <section aria-label="Profile Summary">
+        <Suspense fallback={<DashboardProfileLoading />}>
+          <DashboardProfile />
+        </Suspense>
+      </section>
 
-      <StatsGrid stats={stats} />
+      <section aria-label="Statistics Overview">
+        <Suspense fallback={<StatsGridLoading />}>
+          <StatsGrid />
+        </Suspense>
+      </section>
 
       <Separator className="my-8" />
 
-      <div className="space-y-6">
+      <section aria-label="Contact Messages" className="space-y-6">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-2xl font-bold tracking-tight">
+            Inbound Messages
+          </h2>
+          <p className="text-muted-foreground text-sm">
+            Recent inquiries from your portfolio contact form.
+          </p>
+        </div>
         <ContactMessageGallery />
-      </div>
+      </section>
     </div>
   );
 }

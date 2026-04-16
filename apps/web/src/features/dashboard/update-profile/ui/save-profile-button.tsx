@@ -1,6 +1,8 @@
+'use client';
+
 import { useFormContext } from 'react-hook-form';
 import { saveProfile } from '@/entities/user-profile/api/save-profile';
-import type { ProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
+import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/ui/button';
 import { Icons } from '@/shared/ui/icons';
@@ -10,7 +12,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 export function SaveProfileButton({ userId }: { userId: string }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { handleSubmit } = useFormContext<ProfileFormValues>();
+  const { handleSubmit } = useFormContext<UserProfileFormValues>();
 
   const mutation = useMutation({
     mutationFn: saveProfile,
@@ -29,7 +31,7 @@ export function SaveProfileButton({ userId }: { userId: string }) {
     },
   });
 
-  const onSubmit = (values: ProfileFormValues) => {
+  const onSubmit = (values: UserProfileFormValues) => {
     mutation.mutate({
       ...values,
       translations: values.translations.map((t) => ({

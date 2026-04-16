@@ -1,11 +1,11 @@
 'use client';
 
 import type { Dispatch, SetStateAction } from 'react';
+import { MediaCard } from '@/entities';
 import { cn } from '@/shared/lib/utils';
 import type { PaginatedMetadata } from '@/shared/types/api/paginated-api.type';
 import type { Media } from '@/shared/types/models';
 import { Pagination } from '@/shared/ui/pagination';
-import { MediaCard } from '@/widgets/dashboard/media-manager/ui/media-card';
 
 export function MediaLibrary({
   mediaList,

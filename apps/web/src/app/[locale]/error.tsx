@@ -38,6 +38,7 @@ export default function Error({
     // Log the error to an error reporting service
     console.error(error);
   }, [error]);
+
   return (
     <section className="container relative z-20 mx-auto flex min-h-screen items-center justify-center px-6 py-12">
       <div className="w-full">

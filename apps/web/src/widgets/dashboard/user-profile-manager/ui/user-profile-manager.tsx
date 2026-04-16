@@ -5,7 +5,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import type { AdminUserProfile } from '@/entities/user-profile';
 import { getAdminUserProfile } from '@/entities/user-profile/api/get-user-profile-with-translations';
 import {
-  type ProfileFormValues,
+  type UserProfileFormValues,
   userProfileSchema,
 } from '@/entities/user-profile/model/user-profile-schema';
 import { SocialLinksSection } from '@/features/dashboard/manage-social-link-form/ui';
@@ -38,7 +38,7 @@ export function UserProfileManager({
 
   const user = data?.data;
 
-  const form = useForm<ProfileFormValues>({
+  const form = useForm<UserProfileFormValues>({
     resolver: zodResolver(userProfileSchema),
     defaultValues: { birthdate: null, socialLinks: [], translations: [] },
   });
@@ -61,7 +61,7 @@ export function UserProfileManager({
   }, []);
 
   const performReset = useCallback(
-    (userData: any) => {
+    (userData: AdminUserProfile) => {
       if (!userData) return;
       form.reset({
         birthdate: userData.userProfile?.birthdate
@@ -79,21 +79,18 @@ export function UserProfileManager({
   );
 
   const handleManualReset = () => {
-    performReset(user);
+    performReset(user!);
     toast({ title: 'Form reset' });
   };
 
-  // 1. Initial Data Sync: Only run when the query data actually changes
   useEffect(() => {
     if (user) {
       performReset(user);
     }
   }, [user, performReset]);
 
-  // 2. Tab Management: Auto-select first tab when fields are populated
   useEffect(() => {
     if (fields.length > 0) {
-      // If activeTab is empty or current activeTab ID isn't in the new fields list
       const isTabStillValid = fields.some((f) => f.id === activeTab);
       if (!activeTab || !isTabStillValid) {
         setActiveTab(fields[0].id);
@@ -104,7 +101,6 @@ export function UserProfileManager({
   }, [fields, activeTab]);
 
   const addNewLanguage = () => {
-    const id = crypto.randomUUID(); // Optional: helper to focus
     append({
       language: '',
       displayName: '',
@@ -119,6 +115,10 @@ export function UserProfileManager({
     });
   };
 
+  if (!user) {
+    return;
+  }
+
   return (
     <Form {...form}>
       <div className="mx-auto max-w-4xl space-y-10 pb-24">
@@ -129,6 +129,7 @@ export function UserProfileManager({
               Manage profile and languages
             </p>
           </div>
+
           <Button
             type="button"
             variant="outline"
@@ -172,6 +173,7 @@ export function UserProfileManager({
                   </TabsTrigger>
                 ))}
               </TabsList>
+
               {fields.map((field, index) => (
                 <TabsContent key={field.id} value={field.id}>
                   <ProfileTranslationCard

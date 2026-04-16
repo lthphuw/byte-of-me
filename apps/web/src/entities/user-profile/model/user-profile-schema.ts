@@ -27,4 +27,4 @@ export const userProfileSchema = z.object({
     .min(1),
 });
 
-export type ProfileFormValues = z.infer<typeof userProfileSchema>;
+export type UserProfileFormValues = z.infer<typeof userProfileSchema>;

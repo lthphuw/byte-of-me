@@ -1,12 +1,12 @@
 import type { UseFormReturn } from 'react-hook-form';
-import type { ProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
+import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
 import { DatePicker } from '@/shared/ui/date-picker';
 import { FormControl, FormField, FormItem, FormLabel } from '@/shared/ui/form';
 
 export function UserProfileSectionManager({
   form,
 }: {
-  form: UseFormReturn<ProfileFormValues>;
+  form: UseFormReturn<UserProfileFormValues>;
 }) {
   return (
     <div className="space-y-4">

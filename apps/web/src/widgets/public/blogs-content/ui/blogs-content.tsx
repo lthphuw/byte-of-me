@@ -11,8 +11,6 @@ import { BlogsShell } from '@/widgets/public/blogs-content/ui/blogs-shell';
 
 import { useQuery } from '@tanstack/react-query';
 
-interface BlogsContentProps {}
-
 export function BlogsContent() {
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState({

@@ -103,6 +103,7 @@ export function ProjectManager() {
                 setOpen(true);
               }}
               onDelete={(id) => setProjectToDelete(id)}
+              isPending={deleteMutation.isPending}
             />
           ))
         )}

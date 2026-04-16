@@ -1,20 +1,22 @@
 import type { AdminBlog } from '@/entities/blog';
+import { formatDate } from '@/shared/lib/utils';
 import { Badge } from '@/shared/ui/badge';
-import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/shared/ui/card';
+import { DeleteButton } from '@/shared/ui/delete-button';
+import { EditButton } from '@/shared/ui/edit-button';
 import { ImagePlaceholder } from '@/shared/ui/image-placeholder';
 
-import { format } from 'date-fns';
-import { Calendar, Eye, EyeOff, Pencil, Trash2 } from 'lucide-react';
+import { Calendar, Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
 
 interface BlogCardProps {
   blog: AdminBlog;
   onEdit: (blog: AdminBlog) => void;
   onDelete: (id: string) => void;
+  isPending?: boolean;
 }
 
-export function BlogEditorCard({ blog, onEdit, onDelete }: BlogCardProps) {
+export function BlogEditorCard({ blog, onEdit, onDelete, isPending }: BlogCardProps) {
   const mainTranslation = blog.translations?.[0];
   const coverImageUrl = blog.coverImage?.url;
 
@@ -67,15 +69,14 @@ export function BlogEditorCard({ blog, onEdit, onDelete }: BlogCardProps) {
             'No description provided for this blog post.'}
         </p>
 
-        {/* Render Tags if they exist */}
         <div className="mt-auto flex flex-wrap gap-1.5">
-          {blog.tags?.map((t: any) => (
+          {blog.tags?.map((t) => (
             <Badge
               key={t.tagId}
               variant="outline"
               className="px-2 py-0 text-[10px] font-normal"
             >
-              {(t.tag?.translations?.[0] as any)?.name || t.tag?.id}
+              {(t.tag?.translations?.[0])?.name || t.tag?.id}
             </Badge>
           ))}
         </div>
@@ -85,27 +86,20 @@ export function BlogEditorCard({ blog, onEdit, onDelete }: BlogCardProps) {
         {blog.publishedDate && (
           <div className="text-muted-foreground flex items-center text-[11px]">
             <Calendar className="mr-1 h-3.5 w-3.5" />
-            {format(new Date(blog.publishedDate), 'MMM dd, yyyy')}
+            {formatDate(blog.publishedDate)}
           </div>
         )}
 
         <div className="flex gap-1">
-          <Button
-            size="icon"
-            variant="ghost"
-            className="hover:bg-primary/10 hover:text-primary h-8 w-8"
+          <EditButton
+            isSubmitting={isPending}
             onClick={() => onEdit(blog)}
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="hover:bg-destructive/10 hover:text-destructive h-8 w-8"
+
+          />
+          <DeleteButton
+            isSubmitting={isPending}
             onClick={() => onDelete(blog.id)}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          />
         </div>
       </CardFooter>
     </Card>

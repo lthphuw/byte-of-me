@@ -1,15 +1,18 @@
+'use client';
+
 import { useFieldArray, type UseFormReturn } from 'react-hook-form';
-import type { ProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
+import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
 import { Button } from '@/shared/ui/button';
+import { DeleteButton } from '@/shared/ui/delete-button';
 import { FormControl, FormField, FormItem } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 export function SocialLinksSection({
   form,
 }: {
-  form: UseFormReturn<ProfileFormValues>;
+  form: UseFormReturn<UserProfileFormValues>;
 }) {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -95,17 +98,11 @@ export function SocialLinksSection({
             </div>
 
             {/* Remove */}
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="text-destructive hover:bg-destructive/10"
+            <DeleteButton
               onClick={() => {
                 if (confirm('Remove this link?')) remove(index);
               }}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            />
           </div>
         ))}
       </div>

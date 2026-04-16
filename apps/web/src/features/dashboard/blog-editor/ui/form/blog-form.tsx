@@ -105,7 +105,7 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
         : null,
       isPublished: initialData.isPublished,
       coverImageId: initialData.coverImageId,
-      tagIds: initialData.tags?.map((t: any) => t.tagId) ?? [],
+      tagIds: initialData.tags?.map((t) => t.tagId) ?? [],
       projectId: initialData.projectId ?? undefined,
       translations:
         initialData.translations?.length > 0

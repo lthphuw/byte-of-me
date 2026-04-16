@@ -9,9 +9,11 @@ import { updateTechStack } from '@/entities/tech-stack/api/update-tech-stack';
 import type { TechStackFormValues } from '@/entities/tech-stack/model/tech-stack-schema';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/ui/button';
+import { DeleteButton } from '@/shared/ui/delete-button';
+import { EditButton } from '@/shared/ui/edit-button';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import Image from 'next/image';
 
 import { TechStackDialog } from './tech-stack-dialog';
@@ -115,25 +117,15 @@ export function TechStackManager({
                 </div>
 
                 <div className="flex gap-1">
-                  <Button
-                    variant={'ghost'}
-                    size="icon"
+                  <EditButton
+                    isSubmitting={deleteMutation.isPending}
                     onClick={() => handleOpenEdit(tech)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
+                  />
 
-                  <Button
-                    variant={'ghost'}
-                    size="icon"
+                  <DeleteButton
+                    isSubmitting={deleteMutation.isPending}
                     onClick={() => deleteMutation.mutate(tech.id)}
-                  >
-                    {deleteMutation.isPending ? (
-                      <Loader2 className="animate-spin" />
-                    ) : (
-                      <Trash2 />
-                    )}
-                  </Button>
+                  />
                 </div>
               </div>
             ))}

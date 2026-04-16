@@ -2,22 +2,26 @@
 
 import type { AdminProject } from '@/entities/project/model';
 import { Badge } from '@/shared/ui/badge';
-import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { DeleteButton } from '@/shared/ui/delete-button';
+import { EditButton } from '@/shared/ui/edit-button';
 import { Icons } from '@/shared/ui/icons';
 
-import { Edit2, ExternalLink, Trash2 } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 
 interface ProjectEditorCardProps {
   project: AdminProject;
   onEdit: (project: any) => void;
   onDelete: (id: string) => void;
+  isPending?: boolean;
 }
 
 export function ProjectEditorCard({
   project,
   onEdit,
   onDelete,
+  isPending,
+
 }: ProjectEditorCardProps) {
   const t = project.translations?.[0] || {
     title: project.slug,
@@ -36,22 +40,8 @@ export function ProjectEditorCard({
           </Badge>
 
           <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground h-8 w-8"
-              onClick={() => onEdit(project)}
-            >
-              <Edit2 className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-destructive h-8 w-8"
-              onClick={() => onDelete(project.id)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <EditButton isSubmitting={isPending} onClick={() => onEdit(project)}/>
+            <DeleteButton isSubmitting={isPending} onClick={() => onDelete(project.id)}/>
           </div>
         </div>
 
