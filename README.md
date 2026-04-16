@@ -31,6 +31,24 @@
 
 ---
 
+## 📸 Demo
+
+<div align="center">
+  <table style="width: 100%;">
+    <tr>
+      <td width="50%">
+        <p align="center"><strong>Public Portfolio (Dark Mode)</strong></p>
+        <img src="./docs/public-demo.png" alt="Public Site Demo" width="100%" />
+      </td>
+      <td width="50%">
+        <p align="center"><strong>Private CMS Dashboard</strong></p>
+        <img src="./docs/dashboard-demo.png" alt="Dashboard Demo" width="100%" />
+      </td>
+    </tr>
+  </table>
+</div>
+
+---
 ## Overview
 
 Byte of Me is a personal website designed to work as both a portfolio and a management tool. It handles multi-language support in two ways: using `next-intl` for fixed UI text (like buttons and menus) and a flexible database setup for dynamic content like blog posts and project descriptions.

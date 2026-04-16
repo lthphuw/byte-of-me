@@ -41,4 +41,7 @@ export interface PublicBlog {
   project?: Maybe<Project>;
   coverImage?: Maybe<Media>;
   tags: Tag[];
+
+  views?: number;
+  avgReadingTime?: number;
 }

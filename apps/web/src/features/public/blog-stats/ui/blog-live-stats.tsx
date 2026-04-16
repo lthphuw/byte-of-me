@@ -1,10 +1,10 @@
 import { Eye, Hourglass } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
-import { getBlogStats } from '@/features/public/blog-stats/lib';
+import { getPublicBlogStats } from '@/features/public/blog-stats/lib';
 
 export async function BlogLiveStats({ blogId }: { blogId: string }) {
-  const stats = await getBlogStats(blogId);
+  const stats = await getPublicBlogStats(blogId);
   const t = await getTranslations('blogDetails');
 
   return (

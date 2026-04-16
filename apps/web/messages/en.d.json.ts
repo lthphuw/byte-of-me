@@ -193,6 +193,12 @@ declare const messages: {
       "filters": "Filters",
       "reset": "Reset",
       "seeMore": "See more"
+    },
+    "blogCard": {
+      "readArticle": "Read article",
+      "views": "{count, plural, =0 {No views} one {# view} other {# views}}",
+      "avgRead": "{time}m avg. read",
+      "readingTime": "{time} min read"
     }
   }
 };

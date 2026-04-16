@@ -200,6 +200,12 @@ declare const messages: {
       "filters": "Bộ lọc",
       "reset": "Thiết lập lại",
       "seeMore": "Xem thêm"
+    },
+    "blogCard": {
+      "readArticle": "Đọc bài viết",
+      "views": "{count} lượt xem",
+      "avgRead": "Đọc {time}p",
+      "readingTime": "{time} phút đọc"
     }
   }
 };

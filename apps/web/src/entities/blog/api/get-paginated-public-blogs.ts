@@ -91,15 +91,33 @@ export async function getPaginatedPublicBlogs(
                   },
                 },
               },
+              _count: {
+                select: { blogViewLogs: true },
+              },
             },
           }),
 
           prisma.blog.count({ where }),
         ]);
 
+        const blogIds = blogsRes.map((b) => b.id);
+        const readingTimeStats = await prisma.blogStatisticLog.groupBy({
+          by: ['blogId'],
+          where: {
+            blogId: { in: blogIds },
+            readingTime: { gt: 60 },
+          },
+          _avg: {
+            readingTime: true,
+          },
+        });
+
         const blogs: PublicBlog[] = blogsRes.map((blog) => {
           const translated = getTranslatedContent(blog.translations, locale);
           let project: Maybe<PublicProject> = null;
+
+          const stats = readingTimeStats.find((s) => s.blogId === blog.id);
+          const avgSeconds = stats?._avg.readingTime || 0;
 
           if (blog.project) {
             const blogTranslated = getTranslatedContent(
@@ -126,6 +144,7 @@ export async function getPaginatedPublicBlogs(
               tags: [],
             };
           }
+
           return {
             id: blog.id,
             createdAt: blog.createdAt,
@@ -157,6 +176,8 @@ export async function getPaginatedPublicBlogs(
                 name: t?.name || '',
               };
             }),
+            views: blog._count.blogViewLogs,
+            avgReadingTime: Math.floor(avgSeconds / 60),
           };
         });
 

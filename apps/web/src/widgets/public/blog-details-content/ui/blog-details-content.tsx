@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { Calendar, FolderCode, Tag as TagIcon } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 
@@ -54,34 +55,34 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
               </Suspense>
             </div>
 
+            {/* COVER */}
+            {blog.coverImage && (
+              <div className="relative mt-6 aspect-video w-full overflow-hidden rounded-xl border bg-muted">
+                <Image
+                  src={blog.coverImage.url}
+                  alt={blog.title}
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 100vw, 800px"
+                  className="object-cover"
+                />
+              </div>
+            )}
+
             {/* TAGS */}
             <div className="mt-6 flex flex-wrap gap-2">
               {blog.tags.map((tag) => (
                 <Link key={tag.id} href={`/blogs?tag=${tag.slug}`}>
-                  <Badge
-                    variant="secondary"
-                    className="transition hover:bg-primary/10"
-                  >
-                    <TagIcon className="mr-1 h-3 w-3 shrink-0" />
+                  <Badge variant="secondary" className="rounded-full px-3 py-1">
+                    <TagIcon className="mr-1.5 h-3 w-3 shrink-0" />
                     {tag.name}
                   </Badge>
                 </Link>
               ))}
             </div>
 
-            {/* COVER */}
-            {blog.coverImage && (
-              <div className="mb-10 mt-8 overflow-hidden rounded-xl border">
-                <img
-                  src={blog.coverImage.url}
-                  alt={blog.title}
-                  className="aspect-video h-auto w-full object-cover"
-                />
-              </div>
-            )}
-
             {/* CONTENT */}
-            <article className="w-full min-w-0 max-w-[calc(100vw-6rem)] overflow-hidden break-words md:max-w-none">
+            <article className="w-full min-w-0 max-w-[calc(100vw-4rem)] overflow-hidden break-words md:max-w-none">
               {' '}
               <RichText content={blog.content} />
             </article>

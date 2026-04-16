@@ -1,12 +1,20 @@
 'use client';
 
 import { format } from 'date-fns';
-import { ArrowRight, Calendar, Clock, Layers, Tag as TagIcon, } from 'lucide-react';
+import {
+  ArrowRight,
+  Calendar,
+  Clock,
+  Eye,
+  Layers,
+  Tag as TagIcon,
+} from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 import type { PublicBlog } from '@/entities/blog/model/types';
 import { Badge } from '@/shared/ui/badge';
-import { Card, CardContent, CardFooter, CardHeader } from '@/shared/ui/card';
+import { Card, CardContent } from '@/shared/ui/card';
 
 interface BlogCardProps {
   blog: PublicBlog;
@@ -14,6 +22,8 @@ interface BlogCardProps {
 }
 
 export function BlogCard({ blog, onTagClick }: BlogCardProps) {
+  const t = useTranslations('components.blogCard');
+
   return (
     <Card className="group flex flex-col overflow-hidden border-2 transition-all hover:border-primary/50 hover:shadow-xl">
       {/* Cover Image Area */}
@@ -33,51 +43,45 @@ export function BlogCard({ blog, onTagClick }: BlogCardProps) {
           </div>
         )}
 
-        {/* PublicProject Badge Overlay */}
+        {/* Project Badge Overlay */}
         {blog.project && (
           <div className="absolute left-3 top-3">
             <Badge
               variant="secondary"
               className="bg-background/90 shadow-sm backdrop-blur-sm"
             >
-              Project: {blog.project.title}
+              {blog.project.title}
             </Badge>
           </div>
         )}
       </Link>
 
-      <CardHeader className="space-y-2 p-4">
+      <CardContent className="flex flex-1 flex-col p-4">
         {/* Metadata */}
-        <div className="flex flex-wrap items-center gap-3 text-[10px] uppercase tracking-wider text-muted-foreground">
+        <div className="mb-3 flex items-center gap-3 text-[10px] uppercase tracking-wider text-muted-foreground">
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
             {blog.publishedDate
               ? format(new Date(blog.publishedDate), 'MMM dd, yyyy')
               : 'Draft'}
           </div>
-          <div className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            {blog.readingTime || 5} min read
-          </div>
         </div>
 
         {/* Title & Description */}
         <Link
           href={`/blogs/${blog.slug}`}
-          className="block transition-colors group-hover:text-primary"
+          className="mb-2 block transition-colors group-hover:text-primary"
         >
           <h3 className="line-clamp-2 text-xl font-bold leading-tight">
             {blog.title}
           </h3>
         </Link>
-        <p className="line-clamp-3 text-sm text-muted-foreground">
+        <p className="mb-4 line-clamp-2 text-sm text-muted-foreground">
           {blog.description}
         </p>
-      </CardHeader>
 
-      <CardContent className="mt-auto px-4 pb-4">
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1.5">
+        {/* Tags Area */}
+        <div className="mb-6 flex flex-wrap gap-1.5">
           {blog.tags.map((tag) => (
             <button
               key={tag.id}
@@ -92,17 +96,29 @@ export function BlogCard({ blog, onTagClick }: BlogCardProps) {
             </button>
           ))}
         </div>
-      </CardContent>
 
-      <CardFooter className="border-t bg-muted/30 p-4">
-        <Link
-          href={`/blogs/${blog.slug}`}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-all hover:gap-3"
-        >
-          Read article
-          <ArrowRight className="h-4 w-4" />
-        </Link>
-      </CardFooter>
+        {/* Stats & CTA Row */}
+        <div className="mt-auto flex items-center justify-between border-t pt-4">
+          <div className="flex items-center gap-4 text-[11px] font-medium text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <Eye className="h-3.5 w-3.5" />
+              <span>{t('views', { count: blog.views || 0})}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Clock className="h-3.5 w-3.5" />
+              <span>{blog.avgReadingTime}m</span>
+            </div>
+          </div>
+
+          <Link
+            href={`/blogs/${blog.slug}`}
+            className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-all hover:gap-3"
+          >
+            {t('readArticle')}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </CardContent>
     </Card>
   );
 }

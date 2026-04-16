@@ -1,1 +1,1 @@
-export * from './get-blog-stats';
+export * from './get-public-blog-stats';
