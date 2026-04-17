@@ -38,7 +38,7 @@ export function TechStackDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
   initialData: AdminTechStack | null;
-  onSubmit: (values: TechStackFormValues) => Promise<void>;
+  onSubmit: (values: TechStackFormValues) => Any;
   loading: boolean;
 }) {
   const form = useForm<TechStackFormValues>({

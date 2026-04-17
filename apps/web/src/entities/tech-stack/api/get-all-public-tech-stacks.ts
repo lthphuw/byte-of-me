@@ -18,7 +18,7 @@ export async function getAllPublicTechStacks(): Promise<
   return handlePublicAction('getPublicAllTechStacks', async () => {
     return await withPublicActionHandler(
       'getPublicAllTechStacks',
-      async ({ userId, locale }) => {
+      async ({ userId }) => {
         const items = await prisma.techStack.findMany({
           where: { userId },
           include: { logo: true },

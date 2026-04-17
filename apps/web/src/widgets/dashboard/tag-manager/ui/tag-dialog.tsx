@@ -62,9 +62,7 @@ export function TagDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>
-            {initialData ? 'Edit PublicTag' : 'Create PublicTag'}
-          </DialogTitle>
+          <DialogTitle>{initialData ? 'Edit Tag' : 'Create Tag'}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">

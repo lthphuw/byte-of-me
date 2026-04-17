@@ -1,15 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Plus, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useDebounce } from 'use-debounce';
 
 import { useTagInfiniteQuery } from '@/entities/tag';
 import { TagClickableBadge } from '@/entities/tag/ui/tag-clickable-badge';
 import { Button } from '@/shared/ui/button';
+import { FilterMultiSelectSection } from '@/shared/ui/filter-multi-select-section';
 import { Input } from '@/shared/ui/input';
-import { Skeleton } from '@/shared/ui/skeleton';
 
 interface FilterValues {
   tagSlugs: string[];
@@ -74,7 +74,7 @@ export function BlogFilters({ value, onChange }: BlogFiltersProps) {
 
       <div className="relative">
         <Input
-          placeholder="Search blogs..."
+          placeholder={t('searchBlog')}
           className="h-9 text-sm"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -90,50 +90,24 @@ export function BlogFilters({ value, onChange }: BlogFiltersProps) {
         )}
       </div>
 
-      <div className="flex flex-col gap-3">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-          Tags
-        </p>
-
+      <FilterMultiSelectSection
+        title="Tags"
+        onLoadMore={() => fetchNextTags()}
+        hasMore={hasNextTags}
+        isLoading={isLoadingTags}
+        isFetchingNextPage={isFetchingTags}
+      >
         <div className="flex min-h-[32px] flex-wrap items-center gap-1.5">
-          {isLoadingTags && !isFetchingTags ? (
-            <>
-              <Skeleton className="h-6 w-16 rounded-full" />
-              <Skeleton className="h-6 w-24 rounded-full" />
-              <Skeleton className="h-6 w-20 rounded-full" />
-            </>
-          ) : (
-            <>
-              {allTags.map((tag) => (
-                <TagClickableBadge
-                  key={tag.id}
-                  tag={tag}
-                  active={value.tagSlugs.includes(tag.slug)}
-                  onClick={() => toggleTag(tag.slug)}
-                />
-              ))}
-
-              {isFetchingTags && (
-                <>
-                  <Skeleton className="h-6 w-14 rounded-full" />
-                  <Skeleton className="h-6 w-16 rounded-full" />
-                </>
-              )}
-
-              {hasNextTags && !isFetchingTags && (
-                <button
-                  type="button"
-                  onClick={() => fetchNextTags()}
-                  className="inline-flex h-6 items-center gap-1 px-2 text-[11px] font-medium text-primary transition-all hover:underline"
-                >
-                  <Plus className="h-3 w-3" />
-                  {t('seeMore')}
-                </button>
-              )}
-            </>
-          )}
+          {allTags.map((tag) => (
+            <TagClickableBadge
+              key={tag.id}
+              tag={tag}
+              active={value.tagSlugs.includes(tag.slug)}
+              onClick={(slug) => toggleTag(slug)}
+            />
+          ))}
         </div>
-      </div>
+      </FilterMultiSelectSection>
     </div>
   );
 }

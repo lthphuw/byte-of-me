@@ -10,8 +10,8 @@ import {
   TechStackClickableBadge,
   useTechStackInfiniteQuery,
 } from '@/entities/tech-stack';
-import { ProjectFilterSection } from '@/features/public';
 import { Button } from '@/shared/ui/button';
+import { FilterMultiSelectSection } from '@/shared/ui/filter-multi-select-section';
 import { Input } from '@/shared/ui/input';
 
 export interface FilterValues {
@@ -96,7 +96,7 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
 
       <div className="relative">
         <Input
-          placeholder="Search projects..."
+          placeholder={t('searchProject')}
           className="h-9 text-sm"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -112,7 +112,7 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
         )}
       </div>
 
-      <ProjectFilterSection
+      <FilterMultiSelectSection
         title="Tags"
         onLoadMore={() => fetchNextTags()}
         hasMore={hasNextTags}
@@ -129,9 +129,9 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
             />
           ))}
         </div>
-      </ProjectFilterSection>
+      </FilterMultiSelectSection>
 
-      <ProjectFilterSection
+      <FilterMultiSelectSection
         title="Tech Stack"
         onLoadMore={() => fetchNextTech()}
         hasMore={hasNextTech}
@@ -148,7 +148,7 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
             />
           ))}
         </div>
-      </ProjectFilterSection>
+      </FilterMultiSelectSection>
     </div>
   );
 }

@@ -184,18 +184,23 @@
     "projectFilters": {
       "filters": "Filters",
       "reset": "Reset",
-      "seeMore": "See more"
+      "seeMore": "See more",
+      "searchProject": "Search project..."
     },
     "blogFilters": {
       "filters": "Filters",
       "reset": "Reset",
-      "seeMore": "See more"
+      "seeMore": "See more",
+      "searchBlog": "Search blog..."
     },
     "blogCard": {
       "readArticle": "Read article",
       "views": "{count, plural, =0 {No views} one {# view} other {# views}}",
       "avgRead": "{time}m avg. read",
       "readingTime": "{time} min read"
+    },
+    "multiSelectSection": {
+      "seeMore": "See more"
     }
   },
   "dashboard": {

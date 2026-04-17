@@ -2,235 +2,240 @@
 // See: https://next-intl.dev/docs/workflows/typescript#messages-arguments
 
 declare const messages: {
-  "metadata": {
-    "title": "Phu Luong",
-    "description": "Showcasing passion, experience, and projects — one byte at a time.",
-    "about": {
-      "title": "About Me",
-      "description": "A journey through my background, education, and technical stack."
-    },
-    "experience": {
-      "title": "Experience",
-      "description": "A professional timeline of my roles and hands-on contributions."
-    },
-    "projects": {
-      "title": "Projects",
-      "description": "A collection of my work, from academic builds to real-world solutions."
-    },
-    "contact": {
-      "title": "Contact",
-      "description": "Let's connect for collaborations or professional inquiries."
-    },
-    "blogs": {
-      "title": "Blog",
-      "description": "Insights, tutorials, and reflections on technology and development."
-    }
-  },
-  "global": {
-    "tableOfContent": "Table of Content",
-    "i18nToggle": {
-      "toggleLanguage": "Toggle language",
-      "vietnamese": "Vietnamese",
-      "english": "English",
-      "french": "French"
-    },
-    "modeToggle": {
-      "toggleTheme": "Toggle theme",
-      "light": "Light",
-      "dark": "Dark",
-      "system": "System"
-    },
-    "search": {
-      "searchProjects": "Search projects",
-      "all": "All"
-    },
-    "header": {
-      "nav": {
-        "home": "Home",
-        "about": "About",
-        "experience": "Experience",
-        "projects": "Projects",
-        "blogs": "Blogs",
-        "hobbies": "Hobbies",
-        "more": "More",
-        "letsTalk": "Let's talk",
-        "askMe": "Ask Me",
-        "anythingAboutMe": "Anything about me",
-        "cv": "CV"
-      }
-    },
-    "footer": {
-      "home": "Home",
-      "builtBy": "Built by",
-      "openSource": "Open source on",
-      "links": "Quick Links",
-      "about": "About",
-      "projects": "Projects",
-      "experience": "Experience",
-      "cv": "CV",
-      "anythingAboutMe": "Anything about me",
-      "contact": "Contact",
-      "connect": "Connect",
-      "blogs": "Blogs",
-      "email": "Email",
-      "navigation": "Footer Navigation",
-      "license": "Licensed under",
-      "rights": "All rights reserved."
-    }
-  },
-  "notFound": {
-    "pageNotFound404": "404 - Page Not Found",
-    "oopsPageNotFound": "Oops! Page not found",
-    "sorryWeCouldntFindThatPage": "Sorry, we couldn’t find that page",
-    "pleaseCheckTheUrlOrGoBackHome": "Please check the URL or go back home",
-    "goBack": "Go back",
-    "home": "Home",
-    "aboutMe": "About me",
-    "learnMoreAboutMyBackgroundAndJourney": "Learn more about my background and journey",
-    "seeMyWork": "See my work",
-    "checkOutTheProjectsIveBuilt": "Check out the projects I've built",
-    "contact": "Contact",
-    "reachOutForCollaborationOrQuestions": "Reach out for collaboration or questions",
-    "explore": "Explore"
-  },
-  "error": {
-    "somethingWentWrong": "Something went wrong!",
-    "goBack": "Go back",
-    "home": "Home",
-    "reportForMe": "Report this error",
-    "reportForMeAboutThisError": "Send a report about this error",
-    "send": "Send",
-    "errorDetails": "Error Details",
-    "copyError": "Copy Error",
-    "copied": "Copied!",
-    "missingQuestion": "You haven't entered a question. Please try again.",
-    "invalidInput": "Your question may contain inappropriate content. Please check and try again.",
-    "missingThreadId": "Missing conversation ID. Please refresh the page and try again.",
-    "failedToDelete": "Something went wrong while deleting the conversation. Please try again later or refresh the page."
-  },
-  "about": {
-    "section": {
-      "aboutMe": "About me",
-      "education": "Education",
-      "skillsTechStack": "Skills / Tech Stack"
-    },
-    "techStack": {
-      "frameworksTitle": "Frameworks",
-      "librariesTitle": "Libraries",
-      "programmingLanguagesTitle": "Programming Languages",
-      "databaseTitle": "Database"
-    }
-  },
-  "project": {
-    "details": "Details",
-    "gitHub": "GitHub",
-    "all": "All",
-    "thereAreNoProjectsYet": "There are no projects yet",
-    "loadingProjectList": "Loading project list",
-    "failedToLoadProjectList": "Failed to load project list Please try again",
-    "backToProjects": "Back to projects",
-    "noProjectsFound": "No projects have been added yet.",
-    "noProjectsMatchYourSearch": "No projects match your current filters or search query."
-  },
-  "blog": {
-    "details": "Details",
-    "all": "All",
-    "thereAreNoBlogsYet": "There are no blogs yet",
-    "loadingBlogList": "Loading blog list",
-    "failedToLoadBlogList": "Failed to load blog list. Please try again",
-    "noBlogsFound": "No blogs found yet. Stay tuned for future posts!",
-    "noBlogsMatchYourSearch": "No blogs match your current search or filters."
-  },
-  "blogDetails": {
-    "failedToLoadBlog": "Failed to load blog",
-    "blogNotFoundTitle": "Blog Post Not Found",
-    "blogNotFoundDescription": "Sorry, the article you are looking for doesn't exist or has been moved.",
-    "backToBlogs": "Back to blogs",
-    "goHome": "Go to homepage",
-    "relatedProject": "Related Project",
-    "viewProject": "View project",
-    "views": "{count, plural, =0 {No views} one {# view} other {# views}}",
-    "avgRead": "{time}m avg. read",
-    "readingTime": "{time} min read"
-  },
-  "contact": {
-    "letsWorkTogether": "Let’s work together",
-    "feelFreeToReachOutThroughAnyChannel": "Feel free to reach out through any channel",
-    "sendMeAnEmail": "Send me an email",
-    "linkedIn": "LinkedIn",
-    "gitHub": "GitHub",
-    "or": "Or",
-    "sendMeADirectMessage": "Send me a direct message"
-  },
-  "homepage": {
-    "myStory": "My story",
-    "moreAboutMyJourney": "More about my journey",
-    "selectedProjects": "Selected projects",
-    "aFewThingsIveBuiltRecently": "A few things I’ve built recently",
-    "viewProject": "View project",
-    "viewAllProjects": "View all projects",
-    "thereAreNoProjectsYet": "There are no projects yet",
-    "haveAnIdeaInMind": "Have an idea in mind?",
-    "alwaysInterestedInThoughtfulProjectsAndGoodCollaboration": "Always interested in thoughtful projects and good collaboration.",
-    "letsWorkTogether": "Let’s work together",
-    "emailMe": "Email me",
-    "contactDetails": "Contact details"
-  },
-  "experience": {
-    "updating": "Updating..."
-  },
-  "components": {
-    "expandableText": {
-      "showLess": "Show less",
-      "showMore": "Show more"
-    },
-    "projectFilters": {
-      "filters": "Filters",
-      "reset": "Reset",
-      "seeMore": "See more"
-    },
-    "blogFilters": {
-      "filters": "Filters",
-      "reset": "Reset",
-      "seeMore": "See more"
-    },
-    "blogCard": {
-      "readArticle": "Read article",
-      "views": "{count, plural, =0 {No views} one {# view} other {# views}}",
-      "avgRead": "{time}m avg. read",
-      "readingTime": "{time} min read"
-    }
-  },
-  "dashboard": {
-    "sidebar": {
-      "groups": {
-        "overview": "Overview",
-        "portfolio": "Portfolio Content",
-        "resume": "Resume Data",
-        "configuration": "Configuration"
-      },
-      "items": {
-        "dashboard": "Dashboard",
-        "profile": "Profile",
-        "projects": "Projects",
-        "blogs": "Blogs",
-        "media": "Media Library",
-        "companies": "Companies",
-        "education": "Education",
-        "techStacks": "Tech Stacks",
-        "tags": "Tags",
-        "translations": "Translations"
-      },
-      "actions": {
-        "clearCache": "Clear Cache",
-        "viewSite": "View Site",
-        "signOut": "Sign out",
-        "cacheSuccess": "System updated",
-        "cacheSuccessDesc": "All caches have been cleared successfully.",
-        "cacheError": "Update failed",
-        "cacheErrorDesc": "An error occurred while clearing caches."
-      }
-    }
-  }
+  metadata: {
+    title: 'Phu Luong';
+    description: 'Showcasing passion, experience, and projects — one byte at a time.';
+    about: {
+      title: 'About Me';
+      description: 'A journey through my background, education, and technical stack.';
+    };
+    experience: {
+      title: 'Experience';
+      description: 'A professional timeline of my roles and hands-on contributions.';
+    };
+    projects: {
+      title: 'Projects';
+      description: 'A collection of my work, from academic builds to real-world solutions.';
+    };
+    contact: {
+      title: 'Contact';
+      description: "Let's connect for collaborations or professional inquiries.";
+    };
+    blogs: {
+      title: 'Blog';
+      description: 'Insights, tutorials, and reflections on technology and development.';
+    };
+  };
+  global: {
+    tableOfContent: 'Table of Content';
+    i18nToggle: {
+      toggleLanguage: 'Toggle language';
+      vietnamese: 'Vietnamese';
+      english: 'English';
+      french: 'French';
+    };
+    modeToggle: {
+      toggleTheme: 'Toggle theme';
+      light: 'Light';
+      dark: 'Dark';
+      system: 'System';
+    };
+    search: {
+      searchProjects: 'Search projects';
+      all: 'All';
+    };
+    header: {
+      nav: {
+        home: 'Home';
+        about: 'About';
+        experience: 'Experience';
+        projects: 'Projects';
+        blogs: 'Blogs';
+        hobbies: 'Hobbies';
+        more: 'More';
+        letsTalk: "Let's talk";
+        askMe: 'Ask Me';
+        anythingAboutMe: 'Anything about me';
+        cv: 'CV';
+      };
+    };
+    footer: {
+      home: 'Home';
+      builtBy: 'Built by';
+      openSource: 'Open source on';
+      links: 'Quick Links';
+      about: 'About';
+      projects: 'Projects';
+      experience: 'Experience';
+      cv: 'CV';
+      anythingAboutMe: 'Anything about me';
+      contact: 'Contact';
+      connect: 'Connect';
+      blogs: 'Blogs';
+      email: 'Email';
+      navigation: 'Footer Navigation';
+      license: 'Licensed under';
+      rights: 'All rights reserved.';
+    };
+  };
+  notFound: {
+    pageNotFound404: '404 - Page Not Found';
+    oopsPageNotFound: 'Oops! Page not found';
+    sorryWeCouldntFindThatPage: 'Sorry, we couldn’t find that page';
+    pleaseCheckTheUrlOrGoBackHome: 'Please check the URL or go back home';
+    goBack: 'Go back';
+    home: 'Home';
+    aboutMe: 'About me';
+    learnMoreAboutMyBackgroundAndJourney: 'Learn more about my background and journey';
+    seeMyWork: 'See my work';
+    checkOutTheProjectsIveBuilt: "Check out the projects I've built";
+    contact: 'Contact';
+    reachOutForCollaborationOrQuestions: 'Reach out for collaboration or questions';
+    explore: 'Explore';
+  };
+  error: {
+    somethingWentWrong: 'Something went wrong!';
+    goBack: 'Go back';
+    home: 'Home';
+    reportForMe: 'Report this error';
+    reportForMeAboutThisError: 'Send a report about this error';
+    send: 'Send';
+    errorDetails: 'Error Details';
+    copyError: 'Copy Error';
+    copied: 'Copied!';
+    missingQuestion: "You haven't entered a question. Please try again.";
+    invalidInput: 'Your question may contain inappropriate content. Please check and try again.';
+    missingThreadId: 'Missing conversation ID. Please refresh the page and try again.';
+    failedToDelete: 'Something went wrong while deleting the conversation. Please try again later or refresh the page.';
+  };
+  about: {
+    section: {
+      aboutMe: 'About me';
+      education: 'Education';
+      skillsTechStack: 'Skills / Tech Stack';
+    };
+    techStack: {
+      frameworksTitle: 'Frameworks';
+      librariesTitle: 'Libraries';
+      programmingLanguagesTitle: 'Programming Languages';
+      databaseTitle: 'Database';
+    };
+  };
+  project: {
+    details: 'Details';
+    gitHub: 'GitHub';
+    all: 'All';
+    thereAreNoProjectsYet: 'There are no projects yet';
+    loadingProjectList: 'Loading project list';
+    failedToLoadProjectList: 'Failed to load project list Please try again';
+    backToProjects: 'Back to projects';
+    noProjectsFound: 'No projects have been added yet.';
+    noProjectsMatchYourSearch: 'No projects match your current filters or search query.';
+  };
+  blog: {
+    details: 'Details';
+    all: 'All';
+    thereAreNoBlogsYet: 'There are no blogs yet';
+    loadingBlogList: 'Loading blog list';
+    failedToLoadBlogList: 'Failed to load blog list. Please try again';
+    noBlogsFound: 'No blogs found yet. Stay tuned for future posts!';
+    noBlogsMatchYourSearch: 'No blogs match your current search or filters.';
+  };
+  blogDetails: {
+    failedToLoadBlog: 'Failed to load blog';
+    blogNotFoundTitle: 'Blog Post Not Found';
+    blogNotFoundDescription: "Sorry, the article you are looking for doesn't exist or has been moved.";
+    backToBlogs: 'Back to blogs';
+    goHome: 'Go to homepage';
+    relatedProject: 'Related Project';
+    viewProject: 'View project';
+    views: '{count, plural, =0 {No views} one {# view} other {# views}}';
+    avgRead: '{time}m avg. read';
+    readingTime: '{time} min read';
+  };
+  contact: {
+    letsWorkTogether: 'Let’s work together';
+    feelFreeToReachOutThroughAnyChannel: 'Feel free to reach out through any channel';
+    sendMeAnEmail: 'Send me an email';
+    linkedIn: 'LinkedIn';
+    gitHub: 'GitHub';
+    or: 'Or';
+    sendMeADirectMessage: 'Send me a direct message';
+  };
+  homepage: {
+    myStory: 'My story';
+    moreAboutMyJourney: 'More about my journey';
+    selectedProjects: 'Selected projects';
+    aFewThingsIveBuiltRecently: 'A few things I’ve built recently';
+    viewProject: 'View project';
+    viewAllProjects: 'View all projects';
+    thereAreNoProjectsYet: 'There are no projects yet';
+    haveAnIdeaInMind: 'Have an idea in mind?';
+    alwaysInterestedInThoughtfulProjectsAndGoodCollaboration: 'Always interested in thoughtful projects and good collaboration.';
+    letsWorkTogether: 'Let’s work together';
+    emailMe: 'Email me';
+    contactDetails: 'Contact details';
+  };
+  experience: {
+    updating: 'Updating...';
+  };
+  components: {
+    expandableText: {
+      showLess: 'Show less';
+      showMore: 'Show more';
+    };
+    projectFilters: {
+      filters: 'Filters';
+      reset: 'Reset';
+      seeMore: 'See more';
+      searchProject: 'Search project...';
+    };
+    blogFilters: {
+      filters: 'Filters';
+      reset: 'Reset';
+      seeMore: 'See more';
+      searchBlog: 'Search blog...';
+    };
+    blogCard: {
+      readArticle: 'Read article';
+      views: '{count, plural, =0 {No views} one {# view} other {# views}}';
+      avgRead: '{time}m avg. read';
+      readingTime: '{time} min read';
+    };
+    multiSelectSection: {
+      seeMore: 'See more';
+    };
+  };
+  dashboard: {
+    sidebar: {
+      groups: {
+        overview: 'Overview';
+        portfolio: 'Portfolio Content';
+        resume: 'Resume Data';
+        configuration: 'Configuration';
+      };
+      items: {
+        dashboard: 'Dashboard';
+        profile: 'Profile';
+        projects: 'Projects';
+        blogs: 'Blogs';
+        media: 'Media Library';
+        companies: 'Companies';
+        education: 'Education';
+        techStacks: 'Tech Stacks';
+        tags: 'Tags';
+        translations: 'Translations';
+      };
+      actions: {
+        clearCache: 'Clear Cache';
+        viewSite: 'View Site';
+        signOut: 'Sign out';
+        cacheSuccess: 'System updated';
+        cacheSuccessDesc: 'All caches have been cleared successfully.';
+        cacheError: 'Update failed';
+        cacheErrorDesc: 'An error occurred while clearing caches.';
+      };
+    };
+  };
 };
 export default messages;

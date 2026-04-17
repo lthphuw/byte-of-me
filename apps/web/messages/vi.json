@@ -191,18 +191,23 @@
     "projectFilters": {
       "filters": "Bộ lọc",
       "reset": "Thiết lập lại",
-      "seeMore": "Xem thêm"
+      "seeMore": "Xem thêm",
+      "searchProject": "Tìm kiếm dự án..."
     },
     "blogFilters": {
       "filters": "Bộ lọc",
       "reset": "Thiết lập lại",
-      "seeMore": "Xem thêm"
+      "seeMore": "Xem thêm",
+      "searchBlog": "Tìm kiếm bài viết..."
     },
     "blogCard": {
       "readArticle": "Đọc bài viết",
       "views": "{count} lượt xem",
       "avgRead": "Đọc {time}p",
       "readingTime": "{time} phút đọc"
+    },
+    "multiSelectSection": {
+      "seeMore": "Xem thêm"
     }
   },
   "dashboard": {
