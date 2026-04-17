@@ -53,7 +53,7 @@ export async function getPaginatedMedia(
         },
       },
     };
-  } catch (error: any) {
+  } catch (error: Any) {
     return {
       success: false,
       errorMsg: error.message || 'Failed to fetch media',

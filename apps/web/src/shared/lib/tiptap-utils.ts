@@ -16,7 +16,7 @@ export const duplicateContent = (editor: Editor) => {
     .chain()
     .insertContentAt(
       selection.to,
-      /* eslint-disable */
+
       // @ts-nocheck
       selection.content().content.firstChild?.toJSON(),
       {
@@ -44,13 +44,13 @@ export function absoluteUrl(path: string) {
   return `${process.env.NEXT_PUBLIC_APP_URL}${path}`;
 }
 
-export function getNestedHeadings(json: any) {
+export function getNestedHeadings(json: Any) {
   const headings: { id: string; text: string; level: number }[] = [];
 
   if (json.content) {
-    json.content.forEach((node: any) => {
+    json.content.forEach((node: Any) => {
       if (node.type === 'heading') {
-        const text = node.content?.map((c: any) => c.text).join('') || '';
+        const text = node.content?.map((c: Any) => c.text).join('') || '';
         // Create a slug if ID doesn't exist
         const id = node.attrs.id || text.toLowerCase().replace(/\s+/g, '-');
 

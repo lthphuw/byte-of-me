@@ -38,7 +38,7 @@ export async function createBlog(data: BlogFormValues) {
         },
 
         translations: {
-          create: data.translations as any,
+          create: data.translations as Any,
         },
       },
     });

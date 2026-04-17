@@ -175,7 +175,7 @@ function Section({ title, children }: SectionProps) {
 
 interface FieldProps {
   control: Control<UserProfileFormValues>;
-  name: any;
+  name: Any;
   label: string;
   className?: string;
 }

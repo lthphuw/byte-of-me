@@ -197,5 +197,36 @@
       "avgRead": "{time}m avg. read",
       "readingTime": "{time} min read"
     }
+  },
+  "dashboard": {
+    "sidebar": {
+      "groups": {
+        "overview": "Overview",
+        "portfolio": "Portfolio Content",
+        "resume": "Resume Data",
+        "configuration": "Configuration"
+      },
+      "items": {
+        "dashboard": "Dashboard",
+        "profile": "Profile",
+        "projects": "Projects",
+        "blogs": "Blogs",
+        "media": "Media Library",
+        "companies": "Companies",
+        "education": "Education",
+        "techStacks": "Tech Stacks",
+        "tags": "Tags",
+        "translations": "Translations"
+      },
+      "actions": {
+        "clearCache": "Clear Cache",
+        "viewSite": "View Site",
+        "signOut": "Sign out",
+        "cacheSuccess": "System updated",
+        "cacheSuccessDesc": "All caches have been cleared successfully.",
+        "cacheError": "Update failed",
+        "cacheErrorDesc": "An error occurred while clearing caches."
+      }
+    }
   }
 }

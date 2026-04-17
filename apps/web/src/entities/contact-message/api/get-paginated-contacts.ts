@@ -1,13 +1,15 @@
 'use server';
 
-import { prisma } from '@byte-of-me/db';
-
-import type { Prisma } from '../../../../../../packages/db/generated/prisma/client';
+import { type Prisma,prisma } from '@byte-of-me/db';
 
 import type { AdminContactMessage } from '@/entities/contact-message';
 import { requireUser } from '@/shared/lib/session';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
+
+
+
+
 
 export async function getPaginatedContactMessages(
   page: number = 1,
@@ -68,7 +70,7 @@ export async function getPaginatedContactMessages(
         },
       },
     };
-  } catch (error: any) {
+  } catch (error: Any) {
     return {
       success: false,
       errorMsg: error.message || 'Failed to fetch contact',

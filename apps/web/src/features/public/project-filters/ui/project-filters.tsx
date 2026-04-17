@@ -6,8 +6,11 @@ import { useTranslations } from 'next-intl';
 import { useDebounce } from 'use-debounce';
 
 import { TagClickableBadge, useTagInfiniteQuery } from '@/entities/tag';
-import { TechStackClickableBadge, useTechStackInfiniteQuery, } from '@/entities/tech-stack';
-import { ProjectFilterSection } from '@/features/public/project-filters/ui/project-filter-section';
+import {
+  TechStackClickableBadge,
+  useTechStackInfiniteQuery,
+} from '@/entities/tech-stack';
+import { ProjectFilterSection } from '@/features/public';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 

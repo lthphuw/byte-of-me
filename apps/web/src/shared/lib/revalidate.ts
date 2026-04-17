@@ -19,7 +19,7 @@ export async function purgeEntireCache(): Promise<{
 
     logger.info(`[Cache] Successfully purged entire application cache.`);
     return { success: true };
-  } catch (error: any) {
+  } catch (error: Any) {
     logger.error(`[Cache] Failed to purge app cache: ${error.message}`);
     return {
       success: false,

@@ -1,4 +1,4 @@
-import type { Prisma } from '../../../../../../packages/db/generated/prisma/client';
+import type { Prisma } from '@byte-of-me/db';
 
 import type { Media, Project, Tag } from '@/shared/types/models';
 

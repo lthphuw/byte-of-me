@@ -108,7 +108,7 @@ export const PublicHeaderMainNav = React.forwardRef<
                       : 'text-foreground/60 hover:text-foreground/80'
                   )}
                 >
-                  {t(item.title as any)}
+                  {t(item.title as Any)}
                 </Button>
               </Link>
             );

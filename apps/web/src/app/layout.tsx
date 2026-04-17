@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 import './globals.css';
+// eslint-disable-next-line import-alias/import-alias
 import '../../node_modules/flag-icons/css/flag-icons.min.css';
 
 type Props = {

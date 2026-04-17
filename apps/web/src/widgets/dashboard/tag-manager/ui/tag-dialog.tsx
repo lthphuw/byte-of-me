@@ -3,9 +3,11 @@
 import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
 
 import { type TagFormValues,tagSchema } from '@/entities/tag/model/tag-schema';
 import { Button } from '@/shared/ui/button';
+import { DeleteButton } from '@/shared/ui/delete-button';
 import {
   Dialog,
   DialogContent,
@@ -20,7 +22,7 @@ export function TagDialog({
   initialData,
   onSubmit,
   loading,
-}: any) {
+}: Any) {
   const form = useForm<TagFormValues>({
     resolver: zodResolver(tagSchema),
     defaultValues: {
@@ -38,7 +40,7 @@ export function TagDialog({
     if (initialData) {
       form.reset({
         slug: initialData.slug,
-        translations: initialData.translations.map((t: any) => ({
+        translations: initialData.translations.map((t: Any) => ({
           id: t.id,
           language: t.language,
           name: t.name,
@@ -103,15 +105,7 @@ export function TagDialog({
                   className="flex-1"
                 />
 
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="text-destructive"
-                  onClick={() => remove(index)}
-                >
-                  Remove
-                </Button>
+                <DeleteButton onClick={() => remove(index)} />
               </div>
             ))}
           </div>
@@ -127,7 +121,8 @@ export function TagDialog({
             </Button>
 
             <Button type="submit" disabled={loading}>
-              {loading ? 'Saving...' : 'Save'}
+              {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+              Save
             </Button>
           </div>
         </form>

@@ -1,4 +1,4 @@
-import type { Prisma } from 'node_modules/@byte-of-me/db/generated/prisma/client';
+import type { Prisma } from '@byte-of-me/db';
 
 export type AdminUserProfile = Prisma.UserGetPayload<{
   include: {

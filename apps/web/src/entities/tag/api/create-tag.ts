@@ -8,6 +8,10 @@ import type { TagFormValues } from '@/entities/tag/model/tag-schema';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { requireUser } from '@/shared/lib/session';
 
+
+
+
+
 export async function createTag(values: TagFormValues) {
   try {
     await requireUser();
@@ -25,7 +29,7 @@ export async function createTag(values: TagFormValues) {
     revalidateTag(CACHE_TAGS.TAG, 'max');
 
     return { success: true, data: tag };
-  } catch (e: any) {
+  } catch (e: Any) {
     logger.error(`[Tag] create:`, e.message);
     return { success: false, errorMsg: e.message };
   }

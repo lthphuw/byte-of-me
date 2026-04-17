@@ -10,6 +10,10 @@ import { CACHE_TAGS } from '@/shared/lib/constants';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { Media } from '@/shared/types/models';
 
+
+
+
+
 export async function deleteMedia(id: string): Promise<ApiResponse<Media>> {
   try {
     const session = await auth();
@@ -34,7 +38,7 @@ export async function deleteMedia(id: string): Promise<ApiResponse<Media>> {
 
     return { success: true, data: res };
   } catch (e) {
-    logger.error(`Delete media got error: ${(e as any).message}`);
+    logger.error(`Delete media got error: ${(e as Any).message}`);
     return { success: false, errorMsg: 'Can not delete media.' };
   }
 }

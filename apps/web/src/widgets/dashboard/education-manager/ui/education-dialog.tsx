@@ -34,7 +34,7 @@ import { EducationAchievementItemField } from '@/widgets/dashboard/education-man
 interface EducationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialData?: any;
+  initialData?: Any;
   onSubmit: (data: EducationFormValues) => void;
   loading?: boolean;
 }
@@ -100,14 +100,14 @@ export function EducationDialog({
             : [{ language: 'en', title: '', description: '' }],
 
         achievements:
-          initialData.achievements?.map((a: any) => ({
+          initialData.achievements?.map((a: Any) => ({
             id: a.id,
             sortOrder: a.sortOrder ?? 0,
             translations:
               a.translations?.length > 0
                 ? a.translations
                 : [{ language: 'en', title: '', content: '' }],
-            imageIds: a.images?.map((it: any) => it.mediaId) ?? [],
+            imageIds: a.images?.map((it: Any) => it.mediaId) ?? [],
           })) ?? [],
       });
     } else {

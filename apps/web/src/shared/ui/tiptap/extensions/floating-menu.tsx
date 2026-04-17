@@ -1,6 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import type { Editor } from '@tiptap/core';
 import { FloatingMenu } from '@tiptap/react/menus';
 import {
@@ -343,7 +349,7 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
       //     setIsOpen(false);
       //     setSelectedIndex(-1);
       //   },
-      // } as any}
+      // } as Any}
     >
       <Command
         role="listbox"

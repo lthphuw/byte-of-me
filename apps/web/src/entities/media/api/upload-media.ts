@@ -12,6 +12,10 @@ import { generateFriendlyId } from '@/shared/lib/uuid';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { Media } from '@/shared/types/models';
 
+
+
+
+
 export async function uploadMedia(
   files: File[]
 ): Promise<ApiResponse<Media[]>> {
@@ -57,7 +61,7 @@ export async function uploadMedia(
     revalidateTag(CACHE_TAGS.MEDIA, 'max');
     return { success: true, data: results };
   } catch (error) {
-    logger.error(`Upload error: ${(error as any).message}`);
+    logger.error(`Upload error: ${(error as Any).message}`);
     return { success: false, errorMsg: 'Failed to upload one or more images.' };
   }
 }

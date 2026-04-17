@@ -1,91 +1,43 @@
 'use client';
 
-import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, Tag as TagIcon } from 'lucide-react';
-import { toast } from 'sonner';
+import { Plus } from 'lucide-react';
 
 import { TagDialog } from './tag-dialog';
 
-import { createTag, deleteTag, updateTag } from '@/entities/tag';
-import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/shared/ui/alert-dialog';
+import type { AdminTag } from '@/entities';
+import { TagCard, useTagManagement } from '@/features/dashboard';
 import { Button } from '@/shared/ui/button';
-import { DeleteButton } from '@/shared/ui/delete-button';
-import { EditButton } from '@/shared/ui/edit-button';
+import { ConfirmDeleteDialog } from '@/shared/ui/confirm-delete-dialog';
 import { Empty, EmptyDescription, EmptyHeader } from '@/shared/ui/empty';
 import Loading from '@/shared/ui/loading';
 import { Pagination } from '@/shared/ui/pagination';
 
 export function TagManager() {
-  const queryClient = useQueryClient();
-
-  const [page, setPage] = useState(1);
-  const [editing, setEditing] = useState<any>(null);
-  const [open, setOpen] = useState(false);
-  const [tagToDelete, setTagToDelete] = useState<any>(null);
-
-  const { data, isLoading, isFetching, isPlaceholderData } = useQuery({
-    queryKey: ['tags', page],
-    queryFn: () => getPaginatedAdminTags(page, 12),
-    placeholderData: (prev) => prev,
-  });
-
-  const tags = data?.data?.data || [];
-  const pagination = data?.data?.meta;
-
-  const saveMutation = useMutation({
-    mutationFn: (values: any) =>
-      editing ? updateTag(editing.id, values) : createTag(values),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tags'] });
-      toast.success(editing ? 'Tag updated' : 'Tag created');
-      handleClose();
-    },
-    onError: () => toast.error('Failed to save tag'),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteTag,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tags'] });
-      toast.success('Tag deleted');
-      setTagToDelete(null);
-    },
-    onError: () => toast.error('Could not delete tag'),
-  });
-
-  const handleClose = () => {
-    setOpen(false);
-    setEditing(null);
-  };
-
-  const handleEdit = (tag: any) => {
-    setEditing(tag);
-    setOpen(true);
-  };
+  const {
+    tags,
+    pagination,
+    isLoading,
+    isFetching,
+    isPlaceholderData,
+    setPage,
+    editingTag,
+    isDialogOpen,
+    setIsDialogOpen,
+    tagToDelete,
+    setTagToDelete,
+    actions,
+  } = useTagManagement();
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">Tags</h2>
-          <p className="text-xs text-muted-foreground">
-            Categorize your projects and posts
-          </p>
-        </div>
-        <Button size="sm" onClick={() => setOpen(true)} className="gap-2">
+      <div className="flex items-center justify-end">
+        <Button
+          size="sm"
+          onClick={() => setIsDialogOpen(true)}
+          className="gap-2 shadow-sm"
+        >
           <Plus className="h-4 w-4" />
-          Add Tag
+          Create New Tag
         </Button>
       </div>
 
@@ -93,6 +45,7 @@ export function TagManager() {
         {isLoading ? (
           <div className="flex h-64 flex-col items-center justify-center gap-3">
             <Loading />
+
             <p className="animate-pulse text-xs text-muted-foreground">
               Fetching tags...
             </p>
@@ -108,7 +61,7 @@ export function TagManager() {
                 variant="outline"
                 size="sm"
                 className="mt-4"
-                onClick={() => setOpen(true)}
+                onClick={() => setIsDialogOpen(true)}
               >
                 Create First Tag
               </Button>
@@ -116,35 +69,13 @@ export function TagManager() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {tags.map((tag: any) => (
-              <div
-                key={tag.id}
-                className="group flex items-center justify-between rounded-xl border bg-card p-3 transition-all hover:border-primary/50 hover:shadow-sm"
-              >
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
-                    <TagIcon className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">
-                      {tag.translations?.[0]?.name || tag.slug}
-                    </p>
-                    <p className="truncate font-mono text-[10px] uppercase tracking-tighter text-muted-foreground">
-                      {tag.slug}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex shrink-0 gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                  <EditButton onClick={() => handleEdit(tag)} />
-                  <DeleteButton
-                    isSubmitting={
-                      deleteMutation.isPending && tagToDelete?.id === tag.id
-                    }
-                    onClick={() => setTagToDelete(tag)}
-                  />
-                </div>
-              </div>
+            {tags.map((tag: AdminTag) => (
+              <TagCard
+                tag={tag}
+                onEdit={() => actions.openEditDialog(tag)}
+                onDelete={() => setTagToDelete(tag)}
+                isDeleting={actions.isDeleting}
+              />
             ))}
           </div>
         )}
@@ -167,46 +98,30 @@ export function TagManager() {
       )}
 
       <TagDialog
-        key={editing?.id || 'new'}
-        open={open}
-        onOpenChange={(val: any) => !val && handleClose()}
-        initialData={editing}
-        onSubmit={(data: any) => saveMutation.mutate(data)}
-        loading={saveMutation.isPending}
+        key={editingTag?.id || 'new'}
+        open={isDialogOpen}
+        onOpenChange={(val: Any) => !val && actions.closeDialog()}
+        initialData={editingTag}
+        onSubmit={(data: Any) => actions.handleSave(data)}
+        loading={actions.isSaving}
       />
 
-      <AlertDialog
-        open={!!tagToDelete}
-        onOpenChange={() => setTagToDelete(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete the tag{' '}
-              <span className="font-semibold text-foreground">
-                "{tagToDelete?.slug}"
-              </span>
-              . This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleteMutation.isPending}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive hover:bg-destructive/90"
-              onClick={(e) => {
-                e.preventDefault();
-                deleteMutation.mutate(tagToDelete.id);
-              }}
-              disabled={deleteMutation.isPending}
-            >
-              {deleteMutation.isPending ? 'Deleting...' : 'Delete Tag'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDeleteDialog
+        isOpen={!!tagToDelete}
+        isLoading={actions.isDeleting}
+        onClose={() => setTagToDelete(null)}
+        onConfirm={actions.handleDelete}
+        title="Delete Tag"
+        description={
+          <>
+            This will permanently delete the tag{' '}
+            <span className="font-semibold text-foreground">
+              "{tagToDelete?.slug}"
+            </span>
+            . This action cannot be undone.
+          </>
+        }
+      />
     </div>
   );
 }

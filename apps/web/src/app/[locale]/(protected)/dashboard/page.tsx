@@ -49,14 +49,6 @@ export default async function DashboardPage() {
       <Separator className="my-8" />
 
       <section aria-label="Contact Messages" className="space-y-6">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-2xl font-bold tracking-tight">
-            Inbound Messages
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Recent inquiries from your portfolio contact form.
-          </p>
-        </div>
         <ContactMessageGallery />
       </section>
     </div>

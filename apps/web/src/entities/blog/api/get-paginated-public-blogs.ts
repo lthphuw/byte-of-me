@@ -31,7 +31,7 @@ export async function getPaginatedPublicBlogs(
 
         const skip = (page - 1) * limit;
 
-        const where: any = {
+        const where: Any = {
           isPublished: true,
           AND: [],
         };

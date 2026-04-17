@@ -1,4 +1,4 @@
-import { Mail } from 'lucide-react';
+import React from 'react';
 import { getTranslations } from 'next-intl/server';
 
 import { getPublicInfoForFooter } from '@/features/public/public-site-footer/lib';
@@ -90,7 +90,7 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
               aria-label={t('email')}
               className="hover:text-blue-400"
             >
-              <Mail size={20} />
+              <Icons.email size={20} />
             </a>
           </div>
 

@@ -15,7 +15,7 @@ export function ensureValidUrl(url: string): string {
   return `https://${url}`;
 }
 
-export function prettyStringify(json: any) {
+export function prettyStringify(json: Any) {
   return JSON.stringify(json, null, 2);
 }
 

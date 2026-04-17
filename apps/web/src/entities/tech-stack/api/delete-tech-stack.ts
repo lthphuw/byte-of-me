@@ -6,6 +6,10 @@ import { revalidateTag } from 'next/cache';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { requireUser } from '@/shared/lib/session';
 
+
+
+
+
 export async function deleteTechStack(id: string) {
   try {
     const user = await requireUser();
@@ -16,7 +20,7 @@ export async function deleteTechStack(id: string) {
     revalidateTag(CACHE_TAGS.TECH, 'max');
 
     return !!res.count;
-  } catch (error: any) {
+  } catch (error: Any) {
     console.error('deleteTechStack:', error.message);
     return false;
   }

@@ -3,6 +3,8 @@
 /* eslint-disable */
 // @ts-nocheck
 import { useEffect, useState } from 'react';
+import { ArrowLeftIcon, ArrowRightIcon, Repeat, X } from 'lucide-react';
+
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { Checkbox } from '@/shared/ui/checkbox';
@@ -11,7 +13,6 @@ import { Label } from '@/shared/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { Separator } from '@/shared/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
-import { ArrowLeftIcon, ArrowRightIcon, Repeat, X } from 'lucide-react';
 
 import { type SearchAndReplaceStorage } from '../extensions/search-and-replace';
 import { useToolbar } from './toolbar-provider';
@@ -25,9 +26,9 @@ export function SearchAndReplaceToolbar() {
   const [replaceText, setReplaceText] = useState('');
   const [checked, setChecked] = useState(false);
 
-  const results = (editor?.storage as any)?.searchAndReplace
+  const results = (editor?.storage as Any)?.searchAndReplace
     .results as SearchAndReplaceStorage['results'];
-  const selectedResult = (editor?.storage as any)?.searchAndReplace
+  const selectedResult = (editor?.storage as Any)?.searchAndReplace
     .selectedResult as SearchAndReplaceStorage['selectedResult'];
 
   const replace = () => editor?.chain().replace().run();

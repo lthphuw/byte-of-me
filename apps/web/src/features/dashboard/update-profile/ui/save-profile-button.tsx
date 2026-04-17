@@ -9,6 +9,10 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/ui/button';
 import { Icons } from '@/shared/ui/icons';
 
+
+
+
+
 export function SaveProfileButton({ userId }: { userId: string }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -22,7 +26,7 @@ export function SaveProfileButton({ userId }: { userId: string }) {
         queryKey: ['userProfileSchema', userId],
       });
     },
-    onError: (err: any) => {
+    onError: (err: Any) => {
       toast({
         title: 'Error saving profile',
         description: err?.message,

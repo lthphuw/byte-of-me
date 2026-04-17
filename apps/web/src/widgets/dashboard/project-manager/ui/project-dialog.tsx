@@ -36,7 +36,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 interface ProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialData?: any;
+  initialData?: Any;
   onSubmit: (values: ProjectFromValues) => void;
   loading: boolean;
 }
@@ -96,8 +96,8 @@ export function ProjectDialog({
         startDate: initialData.startDate || '',
         endDate: initialData.endDate || '',
         techStackIds:
-          initialData.techStacks?.map((t: any) => t.techStackId || t.id) || [],
-        tagIds: initialData.tags?.map((t: any) => t.tagId || t.id) || [],
+          initialData.techStacks?.map((t: Any) => t.techStackId || t.id) || [],
+        tagIds: initialData.tags?.map((t: Any) => t.tagId || t.id) || [],
         translations: initialData.translations || [
           { language: 'en', title: '', description: '' },
         ],

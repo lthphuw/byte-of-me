@@ -17,7 +17,7 @@ export async function updateBlogReadingTime(logId: string, seconds: number) {
     logger.debug(`Update blog log ${logId} result: ${JSON.stringify(data)}`);
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: Any) {
     logger.error(
       `Failed to update reading time for log ${logId}: ${error.message}`
     );

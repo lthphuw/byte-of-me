@@ -1,8 +1,9 @@
-import 'dotenv/config';
-
 import { logger } from '@byte-of-me/logger';
 import { PrismaPg } from '@prisma/adapter-pg';
 
+import 'dotenv/config';
+
+// eslint-disable-next-line import-alias/import-alias
 import { PrismaClient } from '../generated/prisma/client';
 
 
@@ -37,3 +38,5 @@ if (!globalForPrisma.prisma) {
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
 }
+
+export * from '../generated/prisma/client';

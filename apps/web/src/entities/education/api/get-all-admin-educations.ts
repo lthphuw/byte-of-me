@@ -7,6 +7,10 @@ import type { AdminEducation } from '@/entities/education';
 import { requireUser } from '@/shared/lib/session';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
+
+
+
+
 export async function getAllAdminEducations(): Promise<
   ApiResponse<AdminEducation[]>
 > {
@@ -37,7 +41,7 @@ export async function getAllAdminEducations(): Promise<
       success: true,
       data: educations,
     };
-  } catch (error: any) {
+  } catch (error: Any) {
     logger.error(`Get Education get error: ${error.message}`);
     return {
       success: false,

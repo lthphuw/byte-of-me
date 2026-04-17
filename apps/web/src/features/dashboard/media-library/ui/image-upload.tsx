@@ -7,7 +7,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/ui/button';
 
 export interface ImageUploadProps {
-  uploadFiles: (files: File[]) => Promise<any>;
+  uploadFiles: (files: File[]) => Promise<Any>;
 }
 
 export function ImageUpload({ uploadFiles }: ImageUploadProps) {

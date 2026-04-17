@@ -96,7 +96,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
   };
 });
 
-function setDeep(obj: Record<string, any>, path: string, value: string) {
+function setDeep(obj: Record<string, Any>, path: string, value: string) {
   const keys = path.split('.');
   let current = obj;
 

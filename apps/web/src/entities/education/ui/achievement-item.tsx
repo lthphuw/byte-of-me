@@ -6,9 +6,9 @@ import { AchievementImages } from './achievement-images';
 
 import { ExpandableText } from '@/shared/ui/expandable-text';
 
-export function AchievementItem({ achievement: a }: { achievement: any }) {
+export function AchievementItem({ achievement: a }: { achievement: Any }) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const urls = a.images.map((i: any) => i.url);
+  const urls = a.images.map((i: Any) => i.url);
 
   return (
     <div className="space-y-1 md:space-y-2">

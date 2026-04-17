@@ -4,8 +4,7 @@ import { setRequestLocale } from 'next-intl/server';
 
 import { routing } from '@/shared/i18n/routing';
 import type { LocaleType } from '@/shared/types';
-import { PublicSiteFooter } from '@/widgets/public/public-site-footer/ui';
-import { PublicSiteHeader } from '@/widgets/public/public-site-header/ui/public-site-header';
+import { PublicSiteFooter, PublicSiteHeader } from '@/widgets/public';
 
 export const dynamic = 'force-static';
 

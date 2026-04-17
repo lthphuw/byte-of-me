@@ -16,17 +16,21 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
 
+
+
+
+
 const flagVariants = {
   initial: { opacity: 0, scale: 0.9, y: 8 },
   animate: { opacity: 1, scale: 1, y: 0 },
   exit: { opacity: 0, scale: 0.9, y: -8 },
 };
 
-export const Flags: Record<LocaleType, any> = {
-  vi: (props: any) => (
+export const Flags: Record<LocaleType, Any> = {
+  vi: (props: Any) => (
     <span className={cn('fi fi-vn border border-muted/20', props.className)} />
   ),
-  en: (props: any) => (
+  en: (props: Any) => (
     <span className={cn('fi fi-gb border border-muted/20', props.className)} />
   ),
 };
@@ -99,7 +103,7 @@ export function I18nToggle() {
                   </div>
                   <div className="flex flex-1 items-center justify-between">
                     <span className="text-sm">
-                      {t(languageNames[lang] as any)}
+                      {t(languageNames[lang] as Any)}
                     </span>
                     <span className="text-[10px] font-bold uppercase tracking-widest opacity-30">
                       {lang}

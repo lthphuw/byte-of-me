@@ -7,6 +7,10 @@ import { revalidateTag } from 'next/cache';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { requireUser } from '@/shared/lib/session';
 
+
+
+
+
 export async function deleteTag(id: string) {
   try {
     await requireUser();
@@ -18,7 +22,7 @@ export async function deleteTag(id: string) {
     revalidateTag(CACHE_TAGS.TAG, 'max');
 
     return { success: true };
-  } catch (e: any) {
+  } catch (e: Any) {
     logger.error(`[Tag] delete:`, e.message);
     return { success: false, errorMsg: e.message };
   }

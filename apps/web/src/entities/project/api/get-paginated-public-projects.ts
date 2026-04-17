@@ -39,7 +39,7 @@ export async function getPaginatedPublicProjects(
 
         const skip = (page - 1) * limit;
 
-        const where: any = {
+        const where: Any = {
           userId,
           isPublished: true,
           AND: [],

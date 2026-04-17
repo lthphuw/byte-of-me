@@ -8,6 +8,10 @@ import { requireUser } from '@/shared/lib/session';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
+
+
+
+
 export async function getPaginatedAdminTags(
   page: number = 1,
   limit: number = 20
@@ -40,7 +44,7 @@ export async function getPaginatedAdminTags(
         },
       },
     };
-  } catch (e: any) {
+  } catch (e: Any) {
     logger.error(`[Service Error] getAdminTag: ${e.message}`);
     return {
       success: false,

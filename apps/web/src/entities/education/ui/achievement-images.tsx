@@ -6,6 +6,10 @@ import { cn } from '@/shared/lib/utils';
 import { Carousel, CarouselContent, CarouselItem } from '@/shared/ui/carousel';
 import { ScrollArea, ScrollBar } from '@/shared/ui/scroll-area';
 
+
+
+
+
 export function AchievementImages({
   images,
   urls,
@@ -13,7 +17,7 @@ export function AchievementImages({
   currentSlide,
   onSlideChange,
   onOpenGallery,
-}: any) {
+}: Any) {
   if (!images?.length) return null;
 
   return (
@@ -21,7 +25,7 @@ export function AchievementImages({
       {/* Desktop */}
       <ScrollArea className="hidden max-w-full pb-2 md:block">
         <div className="flex w-max space-x-4">
-          {images.map((img: any, i: number) => (
+          {images.map((img: Any, i: number) => (
             <button
               key={img.id}
               onClick={() => onOpenGallery(urls, i)}
@@ -46,7 +50,7 @@ export function AchievementImages({
           }}
         >
           <CarouselContent className="-ml-3">
-            {images.map((img: any, i: number) => (
+            {images.map((img: Any, i: number) => (
               <CarouselItem
                 key={img.id}
                 className={cn(
@@ -72,7 +76,7 @@ export function AchievementImages({
           {/* Dots */}
           {images.length > 1 && (
             <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1.5">
-              {images.map((_: any, i: number) => (
+              {images.map((_: Any, i: number) => (
                 <div
                   key={i}
                   className={`rounded-full ${

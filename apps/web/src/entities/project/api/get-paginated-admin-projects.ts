@@ -7,6 +7,10 @@ import { requireUser } from '@/shared/lib/session';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
+
+
+
+
 export async function getPaginatedAdminProjects(
   page: number = 1,
   limit: number = 20
@@ -53,7 +57,7 @@ export async function getPaginatedAdminProjects(
         },
       },
     };
-  } catch (error: any) {
+  } catch (error: Any) {
     return {
       success: false,
       errorMsg: error.message || 'Failed to fetch media',

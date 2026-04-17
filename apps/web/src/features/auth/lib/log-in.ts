@@ -5,10 +5,14 @@ import { logger } from '@byte-of-me/logger';
 import { signIn as nextAuthSignIn } from '@/shared/lib/auth';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
+
+
+
+
 export async function logIn(
   email: string,
   callbackUrl: string
-): Promise<ApiResponse<any>> {
+): Promise<ApiResponse<Any>> {
   try {
     logger.info(
       `Attempting to sign in user with email: ${email}, callbackUrl: ${callbackUrl}`
@@ -23,7 +27,7 @@ export async function logIn(
       success: true,
       data: res,
     };
-  } catch (e: any) {
+  } catch (e: Any) {
     logger.error(`Login ${email} got error: ${e.message}`);
     return {
       success: false,

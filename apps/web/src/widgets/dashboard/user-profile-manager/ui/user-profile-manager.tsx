@@ -48,7 +48,7 @@ export function UserProfileManager({
     name: 'translations',
   });
 
-  const parseAboutMe = useCallback((content: any) => {
+  const parseAboutMe = useCallback((content: Any) => {
     if (!content || content === '<p></p>') return '<p></p>';
     if (typeof content !== 'string') return content;
     try {
@@ -69,7 +69,7 @@ export function UserProfileManager({
           : null,
         socialLinks: userData.socialLinks ?? [],
         translations:
-          userData.userProfile?.translations?.map((t: any) => ({
+          userData.userProfile?.translations?.map((t: Any) => ({
             ...t,
             aboutMe: parseAboutMe(t.aboutMe),
           })) || [],

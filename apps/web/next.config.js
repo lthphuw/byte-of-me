@@ -24,6 +24,12 @@ const nextConfig = {
     resolveExtensions: ['.mdx', '.tsx', '.ts', '.jsx', '.js', '.mjs', '.json'],
   },
 
+  transpilePackages: [
+    '@byte-of-me/db',
+    '@byte-of-me/logger',
+    '@byte-of-me/storage',
+  ],
+
   webpack: (config, { isServer, nextRuntime }) => {
     if (isServer && nextRuntime !== 'edge') {
       config.plugins.push(new PrismaPlugin());

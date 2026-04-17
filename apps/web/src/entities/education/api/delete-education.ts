@@ -8,7 +8,11 @@ import { CACHE_TAGS } from '@/shared/lib/constants';
 import { requireUser } from '@/shared/lib/session';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-export async function deleteEducation(id: string): Promise<ApiResponse<any>> {
+
+
+
+
+export async function deleteEducation(id: string): Promise<ApiResponse<Any>> {
   try {
     const user = await requireUser();
 
@@ -28,7 +32,7 @@ export async function deleteEducation(id: string): Promise<ApiResponse<any>> {
         where: { id },
       }),
     };
-  } catch (error: any) {
+  } catch (error: Any) {
     logger.error(`Delete education error: ${error.message}`);
     return {
       success: false,

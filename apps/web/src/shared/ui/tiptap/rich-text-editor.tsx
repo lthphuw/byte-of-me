@@ -81,8 +81,8 @@ export const extensions = [
 
 type RichTextEditorProps = {
   className?: string;
-  value?: any;
-  onChange?: (value: any) => void;
+  value?: Any;
+  onChange?: (value: Any) => void;
 };
 
 export function RichTextEditor({
@@ -90,7 +90,7 @@ export function RichTextEditor({
   value,
   onChange,
 }: RichTextEditorProps) {
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<Any[]>([]);
 
   const editor = useEditor({
     immediatelyRender: false,

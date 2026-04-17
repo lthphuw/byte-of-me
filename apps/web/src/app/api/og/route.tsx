@@ -2,6 +2,10 @@ import { ImageResponse } from 'next/og';
 
 import { host } from '@/shared/config/host';
 
+
+
+
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -42,7 +46,7 @@ export async function GET(request: Request) {
         height: 630,
       }
     );
-  } catch (e: any) {
+  } catch (e: Any) {
     return new Response(`Failed to generate the image: ${e.message}`, {
       status: 500,
     });

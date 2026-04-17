@@ -10,6 +10,10 @@ import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { requireUser } from '@/shared/lib/session';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
+
+
+
+
 export async function getUserProfile(): Promise<
   ApiResponse<PublicUserProfile>
 > {
@@ -67,7 +71,7 @@ export async function getUserProfile(): Promise<
       success: true,
       data,
     };
-  } catch (error: any) {
+  } catch (error: Any) {
     logger.error(`[Service Error] getUserProfile: ${error.message}`);
 
     return {

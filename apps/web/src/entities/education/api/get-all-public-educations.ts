@@ -52,7 +52,7 @@ export async function getAllPublicEducations(): Promise<
                 sortOrder: a.sortOrder,
                 title: at?.title ?? '',
                 content: at?.content ?? '',
-                images: a.images.map((i: any) => i.media),
+                images: a.images.map((i: Any) => i.media),
               };
             });
 

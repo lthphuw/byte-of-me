@@ -11,7 +11,7 @@ import { Icons } from '@/shared/ui/icons';
 
 interface ProjectEditorCardProps {
   project: AdminProject;
-  onEdit: (project: any) => void;
+  onEdit: (project: Any) => void;
   onDelete: (id: string) => void;
   isPending?: boolean;
 }

@@ -60,7 +60,7 @@ export async function sendContactMessage(values: ContactMessageFormValues) {
     revalidateTag(CACHE_TAGS.CONTACT, 'max');
 
     return { success: true, data: msg };
-  } catch (error: any) {
+  } catch (error: Any) {
     console.error(`Send contact get error: ${error.message}`);
 
     return {

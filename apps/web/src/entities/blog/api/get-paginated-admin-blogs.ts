@@ -8,6 +8,10 @@ import { requireUser } from '@/shared/lib/session';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
+
+
+
+
 export async function getPaginatedAdminBlog(
   page: number,
   limit: number
@@ -58,7 +62,7 @@ export async function getPaginatedAdminBlog(
         },
       },
     };
-  } catch (e: any) {
+  } catch (e: Any) {
     logger.error(`Get paginated blogs error: ${e.message}`);
     return {
       success: false,

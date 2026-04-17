@@ -4,6 +4,10 @@ import { prisma } from '@byte-of-me/db';
 
 import { requireUser } from '@/shared/lib/session';
 
+
+
+
+
 export async function getDashboardStats() {
   try {
     const session = await requireUser();
@@ -52,7 +56,7 @@ export async function getDashboardStats() {
         newMessages: recentMessages,
       },
     };
-  } catch (error: any) {
+  } catch (error: Any) {
     console.error(`Get Dashboard stats  Error: ${error.message}`);
     return { success: false, data: null };
   }

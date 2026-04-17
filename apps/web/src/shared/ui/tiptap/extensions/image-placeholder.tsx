@@ -3,15 +3,6 @@
 /* eslint-disable */
 // @ts-nocheck
 import { useState, type FormEvent } from 'react';
-import { useImageUpload } from '@/shared/hooks/use-image-upload';
-import {
-  NODE_HANDLES_SELECTED_STYLE_CLASSNAME,
-  isValidUrl,
-} from '@/shared/lib/tiptap-utils';
-import { cn } from '@/shared/lib/utils';
-import { Button } from '@/shared/ui/button';
-import { Input } from '@/shared/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import {
   Node,
   NodeViewWrapper,
@@ -22,8 +13,18 @@ import {
 } from '@tiptap/react';
 import { Image, Link, Loader2, Upload, X } from 'lucide-react';
 
+import { useImageUpload } from '@/shared/hooks/use-image-upload';
+import {
+  NODE_HANDLES_SELECTED_STYLE_CLASSNAME,
+  isValidUrl,
+} from '@/shared/lib/tiptap-utils';
+import { cn } from '@/shared/lib/utils';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
+
 export interface ImagePlaceholderOptions {
-  HTMLAttributes: Record<string, any>;
+  HTMLAttributes: Record<string, Any>;
   onUpload?: (url: string) => void;
   onError?: (error: string) => void;
 }
@@ -137,7 +138,7 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(file);
         input.files = dataTransfer.files;
-        handleFileChange({ target: input } as any);
+        handleFileChange({ target: input } as Any);
       }
     }
   };
@@ -197,7 +198,7 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
 
             <Tabs
               value={activeTab}
-              onValueChange={(v: any) => setActiveTab(v)}
+              onValueChange={(v: Any) => setActiveTab(v)}
               className="w-full"
             >
               <TabsList className="grid w-full grid-cols-2">

@@ -8,6 +8,10 @@ import type { UserProfileFormValues } from '@/entities/user-profile/model/user-p
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { requireUser } from '@/shared/lib/session';
 
+
+
+
+
 export async function saveProfile(values: UserProfileFormValues) {
   const start = Date.now();
 
@@ -185,7 +189,7 @@ export async function saveProfile(values: UserProfileFormValues) {
     revalidateTag(CACHE_TAGS.USER, 'max');
     revalidateTag(CACHE_TAGS.SOCIAL, 'max');
     return { success: true };
-  } catch (error: any) {
+  } catch (error: Any) {
     logger.error('[PROFILE] Save failed', {
       message: error.message,
       stack: error.stack,

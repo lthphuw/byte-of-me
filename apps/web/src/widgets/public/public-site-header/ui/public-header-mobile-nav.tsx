@@ -91,7 +91,7 @@ export const PublicHeaderMobileNav = ({
                         item.disabled && 'opacity-60'
                       )}
                     >
-                      {t(item.title as any)}
+                      {t(item.title as Any)}
                     </Link>
                   </motion.div>
                 ))}

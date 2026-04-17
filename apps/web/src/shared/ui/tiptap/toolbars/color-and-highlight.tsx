@@ -2,6 +2,11 @@
 
 /* eslint-disable */
 // @ts-nocheck
+import type { Extension } from '@tiptap/core';
+import type { ColorOptions } from '@tiptap/extension-color';
+import type { HighlightOptions } from '@tiptap/extension-highlight';
+import { CheckIcon, ChevronDownIcon } from 'lucide-react';
+
 import { useMediaQuery } from '@/shared/hooks/use-media-query';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
@@ -9,17 +14,13 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { Separator } from '@/shared/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
-import type { Extension } from '@tiptap/core';
-import type { ColorOptions } from '@tiptap/extension-color';
-import type { HighlightOptions } from '@tiptap/extension-highlight';
-import { CheckIcon, ChevronDownIcon } from 'lucide-react';
 
 import { MobileToolbarGroup, MobileToolbarItem } from './mobile-toolbar-group';
 import { useToolbar } from './toolbar-provider';
 
 type TextStylingExtensions =
-  | Extension<ColorOptions, any>
-  | Extension<HighlightOptions, any>;
+  | Extension<ColorOptions, Any>
+  | Extension<HighlightOptions, Any>;
 
 const TEXT_COLORS = [
   { name: 'Default', color: 'var(--editor-text-default)' },

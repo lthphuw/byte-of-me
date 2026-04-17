@@ -9,10 +9,14 @@ import { CACHE_TAGS } from '@/shared/lib/constants';
 import { requireUser } from '@/shared/lib/session';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
+
+
+
+
 export async function updateEducation(
   id: string,
   values: EducationFormValues
-): Promise<ApiResponse<any>> {
+): Promise<ApiResponse<Any>> {
   try {
     const user = await requireUser();
 
@@ -104,7 +108,7 @@ export async function updateEducation(
 
       return { success: true, data: education };
     });
-  } catch (error: any) {
+  } catch (error: Any) {
     logger.error(`Update education error: ${error.message}`);
     return {
       success: false,

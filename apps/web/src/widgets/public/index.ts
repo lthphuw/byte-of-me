@@ -6,4 +6,4 @@ export * from './experience-content';
 export * from './homepage-content';
 export * from './projects-content';
 export * from './public-site-footer';
-export * from './public-site-footer';
+export * from './public-site-header';

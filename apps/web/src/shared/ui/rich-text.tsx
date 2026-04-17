@@ -7,7 +7,7 @@ import { sanitizeHtml } from '@/shared/lib/uuid';
 import { extensions } from '@/shared/ui/tiptap/rich-text-editor';
 
 export type RichTextProps = {
-  content?: string | any;
+  content?: string | Any;
   className?: string;
   style?: React.CSSProperties;
 };

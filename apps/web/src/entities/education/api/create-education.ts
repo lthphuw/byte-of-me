@@ -11,7 +11,7 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function createEducation(
   values: EducationFormValues
-): Promise<ApiResponse<any>> {
+): Promise<ApiResponse<Any>> {
   try {
     const user = await requireUser();
 
@@ -59,7 +59,7 @@ export async function createEducation(
 
     revalidateTag(CACHE_TAGS.EDUCATION, 'max');
     return { success: true, data: education };
-  } catch (error: any) {
+  } catch (error: Any) {
     logger.error(`Create education error: ${error.message}`);
     return {
       success: false,

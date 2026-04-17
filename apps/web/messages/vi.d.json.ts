@@ -207,6 +207,37 @@ declare const messages: {
       "avgRead": "Đọc {time}p",
       "readingTime": "{time} phút đọc"
     }
+  },
+  "dashboard": {
+    "sidebar": {
+      "groups": {
+        "overview": "Tổng quan",
+        "portfolio": "Nội dung Portfolio",
+        "resume": "Dữ liệu Resume",
+        "configuration": "Cấu hình"
+      },
+      "items": {
+        "dashboard": "Bảng điều khiển",
+        "profile": "Hồ sơ",
+        "projects": "Dự án",
+        "blogs": "Bài viết",
+        "media": "Thư viện",
+        "companies": "Công ty",
+        "education": "Học vấn",
+        "techStacks": "Công nghệ",
+        "tags": "Thẻ",
+        "translations": "Dịch thuật"
+      },
+      "actions": {
+        "clearCache": "Xóa Cache",
+        "viewSite": "Xem trang web",
+        "signOut": "Đăng xuất",
+        "cacheSuccess": "Hệ thống đã cập nhật",
+        "cacheSuccessDesc": "Tất cả bộ nhớ đệm đã được xóa.",
+        "cacheError": "Cập nhật thất bại",
+        "cacheErrorDesc": "Có lỗi xảy ra khi xóa bộ nhớ đệm."
+      }
+    }
   }
 };
 export default messages;

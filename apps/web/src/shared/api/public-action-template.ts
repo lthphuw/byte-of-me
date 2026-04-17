@@ -6,6 +6,10 @@ import { getLocale } from 'next-intl/server';
 import { env } from '@/shared/config/env';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
+
+
+
+
 export type PublicActionContext = {
   locale: string;
   userId: string;
@@ -57,7 +61,7 @@ export async function handlePublicAction<TData>(
   try {
     const data = await handler();
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: Any) {
     logger.error(`[Public] ${actionName}: ${error.message}`);
     return {
       success: false,

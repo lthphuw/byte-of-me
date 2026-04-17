@@ -8,6 +8,10 @@ import type { TechStackFormValues } from '@/entities/tech-stack/model/tech-stack
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { requireUser } from '@/shared/lib/session';
 
+
+
+
+
 export async function addTechStack(data: TechStackFormValues) {
   try {
     const user = await requireUser();
@@ -26,7 +30,7 @@ export async function addTechStack(data: TechStackFormValues) {
     revalidateTag(CACHE_TAGS.TECH, 'max');
 
     return { success: true, data: newTech };
-  } catch (error: any) {
+  } catch (error: Any) {
     logger.error('addTechStack:', error.message);
     return { success: false, error: 'Failed to add tech stack item' };
   }

@@ -5,7 +5,7 @@ export type PaginatedMetadata = {
   hasMore: boolean;
 };
 
-export type PaginatedData<T = any> = {
+export type PaginatedData<T = Any> = {
   data: T[];
   meta: PaginatedMetadata;
 };

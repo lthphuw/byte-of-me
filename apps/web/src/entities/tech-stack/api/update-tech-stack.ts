@@ -8,6 +8,10 @@ import type { TechStackFormValues } from '@/entities/tech-stack/model/tech-stack
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { requireUser } from '@/shared/lib/session';
 
+
+
+
+
 export async function updateTechStack(id: string, data: TechStackFormValues) {
   try {
     const user = await requireUser();
@@ -38,7 +42,7 @@ export async function updateTechStack(id: string, data: TechStackFormValues) {
     revalidateTag(CACHE_TAGS.TECH, 'default');
 
     return { success: true, data: updatedRecord };
-  } catch (error: any) {
+  } catch (error: Any) {
     logger.error('updateTechStack:', error.message);
     return { success: false, error: 'Failed to update tech stack' };
   }

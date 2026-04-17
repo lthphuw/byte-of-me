@@ -3,7 +3,7 @@
  * @param item
  * @returns {boolean}
  */
-function isObject(item: any): item is Record<string, any> {
+function isObject(item: Any): item is Record<string, Any> {
   return item && typeof item === 'object' && !Array.isArray(item);
 }
 
@@ -12,7 +12,7 @@ function isObject(item: any): item is Record<string, any> {
  * @param target
  * @param ...sources
  */
-export function deepMerge(target: any, ...sources: any[]): any {
+export function deepMerge(target: Any, ...sources: Any[]): Any {
   if (!sources.length) return target;
   const source = sources.shift();
 

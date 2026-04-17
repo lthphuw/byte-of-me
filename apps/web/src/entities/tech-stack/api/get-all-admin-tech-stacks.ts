@@ -7,6 +7,10 @@ import type { AdminTechStack } from '@/entities/tech-stack';
 import { requireUser } from '@/shared/lib/session';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
+
+
+
+
 export async function getAllAdminTechStack(): Promise<
   ApiResponse<AdminTechStack[]>
 > {
@@ -23,7 +27,7 @@ export async function getAllAdminTechStack(): Promise<
       success: true,
       data: techStacks,
     };
-  } catch (error: any) {
+  } catch (error: Any) {
     logger.error(`[Service Error] getAllAdminTechStack: ${error.message}`);
 
     return {
