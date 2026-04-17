@@ -2,8 +2,12 @@ import type { Metadata } from 'next';
 
 import { ProjectManager } from '@/widgets/dashboard';
 
+
+
+
+
 export const metadata: Metadata = {
-  title: 'Projects | Dashboard',
+  title: 'Projects',
   description: 'Showcase your work and manage project details.',
   robots: {
     index: false,

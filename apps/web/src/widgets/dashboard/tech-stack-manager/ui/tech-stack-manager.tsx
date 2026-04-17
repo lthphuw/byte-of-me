@@ -2,16 +2,13 @@
 
 import { useMemo } from 'react';
 import { Plus } from 'lucide-react';
-import Image from 'next/image';
 
 import { TechStackDialog } from './tech-stack-dialog';
 
 import type { AdminTechStack } from '@/entities/tech-stack';
-import { useTechStackManagement } from '@/features/dashboard';
+import { TechStackCard, useTechStackManagement } from '@/features/dashboard';
 import { Button } from '@/shared/ui/button';
 import { ConfirmDeleteDialog } from '@/shared/ui/confirm-delete-dialog';
-import { DeleteButton } from '@/shared/ui/delete-button';
-import { EditButton } from '@/shared/ui/edit-button';
 
 export function TechStackManager({
   initialTechStacks,
@@ -61,39 +58,12 @@ export function TechStackManager({
 
             <div className="space-y-2">
               {items.map((tech) => (
-                <div
-                  key={tech.id}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-dashed p-3 transition-colors hover:bg-muted/50"
-                >
-                  <div className="flex items-center gap-3">
-                    {tech.logo?.url && (
-                      <div className="relative h-8 w-8 overflow-hidden rounded-md border bg-white p-1">
-                        <Image
-                          src={tech.logo.url}
-                          alt={tech.name}
-                          fill
-                          className="object-contain"
-                        />
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-sm font-medium leading-none">
-                        {tech.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {tech.slug}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-1">
-                    <EditButton onClick={() => actions.openEditDialog(tech)} />
-                    <DeleteButton
-                      isSubmitting={actions.isDeleting}
-                      onClick={() => setTechToDelete(tech)}
-                    />
-                  </div>
-                </div>
+                <TechStackCard
+                  techStack={tech}
+                  onEdit={() => actions.openEditDialog(tech)}
+                  onDelete={() => setTechToDelete(tech)}
+                  isDeleting={actions.isDeleting}
+                />
               ))}
             </div>
           </section>

@@ -4,8 +4,10 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { MessageSquare, Search, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useDebounce } from 'use-debounce';
 
+// Import the hook
 import type { AdminContactMessage } from '@/entities/contact-message';
 import { getPaginatedContactMessages } from '@/entities/contact-message/api/get-paginated-contacts';
 import { Button } from '@/shared/ui/button';
@@ -24,6 +26,7 @@ import { ScrollArea } from '@/shared/ui/scroll-area';
 import { Skeleton } from '@/shared/ui/skeleton';
 
 export function ContactMessageGallery() {
+  const t = useTranslations('dashboard.contactGallery');
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 400);
@@ -49,16 +52,14 @@ export function ContactMessageGallery() {
         <div>
           <h2 className="flex items-center gap-2 text-xl font-semibold tracking-tight">
             <MessageSquare className="h-5 w-5 text-primary" />
-            Recent Inquiries
+            {t('title')}
           </h2>
-          <p className="text-sm text-muted-foreground">
-            Direct messages from your portfolio contact form.
-          </p>
+          <p className="text-sm text-muted-foreground">{t('description')}</p>
         </div>
 
         {!isLoading && (
           <div className="hidden rounded-full bg-muted px-3 py-1 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground md:block">
-            {meta?.totalCount || 0} Messages
+            {t('messageCount', { count: meta?.totalCount || 0 })}
           </div>
         )}
       </div>
@@ -66,7 +67,7 @@ export function ContactMessageGallery() {
       <div className="group relative max-w-md">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
         <Input
-          placeholder="Search messages..."
+          placeholder={t('searchPlaceholder')}
           value={search}
           onChange={(e) => {
             setPage(1);
@@ -93,7 +94,7 @@ export function ContactMessageGallery() {
         </div>
       ) : messages.length === 0 ? (
         <div className="py-10 text-center text-muted-foreground">
-          No messages found
+          {t('noMessages')}
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -113,7 +114,7 @@ export function ContactMessageGallery() {
                   </div>
                 </div>
                 <div className="truncate text-sm italic text-muted-foreground">
-                  {msg.subject || 'No Subject'}
+                  {msg.subject || t('noSubject')}
                 </div>
                 <div className="truncate text-xs text-muted-foreground">
                   {msg.email}
@@ -127,7 +128,7 @@ export function ContactMessageGallery() {
                     content={msg.message}
                   />
                   <div className="mt-4 text-[10px] font-medium uppercase tracking-wider text-primary hover:underline">
-                    Click to read more
+                    {t('clickMore')}
                   </div>
                 </div>
               </CardContent>
@@ -170,16 +171,16 @@ export function ContactMessageGallery() {
               <div className="mt-4 space-y-4">
                 <div>
                   <h4 className="mb-1 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                    Subject
+                    {t('subjectLabel')}
                   </h4>
                   <p className="font-medium text-foreground">
-                    {selectedMessage.subject || 'No subject provided'}
+                    {selectedMessage.subject || t('noSubjectProvided')}
                   </p>
                 </div>
 
                 <div className="pt-4">
                   <h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                    Message
+                    {t('messageLabel')}
                   </h4>
                   <ScrollArea className="h-[40vh] w-full rounded-md border bg-muted/30 p-4">
                     <RichText content={selectedMessage.message} />
@@ -192,7 +193,7 @@ export function ContactMessageGallery() {
                   variant="outline"
                   onClick={() => setSelectedMessage(null)}
                 >
-                  Close
+                  {t('close')}
                 </Button>
               </div>
             </>

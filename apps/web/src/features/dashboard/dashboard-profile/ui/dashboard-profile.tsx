@@ -1,9 +1,15 @@
+import { getTranslations } from 'next-intl/server';
+
 import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
 
 export async function DashboardProfile() {
-  const profileRes = await getUserProfile();
+  const [profileRes, t] = await Promise.all([
+    getUserProfile(),
+    getTranslations('dashboard.dashboard'),
+  ]);
+
   if (!profileRes.success || !profileRes.data) {
-    return;
+    return null;
   }
 
   const userProfile = profileRes.data;
@@ -11,12 +17,10 @@ export async function DashboardProfile() {
   return (
     <div className="flex flex-col gap-2">
       <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-        Welcome back, {userProfile.displayName}! 👋
+        {t('welcome', { name: userProfile.displayName || '' })}
       </h1>
 
-      <p className="text-lg text-muted-foreground">
-        Manage your personal portfolio and track your content performance.
-      </p>
+      <p className="text-lg text-muted-foreground">{t('description')}</p>
     </div>
   );
 }

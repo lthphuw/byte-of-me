@@ -3,8 +3,12 @@ import type { Metadata } from 'next';
 import { getAdminUserProfile } from '@/entities';
 import { UserProfileManager } from '@/widgets/dashboard';
 
+
+
+
+
 export const metadata: Metadata = {
-  title: 'Profile Manager | Dashboard',
+  title: 'Profile Manager',
   description:
     'Update your public profile information, social links, and display settings.',
   robots: {
@@ -36,13 +40,6 @@ export default async function UserProfilePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold tracking-tight">Profile Settings</h1>
-        <p className="text-muted-foreground">
-          Manage how your information appears across your portfolio.
-        </p>
-      </div>
-
       <UserProfileManager initUser={resp.data} />
     </div>
   );

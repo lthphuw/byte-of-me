@@ -2,8 +2,12 @@ import type { Metadata } from 'next';
 
 import { TagManager } from '@/widgets/dashboard';
 
+
+
+
+
 export const metadata: Metadata = {
-  title: 'Tags | Dashboard',
+  title: 'Tags',
   description: 'Organize and manage tags for projects and blog posts.',
   robots: {
     index: false,

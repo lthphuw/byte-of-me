@@ -232,6 +232,23 @@
         "cacheError": "Update failed",
         "cacheErrorDesc": "An error occurred while clearing caches."
       }
+    },
+    "dashboard": {
+      "welcome": "Welcome back, {name}! 👋",
+      "description": "Manage your personal portfolio and track your content performance."
+    },
+    "contactGallery": {
+      "title": "Recent Inquiries",
+      "description": "Direct messages from your portfolio contact form.",
+      "messageCount": "{count, plural, =1 {1 Message} other {# Messages}}",
+      "searchPlaceholder": "Search messages...",
+      "noMessages": "No messages found",
+      "noSubject": "No Subject",
+      "clickMore": "Click to read more",
+      "subjectLabel": "Subject",
+      "messageLabel": "Message",
+      "noSubjectProvided": "No subject provided",
+      "close": "Close"
     }
   }
 }

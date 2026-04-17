@@ -1,25 +1,16 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
-import { Globe2, Languages, Plus, RotateCcw } from 'lucide-react';
+import { Globe2, Plus, RotateCcw } from 'lucide-react';
 
 import { ProfileTranslationCard } from './profile-translation-card';
 import { UserProfileSectionManager } from './user-profile-section-manager';
 
 import type { AdminUserProfile } from '@/entities/user-profile';
-import { getAdminUserProfile } from '@/entities/user-profile/api/get-user-profile-with-translations';
-import {
-  type UserProfileFormValues,
-  userProfileSchema,
-} from '@/entities/user-profile/model/user-profile-schema';
 import { SocialLinksSection } from '@/features/dashboard/manage-social-link-form/ui';
-import { SaveProfileButton } from '@/features/dashboard/update-profile/ui';
-import { useToast } from '@/shared/hooks/use-toast';
+import { useProfileController } from '@/features/dashboard/update-profile/lib/use-profile-controller';
 import { Button } from '@/shared/ui/button';
 import { Form } from '@/shared/ui/form';
+import { Icons } from '@/shared/ui/icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 
 export function UserProfileManager({
@@ -27,177 +18,86 @@ export function UserProfileManager({
 }: {
   initUser: AdminUserProfile;
 }) {
-  const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<string>('');
-
-  const { data } = useQuery({
-    queryKey: ['userProfileSchema', initUser.id],
-    queryFn: getAdminUserProfile,
-    initialData: { success: true, data: initUser },
-  });
-
-  const user = data?.data;
-
-  const form = useForm<UserProfileFormValues>({
-    resolver: zodResolver(userProfileSchema),
-    defaultValues: { birthdate: null, socialLinks: [], translations: [] },
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: 'translations',
-  });
-
-  const parseAboutMe = useCallback((content: Any) => {
-    if (!content || content === '<p></p>') return '<p></p>';
-    if (typeof content !== 'string') return content;
-    try {
-      return content.startsWith('{') || content.startsWith('[')
-        ? JSON.parse(content)
-        : content;
-    } catch {
-      return content;
-    }
-  }, []);
-
-  const performReset = useCallback(
-    (userData: AdminUserProfile) => {
-      if (!userData) return;
-      form.reset({
-        birthdate: userData.userProfile?.birthdate
-          ? new Date(userData.userProfile.birthdate)
-          : null,
-        socialLinks: userData.socialLinks ?? [],
-        translations:
-          userData.userProfile?.translations?.map((t: Any) => ({
-            ...t,
-            aboutMe: parseAboutMe(t.aboutMe),
-          })) || [],
-      });
-    },
-    [form, parseAboutMe]
-  );
-
-  const handleManualReset = () => {
-    performReset(user!);
-    toast({ title: 'Form reset' });
-  };
-
-  useEffect(() => {
-    if (user) {
-      performReset(user);
-    }
-  }, [user, performReset]);
-
-  useEffect(() => {
-    if (fields.length > 0) {
-      const isTabStillValid = fields.some((f) => f.id === activeTab);
-      if (!activeTab || !isTabStillValid) {
-        setActiveTab(fields[0].id);
-      }
-    } else {
-      setActiveTab('');
-    }
-  }, [fields, activeTab]);
-
-  const addNewLanguage = () => {
-    append({
-      language: '',
-      displayName: '',
-      firstName: '',
-      lastName: '',
-      greeting: '',
-      tagLine: '',
-      bio: '',
-      quote: '',
-      quoteAuthor: '',
-      aboutMe: '<p></p>',
-    });
-  };
-
-  if (!user) {
-    return;
-  }
+  const { form, fields, activeTab, setActiveTab, isSaving, handlers } =
+    useProfileController(initUser);
 
   return (
     <Form {...form}>
-      <div className="mx-auto max-w-4xl space-y-10 pb-24">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold">Profile Settings</h2>
-            <p className="text-sm text-muted-foreground">
-              Manage profile and languages
-            </p>
-          </div>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">
+            Profile Settings
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Manage your global identity.
+          </p>
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handlers.handleReset}
+          className="gap-2"
+        >
+          <RotateCcw className="h-4 w-4" /> Reset
+        </Button>
+      </div>
 
+      {/* Translations */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between border-b pb-2">
+          <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+            <Globe2 className="h-4 w-4" /> Translations
+          </div>
           <Button
             type="button"
-            variant="outline"
             size="sm"
-            onClick={handleManualReset}
+            variant="ghost"
+            onClick={handlers.addLanguage}
+            className="gap-2 text-primary"
           >
-            <RotateCcw className="mr-2 h-4 w-4" /> Reset
+            <Plus className="h-4 w-4" /> Add Language
           </Button>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              <Globe2 className="h-4 w-4" /> Translations
-            </div>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={addNewLanguage}
-            >
-              <Plus className="mr-1 h-4 w-4" /> Add Language{' '}
-              <Languages className="ml-1 h-4 w-4" />
-            </Button>
-          </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-4 bg-muted/50 p-1">
+            {fields.map((field, index) => (
+              <TabsTrigger key={field.id} value={field.id}>
+                {form.watch(`translations.${index}.language`)?.toUpperCase() ||
+                  'NEW'}
+              </TabsTrigger>
+            ))}
+          </TabsList>
 
-          {fields.length === 0 ? (
-            <div className="rounded-lg border py-10 text-center">
-              <Button type="button" onClick={addNewLanguage}>
-                Add first language
-              </Button>
-            </div>
-          ) : (
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="max-w-full overflow-x-auto">
-                {fields.map((field, index) => (
-                  <TabsTrigger key={field.id} value={field.id}>
-                    {form
-                      .watch(`translations.${index}.language`)
-                      ?.toUpperCase() || 'New'}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+          {fields.map((field, index) => (
+            <TabsContent key={field.id} value={field.id}>
+              <ProfileTranslationCard
+                form={form}
+                index={index}
+                onRemove={() => handlers.removeLanguage(index)}
+              />
+            </TabsContent>
+          ))}
+        </Tabs>
+      </section>
 
-              {fields.map((field, index) => (
-                <TabsContent key={field.id} value={field.id}>
-                  <ProfileTranslationCard
-                    form={form}
-                    index={index}
-                    onRemove={() => {
-                      remove(index);
-                    }}
-                  />
-                </TabsContent>
-              ))}
-            </Tabs>
-          )}
-        </div>
+      <UserProfileSectionManager form={form} />
+      <SocialLinksSection form={form} />
 
-        <UserProfileSectionManager form={form} />
-        <SocialLinksSection form={form} />
-
-        <div className="flex justify-end gap-2 border-t p-8 backdrop-blur-md">
-          <Button type="button" variant="ghost" onClick={handleManualReset}>
-            Reset
-          </Button>
-          <SaveProfileButton userId={initUser.id} />
-        </div>
+      {/* Action Bar */}
+      <div className="sticky bottom-6 ml-auto flex w-fit justify-end gap-3 rounded-2xl border p-4 shadow-2xl backdrop-blur-xl">
+        <Button type="button" variant="ghost" onClick={handlers.handleReset}>
+          Cancel
+        </Button>
+        <Button
+          onClick={handlers.handleSave}
+          disabled={isSaving}
+          className="min-w-[140px]"
+        >
+          {isSaving && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+          Save
+        </Button>
       </div>
     </Form>
   );

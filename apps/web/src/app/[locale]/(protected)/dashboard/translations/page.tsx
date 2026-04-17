@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Translations | Dashboard',
+  title: 'Translations',
   description: 'Manage multi-language content and localizations.',
   robots: {
     index: false,

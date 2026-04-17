@@ -2,8 +2,12 @@ import type { Metadata } from 'next';
 
 import { MediaManager } from '@/widgets/dashboard';
 
+
+
+
+
 export const metadata: Metadata = {
-  title: 'Media Library | Dashboard',
+  title: 'Media Library',
   description: 'Upload and organize your images, banners, and assets.',
   robots: {
     index: false,

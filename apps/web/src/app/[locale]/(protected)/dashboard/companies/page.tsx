@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Experience | Dashboard',
+  title: 'Experience',
   description: 'Manage your professional work history and company records.',
   robots: {
     index: false,

@@ -37,14 +37,14 @@ export async function StatsGrid() {
       color: 'text-emerald-500',
     },
     {
-      label: 'PublicBlog Posts',
+      label: 'Blogs',
       value: stats.totalBlogs,
       sub: 'Articles',
       icon: BookOpen,
       color: 'text-orange-500',
     },
     {
-      label: 'PublicEducation',
+      label: 'Education',
       value: stats.totalEducation,
       sub: 'Certificates',
       icon: GraduationCap,

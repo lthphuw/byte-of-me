@@ -2,8 +2,12 @@ import type { Metadata } from 'next';
 
 import { BlogManager } from '@/widgets/dashboard';
 
+
+
+
+
 export const metadata: Metadata = {
-  title: 'Blog Management | Dashboard',
+  title: 'Blog Management',
   description: 'Write, edit, and publish articles for your portfolio blog.',
   robots: {
     index: false,

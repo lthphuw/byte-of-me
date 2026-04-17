@@ -2,8 +2,12 @@ import type { Metadata } from 'next';
 
 import { EducationManager } from '@/widgets/dashboard';
 
+
+
+
+
 export const metadata: Metadata = {
-  title: 'Education | Dashboard',
+  title: 'Education',
   description:
     'Manage your academic history, certifications, and achievements.',
   robots: {

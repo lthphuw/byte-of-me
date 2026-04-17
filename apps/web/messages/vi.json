@@ -239,6 +239,23 @@
         "cacheError": "Cập nhật thất bại",
         "cacheErrorDesc": "Có lỗi xảy ra khi xóa bộ nhớ đệm."
       }
+    },
+    "dashboard": {
+      "welcome": "Chào mừng trở lại, {name}! 👋",
+      "description": "Quản lý danh mục cá nhân và theo dõi hiệu suất nội dung của bạn."
+    },
+    "contactGallery": {
+      "title": "Yêu cầu gần đây",
+      "description": "Tin nhắn trực tiếp từ biểu mẫu liên hệ trong hồ sơ của bạn.",
+      "messageCount": "{count} tin nhắn",
+      "searchPlaceholder": "Tìm kiếm tin nhắn...",
+      "noMessages": "Không tìm thấy tin nhắn nào",
+      "noSubject": "Không có tiêu đề",
+      "clickMore": "Nhấp để đọc thêm",
+      "subjectLabel": "Tiêu đề",
+      "messageLabel": "Nội dung",
+      "noSubjectProvided": "Không có tiêu đề",
+      "close": "Đóng"
     }
   }
 }
