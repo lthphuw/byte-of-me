@@ -7,11 +7,14 @@ import { routing } from '@/shared/i18n/routing';
 import type { LocaleType } from '@/shared/types';
 import { BlogDetailsContent, BlogDetailsShell } from '@/widgets/public';
 
+
+
+
+
 export async function generateStaticParams() {
   const blogs = await prisma.blog.findMany({
     where: { isPublished: true },
     select: { slug: true },
-    take: 100,
   });
 
   if (!blogs) return [];

@@ -1,6 +1,7 @@
 import type { Prisma } from '@byte-of-me/db';
 
-import type { Media, Project, Tag } from '@/shared/types/models';
+import type { PublicProject } from '@/entities';
+import type { Media, Tag } from '@/shared/types/models';
 
 export type AdminBlog = Prisma.BlogGetPayload<{
   include: {
@@ -38,7 +39,9 @@ export interface PublicBlog {
 
   readingTime?: Maybe<number>;
 
-  project?: Maybe<Project>;
+  projectId?: Maybe<string>;
+  project?: Maybe<Partial<PublicProject>>;
+
   coverImage?: Maybe<Media>;
   tags: Tag[];
 

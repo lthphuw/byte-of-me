@@ -148,7 +148,18 @@
     "viewProject": "View project",
     "views": "{count, plural, =0 {No views} one {# view} other {# views}}",
     "avgRead": "{time}m avg. read",
-    "readingTime": "{time} min read"
+    "readingTime": "{time} min read",
+    "like": "Like",
+    "comment": "Comment",
+    "share": "Share",
+    "comments": "Comments",
+    "loadMoreComments": "Loading more...",
+    "loadMore": "Load more",
+    "signInToComment": "Sign in to comment",
+    "postComment": "Post Comment",
+    "noCommentsYet": "No comments yet",
+    "beTheFirstComment": "Be the first to share your thoughts!",
+    "writingComment": "Write a comment..."
   },
   "contact": {
     "letsWorkTogether": "Let’s work together",

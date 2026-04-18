@@ -11,6 +11,10 @@ import { formatDate } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
 
+
+
+
+
 export interface ProjectCardProps {
   project: PublicProject;
   compact?: boolean;
@@ -37,6 +41,7 @@ export function ProjectCard({
             <h3 className="line-clamp-1 text-lg font-bold tracking-tight">
               {project.title}
             </h3>
+
             {/*{!project.endDate && (*/}
             {/*  <span className="bg-primary/10 text-primary flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">*/}
             {/*    Active*/}
@@ -50,7 +55,7 @@ export function ProjectCard({
         </div>
 
         {/* DESCRIPTION */}
-        <p className="mb-5 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+        <p className="mb-5 line-clamp-2 text-sm leading-relaxed text-muted-foreground md:line-clamp-3">
           {project.description}
         </p>
 

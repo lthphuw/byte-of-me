@@ -9,6 +9,7 @@ export const CACHE_TAGS = {
   TAG: 'tag',
   TECH: 'tech-stack',
   USER: 'user-profile',
+  COMMENT: 'comment',
 } as const;
 
 export type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];

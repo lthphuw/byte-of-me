@@ -1,4 +1,6 @@
 export * from './blog';
+export * from './comment';
+export * from './comment';
 export * from './company';
 export * from './contact-message';
 export * from './education';

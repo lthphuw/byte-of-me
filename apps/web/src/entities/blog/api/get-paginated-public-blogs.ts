@@ -2,8 +2,8 @@
 
 import { prisma } from '@byte-of-me/db';
 
+import type { PublicProject } from '@/entities';
 import type { PublicBlog } from '@/entities/blog/model/types';
-import type { PublicProject } from '@/entities/project/model/types';
 import {
   handlePublicAction,
   withPublicActionHandler,
@@ -24,11 +24,10 @@ export async function getPaginatedPublicBlogs(
   params: GetPublicBlogsParams
 ): Promise<ApiResponse<PaginatedData<PublicBlog>>> {
   return handlePublicAction('getPaginatedPublicBlogs', async () => {
-    const data = await withPublicActionHandler(
+    return await withPublicActionHandler(
       'getPaginatedPublicBlogs',
       async ({ locale }) => {
         const { page = 1, limit = 9, tagSlugs = [], search } = params;
-
         const skip = (page - 1) * limit;
 
         const where: Any = {
@@ -44,23 +43,12 @@ export async function getPaginatedPublicBlogs(
           });
         }
 
-        // SEARCH
         if (search) {
           where.translations = {
             some: {
               OR: [
-                {
-                  title: {
-                    contains: search,
-                    mode: 'insensitive',
-                  },
-                },
-                {
-                  description: {
-                    contains: search,
-                    mode: 'insensitive',
-                  },
-                },
+                { title: { contains: search, mode: 'insensitive' } },
+                { description: { contains: search, mode: 'insensitive' } },
               ],
             },
           };
@@ -77,71 +65,35 @@ export async function getPaginatedPublicBlogs(
             include: {
               translations: true,
               coverImage: true,
-              project: {
-                include: {
-                  translations: true,
-                },
-              },
+              project: { include: { translations: true } },
               tags: {
                 include: {
-                  tag: {
-                    include: {
-                      translations: true,
-                    },
-                  },
+                  tag: { include: { translations: true } },
                 },
               },
-              _count: {
-                select: { blogViewLogs: true },
-              },
+              _count: { select: { blogViewLogs: true } },
             },
           }),
-
           prisma.blog.count({ where }),
         ]);
 
-        const blogIds = blogsRes.map((b) => b.id);
-        const readingTimeStats = await prisma.blogStatisticLog.groupBy({
-          by: ['blogId'],
-          where: {
-            blogId: { in: blogIds },
-            readingTime: { gt: 60 },
-          },
-          _avg: {
-            readingTime: true,
-          },
-        });
+
 
         const blogs: PublicBlog[] = blogsRes.map((blog) => {
           const translated = getTranslatedContent(blog.translations, locale);
-          let project: Maybe<PublicProject> = null;
 
-          const stats = readingTimeStats.find((s) => s.blogId === blog.id);
-          const avgSeconds = stats?._avg.readingTime || 0;
-
+          let project: Nullable<Partial<PublicProject>> = null;
           if (blog.project) {
-            const blogTranslated = getTranslatedContent(
+            const projTranslated = getTranslatedContent(
               blog.project.translations,
               locale
             );
 
             project = {
-              id: blog.project.id,
-              createdAt: blog.project.createdAt,
-              updatedAt: blog.project.updatedAt,
-
-              slug: blog.project.slug,
-              githubLink: blog.project.githubLink,
-              liveLink: blog.project.liveLink,
-              startDate: blog.project.startDate,
-              endDate: blog.project.endDate,
-              isPublished: blog.project.isPublished,
-
-              title: blogTranslated?.title || '',
-              description: blogTranslated?.description || '',
-
-              techStacks: [],
-              tags: [],
+              id: blog.id,
+              slug: blog.slug,
+              title: projTranslated?.title || '',
+              description: projTranslated?.description || '',
             };
           }
 
@@ -149,35 +101,19 @@ export async function getPaginatedPublicBlogs(
             id: blog.id,
             createdAt: blog.createdAt,
             updatedAt: blog.updatedAt,
-
             slug: blog.slug,
-
             isPublished: blog.isPublished,
             publishedDate: blog.publishedDate,
-
             title: translated?.title || '',
             description: translated?.description || '',
             content: translated?.content || '',
-
-            project: project,
+            project,
             coverImage: blog.coverImage,
-
             readingTime: blog.readingTime,
-
             tags: blog.tags.map(({ tag }) => {
               const t = getTranslatedContent(tag.translations, locale);
-
-              return {
-                id: tag.id,
-                createdAt: tag.createdAt,
-                updatedAt: tag.updatedAt,
-
-                slug: tag.slug,
-                name: t?.name || '',
-              };
+              return { ...tag, name: t?.name || '' };
             }),
-            views: blog._count.blogViewLogs,
-            avgReadingTime: Math.floor(avgSeconds / 60),
           };
         });
 
@@ -191,10 +127,7 @@ export async function getPaginatedPublicBlogs(
           },
         };
       },
-      {
-        cache: false,
-      }
+      { cache: false }
     );
-    return data;
   });
 }

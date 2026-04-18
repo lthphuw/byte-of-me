@@ -7,6 +7,7 @@ import {
   handlePublicAction,
   withPublicActionHandler,
 } from '@/shared/api/public-action-template';
+import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
@@ -90,7 +91,7 @@ export async function getAllPublicCompanies(): Promise<
       {
         cache: true,
         cacheKey: ['work-experience-list'],
-        cacheTags: ['work-experience'],
+        cacheTags: [CACHE_TAGS.COMPANY],
       }
     );
     return data;

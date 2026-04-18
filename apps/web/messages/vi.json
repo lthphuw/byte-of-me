@@ -155,7 +155,18 @@
     "viewProject": "Xem dự án",
     "views": "{count} lượt xem",
     "avgRead": "Đọc {time}p",
-    "readingTime": "{time} phút đọc"
+    "readingTime": "{time} phút đọc",
+    "like": "Thích",
+    "comment": "Bình luận",
+    "share": "Chia sẻ",
+    "comments": "Bình luận",
+    "loadMoreComments": "Đang tải thêm...",
+    "loadMore": "Xem thêm",
+    "signInToComment": "Đăng nhập để bình luận",
+    "postComment": "Đăng bình luận",
+    "noCommentsYet": "Chưa có bình luận nào",
+    "beTheFirstComment": "Hãy là người đầu tiên chia sẻ suy nghĩ của bạn!",
+    "writingComment": "Viết bình luận..."
   },
   "contact": {
     "letsWorkTogether": "Cùng nhau hợp tác",

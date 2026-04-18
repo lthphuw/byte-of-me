@@ -3,7 +3,6 @@
 import { prisma } from '@byte-of-me/db';
 
 import type { PublicBlog } from '@/entities/blog/model/types';
-import type { PublicProject } from '@/entities/project/model/types';
 import {
   handlePublicAction,
   withPublicActionHandler,
@@ -34,32 +33,6 @@ export async function getPublicBlogBySlug(
         });
 
         const translated = getTranslatedContent(blog.translations, locale);
-        let project: Maybe<PublicProject> = null;
-
-        if (blog.project) {
-          const blogTranslated = getTranslatedContent(
-            blog.project.translations,
-            locale
-          );
-
-          project = {
-            id: blog.project.id,
-            createdAt: blog.project.createdAt,
-            updatedAt: blog.project.updatedAt,
-            slug: blog.project.slug,
-            githubLink: blog.project.githubLink,
-            liveLink: blog.project.liveLink,
-            startDate: blog.project.startDate,
-            endDate: blog.project.endDate,
-            isPublished: blog.project.isPublished,
-
-            title: blogTranslated?.title || '',
-            description: blogTranslated?.description || '',
-
-            techStacks: [],
-            tags: [],
-          };
-        }
 
         return {
           id: blog.id,
@@ -75,7 +48,7 @@ export async function getPublicBlogBySlug(
           description: translated?.description || '',
           content: translated?.content || '',
 
-          project: project,
+          projectId: blog.projectId,
           coverImage: blog.coverImage,
 
           readingTime: blog.readingTime,

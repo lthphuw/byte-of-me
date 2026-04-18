@@ -1,5 +1,6 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import {
   ArrowRight,
@@ -13,8 +14,17 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 import type { PublicBlog } from '@/entities/blog/model/types';
+import { getPublicBlogStats } from '@/features/public/blog-stats/lib';
+import { CACHE_TAGS } from '@/shared/lib/constants';
 import { Badge } from '@/shared/ui/badge';
 import { Card, CardContent } from '@/shared/ui/card';
+import { Skeleton } from '@/shared/ui/skeleton';
+
+
+
+
+
+// Giả sử bạn dùng Shadcn/ui
 
 interface BlogCardProps {
   blog: PublicBlog;
@@ -23,6 +33,15 @@ interface BlogCardProps {
 
 export function BlogCard({ blog, onTagClick }: BlogCardProps) {
   const t = useTranslations('components.blogCard');
+
+  const { data, isLoading } = useQuery({
+    queryKey: [CACHE_TAGS.BLOG, blog.id],
+    queryFn: () => getPublicBlogStats(blog.id),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const views = data?.views ?? blog.views ?? 0;
+  const avgTime = data?.avgTime ?? blog.avgReadingTime ?? 0;
 
   return (
     <Card className="group flex flex-col overflow-hidden border-2 transition-all hover:border-primary/50 hover:shadow-xl">
@@ -43,7 +62,6 @@ export function BlogCard({ blog, onTagClick }: BlogCardProps) {
           </div>
         )}
 
-        {/* Project Badge Overlay */}
         {blog.project && (
           <div className="absolute left-3 top-3">
             <Badge
@@ -100,13 +118,24 @@ export function BlogCard({ blog, onTagClick }: BlogCardProps) {
         {/* Stats & CTA Row */}
         <div className="mt-auto flex items-center justify-between border-t pt-4">
           <div className="flex items-center gap-4 text-[11px] font-medium text-muted-foreground">
+            {/* Views Stat */}
             <div className="flex items-center gap-1">
               <Eye className="h-3.5 w-3.5" />
-              <span>{t('views', { count: blog.views || 0})}</span>
+              {isLoading ? (
+                <Skeleton className="h-3 w-8" />
+              ) : (
+                <span>{t('views', { count: views })}</span>
+              )}
             </div>
+
+            {/* Reading Time Stat */}
             <div className="flex items-center gap-1">
               <Clock className="h-3.5 w-3.5" />
-              <span>{blog.avgReadingTime}m</span>
+              {isLoading ? (
+                <Skeleton className="h-3 w-6" />
+              ) : (
+                <span>{avgTime}m</span>
+              )}
             </div>
           </div>
 
