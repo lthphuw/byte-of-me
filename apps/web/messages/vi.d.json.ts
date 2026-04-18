@@ -2,264 +2,264 @@
 // See: https://next-intl.dev/docs/workflows/typescript#messages-arguments
 
 declare const messages: {
-  metadata: {
-    title: 'Phú Lương';
-    description: 'Nơi lưu giữ đam mê và kinh nghiệm cá nhân — từng byte một.';
-    about: {
-      title: 'Về tôi';
-      description: 'Giới thiệu ngắn gọn về bản thân, học vấn và các công nghệ tôi sử dụng.';
-    };
-    experience: {
-      title: 'Kinh nghiệm';
-      description: 'Các cột mốc và công việc tôi đã từng đảm nhận.';
-    };
-    projects: {
-      title: 'Dự án';
-      description: 'Những sản phẩm cá nhân tôi đã xây dựng.';
-    };
-    contact: {
-      title: 'Liên hệ';
-      description: 'Kết nối với tôi để hợp tác.';
-    };
-    blogs: {
-      title: 'Blog';
-      description: 'Ghi chép kiến thức và những chia sẻ nhỏ về lập trình.';
-    };
-  };
-  global: {
-    tableOfContent: 'Mục lục';
-    i18nToggle: {
-      toggleLanguage: 'Chuyển đổi ngôn ngữ';
-      vietnamese: 'Tiếng Việt';
-      english: 'Tiếng Anh';
-      french: 'Tiếng Pháp';
-    };
-    modeToggle: {
-      toggleTheme: 'Chuyển đổi giao diện';
-      light: 'Sáng';
-      dark: 'Tối';
-      system: 'Theo hệ thống';
-    };
-    search: {
-      searchProjects: 'Tìm kiếm dự án';
-      all: 'Tất cả';
-    };
-    header: {
-      nav: {
-        home: 'Trang chủ';
-        about: 'Giới thiệu';
-        experience: 'Kinh nghiệm';
-        projects: 'Dự án';
-        blogs: 'Bài viết';
-        hobbies: 'Sở thích';
-        more: 'Thêm';
-        letsTalk: 'Liên hệ';
-        askMe: 'Hỏi tôi';
-        anythingAboutMe: 'Mọi thứ về tôi';
-        cv: 'CV';
-      };
-    };
-    footer: {
-      home: 'Trang chủ';
-      builtBy: 'Xây dựng bởi';
-      openSource: 'Mã nguồn mở tại';
-      links: 'Liên kết nhanh';
-      about: 'Giới thiệu';
-      projects: 'Dự án';
-      experience: 'Kinh nghiệm';
-      blogs: 'Bài viết';
-      cv: 'CV';
-      anythingAboutMe: 'Mọi thứ về tôi';
-      contact: 'Liên hệ';
-      connect: 'Kết nối';
-      email: 'Email';
-      navigation: 'Điều hướng chân trang';
-      license: 'Cấp phép theo';
-      rights: 'Mọi quyền được bảo lưu.';
-    };
-  };
-  notFound: {
-    pageNotFound404: '404 — Không tìm thấy trang';
-    oopsPageNotFound: 'Rất tiếc! Trang không tồn tại';
-    sorryWeCouldntFindThatPage: 'Xin lỗi, chúng tôi không thể tìm thấy trang bạn yêu cầu';
-    pleaseCheckTheUrlOrGoBackHome: 'Vui lòng kiểm tra lại đường dẫn hoặc quay về trang chủ';
-    goBack: 'Quay lại';
-    home: 'Trang chủ';
-    aboutMe: 'Giới thiệu';
-    learnMoreAboutMyBackgroundAndJourney: 'Tìm hiểu thêm về hành trình và kinh nghiệm của tôi';
-    seeMyWork: 'Xem dự án';
-    checkOutTheProjectsIveBuilt: 'Khám phá các dự án tôi đã thực hiện';
-    contact: 'Liên hệ';
-    reachOutForCollaborationOrQuestions: 'Liên hệ với tôi nếu bạn có câu hỏi hoặc mong muốn hợp tác';
-    explore: 'Khám phá';
-  };
-  error: {
-    somethingWentWrong: 'Đã xảy ra lỗi!';
-    goBack: 'Quay lại';
-    home: 'Trang chủ';
-    reportForMe: 'Báo cáo lỗi';
-    reportForMeAboutThisError: 'Gửi báo cáo chi tiết về lỗi này';
-    send: 'Gửi';
-    errorDetails: 'Chi tiết lỗi';
-    copyError: 'Sao chép lỗi';
-    copied: 'Đã sao chép!';
-    missingQuestion: 'Bạn chưa nhập câu hỏi. Vui lòng thử lại.';
-    invalidInput: 'Nội dung câu hỏi có thể không phù hợp. Vui lòng kiểm tra và thử lại.';
-    missingThreadId: 'Không tìm thấy mã cuộc trò chuyện. Vui lòng tải lại trang.';
-    failedToDelete: 'Không thể xoá cuộc trò chuyện. Vui lòng thử lại sau hoặc tải lại trang.';
-  };
-  about: {
-    section: {
-      aboutMe: 'Giới thiệu';
-      education: 'Học vấn';
-      skillsTechStack: 'Công nghệ & kỹ năng';
-    };
-    techStack: {
-      frameworksTitle: 'Frameworks';
-      librariesTitle: 'Thư viện';
-      programmingLanguagesTitle: 'Ngôn ngữ lập trình';
-      databaseTitle: 'Cơ sở dữ liệu';
-    };
-  };
-  project: {
-    details: 'Chi tiết';
-    gitHub: 'GitHub';
-    all: 'Tất cả';
-    thereAreNoProjectsYet: 'Hiện chưa có dự án nào';
-    loadingProjectList: 'Đang tải danh sách dự án';
-    failedToLoadProjectList: 'Không thể tải danh sách dự án. Vui lòng thử lại.';
-    noProjectsMatchSelectedFilters: 'Không có dự án nào phù hợp với bộ lọc đã chọn';
-    noProjectsMatchCurrentSearchAndFilters: 'Không tìm thấy dự án phù hợp với tìm kiếm và bộ lọc hiện tại';
-    youveReachedTheEndOfTheProjectList: 'Bạn đã xem hết tất cả dự án';
-    clearFilters: 'Xoá bộ lọc';
-    clearSearch: 'Xoá tìm kiếm';
-    noProjectsYet: 'Chưa có dự án';
-    youCanStartByCreatingANewProject: 'Bạn có thể bắt đầu bằng cách tạo một dự án mới';
-    backToProjects: 'Quay lại danh sách dự án';
-    noProjectsFound: 'Chưa có dự án nào được thêm vào.';
-    noProjectsMatchYourSearch: 'Không tìm thấy dự án nào khớp với bộ lọc của bạn.';
-  };
-  blog: {
-    details: 'Chi tiết';
-    all: 'Tất cả';
-    thereAreNoBlogsYet: 'Hiện chưa có bài viết nào';
-    loadingBlogList: 'Đang tải danh sách bài viết';
-    failedToLoadBlogList: 'Không thể tải danh sách bài viết. Vui lòng thử lại.';
-    noBlogsFound: 'Chưa có bài viết nào. Hãy quay lại sau nhé!';
-    noBlogsMatchYourSearch: 'Không tìm thấy bài viết nào khớp với tìm kiếm của bạn.';
-  };
-  blogDetails: {
-    failedToLoadBlog: 'Không thể tải bài viết';
-    blogNotFoundTitle: 'Không tìm thấy bài viết';
-    blogNotFoundDescription: 'Rất tiếc, bài viết bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.';
-    backToBlogs: 'Quay lại danh sách blog';
-    goHome: 'Về trang chủ';
-    relatedProject: 'Dự án liên quan';
-    viewProject: 'Xem dự án';
-    views: '{count} lượt xem';
-    avgRead: 'Đọc {time}p';
-    readingTime: '{time} phút đọc';
-  };
-  contact: {
-    letsWorkTogether: 'Cùng nhau hợp tác';
-    feelFreeToReachOutThroughAnyChannel: 'Bạn có thể liên hệ với tôi qua bất kỳ kênh nào';
-    sendMeAnEmail: 'Gửi email cho tôi';
-    linkedIn: 'LinkedIn';
-    gitHub: 'GitHub';
-    or: 'Hoặc là';
-    sendMeADirectMessage: 'Để lại tin nhắn';
-  };
-  homepage: {
-    myStory: 'Hành trình của tôi';
-    moreAboutMyJourney: 'Tìm hiểu thêm về hành trình của tôi';
-    selectedProjects: 'Dự án tiêu biểu';
-    aFewThingsIveBuiltRecently: 'Một vài sản phẩm tôi đã thực hiện gần đây';
-    viewProject: 'Xem dự án';
-    viewAllProjects: 'Xem tất cả dự án';
-    thereAreNoProjectsYet: 'Hiện chưa có dự án nào';
-    haveAnIdeaInMind: 'Bạn đang có một ý tưởng?';
-    alwaysInterestedInThoughtfulProjectsAndGoodCollaboration: 'Tôi luôn hứng thú với những dự án được đầu tư nghiêm túc và sự hợp tác chất lượng.';
-    letsWorkTogether: 'Cùng hợp tác';
-    emailMe: 'Liên hệ qua email';
-    contactDetails: 'Thông tin liên hệ';
-  };
-  experience: {
-    updating: 'Đang cập nhật...';
-  };
-  components: {
-    expandableText: {
-      showLess: 'Thu gọn';
-      showMore: 'Xem thêm';
-    };
-    projectFilters: {
-      filters: 'Bộ lọc';
-      reset: 'Thiết lập lại';
-      seeMore: 'Xem thêm';
-      searchProject: 'Tìm kiếm dự án...';
-    };
-    blogFilters: {
-      filters: 'Bộ lọc';
-      reset: 'Thiết lập lại';
-      seeMore: 'Xem thêm';
-      searchBlog: 'Tìm kiếm bài viết...';
-    };
-    blogCard: {
-      readArticle: 'Đọc bài viết';
-      views: '{count} lượt xem';
-      avgRead: 'Đọc {time}p';
-      readingTime: '{time} phút đọc';
-    };
-    multiSelectSection: {
-      seeMore: 'Xem thêm';
-    };
-  };
-  dashboard: {
-    sidebar: {
-      groups: {
-        overview: 'Tổng quan';
-        portfolio: 'Nội dung Portfolio';
-        resume: 'Dữ liệu Resume';
-        configuration: 'Cấu hình';
-      };
-      items: {
-        dashboard: 'Bảng điều khiển';
-        profile: 'Hồ sơ';
-        projects: 'Dự án';
-        blogs: 'Bài viết';
-        media: 'Thư viện';
-        companies: 'Công ty';
-        education: 'Học vấn';
-        techStacks: 'Công nghệ';
-        tags: 'Thẻ';
-        translations: 'Dịch thuật';
-      };
-      actions: {
-        clearCache: 'Xóa Cache';
-        viewSite: 'Xem trang web';
-        signOut: 'Đăng xuất';
-        cacheSuccess: 'Hệ thống đã cập nhật';
-        cacheSuccessDesc: 'Tất cả bộ nhớ đệm đã được xóa.';
-        cacheError: 'Cập nhật thất bại';
-        cacheErrorDesc: 'Có lỗi xảy ra khi xóa bộ nhớ đệm.';
-      };
-    };
-    dashboard: {
-      welcome: 'Chào mừng trở lại, {name}! 👋';
-      description: 'Quản lý danh mục cá nhân và theo dõi hiệu suất nội dung của bạn.';
-    };
-    contactGallery: {
-      title: 'Yêu cầu gần đây';
-      description: 'Tin nhắn trực tiếp từ biểu mẫu liên hệ trong hồ sơ của bạn.';
-      messageCount: '{count} tin nhắn';
-      searchPlaceholder: 'Tìm kiếm tin nhắn...';
-      noMessages: 'Không tìm thấy tin nhắn nào';
-      noSubject: 'Không có tiêu đề';
-      clickMore: 'Nhấp để đọc thêm';
-      subjectLabel: 'Tiêu đề';
-      messageLabel: 'Nội dung';
-      noSubjectProvided: 'Không có tiêu đề';
-      close: 'Đóng';
-    };
-  };
+  "metadata": {
+    "title": "Phú Lương",
+    "description": "Nơi lưu giữ đam mê và kinh nghiệm cá nhân — từng byte một.",
+    "about": {
+      "title": "Về tôi",
+      "description": "Giới thiệu ngắn gọn về bản thân, học vấn và các công nghệ tôi sử dụng."
+    },
+    "experience": {
+      "title": "Kinh nghiệm",
+      "description": "Các cột mốc và công việc tôi đã từng đảm nhận."
+    },
+    "projects": {
+      "title": "Dự án",
+      "description": "Những sản phẩm cá nhân tôi đã xây dựng."
+    },
+    "contact": {
+      "title": "Liên hệ",
+      "description": "Kết nối với tôi để hợp tác."
+    },
+    "blogs": {
+      "title": "Blog",
+      "description": "Ghi chép kiến thức và những chia sẻ nhỏ về lập trình."
+    }
+  },
+  "global": {
+    "tableOfContent": "Mục lục",
+    "i18nToggle": {
+      "toggleLanguage": "Chuyển đổi ngôn ngữ",
+      "vietnamese": "Tiếng Việt",
+      "english": "Tiếng Anh",
+      "french": "Tiếng Pháp"
+    },
+    "modeToggle": {
+      "toggleTheme": "Chuyển đổi giao diện",
+      "light": "Sáng",
+      "dark": "Tối",
+      "system": "Theo hệ thống"
+    },
+    "search": {
+      "searchProjects": "Tìm kiếm dự án",
+      "all": "Tất cả"
+    },
+    "header": {
+      "nav": {
+        "home": "Trang chủ",
+        "about": "Giới thiệu",
+        "experience": "Kinh nghiệm",
+        "projects": "Dự án",
+        "blogs": "Bài viết",
+        "hobbies": "Sở thích",
+        "more": "Thêm",
+        "letsTalk": "Liên hệ",
+        "askMe": "Hỏi tôi",
+        "anythingAboutMe": "Mọi thứ về tôi",
+        "cv": "CV"
+      }
+    },
+    "footer": {
+      "home": "Trang chủ",
+      "builtBy": "Xây dựng bởi",
+      "openSource": "Mã nguồn mở tại",
+      "links": "Liên kết nhanh",
+      "about": "Giới thiệu",
+      "projects": "Dự án",
+      "experience": "Kinh nghiệm",
+      "blogs": "Bài viết",
+      "cv": "CV",
+      "anythingAboutMe": "Mọi thứ về tôi",
+      "contact": "Liên hệ",
+      "connect": "Kết nối",
+      "email": "Email",
+      "navigation": "Điều hướng chân trang",
+      "license": "Cấp phép theo",
+      "rights": "Mọi quyền được bảo lưu."
+    }
+  },
+  "notFound": {
+    "pageNotFound404": "404 — Không tìm thấy trang",
+    "oopsPageNotFound": "Rất tiếc! Trang không tồn tại",
+    "sorryWeCouldntFindThatPage": "Xin lỗi, chúng tôi không thể tìm thấy trang bạn yêu cầu",
+    "pleaseCheckTheUrlOrGoBackHome": "Vui lòng kiểm tra lại đường dẫn hoặc quay về trang chủ",
+    "goBack": "Quay lại",
+    "home": "Trang chủ",
+    "aboutMe": "Giới thiệu",
+    "learnMoreAboutMyBackgroundAndJourney": "Tìm hiểu thêm về hành trình và kinh nghiệm của tôi",
+    "seeMyWork": "Xem dự án",
+    "checkOutTheProjectsIveBuilt": "Khám phá các dự án tôi đã thực hiện",
+    "contact": "Liên hệ",
+    "reachOutForCollaborationOrQuestions": "Liên hệ với tôi nếu bạn có câu hỏi hoặc mong muốn hợp tác",
+    "explore": "Khám phá"
+  },
+  "error": {
+    "somethingWentWrong": "Đã xảy ra lỗi!",
+    "goBack": "Quay lại",
+    "home": "Trang chủ",
+    "reportForMe": "Báo cáo lỗi",
+    "reportForMeAboutThisError": "Gửi báo cáo chi tiết về lỗi này",
+    "send": "Gửi",
+    "errorDetails": "Chi tiết lỗi",
+    "copyError": "Sao chép lỗi",
+    "copied": "Đã sao chép!",
+    "missingQuestion": "Bạn chưa nhập câu hỏi. Vui lòng thử lại.",
+    "invalidInput": "Nội dung câu hỏi có thể không phù hợp. Vui lòng kiểm tra và thử lại.",
+    "missingThreadId": "Không tìm thấy mã cuộc trò chuyện. Vui lòng tải lại trang.",
+    "failedToDelete": "Không thể xoá cuộc trò chuyện. Vui lòng thử lại sau hoặc tải lại trang."
+  },
+  "about": {
+    "section": {
+      "aboutMe": "Giới thiệu",
+      "education": "Học vấn",
+      "skillsTechStack": "Công nghệ & kỹ năng"
+    },
+    "techStack": {
+      "frameworksTitle": "Frameworks",
+      "librariesTitle": "Thư viện",
+      "programmingLanguagesTitle": "Ngôn ngữ lập trình",
+      "databaseTitle": "Cơ sở dữ liệu"
+    }
+  },
+  "project": {
+    "details": "Chi tiết",
+    "gitHub": "GitHub",
+    "all": "Tất cả",
+    "thereAreNoProjectsYet": "Hiện chưa có dự án nào",
+    "loadingProjectList": "Đang tải danh sách dự án",
+    "failedToLoadProjectList": "Không thể tải danh sách dự án. Vui lòng thử lại.",
+    "noProjectsMatchSelectedFilters": "Không có dự án nào phù hợp với bộ lọc đã chọn",
+    "noProjectsMatchCurrentSearchAndFilters": "Không tìm thấy dự án phù hợp với tìm kiếm và bộ lọc hiện tại",
+    "youveReachedTheEndOfTheProjectList": "Bạn đã xem hết tất cả dự án",
+    "clearFilters": "Xoá bộ lọc",
+    "clearSearch": "Xoá tìm kiếm",
+    "noProjectsYet": "Chưa có dự án",
+    "youCanStartByCreatingANewProject": "Bạn có thể bắt đầu bằng cách tạo một dự án mới",
+    "backToProjects": "Quay lại danh sách dự án",
+    "noProjectsFound": "Chưa có dự án nào được thêm vào.",
+    "noProjectsMatchYourSearch": "Không tìm thấy dự án nào khớp với bộ lọc của bạn."
+  },
+  "blog": {
+    "details": "Chi tiết",
+    "all": "Tất cả",
+    "thereAreNoBlogsYet": "Hiện chưa có bài viết nào",
+    "loadingBlogList": "Đang tải danh sách bài viết",
+    "failedToLoadBlogList": "Không thể tải danh sách bài viết. Vui lòng thử lại.",
+    "noBlogsFound": "Chưa có bài viết nào. Hãy quay lại sau nhé!",
+    "noBlogsMatchYourSearch": "Không tìm thấy bài viết nào khớp với tìm kiếm của bạn."
+  },
+  "blogDetails": {
+    "failedToLoadBlog": "Không thể tải bài viết",
+    "blogNotFoundTitle": "Không tìm thấy bài viết",
+    "blogNotFoundDescription": "Rất tiếc, bài viết bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
+    "backToBlogs": "Quay lại danh sách blog",
+    "goHome": "Về trang chủ",
+    "relatedProject": "Dự án liên quan",
+    "viewProject": "Xem dự án",
+    "views": "{count} lượt xem",
+    "avgRead": "Đọc {time}p",
+    "readingTime": "{time} phút đọc"
+  },
+  "contact": {
+    "letsWorkTogether": "Cùng nhau hợp tác",
+    "feelFreeToReachOutThroughAnyChannel": "Bạn có thể liên hệ với tôi qua bất kỳ kênh nào",
+    "sendMeAnEmail": "Gửi email cho tôi",
+    "linkedIn": "LinkedIn",
+    "gitHub": "GitHub",
+    "or": "Hoặc là",
+    "sendMeADirectMessage": "Để lại tin nhắn"
+  },
+  "homepage": {
+    "myStory": "Hành trình của tôi",
+    "moreAboutMyJourney": "Tìm hiểu thêm về hành trình của tôi",
+    "selectedProjects": "Dự án tiêu biểu",
+    "aFewThingsIveBuiltRecently": "Một vài sản phẩm tôi đã thực hiện gần đây",
+    "viewProject": "Xem dự án",
+    "viewAllProjects": "Xem tất cả dự án",
+    "thereAreNoProjectsYet": "Hiện chưa có dự án nào",
+    "haveAnIdeaInMind": "Bạn đang có một ý tưởng?",
+    "alwaysInterestedInThoughtfulProjectsAndGoodCollaboration": "Tôi luôn hứng thú với những dự án được đầu tư nghiêm túc và sự hợp tác chất lượng.",
+    "letsWorkTogether": "Cùng hợp tác",
+    "emailMe": "Liên hệ qua email",
+    "contactDetails": "Thông tin liên hệ"
+  },
+  "experience": {
+    "updating": "Đang cập nhật..."
+  },
+  "components": {
+    "expandableText": {
+      "showLess": "Thu gọn",
+      "showMore": "Xem thêm"
+    },
+    "projectFilters": {
+      "filters": "Bộ lọc",
+      "reset": "Thiết lập lại",
+      "seeMore": "Xem thêm",
+      "searchProject": "Tìm kiếm dự án..."
+    },
+    "blogFilters": {
+      "filters": "Bộ lọc",
+      "reset": "Thiết lập lại",
+      "seeMore": "Xem thêm",
+      "searchBlog": "Tìm kiếm bài viết..."
+    },
+    "blogCard": {
+      "readArticle": "Đọc bài viết",
+      "views": "{count} lượt xem",
+      "avgRead": "Đọc {time}p",
+      "readingTime": "{time} phút đọc"
+    },
+    "multiSelectSection": {
+      "seeMore": "Xem thêm"
+    }
+  },
+  "dashboard": {
+    "sidebar": {
+      "groups": {
+        "overview": "Tổng quan",
+        "portfolio": "Nội dung Portfolio",
+        "resume": "Dữ liệu Resume",
+        "configuration": "Cấu hình"
+      },
+      "items": {
+        "dashboard": "Bảng điều khiển",
+        "profile": "Hồ sơ",
+        "projects": "Dự án",
+        "blogs": "Bài viết",
+        "media": "Thư viện",
+        "companies": "Công ty",
+        "education": "Học vấn",
+        "techStacks": "Công nghệ",
+        "tags": "Thẻ",
+        "translations": "Dịch thuật"
+      },
+      "actions": {
+        "clearCache": "Xóa Cache",
+        "viewSite": "Xem trang web",
+        "signOut": "Đăng xuất",
+        "cacheSuccess": "Hệ thống đã cập nhật",
+        "cacheSuccessDesc": "Tất cả bộ nhớ đệm đã được xóa.",
+        "cacheError": "Cập nhật thất bại",
+        "cacheErrorDesc": "Có lỗi xảy ra khi xóa bộ nhớ đệm."
+      }
+    },
+    "dashboard": {
+      "welcome": "Chào mừng trở lại, {name}! 👋",
+      "description": "Quản lý danh mục cá nhân và theo dõi hiệu suất nội dung của bạn."
+    },
+    "contactGallery": {
+      "title": "Yêu cầu gần đây",
+      "description": "Tin nhắn trực tiếp từ biểu mẫu liên hệ trong hồ sơ của bạn.",
+      "messageCount": "{count} tin nhắn",
+      "searchPlaceholder": "Tìm kiếm tin nhắn...",
+      "noMessages": "Không tìm thấy tin nhắn nào",
+      "noSubject": "Không có tiêu đề",
+      "clickMore": "Nhấp để đọc thêm",
+      "subjectLabel": "Tiêu đề",
+      "messageLabel": "Nội dung",
+      "noSubjectProvided": "Không có tiêu đề",
+      "close": "Đóng"
+    }
+  }
 };
 export default messages;

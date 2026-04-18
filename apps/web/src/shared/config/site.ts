@@ -36,14 +36,14 @@ export const siteConfig: SiteConfig = {
     // Topic
     'Portfolio',
     'Personal Website',
-    'Personal PublicBlog Template',
-    'Minimal PublicBlog',
+    'Personal Blog Template',
+    'Minimal Blog',
     'Digital Garden',
     'Developer Notes',
-    'PublicBlog Template',
+    'Blog Template',
     'Open Source Portfolio',
     'Next.js Personal Website',
-    'Developer Portfolio with PublicBlog',
+    'Developer Portfolio with Blog',
 
     // Techstack
     'Next.js',

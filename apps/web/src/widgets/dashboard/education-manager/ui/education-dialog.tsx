@@ -125,7 +125,7 @@ export function EducationDialog({
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {initialData ? 'Edit PublicEducation' : 'Add PublicEducation'}
+            {initialData ? 'Edit Education' : 'Add Education'}
           </DialogTitle>
         </DialogHeader>
 

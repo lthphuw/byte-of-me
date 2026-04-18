@@ -27,7 +27,7 @@ export function BlogEditorCard({ blog, onEdit, onDelete, isPending }: BlogCardPr
         {coverImageUrl ? (
           <Image
             src={coverImageUrl}
-            alt={mainTranslation?.title || 'PublicBlog cover'}
+            alt={mainTranslation?.title || 'Blog cover'}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -56,7 +56,7 @@ export function BlogEditorCard({ blog, onEdit, onDelete, isPending }: BlogCardPr
 
       <CardHeader className="space-y-1 p-4 pb-2">
         <h3 className="line-clamp-2 min-h-[2.5rem] font-bold leading-tight transition-colors group-hover:text-primary">
-          {mainTranslation?.title || 'Untitled PublicBlog'}
+          {mainTranslation?.title || 'Untitled Blog'}
         </h3>
         <p className="w-fit truncate rounded bg-muted/50 px-1 font-mono text-[11px] text-muted-foreground">
           /{blog.slug}

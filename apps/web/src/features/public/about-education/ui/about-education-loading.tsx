@@ -3,7 +3,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 export function AboutEducationLoading() {
   return (
     <section className="space-y-8">
-      {/* "PublicEducation" Title */}
+      {/* "Blog" Title */}
       <div className="flex items-center gap-4">
         <Skeleton className="h-8 w-40 md:h-10 md:w-56" />
       </div>

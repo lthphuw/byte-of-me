@@ -32,7 +32,7 @@ export default function Error({
 
   const handleCopyError = useCallback(() => {
     copy(prettyStringify(errorDetails));
-  }, []);
+  }, [copy, errorDetails]);
 
   useEffect(() => {
     // Log the error to an error reporting service

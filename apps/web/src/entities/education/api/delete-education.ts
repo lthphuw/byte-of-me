@@ -8,10 +8,6 @@ import { CACHE_TAGS } from '@/shared/lib/constants';
 import { requireUser } from '@/shared/lib/session';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-
-
-
-
 export async function deleteEducation(id: string): Promise<ApiResponse<Any>> {
   try {
     const user = await requireUser();
@@ -21,7 +17,7 @@ export async function deleteEducation(id: string): Promise<ApiResponse<Any>> {
     });
 
     if (!existing) {
-      return { success: false, errorMsg: 'PublicEducation not found' };
+      return { success: false, errorMsg: 'Education not found' };
     }
 
     revalidateTag(CACHE_TAGS.EDUCATION, 'max');

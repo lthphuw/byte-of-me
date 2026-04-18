@@ -30,24 +30,51 @@
 </div>
 
 ---
-
 ## 📸 Demo
 
-<div align="center">
-  <table style="width: 100%;">
-    <tr>
-      <td width="50%">
-        <p align="center"><strong>Public Portfolio (Dark Mode)</strong></p>
-        <img src="./docs/public-demo.png" alt="Public Site Demo" width="100%" />
-      </td>
-      <td width="50%">
-        <p align="center"><strong>Private CMS Dashboard</strong></p>
-        <img src="./docs/dashboard-demo.png" alt="Dashboard Demo" width="100%" />
-      </td>
-    </tr>
-  </table>
+<details>
+<summary>Click to view Public Portfolio</summary>
+<br>
+
+<div style="display: flex; gap: 10px; margin-bottom: 10px;">
+  <div style="flex: 1;">
+    <p align="center"><strong>Homepage</strong></p>
+    <img src="./docs/pub1.png" width="100%" />
+  </div>
+  <div style="flex: 1;">
+    <p align="center"><strong>Blogs</strong></p>
+    <img src="./docs/pub2.png" width="100%" />
+  </div>
 </div>
 
+<div align="center">
+  <p><strong>Contact Page</strong></p>
+  <img src="./docs/pub3.png" width="50%" />
+</div>
+
+</details>
+
+<details>
+<summary>Click to view Dashboard (CMS)</summary>
+<br>
+
+<div style="display: flex; gap: 10px; margin-bottom: 10px;">
+  <div style="flex: 1;">
+    <p align="center"><strong>Dashboard</strong></p>
+    <img src="./docs/dash1.png" width="100%" />
+  </div>
+  <div style="flex: 1;">
+    <p align="center"><strong>Blog Editor</strong></p>
+    <img src="./docs/dash2.png" width="100%" />
+  </div>
+</div>
+
+<div align="center">
+  <p><strong>Education Manager</strong></p>
+  <img src="./docs/dash3.png" width="50%" />
+</div>
+
+</details>
 ---
 ## Overview
 
