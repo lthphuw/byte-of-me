@@ -38,6 +38,7 @@ export async function withPublicActionHandler<TData>(
   }
 
   if (options.cache) {
+    const cacheKey = [...(options.cacheKey || [actionName]), locale];
     const cachedHandler = unstable_cache(
       () => {
         logger.debug(
@@ -45,7 +46,7 @@ export async function withPublicActionHandler<TData>(
         );
         return handler(context);
       },
-      options.cacheKey || [actionName],
+      cacheKey,
       { tags: options.cacheTags || [actionName] }
     );
     return await cachedHandler();

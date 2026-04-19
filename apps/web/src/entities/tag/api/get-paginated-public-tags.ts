@@ -18,7 +18,7 @@ export async function getPaginatedPublicTags(
   return handlePublicAction('getPaginatedTags', async () => {
     const data = await withPublicActionHandler(
       'getPaginatedTags',
-      async ({ userId, locale }) => {
+      async ({ locale }) => {
         const { page = 1, limit = 10 } = pagination;
         const skip = (page - 1) * limit;
 

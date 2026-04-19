@@ -69,7 +69,7 @@ export async function getPublicBlogBySlug(
       },
       {
         cache: true,
-        cacheKey: [CACHE_TAGS.BLOG],
+        cacheKey: [CACHE_TAGS.BLOG, slug],
         cacheTags: [CACHE_TAGS.BLOG, slug],
       }
     );
