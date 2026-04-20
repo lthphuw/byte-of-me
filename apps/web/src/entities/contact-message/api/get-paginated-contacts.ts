@@ -3,7 +3,7 @@
 import { type Prisma,prisma } from '@byte-of-me/db';
 
 import type { AdminContactMessage } from '@/entities/contact-message';
-import { requireUser } from '@/shared/lib/session';
+import { requireAdmin } from '@/shared/lib/auth';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
@@ -19,7 +19,7 @@ export async function getPaginatedContactMessages(
   }
 ): Promise<ApiResponse<PaginatedData<AdminContactMessage>>> {
   try {
-    const session = await requireUser();
+    const session = await requireAdmin();
     const skip = (page - 1) * limit;
 
     const where: Prisma.ContactMessageWhereInput = {

@@ -25,7 +25,11 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
             <BlogHeader blog={blog} />
 
             {/*Actions*/}
-            <BlogActionBar blogId={blog.id} title={blog.title} />
+            <BlogActionBar
+              blogId={blog.id}
+              blogSlug={blog.slug}
+              title={blog.title}
+            />
 
             {/*Content*/}
             <Separator className="mb-8 md:mb-10" />

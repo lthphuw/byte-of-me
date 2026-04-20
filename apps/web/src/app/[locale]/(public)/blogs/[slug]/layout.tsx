@@ -53,10 +53,12 @@ export async function generateMetadata({
   };
 }
 
-interface BlogsLayoutProps {
+interface BlogDetailsLayoutProps {
   children?: React.ReactNode;
 }
 
-export default async function BlogsLayout({ children }: BlogsLayoutProps) {
+export default async function BlogDetailsLayout({
+  children,
+}: BlogDetailsLayoutProps) {
   return <div className="flex flex-col gap-6">{children}</div>;
 }

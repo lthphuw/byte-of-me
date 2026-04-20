@@ -5,16 +5,12 @@ import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
 import type { TagFormValues } from '@/entities/tag/model/tag-schema';
+import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { requireUser } from '@/shared/lib/session';
-
-
-
-
 
 export async function createTag(values: TagFormValues) {
   try {
-    await requireUser();
+    await requireAdmin();
 
     const tag = await prisma.tag.create({
       data: {

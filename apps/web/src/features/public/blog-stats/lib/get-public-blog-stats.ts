@@ -2,8 +2,14 @@
 
 import { prisma } from '@byte-of-me/db';
 
+import { INTERACTION } from '@/shared/lib/constants';
+
+
+
+
+
 export async function getPublicBlogStats(blogId: string) {
-  const [totalViews, medianResult] = await Promise.all([
+  const [totalViews, medianResult, totalLikes] = await Promise.all([
     prisma.blogStatisticLog.count({
       where: { blogId },
     }),
@@ -15,6 +21,13 @@ export async function getPublicBlogStats(blogId: string) {
       AND "reading_time" > 5
       AND "reading_time" < 30 * 60
     `,
+
+    prisma.interaction.count({
+      where: {
+        blogId,
+        type: INTERACTION.LIKE,
+      },
+    }),
   ]);
 
   const medianSeconds = medianResult[0]?.medianTime || 5 * 60;
@@ -23,5 +36,6 @@ export async function getPublicBlogStats(blogId: string) {
     views: totalViews || 0,
     avgTime: Math.floor(medianSeconds / 60),
     rawSeconds: Math.floor(medianSeconds),
+    totalLikes,
   };
 }

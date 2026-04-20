@@ -4,20 +4,16 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
 import type { AdminBlog } from '@/entities/blog';
-import { requireUser } from '@/shared/lib/session';
+import { requireAdmin } from '@/shared/lib/auth';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
-
-
-
-
 
 export async function getPaginatedAdminBlog(
   page: number,
   limit: number
 ): Promise<ApiResponse<PaginatedData<AdminBlog>>> {
   try {
-    const session = await requireUser();
+    const session = await requireAdmin();
     const userId = session.id;
     const skip = (page - 1) * limit;
 

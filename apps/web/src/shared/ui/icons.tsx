@@ -1,3 +1,4 @@
+import { PiHandsClapping } from 'react-icons/pi';
 import {
   AlertTriangle,
   ArrowLeft,
@@ -136,6 +137,10 @@ export const Icons = {
   file: FileText,
   component: Component,
   sparkles: Sparkles,
+
+  clap: ({ className, ...props }: LucideProps) => (
+   <PiHandsClapping className={className} {...props} />
+  ),
 
   // Custom SVG Icons
   debug: ({ className, ...props }: LucideProps) => (

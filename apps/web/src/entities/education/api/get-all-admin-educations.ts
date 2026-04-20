@@ -4,7 +4,7 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
 import type { AdminEducation } from '@/entities/education';
-import { requireUser } from '@/shared/lib/session';
+import { requireAdmin } from '@/shared/lib/auth';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 
@@ -15,7 +15,7 @@ export async function getAllAdminEducations(): Promise<
   ApiResponse<AdminEducation[]>
 > {
   try {
-    const session = await requireUser();
+    const session = await requireAdmin();
     const educations = await prisma.education.findMany({
       where: {
         userId: session.id,

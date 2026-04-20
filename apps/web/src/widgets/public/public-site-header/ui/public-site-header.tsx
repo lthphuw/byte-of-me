@@ -11,6 +11,7 @@ import { PublicHeaderMainNav } from './public-header-main-nav';
 import { globalConfig } from '@/shared/config/global';
 import { cn } from '@/shared/lib/utils';
 import { I18nToggle } from '@/widgets/public/public-site-header/ui/i18n-toggle';
+import { UserActionToggle } from '@/widgets/public/public-site-header/ui/user-action-toggle';
 
 const SCROLL_THRESHOLD = 50;
 const COMPACT_BORDER_RADIUS = 16;
@@ -137,6 +138,7 @@ export function PublicSiteHeader() {
         >
           <ColorSchemeModeToggle />
           <I18nToggle />
+          <UserActionToggle />
         </motion.div>
       </motion.div>
     </>

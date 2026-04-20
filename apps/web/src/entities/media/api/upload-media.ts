@@ -6,20 +6,16 @@ import { revalidateTag } from 'next/cache';
 
 import { supabaseStorage } from '@/shared/api/s3-storage-api';
 import { env } from '@/shared/config/env';
+import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { requireUser } from '@/shared/lib/session';
 import { generateFriendlyId } from '@/shared/lib/uuid';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { Media } from '@/shared/types/models';
 
-
-
-
-
 export async function uploadMedia(
   files: File[]
 ): Promise<ApiResponse<Media[]>> {
-  const user = await requireUser();
+  const user = await requireAdmin();
 
   if (!files || files.length === 0) {
     return { success: false, errorMsg: 'No files provided.' };

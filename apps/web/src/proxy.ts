@@ -4,6 +4,10 @@ import createMiddleware from 'next-intl/middleware';
 import { routing } from '@/shared/i18n/routing';
 import { auth } from '@/shared/lib/auth';
 
+
+
+
+
 const intlMiddleware = createMiddleware(routing);
 
 export default auth(async function middleware(req: NextRequest) {

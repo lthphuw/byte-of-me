@@ -9,7 +9,7 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 
 
-export async function logIn(
+export async function logInToDashboard(
   email: string,
   callbackUrl: string
 ): Promise<ApiResponse<Any>> {

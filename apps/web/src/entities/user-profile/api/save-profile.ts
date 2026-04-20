@@ -5,8 +5,8 @@ import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
 import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
+import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { requireUser } from '@/shared/lib/session';
 
 
 
@@ -16,7 +16,7 @@ export async function saveProfile(values: UserProfileFormValues) {
   const start = Date.now();
 
   try {
-    const user = await requireUser();
+    const user = await requireAdmin();
 
     logger.info('[PROFILE] Start saveProfile', {
       userId: user.id,

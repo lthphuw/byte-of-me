@@ -162,7 +162,7 @@ async function main() {
 
   await prisma.interaction.create({
     data: {
-      type: 'LIKE',
+      type: INTERACTION.LIKE,
       userId: user.id,
       blogId: blog.id
     }

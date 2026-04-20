@@ -4,11 +4,15 @@ import { prisma } from '@byte-of-me/db';
 import { revalidateTag } from 'next/cache';
 
 import type { ProjectFromValues } from '@/entities/project/model';
+import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { requireUser } from '@/shared/lib/session';
+
+
+
+
 
 export async function createProject(data: ProjectFromValues) {
-  const session = await requireUser();
+  const session = await requireAdmin();
 
   const project = await prisma.project.create({
     data: {

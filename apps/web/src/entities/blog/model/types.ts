@@ -3,6 +3,10 @@ import type { Prisma } from '@byte-of-me/db';
 import type { PublicProject } from '@/entities';
 import type { Media, Tag } from '@/shared/types/models';
 
+
+
+
+
 export type AdminBlog = Prisma.BlogGetPayload<{
   include: {
     coverImage: true;
@@ -45,6 +49,7 @@ export interface PublicBlog {
   coverImage?: Maybe<Media>;
   tags: Tag[];
 
+  isInteracted?: boolean;
   views?: number;
   avgReadingTime?: number;
 }

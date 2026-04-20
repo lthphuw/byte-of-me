@@ -13,3 +13,8 @@ export const CACHE_TAGS = {
 } as const;
 
 export type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];
+
+export enum INTERACTION {
+  LIKE= 'LIKE',
+  CLAP= 'CLAP',
+}

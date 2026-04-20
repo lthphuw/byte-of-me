@@ -28,6 +28,9 @@ declare const messages: {
   },
   "global": {
     "tableOfContent": "Table of Content",
+    "userToggle": {
+      "signOut": "Sign out"
+    },
     "i18nToggle": {
       "toggleLanguage": "Toggle language",
       "vietnamese": "Vietnamese",
@@ -162,7 +165,11 @@ declare const messages: {
     "postComment": "Post Comment",
     "noCommentsYet": "No comments yet",
     "beTheFirstComment": "Be the first to share your thoughts!",
-    "writingComment": "Write a comment..."
+    "writingComment": "Write a comment...",
+    "mustSignInToComment": "Must sign in to comment",
+    "posting": "Posting...",
+    "postCommentFailed": "Failed to post comment",
+    "interactFailed": "Failed to interact the post"
   },
   "contact": {
     "letsWorkTogether": "Let’s work together",
@@ -264,6 +271,14 @@ declare const messages: {
       "noSubjectProvided": "No subject provided",
       "close": "Close"
     }
+  },
+  "auth": {
+    "signInTitle": "Sign in to your account",
+    "orContinueWith": "Or continue with",
+    "signInWithGithub": "Continue with GitHub",
+    "signInWithGoogle": "Continue with Google",
+    "emailPlaceholder": "name@example.com",
+    "sendMagicLink": "Send Magic Link"
   }
 };
 export default messages;

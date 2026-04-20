@@ -37,7 +37,7 @@ export async function sendContactMessage(values: ContactMessageFormValues) {
 
     const message = sanitizeHtml(data.message);
     await mailer.sendMail({
-      from: `"${data.name}" <${process.env.SMTP_USER}>`,
+      from: `"${data.name}" <${env.EMAIL_SERVER_USER}>`,
       replyTo: data.email,
       to: env.EMAIL,
       subject: `New Contact Message: ${data.subject || 'No Subject'}`,

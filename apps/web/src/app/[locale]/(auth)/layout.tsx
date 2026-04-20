@@ -1,7 +1,7 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
 
-import { getAuthenticatedUser } from '@/shared/lib/session';
+import { getAuthenticatedAdmin } from '@/shared/lib/auth';
 import { PublicSiteFooter } from '@/widgets/public/public-site-footer/ui';
 
 export const dynamic = 'force-dynamic';
@@ -11,7 +11,7 @@ interface AuthLayoutProps {
 }
 
 export default async function AuthLayout({ children }: AuthLayoutProps) {
-  const user = await getAuthenticatedUser();
+  const user = await getAuthenticatedAdmin();
   if (user) {
     redirect('/dashboard');
   }

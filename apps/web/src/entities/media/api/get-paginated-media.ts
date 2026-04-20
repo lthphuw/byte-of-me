@@ -2,7 +2,7 @@
 
 import { prisma } from '@byte-of-me/db';
 
-import { requireUser } from '@/shared/lib/session';
+import { requireAdmin } from '@/shared/lib/auth';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type {
   PaginatedData,
@@ -14,7 +14,7 @@ export async function getPaginatedMedia(
   pagination: PaginatedParams
 ): Promise<ApiResponse<PaginatedData<Media>>> {
   try {
-    const session = await requireUser();
+    const session = await requireAdmin();
     const { page = 1, limit = 10 } = pagination;
     const skip = (page - 1) * limit;
 

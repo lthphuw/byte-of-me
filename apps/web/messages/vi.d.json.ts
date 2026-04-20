@@ -28,6 +28,9 @@ declare const messages: {
   },
   "global": {
     "tableOfContent": "Mục lục",
+    "userToggle": {
+      "signOut": "Đăng xuất"
+    },
     "i18nToggle": {
       "toggleLanguage": "Chuyển đổi ngôn ngữ",
       "vietnamese": "Tiếng Việt",
@@ -169,7 +172,11 @@ declare const messages: {
     "postComment": "Đăng bình luận",
     "noCommentsYet": "Chưa có bình luận nào",
     "beTheFirstComment": "Hãy là người đầu tiên chia sẻ suy nghĩ của bạn!",
-    "writingComment": "Viết bình luận..."
+    "writingComment": "Viết bình luận...",
+    "mustSignInToComment": "Bạn cần phải đăng nhập để bình luận",
+    "posting": "Đang đăng...",
+    "postCommentFailed": "Đăng bình luận thất bại, vui lòng thử lại sau",
+    "interactFailed": "Tương tác bài viết thất bại, vui lòng thử lại sau"
   },
   "contact": {
     "letsWorkTogether": "Cùng nhau hợp tác",
@@ -271,6 +278,14 @@ declare const messages: {
       "noSubjectProvided": "Không có tiêu đề",
       "close": "Đóng"
     }
+  },
+  "auth": {
+    "signInTitle": "Đăng nhập vào tài khoản",
+    "orContinueWith": "Hoặc tiếp tục với",
+    "signInWithGithub": "Tiếp tục với GitHub",
+    "signInWithGoogle": "Tiếp tục với Google",
+    "emailPlaceholder": "email@example.com",
+    "sendMagicLink": "Gửi liên kết đăng nhập"
   }
 };
 export default messages;

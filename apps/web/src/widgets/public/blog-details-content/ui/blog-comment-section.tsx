@@ -1,16 +1,20 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useIntersection } from '@mantine/hooks';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
 import {
   CommentForm,
+  commentKey,
   CommentList,
   CommentListEmpty,
   CommentListSkeleton,
+  postComment,
   useCommentInfiniteQuery,
 } from '@/entities';
+import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/ui/button';
 import Loading from '@/shared/ui/loading';
 
@@ -20,27 +24,108 @@ export interface BlogCommentSectionProps {
 
 export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
   const t = useTranslations('blogDetails');
-
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const limit = 4;
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useCommentInfiniteQuery(blogId, 8);
+    useCommentInfiniteQuery(blogId, limit);
 
+  const key = commentKey(blogId, limit);
+  const mutation = useMutation({
+    mutationFn: (text: string) => postComment(blogId, text),
+
+    onMutate: async (newText) => {
+      await queryClient.cancelQueries({ queryKey: key });
+
+      const previous = queryClient.getQueryData(key);
+
+      queryClient.setQueryData(key, (old: any) => {
+        if (!old) return old;
+
+        const optimistic = {
+          id: `temp-${Date.now()}`,
+          content: newText,
+          createdAt: new Date().toISOString(),
+          user: { email: '...' },
+        };
+
+        return {
+          ...old,
+          pages: old.pages.map((page: any, i: number) =>
+            i === 0 ? { ...page, data: [optimistic, ...page.data] } : page
+          ),
+        };
+      });
+
+      return { previous };
+    },
+
+    onSuccess: (result) => {
+      if (!result.success) return;
+
+      queryClient.setQueryData(key, (old: any) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          pages: old.pages.map((page: any, i: number) =>
+            i === 0
+              ? {
+                  ...page,
+                  data: [
+                    result.data,
+                    ...page.data.filter((c: any) => !c.id.startsWith('temp-')),
+                  ],
+                }
+              : page
+          ),
+        };
+      });
+    },
+
+    onError: (_err, _vars, ctx) => {
+      queryClient.setQueryData(key, ctx?.previous);
+      toast({
+        title: t('postCommentFailed'),
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: key });
+    },
+  });
   const { ref, entry } = useIntersection({
     root: null,
-    threshold: 1,
+    threshold: 0.1,
   });
 
   useEffect(() => {
-    if (entry?.isIntersecting && hasNextPage) {
+    if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [entry?.isIntersecting, fetchNextPage, hasNextPage]);
+  }, [entry?.isIntersecting, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const allComments = data?.pages.flatMap((page) => page.data) || [];
+  const allComments = useMemo(() => {
+    const map = new Map<string, any>();
+
+    data?.pages.forEach((page) => {
+      page.data.forEach((comment: any) => {
+        map.set(comment.id, comment);
+      });
+    });
+
+    return Array.from(map.values());
+  }, [data]);
 
   return (
     <div id="comments" className="space-y-8">
       <h3 className="text-xl font-bold tracking-tight">{t('comments')}</h3>
-      <CommentForm blogId={blogId} disabled />
+
+      <CommentForm
+        blogId={blogId}
+        isPending={mutation.isPending}
+        onComment={(content) => mutation.mutate(content)}
+      />
 
       <div className="space-y-2">
         {isLoading ? (
@@ -51,19 +136,16 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
           <>
             <CommentList comments={allComments} />
 
-            <div
-              ref={ref}
-              className="flex h-10 items-center justify-center py-4"
-            >
-              {!isFetchingNextPage && (
-                <>
-                  <Loading />
-                  <p className="animate-pulse text-sm text-muted-foreground">
-                    {t('loadMoreComments')}
-                  </p>
-                </>
-              )}
-            </div>
+            {isFetchingNextPage && (
+              <div className="flex items-center justify-center gap-2 py-4">
+                <Loading />
+                <p className="text-sm text-muted-foreground">
+                  {t('loadMoreComments')}
+                </p>
+              </div>
+            )}
+
+            {hasNextPage && <div ref={ref} className="h-4" />}
 
             {hasNextPage && !isFetchingNextPage && (
               <div className="flex justify-center pt-4">

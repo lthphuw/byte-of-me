@@ -10,3 +10,4 @@ export * from './homepage-profile';
 export * from './homepage-recent-projects';
 export * from './project-filters';
 export * from './public-site-footer';
+export * from './toggle-blog-interactions';

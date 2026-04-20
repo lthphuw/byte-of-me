@@ -3,11 +3,15 @@
 import { prisma } from '@byte-of-me/db';
 import { revalidateTag } from 'next/cache';
 
+import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { requireUser } from '@/shared/lib/session';
+
+
+
+
 
 export async function deleteBlog(id: string) {
-  const session = await requireUser();
+  const session = await requireAdmin();
 
   try {
     const deleted = await prisma.blog.delete({

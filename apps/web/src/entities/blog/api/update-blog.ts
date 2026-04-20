@@ -4,11 +4,15 @@ import { prisma } from '@byte-of-me/db';
 import { revalidateTag } from 'next/cache';
 
 import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
+import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { requireUser } from '@/shared/lib/session';
+
+
+
+
 
 export async function updateBlog(id: string, data: BlogFormValues) {
-  await requireUser();
+  await requireAdmin();
 
   try {
     const updatedBlog = await prisma.$transaction(async (tx) => {

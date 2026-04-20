@@ -4,7 +4,7 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
 import type { AdminTechStack } from '@/entities/tech-stack';
-import { requireUser } from '@/shared/lib/session';
+import { requireAdmin } from '@/shared/lib/auth';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 
@@ -15,7 +15,7 @@ export async function getAllAdminTechStack(): Promise<
   ApiResponse<AdminTechStack[]>
 > {
   try {
-    const user = await requireUser();
+    const user = await requireAdmin();
 
     const techStacks = await prisma.techStack.findMany({
       where: { userId: user.id },

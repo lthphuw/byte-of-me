@@ -33,7 +33,6 @@ export async function getPublicBlogBySlug(
         });
 
         const translated = getTranslatedContent(blog.translations, locale);
-
         return {
           id: blog.id,
           createdAt: blog.createdAt,

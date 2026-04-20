@@ -5,8 +5,8 @@ import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
+import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { requireUser } from '@/shared/lib/session';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 
@@ -18,7 +18,7 @@ export async function updateEducation(
   values: EducationFormValues
 ): Promise<ApiResponse<Any>> {
   try {
-    const user = await requireUser();
+    const user = await requireAdmin();
 
     return await prisma.$transaction(async (tx) => {
       const existing = await tx.education.findFirst({

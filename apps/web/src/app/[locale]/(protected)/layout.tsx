@@ -1,7 +1,10 @@
 import { redirect } from 'next/navigation';
-import { SessionProvider } from 'next-auth/react';
 
-import { getAuthenticatedUser } from '@/shared/lib/session';
+import { getAuthenticatedAdmin } from '@/shared/lib/auth';
+
+
+
+
 
 export const dynamic = 'force-dynamic';
 
@@ -10,11 +13,11 @@ export default async function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getAuthenticatedUser();
+  const user = await getAuthenticatedAdmin();
 
   if (!user) {
     redirect('/auth/login');
   }
 
-  return <SessionProvider>{children}</SessionProvider>;
+  return children;
 }

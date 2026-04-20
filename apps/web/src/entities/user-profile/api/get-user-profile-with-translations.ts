@@ -4,18 +4,14 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
 import type { AdminUserProfile } from '@/entities/user-profile';
-import { requireUser } from '@/shared/lib/session';
+import { requireAdmin } from '@/shared/lib/auth';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
-
-
-
-
 
 export async function getAdminUserProfile(): Promise<
   ApiResponse<AdminUserProfile>
 > {
   try {
-    const user = await requireUser();
+    const user = await requireAdmin();
     const data = await prisma.user.findUniqueOrThrow({
       where: { id: user.id },
       include: {

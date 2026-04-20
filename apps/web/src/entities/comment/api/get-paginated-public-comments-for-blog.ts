@@ -7,7 +7,6 @@ import {
   handlePublicAction,
   withPublicActionHandler,
 } from '@/shared/api/public-action-template';
-import { CACHE_TAGS } from '@/shared/lib/constants';
 import type {
   ApiResponse,
   PaginatedData,
@@ -18,12 +17,12 @@ export type GetPaginatedPublicCommentsForBlog = PaginatedParams & {
   blogId: string;
 };
 
-export async function getPaginatedPublicCommentForBlog(
+export async function getPaginatedPublicCommentsForBlog(
   params: GetPaginatedPublicCommentsForBlog
 ): Promise<ApiResponse<PaginatedData<PublicComment>>> {
-  return handlePublicAction('getPaginatedPublicCommentForBlog', async () => {
+  return handlePublicAction('getPaginatedPublicCommentsForBlog', async () => {
     return await withPublicActionHandler(
-      'getPaginatedPublicCommentForBlog',
+      'getPaginatedPublicCommentsForBlog',
       async () => {
         const { blogId, limit = 8, page = 1 } = params;
         const skip = (page - 1) * limit;
@@ -50,6 +49,7 @@ export async function getPaginatedPublicCommentForBlog(
           id: cm.id,
           createdAt: cm.createdAt,
           content: cm.content,
+          blogId: cm.blogId,
           user: {
             email: cm.user?.email ?? 'anonymous',
           },
@@ -66,13 +66,7 @@ export async function getPaginatedPublicCommentForBlog(
         };
       },
       {
-        cache: true,
-        cacheKey: [
-          'comment-list',
-          params.blogId,
-          (params.page ?? 1).toString(),
-        ],
-        cacheTags: [CACHE_TAGS.COMMENT, CACHE_TAGS.BLOG],
+        cache: false,
       }
     );
   });

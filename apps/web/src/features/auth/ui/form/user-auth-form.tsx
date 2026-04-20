@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSearchParams } from 'next/navigation';
 
-import { logIn } from '@/features/auth/lib/log-in';
+import { logInToDashboard } from '@/features/auth/lib/log-in-to-dashboard';
 import {
   type UserAuthLoginFormValues,
   userAuthLoginSchema,
@@ -48,7 +48,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       !fromParam || fromParam.includes('/auth/login')
         ? '/dashboard'
         : fromParam;
-    const signInResult = await logIn(email, callbackUrl);
+    const signInResult = await logInToDashboard(email, callbackUrl);
 
     if (!signInResult.success) {
       toast({

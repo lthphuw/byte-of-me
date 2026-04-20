@@ -6,8 +6,8 @@ import { getLocale } from 'next-intl/server';
 
 import type { PublicUserProfile } from '@/entities/user-profile/model/types';
 import { env } from '@/shared/config/env';
+import { requireAdmin } from '@/shared/lib/auth';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
-import { requireUser } from '@/shared/lib/session';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 
@@ -18,7 +18,7 @@ export async function getUserProfile(): Promise<
   ApiResponse<PublicUserProfile>
 > {
   try {
-    const auth = await requireUser();
+    const auth = await requireAdmin();
     let email = auth.email;
 
     if (!email) {

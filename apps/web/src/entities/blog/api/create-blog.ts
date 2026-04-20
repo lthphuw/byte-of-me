@@ -4,8 +4,8 @@ import { prisma } from '@byte-of-me/db';
 import { revalidateTag } from 'next/cache';
 
 import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
+import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { requireUser } from '@/shared/lib/session';
 
 
 
@@ -14,7 +14,7 @@ import { requireUser } from '@/shared/lib/session';
 // Use the constants we defined
 
 export async function createBlog(data: BlogFormValues) {
-  const session = await requireUser();
+  const session = await requireAdmin();
 
   try {
     const newBlog = await prisma.blog.create({

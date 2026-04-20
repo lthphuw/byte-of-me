@@ -3,7 +3,7 @@
 import { prisma } from '@byte-of-me/db';
 
 import type { AdminProject } from '@/entities/project/model/types';
-import { requireUser } from '@/shared/lib/session';
+import { requireAdmin } from '@/shared/lib/auth';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
@@ -16,7 +16,7 @@ export async function getPaginatedAdminProjects(
   limit: number = 20
 ): Promise<ApiResponse<PaginatedData<AdminProject>>> {
   try {
-    const session = await requireUser();
+    const session = await requireAdmin();
     const userId = session.id;
 
     const skip = (page - 1) * limit;

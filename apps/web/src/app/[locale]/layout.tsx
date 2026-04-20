@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter as FontSans } from 'next/font/google';
 import localFont from 'next/font/local';
 import { notFound } from 'next/navigation';
+import { SessionProvider } from 'next-auth/react';
 import { hasLocale,NextIntlClientProvider } from 'next-intl';
 import {
   getMessages,
@@ -141,7 +142,11 @@ export default async function LocaleLayout({
         )}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <GlobalProvider>{children}</GlobalProvider>
+          <GlobalProvider>
+            <SessionProvider>
+              {children}
+            </SessionProvider>
+          </GlobalProvider>
         </NextIntlClientProvider>
         <Analytics />
       </body>

@@ -65,6 +65,8 @@ model User {
 
   // NextAuth
   email         String    @unique
+  name          String?
+  image         String?
   emailVerified DateTime? @map("email_verified")
 
   accounts Account[]
@@ -676,7 +678,7 @@ model Media {
 }
 
 // ===============================
-// INTERACTIONS (Likes, Shares, etc.)
+// INTERACTION (Likes, Shares, etc.)
 // ===============================
 
 model Interaction {
@@ -689,7 +691,6 @@ model Interaction {
   userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Tương tác có thể thuộc về Blog hoặc Project
   blogId String? @map("blog_id")
   blog   Blog?   @relation(fields: [blogId], references: [id], onDelete: Cascade)
 

@@ -4,13 +4,17 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
+import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { requireUser } from '@/shared/lib/session';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
+
+
+
+
 
 export async function deleteEducation(id: string): Promise<ApiResponse<Any>> {
   try {
-    const user = await requireUser();
+    const user = await requireAdmin();
 
     const existing = await prisma.education.findFirst({
       where: { id, userId: user.id },

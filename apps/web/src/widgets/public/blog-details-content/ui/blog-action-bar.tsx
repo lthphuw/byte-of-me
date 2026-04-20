@@ -1,44 +1,34 @@
-'use client';
+import { Suspense } from 'react';
 
-import { Heart, MessageSquare, Share2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-
-import { Button } from '@/shared/ui/button';
+import {
+  ClapButtonWrapper,
+  InteractionButtonLoading,
+  LikeButtonWrapper,
+} from '@/features/public';
+import { BlogCommentShareActions } from '@/widgets/public/blog-details-content/ui/blog-comment-share-actions';
 
 export function BlogActionBar({
   blogId,
+  blogSlug,
   title,
 }: {
   blogId: string;
+  blogSlug: string;
   title: string;
 }) {
-  const t = useTranslations('blogDetails');
-  const handleShare = () =>
-    navigator.share({ title, url: window.location.href });
-
   return (
-    <div className="flex items-center gap-2 py-3">
-      <Button variant="ghost" size="sm" className="gap-2" disabled>
-        <Heart className="h-4 w-4" /> {t('like')}
-      </Button>
+    <div className="flex items-center justify-between gap-2 py-3">
+      <div className={'flex items-center gap-2'}>
+        <Suspense fallback={<InteractionButtonLoading />}>
+          <LikeButtonWrapper blogId={blogId} blogSlug={blogSlug} />
+        </Suspense>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        className="gap-2"
-        onClick={() => document.getElementById('comments')?.scrollIntoView()}
-      >
-        <MessageSquare className="h-4 w-4" /> {t('comment')}
-      </Button>
+        <Suspense fallback={<InteractionButtonLoading />}>
+          <ClapButtonWrapper blogId={blogId} blogSlug={blogSlug} />
+        </Suspense>
+      </div>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        className="ml-auto gap-2"
-        onClick={handleShare}
-      >
-        <Share2 className="h-4 w-4" /> {t('share')}
-      </Button>
+      <BlogCommentShareActions title={title} />
     </div>
   );
 }

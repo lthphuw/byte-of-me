@@ -2,7 +2,7 @@
 
 import { prisma } from '@byte-of-me/db';
 
-import { requireUser } from '@/shared/lib/session';
+import { requireAdmin } from '@/shared/lib/auth';
 
 
 
@@ -10,7 +10,7 @@ import { requireUser } from '@/shared/lib/session';
 
 export async function getDashboardStats() {
   try {
-    const session = await requireUser();
+    const session = await requireAdmin();
     const userId = session.id;
 
     const [

@@ -1,12 +1,12 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { getPaginatedPublicCommentForBlog } from '@/entities';
+import { commentKey, getPaginatedPublicCommentsForBlog } from '@/entities';
 
 export function useCommentInfiniteQuery(blogId: string, limit: number = 8) {
   return useInfiniteQuery({
-    queryKey: ['comment-list', blogId, limit],
+    queryKey: commentKey(blogId, limit),
     queryFn: async ({ pageParam = 1 }) => {
-      const response = await getPaginatedPublicCommentForBlog({
+      const response = await getPaginatedPublicCommentsForBlog({
         page: pageParam as number,
         limit,
         blogId,

@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 
 import { DashboardNavItems } from './dashboard-nav-items';
 
-import { logOut } from '@/features/auth/lib';
+import { logOutDashboard } from '@/features/auth/lib';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Link, usePathname, useRouter } from '@/shared/i18n/navigation';
 import { purgeEntireCache } from '@/shared/lib/revalidate';
@@ -161,7 +161,7 @@ export function DashboardSidebar() {
             <span>{t('actions.viewSite')}</span>
           </Link>
 
-          <form action={logOut} className="pt-2">
+          <form action={logOutDashboard} className="pt-2">
             <button
               type="submit"
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground/80 transition-all hover:bg-muted/80 hover:text-foreground"

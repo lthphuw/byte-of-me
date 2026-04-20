@@ -4,8 +4,8 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
+import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { requireUser } from '@/shared/lib/session';
 
 
 
@@ -13,7 +13,7 @@ import { requireUser } from '@/shared/lib/session';
 
 export async function deleteTag(id: string) {
   try {
-    await requireUser();
+    await requireAdmin();
 
     await prisma.tag.delete({
       where: { id },
