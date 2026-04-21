@@ -4,6 +4,7 @@ import type { SiteConfig } from '@/shared/types';
 
 export const siteConfig: SiteConfig = {
   name: 'Byte of me',
+  shortName: 'Phu',
   description:
     'Passion, experience, projects, hobbies — all logged, one byte at a time.',
   url: host,

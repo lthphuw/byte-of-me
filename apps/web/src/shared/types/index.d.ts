@@ -20,6 +20,7 @@ export type MainNavItem = NavItem & {
 
 export type SiteConfig = {
   name: string;
+  shortName: string;
   description: string;
   email: string;
   url: string;

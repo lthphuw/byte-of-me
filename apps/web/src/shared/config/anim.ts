@@ -43,3 +43,15 @@ export const iconSwicthVariants = {
   animate: { opacity: 1, scale: 1, rotate: 0 },
   exit: { opacity: 0, scale: 0.8, rotate: -90 },
 };
+
+export const menuVariants: Variants = {
+  initial: { opacity: 0, scale: 0.95, y: 4 },
+  animate: { opacity: 1, scale: 1, y: 0 },
+  exit: { opacity: 0, scale: 0.95, y: -4 },
+};
+
+export const menuTransition: Transition = {
+  type: 'spring',
+  stiffness: 400,
+  damping: 30,
+};

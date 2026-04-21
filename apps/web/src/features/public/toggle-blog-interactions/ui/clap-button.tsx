@@ -46,7 +46,7 @@ export function ClapButton({
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ['blog-clap', blogId] });
       const prev = queryClient.getQueryData(['blog-clap', blogId]);
-      queryClient.setQueryData(['blog-clap', blogId], (old: any) => ({
+      queryClient.setQueryData(['blog-clap', blogId], (old: Any) => ({
         isInteracted: !old.isInteracted,
         count: old.isInteracted ? old.count - 1 : old.count + 1,
       }));

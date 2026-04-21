@@ -7,6 +7,8 @@ import { signOut, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 
 import { logOut } from '@/features/auth';
+import { menuTransition, menuVariants } from '@/shared/config/anim';
+// Shared config
 import { Button } from '@/shared/ui/button';
 import {
   DropdownMenu,
@@ -17,60 +19,51 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
 
-const toggleVariants = {
-  initial: { opacity: 0, scale: 0.9, y: 8 },
-  animate: { opacity: 1, scale: 1, y: 0 },
-  exit: { opacity: 0, scale: 0.9, y: -8 },
-};
-
 export function UserActionToggle() {
   const t = useTranslations('global.userToggle');
   const { data: session } = useSession();
+  const queryClient = useQueryClient();
 
   if (!session?.user) return null;
 
   const initials = session.user.email?.slice(0, 2).toUpperCase() || 'U';
-  const queryClient = useQueryClient();
 
   const handleLogout = async () => {
-    await Promise.all([
-      logOut(), // server-side
-      signOut({ redirect: false }) // Trigger hook client-side
-    ]);
+    queryClient.removeQueries({ queryKey: ['blog-like'] });
+    queryClient.removeQueries({ queryKey: ['blog-clap'] });
 
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ['blog-like'] }),
-      queryClient.invalidateQueries({ queryKey: ['blog-clap'] }),
-    ]);
+    await Promise.all([logOut(), signOut({ redirect: false })]);
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="relative size-10 rounded-full p-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="relative size-10 rounded-full bg-muted p-0 text-muted-foreground transition-all hover:scale-105 hover:bg-muted/80"
         >
-          <div className="flex size-10 items-center justify-center rounded-full bg-muted text-xs font-semibold text-muted-foreground transition-transform hover:scale-105">
-            {initials}
-          </div>
+          <span className="text-xs font-semibold">{initials}</span>
         </Button>
       </DropdownMenuTrigger>
 
-      {/* AnimatePresence handles the exit animation when the menu closes */}
-      <AnimatePresence>
-        <DropdownMenuContent asChild forceMount align="end" className="w-56" sideOffset={8}>
+      <DropdownMenuContent
+        align="end"
+        className="w-56 overflow-hidden"
+        sideOffset={8}
+        forceMount
+      >
+        <AnimatePresence mode="wait" initial={false}>
           <motion.div
-            variants={toggleVariants}
+            variants={menuVariants}
             initial="initial"
             animate="animate"
             exit="exit"
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            transition={menuTransition}
           >
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">
-                  {session.user.name || 'User'}
+                  {session.user.name || session.user.role || 'User'}
                 </p>
                 <p className="truncate text-xs leading-none text-muted-foreground">
                   {session.user.email}
@@ -81,15 +74,15 @@ export function UserActionToggle() {
             <DropdownMenuSeparator />
 
             <DropdownMenuItem
-              onClick={() => handleLogout()}
+              onClick={handleLogout}
               className="cursor-pointer gap-2"
             >
               <LogOut className="size-4" />
               {t('signOut')}
             </DropdownMenuItem>
           </motion.div>
-        </DropdownMenuContent>
-      </AnimatePresence>
+        </AnimatePresence>
+      </DropdownMenuContent>
     </DropdownMenu>
   );
 }

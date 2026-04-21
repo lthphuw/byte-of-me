@@ -1,11 +1,10 @@
 'use client';
 
 import * as React from 'react';
-import { motion, type Variants } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 
-import { iconOpenCloseVariants } from '@/shared/config/anim';
 import { Routes } from '@/shared/config/global';
 import { siteConfig } from '@/shared/config/site';
 import { Link } from '@/shared/i18n/navigation';
@@ -15,26 +14,40 @@ import { Button } from '@/shared/ui/button';
 import { Icons } from '@/shared/ui/icons';
 import { PublicHeaderMobileNav } from '@/widgets/public/public-site-header/ui/public-header-mobile-nav';
 
+
+
+
+
+const HeaderLogo = React.memo(({ minimized }: { minimized: boolean }) => (
+  <motion.div
+    layout="position"
+    className="flex items-center gap-2"
+    transition={{ layout: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } }}
+  >
+    <Icons.logo />
+    <div className="relative overflow-hidden whitespace-nowrap">
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={minimized ? 'short' : 'full'}
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -10, opacity: 0 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+          className="block font-bold"
+        >
+          {minimized ? siteConfig.shortName : siteConfig.name}
+        </motion.span>
+      </AnimatePresence>
+    </div>
+  </motion.div>
+));
+HeaderLogo.displayName = 'HeaderLogo';
+
 interface MainNavProps {
   items: MainNavItem[];
   children?: React.ReactNode;
   minimized?: boolean;
 }
-
-const logoAnimVariants: Variants = {
-  minimized: {
-    scale: 1,
-    x: 0,
-    opacity: 0.95,
-    transition: { type: 'spring', stiffness: 130, damping: 10, mass: 0.4 },
-  },
-  initial: {
-    scale: 1,
-    x: 0,
-    opacity: 1,
-    transition: { type: 'spring', stiffness: 130, damping: 10, mass: 0.4 },
-  },
-};
 
 export const PublicHeaderMainNav = React.forwardRef<
   HTMLDivElement,
@@ -45,11 +58,8 @@ export const PublicHeaderMainNav = React.forwardRef<
   const segment = useSelectedLayoutSegment();
 
   const [open, setOpen] = React.useState(false);
-  const [originPosition, setOriginPosition] = React.useState({ x: 0, y: 0 });
-
   const triggerRef = React.useRef<HTMLButtonElement | null>(null);
-
-  const navItems = items.filter((it) => !it.onlyMobile);
+  const [originPosition, setOriginPosition] = React.useState({ x: 0, y: 0 });
 
   const handleToggleMenu = React.useCallback(() => {
     if (triggerRef.current) {
@@ -62,89 +72,52 @@ export const PublicHeaderMainNav = React.forwardRef<
     setOpen((prev) => !prev);
   }, []);
 
+  const navItems = React.useMemo(
+    () => items.filter((it) => !it.onlyMobile),
+    [items]
+  );
+
   return (
     <div ref={ref} className="flex items-center gap-6 md:gap-10">
-      {/* Logo */}
       <Link
         href={Routes.Homepage}
         locale={locale}
-        className="hidden items-center space-x-2 md:flex"
+        className="hidden items-center md:flex"
       >
-        <motion.div
-          initial="initial"
-          animate={minimized ? 'minimized' : 'initial'}
-          variants={logoAnimVariants}
-          className="flex items-center gap-2 will-change-transform"
-        >
-          <Icons.logo />
-          <span className="hidden font-bold sm:inline-block">
-            {siteConfig.name}
-          </span>
-        </motion.div>
+        <HeaderLogo minimized={minimized} />
       </Link>
 
-      {/* Desktop Navigation */}
       {navItems.length > 0 && (
         <nav className="hidden items-center gap-1 md:flex">
-          {navItems.map((item) => {
-            const isActive = item.href && item.href.startsWith(`/${segment}`);
-
-            return (
-              <Link
-                key={item.href}
-                href={item.disabled ? '#' : item.href}
-                locale={locale}
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.disabled ? '#' : item.href}
+              locale={locale}
+            >
+              <Button
+                variant="ghost"
                 className={cn(
-                  'flex items-center transition-colors',
-                  item.disabled && 'cursor-not-allowed opacity-80'
+                  'text-md font-medium',
+                  item.href.startsWith(`/${segment}`)
+                    ? 'text-foreground font-semibold'
+                    : 'text-foreground/60'
                 )}
               >
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    'text-md font-medium',
-                    isActive
-                      ? 'text-foreground font-semibold'
-                      : 'text-foreground/60 hover:text-foreground/80'
-                  )}
-                >
-                  {t(item.title as Any)}
-                </Button>
-              </Link>
-            );
-          })}
+                {t(item.title as Any)}
+              </Button>
+            </Link>
+          ))}
         </nav>
       )}
 
-      {/* Mobile Navigation */}
       <div className="relative z-[10000] md:hidden">
         <motion.button
-          ref={triggerRef}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.9 }}
+          layout
           onClick={handleToggleMenu}
           className="flex items-center gap-2"
         >
-          <motion.span className="relative size-6">
-            <motion.div
-              variants={iconOpenCloseVariants}
-              animate={open ? 'open' : 'closed'}
-            >
-              <Icons.close className="absolute inset-0 size-6" />
-            </motion.div>
-            <motion.div
-              variants={iconOpenCloseVariants}
-              animate={open ? 'closed' : 'open'}
-            >
-              <Icons.logo className="absolute inset-0 size-6" />
-            </motion.div>
-          </motion.span>
-
-          <span className="text-sm font-bold">
-            {
-              minimized ? "Phu" : "Byte of Me"
-            }
-          </span>
+          <HeaderLogo minimized={minimized} />
         </motion.button>
 
         <PublicHeaderMobileNav
@@ -160,4 +133,4 @@ export const PublicHeaderMainNav = React.forwardRef<
   );
 });
 
-PublicHeaderMainNav.displayName = 'MainNav';
+PublicHeaderMainNav.displayName = 'PublicHeaderMainNav';

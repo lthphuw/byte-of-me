@@ -39,7 +39,7 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
 
       const previous = queryClient.getQueryData(key);
 
-      queryClient.setQueryData(key, (old: any) => {
+      queryClient.setQueryData(key, (old: Any) => {
         if (!old) return old;
 
         const optimistic = {
@@ -51,7 +51,7 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
 
         return {
           ...old,
-          pages: old.pages.map((page: any, i: number) =>
+          pages: old.pages.map((page: Any, i: number) =>
             i === 0 ? { ...page, data: [optimistic, ...page.data] } : page
           ),
         };
@@ -63,18 +63,18 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
     onSuccess: (result) => {
       if (!result.success) return;
 
-      queryClient.setQueryData(key, (old: any) => {
+      queryClient.setQueryData(key, (old: Any) => {
         if (!old) return old;
 
         return {
           ...old,
-          pages: old.pages.map((page: any, i: number) =>
+          pages: old.pages.map((page: Any, i: number) =>
             i === 0
               ? {
                   ...page,
                   data: [
                     result.data,
-                    ...page.data.filter((c: any) => !c.id.startsWith('temp-')),
+                    ...page.data.filter((c: Any) => !c.id.startsWith('temp-')),
                   ],
                 }
               : page
@@ -109,7 +109,7 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
     const map = new Map<string, any>();
 
     data?.pages.forEach((page) => {
-      page.data.forEach((comment: any) => {
+      page.data.forEach((comment: Any) => {
         map.set(comment.id, comment);
       });
     });

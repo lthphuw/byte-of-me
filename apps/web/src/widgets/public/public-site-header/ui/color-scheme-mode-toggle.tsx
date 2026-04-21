@@ -5,7 +5,11 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 
-import { iconSwicthVariants, itemVariants } from '@/shared/config/anim';
+import {
+  iconSwicthVariants,
+  menuTransition,
+  menuVariants,
+} from '@/shared/config/anim';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import {
@@ -35,7 +39,7 @@ export function ColorSchemeModeToggle() {
           className="relative size-10 overflow-hidden p-0 focus-visible:ring-1"
         >
           <div className="relative">
-            <AnimatePresence mode="wait" initial={true}>
+            <AnimatePresence mode="wait" initial={false}>
               {resolvedTheme === 'light' ? (
                 <motion.div
                   key="sun"
@@ -78,7 +82,7 @@ export function ColorSchemeModeToggle() {
 
           return (
             <DropdownMenuItem
-              key={item.value}
+              key={item.value || index}
               onClick={() => setTheme(item.value)}
               className={cn(
                 'cursor-pointer flex items-center gap-2',
@@ -88,11 +92,11 @@ export function ColorSchemeModeToggle() {
             >
               <motion.div
                 custom={index}
-                variants={itemVariants}
-                initial="hidden"
-                animate="visible"
+                variants={menuVariants}
+                initial="initial"
+                animate="animate"
                 exit="exit"
-                className="flex w-full items-center"
+                transition={menuTransition}
               >
                 <Icon className="mr-2 size-4" />
                 <span>{item.label}</span>

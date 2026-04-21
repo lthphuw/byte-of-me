@@ -13,10 +13,6 @@ import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-
-
-
-
 export async function postComment(
   blogId: string,
   content: string
@@ -99,7 +95,7 @@ ${content}
         },
       },
     };
-  } catch (error: any) {
+  } catch (error: Any) {
     logger.error(`Got error when post a comment ${error.message}`);
     throw new Error('Failed to post comment');
   }

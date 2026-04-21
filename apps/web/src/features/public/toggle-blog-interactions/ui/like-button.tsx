@@ -46,7 +46,7 @@ export function LikeButton({
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ['blog-like', blogId] });
       const prev = queryClient.getQueryData(['blog-like', blogId]);
-      queryClient.setQueryData(['blog-like', blogId], (old: any) => ({
+      queryClient.setQueryData(['blog-like', blogId], (old: Any) => ({
         isInteracted: !old.isInteracted,
         count: old.isInteracted ? old.count - 1 : old.count + 1,
       }));

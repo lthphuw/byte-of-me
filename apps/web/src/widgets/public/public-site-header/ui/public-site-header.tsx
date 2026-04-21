@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from 'react';
 import { useElementSize, useWindowScroll } from '@mantine/hooks';
-import { motion, type Transition } from 'framer-motion';
+import { AnimatePresence, motion, type Transition } from 'framer-motion';
 import { useTheme } from 'next-themes';
 
 import { ColorSchemeModeToggle } from './color-scheme-mode-toggle';
@@ -138,7 +138,11 @@ export function PublicSiteHeader() {
         >
           <ColorSchemeModeToggle />
           <I18nToggle />
-          <UserActionToggle />
+
+          <AnimatePresence mode="popLayout">
+            <UserActionToggle />
+          </AnimatePresence>
+
         </motion.div>
       </motion.div>
     </>

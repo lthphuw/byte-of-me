@@ -45,7 +45,7 @@ export function useProfileController(initUser: AdminUserProfile) {
         queryKey: ['userProfileSchema', initUser.id],
       });
     },
-    onError: (err: any) => {
+    onError: (err: Any) => {
       toast({
         title: 'Save failed',
         description: err?.message,
@@ -54,7 +54,7 @@ export function useProfileController(initUser: AdminUserProfile) {
     },
   });
 
-  const parseAboutMe = useCallback((content: any) => {
+  const parseAboutMe = useCallback((content: Any) => {
     if (!content || content === '<p></p>') return '<p></p>';
     if (typeof content !== 'string') return content;
     try {
@@ -74,7 +74,7 @@ export function useProfileController(initUser: AdminUserProfile) {
           : null,
         socialLinks: userData.socialLinks ?? [],
         translations:
-          userData.userProfile?.translations?.map((t: any) => ({
+          userData.userProfile?.translations?.map((t: Any) => ({
             ...t,
             aboutMe: parseAboutMe(t.aboutMe),
           })) || [],
