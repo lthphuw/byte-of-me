@@ -12,6 +12,10 @@ import { CACHE_TAGS } from '@/shared/lib/constants';
 import { cn, formatDate } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 
+
+
+
+
 export function CommentItem({ comment }: { comment: PublicComment }) {
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === 'ADMIN';
@@ -50,6 +54,7 @@ export function CommentItem({ comment }: { comment: PublicComment }) {
               <span className="truncate text-sm font-semibold tracking-tight">
                 {comment.user.email}
               </span>
+
               <span className="text-xs text-muted-foreground">
                 {formatDate(comment.createdAt)}
               </span>

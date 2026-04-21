@@ -6,19 +6,16 @@ import type { PublicBlog } from '@/entities/blog';
 import { Badge } from '@/shared/ui/badge';
 import { RichText } from '@/shared/ui/rich-text';
 
-
-
-
-
 export function BlogContent({ blog }: { blog: PublicBlog }) {
   return (
     <div className="space-y-6">
       {blog.coverImage && (
-        <div className="relative aspect-video w-full overflow-hidden rounded-xl border bg-muted">
+        <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-xl border bg-muted">
           <Image
             src={blog.coverImage.url}
             alt={blog.title}
             fill
+            priority
             className="object-cover"
           />
         </div>

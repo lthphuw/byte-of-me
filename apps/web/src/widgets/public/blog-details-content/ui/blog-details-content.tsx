@@ -19,8 +19,8 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
   return (
     <>
       <BlogDetailsShell>
-        <div className="flex w-full min-w-0 flex-col items-center overflow-hidden py-8 md:px-8 md:py-12">
-          <div className="w-full min-w-0 max-w-3xl">
+        <div className="flex w-full flex-col items-center py-8 md:px-8 md:py-12">
+          <div className="w-full max-w-3xl">
             {/*Header*/}
             <BlogHeader blog={blog} />
 
