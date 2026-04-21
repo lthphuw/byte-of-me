@@ -11,10 +11,12 @@ export function BlogActionBar({
   blogId,
   blogSlug,
   title,
+  noCommentAppear,
 }: {
   blogId: string;
   blogSlug: string;
   title: string;
+  noCommentAppear?: boolean;
 }) {
   return (
     <div className="flex items-center justify-between gap-2 py-3">
@@ -28,7 +30,10 @@ export function BlogActionBar({
         </Suspense>
       </div>
 
-      <BlogCommentShareActions title={title} />
+      <BlogCommentShareActions
+        title={title}
+        noCommentAppear={noCommentAppear}
+      />
     </div>
   );
 }

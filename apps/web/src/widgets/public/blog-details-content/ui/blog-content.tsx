@@ -6,6 +6,10 @@ import type { PublicBlog } from '@/entities/blog';
 import { Badge } from '@/shared/ui/badge';
 import { RichText } from '@/shared/ui/rich-text';
 
+
+
+
+
 export function BlogContent({ blog }: { blog: PublicBlog }) {
   return (
     <div className="space-y-6">
@@ -31,7 +35,7 @@ export function BlogContent({ blog }: { blog: PublicBlog }) {
         ))}
       </div>
 
-      <article className="w-full min-w-0 max-w-[calc(100vw-4rem)] overflow-hidden break-words md:max-w-none">
+      <article className="w-full overflow-hidden break-words md:max-w-none">
         <RichText content={blog.content} />
       </article>
     </div>

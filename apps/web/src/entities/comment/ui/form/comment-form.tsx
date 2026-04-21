@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 
 import { AuthModal } from '@/features/auth';
+import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { Icons } from '@/shared/ui/icons';
 import { Textarea } from '@/shared/ui/textarea';
@@ -16,7 +17,11 @@ export interface CommentFormProps {
   onComment: (content: string) => void;
 }
 
-export function CommentForm({ blogId, isPending, onComment }: CommentFormProps) {
+export function CommentForm({
+  blogId,
+  isPending,
+  onComment,
+}: CommentFormProps) {
   const t = useTranslations('blogDetails');
   const { data: session } = useSession();
   const isAuthenticated = !!session;
@@ -43,33 +48,52 @@ export function CommentForm({ blogId, isPending, onComment }: CommentFormProps) 
         onClose={() => setIsAuthModalOpen(false)}
       />
 
-      <div className="flex w-full flex-col gap-3 rounded-xl border bg-muted/20 p-4 shadow-sm">
-        <Textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          onClick={() => !isAuthenticated && setIsAuthModalOpen(true)}
-          placeholder={
-            isAuthenticated ? t('writingComment') : t('mustSignInToComment')
-          }
-          className="min-h-[100px] w-full resize-y bg-background"
-        />
+      <div className="relative">
+        {/* FORM */}
+        <div
+          className={cn(
+            'flex w-full flex-col gap-3 rounded-xl border bg-muted/20 p-4 shadow-sm transition',
+            !isAuthenticated && 'pointer-events-none opacity-80'
+          )}
+        >
+          <Textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder={t('writingComment')}
+            className="min-h-[100px] w-full resize-y bg-background"
+          />
 
-        <div className="flex w-full justify-end">
-          <Button
-            className="w-full md:w-auto"
-            onClick={handleSubmit}
-            disabled={isPending || !content.trim()}
-          >
-            {isPending
-              ? <>
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                {t('posting')}
-              </>
-              : isAuthenticated
-              ? t('postComment')
-              : t('signInToComment')}
-          </Button>
+          <div className="flex w-full justify-end">
+            <Button
+              className="w-full md:w-auto"
+              onClick={handleSubmit}
+              disabled={isPending || !content.trim()}
+            >
+              {isPending ? (
+                <>
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  {t('posting')}
+                </>
+              ) : (
+                t('postComment')
+              )}
+            </Button>
+          </div>
         </div>
+
+        {!isAuthenticated && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-background/70 backdrop-blur-[2px]">
+            <div className="flex flex-col items-center gap-3 text-center">
+              <p className="text-sm text-muted-foreground">
+                {t('mustSignInToComment')}
+              </p>
+
+              <Button onClick={() => setIsAuthModalOpen(true)}>
+                {t('signInToComment')}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

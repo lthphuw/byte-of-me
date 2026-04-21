@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { generateHTML } from '@tiptap/html';
 
 import { cn } from '@/shared/lib/utils';
@@ -7,7 +8,7 @@ import { sanitizeHtml } from '@/shared/lib/uuid';
 import { extensions } from '@/shared/ui/tiptap/rich-text-editor';
 
 export type RichTextProps = {
-  content?: string | Any;
+  content?: string | unknown;
   className?: string;
   style?: React.CSSProperties;
 };
@@ -19,36 +20,83 @@ export function RichText({ content, className, style }: RichTextProps) {
 
   try {
     const json = typeof content === 'string' ? JSON.parse(content) : content;
-    htmlContent = generateHTML(json, extensions);
+    htmlContent = generateHTML(json as any, extensions);
   } catch {
     htmlContent = typeof content === 'string' ? content : '';
   }
 
-
   return (
-    <div
+    <article
       className={cn(
+        'mx-auto w-full max-w-[720px]',
         'break-words [word-break:break-word] [overflow-wrap:anywhere]',
-        'font-normal leading-7 text-neutral-800 dark:text-neutral-200',
-
+        'text-[17px] leading-8 tracking-[0.01em]',
+        'text-neutral-800 dark:text-neutral-200',
+        'selection:bg-neutral-200 dark:selection:bg-neutral-700',
         'prose prose-neutral dark:prose-invert max-w-none',
 
-        // Typography
-        '[&_p]:my-3',
-        '[&_h1]:text-2xl [&_h1]:font-semibold [&_h1]:mt-6',
-        '[&_h2]:text-xl [&_h2]:font-semibold [&_h2]:mt-5',
-        '[&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3',
-        '[&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3',
+        // Layout rhythm
+        '[&_p]:my-5 [&_p]:leading-8',
+        '[&_p]:text-[17px]',
+        '[&_p:first-child]:mt-0 [&_p:last-child]:mb-0',
 
-        'prose-code:bg-transparent prose-code:text-inherit',
+        // Headings
+        '[&_h1]:mt-10 [&_h1]:mb-4 [&_h1]:text-3xl [&_h1]:font-semibold [&_h1]:leading-tight [&_h1]:tracking-[-0.02em]',
+        '[&_h2]:mt-8 [&_h2]:mb-3 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:leading-tight [&_h2]:tracking-[-0.015em]',
+        '[&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:leading-snug',
+        '[&_h4]:mt-5 [&_h4]:mb-2 [&_h4]:text-lg [&_h4]:font-semibold',
 
-        // CODE BLOCK
-        '[&_pre]:!bg-neutral-900 [&_pre]:!text-neutral-100',
-        'dark:[&_pre]:!bg-neutral-950',
-        '[&_pre]:p-4 [&_pre]:rounded-xl [&_pre]:overflow-x-auto',
+        // Lists
+        '[&_ul]:my-5 [&_ol]:my-5',
+        '[&_ul]:pl-6 [&_ol]:pl-6',
+        '[&_li]:my-1.5',
+        '[&_li_p]:my-2',
 
-        '[&_pre_code]:!bg-transparent [&_pre_code]:!text-inherit [&_pre_code]:p-0',
+        // Blockquote
+        '[&_blockquote]:my-6 [&_blockquote]:border-l-4 [&_blockquote]:border-neutral-300',
+        'dark:[&_blockquote]:border-neutral-700',
+        '[&_blockquote]:pl-5 [&_blockquote]:italic [&_blockquote]:text-neutral-600',
+        'dark:[&_blockquote]:text-neutral-300',
 
+        // Links
+        '[&_a]:font-medium [&_a]:text-neutral-950 [&_a]:underline [&_a]:decoration-neutral-300 [&_a]:underline-offset-4',
+        'dark:[&_a]:text-neutral-50 dark:[&_a]:decoration-neutral-600',
+        '[&_a:hover]:decoration-neutral-500',
+
+        // Strong / emphasis
+        '[&_strong]:font-semibold',
+        '[&_em]:italic',
+
+        // Horizontal rule
+        '[&_hr]:my-8 [&_hr]:border-neutral-200',
+        'dark:[&_hr]:border-neutral-800',
+
+        // Images / media
+        '[&_img]:my-6 [&_img]:rounded-2xl [&_img]:shadow-sm',
+        '[&_figure]:my-6',
+
+        // Inline code
+        '[&_code]:rounded-md [&_code]:bg-neutral-100 [&_code]:px-1.5 [&_code]:py-0.5',
+        '[&_code]:font-mono [&_code]:text-[0.92em] [&_code]:text-neutral-800',
+        'dark:[&_code]:bg-neutral-800 dark:[&_code]:text-neutral-100',
+
+        // Code block
+        '[&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre]:rounded-2xl',
+        '[&_pre]:bg-neutral-950 [&_pre]:p-5 [&_pre]:text-neutral-100',
+        'dark:[&_pre]:bg-neutral-950',
+        '[&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-inherit',
+        '[&_pre]:shadow-sm',
+
+        // Tables
+        '[&_table]:my-6 [&_table]:w-full [&_table]:border-collapse [&_table]:overflow-hidden',
+        '[&_th]:border-b [&_th]:border-neutral-200 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left',
+        'dark:[&_th]:border-neutral-800',
+        '[&_td]:border-b [&_td]:border-neutral-200 [&_td]:px-3 [&_td]:py-2',
+        'dark:[&_td]:border-neutral-800',
+
+        // Editor-specific polish
+        '[&_br]:leading-[0]',
+        '[&_p>*:first-child]:mt-0',
         className
       )}
       style={style}

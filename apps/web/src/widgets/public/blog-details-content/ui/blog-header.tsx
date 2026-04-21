@@ -6,9 +6,13 @@ import { BlogLiveStats, BlogLiveStatsSkeleton } from '@/features/public';
 import { formatDate } from '@/shared/lib/utils';
 import { Separator } from '@/shared/ui/separator';
 
+
+
+
+
 export function BlogHeader({ blog }: { blog: PublicBlog }) {
   return (
-    <header>
+    <header className={'w-full'}>
       <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
         {blog.title}
       </h1>

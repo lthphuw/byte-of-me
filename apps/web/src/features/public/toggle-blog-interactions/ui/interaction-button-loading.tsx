@@ -1,5 +1,5 @@
 import { Skeleton } from '@/shared/ui/skeleton';
 
 export function InteractionButtonLoading() {
-  return <Skeleton className="h-9 w-20" />;
+  return <Skeleton className="h-8 w-14 md:w-16" />;
 }
