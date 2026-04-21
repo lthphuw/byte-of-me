@@ -140,7 +140,11 @@ export const PublicHeaderMainNav = React.forwardRef<
             </motion.div>
           </motion.span>
 
-          <span className="font-bold">Byte Of Me</span>
+          <span className="text-sm font-bold">
+            {
+              minimized ? "Phu" : "Byte of Me"
+            }
+          </span>
         </motion.button>
 
         <PublicHeaderMobileNav

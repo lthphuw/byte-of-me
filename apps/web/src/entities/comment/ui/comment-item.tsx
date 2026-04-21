@@ -21,12 +21,8 @@ export function CommentItem({ comment }: { comment: PublicComment }) {
 
   const mutation = useMutation({
     mutationFn: () => hideComment(comment.id),
-    onMutate: async () => {
-      setIsHidden(true);
-    },
-    onError: () => {
-      setIsHidden(false);
-    },
+    onMutate: () => setIsHidden(true),
+    onError: () => setIsHidden(false),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [CACHE_TAGS.COMMENT, comment.blogId],
@@ -40,20 +36,18 @@ export function CommentItem({ comment }: { comment: PublicComment }) {
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 1, height: 'auto' }}
-        exit={{ opacity: 0, height: 0, marginTop: 0, marginBottom: 0 }}
+        exit={{ opacity: 0, height: 0 }}
         transition={{ duration: 0.25 }}
-        className="group flex gap-4 border-b border-muted py-6 last:border-0"
+        className="group flex gap-3 border-b border-muted py-6 last:border-0"
       >
-        {/* Avatar */}
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-xs font-bold text-muted-foreground">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-bold text-muted-foreground">
           {comment.user.email.slice(0, 2).toUpperCase()}
         </div>
 
-        {/* Content */}
-        <div className="flex-1 space-y-1">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold tracking-tight">
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex min-w-0 flex-col">
+              <span className="truncate text-sm font-semibold tracking-tight">
                 {comment.user.email}
               </span>
               <span className="text-xs text-muted-foreground">
@@ -61,7 +55,6 @@ export function CommentItem({ comment }: { comment: PublicComment }) {
               </span>
             </div>
 
-            {/* Admin action */}
             {isAdmin && (
               <Button
                 size="icon"
@@ -69,8 +62,8 @@ export function CommentItem({ comment }: { comment: PublicComment }) {
                 onClick={() => mutation.mutate()}
                 disabled={mutation.isPending}
                 className={cn(
-                  'opacity-0 transition-opacity group-hover:opacity-100',
-                  'h-8 w-8 text-muted-foreground hover:text-red-500'
+                  'shrink-0 h-8 w-8 text-muted-foreground hover:text-red-500',
+                  'md:opacity-0 md:group-hover:opacity-100'
                 )}
               >
                 <EyeOff className="h-4 w-4" />
@@ -78,7 +71,7 @@ export function CommentItem({ comment }: { comment: PublicComment }) {
             )}
           </div>
 
-          <p className="text-sm leading-relaxed text-foreground/90">
+          <p className="mt-2 break-words text-sm leading-relaxed text-foreground/90">
             {comment.content}
           </p>
         </div>
