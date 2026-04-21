@@ -3,7 +3,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LogOut } from 'lucide-react';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 
 import { logOut } from '@/features/auth';
@@ -33,7 +33,10 @@ export function UserActionToggle() {
   const queryClient = useQueryClient();
 
   const handleLogout = async () => {
-    await logOut();
+    await Promise.all([
+      logOut(), // server-side
+      signOut({ redirect: false }) // Trigger hook client-side
+    ]);
 
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: ['blog-like'] }),
