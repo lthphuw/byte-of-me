@@ -46,7 +46,7 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
           id: `temp-${Date.now()}`,
           content: newText,
           createdAt: new Date().toISOString(),
-          user: { email: '...' },
+          user: { name: '...', email: '...' },
         };
 
         return {

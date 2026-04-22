@@ -7,9 +7,9 @@ import { useTranslations } from 'next-intl';
 
 import { AuthModal } from '@/features/auth';
 import { cn } from '@/shared/lib/utils';
+import { AutoGrowingTextarea } from '@/shared/ui/auto-growing-text-area';
 import { Button } from '@/shared/ui/button';
 import { Icons } from '@/shared/ui/icons';
-import { Textarea } from '@/shared/ui/textarea';
 
 export interface CommentFormProps {
   blogId: string;
@@ -49,20 +49,17 @@ export function CommentForm({
       />
 
       <div className="relative">
-        {/* FORM */}
         <div
           className={cn(
             'flex w-full flex-col gap-3 rounded-xl border bg-muted/20 p-4 shadow-sm transition',
             !isAuthenticated && 'pointer-events-none opacity-80'
           )}
         >
-          <Textarea
+          <AutoGrowingTextarea
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={(val) => setContent(val)}
             placeholder={t('writingComment')}
-            className="min-h-[100px] w-full resize-y bg-background"
-          />
-
+/>
           <div className="flex w-full justify-end">
             <Button
               className="w-full md:w-auto"
