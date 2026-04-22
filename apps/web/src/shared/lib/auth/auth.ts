@@ -4,11 +4,16 @@ import { logger } from '@byte-of-me/logger';
 import NextAuth from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
 import GitHub from 'next-auth/providers/github';
+import Google from 'next-auth/providers/google';
 import nodemailer from 'nodemailer';
 
 import { env } from '@/shared/config/env';
 import { siteConfig } from '@/shared/config/site';
 import { signInTemplate } from '@/shared/lib/templates/sign-in-template';
+
+
+
+
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -40,6 +45,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     GitHub({
       clientId: env.AUTH_GITHUB_ID,
       clientSecret: env.AUTH_GITHUB_SECRET,
+      allowDangerousEmailAccountLinking: true,
+    }),
+
+    Google({
+      clientId: env.AUTH_GOOGLE_ID,
+      clientSecret: env.AUTH_GOOGLE_SECRET,
       allowDangerousEmailAccountLinking: true,
     }),
   ],

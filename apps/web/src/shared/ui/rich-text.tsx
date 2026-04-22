@@ -7,6 +7,10 @@ import { cn } from '@/shared/lib/utils';
 import { sanitizeHtml } from '@/shared/lib/uuid';
 import { extensions } from '@/shared/ui/tiptap/rich-text-editor';
 
+
+
+
+
 export type RichTextProps = {
   content?: string | unknown;
   className?: string;
@@ -76,16 +80,16 @@ export function RichText({ content, className, style }: RichTextProps) {
         '[&_figure]:my-6',
 
         // Inline code
-        '[&_code]:rounded-md [&_code]:bg-neutral-100 [&_code]:px-1.5 [&_code]:py-0.5',
-        '[&_code]:font-mono [&_code]:text-[0.92em] [&_code]:text-neutral-800',
-        'dark:[&_code]:bg-neutral-800 dark:[&_code]:text-neutral-100',
+        '[&_code:not(pre_code)]:rounded-md',
+        '[&_code:not(pre_code)]:bg-neutral-100',
+        '[&_code:not(pre_code)]:px-1.5',
+        '[&_code:not(pre_code)]:py-0.5',
+        '[&_code:not(pre_code)]:font-mono',
+        '[&_code:not(pre_code)]:text-[0.92em]',
+        '[&_code:not(pre_code)]:text-neutral-800',
 
-        // Code block
-        '[&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre]:rounded-2xl',
-        '[&_pre]:bg-neutral-950 [&_pre]:p-5 [&_pre]:text-neutral-100',
-        'dark:[&_pre]:bg-neutral-950',
-        '[&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-inherit',
-        '[&_pre]:shadow-sm',
+        'dark:[&_code:not(pre_code)]:bg-neutral-800',
+        'dark:[&_code:not(pre_code)]:text-neutral-100',
 
         // Tables
         '[&_table]:my-6 [&_table]:w-full [&_table]:border-collapse [&_table]:overflow-hidden',

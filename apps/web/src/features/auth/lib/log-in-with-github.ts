@@ -8,7 +8,7 @@ import { signIn as nextAuthSignIn } from '@/shared/lib/auth';
 
 
 
-export async function logInWithGitHub(callbackUrl: string) {
+export async function logInWithGithub(callbackUrl: string) {
   try {
     logger.info(
       `Attempting to sign in with GitHub, callbackUrl: ${callbackUrl}`

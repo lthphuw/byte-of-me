@@ -18,8 +18,13 @@ export const env = createEnv({
     EMAIL_SERVER_PASSWORD: z.string(),
     EMAIL_FROM: z.string(),
 
+    // Github provdier
     AUTH_GITHUB_ID: z.string(),
     AUTH_GITHUB_SECRET: z.string(),
+
+    // Google provider
+    AUTH_GOOGLE_ID: z.string(),
+    AUTH_GOOGLE_SECRET: z.string(),
 
     SUPABASE_S3_STORAGE_REGION: z.string(),
     SUPABASE_S3_STORAGE_ENDPOINT: z.string(),
@@ -62,6 +67,9 @@ export const env = createEnv({
 
     AUTH_GITHUB_ID: process.env.AUTH_GITHUB_ID,
     AUTH_GITHUB_SECRET: process.env.AUTH_GITHUB_SECRET,
+
+    AUTH_GOOGLE_ID: process.env.AUTH_GOOGLE_ID,
+    AUTH_GOOGLE_SECRET: process.env.AUTH_GOOGLE_SECRET,
 
     SUPABASE_S3_STORAGE_REGION: process.env.SUPABASE_S3_STORAGE_REGION,
     SUPABASE_S3_STORAGE_ENDPOINT: process.env.SUPABASE_S3_STORAGE_ENDPOINT,

@@ -4,14 +4,15 @@ import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 
-import { GithubAuthButton } from './github-auth-button';
-
+import { GoogleAuthButton } from '@/features/auth/ui/google-auth-button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/shared/ui/dialog';
+
+import { GithubAuthButton } from './github-auth-button';
 
 interface AuthModalProps {
   isOpen?: boolean;
@@ -62,6 +63,15 @@ export function AuthModal({ isOpen, onClose, children }: AuthModalProps) {
                   }}
                 >
                   <GithubAuthButton className="h-11 w-full text-sm font-medium" />
+                </motion.div>
+
+                <motion.div
+                  variants={{
+                    hidden: { opacity: 0, y: 6 },
+                    visible: { opacity: 1, y: 0 },
+                  }}
+                >
+                  <GoogleAuthButton className="h-11 w-full text-sm font-medium" />
                 </motion.div>
 
                 {children && (
