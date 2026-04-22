@@ -6,10 +6,6 @@ import type { PublicBlog } from '@/entities/blog';
 import { Badge } from '@/shared/ui/badge';
 import { RichText } from '@/shared/ui/rich-text';
 
-
-
-
-
 export function BlogContent({ blog }: { blog: PublicBlog }) {
   return (
     <div className="space-y-6">
@@ -27,7 +23,7 @@ export function BlogContent({ blog }: { blog: PublicBlog }) {
 
       <div className="flex flex-wrap gap-2">
         {blog.tags.map((tag) => (
-          <Link key={tag.id} href={`/blogs?tag=${tag.slug}`}>
+          <Link key={tag.id} href={`/blogs?tags=${tag.slug}`}>
             <Badge variant="secondary" className="rounded-full px-3 py-1">
               <TagIcon className="mr-1.5 h-3 w-3" /> {tag.name}
             </Badge>

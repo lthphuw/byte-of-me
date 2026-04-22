@@ -30,6 +30,7 @@ export async function getPaginatedPublicBlogs(
         const { page = 1, limit = 9, tagSlugs = [], search } = params;
         const skip = (page - 1) * limit;
 
+        console.log(`>>> Fetch blogs by filters ${tagSlugs} ${search}`);
         const where: Any = {
           isPublished: true,
           AND: [],

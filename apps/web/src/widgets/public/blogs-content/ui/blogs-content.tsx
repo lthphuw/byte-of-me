@@ -9,20 +9,16 @@ import {
   BlogEmpty,
   getPaginatedPublicBlogs,
 } from '@/entities';
-import { BlogFilters } from '@/features/public';
+import { BlogFilters, useBlogFilters } from '@/features/public';
 import { Pagination } from '@/shared/ui/pagination';
 import { BlogsShell } from '@/widgets/public/blogs-content/ui/blogs-shell';
 
 export function BlogsContent() {
   const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState({
-    tagSlugs: [] as string[],
-    search: '',
-  });
-
+  const { filters, updateFilters } = useBlogFilters();
   const { data, isLoading, isFetching, isPlaceholderData } = useQuery({
     queryKey: ['public-blogs', page, filters],
-    queryFn: () => getPaginatedPublicBlogs({ ...filters, page, limit: 9 }),
+    queryFn: () => getPaginatedPublicBlogs({ ...filters, page, limit: 6 }),
     placeholderData: (previousData) => previousData,
   });
 
@@ -35,14 +31,15 @@ export function BlogsContent() {
   };
   const hasActiveFilters =
     filters.search.length > 0 || filters.tagSlugs.length > 0;
+
   const toggleTag = (slug: string) => {
     setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      tagSlugs: prev.tagSlugs.includes(slug)
-        ? prev.tagSlugs.filter((s) => s !== slug)
-        : [...prev.tagSlugs, slug],
-    }));
+
+    const nextTags = filters.tagSlugs.includes(slug)
+      ? filters.tagSlugs.filter((s) => s !== slug)
+      : [...filters.tagSlugs, slug];
+
+    updateFilters({ ...filters, tagSlugs: nextTags });
   };
 
   return (
@@ -52,7 +49,7 @@ export function BlogsContent() {
           value={filters}
           onChange={(next) => {
             setPage(1);
-            setFilters(next);
+            updateFilters(next);
           }}
         />
 

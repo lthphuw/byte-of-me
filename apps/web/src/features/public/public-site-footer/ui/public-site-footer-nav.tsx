@@ -21,8 +21,9 @@ export function PublicSiteFooterNav() {
       className="flex flex-wrap items-center justify-center gap-2 md:items-start md:gap-6"
       aria-label={t('navigation')}
     >
-      {globalConfig.footer.nav.map((item) => (
+      {globalConfig.footer.nav.map((item, idx) => (
         <Link
+          key={idx}
           href={item.disabled ? '#' : item.href}
           className={cn(
             'font-medium hover:text-blue-400 items-center rounded-lg px-1 text-sm transition-colors',
