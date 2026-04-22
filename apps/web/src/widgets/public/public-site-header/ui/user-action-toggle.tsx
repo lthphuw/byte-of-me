@@ -8,7 +8,6 @@ import { useTranslations } from 'next-intl';
 
 import { logOut } from '@/features/auth';
 import { menuTransition, menuVariants } from '@/shared/config/anim';
-// Shared config
 import { Button } from '@/shared/ui/button';
 import {
   DropdownMenu,
@@ -29,10 +28,9 @@ export function UserActionToggle() {
   const initials = session.user.email?.slice(0, 2).toUpperCase() || 'U';
 
   const handleLogout = async () => {
-    queryClient.removeQueries({ queryKey: ['blog-like'] });
-    queryClient.removeQueries({ queryKey: ['blog-clap'] });
-
+    queryClient.clear();
     await Promise.all([logOut(), signOut({ redirect: false })]);
+    window.location.reload();
   };
 
   return (

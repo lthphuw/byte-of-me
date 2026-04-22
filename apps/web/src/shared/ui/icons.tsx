@@ -1,3 +1,4 @@
+import { PiHandsClapping } from 'react-icons/pi';
 import {
   AlertTriangle,
   ArrowLeft,
@@ -32,6 +33,7 @@ import {
   Laptop,
   LayoutDashboard,
   Loader2,
+  type LucideProps,
   Mail,
   Moon,
   MoreVertical,
@@ -47,9 +49,7 @@ import {
   User,
   UserCircle,
   X,
-  type LucideProps,
 } from 'lucide-react';
-import { PiHandsClapping } from 'react-icons/pi';
 
 import { cn } from '@/shared/lib/utils';
 

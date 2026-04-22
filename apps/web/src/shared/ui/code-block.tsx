@@ -15,14 +15,14 @@ export function CodeBlock({
   const { copy, copied } = useClipboard({ timeout: 2000 });
 
   return (
-    <div className="relative my-6 group">
-      <div className="absolute right-3 top-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-        <span className="text-xs font-mono text-neutral-400 uppercase">
+    <div className="group relative my-6">
+      <div className="absolute right-3 top-3 z-10 flex items-center gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+        <span className="font-mono text-xs uppercase text-neutral-400">
           {lang}
         </span>
         <button
           onClick={() => copy(code)}
-          className="p-1.5 bg-neutral-800 rounded-md hover:bg-neutral-700"
+          className="rounded-md bg-neutral-800 p-1.5 hover:bg-neutral-700"
         >
           {copied ? (
             <Check size={14} className="text-green-400" />

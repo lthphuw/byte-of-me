@@ -4,6 +4,8 @@ import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 
+import { GithubAuthButton } from './github-auth-button';
+
 import { GoogleAuthButton } from '@/features/auth/ui/google-auth-button';
 import {
   Dialog,
@@ -11,8 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/ui/dialog';
-
-import { GithubAuthButton } from './github-auth-button';
 
 interface AuthModalProps {
   isOpen?: boolean;

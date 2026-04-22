@@ -17,7 +17,7 @@ export async function logInWithGoogle(callbackUrl: string) {
         prompt: 'login',
       },
     });
-  } catch (e: any) {
+  } catch (e: Any) {
     if (e.message?.includes('NEXT_REDIRECT')) throw e;
     logger.error(`Google login error: ${e.message}`);
     return { success: false, errorMsg: e.message };
