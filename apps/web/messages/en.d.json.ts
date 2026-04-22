@@ -169,7 +169,8 @@ declare const messages: {
     "mustSignInToComment": "Must sign in to comment",
     "posting": "Posting...",
     "postCommentFailed": "Failed to post comment",
-    "interactFailed": "Failed to interact the post"
+    "interactFailed": "Failed to interact the post",
+    "justNow": "just now"
   },
   "contact": {
     "letsWorkTogether": "Let’s work together",

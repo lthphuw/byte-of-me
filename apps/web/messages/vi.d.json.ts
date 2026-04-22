@@ -176,7 +176,8 @@ declare const messages: {
     "mustSignInToComment": "Bạn cần phải đăng nhập để bình luận",
     "posting": "Đang đăng...",
     "postCommentFailed": "Đăng bình luận thất bại, vui lòng thử lại sau",
-    "interactFailed": "Tương tác bài viết thất bại, vui lòng thử lại sau"
+    "interactFailed": "Tương tác bài viết thất bại, vui lòng thử lại sau",
+    "justNow": "vừa xong"
   },
   "contact": {
     "letsWorkTogether": "Cùng nhau hợp tác",

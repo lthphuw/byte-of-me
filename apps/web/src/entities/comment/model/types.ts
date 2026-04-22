@@ -6,6 +6,7 @@ export interface PublicComment {
   content: string;
   blogId?: Maybe<string>;
   user: {
+    name: string;
     email: string;
   };
 }

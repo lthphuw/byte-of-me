@@ -51,6 +51,7 @@ export async function getPaginatedPublicCommentsForBlog(
           content: cm.content,
           blogId: cm.blogId,
           user: {
+            name: cm.user?.name ?? cm.user?.email ?? 'anonymous',
             email: cm.user?.email ?? 'anonymous',
           },
         }));

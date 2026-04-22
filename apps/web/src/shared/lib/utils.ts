@@ -1,4 +1,8 @@
 import { type ClassValue,clsx } from 'clsx';
+// eslint-disable-next-line import/no-duplicates
+import { formatDistanceToNow } from 'date-fns';
+// eslint-disable-next-line import/no-duplicates
+import { enUS, vi } from 'date-fns/locale';
 import { twMerge } from 'tailwind-merge';
 
 import { env } from '@/shared/config/env';
@@ -43,6 +47,13 @@ export function formatDate(
   }).format(date);
 }
 
+export function getRelativeTime(date: Date, locale: string) {
+  const dateObj = new Date(date);
+  return formatDistanceToNow(dateObj, {
+    addSuffix: true,
+    locale: locale === 'vi' ? vi : enUS,
+  });
+}
 /**
  * For debugging
  * @param ms
