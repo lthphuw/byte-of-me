@@ -79,6 +79,7 @@ export const PublicHeaderMainNav = React.forwardRef<
           isOpen={open}
           onOpenChange={setOpen}
           items={items}
+          minimized={minimized}
           triggerRef={triggerRef}
         >
           {children}

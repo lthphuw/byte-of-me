@@ -46,7 +46,7 @@ export function UserActionToggle() {
 
       <DropdownMenuContent
         align="end"
-        className="w-56 overflow-hidden"
+        className="w-56 overflow-hidden shadow-lg container-bg"
         sideOffset={8}
         forceMount
       >

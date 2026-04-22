@@ -4,14 +4,16 @@ import { getTranslations } from 'next-intl/server';
 import { BlogContent } from './blog-content';
 
 import type { PublicBlog } from '@/entities/blog';
-import { BlogAnalytics } from '@/features/public';
+import {
+  BlogAnalytics,
+  BlogCommentSection,
+  BlogRelatedProjectCard,
+  RelatedProjectCardSkeleton,
+} from '@/features/public';
 import { Separator } from '@/shared/ui/separator';
 import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-action-bar';
-import { BlogCommentSection } from '@/widgets/public/blog-details-content/ui/blog-comment-section';
-import { BlogHeader } from '@/widgets/public/blog-details-content/ui/blog-header';
+import { BlogContentHeader } from '@/widgets/public/blog-details-content/ui/blog-content-header';
 import { BlogDetailsShell } from '@/widgets/public/blog-details-content/ui/blog-shells';
-import { RelatedProjectCard } from '@/widgets/public/blog-details-content/ui/related-project-card';
-import { RelatedProjectCardSkeleton } from '@/widgets/public/blog-details-content/ui/related-project-card-loading';
 
 export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
   const t = await getTranslations('blogDetails');
@@ -22,7 +24,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
         <div className="flex w-full flex-col items-center py-8 md:px-8 md:py-12">
           <div className="w-full max-w-[calc(100vw-4rem)]">
             {/*Header*/}
-            <BlogHeader blog={blog} />
+            <BlogContentHeader blog={blog} />
 
             {/*Actions*/}
             <BlogActionBar
@@ -58,7 +60,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
                     <RelatedProjectCardSkeleton label={t('relatedProject')} />
                   }
                 >
-                  <RelatedProjectCard
+                  <BlogRelatedProjectCard
                     projectId={blog.projectId}
                     label={t('relatedProject')}
                   />

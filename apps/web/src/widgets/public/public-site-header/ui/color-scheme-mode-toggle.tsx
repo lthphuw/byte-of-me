@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 
 import {
-  iconSwicthVariants,
+  iconSwitchVariants,
   menuTransition,
   menuVariants,
 } from '@/shared/config/anim';
@@ -43,7 +43,7 @@ export function ColorSchemeModeToggle() {
               {resolvedTheme === 'light' ? (
                 <motion.div
                   key="sun"
-                  variants={iconSwicthVariants}
+                  variants={iconSwitchVariants}
                   initial="initial"
                   animate="animate"
                   exit="exit"
@@ -55,7 +55,7 @@ export function ColorSchemeModeToggle() {
               ) : (
                 <motion.div
                   key="moon"
-                  variants={iconSwicthVariants}
+                  variants={iconSwitchVariants}
                   initial="initial"
                   animate="animate"
                   exit="exit"
@@ -74,7 +74,7 @@ export function ColorSchemeModeToggle() {
 
       <DropdownMenuContent
         align="end"
-        className="z-50 min-w-[160px] space-y-1 overflow-hidden rounded-md border border-muted/50 bg-popover shadow-lg"
+        className="z-50 min-w-[160px] space-y-1 overflow-hidden rounded-md border border-muted/50 bg-popover  shadow-lg container-bg"
       >
         {items.map((item, index) => {
           const isActive = theme === item.value;

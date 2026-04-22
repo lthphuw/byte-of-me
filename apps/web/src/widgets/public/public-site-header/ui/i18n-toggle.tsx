@@ -16,6 +16,10 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
 
+
+
+
+
 const flagVariants = {
   initial: { opacity: 0, scale: 0.9, y: 8 },
   animate: { opacity: 1, scale: 1, y: 0 },
@@ -68,7 +72,7 @@ export function I18nToggle() {
       <DropdownMenuContent
         align="end"
         sideOffset={8}
-        className="min-w-[180px] overflow-hidden border-muted/50 bg-popover shadow-lg"
+        className="min-w-[180px] overflow-hidden border-muted/50 bg-popover shadow-lg container-bg"
         forceMount
       >
         <AnimatePresence>

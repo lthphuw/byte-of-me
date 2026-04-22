@@ -7,7 +7,6 @@ import { MessageSquare, Search, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useDebounce } from 'use-debounce';
 
-// Import the hook
 import type { AdminContactMessage } from '@/entities/contact-message';
 import { getPaginatedContactMessages } from '@/entities/contact-message/api/get-paginated-contacts';
 import { Button } from '@/shared/ui/button';

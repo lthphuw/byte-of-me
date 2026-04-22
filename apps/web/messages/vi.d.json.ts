@@ -23,7 +23,7 @@ declare const messages: {
     },
     "blogs": {
       "title": "Blog",
-      "description": "Ghi chép kiến thức và những chia sẻ nhỏ về lập trình."
+      "description": "Blogs chia sẻ nhỏ về lập trình."
     }
   },
   "global": {

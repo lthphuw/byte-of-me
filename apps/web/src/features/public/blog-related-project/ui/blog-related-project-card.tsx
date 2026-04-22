@@ -8,7 +8,7 @@ import { formatDate } from '@/shared/lib/utils';
 import { Card } from '@/shared/ui/card';
 
 
-export async function RelatedProjectCard({
+export async function BlogRelatedProjectCard({
   projectId,
   label,
 }: {

@@ -3,11 +3,14 @@
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
+import { useSelectedLayoutSegment } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { itemVariants } from '@/shared/config/anim';
+import { Routes } from '@/shared/config/global';
 import { useLockBody } from '@/shared/hooks/use-lock-body';
 import { Link } from '@/shared/i18n/navigation';
+import { cn } from '@/shared/lib/utils';
 import type { MainNavItem } from '@/shared/types';
 
 
@@ -36,6 +39,7 @@ interface PublicHeaderMobileNavProps {
   onOpenChange?: (open: boolean) => void;
   items: MainNavItem[];
   children?: React.ReactNode;
+  minimized?: boolean;
 }
 
 
@@ -44,11 +48,13 @@ export const PublicHeaderMobileNav = ({
   children,
   isOpen,
   onOpenChange = () => {},
+                                        minimized,
   triggerRef,
 }: PublicHeaderMobileNavProps) => {
   useLockBody(isOpen);
   const t = useTranslations('global.header.nav');
   const menuRef = React.useRef<HTMLDivElement>(null);
+  const segment = useSelectedLayoutSegment();
 
   React.useEffect(() => {
     if (!isOpen) return;
@@ -76,7 +82,12 @@ export const PublicHeaderMobileNav = ({
         <>
           <motion.div
             ref={menuRef}
-            className="fixed inset-x-8 top-[100px] z-[9999] overflow-hidden rounded-2xl border border-border p-4 shadow-xl backdrop-blur-xl container-bg md:hidden"
+            className={
+            cn(
+              "fixed inset-x-8 z-[9999] overflow-hidden rounded-2xl border border-border p-4 shadow-xl backdrop-blur-xl container-bg md:hidden",
+              minimized ? 'top-24' : 'top-16'
+            )
+            }
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -89,7 +100,12 @@ export const PublicHeaderMobileNav = ({
                     <Link
                       href={item.disabled ? '#' : item.href}
                       onClick={() => onOpenChange(false)}
-                      className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent"
+                      className={cn(
+                        "flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent",
+                        item.href.startsWith(`/${segment}`) || (!segment && item.href === Routes.Homepage)
+                          ? 'text-foreground font-semibold'
+                          : 'text-foreground/60'
+                      )}
                     >
                       {t(item.title as Any)}
                     </Link>

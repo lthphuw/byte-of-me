@@ -4,10 +4,14 @@ import { type MouseEvent,useCallback } from 'react';
 import { useClipboard } from '@mantine/hooks';
 import { AnimatePresence, motion } from 'framer-motion';
 
-import { defaultSpring, iconSwicthVariants } from '@/shared/config/anim';
+import { defaultSpring, iconSwitchVariants } from '@/shared/config/anim';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { Icons } from '@/shared/ui/icons';
+
+
+
+
 
 export interface CopyButtonProps {
   copyTimeout?: number;
@@ -50,7 +54,7 @@ export function CopyButton({
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={copied ? 'check' : 'copy'}
-          variants={iconSwicthVariants}
+          variants={iconSwitchVariants}
           initial="initial"
           animate="animate"
           exit="exit"

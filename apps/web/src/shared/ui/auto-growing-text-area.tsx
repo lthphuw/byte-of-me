@@ -2,17 +2,22 @@
 
 import { useEffect, useRef } from 'react';
 
+import { cn } from '@/shared/lib/utils';
 import { Textarea } from '@/shared/ui/textarea';
+
+export interface AutoGrowingTextAreaProps {
+  value: string;
+  onChange: (val: string) => void;
+  placeholder: string;
+  className?: string;
+}
 
 export function AutoGrowingTextarea({
   value,
   onChange,
   placeholder,
-}: {
-  value: string;
-  onChange: (val: string) => void;
-  placeholder: string;
-}) {
+  className,
+}: AutoGrowingTextAreaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -29,7 +34,15 @@ export function AutoGrowingTextarea({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="max-h-[200px] min-h-[44px] w-full resize-none overflow-hidden bg-background p-3 text-sm focus-visible:ring-1 focus-visible:ring-neutral-400"
+      className={cn(
+        'w-full resize-none overflow-hidden bg-background p-3',
+        'text-base md:text-sm',
+        'min-h-[48px] md:min-h-[44px]',
+        'max-h-[200px] rounded-xl',
+        'focus-visible:ring-1 focus-visible:ring-neutral-400',
+        'transition-[height] duration-200 ease-out',
+        className
+      )}
       style={{ height: 'auto' }}
     />
   );

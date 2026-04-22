@@ -2,7 +2,8 @@ import React from 'react';
 import { getTranslations } from 'next-intl/server';
 
 import { getPublicInfoForFooter } from '@/features/public/public-site-footer/lib';
-import { globalConfig,Routes } from '@/shared/config/global';
+import { PublicSiteFooterNav } from '@/features/public/public-site-footer/ui/public-site-footer-nav';
+import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
 import { cn, ensureValidUrl } from '@/shared/lib/utils';
 import { Icons } from '@/shared/ui/icons';
@@ -27,7 +28,7 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
 
   return (
     <footer className={cn('py-8 relative z-20', className)}>
-      <div className="container mx-auto flex max-w-[100%] flex-col items-center justify-between gap-6 px-4 md:flex-row md:px-12">
+      <div className="container mx-auto flex max-w-[100%] flex-col items-center justify-between gap-6 px-8 md:flex-row md:px-12">
         <div className="flex flex-col items-center gap-2 md:items-start">
           <Link href={Routes.Homepage} aria-label={t('home')}>
             <Icons.logo />
@@ -39,25 +40,12 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
               href={`mailto:${email}`}
               className="font-medium underline underline-offset-4 hover:text-blue-400"
             >
-              {displayName}
+              {displayName || email}
             </a>
           </h2>
         </div>
 
-        <nav
-          className="flex flex-wrap items-center justify-center gap-2 md:items-start md:gap-6"
-          aria-label={t('navigation')}
-        >
-          {globalConfig.footer.nav.map((it) => (
-            <Link
-              key={it.href}
-              href={it.href}
-              className="text-sm hover:text-blue-400 md:text-base"
-            >
-              {t(it.title as never)}
-            </Link>
-          ))}
-        </nav>
+        <PublicSiteFooterNav/>
 
         <div className="flex flex-col items-center gap-2 md:items-end">
           <div className="flex gap-4">
