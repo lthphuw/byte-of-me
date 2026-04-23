@@ -1,7 +1,7 @@
+import { BlogDetailsShell } from '@/widgets/public/blog-details-content/ui/blog-shells';
 import { Card } from '@/shared/ui/card';
 import { Separator } from '@/shared/ui/separator';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { BlogDetailsShell } from '@/widgets/public/blog-details-content/ui/blog-shells';
 
 export default function BlogDetailsLoading() {
   return (
@@ -26,18 +26,6 @@ export default function BlogDetailsLoading() {
             <Skeleton className="h-4 w-24" />
           </div>
 
-          {/* TAGS SKELETON */}
-          <div className="mt-6 flex flex-wrap gap-2">
-            <Skeleton className="h-6 w-16 rounded-full" />
-            <Skeleton className="h-6 w-20 rounded-full" />
-            <Skeleton className="h-6 w-14 rounded-full" />
-          </div>
-
-          {/* COVER IMAGE SKELETON */}
-          <div className="mb-10 mt-8">
-            <Skeleton className="aspect-video w-full rounded-xl" />
-          </div>
-
           {/* CONTENT SKELETON (Rich Text Mockup) */}
           <div className="space-y-4">
             <Skeleton className="h-4 w-full" />
@@ -48,6 +36,13 @@ export default function BlogDetailsLoading() {
               <Skeleton className="h-4 w-5/6" />
               <Skeleton className="h-4 w-full" />
             </div>
+          </div>
+
+          {/* TAGS SKELETON */}
+          <div className="mt-6 flex flex-wrap gap-2">
+            <Skeleton className="h-6 w-16 rounded-full" />
+            <Skeleton className="h-6 w-20 rounded-full" />
+            <Skeleton className="h-6 w-14 rounded-full" />
           </div>
 
           {/* PROJECT CARD SKELETON */}

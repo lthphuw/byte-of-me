@@ -1,11 +1,11 @@
 import { Suspense } from 'react';
 
+import { BlogCommentShareActions } from '@/widgets/public/blog-details-content/ui/blog-comment-share-actions';
 import {
   ClapButtonWrapper,
   InteractionButtonLoading,
   LikeButtonWrapper,
 } from '@/features/public';
-import { BlogCommentShareActions } from '@/widgets/public/blog-details-content/ui/blog-comment-share-actions';
 
 export function BlogActionBar({
   blogId,
@@ -19,8 +19,8 @@ export function BlogActionBar({
   noCommentAppear?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between gap-2 py-3">
-      <div className={'flex items-center gap-2'}>
+    <div className="flex items-center justify-between gap-2 py-2">
+      <div className={'flex items-center gap-2 ml-[-4px]'}>
         <Suspense fallback={<InteractionButtonLoading />}>
           <LikeButtonWrapper blogId={blogId} blogSlug={blogSlug} />
         </Suspense>

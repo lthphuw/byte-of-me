@@ -1,14 +1,15 @@
 import { Suspense } from 'react';
 import { Calendar } from 'lucide-react';
 
-import type { PublicBlog } from '@/entities/blog';
+import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-action-bar';
 import { BlogLiveStats, BlogLiveStatsSkeleton } from '@/features/public';
+import type { PublicBlog } from '@/entities/blog';
 import { formatDate } from '@/shared/lib/utils';
 import { Separator } from '@/shared/ui/separator';
 
 export function BlogContentHeader({ blog }: { blog: PublicBlog }) {
   return (
-    <header className={'w-full'}>
+    <header className={'w-fullç'}>
       <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
         {blog.title}
       </h1>
@@ -17,7 +18,7 @@ export function BlogContentHeader({ blog }: { blog: PublicBlog }) {
         <p className="mt-3 text-lg text-muted-foreground">{blog.description}</p>
       )}
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-b pb-6 text-sm">
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 pb-3 text-sm">
         {blog.publishedDate && (
           <div className="flex items-center gap-1 text-muted-foreground">
             <Calendar className="h-4 w-4" />
@@ -31,6 +32,9 @@ export function BlogContentHeader({ blog }: { blog: PublicBlog }) {
           <BlogLiveStats blogId={blog.id} />
         </Suspense>
       </div>
+
+      <BlogActionBar blogId={blog.id} blogSlug={blog.slug} title={blog.title} />
+      <Separator className="mt-4" />
     </header>
   );
 }

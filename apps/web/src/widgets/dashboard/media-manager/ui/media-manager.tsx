@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 
-import { useMediaLibrary } from '@/entities/media/api/use-media-library';
+import { MediaLibrary } from '@/widgets/dashboard/media-manager/ui/media-library';
+import { MediaLibraryEmpty } from '@/widgets/dashboard/media-manager/ui/media-library-empty';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
+import { useMediaLibrary } from '@/entities/media/api/use-media-library';
 import { Button } from '@/shared/ui/button';
 import {
   Dialog,
@@ -14,8 +16,6 @@ import {
   DialogTrigger,
 } from '@/shared/ui/dialog';
 import Loading from '@/shared/ui/loading';
-import { MediaLibrary } from '@/widgets/dashboard/media-manager/ui/media-library';
-import { MediaLibraryEmpty } from '@/widgets/dashboard/media-manager/ui/media-library-empty';
 
 export function MediaManager() {
   const [page, setPage] = useState(1);
@@ -28,12 +28,12 @@ export function MediaManager() {
   return (
     <div className="space-y-6">
       <header className="flex items-center justify-between">
-        <section>
-          <h2 className="text-2xl font-bold tracking-tight">Media Library</h2>
-          <p className="text-sm text-muted-foreground">
-            Manage your digital assets and uploads.
-          </p>
-        </section>
+        {/*<section>*/}
+        {/*  <h2 className="text-2xl font-bold tracking-tight">Media Library</h2>*/}
+        {/*  <p className="text-sm text-muted-foreground">*/}
+        {/*    Manage your digital assets and uploads.*/}
+        {/*  </p>*/}
+        {/*</section>*/}
 
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>

@@ -71,7 +71,7 @@ export function ClapButton({
         onClick={() => (session ? mutation.mutate() : setIsAuthModalOpen(true))}
         disabled={mutation.isPending}
         className={cn(
-          'px-1 md:px-2 group gap-2 hover:bg-transparent',
+          'px-0 group gap-2 hover:bg-transparent',
           isClapped && 'text-amber-500'
         )}
       >

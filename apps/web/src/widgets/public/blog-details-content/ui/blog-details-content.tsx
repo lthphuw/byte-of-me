@@ -1,19 +1,19 @@
 import { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
 
-import { BlogContent } from './blog-content';
-
-import type { PublicBlog } from '@/entities/blog';
+import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-action-bar';
+import { BlogContentHeader } from '@/widgets/public/blog-details-content/ui/blog-content-header';
+import { BlogDetailsShell } from '@/widgets/public/blog-details-content/ui/blog-shells';
 import {
   BlogAnalytics,
   BlogCommentSection,
   BlogRelatedProjectCard,
   RelatedProjectCardSkeleton,
 } from '@/features/public';
+import type { PublicBlog } from '@/entities/blog';
 import { Separator } from '@/shared/ui/separator';
-import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-action-bar';
-import { BlogContentHeader } from '@/widgets/public/blog-details-content/ui/blog-content-header';
-import { BlogDetailsShell } from '@/widgets/public/blog-details-content/ui/blog-shells';
+
+import { BlogContent } from './blog-content';
 
 export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
   const t = await getTranslations('blogDetails');
@@ -26,19 +26,12 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
             {/*Header*/}
             <BlogContentHeader blog={blog} />
 
-            {/*Actions*/}
-            <BlogActionBar
-              blogId={blog.id}
-              blogSlug={blog.slug}
-              title={blog.title}
-            />
-
             {/*Content*/}
-            <Separator className="mb-8 md:mb-10" />
+            <div className="mb-8 md:mb-10" />
             <BlogContent blog={blog} />
 
             {/*Blog actions section, but for footer, user dont need to scroll upper*/}
-            <Separator className="mt-8 md:mt-10" />
+            <div className="mt-4 md:mt-8" />
             <BlogActionBar
               blogId={blog.id}
               blogSlug={blog.slug}
