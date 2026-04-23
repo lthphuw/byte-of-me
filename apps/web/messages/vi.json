@@ -177,7 +177,8 @@
     "justNow": "vừa xong",
     "reply": "Trả lời",
     "replyTo": "Trả lời",
-    "cancel": "Huỷ"
+    "cancel": "Huỷ",
+    "hideCommentFailed": "Xoá bình luận thất bại, vui lòng thử lại sau"
   },
   "contact": {
     "letsWorkTogether": "Cùng nhau hợp tác",

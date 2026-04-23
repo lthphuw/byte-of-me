@@ -170,7 +170,8 @@
     "justNow": "just now",
     "reply": "Reply",
     "replyTo": "Reply to",
-    "cancel": "Cancle"
+    "cancel": "Cancle",
+    "hideCommentFailed": "Failed to delete the comment, try again later"
   },
   "contact": {
     "letsWorkTogether": "Let’s work together",
