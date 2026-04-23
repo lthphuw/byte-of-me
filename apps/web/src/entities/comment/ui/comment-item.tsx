@@ -106,7 +106,7 @@ export function CommentItem({
             variant="ghost"
             disabled={!session}
             onClick={() => onReply?.(comment)}
-            className="h-6 px-0 text-xs text-muted-foreground hover:text-foreground"
+            className="h-6 px-1 text-xs text-muted-foreground hover:text-foreground"
           >
             <Reply className="mr-1 h-3.5 w-3.5" />
             {t('reply')}
