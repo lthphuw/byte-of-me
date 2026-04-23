@@ -8,10 +8,6 @@ import { requireAdmin } from '@/shared/lib/auth';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
-
-
-
-
 export async function getPaginatedAdminBlogs(
   page: number,
   limit: number

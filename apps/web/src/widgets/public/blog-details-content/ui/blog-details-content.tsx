@@ -1,19 +1,19 @@
 import { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
 
-import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-action-bar';
-import { BlogContentHeader } from '@/widgets/public/blog-details-content/ui/blog-content-header';
-import { BlogDetailsShell } from '@/widgets/public/blog-details-content/ui/blog-shells';
+import { BlogContent } from './blog-content';
+
+import type { PublicBlog } from '@/entities/blog';
 import {
   BlogAnalytics,
   BlogCommentSection,
   BlogRelatedProjectCard,
   RelatedProjectCardSkeleton,
 } from '@/features/public';
-import type { PublicBlog } from '@/entities/blog';
 import { Separator } from '@/shared/ui/separator';
-
-import { BlogContent } from './blog-content';
+import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-action-bar';
+import { BlogContentHeader } from '@/widgets/public/blog-details-content/ui/blog-content-header';
+import { BlogDetailsShell } from '@/widgets/public/blog-details-content/ui/blog-shells';
 
 export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
   const t = await getTranslations('blogDetails');

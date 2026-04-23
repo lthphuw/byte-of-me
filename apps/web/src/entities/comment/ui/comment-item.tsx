@@ -1,13 +1,13 @@
 'use client';
 
-import Link from 'next/link';
-import { hideComment } from '@/entities';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
 import { EyeOff, Reply } from 'lucide-react';
+import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { hideComment } from '@/entities';
 import type { PublicComment } from '@/entities/comment/model';
 import { useToast } from '@/shared/hooks/use-toast';
 import { CACHE_TAGS } from '@/shared/lib/constants';

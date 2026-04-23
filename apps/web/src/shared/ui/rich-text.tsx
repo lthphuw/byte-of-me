@@ -7,10 +7,6 @@ import { cn } from '@/shared/lib/utils';
 import { sanitizeHtml } from '@/shared/lib/uuid';
 import { extensions } from '@/shared/ui/tiptap/rich-text-editor';
 
-
-
-
-
 export type RichTextProps = {
   content?: string | unknown;
   className?: string;
@@ -45,10 +41,10 @@ export function RichText({ content, className, style }: RichTextProps) {
         '[&_p:first-child]:mt-0 [&_p:last-child]:mb-0',
 
         // Headings
-        '[&_h1]:mt-10 [&_h1]:mb-4 [&_h1]:text-3xl [&_h1]:font-semibold [&_h1]:leading-tight [&_h1]:tracking-[-0.02em]',
-        '[&_h2]:mt-8 [&_h2]:mb-3 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:leading-tight [&_h2]:tracking-[-0.015em]',
-        '[&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:leading-snug',
-        '[&_h4]:mt-5 [&_h4]:mb-2 [&_h4]:text-lg [&_h4]:font-semibold',
+        '[&_h1]:mt-14 [&_h1]:mb-6 [&_h1]:text-4xl [&_h1]:font-bold [&_h1]:leading-tight [&_h1]:tracking-[-0.02em]',
+        '[&_h2]:mt-12 [&_h2]:mb-4 [&_h2]:text-3xl [&_h2]:font-semibold [&_h2]:leading-tight [&_h2]:tracking-[-0.015em]',
+        '[&_h3]:mt-10 [&_h3]:mb-3 [&_h3]:text-2xl [&_h3]:font-semibold [&_h3]:leading-snug',
+        '[&_h4]:mt-8 [&_h4]:mb-2 [&_h4]:text-xl [&_h4]:font-medium',
 
         // Lists
         '[&_ul]:my-5 [&_ol]:my-5',

@@ -1,11 +1,11 @@
 import { Suspense } from 'react';
 import { Calendar } from 'lucide-react';
 
-import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-action-bar';
-import { BlogLiveStats, BlogLiveStatsSkeleton } from '@/features/public';
 import type { PublicBlog } from '@/entities/blog';
+import { BlogLiveStats, BlogLiveStatsSkeleton } from '@/features/public';
 import { formatDate } from '@/shared/lib/utils';
 import { Separator } from '@/shared/ui/separator';
+import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-action-bar';
 
 export function BlogContentHeader({ blog }: { blog: PublicBlog }) {
   return (

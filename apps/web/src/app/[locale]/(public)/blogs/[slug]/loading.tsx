@@ -1,7 +1,7 @@
-import { BlogDetailsShell } from '@/widgets/public/blog-details-content/ui/blog-shells';
 import { Card } from '@/shared/ui/card';
 import { Separator } from '@/shared/ui/separator';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { BlogDetailsShell } from '@/widgets/public/blog-details-content/ui/blog-shells';
 
 export default function BlogDetailsLoading() {
   return (
@@ -27,7 +27,7 @@ export default function BlogDetailsLoading() {
           </div>
 
           {/* CONTENT SKELETON (Rich Text Mockup) */}
-          <div className="space-y-4">
+          <div className="mt-8 space-y-4">
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-3/4" />

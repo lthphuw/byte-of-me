@@ -3,10 +3,8 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 
-import { MediaLibrary } from '@/widgets/dashboard/media-manager/ui/media-library';
-import { MediaLibraryEmpty } from '@/widgets/dashboard/media-manager/ui/media-library-empty';
-import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import { useMediaLibrary } from '@/entities/media/api/use-media-library';
+import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import { Button } from '@/shared/ui/button';
 import {
   Dialog,
@@ -16,6 +14,8 @@ import {
   DialogTrigger,
 } from '@/shared/ui/dialog';
 import Loading from '@/shared/ui/loading';
+import { MediaLibrary } from '@/widgets/dashboard/media-manager/ui/media-library';
+import { MediaLibraryEmpty } from '@/widgets/dashboard/media-manager/ui/media-library-empty';
 
 export function MediaManager() {
   const [page, setPage] = useState(1);
