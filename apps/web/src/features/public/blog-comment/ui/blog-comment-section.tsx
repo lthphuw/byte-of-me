@@ -32,35 +32,65 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
 
   const key = commentKey(blogId, limit);
   const mutation = useMutation({
-    mutationFn: (text: string) => postComment(blogId, text),
+    mutationFn: ({
+      content,
+      parentId,
+    }: {
+      content: string;
+      parentId?: string;
+    }) => postComment(blogId, content, parentId),
 
-    onMutate: async (newText) => {
+    onMutate: async ({ content, parentId }) => {
       await queryClient.cancelQueries({ queryKey: key });
 
       const previous = queryClient.getQueryData(key);
 
+      const tempId = `temp-${Date.now()}`;
+
+      const optimistic = {
+        id: tempId,
+        content,
+        parentId,
+        createdAt: new Date().toISOString(),
+        user: { name: '...', email: '...' },
+        children: [],
+      };
+
       queryClient.setQueryData(key, (old: Any) => {
         if (!old) return old;
 
-        const optimistic = {
-          id: `temp-${Date.now()}`,
-          content: newText,
-          createdAt: new Date().toISOString(),
-          user: { name: '...', email: '...' },
-        };
-
         return {
           ...old,
-          pages: old.pages.map((page: Any, i: number) =>
-            i === 0 ? { ...page, data: [optimistic, ...page.data] } : page
-          ),
+          pages: old.pages.map((page: Any, i: number) => {
+            if (i !== 0) return page;
+
+            if (!parentId) {
+              return {
+                ...page,
+                data: [optimistic, ...page.data],
+              };
+            }
+
+            return {
+              ...page,
+              data: page.data.map((c: Any) => {
+                if (c.id === parentId) {
+                  return {
+                    ...c,
+                    children: [...(c.children || []), optimistic],
+                  };
+                }
+                return c;
+              }),
+            };
+          }),
         };
       });
 
-      return { previous };
+      return { previous, tempId };
     },
 
-    onSuccess: (result) => {
+    onSuccess: (result, _vars, ctx) => {
       if (!result.success) return;
 
       queryClient.setQueryData(key, (old: Any) => {
@@ -68,17 +98,29 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
 
         return {
           ...old,
-          pages: old.pages.map((page: Any, i: number) =>
-            i === 0
-              ? {
-                  ...page,
-                  data: [
-                    result.data,
-                    ...page.data.filter((c: Any) => !c.id.startsWith('temp-')),
-                  ],
+          pages: old.pages.map((page: Any, i: number) => {
+            if (i !== 0) return page;
+
+            return {
+              ...page,
+              data: page.data.map((c: Any) => {
+                if (c.id === ctx?.tempId) {
+                  return result.data;
                 }
-              : page
-          ),
+
+                if (c.children) {
+                  return {
+                    ...c,
+                    children: c.children.map((child: Any) =>
+                      child.id === ctx?.tempId ? result.data : child
+                    ),
+                  };
+                }
+
+                return c;
+              }),
+            };
+          }),
         };
       });
     },
@@ -94,6 +136,7 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
       queryClient.invalidateQueries({ queryKey: key });
     },
   });
+
   const { ref, entry } = useIntersection({
     root: null,
     threshold: 0.1,
@@ -124,7 +167,7 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
       <CommentForm
         blogId={blogId}
         isPending={mutation.isPending}
-        onComment={(content) => mutation.mutate(content)}
+        onComment={(content) => mutation.mutate({content})}
       />
 
       <div className="space-y-2">
@@ -134,7 +177,11 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
           <CommentListEmpty />
         ) : (
           <>
-            <CommentList comments={allComments} />
+            <CommentList
+              blogId={blogId}
+              comments={allComments}
+              onComment={(content, parentId) => mutation.mutate({content, parentId})}
+            />
 
             {isFetchingNextPage && (
               <div className="flex items-center justify-center gap-2 py-4">

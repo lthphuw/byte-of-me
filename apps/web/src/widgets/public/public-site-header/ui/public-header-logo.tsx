@@ -13,7 +13,7 @@ export const PublicHeaderLogo = React.memo(
     >
       <Icons.logo />
       <div className="relative overflow-hidden whitespace-nowrap">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
           <motion.span
             key={minimized ? 'short' : 'full'}
             initial={{ y: 10, opacity: 0 }}

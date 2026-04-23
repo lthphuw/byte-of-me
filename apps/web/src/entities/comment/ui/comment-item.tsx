@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
-import { EyeOff } from 'lucide-react';
+import { EyeOff, Reply } from 'lucide-react';
+import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -12,24 +12,28 @@ import type { PublicComment } from '@/entities/comment/model';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getRelativeTime } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
+import { Skeleton } from '@/shared/ui/skeleton';
 
-
-
-
-
-export function CommentItem({ comment }: { comment: PublicComment }) {
+export function CommentItem({
+  comment,
+  isReply,
+  onReply,
+}: {
+  comment: PublicComment;
+  isReply?: boolean;
+  onReply?: (comment: PublicComment) => void;
+}) {
   const t = useTranslations('blogDetails');
   const locale = useLocale();
   const { data: session } = useSession();
-  const isAdmin = session?.user?.role === 'ADMIN';
+
+  const isRemovable =
+    session?.user?.role === 'ADMIN' || session?.user?.id === comment.user.id;
 
   const queryClient = useQueryClient();
-  const [isHidden, setIsHidden] = useState(false);
 
-  const mutation = useMutation({
+  const hideMutation = useMutation({
     mutationFn: () => hideComment(comment.id),
-    onMutate: () => setIsHidden(true),
-    onError: () => setIsHidden(false),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [CACHE_TAGS.COMMENT, comment.blogId],
@@ -37,47 +41,69 @@ export function CommentItem({ comment }: { comment: PublicComment }) {
     },
   });
 
-  if (isHidden) return null;
-
+  if (hideMutation.isPending) {
+    return <Skeleton className="h-16 w-full" />;
+  }
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 1, height: 'auto' }}
-        exit={{ opacity: 0, height: 0 }}
-        className="group flex gap-3 border-b border-muted py-6 last:border-0"
+        id={`comment-${comment.id}`}
+        initial={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="grid grid-cols-[auto_1fr] gap-x-3"
       >
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-bold text-muted-foreground">
+        {/* AVATAR */}
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-[10px] font-semibold text-muted-foreground">
           {comment.user.email.slice(0, 2).toUpperCase()}
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col">
-          <div className="relative flex items-start justify-between gap-2">
-            <div className="flex flex-col md:flex-row md:items-center md:gap-2">
-              <span className="truncate text-sm font-semibold tracking-tight">
-                {comment.user.name ?? comment.user.email}
-              </span>
-
-              <span className="text-xs text-muted-foreground">
-                {getRelativeTime(comment.createdAt, locale)}
-              </span>
-            </div>
-
-            {isAdmin && (
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => mutation.mutate()}
-                disabled={mutation.isPending}
-                className="absolute right-0 top-0 h-8 w-8 text-muted-foreground transition-opacity hover:text-red-500 group-hover:opacity-100 md:opacity-0"
-              >
-                <EyeOff className="h-4 w-4" />
-              </Button>
-            )}
+        {/* HEADER */}
+        <div className="flex min-w-0 items-center justify-between gap-2">
+          <div className="flex min-w-0 flex-col gap-0 text-sm md:flex-row md:items-center md:gap-2">
+            <span className="truncate font-medium">
+              {comment.user.name ?? comment.user.email}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {getRelativeTime(comment.createdAt, locale)}
+            </span>
           </div>
 
-          <p className="mt-2 break-words text-sm leading-relaxed text-foreground/90 md:mt-0">
-            {comment.content}
-          </p>
+          {isRemovable && (
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => hideMutation.mutate()}
+              disabled={hideMutation.isPending}
+              className="h-7 w-7 text-muted-foreground opacity-100 hover:text-red-500 md:opacity-0 md:hover:opacity-100"
+            >
+              <EyeOff className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+
+        <p className="col-span-2 mt-2 flex items-center gap-1 text-sm leading-relaxed text-foreground/90">
+          {comment.userReplied && (
+            <Link
+              href={`#comment-${comment.parentId}`}
+              className="inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-xs font-medium text-primary/80 transition-colors hover:text-primary"
+            >
+              @{comment.userReplied}
+            </Link>
+          )}
+          {comment.content}
+        </p>
+
+        <div className="col-span-2 mt-3 flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="ghost"
+            disabled={!session}
+            onClick={() => onReply?.(comment)}
+            className="h-6 px-0 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <Reply className="mr-1 h-3.5 w-3.5" />
+            {t('reply')}
+          </Button>
         </div>
       </motion.div>
     </AnimatePresence>

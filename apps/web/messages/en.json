@@ -167,7 +167,10 @@
     "posting": "Posting...",
     "postCommentFailed": "Failed to post comment",
     "interactFailed": "Failed to interact the post",
-    "justNow": "just now"
+    "justNow": "just now",
+    "reply": "Reply",
+    "replyTo": "Reply to",
+    "cancel": "Cancle"
   },
   "contact": {
     "letsWorkTogether": "Let’s work together",

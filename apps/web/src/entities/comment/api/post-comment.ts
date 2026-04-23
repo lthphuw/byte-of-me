@@ -13,13 +13,10 @@ import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-
-
-
-
 export async function postComment(
   blogId: string,
-  content: string
+  content: string,
+  parentId?: string
 ): Promise<ApiResponse<PublicComment>> {
   if (!blogId) throw new Error('Blog id is required');
   if (!content || content.trim().length < 2)
@@ -29,9 +26,15 @@ export async function postComment(
   const user = await requireUser();
 
   try {
-    const comment = await createCommentInDb(blogId, content, user.id);
+    const comment = await createCommentInDb(blogId, content, user.id, parentId);
 
-    sendCommentNotification(blogId, content, user.email || 'anonymous', locale);
+    // No need to await this
+    sendCommentNotification(
+      blogId,
+      content,
+      user.email || 'anonymous',
+      locale
+    ).then((r) => {});
 
     revalidateTag(CACHE_TAGS.COMMENT, 'profile');
 
@@ -39,13 +42,15 @@ export async function postComment(
       success: true,
       data: {
         ...comment,
+        parentId,
         user: {
+          id: user.id,
           name: user.name || 'anonymous',
           email: user.email || 'anonymous',
         },
       },
     };
-  } catch (error: any) {
+  } catch (error: Any) {
     logger.error(`Failed to post comment: ${error.message}`);
     throw new Error('Failed to post comment');
   }
@@ -54,10 +59,11 @@ export async function postComment(
 async function createCommentInDb(
   blogId: string,
   content: string,
-  userId: string
+  userId: string,
+  parentId?: string
 ) {
-  return await prisma.comment.create({
-    data: { blogId, userId, content: content.trim() },
+  return prisma.comment.create({
+    data: { blogId, userId, parentId: parentId ?? null, content: content.trim() },
   });
 }
 
