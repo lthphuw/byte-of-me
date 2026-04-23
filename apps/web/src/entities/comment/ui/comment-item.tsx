@@ -8,18 +8,12 @@ import { EyeOff, Reply } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
 
-
-
 import type { PublicComment } from '@/entities/comment/model';
 import { useToast } from '@/shared/hooks/use-toast';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getRelativeTime } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { Skeleton } from '@/shared/ui/skeleton';
-
-
-
-
 
 export function CommentItem({
   comment,
@@ -51,7 +45,7 @@ export function CommentItem({
       toast({
         description: t('hideCommentFailed'),
       });
-    }
+    },
   });
 
   if (hideMutation.isPending) {
