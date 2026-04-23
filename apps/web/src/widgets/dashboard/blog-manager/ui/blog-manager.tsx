@@ -1,19 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { type AdminBlog, createBlog, deleteBlog, getPaginatedAdminBlogs, updateBlog, } from '@/entities';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 
-import {
-  type AdminBlog,
-  createBlog,
-  deleteBlog,
-  getPaginatedAdminBlog,
-  updateBlog,
-} from '@/entities';
+import { BlogEditorDialog } from '@/features/dashboard';
 import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import { BlogEditorCard } from '@/entities/blog/ui/blog-editor-card';
-import { BlogEditorDialog } from '@/features/dashboard';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,7 +33,7 @@ export function BlogManager() {
 
   const { data, isLoading, isPlaceholderData } = useQuery({
     queryKey: ['blogs', page],
-    queryFn: () => getPaginatedAdminBlog(page, 12),
+    queryFn: () => getPaginatedAdminBlogs(page, 12),
   });
 
   const saveMutation = useMutation({

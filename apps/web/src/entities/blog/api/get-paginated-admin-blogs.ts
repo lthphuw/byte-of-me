@@ -8,7 +8,11 @@ import { requireAdmin } from '@/shared/lib/auth';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
-export async function getPaginatedAdminBlog(
+
+
+
+
+export async function getPaginatedAdminBlogs(
   page: number,
   limit: number
 ): Promise<ApiResponse<PaginatedData<AdminBlog>>> {
@@ -54,7 +58,7 @@ export async function getPaginatedAdminBlog(
           currentPage: page,
           totalPages: Math.ceil(count / limit),
           totalCount: count,
-          hasMore: page === Math.ceil(count / limit),
+          hasMore: page < Math.ceil(count / limit),
         },
       },
     };
