@@ -3,7 +3,7 @@
 import clsx from 'clsx';
 
 import type { PublicTechStack } from '@/entities/tech-stack/model/types';
-import { Badge } from '@/shared/ui/badge';
+import { Badge } from '@/shared/ui';
 
 interface TechStackBadgeProps {
   tech: PublicTechStack;

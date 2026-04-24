@@ -10,7 +10,7 @@ export type LoadingProps = {
   strokeWidth?: number;
 };
 
-export default function Loading({
+export function Loading({
   className,
   size = 24,
   strokeWidth = 3,

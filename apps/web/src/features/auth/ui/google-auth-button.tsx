@@ -4,8 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { logInWithGoogle } from '@/features/auth';
-import { Button } from '@/shared/ui/button';
-import { Icons } from '@/shared/ui/icons';
+import { Button , Icons } from '@/shared/ui';
 
 export function GoogleAuthButton({ className }: { className?: string }) {
   const t = useTranslations('auth');

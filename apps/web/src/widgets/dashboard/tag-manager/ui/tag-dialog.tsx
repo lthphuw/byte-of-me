@@ -6,15 +6,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 
 import { type TagFormValues,tagSchema } from '@/entities/tag/model/tag-schema';
-import { Button } from '@/shared/ui/button';
-import { DeleteButton } from '@/shared/ui/delete-button';
-import {
+import { Button , DeleteButton ,
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
-} from '@/shared/ui/dialog';
-import { Input } from '@/shared/ui/input';
+  DialogTitle, Input } from '@/shared/ui';
 
 export function TagDialog({
   open,

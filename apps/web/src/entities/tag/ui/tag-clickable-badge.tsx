@@ -2,7 +2,7 @@
 
 import type { PublicTag } from '@/entities/tag/model/types';
 import { cn } from '@/shared/lib/utils';
-import { Badge } from '@/shared/ui/badge';
+import { Badge } from '@/shared/ui';
 
 interface TagBadgeProps {
   tag: PublicTag;

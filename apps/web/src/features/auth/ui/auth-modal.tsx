@@ -12,7 +12,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/shared/ui/dialog';
+} from '@/shared/ui';
 
 interface AuthModalProps {
   isOpen?: boolean;

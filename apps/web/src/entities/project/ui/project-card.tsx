@@ -8,8 +8,7 @@ import { TagClickableBadge } from '@/entities/tag/ui/tag-clickable-badge';
 import { TechStackClickableBadge } from '@/entities/tech-stack/ui/tech-stack-clickable-badge';
 import { Link } from '@/shared/i18n/navigation';
 import { formatDate } from '@/shared/lib/utils';
-import { Button } from '@/shared/ui/button';
-import { Card, CardContent } from '@/shared/ui/card';
+import { Button , Card, CardContent } from '@/shared/ui';
 
 
 

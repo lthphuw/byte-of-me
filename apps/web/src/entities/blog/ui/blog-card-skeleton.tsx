@@ -1,5 +1,4 @@
-import { Card, CardContent, CardFooter, CardHeader } from '@/shared/ui/card';
-import { Skeleton } from '@/shared/ui/skeleton';
+import { Card, CardContent, CardFooter, CardHeader , Skeleton } from '@/shared/ui';
 
 export function BlogCardSkeleton() {
   return (

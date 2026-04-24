@@ -16,17 +16,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/shared/ui/dialog';
-import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-} from '@/shared/ui/form';
-import { Input } from '@/shared/ui/input';
-import { SubmitButton } from '@/shared/ui/submit-button';
+  FormMessage, Input , SubmitButton } from '@/shared/ui';
 
 export function TechStackDialog({
   open,

@@ -10,7 +10,7 @@ import {
   getPaginatedPublicBlogs,
 } from '@/entities';
 import { BlogFilters, useBlogFilters } from '@/features/public';
-import { Pagination } from '@/shared/ui/pagination';
+import { Pagination } from '@/shared/ui';
 import { BlogsShell } from '@/widgets/public/blogs-content/ui/blogs-shell';
 
 export function BlogsContent() {
@@ -29,8 +29,9 @@ export function BlogsContent() {
     totalPages: 1,
     hasMore: false,
   };
+  console.log(`>>> filter: ${JSON.stringify(filters, null, 2)}`);
   const hasActiveFilters =
-    filters.search.length > 0 || filters.tagSlugs.length > 0;
+    filters?.search?.length > 0 || filters?.tagSlugs?.length > 0;
 
   const toggleTag = (slug: string) => {
     setPage(1);

@@ -10,7 +10,7 @@ import {
   BlogRelatedProjectCard,
   RelatedProjectCardSkeleton,
 } from '@/features/public';
-import { Separator } from '@/shared/ui/separator';
+import { Separator } from '@/shared/ui';
 import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-action-bar';
 import { BlogContentHeader } from '@/widgets/public/blog-details-content/ui/blog-content-header';
 import { BlogDetailsShell } from '@/widgets/public/blog-details-content/ui/blog-shells';

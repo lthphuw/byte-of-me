@@ -6,11 +6,15 @@ import { TagDialog } from './tag-dialog';
 
 import type { AdminTag } from '@/entities';
 import { TagCard, useTagManagement } from '@/features/dashboard';
-import { Button } from '@/shared/ui/button';
-import { ConfirmDeleteDialog } from '@/shared/ui/confirm-delete-dialog';
-import { Empty, EmptyDescription, EmptyHeader } from '@/shared/ui/empty';
-import Loading from '@/shared/ui/loading';
-import { Pagination } from '@/shared/ui/pagination';
+import {
+  Button,
+  ConfirmDeleteDialog,
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  Loading,
+  Pagination,
+} from '@/shared/ui';
 
 export function TagManager() {
   const {

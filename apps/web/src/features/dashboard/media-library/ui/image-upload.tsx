@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ImageIcon, Loader2, X } from 'lucide-react';
 
 import { useToast } from '@/shared/hooks/use-toast';
-import { Button } from '@/shared/ui/button';
+import { Button } from '@/shared/ui';
 
 export interface ImageUploadProps {
   uploadFiles: (files: File[]) => Promise<Any>;

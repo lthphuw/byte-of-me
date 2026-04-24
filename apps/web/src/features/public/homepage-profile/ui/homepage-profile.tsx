@@ -10,7 +10,7 @@ import {
 } from '@/entities/user-profile';
 import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
-import { Button } from '@/shared/ui/button';
+import { Button } from '@/shared/ui';
 
 export async function HomepageProfile() {
   const t = await getTranslations('homepage');

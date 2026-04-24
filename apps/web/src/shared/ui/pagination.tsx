@@ -2,7 +2,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import type { PaginatedMetadata } from '@/shared/types/api/paginated-api.type';
-import { Button } from '@/shared/ui/button';
+import { Button } from '@/shared/ui';
 
 export interface PaginationProps {
   pagination?: PaginatedMetadata;

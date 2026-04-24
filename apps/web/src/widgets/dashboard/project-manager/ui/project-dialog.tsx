@@ -12,26 +12,20 @@ import {
 } from '@/entities/project/model';
 import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
 import { getAllAdminTechStack } from '@/entities/tech-stack/api/get-all-admin-tech-stacks';
-import { Button } from '@/shared/ui/button';
-import {
+import { Button ,
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/shared/ui/dialog';
-import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-} from '@/shared/ui/form';
-import { Input } from '@/shared/ui/input';
-import { MultiSelect } from '@/shared/ui/multi-select';
+  FormMessage, Input , MultiSelect } from '@/shared/ui';
 // Assuming you have a MultiSelect component
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
 
 interface ProjectDialogProps {
   open: boolean;

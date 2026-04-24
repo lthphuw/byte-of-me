@@ -5,7 +5,7 @@ import { generateHTML } from '@tiptap/html';
 
 import { cn } from '@/shared/lib/utils';
 import { sanitizeHtml } from '@/shared/lib/uuid';
-import { extensions } from '@/shared/ui/tiptap/rich-text-editor';
+import { extensions } from '@/shared/ui/rich-text-editor';
 
 export type RichTextProps = {
   content?: string | unknown;

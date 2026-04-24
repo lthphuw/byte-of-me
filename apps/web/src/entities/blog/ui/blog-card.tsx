@@ -16,9 +16,7 @@ import { useTranslations } from 'next-intl';
 import type { PublicBlog } from '@/entities/blog/model/types';
 import { getPublicBlogStats } from '@/features/public/blog-stats/lib';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { Badge } from '@/shared/ui/badge';
-import { Card, CardContent } from '@/shared/ui/card';
-import { Skeleton } from '@/shared/ui/skeleton';
+import { Badge , Card, CardContent , Skeleton } from '@/shared/ui';
 
 interface BlogCardProps {
   blog: PublicBlog;

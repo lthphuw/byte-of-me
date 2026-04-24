@@ -4,17 +4,13 @@ import * as React from 'react';
 import { Check, ChevronsUpDown, X } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
-import { Badge } from '@/shared/ui/badge';
-import { Button } from '@/shared/ui/button';
-import {
+import { Badge , Button ,
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList,
-} from '@/shared/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
+  CommandList, Popover, PopoverContent, PopoverTrigger } from '@/shared/ui';
 
 export interface Option {
   label: string;

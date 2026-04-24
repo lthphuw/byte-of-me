@@ -2,7 +2,7 @@ import { UserCircle2 } from 'lucide-react';
 
 import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
-import { Button } from '@/shared/ui/button';
+import { Button } from '@/shared/ui';
 
 export function HomepageProfileEmpty() {
   return (

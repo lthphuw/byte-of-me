@@ -9,7 +9,7 @@ import { logOutDashboard } from '@/features/auth/lib';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Link, usePathname, useRouter } from '@/shared/i18n/navigation';
 import { purgeEntireCache } from '@/shared/lib/revalidate';
-import { Icons } from '@/shared/ui/icons';
+import { Icons } from '@/shared/ui';
 
 export function DashboardSidebar() {
   const t = useTranslations('dashboard.sidebar');

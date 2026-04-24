@@ -5,24 +5,26 @@ import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { MessageSquare, Search, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useDebounce } from 'use-debounce';
 
 import type { AdminContactMessage } from '@/entities/contact-message';
 import { getPaginatedContactMessages } from '@/entities/contact-message/api/get-paginated-contacts';
-import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardHeader } from '@/shared/ui/card';
 import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/shared/ui/dialog';
-import { Input } from '@/shared/ui/input';
-import { Pagination } from '@/shared/ui/pagination';
-import { RichText } from '@/shared/ui/rich-text';
-import { ScrollArea } from '@/shared/ui/scroll-area';
-import { Skeleton } from '@/shared/ui/skeleton';
+  Input,
+  Pagination,
+  RichText,
+  ScrollArea,
+  Skeleton,
+} from '@/shared/ui';
+import { useDebounce } from '@/shared/hooks';
 
 export function ContactMessageGallery() {
   const t = useTranslations('dashboard.contactGallery');

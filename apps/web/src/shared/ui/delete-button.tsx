@@ -1,6 +1,6 @@
 import { Loader2, Trash2 } from 'lucide-react';
 
-import { Button } from '@/shared/ui/button';
+import { Button } from '@/shared/ui';
 
 export interface DeleteButtonProps {
   isSubmitting?: boolean;

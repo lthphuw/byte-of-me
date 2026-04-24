@@ -15,11 +15,7 @@ import { updateEducation } from '@/entities/education/api/update-education';
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
 import { useToast } from '@/shared/hooks/use-toast';
 import { formatDate } from '@/shared/lib/utils';
-import { Badge } from '@/shared/ui/badge';
-import { Button } from '@/shared/ui/button';
-import { DeleteButton } from '@/shared/ui/delete-button';
-import { EditButton } from '@/shared/ui/edit-button';
-import Loading from '@/shared/ui/loading';
+import { Badge, Button, DeleteButton, EditButton, Loading } from '@/shared/ui';
 
 export function EducationManager() {
   const { toast } = useToast();

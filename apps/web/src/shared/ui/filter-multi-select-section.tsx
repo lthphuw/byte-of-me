@@ -3,8 +3,7 @@
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/shared/ui/button';
-import { Skeleton } from '@/shared/ui/skeleton';
+import { Button , Skeleton } from '@/shared/ui';
 
 
 

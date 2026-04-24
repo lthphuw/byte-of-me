@@ -1,6 +1,6 @@
 'use client';
 
-import { Empty, EmptyDescription, EmptyHeader } from '@/shared/ui/empty';
+import { Empty, EmptyDescription, EmptyHeader } from '@/shared/ui';
 
 export function MediaLibraryEmpty() {
   return (

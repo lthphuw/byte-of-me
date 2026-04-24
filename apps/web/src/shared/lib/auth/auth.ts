@@ -11,10 +11,6 @@ import { env } from '@/shared/config/env';
 import { siteConfig } from '@/shared/config/site';
 import { signInTemplate } from '@/shared/lib/templates/sign-in-template';
 
-
-
-
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   trustHost: true,
@@ -104,7 +100,7 @@ async function sendVerificationRequest({ identifier, url, provider }: Any) {
       from: provider.from,
       subject: `Sign in to ${fromName}`,
       text: `Sign in to ${fromName}\n${url}\n\n`,
-      html: signInTemplate({ url, host: fromName }),
+      html: await signInTemplate({ url, host: fromName }),
     });
   } catch (error: Any) {
     logger.error(

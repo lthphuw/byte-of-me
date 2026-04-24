@@ -3,11 +3,7 @@ import Image from 'next/image';
 
 import type { AdminBlog } from '@/entities/blog';
 import { formatDate } from '@/shared/lib/utils';
-import { Badge } from '@/shared/ui/badge';
-import { Card, CardContent, CardFooter, CardHeader } from '@/shared/ui/card';
-import { DeleteButton } from '@/shared/ui/delete-button';
-import { EditButton } from '@/shared/ui/edit-button';
-import { ImagePlaceholder } from '@/shared/ui/image-placeholder';
+import { Badge , Card, CardContent, CardFooter, CardHeader , DeleteButton , EditButton , ImagePlaceholder } from '@/shared/ui';
 
 interface BlogCardProps {
   blog: AdminBlog;

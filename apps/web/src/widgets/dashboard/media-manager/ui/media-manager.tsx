@@ -5,15 +5,15 @@ import { Plus } from 'lucide-react';
 
 import { useMediaLibrary } from '@/entities/media/api/use-media-library';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
-import { Button } from '@/shared/ui/button';
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/shared/ui/dialog';
-import Loading from '@/shared/ui/loading';
+  Loading,
+} from '@/shared/ui';
 import { MediaLibrary } from '@/widgets/dashboard/media-manager/ui/media-library';
 import { MediaLibraryEmpty } from '@/widgets/dashboard/media-manager/ui/media-library-empty';
 

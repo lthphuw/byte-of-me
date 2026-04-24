@@ -3,11 +3,7 @@
 import { ExternalLink } from 'lucide-react';
 
 import type { AdminProject } from '@/entities/project/model';
-import { Badge } from '@/shared/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
-import { DeleteButton } from '@/shared/ui/delete-button';
-import { EditButton } from '@/shared/ui/edit-button';
-import { Icons } from '@/shared/ui/icons';
+import { Badge , Card, CardContent, CardHeader, CardTitle , DeleteButton , EditButton , Icons } from '@/shared/ui';
 
 interface ProjectEditorCardProps {
   project: AdminProject;

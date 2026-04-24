@@ -1,5 +1,4 @@
-import { Card } from '@/shared/ui/card';
-import { Skeleton } from '@/shared/ui/skeleton';
+import { Card , Skeleton } from '@/shared/ui';
 
 export function RelatedProjectCardSkeleton({ label }: { label?: string }) {
   return (

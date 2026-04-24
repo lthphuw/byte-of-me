@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo } from 'react';
-import { useIntersection } from '@mantine/hooks';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
@@ -14,9 +13,9 @@ import {
   postComment,
   useCommentInfiniteQuery,
 } from '@/entities';
+import { useIntersection } from '@/shared/hooks';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Button } from '@/shared/ui/button';
-import Loading from '@/shared/ui/loading';
+import { Button, Loading } from '@/shared/ui';
 
 export interface BlogCommentSectionProps {
   blogId: string;

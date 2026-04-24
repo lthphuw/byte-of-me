@@ -10,25 +10,17 @@ import {
   educationSchema,
 } from '@/entities/education/model/education-schema';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
-import { Button } from '@/shared/ui/button';
-import { DatePicker } from '@/shared/ui/date-picker';
-import {
+import { Button , DatePicker ,
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/shared/ui/dialog';
-import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
-} from '@/shared/ui/form';
-import { Icons } from '@/shared/ui/icons';
-import { Input } from '@/shared/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
+  FormLabel, Icons , Input , Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
 import { EducationAchievementItemField } from '@/widgets/dashboard/education-manager/ui/education-achievement-item-field';
 
 interface EducationDialogProps {

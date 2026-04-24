@@ -4,8 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { logInWithGithub } from '@/features/auth/lib/log-in-with-github';
-import { Button } from '@/shared/ui/button';
-import { Icons } from '@/shared/ui/icons';
+import { Button , Icons } from '@/shared/ui';
 
 
 

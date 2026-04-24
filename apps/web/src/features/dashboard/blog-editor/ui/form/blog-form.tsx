@@ -15,30 +15,31 @@ import {
 import { getPaginatedAdminProjects } from '@/entities/project/api/get-paginated-admin-projects';
 import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
-import { Button } from '@/shared/ui/button';
-import { Checkbox } from '@/shared/ui/checkbox';
 import {
+  Button,
+  Checkbox,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/shared/ui/form';
-import { Icons } from '@/shared/ui/icons';
-import { Input } from '@/shared/ui/input';
-import Loading from '@/shared/ui/loading';
-import { MultiSelect } from '@/shared/ui/multi-select';
-import {
+  Icons,
+  Input,
+  Loading,
+  MultiSelect,
+  RichTextEditor,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/shared/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
-import { Textarea } from '@/shared/ui/textarea';
-import { RichTextEditor } from '@/shared/ui/tiptap/rich-text-editor';
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Textarea,
+} from '@/shared/ui';
 
 export interface BlogFormProps {
   initialData?: AdminBlog;

@@ -9,7 +9,7 @@ import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import type { MainNavItem } from '@/shared/types';
-import { Button } from '@/shared/ui/button';
+import { Button } from '@/shared/ui';
 import { PublicHeaderLogo } from '@/widgets/public/public-site-header/ui/public-header-logo';
 import { PublicHeaderMobileNav } from '@/widgets/public/public-site-header/ui/public-header-mobile-nav';
 

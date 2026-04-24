@@ -9,7 +9,7 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from '@/shared/ui/empty';
+} from '@/shared/ui';
 import { ExperienceShell } from '@/widgets/public/experience-content/ui/experience-shell';
 
 export function ExperienceContent() {

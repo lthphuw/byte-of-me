@@ -6,9 +6,7 @@ import Image from 'next/image';
 
 import { cn, formatImageSize } from '@/shared/lib/utils';
 import type { Media } from '@/shared/types/models';
-import { Card, CardContent } from '@/shared/ui/card';
-import { CopyButton } from '@/shared/ui/copy-button';
-import { DeleteButton } from '@/shared/ui/delete-button';
+import { Card, CardContent , CopyButton , DeleteButton } from '@/shared/ui';
 
 export interface MediaCardProps {
   media: Media;

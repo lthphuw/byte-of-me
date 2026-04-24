@@ -10,7 +10,7 @@ import {
   ProjectEmpty,
 } from '@/entities';
 import { ProjectFilters } from '@/features/public';
-import { Pagination } from '@/shared/ui/pagination';
+import { Pagination } from '@/shared/ui';
 import { ProjectsShell } from '@/widgets/public/projects-content/ui/projects-shell';
 
 export function ProjectsContent() {

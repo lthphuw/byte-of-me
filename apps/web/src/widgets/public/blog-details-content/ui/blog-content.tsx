@@ -2,8 +2,7 @@ import { TagIcon } from 'lucide-react';
 
 import type { PublicBlog } from '@/entities/blog';
 import { Link } from '@/shared/i18n/navigation';
-import { Badge } from '@/shared/ui/badge';
-import { RichText } from '@/shared/ui/rich-text';
+import { Badge , RichText } from '@/shared/ui';
 
 
 

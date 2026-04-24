@@ -8,15 +8,14 @@ import { useTranslations } from 'next-intl';
 
 import { logOut } from '@/features/auth';
 import { menuTransition, menuVariants } from '@/shared/config/anim';
-import { Button } from '@/shared/ui/button';
-import {
+import { Button ,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/shared/ui/dropdown-menu';
+} from '@/shared/ui';
 
 export function UserActionToggle() {
   const t = useTranslations('global.userToggle');

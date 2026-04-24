@@ -15,7 +15,7 @@ import {
 import { useToast } from '@/shared/hooks/use-toast';
 import { INTERACTION } from '@/shared/lib/constants';
 import { cn } from '@/shared/lib/utils';
-import { Button } from '@/shared/ui/button';
+import { Button } from '@/shared/ui';
 
 export function LikeButton({
   blogId,

@@ -1,13 +1,12 @@
 'use client';
 
 import { type MouseEvent,useCallback } from 'react';
-import { useClipboard } from '@mantine/hooks';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { defaultSpring, iconSwitchVariants } from '@/shared/config/anim';
+import { useClipboard } from '@/shared/hooks';
 import { cn } from '@/shared/lib/utils';
-import { Button } from '@/shared/ui/button';
-import { Icons } from '@/shared/ui/icons';
+import { Button, Icons } from '@/shared/ui';
 
 
 

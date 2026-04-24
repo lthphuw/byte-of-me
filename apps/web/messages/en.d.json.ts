@@ -284,6 +284,15 @@ declare const messages: {
     "signInWithGoogle": "Continue with Google",
     "emailPlaceholder": "name@example.com",
     "sendMagicLink": "Send Magic Link"
+  },
+  "email": {
+    "signIn": {
+      "title": "Sign in to your account",
+      "description": "Click the button below to access your dashboard.",
+      "button": "Sign in",
+      "expire": "This link will expire in 24 hours.",
+      "ignore": "If you did not request this email, you can safely ignore it."
+    }
   }
 };
 export default messages;

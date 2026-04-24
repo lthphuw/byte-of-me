@@ -8,7 +8,7 @@ import { TailwindIndicator } from '@/app/providers/_components';
 import { TanStackQueryProvider } from '@/app/providers/tan-stack-query-provider';
 import { ThemeProvider } from '@/app/providers/theme-provider';
 import { env } from '@/shared/config/env';
-import { Toaster } from '@/shared/ui/toaster';
+import { Toaster } from '@/shared/ui';
 
 
 

@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { getPublicRecentProjects,ProjectEmpty } from '@/entities/project';
 import { ProjectCard } from '@/entities/project/ui/project-card';
 import { Routes } from '@/shared/config/global';
-import { Button } from '@/shared/ui/button';
+import { Button } from '@/shared/ui';
 
 export async function HomepageRecentProjects() {
   const t = await getTranslations('homepage');

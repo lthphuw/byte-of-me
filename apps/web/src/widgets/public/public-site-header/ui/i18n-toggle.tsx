@@ -8,13 +8,12 @@ import { languageNames, supportedLanguages } from '@/shared/config/language';
 import { Link, usePathname } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import type { LocaleType } from '@/shared/types';
-import { Button } from '@/shared/ui/button';
-import {
+import { Button ,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/shared/ui/dropdown-menu';
+} from '@/shared/ui';
 
 
 

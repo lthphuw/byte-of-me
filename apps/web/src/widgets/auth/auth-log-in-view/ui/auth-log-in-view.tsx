@@ -6,8 +6,7 @@ import { UserAuthForm } from '@/features/auth/ui';
 import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
-import { buttonVariants } from '@/shared/ui/button';
-import { Icons } from '@/shared/ui/icons';
+import { buttonVariants , Icons } from '@/shared/ui';
 
 export function AuthLogInView() {
   return (

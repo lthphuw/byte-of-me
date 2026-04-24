@@ -3,9 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
-import { Button } from '@/shared/ui/button';
-import GoBackButton from '@/shared/ui/go-back';
-import { Icons } from '@/shared/ui/icons';
+import { Button, GoBackButton, Icons } from '@/shared/ui';
 
 export default async function NotFound() {
   const t = await getTranslations('notFound');

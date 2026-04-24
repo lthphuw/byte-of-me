@@ -8,7 +8,7 @@ import {
   StatsGrid,
   StatsGridLoading,
 } from '@/features/dashboard';
-import { Separator } from '@/shared/ui/separator';
+import { Separator } from '@/shared/ui';
 import { ContactMessageGallery } from '@/widgets/dashboard/contact-message-gallery/ui/contact-message-gallery';
 
 export async function generateMetadata(): Promise<Metadata> {

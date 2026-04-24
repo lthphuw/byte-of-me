@@ -3,7 +3,7 @@
 import { MessageSquare, Share2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/shared/ui/button';
+import { Button } from '@/shared/ui';
 
 export function BlogCommentShareActions({
   title,

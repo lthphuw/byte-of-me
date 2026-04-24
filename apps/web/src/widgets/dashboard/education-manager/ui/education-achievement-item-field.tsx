@@ -10,10 +10,7 @@ import { Languages, Trash, X } from 'lucide-react';
 
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
 import { MediaMultiSelect } from '@/features/dashboard/media-library/ui/media-multi-select';
-import { Button } from '@/shared/ui/button';
-import { FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
-import { Input } from '@/shared/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
+import { Button , FormField, FormItem, FormLabel, FormMessage , Input , Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
 
 interface EducationAchievementItemFieldProps {
   index: number;

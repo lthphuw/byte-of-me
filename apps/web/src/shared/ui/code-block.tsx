@@ -1,7 +1,12 @@
 'use client';
 
-import { useClipboard } from '@mantine/hooks';
 import { Check, Copy } from 'lucide-react';
+
+import { useClipboard } from '@/shared/hooks';
+
+
+
+
 
 export function CodeBlock({
   code,

@@ -3,8 +3,7 @@
 import Image from 'next/image';
 
 import { cn } from '@/shared/lib/utils';
-import { Carousel, CarouselContent, CarouselItem } from '@/shared/ui/carousel';
-import { ScrollArea, ScrollBar } from '@/shared/ui/scroll-area';
+import { Carousel, CarouselContent, CarouselItem , ScrollArea, ScrollBar } from '@/shared/ui';
 
 
 

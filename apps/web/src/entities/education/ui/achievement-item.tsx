@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { AchievementImages } from './achievement-images';
 
-import { ExpandableText } from '@/shared/ui/expandable-text';
+import { ExpandableText } from '@/shared/ui';
 
 export function AchievementItem({ achievement: a }: { achievement: Any }) {
   const [currentSlide, setCurrentSlide] = useState(0);

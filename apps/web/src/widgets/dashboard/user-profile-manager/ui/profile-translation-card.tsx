@@ -3,12 +3,7 @@
 import type { Control, UseFormReturn } from 'react-hook-form';
 
 import type { UserProfileFormValues } from '@/entities';
-import { DeleteButton } from '@/shared/ui/delete-button';
-import { FormControl, FormField, FormItem, FormLabel } from '@/shared/ui/form';
-import { Input } from '@/shared/ui/input';
-import { Separator } from '@/shared/ui/separator';
-import { Textarea } from '@/shared/ui/textarea';
-import { RichTextEditor } from '@/shared/ui/tiptap/rich-text-editor';
+import { DeleteButton , FormControl, FormField, FormItem, FormLabel , Input , RichTextEditor , Separator , Textarea } from '@/shared/ui';
 
 interface ProfileTranslationCardProps {
   form: UseFormReturn<UserProfileFormValues>;

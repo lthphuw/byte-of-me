@@ -11,7 +11,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/shared/ui/alert-dialog';
+} from '@/shared/ui';
 
 interface ConfirmDeleteDialogProps {
   isOpen: boolean;

@@ -9,7 +9,7 @@ import {
 } from '@/features/public/contact-infos/ui/contact-motions';
 import { env } from '@/shared/config/env';
 import { Link } from '@/shared/i18n/navigation';
-import { Icons } from '@/shared/ui/icons';
+import { Icons } from '@/shared/ui';
 
 export async function ContactInfos() {
   const t = await getTranslations('contact');

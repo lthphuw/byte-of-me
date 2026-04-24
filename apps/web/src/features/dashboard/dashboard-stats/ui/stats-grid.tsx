@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 import { getDashboardStats } from '@/features/dashboard/dashboard-stats/lib';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui';
 
 export async function StatsGrid() {
   const dataResp = await getDashboardStats();

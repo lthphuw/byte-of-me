@@ -23,11 +23,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/shared/ui/alert-dialog';
-import { Button } from '@/shared/ui/button';
-import { Empty, EmptyDescription, EmptyHeader } from '@/shared/ui/empty';
-import Loading from '@/shared/ui/loading';
-import { Pagination } from '@/shared/ui/pagination';
+  Button,
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  Loading,
+  Pagination,
+} from '@/shared/ui';
 
 export function BlogManager() {
   const queryClient = useQueryClient();

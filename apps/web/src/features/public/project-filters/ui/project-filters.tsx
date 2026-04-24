@@ -3,16 +3,14 @@
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useDebounce } from 'use-debounce';
 
 import { TagClickableBadge, useTagInfiniteQuery } from '@/entities/tag';
 import {
   TechStackClickableBadge,
   useTechStackInfiniteQuery,
 } from '@/entities/tech-stack';
-import { Button } from '@/shared/ui/button';
-import { FilterMultiSelectSection } from '@/shared/ui/filter-multi-select-section';
-import { Input } from '@/shared/ui/input';
+import { useDebounce } from '@/shared/hooks';
+import { Button, FilterMultiSelectSection, Input } from '@/shared/ui';
 
 export interface FilterValues {
   tagSlugs: string[];

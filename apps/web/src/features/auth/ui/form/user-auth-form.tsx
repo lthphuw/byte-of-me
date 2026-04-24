@@ -12,17 +12,17 @@ import {
 } from '@/features/auth/model/user-auth-login-schema';
 import { toast } from '@/shared/hooks/use-toast';
 import { cn } from '@/shared/lib/utils';
-import { Button } from '@/shared/ui/button';
 import {
+  Button,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/shared/ui/form';
-import { Icons } from '@/shared/ui/icons';
-import { Input } from '@/shared/ui/input';
+  Icons,
+  Input,
+} from '@/shared/ui';
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 

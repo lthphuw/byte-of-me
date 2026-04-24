@@ -14,8 +14,7 @@ import {
 import { useToast } from '@/shared/hooks/use-toast';
 import { INTERACTION } from '@/shared/lib/constants';
 import { cn } from '@/shared/lib/utils';
-import { Button } from '@/shared/ui/button';
-import { Icons } from '@/shared/ui/icons';
+import { Button , Icons } from '@/shared/ui';
 
 export function ClapButton({
   blogId,

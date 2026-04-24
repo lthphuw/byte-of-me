@@ -7,8 +7,7 @@ import { TechStackDialog } from './tech-stack-dialog';
 
 import type { AdminTechStack } from '@/entities/tech-stack';
 import { TechStackCard, useTechStackManagement } from '@/features/dashboard';
-import { Button } from '@/shared/ui/button';
-import { ConfirmDeleteDialog } from '@/shared/ui/confirm-delete-dialog';
+import { Button , ConfirmDeleteDialog } from '@/shared/ui';
 
 export function TechStackManager({
   initialTechStacks,

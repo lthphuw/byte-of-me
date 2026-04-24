@@ -291,6 +291,15 @@ declare const messages: {
     "signInWithGoogle": "Tiếp tục với Google",
     "emailPlaceholder": "email@example.com",
     "sendMagicLink": "Gửi liên kết đăng nhập"
+  },
+  "email": {
+    "signIn": {
+      "title": "Đăng nhập vào tài khoản",
+      "description": "Nhấn vào nút bên dưới để truy cập hệ thống.",
+      "button": "Đăng nhập",
+      "expire": "Liên kết này sẽ hết hạn sau 24 giờ.",
+      "ignore": "Nếu bạn không yêu cầu email này, hãy bỏ qua."
+    }
   }
 };
 export default messages;

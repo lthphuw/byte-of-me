@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
-import { Button } from '@/shared/ui/button';
+import { Button } from '@/shared/ui';
 
 export async function HomepageContactCta() {
   const t = await getTranslations('homepage');

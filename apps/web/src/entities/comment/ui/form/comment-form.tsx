@@ -7,9 +7,7 @@ import { useTranslations } from 'next-intl';
 
 import { AuthModal } from '@/features/auth';
 import { cn } from '@/shared/lib/utils';
-import { AutoGrowingTextarea } from '@/shared/ui/auto-growing-text-area';
-import { Button } from '@/shared/ui/button';
-import { Icons } from '@/shared/ui/icons';
+import { AutoGrowingTextarea , Button , Icons } from '@/shared/ui';
 
 
 

@@ -6,16 +6,12 @@ import { Check, ChevronDown, ImageIcon, Loader2, Plus, X } from 'lucide-react';
 import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import { cn } from '@/shared/lib/utils';
-import { Button } from '@/shared/ui/button';
-import {
+import { Button ,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from '@/shared/ui/dialog';
-import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
-import { ScrollArea } from '@/shared/ui/scroll-area';
+  DialogTrigger, Popover, PopoverContent, PopoverTrigger , ScrollArea } from '@/shared/ui';
 
 interface MediaMultiSelectProps {
   value?: string[];

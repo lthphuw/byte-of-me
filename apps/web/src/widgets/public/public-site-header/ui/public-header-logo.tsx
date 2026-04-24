@@ -2,7 +2,7 @@ import * as React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { siteConfig } from '@/shared/config/site';
-import { Icons } from '@/shared/ui/icons';
+import { Icons } from '@/shared/ui';
 
 export const PublicHeaderLogo = React.memo(
   ({ minimized }: { minimized: boolean }) => (

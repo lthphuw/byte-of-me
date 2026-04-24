@@ -6,7 +6,7 @@ import { PublicSiteFooterNav } from '@/features/public/public-site-footer/ui/pub
 import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
 import { cn, ensureValidUrl } from '@/shared/lib/utils';
-import { Icons } from '@/shared/ui/icons';
+import { Icons } from '@/shared/ui';
 
 
 

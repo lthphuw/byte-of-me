@@ -8,10 +8,7 @@ import { UserProfileSectionManager } from './user-profile-section-manager';
 import type { AdminUserProfile } from '@/entities/user-profile';
 import { SocialLinksSection } from '@/features/dashboard/manage-social-link-form/ui';
 import { useProfileController } from '@/features/dashboard/update-profile/lib/use-profile-controller';
-import { Button } from '@/shared/ui/button';
-import { Form } from '@/shared/ui/form';
-import { Icons } from '@/shared/ui/icons';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
+import { Button , Form , Icons , Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
 
 export function UserProfileManager({
   initUser,

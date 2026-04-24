@@ -5,7 +5,7 @@ import { getLocale } from 'next-intl/server';
 import { getPublicProjectById } from '@/entities';
 import { Routes } from '@/shared/config/global';
 import { formatDate } from '@/shared/lib/utils';
-import { Card } from '@/shared/ui/card';
+import { Card } from '@/shared/ui';
 
 
 export async function BlogRelatedProjectCard({

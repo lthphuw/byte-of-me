@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 
 import { cn } from '@/shared/lib/utils';
-import { Textarea } from '@/shared/ui/textarea';
+import { Textarea } from '@/shared/ui';
 
 export interface AutoGrowingTextAreaProps {
   value: string;

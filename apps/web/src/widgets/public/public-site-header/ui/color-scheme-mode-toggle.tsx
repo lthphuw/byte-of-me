@@ -11,14 +11,11 @@ import {
   menuVariants,
 } from '@/shared/config/anim';
 import { cn } from '@/shared/lib/utils';
-import { Button } from '@/shared/ui/button';
-import {
+import { Button ,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/shared/ui/dropdown-menu';
-import { Icons } from '@/shared/ui/icons';
+  DropdownMenuTrigger, Icons } from '@/shared/ui';
 
 export function ColorSchemeModeToggle() {
   const t = useTranslations('global.modeToggle');

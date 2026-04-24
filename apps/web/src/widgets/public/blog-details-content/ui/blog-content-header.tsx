@@ -4,7 +4,7 @@ import { Calendar } from 'lucide-react';
 import type { PublicBlog } from '@/entities/blog';
 import { BlogLiveStats, BlogLiveStatsSkeleton } from '@/features/public';
 import { formatDate } from '@/shared/lib/utils';
-import { Separator } from '@/shared/ui/separator';
+import { Separator } from '@/shared/ui';
 import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-action-bar';
 
 export function BlogContentHeader({ blog }: { blog: PublicBlog }) {

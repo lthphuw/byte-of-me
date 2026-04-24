@@ -1,5 +1,5 @@
 import { cn } from '@/shared/lib/utils';
-import { Skeleton } from '@/shared/ui/skeleton';
+import { Skeleton } from '@/shared/ui';
 import { BlogsShell } from '@/widgets/public/blogs-content/ui';
 
 export default function BlogsLoading() {

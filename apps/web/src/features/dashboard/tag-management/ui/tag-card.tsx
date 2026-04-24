@@ -5,8 +5,7 @@ import { useLocale } from 'next-intl';
 
 import type { AdminTag } from '@/entities';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
-import { DeleteButton } from '@/shared/ui/delete-button';
-import { EditButton } from '@/shared/ui/edit-button';
+import { DeleteButton , EditButton } from '@/shared/ui';
 
 interface TagCardProps {
   tag: AdminTag;
