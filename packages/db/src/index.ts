@@ -3,40 +3,45 @@ import { PrismaPg } from '@prisma/adapter-pg';
 
 import 'dotenv/config';
 
-// eslint-disable-next-line import-alias/import-alias
-import { PrismaClient } from '../generated/prisma/client';
+import { PrismaClient } from './generated/prisma/client';
 
+const connectionString = process.env.DATABASE_URL;
 
-const connectionString = `${process.env.DATABASE_URL}`;
+if (!connectionString) {
+  throw new Error('DATABASE_URL is not defined');
+}
 
 const globalForPrisma = global as unknown as {
-  prisma: PrismaClient | undefined;
+  prisma?: PrismaClient;
 };
 
-const adapter = new PrismaPg({ connectionString });
+export function createPrismaClient() {
+  const adapter = new PrismaPg({ connectionString });
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+  const client = new PrismaClient({
     adapter,
     log: [
-      { emit: "event", level: "query" },
-      { emit: "stdout", level: "error" },
-      { emit: "stdout", level: "info" },
-      { emit: "stdout", level: "warn" },
+      { emit: 'event', level: 'query' },
+      { emit: 'stdout', level: 'error' },
+      { emit: 'stdout', level: 'info' },
+      { emit: 'stdout', level: 'warn' },
     ],
   });
 
-if (!globalForPrisma.prisma) {
-  prisma.$on("query" as never, (e: any) => {
+  client.$on('query' as never, (e: any) => {
     logger.info(`Query: ${e.query}`);
     logger.info(`Params: ${e.params}`);
     logger.info(`Duration: ${e.duration}ms`);
   });
+
+  return client;
 }
 
-if (process.env.NODE_ENV !== "production") {
+export const prisma =
+  globalForPrisma.prisma ?? createPrismaClient();
+
+if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
 }
 
-export * from '../generated/prisma/client';
+export * from './generated/prisma/client';

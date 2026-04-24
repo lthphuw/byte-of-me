@@ -1,23 +1,16 @@
-
-export interface StorageConfig {
+export type StorageConfig = {
   region: string;
-  endpoint: string;
+  bucket: string;
+  endpoint?: string;
   publicEndpoint: string;
-  credentials: {
+  credentials?: {
     accessKeyId: string;
     secretAccessKey: string;
   };
-  bucket: string;
-}
+};
 
-export interface UploadFileParams {
+export type UploadFileParams = {
   fileKey: string;
-  body: Buffer | Uint8Array;
-  contentType: string;
-}
-
-
-export interface UploadFileResponse {
-  fileKey: string;
-  sendResult: any;
-}
+  body: Buffer | Uint8Array | Blob | string;
+  contentType?: string;
+};
