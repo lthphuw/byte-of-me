@@ -20,7 +20,7 @@ export function RichText({ content, className, style }: RichTextProps) {
 
   try {
     const json = typeof content === 'string' ? JSON.parse(content) : content;
-    htmlContent = generateHTML(json as any, extensions);
+    htmlContent = generateHTML(json as Any, extensions);
   } catch {
     htmlContent = typeof content === 'string' ? content : '';
   }

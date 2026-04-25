@@ -4,10 +4,7 @@ import { prisma } from '@byte-of-me/db';
 
 import type { PublicProject } from '@/entities';
 import type { PublicBlog } from '@/entities/blog/model/types';
-import {
-  handlePublicAction,
-  withPublicActionHandler,
-} from '@/shared/api/public-action-template';
+import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type {

@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 
 import type { AdminContactMessage } from '@/entities/contact-message';
 import { getPaginatedContactMessages } from '@/entities/contact-message/api/get-paginated-contacts';
+import { useDebounce } from '@/shared/hooks';
 import {
   Button,
   Card,
@@ -24,7 +25,6 @@ import {
   ScrollArea,
   Skeleton,
 } from '@/shared/ui';
-import { useDebounce } from '@/shared/hooks';
 
 export function ContactMessageGallery() {
   const t = useTranslations('dashboard.contactGallery');

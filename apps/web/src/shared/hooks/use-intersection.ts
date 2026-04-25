@@ -5,7 +5,7 @@ export interface UseIntersectionReturnValue<T> {
   entry: IntersectionObserverEntry | null;
 }
 
-export function useIntersection<T extends HTMLElement = any>(
+export function useIntersection<T extends HTMLElement = Any>(
   options?: IntersectionObserverInit
 ): UseIntersectionReturnValue<T> {
   const [entry, setEntry] = useState<IntersectionObserverEntry | null>(null);

@@ -7,8 +7,8 @@ import { signOut, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 
 import { logOut } from '@/features/auth';
-import { menuTransition, menuVariants } from '@/shared/config/anim';
-import { Button ,
+import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -16,6 +16,7 @@ import { Button ,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/shared/ui';
+import { menuTransition, menuVariants } from '@/shared/ui/motion';
 
 export function UserActionToggle() {
   const t = useTranslations('global.userToggle');

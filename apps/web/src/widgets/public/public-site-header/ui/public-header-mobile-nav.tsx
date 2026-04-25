@@ -6,12 +6,12 @@ import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
-import { itemVariants } from '@/shared/config/anim';
 import { Routes } from '@/shared/config/global';
 import { useLockBody } from '@/shared/hooks/use-lock-body';
 import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import type { MainNavItem } from '@/shared/types';
+import { itemVariants } from '@/shared/ui/motion';
 
 
 

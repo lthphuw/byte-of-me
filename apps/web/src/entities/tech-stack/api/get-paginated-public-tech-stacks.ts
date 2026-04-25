@@ -3,10 +3,7 @@
 import { prisma } from '@byte-of-me/db';
 
 import type { PublicTechStack } from '@/entities/tech-stack/model/types';
-import {
-  handlePublicAction,
-  withPublicActionHandler,
-} from '@/shared/api/public-action-template';
+import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import type { PaginatedData, PaginatedParams } from '@/shared/types/api';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';

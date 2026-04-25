@@ -3,10 +3,7 @@
 import { prisma } from '@byte-of-me/db';
 
 import type { PublicSocialLink } from '@/entities/social-link/model/types';
-import {
-  handlePublicAction,
-  withPublicActionHandler,
-} from '@/shared/api/public-action-template';
+import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { siteConfig } from '@/shared/config/site';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';

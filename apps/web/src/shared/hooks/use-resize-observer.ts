@@ -13,12 +13,12 @@ const defaultState: ObserverRect = {
   right: 0,
 };
 
-export type UseResizeObserverReturnValue<T extends HTMLElement = any> = [
+export type UseResizeObserverReturnValue<T extends HTMLElement = Any> = [
   React.RefCallback<T | null>,
   ObserverRect
 ];
 
-export function useResizeObserver<T extends HTMLElement = any>(
+export function useResizeObserver<T extends HTMLElement = Any>(
   options?: ResizeObserverOptions
 ): UseResizeObserverReturnValue<T> {
   const frameID = useRef(0);
@@ -74,13 +74,13 @@ export function useResizeObserver<T extends HTMLElement = any>(
   return [refCallback, rect] as const;
 }
 
-export interface UseElementSizeReturnValue<T extends HTMLElement = any> {
+export interface UseElementSizeReturnValue<T extends HTMLElement = Any> {
   ref: React.RefCallback<T | null>;
   width: number;
   height: number;
 }
 
-export function useElementSize<T extends HTMLElement = any>(
+export function useElementSize<T extends HTMLElement = Any>(
   options?: ResizeObserverOptions
 ): { ref: React.RefCallback<T | null>; width: number; height: number } {
   const [ref, { width, height }] = useResizeObserver<T>(options);

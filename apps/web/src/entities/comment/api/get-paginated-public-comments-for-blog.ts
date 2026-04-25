@@ -3,10 +3,7 @@
 import { prisma } from '@byte-of-me/db';
 
 import type { PublicComment } from '@/entities';
-import {
-  handlePublicAction,
-  withPublicActionHandler,
-} from '@/shared/api/public-action-template';
+import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import type {
   ApiResponse,
   PaginatedData,

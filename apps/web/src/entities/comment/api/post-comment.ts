@@ -6,12 +6,16 @@ import { revalidateTag } from 'next/cache';
 import { getLocale } from 'next-intl/server';
 
 import type { PublicComment } from '@/entities';
-import { mailer } from '@/shared/api/mailer';
+import { mailer } from '@/shared/api';
 import { env } from '@/shared/config/env';
 import { requireUser } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
+
+
+
+
 
 export async function postComment(
   blogId: string,

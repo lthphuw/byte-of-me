@@ -15,7 +15,7 @@ export type UseDebouncedValueReturnValue<T> = [
   UseDebouncedValueHandlers
 ];
 
-export function useDebounce<T = any>(
+export function useDebounce<T = Any>(
   value: T,
   wait: number,
   options: UseDebouncedValueOptions = { leading: false }

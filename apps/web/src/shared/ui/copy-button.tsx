@@ -3,14 +3,14 @@
 import { type MouseEvent,useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
-import { defaultSpring, iconSwitchVariants } from '@/shared/config/anim';
 import { useClipboard } from '@/shared/hooks';
 import { cn } from '@/shared/lib/utils';
-import { Button, Icons } from '@/shared/ui';
-
-
-
-
+import {
+  Button,
+  Icons,
+  iconSwitchVariants,
+  springTransition,
+} from '@/shared/ui';
 
 export interface CopyButtonProps {
   copyTimeout?: number;
@@ -57,7 +57,7 @@ export function CopyButton({
           initial="initial"
           animate="animate"
           exit="exit"
-          transition={defaultSpring}
+          transition={springTransition}
           className="flex items-center justify-center"
         >
           {copied ? (

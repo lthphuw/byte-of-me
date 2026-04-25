@@ -8,7 +8,7 @@ import {
   type ContactMessageFormValues,
   contactMessageSchema,
 } from '@/entities/contact-message/model/contact-message-schema';
-import { mailer } from '@/shared/api/mailer';
+import { mailer } from '@/shared/api';
 import { env } from '@/shared/config/env';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { sanitizeHtml } from '@/shared/lib/uuid';

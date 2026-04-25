@@ -1,7 +1,7 @@
 // Global
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  type Any = any;
+
+  type Any = Any;
   type Nullable<T> = T | null;
   type Maybe<T> = T | null | undefined;
 }

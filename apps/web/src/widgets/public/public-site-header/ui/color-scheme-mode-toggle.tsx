@@ -5,17 +5,20 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 
+import { cn } from '@/shared/lib/utils';
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  Icons,
+} from '@/shared/ui';
 import {
   iconSwitchVariants,
   menuTransition,
   menuVariants,
-} from '@/shared/config/anim';
-import { cn } from '@/shared/lib/utils';
-import { Button ,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger, Icons } from '@/shared/ui';
+} from '@/shared/ui/motion';
 
 export function ColorSchemeModeToggle() {
   const t = useTranslations('global.modeToggle');
