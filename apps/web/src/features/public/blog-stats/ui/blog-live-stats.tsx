@@ -3,6 +3,8 @@ import { getTranslations } from 'next-intl/server';
 
 import { getPublicBlogStats } from '@/features/public/blog-stats/lib';
 
+export const dynamic = 'force-dynamic';
+
 export async function BlogLiveStats({ blogId }: { blogId: string }) {
   const stats = await getPublicBlogStats(blogId);
   const t = await getTranslations('blogDetails');
