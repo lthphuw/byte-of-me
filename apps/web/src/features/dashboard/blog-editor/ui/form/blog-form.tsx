@@ -1,20 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
-import { Languages, Trash } from 'lucide-react';
-
-import type { AdminBlog } from '@/entities/blog';
-import {
-  blogFormSchema,
-  type BlogFormValues,
-} from '@/entities/blog/model/blog-schema';
-import { getPaginatedAdminProjects } from '@/entities/project/api/get-paginated-admin-projects';
-import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
-import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import {
   Button,
   Checkbox,
@@ -25,7 +13,6 @@ import {
   FormLabel,
   FormMessage,
   Icons,
-  Input,
   Loading,
   MultiSelect,
   RichTextEditor,
@@ -34,12 +21,20 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  Textarea,
-} from '@/shared/ui';
+} from '@byte-of-me/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
+
+import type { AdminBlog } from '@/entities/blog';
+import {
+  blogFormSchema,
+  type BlogFormValues,
+} from '@/entities/blog/model/blog-schema';
+import { uploadSingleMedia } from '@/entities/media/api/upload-single-media';
+import { getPaginatedAdminProjects } from '@/entities/project/api/get-paginated-admin-projects';
+import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
+import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
+import { TextField, TranslationTabs } from '@/shared/ui';
 
 export interface BlogFormProps {
   initialData?: AdminBlog;
@@ -89,13 +84,6 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: 'translations',
-  });
-
-  const [tab, setTab] = useState<string>();
-
   useEffect(() => {
     if (!initialData) return;
 
@@ -112,48 +100,33 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
         initialData.translations?.length > 0
           ? initialData.translations.map((it) => ({
               ...it,
-              content: it.content ? (
-                typeof it.content === 'string' ? (
-                  JSON.parse(it.content)
-                ) : (
-                  it.content
-                )
-              ) : (
-                <p></p>
-              ),
+              content: it.content
+                ? typeof it.content === 'string'
+                  ? JSON.parse(it.content)
+                  : it.content
+                : '<p></p>',
             }))
           : [
               {
                 language: 'en',
                 title: '',
                 description: '',
-                content: <p></p>,
+                content: '<p></p>',
               },
             ],
     });
   }, [initialData, form]);
-
-  useEffect(() => {
-    if (fields.length > 0 && !tab) setTab(fields[0].id);
-  }, [fields, tab]);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-4">
-            <FormField
+            <TextField
               control={form.control}
               name="slug"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Slug</FormLabel>
-                  <FormControl>
-                    <Input placeholder="my-awesome-blog" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Slug"
+              placeholder="my-awesome-blog"
             />
 
             <FormField
@@ -254,90 +227,33 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
 
         {/* Translations Section */}
         <div className="space-y-4 border-t pt-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Content Translations</h3>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={() =>
-                append({
-                  language: 'new',
-                  title: '',
-                  description: '',
-                  content: '',
-                })
-              }
-            >
-              Add Language <Languages className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
+          <h3 className="text-lg font-semibold">Content Translations</h3>
 
-          <Tabs value={tab} onValueChange={setTab} className="w-full">
-            <TabsList className="mb-4">
-              {fields.map((f, i) => {
-                const lang = form.watch(`translations.${i}.language`);
-                return (
-                  <TabsTrigger key={f.id} value={f.id}>
-                    {lang?.toUpperCase() || 'NEW'}
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
+          <TranslationTabs
+            control={form.control}
+            name="translations"
+            className="w-full"
+            newTranslation={() => ({
+              language: '',
+              title: '',
+              description: '',
+              content: '',
+            })}
+            renderFields={(i) => (
+              <>
+                <TextField
+                  control={form.control}
+                  name={`translations.${i}.title`}
+                  label="Title"
+                  placeholder="Post title..."
+                />
 
-            {fields.map((f, i) => (
-              <TabsContent
-                key={f.id}
-                value={f.id}
-                className="space-y-4 duration-300 animate-in fade-in"
-              >
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-                  <FormField
-                    control={form.control}
-                    name={`translations.${i}.language`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Lang Code (e.g. en, vi)</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="md:col-span-3">
-                    <FormField
-                      control={form.control}
-                      name={`translations.${i}.title`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Title</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Post title..." {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-
-                <FormField
+                <TextField
                   control={form.control}
                   name={`translations.${i}.description`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Short Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Brief summary of the post..."
-                          {...field}
-                          value={field.value ?? ''}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  label="Short Description"
+                  placeholder="Brief summary of the post..."
+                  multiline
                 />
 
                 <FormField
@@ -351,6 +267,7 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
                           <RichTextEditor
                             value={field.value}
                             onChange={field.onChange}
+                            uploadImage={uploadSingleMedia}
                           />
                         </div>
                       </FormControl>
@@ -358,19 +275,9 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
                     </FormItem>
                   )}
                 />
-
-                <Button
-                  className="w-full"
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => remove(i)}
-                >
-                  <Trash className="mr-2 h-4 w-4" /> Remove Translation
-                </Button>
-              </TabsContent>
-            ))}
-          </Tabs>
+              </>
+            )}
+          />
         </div>
 
         <div className="flex justify-end gap-4 border-t pt-6">

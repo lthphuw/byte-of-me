@@ -1,4 +1,5 @@
 import React from 'react';
+import { Icons } from '@byte-of-me/ui';
 import { getTranslations } from 'next-intl/server';
 
 import { getPublicInfoForFooter } from '@/features/public/public-site-footer/lib';
@@ -6,7 +7,6 @@ import { PublicSiteFooterNav } from '@/features/public/public-site-footer/ui/pub
 import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
 import { cn, ensureValidUrl } from '@/shared/lib/utils';
-import { Icons } from '@/shared/ui';
 
 
 

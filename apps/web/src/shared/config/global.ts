@@ -22,10 +22,6 @@ export const globalConfig: GlobalConfig = {
         href: Routes.About,
       },
       {
-        title: 'experience',
-        href: Routes.Experience,
-      },
-      {
         title: 'projects',
         href: Routes.Projects,
       },
@@ -44,10 +40,6 @@ export const globalConfig: GlobalConfig = {
       {
         title: 'about',
         href: Routes.About,
-      },
-      {
-        title: 'experience',
-        href: Routes.Experience,
       },
       {
         title: 'projects',

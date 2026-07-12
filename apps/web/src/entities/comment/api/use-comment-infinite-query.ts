@@ -1,6 +1,10 @@
+'use client';
+
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { commentKey, getPaginatedPublicCommentsForBlog } from '@/entities';
+import { getPaginatedPublicCommentsForBlog } from './get-paginated-public-comments-for-blog';
+
+import { commentKey } from '@/entities/comment/model';
 
 export function useCommentInfiniteQuery(blogId: string, limit: number = 8) {
   return useInfiniteQuery({

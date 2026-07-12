@@ -3,8 +3,9 @@
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
-import type { AdminTechStack } from '@/entities/tech-stack';
+import type { AdminTechStack } from '@/entities/tech-stack/model/types';
 import { requireAdmin } from '@/shared/lib/auth';
+import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 
@@ -27,12 +28,13 @@ export async function getAllAdminTechStack(): Promise<
       success: true,
       data: techStacks,
     };
-  } catch (error: Any) {
-    logger.error(`[Service Error] getAllAdminTechStack: ${error.message}`);
+  } catch (error) {
+    const errorMsg = getErrorMessage(error);
+    logger.error(`[Service Error] getAllAdminTechStack: ${errorMsg}`);
 
     return {
       success: false,
-      errorMsg: error.message || 'An unexpected error occurred',
+      errorMsg,
     };
   }
 }

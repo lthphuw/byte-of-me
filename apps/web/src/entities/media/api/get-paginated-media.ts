@@ -3,6 +3,8 @@
 import { prisma } from '@byte-of-me/db';
 
 import { requireAdmin } from '@/shared/lib/auth';
+import { buildPaginatedMeta } from '@/shared/lib/pagination';
+import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type {
   PaginatedData,
@@ -22,7 +24,7 @@ export async function getPaginatedMedia(
       prisma.media.findMany({
         where: { userId: session.id },
         orderBy: { createdAt: 'desc' },
-        skip: skip,
+        skip,
         take: limit,
       }),
       prisma.media.count({
@@ -45,18 +47,13 @@ export async function getPaginatedMedia(
           bucket: it.bucket,
           url: it.url,
         })),
-        meta: {
-          currentPage: page,
-          totalPages: Math.ceil(totalCount / limit),
-          totalCount,
-          hasMore: skip + items.length < totalCount,
-        },
+        meta: buildPaginatedMeta({ page, limit, totalCount }),
       },
     };
-  } catch (error: Any) {
+  } catch (error) {
     return {
       success: false,
-      errorMsg: error.message || 'Failed to fetch media',
+      errorMsg: getErrorMessage(error, 'Failed to fetch media'),
     };
   }
 }

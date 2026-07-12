@@ -1,10 +1,7 @@
 import type { Prisma } from '@byte-of-me/db';
 
-import type { PublicProject } from '@/entities';
+import type { PublicProject } from '@/entities/project/model/types';
 import type { Media, Tag } from '@/shared/types/models';
-
-
-
 
 
 export type AdminBlog = Prisma.BlogGetPayload<{
@@ -28,6 +25,11 @@ export type AdminBlog = Prisma.BlogGetPayload<{
   };
 }>;
 
+export interface BlogAuthor {
+  name: string;
+  avatar?: Maybe<string>;
+}
+
 export interface PublicBlog {
   id: string;
   createdAt: Date;
@@ -49,7 +51,16 @@ export interface PublicBlog {
   coverImage?: Maybe<Media>;
   tags: Tag[];
 
+  author?: Maybe<BlogAuthor>;
+
   isInteracted?: boolean;
   views?: number;
   avgReadingTime?: number;
+}
+
+/** Minimal blog reference for prev/next navigation and related-post lists. */
+export interface BlogSummary {
+  id: string;
+  slug: string;
+  title: string;
 }

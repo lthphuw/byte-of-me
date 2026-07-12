@@ -1,25 +1,28 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
-
-import { useMediaLibrary } from '@/entities/media/api/use-media-library';
-import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import {
   Button,
+  ConfirmDeleteDialog,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
   Loading,
-} from '@/shared/ui';
+} from '@byte-of-me/ui';
+import { Plus } from 'lucide-react';
+
+import { useMediaLibrary } from '@/entities/media/api/use-media-library';
+import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
+import { ManagerPageHeader } from '@/shared/ui';
 import { MediaLibrary } from '@/widgets/dashboard/media-manager/ui/media-library';
 import { MediaLibraryEmpty } from '@/widgets/dashboard/media-manager/ui/media-library-empty';
 
 export function MediaManager() {
   const [page, setPage] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
+  const [mediaToDelete, setMediaToDelete] = useState<string | null>(null);
 
   const { query, upload, remove } = useMediaLibrary(page);
   const mediaList = query?.data?.data?.data || [];
@@ -27,32 +30,30 @@ export function MediaManager() {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-center justify-between">
-        {/*<section>*/}
-        {/*  <h2 className="text-2xl font-bold tracking-tight">Media Library</h2>*/}
-        {/*  <p className="text-sm text-muted-foreground">*/}
-        {/*    Manage your digital assets and uploads.*/}
-        {/*  </p>*/}
-        {/*</section>*/}
-
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button size="sm" className="gap-2">
-              <Plus className="h-4 w-4" /> Add Media
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-xl">
-            <DialogHeader>
-              <DialogTitle>Upload Media</DialogTitle>
-            </DialogHeader>
-            <ImageUpload
-              uploadFiles={async (files) => {
-                upload.mutate(files);
-              }}
-            />
-          </DialogContent>
-        </Dialog>
-      </header>
+      <ManagerPageHeader
+        title="Media Library"
+        description="Centralized storage for your portfolio assets and banner images."
+        action={
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm" className="gap-2">
+                <Plus className="h-4 w-4" /> Add Media
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-xl">
+              <DialogHeader>
+                <DialogTitle>Upload Media</DialogTitle>
+              </DialogHeader>
+              <ImageUpload
+                uploadFiles={async (files) => {
+                  await upload.mutateAsync(files);
+                  setIsOpen(false);
+                }}
+              />
+            </DialogContent>
+          </Dialog>
+        }
+      />
 
       {query.isLoading ? (
         <div className="flex h-64 items-center justify-center">
@@ -65,11 +66,26 @@ export function MediaManager() {
           mediaList={mediaList}
           isPlaceholderData={query.isPlaceholderData}
           setPage={setPage}
-          remove={remove.mutate}
+          remove={(id) => setMediaToDelete(id)}
           isRemoving={remove.isPending}
           pagination={pagination}
         />
       )}
+
+      <ConfirmDeleteDialog
+        isOpen={!!mediaToDelete}
+        isLoading={remove.isPending}
+        onClose={() => setMediaToDelete(null)}
+        onConfirm={() => {
+          if (mediaToDelete) {
+            remove.mutate(mediaToDelete, {
+              onSuccess: () => setMediaToDelete(null),
+            });
+          }
+        }}
+        title="Delete Media"
+        description="This will permanently delete this media file. This action cannot be undone."
+      />
     </div>
   );
 }

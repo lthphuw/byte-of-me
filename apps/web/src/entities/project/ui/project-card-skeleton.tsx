@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent , Skeleton } from '@/shared/ui';
+import { Card, CardContent , Skeleton } from '@byte-of-me/ui';
 
 interface ProjectCardSkeletonProps {
   compact?: boolean;

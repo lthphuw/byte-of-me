@@ -1,5 +1,6 @@
 'use client';
 
+import { Button , Form , Icons , Tabs, TabsContent, TabsList, TabsTrigger } from '@byte-of-me/ui';
 import { Globe2, Plus, RotateCcw } from 'lucide-react';
 
 import { ProfileTranslationCard } from './profile-translation-card';
@@ -8,7 +9,7 @@ import { UserProfileSectionManager } from './user-profile-section-manager';
 import type { AdminUserProfile } from '@/entities/user-profile';
 import { SocialLinksSection } from '@/features/dashboard/manage-social-link-form/ui';
 import { useProfileController } from '@/features/dashboard/update-profile/lib/use-profile-controller';
-import { Button , Form , Icons , Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
+import { ManagerPageHeader } from '@/shared/ui';
 
 export function UserProfileManager({
   initUser,
@@ -20,25 +21,21 @@ export function UserProfileManager({
 
   return (
     <Form {...form}>
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">
-            Profile Settings
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Manage your global identity.
-          </p>
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={handlers.handleReset}
-          className="gap-2"
-        >
-          <RotateCcw className="h-4 w-4" /> Reset
-        </Button>
-      </div>
+      <ManagerPageHeader
+        title="Profile Settings"
+        description="Manage your global identity."
+        action={
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handlers.handleReset}
+            className="gap-2"
+          >
+            <RotateCcw className="h-4 w-4" /> Reset
+          </Button>
+        }
+      />
 
       {/* Translations */}
       <section className="space-y-4">

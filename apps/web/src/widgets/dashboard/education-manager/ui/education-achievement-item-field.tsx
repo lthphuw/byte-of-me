@@ -6,11 +6,11 @@ import {
   useFieldArray,
   type UseFormWatch,
 } from 'react-hook-form';
+import { Button , FormField, FormItem, FormLabel, FormMessage , Input , Tabs, TabsContent, TabsList, TabsTrigger } from '@byte-of-me/ui';
 import { Languages, Trash, X } from 'lucide-react';
 
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
 import { MediaMultiSelect } from '@/features/dashboard/media-library/ui/media-multi-select';
-import { Button , FormField, FormItem, FormLabel, FormMessage , Input , Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
 
 interface EducationAchievementItemFieldProps {
   index: number;
@@ -156,6 +156,21 @@ export function EducationAchievementItemField({
                 </FormItem>
               )}
             />
+
+            {fields.length > 1 && (
+              <Button
+                className="mt-2"
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  removeTranslation(i);
+                  setTab(fields[i === 0 ? 1 : 0]?.id);
+                }}
+              >
+                <Trash /> Remove Language
+              </Button>
+            )}
           </TabsContent>
         ))}
       </Tabs>
@@ -167,7 +182,7 @@ export function EducationAchievementItemField({
         variant="outline"
         onClick={() => remove(index)}
       >
-        <Trash /> Remove Achievement Translation
+        <Trash /> Remove Achievement
       </Button>
     </div>
   );

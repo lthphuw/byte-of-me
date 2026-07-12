@@ -1,4 +1,4 @@
-import { Skeleton } from '@/shared/ui';
+import { Skeleton } from '@byte-of-me/ui';
 
 export function HomepageProfileLoading() {
   return (

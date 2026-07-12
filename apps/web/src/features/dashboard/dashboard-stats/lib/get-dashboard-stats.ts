@@ -3,6 +3,7 @@
 import { prisma } from '@byte-of-me/db';
 
 import { requireAdmin } from '@/shared/lib/auth';
+import { getErrorMessage } from '@/shared/lib/utils';
 
 
 
@@ -56,8 +57,8 @@ export async function getDashboardStats() {
         newMessages: recentMessages,
       },
     };
-  } catch (error: Any) {
-    console.error(`Get Dashboard stats  Error: ${error.message}`);
+  } catch (error) {
+    console.error(`Get Dashboard stats  Error: ${getErrorMessage(error)}`);
     return { success: false, data: null };
   }
 }

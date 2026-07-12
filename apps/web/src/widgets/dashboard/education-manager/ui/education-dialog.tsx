@@ -2,14 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Languages, Plus, Trash } from 'lucide-react';
-
-import {
-  type EducationFormValues,
-  educationSchema,
-} from '@/entities/education/model/education-schema';
-import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import { Button , DatePicker ,
   Dialog,
   DialogContent,
@@ -20,13 +12,23 @@ import { Button , DatePicker ,
   FormControl,
   FormField,
   FormItem,
-  FormLabel, Icons , Input , Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
+  FormLabel, FormMessage, Icons } from '@byte-of-me/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Plus } from 'lucide-react';
+
+import type { AdminEducation } from '@/entities/education';
+import {
+  type EducationFormValues,
+  educationSchema,
+} from '@/entities/education/model/education-schema';
+import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
+import { TextField, TranslationTabs } from '@/shared/ui';
 import { EducationAchievementItemField } from '@/widgets/dashboard/education-manager/ui/education-achievement-item-field';
 
 interface EducationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialData?: Any;
+  initialData?: Nullable<AdminEducation>;
   onSubmit: (data: EducationFormValues) => void;
   loading?: boolean;
 }
@@ -51,15 +53,6 @@ export function EducationDialog({
   });
 
   const {
-    fields: educationTranslations,
-    append: appendEducationTranslation,
-    remove: removeEducationTranslation,
-  } = useFieldArray({
-    control: form.control,
-    name: 'translations',
-  });
-
-  const {
     fields: achievements,
     append: appendAchievement,
     remove: removeAchievement,
@@ -68,7 +61,6 @@ export function EducationDialog({
     name: 'achievements',
   });
 
-  const [educationTab, setEducationTab] = useState<string>();
   const [achievementTabs, setAchievementTabs] = useState<
     Record<number, string>
   >({});
@@ -92,25 +84,20 @@ export function EducationDialog({
             : [{ language: 'en', title: '', description: '' }],
 
         achievements:
-          initialData.achievements?.map((a: Any) => ({
+          initialData.achievements?.map((a) => ({
             id: a.id,
             sortOrder: a.sortOrder ?? 0,
             translations:
               a.translations?.length > 0
                 ? a.translations
                 : [{ language: 'en', title: '', content: '' }],
-            imageIds: a.images?.map((it: Any) => it.mediaId) ?? [],
+            imageIds: a.images?.map((it) => it.mediaId) ?? [],
           })) ?? [],
       });
     } else {
       form.reset();
     }
   }, [initialData, open, form]);
-
-  useEffect(() => {
-    if (educationTranslations.length > 0)
-      setEducationTab(educationTranslations[0].id);
-  }, [educationTranslations]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -136,6 +123,7 @@ export function EducationDialog({
                         onChange={(media) => field.onChange(media?.id)}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -147,6 +135,7 @@ export function EducationDialog({
                   <FormItem>
                     <FormLabel>Start Date</FormLabel>
                     <DatePicker value={field.value} onChange={field.onChange} />
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -161,6 +150,7 @@ export function EducationDialog({
                       value={field.value}
                       onChange={(d) => field.onChange(d || null)}
                     />
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -171,84 +161,30 @@ export function EducationDialog({
                 <h3 className="text-sm font-medium">Translations</h3>
               </div>
 
-              <Tabs value={educationTab} onValueChange={setEducationTab}>
-                <div
-                  className={'mb-2 flex w-full justify-between align-middle'}
-                >
-                  <TabsList>
-                    {educationTranslations.map((f, i) => {
-                      const lang = form.watch(`translations.${i}.language`);
-                      return (
-                        <TabsTrigger key={f.id} value={f.id}>
-                          {lang?.toUpperCase()}
-                        </TabsTrigger>
-                      );
-                    })}
-                  </TabsList>
-
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() =>
-                      appendEducationTranslation({
-                        language: 'New',
-                        title: '',
-                        description: '',
-                      })
-                    }
-                  >
-                    Add Language <Languages />
-                  </Button>
-                </div>
-
-                {educationTranslations.map((f, i) => (
-                  <TabsContent key={f.id} value={f.id}>
-                    <FormField
-                      control={form.control}
-                      name={`translations.${i}.language`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Language</FormLabel>
-                          <Input {...field} />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
+              <TranslationTabs
+                control={form.control}
+                name="translations"
+                newTranslation={() => ({
+                  language: '',
+                  title: '',
+                  description: '',
+                })}
+                renderFields={(i) => (
+                  <>
+                    <TextField
                       control={form.control}
                       name={`translations.${i}.title`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>School / Degree</FormLabel>
-                          <Input {...field} />
-                        </FormItem>
-                      )}
+                      label="School / Degree"
                     />
 
-                    <FormField
+                    <TextField
                       control={form.control}
                       name={`translations.${i}.description`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <Input {...field} value={field.value ?? ''} />
-                        </FormItem>
-                      )}
+                      label="Description"
                     />
-
-                    <Button
-                      className={'mt-2 w-full'}
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => removeEducationTranslation(i)}
-                    >
-                      <Trash /> Remove Education Translation
-                    </Button>
-                  </TabsContent>
-                ))}
-              </Tabs>
+                  </>
+                )}
+              />
             </div>
 
             <div className="space-y-4 border-t pt-4">

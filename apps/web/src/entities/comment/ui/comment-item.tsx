@@ -1,18 +1,18 @@
 'use client';
 
+import { Button , Skeleton } from '@byte-of-me/ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { EyeOff, Reply } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
-import { hideComment } from '@/entities';
+import { hideComment } from '@/entities/comment/api/hide-comment';
 import type { PublicComment } from '@/entities/comment/model';
-import { useToast } from '@/shared/hooks/use-toast';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getRelativeTime } from '@/shared/lib/utils';
-import { Button , Skeleton } from '@/shared/ui';
 
 export function CommentItem({
   comment,
@@ -23,7 +23,6 @@ export function CommentItem({
   isReply?: boolean;
   onReply?: (comment: PublicComment) => void;
 }) {
-  const { toast } = useToast();
   const t = useTranslations('blogDetails');
   const locale = useLocale();
   const { data: session } = useSession();
@@ -40,10 +39,8 @@ export function CommentItem({
         queryKey: [CACHE_TAGS.COMMENT, comment.blogId],
       });
     },
-    onError: (error) => {
-      toast({
-        description: t('hideCommentFailed'),
-      });
+    onError: () => {
+      toast(t('hideCommentFailed'));
     },
   });
 
@@ -52,7 +49,7 @@ export function CommentItem({
   }
   return (
     <AnimatePresence>
-      <motion.div
+      <m.div
         id={`comment-${comment.id}`}
         initial={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -60,14 +57,14 @@ export function CommentItem({
       >
         {/* AVATAR */}
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-[10px] font-semibold text-muted-foreground">
-          {comment.user.email.slice(0, 2).toUpperCase()}
+          {(comment.user.name || 'Anonymous').slice(0, 2).toUpperCase()}
         </div>
 
         {/* HEADER */}
         <div className="flex min-w-0 items-center justify-between gap-2">
           <div className="flex min-w-0 flex-col gap-0 text-sm md:flex-row md:items-center md:gap-2">
             <span className="truncate font-medium">
-              {comment.user.name ?? comment.user.email}
+              {comment.user.name || 'Anonymous'}
             </span>
             <span className="text-xs text-muted-foreground">
               {getRelativeTime(comment.createdAt, locale)}
@@ -111,7 +108,7 @@ export function CommentItem({
             {t('reply')}
           </Button>
         </div>
-      </motion.div>
+      </m.div>
     </AnimatePresence>
   );
 }

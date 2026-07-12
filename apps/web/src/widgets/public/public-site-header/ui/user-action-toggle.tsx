@@ -1,12 +1,5 @@
 'use client';
 
-import { useQueryClient } from '@tanstack/react-query';
-import { AnimatePresence, motion } from 'framer-motion';
-import { LogOut } from 'lucide-react';
-import { signOut, useSession } from 'next-auth/react';
-import { useTranslations } from 'next-intl';
-
-import { logOut } from '@/features/auth';
 import {
   Button,
   DropdownMenu,
@@ -15,8 +8,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/shared/ui';
-import { menuTransition, menuVariants } from '@/shared/ui/motion';
+ menuTransition, menuVariants } from '@byte-of-me/ui';
+import { useQueryClient } from '@tanstack/react-query';
+import { AnimatePresence, m } from 'framer-motion';
+import { LogOut } from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
+
+import { logOut } from '@/features/auth';
 
 export function UserActionToggle() {
   const t = useTranslations('global.userToggle');
@@ -51,7 +50,7 @@ export function UserActionToggle() {
         forceMount
       >
         <AnimatePresence mode="wait" initial={false}>
-          <motion.div
+          <m.div
             variants={menuVariants}
             initial="initial"
             animate="animate"
@@ -78,7 +77,7 @@ export function UserActionToggle() {
               <LogOut className="size-4" />
               {t('signOut')}
             </DropdownMenuItem>
-          </motion.div>
+          </m.div>
         </AnimatePresence>
       </DropdownMenuContent>
     </DropdownMenu>

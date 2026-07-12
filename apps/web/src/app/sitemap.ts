@@ -8,11 +8,12 @@ import { getPathname } from '@/shared/i18n/navigation';
 import { routing } from '@/shared/i18n/routing';
 
 async function getDynamicRoutes(): Promise<string[]> {
-  const projects = await prisma.project.findMany({
-    select: { id: true },
+  const blogs = await prisma.blog.findMany({
+    where: { isPublished: true },
+    select: { slug: true },
   });
 
-  return projects.map((p) => `/projects/${p.id}`);
+  return blogs.map((blog) => `/blogs/${blog.slug}`);
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

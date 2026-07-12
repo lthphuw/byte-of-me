@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Button, FilterMultiSelectSection, Input,useDebounce  } from '@byte-of-me/ui';
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -9,8 +10,6 @@ import {
   TechStackClickableBadge,
   useTechStackInfiniteQuery,
 } from '@/entities/tech-stack';
-import { useDebounce } from '@/shared/hooks';
-import { Button, FilterMultiSelectSection, Input } from '@/shared/ui';
 
 export interface FilterValues {
   tagSlugs: string[];

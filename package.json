@@ -9,9 +9,11 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "generate": "pnpm --filter @repo/db generate",
+    "generate": "pnpm --filter @byte-of-me/db generate",
     "lint": "turbo run lint",
-    "lint:fix": "turbo run lint:fix"
+    "lint:fix": "turbo run lint:fix",
+    "check-types": "turbo run check-types",
+    "check": "sh scripts/check.sh"
   },
   "packageManager": "pnpm@10.12.4",
   "devDependencies": {

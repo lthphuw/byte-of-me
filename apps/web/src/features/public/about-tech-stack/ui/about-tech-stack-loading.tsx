@@ -1,4 +1,4 @@
-import { Card , Skeleton } from '@/shared/ui';
+import { Card , Skeleton } from '@byte-of-me/ui';
 
 export function AboutTechStackLoading() {
   // Define a set of different "pill" width variations to create a natural look
@@ -39,10 +39,12 @@ export function AboutTechStackLoading() {
                 {/* Container for the specific tech pills */}
                 <div className="flex flex-wrap gap-3">
                   {/*
-                    Generate 2 to 4 random-looking pills per category
-                    using the pre-defined width variations.
+                    Generate 2 to 4 pills per category using the pre-defined
+                    width variations. Count must be deterministic: this renders
+                    on the server as a Suspense fallback, and randomness would
+                    cause a hydration mismatch.
                   */}
-                  {[...Array(Math.floor(Math.random() * 3) + 2)].map(
+                  {[...Array((cardIndex % 3) + 2)].map(
                     (_, pillIndex) => {
                       const widthClass =
                         pillWidths[(cardIndex + pillIndex) % pillWidths.length];

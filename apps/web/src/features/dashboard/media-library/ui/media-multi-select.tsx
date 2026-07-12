@@ -1,17 +1,17 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Check, ChevronDown, ImageIcon, Loader2, Plus, X } from 'lucide-react';
-
-import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media';
-import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
-import { cn } from '@/shared/lib/utils';
 import { Button ,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger, Popover, PopoverContent, PopoverTrigger , ScrollArea } from '@/shared/ui';
+  DialogTrigger, Popover, PopoverContent, PopoverTrigger , ScrollArea } from '@byte-of-me/ui';
+import { Check, ChevronDown, ImageIcon, Loader2, Plus, X } from 'lucide-react';
+
+import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media';
+import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
+import { cn } from '@/shared/lib/utils';
 
 interface MediaMultiSelectProps {
   value?: string[];

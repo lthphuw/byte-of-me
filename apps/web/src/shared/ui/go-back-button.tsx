@@ -1,7 +1,8 @@
 'use client';
 
+import { Button } from '@byte-of-me/ui';
+
 import { useRouter } from '@/shared/i18n/navigation';
-import { Button } from '@/shared/ui';
 
 export function GoBackButton({ children }: { children: React.ReactNode }) {
   const router = useRouter();

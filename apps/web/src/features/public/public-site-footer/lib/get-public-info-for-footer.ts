@@ -40,7 +40,7 @@ export async function getPublicInfoForFooter(): Promise<
         const translation = getTranslatedContent(translations, locale);
 
         return {
-          displayName: translation.displayName || siteConfig.name,
+          displayName: translation?.displayName || siteConfig.name,
           email: userEmail,
           socialLinks,
         };

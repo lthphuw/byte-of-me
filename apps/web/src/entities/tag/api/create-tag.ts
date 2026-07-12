@@ -5,10 +5,15 @@ import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
 import type { TagFormValues } from '@/entities/tag/model/tag-schema';
+import type { AdminTag } from '@/entities/tag/model/types';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
+import { getErrorMessage } from '@/shared/lib/utils';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-export async function createTag(values: TagFormValues) {
+export async function createTag(
+  values: TagFormValues
+): Promise<ApiResponse<AdminTag>> {
   try {
     await requireAdmin();
 
@@ -25,8 +30,9 @@ export async function createTag(values: TagFormValues) {
     revalidateTag(CACHE_TAGS.TAG, 'max');
 
     return { success: true, data: tag };
-  } catch (e: Any) {
-    logger.error(`[Tag] create:`, e.message);
-    return { success: false, errorMsg: e.message };
+  } catch (error) {
+    const errorMsg = getErrorMessage(error);
+    logger.error(`[Tag] create: ${errorMsg}`);
+    return { success: false, errorMsg };
   }
 }

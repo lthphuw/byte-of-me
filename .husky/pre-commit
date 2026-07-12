@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-turbo run build || exit 1
-
-#npx pretty-quick --staged || exit 1
+# Fast gate on every commit: type-check + lint (turbo caches, so this is quick).
+# The full build runs on pre-push instead — see .husky/pre-push.
+turbo run check-types lint || exit 1

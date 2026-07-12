@@ -1,17 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import { Button } from '@byte-of-me/ui';
 import { ImageIcon, Loader2, X } from 'lucide-react';
-
-import { useToast } from '@/shared/hooks/use-toast';
-import { Button } from '@/shared/ui';
+import { toast } from 'sonner';
 
 export interface ImageUploadProps {
-  uploadFiles: (files: File[]) => Promise<Any>;
+  uploadFiles: (files: File[]) => Promise<void>;
 }
 
 export function ImageUpload({ uploadFiles }: ImageUploadProps) {
-  const { toast } = useToast();
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const maxSizeUploadInMbs = 3;
@@ -20,18 +18,14 @@ export function ImageUpload({ uploadFiles }: ImageUploadProps) {
 
     const validFiles = Array.from(incomingFiles).filter((file) => {
       if (!file.type.startsWith('image/')) {
-        toast({
-          title: 'Invalid type',
+        toast.error('Invalid type', {
           description: `${file.name} is not an image.`,
-          variant: 'destructive',
         });
         return false;
       }
       if (file.size > maxSizeUploadInMbs * 1024 * 1024) {
-        toast({
-          title: 'File too large',
+        toast.error('File too large', {
           description: `${file.name} exceeds ${maxSizeUploadInMbs}MB.`,
-          variant: 'destructive',
         });
         return false;
       }
@@ -50,10 +44,10 @@ export function ImageUpload({ uploadFiles }: ImageUploadProps) {
     setIsUploading(true);
     try {
       await uploadFiles(files);
-      toast({ title: 'Success', description: 'All images uploaded.' });
+      toast('Success', { description: 'All images uploaded.' });
       setFiles([]);
     } catch (error) {
-      toast({ variant: 'destructive', title: 'Upload failed' });
+      toast.error('Upload failed');
     } finally {
       setIsUploading(false);
     }

@@ -1,9 +1,18 @@
 'use client';
 
 import { useState } from 'react';
+import {
+  Badge,
+  Button,
+  ConfirmDeleteDialog,
+  DeleteButton,
+  EditButton,
+  Loading,
+} from '@byte-of-me/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { GraduationCap, Inbox, Plus } from 'lucide-react';
+import { GraduationCap, Plus } from 'lucide-react';
 import Image from 'next/image';
+import { toast } from 'sonner';
 
 import { EducationDialog } from './education-dialog';
 
@@ -13,20 +22,21 @@ import { deleteEducation } from '@/entities/education/api/delete-education';
 import { getAllAdminEducations } from '@/entities/education/api/get-all-admin-educations';
 import { updateEducation } from '@/entities/education/api/update-education';
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
-import { useToast } from '@/shared/hooks/use-toast';
 import { formatDate } from '@/shared/lib/utils';
-import { Badge, Button, DeleteButton, EditButton, Loading } from '@/shared/ui';
+import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
 export function EducationManager() {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const [editing, setEditing] = useState<AdminEducation | null>(null);
   const [open, setOpen] = useState(false);
+  const [eduToDelete, setEduToDelete] = useState<AdminEducation | null>(null);
 
   const {
     data: response,
     isLoading,
+    isError,
+    refetch,
     isFetching,
   } = useQuery({
     queryKey: ['educations'],
@@ -34,28 +44,28 @@ export function EducationManager() {
   });
 
   const educations = response?.success ? response.data : [];
-  const isEmpty = !isLoading && educations.length === 0;
 
   const saveMutation = useMutation({
     mutationFn: (values: EducationFormValues) =>
       editing ? updateEducation(editing.id, values) : createEducation(values),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['educations'] });
-      toast({ title: editing ? 'Education updated' : 'Education created' });
+      toast(editing ? 'Education updated' : 'Education created');
       setOpen(false);
     },
     onError: () =>
-      toast({ title: 'Error saving education', variant: 'destructive' }),
+      toast.error('Error saving education'),
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteEducation,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['educations'] });
-      toast({ title: 'Education removed' });
+      toast('Education removed');
+      setEduToDelete(null);
     },
     onError: () =>
-      toast({ title: 'Error deleting education', variant: 'destructive' }),
+      toast.error('Error deleting education'),
   });
 
   const handleCreate = () => {
@@ -70,41 +80,39 @@ export function EducationManager() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">Education</h2>
-          <p className="text-sm text-muted-foreground">
-            Manage your academic background
-          </p>
-        </div>
-        <Button onClick={handleCreate} size="sm" className="gap-2">
-          <Plus className="h-4 w-4" />
-          Add Education
-        </Button>
-      </div>
+      <ManagerPageHeader
+        title="Education"
+        description="Manage your academic background"
+        action={
+          <Button onClick={handleCreate} size="sm" className="gap-2">
+            <Plus className="h-4 w-4" />
+            Add Education
+          </Button>
+        }
+      />
 
       <div className="relative min-h-[200px] space-y-4">
-        {isLoading ? (
-          <div className="flex h-48 flex-col items-center justify-center gap-2">
-            <Loading />
-            <p className="animate-pulse text-xs text-muted-foreground">
-              Loading records...
-            </p>
-          </div>
-        ) : isEmpty ? (
-          <div className="flex h-48 flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/20 p-8 text-center">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-              <Inbox className="h-6 w-6 text-muted-foreground" />
-            </div>
-            <h3 className="font-medium">No education entries</h3>
-            <p className="mb-4 text-sm text-muted-foreground">
-              Start by adding your first academic achievement.
-            </p>
+        <ManagerListState
+          isLoading={isLoading}
+          isError={isError}
+          onRetry={() => refetch()}
+          isEmpty={educations.length === 0}
+          emptyTitle="No education entries"
+          emptyDescription="Start by adding your first academic achievement."
+          emptyAction={
             <Button variant="outline" size="sm" onClick={handleCreate}>
               Add Your First Entry
             </Button>
-          </div>
-        ) : (
+          }
+          skeleton={
+            <div className="flex h-48 flex-col items-center justify-center gap-2">
+              <Loading />
+              <p className="animate-pulse text-xs text-muted-foreground">
+                Loading records...
+              </p>
+            </div>
+          }
+        >
           <div className="grid gap-4">
             {educations.map((edu) => {
               const title =
@@ -151,21 +159,17 @@ export function EducationManager() {
                   <div className="flex items-center gap-2 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
                     <EditButton onClick={() => handleEdit(edu)} />
                     <DeleteButton
-                      isSubmitting={deleteMutation.isPending}
-                      onClick={() => {
-                        if (
-                          confirm(`Are you sure you want to delete "${title}"?`)
-                        ) {
-                          deleteMutation.mutate(edu.id);
-                        }
-                      }}
+                      isSubmitting={
+                        deleteMutation.isPending && eduToDelete?.id === edu.id
+                      }
+                      onClick={() => setEduToDelete(edu)}
                     />
                   </div>
                 </div>
               );
             })}
           </div>
-        )}
+        </ManagerListState>
 
         {!isLoading && isFetching && (
           <div className="absolute right-2 top-2">
@@ -180,6 +184,16 @@ export function EducationManager() {
         initialData={editing}
         onSubmit={(values) => saveMutation.mutate(values)}
         loading={saveMutation.isPending}
+      />
+
+      <ConfirmDeleteDialog
+        isOpen={!!eduToDelete}
+        isLoading={deleteMutation.isPending}
+        onClose={() => setEduToDelete(null)}
+        onConfirm={() => eduToDelete && deleteMutation.mutate(eduToDelete.id)}
+        description={`Are you sure you want to delete "${
+          eduToDelete?.translations?.[0]?.title || 'Untitled Education'
+        }"?`}
       />
     </div>
   );

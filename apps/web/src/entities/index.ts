@@ -1,6 +1,5 @@
 export * from './blog';
 export * from './comment';
-export * from './comment';
 export * from './company';
 export * from './contact-message';
 export * from './education';
@@ -9,4 +8,5 @@ export * from './project';
 export * from './social-link';
 export * from './tag';
 export * from './tech-stack';
+export * from './translation';
 export * from './user-profile';

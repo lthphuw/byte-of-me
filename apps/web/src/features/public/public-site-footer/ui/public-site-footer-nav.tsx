@@ -33,7 +33,7 @@ export function PublicSiteFooterNav() {
               : 'text-foreground/60'
           )}
         >
-          {t(item.title as Any)}
+          {t(item.title as Parameters<typeof t>[0])}
         </Link>
       ))}
     </nav>

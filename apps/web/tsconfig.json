@@ -1,12 +1,12 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../packages/config/typescript/nextjs.json",
   "compilerOptions": {
     "moduleResolution": "bundler",
-    "resolveJsonModule": true,
     "allowArbitraryExtensions": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@byte-of-me/ui": ["../../packages/ui/src/index.ts"]
     }
   },
   "include": [

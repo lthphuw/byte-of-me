@@ -1,11 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
-import { useTheme } from 'next-themes';
-
-import { cn } from '@/shared/lib/utils';
 import {
   Button,
   DropdownMenu,
@@ -13,16 +8,24 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   Icons,
-} from '@/shared/ui';
-import {
   iconSwitchVariants,
   menuTransition,
-  menuVariants,
-} from '@/shared/ui/motion';
+  menuVariants} from '@byte-of-me/ui';
+import { AnimatePresence, m } from 'framer-motion';
+import { useTranslations } from 'next-intl';
+import { useTheme } from 'next-themes';
+
+import { cn } from '@/shared/lib/utils';
 
 export function ColorSchemeModeToggle() {
   const t = useTranslations('global.modeToggle');
   const { theme, setTheme, resolvedTheme } = useTheme();
+
+  // `resolvedTheme` is undefined on the server but resolved from localStorage
+  // on the client's first render — branching on it before mount causes a
+  // hydration mismatch on every public page.
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
 
   const items = [
     { value: 'light', icon: Icons.sun, label: t('light') },
@@ -39,9 +42,14 @@ export function ColorSchemeModeToggle() {
           className="relative size-10 overflow-hidden p-0 focus-visible:ring-1"
         >
           <div className="relative">
+            {!mounted ? (
+              <div className="absolute inset-0 flex items-center justify-center opacity-0">
+                <Icons.sun size={28} />
+              </div>
+            ) : (
             <AnimatePresence mode="wait" initial={false}>
               {resolvedTheme === 'light' ? (
-                <motion.div
+                <m.div
                   key="sun"
                   variants={iconSwitchVariants}
                   initial="initial"
@@ -51,9 +59,9 @@ export function ColorSchemeModeToggle() {
                   className="absolute inset-0 flex items-center justify-center"
                 >
                   <Icons.sun size={28} />
-                </motion.div>
+                </m.div>
               ) : (
-                <motion.div
+                <m.div
                   key="moon"
                   variants={iconSwitchVariants}
                   initial="initial"
@@ -63,9 +71,10 @@ export function ColorSchemeModeToggle() {
                   className="absolute inset-0 flex items-center justify-center"
                 >
                   <Icons.moon size={28} />
-                </motion.div>
+                </m.div>
               )}
             </AnimatePresence>
+            )}
           </div>
 
           <span className="sr-only">{t('toggleTheme')}</span>
@@ -90,7 +99,7 @@ export function ColorSchemeModeToggle() {
               )}
               asChild
             >
-              <motion.div
+              <m.div
                 custom={index}
                 variants={menuVariants}
                 initial="initial"
@@ -100,7 +109,7 @@ export function ColorSchemeModeToggle() {
               >
                 <Icon className="mr-2 size-4" />
                 <span>{item.label}</span>
-              </motion.div>
+              </m.div>
             </DropdownMenuItem>
           );
         })}

@@ -4,6 +4,7 @@ import { unstable_cache } from 'next/cache';
 import { getLocale } from 'next-intl/server';
 
 import { env } from '@/shared/config/env';
+import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 
@@ -62,11 +63,12 @@ export async function handlePublicAction<TData>(
   try {
     const data = await handler();
     return { success: true, data };
-  } catch (error: Any) {
-    logger.error(`[Public] ${actionName}: ${error.message}`);
+  } catch (error) {
+    const errorMsg = getErrorMessage(error);
+    logger.error(`[Public] ${actionName}: ${errorMsg}`);
     return {
       success: false,
-      errorMsg: error.message || 'An unexpected error occurred',
+      errorMsg,
     };
   }
 }

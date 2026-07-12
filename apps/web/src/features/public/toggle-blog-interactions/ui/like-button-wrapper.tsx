@@ -1,5 +1,3 @@
-'use server';
-
 import { getBlogInteractionsForUser } from '@/features/public';
 import { LikeButton } from '@/features/public/toggle-blog-interactions/ui/like-button';
 import { INTERACTION } from '@/shared/lib/constants';

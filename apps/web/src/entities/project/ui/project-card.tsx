@@ -1,5 +1,6 @@
 'use client';
 
+import { Button , Card, CardContent } from '@byte-of-me/ui';
 import { Code, ExternalLink } from 'lucide-react';
 import { useLocale } from 'next-intl';
 
@@ -8,7 +9,6 @@ import { TagClickableBadge } from '@/entities/tag/ui/tag-clickable-badge';
 import { TechStackClickableBadge } from '@/entities/tech-stack/ui/tech-stack-clickable-badge';
 import { Link } from '@/shared/i18n/navigation';
 import { formatDate } from '@/shared/lib/utils';
-import { Button , Card, CardContent } from '@/shared/ui';
 
 
 

@@ -25,6 +25,7 @@
     "@byte-of-me/db": "workspace:*",
     "@byte-of-me/logger": "workspace:*",
     "@byte-of-me/storage": "workspace:*",
+    "@byte-of-me/ui": "workspace:*",
     "@hookform/resolvers": "^5.2.2",
     "@lexical/react": "^0.42.0",
     "@lexical/rich-text": "^0.42.0",

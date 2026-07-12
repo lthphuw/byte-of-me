@@ -1,8 +1,14 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useMemo, useState } from 'react';
+import { Button, Loading,useIntersection } from '@byte-of-me/ui';
+import {
+  type InfiniteData,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import {
   CommentForm,
@@ -11,11 +17,13 @@ import {
   CommentListEmpty,
   CommentListSkeleton,
   postComment,
+  type PublicComment,
   useCommentInfiniteQuery,
 } from '@/entities';
-import { useIntersection } from '@/shared/hooks';
-import { useToast } from '@/shared/hooks/use-toast';
-import { Button, Loading } from '@/shared/ui';
+import { AuthModal } from '@/features/auth';
+import type { PaginatedData } from '@/shared/types/api';
+
+type CommentsCache = InfiniteData<PaginatedData<PublicComment>>;
 
 export interface BlogCommentSectionProps {
   blogId: string;
@@ -24,7 +32,7 @@ export interface BlogCommentSectionProps {
 export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
   const t = useTranslations('blogDetails');
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const limit = 4;
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useCommentInfiniteQuery(blogId, limit);
@@ -42,25 +50,25 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
     onMutate: async ({ content, parentId }) => {
       await queryClient.cancelQueries({ queryKey: key });
 
-      const previous = queryClient.getQueryData(key);
+      const previous = queryClient.getQueryData<CommentsCache>(key);
 
       const tempId = `temp-${Date.now()}`;
 
-      const optimistic = {
+      const optimistic: PublicComment = {
         id: tempId,
         content,
         parentId,
-        createdAt: new Date().toISOString(),
-        user: { name: '...', email: '...' },
+        createdAt: new Date(),
+        user: { id: tempId, name: '...' },
         children: [],
       };
 
-      queryClient.setQueryData(key, (old: Any) => {
+      queryClient.setQueryData<CommentsCache>(key, (old) => {
         if (!old) return old;
 
         return {
           ...old,
-          pages: old.pages.map((page: Any, i: number) => {
+          pages: old.pages.map((page, i) => {
             if (i !== 0) return page;
 
             if (!parentId) {
@@ -72,7 +80,7 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
 
             return {
               ...page,
-              data: page.data.map((c: Any) => {
+              data: page.data.map((c) => {
                 if (c.id === parentId) {
                   return {
                     ...c,
@@ -92,17 +100,17 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
     onSuccess: (result, _vars, ctx) => {
       if (!result.success) return;
 
-      queryClient.setQueryData(key, (old: Any) => {
+      queryClient.setQueryData<CommentsCache>(key, (old) => {
         if (!old) return old;
 
         return {
           ...old,
-          pages: old.pages.map((page: Any, i: number) => {
+          pages: old.pages.map((page, i) => {
             if (i !== 0) return page;
 
             return {
               ...page,
-              data: page.data.map((c: Any) => {
+              data: page.data.map((c) => {
                 if (c.id === ctx?.tempId) {
                   return result.data;
                 }
@@ -110,7 +118,7 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
                 if (c.children) {
                   return {
                     ...c,
-                    children: c.children.map((child: Any) =>
+                    children: c.children.map((child) =>
                       child.id === ctx?.tempId ? result.data : child
                     ),
                   };
@@ -126,9 +134,7 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
 
     onError: (_err, _vars, ctx) => {
       queryClient.setQueryData(key, ctx?.previous);
-      toast({
-        title: t('postCommentFailed'),
-      });
+      toast(t('postCommentFailed'));
     },
 
     onSettled: () => {
@@ -148,10 +154,10 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
   }, [entry?.isIntersecting, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const allComments = useMemo(() => {
-    const map = new Map<string, any>();
+    const map = new Map<string, PublicComment>();
 
     data?.pages.forEach((page) => {
-      page.data.forEach((comment: Any) => {
+      page.data.forEach((comment) => {
         map.set(comment.id, comment);
       });
     });
@@ -161,12 +167,18 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
 
   return (
     <div id="comments" className="space-y-8">
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
+
       <h3 className="text-xl font-bold tracking-tight">{t('comments')}</h3>
 
       <CommentForm
         blogId={blogId}
         isPending={mutation.isPending}
         onComment={(content) => mutation.mutate({content})}
+        onRequireAuth={() => setIsAuthModalOpen(true)}
       />
 
       <div className="space-y-2">
@@ -180,6 +192,7 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
               blogId={blogId}
               comments={allComments}
               onComment={(content, parentId) => mutation.mutate({content, parentId})}
+              onRequireAuth={() => setIsAuthModalOpen(true)}
             />
 
             {isFetchingNextPage && (

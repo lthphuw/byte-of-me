@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { Icons } from '@byte-of-me/ui';
+import { AnimatePresence, m } from 'framer-motion';
 
 import { siteConfig } from '@/shared/config/site';
-import { Icons } from '@/shared/ui';
 
 export const PublicHeaderLogo = React.memo(
   ({ minimized }: { minimized: boolean }) => (
@@ -14,7 +14,7 @@ export const PublicHeaderLogo = React.memo(
       <Icons.logo />
       <div className="relative overflow-hidden whitespace-nowrap">
         <AnimatePresence mode="wait" initial={false}>
-          <motion.span
+          <m.span
             key={minimized ? 'short' : 'full'}
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -23,7 +23,7 @@ export const PublicHeaderLogo = React.memo(
             className="block font-bold"
           >
             {minimized ? siteConfig.shortName : siteConfig.name}
-          </motion.span>
+          </m.span>
         </AnimatePresence>
       </div>
     </div>

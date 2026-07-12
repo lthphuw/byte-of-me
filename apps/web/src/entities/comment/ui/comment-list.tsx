@@ -3,18 +3,23 @@
 import { useState } from 'react';
 
 import { CommentItem } from './comment-item';
+import { CommentForm } from './form';
 
-import { CommentForm } from '@/entities';
 import type { PublicComment } from '@/entities/comment/model';
-
 
 type Props = {
   blogId: string;
   comments: PublicComment[];
   onComment: (content: string, parentId?: string) => void;
+  onRequireAuth?: () => void;
 };
 
-export function CommentList({ blogId, comments, onComment }: Props) {
+export function CommentList({
+  blogId,
+  comments,
+  onComment,
+  onRequireAuth,
+}: Props) {
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
 
   return (
@@ -38,9 +43,10 @@ export function CommentList({ blogId, comments, onComment }: Props) {
                     onComment(content, root.id);
                     setActiveReplyId(null);
                   }}
+                  onRequireAuth={onRequireAuth}
                   replyTo={{
                     parentId: root.id,
-                    replyingToUser: root.user.name ?? root.user.email,
+                    replyingToUser: root.user.name || 'Anonymous',
                   }}
                   onCancelReply={() => setActiveReplyId(null)}
                 />
@@ -66,9 +72,10 @@ export function CommentList({ blogId, comments, onComment }: Props) {
                             onComment(content, root.id);
                             setActiveReplyId(null);
                           }}
+                          onRequireAuth={onRequireAuth}
                           replyTo={{
                             parentId: root.id,
-                            replyingToUser: root.user.name ?? root.user.email,
+                            replyingToUser: reply.user.name || 'Anonymous',
                           }}
                           onCancelReply={() => setActiveReplyId(null)}
                         />

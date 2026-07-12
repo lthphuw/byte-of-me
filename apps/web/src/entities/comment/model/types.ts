@@ -1,4 +1,25 @@
+import type { Prisma } from '@byte-of-me/db';
+
 import { CACHE_TAGS } from '@/shared/lib/constants';
+
+export type AdminComment = Prisma.CommentGetPayload<{
+  include: {
+    user: { select: { id: true; name: true; email: true; image: true } };
+    blog: {
+      select: {
+        id: true;
+        slug: true;
+        translations: { select: { language: true; title: true } };
+      };
+    };
+    project: {
+      select: {
+        id: true;
+        translations: { select: { language: true; title: true } };
+      };
+    };
+  };
+}>;
 
 export interface PublicComment {
   id: string;
@@ -10,7 +31,6 @@ export interface PublicComment {
   user: {
     id: string;
     name: string;
-    email: string;
   };
   children?: PublicComment[];
 }

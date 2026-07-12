@@ -3,6 +3,7 @@
 import { logger } from '@byte-of-me/logger';
 
 import { signIn as nextAuthSignIn } from '@/shared/lib/auth';
+import { getErrorMessage } from '@/shared/lib/utils';
 
 export async function logInWithGoogle(callbackUrl: string) {
   try {
@@ -17,9 +18,10 @@ export async function logInWithGoogle(callbackUrl: string) {
         prompt: 'login',
       },
     });
-  } catch (e: Any) {
-    if (e.message?.includes('NEXT_REDIRECT')) throw e;
-    logger.error(`Google login error: ${e.message}`);
-    return { success: false, errorMsg: e.message };
+  } catch (error) {
+    const errorMsg = getErrorMessage(error);
+    if (errorMsg.includes('NEXT_REDIRECT')) throw error;
+    logger.error(`Google login error: ${errorMsg}`);
+    return { success: false, errorMsg };
   }
 }

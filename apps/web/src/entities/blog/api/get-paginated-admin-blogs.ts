@@ -5,6 +5,8 @@ import { logger } from '@byte-of-me/logger';
 
 import type { AdminBlog } from '@/entities/blog';
 import { requireAdmin } from '@/shared/lib/auth';
+import { buildPaginatedMeta } from '@/shared/lib/pagination';
+import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
@@ -42,7 +44,7 @@ export async function getPaginatedAdminBlogs(
         take: limit,
       }),
       prisma.blog.count({
-        where: { userId: userId },
+        where: { userId },
       }),
     ]);
 
@@ -50,19 +52,15 @@ export async function getPaginatedAdminBlogs(
       success: true,
       data: {
         data: items,
-        meta: {
-          currentPage: page,
-          totalPages: Math.ceil(count / limit),
-          totalCount: count,
-          hasMore: page < Math.ceil(count / limit),
-        },
+        meta: buildPaginatedMeta({ page, limit, totalCount: count }),
       },
     };
-  } catch (e: Any) {
-    logger.error(`Get paginated blogs error: ${e.message}`);
+  } catch (error) {
+    const errorMsg = getErrorMessage(error);
+    logger.error(`Get paginated blogs error: ${errorMsg}`);
     return {
       success: false,
-      errorMsg: e.message,
+      errorMsg,
     };
   }
 }

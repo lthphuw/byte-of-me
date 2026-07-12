@@ -26,6 +26,7 @@ const nextConfig = {
 
   transpilePackages: [
     '@byte-of-me/db',
+    '@byte-of-me/ui',
     '@byte-of-me/logger',
     '@byte-of-me/storage',
   ],

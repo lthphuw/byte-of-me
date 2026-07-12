@@ -37,13 +37,6 @@ export default async function TechStackPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold tracking-tight">Tech Stack</h1>
-        <p className="text-lg text-muted-foreground">
-          Maintain the list of technologies, frameworks, and tools you use.
-        </p>
-      </div>
-
       <TechStackManager initialTechStacks={resp.data} />
     </div>
   );

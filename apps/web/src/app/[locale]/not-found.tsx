@@ -1,9 +1,10 @@
+import { Button, Icons } from '@byte-of-me/ui';
 import { getTranslations } from 'next-intl/server';
 
 import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
-import { Button, GoBackButton, Icons } from '@/shared/ui';
+import { GoBackButton } from '@/shared/ui';
 
 export default async function NotFound() {
   const t = await getTranslations('notFound');

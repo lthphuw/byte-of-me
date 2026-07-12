@@ -3,6 +3,8 @@
 import { logger } from '@byte-of-me/logger';
 import { revalidatePath } from 'next/cache';
 
+import { getErrorMessage } from '@/shared/lib/utils';
+
 
 
 
@@ -19,11 +21,12 @@ export async function purgeEntireCache(): Promise<{
 
     logger.info(`[Cache] Successfully purged entire application cache.`);
     return { success: true };
-  } catch (error: Any) {
-    logger.error(`[Cache] Failed to purge app cache: ${error.message}`);
+  } catch (error) {
+    const errorMsg = getErrorMessage(error, 'Failed to purge cache');
+    logger.error(`[Cache] Failed to purge app cache: ${errorMsg}`);
     return {
       success: false,
-      errorMsg: error.message || 'Failed to purge cache',
+      errorMsg,
     };
   }
 }

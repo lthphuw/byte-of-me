@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Pagination } from '@byte-of-me/ui';
 import { useQuery } from '@tanstack/react-query';
 
 import {
@@ -10,7 +11,7 @@ import {
   ProjectEmpty,
 } from '@/entities';
 import { ProjectFilters } from '@/features/public';
-import { Pagination } from '@/shared/ui';
+import { RevealItem } from '@/shared/ui';
 import { ProjectsShell } from '@/widgets/public/projects-content/ui/projects-shell';
 
 export function ProjectsContent() {
@@ -88,13 +89,14 @@ export function ProjectsContent() {
                   : 'opacity-100'
               }`}
             >
-              {projects.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  onTagClick={(slug) => toggleTag(slug)}
-                  onTechClick={(slug) => toggleTech(slug)}
-                />
+              {projects.map((project, index) => (
+                <RevealItem key={project.id} index={index}>
+                  <ProjectCard
+                    project={project}
+                    onTagClick={(slug) => toggleTag(slug)}
+                    onTechClick={(slug) => toggleTech(slug)}
+                  />
+                </RevealItem>
               ))}
             </div>
           )}

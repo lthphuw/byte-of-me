@@ -5,6 +5,8 @@ import { logger } from '@byte-of-me/logger';
 
 import type { AdminTag } from '@/entities/tag';
 import { requireAdmin } from '@/shared/lib/auth';
+import { buildPaginatedMeta } from '@/shared/lib/pagination';
+import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
@@ -13,7 +15,7 @@ export async function getPaginatedAdminTags(
   limit: number = 20
 ): Promise<ApiResponse<PaginatedData<AdminTag>>> {
   try {
-    const user = await requireAdmin();
+    await requireAdmin();
 
     const skip = (page - 1) * limit;
     const [tags, totalCount] = await Promise.all([
@@ -22,7 +24,7 @@ export async function getPaginatedAdminTags(
           translations: true,
         },
         orderBy: { createdAt: 'desc' },
-        skip: skip,
+        skip,
         take: limit,
       }),
       prisma.tag.count({}),
@@ -32,19 +34,15 @@ export async function getPaginatedAdminTags(
       success: true,
       data: {
         data: tags,
-        meta: {
-          currentPage: page,
-          totalPages: Math.ceil(totalCount / limit),
-          totalCount,
-          hasMore: skip + tags.length < totalCount,
-        },
+        meta: buildPaginatedMeta({ page, limit, totalCount }),
       },
     };
-  } catch (e: Any) {
-    logger.error(`[Service Error] getAdminTag: ${e.message}`);
+  } catch (error) {
+    const errorMsg = getErrorMessage(error);
+    logger.error(`[Service Error] getAdminTag: ${errorMsg}`);
     return {
       success: false,
-      errorMsg: e.message,
+      errorMsg,
     };
   }
 }

@@ -1,7 +1,7 @@
 import * as React from 'react';
+import { ShellBase, type ShellProps } from '@byte-of-me/ui';
 
 import { cn } from '@/shared/lib/utils';
-import { ShellBase, type ShellProps } from '@/shared/ui';
 
 export function BlogsShell({ className, ...props }: ShellProps) {
   return (

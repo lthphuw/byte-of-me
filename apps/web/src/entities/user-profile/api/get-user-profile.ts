@@ -8,6 +8,7 @@ import type { PublicUserProfile } from '@/entities/user-profile/model/types';
 import { env } from '@/shared/config/env';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
+import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 
@@ -71,12 +72,13 @@ export async function getUserProfile(): Promise<
       success: true,
       data,
     };
-  } catch (error: Any) {
-    logger.error(`[Service Error] getUserProfile: ${error.message}`);
+  } catch (error) {
+    const errorMsg = getErrorMessage(error);
+    logger.error(`[Service Error] getUserProfile: ${errorMsg}`);
 
     return {
       success: false,
-      errorMsg: error.message || 'An unexpected error occurred',
+      errorMsg,
     };
   }
 }

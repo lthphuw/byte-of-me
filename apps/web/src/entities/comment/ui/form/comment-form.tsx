@@ -2,21 +2,17 @@
 
 import * as React from 'react';
 import { useState } from 'react';
+import { AutoGrowingTextarea , Button , Icons } from '@byte-of-me/ui';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 
-import { AuthModal } from '@/features/auth';
 import { cn } from '@/shared/lib/utils';
-import { AutoGrowingTextarea , Button , Icons } from '@/shared/ui';
-
-
-
-
 
 export interface CommentFormProps {
   blogId: string;
   isPending?: boolean;
   onComment: (content: string, parentId?: string) => void;
+  onRequireAuth?: () => void;
   replyTo?: Maybe<{
     parentId: string;
     replyingToUser: string;
@@ -28,6 +24,7 @@ export function CommentForm({
   blogId,
   isPending,
   onComment,
+  onRequireAuth,
   replyTo,
   onCancelReply,
 }: CommentFormProps) {
@@ -35,12 +32,11 @@ export function CommentForm({
   const { data: session } = useSession();
   const isAuthenticated = !!session;
 
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [content, setContent] = useState('');
 
   const handleSubmit = () => {
     if (!isAuthenticated) {
-      setIsAuthModalOpen(true);
+      onRequireAuth?.();
       return;
     }
 
@@ -52,13 +48,7 @@ export function CommentForm({
   };
 
   return (
-    <>
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-      />
-
-      <div className="relative">
+    <div className="relative">
         <div
           className={cn(
             'flex w-full flex-col gap-3 rounded-xl border bg-muted/20 p-4 shadow-sm transition',
@@ -114,13 +104,12 @@ export function CommentForm({
                 {t('mustSignInToComment')}
               </p>
 
-              <Button onClick={() => setIsAuthModalOpen(true)}>
+              <Button onClick={onRequireAuth}>
                 {t('signInToComment')}
               </Button>
             </div>
           </div>
         )}
-      </div>
-    </>
+    </div>
   );
 }

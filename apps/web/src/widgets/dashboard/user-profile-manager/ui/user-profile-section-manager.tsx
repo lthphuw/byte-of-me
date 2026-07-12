@@ -1,7 +1,9 @@
+'use client';
+
 import type { UseFormReturn } from 'react-hook-form';
+import { DatePicker , FormControl, FormField, FormItem, FormLabel } from '@byte-of-me/ui';
 
 import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
-import { DatePicker , FormControl, FormField, FormItem, FormLabel } from '@/shared/ui';
 
 export function UserProfileSectionManager({
   form,

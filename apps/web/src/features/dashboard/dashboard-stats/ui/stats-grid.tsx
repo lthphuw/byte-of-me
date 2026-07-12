@@ -1,5 +1,4 @@
-'use server';
-
+import { Card, CardContent, CardHeader, CardTitle } from '@byte-of-me/ui';
 import {
   BookOpen,
   Briefcase,
@@ -12,7 +11,6 @@ import {
 } from 'lucide-react';
 
 import { getDashboardStats } from '@/features/dashboard/dashboard-stats/lib';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui';
 
 export async function StatsGrid() {
   const dataResp = await getDashboardStats();

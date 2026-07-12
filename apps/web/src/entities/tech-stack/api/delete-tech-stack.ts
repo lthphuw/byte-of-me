@@ -5,6 +5,7 @@ import { revalidateTag } from 'next/cache';
 
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
+import { getErrorMessage } from '@/shared/lib/utils';
 
 
 
@@ -20,8 +21,8 @@ export async function deleteTechStack(id: string) {
     revalidateTag(CACHE_TAGS.TECH, 'max');
 
     return !!res.count;
-  } catch (error: Any) {
-    console.error('deleteTechStack:', error.message);
+  } catch (error) {
+    console.error('deleteTechStack:', getErrorMessage(error));
     return false;
   }
 }

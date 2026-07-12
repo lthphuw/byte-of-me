@@ -20,6 +20,12 @@ export default [
       '**/build/**',
       '**/coverage/**',
       '**/.turbo/**',
+      // Non-source config files are plain JS and live outside any tsconfig
+      // `project`, so the type-aware parser can't handle them — skip linting.
+      '**/*.config.{js,cjs,mjs,ts}',
+      // Ambient declaration files: no runtime code to lint and they trip the
+      // type-aware parser when not part of a tsconfig `project`.
+      '**/*.d.ts',
     ],
   },
 
@@ -105,6 +111,15 @@ export default [
     rules: {
       'tailwindcss/classnames-order': 'warn',
       'tailwindcss/no-custom-classname': 'off',
+    },
+  },
+
+  /* Workspace packages are self-contained: internal imports are relative,
+     the '@' alias belongs to apps/web only. */
+  {
+    files: ['packages/**/*.{ts,tsx}'],
+    rules: {
+      'import-alias/import-alias': 'off',
     },
   },
 

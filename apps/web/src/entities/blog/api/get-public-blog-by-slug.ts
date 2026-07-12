@@ -26,6 +26,7 @@ export async function getPublicBlogBySlug(
             coverImage: true,
             tags: { include: { tag: { include: { translations: true } } } },
             project: { include: { translations: true } },
+            user: { select: { name: true, image: true } },
           },
         });
 
@@ -48,6 +49,11 @@ export async function getPublicBlogBySlug(
           coverImage: blog.coverImage,
 
           readingTime: blog.readingTime,
+
+          author: {
+            name: blog.user?.name || '',
+            avatar: blog.user?.image,
+          },
 
           tags: blog.tags.map(({ tag }) => {
             const t = getTranslatedContent(tag.translations, locale);

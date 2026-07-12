@@ -2,16 +2,15 @@
 
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion, type Variants } from 'framer-motion';
+import { itemVariants,useLockBody  } from '@byte-of-me/ui';
+import { AnimatePresence, m, type Variants } from 'framer-motion';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { Routes } from '@/shared/config/global';
-import { useLockBody } from '@/shared/hooks/use-lock-body';
 import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import type { MainNavItem } from '@/shared/types';
-import { itemVariants } from '@/shared/ui/motion';
 
 
 
@@ -80,7 +79,7 @@ export const PublicHeaderMobileNav = ({
     <AnimatePresence mode="wait" initial={false}>
       {isOpen && (
         <>
-          <motion.div
+          <m.div
             ref={menuRef}
             className={
             cn(
@@ -96,7 +95,7 @@ export const PublicHeaderMobileNav = ({
             <div className="grid gap-4">
               <nav className="grid gap-1">
                 {items.map((item, index) => (
-                  <motion.div key={item.href + index} variants={itemVariants}>
+                  <m.div key={item.href + index} variants={itemVariants}>
                     <Link
                       href={item.disabled ? '#' : item.href}
                       onClick={() => onOpenChange(false)}
@@ -107,14 +106,14 @@ export const PublicHeaderMobileNav = ({
                           : 'text-foreground/60'
                       )}
                     >
-                      {t(item.title as Any)}
+                      {t(item.title as Parameters<typeof t>[0])}
                     </Link>
-                  </motion.div>
+                  </m.div>
                 ))}
               </nav>
               {children}
             </div>
-          </motion.div>
+          </m.div>
         </>
       )}
     </AnimatePresence>,

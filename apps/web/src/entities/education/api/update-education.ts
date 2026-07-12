@@ -1,12 +1,13 @@
 'use server';
 
-import { prisma } from '@byte-of-me/db';
+import { type Education, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
+import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 
@@ -16,7 +17,7 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 export async function updateEducation(
   id: string,
   values: EducationFormValues
-): Promise<ApiResponse<Any>> {
+): Promise<ApiResponse<Education>> {
   try {
     const user = await requireAdmin();
 
@@ -108,11 +109,12 @@ export async function updateEducation(
 
       return { success: true, data: education };
     });
-  } catch (error: Any) {
-    logger.error(`Update education error: ${error.message}`);
+  } catch (error) {
+    const errorMsg = getErrorMessage(error, 'Failed to update educationSchema');
+    logger.error(`Update education error: ${errorMsg}`);
     return {
       success: false,
-      errorMsg: error.message || 'Failed to update educationSchema',
+      errorMsg,
     };
   }
 }

@@ -19,13 +19,6 @@ export const metadata: Metadata = {
 export default async function BlogsPage() {
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold tracking-tight">Blog Posts</h1>
-        <p className="text-lg text-muted-foreground">
-          Create and manage your articles, drafts, and published content.
-        </p>
-      </div>
-
       <BlogManager />
     </div>
   );

@@ -171,7 +171,15 @@
     "reply": "Reply",
     "replyTo": "Reply to",
     "cancel": "Cancle",
-    "hideCommentFailed": "Failed to delete the comment, try again later"
+    "hideCommentFailed": "Failed to delete the comment, try again later",
+    "linkCopied": "Link copied to clipboard",
+    "home": "Home",
+    "allPosts": "All posts",
+    "tableOfContents": "On this page",
+    "relatedPosts": "Related posts",
+    "previousPost": "Previous",
+    "nextPost": "Next",
+    "aboutTheAuthor": "About the author"
   },
   "contact": {
     "letsWorkTogether": "Let’s work together",
@@ -197,6 +205,7 @@
     "contactDetails": "Contact details"
   },
   "experience": {
+    "title": "Work Experience",
     "updating": "Updating..."
   },
   "components": {
@@ -239,6 +248,7 @@
         "profile": "Profile",
         "projects": "Projects",
         "blogs": "Blogs",
+        "comments": "Comments",
         "media": "Media Library",
         "companies": "Companies",
         "education": "Education",

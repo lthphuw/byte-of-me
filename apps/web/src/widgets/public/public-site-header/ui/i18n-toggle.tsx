@@ -1,20 +1,20 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
-import { useLocale, useTranslations } from 'next-intl';
-
-import { languageNames, supportedLanguages } from '@/shared/config/language';
-import { Link, usePathname } from '@/shared/i18n/navigation';
-import { cn } from '@/shared/lib/utils';
-import type { LocaleType } from '@/shared/types';
+import type { ReactElement } from 'react';
 import {
   Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/shared/ui';
-import { menuTransition, menuVariants } from '@/shared/ui/motion';
+ menuTransition, menuVariants } from '@byte-of-me/ui';
+import { AnimatePresence, m } from 'framer-motion';
+import { useLocale, useTranslations } from 'next-intl';
+
+import { languageNames, supportedLanguages } from '@/shared/config/language';
+import { Link, usePathname } from '@/shared/i18n/navigation';
+import { cn } from '@/shared/lib/utils';
+import type { LocaleType } from '@/shared/types';
 
 const flagVariants = {
   initial: { opacity: 0, scale: 0.9, y: 8 },
@@ -22,11 +22,14 @@ const flagVariants = {
   exit: { opacity: 0, scale: 0.9, y: -8 },
 };
 
-export const Flags: Record<LocaleType, Any> = {
-  vi: (props: Any) => (
+export const Flags: Record<
+  LocaleType,
+  (props: { className?: string }) => ReactElement
+> = {
+  vi: (props) => (
     <span className={cn('fi fi-vn border border-muted/20', props.className)} />
   ),
-  en: (props: Any) => (
+  en: (props) => (
     <span className={cn('fi fi-gb border border-muted/20', props.className)} />
   ),
 };
@@ -48,7 +51,7 @@ export function I18nToggle() {
         >
           <div className="relative flex size-6 items-center justify-center overflow-hidden rounded-sm">
             <AnimatePresence mode="wait" initial={false}>
-              <motion.div
+              <m.div
                 key={locale}
                 variants={flagVariants}
                 initial="initial"
@@ -58,7 +61,7 @@ export function I18nToggle() {
                 className="absolute inset-0 flex items-center justify-center"
               >
                 <CurrentFlag className="size-full object-cover shadow-sm" />
-              </motion.div>
+              </m.div>
             </AnimatePresence>
           </div>
           <span className="sr-only">{t('toggleLanguage')}</span>
@@ -72,7 +75,7 @@ export function I18nToggle() {
         forceMount
       >
         <AnimatePresence>
-          <motion.div
+          <m.div
             variants={menuVariants}
             initial="initial"
             animate="animate"
@@ -100,7 +103,7 @@ export function I18nToggle() {
                     </div>
                     <div className="flex flex-1 items-center justify-between">
                       <span className="text-sm">
-                        {t(languageNames[lang] as Any)}
+                        {t(languageNames[lang] as Parameters<typeof t>[0])}
                       </span>
                       <span className="text-[10px] font-bold uppercase tracking-widest opacity-30">
                         {lang}
@@ -110,7 +113,7 @@ export function I18nToggle() {
                 </DropdownMenuItem>
               );
             })}
-          </motion.div>
+          </m.div>
         </AnimatePresence>
       </DropdownMenuContent>
     </DropdownMenu>

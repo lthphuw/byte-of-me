@@ -1,14 +1,17 @@
 import { Suspense } from 'react';
+import { Separator } from '@byte-of-me/ui';
+import { BarChart3 } from 'lucide-react';
 import type { Metadata } from 'next';
 
 import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
 import {
+  AnalyticsOverview,
+  AnalyticsOverviewLoading,
   DashboardProfile,
   DashboardProfileLoading,
   StatsGrid,
   StatsGridLoading,
 } from '@/features/dashboard';
-import { Separator } from '@/shared/ui';
 import { ContactMessageGallery } from '@/widgets/dashboard/contact-message-gallery/ui/contact-message-gallery';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -43,6 +46,21 @@ export default async function DashboardPage() {
       <section aria-label="Statistics Overview">
         <Suspense fallback={<StatsGridLoading />}>
           <StatsGrid />
+        </Suspense>
+      </section>
+
+      <section aria-label="Analytics" className="space-y-6">
+        <div className="border-b pb-4">
+          <h2 className="flex items-center gap-2 text-xl font-semibold tracking-tight">
+            <BarChart3 className="h-5 w-5 text-primary" />
+            Analytics
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Blog views, engagement, and page traffic at a glance.
+          </p>
+        </div>
+        <Suspense fallback={<AnalyticsOverviewLoading />}>
+          <AnalyticsOverview />
         </Suspense>
       </section>
 

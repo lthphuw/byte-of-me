@@ -1,10 +1,10 @@
 'use client';
 
+import { Button , Icons } from '@byte-of-me/ui';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { logInWithGithub } from '@/features/auth/lib/log-in-with-github';
-import { Button , Icons } from '@/shared/ui';
 
 
 

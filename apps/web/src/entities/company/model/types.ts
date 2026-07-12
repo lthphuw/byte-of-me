@@ -1,4 +1,24 @@
+import type { Prisma } from '@byte-of-me/db';
+
 import type { Media } from '@/shared/types/models';
+
+export type AdminCompany = Prisma.CompanyGetPayload<{
+  include: {
+    logo: true;
+    translations: true;
+    techStacks: true;
+    roles: {
+      include: {
+        translations: true;
+        tasks: {
+          include: {
+            translations: true;
+          };
+        };
+      };
+    };
+  };
+}>;
 
 export interface PublicTask {
   id: string;

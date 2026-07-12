@@ -24,13 +24,6 @@ export const metadata: Metadata = {
 export default async function EducationPage() {
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold tracking-tight">Education</h1>
-        <p className="text-lg text-muted-foreground">
-          Curate your academic background and professional certifications.
-        </p>
-      </div>
-
       <EducationManager />
     </div>
   );

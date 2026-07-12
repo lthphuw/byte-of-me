@@ -23,13 +23,6 @@ export const metadata: Metadata = {
 export default async function MediaPage() {
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold tracking-tight">Media Library</h1>
-        <p className="text-lg text-muted-foreground">
-          Centralized storage for your portfolio assets and banner images.
-        </p>
-      </div>
-
       <MediaManager />
     </div>
   );

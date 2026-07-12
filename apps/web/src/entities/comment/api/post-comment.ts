@@ -2,15 +2,17 @@
 
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
+import { escapeHtml } from '@byte-of-me/ui';
 import { revalidateTag } from 'next/cache';
 import { getLocale } from 'next-intl/server';
 
-import type { PublicComment } from '@/entities';
+import type { PublicComment } from '@/entities/comment/model';
 import { mailer } from '@/shared/api';
 import { env } from '@/shared/config/env';
 import { requireUser } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
+import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 
@@ -49,13 +51,12 @@ export async function postComment(
         parentId,
         user: {
           id: user.id,
-          name: user.name || 'anonymous',
-          email: user.email || 'anonymous',
+          name: user.name || 'Anonymous',
         },
       },
     };
-  } catch (error: Any) {
-    logger.error(`Failed to post comment: ${error.message}`);
+  } catch (error) {
+    logger.error(`Failed to post comment: ${getErrorMessage(error)}`);
     throw new Error('Failed to post comment');
   }
 }
@@ -94,11 +95,11 @@ async function sendCommentNotification(
       html: `
         <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee;">
           <h2>New Comment Notification</h2>
-          <p><strong>Blog:</strong> ${translated?.title ?? 'Unknown'}</p>
-          <p><strong>From:</strong> ${userEmail ?? 'anonymous'}</p>
+          <p><strong>Blog:</strong> ${escapeHtml(translated?.title ?? 'Unknown')}</p>
+          <p><strong>From:</strong> ${escapeHtml(userEmail ?? 'anonymous')}</p>
           <hr />
           <p><strong>Comment:</strong></p>
-          <p style="white-space: pre-wrap;">${content}</p>
+          <p style="white-space: pre-wrap;">${escapeHtml(content)}</p>
           ${
             blog?.slug
               ? `<p style="margin-top:16px;"><a href="${process.env.NEXT_PUBLIC_APP_URL}/blog/${blog.slug}">View Blog</a></p>`
@@ -108,7 +109,7 @@ async function sendCommentNotification(
       `,
     });
     logger.info(`Comment notification sent for ${translated?.title}`);
-  } catch (e: any) {
-    logger.error(`Failed to send comment notification: ${e.message}`);
+  } catch (e) {
+    logger.error(`Failed to send comment notification: ${getErrorMessage(e)}`);
   }
 }

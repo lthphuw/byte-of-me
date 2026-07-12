@@ -1,9 +1,8 @@
 'use client';
 
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@byte-of-me/ui';
 import { LibraryBig, SearchX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/ui';
 
 export interface BlogEmptyProps {
   isSearch?: boolean;

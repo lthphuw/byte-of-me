@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { Badge , Card, CardContent } from '@byte-of-me/ui';
 import { format } from 'date-fns';
 import {
   ArrowRight,
@@ -10,13 +10,10 @@ import {
   Layers,
   Tag as TagIcon,
 } from 'lucide-react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 import type { PublicBlog } from '@/entities/blog/model/types';
-import { getPublicBlogStats } from '@/features/public/blog-stats/lib';
-import { CACHE_TAGS } from '@/shared/lib/constants';
-import { Badge , Card, CardContent , Skeleton } from '@/shared/ui';
+import { Link } from '@/shared/i18n/navigation';
 
 interface BlogCardProps {
   blog: PublicBlog;
@@ -26,14 +23,8 @@ interface BlogCardProps {
 export function BlogCard({ blog, onTagClick }: BlogCardProps) {
   const t = useTranslations('components.blogCard');
 
-  const { data, isLoading } = useQuery({
-    queryKey: [CACHE_TAGS.BLOG, blog.id],
-    queryFn: () => getPublicBlogStats(blog.id),
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const views = data?.views ?? blog.views ?? 0;
-  const avgTime = data?.avgTime ?? blog.avgReadingTime ?? 0;
+  const views = blog.views ?? 0;
+  const avgTime = blog.avgReadingTime ?? blog.readingTime ?? 0;
 
   return (
     <Card className="group flex flex-col overflow-hidden border-2 transition-all hover:border-primary/50 hover:shadow-xl">
@@ -113,21 +104,13 @@ export function BlogCard({ blog, onTagClick }: BlogCardProps) {
             {/* Views Stat */}
             <div className="flex items-center gap-1">
               <Eye className="h-3.5 w-3.5" />
-              {isLoading ? (
-                <Skeleton className="h-3 w-8" />
-              ) : (
-                <span>{t('views', { count: views })}</span>
-              )}
+              <span>{t('views', { count: views })}</span>
             </div>
 
             {/* Reading Time Stat */}
             <div className="flex items-center gap-1">
               <Clock className="h-3.5 w-3.5" />
-              {isLoading ? (
-                <Skeleton className="h-3 w-6" />
-              ) : (
-                <span>{avgTime}m</span>
-              )}
+              <span>{avgTime}m</span>
             </div>
           </div>
 

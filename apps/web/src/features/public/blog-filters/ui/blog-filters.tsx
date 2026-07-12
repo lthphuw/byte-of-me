@@ -1,13 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Button, FilterMultiSelectSection, Input,useDebounce  } from '@byte-of-me/ui';
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { useTagInfiniteQuery } from '@/entities/tag';
 import { TagClickableBadge } from '@/entities/tag/ui/tag-clickable-badge';
-import { useDebounce } from '@/shared/hooks';
-import { Button, FilterMultiSelectSection, Input } from '@/shared/ui';
 
 interface FilterValues {
   tagSlugs: string[];

@@ -181,7 +181,15 @@ declare const messages: {
     "reply": "Trả lời",
     "replyTo": "Trả lời",
     "cancel": "Huỷ",
-    "hideCommentFailed": "Xoá bình luận thất bại, vui lòng thử lại sau"
+    "hideCommentFailed": "Xoá bình luận thất bại, vui lòng thử lại sau",
+    "linkCopied": "Đã sao chép liên kết",
+    "home": "Trang chủ",
+    "allPosts": "Tất cả bài viết",
+    "tableOfContents": "Nội dung",
+    "relatedPosts": "Bài viết liên quan",
+    "previousPost": "Trước",
+    "nextPost": "Tiếp",
+    "aboutTheAuthor": "Về tác giả"
   },
   "contact": {
     "letsWorkTogether": "Cùng nhau hợp tác",
@@ -207,6 +215,7 @@ declare const messages: {
     "contactDetails": "Thông tin liên hệ"
   },
   "experience": {
+    "title": "Kinh nghiệm làm việc",
     "updating": "Đang cập nhật..."
   },
   "components": {
@@ -249,6 +258,7 @@ declare const messages: {
         "profile": "Hồ sơ",
         "projects": "Dự án",
         "blogs": "Bài viết",
+        "comments": "Bình luận",
         "media": "Thư viện",
         "companies": "Công ty",
         "education": "Học vấn",

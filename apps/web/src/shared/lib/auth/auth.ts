@@ -2,7 +2,9 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import NextAuth from 'next-auth';
-import EmailProvider from 'next-auth/providers/email';
+import EmailProvider, {
+  type EmailProviderSendVerificationRequestParams,
+} from 'next-auth/providers/email';
 import GitHub from 'next-auth/providers/github';
 import Google from 'next-auth/providers/google';
 import nodemailer from 'nodemailer';
@@ -10,6 +12,7 @@ import nodemailer from 'nodemailer';
 import { env } from '@/shared/config/env';
 import { siteConfig } from '@/shared/config/site';
 import { signInTemplate } from '@/shared/lib/templates/sign-in-template';
+import { getErrorMessage } from '@/shared/lib/utils';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -41,13 +44,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     GitHub({
       clientId: env.AUTH_GITHUB_ID,
       clientSecret: env.AUTH_GITHUB_SECRET,
-      allowDangerousEmailAccountLinking: true,
     }),
 
     Google({
       clientId: env.AUTH_GOOGLE_ID,
       clientSecret: env.AUTH_GOOGLE_SECRET,
-      allowDangerousEmailAccountLinking: true,
     }),
   ],
 
@@ -90,7 +91,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
 });
 
-async function sendVerificationRequest({ identifier, url, provider }: Any) {
+async function sendVerificationRequest({
+  identifier,
+  url,
+  provider,
+}: EmailProviderSendVerificationRequestParams) {
   const transporter = nodemailer.createTransport(provider.server);
   const fromName = siteConfig.name;
 
@@ -102,9 +107,9 @@ async function sendVerificationRequest({ identifier, url, provider }: Any) {
       text: `Sign in to ${fromName}\n${url}\n\n`,
       html: await signInTemplate({ url, host: fromName }),
     });
-  } catch (error: Any) {
+  } catch (error) {
     logger.error(
-      `[Nodemailer] Send verification email got error: ${error.message}`
+      `[Nodemailer] Send verification email got error: ${getErrorMessage(error)}`
     );
     throw new Error('Could not send verification email.');
   }

@@ -8,6 +8,7 @@ import tailwindcssAnimate from 'tailwindcss-animate';
 export default {
   content: [
     './src/**/*.{ts,tsx}',
+    '../../packages/ui/src/**/*.{ts,tsx}',
   ],
   darkMode: ['class'],
   theme: {

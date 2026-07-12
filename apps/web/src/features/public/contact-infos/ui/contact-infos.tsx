@@ -1,4 +1,5 @@
 import React from 'react';
+import { Icons } from '@byte-of-me/ui';
 import { getTranslations } from 'next-intl/server';
 
 import { getAllPublicContacts } from '@/entities/social-link/api/get-all-public-contacts';
@@ -9,7 +10,6 @@ import {
 } from '@/features/public/contact-infos/ui/contact-motions';
 import { env } from '@/shared/config/env';
 import { Link } from '@/shared/i18n/navigation';
-import { Icons } from '@/shared/ui';
 
 export async function ContactInfos() {
   const t = await getTranslations('contact');

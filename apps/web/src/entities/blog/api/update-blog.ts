@@ -1,17 +1,17 @@
 'use server';
 
-import { prisma } from '@byte-of-me/db';
+import { type Blog, prisma } from '@byte-of-me/db';
 import { revalidateTag } from 'next/cache';
 
 import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-
-
-
-
-export async function updateBlog(id: string, data: BlogFormValues) {
+export async function updateBlog(
+  id: string,
+  data: BlogFormValues
+): Promise<ApiResponse<Blog>> {
   await requireAdmin();
 
   try {
@@ -62,6 +62,6 @@ export async function updateBlog(id: string, data: BlogFormValues) {
     return { success: true, data: updatedBlog };
   } catch (error) {
     console.error('[UPDATE_BLOG_ERROR]', error);
-    return { success: false, error: 'Failed to update blog post' };
+    return { success: false, errorMsg: 'Failed to update blog post' };
   }
 }

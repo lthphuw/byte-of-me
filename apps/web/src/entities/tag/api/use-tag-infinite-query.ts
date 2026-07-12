@@ -1,3 +1,5 @@
+'use client';
+
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { getPaginatedPublicTags } from '@/entities/tag/api/get-paginated-public-tags';

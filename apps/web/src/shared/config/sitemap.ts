@@ -8,7 +8,6 @@ export const sitemapConfig: Record<
   }
 > = {
   '/': { priority: 1.0, changeFrequency: 'daily' },
-  '/ask-me': { priority: 0.9, changeFrequency: 'daily' },
   // '/cv': { priority: 0.9, changeFrequency: 'monthly' },
   '/blogs': { priority: 0.85, changeFrequency: 'weekly' },
   '/projects': { priority: 0.85, changeFrequency: 'weekly' },

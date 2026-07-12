@@ -2,6 +2,7 @@
 
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
+import { escapeHtml, sanitizeHtml } from '@byte-of-me/ui';
 import { revalidateTag } from 'next/cache';
 
 import {
@@ -11,7 +12,6 @@ import {
 import { mailer } from '@/shared/api';
 import { env } from '@/shared/config/env';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { sanitizeHtml } from '@/shared/lib/uuid';
 
 export async function sendContactMessage(values: ContactMessageFormValues) {
   const parsed = contactMessageSchema.safeParse(values);
@@ -47,9 +47,9 @@ async function sendNotificationEmail(data: ContactMessageFormValues) {
       html: `
         <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee;">
           <h2>New message from <b>Byte of Me</b></h2>
-          <p><strong>Name:</strong> ${data.name}</p>
-          <p><strong>Email:</strong> ${data.email}</p>
-          <p><strong>Subject:</strong> ${data.subject || 'N/A'}</p>
+          <p><strong>Name:</strong> ${escapeHtml(data.name)}</p>
+          <p><strong>Email:</strong> ${escapeHtml(data.email)}</p>
+          <p><strong>Subject:</strong> ${escapeHtml(data.subject || 'N/A')}</p>
           <hr />
           <p style="white-space: pre-wrap;">${sanitizedMessage}</p>
         </div>

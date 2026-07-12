@@ -174,7 +174,15 @@ declare const messages: {
     "reply": "Reply",
     "replyTo": "Reply to",
     "cancel": "Cancle",
-    "hideCommentFailed": "Failed to delete the comment, try again later"
+    "hideCommentFailed": "Failed to delete the comment, try again later",
+    "linkCopied": "Link copied to clipboard",
+    "home": "Home",
+    "allPosts": "All posts",
+    "tableOfContents": "On this page",
+    "relatedPosts": "Related posts",
+    "previousPost": "Previous",
+    "nextPost": "Next",
+    "aboutTheAuthor": "About the author"
   },
   "contact": {
     "letsWorkTogether": "Let’s work together",
@@ -200,6 +208,7 @@ declare const messages: {
     "contactDetails": "Contact details"
   },
   "experience": {
+    "title": "Work Experience",
     "updating": "Updating..."
   },
   "components": {
@@ -242,6 +251,7 @@ declare const messages: {
         "profile": "Profile",
         "projects": "Projects",
         "blogs": "Blogs",
+        "comments": "Comments",
         "media": "Media Library",
         "companies": "Companies",
         "education": "Education",

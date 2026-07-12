@@ -1,11 +1,12 @@
 'use server';
 
-import { prisma } from '@byte-of-me/db';
+import { type Prisma, prisma } from '@byte-of-me/db';
 
-import type { PublicProject } from '@/entities';
 import type { PublicBlog } from '@/entities/blog/model/types';
+import type { PublicProject } from '@/entities/project/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
+import { buildPaginatedMeta } from '@/shared/lib/pagination';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type {
   PaginatedData,
@@ -27,18 +28,12 @@ export async function getPaginatedPublicBlogs(
         const { page = 1, limit = 9, tagSlugs = [], search } = params;
         const skip = (page - 1) * limit;
 
-        console.log(`>>> Fetch blogs by filters ${tagSlugs} ${search}`);
-        const where: Any = {
-          isPublished: true,
-          AND: [],
-        };
+        const where: Prisma.BlogWhereInput = { isPublished: true };
 
         if (tagSlugs.length > 0) {
-          tagSlugs.forEach((slug) => {
-            where.AND.push({
-              tags: { some: { tag: { slug } } },
-            });
-          });
+          where.AND = tagSlugs.map((slug) => ({
+            tags: { some: { tag: { slug } } },
+          }));
         }
 
         if (search) {
@@ -51,8 +46,6 @@ export async function getPaginatedPublicBlogs(
             },
           };
         }
-
-        if (where.AND.length === 0) delete where.AND;
 
         const [blogsRes, total] = await Promise.all([
           prisma.blog.findMany({
@@ -75,8 +68,6 @@ export async function getPaginatedPublicBlogs(
           prisma.blog.count({ where }),
         ]);
 
-
-
         const blogs: PublicBlog[] = blogsRes.map((blog) => {
           const translated = getTranslatedContent(blog.translations, locale);
 
@@ -88,8 +79,8 @@ export async function getPaginatedPublicBlogs(
             );
 
             project = {
-              id: blog.id,
-              slug: blog.slug,
+              id: blog.project.id,
+              slug: blog.project.slug,
               title: projTranslated?.title || '',
               description: projTranslated?.description || '',
             };
@@ -108,6 +99,8 @@ export async function getPaginatedPublicBlogs(
             project,
             coverImage: blog.coverImage,
             readingTime: blog.readingTime,
+            views: blog._count.blogViewLogs,
+            avgReadingTime: blog.readingTime ?? 0,
             tags: blog.tags.map(({ tag }) => {
               const t = getTranslatedContent(tag.translations, locale);
               return { ...tag, name: t?.name || '' };
@@ -117,12 +110,7 @@ export async function getPaginatedPublicBlogs(
 
         return {
           data: blogs,
-          meta: {
-            currentPage: page,
-            totalPages: Math.ceil(total / limit),
-            totalCount: total,
-            hasMore: page < Math.ceil(total / limit),
-          },
+          meta: buildPaginatedMeta({ page, limit, totalCount: total }),
         };
       },
       { cache: false }

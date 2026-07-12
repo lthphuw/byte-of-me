@@ -3,6 +3,8 @@
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
+import { getErrorMessage } from '@/shared/lib/utils';
+
 export async function updateBlogReadingTime(logId: string, seconds: number) {
   try {
     const data = await prisma.blogStatisticLog.update({
@@ -17,9 +19,9 @@ export async function updateBlogReadingTime(logId: string, seconds: number) {
     logger.debug(`Update blog log ${logId} result: ${JSON.stringify(data)}`);
 
     return { success: true };
-  } catch (error: Any) {
+  } catch (error) {
     logger.error(
-      `Failed to update reading time for log ${logId}: ${error.message}`
+      `Failed to update reading time for log ${logId}: ${getErrorMessage(error)}`
     );
     return { success: false };
   }

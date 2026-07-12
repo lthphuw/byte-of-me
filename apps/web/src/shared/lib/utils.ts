@@ -1,15 +1,10 @@
-import { type ClassValue,clsx } from 'clsx';
 // eslint-disable-next-line import/no-duplicates
 import { formatDistanceToNow } from 'date-fns';
 // eslint-disable-next-line import/no-duplicates
 import { enUS, vi } from 'date-fns/locale';
-import { twMerge } from 'tailwind-merge';
 
-import { env } from '@/shared/config/env';
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+export { cn } from '@byte-of-me/ui';
 
 export function ensureValidUrl(url: string): string {
   if (/^https?:\/\//i.test(url)) return url;
@@ -19,8 +14,17 @@ export function ensureValidUrl(url: string): string {
   return `https://${url}`;
 }
 
-export function prettyStringify(json: Any) {
+export function prettyStringify(json: unknown) {
   return JSON.stringify(json, null, 2);
+}
+
+export function getErrorMessage(
+  error: unknown,
+  fallback = 'An unexpected error occurred'
+): string {
+  if (error instanceof Error && error.message) return error.message;
+  if (typeof error === 'string' && error) return error;
+  return fallback;
 }
 
 export function formatImageSize(bytes: number) {
@@ -53,13 +57,4 @@ export function getRelativeTime(date: Date, locale: string) {
     addSuffix: true,
     locale: locale === 'vi' ? vi : enUS,
   });
-}
-/**
- * For debugging
- * @param ms
- */
-export async function delay(ms: number) {
-  if (env.NODE_ENV !== 'production') {
-    await new Promise((resolve) => setTimeout(resolve, ms));
-  }
 }

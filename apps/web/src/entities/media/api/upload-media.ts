@@ -8,6 +8,7 @@ import { supabaseStorage } from '@/shared/api';
 import { env } from '@/shared/config/env';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
+import { getErrorMessage } from '@/shared/lib/utils';
 import { generateFriendlyId } from '@/shared/lib/uuid';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { Media } from '@/shared/types/models';
@@ -61,7 +62,7 @@ export async function uploadMedia(
     revalidateTag(CACHE_TAGS.MEDIA, 'max');
     return { success: true, data: results };
   } catch (error) {
-    logger.error(`Upload error: ${(error as Any).message}`);
+    logger.error(`Upload error: ${getErrorMessage(error)}`);
     return { success: false, errorMsg: 'Failed to upload one or more images.' };
   }
 }

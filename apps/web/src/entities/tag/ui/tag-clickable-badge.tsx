@@ -1,8 +1,9 @@
 'use client';
 
+import { Badge } from '@byte-of-me/ui';
+
 import type { PublicTag } from '@/entities/tag/model/types';
 import { cn } from '@/shared/lib/utils';
-import { Badge } from '@/shared/ui';
 
 interface TagBadgeProps {
   tag: PublicTag;

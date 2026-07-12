@@ -1,13 +1,13 @@
 'use client';
 
+import { Badge , Card, CardContent, CardHeader, CardTitle , DeleteButton , EditButton , Icons } from '@byte-of-me/ui';
 import { ExternalLink } from 'lucide-react';
 
 import type { AdminProject } from '@/entities/project/model';
-import { Badge , Card, CardContent, CardHeader, CardTitle , DeleteButton , EditButton , Icons } from '@/shared/ui';
 
 interface ProjectEditorCardProps {
   project: AdminProject;
-  onEdit: (project: Any) => void;
+  onEdit: (project: AdminProject) => void;
   onDelete: (id: string) => void;
   isPending?: boolean;
 }

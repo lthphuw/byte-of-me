@@ -1,13 +1,29 @@
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
 import { Eye, Hourglass } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
 
-import { getPublicBlogStats } from '@/features/public/blog-stats/lib';
+import { BlogLiveStatsSkeleton } from './blog-live-stats-loading';
 
-export const dynamic = 'force-dynamic';
+import { getPublicBlogStats } from '@/entities/blog/api/get-public-blog-stats';
+import { CACHE_TAGS } from '@/shared/lib/constants';
 
-export async function BlogLiveStats({ blogId }: { blogId: string }) {
-  const stats = await getPublicBlogStats(blogId);
-  const t = await getTranslations('blogDetails');
+// The public segment is statically generated, so a server render of these
+// stats would be frozen at build time. Fetching client-side (same query key
+// as BlogCard, so the cache is shared) keeps them genuinely live.
+export function BlogLiveStats({ blogId }: { blogId: string }) {
+  const t = useTranslations('blogDetails');
+
+  const { data: stats, isLoading } = useQuery({
+    queryKey: [CACHE_TAGS.BLOG, blogId],
+    queryFn: () => getPublicBlogStats(blogId),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  if (isLoading || !stats) {
+    return <BlogLiveStatsSkeleton />;
+  }
 
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground md:text-base">

@@ -7,6 +7,7 @@ import { revalidateTag } from 'next/cache';
 import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
+import { getErrorMessage } from '@/shared/lib/utils';
 
 
 
@@ -189,12 +190,13 @@ export async function saveProfile(values: UserProfileFormValues) {
     revalidateTag(CACHE_TAGS.USER, 'max');
     revalidateTag(CACHE_TAGS.SOCIAL, 'max');
     return { success: true };
-  } catch (error: Any) {
+  } catch (error) {
+    const errorMsg = getErrorMessage(error);
     logger.error('[PROFILE] Save failed', {
-      message: error.message,
-      stack: error.stack,
+      message: errorMsg,
+      stack: error instanceof Error ? error.stack : undefined,
     });
 
-    return { success: false, error: error.message };
+    return { success: false, error: errorMsg };
   }
 }

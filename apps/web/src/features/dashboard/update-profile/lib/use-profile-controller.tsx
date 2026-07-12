@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 import type { AdminUserProfile } from '@/entities/user-profile';
 import { getAdminUserProfile } from '@/entities/user-profile/api/get-user-profile-with-translations';
@@ -12,10 +13,8 @@ import {
   type UserProfileFormValues,
   userProfileSchema,
 } from '@/entities/user-profile/model/user-profile-schema';
-import { useToast } from '@/shared/hooks/use-toast';
 
 export function useProfileController(initUser: AdminUserProfile) {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<string>('');
 
@@ -40,21 +39,19 @@ export function useProfileController(initUser: AdminUserProfile) {
   const saveMutation = useMutation({
     mutationFn: saveProfile,
     onSuccess: () => {
-      toast({ title: 'Profile synchronized' });
+      toast('Profile synchronized');
       queryClient.invalidateQueries({
         queryKey: ['userProfileSchema', initUser.id],
       });
     },
-    onError: (err: Any) => {
-      toast({
-        title: 'Save failed',
+    onError: (err) => {
+      toast.error('Save failed', {
         description: err?.message,
-        variant: 'destructive',
       });
     },
   });
 
-  const parseAboutMe = useCallback((content: Any) => {
+  const parseAboutMe = useCallback((content: unknown) => {
     if (!content || content === '<p></p>') return '<p></p>';
     if (typeof content !== 'string') return content;
     try {
@@ -74,7 +71,7 @@ export function useProfileController(initUser: AdminUserProfile) {
           : null,
         socialLinks: userData.socialLinks ?? [],
         translations:
-          userData.userProfile?.translations?.map((t: Any) => ({
+          userData.userProfile?.translations?.map((t) => ({
             ...t,
             aboutMe: parseAboutMe(t.aboutMe),
           })) || [],

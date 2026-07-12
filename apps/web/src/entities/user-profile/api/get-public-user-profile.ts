@@ -35,9 +35,12 @@ export async function getPublicUserProfile(): Promise<
         });
 
         const profileTranslation = getTranslatedContent(
-          userProfile?.translations || [],
+          userProfile.translations,
           locale
         );
+        if (!profileTranslation) {
+          throw new Error('No translation found for user profile');
+        }
 
         return {
           displayName: profileTranslation.displayName ?? '',

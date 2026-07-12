@@ -36,21 +36,4 @@ export const generateFriendlyId = (length: number = 12): string => {
   return nanoidFriendly();
 };
 
-export function sanitizeHtml(html: string): string {
-  if (!html) return '';
-
-  let clean = html.replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gim, '');
-  clean = clean.replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gim, '');
-
-  const allowedTags =
-    /<\/?(b|i|em|strong|p|br|h1|h2|h3|h4|ul|ol|li|blockquote|code|pre|a|img|div|span)\b[^>]*>/gim;
-
-  clean = clean.replace(/<[^>]+>/g, (tag) => {
-    return tag.match(allowedTags) ? tag : '';
-  });
-
-  clean = clean.replace(/\s(on\w+)\s*=\s*["'][^"']*["']/gim, '');
-  clean = clean.replace(/href\s*=\s*["']javascript:[^"']*["']/gim, 'href="#"');
-
-  return clean.trim();
-}
+export { sanitizeHtml } from '@byte-of-me/ui';

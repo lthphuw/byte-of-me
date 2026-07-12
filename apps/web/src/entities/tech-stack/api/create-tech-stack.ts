@@ -7,6 +7,7 @@ import { revalidateTag } from 'next/cache';
 import type { TechStackFormValues } from '@/entities/tech-stack/model/tech-stack-schema';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
+import { getErrorMessage } from '@/shared/lib/utils';
 
 export async function addTechStack(data: TechStackFormValues) {
   try {
@@ -26,8 +27,8 @@ export async function addTechStack(data: TechStackFormValues) {
     revalidateTag(CACHE_TAGS.TECH, 'max');
 
     return { success: true, data: newTech };
-  } catch (error: Any) {
-    logger.error('addTechStack:', error.message);
+  } catch (error) {
+    logger.error(`addTechStack: ${getErrorMessage(error)}`);
     return { success: false, error: 'Failed to add tech stack item' };
   }
 }

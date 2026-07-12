@@ -1,12 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Check, ChevronDown, ImageIcon, Loader2, Plus } from 'lucide-react';
-
-import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media';
-import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
-import { cn } from '@/shared/lib/utils';
-import type { Media } from '@/shared/types/models';
 import {
   Button,
   Dialog,
@@ -18,7 +12,13 @@ import {
   PopoverContent,
   PopoverTrigger,
   ScrollArea,
-} from '@/shared/ui';
+} from '@byte-of-me/ui';
+import { Check, ChevronDown, ImageIcon, Loader2, Plus } from 'lucide-react';
+
+import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media';
+import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
+import { cn } from '@/shared/lib/utils';
+import type { Media } from '@/shared/types/models';
 
 interface MediaSelectProps {
   value?: string | null;

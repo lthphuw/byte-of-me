@@ -6,12 +6,10 @@ import { revalidateTag } from 'next/cache';
 
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
+import { getErrorMessage } from '@/shared/lib/utils';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-
-
-
-
-export async function deleteTag(id: string) {
+export async function deleteTag(id: string): Promise<ApiResponse<null>> {
   try {
     await requireAdmin();
 
@@ -21,9 +19,10 @@ export async function deleteTag(id: string) {
 
     revalidateTag(CACHE_TAGS.TAG, 'max');
 
-    return { success: true };
-  } catch (e: Any) {
-    logger.error(`[Tag] delete:`, e.message);
-    return { success: false, errorMsg: e.message };
+    return { success: true, data: null };
+  } catch (error) {
+    const errorMsg = getErrorMessage(error);
+    logger.error(`[Tag] delete: ${errorMsg}`);
+    return { success: false, errorMsg };
   }
 }

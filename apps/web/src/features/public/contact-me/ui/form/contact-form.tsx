@@ -2,16 +2,7 @@
 
 import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-
-import {
-  type ContactMessageFormValues,
-  contactMessageSchema,
-  sendContactMessage,
-} from '@/entities/contact-message';
-import { useToast } from '@/shared/hooks/use-toast';
-import {
-  Button,
+import {   Button,
   Form,
   FormControl,
   FormField,
@@ -21,11 +12,18 @@ import {
   Icons,
   Input,
   RichTextEditorLite,
-} from '@/shared/ui';
+} from '@byte-of-me/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+
+import {
+  type ContactMessageFormValues,
+  contactMessageSchema,
+  sendContactMessage,
+} from '@/entities/contact-message';
 
 export function ContactForm() {
   const [isPending, startTransition] = useTransition();
-  const { toast } = useToast();
 
   const form = useForm<ContactMessageFormValues>({
     resolver: zodResolver(contactMessageSchema),
@@ -52,13 +50,9 @@ export function ContactForm() {
           message: '',
         });
 
-        toast({
-          title: 'Message sent!',
-        });
+        toast('Message sent!');
       } else {
-        toast({
-          title: 'Failed to send message',
-        });
+        toast('Failed to send message');
       }
     });
   };

@@ -2,13 +2,13 @@
 
 // Error boundaries must be Client Components
 import { useCallback, useEffect, useMemo } from 'react';
+import { Button, Icons,useClipboard  } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
 import { Routes } from '@/shared/config/global';
-import { useClipboard } from '@/shared/hooks';
 import { Link } from '@/shared/i18n/navigation';
 import { cn, prettyStringify } from '@/shared/lib/utils';
-import { Button, GoBackButton, Icons } from '@/shared/ui';
+import { GoBackButton } from '@/shared/ui';
 
 
 

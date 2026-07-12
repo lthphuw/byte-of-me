@@ -7,6 +7,7 @@ import { revalidateTag } from 'next/cache';
 import type { TechStackFormValues } from '@/entities/tech-stack/model/tech-stack-schema';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
+import { getErrorMessage } from '@/shared/lib/utils';
 
 
 
@@ -42,8 +43,8 @@ export async function updateTechStack(id: string, data: TechStackFormValues) {
     revalidateTag(CACHE_TAGS.TECH, 'default');
 
     return { success: true, data: updatedRecord };
-  } catch (error: Any) {
-    logger.error('updateTechStack:', error.message);
+  } catch (error) {
+    logger.error(`updateTechStack: ${getErrorMessage(error)}`);
     return { success: false, error: 'Failed to update tech stack' };
   }
 }

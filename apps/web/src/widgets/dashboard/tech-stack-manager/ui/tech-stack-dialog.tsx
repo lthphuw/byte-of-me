@@ -2,14 +2,6 @@
 
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-
-import type { AdminTechStack } from '@/entities/tech-stack';
-import {
-  type TechStackFormValues,
-  techStackSchema,
-} from '@/entities/tech-stack/model/tech-stack-schema';
-import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import {
   Dialog,
   DialogContent,
@@ -21,7 +13,15 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage, Input , SubmitButton } from '@/shared/ui';
+  FormMessage, Input , SubmitButton } from '@byte-of-me/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import type { AdminTechStack } from '@/entities/tech-stack';
+import {
+  type TechStackFormValues,
+  techStackSchema,
+} from '@/entities/tech-stack/model/tech-stack-schema';
+import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 
 export function TechStackDialog({
   open,
@@ -33,7 +33,7 @@ export function TechStackDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
   initialData: AdminTechStack | null;
-  onSubmit: (values: TechStackFormValues) => Any;
+  onSubmit: (values: TechStackFormValues) => void;
   loading: boolean;
 }) {
   const form = useForm<TechStackFormValues>({

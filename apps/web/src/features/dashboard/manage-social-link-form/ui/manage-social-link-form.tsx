@@ -1,10 +1,10 @@
 'use client';
 
 import { useFieldArray, type UseFormReturn } from 'react-hook-form';
+import { Button , DeleteButton , FormControl, FormField, FormItem , Input } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 
 import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
-import { Button , DeleteButton , FormControl, FormField, FormItem , Input } from '@/shared/ui';
 
 export function SocialLinksSection({
   form,

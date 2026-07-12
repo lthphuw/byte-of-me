@@ -1,5 +1,3 @@
-'use server';
-
 import { getBlogInteractionsForUser } from '@/features/public';
 import { ClapButton } from '@/features/public/toggle-blog-interactions/ui/clap-button';
 import { INTERACTION } from '@/shared/lib/constants';

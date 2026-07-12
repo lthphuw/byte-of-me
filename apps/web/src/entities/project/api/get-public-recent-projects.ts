@@ -45,6 +45,10 @@ export async function getPublicRecentProjects(): Promise<
 
         const recentProjects: PublicProject[] = projects.map((p) => {
           const t = getTranslatedContent(p.translations, locale);
+          if (!t) {
+            throw new Error(`No translation found for project ${p.id}`);
+          }
+
           return {
             ...t,
             id: p.id,

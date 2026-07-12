@@ -38,6 +38,12 @@ export async function getPublicProjectById(
                 },
               },
             },
+
+            coauthors: {
+              include: {
+                coauthor: true,
+              },
+            },
           },
         });
         if (!project) {
@@ -45,6 +51,10 @@ export async function getPublicProjectById(
         }
 
         const t = getTranslatedContent(project.translations, locale);
+        if (!t) {
+          throw new Error(`No translation found for project ${project.id}`);
+        }
+
         return {
           ...t,
           id: project.id,
@@ -77,6 +87,12 @@ export async function getPublicProjectById(
               name: t?.name || '',
             };
           }),
+
+          coauthors: project.coauthors.map(({ coauthor }) => ({
+            id: coauthor.id,
+            fullName: coauthor.fullName,
+            email: coauthor.email,
+          })),
         };
       },
       {

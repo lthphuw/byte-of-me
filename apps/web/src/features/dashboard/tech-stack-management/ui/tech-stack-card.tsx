@@ -1,9 +1,9 @@
 'use client';
 
+import { DeleteButton , EditButton } from '@byte-of-me/ui';
 import Image from 'next/image';
 
 import type { AdminTechStack } from '@/entities';
-import { DeleteButton , EditButton } from '@/shared/ui';
 
 export interface TechStackCardProps {
   techStack: AdminTechStack;

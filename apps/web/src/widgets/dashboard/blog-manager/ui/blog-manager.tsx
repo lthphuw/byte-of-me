@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Button, ConfirmDeleteDialog, Pagination } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 
 import {
@@ -14,112 +13,93 @@ import {
 import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import { BlogEditorCard } from '@/entities/blog/ui/blog-editor-card';
 import { BlogEditorDialog } from '@/features/dashboard';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  Button,
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  Loading,
-  Pagination,
-} from '@/shared/ui';
+import { useCrudManager } from '@/shared/hooks/use-crud-manager';
+import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
 export function BlogManager() {
-  const queryClient = useQueryClient();
-
-  const [page, setPage] = useState(1);
-  const [editing, setEditing] = useState<AdminBlog | null>(null);
-  const [open, setOpen] = useState(false);
-  const [blogToDelete, setBlogToDelete] = useState<string | null>(null);
-
-  const { data, isLoading, isPlaceholderData } = useQuery({
-    queryKey: ['blogs', page],
-    queryFn: () => getPaginatedAdminBlogs(page, 12),
+  const {
+    items: blogs,
+    pagination,
+    isLoading,
+    isError,
+    refetch,
+    isPlaceholderData,
+    setPage,
+    editing,
+    isDialogOpen,
+    onDialogOpenChange,
+    openCreateDialog,
+    openEditDialog,
+    save,
+    isSaving,
+    itemToDelete,
+    requestDelete,
+    cancelDelete,
+    confirmDelete,
+    isDeleting,
+    isDeletingItem,
+  } = useCrudManager<AdminBlog, BlogFormValues>({
+    queryKey: 'blogs',
+    entityLabel: 'Blog',
+    pageSize: 12,
+    fetchPage: (page, limit) => getPaginatedAdminBlogs(page, limit),
+    create: createBlog,
+    update: updateBlog,
+    remove: deleteBlog,
   });
 
-  const saveMutation = useMutation({
-    mutationFn: (data: BlogFormValues) =>
-      editing ? updateBlog(editing.id, data) : createBlog(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['blogs'] });
-      setOpen(false);
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteBlog,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['blogs'] });
-      setBlogToDelete(null);
-    },
-  });
-
-  const blogs = data?.data?.data || [];
-  const meta = data?.data?.meta;
+  const newBlogButton = (
+    <Button size="sm" onClick={openCreateDialog}>
+      <Plus className="mr-2 h-4 w-4" />
+      New Blog
+    </Button>
+  );
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Blogs</h2>
-        <Button
-          size="sm"
-          onClick={() => {
-            setEditing(null);
-            setOpen(true);
-          }}
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          New Blog
-        </Button>
-      </div>
+      <ManagerPageHeader
+        title="Blog Posts"
+        description="Create and manage your articles, drafts, and published content."
+        action={newBlogButton}
+      />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {isLoading ? (
-          <div className="col-span-full flex justify-center py-20">
-            <Loading />
-          </div>
-        ) : blogs.length === 0 ? (
-          <div className="col-span-full flex justify-center py-20">
-            <Empty>
-              <EmptyHeader>No blogs found</EmptyHeader>
-              <EmptyDescription>Create your first blog.</EmptyDescription>
-            </Empty>
-          </div>
-        ) : (
-          blogs.map((blog) => (
+      <ManagerListState
+        isLoading={isLoading}
+        isError={isError}
+        onRetry={() => refetch()}
+        isEmpty={blogs.length === 0}
+        emptyTitle="No blogs found"
+        emptyDescription="Create your first blog."
+        emptyAction={newBlogButton}
+      >
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {blogs.map((blog) => (
             <BlogEditorCard
               key={blog.id}
               blog={blog}
-              onEdit={(b) => {
-                setEditing(b);
-                setOpen(true);
-              }}
-              onDelete={(id) => setBlogToDelete(id)}
-              isPending={deleteMutation.isPending}
+              onEdit={openEditDialog}
+              onDelete={() => requestDelete(blog)}
+              isPending={isDeletingItem(blog)}
             />
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      </ManagerListState>
 
-      <Pagination
-        pagination={meta}
-        setPage={setPage}
-        isPlaceholderData={isPlaceholderData}
-      />
+      {blogs.length > 0 && (
+        <Pagination
+          pagination={pagination}
+          setPage={setPage}
+          isPlaceholderData={isPlaceholderData}
+        />
+      )}
 
       <BlogEditorDialog
-        open={open}
-        onOpenChange={setOpen}
-        initialData={editing!}
+        key={editing?.id ?? 'new'}
+        open={isDialogOpen}
+        onOpenChange={onDialogOpenChange}
+        initialData={editing}
         onSubmit={(values) =>
-          saveMutation.mutate({
+          save({
             ...values,
             translations:
               values.translations?.map((t) => ({
@@ -128,38 +108,17 @@ export function BlogManager() {
               })) || [],
           })
         }
-        loading={saveMutation.isPending}
+        loading={isSaving}
       />
 
-      <AlertDialog
-        open={!!blogToDelete}
-        onOpenChange={() => setBlogToDelete(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Blog?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleteMutation.isPending}>
-              Cancel
-            </AlertDialogCancel>
-
-            <AlertDialogAction
-              onClick={(e) => {
-                e.preventDefault();
-                if (blogToDelete) deleteMutation.mutate(blogToDelete);
-              }}
-              disabled={deleteMutation.isPending}
-            >
-              {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDeleteDialog
+        isOpen={!!itemToDelete}
+        isLoading={isDeleting}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Delete Blog?"
+        description="This action cannot be undone."
+      />
     </div>
   );
 }

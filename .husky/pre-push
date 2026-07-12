@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Full build gate before code leaves the machine.
+turbo run build || exit 1

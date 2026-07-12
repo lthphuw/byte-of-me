@@ -1,10 +1,11 @@
+import { Button } from '@byte-of-me/ui';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 
 import { getPublicRecentProjects,ProjectEmpty } from '@/entities/project';
 import { ProjectCard } from '@/entities/project/ui/project-card';
 import { Routes } from '@/shared/config/global';
-import { Button } from '@/shared/ui';
+import { StaggerItem, StaggerList } from '@/shared/ui';
 
 export async function HomepageRecentProjects() {
   const t = await getTranslations('homepage');
@@ -34,17 +35,21 @@ export async function HomepageRecentProjects() {
       </div>
 
       {/* Content */}
-      <div className="grid gap-4 md:grid-cols-2 md:gap-6">
-        {!hasProjects ? (
+      {!hasProjects ? (
+        <div className="grid gap-4 md:grid-cols-2 md:gap-6">
           <div className="col-span-full py-10">
             <ProjectEmpty />
           </div>
-        ) : (
-          recentProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))
-        )}
-      </div>
+        </div>
+      ) : (
+        <StaggerList className="grid gap-4 md:grid-cols-2 md:gap-6">
+          {recentProjects.map((project) => (
+            <StaggerItem key={project.id}>
+              <ProjectCard project={project} />
+            </StaggerItem>
+          ))}
+        </StaggerList>
+      )}
     </section>
   );
 }

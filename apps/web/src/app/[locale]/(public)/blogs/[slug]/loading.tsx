@@ -1,4 +1,5 @@
-import { Card , Separator , Skeleton } from '@/shared/ui';
+import { Card , Separator , Skeleton } from '@byte-of-me/ui';
+
 import { BlogDetailsShell } from '@/widgets/public/blog-details-content/ui/blog-shells';
 
 export default function BlogDetailsLoading() {

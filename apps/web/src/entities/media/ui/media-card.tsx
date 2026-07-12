@@ -1,12 +1,12 @@
 'use client';
 
 import * as React from 'react';
+import { Card, CardContent , CopyButton , DeleteButton } from '@byte-of-me/ui';
 import { FileIcon } from 'lucide-react';
 import Image from 'next/image';
 
 import { cn, formatImageSize } from '@/shared/lib/utils';
 import type { Media } from '@/shared/types/models';
-import { Card, CardContent , CopyButton , DeleteButton } from '@/shared/ui';
 
 export interface MediaCardProps {
   media: Media;

@@ -1,3 +1,4 @@
+import { Card } from '@byte-of-me/ui';
 import { FolderCode } from 'lucide-react';
 import Link from 'next/link';
 import { getLocale } from 'next-intl/server';
@@ -5,7 +6,6 @@ import { getLocale } from 'next-intl/server';
 import { getPublicProjectById } from '@/entities';
 import { Routes } from '@/shared/config/global';
 import { formatDate } from '@/shared/lib/utils';
-import { Card } from '@/shared/ui';
 
 
 export async function BlogRelatedProjectCard({
@@ -47,6 +47,27 @@ export async function BlogRelatedProjectCard({
             {project.description}
           </p>
         </Link>
+
+        {project.coauthors && project.coauthors.length > 0 && (
+          <p className="mt-2 text-sm text-muted-foreground">
+            Co-authors:{' '}
+            {project.coauthors.map((coauthor, index) => (
+              <span key={coauthor.id}>
+                {index > 0 && ', '}
+                {coauthor.email ? (
+                  <a
+                    href={`mailto:${coauthor.email}`}
+                    className="underline-offset-2 hover:underline"
+                  >
+                    {coauthor.fullName}
+                  </a>
+                ) : (
+                  coauthor.fullName
+                )}
+              </span>
+            ))}
+          </p>
+        )}
       </Card>
     </div>
   );

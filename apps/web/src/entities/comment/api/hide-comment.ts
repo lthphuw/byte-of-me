@@ -12,6 +12,7 @@ export async function hideComment(commentId: string) {
   await prisma.comment.update({
     where: {
       id: commentId,
+      userId: user.id,
     },
     data: {
       isDeleted: true,

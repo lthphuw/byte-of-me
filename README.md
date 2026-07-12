@@ -1,148 +1,180 @@
 <div align="center">
-  <h1>
-    <a href="https://phu-lth.space/" target="_blank" style="text-decoration: none; color: inherit;">
-      Byte of Me
-    </a>
-  </h1>
 
-  <p><strong>A multilingual portfolio and personal CMS</strong></p>
+# Byte of Me
 
-  <p>Built with Next.js, Supabase, and Auth.js. This project features a clean public site for visitors and a private dashboard to manage content across different languages easily.</p>
+**A multilingual portfolio & headless CMS — logged one byte at a time.**
 
-  <div style="margin: 20px 0;">
-    <img src="https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white&style=flat-square" alt="Next.js" />
-    <img src="https://img.shields.io/badge/shadcn/ui-000000?logo=shadcnui&logoColor=fff&style=flat-square" alt="shadcn/ui" />
-    <img src="https://img.shields.io/badge/TanStack_Query-FF4154?logo=react-query&logoColor=fff&style=flat-square" alt="TanStack Query" />
-    <img src="https://img.shields.io/badge/Auth.js-000000?logo=nextdotjs&logoColor=white&style=flat-square" alt="Auth.js" />
-    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white&style=flat-square" alt="Tailwind CSS" />
-    <img src="https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white&style=flat-square" alt="Prisma" />
-    <img src="https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=fff&style=flat-square" alt="Supabase" />
-  </div>
+A production personal website with a polished public portfolio and a private, multilingual content dashboard. Built as a TypeScript monorepo on Next.js 16 and the App Router.
 
-  <p>
-    <a href="https://github.com/lthphuw/byte-of-me" target="_blank">
-      <img src="https://img.shields.io/github/stars/lthphuw/byte-of-me?style=social" alt="GitHub Stars" />
-    </a>
-    <a href="https://github.com/lthphuw/byte-of-me/fork" target="_blank" style="margin-left: 10px;">
-      <img src="https://img.shields.io/github/forks/lthphuw/byte-of-me?style=social" alt="GitHub Forks" />
-    </a>
-  </p>
+[**🌐 Live — phu-lth.space**](https://phu-lth.space/)
+
+<br />
+
+<img src="https://img.shields.io/badge/Next.js_16-000000?logo=next.js&logoColor=white&style=flat-square" alt="Next.js" />
+<img src="https://img.shields.io/badge/React_19-20232A?logo=react&logoColor=61DAFB&style=flat-square" alt="React" />
+<img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white&style=flat-square" alt="TypeScript" />
+<img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white&style=flat-square" alt="Tailwind CSS" />
+<img src="https://img.shields.io/badge/shadcn/ui-000000?logo=shadcnui&logoColor=fff&style=flat-square" alt="shadcn/ui" />
+<br />
+<img src="https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white&style=flat-square" alt="Prisma" />
+<img src="https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white&style=flat-square" alt="PostgreSQL" />
+<img src="https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=fff&style=flat-square" alt="Supabase" />
+<img src="https://img.shields.io/badge/TanStack_Query-FF4154?logo=react-query&logoColor=fff&style=flat-square" alt="TanStack Query" />
+<img src="https://img.shields.io/badge/Auth.js-000000?logo=nextdotjs&logoColor=white&style=flat-square" alt="Auth.js" />
+<br />
+<img src="https://img.shields.io/badge/next--intl-EC4899?logoColor=white&style=flat-square" alt="next-intl" />
+<img src="https://img.shields.io/badge/Framer_Motion-0055FF?logo=framer&logoColor=white&style=flat-square" alt="Framer Motion" />
+<img src="https://img.shields.io/badge/Turborepo-EF4444?logo=turborepo&logoColor=white&style=flat-square" alt="Turborepo" />
+<img src="https://img.shields.io/badge/pnpm-F69220?logo=pnpm&logoColor=white&style=flat-square" alt="pnpm" />
+
 </div>
 
 ---
-## 📸 Demo
 
-<details>
-<summary>Click to view Public Portfolio</summary>
-<br>
-
-<div style="display: flex; gap: 10px; margin-bottom: 10px;">
-  <div style="flex: 1;">
-    <p align="center"><strong>Homepage</strong></p>
-    <img src="./docs/pub1.png" width="100%" />
-  </div>
-  <div style="flex: 1;">
-    <p align="center"><strong>Blogs</strong></p>
-    <img src="./docs/pub2.png" width="100%" />
-  </div>
-</div>
-
-<div align="center">
-  <p><strong>Contact Page</strong></p>
-  <img src="./docs/pub3.png" width="50%" />
-</div>
-
-</details>
-
-<details>
-<summary>Click to view Dashboard (CMS)</summary>
-<br>
-
-<div style="display: flex; gap: 10px; margin-bottom: 10px;">
-  <div style="flex: 1;">
-    <p align="center"><strong>Dashboard</strong></p>
-    <img src="./docs/dash1.png" width="100%" />
-  </div>
-  <div style="flex: 1;">
-    <p align="center"><strong>Blog Editor</strong></p>
-    <img src="./docs/dash2.png" width="100%" />
-  </div>
-</div>
-
-<div align="center">
-  <p><strong>Education Manager</strong></p>
-  <img src="./docs/dash3.png" width="50%" />
-</div>
-
-</details>
----
 ## Overview
 
-Byte of Me is a personal website designed to work as both a portfolio and a management tool. It handles multi-language support in two ways: using `next-intl` for fixed UI text (like buttons and menus) and a flexible database setup for dynamic content like blog posts and project descriptions.
+**Byte of Me** is a personal portfolio that doubles as its own content platform. Visitors get a fast, animated, fully bilingual (English / Tiếng Việt) site; the owner gets a private dashboard to write blog posts, manage projects and work history, and translate everything — without touching code or redeploying.
+
+The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced Design](https://feature-sliced.design/) on the frontend and shared workspace packages for the database, storage, and UI kit.
+
+<div align="center">
+  <img src="docs/pub1.png" alt="Byte of Me — public portfolio" width="80%" />
+</div>
 
 ---
 
-## Main Features
+## Highlights
 
-* **Flexible Data**: Uses **Prisma** and **Supabase** (PostgreSQL) to store and manage data reliably.
-* **Easy Storage**: Handles images and files using **Supabase Storage** (S3-compatible).
-* **Secure Login**: Private dashboard access is protected by **Auth.js**.
-* **Smooth Performance**: Uses **TanStack Query** for fast data loading and background updates.
-* **Modern Design**: Built with **shadcn/ui** and **Tailwind CSS**, including a dark mode that matches your system settings.
-* **Multi-language**: Built-in support for switching between languages for all content.
+### 🎨 Public portfolio
+- **Home, About, Experience, Projects, Blogs, Contact** — server-rendered, SEO-friendly, and richly animated with Framer Motion.
+- **Full-featured blog** — cover hero, author byline, breadcrumb, table of contents, reading-progress bar, related posts, prev/next navigation, and per-post **likes, claps, and threaded comments**.
+- **Filterable, paginated** project and blog listings with shareable, URL-based filters.
+- **A vertical experience timeline** rendered from live CMS data.
+
+### 🔐 Private CMS dashboard
+- Manage **blogs, projects, companies & roles, education, tags, tech stacks, media, and translations** from one place.
+- **Rich-text editor** (TipTap) with code blocks, images, tables, and typography.
+- **Media library** backed by Supabase Storage.
+- Protected by **Auth.js** with GitHub & Google OAuth.
+
+### 🌍 Two-layer internationalization
+- **Static UI** strings (buttons, labels, nav, validation) via **next-intl** locale files.
+- **Dynamic content** (blogs, projects, experience, tags…) translated and stored **in PostgreSQL**, editable from the dashboard.
+
+### ⚡ Engineered for quality
+- **Feature-Sliced Design** architecture with clear `app → widgets → features → entities → shared` boundaries.
+- **Server Components first**, TanStack Query for client/server state, GPU-friendly lazy-loaded animations.
+- **Turborepo + pnpm** workspace with shared, independently-typed packages.
+
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="docs/pub2.png" alt="Public site" /></td>
+      <td><img src="docs/pub3.png" alt="Blog detail" /></td>
+    </tr>
+  </table>
+</div>
+
+---
+
+## The dashboard
+
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="docs/dash1.png" alt="Dashboard" /></td>
+      <td><img src="docs/dash2.png" alt="Content management" /></td>
+      <td><img src="docs/dash3.png" alt="Editor" /></td>
+    </tr>
+  </table>
+</div>
 
 ---
 
-## Project Structure
+## Tech stack
 
-### Public Site
-* **Home**: A quick intro and summary of what I do.
-* **About**: Bio, education history, and a list of technologies I use.
-* **Projects**: A gallery of my work with filters to find specific types of projects.
-* **Blogs**: Technical articles with pagination and language switching.
-* **Contact**: A simple way to get in touch.
+| Layer | Technology |
+| --- | --- |
+| **Framework** | Next.js 16 (App Router, RSC), React 19 |
+| **Language** | TypeScript |
+| **Styling** | Tailwind CSS, shadcn/ui, Framer Motion |
+| **Data** | PostgreSQL (Supabase) via Prisma ORM |
+| **Server state** | TanStack Query |
+| **Auth** | Auth.js (NextAuth v5) — GitHub & Google OAuth |
+| **i18n** | next-intl (UI) + database translations (content) |
+| **Storage** | Supabase Storage |
+| **Editor** | TipTap rich-text |
+| **Forms & validation** | React Hook Form + Zod |
+| **Tooling** | Turborepo, pnpm workspaces, ESLint, Prettier, Husky |
 
-### Dashboard (CMS)
-* **Stats**: A quick look at how much content is on the site.
-* **Media**: A place to upload and manage images or documents.
-* **Content Management**: Dedicated sections to create, edit, or delete blogs, projects, tags, and work history (with multi-language content).
-* **Translations**: A workspace to manage multi-language text for the entire site (for static content).
+---
+
+## Architecture
+
+The frontend follows **Feature-Sliced Design** — each layer may only depend on the layers below it, keeping features isolated and reusable:
+
+<div align="center">
+  <img src="docs/app-web-design.png" alt="Feature-Sliced Design layers" width="70%" />
+</div>
+
+```
+byte-of-me/
+├── apps/
+│   └── web/                 # Next.js app (public site + dashboard)
+│       └── src/
+│           ├── app/         # App Router routes & layouts
+│           ├── widgets/     # Composite UI blocks (page sections)
+│           ├── features/    # User-facing capabilities
+│           ├── entities/    # Domain models + their API/UI
+│           └── shared/      # Config, i18n, libs, primitives
+└── packages/
+    ├── ui/                  # Shared component & design system (@byte-of-me/ui)
+    ├── db/                  # Prisma schema & client (@byte-of-me/db)
+    ├── storage/             # Supabase Storage helpers (@byte-of-me/storage)
+    ├── logger/              # Structured logging (@byte-of-me/logger)
+    └── config/              # Shared TS/tooling config (@byte-of-me/config)
+```
 
 ---
 
-## How to Run Locally
+## Getting started
 
-### Prerequisites
-* Node.js (v24.4.1)
-* pnpm (`npm install -g pnpm`)
+> Requires **Node.js ≥ 20**, **pnpm 10**, and a PostgreSQL database (Supabase works out of the box).
 
-### Setup
+```bash
+# 1. Install dependencies
+pnpm install
 
-1.  **Clone the project**:
-    ```bash
-    git clone [https://github.com/lthphuw/byte-of-me.git](https://github.com/lthphuw/byte-of-me.git)
-    cd byte-of-me
-    ```
+# 2. Configure environment
+cp apps/web/.env.example apps/web/.env
+#   → set DATABASE_URL, AUTH_* secrets, Supabase storage keys, etc.
 
-2.  **Install dependencies**:
-    ```bash
-    pnpm install
-    ```
+# 3. Generate the Prisma client
+pnpm --filter @byte-of-me/db generate
 
-3.  **Environment Variables**:
-    Create your `.env` files based on the `.env.example` files found in:
-  * `apps/web`
-  * `packages/db`
-  * `packages/storage`
+# 4. Run the dev server
+pnpm dev            # http://localhost:3000
+```
 
-4.  **Start developing**:
-    ```bash
-    pnpm dev
-    ```
-    Open `http://localhost:3000` in your browser.
+Useful scripts (run from the repo root):
+
+| Command | Description |
+| --- | --- |
+| `pnpm dev` | Start the app in development |
+| `pnpm build` | Production build (all packages) |
+| `pnpm check` | Type-check → lint → build (full verification) |
+| `pnpm check-types` | Type-check every package |
+| `pnpm lint` | Lint every package |
+
+Git hooks (Husky) run type-check + lint on **commit** and a full build on **push**.
 
 ---
+
+## Author
+
+**Phu Luong Thanh Hoang** ([@lthphuw](https://github.com/lthphuw))
+🌐 [phu-lth.space](https://phu-lth.space/) · ✉️ lthphuw@gmail.com
 
 ## License
 
-This project is licensed under the [MIT License](./LICENSE.md).
+Released under the terms in [LICENSE.md](LICENSE.md).

@@ -4,11 +4,10 @@ import { prisma } from '@byte-of-me/db';
 
 import type { AdminProject } from '@/entities/project/model/types';
 import { requireAdmin } from '@/shared/lib/auth';
+import { buildPaginatedMeta } from '@/shared/lib/pagination';
+import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
-
-
-
 
 
 export async function getPaginatedAdminProjects(
@@ -22,9 +21,9 @@ export async function getPaginatedAdminProjects(
     const skip = (page - 1) * limit;
     const [items, totalCount] = await Promise.all([
       prisma.project.findMany({
-        where: { userId: userId },
+        where: { userId },
         orderBy: { createdAt: 'desc' },
-        skip: skip,
+        skip,
         take: limit,
         include: {
           translations: true,
@@ -38,10 +37,15 @@ export async function getPaginatedAdminProjects(
               },
             },
           },
+          coauthors: {
+            include: {
+              coauthor: true,
+            },
+          },
         },
       }),
       prisma.project.count({
-        where: { userId: userId },
+        where: { userId },
       }),
     ]);
 
@@ -49,18 +53,13 @@ export async function getPaginatedAdminProjects(
       success: true,
       data: {
         data: items,
-        meta: {
-          currentPage: page,
-          totalPages: Math.ceil(totalCount / limit),
-          totalCount,
-          hasMore: skip + items.length < totalCount,
-        },
+        meta: buildPaginatedMeta({ page, limit, totalCount }),
       },
     };
-  } catch (error: Any) {
+  } catch (error) {
     return {
       success: false,
-      errorMsg: error.message || 'Failed to fetch media',
+      errorMsg: getErrorMessage(error, 'Failed to fetch media'),
     };
   }
 }

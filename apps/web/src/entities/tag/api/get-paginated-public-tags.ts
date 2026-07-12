@@ -6,6 +6,7 @@ import type { PublicTag } from '@/entities/tag/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
+import { buildPaginatedMeta } from '@/shared/lib/pagination';
 import type { PaginatedData, PaginatedParams } from '@/shared/types/api';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
@@ -49,12 +50,7 @@ export async function getPaginatedPublicTags(
 
         return {
           data: tags,
-          meta: {
-            currentPage: page,
-            totalPages: Math.ceil(count / limit),
-            totalCount: count,
-            hasMore: page < Math.ceil(count / limit),
-          },
+          meta: buildPaginatedMeta({ page, limit, totalCount: count }),
         };
       },
       {

@@ -1,18 +1,18 @@
 'use client';
 
 import React from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
-
-import { GithubAuthButton } from './github-auth-button';
-
-import { GoogleAuthButton } from '@/features/auth/ui/google-auth-button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/shared/ui';
+} from '@byte-of-me/ui';
+import { AnimatePresence, m } from 'framer-motion';
+import { useTranslations } from 'next-intl';
+
+import { GithubAuthButton } from './github-auth-button';
+
+import { GoogleAuthButton } from '@/features/auth/ui/google-auth-button';
 
 interface AuthModalProps {
   isOpen?: boolean;
@@ -28,7 +28,7 @@ export function AuthModal({ isOpen, onClose, children }: AuthModalProps) {
       <AnimatePresence>
         {isOpen && (
           <DialogContent className="w-[90vw] overflow-hidden rounded-2xl p-6 sm:max-w-[400px]">
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -43,7 +43,7 @@ export function AuthModal({ isOpen, onClose, children }: AuthModalProps) {
               </DialogHeader>
 
               {/* Content */}
-              <motion.div
+              <m.div
                 className="flex flex-col gap-5 pt-6"
                 initial="hidden"
                 animate="visible"
@@ -56,26 +56,26 @@ export function AuthModal({ isOpen, onClose, children }: AuthModalProps) {
                   },
                 }}
               >
-                <motion.div
+                <m.div
                   variants={{
                     hidden: { opacity: 0, y: 6 },
                     visible: { opacity: 1, y: 0 },
                   }}
                 >
                   <GithubAuthButton className="h-11 w-full text-sm font-medium" />
-                </motion.div>
+                </m.div>
 
-                <motion.div
+                <m.div
                   variants={{
                     hidden: { opacity: 0, y: 6 },
                     visible: { opacity: 1, y: 0 },
                   }}
                 >
                   <GoogleAuthButton className="h-11 w-full text-sm font-medium" />
-                </motion.div>
+                </m.div>
 
                 {children && (
-                  <motion.div
+                  <m.div
                     variants={{
                       hidden: { opacity: 0, y: 6 },
                       visible: { opacity: 1, y: 0 },
@@ -83,10 +83,10 @@ export function AuthModal({ isOpen, onClose, children }: AuthModalProps) {
                     className="text-center text-sm text-muted-foreground"
                   >
                     {children}
-                  </motion.div>
+                  </m.div>
                 )}
-              </motion.div>
-            </motion.div>
+              </m.div>
+            </m.div>
           </DialogContent>
         )}
       </AnimatePresence>

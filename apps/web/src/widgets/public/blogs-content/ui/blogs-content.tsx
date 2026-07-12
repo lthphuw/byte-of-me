@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Pagination } from '@byte-of-me/ui';
 import { useQuery } from '@tanstack/react-query';
 
 import {
@@ -10,7 +11,7 @@ import {
   getPaginatedPublicBlogs,
 } from '@/entities';
 import { BlogFilters, useBlogFilters } from '@/features/public';
-import { Pagination } from '@/shared/ui';
+import { RevealItem } from '@/shared/ui';
 import { BlogsShell } from '@/widgets/public/blogs-content/ui/blogs-shell';
 
 export function BlogsContent() {
@@ -20,6 +21,11 @@ export function BlogsContent() {
     queryKey: ['public-blogs', page, filters],
     queryFn: () => getPaginatedPublicBlogs({ ...filters, page, limit: 6 }),
     placeholderData: (previousData) => previousData,
+    // The server-prefetched default page is already fresh (the route is
+    // force-dynamic), so don't immediately refetch it on mount — that avoids
+    // flashing skeletons over hydrated data. Filter/page changes use a new key
+    // and still fetch live.
+    staleTime: 5 * 60 * 1000,
   });
 
   const blogs = data?.data?.data || [];
@@ -29,7 +35,6 @@ export function BlogsContent() {
     totalPages: 1,
     hasMore: false,
   };
-  console.log(`>>> filter: ${JSON.stringify(filters, null, 2)}`);
   const hasActiveFilters =
     filters?.search?.length > 0 || filters?.tagSlugs?.length > 0;
 
@@ -72,12 +77,10 @@ export function BlogsContent() {
                   : 'opacity-100'
               }`}
             >
-              {blogs.map((blog) => (
-                <BlogCard
-                  key={blog.id}
-                  blog={blog}
-                  onTagClick={(slug) => toggleTag(slug)}
-                />
+              {blogs.map((blog, index) => (
+                <RevealItem key={blog.id} index={index}>
+                  <BlogCard blog={blog} onTagClick={(slug) => toggleTag(slug)} />
+                </RevealItem>
               ))}
             </div>
           )}

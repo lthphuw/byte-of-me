@@ -1,13 +1,19 @@
 'use client';
 
+import { Carousel, CarouselContent, CarouselItem , ScrollArea, ScrollBar } from '@byte-of-me/ui';
 import Image from 'next/image';
 
 import { cn } from '@/shared/lib/utils';
-import { Carousel, CarouselContent, CarouselItem , ScrollArea, ScrollBar } from '@/shared/ui';
+import type { Media } from '@/shared/types/models';
 
-
-
-
+interface AchievementImagesProps {
+  images: Media[];
+  urls: string[];
+  title: string;
+  currentSlide: number;
+  onSlideChange: (index: number) => void;
+  onOpenGallery?: (urls: string[], index: number) => void;
+}
 
 export function AchievementImages({
   images,
@@ -16,7 +22,7 @@ export function AchievementImages({
   currentSlide,
   onSlideChange,
   onOpenGallery,
-}: Any) {
+}: AchievementImagesProps) {
   if (!images?.length) return null;
 
   return (
@@ -24,10 +30,10 @@ export function AchievementImages({
       {/* Desktop */}
       <ScrollArea className="hidden max-w-full pb-2 md:block">
         <div className="flex w-max space-x-4">
-          {images.map((img: Any, i: number) => (
+          {images.map((img, i) => (
             <button
               key={img.id}
-              onClick={() => onOpenGallery(urls, i)}
+              onClick={() => onOpenGallery?.(urls, i)}
               className="relative aspect-[4/3] w-40 shrink-0 overflow-hidden rounded-md"
             >
               <Image src={img.url} alt={title} fill className="object-cover" />
@@ -49,7 +55,7 @@ export function AchievementImages({
           }}
         >
           <CarouselContent className="-ml-3">
-            {images.map((img: Any, i: number) => (
+            {images.map((img, i) => (
               <CarouselItem
                 key={img.id}
                 className={cn(
@@ -58,7 +64,7 @@ export function AchievementImages({
                 )}
               >
                 <button
-                  onClick={() => onOpenGallery(urls, i)}
+                  onClick={() => onOpenGallery?.(urls, i)}
                   className="relative aspect-[4/3] w-full overflow-hidden rounded-xl"
                 >
                   <Image
@@ -75,7 +81,7 @@ export function AchievementImages({
           {/* Dots */}
           {images.length > 1 && (
             <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1.5">
-              {images.map((_: Any, i: number) => (
+              {images.map((_, i) => (
                 <div
                   key={i}
                   className={`rounded-full ${

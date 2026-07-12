@@ -1,20 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+import { Button , Icons } from '@byte-of-me/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import { AuthModal } from '@/features/auth';
 import {
   getBlogInteractionsForUser,
   toggleBlogInteraction,
 } from '@/features/public';
-import { useToast } from '@/shared/hooks/use-toast';
 import { INTERACTION } from '@/shared/lib/constants';
 import { cn } from '@/shared/lib/utils';
-import { Button , Icons } from '@/shared/ui';
 
 export function ClapButton({
   blogId,
@@ -29,7 +29,6 @@ export function ClapButton({
   const { data: session } = useSession();
   const queryClient = useQueryClient();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const { toast } = useToast();
 
   const { data } = useQuery({
     queryKey: ['blog-clap', blogId],
@@ -44,16 +43,25 @@ export function ClapButton({
     mutationFn: () => toggleBlogInteraction(blogId, blogSlug, INTERACTION.CLAP),
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ['blog-clap', blogId] });
-      const prev = queryClient.getQueryData(['blog-clap', blogId]);
-      queryClient.setQueryData(['blog-clap', blogId], (old: Any) => ({
-        isInteracted: !old.isInteracted,
-        count: old.isInteracted ? old.count - 1 : old.count + 1,
-      }));
+      const prev = queryClient.getQueryData<{
+        isInteracted: boolean;
+        count: number;
+      }>(['blog-clap', blogId]);
+      queryClient.setQueryData<{ isInteracted: boolean; count: number }>(
+        ['blog-clap', blogId],
+        (old) =>
+          old
+            ? {
+                isInteracted: !old.isInteracted,
+                count: old.isInteracted ? old.count - 1 : old.count + 1,
+              }
+            : old
+      );
       return { prev };
     },
     onError: (_, __, ctx) => {
       queryClient.setQueryData(['blog-clap', blogId], ctx?.prev);
-      toast({ title: t('interactFailed') });
+      toast(t('interactFailed'));
     },
   });
 
@@ -78,14 +86,14 @@ export function ClapButton({
           <AnimatePresence>
             {isClapped && (
               <>
-                <motion.div
+                <m.div
                   initial={{ scale: 0, opacity: 0.6 }}
                   animate={{ scale: 2, opacity: 0 }}
                   exit={{ opacity: 0 }}
                   className="absolute h-full w-full rounded-full bg-amber-500/30"
                 />
                 {[...Array(6)].map((_, i) => (
-                  <motion.span
+                  <m.span
                     key={i}
                     initial={{ x: 0, y: 0, opacity: 1, scale: 0.8 }}
                     animate={{
@@ -101,7 +109,7 @@ export function ClapButton({
             )}
           </AnimatePresence>
 
-          <motion.div
+          <m.div
             animate={{ scale: isClapped ? [1, 1.3, 1] : 1 }}
             transition={{ duration: 0.3 }}
           >
@@ -111,7 +119,7 @@ export function ClapButton({
                 isClapped ? 'fill-amber-500 stroke-amber-500' : 'stroke-current'
               )}
             />
-          </motion.div>
+          </m.div>
         </div>
         <span className="font-medium">{count}</span>
       </Button>

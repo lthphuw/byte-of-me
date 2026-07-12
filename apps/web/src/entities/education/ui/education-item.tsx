@@ -1,9 +1,9 @@
+import { RichText } from '@byte-of-me/ui';
 import Image from 'next/image';
 
 import { AchievementItem } from './achievement-item';
 
 import type { PublicEducation } from '@/entities/education/model/types';
-import { RichText } from '@/shared/ui';
 
 export function EducationItem({ edu }: { edu: PublicEducation }) {
   return (

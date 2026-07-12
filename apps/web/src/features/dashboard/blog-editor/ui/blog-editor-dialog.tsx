@@ -1,21 +1,22 @@
 'use client';
 
-import { BlogForm } from './form/blog-form';
-
-import type { AdminBlog } from '@/entities/blog';
-import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/shared/ui';
+} from '@byte-of-me/ui';
+
+import { BlogForm } from './form/blog-form';
+
+import type { AdminBlog } from '@/entities/blog';
+import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 
 export interface BlogEditorDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (value: BlogFormValues) => void;
-  initialData: AdminBlog;
+  initialData: Nullable<AdminBlog>;
   loading: boolean;
 }
 
@@ -36,7 +37,7 @@ export function BlogEditorDialog({
         </DialogHeader>
 
         <BlogForm
-          initialData={initialData}
+          initialData={initialData ?? undefined}
           onSubmit={onSubmit}
           loading={loading}
         />

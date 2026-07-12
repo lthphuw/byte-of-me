@@ -1,9 +1,9 @@
 'use client';
 
+import { Button } from '@byte-of-me/ui';
 import { MessageSquare, Share2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-
-import { Button } from '@/shared/ui';
+import { toast } from 'sonner';
 
 export function BlogCommentShareActions({
   title,
@@ -13,8 +13,18 @@ export function BlogCommentShareActions({
   noCommentAppear?: boolean;
 }) {
   const t = useTranslations('blogDetails');
-  const handleShare = () =>
-    navigator.share({ title, url: window.location.href });
+  const handleShare = async () => {
+    const url = window.location.href;
+
+    // Web Share API is unavailable on most desktop browsers.
+    if (navigator.share) {
+      await navigator.share({ title, url });
+      return;
+    }
+
+    await navigator.clipboard.writeText(url);
+    toast(t('linkCopied'));
+  };
 
   return (
     <div className={'flex items-center gap-2'}>

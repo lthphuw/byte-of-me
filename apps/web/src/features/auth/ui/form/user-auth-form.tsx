@@ -2,18 +2,7 @@
 
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useSearchParams } from 'next/navigation';
-
-import { logInToDashboard } from '@/features/auth/lib/log-in-to-dashboard';
-import {
-  type UserAuthLoginFormValues,
-  userAuthLoginSchema,
-} from '@/features/auth/model/user-auth-login-schema';
-import { toast } from '@/shared/hooks/use-toast';
-import { cn } from '@/shared/lib/utils';
-import {
-  Button,
+import {   Button,
   Form,
   FormControl,
   FormField,
@@ -22,7 +11,17 @@ import {
   FormMessage,
   Icons,
   Input,
-} from '@/shared/ui';
+} from '@byte-of-me/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useSearchParams } from 'next/navigation';
+import { toast } from 'sonner';
+
+import { logInToDashboard } from '@/features/auth/lib/log-in-to-dashboard';
+import {
+  type UserAuthLoginFormValues,
+  userAuthLoginSchema,
+} from '@/features/auth/model/user-auth-login-schema';
+import { cn } from '@/shared/lib/utils';
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -51,18 +50,15 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     const signInResult = await logInToDashboard(email, callbackUrl);
 
     if (!signInResult.success) {
-      toast({
-        title: 'Something went wrong.',
+      toast.error('Something went wrong.', {
         description:
           signInResult.errorMsg ||
           'Failed to send login link. Please try again.',
-        variant: 'destructive',
       });
       return;
     }
 
-    toast({
-      title: 'Check your email',
+    toast('Check your email', {
       description: `We sent you a login link to ${email}. Be sure to check your spam too.`,
     });
   }

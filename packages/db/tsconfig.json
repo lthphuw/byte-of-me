@@ -1,4 +1,5 @@
 {
+  "extends": "../config/typescript/base.json",
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
@@ -9,8 +10,6 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": false,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
     "noImplicitAny": false
   },
   "include": ["src/**/*"]

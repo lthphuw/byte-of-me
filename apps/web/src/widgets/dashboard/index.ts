@@ -1,4 +1,6 @@
 export * from './blog-manager';
+export * from './comment-manager';
+export * from './company-manager';
 export * from './contact-message-gallery';
 export * from './dashboard-sidebar';
 export * from './education-manager';
@@ -6,4 +8,5 @@ export * from './media-manager';
 export * from './project-manager';
 export * from './tag-manager';
 export * from './tech-stack-manager';
+export * from './translation-manager';
 export * from './user-profile-manager';

@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader , Skeleton } from '@/shared/ui';
+import { Card, CardContent, CardHeader , Skeleton } from '@byte-of-me/ui';
 
 export function StatsGridLoading() {
   return (

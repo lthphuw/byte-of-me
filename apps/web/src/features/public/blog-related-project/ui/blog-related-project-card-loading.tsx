@@ -1,4 +1,4 @@
-import { Card , Skeleton } from '@/shared/ui';
+import { Card , Skeleton } from '@byte-of-me/ui';
 
 export function RelatedProjectCardSkeleton({ label }: { label?: string }) {
   return (

@@ -1,9 +1,9 @@
 'use client';
 
-import type { Control, UseFormReturn } from 'react-hook-form';
+import type { Control, Path, UseFormReturn } from 'react-hook-form';
+import { DeleteButton , FormControl, FormField, FormItem, FormLabel , Input , RichTextEditor , Separator , Textarea } from '@byte-of-me/ui';
 
-import type { UserProfileFormValues } from '@/entities';
-import { DeleteButton , FormControl, FormField, FormItem, FormLabel , Input , RichTextEditor , Separator , Textarea } from '@/shared/ui';
+import { uploadSingleMedia,type UserProfileFormValues } from '@/entities';
 
 interface ProfileTranslationCardProps {
   form: UseFormReturn<UserProfileFormValues>;
@@ -142,7 +142,11 @@ export function ProfileTranslationCard({
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <RichTextEditor value={field.value} onChange={field.onChange} />
+                <RichTextEditor
+                  value={field.value}
+                  onChange={field.onChange}
+                  uploadImage={uploadSingleMedia}
+                />
               </FormControl>
             </FormItem>
           )}
@@ -170,7 +174,7 @@ function Section({ title, children }: SectionProps) {
 
 interface FieldProps {
   control: Control<UserProfileFormValues>;
-  name: Any;
+  name: Path<UserProfileFormValues>;
   label: string;
   className?: string;
 }

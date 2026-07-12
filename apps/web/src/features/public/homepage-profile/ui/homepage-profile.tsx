@@ -1,3 +1,4 @@
+import { Button } from '@byte-of-me/ui';
 import { Route } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
@@ -10,7 +11,6 @@ import {
 } from '@/entities/user-profile';
 import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
-import { Button } from '@/shared/ui';
 
 export async function HomepageProfile() {
   const t = await getTranslations('homepage');

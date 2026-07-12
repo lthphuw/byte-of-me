@@ -1,3 +1,4 @@
+import { MotionProvider } from '@byte-of-me/ui';
 import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
@@ -30,12 +31,17 @@ export default async function PublicLayout({
   setRequestLocale(locale as LocaleType);
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden">
-      <PublicSiteHeader />
-      <div className="container grid flex-1 gap-12">
-        <main className="flex w-full flex-1 flex-col">{children}</main>
+    <MotionProvider>
+      <div className="relative flex min-h-screen flex-col overflow-hidden">
+        <PublicSiteHeader />
+        <div className="container grid min-w-0 flex-1 gap-12">
+          {/* min-w-0: as a grid item, <main> must be allowed to shrink below its
+              content's min-content, otherwise wide children (e.g. blog code
+              blocks) force it past the viewport on mobile. */}
+          <main className="flex w-full min-w-0 flex-1 flex-col">{children}</main>
+        </div>
+        <PublicSiteFooter />
       </div>
-      <PublicSiteFooter />
-    </div>
+    </MotionProvider>
   );
 }

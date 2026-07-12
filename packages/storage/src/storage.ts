@@ -1,12 +1,13 @@
+import type {
+  S3Client} from '@aws-sdk/client-s3';
 import {
   DeleteObjectCommand,
-  PutObjectCommand,
-  S3Client,
+  PutObjectCommand
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
-import type { StorageConfig, UploadFileParams } from './storage.interface';
 import { createS3Client } from './s3.factory';
+import type { StorageConfig, UploadFileParams } from './storage.interface';
 
 export class Storage {
   private readonly client: S3Client;

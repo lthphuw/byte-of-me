@@ -1,9 +1,9 @@
 'use client';
 
+import { Badge } from '@byte-of-me/ui';
 import clsx from 'clsx';
 
 import type { PublicTechStack } from '@/entities/tech-stack/model/types';
-import { Badge } from '@/shared/ui';
 
 interface TechStackBadgeProps {
   tech: PublicTechStack;

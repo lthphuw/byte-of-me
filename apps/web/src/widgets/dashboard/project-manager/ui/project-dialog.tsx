@@ -2,16 +2,6 @@
 
 import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
-import { Plus, Trash2 } from 'lucide-react';
-
-import {
-  type ProjectFromValues,
-  projectSchema,
-} from '@/entities/project/model';
-import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
-import { getAllAdminTechStack } from '@/entities/tech-stack/api/get-all-admin-tech-stacks';
 import { Button ,
   Dialog,
   DialogContent,
@@ -23,14 +13,24 @@ import { Button ,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage, Input , MultiSelect } from '@/shared/ui';
-// Assuming you have a MultiSelect component
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
+  FormMessage, MultiSelect } from '@byte-of-me/ui';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
+import { Plus, X } from 'lucide-react';
+
+import {
+  type AdminProject,
+  type ProjectFromValues,
+  projectSchema,
+} from '@/entities/project/model';
+import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
+import { getAllAdminTechStack } from '@/entities/tech-stack/api/get-all-admin-tech-stacks';
+import { TextField, TranslationTabs } from '@/shared/ui';
 
 interface ProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialData?: Any;
+  initialData?: Nullable<AdminProject>;
   onSubmit: (values: ProjectFromValues) => void;
   loading: boolean;
 }
@@ -72,13 +72,18 @@ export function ProjectDialog({
       endDate: '',
       techStackIds: [],
       tagIds: [],
+      coauthors: [],
       translations: [{ language: 'en', title: '', description: '' }],
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const {
+    fields: coauthorFields,
+    append: appendCoauthor,
+    remove: removeCoauthor,
+  } = useFieldArray({
     control: form.control,
-    name: 'translations',
+    name: 'coauthors',
   });
 
   useEffect(() => {
@@ -87,14 +92,20 @@ export function ProjectDialog({
         ...initialData,
         githubLink: initialData.githubLink || '',
         liveLink: initialData.liveLink || '',
-        startDate: initialData.startDate || '',
-        endDate: initialData.endDate || '',
-        techStackIds:
-          initialData.techStacks?.map((t: Any) => t.techStackId || t.id) || [],
-        tagIds: initialData.tags?.map((t: Any) => t.tagId || t.id) || [],
-        translations: initialData.translations || [
-          { language: 'en', title: '', description: '' },
-        ],
+        startDate: initialData.startDate?.toISOString() || '',
+        endDate: initialData.endDate?.toISOString() || '',
+        techStackIds: initialData.techStacks?.map((t) => t.techStackId) || [],
+        tagIds: initialData.tags?.map((t) => t.tagId) || [],
+        coauthors:
+          initialData.coauthors?.map((c) => ({
+            fullName: c.coauthor.fullName,
+            email: c.coauthor.email || '',
+          })) || [],
+        translations: initialData.translations.map((t) => ({
+          language: t.language,
+          title: t.title,
+          description: t.description || '',
+        })),
       });
     } else if (!initialData && open) {
       form.reset({
@@ -105,6 +116,7 @@ export function ProjectDialog({
         endDate: '',
         techStackIds: [],
         tagIds: [],
+        coauthors: [],
         translations: [{ language: 'en', title: '', description: '' }],
       });
     }
@@ -122,71 +134,40 @@ export function ProjectDialog({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormField
+              <TextField
                 control={form.control}
                 name="slug"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Slug</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="my-awesome-project" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Slug"
+                placeholder="my-awesome-project"
               />
               <div className="grid grid-cols-2 gap-2">
-                <FormField
+                <TextField
                   control={form.control}
                   name="startDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Start Date</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
+                  label="Start Date"
+                  type="date"
                 />
-                <FormField
+                <TextField
                   control={form.control}
                   name="endDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>End Date</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
+                  label="End Date"
+                  type="date"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormField
+              <TextField
                 control={form.control}
                 name="githubLink"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>GitHub Link</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="https://github.com/..." />
-                    </FormControl>
-                  </FormItem>
-                )}
+                label="GitHub Link"
+                placeholder="https://github.com/..."
               />
-              <FormField
+              <TextField
                 control={form.control}
                 name="liveLink"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Live Link</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="https://..." />
-                    </FormControl>
-                  </FormItem>
-                )}
+                label="Live Link"
+                placeholder="https://..."
               />
             </div>
 
@@ -205,6 +186,7 @@ export function ProjectDialog({
                         placeholder="Select tech stack"
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -224,6 +206,7 @@ export function ProjectDialog({
                         placeholder="Select tags"
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -231,82 +214,74 @@ export function ProjectDialog({
 
             <div className="space-y-4 border-t pt-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">
-                  Content Translations
-                </span>
+                <span className="text-sm font-medium">Co-authors</span>
                 <Button
                   type="button"
-                  variant="outline"
                   size="sm"
-                  onClick={() =>
-                    append({ language: '', title: '', description: '' })
-                  }
+                  variant="outline"
+                  onClick={() => appendCoauthor({ fullName: '', email: '' })}
                 >
-                  <Plus className="mr-2 h-4 w-4" /> Add Language
+                  <Plus /> Add Co-author
                 </Button>
               </div>
 
-              <Tabs defaultValue={fields[0]?.id}>
-                <TabsList className="justify-start overflow-x-auto">
-                  {fields.map((field, index) => (
-                    <TabsTrigger key={field.id} value={field.id}>
-                      {form
-                        .watch(`translations.${index}.language`)
-                        ?.toUpperCase() || `New`}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-                {fields.map((field, index) => (
-                  <TabsContent
-                    key={field.id}
-                    value={field.id}
-                    className="space-y-4 rounded-lg border bg-muted/20 p-4"
+              {coauthorFields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="grid grid-cols-1 items-start gap-4 md:grid-cols-[1fr_1fr_auto]"
+                >
+                  <TextField
+                    control={form.control}
+                    name={`coauthors.${index}.fullName`}
+                    label="Name"
+                    placeholder="Jane Doe"
+                  />
+                  <TextField
+                    control={form.control}
+                    name={`coauthors.${index}.email`}
+                    label="Email"
+                    type="email"
+                    placeholder="jane@example.com"
+                  />
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    className="md:mt-8"
+                    onClick={() => removeCoauthor(index)}
                   >
-                    <div className="flex items-center justify-between gap-4">
-                      <FormField
-                        control={form.control}
-                        name={`translations.${index}.language`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>Language Code (en, vi...)</FormLabel>
-                            <Input {...field} placeholder="en" />
-                          </FormItem>
-                        )}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="mt-8 text-destructive"
-                        onClick={() => remove(index)}
-                        disabled={fields.length === 1}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <FormField
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-4 border-t pt-4">
+              <span className="text-sm font-medium">Content Translations</span>
+
+              <TranslationTabs
+                control={form.control}
+                name="translations"
+                newTranslation={() => ({
+                  language: '',
+                  title: '',
+                  description: '',
+                })}
+                renderFields={(index) => (
+                  <>
+                    <TextField
                       control={form.control}
                       name={`translations.${index}.title`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Title</FormLabel>
-                          <Input {...field} />
-                        </FormItem>
-                      )}
+                      label="Title"
                     />
-                    <FormField
+                    <TextField
                       control={form.control}
                       name={`translations.${index}.description`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <Input {...field} />
-                        </FormItem>
-                      )}
+                      label="Description"
                     />
-                  </TabsContent>
-                ))}
-              </Tabs>
+                  </>
+                )}
+              />
             </div>
 
             <DialogFooter>

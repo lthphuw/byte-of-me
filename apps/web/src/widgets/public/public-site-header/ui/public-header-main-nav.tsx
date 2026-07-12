@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { motion } from 'framer-motion';
+import { Button } from '@byte-of-me/ui';
+import { m } from 'framer-motion';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -9,7 +10,6 @@ import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import type { MainNavItem } from '@/shared/types';
-import { Button } from '@/shared/ui';
 import { PublicHeaderLogo } from '@/widgets/public/public-site-header/ui/public-header-logo';
 import { PublicHeaderMobileNav } from '@/widgets/public/public-site-header/ui/public-header-mobile-nav';
 
@@ -59,7 +59,7 @@ export const PublicHeaderMainNav = React.forwardRef<
                     : 'text-foreground/60'
                 )}
               >
-                {t(item.title as Any)}
+                {t(item.title as Parameters<typeof t>[0])}
               </Button>
             </Link>
           ))}
@@ -67,13 +67,13 @@ export const PublicHeaderMainNav = React.forwardRef<
       )}
 
       <div className="relative z-[10000] shrink-0 md:hidden">
-        <motion.button
+        <m.button
           ref={triggerRef}
           onClick={() => setOpen((prev) => !prev)}
           className="flex items-center gap-2"
         >
           <PublicHeaderLogo minimized={minimized} />
-        </motion.button>
+        </m.button>
 
         <PublicHeaderMobileNav
           isOpen={open}

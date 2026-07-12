@@ -96,7 +96,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
   };
 });
 
-function setDeep(obj: Record<string, Any>, path: string, value: string) {
+function setDeep(obj: Record<string, unknown>, path: string, value: string) {
   const keys = path.split('.');
   let current = obj;
 
@@ -106,8 +106,9 @@ function setDeep(obj: Record<string, Any>, path: string, value: string) {
     if (i === keys.length - 1) {
       current[key] = value;
     } else {
-      current[key] = current[key] ?? {};
-      current = current[key];
+      const next = current[key] ?? {};
+      current[key] = next;
+      current = next as Record<string, unknown>;
     }
   }
 }

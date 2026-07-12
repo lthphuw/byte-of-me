@@ -5,6 +5,7 @@ import { getLocale } from 'next-intl/server';
 
 import { env } from '@/shared/config/env';
 import { signIn as nextAuthSignIn } from '@/shared/lib/auth';
+import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 
@@ -14,7 +15,7 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 export async function logInToDashboard(
   email: string,
   callbackUrl: string
-): Promise<ApiResponse<Any>> {
+): Promise<ApiResponse<string>> {
   try {
     logger.info(
       `Attempting to sign in user with email: ${email}, callbackUrl: ${callbackUrl}`
@@ -24,7 +25,8 @@ export async function logInToDashboard(
     }
 
     const locale = await getLocale();
-    const res = await nextAuthSignIn('email', {
+    // With `redirect: false`, next-auth resolves with the URL to redirect to.
+    const res: string = await nextAuthSignIn('email', {
       email,
       redirect: false,
       callbackUrl: `/${locale}/dashboard`,
@@ -34,11 +36,15 @@ export async function logInToDashboard(
       success: true,
       data: res,
     };
-  } catch (e: Any) {
-    logger.error(`Login ${email} got error: ${e.message}`);
+  } catch (error) {
+    const errorMsg = getErrorMessage(
+      error,
+      'An unexpected error occurred during sign in.'
+    );
+    logger.error(`Login ${email} got error: ${errorMsg}`);
     return {
       success: false,
-      errorMsg: e.message || 'An unexpected error occurred during sign in.',
+      errorMsg,
     };
   }
 }

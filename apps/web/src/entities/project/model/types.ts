@@ -15,6 +15,11 @@ export type AdminProject = Prisma.ProjectGetPayload<{
         };
       };
     };
+    coauthors: {
+      include: {
+        coauthor: true;
+      };
+    };
   };
 }>;
 

@@ -1,9 +1,11 @@
+'use client';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 import { deleteMedia } from '@/entities/media/api/delete-media';
 import { getPaginatedMedia } from '@/entities/media/api/get-paginated-media';
 import { uploadMedia } from '@/entities/media/api/upload-media';
-import { toast } from '@/shared/hooks/use-toast';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 
 export function useMediaLibrary(page = 1) {
@@ -24,8 +26,9 @@ export function useMediaLibrary(page = 1) {
     mutationFn: (files: File[]) => uploadMedia(files),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [CACHE_TAGS.MEDIA] });
-      toast({ title: 'Upload successful' });
+      toast('Upload successful');
     },
+    onError: () => toast.error('Upload failed'),
   });
 
   // Deleting
@@ -33,8 +36,9 @@ export function useMediaLibrary(page = 1) {
     mutationFn: (id: string) => deleteMedia(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [CACHE_TAGS.MEDIA] });
-      toast({ title: 'Media deleted' });
+      toast('Media deleted');
     },
+    onError: () => toast.error('Could not delete media'),
   });
 
   return { query, upload, remove };

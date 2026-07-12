@@ -1,9 +1,11 @@
+'use client';
+
+import { Badge , Card, CardContent, CardFooter, CardHeader , DeleteButton , EditButton , ImagePlaceholder } from '@byte-of-me/ui';
 import { Calendar, Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
 
 import type { AdminBlog } from '@/entities/blog';
 import { formatDate } from '@/shared/lib/utils';
-import { Badge , Card, CardContent, CardFooter, CardHeader , DeleteButton , EditButton , ImagePlaceholder } from '@/shared/ui';
 
 interface BlogCardProps {
   blog: AdminBlog;

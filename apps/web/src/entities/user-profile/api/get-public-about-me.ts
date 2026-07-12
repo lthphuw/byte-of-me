@@ -29,9 +29,12 @@ export async function getPublicAboutMe(): Promise<
         });
 
         const profileTranslation = getTranslatedContent(
-          userProfile?.translations || [],
+          userProfile.translations,
           locale
         );
+        if (!profileTranslation) {
+          throw new Error('No translation found for user profile');
+        }
 
         return { aboutMe: profileTranslation.aboutMe || '' };
       },

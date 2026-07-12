@@ -1,17 +1,16 @@
 'use server';
 
-import { prisma } from '@byte-of-me/db';
+import { prisma,type Project } from '@byte-of-me/db';
 import { revalidateTag } from 'next/cache';
 
 import type { ProjectFromValues } from '@/entities/project/model';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-
-
-
-
-export async function createProject(data: ProjectFromValues) {
+export async function createProject(
+  data: ProjectFromValues
+): Promise<ApiResponse<Project>> {
   const session = await requireAdmin();
 
   const project = await prisma.project.create({
@@ -41,6 +40,18 @@ export async function createProject(data: ProjectFromValues) {
           })) ?? [],
       },
 
+      coauthors: {
+        create:
+          data.coauthors?.map((coauthor) => ({
+            coauthor: {
+              create: {
+                fullName: coauthor.fullName,
+                email: coauthor.email || null,
+              },
+            },
+          })) ?? [],
+      },
+
       translations: {
         create: data.translations.map((t) => ({
           language: t.language,
@@ -52,5 +63,5 @@ export async function createProject(data: ProjectFromValues) {
   });
 
   revalidateTag(CACHE_TAGS.PROJECT, 'max');
-  return project;
+  return { success: true, data: project };
 }

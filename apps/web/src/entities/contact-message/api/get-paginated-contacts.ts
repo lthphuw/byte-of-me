@@ -4,11 +4,10 @@ import { type Prisma,prisma } from '@byte-of-me/db';
 
 import type { AdminContactMessage } from '@/entities/contact-message';
 import { requireAdmin } from '@/shared/lib/auth';
+import { buildPaginatedMeta } from '@/shared/lib/pagination';
+import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
-
-
-
 
 
 export async function getPaginatedContactMessages(
@@ -62,18 +61,13 @@ export async function getPaginatedContactMessages(
       success: true,
       data: {
         data: items,
-        meta: {
-          currentPage: page,
-          totalPages: Math.ceil(totalCount / limit),
-          totalCount,
-          hasMore: skip + items.length < totalCount,
-        },
+        meta: buildPaginatedMeta({ page, limit, totalCount }),
       },
     };
-  } catch (error: Any) {
+  } catch (error) {
     return {
       success: false,
-      errorMsg: error.message || 'Failed to fetch contact',
+      errorMsg: getErrorMessage(error, 'Failed to fetch contact'),
     };
   }
 }

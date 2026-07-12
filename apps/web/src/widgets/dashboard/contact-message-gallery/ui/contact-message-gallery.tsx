@@ -1,16 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
-import { MessageSquare, Search, X } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-
-import type { AdminContactMessage } from '@/entities/contact-message';
-import { getPaginatedContactMessages } from '@/entities/contact-message/api/get-paginated-contacts';
-import { useDebounce } from '@/shared/hooks';
-import {
-  Button,
+import {   Button,
   Card,
   CardContent,
   CardHeader,
@@ -24,7 +15,15 @@ import {
   RichText,
   ScrollArea,
   Skeleton,
-} from '@/shared/ui';
+useDebounce ,
+} from '@byte-of-me/ui';
+import { useQuery } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { MessageSquare, Search, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
+import type { AdminContactMessage } from '@/entities/contact-message';
+import { getPaginatedContactMessages } from '@/entities/contact-message/api/get-paginated-contacts';
 
 export function ContactMessageGallery() {
   const t = useTranslations('dashboard.contactGallery');

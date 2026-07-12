@@ -1,14 +1,14 @@
 'use client';
 
 import type { CSSProperties } from 'react';
-import { AnimatePresence, motion, type Transition } from 'framer-motion';
+import { useElementSize, useWindowScroll } from '@byte-of-me/ui';
+import { AnimatePresence, m, type Transition } from 'framer-motion';
 import { useTheme } from 'next-themes';
 
 import { ColorSchemeModeToggle } from './color-scheme-mode-toggle';
 import { PublicHeaderMainNav } from './public-header-main-nav';
 
 import { globalConfig } from '@/shared/config/global';
-import { useElementSize, useWindowScroll } from '@/shared/hooks';
 import { cn } from '@/shared/lib/utils';
 import { I18nToggle } from '@/widgets/public/public-site-header/ui/i18n-toggle';
 import { UserActionToggle } from '@/widgets/public/public-site-header/ui/user-action-toggle';
@@ -58,7 +58,7 @@ export function PublicSiteHeader() {
 
   return (
     <>
-      <motion.header
+      <m.header
         animate={{
           width: isCompact ? compactWidth : '100%',
           left: isCompact ? COMPACT_X_OFFSET : 0,
@@ -78,7 +78,7 @@ export function PublicSiteHeader() {
           width: { type: 'tween', ease: 'easeInOut', duration: 0.3 },
         }}
       >
-        <motion.div
+        <m.div
           layout
           animate={{
             scale: isCompact ? 0.9 : 1,
@@ -102,11 +102,11 @@ export function PublicSiteHeader() {
             items={globalConfig.header.nav}
             minimized={isCompact}
           />
-        </motion.div>
-      </motion.header>
+        </m.div>
+      </m.header>
 
       {/* Controllers */}
-      <motion.div
+      <m.div
         layout
         className={cn(
           'fixed top-0 right-6 bg-transparent md:right-12 z-50 space-x-2 appearance-none [-webkit-appearance:none]',
@@ -120,7 +120,7 @@ export function PublicSiteHeader() {
         }}
         transition={TRANSITION}
       >
-        <motion.div
+        <m.div
           layout
           animate={{
             scale: isCompact ? 0.9 : 1,
@@ -143,8 +143,8 @@ export function PublicSiteHeader() {
             <UserActionToggle />
           </AnimatePresence>
 
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
     </>
   );
 }

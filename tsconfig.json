@@ -1,31 +1,11 @@
 {
+  "extends": "./packages/config/typescript/nextjs.json",
   "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "target": "ES2023",
-    "strict": true,
-    "esModuleInterop": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["apps/web/src/*"],
       "@db/*": ["packages/db/src/*"],
-      "@ai/*": ["packages/ai/src/*"],
-      "@logger/*": ["packages/logger/src/*"],
-    },
-    "strictNullChecks": true,
-    "plugins": [
-      {
-        "name": "next",
-      },
-    ],
-  },
+      "@logger/*": ["packages/logger/src/*"]
+    }
+  }
 }

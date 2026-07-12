@@ -6,14 +6,14 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen flex-col lg:flex-row">
       {/* Sidebar */}
       <DashboardSidebar />
 
       {/* Main content */}
       <div className="flex flex-1 flex-col overflow-hidden bg-muted/40">
         <main className="container relative py-6 lg:py-8">
-          <div className="mx-auto w-full min-w-0 p-10">{children}</div>
+          <div className="mx-auto w-full min-w-0 p-4 lg:p-10">{children}</div>
         </main>
       </div>
     </div>

@@ -2,8 +2,9 @@
 
 import { prisma } from '@byte-of-me/db';
 
-import type { PublicComment } from '@/entities';
+import type { PublicComment } from '@/entities/comment/model';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
+import { buildPaginatedMeta } from '@/shared/lib/pagination';
 import type {
   ApiResponse,
   PaginatedData,
@@ -79,6 +80,7 @@ export async function getPaginatedPublicCommentsForBlog(
           return result;
         }
 
+        // Never expose commenter email addresses in the public payload.
         const allCommentsRaw = roots.map((root) => ({
           ...root,
           children: collectDescendants(root.id).map((it) => ({
@@ -87,11 +89,10 @@ export async function getPaginatedPublicCommentsForBlog(
             content: it.content,
             blogId: it.blogId,
             parentId: it.parentId,
-            userReplied: root.user?.name ?? root.user?.email ?? 'anonymous',
+            userReplied: root.user?.name ?? 'Anonymous',
             user: {
               id: it.userId,
-              name: it.user?.name ?? it.user?.email ?? 'anonymous',
-              email: it.user?.email ?? 'anonymous',
+              name: it.user?.name ?? 'Anonymous',
             },
           })),
         }));
@@ -105,19 +106,13 @@ export async function getPaginatedPublicCommentsForBlog(
           children: cm.children,
           user: {
             id: cm.userId,
-            name: cm.user?.name ?? cm.user?.email ?? 'anonymous',
-            email: cm.user?.email ?? 'anonymous',
+            name: cm.user?.name ?? 'Anonymous',
           },
         }));
 
         return {
           data: comments,
-          meta: {
-            currentPage: page,
-            totalPages: Math.ceil(count / limit),
-            totalCount: count,
-            hasMore: page < Math.ceil(count / limit),
-          },
+          meta: buildPaginatedMeta({ page, limit, totalCount: count }),
         };
       },
       {
