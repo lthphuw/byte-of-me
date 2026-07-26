@@ -1,7 +1,7 @@
 'use client';
 
 import { buttonVariants , Icons } from '@byte-of-me/ui';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 import { UserAuthForm } from '@/features/auth/ui';
 import { Routes } from '@/shared/config/global';
@@ -11,7 +11,7 @@ import { cn } from '@/shared/lib/utils';
 export function AuthLogInView() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
@@ -24,10 +24,10 @@ export function AuthLogInView() {
           <Icons.chevronLeft className="h-4 w-4" />
           Back
         </Link>
-      </motion.div>
+      </m.div>
 
       {/* Center Card */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{
@@ -47,7 +47,7 @@ export function AuthLogInView() {
         </div>
 
         <UserAuthForm />
-      </motion.div>
+      </m.div>
     </div>
   );
 }

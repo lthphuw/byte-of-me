@@ -35,18 +35,15 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
-function getLanguageLabel(
-  values: unknown,
-  name: string,
-  index: number
-): string {
-  let current: unknown = values;
-  for (const segment of `${name}.${index}.language`.split('.')) {
-    if (!isRecord(current)) return '??';
-    current = current[segment];
-  }
-  return typeof current === 'string' && current
-    ? current.toUpperCase()
+function getLanguageLabel(translations: unknown, index: number): string {
+  if (!Array.isArray(translations)) return '??';
+
+  const entry: unknown = translations[index];
+  if (!isRecord(entry)) return '??';
+
+  const language = entry.language;
+  return typeof language === 'string' && language
+    ? language.toUpperCase()
     : '??';
 }
 
@@ -68,7 +65,12 @@ export function TranslationTabs({
 }: TranslationTabsProps): ReactElement {
   const { fields, append, remove } = useFieldArray({ control, name });
   const [tab, setTab] = useState<string>();
-  const values = useWatch({ control });
+  // Scoped to this array on purpose. An unscoped `useWatch({ control })` makes
+  // react-hook-form deep-clone the whole form on every keystroke anywhere, for
+  // every mounted instance — which is quadratic once a form nests several of
+  // these around rich text editors. `as unknown` because the non-generic
+  // implementation signature can only type this as FieldValues.
+  const translations = useWatch({ control, name }) as unknown;
 
   useEffect(() => {
     if (fields.length === 0) return;
@@ -79,11 +81,11 @@ export function TranslationTabs({
 
   return (
     <Tabs value={tab} onValueChange={setTab} className={className}>
-      <div className="mb-2 flex w-full justify-between align-middle">
+      <div className="mb-2 flex w-full flex-wrap items-center justify-between gap-2">
         <TabsList>
           {fields.map((f, i) => (
             <TabsTrigger key={f.id} value={f.id}>
-              {getLanguageLabel(values, name, i)}
+              {getLanguageLabel(translations, i)}
             </TabsTrigger>
           ))}
         </TabsList>

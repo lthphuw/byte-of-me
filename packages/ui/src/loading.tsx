@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 import { cn } from './lib/utils';
 
@@ -17,7 +17,7 @@ export function Loading({
 }: LoadingProps) {
   return (
     <div className={cn('flex items-center justify-center', className)}>
-      <motion.svg
+      <m.svg
         width={size}
         height={size}
         viewBox="0 0 24 24"
@@ -39,14 +39,14 @@ export function Loading({
           opacity="0.2"
         />
 
-        <motion.path
+        <m.path
           d="M22 12a10 10 0 0 1-10 10"
           stroke="currentColor"
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           fill="none"
         />
-      </motion.svg>
+      </m.svg>
     </div>
   );
 }

@@ -20,13 +20,13 @@ export * from './dropdown-menu';
 export * from './edit-button';
 export * from './empty';
 export * from './expandable-text';
-export * from './filter-multi-select-section';
 export * from './form';
 export * from './hooks';
 export * from './icons';
 export * from './image-placeholder';
 export * from './input';
 export * from './label';
+export * from './lib/rich-text-content';
 export * from './lib/sanitize';
 export * from './lib/utils';
 export * from './loading';
@@ -35,8 +35,15 @@ export * from './multi-select';
 export * from './pagination';
 export * from './popover';
 export * from './progress';
-export * from './rich-text';
-export * from './rich-text-editor'
+// `./rich-text` is NOT re-exported either: it imports the extension schema
+// from `./rich-text-editor` to run `generateHTML`, so re-exporting it here
+// puts tiptap back into every client bundle through the same side-effect
+// path. Import it by subpath: `@byte-of-me/ui/rich-text`.
+// `./rich-text-editor` is NOT re-exported here on purpose. It imports
+// `tiptap.css`, and that side effect blocks tree-shaking — so every client
+// component importing anything from this barrel used to drag the whole editor
+// (~1 MB of tiptap/prosemirror/lowlight) into its bundle, public pages
+// included. Import it by its subpath instead: `@byte-of-me/ui/rich-text-editor`.
 export * from './scroll-area';
 export * from './select';
 export * from './separator';

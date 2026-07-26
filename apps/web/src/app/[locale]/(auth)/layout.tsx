@@ -16,8 +16,10 @@ export default async function AuthLayout({ children }: AuthLayoutProps) {
     redirect('/dashboard');
   }
 
+  // min-h-screen, not h-screen + overflow-hidden: the latter clips the form
+  // with no way to scroll to it on short viewports (landscape phones).
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
+    <div className="flex min-h-screen flex-col overflow-x-clip">
       <div className="container relative flex flex-1 flex-col">
         <main className="flex flex-1 flex-col">{children}</main>
       </div>

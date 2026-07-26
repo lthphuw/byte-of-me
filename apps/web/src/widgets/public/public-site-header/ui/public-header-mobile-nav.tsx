@@ -12,10 +12,6 @@ import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import type { MainNavItem } from '@/shared/types';
 
-
-
-
-
 const containerVariants: Variants = {
   hidden: { opacity: 0, scale: 0.95, y: -10 },
   visible: {
@@ -38,16 +34,13 @@ interface PublicHeaderMobileNavProps {
   onOpenChange?: (open: boolean) => void;
   items: MainNavItem[];
   children?: React.ReactNode;
-  minimized?: boolean;
 }
-
 
 export const PublicHeaderMobileNav = ({
   items,
   children,
   isOpen,
   onOpenChange = () => {},
-                                        minimized,
   triggerRef,
 }: PublicHeaderMobileNavProps) => {
   useLockBody(isOpen);
@@ -78,43 +71,45 @@ export const PublicHeaderMobileNav = ({
   return createPortal(
     <AnimatePresence mode="wait" initial={false}>
       {isOpen && (
-        <>
-          <m.div
-            ref={menuRef}
-            className={
-            cn(
-              "fixed inset-x-8 z-[9999] overflow-hidden rounded-2xl border border-border p-4 shadow-xl backdrop-blur-xl container-bg md:hidden",
-              minimized ? 'top-24' : 'top-16'
-            )
-            }
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-          >
-            <div className="grid gap-4">
-              <nav className="grid gap-1">
-                {items.map((item, index) => (
-                  <m.div key={item.href + index} variants={itemVariants}>
-                    <Link
-                      href={item.disabled ? '#' : item.href}
-                      onClick={() => onOpenChange(false)}
-                      className={cn(
-                        "flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent",
-                        item.href.startsWith(`/${segment}`) || (!segment && item.href === Routes.Homepage)
-                          ? 'text-foreground font-semibold'
-                          : 'text-foreground/60'
-                      )}
-                    >
-                      {t(item.title as Parameters<typeof t>[0])}
-                    </Link>
-                  </m.div>
-                ))}
-              </nav>
-              {children}
+        // top-[72px]: island bottom is 64px on mobile in both states, +8px gap.
+        // The `container` shell aligns the panel with the page content column.
+        <m.div
+          className="pointer-events-none fixed inset-x-0 top-[72px] z-[9999] md:hidden"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+        >
+          <div className="container">
+            <div
+              ref={menuRef}
+              className="pointer-events-auto overflow-hidden rounded-2xl border border-border p-4 shadow-xl backdrop-blur-xl container-bg"
+            >
+          <div className="grid gap-4">
+            <nav className="grid gap-1">
+              {items.map((item, index) => (
+                <m.div key={item.href + index} variants={itemVariants}>
+                  <Link
+                    href={item.disabled ? '#' : item.href}
+                    onClick={() => onOpenChange(false)}
+                    className={cn(
+                      'flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent',
+                      item.href.startsWith(`/${segment}`) ||
+                        (!segment && item.href === Routes.Homepage)
+                        ? 'text-foreground font-semibold'
+                        : 'text-foreground/60'
+                    )}
+                  >
+                    {t(item.title as Parameters<typeof t>[0])}
+                  </Link>
+                </m.div>
+              ))}
+            </nav>
+            {children}
+          </div>
             </div>
-          </m.div>
-        </>
+          </div>
+        </m.div>
       )}
     </AnimatePresence>,
     document.body

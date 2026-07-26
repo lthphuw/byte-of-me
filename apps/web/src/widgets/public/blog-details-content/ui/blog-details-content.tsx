@@ -16,6 +16,7 @@ import {
 } from '@/features/public';
 import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-action-bar';
 import { BlogBreadcrumb } from '@/widgets/public/blog-details-content/ui/blog-breadcrumb';
+import { BlogCitationLinks } from '@/widgets/public/blog-details-content/ui/blog-citation-links';
 import { BlogContentHeader } from '@/widgets/public/blog-details-content/ui/blog-content-header';
 import { BlogReadingProgress } from '@/widgets/public/blog-details-content/ui/blog-reading-progress';
 import { BlogDetailsShell } from '@/widgets/public/blog-details-content/ui/blog-shells';
@@ -32,24 +33,37 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
       <BlogReadingProgress />
 
       <BlogDetailsShell>
-        <div className="w-full py-8 md:px-8 md:py-12">
-          <BlogBreadcrumb title={blog.title} />
-
-          <div className="flex w-full justify-center gap-10">
+        <div className="w-full">
+          {/*
+            Three tracks on wide screens: the article sits in the centre one so
+            it stays optically centred on the page, and the rail fills the right
+            margin instead of pushing the text off-centre.
+          */}
+          <div className="grid grid-cols-1 gap-x-8 xl:grid-cols-[1fr_minmax(0,720px)_1fr]">
             {/* Main column */}
-            <div className="w-full min-w-0 max-w-[760px]">
+            <div className="mx-auto w-full min-w-0 max-w-[720px] xl:col-start-2 xl:mx-0">
+              <BlogBreadcrumb title={blog.title} />
+
               <BlogContentHeader blog={blog} />
 
-              {/* Mobile table of contents (hidden when < 2 headings) */}
-              <div className="mt-6 xl:hidden">
-                <BlogTableOfContents
-                  targetId={ARTICLE_ID}
-                  label={t('tableOfContents')}
-                />
-              </div>
+              {/* The narrow-screen table of contents shares a wrapper with the
+                  article body so its `sticky` releases at the end of the post
+                  rather than hovering over the comments below. */}
+              <div>
+                {/* Collapsed by default so the article still starts above the
+                    fold, and sticky so it stays reachable while reading
+                    (hidden when < 2 headings) */}
+                <div className="sticky top-24 z-30 mt-6 xl:hidden">
+                  <BlogTableOfContents
+                    targetId={ARTICLE_ID}
+                    label={t('tableOfContents')}
+                    variant="collapsible"
+                  />
+                </div>
 
-              <div className="mb-8 md:mb-10" />
-              <BlogContent blog={blog} />
+                <div className="mb-8 md:mb-10" />
+                <BlogContent blog={blog} />
+              </div>
 
               <div className="mt-4 md:mt-8" />
               <BlogActionBar
@@ -116,8 +130,8 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
             </div>
 
             {/* Desktop table of contents */}
-            <aside className="hidden w-56 shrink-0 xl:block">
-              <div className="sticky top-24">
+            <aside className="hidden xl:col-start-3 xl:block">
+              <div className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pl-6">
                 <BlogTableOfContents
                   targetId={ARTICLE_ID}
                   label={t('tableOfContents')}
@@ -128,6 +142,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
         </div>
       </BlogDetailsShell>
 
+      <BlogCitationLinks targetId={ARTICLE_ID} />
       <BlogAnalytics blogId={blog.id} />
     </>
   );

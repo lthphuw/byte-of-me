@@ -8,7 +8,10 @@ export const siteConfig: SiteConfig = {
   description:
     'Passion, experience, projects, hobbies — all logged, one byte at a time.',
   url: host,
-  ogImage: `${host}/images/avatars/HaNot2024.jpeg`,
+  // The `/api/og` route renders a 1200x630 card and takes an optional
+  // `?title=`. Pointing the default here means the generator is the single
+  // source of social preview images instead of sitting unreferenced.
+  ogImage: `${host}/api/og`,
   links: {
     github: 'https://github.com/lthphuw',
   },

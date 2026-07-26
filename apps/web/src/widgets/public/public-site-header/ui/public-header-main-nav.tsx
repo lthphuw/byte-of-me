@@ -19,10 +19,11 @@ interface MainNavProps {
   minimized?: boolean;
 }
 
-export const PublicHeaderMainNav = React.forwardRef<
-  HTMLDivElement,
-  MainNavProps
->(({ items, children, minimized = false }, ref) => {
+export function PublicHeaderMainNav({
+  items,
+  children,
+  minimized = false,
+}: MainNavProps) {
   const locale = useLocale();
   const t = useTranslations('global.header.nav');
   const segment = useSelectedLayoutSegment();
@@ -33,7 +34,7 @@ export const PublicHeaderMainNav = React.forwardRef<
   const navItems = items.filter((it) => !it.onlyMobile);
 
   return (
-    <div ref={ref} className="flex items-center gap-6 md:gap-10">
+    <div className="flex items-center gap-6 md:gap-10">
       <Link
         href={Routes.Homepage}
         locale={locale}
@@ -79,7 +80,6 @@ export const PublicHeaderMainNav = React.forwardRef<
           isOpen={open}
           onOpenChange={setOpen}
           items={items}
-          minimized={minimized}
           triggerRef={triggerRef}
         >
           {children}
@@ -87,6 +87,4 @@ export const PublicHeaderMainNav = React.forwardRef<
       </div>
     </div>
   );
-});
-
-PublicHeaderMainNav.displayName = 'PublicHeaderMainNav';
+}

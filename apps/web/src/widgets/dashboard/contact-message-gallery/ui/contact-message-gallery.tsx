@@ -1,22 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import {   Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  Input,
-  Pagination,
-  RichText,
-  ScrollArea,
-  Skeleton,
-useDebounce ,
-} from '@byte-of-me/ui';
+import { Button, Card, CardContent, CardHeader, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Input, Pagination, ScrollArea, Skeleton, useDebounce } from '@byte-of-me/ui';
+import { RichText } from '@byte-of-me/ui/rich-text';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { MessageSquare, Search, X } from 'lucide-react';

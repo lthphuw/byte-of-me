@@ -23,6 +23,8 @@ export function RichTextEditorLite({ value, onChange, className }: Props) {
         heading: false,
         codeBlock: false,
         blockquote: false,
+        // Link is registered explicitly below with its own config.
+        link: false,
       }),
       Link,
       Placeholder.configure({

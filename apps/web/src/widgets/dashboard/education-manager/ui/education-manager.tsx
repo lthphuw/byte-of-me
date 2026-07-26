@@ -124,15 +124,16 @@ export function EducationManager() {
               return (
                 <div
                   key={edu.id}
-                  className="group flex items-center justify-between rounded-xl border bg-card p-4 transition-all hover:border-primary/50 hover:shadow-md"
+                  className="group flex items-center justify-between gap-4 rounded-xl border bg-card p-4 transition-all hover:border-primary/50 hover:shadow-md"
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex min-w-0 items-center gap-4">
                     <div className="relative flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-muted">
                       {edu.logo?.url ? (
                         <Image
                           src={edu.logo.url}
                           alt={title}
                           fill
+                          sizes="56px"
                           className="object-contain p-2"
                         />
                       ) : (
@@ -140,8 +141,10 @@ export function EducationManager() {
                       )}
                     </div>
 
-                    <div className="space-y-1">
-                      <h4 className="font-semibold leading-none">{title}</h4>
+                    <div className="min-w-0 space-y-1">
+                      <h4 className="truncate font-semibold leading-none">
+                        {title}
+                      </h4>
                       <p className="text-xs font-medium text-muted-foreground">
                         {dateRange}
                       </p>
@@ -150,13 +153,25 @@ export function EducationManager() {
                           variant="secondary"
                           className="px-2 py-0 text-[10px]"
                         >
-                          {edu.achievements.length} Achievements
+                          {edu.achievements.length}{' '}
+                          {edu.achievements.length === 1
+                            ? 'Achievement'
+                            : 'Achievements'}
                         </Badge>
+
+                        {!edu.endDate && (
+                          <Badge
+                            variant="outline"
+                            className="px-2 py-0 text-[10px]"
+                          >
+                            Ongoing
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
+                  <div className="flex shrink-0 items-center gap-2 transition-opacity sm:opacity-0 sm:focus-within:opacity-100 sm:group-hover:opacity-100">
                     <EditButton onClick={() => handleEdit(edu)} />
                     <DeleteButton
                       isSubmitting={

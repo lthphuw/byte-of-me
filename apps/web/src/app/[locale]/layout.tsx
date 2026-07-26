@@ -79,12 +79,24 @@ export async function generateMetadata({
       title: `${t('title')} | Byte of me`,
       description: t('description'),
       siteName: 'Byte of me',
+      // Without this, every page except a blog post with a cover image was
+      // shared with no preview image at all — and `twitter.card` below already
+      // promised a large one.
+      images: [
+        {
+          url: siteConfig.ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${t('title')} | Byte of me`,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: `${t('title')} | Byte of me`,
       description: t('description'),
       creator: '@lthphuw',
+      images: [siteConfig.ogImage],
     },
     icons: {
       icon: '/favicon.ico',

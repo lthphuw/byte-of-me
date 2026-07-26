@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
-import { host } from '@/shared/config/host';
-import { siteConfig } from '@/shared/config/site';
+import { buildPublicPageMetadata } from '@/shared/lib/metadata';
 
 export async function generateMetadata({
   params,
@@ -11,49 +10,20 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations('metadata.projects');
-  const url = `${host}/${locale}/projects`;
 
-  return {
+  return buildPublicPageMetadata({
+    segment: 'projects',
+    locale,
     title: t('title'),
     description: t('description'),
-    keywords: [
-      'Các dự án đã làm',
-      'Dự án',
-      'Projects',
-      'Side Projects',
-      ...siteConfig.keywords,
-    ].map((key) => key.toLowerCase()),
-    alternates: {
-      canonical: url,
-      languages: {
-        vi: `${siteConfig.url}/vi/projects`,
-        en: `${siteConfig.url}/en/projects`,
-      },
-    },
-    openGraph: {
-      title: `${t('title')} | ${siteConfig.name}`,
-      description: t('description'),
-      url,
-      type: 'website',
-      locale: locale === 'vi' ? 'vi_VN' : 'en_US',
-      siteName: 'Byte of me',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${t('title')} | ${siteConfig.name}`,
-      description: t('description'),
-
-      creator: '@lthphuw',
-    },
-  };
+    keywords: ['Các dự án đã làm', 'Dự án', 'Projects', 'Side Projects'],
+  });
 }
 
 interface ProjectsLayoutProps {
   children?: React.ReactNode;
 }
 
-export default async function ProjectsLayout({
-  children,
-}: ProjectsLayoutProps) {
+export default async function ProjectsLayout({ children }: ProjectsLayoutProps) {
   return <div className="flex flex-col gap-6">{children}</div>;
 }

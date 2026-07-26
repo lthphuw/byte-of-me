@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Button, FilterMultiSelectSection, Input,useDebounce  } from '@byte-of-me/ui';
-import { X } from 'lucide-react';
+import { Button, useDebounce } from '@byte-of-me/ui';
+import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { useTagInfiniteQuery } from '@/entities/tag';
 import { TagClickableBadge } from '@/entities/tag/ui/tag-clickable-badge';
+import { FilterSearchInput } from '@/shared/ui';
 
 interface FilterValues {
   tagSlugs: string[];
@@ -18,8 +19,14 @@ interface BlogFiltersProps {
   onChange: (value: FilterValues) => void;
 }
 
+/**
+ * Compact one-row filter bar. It used to be a bordered card that filled the top
+ * of the page, so the first thing a visitor saw was a filter form rather than
+ * any posts.
+ */
 export function BlogFilters({ value, onChange }: BlogFiltersProps) {
   const t = useTranslations('components.blogFilters');
+  const tShared = useTranslations('components.filters');
 
   const [search, setSearch] = useState(value.search);
   const [debounced] = useDebounce(search, 400);
@@ -29,11 +36,14 @@ export function BlogFilters({ value, onChange }: BlogFiltersProps) {
     fetchNextPage: fetchNextTags,
     hasNextPage: hasNextTags,
     isFetchingNextPage: isFetchingTags,
-    isLoading: isLoadingTags,
   } = useTagInfiniteQuery(10);
 
+  // Only the debounced term should trigger a change. `onChange` and `value` are
+  // recreated by the parent on every render, so including them would refire the
+  // filter on each keystroke.
   useEffect(() => {
     onChange({ ...value, search: debounced });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debounced]);
 
   const allTags = tagData?.pages.flatMap((page) => page.data) || [];
@@ -54,57 +64,53 @@ export function BlogFilters({ value, onChange }: BlogFiltersProps) {
   const hasFilters = value.tagSlugs.length > 0 || search.length > 0;
 
   return (
-    <div className="flex flex-col gap-5 rounded-xl border bg-card p-4 md:p-5">
-      <div className="flex h-8 items-center justify-between">
-        <h2 className="text-sm font-bold tracking-tight">{t('filters')}</h2>
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-2">
+        <FilterSearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder={t('searchBlog')}
+          clearLabel={tShared('clearSearch')}
+          className="w-full sm:max-w-xs"
+        />
+
         {hasFilters && (
           <Button
             variant="ghost"
             size="sm"
             onClick={handleReset}
-            className="h-8 px-2 text-xs text-muted-foreground"
+            className="h-9 shrink-0 px-3 text-xs text-muted-foreground"
           >
             {t('reset')}
           </Button>
         )}
       </div>
 
-      <div className="relative">
-        <Input
-          placeholder={t('searchBlog')}
-          className="h-9 text-sm"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        {search && (
-          <button
-            type="button"
-            onClick={() => setSearch('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-muted-foreground hover:bg-transparent"
-          >
-            <X size={14} />
-          </button>
-        )}
-      </div>
-
-      <FilterMultiSelectSection
-        title="Tags"
-        onLoadMore={() => fetchNextTags()}
-        hasMore={hasNextTags}
-        isLoading={isLoadingTags}
-        isFetchingNextPage={isFetchingTags}
-      >
-        <div className="flex min-h-[32px] flex-wrap items-center gap-1.5">
+      {allTags.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5">
           {allTags.map((tag) => (
             <TagClickableBadge
               key={tag.id}
               tag={tag}
               active={value.tagSlugs.includes(tag.slug)}
-              onClick={(slug) => toggleTag(slug)}
+              onClick={toggleTag}
             />
           ))}
+
+          {hasNextTags && (
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={isFetchingTags}
+              onClick={() => fetchNextTags()}
+              className="h-6 gap-1 px-2 text-[11px] text-muted-foreground"
+            >
+              <Plus className="size-3" />
+              {t('seeMore')}
+            </Button>
+          )}
         </div>
-      </FilterMultiSelectSection>
+      )}
     </div>
   );
 }

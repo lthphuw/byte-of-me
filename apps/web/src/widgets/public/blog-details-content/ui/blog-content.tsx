@@ -1,4 +1,5 @@
-import { RichText } from '@byte-of-me/ui';
+import { MermaidBlocks } from '@byte-of-me/ui/mermaid-blocks';
+import { RichText } from '@byte-of-me/ui/rich-text';
 
 import type { PublicBlog } from '@/entities/blog';
 
@@ -9,7 +10,11 @@ export function BlogContent({ blog }: { blog: PublicBlog }) {
       id="blog-article-content"
       className="w-full overflow-hidden break-words md:max-w-none"
     >
-      <RichText content={blog.content} />
+      {/* RichText stays server-rendered; MermaidBlocks only swaps
+          `language-mermaid` code blocks for drawn SVGs after hydration. */}
+      <MermaidBlocks>
+        <RichText content={blog.content} />
+      </MermaidBlocks>
     </div>
   );
 }

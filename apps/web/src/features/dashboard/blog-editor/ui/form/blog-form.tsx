@@ -15,7 +15,6 @@ import {
   Icons,
   Loading,
   MultiSelect,
-  RichTextEditor,
   Select,
   SelectContent,
   SelectItem,
@@ -35,14 +34,17 @@ import { getPaginatedAdminProjects } from '@/entities/project/api/get-paginated-
 import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import { TextField, TranslationTabs } from '@/shared/ui';
+import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
 export interface BlogFormProps {
   initialData?: AdminBlog;
   onSubmit: (data: BlogFormValues) => void;
   loading: boolean;
+  /** Set by a dialog host so its footer button can submit this form. */
+  formId?: string;
 }
 
-export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
+export function BlogForm({ initialData, onSubmit, loading, formId }: BlogFormProps) {
   const { data: tagsData, isLoading: isTagLoading } = useQuery({
     queryKey: ['tags', 1],
     queryFn: () => getPaginatedAdminTags(1, 100),
@@ -119,7 +121,11 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        id={formId}
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-6"
+      >
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-4">
             <TextField
@@ -280,20 +286,24 @@ export function BlogForm({ initialData, onSubmit, loading }: BlogFormProps) {
           />
         </div>
 
-        <div className="flex justify-end gap-4 border-t pt-6">
-          <Button
-            type="submit"
-            size="lg"
-            className="min-w-[120px]"
-            disabled={loading}
-          >
-            {loading ? (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              'Save Post'
-            )}
-          </Button>
-        </div>
+        {/* When hosted in a dialog, the dialog's fixed footer submits via
+            the form id instead — no second save button inside the scroll. */}
+        {!formId && (
+          <div className="flex justify-end gap-4 border-t pt-6">
+            <Button
+              type="submit"
+              size="lg"
+              className="min-w-[120px]"
+              disabled={loading}
+            >
+              {loading ? (
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                'Save Post'
+              )}
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   );

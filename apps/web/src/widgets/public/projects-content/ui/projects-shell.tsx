@@ -6,7 +6,7 @@ import { cn } from '@/shared/lib/utils';
 export function ProjectsShell({ className, ...props }: ShellProps) {
   return (
     <ShellBase
-      className={cn('flex max-w-5xl flex-col gap-8', className)}
+      className={cn('max-w-5xl', className)}
       {...props}
     />
   );

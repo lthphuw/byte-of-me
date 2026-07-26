@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
-import { host } from '@/shared/config/host';
-import { siteConfig } from '@/shared/config/site';
+import { buildPublicPageMetadata } from '@/shared/lib/metadata';
 
 export async function generateMetadata({
   params,
@@ -11,9 +10,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations('metadata.experience');
-  const url = `${host}/${locale}/experience`;
 
-  return {
+  return buildPublicPageMetadata({
+    segment: 'experience',
+    locale,
     title: t('title'),
     description: t('description'),
     keywords: [
@@ -21,39 +21,14 @@ export async function generateMetadata({
       'Việc làm',
       'Kinh nghiệm việc làm',
       'Experience',
-      ...siteConfig.keywords,
-    ].map((key) => key.toLowerCase()),
-    alternates: {
-      canonical: url,
-      languages: {
-        vi: `${siteConfig.url}/vi/experience`,
-        en: `${siteConfig.url}/en/experience`,
-      },
-    },
-    openGraph: {
-      title: `${t('title')} | ${siteConfig.name}`,
-      description: t('description'),
-      url,
-      type: 'website',
-      locale: locale === 'vi' ? 'vi_VN' : 'en_US',
-      siteName: 'Byte of me',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${t('title')} | ${siteConfig.name}`,
-      description: t('description'),
-
-      creator: '@lthphuw',
-    },
-  };
+    ],
+  });
 }
 
 interface ExperienceLayoutProps {
   children?: React.ReactNode;
 }
 
-export default async function ExperienceLayout({
-  children,
-}: ExperienceLayoutProps) {
+export default async function ExperienceLayout({ children }: ExperienceLayoutProps) {
   return <div className="flex flex-col gap-6">{children}</div>;
 }

@@ -125,6 +125,7 @@ interface RevealItemProps {
   /** Position in the list — used to stagger the entrance (capped). */
   index?: number;
   className?: string;
+  as?: MotionTag;
 }
 
 /**
@@ -133,10 +134,16 @@ interface RevealItemProps {
  * remounts — suited to client-fetched, paginated grids where each result set
  * should animate in. The stagger step is capped so late items never lag.
  */
-export function RevealItem({ children, index = 0, className }: RevealItemProps) {
+export function RevealItem({
+  children,
+  index = 0,
+  className,
+  as = 'div',
+}: RevealItemProps) {
   const delay = Math.min(index, MAX_STAGGER_STEPS) * motionStagger.base;
+  const Comp = MOTION_TAGS[as];
   return (
-    <m.div
+    <Comp
       className={className}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
@@ -147,6 +154,6 @@ export function RevealItem({ children, index = 0, className }: RevealItemProps) 
       }}
     >
       {children}
-    </m.div>
+    </Comp>
   );
 }

@@ -6,7 +6,8 @@ export default function BlogDetailsLoading() {
   return (
     <BlogDetailsShell>
       <div className="flex w-full min-w-0 flex-col items-center overflow-hidden py-8 md:px-8 md:py-12">
-        <div className="w-full min-w-0 max-w-3xl">
+        {/* Matches the article's reading measure so nothing shifts on load. */}
+        <div className="w-full min-w-0 max-w-[720px]">
           {/* TITLE SKELETON */}
           <div className="space-y-2">
             <Skeleton className="h-10 w-full md:h-12" />

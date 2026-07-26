@@ -20,7 +20,7 @@ export async function BlogBreadcrumb({ title }: { title: string }) {
 
       <Link
         href={Routes.Blogs}
-        className="transition-colors hover:text-foreground min-w-16"
+        className="min-w-16 transition-colors hover:text-foreground"
       >
         {t('allPosts')}
       </Link>

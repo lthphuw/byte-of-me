@@ -140,7 +140,15 @@ declare const messages: {
     "youCanStartByCreatingANewProject": "Bạn có thể bắt đầu bằng cách tạo một dự án mới",
     "backToProjects": "Quay lại danh sách dự án",
     "noProjectsFound": "Chưa có dự án nào được thêm vào.",
-    "noProjectsMatchYourSearch": "Không tìm thấy dự án nào khớp với bộ lọc của bạn."
+    "noProjectsMatchYourSearch": "Không tìm thấy dự án nào khớp với bộ lọc của bạn.",
+    "pageTitle": "Dự án",
+    "pageDescription": "Những thứ tôi đã thiết kế, xây và đưa lên chạy thật",
+    "count": "{count, plural, =0 {Chưa có dự án} other {# dự án}}",
+    "present": "Nay",
+    "liveDemo": "Xem thử",
+    "ongoing": "Đang làm",
+    "completed": "Đã xong",
+    "undated": "Chưa rõ thời gian"
   },
   "blog": {
     "details": "Chi tiết",
@@ -149,7 +157,12 @@ declare const messages: {
     "loadingBlogList": "Đang tải danh sách bài viết",
     "failedToLoadBlogList": "Không thể tải danh sách bài viết. Vui lòng thử lại.",
     "noBlogsFound": "Chưa có bài viết nào. Hãy quay lại sau nhé!",
-    "noBlogsMatchYourSearch": "Không tìm thấy bài viết nào khớp với tìm kiếm của bạn."
+    "noBlogsMatchYourSearch": "Không tìm thấy bài viết nào khớp với tìm kiếm của bạn.",
+    "pageTitle": "Bài viết",
+    "pageDescription": "Ghi chép khi làm web — CMS, monorepo và những thứ đã vỡ dọc đường",
+    "count": "{count, plural, =0 {Chưa có bài viết} other {# bài viết}}",
+    "showDrafts": "Bản nháp",
+    "showDraftsHint": "Chỉ admin thấy — khách truy cập không bao giờ thấy bản nháp"
   },
   "blogDetails": {
     "failedToLoadBlog": "Không thể tải bài viết",
@@ -227,22 +240,24 @@ declare const messages: {
       "filters": "Bộ lọc",
       "reset": "Thiết lập lại",
       "seeMore": "Xem thêm",
-      "searchProject": "Tìm kiếm dự án..."
+      "searchProject": "Tìm kiếm dự án...",
+      "tags": "Thẻ",
+      "techStack": "Công nghệ"
     },
     "blogFilters": {
       "filters": "Bộ lọc",
       "reset": "Thiết lập lại",
       "seeMore": "Xem thêm",
-      "searchBlog": "Tìm kiếm bài viết..."
+      "searchBlog": "Tìm kiếm bài viết...",
+      "tags": "Thẻ"
     },
     "blogCard": {
-      "readArticle": "Đọc bài viết",
       "views": "{count} lượt xem",
-      "avgRead": "Đọc {time}p",
-      "readingTime": "{time} phút đọc"
+      "readingTime": "{time} phút đọc",
+      "draft": "Nháp"
     },
-    "multiSelectSection": {
-      "seeMore": "Xem thêm"
+    "filters": {
+      "clearSearch": "Xoá tìm kiếm"
     }
   },
   "dashboard": {

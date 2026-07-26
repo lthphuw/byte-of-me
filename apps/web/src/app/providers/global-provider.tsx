@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, type ReactNode,useContext } from 'react';
-import { Toaster } from '@byte-of-me/ui';
+import { MotionProvider, Toaster } from '@byte-of-me/ui';
 import { GoogleAnalytics as NextGoogleAnalytics } from '@next/third-parties/google';
 import { SpeedInsights as VercelSpeedInsights } from '@vercel/speed-insights/next';
 
@@ -26,6 +26,12 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   return (
     <GlobalContext.Provider value={{}}>
       <TanStackQueryProvider>
+        {/* MotionProvider sits at the root so `m.*` components animate on every
+            route group. Anything rendered outside LazyMotion's tree falls back
+            to a static render with no warning — dashboard and auth used to sit
+            outside it, which forced shared components (Loading, CopyButton)
+            onto eager `motion.*` imports and full framer in every bundle. */}
+        <MotionProvider>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {/* Main content */}
           {children}
@@ -36,6 +42,7 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
           <NextGoogleAnalytics gaId={`${env.NEXT_PUBLIC_GA_ID}`} />
           <VercelSpeedInsights />
         </ThemeProvider>
+        </MotionProvider>
       </TanStackQueryProvider>
     </GlobalContext.Provider>
   );

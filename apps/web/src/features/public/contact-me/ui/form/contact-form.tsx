@@ -2,7 +2,8 @@
 
 import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
-import {   Button,
+import {
+  Button,
   Form,
   FormControl,
   FormField,
@@ -11,9 +12,9 @@ import {   Button,
   FormMessage,
   Icons,
   Input,
-  RichTextEditorLite,
 } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
+import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
 
 import {
@@ -21,6 +22,25 @@ import {
   contactMessageSchema,
   sendContactMessage,
 } from '@/entities/contact-message';
+
+// Loaded on demand, and via Lite's own subpath (`…/rich-text-editor-lite`, not
+// the `…/rich-text-editor` barrel whose `import './tiptap.css'` side effect
+// drags the full editor along). This form sits on the public homepage, and a
+// static import would put tiptap core + prosemirror (~570 KB raw) into its
+// initial JS; deferred, the editor arrives after hydration while the rest of
+// the form is already interactive.
+const RichTextEditorLite = dynamic(
+  () =>
+    import('@byte-of-me/ui/rich-text-editor-lite').then(
+      (mod) => mod.RichTextEditorLite
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="min-h-[120px] w-full animate-pulse rounded-md border bg-muted/30" />
+    ),
+  }
+);
 
 export function ContactForm() {
   const [isPending, startTransition] = useTransition();

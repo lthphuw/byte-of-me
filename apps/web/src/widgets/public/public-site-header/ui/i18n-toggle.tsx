@@ -22,15 +22,32 @@ const flagVariants = {
   exit: { opacity: 0, scale: 0.9, y: -8 },
 };
 
+// Only these two flags exist in the UI, so they are served as two static
+// files under public/flags (copied from the flag-icons package) instead of
+// importing flag-icons.min.css — which drags all 257 flag classes plus every
+// flag SVG (~550 files) into the build for the sake of two.
+const flagClass =
+  'inline-block w-[1.333333em] leading-[1em] bg-contain bg-center bg-no-repeat';
+
 export const Flags: Record<
   LocaleType,
   (props: { className?: string }) => ReactElement
 > = {
   vi: (props) => (
-    <span className={cn('fi fi-vn border border-muted/20', props.className)} />
+    <span
+      role="img"
+      aria-label="Tiếng Việt"
+      className={cn(flagClass, 'border border-muted/20', props.className)}
+      style={{ backgroundImage: "url('/flags/vn.svg')" }}
+    />
   ),
   en: (props) => (
-    <span className={cn('fi fi-gb border border-muted/20', props.className)} />
+    <span
+      role="img"
+      aria-label="English"
+      className={cn(flagClass, 'border border-muted/20', props.className)}
+      style={{ backgroundImage: "url('/flags/gb.svg')" }}
+    />
   ),
 };
 

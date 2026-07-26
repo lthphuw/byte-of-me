@@ -1,9 +1,19 @@
 'use client';
 
 import type { Control, Path, UseFormReturn } from 'react-hook-form';
-import { DeleteButton , FormControl, FormField, FormItem, FormLabel , Input , RichTextEditor , Separator , Textarea } from '@byte-of-me/ui';
+import {
+  DeleteButton,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  Input,
+  Separator,
+  Textarea,
+} from '@byte-of-me/ui';
 
-import { uploadSingleMedia,type UserProfileFormValues } from '@/entities';
+import { uploadSingleMedia, type UserProfileFormValues } from '@/entities';
+import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
 interface ProfileTranslationCardProps {
   form: UseFormReturn<UserProfileFormValues>;
@@ -73,13 +83,13 @@ export function ProfileTranslationCard({
             name={`translations.${index}.tagLine`}
             render={({ field }) => (
               <FormItem >
-                <FormLabel>Short Bio</FormLabel>
+                <FormLabel>Tagline</FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
                     value={field.value ?? ''}
                     className="min-h-[80px] resize-none"
-                    placeholder="Short bio..."
+                    placeholder="Chào, mình là...."
                   />
                 </FormControl>
               </FormItem>
@@ -97,7 +107,7 @@ export function ProfileTranslationCard({
                     {...field}
                     value={field.value ?? ''}
                     className="min-h-[80px] resize-none"
-                    placeholder="Short bio..."
+                    placeholder="Fullstack developer..."
                   />
                 </FormControl>
               </FormItem>

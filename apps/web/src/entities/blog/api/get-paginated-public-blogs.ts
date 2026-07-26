@@ -5,6 +5,7 @@ import { type Prisma, prisma } from '@byte-of-me/db';
 import type { PublicBlog } from '@/entities/blog/model/types';
 import type { PublicProject } from '@/entities/project/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
+import { getAuthenticatedAdmin } from '@/shared/lib/auth';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { buildPaginatedMeta } from '@/shared/lib/pagination';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
@@ -16,6 +17,12 @@ import type {
 export type GetPublicBlogsParams = PaginatedParams & {
   tagSlugs?: string[];
   search?: string;
+  /**
+   * Also return unpublished posts. The flag alone grants nothing — the
+   * session is re-checked server-side and non-admins get published-only
+   * results regardless of what the client sends.
+   */
+  includeDrafts?: boolean;
 };
 
 export async function getPaginatedPublicBlogs(
@@ -25,10 +32,19 @@ export async function getPaginatedPublicBlogs(
     return await withPublicActionHandler(
       'getPaginatedPublicBlogs',
       async ({ locale }) => {
-        const { page = 1, limit = 9, tagSlugs = [], search } = params;
+        const {
+          page = 1,
+          limit = 9,
+          tagSlugs = [],
+          search,
+          includeDrafts,
+        } = params;
         const skip = (page - 1) * limit;
 
-        const where: Prisma.BlogWhereInput = { isPublished: true };
+        const admin = includeDrafts ? await getAuthenticatedAdmin() : null;
+        const where: Prisma.BlogWhereInput = admin
+          ? {}
+          : { isPublished: true };
 
         if (tagSlugs.length > 0) {
           where.AND = tagSlugs.map((slug) => ({

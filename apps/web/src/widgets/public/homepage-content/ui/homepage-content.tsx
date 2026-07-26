@@ -14,9 +14,14 @@ import {
 export async function HomepageContent() {
   return (
     <HomepageShell>
-      <main
+      {/* A <div>, not <main>: the public layout already provides the page's
+          <main> landmark, and nesting a second one is invalid and leaves screen
+          readers with two "main" regions to choose between.
+          The width comes from HomepageShell — a max-width here would sit inside
+          the shell's narrower one and never apply. */}
+      <div
         id="home"
-        className="mx-auto max-w-6xl space-y-16 px-0 py-14 md:space-y-28 md:px-8 md:py-20"
+        className="space-y-16 md:space-y-24"
       >
         <HomepageSectionMotion delay={0.1}>
           <Suspense fallback={<HomepageProfileLoading />}>
@@ -33,7 +38,7 @@ export async function HomepageContent() {
         <HomepageSectionMotion>
           <HomepageContactCta />
         </HomepageSectionMotion>
-      </main>
+      </div>
     </HomepageShell>
   );
 }

@@ -92,6 +92,31 @@ export default {
             height: 0,
           },
         },
+        // Deliberately not a height animation. Radix measures
+        // `--radix-collapsible-content-height` the moment the content mounts,
+        // but this content holds a Tiptap editor that renders one tick later
+        // (`immediatelyRender: false`) — the measurement lands ~180px while the
+        // real content is ~610px, so a height tween would run to the wrong
+        // target and snap. Opacity and a short lift need no measurement and
+        // stay correct however the content grows.
+        'collapsible-down': {
+          from: {
+            opacity: 0,
+            transform: 'translateY(-4px)',
+          },
+          to: {
+            opacity: 1,
+            transform: 'translateY(0)',
+          },
+        },
+        'collapsible-up': {
+          from: {
+            opacity: 1,
+          },
+          to: {
+            opacity: 0,
+          },
+        },
         gradient: {
           '0%': {
             backgroundPosition: '0% 50%',
@@ -107,6 +132,10 @@ export default {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        // Enter eases out, exit eases in and runs shorter — collapsing should
+        // get out of the way rather than linger.
+        'collapsible-down': 'collapsible-down 0.18s ease-out',
+        'collapsible-up': 'collapsible-up 0.12s ease-in',
         gradient: 'gradient 8s linear infinite',
         'ping-3': 'ping 1s ease-in-out 3',
       },
@@ -145,6 +174,15 @@ export default {
         },
         '.article-text': {
           '@apply leading-relaxed text-justify tracking-normal break-safe': {},
+        },
+        // The one label style shared by every list surface — post dates, project
+        // date ranges, stats, timeline years. It is what makes the blog grid and
+        // the project timeline read as the same system despite different shapes.
+        // Deliberately not uppercased: abbreviated Vietnamese months ("thg 4")
+        // look broken in caps.
+        '.meta-label': {
+          '@apply text-[11px] font-medium tracking-[0.08em] text-muted-foreground':
+            {},
         },
       });
     }),

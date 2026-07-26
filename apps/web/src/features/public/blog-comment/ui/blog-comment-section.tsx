@@ -10,6 +10,9 @@ import {
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
+// Narrow import on purpose: `@/entities` re-exports every entity, so a
+// client component importing it drags unrelated server-rendering modules
+// (education-item -> RichText -> tiptap) into the public bundle.
 import {
   CommentForm,
   commentKey,
@@ -19,7 +22,7 @@ import {
   postComment,
   type PublicComment,
   useCommentInfiniteQuery,
-} from '@/entities';
+} from '@/entities/comment';
 import { AuthModal } from '@/features/auth';
 import type { PaginatedData } from '@/shared/types/api';
 

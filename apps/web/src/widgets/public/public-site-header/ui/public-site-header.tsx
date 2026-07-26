@@ -1,150 +1,60 @@
 'use client';
 
-import type { CSSProperties } from 'react';
-import { useElementSize, useWindowScroll } from '@byte-of-me/ui';
-import { AnimatePresence, m, type Transition } from 'framer-motion';
-import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
+import { useMotionValueEvent, useScroll } from 'framer-motion';
 
 import { ColorSchemeModeToggle } from './color-scheme-mode-toggle';
+import { HeaderIsland, useIslandGeometry } from './header-island';
+import { I18nToggle } from './i18n-toggle';
 import { PublicHeaderMainNav } from './public-header-main-nav';
+import { UserActionToggle } from './user-action-toggle';
 
 import { globalConfig } from '@/shared/config/global';
-import { cn } from '@/shared/lib/utils';
-import { I18nToggle } from '@/widgets/public/public-site-header/ui/i18n-toggle';
-import { UserActionToggle } from '@/widgets/public/public-site-header/ui/user-action-toggle';
 
-const SCROLL_THRESHOLD = 50;
-const COMPACT_BORDER_RADIUS = 16;
-const COMPACT_TOP_OFFSET = 32;
-const COMPACT_X_OFFSET = 32;
-const COMPACT_WIDTH_OFFSET = 48;
-const COMPACT_HEIGHT = 56;
-const DEFAULT_HEIGHT = 64;
-const COMPACT_PADDING = '12px 16px';
-const DEFAULT_PADDING = '16px';
-const SHADOW_TRANSITION_THRESHOLD = 10;
-
-const TRANSITION: Transition = {
-  type: 'spring',
-  stiffness: 100,
-  mass: 0.6,
-  damping: 10,
-};
+/**
+ * Docking and undocking at the same offset makes the header flicker when the
+ * scroll comes to rest right on the threshold, so the two edges are separated.
+ */
+const DOCK_AT = 64;
+const UNDOCK_AT = 24;
 
 export function PublicSiteHeader() {
-  const [{ y: scrollY }] = useWindowScroll();
-  const { width: headerWidth, ref: mainNavRef } = useElementSize();
-  const { resolvedTheme } = useTheme();
+  const { scrollY } = useScroll();
+  const [docked, setDocked] = useState(false);
 
-  const isCompact = scrollY >= SCROLL_THRESHOLD;
-  const compactWidth = headerWidth
-    ? `calc(${headerWidth}px + ${COMPACT_WIDTH_OFFSET}px)`
-    : '100%';
+  // Reading scroll through a motion value keeps the header out of React's
+  // render path while scrolling: `setDocked` is only ever handed a new value
+  // when a threshold is actually crossed, and React bails out of the rest.
+  useMotionValueEvent(scrollY, 'change', (y) =>
+    setDocked((wasDocked) => (wasDocked ? y > UNDOCK_AT : y >= DOCK_AT))
+  );
 
-  const shadowOpacity =
-    Math.min(scrollY / SHADOW_TRANSITION_THRESHOLD, 1) * 0.1;
+  // A reload or back-navigation can land the page mid-scroll without ever
+  // firing a scroll event, which would leave the header undocked over content.
+  useEffect(() => setDocked(scrollY.get() >= DOCK_AT), [scrollY]);
 
-  const boxShadow = (() => {
-    const color = resolvedTheme === 'dark' ? '255,255,255' : '0,0,0';
-    const opacity =
-      resolvedTheme === 'dark'
-        ? Math.min(shadowOpacity + 0.05, 0.15)
-        : shadowOpacity;
+  const geometry = useIslandGeometry(docked);
 
-    return `0 4px 10px rgba(${color},${opacity})`;
-  })() as CSSProperties['boxShadow'];
-
-  const controllerBoxShadow = isCompact ? boxShadow : 'none';
-
+  // Fixed shell + `container`: island insets are measured from the content
+  // column, not the viewport, so the header tracks the content at any width.
   return (
-    <>
-      <m.header
-        animate={{
-          width: isCompact ? compactWidth : '100%',
-          left: isCompact ? COMPACT_X_OFFSET : 0,
-          top: isCompact ? COMPACT_TOP_OFFSET : 0,
-          borderRadius: isCompact ? COMPACT_BORDER_RADIUS : 1,
-          boxShadow: scrollY > 0 ? boxShadow : 'none',
-        }}
-        className={cn(
-          'fixed left-0 top-0 pl-2 z-50 w-full appearance-none overflow-hidden will-change-[width,transform] [-webkit-appearance:none]',
-          isCompact && 'mr-auto pl-0 container-bg'
-        )}
-        transition={{
-          top: TRANSITION,
-          left: TRANSITION,
-          borderRadius: TRANSITION,
-          boxShadow: TRANSITION,
-          width: { type: 'tween', ease: 'easeInOut', duration: 0.3 },
-        }}
-      >
-        <m.div
-          layout
-          animate={{
-            scale: isCompact ? 0.9 : 1,
-            opacity: isCompact ? 0.95 : 1,
-            borderRadius: isCompact ? COMPACT_BORDER_RADIUS : 1,
-          }}
-          className={cn(
-            'flex w-full items-center justify-between rounded-2xl overflow-hidden',
-            isCompact
-              ? 'py-1 px-2 md:py-3 md:px-4'
-              : `${DEFAULT_PADDING} md:ml-12`
-          )}
-          style={{
-            height: isCompact ? COMPACT_HEIGHT : DEFAULT_HEIGHT,
-            padding: isCompact ? COMPACT_PADDING : DEFAULT_PADDING,
-          }}
-          transition={TRANSITION}
-        >
-          <PublicHeaderMainNav
-            ref={mainNavRef}
-            items={globalConfig.header.nav}
-            minimized={isCompact}
-          />
-        </m.div>
-      </m.header>
+    <header>
+      <div className="pointer-events-none fixed inset-x-0 top-0 z-50">
+        <div className="container relative">
+          <HeaderIsland side="left" docked={docked} geometry={geometry}>
+            <PublicHeaderMainNav
+              items={globalConfig.header.nav}
+              minimized={docked}
+            />
+          </HeaderIsland>
 
-      {/* Controllers */}
-      <m.div
-        layout
-        className={cn(
-          'fixed top-0 right-6 bg-transparent md:right-12 z-50 space-x-2 appearance-none [-webkit-appearance:none]',
-          isCompact && 'ml-auto pl-0 container-bg'
-        )}
-        animate={{
-          right: isCompact ? COMPACT_X_OFFSET : 24,
-          top: isCompact ? COMPACT_TOP_OFFSET : 0,
-          borderRadius: isCompact ? COMPACT_BORDER_RADIUS : 1,
-          boxShadow: controllerBoxShadow,
-        }}
-        transition={TRANSITION}
-      >
-        <m.div
-          layout
-          animate={{
-            scale: isCompact ? 0.9 : 1,
-            opacity: isCompact ? 0.95 : 1,
-            borderRadius: isCompact ? COMPACT_BORDER_RADIUS : 1,
-          }}
-          className={cn(
-            'flex items-center gap-2 rounded-2xl justify-end',
-            isCompact ? 'py-1 px-2 md:py-3 md:px-4' : 'md:px-4'
-          )}
-          style={{
-            height: isCompact ? COMPACT_HEIGHT : DEFAULT_HEIGHT,
-          }}
-          transition={TRANSITION}
-        >
-          <ColorSchemeModeToggle />
-          <I18nToggle />
-
-          <AnimatePresence mode="popLayout">
+          <HeaderIsland side="right" docked={docked} geometry={geometry}>
+            <ColorSchemeModeToggle />
+            <I18nToggle />
             <UserActionToggle />
-          </AnimatePresence>
-
-        </m.div>
-      </m.div>
-    </>
+          </HeaderIsland>
+        </div>
+      </div>
+    </header>
   );
 }

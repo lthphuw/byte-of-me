@@ -3,6 +3,3 @@ export * from './use-debounce';
 export * from './use-intersection';
 export * from './use-lock-body';
 export * from './use-media-query';
-export * from './use-resize-observer';
-export * from './use-window-event';
-export * from './use-window-scroll';

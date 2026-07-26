@@ -1,4 +1,4 @@
-import { PrismaPlugin } from '@prisma/nextjs-monorepo-workaround-plugin';
+import path from 'node:path';
 import createNextIntlPlugin from 'next-intl/plugin';
 
 const nextConfig = {
@@ -18,6 +18,18 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '3mb',
     },
+    // Rewrites `import { X } from 'pkg'` into a direct deep import per symbol.
+    // These are all barrel packages: without this, importing one icon pulls the
+    // module graph for the whole set, which the bundler then has to prove is
+    // dead before dropping it — and it usually can't, because of side effects.
+    optimizePackageImports: [
+      'lucide-react',
+      'react-icons',
+      'date-fns',
+      'framer-motion',
+      'embla-carousel-react',
+      'cmdk',
+    ],
   },
 
   turbopack: {
@@ -31,11 +43,25 @@ const nextConfig = {
     '@byte-of-me/storage',
   ],
 
-  webpack: (config, { isServer, nextRuntime }) => {
-    if (isServer && nextRuntime !== 'edge') {
-      config.plugins.push(new PrismaPlugin());
-    }
-    return config;
+  // The build runs `next build --turbopack`, which ignores a `webpack` hook
+  // entirely — so the PrismaPlugin that used to live here never ran. It is not
+  // needed either: Prisma 7 talks to Postgres through `@prisma/adapter-pg`, so
+  // there is no query-engine binary for the plugin to copy.
+
+  // pnpm workspace: without this, file tracing starts at apps/web and Next
+  // cannot follow symlinks into the root node_modules, which on Vercel shows up
+  // as a workspace-root warning and mis-traced server bundles.
+  outputFileTracingRoot: path.join(import.meta.dirname, '../../'),
+  outputFileTracingExcludes: {
+    // Nothing server-rendered needs these at runtime; they are pure build-time
+    // or editor-only weight in the serverless function.
+    '**/*': [
+      'node_modules/.pnpm/@swc+core*/**',
+      'node_modules/.pnpm/esbuild*/**',
+      'node_modules/.pnpm/typescript*/**',
+      'node_modules/.pnpm/@esbuild*/**',
+      'node_modules/.pnpm/prisma@*/**',
+    ],
   },
   async headers() {
     return [

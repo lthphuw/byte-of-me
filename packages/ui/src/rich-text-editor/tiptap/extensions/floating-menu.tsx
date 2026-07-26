@@ -1,6 +1,7 @@
 'use client';
 
 import React, {
+  type ComponentProps,
   useCallback,
   useEffect,
   useMemo,
@@ -8,6 +9,7 @@ import React, {
   useState,
 } from 'react';
 import type { Editor } from '@tiptap/core';
+import { PluginKey } from '@tiptap/pm/state';
 import { FloatingMenu } from '@tiptap/react/menus';
 import {
   AlignCenter,
@@ -180,6 +182,10 @@ const groups: CommandGroupType[] = [
   },
 ];
 
+type ShouldShowProps = Parameters<
+  NonNullable<ComponentProps<typeof FloatingMenu>['shouldShow']>
+>[0];
+
 export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -307,6 +313,42 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
     setSelectedIndex(-1);
   }, [search]);
 
+  const pluginKey = useMemo(() => new PluginKey('slashCommandMenu'), []);
+
+  // `shouldShow` runs inside the plugin, not the render pass, so it reads the
+  // latest state through a ref instead of a closure. That keeps the callback
+  // itself referentially stable — see the note on the component below.
+  const menuStateRef = useRef({ isOpen, search });
+  menuStateRef.current = { isOpen, search };
+
+  const shouldShow = useCallback(
+    ({ state }: ShouldShowProps) => {
+      const { $from } = state.selection;
+      const currentLineText = $from.parent.textBetween(
+        0,
+        $from.parentOffset,
+        '\n',
+        ' '
+      );
+
+      const isSlashCommand =
+        currentLineText.startsWith('/') &&
+        $from.parent.type.name !== 'codeBlock' &&
+        $from.parentOffset === currentLineText.length;
+
+      if (!isSlashCommand) {
+        if (menuStateRef.current.isOpen) setIsOpen(false);
+        return false;
+      }
+
+      const query = currentLineText.slice(1).trim();
+      if (query !== menuStateRef.current.search) setSearch(query);
+      if (!menuStateRef.current.isOpen) setIsOpen(true);
+      return true;
+    },
+    []
+  );
+
   useEffect(() => {
     if (selectedIndex >= 0 && itemRefs.current[selectedIndex]) {
       itemRefs.current[selectedIndex]?.focus();
@@ -316,32 +358,16 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
   return (
     <FloatingMenu
       editor={editor}
-      shouldShow={({ state }) => {
-        if (!editor) return false;
-
-        const { $from } = state.selection;
-        const currentLineText = $from.parent.textBetween(
-          0,
-          $from.parentOffset,
-          '\n',
-          ' '
-        );
-
-        const isSlashCommand =
-          currentLineText.startsWith('/') &&
-          $from.parent.type.name !== 'codeBlock' &&
-          $from.parentOffset === currentLineText.length;
-
-        if (!isSlashCommand) {
-          if (isOpen) setIsOpen(false);
-          return false;
-        }
-
-        const query = currentLineText.slice(1).trim();
-        if (query !== search) setSearch(query);
-        if (!isOpen) setIsOpen(true);
-        return true;
-      }}
+      // Both of these MUST keep a stable identity. `@tiptap/react/menus` syncs
+      // its plugin options from an effect keyed on `[shouldShow, pluginKey, …]`
+      // by dispatching a ProseMirror transaction. An inline `shouldShow` — or
+      // the default `pluginKey`, which the library rebuilds with
+      // `new PluginKey()` on every render — changes that key every render, so
+      // the effect dispatches, the transaction re-renders us through
+      // `shouldRerenderOnTransaction`, and the cycle never settles ("Maximum
+      // update depth exceeded" the moment the editor receives focus).
+      pluginKey={pluginKey}
+      shouldShow={shouldShow}
       // tippyOptions={{
       //   placement: "bottom-start",
       //   interactive: true,

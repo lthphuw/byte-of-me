@@ -60,7 +60,7 @@ export async function ContactInfos() {
     <div className="w-full max-w-md space-y-8">
       {/* Header */}
       <ContactHeaderMotion id="contact-info">
-        <h1 className="text-2xl font-semibold tracking-tight md:text-4xl">
+        <h1 className="font-heading text-3xl tracking-tight md:text-5xl">
           {t('letsWorkTogether')}
         </h1>
         <p className="text-sm text-muted-foreground md:text-base">

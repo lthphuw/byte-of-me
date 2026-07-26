@@ -12,8 +12,7 @@ import { AboutShell } from '@/widgets/public/about-content/ui/about-shell';
 export function AboutContent() {
   return (
     <AboutShell>
-      <div className="flex justify-center px-0 py-8 md:px-8">
-        <div className="w-full max-w-4xl space-y-20">
+      <div className="space-y-16 md:space-y-24">
           <AboutSectionMotion>
             <Suspense fallback={<AboutMeLoading />}>
               <AboutMe />
@@ -31,7 +30,6 @@ export function AboutContent() {
               <AboutTechStack />
             </Suspense>
           </AboutSectionMotion>
-        </div>
       </div>
     </AboutShell>
   );

@@ -70,4 +70,61 @@ describe('Storage', () => {
       expect(result).toBe('signed-url');
     });
   });
+
+  describe('config normalization', () => {
+    it('strips a trailing slash off publicEndpoint', () => {
+      const slashed = new Storage(
+        { ...config, publicEndpoint: 'http://localhost:9000/' },
+        mockClient
+      );
+
+      expect(slashed.getPublicUrl('a.png')).toBe(
+        'http://localhost:9000/test-bucket/a.png'
+      );
+    });
+  });
+
+  describe('command wiring', () => {
+    it('uploadFile sends bucket, key and content type', async () => {
+      mockSend.mockResolvedValueOnce({});
+
+      await storage.uploadFile({
+        fileKey: 'img.png',
+        body: 'data',
+        contentType: 'image/png',
+      });
+
+      const command = mockSend.mock.calls[0][0];
+      expect(command.input).toEqual(
+        expect.objectContaining({
+          Bucket: 'test-bucket',
+          Key: 'img.png',
+          ContentType: 'image/png',
+        })
+      );
+    });
+
+    it('deleteFile targets the right bucket and key', async () => {
+      mockSend.mockResolvedValueOnce({});
+
+      await storage.deleteFile('old.txt');
+
+      const command = mockSend.mock.calls[0][0];
+      expect(command.input).toEqual(
+        expect.objectContaining({ Bucket: 'test-bucket', Key: 'old.txt' })
+      );
+    });
+
+    it('getPresignedUploadUrl forwards expiresIn', async () => {
+      (getSignedUrl as jest.Mock).mockResolvedValueOnce('signed');
+
+      await storage.getPresignedUploadUrl('up.bin', 120);
+
+      expect(getSignedUrl).toHaveBeenCalledWith(
+        mockClient,
+        expect.anything(),
+        { expiresIn: 120 }
+      );
+    });
+  });
 });

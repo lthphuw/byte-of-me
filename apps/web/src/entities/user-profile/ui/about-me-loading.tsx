@@ -2,14 +2,9 @@ import { Skeleton } from '@byte-of-me/ui';
 
 export function AboutMeLoading() {
   return (
-    <section className="space-y-6">
-      {/* Header Skeleton */}
-      <div className="flex items-center gap-4">
-        <Skeleton className="h-8 w-48 md:h-10 md:w-64" />
-      </div>
-
-      {/* RichText Content Skeleton */}
-      <div className="ml-0.5 space-y-3 pl-0">
+    <section>
+      {/* Mirrors AboutMe: no visible title — prose starts at the top. */}
+      <div className="space-y-3">
         <Skeleton className="h-5 w-full" />
         <Skeleton className="h-5 w-[95%]" />
         <Skeleton className="h-5 w-[98%]" />

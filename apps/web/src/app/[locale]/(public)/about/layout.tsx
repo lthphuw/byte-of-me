@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
-import { host } from '@/shared/config/host';
-import { siteConfig } from '@/shared/config/site';
+import { buildPublicPageMetadata } from '@/shared/lib/metadata';
 
 export async function generateMetadata({
   params,
@@ -11,40 +10,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations('metadata.about');
-  const url = `${host}/${locale}/about`;
 
-  return {
+  return buildPublicPageMetadata({
+    segment: 'about',
+    locale,
     title: t('title'),
     description: t('description'),
-    keywords: [
-      'Về bản thân tôi',
-      'Giới thiệu',
-      'About Me',
-      ...siteConfig.keywords,
-    ].map((key) => key.toLowerCase()),
-    alternates: {
-      canonical: url,
-      languages: {
-        vi: `${siteConfig.url}/vi/about`,
-        en: `${siteConfig.url}/en/about`,
-      },
-    },
-    openGraph: {
-      title: `${t('title')} | ${siteConfig.name}`,
-      description: t('description'),
-      url,
-      type: 'website',
-      locale: locale === 'vi' ? 'vi_VN' : 'en_US',
-      siteName: 'Byte of me',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${t('title')} | ${siteConfig.name}`,
-      description: t('description'),
-
-      creator: '@lthphuw',
-    },
-  };
+    keywords: ['Về bản thân tôi', 'Giới thiệu', 'About Me'],
+  });
 }
 
 interface AboutLayoutProps {

@@ -26,11 +26,13 @@ export async function getAllPublicEducations(): Promise<
         const items = await prisma.education.findMany({
           where: { userId },
           include: {
-            translations: true,
+            // Deterministic order so the locale fallback in
+            // getTranslatedContent resolves the same way on every request.
+            translations: { orderBy: { language: 'asc' } },
             logo: true,
             achievements: {
               include: {
-                translations: true,
+                translations: { orderBy: { language: 'asc' } },
                 images: { include: { media: true } },
               },
               orderBy: { sortOrder: 'asc' },

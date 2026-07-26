@@ -1,4 +1,3 @@
-import { MotionProvider } from '@byte-of-me/ui';
 import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
@@ -31,8 +30,14 @@ export default async function PublicLayout({
   setRequestLocale(locale as LocaleType);
 
   return (
-    <MotionProvider>
-      <div className="relative flex min-h-screen flex-col overflow-hidden">
+    <>
+      {/* overflow-x-clip, not overflow-hidden: `hidden` makes this element the
+          nearest scroll container for every `position: sticky` descendant, and
+          because the page scrolls on <html> that container never scrolls — so
+          sticky never engages anywhere on the public site. `clip` still stops
+          wide children (code blocks, tables) from overflowing sideways without
+          establishing a scroll container. */}
+      <div className="relative flex min-h-screen flex-col overflow-x-clip">
         <PublicSiteHeader />
         <div className="container grid min-w-0 flex-1 gap-12">
           {/* min-w-0: as a grid item, <main> must be allowed to shrink below its
@@ -42,6 +47,6 @@ export default async function PublicLayout({
         </div>
         <PublicSiteFooter />
       </div>
-    </MotionProvider>
+    </>
   );
 }

@@ -439,3 +439,31 @@
   height: 0;
   pointer-events: none;
 }
+
+/* Tables — editing surface. Rendered pages style tables via RichText. */
+.ProseMirror table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+.ProseMirror th,
+.ProseMirror td {
+  border: 1px solid hsl(var(--border));
+  padding: 0.4rem 0.6rem;
+  vertical-align: top;
+  position: relative;
+}
+.ProseMirror th {
+  background: hsl(var(--muted) / 0.5);
+  font-weight: 600;
+  text-align: left;
+}
+.ProseMirror .selectedCell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: hsl(var(--primary) / 0.08);
+  pointer-events: none;
+}

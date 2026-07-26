@@ -1,189 +1,208 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useState } from 'react';
+import { type Control, useWatch } from 'react-hook-form';
 import {
-  type Control,
-  useFieldArray,
-  type UseFormWatch,
-} from 'react-hook-form';
-import { Button , FormField, FormItem, FormLabel, FormMessage , Input , Tabs, TabsContent, TabsList, TabsTrigger } from '@byte-of-me/ui';
-import { Languages, Trash, X } from 'lucide-react';
+  Badge,
+  Button,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  fromEditorContent,
+  toEditorContent,
+} from '@byte-of-me/ui';
+import { Reorder, useDragControls } from 'framer-motion';
+import {
+  ChevronDown,
+  GripVertical,
+  ImageIcon,
+  Trash,
+} from 'lucide-react';
 
+import { uploadSingleMedia } from '@/entities';
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
 import { MediaMultiSelect } from '@/features/dashboard/media-library/ui/media-multi-select';
+import { cn } from '@/shared/lib/utils';
+import { TextField, TranslationTabs } from '@/shared/ui';
+import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
 interface EducationAchievementItemFieldProps {
+  /** `useFieldArray` field id — the stable value framer-motion reorders by. */
+  id: string;
   index: number;
+  total: number;
   control: Control<EducationFormValues>;
-  watch: UseFormWatch<EducationFormValues>;
   remove: (index: number) => void;
-  tab: string | undefined;
-  setTab: (val: string) => void;
+  defaultOpen?: boolean;
 }
 
 export function EducationAchievementItemField({
+  id,
   index,
+  total,
   control,
-  watch,
   remove,
-  tab,
-  setTab,
+  defaultOpen = false,
 }: EducationAchievementItemFieldProps) {
-  const {
-    fields,
-    append: appendTranslation,
-    remove: removeTranslation,
-  } = useFieldArray({
-    control,
-    name: `achievements.${index}.translations`,
-  });
+  const dragControls = useDragControls();
+  const [open, setOpen] = useState(defaultOpen);
 
-  useEffect(() => {
-    if (!tab && fields.length > 0) {
-      setTab(fields[0].id);
-    }
-  }, [fields, tab, setTab]);
+  // `useWatch`, not `form.watch`: the latter re-renders the whole dialog — and
+  // therefore every other achievement's editor — on each keystroke.
+  const summary = useWatch({
+    control,
+    name: `achievements.${index}.translations.0.title`,
+  });
+  const imageIds = useWatch({
+    control,
+    name: `achievements.${index}.imageIds`,
+  });
+  const imageCount = imageIds?.length ?? 0;
 
   return (
-    <div className="relative space-y-4 rounded-lg border p-4 pt-8">
-      <Button
-        type="button"
-        size="icon"
-        variant="ghost"
-        className="absolute right-2 top-2"
-        onClick={() => remove(index)}
-      >
-        <X className="h-4 w-4" />
-      </Button>
+    <Reorder.Item
+      as="div"
+      value={id}
+      // Only the grip handle starts a drag, so text selection and the rich
+      // text editor inside the card keep working normally.
+      dragListener={false}
+      dragControls={dragControls}
+      // Position only. The default `layout` also animates size, which framer
+      // does with a transform — so expanding the card would stretch and squash
+      // its contents while the collapsible's own height animation runs. This
+      // keeps the reorder animation and the expand animation from fighting.
+      layout="position"
+      className="rounded-lg border bg-card transition-shadow"
+    >
+      <Collapsible open={open} onOpenChange={setOpen}>
+        <div className="flex items-center gap-1 p-2">
+          <button
+            type="button"
+            aria-label={`Reorder achievement ${index + 1} of ${total}`}
+            onPointerDown={(event) => dragControls.start(event)}
+            // `touch-none` stops a touch drag from scrolling the dialog
+            // instead of moving the card.
+            className="flex h-8 w-6 shrink-0 cursor-grab touch-none select-none items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground active:cursor-grabbing"
+          >
+            <GripVertical className="h-4 w-4" />
+          </button>
 
-      <FormField
-        control={control}
-        name={`achievements.${index}.sortOrder`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Sort</FormLabel>
-            <Input
-              type="number"
-              className="w-full"
-              value={Number(field.value)}
-              onChange={(e) => {
-                const val = e.target.value === '' ? 0 : Number(e.target.value);
-                field.onChange(val);
-              }}
-            />
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+          <span className="w-5 shrink-0 text-xs font-medium tabular-nums text-muted-foreground">
+            {index + 1}
+          </span>
 
-      <FormField
-        control={control}
-        name={`achievements.${index}.imageIds`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Images</FormLabel>
-            <MediaMultiSelect
-              value={field.value ?? []}
-              onChange={field.onChange}
-            />
-          </FormItem>
-        )}
-      />
+          <CollapsibleTrigger asChild>
+            <button
+              type="button"
+              className="flex min-w-0 flex-1 items-center gap-2 rounded px-1 py-1.5 text-left transition-colors hover:bg-muted/50"
+            >
+              {/* `min-w-0` is what lets `truncate` actually clip: without it
+                  a nowrap flex item refuses to shrink below its text width and
+                  widens the whole dialog. */}
+              <span
+                className={cn(
+                  'min-w-0 flex-1 truncate text-sm font-medium',
+                  !summary && 'text-muted-foreground'
+                )}
+              >
+                {summary || 'Untitled achievement'}
+              </span>
 
-      <Tabs value={tab} onValueChange={setTab}>
-        <div className={'mb-2 flex w-full justify-between align-middle'}>
-          <TabsList>
-            {fields.map((f, i) => {
-              const lang = watch(
-                `achievements.${index}.translations.${i}.language`
-              );
+              {imageCount > 0 && (
+                <Badge
+                  variant="secondary"
+                  className="shrink-0 gap-1 px-1.5 py-0 text-[10px]"
+                >
+                  <ImageIcon className="h-2.5 w-2.5" />
+                  {imageCount}
+                </Badge>
+              )}
 
-              return (
-                <TabsTrigger key={f.id} value={f.id}>
-                  {lang?.toUpperCase()}
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
+              <ChevronDown
+                className={cn(
+                  'ml-auto h-4 w-4 shrink-0 text-muted-foreground transition-transform',
+                  open && 'rotate-180'
+                )}
+              />
+            </button>
+          </CollapsibleTrigger>
 
           <Button
             type="button"
-            size="sm"
-            variant="outline"
-            onClick={() =>
-              appendTranslation({
-                language: 'new',
-                title: '',
-                content: '',
-              })
-            }
+            size="icon"
+            variant="ghost"
+            aria-label="Remove achievement"
+            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
+            onClick={() => remove(index)}
           >
-            <Languages /> Add Language
+            <Trash className="h-4 w-4" />
           </Button>
         </div>
 
-        {fields.map((f, i) => (
-          <TabsContent key={f.id} value={f.id}>
-            <FormField
-              control={control}
-              name={`achievements.${index}.translations.${i}.language`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Language</FormLabel>
-                  <Input {...field} />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={control}
-              name={`achievements.${index}.translations.${i}.title`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <Input {...field} />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={control}
-              name={`achievements.${index}.translations.${i}.content`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Content</FormLabel>
-                  <Input {...field} value={field.value ?? ''} />
-                </FormItem>
-              )}
-            />
-
-            {fields.length > 1 && (
-              <Button
-                className="mt-2"
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  removeTranslation(i);
-                  setTab(fields[i === 0 ? 1 : 0]?.id);
-                }}
-              >
-                <Trash /> Remove Language
-              </Button>
+        {/* Padding lives on the inner element: the animated one goes from
+            height 0, and padding on it would jump the first frame. */}
+        <CollapsibleContent>
+          <div className="space-y-4 border-t p-4">
+          <FormField
+            control={control}
+            name={`achievements.${index}.imageIds`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Images</FormLabel>
+                <MediaMultiSelect
+                  value={field.value ?? []}
+                  onChange={field.onChange}
+                />
+              </FormItem>
             )}
-          </TabsContent>
-        ))}
-      </Tabs>
+          />
 
-      <Button
-        className={'w-full'}
-        type="button"
-        size="sm"
-        variant="outline"
-        onClick={() => remove(index)}
-      >
-        <Trash /> Remove Achievement
-      </Button>
-    </div>
+          <TranslationTabs
+            control={control}
+            name={`achievements.${index}.translations`}
+            newTranslation={() => ({ language: '', title: '', content: '' })}
+            renderFields={(i) => (
+              <>
+                <TextField
+                  control={control}
+                  name={`achievements.${index}.translations.${i}.title`}
+                  label="Title"
+                />
+
+                <FormField
+                  control={control}
+                  name={`achievements.${index}.translations.${i}.content`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Content</FormLabel>
+                      <RichTextEditor
+                        compact
+                        minHeight={140}
+                        placeholder="Describe this achievement…"
+                        className="rounded-md"
+                        // Tiptap reads `value` once, on mount. Rendering is
+                        // gated by the language tab and the collapsible above,
+                        // so a remount always picks up the current form value.
+                        value={toEditorContent(field.value)}
+                        onChange={(json) =>
+                          field.onChange(fromEditorContent(json))
+                        }
+                        uploadImage={uploadSingleMedia}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
+          />
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+    </Reorder.Item>
   );
 }

@@ -23,10 +23,13 @@ export async function getAllAdminEducations(): Promise<
       },
       include: {
         logo: true,
-        translations: true,
+        // Every save rewrites translations with `deleteMany` + `create`, so
+        // physical row order changes each time. Without an explicit order the
+        // language tabs in the edit dialog would reshuffle between sessions.
+        translations: { orderBy: { language: 'asc' } },
         achievements: {
           include: {
-            translations: true,
+            translations: { orderBy: { language: 'asc' } },
             images: true,
           },
           orderBy: {

@@ -1,10 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { Button , DatePicker ,
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import {
+  Button,
+  DatePicker,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -12,10 +15,15 @@ import { Button , DatePicker ,
   FormControl,
   FormField,
   FormItem,
-  FormLabel, FormMessage, Icons } from '@byte-of-me/ui';
+  FormLabel,
+  FormMessage,
+  fromEditorContent,
+  Icons,
+  toEditorContent,
+} from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus } from 'lucide-react';
 
+import { uploadSingleMedia } from '@/entities';
 import type { AdminEducation } from '@/entities/education';
 import {
   type EducationFormValues,
@@ -23,7 +31,8 @@ import {
 } from '@/entities/education/model/education-schema';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import { TextField, TranslationTabs } from '@/shared/ui';
-import { EducationAchievementItemField } from '@/widgets/dashboard/education-manager/ui/education-achievement-item-field';
+import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
+import { EducationAchievementsField } from '@/widgets/dashboard/education-manager/ui/education-achievements-field';
 
 interface EducationDialogProps {
   open: boolean;
@@ -52,18 +61,16 @@ export function EducationDialog({
     },
   });
 
-  const {
-    fields: achievements,
-    append: appendAchievement,
-    remove: removeAchievement,
-  } = useFieldArray({
-    control: form.control,
-    name: 'achievements',
-  });
-
-  const [achievementTabs, setAchievementTabs] = useState<
-    Record<number, string>
-  >({});
+  // Achievement order is whatever the list shows, so `sortOrder` is stamped
+  // from the position at submit time rather than tracked as an editable field.
+  const handleSubmit = (values: EducationFormValues) =>
+    onSubmit({
+      ...values,
+      achievements: values.achievements.map((achievement, index) => ({
+        ...achievement,
+        sortOrder: index,
+      })),
+    });
 
   useEffect(() => {
     if (!open) return;
@@ -101,15 +108,31 @@ export function EducationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-        <DialogHeader>
+      {/* Header and footer stay put; only the field area scrolls, so the title
+          and Save button are always reachable in a form this tall.
+          `min-w-0` on the scrolling body is load-bearing: without it the flex
+          item takes its automatic minimum size from the widest descendant —
+          the editor toolbar's ~990px button row — and drags the whole dialog
+          wider than its own max-width. With it, the toolbar scrolls inside its
+          own ScrollArea, which is what it was built to do. */}
+      <DialogContent className="flex max-h-[90vh] w-[calc(100vw-2rem)] max-w-2xl flex-col gap-0 overflow-hidden p-0 sm:w-full">
+        <DialogHeader className="shrink-0 space-y-1 border-b px-6 py-4 pr-14 text-left">
           <DialogTitle>
-            {initialData ? 'Edit Education' : 'Add Education'}
+            {initialData ? 'Edit education' : 'Add education'}
           </DialogTitle>
+          <DialogDescription>
+            {initialData
+              ? 'Update this entry and the achievements listed under it.'
+              : 'Add a school or degree, then list what you achieved there.'}
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="flex min-h-0 flex-1 flex-col"
+          >
+            <div className="min-w-0 flex-1 space-y-8 overflow-y-auto px-6 py-5">
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -156,9 +179,13 @@ export function EducationDialog({
               />
             </div>
 
-            <div className="space-y-4 border-t pt-4">
-              <div className="flex items-center justify-between">
+            <section className="space-y-4 border-t pt-6">
+              <div className="space-y-1">
                 <h3 className="text-sm font-medium">Translations</h3>
+                <p className="text-xs text-muted-foreground">
+                  One tab per language. Visitors see the tab matching their
+                  locale.
+                </p>
               </div>
 
               <TranslationTabs
@@ -177,63 +204,48 @@ export function EducationDialog({
                       label="School / Degree"
                     />
 
-                    <TextField
+                    <FormField
                       control={form.control}
                       name={`translations.${i}.description`}
-                      label="Description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description</FormLabel>
+                          <RichTextEditor
+                            compact
+                            minHeight={140}
+                            placeholder="A short summary of this program…"
+                            className="rounded-md"
+                            value={toEditorContent(field.value)}
+                            onChange={(json) =>
+                              field.onChange(fromEditorContent(json))
+                            }
+                            uploadImage={uploadSingleMedia}
+                          />
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </>
                 )}
               />
+            </section>
+
+            <EducationAchievementsField control={form.control} />
             </div>
 
-            <div className="space-y-4 border-t pt-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium">Achievements</h3>
-
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    appendAchievement({
-                      sortOrder: 0,
-                      translations: [
-                        { language: 'New', title: '', content: '' },
-                      ],
-                      imageIds: [],
-                    })
-                  }
-                >
-                  <Plus className="mr-2 h-3 w-3" />
-                  Add
-                </Button>
-              </div>
-
-              {achievements.map((item, index) => (
-                <EducationAchievementItemField
-                  key={item.id}
-                  index={index}
-                  control={form.control}
-                  watch={form.watch}
-                  remove={removeAchievement}
-                  tab={achievementTabs[index]}
-                  setTab={(val) =>
-                    setAchievementTabs((prev) => ({
-                      ...prev,
-                      [index]: val,
-                    }))
-                  }
-                />
-              ))}
-            </div>
-
-            <DialogFooter>
+            <DialogFooter className="shrink-0 gap-2 border-t bg-muted/30 px-6 py-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancel
+              </Button>
               <Button type="submit" disabled={loading}>
                 {loading && (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                )}{' '}
-                Save
+                )}
+                {initialData ? 'Save changes' : 'Add education'}
               </Button>
             </DialogFooter>
           </form>

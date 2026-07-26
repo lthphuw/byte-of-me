@@ -1,7 +1,7 @@
 'use client';
 
 import { type MouseEvent,useCallback } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 
 import { useClipboard } from './hooks/index';
 import {
@@ -51,7 +51,7 @@ export function CopyButton({
       aria-label={copied ? 'Copied' : 'Copy to clipboard'}
     >
       <AnimatePresence mode="wait" initial={false}>
-        <motion.div
+        <m.div
           key={copied ? 'check' : 'copy'}
           variants={iconSwitchVariants}
           initial="initial"
@@ -65,7 +65,7 @@ export function CopyButton({
           ) : (
             <Icons.copy size={14} />
           )}
-        </motion.div>
+        </m.div>
       </AnimatePresence>
     </Button>
   );

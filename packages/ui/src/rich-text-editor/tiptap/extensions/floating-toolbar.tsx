@@ -10,6 +10,7 @@ import { AlignmentTooolbar } from '../toolbars/alignment';
 import { BlockquoteToolbar } from '../toolbars/blockquote';
 import { BoldToolbar } from '../toolbars/bold';
 import { BulletListToolbar } from '../toolbars/bullet-list';
+import { CitationToolbar } from '../toolbars/citation';
 import { ColorHighlightToolbar } from '../toolbars/color-and-highlight';
 import { HeadingsToolbar } from '../toolbars/headings';
 import { ImagePlaceholderToolbar } from '../toolbars/image-placeholder-toolbar';
@@ -75,6 +76,7 @@ export function FloatingToolbar({ editor }: { editor: Editor | null }) {
                   {/* Rich formatting */}
                   <ColorHighlightToolbar />
                   <LinkToolbar />
+                  <CitationToolbar />
                   <ImagePlaceholderToolbar />
                   <Separator orientation="vertical" className="mx-1 h-6" />
 

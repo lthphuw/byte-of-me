@@ -1,19 +1,12 @@
 'use client';
 
-import { Badge , Card, CardContent } from '@byte-of-me/ui';
-import { format } from 'date-fns';
-import {
-  ArrowRight,
-  Calendar,
-  Clock,
-  Eye,
-  Layers,
-  Tag as TagIcon,
-} from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { Badge } from '@byte-of-me/ui';
+import { Layers } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 
 import type { PublicBlog } from '@/entities/blog/model/types';
 import { Link } from '@/shared/i18n/navigation';
+import { formatDate } from '@/shared/lib/utils';
 
 interface BlogCardProps {
   blog: PublicBlog;
@@ -22,107 +15,98 @@ interface BlogCardProps {
 
 export function BlogCard({ blog, onTagClick }: BlogCardProps) {
   const t = useTranslations('components.blogCard');
+  const locale = useLocale();
 
   const views = blog.views ?? 0;
-  const avgTime = blog.avgReadingTime ?? blog.readingTime ?? 0;
+  const readingTime = blog.avgReadingTime ?? blog.readingTime ?? 0;
+
+  // One line, joined rather than laid out as separate nodes — every part is
+  // already localised, so this stays a single readable run of text.
+  const meta = [
+    formatDate(blog.publishedDate, locale, {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    }),
+    // `readingTime` is a plain placeholder, not a plural — it takes a string.
+    readingTime > 0 ? t('readingTime', { time: String(readingTime) }) : null,
+    t('views', { count: views }),
+  ]
+    .filter(Boolean)
+    .join(' · ');
 
   return (
-    <Card className="group flex flex-col overflow-hidden border-2 transition-all hover:border-primary/50 hover:shadow-xl">
-      {/* Cover Image Area */}
-      <Link
-        href={`/blogs/${blog.slug}`}
-        className="relative aspect-video overflow-hidden bg-muted"
-      >
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-300 hover:border-border hover:shadow-md">
+      <div className="relative aspect-[16/10] overflow-hidden bg-muted">
         {blog.coverImage ? (
           <img
             src={blog.coverImage.url}
-            alt={blog.title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            alt=""
+            className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center">
-            <Layers className="h-12 w-12 text-muted-foreground/20" />
+          <div className="flex size-full items-center justify-center">
+            <Layers className="size-10 text-muted-foreground/20" />
           </div>
         )}
 
-        {blog.project && (
-          <div className="absolute left-3 top-3">
-            <Badge
-              variant="secondary"
-              className="bg-background/90 shadow-sm backdrop-blur-sm"
-            >
-              {blog.project.title}
-            </Badge>
-          </div>
+        {!blog.isPublished && (
+          <Badge className="absolute right-3 top-3 border-amber-500/30 bg-amber-500/15 text-amber-600 backdrop-blur-sm dark:text-amber-400">
+            {t('draft')}
+          </Badge>
         )}
-      </Link>
 
-      <CardContent className="flex flex-1 flex-col p-4">
-        {/* Metadata */}
-        <div className="mb-3 flex items-center gap-3 text-[10px] uppercase tracking-wider text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <Calendar className="h-3 w-3" />
-            {blog.publishedDate
-              ? format(new Date(blog.publishedDate), 'MMM dd, yyyy')
-              : 'Draft'}
-          </div>
-        </div>
-
-        {/* Title & Description */}
-        <Link
-          href={`/blogs/${blog.slug}`}
-          className="mb-2 block transition-colors group-hover:text-primary"
-        >
-          <h3 className="line-clamp-2 text-xl font-bold leading-tight">
-            {blog.title}
-          </h3>
-        </Link>
-        <p className="mb-4 line-clamp-2 text-sm text-muted-foreground">
-          {blog.description}
-        </p>
-
-        {/* Tags Area */}
-        <div className="mb-6 flex flex-wrap gap-1.5">
-          {blog.tags.map((tag) => (
-            <button
-              key={tag.id}
-              onClick={(e) => {
-                e.preventDefault();
-                onTagClick?.(tag.slug);
-              }}
-              className="inline-flex items-center gap-1 rounded-full bg-primary/5 px-2.5 py-0.5 text-[10px] font-medium text-primary transition-colors hover:bg-primary/10"
-            >
-              <TagIcon className="h-2 w-2" />
-              {tag.name}
-            </button>
-          ))}
-        </div>
-
-        {/* Stats & CTA Row */}
-        <div className="mt-auto flex items-center justify-between border-t pt-4">
-          <div className="flex items-center gap-4 text-[11px] font-medium text-muted-foreground">
-            {/* Views Stat */}
-            <div className="flex items-center gap-1">
-              <Eye className="h-3.5 w-3.5" />
-              <span>{t('views', { count: views })}</span>
-            </div>
-
-            {/* Reading Time Stat */}
-            <div className="flex items-center gap-1">
-              <Clock className="h-3.5 w-3.5" />
-              <span>{avgTime}m</span>
-            </div>
-          </div>
-
-          <Link
-            href={`/blogs/${blog.slug}`}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-all hover:gap-3"
+        {blog.project?.title && (
+          <Badge
+            variant="secondary"
+            className="absolute left-3 top-3 bg-background/90 backdrop-blur-sm"
           >
-            {t('readArticle')}
-            <ArrowRight className="h-4 w-4" />
+            {blog.project.title}
+          </Badge>
+        )}
+      </div>
+
+      <div className="flex flex-1 flex-col gap-3 p-5">
+        <p className="meta-label">{meta}</p>
+
+        <h3 className="font-heading text-xl leading-snug tracking-tight">
+          {/* The pseudo-element stretches over the whole card, so the card is one
+              link and one tab stop. Previously the cover, the title and a "Read
+              article" button were three separate links to the same URL. */}
+          {/* Drafts 404 on the public detail route by design, so their card
+              leads to the dashboard where the post can be edited/previewed. */}
+          <Link
+            href={blog.isPublished ? `/blogs/${blog.slug}` : '/dashboard/blogs'}
+            locale={locale}
+            className="line-clamp-2 after:absolute after:inset-0 after:content-[''] focus-visible:outline-none group-focus-within:underline group-focus-within:underline-offset-4 group-hover:underline group-hover:underline-offset-4"
+          >
+            {blog.title}
           </Link>
-        </div>
-      </CardContent>
-    </Card>
+        </h3>
+
+        {blog.description && (
+          <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+            {blog.description}
+          </p>
+        )}
+
+        {blog.tags.length > 0 && (
+          // z-10 lifts the tags above the card-wide link overlay so they stay
+          // clickable as filters.
+          <div className="relative z-10 mt-auto flex flex-wrap gap-1.5 pt-2">
+            {blog.tags.map((tag) => (
+              <button
+                key={tag.id}
+                type="button"
+                onClick={() => onTagClick?.(tag.slug)}
+                className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+              >
+                {tag.name}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </article>
   );
 }

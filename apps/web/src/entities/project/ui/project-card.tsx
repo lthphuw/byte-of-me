@@ -1,18 +1,14 @@
 'use client';
 
-import { Button , Card, CardContent } from '@byte-of-me/ui';
+import { Button, Card, CardContent } from '@byte-of-me/ui';
 import { Code, ExternalLink } from 'lucide-react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import type { PublicProject } from '@/entities/project/model/types';
 import { TagClickableBadge } from '@/entities/tag/ui/tag-clickable-badge';
 import { TechStackClickableBadge } from '@/entities/tech-stack/ui/tech-stack-clickable-badge';
 import { Link } from '@/shared/i18n/navigation';
 import { formatDate } from '@/shared/lib/utils';
-
-
-
-
 
 export interface ProjectCardProps {
   project: PublicProject;
@@ -21,6 +17,11 @@ export interface ProjectCardProps {
   onTechClick?: (slug: string) => void;
 }
 
+/**
+ * Card form of a project, used where projects appear alongside other content —
+ * currently the homepage. The projects list page uses `ProjectTimelineItem`
+ * instead, which has room for the full date range and both action buttons.
+ */
 export function ProjectCard({
   compact,
   project,
@@ -28,39 +29,33 @@ export function ProjectCard({
   onTechClick,
 }: ProjectCardProps) {
   const locale = useLocale();
+  const t = useTranslations('project');
+
   const start = formatDate(project.startDate, locale);
-  const end = project.endDate ? formatDate(project.endDate) : 'Present';
+  // The locale was missing here, so end dates rendered in English while start
+  // dates followed the active locale.
+  const end = project.endDate
+    ? formatDate(project.endDate, locale)
+    : t('present');
 
   return (
-    <Card className="flex h-full flex-col rounded-xl border-border/40 bg-card transition-colors hover:border-border/80">
-      <CardContent className="flex flex-1 flex-col p-5">
-        {/* HEADER */}
-        <div className="mb-3 flex flex-col gap-1">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="line-clamp-1 text-lg font-bold tracking-tight">
-              {project.title}
-            </h3>
-
-            {/*{!project.endDate && (*/}
-            {/*  <span className="bg-primary/10 text-primary flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">*/}
-            {/*    Active*/}
-            {/*  </span>*/}
-            {/*)}*/}
-          </div>
-
-          <time className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground/60">
-            {start ? `${start} — ${end}` : 'Ongoing'}
+    <Card className="group flex h-full flex-col rounded-2xl border-border/60 bg-card transition-all duration-300 hover:border-border hover:shadow-md">
+      <CardContent className="flex flex-1 flex-col gap-3 p-5">
+        <div className="space-y-1">
+          <h3 className="line-clamp-1 font-heading text-lg tracking-tight">
+            {project.title}
+          </h3>
+          <time className="block tabular-nums meta-label">
+            {start ? `${start} — ${end}` : end}
           </time>
         </div>
 
-        {/* DESCRIPTION */}
-        <p className="mb-5 line-clamp-2 text-sm leading-relaxed text-muted-foreground md:line-clamp-3">
+        <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground md:line-clamp-3">
           {project.description}
         </p>
 
-        {/* METADATA */}
         {!compact && (
-          <div className="mt-auto space-y-3">
+          <div className="mt-auto space-y-2 pt-2">
             <div className="flex flex-wrap gap-1.5">
               {project.techStacks.map((tech) => (
                 <TechStackClickableBadge
@@ -71,7 +66,7 @@ export function ProjectCard({
               ))}
             </div>
 
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1.5">
               {project.tags.map((tag) => (
                 <TagClickableBadge
                   key={tag.id}
@@ -83,8 +78,7 @@ export function ProjectCard({
           </div>
         )}
 
-        {/* ACTIONS */}
-        <div className="mt-5 flex items-center gap-2 border-t pt-5">
+        <div className="mt-auto flex items-center gap-2 border-t border-border/60 pt-4">
           {project.liveLink && (
             <Button
               size="sm"
@@ -93,7 +87,7 @@ export function ProjectCard({
             >
               <Link href={project.liveLink} target="_blank">
                 <ExternalLink className="mr-2" size={14} />
-                Live Demo
+                {t('liveDemo')}
               </Link>
             </Button>
           )}
@@ -111,7 +105,11 @@ export function ProjectCard({
             >
               <Link href={project.githubLink} target="_blank">
                 <Code size={16} />
-                {!project.liveLink && <span className="ml-2">GitHub</span>}
+                {project.liveLink ? (
+                  <span className="sr-only">{t('gitHub')}</span>
+                ) : (
+                  <span className="ml-2">{t('gitHub')}</span>
+                )}
               </Link>
             </Button>
           )}

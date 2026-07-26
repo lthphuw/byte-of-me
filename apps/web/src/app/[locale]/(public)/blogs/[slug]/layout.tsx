@@ -28,7 +28,12 @@ export async function generateMetadata({
     };
   }
 
-  const image = blog?.coverImage?.url;
+  // Posts without a cover image used to be shared with no preview at all.
+  // Fall back to the generated card, titled with the post.
+  const image =
+    blog?.coverImage?.url ??
+    `${siteConfig.ogImage}?title=${encodeURIComponent(blog.title)}` +
+      `&subtitle=${encodeURIComponent(blog.description || '')}`;
   const authorName = author?.displayName || 'Phu Luong';
   return {
     title: blog.title,
@@ -70,16 +75,14 @@ export async function generateMetadata({
       locale: locale === 'vi' ? 'vi_VN' : 'en_US',
       siteName: siteConfig.name,
 
-      images: image
-        ? [
-            {
-              url: image,
-              width: 1200,
-              height: 630,
-              alt: blog.title,
-            },
-          ]
-        : [],
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: blog.title,
+        },
+      ],
 
       publishedTime: blog?.createdAt
         ? new Date(blog.createdAt).toISOString()
@@ -96,7 +99,7 @@ export async function generateMetadata({
       title: `${blog.title} | ${siteConfig.name}`,
       description: blog.description || '',
       creator: '@lthphuw',
-      images: image ? [image] : [],
+      images: [image],
     },
 
     category: 'technology',

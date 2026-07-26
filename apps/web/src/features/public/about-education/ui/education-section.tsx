@@ -1,5 +1,7 @@
-'use client';
-
+// Deliberately a server component. It only maps data to markup, and it is the
+// boundary that keeps `EducationItem` → `RichText` → the Tiptap extension
+// schema on the server. A `'use client'` here once turned that whole subtree
+// into client code and shipped the full editor (~380 KB) to the About page.
 import { EducationItem } from '@/entities/education';
 import type { PublicEducation } from '@/entities/education/model/types';
 

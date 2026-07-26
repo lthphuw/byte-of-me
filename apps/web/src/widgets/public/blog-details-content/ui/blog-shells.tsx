@@ -6,7 +6,9 @@ import { cn } from '@/shared/lib/utils';
 export function BlogDetailsShell({ className, ...props }: ShellProps) {
   return (
     <ShellBase
-      className={cn('flex max-w-5xl flex-col gap-8', className)}
+      // Wide enough to hold a 720px reading column with a real table-of-contents
+      // rail beside it, instead of squeezing the rail against the viewport edge.
+      className={cn('max-w-[1240px]', className)}
       {...props}
     />
   );

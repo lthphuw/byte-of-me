@@ -3,18 +3,23 @@
 import { useState } from 'react';
 import { Pagination } from '@byte-of-me/ui';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
+// Narrow import on purpose: `@/entities` re-exports every entity, so a
+// client component importing it drags unrelated server-rendering modules
+// (education-item -> RichText -> tiptap) into the public bundle.
 import {
   getPaginatedPublicProjects,
-  ProjectCard,
-  ProjectCardSkeleton,
   ProjectEmpty,
-} from '@/entities';
+  ProjectTimelineItemSkeleton,
+} from '@/entities/project';
 import { ProjectFilters } from '@/features/public';
-import { RevealItem } from '@/shared/ui';
+import { ListPageHeader } from '@/shared/ui';
 import { ProjectsShell } from '@/widgets/public/projects-content/ui/projects-shell';
+import { ProjectsTimeline } from '@/widgets/public/projects-content/ui/projects-timeline';
 
 export function ProjectsContent() {
+  const t = useTranslations('project');
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState({
     tagSlugs: [] as string[],
@@ -40,6 +45,8 @@ export function ProjectsContent() {
     hasMore: false,
   };
 
+  const showSkeletons = isLoading || (isFetching && !isPlaceholderData);
+
   const toggleTag = (slug: string) => {
     setPage(1);
     setFilters((prev) => ({
@@ -62,7 +69,11 @@ export function ProjectsContent() {
 
   return (
     <ProjectsShell>
-      <div className="container flex flex-col gap-6 px-0 py-8 md:gap-8 md:px-6">
+      <ListPageHeader
+        title={t('pageTitle')}
+        description={t('pageDescription')}
+        count={t('count', { count: pagination.totalCount })}
+      >
         <ProjectFilters
           value={filters}
           onChange={(next) => {
@@ -70,45 +81,37 @@ export function ProjectsContent() {
             setFilters(next);
           }}
         />
+      </ListPageHeader>
 
-        {/* PROJECT GRID */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
-          {isLoading || (isFetching && !isPlaceholderData) ? (
-            Array.from({ length: 3 }).map((_, i) => (
-              <ProjectCardSkeleton key={i} />
-            ))
-          ) : projects.length === 0 ? (
-            <div className="col-span-full flex items-center justify-center py-10">
-              <ProjectEmpty isSearch={hasActiveFilters} />
-            </div>
-          ) : (
-            <div
-              className={`contents transition-opacity duration-200 ${
-                isPlaceholderData
-                  ? 'pointer-events-none opacity-50'
-                  : 'opacity-100'
-              }`}
-            >
-              {projects.map((project, index) => (
-                <RevealItem key={project.id} index={index}>
-                  <ProjectCard
-                    project={project}
-                    onTagClick={(slug) => toggleTag(slug)}
-                    onTechClick={(slug) => toggleTech(slug)}
-                  />
-                </RevealItem>
-              ))}
-            </div>
-          )}
+      {showSkeletons ? (
+        <ol className="border-l border-border/60">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <ProjectTimelineItemSkeleton key={i} />
+          ))}
+        </ol>
+      ) : projects.length === 0 ? (
+        <div className="flex items-center justify-center py-16">
+          <ProjectEmpty isSearch={hasActiveFilters} />
         </div>
+      ) : (
+        <div
+          className={`transition-opacity duration-200 ${
+            isPlaceholderData ? 'pointer-events-none opacity-50' : 'opacity-100'
+          }`}
+        >
+          <ProjectsTimeline
+            projects={projects}
+            onTagClick={toggleTag}
+            onTechClick={toggleTech}
+          />
+        </div>
+      )}
 
-        {/* PAGINATION */}
-        <Pagination
-          setPage={setPage}
-          pagination={pagination}
-          isPlaceholderData={isPlaceholderData}
-        />
-      </div>
+      <Pagination
+        setPage={setPage}
+        pagination={pagination}
+        isPlaceholderData={isPlaceholderData}
+      />
     </ProjectsShell>
   );
 }

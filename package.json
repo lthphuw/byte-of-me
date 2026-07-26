@@ -12,6 +12,7 @@
     "generate": "pnpm --filter @byte-of-me/db generate",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
+    "test": "turbo run test",
     "check-types": "turbo run check-types",
     "check": "sh scripts/check.sh"
   },

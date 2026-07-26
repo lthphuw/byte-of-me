@@ -1,4 +1,4 @@
-import { RichText } from '@byte-of-me/ui';
+import { RichText } from '@byte-of-me/ui/rich-text';
 import { getTranslations } from 'next-intl/server';
 
 import { getPublicAboutMe } from '@/entities/user-profile/api/get-public-about-me';
@@ -11,15 +11,12 @@ export async function AboutMe() {
   }
 
   return (
-    <section className="space-y-6">
-      <div className="flex items-center gap-4">
-        <h2 className="text-2xl font-bold tracking-tight md:text-4xl">
-          {t('about.section.aboutMe')}
-        </h2>
-      </div>
-      <div className="ml-0.5 pl-0">
-        <RichText content={aboutMeResp?.data.aboutMe} />
-      </div>
+    <section>
+      {/* sr-only h1 keeps the outline/SEO; visually the prose IS the intro.
+          No space-y here: it would offset the prose below the other pages'
+          first line, since the hidden h1 still counts as a sibling. */}
+      <h1 className="sr-only">{t('about.section.aboutMe')}</h1>
+      <RichText content={aboutMeResp?.data.aboutMe} />
     </section>
   );
 }

@@ -130,7 +130,15 @@
     "failedToLoadProjectList": "Failed to load project list Please try again",
     "backToProjects": "Back to projects",
     "noProjectsFound": "No projects have been added yet.",
-    "noProjectsMatchYourSearch": "No projects match your current filters or search query."
+    "noProjectsMatchYourSearch": "No projects match your current filters or search query.",
+    "pageTitle": "Projects",
+    "pageDescription": "Things I have designed, built and shipped",
+    "count": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
+    "present": "Present",
+    "liveDemo": "Live demo",
+    "ongoing": "Ongoing",
+    "completed": "Completed",
+    "undated": "Undated"
   },
   "blog": {
     "details": "Details",
@@ -139,7 +147,12 @@
     "loadingBlogList": "Loading blog list",
     "failedToLoadBlogList": "Failed to load blog list. Please try again",
     "noBlogsFound": "No blogs found yet. Stay tuned for future posts!",
-    "noBlogsMatchYourSearch": "No blogs match your current search or filters."
+    "noBlogsMatchYourSearch": "No blogs match your current search or filters.",
+    "pageTitle": "Blog",
+    "pageDescription": "Notes on building for the web — CMS work, monorepos and the things that broke along the way",
+    "count": "{count, plural, =0 {No posts} one {# post} other {# posts}}",
+    "showDrafts": "Drafts",
+    "showDraftsHint": "Admin only — visitors never see drafts"
   },
   "blogDetails": {
     "failedToLoadBlog": "Failed to load blog",
@@ -217,22 +230,24 @@
       "filters": "Filters",
       "reset": "Reset",
       "seeMore": "See more",
-      "searchProject": "Search project..."
+      "searchProject": "Search project...",
+      "tags": "Tags",
+      "techStack": "Tech stack"
     },
     "blogFilters": {
       "filters": "Filters",
       "reset": "Reset",
       "seeMore": "See more",
-      "searchBlog": "Search blog..."
+      "searchBlog": "Search blog...",
+      "tags": "Tags"
     },
     "blogCard": {
-      "readArticle": "Read article",
       "views": "{count, plural, =0 {No views} one {# view} other {# views}}",
-      "avgRead": "{time}m avg. read",
-      "readingTime": "{time} min read"
+      "readingTime": "{time} min read",
+      "draft": "Draft"
     },
-    "multiSelectSection": {
-      "seeMore": "See more"
+    "filters": {
+      "clearSearch": "Clear search"
     }
   },
   "dashboard": {

@@ -1,6 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@byte-of-me/ui';
+import { ChevronDown, List } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
 
@@ -26,16 +32,23 @@ function slugify(text: string): string {
  * `#{targetId}`. The article body is `dangerouslySetInnerHTML` with no heading
  * ids, so we assign slug ids on mount, then track the active heading with an
  * IntersectionObserver for scroll-spy.
+ *
+ * `variant` picks the presentation: a sticky rail beside the article on wide
+ * screens, or a collapsed bar above it on narrow ones, where an expanded list
+ * would push the first paragraph off the screen.
  */
 export function BlogTableOfContents({
   targetId,
   label,
+  variant = 'rail',
 }: {
   targetId: string;
   label: string;
+  variant?: 'rail' | 'collapsible';
 }) {
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeId, setActiveId] = useState('');
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const container = document.getElementById(targetId);
@@ -57,7 +70,8 @@ export function BlogTableOfContents({
         node.id = id;
       }
       seen.add(id);
-      node.style.scrollMarginTop = '6rem';
+      // Landing offset is a responsive class on the article (see RichText) —
+      // an inline style here could not vary with the breakpoint.
       return {
         id,
         text: node.textContent || '',
@@ -83,33 +97,72 @@ export function BlogTableOfContents({
 
   if (headings.length < 2) return null;
 
+  const jumpTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    history.replaceState(null, '', `#${id}`);
+  };
+
+  const list = (
+    <ul className="space-y-1 border-l border-border">
+      {headings.map((heading) => (
+        <li key={heading.id}>
+          <a
+            href={`#${heading.id}`}
+            onClick={(e) => {
+              e.preventDefault();
+              jumpTo(heading.id);
+              setOpen(false);
+            }}
+            className={cn(
+              '-ml-px block border-l-2 border-transparent py-1 text-muted-foreground transition-colors hover:text-foreground',
+              heading.level === 3 ? 'pl-6' : 'pl-3',
+              activeId === heading.id &&
+                'border-primary font-medium text-foreground'
+            )}
+          >
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+
+  if (variant === 'collapsible') {
+    return (
+      <Collapsible open={open} onOpenChange={setOpen}>
+        {/* Opaque, because this bar is sticky and scrolls over body text. */}
+        <nav
+          aria-label={label}
+          className="overflow-hidden rounded-lg border border-border bg-background/95 text-sm shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/80"
+        >
+          <CollapsibleTrigger className="flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left transition-colors hover:bg-muted/50">
+            <span className="flex min-w-0 items-center gap-2 font-medium">
+              <List className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <span className="truncate">{label}</span>
+            </span>
+            <span className="flex shrink-0 items-center gap-2 text-muted-foreground">
+              <span className="text-xs tabular-nums">{headings.length}</span>
+              <ChevronDown
+                className={cn(
+                  'h-4 w-4 transition-transform duration-200',
+                  open && 'rotate-180'
+                )}
+              />
+            </span>
+          </CollapsibleTrigger>
+          {/* Long posts must not push the expanded list past the viewport. */}
+          <CollapsibleContent className="max-h-[50vh] overflow-y-auto px-4 pb-3 pt-1">
+            {list}
+          </CollapsibleContent>
+        </nav>
+      </Collapsible>
+    );
+  }
+
   return (
     <nav aria-label={label} className="text-sm">
       <p className="mb-3 font-semibold text-muted-foreground">{label}</p>
-      <ul className="space-y-1 border-l border-border">
-        {headings.map((heading) => (
-          <li key={heading.id}>
-            <a
-              href={`#${heading.id}`}
-              onClick={(e) => {
-                e.preventDefault();
-                document
-                  .getElementById(heading.id)
-                  ?.scrollIntoView({ behavior: 'smooth' });
-                history.replaceState(null, '', `#${heading.id}`);
-              }}
-              className={cn(
-                '-ml-px block border-l-2 border-transparent py-1 text-muted-foreground transition-colors hover:text-foreground',
-                heading.level === 3 ? 'pl-6' : 'pl-3',
-                activeId === heading.id &&
-                  'border-primary font-medium text-foreground'
-              )}
-            >
-              {heading.text}
-            </a>
-          </li>
-        ))}
-      </ul>
+      {list}
     </nav>
   );
 }
