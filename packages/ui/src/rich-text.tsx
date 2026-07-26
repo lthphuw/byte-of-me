@@ -108,8 +108,8 @@ export function RichText({
         // Anchor landing offset. Below xl the article page floats a sticky
         // table-of-contents bar under the fixed header, so a jumped-to heading
         // needs to clear both; from xl the bar moves into the side rail.
-        '[&_h2]:scroll-mt-36 [&_h3]:scroll-mt-36',
-        'xl:[&_h2]:scroll-mt-24 xl:[&_h3]:scroll-mt-24',
+        '[&_h2]:scroll-mt-40 [&_h3]:scroll-mt-40',
+        'xl:[&_h2]:scroll-mt-28 xl:[&_h3]:scroll-mt-28',
 
         // Lists
         '[&_ul]:my-5 [&_ol]:my-5',
@@ -167,7 +167,7 @@ export function RichText({
 
         // Citation markers — quiet inline chips that invert on hover so it is
         // obvious they are clickable without shouting mid-sentence.
-        '[&_sup.citation]:scroll-mt-36 xl:[&_sup.citation]:scroll-mt-24',
+        '[&_sup.citation]:scroll-mt-40 xl:[&_sup.citation]:scroll-mt-28',
         '[&_sup.citation]:align-super [&_sup.citation]:text-[0.7em] [&_sup.citation]:tabular-nums',
         '[&_sup.citation>a]:rounded [&_sup.citation>a]:bg-neutral-100 [&_sup.citation>a]:px-1 [&_sup.citation>a]:py-px',
         '[&_sup.citation>a]:transition-colors [&_sup.citation>a]:duration-500',
@@ -193,7 +193,7 @@ export function RichText({
         '[&_.references-title]:mb-4 [&_.references-title]:mt-0 [&_.references-title]:text-lg',
         '[&_.references-title]:font-semibold [&_.references-title]:tracking-normal',
         '[&_.references-list]:my-0 [&_.references-list]:list-decimal [&_.references-list]:space-y-2 [&_.references-list]:pl-6',
-        '[&_.references-item]:scroll-mt-36 xl:[&_.references-item]:scroll-mt-24',
+        '[&_.references-item]:scroll-mt-40 xl:[&_.references-item]:scroll-mt-28',
         '[&_.references-item]:rounded [&_.references-item]:px-1.5 [&_.references-item]:py-0.5',
         '[&_.references-item]:text-[15px] [&_.references-item]:leading-7 [&_.references-item]:transition-colors [&_.references-item]:duration-500',
         // Jump target highlight. `:target` keeps it working without JS.
