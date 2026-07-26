@@ -170,6 +170,17 @@ export function RichText({
         '[&_sup.citation]:scroll-mt-36 xl:[&_sup.citation]:scroll-mt-24',
         '[&_sup.citation]:align-super [&_sup.citation]:text-[0.7em] [&_sup.citation]:tabular-nums',
         '[&_sup.citation>a]:rounded [&_sup.citation>a]:bg-neutral-100 [&_sup.citation>a]:px-1 [&_sup.citation>a]:py-px',
+        '[&_sup.citation>a]:transition-colors [&_sup.citation>a]:duration-500',
+        // Jump-back landing highlight — the inverse of .references-item's
+        // flash: the backlink script tags the marker with .is-flash and the
+        // chip inverts for a moment so the eye finds where it landed.
+        // The backlink script flashes either the exact marker <a> the reader
+        // came from (origins map) or, on deep links, the whole <sup> — cover
+        // both.
+        '[&_sup.citation.is-flash>a]:bg-neutral-900 [&_sup.citation.is-flash>a]:text-neutral-50',
+        'dark:[&_sup.citation.is-flash>a]:bg-neutral-100 dark:[&_sup.citation.is-flash>a]:text-neutral-900',
+        '[&_sup.citation>a.is-flash]:bg-neutral-900 [&_sup.citation>a.is-flash]:text-neutral-50',
+        'dark:[&_sup.citation>a.is-flash]:bg-neutral-100 dark:[&_sup.citation>a.is-flash]:text-neutral-900',
         '[&_sup.citation>a]:font-medium [&_sup.citation>a]:text-neutral-700 [&_sup.citation>a]:no-underline',
         'dark:[&_sup.citation>a]:bg-neutral-800 dark:[&_sup.citation>a]:text-neutral-300',
         '[&_sup.citation>a:hover]:bg-neutral-900 [&_sup.citation>a:hover]:text-neutral-50',

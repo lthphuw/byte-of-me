@@ -9,6 +9,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import { TableKit } from '@tiptap/extension-table';
+import { Markdown } from '@tiptap/markdown';
 import TableOfContents, {
   getHierarchicalIndexes,
   type TableOfContentDataItem,
@@ -86,6 +87,9 @@ export function createExtensions(options?: {
     SearchAndReplace,
     Typography,
     TableKit.configure({ table: { resizable: false } }),
+    // Markdown in, markdown understood: pasting a README-style document turns
+    // into real headings/lists/tables/code blocks instead of flat text.
+    Markdown,
     Citation,
     ReferenceList,
   ];

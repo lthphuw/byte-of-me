@@ -35,6 +35,8 @@ function buildItemSpec(item: ReferenceItem): Spec {
   }
 
   // Readers who jump down to an entry need a way back to where they were.
+  // No glyph child: the arrow is a CSS-mask icon (globals.css) so it follows
+  // the text color in both themes; aria-label carries the meaning.
   children.push([
     'a',
     {
@@ -43,7 +45,6 @@ function buildItemSpec(item: ReferenceItem): Spec {
       'data-reference-backlink': item.id,
       'aria-label': 'Back to citation',
     },
-    '↩',
   ]);
 
   return ['li', { id: `ref-${item.id}`, class: 'references-item' }, ...children];

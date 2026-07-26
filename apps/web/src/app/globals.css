@@ -121,3 +121,18 @@ html {
   background-position: center !important;
   background-repeat: no-repeat !important;
 }
+
+/* References backlink (↩) — lucide "corner-up-left" as a CSS mask so the icon
+   inherits text color in both themes. The anchor itself is rendered empty by
+   the reference-list schema; aria-label carries the meaning. */
+.references-backlink {
+  display: inline-block;
+  width: 0.95em;
+  height: 0.95em;
+  vertical-align: -0.1em;
+  background-color: currentColor;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 14 4 9 9 4'/%3E%3Cpath d='M20 20v-7a4 4 0 0 0-4-4H4'/%3E%3C/svg%3E");
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+}

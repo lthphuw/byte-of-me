@@ -33,6 +33,7 @@ import { uploadSingleMedia } from '@/entities/media/api/upload-single-media';
 import { getPaginatedAdminProjects } from '@/entities/project/api/get-paginated-admin-projects';
 import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
+import { useFormAutosave } from '@/shared/hooks/use-form-autosave';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
@@ -119,13 +120,42 @@ export function BlogForm({ initialData, onSubmit, loading, formId }: BlogFormPro
     });
   }, [initialData, form]);
 
+  const autosave = useFormAutosave(
+    form,
+    `blog-draft:${initialData?.id ?? 'new'}`
+  );
+
   return (
     <Form {...form}>
       <form
         id={formId}
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit((values) => {
+          autosave.clear();
+          onSubmit(values);
+        })}
         className="space-y-6"
       >
+        {autosave.restorable && (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm">
+            <span>
+              Unsaved draft from{' '}
+              {autosave.restorable.toLocaleTimeString()} found.
+            </span>
+            <span className="flex gap-2">
+              <Button type="button" size="sm" onClick={autosave.restore}>
+                Restore
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={autosave.discard}
+              >
+                Discard
+              </Button>
+            </span>
+          </div>
+        )}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-4">
             <TextField
