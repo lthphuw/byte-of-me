@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge , Card, CardContent, CardHeader, CardTitle , DeleteButton , EditButton , Icons } from '@byte-of-me/ui';
+import { Badge , Card, CardContent, CardHeader, CardTitle , DeleteButton , EditButton , Icons, richTextToPlainText } from '@byte-of-me/ui';
 import { ExternalLink } from 'lucide-react';
 
 import type { AdminProject } from '@/entities/project/model';
@@ -46,7 +46,9 @@ export function ProjectEditorCard({
             {t.title}
           </CardTitle>
           <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-            {t.description}
+            {/* Descriptions are stored as Tiptap JSON; the clamped card wants
+                the text-only reading, not the raw document. */}
+            {richTextToPlainText(t.description)}
           </p>
         </div>
       </CardHeader>

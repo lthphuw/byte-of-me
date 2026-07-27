@@ -20,7 +20,13 @@ export interface Project {
   endDate: Maybe<Date>;
   isPublished: Maybe<boolean>;
   title: Maybe<string>;
+  /** Plain-text reading of the description, for `line-clamp` excerpts. */
   description: Maybe<string>;
+  /**
+   * Sanitized HTML rendered from the stored rich text. Only populated where a
+   * consumer displays the full description (the projects timeline).
+   */
+  descriptionHtml?: string;
 
   tags: Tag[];
   techStacks: TechStack[];

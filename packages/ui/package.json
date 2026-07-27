@@ -10,6 +10,8 @@
     "./lib/rich-text-content": "./src/lib/rich-text-content.ts",
     "./rich-text-editor": "./src/rich-text-editor/index.ts",
     "./rich-text": "./src/rich-text.tsx",
+    "./rich-text-html": "./src/rich-text-html.tsx",
+    "./rich-text-render": "./src/rich-text-render.ts",
     "./rich-text-editor-lite": "./src/rich-text-editor/tiptap/rich-text-editor-lite.tsx",
     "./mermaid-blocks": "./src/mermaid-blocks.tsx"
   },

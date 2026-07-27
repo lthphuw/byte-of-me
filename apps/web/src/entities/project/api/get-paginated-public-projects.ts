@@ -1,6 +1,8 @@
 'use server';
 
 import { type Prisma, prisma } from '@byte-of-me/db';
+import { richTextToPlainText } from '@byte-of-me/ui/lib/rich-text-content';
+import { renderRichTextHtml } from '@byte-of-me/ui/rich-text-render';
 
 import type { PublicProject } from '@/entities/project/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
@@ -114,7 +116,11 @@ export async function getPaginatedPublicProjects(
             isPublished: project.isPublished,
 
             title: translated?.title || '',
-            description: translated?.description || '',
+            // Rendered here, server-side: this list is fetched by a client
+            // widget (TanStack Query), which must not import the tiptap
+            // render schema itself.
+            description: richTextToPlainText(translated?.description),
+            descriptionHtml: renderRichTextHtml(translated?.description),
 
             techStacks: project.techStacks.map(({ techStack }) => ({
               id: techStack.id,

@@ -2,6 +2,7 @@ import type { Editor } from '@tiptap/core';
 import { Eye, Pencil } from 'lucide-react';
 
 import { Button, ScrollArea, ScrollBar, Separator, TooltipProvider } from '../../../index';
+import { cn } from '../../../lib/utils';
 
 import { AlignmentTooolbar } from './alignment';
 import { BlockquoteToolbar } from './blockquote';
@@ -66,70 +67,83 @@ export const EditorToolbar = ({
     );
   }
 
+  // Compact editors live inside dialogs, whose width can't fit the whole
+  // button row. There the row wraps to a second line, because the alternative
+  // — the ScrollArea below with its hidden scrollbar — leaves the overflowing
+  // buttons (image, colour) with no visible way to reach them. The full
+  // editor keeps the single scrolling row: it owns the page width.
+  const row = (
+    <div
+      className={cn('flex items-center gap-1 px-2', compact && 'flex-wrap')}
+    >
+      {/* History Group */}
+      <UndoToolbar />
+      <RedoToolbar />
+      <Separator orientation="vertical" className="mx-1 h-7" />
+
+      {/* Text Structure Group */}
+      <HeadingsToolbar />
+      <BlockquoteToolbar />
+      <CodeToolbar />
+      <CodeBlockToolbar />
+      <Separator orientation="vertical" className="mx-1 h-7" />
+
+      {/* Basic Formatting Group */}
+      <BoldToolbar />
+      <ItalicToolbar />
+      <UnderlineToolbar />
+      <StrikeThroughToolbar />
+      <LinkToolbar />
+      {!compact && <CitationToolbar />}
+      <Separator orientation="vertical" className="mx-1 h-7" />
+
+      {/* Lists & Structure Group */}
+      <BulletListToolbar />
+      <OrderedListToolbar />
+      <HorizontalRuleToolbar />
+      {!compact && <TableToolbar />}
+      <Separator orientation="vertical" className="mx-1 h-7" />
+
+      {/* Alignment Group */}
+      <AlignmentTooolbar />
+      <Separator orientation="vertical" className="mx-1 h-7" />
+
+      {/* Media & Styling Group */}
+      <ImagePlaceholderToolbar />
+      <ColorHighlightToolbar />
+      <Separator orientation="vertical" className="mx-1 h-7" />
+
+      <div className="flex-1" />
+
+      {/* Utility Group */}
+      {!compact && <SearchAndReplaceToolbar />}
+      {onTogglePreview && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-8 gap-2 px-2 text-xs"
+          onClick={onTogglePreview}
+        >
+          <Eye className="h-3.5 w-3.5" />
+          Preview
+        </Button>
+      )}
+    </div>
+  );
+
   return (
     <div className="sticky top-0 z-20 hidden w-full border-b bg-background sm:block">
       <ToolbarProvider editor={editor}>
         <TooltipProvider>
-          <ScrollArea className="h-fit py-0.5">
-            <div>
-              <div className="flex items-center gap-1 px-2">
-                {/* History Group */}
-                <UndoToolbar />
-                <RedoToolbar />
-                <Separator orientation="vertical" className="mx-1 h-7" />
-
-                {/* Text Structure Group */}
-                <HeadingsToolbar />
-                <BlockquoteToolbar />
-                <CodeToolbar />
-                <CodeBlockToolbar />
-                <Separator orientation="vertical" className="mx-1 h-7" />
-
-                {/* Basic Formatting Group */}
-                <BoldToolbar />
-                <ItalicToolbar />
-                <UnderlineToolbar />
-                <StrikeThroughToolbar />
-                <LinkToolbar />
-                {!compact && <CitationToolbar />}
-                <Separator orientation="vertical" className="mx-1 h-7" />
-
-                {/* Lists & Structure Group */}
-                <BulletListToolbar />
-                <OrderedListToolbar />
-                <HorizontalRuleToolbar />
-                {!compact && <TableToolbar />}
-                <Separator orientation="vertical" className="mx-1 h-7" />
-
-                {/* Alignment Group */}
-                <AlignmentTooolbar />
-                <Separator orientation="vertical" className="mx-1 h-7" />
-
-                {/* Media & Styling Group */}
-                <ImagePlaceholderToolbar />
-                <ColorHighlightToolbar />
-                <Separator orientation="vertical" className="mx-1 h-7" />
-
-                <div className="flex-1" />
-
-                {/* Utility Group */}
-                {!compact && <SearchAndReplaceToolbar />}
-                {onTogglePreview && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 gap-2 px-2 text-xs"
-                    onClick={onTogglePreview}
-                  >
-                    <Eye className="h-3.5 w-3.5" />
-                    Preview
-                  </Button>
-                )}
-              </div>
-            </div>
-            <ScrollBar className="hidden" orientation="horizontal" />
-          </ScrollArea>
+          {compact ? (
+            <div className="py-0.5">{row}</div>
+          ) : (
+            <ScrollArea className="h-fit py-0.5">
+              <div>{row}</div>
+              <ScrollBar className="hidden" orientation="horizontal" />
+            </ScrollArea>
+          )}
         </TooltipProvider>
       </ToolbarProvider>
     </div>

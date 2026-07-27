@@ -1,6 +1,9 @@
 'use client';
 
 import { Button } from '@byte-of-me/ui';
+// Subpath on purpose: the presentational half of RichText, with no tiptap in
+// it. The HTML itself is rendered by the server action that feeds this list.
+import { RichTextHtml } from '@byte-of-me/ui/rich-text-html';
 import { Code, ExternalLink } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -9,6 +12,7 @@ import { TagClickableBadge } from '@/entities/tag/ui/tag-clickable-badge';
 import { TechStackClickableBadge } from '@/entities/tech-stack/ui/tech-stack-clickable-badge';
 import { Link } from '@/shared/i18n/navigation';
 import { cn, formatDate } from '@/shared/lib/utils';
+import { ExpandableRichText } from '@/shared/ui';
 
 export interface ProjectTimelineItemProps {
   project: PublicProject;
@@ -63,10 +67,14 @@ export function ProjectTimelineItem({
           <time className="shrink-0 tabular-nums meta-label">{dateRange}</time>
         </div>
 
-        {project.description && (
-          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            {project.description}
-          </p>
+        {project.descriptionHtml && (
+          <ExpandableRichText className="max-w-2xl">
+            <RichTextHtml
+              html={project.descriptionHtml}
+              variant="compact"
+              className="text-muted-foreground"
+            />
+          </ExpandableRichText>
         )}
 
         {project.techStacks.length > 0 && (

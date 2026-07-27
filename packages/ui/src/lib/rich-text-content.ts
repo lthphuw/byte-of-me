@@ -39,3 +39,26 @@ export function toEditorContent(value?: string | null): Content {
 export function fromEditorContent(json: JSONContent): string {
   return JSON.stringify(json);
 }
+
+/**
+ * Text-only reading of a stored rich text value, for excerpt contexts
+ * (`line-clamp` cards) where markup would be clipped mid-tag anyway. Blocks
+ * are joined with spaces; legacy plain text passes through unchanged.
+ */
+export function richTextToPlainText(value?: string | null): string {
+  if (!value) return '';
+
+  const doc = parseRichTextContent(value);
+  if (!doc) return value;
+
+  const collect = (node: JSONContent): string => {
+    if (node.type === 'text') return node.text ?? '';
+    return (node.content ?? []).map(collect).join('');
+  };
+
+  return (doc.content ?? [])
+    .map(collect)
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+}

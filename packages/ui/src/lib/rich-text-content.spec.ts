@@ -1,6 +1,7 @@
 import {
   fromEditorContent,
   parseRichTextContent,
+  richTextToPlainText,
   toEditorContent,
 } from './rich-text-content';
 
@@ -57,5 +58,65 @@ describe('toEditorContent', () => {
 describe('fromEditorContent', () => {
   it('round-trips through toEditorContent', () => {
     expect(toEditorContent(fromEditorContent(doc))).toEqual(doc);
+  });
+});
+
+describe('richTextToPlainText', () => {
+  it('returns an empty string for empty values', () => {
+    expect(richTextToPlainText('')).toBe('');
+    expect(richTextToPlainText(null)).toBe('');
+    expect(richTextToPlainText(undefined)).toBe('');
+  });
+
+  it('hands legacy plain text back verbatim', () => {
+    expect(richTextToPlainText('an older plain-text description')).toBe(
+      'an older plain-text description'
+    );
+  });
+
+  it('joins block text with spaces and drops markup structure', () => {
+    const richDoc = JSON.stringify({
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            { type: 'text', text: 'A CMS ' },
+            { type: 'text', marks: [{ type: 'bold' }], text: 'and' },
+            { type: 'text', text: ' portfolio.' },
+          ],
+        },
+        {
+          type: 'bulletList',
+          content: [
+            {
+              type: 'listItem',
+              content: [
+                {
+                  type: 'paragraph',
+                  content: [{ type: 'text', text: 'Multilingual' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(richTextToPlainText(richDoc)).toBe(
+      'A CMS and portfolio. Multilingual'
+    );
+  });
+
+  it('skips blocks with no text, such as empty paragraphs', () => {
+    const richDoc = JSON.stringify({
+      type: 'doc',
+      content: [
+        { type: 'paragraph' },
+        { type: 'paragraph', content: [{ type: 'text', text: 'Only me' }] },
+      ],
+    });
+
+    expect(richTextToPlainText(richDoc)).toBe('Only me');
   });
 });

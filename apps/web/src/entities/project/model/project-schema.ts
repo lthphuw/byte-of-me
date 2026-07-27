@@ -17,6 +17,7 @@ export const projectSchema = z.object({
   liveLink: z.string().url().optional().or(z.literal('')),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
+  isPublished: z.boolean(),
   techStackIds: z.array(z.string()).optional(),
   tagIds: z.array(z.string()).optional(),
   coauthors: z.array(projectCoauthorSchema).optional(),

@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@byte-of-me/db';
+import { richTextToPlainText } from '@byte-of-me/ui/lib/rich-text-content';
 
 import type { PublicProject } from '@/entities/project/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
@@ -51,6 +52,9 @@ export async function getPublicRecentProjects(): Promise<
 
           return {
             ...t,
+            // The homepage card clamps the description, so it gets the
+            // text-only reading of the stored rich text.
+            description: richTextToPlainText(t.description),
             id: p.id,
             slug: p.slug,
             startDate: p.startDate,

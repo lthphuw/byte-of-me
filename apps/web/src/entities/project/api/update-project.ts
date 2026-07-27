@@ -29,6 +29,7 @@ export async function updateProject(
         liveLink: data.liveLink || null,
         startDate: data.startDate ? new Date(data.startDate) : null,
         endDate: data.endDate ? new Date(data.endDate) : null,
+        isPublished: data.isPublished,
 
         techStacks: {
           deleteMany: {},

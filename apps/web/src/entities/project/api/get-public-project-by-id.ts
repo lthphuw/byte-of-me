@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@byte-of-me/db';
+import { richTextToPlainText } from '@byte-of-me/ui/lib/rich-text-content';
 
 import type { PublicProject } from '@/entities/project/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
@@ -57,6 +58,9 @@ export async function getPublicProjectById(
 
         return {
           ...t,
+          // The related-project card clamps the description, so it gets the
+          // text-only reading of the stored rich text.
+          description: richTextToPlainText(t.description),
           id: project.id,
           slug: project.slug,
           startDate: project.startDate,

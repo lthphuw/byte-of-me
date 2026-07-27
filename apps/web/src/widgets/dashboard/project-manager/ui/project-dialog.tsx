@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Button ,
+  Checkbox,
   Dialog,
   DialogContent,
   DialogFooter,
@@ -13,11 +14,12 @@ import { Button ,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage, MultiSelect } from '@byte-of-me/ui';
+  FormMessage, fromEditorContent, MultiSelect, toEditorContent } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { Plus, X } from 'lucide-react';
 
+import { uploadSingleMedia } from '@/entities';
 import {
   type AdminProject,
   type ProjectFromValues,
@@ -26,6 +28,7 @@ import {
 import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
 import { getAllAdminTechStack } from '@/entities/tech-stack/api/get-all-admin-tech-stacks';
 import { TextField, TranslationTabs } from '@/shared/ui';
+import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
 interface ProjectDialogProps {
   open: boolean;
@@ -70,6 +73,7 @@ export function ProjectDialog({
       liveLink: '',
       startDate: '',
       endDate: '',
+      isPublished: false,
       techStackIds: [],
       tagIds: [],
       coauthors: [],
@@ -92,8 +96,11 @@ export function ProjectDialog({
         ...initialData,
         githubLink: initialData.githubLink || '',
         liveLink: initialData.liveLink || '',
-        startDate: initialData.startDate?.toISOString() || '',
-        endDate: initialData.endDate?.toISOString() || '',
+        // <input type="date"> only accepts yyyy-MM-dd — a full ISO string
+        // renders as an empty field.
+        startDate: initialData.startDate?.toISOString().slice(0, 10) || '',
+        endDate: initialData.endDate?.toISOString().slice(0, 10) || '',
+        isPublished: initialData.isPublished,
         techStackIds: initialData.techStacks?.map((t) => t.techStackId) || [],
         tagIds: initialData.tags?.map((t) => t.tagId) || [],
         coauthors:
@@ -114,6 +121,7 @@ export function ProjectDialog({
         liveLink: '',
         startDate: '',
         endDate: '',
+        isPublished: false,
         techStackIds: [],
         tagIds: [],
         coauthors: [],
@@ -124,15 +132,23 @@ export function ProjectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
-        <DialogHeader>
+      {/* Same shell as the education dialog: fixed header and footer around a
+          scrolling body. `min-w-0` on that body is load-bearing — without it
+          the flex item sizes to the editor toolbar's button row and drags the
+          dialog past its own max-width (horizontal overflow). */}
+      <DialogContent className="flex max-h-[90vh] w-[calc(100vw-2rem)] max-w-4xl flex-col gap-0 overflow-hidden p-0 sm:w-full">
+        <DialogHeader className="shrink-0 border-b px-6 py-4 pr-14 text-left">
           <DialogTitle>
             {initialData ? 'Edit Project' : 'New Project'}
           </DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex min-h-0 flex-1 flex-col"
+          >
+            <div className="min-w-0 flex-1 space-y-6 overflow-y-auto px-6 py-5">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <TextField
                 control={form.control}
@@ -170,6 +186,24 @@ export function ProjectDialog({
                 placeholder="https://..."
               />
             </div>
+
+            <FormField
+              control={form.control}
+              name="isPublished"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Published</FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
@@ -274,17 +308,34 @@ export function ProjectDialog({
                       name={`translations.${index}.title`}
                       label="Title"
                     />
-                    <TextField
+                    <FormField
                       control={form.control}
                       name={`translations.${index}.description`}
-                      label="Description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description</FormLabel>
+                          <RichTextEditor
+                            compact
+                            minHeight={140}
+                            placeholder="What this project is, and what it does…"
+                            className="rounded-md"
+                            value={toEditorContent(field.value)}
+                            onChange={(json) =>
+                              field.onChange(fromEditorContent(json))
+                            }
+                            uploadImage={uploadSingleMedia}
+                          />
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </>
                 )}
               />
             </div>
+            </div>
 
-            <DialogFooter>
+            <DialogFooter className="shrink-0 gap-2 border-t bg-muted/30 px-6 py-4">
               <Button
                 type="submit"
                 disabled={loading}
