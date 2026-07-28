@@ -9,7 +9,6 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import { TableKit } from '@tiptap/extension-table';
-import { Markdown } from '@tiptap/markdown';
 import TableOfContents, {
   getHierarchicalIndexes,
   type TableOfContentDataItem,
@@ -18,6 +17,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import Typography from '@tiptap/extension-typography';
 import Underline from '@tiptap/extension-underline';
+import { Markdown } from '@tiptap/markdown';
 import {
   type Content,
   EditorContent,

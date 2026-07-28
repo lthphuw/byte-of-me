@@ -5,7 +5,10 @@ import { type Prisma, prisma } from '@byte-of-me/db';
 import type { PublicBlog } from '@/entities/blog/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
+import {
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
@@ -30,14 +33,31 @@ export async function getRelatedPublicBlogs(
           tags: { some: { tag: { slug: { in: tagSlugs } } } },
         };
 
+        // Related-post cards only show title/description, so the heavy
+        // BlogTranslation.content column is never selected here.
+        const languages = { in: getTranslationLanguages(locale) };
         const blogsRes = await prisma.blog.findMany({
           where,
           orderBy: { publishedDate: 'desc' },
           take: limit,
           include: {
-            translations: true,
+            translations: {
+              where: { language: languages },
+              select: { language: true, title: true, description: true },
+            },
             coverImage: true,
-            tags: { include: { tag: { include: { translations: true } } } },
+            tags: {
+              include: {
+                tag: {
+                  include: {
+                    translations: {
+                      where: { language: languages },
+                      select: { language: true, name: true },
+                    },
+                  },
+                },
+              },
+            },
             _count: { select: { blogViewLogs: true } },
           },
         });
@@ -54,6 +74,7 @@ export async function getRelatedPublicBlogs(
             publishedDate: blog.publishedDate,
             title: translated?.title || '',
             description: translated?.description || '',
+            // Not fetched for cards; the detail action loads the full body.
             content: '',
             coverImage: blog.coverImage,
             readingTime: blog.readingTime,
@@ -68,7 +89,7 @@ export async function getRelatedPublicBlogs(
       },
       {
         cache: true,
-        cacheKey: ['related-public-blogs', blogId, ...tagSlugs],
+        cacheKey: ['related-public-blogs', blogId, String(limit), ...tagSlugs],
         cacheTags: [CACHE_TAGS.BLOG],
       }
     );

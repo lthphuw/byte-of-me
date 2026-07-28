@@ -1,4 +1,4 @@
-import type { Prisma } from '@byte-of-me/db';
+import type { Prisma } from '@byte-of-me/db/types';
 
 import type { Media } from '@/shared/types/models';
 

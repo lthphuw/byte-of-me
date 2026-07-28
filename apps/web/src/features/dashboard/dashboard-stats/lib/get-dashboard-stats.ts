@@ -1,15 +1,26 @@
 'use server';
 
 import { prisma } from '@byte-of-me/db';
+import { logger } from '@byte-of-me/logger';
 
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 
+export type DashboardStats = {
+  totalMessages: number;
+  totalProjects: number;
+  totalBlogs: number;
+  totalEducation: number;
+  totalCompanies: number;
+  totalTechStack: number;
+  totalTags: number;
+  newMessages: number;
+};
 
-
-
-
-export async function getDashboardStats() {
+export async function getDashboardStats(): Promise<
+  | { success: true; data: DashboardStats }
+  | { success: false; data: null; errorMsg: string }
+> {
   try {
     const session = await requireAdmin();
     const userId = session.id;
@@ -22,7 +33,6 @@ export async function getDashboardStats() {
       companyCount,
       techStackCount,
       tagCount,
-      translationCount,
     ] = await Promise.all([
       prisma.contactMessage.count({ where: { userId } }),
       prisma.project.count({ where: { userId } }),
@@ -31,7 +41,6 @@ export async function getDashboardStats() {
       prisma.company.count({ where: { userId } }),
       prisma.techStack.count({ where: {} }),
       prisma.tag.count({ where: {} }),
-      prisma.translation.count({ where: {} }),
     ]);
 
     const recentMessages = await prisma.contactMessage.count({
@@ -53,12 +62,12 @@ export async function getDashboardStats() {
         totalCompanies: companyCount,
         totalTechStack: techStackCount,
         totalTags: tagCount,
-        totalTranslations: translationCount,
         newMessages: recentMessages,
       },
     };
   } catch (error) {
-    console.error(`Get Dashboard stats  Error: ${getErrorMessage(error)}`);
-    return { success: false, data: null };
+    const errorMsg = getErrorMessage(error, 'Failed to fetch dashboard stats');
+    logger.error(`Get Dashboard stats  Error: ${errorMsg}`);
+    return { success: false, data: null, errorMsg };
   }
 }

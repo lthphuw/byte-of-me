@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Button , DeleteButton ,
   Dialog,
@@ -10,8 +9,9 @@ import { Button , DeleteButton ,
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 
-import type { AdminTag } from '@/entities';
+import type { AdminTag } from '@/entities/tag';
 import { type TagFormValues,tagSchema } from '@/entities/tag/model/tag-schema';
+import { useResetOnOpen } from '@/shared/hooks/use-reset-on-open';
 import { TextField } from '@/shared/ui';
 
 export function TagDialog({
@@ -40,23 +40,14 @@ export function TagDialog({
     name: 'translations',
   });
 
-  useEffect(() => {
-    if (initialData) {
-      form.reset({
-        slug: initialData.slug,
-        translations: initialData.translations.map((t) => ({
-          id: t.id,
-          language: t.language,
-          name: t.name,
-        })),
-      });
-    } else {
-      form.reset({
-        slug: '',
-        translations: [{ language: 'en', name: '' }],
-      });
-    }
-  }, [initialData, form]);
+  useResetOnOpen(form, open, initialData, (data) => ({
+    slug: data.slug,
+    translations: data.translations.map((t) => ({
+      id: t.id,
+      language: t.language,
+      name: t.name,
+    })),
+  }));
 
   const handleSubmit = (values: TagFormValues) => {
     onSubmit(values);

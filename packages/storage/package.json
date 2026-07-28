@@ -12,8 +12,10 @@
     "build:types": "tsc -p tsconfig.build.json",
     "clean": "rm -rf dist",
     "test": "jest",
-    "lint": "eslint src --fix",
-    "prepublishOnly": "pnpm build"
+    "lint": "eslint src",
+    "prepublishOnly": "pnpm build",
+    "check-types": "tsc --noEmit",
+    "lint:fix": "eslint src --fix"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1009.0",
@@ -26,7 +28,7 @@
     "@types/node": "^25.5.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.0",
-    "typescript": "^5.4.0"
+    "typescript": "5.8.3"
   },
   "sideEffects": false
 }

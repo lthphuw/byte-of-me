@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl';
 import {
   getPaginatedPublicProjects,
   ProjectEmpty,
+  projectKeys,
   ProjectTimelineItemSkeleton,
 } from '@/entities/project';
 import { ProjectFilters } from '@/features/public';
@@ -32,7 +33,7 @@ export function ProjectsContent() {
     filters.techStackSlugs.length > 0;
 
   const { data, isLoading, isFetching, isPlaceholderData } = useQuery({
-    queryKey: ['projects', page, filters],
+    queryKey: projectKeys.publicList(page, filters),
     queryFn: () => getPaginatedPublicProjects({ ...filters, page, limit: 8 }),
     placeholderData: (previousData) => previousData,
   });

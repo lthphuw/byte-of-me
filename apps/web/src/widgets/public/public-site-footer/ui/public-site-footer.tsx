@@ -1,14 +1,18 @@
 import { Suspense } from 'react';
 
 import {
-  PublicSiteFooter as PublicSiteFooterFeature,
+  PublicSiteFooter,
   PublicSiteFooterLoading,
-} from '@/features/public';
+} from '@/features/public/public-site-footer/ui';
 
-export function PublicSiteFooter() {
+/**
+ * Suspense boundary around the data-fetching footer feature, so a slow
+ * profile/social-link read never blocks the rest of the page.
+ */
+export function PublicSiteFooterSection() {
   return (
     <Suspense fallback={<PublicSiteFooterLoading />}>
-      <PublicSiteFooterFeature className="border-t" />
+      <PublicSiteFooter className="border-t" />
     </Suspense>
   );
 }

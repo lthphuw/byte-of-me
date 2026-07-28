@@ -1,18 +1,14 @@
 'use client';
 
-import { useState } from 'react';
 import {
   Badge,
   Button,
   ConfirmDeleteDialog,
   DeleteButton,
   EditButton,
-  Loading,
 } from '@byte-of-me/ui';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Briefcase, Plus } from 'lucide-react';
 import Image from 'next/image';
-import { toast } from 'sonner';
 
 import { CompanyDialog } from './company-dialog';
 
@@ -21,62 +17,40 @@ import { deleteCompany } from '@/entities/company/api/delete-company';
 import { getAllAdminCompanies } from '@/entities/company/api/get-all-admin-companies';
 import { updateCompany } from '@/entities/company/api/update-company';
 import type { CompanyFormValues } from '@/entities/company/model/company-schema';
+import { companyKeys } from '@/entities/company/model/query-keys';
 import type { AdminCompany } from '@/entities/company/model/types';
+import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { formatDate } from '@/shared/lib/utils';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
 export function CompanyManager() {
-  const queryClient = useQueryClient();
-
-  const [editing, setEditing] = useState<AdminCompany | null>(null);
-  const [open, setOpen] = useState(false);
-  const [companyToDelete, setCompanyToDelete] = useState<AdminCompany | null>(
-    null
-  );
-
   const {
-    data: response,
+    items: companies,
     isLoading,
     isError,
     refetch,
     isFetching,
-  } = useQuery({
-    queryKey: ['companies'],
-    queryFn: getAllAdminCompanies,
+    editing,
+    isDialogOpen,
+    onDialogOpenChange,
+    openCreateDialog,
+    openEditDialog,
+    save,
+    isSaving,
+    itemToDelete: companyToDelete,
+    requestDelete,
+    cancelDelete,
+    confirmDelete,
+    isDeleting,
+    isDeletingItem,
+  } = useCrudManager<AdminCompany, CompanyFormValues>({
+    queryKey: companyKeys.list(),
+    entityLabel: 'Work experience',
+    fetchAll: getAllAdminCompanies,
+    create: createCompany,
+    update: updateCompany,
+    remove: deleteCompany,
   });
-
-  const companies = response?.success ? response.data : [];
-
-  const saveMutation = useMutation({
-    mutationFn: (values: CompanyFormValues) =>
-      editing ? updateCompany(editing.id, values) : createCompany(values),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['companies'] });
-      toast(editing ? 'Work experience updated' : 'Work experience created');
-      setOpen(false);
-    },
-    onError: () => toast.error('Error saving work experience'),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteCompany,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['companies'] });
-      toast('Work experience removed');
-      setCompanyToDelete(null);
-    },
-    onError: () => toast.error('Error deleting work experience'),
-  });
-
-  const handleCreate = () => {
-    setEditing(null);
-    setOpen(true);
-  };
-
-  const handleEdit = (company: AdminCompany) => {
-    setEditing(company);
-    setOpen(true);
-  };
 
   return (
     <div className="space-y-6">
@@ -84,7 +58,7 @@ export function CompanyManager() {
         title="Work Experience"
         description="Maintain your professional timeline and company records"
         action={
-          <Button onClick={handleCreate} size="sm" className="gap-2">
+          <Button onClick={openCreateDialog} size="sm" className="gap-2">
             <Plus className="h-4 w-4" />
             Add Experience
           </Button>
@@ -96,21 +70,14 @@ export function CompanyManager() {
           isLoading={isLoading}
           isError={isError}
           onRetry={() => refetch()}
+          isFetching={isFetching}
           isEmpty={companies.length === 0}
           emptyTitle="No work experience"
           emptyDescription="Start by adding the first company you worked with."
           emptyAction={
-            <Button variant="outline" size="sm" onClick={handleCreate}>
+            <Button variant="outline" size="sm" onClick={openCreateDialog}>
               Add Your First Entry
             </Button>
-          }
-          skeleton={
-            <div className="flex h-48 flex-col items-center justify-center gap-2">
-              <Loading />
-              <p className="animate-pulse text-xs text-muted-foreground">
-                Loading records...
-              </p>
-            </div>
           }
         >
           <div className="grid gap-4">
@@ -164,13 +131,10 @@ export function CompanyManager() {
                   </div>
 
                   <div className="flex items-center gap-2 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
-                    <EditButton onClick={() => handleEdit(company)} />
+                    <EditButton onClick={() => openEditDialog(company)} />
                     <DeleteButton
-                      isSubmitting={
-                        deleteMutation.isPending &&
-                        companyToDelete?.id === company.id
-                      }
-                      onClick={() => setCompanyToDelete(company)}
+                      isSubmitting={isDeletingItem(company)}
+                      onClick={() => requestDelete(company)}
                     />
                   </div>
                 </div>
@@ -178,30 +142,22 @@ export function CompanyManager() {
             })}
           </div>
         </ManagerListState>
-
-        {!isLoading && isFetching && (
-          <div className="absolute right-2 top-2">
-            <Loading />
-          </div>
-        )}
       </div>
 
       <CompanyDialog
         key={editing?.id || 'new'}
-        open={open}
-        onOpenChange={setOpen}
+        open={isDialogOpen}
+        onOpenChange={onDialogOpenChange}
         initialData={editing}
-        onSubmit={(values) => saveMutation.mutate(values)}
-        loading={saveMutation.isPending}
+        onSubmit={(values) => save(values)}
+        loading={isSaving}
       />
 
       <ConfirmDeleteDialog
         isOpen={!!companyToDelete}
-        isLoading={deleteMutation.isPending}
-        onClose={() => setCompanyToDelete(null)}
-        onConfirm={() =>
-          companyToDelete && deleteMutation.mutate(companyToDelete.id)
-        }
+        isLoading={isDeleting}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
         description={`Are you sure you want to delete "${
           companyToDelete?.company ?? ''
         }" and all of its roles?`}

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { getAllAdminTechStack } from '@/entities';
+import { getAllAdminTechStack } from '@/entities/tech-stack';
 import { TechStackManager } from '@/widgets/dashboard';
 
 

@@ -1,5 +1,7 @@
 import { logger } from '@byte-of-me/logger';
 
+import 'server-only';
+
 import { auth } from '@/shared/lib/auth/auth';
 
 export async function getAuthenticatedUser() {

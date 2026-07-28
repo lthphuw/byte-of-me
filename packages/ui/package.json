@@ -13,7 +13,10 @@
     "./rich-text-html": "./src/rich-text-html.tsx",
     "./rich-text-render": "./src/rich-text-render.ts",
     "./rich-text-editor-lite": "./src/rich-text-editor/tiptap/rich-text-editor-lite.tsx",
-    "./mermaid-blocks": "./src/mermaid-blocks.tsx"
+    "./mermaid-blocks": "./src/mermaid-blocks.tsx",
+    "./hooks/*": "./src/hooks/*.ts",
+    "./motion": "./src/motion/index.ts",
+    "./*": "./src/*.tsx"
   },
   "scripts": {
     "check-types": "tsc --noEmit",
@@ -22,7 +25,6 @@
     "test": "jest"
   },
   "peerDependencies": {
-    "next-intl": "^4.6.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.0"
   },

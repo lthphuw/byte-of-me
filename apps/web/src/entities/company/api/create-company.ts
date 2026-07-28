@@ -4,17 +4,27 @@ import { type Company, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
-import type { CompanyFormValues } from '@/entities/company/model/company-schema';
+import {
+  type CompanyFormValues,
+  companySchema,
+} from '@/entities/company/model/company-schema';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getErrorMessage } from '@/shared/lib/utils';
+import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function createCompany(
-  values: CompanyFormValues
+  input: CompanyFormValues
 ): Promise<ApiResponse<Company>> {
   try {
     const user = await requireAdmin();
+
+    const parsed = parseInput(companySchema, input);
+    if (!parsed.ok) {
+      return { success: false, errorMsg: parsed.errorMsg };
+    }
+    const values = parsed.data;
 
     const company = await prisma.company.create({
       data: {

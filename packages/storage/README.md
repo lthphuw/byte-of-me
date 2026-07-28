@@ -4,6 +4,12 @@ Lightweight S3-compatible object storage client, built on AWS SDK v3. Used with
 **Supabase Storage** via its S3 endpoint, but nothing here is Supabase-specific —
 any S3-compatible provider works.
 
+> **Configuration comes from the consuming app.** This package reads no
+> environment variables of its own — it has no `dotenv` import and never
+> touches `process.env`. A stray `packages/storage/.env` is a leftover and is
+> not loaded by anything; the real values live in `apps/web/.env` and are
+> passed to the constructor below.
+
 ## API
 
 ```ts

@@ -14,6 +14,10 @@ import {
 import { GlobalProvider } from '@/app/providers/global-provider';
 import { host } from '@/shared/config/host';
 import { siteConfig } from '@/shared/config/site';
+import {
+  pickMessages,
+  ROOT_MESSAGE_NAMESPACES,
+} from '@/shared/i18n/messages';
 import { routing } from '@/shared/i18n/routing';
 import { cn } from '@/shared/lib/utils';
 
@@ -142,7 +146,10 @@ export default async function LocaleLayout({
 
   setRequestLocale(locale);
 
-  const messages = await getMessages();
+  // Only what the locale root itself renders on the client (error.tsx). Each
+  // route group mounts its own provider with its own namespaces — see
+  // shared/i18n/messages.ts.
+  const messages = pickMessages(await getMessages(), ROOT_MESSAGE_NAMESPACES);
 
   return (
     <html lang={locale} suppressHydrationWarning>

@@ -313,7 +313,7 @@ export type EducationCreateInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  sortOrder: number
+  sortOrder?: number
   startDate: Date | string
   endDate?: Date | string | null
   logo?: Prisma.MediaCreateNestedOneWithoutEducationSchemaInput
@@ -326,7 +326,7 @@ export type EducationUncheckedCreateInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  sortOrder: number
+  sortOrder?: number
   startDate: Date | string
   endDate?: Date | string | null
   logoId?: string | null
@@ -365,7 +365,7 @@ export type EducationCreateManyInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  sortOrder: number
+  sortOrder?: number
   startDate: Date | string
   endDate?: Date | string | null
   logoId?: string | null
@@ -564,7 +564,7 @@ export type EducationCreateWithoutUserInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  sortOrder: number
+  sortOrder?: number
   startDate: Date | string
   endDate?: Date | string | null
   logo?: Prisma.MediaCreateNestedOneWithoutEducationSchemaInput
@@ -576,7 +576,7 @@ export type EducationUncheckedCreateWithoutUserInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  sortOrder: number
+  sortOrder?: number
   startDate: Date | string
   endDate?: Date | string | null
   logoId?: string | null
@@ -628,7 +628,7 @@ export type EducationCreateWithoutTranslationsInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  sortOrder: number
+  sortOrder?: number
   startDate: Date | string
   endDate?: Date | string | null
   logo?: Prisma.MediaCreateNestedOneWithoutEducationSchemaInput
@@ -640,7 +640,7 @@ export type EducationUncheckedCreateWithoutTranslationsInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  sortOrder: number
+  sortOrder?: number
   startDate: Date | string
   endDate?: Date | string | null
   logoId?: string | null
@@ -692,7 +692,7 @@ export type EducationCreateWithoutAchievementsInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  sortOrder: number
+  sortOrder?: number
   startDate: Date | string
   endDate?: Date | string | null
   logo?: Prisma.MediaCreateNestedOneWithoutEducationSchemaInput
@@ -704,7 +704,7 @@ export type EducationUncheckedCreateWithoutAchievementsInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  sortOrder: number
+  sortOrder?: number
   startDate: Date | string
   endDate?: Date | string | null
   logoId?: string | null
@@ -756,7 +756,7 @@ export type EducationCreateWithoutLogoInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  sortOrder: number
+  sortOrder?: number
   startDate: Date | string
   endDate?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutEducationsInput
@@ -768,7 +768,7 @@ export type EducationUncheckedCreateWithoutLogoInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  sortOrder: number
+  sortOrder?: number
   startDate: Date | string
   endDate?: Date | string | null
   userId: string
@@ -806,7 +806,7 @@ export type EducationCreateManyUserInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  sortOrder: number
+  sortOrder?: number
   startDate: Date | string
   endDate?: Date | string | null
   logoId?: string | null
@@ -850,7 +850,7 @@ export type EducationCreateManyLogoInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  sortOrder: number
+  sortOrder?: number
   startDate: Date | string
   endDate?: Date | string | null
   userId: string

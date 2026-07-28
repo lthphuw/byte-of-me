@@ -1,6 +1,4 @@
-import type { Prisma } from '@byte-of-me/db';
-
-import { CACHE_TAGS } from '@/shared/lib/constants';
+import type { Prisma } from '@byte-of-me/db/types';
 
 export type AdminComment = Prisma.CommentGetPayload<{
   include: {
@@ -34,8 +32,3 @@ export interface PublicComment {
   };
   children?: PublicComment[];
 }
-export const commentKey = (blogId: string, limit: number) => [
-  CACHE_TAGS.COMMENT,
-  blogId,
-  limit,
-];

@@ -11,7 +11,10 @@ import {
   withPublicActionHandler,
 } from '@/shared/api/public-action-template';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
+import {
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getAllPublicEducations(): Promise<
@@ -23,16 +26,25 @@ export async function getAllPublicEducations(): Promise<
     return await withPublicActionHandler(
       'getAllPublicEducations',
       async ({ userId, locale }) => {
+        const languages = { in: getTranslationLanguages(locale) };
         const items = await prisma.education.findMany({
           where: { userId },
           include: {
             // Deterministic order so the locale fallback in
             // getTranslatedContent resolves the same way on every request.
-            translations: { orderBy: { language: 'asc' } },
+            translations: {
+              where: { language: languages },
+              select: { language: true, title: true, description: true },
+              orderBy: { language: 'asc' },
+            },
             logo: true,
             achievements: {
               include: {
-                translations: { orderBy: { language: 'asc' } },
+                translations: {
+                  where: { language: languages },
+                  select: { language: true, title: true, content: true },
+                  orderBy: { language: 'asc' },
+                },
                 images: { include: { media: true } },
               },
               orderBy: { sortOrder: 'asc' },

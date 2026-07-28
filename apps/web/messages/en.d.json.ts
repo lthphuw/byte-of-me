@@ -271,8 +271,7 @@ declare const messages: {
         "companies": "Companies",
         "education": "Education",
         "techStacks": "Tech Stacks",
-        "tags": "Tags",
-        "translations": "Translations"
+        "tags": "Tags"
       },
       "actions": {
         "clearCache": "Clear Cache",

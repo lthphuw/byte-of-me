@@ -205,7 +205,6 @@ export type TagTranslationOrderByWithRelationInput = {
 
 export type TagTranslationWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  name?: string
   tagId_language?: Prisma.TagTranslationTagIdLanguageCompoundUniqueInput
   AND?: Prisma.TagTranslationWhereInput | Prisma.TagTranslationWhereInput[]
   OR?: Prisma.TagTranslationWhereInput[]
@@ -213,9 +212,10 @@ export type TagTranslationWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"TagTranslation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TagTranslation"> | Date | string
   language?: Prisma.StringFilter<"TagTranslation"> | string
+  name?: Prisma.StringFilter<"TagTranslation"> | string
   tagId?: Prisma.StringFilter<"TagTranslation"> | string
   tag?: Prisma.XOR<Prisma.TagScalarRelationFilter, Prisma.TagWhereInput>
-}, "id" | "name" | "tagId_language">
+}, "id" | "tagId_language">
 
 export type TagTranslationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

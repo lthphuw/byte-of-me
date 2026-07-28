@@ -1,5 +1,7 @@
 import nodemailer from 'nodemailer';
 
+import 'server-only';
+
 import { env } from '@/shared/config/env';
 
 export const mailer = nodemailer.createTransport({

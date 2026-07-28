@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import {
   Button,
@@ -31,7 +30,9 @@ import {
 } from '@/entities/company/model/company-schema';
 import type { AdminCompany } from '@/entities/company/model/types';
 import { getAllAdminTechStack } from '@/entities/tech-stack/api/get-all-admin-tech-stacks';
+import { techStackKeys } from '@/entities/tech-stack/model/query-keys';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
+import { useResetOnOpen } from '@/shared/hooks/use-reset-on-open';
 import { TextField, TranslationTabs } from '@/shared/ui';
 
 interface CompanyDialogProps {
@@ -50,7 +51,8 @@ export function CompanyDialog({
   loading,
 }: CompanyDialogProps) {
   const { data: techData } = useQuery({
-    queryKey: ['admin-techstacks-list'],
+    // Shared with ProjectDialog on purpose — same options data.
+    queryKey: techStackKeys.options(),
     queryFn: () => getAllAdminTechStack(),
     enabled: open,
   });
@@ -81,62 +83,54 @@ export function CompanyDialog({
     name: 'roles',
   });
 
-  useEffect(() => {
-    if (!open) return;
+  useResetOnOpen(form, open, initialData, (data) => ({
+    id: data.id,
+    company: data.company,
+    location: data.location,
+    startDate: new Date(data.startDate),
+    endDate: data.endDate ? new Date(data.endDate) : null,
+    logoId: data.logoId ?? null,
 
-    if (initialData) {
-      form.reset({
-        id: initialData.id,
-        company: initialData.company,
-        location: initialData.location,
-        startDate: new Date(initialData.startDate),
-        endDate: initialData.endDate ? new Date(initialData.endDate) : null,
-        logoId: initialData.logoId ?? null,
+    translations:
+      data.translations?.length > 0
+        ? data.translations.map((t) => ({
+            id: t.id,
+            language: t.language,
+            description: t.description ?? '',
+          }))
+        : [{ language: 'en', description: '' }],
 
+    techStackIds: data.techStacks?.map((t) => t.techStackId) ?? [],
+
+    roles:
+      data.roles?.map((r) => ({
+        id: r.id,
+        startDate: r.startDate ? new Date(r.startDate) : null,
+        endDate: r.endDate ? new Date(r.endDate) : null,
         translations:
-          initialData.translations?.length > 0
-            ? initialData.translations.map((t) => ({
+          r.translations?.length > 0
+            ? r.translations.map((t) => ({
                 id: t.id,
                 language: t.language,
+                title: t.title,
                 description: t.description ?? '',
               }))
-            : [{ language: 'en', description: '' }],
-
-        techStackIds: initialData.techStacks?.map((t) => t.techStackId) ?? [],
-
-        roles:
-          initialData.roles?.map((r) => ({
-            id: r.id,
-            startDate: r.startDate ? new Date(r.startDate) : null,
-            endDate: r.endDate ? new Date(r.endDate) : null,
+            : [{ language: 'en', title: '', description: '' }],
+        tasks:
+          r.tasks?.map((task) => ({
+            id: task.id,
+            sortOrder: task.sortOrder ?? 0,
             translations:
-              r.translations?.length > 0
-                ? r.translations.map((t) => ({
+              task.translations?.length > 0
+                ? task.translations.map((t) => ({
                     id: t.id,
                     language: t.language,
-                    title: t.title,
-                    description: t.description ?? '',
+                    content: t.content,
                   }))
-                : [{ language: 'en', title: '', description: '' }],
-            tasks:
-              r.tasks?.map((task) => ({
-                id: task.id,
-                sortOrder: task.sortOrder ?? 0,
-                translations:
-                  task.translations?.length > 0
-                    ? task.translations.map((t) => ({
-                        id: t.id,
-                        language: t.language,
-                        content: t.content,
-                      }))
-                    : [{ language: 'en', content: '' }],
-              })) ?? [],
+                : [{ language: 'en', content: '' }],
           })) ?? [],
-      });
-    } else {
-      form.reset();
-    }
-  }, [initialData, open, form]);
+      })) ?? [],
+  }));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

@@ -9,7 +9,7 @@ export interface UseClipboardInput {
 
 export interface UseClipboardReturnValue {
   /** Function to copy value to clipboard */
-  copy: (value: any) => void;
+  copy: (value: string) => void;
 
   /** Function to reset copied state and error */
   reset: () => void;
@@ -42,7 +42,7 @@ export function useClipboard(
     setCopied(value);
   };
 
-  const copy = (value: any) => {
+  const copy = (value: string) => {
     if ('clipboard' in navigator) {
       navigator.clipboard
         .writeText(value)

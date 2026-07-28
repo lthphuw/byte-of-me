@@ -1,4 +1,52 @@
-import { buildPaginatedMeta } from './pagination';
+import { buildPaginatedMeta, clampPagination } from './pagination';
+
+describe('clampPagination', () => {
+  it('passes through in-range values', () => {
+    expect(clampPagination({ page: 2, limit: 12 })).toEqual({
+      page: 2,
+      limit: 12,
+    });
+  });
+
+  it('applies defaults when params are missing', () => {
+    expect(clampPagination({})).toEqual({ page: 1, limit: 12 });
+  });
+
+  it('clamps oversized limits to the ceiling', () => {
+    expect(clampPagination({ page: 0, limit: 1_000_000 })).toEqual({
+      page: 1,
+      limit: 50,
+    });
+  });
+
+  it('floors fractional values and raises sub-1 values to 1', () => {
+    expect(clampPagination({ page: 2.7, limit: -3 })).toEqual({
+      page: 2,
+      limit: 1,
+    });
+  });
+
+  it('rejects non-finite values back to safe bounds', () => {
+    expect(clampPagination({ page: Number.NaN, limit: Infinity })).toEqual({
+      page: 1,
+      limit: 50,
+    });
+  });
+
+  it('honours a custom ceiling', () => {
+    expect(clampPagination({ limit: 100 }, { maxLimit: 30 })).toEqual({
+      page: 1,
+      limit: 30,
+    });
+  });
+
+  it('honours a custom default limit', () => {
+    expect(clampPagination({}, { defaultLimit: 9 })).toEqual({
+      page: 1,
+      limit: 9,
+    });
+  });
+});
 
 describe('buildPaginatedMeta', () => {
   it('rounds a partial last page up', () => {

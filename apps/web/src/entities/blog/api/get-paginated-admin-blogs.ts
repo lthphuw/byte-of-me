@@ -5,18 +5,22 @@ import { logger } from '@byte-of-me/logger';
 
 import type { AdminBlog } from '@/entities/blog';
 import { requireAdmin } from '@/shared/lib/auth';
-import { buildPaginatedMeta } from '@/shared/lib/pagination';
+import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
 import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
 export async function getPaginatedAdminBlogs(
-  page: number,
-  limit: number
+  rawPage: number,
+  rawLimit: number
 ): Promise<ApiResponse<PaginatedData<AdminBlog>>> {
   try {
     const session = await requireAdmin();
     const userId = session.id;
+    const { page, limit } = clampPagination(
+      { page: rawPage, limit: rawLimit },
+      { defaultLimit: 20 }
+    );
     const skip = (page - 1) * limit;
 
     const [items, count] = await Promise.all([

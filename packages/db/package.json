@@ -3,14 +3,22 @@
   "version": "1.0.0",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts"
   },
   "scripts": {
     "test": "jest",
     "generate": "prisma generate",
     "build": "prisma generate && swc src -d dist --strip-leading-paths && pnpm types",
     "types": "tsc --skipLibCheck --declaration --emitDeclarationOnly --esModuleInterop --declarationDir dist --rootDir src",
-    "prepublishOnly": "cd ../../ && turbo run build"
+    "prepublishOnly": "cd ../../ && turbo run build",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:push": "prisma db push",
+    "db:seed": "prisma db seed"
   },
   "devDependencies": {
     "@prisma/client-runtime-utils": "^7.5.0",

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { AuthLogInView } from '@/widgets/auth/auth-log-in-view/ui';
+import { AuthLogInView } from '@/widgets/auth/auth-log-in-view';
 
 export const metadata: Metadata = {
   title: 'Login | Byte of Me',

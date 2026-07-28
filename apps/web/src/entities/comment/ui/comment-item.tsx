@@ -10,8 +10,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { hideComment } from '@/entities/comment/api/hide-comment';
-import type { PublicComment } from '@/entities/comment/model';
-import { CACHE_TAGS } from '@/shared/lib/constants';
+import { commentKeys, type PublicComment } from '@/entities/comment/model';
 import { getRelativeTime } from '@/shared/lib/utils';
 
 export function CommentItem({
@@ -33,10 +32,15 @@ export function CommentItem({
   const queryClient = useQueryClient();
 
   const hideMutation = useMutation({
-    mutationFn: () => hideComment(comment.id),
+    // hideComment resolves with an ApiResponse instead of throwing, so
+    // unwrap-and-throw here to keep onError driving the failure toast.
+    mutationFn: async () => {
+      const res = await hideComment(comment.id);
+      if (!res.success) throw new Error(res.errorMsg);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [CACHE_TAGS.COMMENT, comment.blogId],
+        queryKey: commentKeys.threads(comment.blogId),
       });
     },
     onError: () => {

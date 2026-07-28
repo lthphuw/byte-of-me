@@ -8,12 +8,18 @@ import { supabaseStorage } from '@/shared/api';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getErrorMessage } from '@/shared/lib/utils';
+import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { Media } from '@/shared/types/models';
 
 export async function deleteMedia(id: string): Promise<ApiResponse<Media>> {
   try {
     const user = await requireAdmin();
+
+    const parsedId = parseInput(idSchema, id);
+    if (!parsedId.ok) {
+      return { success: false, errorMsg: parsedId.errorMsg };
+    }
 
     const media = await prisma.media.findFirst({
       where: {

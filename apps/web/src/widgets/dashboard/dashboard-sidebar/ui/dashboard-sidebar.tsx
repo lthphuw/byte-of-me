@@ -90,12 +90,6 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       label: t('groups.configuration'),
       items: [
         { href: '/dashboard/tags', label: t('items.tags'), icon: Icons.tags },
-        {
-          href: '/dashboard/translations',
-          label: t('items.translations'),
-          icon: Icons.translations,
-          // soon: true,
-        },
       ],
     },
   ];

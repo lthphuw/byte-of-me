@@ -83,11 +83,10 @@ export const ModelName = {
   TagTranslation: 'TagTranslation',
   BlogTag: 'BlogTag',
   ProjectTag: 'ProjectTag',
-  Translation: 'Translation',
   Media: 'Media',
   Interaction: 'Interaction',
   Comment: 'Comment',
-  PageView: 'PageView',
+  RateLimitHit: 'RateLimitHit',
   ContactMessage: 'ContactMessage'
 } as const
 
@@ -512,20 +511,6 @@ export const ProjectTagScalarFieldEnum = {
 export type ProjectTagScalarFieldEnum = (typeof ProjectTagScalarFieldEnum)[keyof typeof ProjectTagScalarFieldEnum]
 
 
-export const TranslationScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  language: 'language',
-  sourceText: 'sourceText',
-  translated: 'translated',
-  resourceType: 'resourceType',
-  resourceId: 'resourceId'
-} as const
-
-export type TranslationScalarFieldEnum = (typeof TranslationScalarFieldEnum)[keyof typeof TranslationScalarFieldEnum]
-
-
 export const MediaScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
@@ -570,19 +555,13 @@ export const CommentScalarFieldEnum = {
 export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
 
 
-export const PageViewScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  path: 'path',
-  visitorId: 'visitorId',
-  userAgent: 'userAgent',
-  referer: 'referer',
-  blogId: 'blogId',
-  projectId: 'projectId',
-  userId: 'userId'
+export const RateLimitHitScalarFieldEnum = {
+  key: 'key',
+  windowStart: 'windowStart',
+  count: 'count'
 } as const
 
-export type PageViewScalarFieldEnum = (typeof PageViewScalarFieldEnum)[keyof typeof PageViewScalarFieldEnum]
+export type RateLimitHitScalarFieldEnum = (typeof RateLimitHitScalarFieldEnum)[keyof typeof RateLimitHitScalarFieldEnum]
 
 
 export const ContactMessageScalarFieldEnum = {

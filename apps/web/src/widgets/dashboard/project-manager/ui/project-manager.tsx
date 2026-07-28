@@ -10,8 +10,9 @@ import {
   deleteProject,
   getPaginatedAdminProjects,
   updateProject,
-} from '@/entities';
+} from '@/entities/project';
 import type { AdminProject, ProjectFromValues } from '@/entities/project/model';
+import { projectKeys } from '@/entities/project/model/query-keys';
 import { ProjectEditorCard } from '@/entities/project/ui/project-editor-card';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
@@ -39,7 +40,7 @@ export function ProjectManager() {
     isDeleting,
     isDeletingItem,
   } = useCrudManager<AdminProject, ProjectFromValues>({
-    queryKey: 'projects',
+    queryKey: projectKeys.adminList(),
     entityLabel: 'Project',
     pageSize: 12,
     fetchPage: (page, limit) => getPaginatedAdminProjects(page, limit),

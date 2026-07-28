@@ -5,7 +5,7 @@ import { Button, useDebounce } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { useTagInfiniteQuery } from '@/entities/tag';
+import { useTagInfiniteQuery } from '@/entities/tag/query';
 import { TagClickableBadge } from '@/entities/tag/ui/tag-clickable-badge';
 import { FilterSearchInput } from '@/shared/ui';
 

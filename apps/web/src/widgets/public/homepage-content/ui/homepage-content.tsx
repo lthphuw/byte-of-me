@@ -1,6 +1,5 @@
 import { Suspense } from 'react';
 
-import { HomepageSectionMotion } from './homepage-section-motion';
 import { HomepageShell } from './homepage-shell';
 
 import {
@@ -10,6 +9,7 @@ import {
   HomepageRecentProjects,
   HomepageRecentProjectsLoading,
 } from '@/features/public';
+import { RevealSection } from '@/shared/ui';
 
 export async function HomepageContent() {
   return (
@@ -23,21 +23,21 @@ export async function HomepageContent() {
         id="home"
         className="space-y-16 md:space-y-24"
       >
-        <HomepageSectionMotion delay={0.1}>
+        <RevealSection delay={0.1}>
           <Suspense fallback={<HomepageProfileLoading />}>
             <HomepageProfile />
           </Suspense>
-        </HomepageSectionMotion>
+        </RevealSection>
 
-        <HomepageSectionMotion>
+        <RevealSection>
           <Suspense fallback={<HomepageRecentProjectsLoading />}>
             <HomepageRecentProjects />
           </Suspense>
-        </HomepageSectionMotion>
+        </RevealSection>
 
-        <HomepageSectionMotion>
+        <RevealSection>
           <HomepageContactCta />
-        </HomepageSectionMotion>
+        </RevealSection>
       </div>
     </HomepageShell>
   );

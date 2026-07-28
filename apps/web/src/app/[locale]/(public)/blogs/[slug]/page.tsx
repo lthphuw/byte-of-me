@@ -1,25 +1,20 @@
-import { prisma } from '@byte-of-me/db';
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 
 import { getPublicBlogBySlug } from '@/entities/blog/api/get-public-blog-by-slug';
+import { getPublishedBlogSlugs } from '@/entities/blog/api/get-published-blog-slugs';
 import { host } from '@/shared/config/host';
 import { routing } from '@/shared/i18n/routing';
 import type { LocaleType } from '@/shared/types';
 import { BlogDetailsContent } from '@/widgets/public';
 
 export async function generateStaticParams() {
-  const blogs = await prisma.blog.findMany({
-    where: { isPublished: true },
-    select: { slug: true },
-  });
+  const slugs = await getPublishedBlogSlugs();
 
-  if (!blogs) return [];
-
-  return blogs.flatMap((blog) =>
+  return slugs.flatMap((slug) =>
     routing.locales.map((locale) => ({
       locale,
-      slug: blog.slug,
+      slug,
     }))
   );
 }

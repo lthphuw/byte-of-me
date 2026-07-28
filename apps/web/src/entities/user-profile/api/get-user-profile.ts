@@ -7,13 +7,12 @@ import { getLocale } from 'next-intl/server';
 import type { PublicUserProfile } from '@/entities/user-profile/model/types';
 import { env } from '@/shared/config/env';
 import { requireAdmin } from '@/shared/lib/auth';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
+import {
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@/shared/lib/i18n-utils';
 import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
-
-
-
-
 
 export async function getUserProfile(): Promise<
   ApiResponse<PublicUserProfile>
@@ -34,7 +33,11 @@ export async function getUserProfile(): Promise<
       include: {
         userProfile: {
           include: {
-            translations: true,
+            // Display-only read: one locale (+ 'en' fallback) is enough. The
+            // editor uses getAdminUserProfile, which keeps every locale.
+            translations: {
+              where: { language: { in: getTranslationLanguages(locale) } },
+            },
           },
         },
       },

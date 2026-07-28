@@ -1,5 +1,6 @@
-import { getBlogInteractionsForUser } from '@/features/public';
-import { ClapButton } from '@/features/public/toggle-blog-interactions/ui/clap-button';
+import { ClapButton } from './clap-button';
+
+import { getBlogInteractionsForUser } from '@/features/public/toggle-blog-interactions/lib';
 import { INTERACTION } from '@/shared/lib/constants';
 
 export async function ClapButtonWrapper({

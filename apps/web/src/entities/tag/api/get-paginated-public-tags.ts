@@ -5,26 +5,32 @@ import { prisma } from '@byte-of-me/db';
 import type { PublicTag } from '@/entities/tag/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
-import { buildPaginatedMeta } from '@/shared/lib/pagination';
+import {
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@/shared/lib/i18n-utils';
+import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
 import type { PaginatedData, PaginatedParams } from '@/shared/types/api';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getPaginatedPublicTags(
   pagination: PaginatedParams
 ): Promise<ApiResponse<PaginatedData<PublicTag>>> {
+  const { page, limit } = clampPagination(pagination, { defaultLimit: 10 });
   return handlePublicAction('getPaginatedTags', async () => {
     const data = await withPublicActionHandler(
       'getPaginatedTags',
       async ({ locale }) => {
-        const { page = 1, limit = 10 } = pagination;
         const skip = (page - 1) * limit;
 
         const [items, count] = await Promise.all([
           prisma.tag.findMany({
             where: {},
             include: {
-              translations: true,
+              translations: {
+                where: { language: { in: getTranslationLanguages(locale) } },
+                select: { language: true, name: true },
+              },
             },
             orderBy: {
               updatedAt: 'desc',
@@ -55,7 +61,7 @@ export async function getPaginatedPublicTags(
       },
       {
         cache: true,
-        cacheKey: [CACHE_TAGS.TAG],
+        cacheKey: [CACHE_TAGS.TAG, String(page), String(limit)],
         cacheTags: [CACHE_TAGS.TAG],
       }
     );

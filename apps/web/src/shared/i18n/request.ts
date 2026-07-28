@@ -1,10 +1,7 @@
-import { prisma } from '@byte-of-me/db';
 import { hasLocale } from 'next-intl';
 import { getRequestConfig } from 'next-intl/server';
 
 import { routing } from './routing';
-
-import { deepMerge } from '@/shared/lib/deep-merge';
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
@@ -12,33 +9,16 @@ export default getRequestConfig(async ({ requestLocale }) => {
     ? requested
     : routing.defaultLocale;
 
-  const [staticMessages, dynamicMessages] = await Promise.all([
-    // Static JSON
-    (async () => {
-      try {
-        const mod = await import(`../../../messages/${locale}.json`);
-        return mod.default ?? {};
-      } catch (err) {
-        console.error('[i18n] Static load error:', err);
-        return {};
-      }
-    })(),
-
-    (async () => {
-      try {
-        const data = await prisma.translation.findMany({});
-        return data.reduce((acc, item) => {
-          acc[item.sourceText] = item.translated;
-          return acc;
-        }, {} as Record<string, string>);
-      } catch (err) {
-        console.error('[i18n] Dynamic load error:', err);
-        return {};
-      }
-    })(),
-  ]);
-
-  const messages = deepMerge({}, staticMessages, dynamicMessages);
+  // UI strings come exclusively from the static JSON catalogues. Dynamic
+  // content translation lives in the per-entity *Translation tables and is
+  // resolved by getTranslatedContent — never merged into next-intl.
+  let messages: Record<string, unknown> = {};
+  try {
+    const mod = await import(`../../../messages/${locale}.json`);
+    messages = mod.default ?? {};
+  } catch (err) {
+    console.error('[i18n] Static load error:', err);
+  }
 
   return {
     locale,
@@ -95,20 +75,3 @@ export default getRequestConfig(async ({ requestLocale }) => {
     },
   };
 });
-
-function setDeep(obj: Record<string, unknown>, path: string, value: string) {
-  const keys = path.split('.');
-  let current = obj;
-
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
-
-    if (i === keys.length - 1) {
-      current[key] = value;
-    } else {
-      const next = current[key] ?? {};
-      current[key] = next;
-      current = next as Record<string, unknown>;
-    }
-  }
-}

@@ -1,17 +1,26 @@
 import path from 'node:path';
 import createNextIntlPlugin from 'next-intl/plugin';
 
+// Derived, never hardcoded: the storage host belongs to the deployment, and a
+// literal here both duplicates the env var every runtime path already uses and
+// publishes the project ref in a public repo.
+const storageHost = process.env.SUPABASE_S3_STORAGE_PUBLIC_ENDPOINT
+  ? new URL(process.env.SUPABASE_S3_STORAGE_PUBLIC_ENDPOINT).hostname
+  : undefined;
+
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'ovkdfmeangyqrozdithl.storage.supabase.co',
-        port: '',
-        pathname: '/storage/v1/object/public/**',
-      },
-    ],
+    remotePatterns: storageHost
+      ? [
+          {
+            protocol: 'https',
+            hostname: storageHost,
+            port: '',
+            pathname: '/storage/v1/object/public/**',
+          },
+        ]
+      : [],
   },
 
   experimental: {
@@ -29,6 +38,10 @@ const nextConfig = {
       'framer-motion',
       'embla-carousel-react',
       'cmdk',
+      // Measured 2026-07-27: adding '@byte-of-me/ui' here changes nothing
+      // (/en initial JS 1604 KB either way, .next/static 9.0M either way).
+      // Turbopack already drops the unreached modules behind our own barrel,
+      // so the barrel is a maintainability concern, not a bundle one.
     ],
   },
 
@@ -66,11 +79,23 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/((?!.*dashboard).*)/:path*',
+        // Public pages only. `api` must be excluded here: NextAuth serves
+        // per-user session/CSRF JSON under /api/auth, and a shared CDN that
+        // honors `public, s-maxage` would replay one user's session to another.
+        source: '/((?!api|.*dashboard).*)/:path*',
         headers: [
           {
             key: 'Cache-Control',
             value: 'public, s-maxage=3600, stale-while-revalidate=86400',
+          },
+        ],
+      },
+      {
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'private, no-store',
           },
         ],
       },

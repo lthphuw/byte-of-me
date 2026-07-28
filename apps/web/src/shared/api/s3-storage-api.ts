@@ -1,5 +1,7 @@
 import { Storage } from '@byte-of-me/storage';
 
+import 'server-only';
+
 import { env } from '@/shared/config/env';
 
 export const supabaseStorage = new Storage({

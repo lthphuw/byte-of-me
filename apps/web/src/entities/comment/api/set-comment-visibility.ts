@@ -7,6 +7,7 @@ import { revalidateTag } from 'next/cache';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getErrorMessage } from '@/shared/lib/utils';
+import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function setCommentVisibility(
@@ -15,6 +16,11 @@ export async function setCommentVisibility(
 ): Promise<ApiResponse<Comment>> {
   try {
     await requireAdmin();
+
+    const parsedId = parseInput(idSchema, commentId);
+    if (!parsedId.ok) {
+      return { success: false, errorMsg: parsedId.errorMsg };
+    }
 
     const comment = await prisma.comment.update({
       where: { id: commentId },

@@ -36,7 +36,7 @@ interface RevealSectionProps {
 }
 
 /**
- * Scroll-reveal fade-up for a page section. Consolidates the previously
+ * Scroll-reveal fade-up for a page section. Replaced the previously
  * duplicated per-widget `*SectionMotion` components.
  */
 export function RevealSection({

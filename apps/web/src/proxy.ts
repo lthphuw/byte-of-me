@@ -1,26 +1,13 @@
-import { type NextRequest,NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 
 import { routing } from '@/shared/i18n/routing';
-import { auth } from '@/shared/lib/auth';
 
-
-
-
-
-const intlMiddleware = createMiddleware(routing);
-
-export default auth(async function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-  if (pathname.startsWith('/api')) {
-    return NextResponse.next();
-  }
-
-  const intlResponse = intlMiddleware(req);
-  if (intlResponse) return intlResponse;
-
-  return NextResponse.next();
-});
+// This middleware only handles locale negotiation and rewriting. It reads no
+// session, so it must not pull the NextAuth config into the edge bundle.
+// Authorization lives elsewhere: `app/[locale]/(protected)/layout.tsx` gates the
+// dashboard via `getAuthenticatedAdmin()`, and every server action goes through
+// the per-action `requireAdmin()` / `requireUser()` guards in `shared/lib/auth`.
+export default createMiddleware(routing);
 
 export const config = {
   matcher: '/((?!api|trpc|_next|_vercel|.*\\..*).*)',

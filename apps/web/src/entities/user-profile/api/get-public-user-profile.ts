@@ -54,7 +54,7 @@ export async function getPublicUserProfile(): Promise<
       {
         cache: true,
         cacheKey: ['homepage-public-user-profile'],
-        cacheTags: [CACHE_TAGS.USER, CACHE_TAGS.PROJECT],
+        cacheTags: [CACHE_TAGS.USER],
       }
     );
   });

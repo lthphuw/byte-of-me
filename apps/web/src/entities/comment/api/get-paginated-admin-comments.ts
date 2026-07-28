@@ -5,18 +5,22 @@ import { logger } from '@byte-of-me/logger';
 
 import type { AdminComment } from '@/entities/comment/model/types';
 import { requireAdmin } from '@/shared/lib/auth';
-import { buildPaginatedMeta } from '@/shared/lib/pagination';
+import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
 import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
 export async function getPaginatedAdminComments(
-  page: number = 1,
-  limit: number = 20
+  rawPage: number = 1,
+  rawLimit: number = 20
 ): Promise<ApiResponse<PaginatedData<AdminComment>>> {
   try {
     await requireAdmin();
 
+    const { page, limit } = clampPagination(
+      { page: rawPage, limit: rawLimit },
+      { defaultLimit: 20 }
+    );
     const skip = (page - 1) * limit;
 
     const [items, totalCount] = await Promise.all([

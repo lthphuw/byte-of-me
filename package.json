@@ -14,7 +14,9 @@
     "lint:fix": "turbo run lint:fix",
     "test": "turbo run test",
     "check-types": "turbo run check-types",
-    "check": "sh scripts/check.sh"
+    "check": "sh scripts/check.sh",
+    "format": "prettier --write \"{apps,packages}/*/src/**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"{apps,packages}/*/src/**/*.{ts,tsx,js,jsx,json,md}\""
   },
   "packageManager": "pnpm@10.12.4",
   "devDependencies": {
@@ -34,5 +36,8 @@
     "globals": "^17.5.0",
     "turbo": "2.9.3",
     "typescript-eslint": "^8.36.0"
+  },
+  "engines": {
+    "node": ">=20.9.0"
   }
 }

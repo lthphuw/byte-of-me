@@ -197,6 +197,16 @@ const replaceAll = (
   dispatch!(tr);
 };
 
+/**
+ * `domAtPos` can resolve to a text node, which has no scrollIntoView — scroll
+ * its parent element in that case.
+ */
+const scrollResultIntoView = (view: EditorView, from: number) => {
+  const { node } = view.domAtPos(from);
+  const element = node instanceof Element ? node : node.parentElement;
+  element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+
 const selectNext = (editor: CoreEditor) => {
   const { results } = editor.storage.searchAndReplace;
 
@@ -220,11 +230,7 @@ const selectNext = (editor: CoreEditor) => {
   const view: EditorView | undefined = editor.view;
 
   if (view) {
-    view
-      .domAtPos(from)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      .node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    scrollResultIntoView(view, from);
   }
 };
 
@@ -248,11 +254,7 @@ const selectPrevious = (editor: CoreEditor) => {
   const view: EditorView | undefined = editor.view;
 
   if (view) {
-    view
-      .domAtPos(from)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      .node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    scrollResultIntoView(view, from);
   }
 };
 

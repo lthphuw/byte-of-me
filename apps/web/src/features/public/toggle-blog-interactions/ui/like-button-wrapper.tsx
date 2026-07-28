@@ -1,5 +1,6 @@
-import { getBlogInteractionsForUser } from '@/features/public';
-import { LikeButton } from '@/features/public/toggle-blog-interactions/ui/like-button';
+import { LikeButton } from './like-button';
+
+import { getBlogInteractionsForUser } from '@/features/public/toggle-blog-interactions/lib';
 import { INTERACTION } from '@/shared/lib/constants';
 
 export async function LikeButtonWrapper({

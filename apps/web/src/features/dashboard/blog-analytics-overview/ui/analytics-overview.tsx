@@ -22,7 +22,7 @@ export async function AnalyticsOverview() {
   if (!dataResp.success || !dataResp.data) {
     return null;
   }
-  const { viewsByDay, totalViewsLast30Days, topBlogs, likes, claps, pageViews } =
+  const { viewsByDay, totalViewsLast30Days, topBlogs, likes, claps, blogViews } =
     dataResp.data;
 
   const maxDailyViews = Math.max(...viewsByDay.map((d) => d.views), 1);
@@ -32,9 +32,9 @@ export async function AnalyticsOverview() {
     { label: 'Likes', value: likes, sub: 'All time', icon: Heart },
     { label: 'Claps', value: claps, sub: 'All time', icon: Hand },
     {
-      label: 'Page Views',
-      value: pageViews.total,
-      sub: `${pageViews.last30Days} in last 30 days`,
+      label: 'Blog Views',
+      value: blogViews.total,
+      sub: `${blogViews.last30Days} in last 30 days`,
       icon: Eye,
     },
   ];

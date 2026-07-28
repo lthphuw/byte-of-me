@@ -1,19 +1,30 @@
 'use server';
 
 import { type Blog, prisma } from '@byte-of-me/db';
+import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
-import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
+import {
+  blogFormSchema,
+  type BlogFormValues,
+} from '@/entities/blog/model/blog-schema';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
+import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 // Use the constants we defined
 
 export async function createBlog(
-  data: BlogFormValues
+  input: BlogFormValues
 ): Promise<ApiResponse<Blog>> {
   const session = await requireAdmin();
+
+  const parsed = parseInput(blogFormSchema, input);
+  if (!parsed.ok) {
+    return { success: false, errorMsg: parsed.errorMsg };
+  }
+  const data = parsed.data;
 
   try {
     const newBlog = await prisma.blog.create({
@@ -51,7 +62,7 @@ export async function createBlog(
 
     return { success: true, data: newBlog };
   } catch (error) {
-    console.error('[CREATE_BLOG_ERROR]', error);
+    logger.error('[CREATE_BLOG_ERROR]', { error });
     return { success: false, errorMsg: 'Failed to create blog post' };
   }
 }

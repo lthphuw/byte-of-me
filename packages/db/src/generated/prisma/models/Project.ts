@@ -230,7 +230,6 @@ export type ProjectWhereInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorListRelationFilter
   interactions?: Prisma.InteractionListRelationFilter
   comments?: Prisma.CommentListRelationFilter
-  pageViews?: Prisma.PageViewListRelationFilter
 }
 
 export type ProjectOrderByWithRelationInput = {
@@ -252,7 +251,6 @@ export type ProjectOrderByWithRelationInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorOrderByRelationAggregateInput
   interactions?: Prisma.InteractionOrderByRelationAggregateInput
   comments?: Prisma.CommentOrderByRelationAggregateInput
-  pageViews?: Prisma.PageViewOrderByRelationAggregateInput
 }
 
 export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -277,7 +275,6 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   coauthors?: Prisma.ProjectOnProjectCoAuthorListRelationFilter
   interactions?: Prisma.InteractionListRelationFilter
   comments?: Prisma.CommentListRelationFilter
-  pageViews?: Prisma.PageViewListRelationFilter
 }, "id" | "slug">
 
 export type ProjectOrderByWithAggregationInput = {
@@ -330,7 +327,6 @@ export type ProjectCreateInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorCreateNestedManyWithoutProjectInput
   interactions?: Prisma.InteractionCreateNestedManyWithoutProjectInput
   comments?: Prisma.CommentCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateInput = {
@@ -351,7 +347,6 @@ export type ProjectUncheckedCreateInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedCreateNestedManyWithoutProjectInput
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutProjectInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUpdateInput = {
@@ -372,7 +367,6 @@ export type ProjectUpdateInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUpdateManyWithoutProjectNestedInput
   interactions?: Prisma.InteractionUpdateManyWithoutProjectNestedInput
   comments?: Prisma.CommentUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateInput = {
@@ -393,7 +387,6 @@ export type ProjectUncheckedUpdateInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedUpdateManyWithoutProjectNestedInput
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutProjectNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyInput = {
@@ -643,22 +636,6 @@ export type ProjectUpdateOneWithoutCommentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutCommentsInput, Prisma.ProjectUpdateWithoutCommentsInput>, Prisma.ProjectUncheckedUpdateWithoutCommentsInput>
 }
 
-export type ProjectCreateNestedOneWithoutPageViewsInput = {
-  create?: Prisma.XOR<Prisma.ProjectCreateWithoutPageViewsInput, Prisma.ProjectUncheckedCreateWithoutPageViewsInput>
-  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutPageViewsInput
-  connect?: Prisma.ProjectWhereUniqueInput
-}
-
-export type ProjectUpdateOneWithoutPageViewsNestedInput = {
-  create?: Prisma.XOR<Prisma.ProjectCreateWithoutPageViewsInput, Prisma.ProjectUncheckedCreateWithoutPageViewsInput>
-  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutPageViewsInput
-  upsert?: Prisma.ProjectUpsertWithoutPageViewsInput
-  disconnect?: Prisma.ProjectWhereInput | boolean
-  delete?: Prisma.ProjectWhereInput | boolean
-  connect?: Prisma.ProjectWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutPageViewsInput, Prisma.ProjectUpdateWithoutPageViewsInput>, Prisma.ProjectUncheckedUpdateWithoutPageViewsInput>
-}
-
 export type ProjectCreateWithoutUserInput = {
   id?: string
   createdAt?: Date | string
@@ -676,7 +653,6 @@ export type ProjectCreateWithoutUserInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorCreateNestedManyWithoutProjectInput
   interactions?: Prisma.InteractionCreateNestedManyWithoutProjectInput
   comments?: Prisma.CommentCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutUserInput = {
@@ -696,7 +672,6 @@ export type ProjectUncheckedCreateWithoutUserInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedCreateNestedManyWithoutProjectInput
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutProjectInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutUserInput = {
@@ -758,7 +733,6 @@ export type ProjectCreateWithoutTechStacksInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorCreateNestedManyWithoutProjectInput
   interactions?: Prisma.InteractionCreateNestedManyWithoutProjectInput
   comments?: Prisma.CommentCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutTechStacksInput = {
@@ -778,7 +752,6 @@ export type ProjectUncheckedCreateWithoutTechStacksInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedCreateNestedManyWithoutProjectInput
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutProjectInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutTechStacksInput = {
@@ -814,7 +787,6 @@ export type ProjectUpdateWithoutTechStacksInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUpdateManyWithoutProjectNestedInput
   interactions?: Prisma.InteractionUpdateManyWithoutProjectNestedInput
   comments?: Prisma.CommentUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutTechStacksInput = {
@@ -834,7 +806,6 @@ export type ProjectUncheckedUpdateWithoutTechStacksInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedUpdateManyWithoutProjectNestedInput
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutProjectNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutTranslationsInput = {
@@ -854,7 +825,6 @@ export type ProjectCreateWithoutTranslationsInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorCreateNestedManyWithoutProjectInput
   interactions?: Prisma.InteractionCreateNestedManyWithoutProjectInput
   comments?: Prisma.CommentCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutTranslationsInput = {
@@ -874,7 +844,6 @@ export type ProjectUncheckedCreateWithoutTranslationsInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedCreateNestedManyWithoutProjectInput
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutProjectInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutTranslationsInput = {
@@ -910,7 +879,6 @@ export type ProjectUpdateWithoutTranslationsInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUpdateManyWithoutProjectNestedInput
   interactions?: Prisma.InteractionUpdateManyWithoutProjectNestedInput
   comments?: Prisma.CommentUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutTranslationsInput = {
@@ -930,7 +898,6 @@ export type ProjectUncheckedUpdateWithoutTranslationsInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedUpdateManyWithoutProjectNestedInput
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutProjectNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutCoauthorsInput = {
@@ -950,7 +917,6 @@ export type ProjectCreateWithoutCoauthorsInput = {
   blog?: Prisma.BlogCreateNestedOneWithoutProjectInput
   interactions?: Prisma.InteractionCreateNestedManyWithoutProjectInput
   comments?: Prisma.CommentCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutCoauthorsInput = {
@@ -970,7 +936,6 @@ export type ProjectUncheckedCreateWithoutCoauthorsInput = {
   blog?: Prisma.BlogUncheckedCreateNestedOneWithoutProjectInput
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutProjectInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutCoauthorsInput = {
@@ -1006,7 +971,6 @@ export type ProjectUpdateWithoutCoauthorsInput = {
   blog?: Prisma.BlogUpdateOneWithoutProjectNestedInput
   interactions?: Prisma.InteractionUpdateManyWithoutProjectNestedInput
   comments?: Prisma.CommentUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutCoauthorsInput = {
@@ -1026,7 +990,6 @@ export type ProjectUncheckedUpdateWithoutCoauthorsInput = {
   blog?: Prisma.BlogUncheckedUpdateOneWithoutProjectNestedInput
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutProjectNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutBlogInput = {
@@ -1046,7 +1009,6 @@ export type ProjectCreateWithoutBlogInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorCreateNestedManyWithoutProjectInput
   interactions?: Prisma.InteractionCreateNestedManyWithoutProjectInput
   comments?: Prisma.CommentCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutBlogInput = {
@@ -1066,7 +1028,6 @@ export type ProjectUncheckedCreateWithoutBlogInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedCreateNestedManyWithoutProjectInput
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutProjectInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutBlogInput = {
@@ -1102,7 +1063,6 @@ export type ProjectUpdateWithoutBlogInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUpdateManyWithoutProjectNestedInput
   interactions?: Prisma.InteractionUpdateManyWithoutProjectNestedInput
   comments?: Prisma.CommentUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutBlogInput = {
@@ -1122,7 +1082,6 @@ export type ProjectUncheckedUpdateWithoutBlogInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedUpdateManyWithoutProjectNestedInput
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutProjectNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutTagsInput = {
@@ -1142,7 +1101,6 @@ export type ProjectCreateWithoutTagsInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorCreateNestedManyWithoutProjectInput
   interactions?: Prisma.InteractionCreateNestedManyWithoutProjectInput
   comments?: Prisma.CommentCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutTagsInput = {
@@ -1162,7 +1120,6 @@ export type ProjectUncheckedCreateWithoutTagsInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedCreateNestedManyWithoutProjectInput
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutProjectInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutTagsInput = {
@@ -1198,7 +1155,6 @@ export type ProjectUpdateWithoutTagsInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUpdateManyWithoutProjectNestedInput
   interactions?: Prisma.InteractionUpdateManyWithoutProjectNestedInput
   comments?: Prisma.CommentUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutTagsInput = {
@@ -1218,7 +1174,6 @@ export type ProjectUncheckedUpdateWithoutTagsInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedUpdateManyWithoutProjectNestedInput
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutProjectNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutInteractionsInput = {
@@ -1238,7 +1193,6 @@ export type ProjectCreateWithoutInteractionsInput = {
   blog?: Prisma.BlogCreateNestedOneWithoutProjectInput
   coauthors?: Prisma.ProjectOnProjectCoAuthorCreateNestedManyWithoutProjectInput
   comments?: Prisma.CommentCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutInteractionsInput = {
@@ -1258,7 +1212,6 @@ export type ProjectUncheckedCreateWithoutInteractionsInput = {
   blog?: Prisma.BlogUncheckedCreateNestedOneWithoutProjectInput
   coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedCreateNestedManyWithoutProjectInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutInteractionsInput = {
@@ -1294,7 +1247,6 @@ export type ProjectUpdateWithoutInteractionsInput = {
   blog?: Prisma.BlogUpdateOneWithoutProjectNestedInput
   coauthors?: Prisma.ProjectOnProjectCoAuthorUpdateManyWithoutProjectNestedInput
   comments?: Prisma.CommentUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutInteractionsInput = {
@@ -1314,7 +1266,6 @@ export type ProjectUncheckedUpdateWithoutInteractionsInput = {
   blog?: Prisma.BlogUncheckedUpdateOneWithoutProjectNestedInput
   coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedUpdateManyWithoutProjectNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutCommentsInput = {
@@ -1334,7 +1285,6 @@ export type ProjectCreateWithoutCommentsInput = {
   blog?: Prisma.BlogCreateNestedOneWithoutProjectInput
   coauthors?: Prisma.ProjectOnProjectCoAuthorCreateNestedManyWithoutProjectInput
   interactions?: Prisma.InteractionCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutCommentsInput = {
@@ -1354,7 +1304,6 @@ export type ProjectUncheckedCreateWithoutCommentsInput = {
   blog?: Prisma.BlogUncheckedCreateNestedOneWithoutProjectInput
   coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedCreateNestedManyWithoutProjectInput
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutProjectInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutCommentsInput = {
@@ -1390,7 +1339,6 @@ export type ProjectUpdateWithoutCommentsInput = {
   blog?: Prisma.BlogUpdateOneWithoutProjectNestedInput
   coauthors?: Prisma.ProjectOnProjectCoAuthorUpdateManyWithoutProjectNestedInput
   interactions?: Prisma.InteractionUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutCommentsInput = {
@@ -1410,103 +1358,6 @@ export type ProjectUncheckedUpdateWithoutCommentsInput = {
   blog?: Prisma.BlogUncheckedUpdateOneWithoutProjectNestedInput
   coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedUpdateManyWithoutProjectNestedInput
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutProjectNestedInput
-}
-
-export type ProjectCreateWithoutPageViewsInput = {
-  id?: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  slug: string
-  githubLink?: string | null
-  liveLink?: string | null
-  startDate?: Date | string | null
-  endDate?: Date | string | null
-  isPublished?: boolean
-  user: Prisma.UserCreateNestedOneWithoutProjectsInput
-  translations?: Prisma.ProjectTranslationCreateNestedManyWithoutProjectInput
-  techStacks?: Prisma.TechStackOnProjectsCreateNestedManyWithoutProjectInput
-  tags?: Prisma.ProjectTagCreateNestedManyWithoutProjectInput
-  blog?: Prisma.BlogCreateNestedOneWithoutProjectInput
-  coauthors?: Prisma.ProjectOnProjectCoAuthorCreateNestedManyWithoutProjectInput
-  interactions?: Prisma.InteractionCreateNestedManyWithoutProjectInput
-  comments?: Prisma.CommentCreateNestedManyWithoutProjectInput
-}
-
-export type ProjectUncheckedCreateWithoutPageViewsInput = {
-  id?: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  slug: string
-  githubLink?: string | null
-  liveLink?: string | null
-  startDate?: Date | string | null
-  endDate?: Date | string | null
-  isPublished?: boolean
-  userId: string
-  translations?: Prisma.ProjectTranslationUncheckedCreateNestedManyWithoutProjectInput
-  techStacks?: Prisma.TechStackOnProjectsUncheckedCreateNestedManyWithoutProjectInput
-  tags?: Prisma.ProjectTagUncheckedCreateNestedManyWithoutProjectInput
-  blog?: Prisma.BlogUncheckedCreateNestedOneWithoutProjectInput
-  coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedCreateNestedManyWithoutProjectInput
-  interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutProjectInput
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutProjectInput
-}
-
-export type ProjectCreateOrConnectWithoutPageViewsInput = {
-  where: Prisma.ProjectWhereUniqueInput
-  create: Prisma.XOR<Prisma.ProjectCreateWithoutPageViewsInput, Prisma.ProjectUncheckedCreateWithoutPageViewsInput>
-}
-
-export type ProjectUpsertWithoutPageViewsInput = {
-  update: Prisma.XOR<Prisma.ProjectUpdateWithoutPageViewsInput, Prisma.ProjectUncheckedUpdateWithoutPageViewsInput>
-  create: Prisma.XOR<Prisma.ProjectCreateWithoutPageViewsInput, Prisma.ProjectUncheckedCreateWithoutPageViewsInput>
-  where?: Prisma.ProjectWhereInput
-}
-
-export type ProjectUpdateToOneWithWhereWithoutPageViewsInput = {
-  where?: Prisma.ProjectWhereInput
-  data: Prisma.XOR<Prisma.ProjectUpdateWithoutPageViewsInput, Prisma.ProjectUncheckedUpdateWithoutPageViewsInput>
-}
-
-export type ProjectUpdateWithoutPageViewsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  githubLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  liveLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  user?: Prisma.UserUpdateOneRequiredWithoutProjectsNestedInput
-  translations?: Prisma.ProjectTranslationUpdateManyWithoutProjectNestedInput
-  techStacks?: Prisma.TechStackOnProjectsUpdateManyWithoutProjectNestedInput
-  tags?: Prisma.ProjectTagUpdateManyWithoutProjectNestedInput
-  blog?: Prisma.BlogUpdateOneWithoutProjectNestedInput
-  coauthors?: Prisma.ProjectOnProjectCoAuthorUpdateManyWithoutProjectNestedInput
-  interactions?: Prisma.InteractionUpdateManyWithoutProjectNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutProjectNestedInput
-}
-
-export type ProjectUncheckedUpdateWithoutPageViewsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  githubLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  liveLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  translations?: Prisma.ProjectTranslationUncheckedUpdateManyWithoutProjectNestedInput
-  techStacks?: Prisma.TechStackOnProjectsUncheckedUpdateManyWithoutProjectNestedInput
-  tags?: Prisma.ProjectTagUncheckedUpdateManyWithoutProjectNestedInput
-  blog?: Prisma.BlogUncheckedUpdateOneWithoutProjectNestedInput
-  coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedUpdateManyWithoutProjectNestedInput
-  interactions?: Prisma.InteractionUncheckedUpdateManyWithoutProjectNestedInput
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyUserInput = {
@@ -1538,7 +1389,6 @@ export type ProjectUpdateWithoutUserInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUpdateManyWithoutProjectNestedInput
   interactions?: Prisma.InteractionUpdateManyWithoutProjectNestedInput
   comments?: Prisma.CommentUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutUserInput = {
@@ -1558,7 +1408,6 @@ export type ProjectUncheckedUpdateWithoutUserInput = {
   coauthors?: Prisma.ProjectOnProjectCoAuthorUncheckedUpdateManyWithoutProjectNestedInput
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutProjectNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutProjectNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateManyWithoutUserInput = {
@@ -1585,7 +1434,6 @@ export type ProjectCountOutputType = {
   coauthors: number
   interactions: number
   comments: number
-  pageViews: number
 }
 
 export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1595,7 +1443,6 @@ export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   coauthors?: boolean | ProjectCountOutputTypeCountCoauthorsArgs
   interactions?: boolean | ProjectCountOutputTypeCountInteractionsArgs
   comments?: boolean | ProjectCountOutputTypeCountCommentsArgs
-  pageViews?: boolean | ProjectCountOutputTypeCountPageViewsArgs
 }
 
 /**
@@ -1650,13 +1497,6 @@ export type ProjectCountOutputTypeCountCommentsArgs<ExtArgs extends runtime.Type
   where?: Prisma.CommentWhereInput
 }
 
-/**
- * ProjectCountOutputType without action
- */
-export type ProjectCountOutputTypeCountPageViewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PageViewWhereInput
-}
-
 
 export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1677,7 +1517,6 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   coauthors?: boolean | Prisma.Project$coauthorsArgs<ExtArgs>
   interactions?: boolean | Prisma.Project$interactionsArgs<ExtArgs>
   comments?: boolean | Prisma.Project$commentsArgs<ExtArgs>
-  pageViews?: boolean | Prisma.Project$pageViewsArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -1732,7 +1571,6 @@ export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   coauthors?: boolean | Prisma.Project$coauthorsArgs<ExtArgs>
   interactions?: boolean | Prisma.Project$interactionsArgs<ExtArgs>
   comments?: boolean | Prisma.Project$commentsArgs<ExtArgs>
-  pageViews?: boolean | Prisma.Project$pageViewsArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1753,7 +1591,6 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     coauthors: Prisma.$ProjectOnProjectCoAuthorPayload<ExtArgs>[]
     interactions: Prisma.$InteractionPayload<ExtArgs>[]
     comments: Prisma.$CommentPayload<ExtArgs>[]
-    pageViews: Prisma.$PageViewPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2168,7 +2005,6 @@ export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.
   coauthors<T extends Prisma.Project$coauthorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$coauthorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectOnProjectCoAuthorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   interactions<T extends Prisma.Project$interactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$interactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InteractionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   comments<T extends Prisma.Project$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  pageViews<T extends Prisma.Project$pageViewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$pageViewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PageViewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2769,30 +2605,6 @@ export type Project$commentsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.CommentScalarFieldEnum | Prisma.CommentScalarFieldEnum[]
-}
-
-/**
- * Project.pageViews
- */
-export type Project$pageViewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the PageView
-   */
-  select?: Prisma.PageViewSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the PageView
-   */
-  omit?: Prisma.PageViewOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PageViewInclude<ExtArgs> | null
-  where?: Prisma.PageViewWhereInput
-  orderBy?: Prisma.PageViewOrderByWithRelationInput | Prisma.PageViewOrderByWithRelationInput[]
-  cursor?: Prisma.PageViewWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.PageViewScalarFieldEnum | Prisma.PageViewScalarFieldEnum[]
 }
 
 /**

@@ -2,12 +2,23 @@
   "$schema": "https://turborepo.dev/schema.json",
   "tasks": {
     "check-types": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*"
+      ],
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**"
+      ],
       "env": [
         "NODE_ENV",
         "DATABASE_URL",
@@ -30,7 +41,10 @@
         "AUTH_GITHUB_ID",
         "AUTH_GITHUB_SECRET",
         "AUTH_GOOGLE_ID",
-        "AUTH_GOOGLE_SECRET"
+        "AUTH_GOOGLE_SECRET",
+        "NEXT_PUBLIC_ENV",
+        "NEXT_PUBLIC_GA_ID",
+        "NEXT_PUBLIC_AUTHOR_EMAIL"
       ]
     },
     "db:migrate:dev": {
@@ -51,14 +65,20 @@
       "persistent": true
     },
     "generate": {
-      "dependsOn": ["^generate"],
+      "dependsOn": [
+        "^generate"
+      ],
       "cache": false
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": [
+        "^lint"
+      ]
     },
     "test": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "lint:fix": {
       "cache": false

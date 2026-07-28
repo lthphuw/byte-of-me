@@ -141,7 +141,7 @@ flowchart TB
     APP["app/<br/>routes · layouts · providers · route handlers"]
     WID["widgets/<br/>composite page sections<br/>public-site-header · blog-details-content · blog-manager"]
     FEAT["features/<br/>user-facing capabilities<br/>blog-comment · blog-filters · blog-editor · media-library"]
-    ENT["entities/<br/>domain models + their server API and UI<br/>blog · project · company · tag · translation · media"]
+    ENT["entities/<br/>domain models + their server API, client queries and UI<br/>blog · project · company · tag · media · comment"]
     SH["shared/<br/>api · config · hooks · i18n · lib · types · ui"]
     PKG["packages/*<br/>ui · db · storage · logger"]
 
@@ -266,7 +266,7 @@ flowchart TB
     UITEXT["Buttons · labels · nav<br/>validation · dialogs"] --> static
     CONTENT["Post bodies · titles · summaries<br/>role descriptions · tag names"] --> dynamic
 
-    DASH["Dashboard<br/>translation manager"] -->|"author edits"| TR
+    DASH["Dashboard<br/>entity editors"] -->|"author edits each locale"| TR
 
     classDef app fill:#4338ca,stroke:#a5b4fc,color:#eef2ff
     classDef data fill:#b45309,stroke:#fcd34d,color:#fffbeb
@@ -276,6 +276,10 @@ flowchart TB
 ```
 
 The dividing line: **if a translator would need the running app to know what the string means, it's UI text** (next-intl). If it's something the author writes as content, it's a database translation. Never move content into locale JSON; never store UI strings in the database.
+
+A third path used to exist — a `Translation` table whose rows were merged into the next-intl catalogue at request time — and it has been removed. It never worked (dot-path keys were never nested, and the query was unfiltered by locale), and it blurred the very line this section draws.
+
+The client catalogue is scoped per route group rather than mounted once at the locale root: each group layout mounts `NextIntlClientProvider` with only the namespaces its **client** components read (see `src/shared/i18n/messages.ts`). Server components use `getTranslations` and never constrain those lists. Reads of `*Translation` rows are filtered to `[locale, 'en']` — see `getTranslationLanguages`.
 
 Locales are `en` (default) and `vi`, declared once in `src/shared/i18n/routing.ts`.
 

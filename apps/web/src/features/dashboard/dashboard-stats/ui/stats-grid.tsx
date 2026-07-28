@@ -5,7 +5,6 @@ import {
   Building2,
   Cpu,
   GraduationCap,
-  Languages,
   MessageSquare,
   Tag,
 } from 'lucide-react';
@@ -54,7 +53,6 @@ export async function StatsGrid() {
     { label: 'Companies', value: stats.totalCompanies, icon: Building2 },
     { label: 'Tech Stack', value: stats.totalTechStack, icon: Cpu },
     { label: 'Tags', value: stats.totalTags, icon: Tag },
-    { label: 'Translations', value: stats.totalTranslations, icon: Languages },
   ];
 
   return (

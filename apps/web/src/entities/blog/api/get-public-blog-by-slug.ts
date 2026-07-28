@@ -5,7 +5,10 @@ import { prisma } from '@byte-of-me/db';
 import type { PublicBlog } from '@/entities/blog/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
+import {
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getPublicBlogBySlug(
@@ -19,13 +22,26 @@ export async function getPublicBlogBySlug(
     return await withPublicActionHandler(
       'getPublicBlogBySlug',
       async ({ locale }) => {
+        // The detail page renders the full article body, so all translation
+        // fields stay selected — but only for the locale (+ 'en' fallback).
+        const languages = { in: getTranslationLanguages(locale) };
         const blog = await prisma.blog.findUniqueOrThrow({
           where: { slug, isPublished: true },
           include: {
-            translations: true,
+            translations: { where: { language: languages } },
             coverImage: true,
-            tags: { include: { tag: { include: { translations: true } } } },
-            project: { include: { translations: true } },
+            tags: {
+              include: {
+                tag: {
+                  include: {
+                    translations: {
+                      where: { language: languages },
+                      select: { language: true, name: true },
+                    },
+                  },
+                },
+              },
+            },
             user: { select: { name: true, image: true } },
           },
         });
