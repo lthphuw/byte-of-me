@@ -4,7 +4,7 @@ import { DeleteButton , EditButton } from '@byte-of-me/ui';
 import { Tag as TagIcon } from 'lucide-react';
 import { useLocale } from 'next-intl';
 
-import type { AdminTag } from '@/entities';
+import type { AdminTag } from '@/entities/tag';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 
 interface TagCardProps {

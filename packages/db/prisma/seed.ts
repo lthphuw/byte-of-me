@@ -1,13 +1,24 @@
 import { prisma } from '../src';
 
+/**
+ * Fixed so `AUTHOR_ID` in apps/web/.env can be set once and stay valid across
+ * re-seeds — every public read is scoped to that id, so a mismatch renders an
+ * empty site with no error.
+ */
+const SEED_AUTHOR_ID = 'cseedauthor0000000000001';
+
 async function main() {
   console.log('Seeding database...');
 
   // --- USER ---
   const birthdate = new Date(2002, 10, 20);
 
-  const user = await prisma.user.create({
-    data: {
+  // Idempotent: re-running the seed must not trip the unique email.
+  const user = await prisma.user.upsert({
+    where: { id: SEED_AUTHOR_ID },
+    update: {},
+    create: {
+      id: SEED_AUTHOR_ID,
       role: 'ADMIN',
       email: 'lthphuw@gmail.com',
       emailVerified: new Date(),
@@ -107,8 +118,10 @@ async function main() {
     skipDuplicates: true,
   });
 
-  const project = await prisma.project.create({
-    data: {
+  const project = await prisma.project.upsert({
+    where: { slug: 'byte-of-me' },
+    update: {},
+    create: {
       slug: 'byte-of-me',
       githubLink: 'https://github.com/lthphuw/byte-of-me',
       liveLink: 'https://phu-lth.space',
@@ -134,8 +147,10 @@ async function main() {
     }
   });
 
-  const blog = await prisma.blog.create({
-    data: {
+  const blog = await prisma.blog.upsert({
+    where: { slug: 'tech-stack-reveal-byte-of-me' },
+    update: {},
+    create: {
       slug: 'tech-stack-reveal-byte-of-me',
       isPublished: true,
       userId: user.id,
@@ -153,30 +168,39 @@ async function main() {
     }
   });
 
-  await prisma.pageView.createMany({
-    data: [
-      { path: `/projects/${project.slug}`, projectId: project.id, userAgent: 'Vercel-Bot' },
-      { path: `/blogs/${blog.slug}`, blogId: blog.id, userAgent: 'Mozilla/5.0' }
-    ]
-  });
-
-  await prisma.interaction.create({
-    data: {
-      type: INTERACTION.LIKE,
+  await prisma.interaction.upsert({
+    where: {
+      userId_blogId_type: {
+        userId: user.id,
+        blogId: blog.id,
+        type: 'LIKE'
+      }
+    },
+    update: {},
+    create: {
+      // Mirrors INTERACTION.LIKE in the app; packages/db cannot import app code.
+      type: 'LIKE',
       userId: user.id,
       blogId: blog.id
     }
   });
 
-  await prisma.comment.create({
-    data: {
-      content: 'Impressive architecture on this one.',
-      userId: user.id,
-      projectId: project.id
-    }
+  const seedComment = 'Impressive architecture on this one.';
+  const existingComment = await prisma.comment.findFirst({
+    where: { content: seedComment, projectId: project.id }
   });
+  if (!existingComment) {
+    await prisma.comment.create({
+      data: {
+        content: seedComment,
+        userId: user.id,
+        projectId: project.id
+      }
+    });
+  }
 
   console.log('Seeding completed!');
+  console.log(`AUTHOR_ID=${user.id}  <-- set this in apps/web/.env`);
 }
 
 main()

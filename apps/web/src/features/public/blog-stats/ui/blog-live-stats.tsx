@@ -7,17 +7,24 @@ import { useTranslations } from 'next-intl';
 import { BlogLiveStatsSkeleton } from './blog-live-stats-loading';
 
 import { getPublicBlogStats } from '@/entities/blog/api/get-public-blog-stats';
-import { CACHE_TAGS } from '@/shared/lib/constants';
+import { blogKeys } from '@/entities/blog/model/query-keys';
 
 // The public segment is statically generated, so a server render of these
-// stats would be frozen at build time. Fetching client-side (same query key
-// as BlogCard, so the cache is shared) keeps them genuinely live.
+// stats would be frozen at build time. Fetching client-side keeps them
+// genuinely live.
 export function BlogLiveStats({ blogId }: { blogId: string }) {
   const t = useTranslations('blogDetails');
 
   const { data: stats, isLoading } = useQuery({
-    queryKey: [CACHE_TAGS.BLOG, blogId],
-    queryFn: () => getPublicBlogStats(blogId),
+    queryKey: blogKeys.stats(blogId),
+    // Unwrap the ApiResponse envelope; throwing on failure lets TanStack
+    // Query keep any previously fetched stats instead of caching an error
+    // payload, and the `!stats` fallback below renders the skeleton.
+    queryFn: async () => {
+      const res = await getPublicBlogStats(blogId);
+      if (!res.success) throw new Error(res.errorMsg);
+      return res.data;
+    },
     staleTime: 1000 * 60 * 5,
   });
 

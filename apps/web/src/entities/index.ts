@@ -8,5 +8,4 @@ export * from './project';
 export * from './social-link';
 export * from './tag';
 export * from './tech-stack';
-export * from './translation';
 export * from './user-profile';

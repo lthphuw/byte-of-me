@@ -1,19 +1,17 @@
-import { prisma } from '@byte-of-me/db';
+import { logger } from '@byte-of-me/logger';
 import type { MetadataRoute } from 'next';
 import type { Locale } from 'next-intl';
 
+import { getPublishedBlogSlugs } from '@/entities/blog/api/get-published-blog-slugs';
 import { host } from '@/shared/config/host';
 import { sitemapConfig } from '@/shared/config/sitemap';
 import { getPathname } from '@/shared/i18n/navigation';
 import { routing } from '@/shared/i18n/routing';
 
 async function getDynamicRoutes(): Promise<string[]> {
-  const blogs = await prisma.blog.findMany({
-    where: { isPublished: true },
-    select: { slug: true },
-  });
+  const slugs = await getPublishedBlogSlugs();
 
-  return blogs.map((blog) => `/blogs/${blog.slug}`);
+  return slugs.map((slug) => `/blogs/${slug}`);
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -48,10 +46,9 @@ function getUrl(href: string, locale: Locale): string {
     const pathname = getPathname({ locale, href });
     return `${host}${pathname}`.replace(/\/$/, '');
   } catch (error) {
-    console.error(
-      `Error generating URL for href: ${href}, locale: ${locale}`,
-      error
-    );
+    logger.error(`Error generating URL for href: ${href}, locale: ${locale}`, {
+      error,
+    });
     return `${host}/${locale}`;
   }
 }

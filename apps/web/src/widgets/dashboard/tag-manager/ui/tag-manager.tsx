@@ -1,21 +1,21 @@
 'use client';
 
-import { Button, ConfirmDeleteDialog, Loading, Pagination } from '@byte-of-me/ui';
+import { Button, ConfirmDeleteDialog, Pagination } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 
 import { TagDialog } from './tag-dialog';
 
-import type { AdminTag } from '@/entities';
 import {
+  type AdminTag,
   createTag,
   deleteTag,
   getPaginatedAdminTags,
   type TagFormValues,
+  tagKeys,
   updateTag,
 } from '@/entities/tag';
 import { TagCard } from '@/features/dashboard';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
-import { CACHE_TAGS } from '@/shared/lib/constants';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
 export function TagManager() {
@@ -41,7 +41,7 @@ export function TagManager() {
     confirmDelete,
     isDeleting,
   } = useCrudManager<AdminTag, TagFormValues>({
-    queryKey: CACHE_TAGS.TAG,
+    queryKey: tagKeys.adminList(),
     entityLabel: 'Tag',
     pageSize: 12,
     fetchPage: (page, limit) => getPaginatedAdminTags(page, limit),
@@ -72,6 +72,7 @@ export function TagManager() {
           isLoading={isLoading}
           isError={isError}
           onRetry={() => refetch()}
+          isFetching={isFetching}
           isEmpty={tags.length === 0}
           emptyTitle="No tags found"
           emptyDescription="Create tags to organize your content library."
@@ -84,15 +85,6 @@ export function TagManager() {
             >
               Create First Tag
             </Button>
-          }
-          skeleton={
-            <div className="flex h-64 flex-col items-center justify-center gap-3">
-              <Loading />
-
-              <p className="animate-pulse text-xs text-muted-foreground">
-                Fetching tags...
-              </p>
-            </div>
           }
         >
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -107,12 +99,6 @@ export function TagManager() {
             ))}
           </div>
         </ManagerListState>
-
-        {!isLoading && isFetching && (
-          <div className="absolute -top-12 right-0">
-            <Loading />
-          </div>
-        )}
       </div>
 
       {pagination && tags.length > 0 && (

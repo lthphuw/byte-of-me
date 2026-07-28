@@ -3,16 +3,27 @@
 import { prisma,type Project } from '@byte-of-me/db';
 import { revalidateTag } from 'next/cache';
 
-import type { ProjectFromValues } from '@/entities/project/model';
+import { type ProjectFromValues, projectSchema } from '@/entities/project/model';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
+import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function updateProject(
   id: string,
-  data: ProjectFromValues
+  input: ProjectFromValues
 ): Promise<ApiResponse<Project>> {
   await requireAdmin();
+
+  const parsedId = parseInput(idSchema, id);
+  if (!parsedId.ok) {
+    return { success: false, errorMsg: parsedId.errorMsg };
+  }
+  const parsed = parseInput(projectSchema, input);
+  if (!parsed.ok) {
+    return { success: false, errorMsg: parsed.errorMsg };
+  }
+  const data = parsed.data;
 
   const project = await prisma.$transaction(async (tx) => {
     const previousJoins = await tx.projectOnProjectCoAuthor.findMany({

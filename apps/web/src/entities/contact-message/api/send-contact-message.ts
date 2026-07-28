@@ -1,9 +1,11 @@
 'use server';
 
-import { prisma } from '@byte-of-me/db';
+import { type ContactMessage, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { escapeHtml, sanitizeHtml } from '@byte-of-me/ui';
 import { revalidateTag } from 'next/cache';
+import { headers } from 'next/headers';
+import { after } from 'next/server';
 
 import {
   type ContactMessageFormValues,
@@ -12,24 +14,51 @@ import {
 import { mailer } from '@/shared/api';
 import { env } from '@/shared/config/env';
 import { CACHE_TAGS } from '@/shared/lib/constants';
+import { checkRateLimit } from '@/shared/lib/rate-limit';
+import { getErrorMessage } from '@/shared/lib/utils';
+import { parseInput } from '@/shared/lib/validate-action-input';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-export async function sendContactMessage(values: ContactMessageFormValues) {
-  const parsed = contactMessageSchema.safeParse(values);
-  if (!parsed.success) {
-    return { success: false, errors: parsed.error.flatten() };
+export async function sendContactMessage(
+  values: ContactMessageFormValues
+): Promise<ApiResponse<ContactMessage>> {
+  const parsed = parseInput(contactMessageSchema, values);
+  if (!parsed.ok) {
+    return { success: false, errorMsg: parsed.errorMsg };
+  }
+
+  // Anonymous write path: throttle per client IP before touching the DB.
+  const headerList = await headers();
+  const ip =
+    headerList.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  const { allowed } = await checkRateLimit({
+    key: `contact:${ip}`,
+    limit: 3,
+    windowSec: 600,
+  });
+  if (!allowed) {
+    return {
+      success: false,
+      errorMsg: 'Too many messages sent. Please try again later.',
+    };
   }
 
   try {
     const msg = await saveContactToDb(parsed.data);
-    sendNotificationEmail(parsed.data);
+
+    // Deferred: SMTP must not hold the response open, and the serverless
+    // invocation must not be frozen mid-send.
+    after(async () => {
+      await sendNotificationEmail(parsed.data);
+    });
 
     revalidateTag(CACHE_TAGS.CONTACT, 'max');
     return { success: true, data: msg };
-  } catch (error: any) {
-    logger.error(`Send contact error: ${error.message}`);
+  } catch (error) {
+    logger.error(`Send contact error: ${getErrorMessage(error)}`);
     return {
       success: false,
-      message: 'Something went wrong. Please try again.',
+      errorMsg: 'Something went wrong. Please try again.',
     };
   }
 }
@@ -56,8 +85,8 @@ async function sendNotificationEmail(data: ContactMessageFormValues) {
       `,
     });
     logger.info(`Email sent for subject: ${data.subject}`);
-  } catch (e: any) {
-    logger.error(`Send email failed: ${e.message}`);
+  } catch (e) {
+    logger.error(`Send email failed: ${getErrorMessage(e)}`);
   }
 }
 

@@ -13,7 +13,7 @@ import {
 } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 
-import { useMediaLibrary } from '@/entities/media/api/use-media-library';
+import { useMediaLibrary } from '@/entities/media/query/use-media-library';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import { ManagerPageHeader } from '@/shared/ui';
 import { MediaLibrary } from '@/widgets/dashboard/media-manager/ui/media-library';

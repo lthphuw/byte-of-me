@@ -191,7 +191,7 @@ There is no `middleware.ts` — the locale lives in the `[locale]` segment, `/` 
 
 ## Getting started
 
-> Requires **Node.js ≥ 20**, **pnpm 10**, and a PostgreSQL 16 database (Supabase works out of the box; `docker-compose.yml` gives you a local one).
+> Requires **Node.js ≥ 20.9** (Next 16's floor; note `.nvmrc` pins v24.4.1), **pnpm 10**, and a PostgreSQL 16 database (Supabase works out of the box; `docker-compose.yml` gives you a local one).
 
 ```bash
 # 1. Install dependencies
@@ -206,11 +206,14 @@ docker compose up -d postgres
 #   → postgresql://admin:secret@localhost:5432/byte_of_me
 
 # 4. Apply migrations and generate the Prisma client
-pnpm --filter @byte-of-me/db exec prisma migrate dev
+pnpm --filter @byte-of-me/db db:migrate:dev
 pnpm generate
 
 # 5. (Optional) Seed demo content
-pnpm --filter @byte-of-me/db exec prisma db seed
+pnpm --filter @byte-of-me/db db:seed
+#   The seed prints AUTHOR_ID and always uses the same value. Every public
+#   read is scoped to it, so apps/web/.env must carry that exact id or the
+#   site renders empty with no error. The seed is idempotent: re-run freely.
 
 # 6. Run the dev server
 pnpm dev            # http://localhost:3000  → redirects to /en
@@ -259,11 +262,11 @@ Package-scoped extras:
 | Command | Description |
 | --- | --- |
 | `pnpm --filter web preview` | Production build, then `next start` |
-| `pnpm --filter web format` | Prettier over `apps/web/src` |
-| `pnpm --filter @byte-of-me/db exec prisma migrate dev` | Create + apply a migration |
-| `pnpm --filter @byte-of-me/db exec prisma migrate deploy` | Apply pending migrations (CI/prod) |
+| `pnpm format` | Prettier over every workspace `src` |
+| `pnpm --filter @byte-of-me/db db:migrate:dev` | Create + apply a migration |
+| `pnpm --filter @byte-of-me/db db:migrate:deploy` | Apply pending migrations (CI/prod) |
 | `pnpm --filter @byte-of-me/db exec prisma migrate reset --force` | Reset the database (destroys all data) |
-| `pnpm --filter @byte-of-me/db exec prisma db seed` | Seed demo content |
+| `pnpm --filter @byte-of-me/db db:seed` | Seed demo content (idempotent) |
 | `pnpm --filter @byte-of-me/db exec prisma studio --port 7777` | Browse the database |
 
 Git hooks (Husky):

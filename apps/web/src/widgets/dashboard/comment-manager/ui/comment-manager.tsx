@@ -8,7 +8,6 @@ import {
   Badge,
   Button,
   ConfirmDeleteDialog,
-  Loading,
   Pagination,
 } from '@byte-of-me/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -17,6 +16,7 @@ import { toast } from 'sonner';
 
 import { getPaginatedAdminComments } from '@/entities/comment/api/get-paginated-admin-comments';
 import { setCommentVisibility } from '@/entities/comment/api/set-comment-visibility';
+import { commentKeys } from '@/entities/comment/model/query-keys';
 import type { AdminComment } from '@/entities/comment/model/types';
 import { formatDate } from '@/shared/lib/utils';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
@@ -49,7 +49,7 @@ export function CommentManager() {
     isFetching,
     isPlaceholderData,
   } = useQuery({
-    queryKey: ['admin-comments', page],
+    queryKey: commentKeys.adminList(page),
     queryFn: () => getPaginatedAdminComments(page, PAGE_SIZE),
     placeholderData: (prev) => prev,
   });
@@ -61,7 +61,7 @@ export function CommentManager() {
     mutationFn: ({ id, hidden }: { id: string; hidden: boolean }) =>
       setCommentVisibility(id, hidden),
     onSuccess: (_, { hidden }) => {
-      queryClient.invalidateQueries({ queryKey: ['admin-comments'] });
+      queryClient.invalidateQueries({ queryKey: commentKeys.adminAll() });
       toast(hidden ? 'Comment hidden' : 'Comment restored');
       setCommentToHide(null);
     },
@@ -80,17 +80,10 @@ export function CommentManager() {
           isLoading={isLoading}
           isError={isError}
           onRetry={() => refetch()}
+          isFetching={isFetching}
           isEmpty={comments.length === 0}
           emptyTitle="No comments yet"
           emptyDescription="Comments on your blogs and projects will show up here."
-          skeleton={
-            <div className="flex h-64 flex-col items-center justify-center gap-3">
-              <Loading />
-              <p className="animate-pulse text-xs text-muted-foreground">
-                Fetching comments...
-              </p>
-            </div>
-          }
         >
           <div className="flex flex-col gap-2">
             {comments.map((comment) => (
@@ -163,12 +156,6 @@ export function CommentManager() {
             ))}
           </div>
         </ManagerListState>
-
-        {!isLoading && isFetching && (
-          <div className="absolute -top-12 right-0">
-            <Loading />
-          </div>
-        )}
       </div>
 
       {pagination && comments.length > 0 && (

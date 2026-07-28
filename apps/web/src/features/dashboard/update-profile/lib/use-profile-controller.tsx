@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import type { AdminUserProfile } from '@/entities/user-profile';
 import { getAdminUserProfile } from '@/entities/user-profile/api/get-user-profile-with-translations';
 import { saveProfile } from '@/entities/user-profile/api/save-profile';
+import { userProfileKeys } from '@/entities/user-profile/model/query-keys';
 import {
   type UserProfileFormValues,
   userProfileSchema,
@@ -19,7 +20,7 @@ export function useProfileController(initUser: AdminUserProfile) {
   const [activeTab, setActiveTab] = useState<string>('');
 
   const { data: response } = useQuery({
-    queryKey: ['userProfileSchema', initUser.id],
+    queryKey: userProfileKeys.profile(initUser.id),
     queryFn: getAdminUserProfile,
     initialData: { success: true, data: initUser },
   });
@@ -37,11 +38,19 @@ export function useProfileController(initUser: AdminUserProfile) {
   });
 
   const saveMutation = useMutation({
-    mutationFn: saveProfile,
+    // saveProfile resolves (never throws) with an ApiResponse — unwrap it so
+    // a { success: false } result reaches onError instead of onSuccess.
+    mutationFn: async (values: Parameters<typeof saveProfile>[0]) => {
+      const res = await saveProfile(values);
+      if (!res.success) {
+        throw new Error(res.errorMsg);
+      }
+      return res.data;
+    },
     onSuccess: () => {
       toast('Profile synchronized');
       queryClient.invalidateQueries({
-        queryKey: ['userProfileSchema', initUser.id],
+        queryKey: userProfileKeys.profile(initUser.id),
       });
     },
     onError: (err) => {

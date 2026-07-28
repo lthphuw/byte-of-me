@@ -8,8 +8,9 @@ import { Button ,
   DialogTitle,
   DialogTrigger, Popover, PopoverContent, PopoverTrigger , ScrollArea } from '@byte-of-me/ui';
 import { Check, ChevronDown, ImageIcon, Loader2, Plus, X } from 'lucide-react';
+import Image from 'next/image';
 
-import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media';
+import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media/query';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import { cn } from '@/shared/lib/utils';
 
@@ -55,8 +56,10 @@ export function MediaMultiSelect({
                   key={media.id}
                   className="h-10 w-10 shrink-0 overflow-hidden rounded border bg-background"
                 >
-                  <img
+                  <Image
                     src={media.url}
+                    width={40}
+                    height={40}
                     className="h-full w-full object-cover"
                     alt={media.fileName}
                   />
@@ -128,8 +131,10 @@ export function MediaMultiSelect({
                   key={media.id}
                   className="group relative h-12 w-12 overflow-hidden rounded border"
                 >
-                  <img
+                  <Image
                     src={media.url}
+                    width={48}
+                    height={48}
                     className="h-full w-full object-cover"
                     alt={media.fileName}
                   />
@@ -168,8 +173,10 @@ export function MediaMultiSelect({
                           : 'border-transparent hover:border-primary/50'
                       )}
                     >
-                      <img
+                      <Image
                         src={media.url}
+                        fill
+                        sizes="120px"
                         className="h-full w-full object-cover"
                         alt={media.fileName}
                       />

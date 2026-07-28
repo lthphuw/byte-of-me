@@ -416,11 +416,10 @@ export const ModelName = {
   TagTranslation: 'TagTranslation',
   BlogTag: 'BlogTag',
   ProjectTag: 'ProjectTag',
-  Translation: 'Translation',
   Media: 'Media',
   Interaction: 'Interaction',
   Comment: 'Comment',
-  PageView: 'PageView',
+  RateLimitHit: 'RateLimitHit',
   ContactMessage: 'ContactMessage'
 } as const
 
@@ -437,7 +436,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "translation" | "media" | "interaction" | "comment" | "pageView" | "contactMessage"
+    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2809,80 +2808,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    Translation: {
-      payload: Prisma.$TranslationPayload<ExtArgs>
-      fields: Prisma.TranslationFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.TranslationFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.TranslationFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationPayload>
-        }
-        findFirst: {
-          args: Prisma.TranslationFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.TranslationFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationPayload>
-        }
-        findMany: {
-          args: Prisma.TranslationFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationPayload>[]
-        }
-        create: {
-          args: Prisma.TranslationCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationPayload>
-        }
-        createMany: {
-          args: Prisma.TranslationCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.TranslationCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationPayload>[]
-        }
-        delete: {
-          args: Prisma.TranslationDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationPayload>
-        }
-        update: {
-          args: Prisma.TranslationUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationPayload>
-        }
-        deleteMany: {
-          args: Prisma.TranslationDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.TranslationUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.TranslationUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationPayload>[]
-        }
-        upsert: {
-          args: Prisma.TranslationUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TranslationPayload>
-        }
-        aggregate: {
-          args: Prisma.TranslationAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateTranslation>
-        }
-        groupBy: {
-          args: Prisma.TranslationGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.TranslationGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.TranslationCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.TranslationCountAggregateOutputType> | number
-        }
-      }
-    }
     Media: {
       payload: Prisma.$MediaPayload<ExtArgs>
       fields: Prisma.MediaFieldRefs
@@ -3105,77 +3030,77 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    PageView: {
-      payload: Prisma.$PageViewPayload<ExtArgs>
-      fields: Prisma.PageViewFieldRefs
+    RateLimitHit: {
+      payload: Prisma.$RateLimitHitPayload<ExtArgs>
+      fields: Prisma.RateLimitHitFieldRefs
       operations: {
         findUnique: {
-          args: Prisma.PageViewFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PageViewPayload> | null
+          args: Prisma.RateLimitHitFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitHitPayload> | null
         }
         findUniqueOrThrow: {
-          args: Prisma.PageViewFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PageViewPayload>
+          args: Prisma.RateLimitHitFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitHitPayload>
         }
         findFirst: {
-          args: Prisma.PageViewFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PageViewPayload> | null
+          args: Prisma.RateLimitHitFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitHitPayload> | null
         }
         findFirstOrThrow: {
-          args: Prisma.PageViewFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PageViewPayload>
+          args: Prisma.RateLimitHitFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitHitPayload>
         }
         findMany: {
-          args: Prisma.PageViewFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PageViewPayload>[]
+          args: Prisma.RateLimitHitFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitHitPayload>[]
         }
         create: {
-          args: Prisma.PageViewCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PageViewPayload>
+          args: Prisma.RateLimitHitCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitHitPayload>
         }
         createMany: {
-          args: Prisma.PageViewCreateManyArgs<ExtArgs>
+          args: Prisma.RateLimitHitCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
         createManyAndReturn: {
-          args: Prisma.PageViewCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PageViewPayload>[]
+          args: Prisma.RateLimitHitCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitHitPayload>[]
         }
         delete: {
-          args: Prisma.PageViewDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PageViewPayload>
+          args: Prisma.RateLimitHitDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitHitPayload>
         }
         update: {
-          args: Prisma.PageViewUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PageViewPayload>
+          args: Prisma.RateLimitHitUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitHitPayload>
         }
         deleteMany: {
-          args: Prisma.PageViewDeleteManyArgs<ExtArgs>
+          args: Prisma.RateLimitHitDeleteManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateMany: {
-          args: Prisma.PageViewUpdateManyArgs<ExtArgs>
+          args: Prisma.RateLimitHitUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateManyAndReturn: {
-          args: Prisma.PageViewUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PageViewPayload>[]
+          args: Prisma.RateLimitHitUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitHitPayload>[]
         }
         upsert: {
-          args: Prisma.PageViewUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$PageViewPayload>
+          args: Prisma.RateLimitHitUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RateLimitHitPayload>
         }
         aggregate: {
-          args: Prisma.PageViewAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregatePageView>
+          args: Prisma.RateLimitHitAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRateLimitHit>
         }
         groupBy: {
-          args: Prisma.PageViewGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.PageViewGroupByOutputType>[]
+          args: Prisma.RateLimitHitGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RateLimitHitGroupByOutputType>[]
         }
         count: {
-          args: Prisma.PageViewCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.PageViewCountAggregateOutputType> | number
+          args: Prisma.RateLimitHitCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RateLimitHitCountAggregateOutputType> | number
         }
       }
     }
@@ -3697,20 +3622,6 @@ export const ProjectTagScalarFieldEnum = {
 export type ProjectTagScalarFieldEnum = (typeof ProjectTagScalarFieldEnum)[keyof typeof ProjectTagScalarFieldEnum]
 
 
-export const TranslationScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  language: 'language',
-  sourceText: 'sourceText',
-  translated: 'translated',
-  resourceType: 'resourceType',
-  resourceId: 'resourceId'
-} as const
-
-export type TranslationScalarFieldEnum = (typeof TranslationScalarFieldEnum)[keyof typeof TranslationScalarFieldEnum]
-
-
 export const MediaScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
@@ -3755,19 +3666,13 @@ export const CommentScalarFieldEnum = {
 export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
 
 
-export const PageViewScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  path: 'path',
-  visitorId: 'visitorId',
-  userAgent: 'userAgent',
-  referer: 'referer',
-  blogId: 'blogId',
-  projectId: 'projectId',
-  userId: 'userId'
+export const RateLimitHitScalarFieldEnum = {
+  key: 'key',
+  windowStart: 'windowStart',
+  count: 'count'
 } as const
 
-export type PageViewScalarFieldEnum = (typeof PageViewScalarFieldEnum)[keyof typeof PageViewScalarFieldEnum]
+export type RateLimitHitScalarFieldEnum = (typeof RateLimitHitScalarFieldEnum)[keyof typeof RateLimitHitScalarFieldEnum]
 
 
 export const ContactMessageScalarFieldEnum = {
@@ -4004,11 +3909,10 @@ export type GlobalOmitConfig = {
   tagTranslation?: Prisma.TagTranslationOmit
   blogTag?: Prisma.BlogTagOmit
   projectTag?: Prisma.ProjectTagOmit
-  translation?: Prisma.TranslationOmit
   media?: Prisma.MediaOmit
   interaction?: Prisma.InteractionOmit
   comment?: Prisma.CommentOmit
-  pageView?: Prisma.PageViewOmit
+  rateLimitHit?: Prisma.RateLimitHitOmit
   contactMessage?: Prisma.ContactMessageOmit
 }
 

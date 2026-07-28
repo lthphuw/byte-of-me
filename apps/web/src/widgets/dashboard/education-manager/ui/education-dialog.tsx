@@ -23,12 +23,12 @@ import {
 } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { uploadSingleMedia } from '@/entities';
 import type { AdminEducation } from '@/entities/education';
 import {
   type EducationFormValues,
   educationSchema,
 } from '@/entities/education/model/education-schema';
+import { uploadSingleMedia } from '@/entities/media';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';

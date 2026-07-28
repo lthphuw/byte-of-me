@@ -14,6 +14,7 @@ import {
   BlogCard,
   BlogCardSkeleton,
   BlogEmpty,
+  blogKeys,
   getPaginatedPublicBlogs,
 } from '@/entities/blog';
 import { BlogFilters, useBlogFilters } from '@/features/public';
@@ -31,19 +32,17 @@ export function BlogsContent() {
   const [showDrafts, setShowDrafts] = useState(false);
   const includeDrafts = isAdmin && showDrafts;
   const { data, isLoading, isFetching, isPlaceholderData } = useQuery({
-    // The base key must stay byte-identical to the server prefetch in
-    // blogs/page.tsx so the SSR'd first page hydrates instead of refetching —
-    // a mount-time action call on this force-dynamic page deadlocks against
-    // its own hydration. The drafts variant only exists after an admin
-    // interaction, so it may fetch live.
+    // The drafts variant only exists after an admin interaction, so it may
+    // fetch live; the base key hydrates from the server prefetch in
+    // blogs/page.tsx.
     queryKey: includeDrafts
-      ? ['public-blogs', page, filters, 'with-drafts']
-      : ['public-blogs', page, filters],
+      ? blogKeys.publicListWithDrafts(page, filters)
+      : blogKeys.publicList(page, filters),
     queryFn: () =>
       getPaginatedPublicBlogs({ ...filters, page, limit: 6, includeDrafts }),
     placeholderData: (previousData) => previousData,
-    // The server-prefetched default page is already fresh (the route is
-    // force-dynamic), so don't immediately refetch it on mount — that avoids
+    // The server-prefetched default page comes from a tag-purged cache entry,
+    // so don't immediately refetch it on mount — that avoids
     // flashing skeletons over hydrated data. Filter/page changes use a new key
     // and still fetch live.
     staleTime: 5 * 60 * 1000,

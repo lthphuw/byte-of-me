@@ -1,24 +1,27 @@
 'use server';
 
-import { type Prisma,prisma } from '@byte-of-me/db';
+import { type Prisma, prisma } from '@byte-of-me/db';
 
 import type { AdminContactMessage } from '@/entities/contact-message';
 import { requireAdmin } from '@/shared/lib/auth';
-import { buildPaginatedMeta } from '@/shared/lib/pagination';
+import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
 import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
-
 export async function getPaginatedContactMessages(
-  page: number = 1,
-  limit: number = 20,
+  rawPage: number = 1,
+  rawLimit: number = 20,
   filter?: {
     search?: string;
   }
 ): Promise<ApiResponse<PaginatedData<AdminContactMessage>>> {
   try {
     const session = await requireAdmin();
+    const { page, limit } = clampPagination(
+      { page: rawPage, limit: rawLimit },
+      { defaultLimit: 20 }
+    );
     const skip = (page - 1) * limit;
 
     const where: Prisma.ContactMessageWhereInput = {

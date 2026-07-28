@@ -3,7 +3,7 @@ import { PrismaPg } from '@prisma/adapter-pg';
 
 import 'dotenv/config';
 
-import { PrismaClient } from './generated/prisma/client';
+import { type Prisma, PrismaClient } from './generated/prisma/client';
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -28,11 +28,16 @@ export function createPrismaClient() {
     ],
   });
 
-  client.$on('query' as never, (e: any) => {
-    logger.info(`Query: ${e.query}`);
-    logger.info(`Params: ${e.params}`);
-    logger.info(`Duration: ${e.duration}ms`);
-  });
+  // Auth.js writes through this client, so query params include live
+  // magic-link tokens, OAuth tokens, and user emails — never log them in
+  // production, where the log stream may be shipped off-host.
+  if (process.env.NODE_ENV !== 'production') {
+    client.$on('query', (e: Prisma.QueryEvent) => {
+      logger.debug(`Query: ${e.query}`);
+      logger.debug(`Params: ${e.params}`);
+      logger.debug(`Duration: ${e.duration}ms`);
+    });
+  }
 
   return client;
 }

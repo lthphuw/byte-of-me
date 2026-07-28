@@ -278,8 +278,7 @@ declare const messages: {
         "companies": "Công ty",
         "education": "Học vấn",
         "techStacks": "Công nghệ",
-        "tags": "Thẻ",
-        "translations": "Dịch thuật"
+        "tags": "Thẻ"
       },
       "actions": {
         "clearCache": "Xóa Cache",

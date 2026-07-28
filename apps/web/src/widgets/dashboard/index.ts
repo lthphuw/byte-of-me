@@ -8,5 +8,4 @@ export * from './media-manager';
 export * from './project-manager';
 export * from './tag-manager';
 export * from './tech-stack-manager';
-export * from './translation-manager';
 export * from './user-profile-manager';

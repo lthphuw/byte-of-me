@@ -6,8 +6,12 @@ import type { PublicBlog } from '@/entities/blog/model/types';
 import type { PublicProject } from '@/entities/project/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { getAuthenticatedAdmin } from '@/shared/lib/auth';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
-import { buildPaginatedMeta } from '@/shared/lib/pagination';
+import { CACHE_TAGS } from '@/shared/lib/constants';
+import {
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@/shared/lib/i18n-utils';
+import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type {
   PaginatedData,
@@ -29,22 +33,16 @@ export async function getPaginatedPublicBlogs(
   params: GetPublicBlogsParams
 ): Promise<ApiResponse<PaginatedData<PublicBlog>>> {
   return handlePublicAction('getPaginatedPublicBlogs', async () => {
+    const { tagSlugs = [], search, includeDrafts } = params;
+    const { page, limit } = clampPagination(params, { defaultLimit: 9 });
+
     return await withPublicActionHandler(
       'getPaginatedPublicBlogs',
       async ({ locale }) => {
-        const {
-          page = 1,
-          limit = 9,
-          tagSlugs = [],
-          search,
-          includeDrafts,
-        } = params;
         const skip = (page - 1) * limit;
 
         const admin = includeDrafts ? await getAuthenticatedAdmin() : null;
-        const where: Prisma.BlogWhereInput = admin
-          ? {}
-          : { isPublished: true };
+        const where: Prisma.BlogWhereInput = admin ? {} : { isPublished: true };
 
         if (tagSlugs.length > 0) {
           where.AND = tagSlugs.map((slug) => ({
@@ -63,6 +61,9 @@ export async function getPaginatedPublicBlogs(
           };
         }
 
+        // List cards never render the article body, so BlogTranslation.content
+        // (a full @db.Text column) is deliberately not selected here.
+        const languages = { in: getTranslationLanguages(locale) };
         const [blogsRes, total] = await Promise.all([
           prisma.blog.findMany({
             where,
@@ -70,12 +71,29 @@ export async function getPaginatedPublicBlogs(
             skip,
             take: limit,
             include: {
-              translations: true,
+              translations: {
+                where: { language: languages },
+                select: { language: true, title: true, description: true },
+              },
               coverImage: true,
-              project: { include: { translations: true } },
+              project: {
+                include: {
+                  translations: {
+                    where: { language: languages },
+                    select: { language: true, title: true, description: true },
+                  },
+                },
+              },
               tags: {
                 include: {
-                  tag: { include: { translations: true } },
+                  tag: {
+                    include: {
+                      translations: {
+                        where: { language: languages },
+                        select: { language: true, name: true },
+                      },
+                    },
+                  },
                 },
               },
               _count: { select: { blogViewLogs: true } },
@@ -111,7 +129,8 @@ export async function getPaginatedPublicBlogs(
             publishedDate: blog.publishedDate,
             title: translated?.title || '',
             description: translated?.description || '',
-            content: translated?.content || '',
+            // Not fetched for lists; the detail action loads the full body.
+            content: '',
             project,
             coverImage: blog.coverImage,
             readingTime: blog.readingTime,
@@ -129,7 +148,21 @@ export async function getPaginatedPublicBlogs(
           meta: buildPaginatedMeta({ page, limit, totalCount: total }),
         };
       },
-      { cache: false }
+      {
+        // The draft-inclusive branch depends on the caller's session, so its
+        // result must never be shared: only the anonymous, published-only
+        // branch is cached. The key mirrors every closure argument the query
+        // depends on (locale is appended by the handler).
+        cache: !includeDrafts,
+        cacheKey: [
+          'paginated-public-blogs',
+          String(page),
+          String(limit),
+          search ?? '',
+          tagSlugs.join(','),
+        ],
+        cacheTags: [CACHE_TAGS.BLOG],
+      }
     );
   });
 }

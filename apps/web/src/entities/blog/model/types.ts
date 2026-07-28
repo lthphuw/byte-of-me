@@ -1,4 +1,4 @@
-import type { Prisma } from '@byte-of-me/db';
+import type { Prisma } from '@byte-of-me/db/types';
 
 import type { PublicProject } from '@/entities/project/model/types';
 import type { Media, Tag } from '@/shared/types/models';

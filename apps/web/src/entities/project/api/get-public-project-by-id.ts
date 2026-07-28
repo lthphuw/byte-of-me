@@ -6,7 +6,10 @@ import { richTextToPlainText } from '@byte-of-me/ui/lib/rich-text-content';
 import type { PublicProject } from '@/entities/project/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
+import {
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getPublicProjectById(
@@ -19,7 +22,18 @@ export async function getPublicProjectById(
         const project = await prisma.project.findUnique({
           where: { isPublished: true, userId, id },
           include: {
-            translations: true,
+            // createdAt/updatedAt stay selected: the `...t` spread below is
+            // what populates those fields on the returned PublicProject.
+            translations: {
+              where: { language: { in: getTranslationLanguages(locale) } },
+              select: {
+                language: true,
+                title: true,
+                description: true,
+                createdAt: true,
+                updatedAt: true,
+              },
+            },
             techStacks: {
               include: {
                 techStack: {
@@ -34,7 +48,12 @@ export async function getPublicProjectById(
               include: {
                 tag: {
                   include: {
-                    translations: true,
+                    translations: {
+                      where: {
+                        language: { in: getTranslationLanguages(locale) },
+                      },
+                      select: { language: true, name: true },
+                    },
                   },
                 },
               },

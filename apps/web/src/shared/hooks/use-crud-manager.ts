@@ -13,19 +13,34 @@ function unwrap<T>(res: ApiResponse<T>): T {
 }
 
 export type CrudManagerOptions<TItem extends { id: string }, TSaveInput> = {
-  /** Query-key root; page number is appended automatically. */
-  queryKey: string;
+  /**
+   * Query-key root from the entity's key factory (e.g. `blogKeys.adminList()`);
+   * the page number is appended automatically when paginated.
+   */
+  queryKey: readonly unknown[];
   /** Human label used in toasts, e.g. 'Tag' → 'Tag created'. */
   entityLabel: string;
   pageSize?: number;
-  fetchPage: (
-    page: number,
-    limit: number
-  ) => Promise<ApiResponse<PaginatedData<TItem>>>;
   create: (values: TSaveInput) => Promise<ApiResponse<unknown>>;
   update: (id: string, values: TSaveInput) => Promise<ApiResponse<unknown>>;
   remove: (id: string) => Promise<ApiResponse<unknown>>;
-};
+} & (
+  | {
+      fetchPage: (
+        page: number,
+        limit: number
+      ) => Promise<ApiResponse<PaginatedData<TItem>>>;
+      fetchAll?: never;
+      initialItems?: never;
+    }
+  | {
+      /** Non-paginated lists (education, companies, tech stack). */
+      fetchAll: () => Promise<ApiResponse<TItem[]>>;
+      fetchPage?: never;
+      /** Server-rendered items to hydrate the first paint. */
+      initialItems?: TItem[];
+    }
+);
 
 /**
  * The standard dashboard manager flow:
@@ -38,6 +53,8 @@ export function useCrudManager<TItem extends { id: string }, TSaveInput>({
   entityLabel,
   pageSize = 12,
   fetchPage,
+  fetchAll,
+  initialItems,
   create,
   update,
   remove,
@@ -50,17 +67,26 @@ export function useCrudManager<TItem extends { id: string }, TSaveInput>({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<Nullable<TItem>>(null);
 
-  const query = useQuery({
-    queryKey: [queryKey, page],
-    queryFn: async () => unwrap(await fetchPage(page, pageSize)),
+  type ListResult = { data: TItem[]; meta?: PaginatedData<TItem>['meta'] };
+
+  const query = useQuery<ListResult>({
+    queryKey: fetchPage ? [...queryKey, page] : [...queryKey],
+    queryFn: async (): Promise<ListResult> => {
+      if (fetchPage) return unwrap(await fetchPage(page, pageSize));
+      if (!fetchAll) {
+        throw new Error('useCrudManager requires fetchPage or fetchAll');
+      }
+      return { data: unwrap(await fetchAll()) };
+    },
     placeholderData: (prev) => prev,
+    initialData: initialItems ? { data: initialItems } : undefined,
   });
 
   const saveMutation = useMutation({
     mutationFn: async (values: TSaveInput) =>
       unwrap(await (editing ? update(editing.id, values) : create(values))),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [queryKey] });
+      queryClient.invalidateQueries({ queryKey });
       toast.success(
         editing ? `${entityLabel} updated` : `${entityLabel} created`
       );
@@ -72,7 +98,7 @@ export function useCrudManager<TItem extends { id: string }, TSaveInput>({
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => unwrap(await remove(id)),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [queryKey] });
+      queryClient.invalidateQueries({ queryKey });
       toast.success(`${entityLabel} deleted`);
       setItemToDelete(null);
     },

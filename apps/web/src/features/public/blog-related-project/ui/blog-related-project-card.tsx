@@ -3,7 +3,7 @@ import { FolderCode } from 'lucide-react';
 import Link from 'next/link';
 import { getLocale } from 'next-intl/server';
 
-import { getPublicProjectById } from '@/entities';
+import { getPublicProjectById } from '@/entities/project';
 import { Routes } from '@/shared/config/global';
 import { formatDate } from '@/shared/lib/utils';
 

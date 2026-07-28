@@ -12,7 +12,8 @@ import {
   Textarea,
 } from '@byte-of-me/ui';
 
-import { uploadSingleMedia, type UserProfileFormValues } from '@/entities';
+import { uploadSingleMedia } from '@/entities/media';
+import type { UserProfileFormValues } from '@/entities/user-profile';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
 interface ProfileTranslationCardProps {

@@ -3,7 +3,7 @@
 import { prisma } from '@byte-of-me/db';
 
 import { requireAdmin } from '@/shared/lib/auth';
-import { buildPaginatedMeta } from '@/shared/lib/pagination';
+import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
 import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type {
@@ -17,7 +17,7 @@ export async function getPaginatedMedia(
 ): Promise<ApiResponse<PaginatedData<Media>>> {
   try {
     const session = await requireAdmin();
-    const { page = 1, limit = 10 } = pagination;
+    const { page, limit } = clampPagination(pagination, { defaultLimit: 10 });
     const skip = (page - 1) * limit;
 
     const [items, totalCount] = await Promise.all([

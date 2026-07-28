@@ -7,6 +7,7 @@ import { revalidateTag } from 'next/cache';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getErrorMessage } from '@/shared/lib/utils';
+import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 
@@ -18,6 +19,11 @@ export async function deleteEducation(
 ): Promise<ApiResponse<Education>> {
   try {
     const user = await requireAdmin();
+
+    const parsedId = parseInput(idSchema, id);
+    if (!parsedId.ok) {
+      return { success: false, errorMsg: parsedId.errorMsg };
+    }
 
     const existing = await prisma.education.findFirst({
       where: { id, userId: user.id },
@@ -36,7 +42,7 @@ export async function deleteEducation(
       }),
     };
   } catch (error) {
-    const errorMsg = getErrorMessage(error, 'Failed to delete educationSchema');
+    const errorMsg = getErrorMessage(error, 'Failed to delete education');
     logger.error(`Delete education error: ${errorMsg}`);
     return {
       success: false,

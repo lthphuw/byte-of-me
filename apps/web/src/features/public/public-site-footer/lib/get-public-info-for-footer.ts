@@ -5,6 +5,7 @@ import { prisma } from '@byte-of-me/db';
 import type { PublicSocialLink } from '@/entities/social-link/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { siteConfig } from '@/shared/config/site';
+import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
@@ -48,7 +49,7 @@ export async function getPublicInfoForFooter(): Promise<
       {
         cache: true,
         cacheKey: ['user-info-for-footer'],
-        cacheTags: ['userInfoForFooter', 'social-link', 'user-profile'],
+        cacheTags: [CACHE_TAGS.SOCIAL, CACHE_TAGS.USER],
       }
     );
   });

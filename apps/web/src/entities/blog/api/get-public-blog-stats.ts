@@ -2,15 +2,27 @@
 
 import { prisma } from '@byte-of-me/db';
 
+import { handlePublicAction } from '@/shared/api';
 import { INTERACTION } from '@/shared/lib/constants';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-export async function getPublicBlogStats(blogId: string) {
-  const [totalViews, medianResult, totalLikes] = await Promise.all([
-    prisma.blogStatisticLog.count({
-      where: { blogId },
-    }),
+export type PublicBlogStats = {
+  views: number;
+  avgTime: number;
+  rawSeconds: number;
+  totalLikes: number;
+};
 
-    prisma.$queryRaw<{ medianTime: number }[]>`
+export async function getPublicBlogStats(
+  blogId: string
+): Promise<ApiResponse<PublicBlogStats>> {
+  return handlePublicAction('getPublicBlogStats', async () => {
+    const [totalViews, medianResult, totalLikes] = await Promise.all([
+      prisma.blogStatisticLog.count({
+        where: { blogId },
+      }),
+
+      prisma.$queryRaw<{ medianTime: number }[]>`
       SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY "reading_time") as "medianTime"
       FROM "blog_view_logs"
       WHERE "blog_id" = ${blogId}
@@ -18,20 +30,21 @@ export async function getPublicBlogStats(blogId: string) {
       AND "reading_time" < 30 * 60
     `,
 
-    prisma.interaction.count({
-      where: {
-        blogId,
-        type: INTERACTION.LIKE,
-      },
-    }),
-  ]);
+      prisma.interaction.count({
+        where: {
+          blogId,
+          type: INTERACTION.LIKE,
+        },
+      }),
+    ]);
 
-  const medianSeconds = medianResult[0]?.medianTime || 5 * 60;
+    const medianSeconds = medianResult[0]?.medianTime || 5 * 60;
 
-  return {
-    views: totalViews || 0,
-    avgTime: Math.floor(medianSeconds / 60),
-    rawSeconds: Math.floor(medianSeconds),
-    totalLikes,
-  };
+    return {
+      views: totalViews || 0,
+      avgTime: Math.floor(medianSeconds / 60),
+      rawSeconds: Math.floor(medianSeconds),
+      totalLikes,
+    };
+  });
 }

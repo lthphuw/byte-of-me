@@ -18,10 +18,23 @@ export interface ManagerListStateProps {
   emptyTitle: string;
   emptyDescription?: string;
   emptyAction?: ReactNode;
-  /** Optional skeleton shown while loading; defaults to a centered spinner. */
+  /**
+   * Background refetch (e.g. paging through a placeholder-kept list). Renders
+   * the standard corner spinner — the host must be `relative` for it to land.
+   */
+  isFetching?: boolean;
+  /** Optional skeleton shown while loading; defaults to the standard one. */
   skeleton?: ReactNode;
   children: ReactNode;
 }
+
+/** Default loading body — the block every manager used to hand-write. */
+const DEFAULT_SKELETON = (
+  <div className="flex h-64 flex-col items-center justify-center gap-3">
+    <Loading />
+    <p className="animate-pulse text-xs text-muted-foreground">Loading…</p>
+  </div>
+);
 
 /**
  * The standard list body for dashboard managers:
@@ -35,21 +48,26 @@ export function ManagerListState({
   emptyTitle,
   emptyDescription,
   emptyAction,
+  isFetching,
   skeleton,
   children,
 }: ManagerListStateProps) {
   if (isLoading) {
-    return (
-      skeleton ?? (
-        <div className="flex justify-center py-20">
-          <Loading />
-        </div>
-      )
-    );
+    return skeleton ?? DEFAULT_SKELETON;
   }
 
+  // Only meaningful once the first page has painted; while `isLoading` the
+  // skeleton already says the list is busy.
+  const refetchSpinner = isFetching ? (
+    <div className="pointer-events-none absolute right-2 top-2">
+      <Loading />
+    </div>
+  ) : null;
+
+  let body: ReactNode = children;
+
   if (isError) {
-    return (
+    body = (
       <div className="flex justify-center py-20">
         <Empty>
           <EmptyHeader>
@@ -66,10 +84,8 @@ export function ManagerListState({
         </Empty>
       </div>
     );
-  }
-
-  if (isEmpty) {
-    return (
+  } else if (isEmpty) {
+    body = (
       <div className="flex justify-center py-20">
         <Empty>
           <EmptyHeader>
@@ -84,5 +100,10 @@ export function ManagerListState({
     );
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      {body}
+      {refetchSpinner}
+    </>
+  );
 }

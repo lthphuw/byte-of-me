@@ -8,11 +8,12 @@ import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
+import { blogKeys } from '@/entities/blog/model/query-keys';
 import { AuthModal } from '@/features/auth';
 import {
   getBlogInteractionsForUser,
   toggleBlogInteraction,
-} from '@/features/public';
+} from '@/features/public/toggle-blog-interactions/lib';
 import { INTERACTION } from '@/shared/lib/constants';
 import { cn } from '@/shared/lib/utils';
 
@@ -31,7 +32,7 @@ export function ClapButton({
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const { data } = useQuery({
-    queryKey: ['blog-clap', blogId],
+    queryKey: blogKeys.clap(blogId),
     queryFn: () => getBlogInteractionsForUser(blogId, INTERACTION.CLAP),
     enabled: !!session,
     initialData,
@@ -40,15 +41,24 @@ export function ClapButton({
   const { isInteracted: isClapped, count = 0 } = data;
 
   const mutation = useMutation({
-    mutationFn: () => toggleBlogInteraction(blogId, blogSlug, INTERACTION.CLAP),
+    // The action resolves with an ApiResponse instead of throwing, so
+    // unwrap-and-throw here to keep onError driving the optimistic rollback.
+    mutationFn: async () => {
+      const res = await toggleBlogInteraction(
+        blogId,
+        blogSlug,
+        INTERACTION.CLAP
+      );
+      if (!res.success) throw new Error(res.errorMsg);
+    },
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ['blog-clap', blogId] });
+      await queryClient.cancelQueries({ queryKey: blogKeys.clap(blogId) });
       const prev = queryClient.getQueryData<{
         isInteracted: boolean;
         count: number;
-      }>(['blog-clap', blogId]);
+      }>(blogKeys.clap(blogId));
       queryClient.setQueryData<{ isInteracted: boolean; count: number }>(
-        ['blog-clap', blogId],
+        blogKeys.clap(blogId),
         (old) =>
           old
             ? {
@@ -60,8 +70,14 @@ export function ClapButton({
       return { prev };
     },
     onError: (_, __, ctx) => {
-      queryClient.setQueryData(['blog-clap', blogId], ctx?.prev);
+      queryClient.setQueryData(blogKeys.clap(blogId), ctx?.prev);
       toast(t('interactFailed'));
+    },
+    // Reconcile the optimistic count (and the live stats row) with the server
+    // regardless of outcome.
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: blogKeys.clap(blogId) });
+      queryClient.invalidateQueries({ queryKey: blogKeys.stats(blogId) });
     },
   });
 

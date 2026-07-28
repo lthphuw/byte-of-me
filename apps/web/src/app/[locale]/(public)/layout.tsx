@@ -1,10 +1,15 @@
 import { notFound } from 'next/navigation';
-import { hasLocale } from 'next-intl';
-import { setRequestLocale } from 'next-intl/server';
+import { hasLocale, NextIntlClientProvider } from 'next-intl';
+import { getMessages, setRequestLocale } from 'next-intl/server';
 
+import {
+  pickMessages,
+  PUBLIC_MESSAGE_NAMESPACES,
+} from '@/shared/i18n/messages';
 import { routing } from '@/shared/i18n/routing';
 import type { LocaleType } from '@/shared/types';
-import { PublicSiteFooter, PublicSiteHeader } from '@/widgets/public';
+import { PublicSiteFooterSection } from '@/widgets/public/public-site-footer';
+import { PublicSiteHeader } from '@/widgets/public/public-site-header';
 
 export const dynamic = 'force-static';
 
@@ -30,7 +35,9 @@ export default async function PublicLayout({
   setRequestLocale(locale as LocaleType);
 
   return (
-    <>
+    <NextIntlClientProvider
+      messages={pickMessages(await getMessages(), PUBLIC_MESSAGE_NAMESPACES)}
+    >
       {/* overflow-x-clip, not overflow-hidden: `hidden` makes this element the
           nearest scroll container for every `position: sticky` descendant, and
           because the page scrolls on <html> that container never scrolls — so
@@ -45,8 +52,8 @@ export default async function PublicLayout({
               blocks) force it past the viewport on mobile. */}
           <main className="flex w-full min-w-0 flex-1 flex-col">{children}</main>
         </div>
-        <PublicSiteFooter />
+        <PublicSiteFooterSection />
       </div>
-    </>
+    </NextIntlClientProvider>
   );
 }

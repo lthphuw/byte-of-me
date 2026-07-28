@@ -1,10 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Button, ConfirmDeleteDialog } from '@byte-of-me/ui';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { TechStackDialog } from './tech-stack-dialog';
 
@@ -13,9 +11,10 @@ import { addTechStack } from '@/entities/tech-stack/api/create-tech-stack';
 import { deleteTechStack } from '@/entities/tech-stack/api/delete-tech-stack';
 import { getAllAdminTechStack } from '@/entities/tech-stack/api/get-all-admin-tech-stacks';
 import { updateTechStack } from '@/entities/tech-stack/api/update-tech-stack';
+import { techStackKeys } from '@/entities/tech-stack/model/query-keys';
 import type { TechStackFormValues } from '@/entities/tech-stack/model/tech-stack-schema';
 import { TechStackCard } from '@/features/dashboard';
-import { CACHE_TAGS } from '@/shared/lib/constants';
+import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
 export function TechStackManager({
@@ -23,56 +22,32 @@ export function TechStackManager({
 }: {
   initialTechStacks: AdminTechStack[];
 }) {
-  const queryClient = useQueryClient();
-
-  const [editingTech, setEditingTech] = useState<Nullable<AdminTechStack>>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [techToDelete, setTechToDelete] = useState<Nullable<AdminTechStack>>(null);
-
-  // Non-paginated list, so this stays a local query instead of
-  // useCrudManager's fetchPage.
   const {
-    data: techStacks = [],
+    items: techStacks,
     isLoading,
     isError,
     refetch,
-  } = useQuery({
-    queryKey: [CACHE_TAGS.TECH],
-    queryFn: async () => {
-      const res = await getAllAdminTechStack();
-      if (!res.success) throw new Error(res.errorMsg);
-      return res.data;
-    },
-    initialData: initialTechStacks,
-    placeholderData: (prev) => prev,
-  });
-
-  const closeDialog = () => {
-    setEditingTech(null);
-    setIsDialogOpen(false);
-  };
-
-  const saveMutation = useMutation({
-    mutationFn: (values: TechStackFormValues) =>
-      editingTech
-        ? updateTechStack(editingTech.id, values)
-        : addTechStack(values),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CACHE_TAGS.TECH] });
-      toast(editingTech ? 'Tech stack updated' : 'Tech stack added');
-      closeDialog();
-    },
-    onError: () => toast.error('Failed to save tech stack'),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteTechStack(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CACHE_TAGS.TECH] });
-      toast('Tech stack removed');
-      setTechToDelete(null);
-    },
-    onError: () => toast.error('Could not delete tech stack'),
+    editing: editingTech,
+    isDialogOpen,
+    onDialogOpenChange,
+    openCreateDialog,
+    openEditDialog,
+    save,
+    isSaving,
+    itemToDelete: techToDelete,
+    requestDelete,
+    cancelDelete,
+    confirmDelete,
+    isDeleting,
+    isDeletingItem,
+  } = useCrudManager<AdminTechStack, TechStackFormValues>({
+    queryKey: techStackKeys.list(),
+    entityLabel: 'Tech stack',
+    fetchAll: getAllAdminTechStack,
+    initialItems: initialTechStacks,
+    create: addTechStack,
+    update: updateTechStack,
+    remove: deleteTechStack,
   });
 
   const grouped = useMemo(() => {
@@ -90,11 +65,7 @@ export function TechStackManager({
         title="Tech Stack"
         description="Maintain the list of technologies, frameworks, and tools you use."
         action={
-          <Button
-            onClick={() => setIsDialogOpen(true)}
-            size="sm"
-            className="gap-2"
-          >
+          <Button onClick={openCreateDialog} size="sm" className="gap-2">
             <Plus className="h-4 w-4" /> Add TechStack
           </Button>
         }
@@ -107,11 +78,7 @@ export function TechStackManager({
         isEmpty={techStacks.length === 0}
         emptyTitle="No tech stacks found"
         emptyAction={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsDialogOpen(true)}
-          >
+          <Button variant="outline" size="sm" onClick={openCreateDialog}>
             <Plus className="h-4 w-4" /> Add TechStack
           </Button>
         }
@@ -131,12 +98,9 @@ export function TechStackManager({
                   <TechStackCard
                     key={tech.id}
                     techStack={tech}
-                    onEdit={() => {
-                      setEditingTech(tech);
-                      setIsDialogOpen(true);
-                    }}
-                    onDelete={() => setTechToDelete(tech)}
-                    isDeleting={deleteMutation.isPending}
+                    onEdit={() => openEditDialog(tech)}
+                    onDelete={() => requestDelete(tech)}
+                    isDeleting={isDeletingItem(tech)}
                   />
                 ))}
               </div>
@@ -148,17 +112,17 @@ export function TechStackManager({
       <TechStackDialog
         key={editingTech?.id || 'new'}
         open={isDialogOpen}
-        onOpenChange={(val) => !val && closeDialog()}
+        onOpenChange={onDialogOpenChange}
         initialData={editingTech}
-        onSubmit={(values) => saveMutation.mutate(values)}
-        loading={saveMutation.isPending}
+        onSubmit={(values) => save(values)}
+        loading={isSaving}
       />
 
       <ConfirmDeleteDialog
         isOpen={!!techToDelete}
-        isLoading={deleteMutation.isPending}
-        onClose={() => setTechToDelete(null)}
-        onConfirm={() => techToDelete && deleteMutation.mutate(techToDelete.id)}
+        isLoading={isDeleting}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
         title="Remove Tech stack"
         description={
           <p>

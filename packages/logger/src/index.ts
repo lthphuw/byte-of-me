@@ -28,19 +28,19 @@ export class Logger {
     this.name = name;
   }
 
-  debug(message: string, meta?: Record<string, any>): void {
+  debug(message: string, meta?: Record<string, unknown>): void {
     this.log('debug', message, meta);
   }
 
-  info(message: string, meta?: Record<string, any>): void {
+  info(message: string, meta?: Record<string, unknown>): void {
     this.log('info', message, meta);
   }
 
-  warn(message: string, meta?: Record<string, any>): void {
+  warn(message: string, meta?: Record<string, unknown>): void {
     this.log('warn', message, meta);
   }
 
-  error(message: string, meta?: Record<string, any>): void {
+  error(message: string, meta?: Record<string, unknown>): void {
     this.log('error', message, meta);
   }
 
@@ -61,12 +61,12 @@ export class Logger {
     return LEVELS.indexOf(level) >= LEVELS.indexOf(currentLevel);
   }
 
-  private log(level: LogLevel, message: string, meta?: Record<string, any>): void {
+  private log(level: LogLevel, message: string, meta?: Record<string, unknown>): void {
     this._log(level, message, { namespace: this.name, ...meta });
   }
 
 
-  private _log(level: LogLevel, message: string, meta?: Record<string, any>): void {
+  private _log(level: LogLevel, message: string, meta?: Record<string, unknown>): void {
     if (!this._shouldLog(level)) return;
 
     const logObject = {
@@ -78,6 +78,8 @@ export class Logger {
 
     const logStr = JSON.stringify(logObject, null, 2);
 
+    // This IS the console sink the no-console rule exists to funnel calls into.
+    /* eslint-disable no-console */
     switch (level) {
       case 'debug':
         console.log(chalk.gray(logStr));
@@ -92,6 +94,7 @@ export class Logger {
         console.error(chalk.red(logStr));
         break;
     }
+    /* eslint-enable no-console */
   }
 }
 

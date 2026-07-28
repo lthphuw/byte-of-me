@@ -6,30 +6,30 @@ import {
   AboutTechStack,
   AboutTechStackLoading,
 } from '@/features/public/about-tech-stack/ui';
-import { AboutSectionMotion } from '@/widgets/public/about-content/ui/about-section-motion';
+import { RevealSection } from '@/shared/ui';
 import { AboutShell } from '@/widgets/public/about-content/ui/about-shell';
 
 export function AboutContent() {
   return (
     <AboutShell>
       <div className="space-y-16 md:space-y-24">
-          <AboutSectionMotion>
+          <RevealSection>
             <Suspense fallback={<AboutMeLoading />}>
               <AboutMe />
             </Suspense>
-          </AboutSectionMotion>
+          </RevealSection>
 
-          <AboutSectionMotion>
+          <RevealSection>
             <Suspense fallback={<AboutEducationLoading />}>
               <AboutEducation />
             </Suspense>
-          </AboutSectionMotion>
+          </RevealSection>
 
-          <AboutSectionMotion>
+          <RevealSection>
             <Suspense fallback={<AboutTechStackLoading />}>
               <AboutTechStack />
             </Suspense>
-          </AboutSectionMotion>
+          </RevealSection>
       </div>
     </AboutShell>
   );

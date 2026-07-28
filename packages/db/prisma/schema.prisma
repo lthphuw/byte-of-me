@@ -30,6 +30,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId], map: "idx_accounts_user_id")
   @@map("accounts")
 }
 
@@ -40,6 +41,7 @@ model Session {
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId], map: "idx_sessions_user_id")
   @@map("sessions")
 }
 
@@ -84,7 +86,6 @@ model User {
   interactions      Interaction[]
   comments          Comment[]
   contactMessages   ContactMessage[]
-  pageViews         PageView[]
   blogStatisticLogs BlogStatisticLog[]
 
   @@map("users")
@@ -158,12 +159,14 @@ model Education {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  sortOrder Int
+  sortOrder Int       @default(0)
   startDate DateTime  @map("start_date")
   endDate   DateTime? @map("end_date")
 
+  // SetNull, not Cascade: deleting a Media row must clear the logo, never
+  // destroy the education entry that referenced it.
   logoId String? @map("logo_id")
-  logo   Media?  @relation(fields: [logoId], references: [id], onDelete: Cascade)
+  logo   Media?  @relation(fields: [logoId], references: [id], onDelete: SetNull)
 
   userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -172,6 +175,7 @@ model Education {
   translations EducationTranslation[]
 
   @@index([userId], map: "idx_educations_user_id")
+  @@index([logoId], map: "idx_educations_logo_id")
   @@map("educations")
 }
 
@@ -256,7 +260,7 @@ model TechStack {
   sortOrder Int    @default(0) @map("sort_order")
 
   logoId String? @map("logo_id")
-  logo   Media?  @relation(fields: [logoId], references: [id], onDelete: Cascade)
+  logo   Media?  @relation(fields: [logoId], references: [id], onDelete: SetNull)
 
   userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -264,6 +268,8 @@ model TechStack {
   projects  TechStackOnProjects[]
   companies TechStackOnCompanies[]
 
+  @@index([userId], map: "idx_tech_stacks_user_id")
+  @@index([logoId], map: "idx_tech_stacks_logo_id")
   @@map("tech_stacks")
 }
 
@@ -312,7 +318,7 @@ model Company {
   endDate   DateTime? @map("end_date")
 
   logoId String? @map("logo_id")
-  logo   Media?  @relation(fields: [logoId], references: [id], onDelete: Cascade)
+  logo   Media?  @relation(fields: [logoId], references: [id], onDelete: SetNull)
 
   userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -323,6 +329,7 @@ model Company {
   translations CompanyTranslation[]
 
   @@index([userId], map: "idx_companies_user_id")
+  @@index([logoId], map: "idx_companies_logo_id")
   @@map("companies")
 }
 
@@ -436,9 +443,8 @@ model Project {
   coauthors    ProjectOnProjectCoAuthor[]
   interactions Interaction[]
   comments     Comment[]
-  pageViews    PageView[]
 
-  @@index([userId], map: "idx_projects_user_id")
+  @@index([userId, isPublished, startDate], map: "idx_projects_public_list")
   @@map("projects")
 }
 
@@ -511,12 +517,11 @@ model Blog {
   tags         BlogTag[]
   interactions Interaction[]
   comments     Comment[]
-  pageViews    PageView[]
   blogViewLogs BlogStatisticLog[]
 
   @@index([userId], map: "idx_blogs_user_id")
   @@index([isPublished, publishedDate(sort: Desc)], map: "idx_blogs_published_feed")
-  @@index([isPublished, publishedDate], map: "idx_blogs_publish_scheduler")
+  @@index([coverImageId], map: "idx_blogs_cover_image_id")
   @@map("blogs")
 }
 
@@ -561,6 +566,7 @@ model BlogStatisticLog {
   @@index([blogId, createdAt(sort: Desc)], map: "idx_blog_logs_time_series")
   @@index([blogId, deviceType], map: "idx_blog_logs_device")
   @@index([blogId, countryCode], map: "idx_blog_logs_country")
+  @@index([viewerId], map: "idx_blog_view_logs_viewer_id")
   @@map("blog_view_logs")
 }
 
@@ -588,7 +594,10 @@ model TagTranslation {
 
   language String
 
-  name String @unique
+  // Not globally unique: the same display name legitimately repeats across
+  // locales of one tag ("React" in en and vi) — @@unique([tagId, language])
+  // below is the real constraint.
+  name String
 
   tagId String @map("tag_id")
   tag   Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
@@ -628,26 +637,6 @@ model ProjectTag {
 }
 
 // ===============================
-// TRANSLATIONS
-// ===============================
-
-model Translation {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  language     String
-  sourceText   String  @map("source_text") @db.Text
-  translated   String  @db.Text
-  resourceType String? @map("resource_type")
-  resourceId   String? @map("resource_id")
-
-  @@unique([sourceText, language], map: "uq_translations_source_text_language")
-  @@index([resourceType, resourceId], map: "idx_translations_resource")
-  @@map("translations")
-}
-
-// ===============================
 // MEDIA
 // ===============================
 
@@ -674,6 +663,7 @@ model Media {
   educationAchiements AchievementOnMedias[]
   blogs               Blog[]
 
+  @@index([userId], map: "idx_media_user_id")
   @@map("media")
 }
 
@@ -699,7 +689,7 @@ model Interaction {
 
   @@unique([userId, blogId, type], map: "uq_user_blog_interaction")
   @@unique([userId, projectId, type], map: "uq_user_project_interaction")
-  @@index([blogId], map: "idx_interactions_blog_id")
+  @@index([blogId, type], map: "idx_interactions_blog_type")
   @@index([projectId], map: "idx_interactions_project_id")
   @@map("interactions")
 }
@@ -730,38 +720,26 @@ model Comment {
   parent   Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
   replies  Comment[] @relation("CommentToComment")
 
-  @@index([blogId], map: "idx_comments_blog_id")
+  @@index([blogId, parentId, isDeleted], map: "idx_comments_blog_thread")
   @@index([projectId], map: "idx_comments_project_id")
   @@index([parentId], map: "idx_comments_parent_id")
   @@map("comments")
 }
 
 // ===============================
-// TRAFFIC / ANALYTICS
+// RATE LIMITING
 // ===============================
 
-model PageView {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now()) @map("created_at")
+// Fixed-window counters for anonymous/public write endpoints (contact form,
+// comments, view tracking). One row per (key, window); expired windows are
+// cleaned up opportunistically by the limiter itself.
+model RateLimitHit {
+  key         String
+  windowStart DateTime @map("window_start")
+  count       Int      @default(1)
 
-  path String // URL endpoint (VD: "/projects/my-app", "/blogs/hello-world")
-
-  visitorId String? @map("visitor_id")
-  userAgent String? @map("user_agent")
-  referer   String?
-
-  blogId String? @map("blog_id")
-  blog   Blog?   @relation(fields: [blogId], references: [id], onDelete: Cascade)
-
-  projectId String?  @map("project_id")
-  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  user      User?    @relation(fields: [userId], references: [id])
-  userId    String?
-
-  @@index([path], map: "idx_page_views_path")
-  @@index([blogId], map: "idx_page_views_blog_id")
-  @@index([projectId], map: "idx_page_views_project_id")
-  @@map("page_views")
+  @@id([key, windowStart])
+  @@map("rate_limit_hits")
 }
 
 // ===============================
@@ -783,5 +761,6 @@ model ContactMessage {
   user   User   @relation(fields: [userId], references: [id])
 
   @@index([email], map: "idx_contact_email")
+  @@index([userId, createdAt], map: "idx_contact_user_created")
   @@map("contact_messages")
 }

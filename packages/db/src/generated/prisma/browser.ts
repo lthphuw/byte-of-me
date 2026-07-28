@@ -178,11 +178,6 @@ export type BlogTag = Prisma.BlogTagModel
  */
 export type ProjectTag = Prisma.ProjectTagModel
 /**
- * Model Translation
- * 
- */
-export type Translation = Prisma.TranslationModel
-/**
  * Model Media
  * 
  */
@@ -198,10 +193,10 @@ export type Interaction = Prisma.InteractionModel
  */
 export type Comment = Prisma.CommentModel
 /**
- * Model PageView
+ * Model RateLimitHit
  * 
  */
-export type PageView = Prisma.PageViewModel
+export type RateLimitHit = Prisma.RateLimitHitModel
 /**
  * Model ContactMessage
  * 

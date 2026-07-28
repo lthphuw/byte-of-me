@@ -10,6 +10,7 @@ import { useTranslations } from 'next-intl';
 
 import type { AdminContactMessage } from '@/entities/contact-message';
 import { getPaginatedContactMessages } from '@/entities/contact-message/api/get-paginated-contacts';
+import { contactMessageKeys } from '@/entities/contact-message/model/query-keys';
 
 export function ContactMessageGallery() {
   const t = useTranslations('dashboard.contactGallery');
@@ -21,7 +22,7 @@ export function ContactMessageGallery() {
     useState<AdminContactMessage | null>(null);
 
   const { data, isLoading, isPlaceholderData } = useQuery({
-    queryKey: ['contactMessages', page, debouncedSearch],
+    queryKey: contactMessageKeys.list(page, debouncedSearch),
     queryFn: () =>
       getPaginatedContactMessages(page, 6, {
         search: debouncedSearch,

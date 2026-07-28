@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Dialog,
@@ -22,6 +21,7 @@ import {
   techStackSchema,
 } from '@/entities/tech-stack/model/tech-stack-schema';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
+import { useResetOnOpen } from '@/shared/hooks/use-reset-on-open';
 
 export function TechStackDialog({
   open,
@@ -46,23 +46,12 @@ export function TechStackDialog({
     },
   });
 
-  useEffect(() => {
-    if (initialData) {
-      form.reset({
-        name: initialData.name,
-        slug: initialData.slug,
-        group: initialData.group ?? '',
-        logoId: initialData.logoId ?? null,
-      });
-    } else {
-      form.reset({
-        name: '',
-        slug: '',
-        group: '',
-        logoId: null,
-      });
-    }
-  }, [initialData, form]);
+  useResetOnOpen(form, open, initialData, (data) => ({
+    name: data.name,
+    slug: data.slug,
+    group: data.group ?? '',
+    logoId: data.logoId ?? null,
+  }));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

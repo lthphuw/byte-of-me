@@ -23,8 +23,8 @@ import {
   Trash,
 } from 'lucide-react';
 
-import { uploadSingleMedia } from '@/entities';
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
+import { uploadSingleMedia } from '@/entities/media';
 import { MediaMultiSelect } from '@/features/dashboard/media-library/ui/media-multi-select';
 import { cn } from '@/shared/lib/utils';
 import { TextField, TranslationTabs } from '@/shared/ui';

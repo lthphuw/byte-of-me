@@ -2,6 +2,7 @@
 
 import { Badge } from '@byte-of-me/ui';
 import { Layers } from 'lucide-react';
+import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
 import type { PublicBlog } from '@/entities/blog/model/types';
@@ -39,9 +40,11 @@ export function BlogCard({ blog, onTagClick }: BlogCardProps) {
     <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-300 hover:border-border hover:shadow-md">
       <div className="relative aspect-[16/10] overflow-hidden bg-muted">
         {blog.coverImage ? (
-          <img
+          <Image
             src={blog.coverImage.url}
             alt=""
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
             className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (

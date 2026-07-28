@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@byte-of-me/db';
+import { logger } from '@byte-of-me/logger';
 
 import { requireAdmin } from '@/shared/lib/auth';
 import { INTERACTION } from '@/shared/lib/constants';
@@ -26,7 +27,7 @@ export type AnalyticsOverviewData = {
   topBlogs: TopBlog[];
   likes: number;
   claps: number;
-  pageViews: {
+  blogViews: {
     total: number;
     last30Days: number;
   };
@@ -34,7 +35,7 @@ export type AnalyticsOverviewData = {
 
 export async function getAnalyticsOverview(): Promise<
   | { success: true; data: AnalyticsOverviewData }
-  | { success: false; data: null }
+  | { success: false; data: null; errorMsg: string }
 > {
   try {
     await requireAdmin();
@@ -43,13 +44,8 @@ export async function getAnalyticsOverview(): Promise<
     since.setUTCHours(0, 0, 0, 0);
     since.setUTCDate(since.getUTCDate() - (DAYS - 1));
 
-    const [
-      viewsByDayRaw,
-      topBlogsRaw,
-      interactionsRaw,
-      totalPageViews,
-      recentPageViews,
-    ] = await Promise.all([
+    const [viewsByDayRaw, topBlogsRaw, interactionsRaw, totalBlogViews] =
+      await Promise.all([
       prisma.$queryRaw<{ day: Date; views: bigint }[]>`
         SELECT date_trunc('day', "created_at") AS "day",
                COUNT(*)::bigint AS "views"
@@ -71,11 +67,7 @@ export async function getAnalyticsOverview(): Promise<
         _count: { _all: true },
       }),
 
-      prisma.pageView.count(),
-
-      prisma.pageView.count({
-        where: { createdAt: { gte: since } },
-      }),
+      prisma.blogStatisticLog.count(),
     ]);
 
     const viewsPerDay = new Map<string, number>(
@@ -126,14 +118,18 @@ export async function getAnalyticsOverview(): Promise<
         topBlogs,
         likes: countByType(INTERACTION.LIKE),
         claps: countByType(INTERACTION.CLAP),
-        pageViews: {
-          total: totalPageViews,
-          last30Days: recentPageViews,
+        blogViews: {
+          total: totalBlogViews,
+          last30Days: viewsByDay.reduce((sum, d) => sum + d.views, 0),
         },
       },
     };
   } catch (error) {
-    console.error(`Get analytics overview error: ${getErrorMessage(error)}`);
-    return { success: false, data: null };
+    const errorMsg = getErrorMessage(
+      error,
+      'Failed to fetch analytics overview'
+    );
+    logger.error(`Get analytics overview error: ${errorMsg}`);
+    return { success: false, data: null, errorMsg };
   }
 }

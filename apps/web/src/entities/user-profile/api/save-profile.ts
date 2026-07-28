@@ -4,20 +4,30 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
-import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
+import {
+  type UserProfileFormValues,
+  userProfileSchema,
+} from '@/entities/user-profile/model/user-profile-schema';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getErrorMessage } from '@/shared/lib/utils';
+import { parseInput } from '@/shared/lib/validate-action-input';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 
-
-
-
-export async function saveProfile(values: UserProfileFormValues) {
+export async function saveProfile(
+  input: UserProfileFormValues
+): Promise<ApiResponse<null>> {
   const start = Date.now();
 
   try {
     const user = await requireAdmin();
+
+    const parsed = parseInput(userProfileSchema, input);
+    if (!parsed.ok) {
+      return { success: false, errorMsg: parsed.errorMsg };
+    }
+    const values = parsed.data;
 
     logger.info('[PROFILE] Start saveProfile', {
       userId: user.id,
@@ -82,13 +92,15 @@ export async function saveProfile(values: UserProfileFormValues) {
         },
       });
 
+      // Diff by platform (the upsert key below): a NOT over a list of
+      // {platform,url} objects is NOT(a AND b AND ...), which with 2+ links
+      // is always true and deleted every row on save.
       const deleteSocialLinks = tx.socialLink.deleteMany({
         where: {
           userId: user.id,
-          NOT: incomingSocialLinks.map((s) => ({
-            platform: s.platform,
-            url: s.url,
-          })),
+          platform: {
+            notIn: incomingSocialLinks.map((s) => s.platform),
+          },
         },
       });
 
@@ -167,6 +179,7 @@ export async function saveProfile(values: UserProfileFormValues) {
               firstName: t.firstName,
               lastName: t.lastName,
               tagLine: t.tagLine,
+              greeting: t.greeting,
               bio: t.bio,
               aboutMe: t.aboutMe ?? null,
               quote: t.quote,
@@ -189,7 +202,7 @@ export async function saveProfile(values: UserProfileFormValues) {
 
     revalidateTag(CACHE_TAGS.USER, 'max');
     revalidateTag(CACHE_TAGS.SOCIAL, 'max');
-    return { success: true };
+    return { success: true, data: null };
   } catch (error) {
     const errorMsg = getErrorMessage(error);
     logger.error('[PROFILE] Save failed', {
@@ -197,6 +210,6 @@ export async function saveProfile(values: UserProfileFormValues) {
       stack: error instanceof Error ? error.stack : undefined,
     });
 
-    return { success: false, error: errorMsg };
+    return { success: false, errorMsg };
   }
 }

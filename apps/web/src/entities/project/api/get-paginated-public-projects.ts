@@ -6,8 +6,12 @@ import { renderRichTextHtml } from '@byte-of-me/ui/rich-text-render';
 
 import type { PublicProject } from '@/entities/project/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
-import { buildPaginatedMeta } from '@/shared/lib/pagination';
+import { CACHE_TAGS } from '@/shared/lib/constants';
+import {
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@/shared/lib/i18n-utils';
+import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type {
   PaginatedData,
@@ -24,17 +28,12 @@ export async function getPaginatedPublicProjects(
   params: GetPublicProjectsParams
 ): Promise<ApiResponse<PaginatedData<PublicProject>>> {
   return handlePublicAction('getPaginatedPublicProjects', async () => {
+    const { tagSlugs = [], techStackSlugs = [], search } = params;
+    const { page, limit } = clampPagination(params, { defaultLimit: 9 });
+
     return await withPublicActionHandler(
       'getPaginatedPublicProjects',
       async ({ userId, locale }) => {
-        const {
-          page = 1,
-          limit = 9,
-          tagSlugs = [],
-          techStackSlugs = [],
-          search,
-        } = params;
-
         const skip = (page - 1) * limit;
 
         const filterConditions: Prisma.ProjectWhereInput[] = [
@@ -74,7 +73,10 @@ export async function getPaginatedPublicProjects(
             take: limit,
 
             include: {
-              translations: true,
+              translations: {
+                where: { language: { in: getTranslationLanguages(locale) } },
+                select: { language: true, title: true, description: true },
+              },
 
               techStacks: {
                 include: {
@@ -90,7 +92,12 @@ export async function getPaginatedPublicProjects(
                 include: {
                   tag: {
                     include: {
-                      translations: true,
+                      translations: {
+                        where: {
+                          language: { in: getTranslationLanguages(locale) },
+                        },
+                        select: { language: true, name: true },
+                      },
                     },
                   },
                 },
@@ -154,7 +161,19 @@ export async function getPaginatedPublicProjects(
         };
       },
       {
-        cache: false,
+        // Published-only, session-independent list: safe to share. The key
+        // mirrors every closure argument the query depends on (locale is
+        // appended by the handler).
+        cache: true,
+        cacheKey: [
+          'paginated-public-projects',
+          String(page),
+          String(limit),
+          search ?? '',
+          tagSlugs.join(','),
+          techStackSlugs.join(','),
+        ],
+        cacheTags: [CACHE_TAGS.PROJECT],
       }
     );
   });

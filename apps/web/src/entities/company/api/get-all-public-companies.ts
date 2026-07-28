@@ -5,7 +5,10 @@ import { prisma } from '@byte-of-me/db';
 import type { PublicCompany } from '@/entities/company/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
+import {
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getAllPublicCompanies(): Promise<
@@ -15,19 +18,33 @@ export async function getAllPublicCompanies(): Promise<
     const data = await withPublicActionHandler(
       'getAllPublicCompanies',
       async ({ email, locale }) => {
+        const languages = { in: getTranslationLanguages(locale) };
         const resp = await prisma.user.findUniqueOrThrow({
           where: { email },
           include: {
             workExperiences: {
               include: {
-                translations: true,
+                translations: {
+                  where: { language: languages },
+                  select: { language: true, description: true },
+                },
                 logo: true,
                 roles: {
                   include: {
-                    translations: true,
+                    translations: {
+                      where: { language: languages },
+                      select: {
+                        language: true,
+                        title: true,
+                        description: true,
+                      },
+                    },
                     tasks: {
                       include: {
-                        translations: true,
+                        translations: {
+                          where: { language: languages },
+                          select: { language: true, content: true },
+                        },
                       },
                       orderBy: { sortOrder: 'desc' },
                     },

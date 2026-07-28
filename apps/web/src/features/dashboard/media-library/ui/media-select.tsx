@@ -14,8 +14,9 @@ import {
   ScrollArea,
 } from '@byte-of-me/ui';
 import { Check, ChevronDown, ImageIcon, Loader2, Plus } from 'lucide-react';
+import Image from 'next/image';
 
-import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media';
+import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media/query';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import { cn } from '@/shared/lib/utils';
 import type { Media } from '@/shared/types/models';
@@ -48,8 +49,10 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded border bg-background">
               {selectedMedia ? (
-                <img
+                <Image
                   src={selectedMedia.url}
+                  width={40}
+                  height={40}
                   className="h-full w-full object-cover"
                   alt="Selected"
                 />
@@ -124,8 +127,10 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
                         : 'border-transparent hover:border-primary/50'
                     )}
                   >
-                    <img
+                    <Image
                       src={media.url}
+                      fill
+                      sizes="120px"
                       className="h-full w-full object-cover"
                       alt={media.fileName}
                     />

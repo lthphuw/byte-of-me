@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# Full build gate before code leaves the machine.
-turbo run build || exit 1
+# Full gate before code leaves the machine: the test suite (which no hook
+# ran before) plus the build.
+turbo run test build || exit 1

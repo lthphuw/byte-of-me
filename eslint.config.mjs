@@ -1,3 +1,4 @@
+import nextPlugin from '@next/eslint-plugin-next';
 import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
@@ -111,6 +112,22 @@ export default [
     rules: {
       'tailwindcss/classnames-order': 'warn',
       'tailwindcss/no-custom-classname': 'off',
+    },
+  },
+
+  /* Next.js rules, scoped to the app. These used to live in
+     apps/web/.eslintrc.json, which ESLint 9 ignores in favour of this flat
+     config — so the app was carrying eslint-config-next without ever running
+     a single one of its rules. */
+  {
+    files: ['apps/web/**/*.{ts,tsx}'],
+    plugins: { '@next/next': nextPlugin },
+    rules: {
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs['core-web-vitals'].rules,
+      // Routing goes through next-intl's Link wrapper, which this rule can't
+      // see through; it would flag every legitimate anchor.
+      '@next/next/no-html-link-for-pages': 'off',
     },
   },
 

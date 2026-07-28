@@ -3,10 +3,8 @@
 import { logger } from '@byte-of-me/logger';
 import { revalidatePath } from 'next/cache';
 
+import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
-
-
-
 
 
 /**
@@ -17,6 +15,10 @@ export async function purgeEntireCache(): Promise<{
   errorMsg?: string;
 }> {
   try {
+    // Server actions are public HTTP endpoints — without this gate anyone can
+    // stampede the cache into repeated full purges.
+    await requireAdmin();
+
     revalidatePath('/', 'layout');
 
     logger.info(`[Cache] Successfully purged entire application cache.`);

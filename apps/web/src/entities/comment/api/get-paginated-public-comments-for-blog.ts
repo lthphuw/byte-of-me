@@ -4,7 +4,7 @@ import { prisma } from '@byte-of-me/db';
 
 import type { PublicComment } from '@/entities/comment/model';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
-import { buildPaginatedMeta } from '@/shared/lib/pagination';
+import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
 import type {
   ApiResponse,
   PaginatedData,
@@ -22,7 +22,8 @@ export async function getPaginatedPublicCommentsForBlog(
     return await withPublicActionHandler(
       'getPaginatedPublicCommentsForBlog',
       async () => {
-        const { blogId, limit = 8, page = 1 } = params;
+        const { blogId } = params;
+        const { page, limit } = clampPagination(params, { defaultLimit: 8 });
         const skip = (page - 1) * limit;
 
         const rootWhere = {
@@ -31,10 +32,22 @@ export async function getPaginatedPublicCommentsForBlog(
           isDeleted: false,
         };
 
+        // Only the fields the public payload below exposes — never full user
+        // rows (emails etc.).
+        const commentSelect = {
+          id: true,
+          createdAt: true,
+          content: true,
+          blogId: true,
+          parentId: true,
+          userId: true,
+          user: { select: { name: true } },
+        } as const;
+
         const [roots, count] = await Promise.all([
           prisma.comment.findMany({
             where: rootWhere,
-            include: { user: true },
+            select: commentSelect,
             orderBy: { updatedAt: 'desc' },
             take: limit,
             skip,
@@ -44,17 +57,26 @@ export async function getPaginatedPublicCommentsForBlog(
 
         const rootIds = roots.map((c) => c.id);
 
-        const descendants = rootIds.length
-          ? await prisma.comment.findMany({
-              where: {
-                blogId,
-                isDeleted: false,
-                NOT: { parentId: null },
-              },
-              orderBy: { updatedAt: 'asc' },
-              include: { user: true },
-            })
-          : [];
+        // Replies can nest arbitrarily deep, so walk the thread level by
+        // level — but only under this page's roots, never the blog's whole
+        // reply table. MAX_DEPTH bounds both the query count and any cycle a
+        // corrupt parentId chain could create.
+        const MAX_DEPTH = 20;
+        const descendants: (typeof roots)[number][] = [];
+        let parentIds = rootIds;
+        for (let depth = 0; depth < MAX_DEPTH && parentIds.length > 0; depth++) {
+          const level = await prisma.comment.findMany({
+            where: {
+              blogId,
+              isDeleted: false,
+              parentId: { in: parentIds },
+            },
+            orderBy: { updatedAt: 'asc' },
+            select: commentSelect,
+          });
+          descendants.push(...level);
+          parentIds = level.map((c) => c.id);
+        }
 
         const map = new Map<string, (typeof descendants)[number][]>();
 

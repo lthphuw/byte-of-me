@@ -9,6 +9,8 @@ import GitHub from 'next-auth/providers/github';
 import Google from 'next-auth/providers/google';
 import nodemailer from 'nodemailer';
 
+import 'server-only';
+
 import { env } from '@/shared/config/env';
 import { siteConfig } from '@/shared/config/site';
 import { signInTemplate } from '@/shared/lib/templates/sign-in-template';

@@ -3,7 +3,7 @@
 import { DeleteButton , EditButton } from '@byte-of-me/ui';
 import Image from 'next/image';
 
-import type { AdminTechStack } from '@/entities';
+import type { AdminTechStack } from '@/entities/tech-stack';
 
 export interface TechStackCardProps {
   techStack: AdminTechStack;

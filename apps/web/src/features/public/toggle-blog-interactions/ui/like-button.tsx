@@ -9,11 +9,12 @@ import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
+import { blogKeys } from '@/entities/blog/model/query-keys';
 import { AuthModal } from '@/features/auth';
 import {
   getBlogInteractionsForUser,
   toggleBlogInteraction,
-} from '@/features/public';
+} from '@/features/public/toggle-blog-interactions/lib';
 import { INTERACTION } from '@/shared/lib/constants';
 import { cn } from '@/shared/lib/utils';
 
@@ -32,7 +33,7 @@ export function LikeButton({
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const { data } = useQuery({
-    queryKey: ['blog-like', blogId],
+    queryKey: blogKeys.like(blogId),
     queryFn: () => getBlogInteractionsForUser(blogId, INTERACTION.LIKE),
     enabled: !!session,
     initialData,
@@ -41,15 +42,24 @@ export function LikeButton({
   const { isInteracted, count } = data;
 
   const mutation = useMutation({
-    mutationFn: () => toggleBlogInteraction(blogId, blogSlug, INTERACTION.LIKE),
+    // The action resolves with an ApiResponse instead of throwing, so
+    // unwrap-and-throw here to keep onError driving the optimistic rollback.
+    mutationFn: async () => {
+      const res = await toggleBlogInteraction(
+        blogId,
+        blogSlug,
+        INTERACTION.LIKE
+      );
+      if (!res.success) throw new Error(res.errorMsg);
+    },
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ['blog-like', blogId] });
+      await queryClient.cancelQueries({ queryKey: blogKeys.like(blogId) });
       const prev = queryClient.getQueryData<{
         isInteracted: boolean;
         count: number;
-      }>(['blog-like', blogId]);
+      }>(blogKeys.like(blogId));
       queryClient.setQueryData<{ isInteracted: boolean; count: number }>(
-        ['blog-like', blogId],
+        blogKeys.like(blogId),
         (old) =>
           old
             ? {
@@ -61,8 +71,14 @@ export function LikeButton({
       return { prev };
     },
     onError: (_, __, ctx) => {
-      queryClient.setQueryData(['blog-like', blogId], ctx?.prev);
+      queryClient.setQueryData(blogKeys.like(blogId), ctx?.prev);
       toast(t('interactFailed'));
+    },
+    // Reconcile the optimistic count (and the live stats row) with the server
+    // regardless of outcome.
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: blogKeys.like(blogId) });
+      queryClient.invalidateQueries({ queryKey: blogKeys.stats(blogId) });
     },
   });
 

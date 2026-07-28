@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { getAdminUserProfile } from '@/entities';
+import { getAdminUserProfile } from '@/entities/user-profile';
 import { UserProfileManager } from '@/widgets/dashboard';
 
 

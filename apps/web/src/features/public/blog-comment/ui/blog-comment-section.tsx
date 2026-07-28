@@ -21,8 +21,8 @@ import {
   CommentListSkeleton,
   postComment,
   type PublicComment,
-  useCommentInfiniteQuery,
 } from '@/entities/comment';
+import { useCommentInfiniteQuery } from '@/entities/comment/query';
 import { AuthModal } from '@/features/auth';
 import type { PaginatedData } from '@/shared/types/api';
 
@@ -42,13 +42,19 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
 
   const key = commentKey(blogId, limit);
   const mutation = useMutation({
-    mutationFn: ({
+    // postComment resolves with an ApiResponse instead of throwing, so
+    // unwrap-and-throw here to keep onError driving the optimistic rollback.
+    mutationFn: async ({
       content,
       parentId,
     }: {
       content: string;
       parentId?: string;
-    }) => postComment(blogId, content, parentId),
+    }) => {
+      const res = await postComment(blogId, content, parentId);
+      if (!res.success) throw new Error(res.errorMsg);
+      return res.data;
+    },
 
     onMutate: async ({ content, parentId }) => {
       await queryClient.cancelQueries({ queryKey: key });
@@ -100,9 +106,7 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
       return { previous, tempId };
     },
 
-    onSuccess: (result, _vars, ctx) => {
-      if (!result.success) return;
-
+    onSuccess: (posted, _vars, ctx) => {
       queryClient.setQueryData<CommentsCache>(key, (old) => {
         if (!old) return old;
 
@@ -115,14 +119,14 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
               ...page,
               data: page.data.map((c) => {
                 if (c.id === ctx?.tempId) {
-                  return result.data;
+                  return posted;
                 }
 
                 if (c.children) {
                   return {
                     ...c,
                     children: c.children.map((child) =>
-                      child.id === ctx?.tempId ? result.data : child
+                      child.id === ctx?.tempId ? posted : child
                     ),
                   };
                 }

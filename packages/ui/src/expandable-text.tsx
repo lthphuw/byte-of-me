@@ -1,24 +1,28 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';
-
-
-
 
 
 type ExpandableTextProps = {
   content: string;
   defaultLines?: number;
+  /**
+   * Toggle copy. Passed in rather than translated here: this package has no
+   * message catalogue of its own, and must not assume the consuming app
+   * defines a particular namespace.
+   */
+  showMoreLabel: string;
+  showLessLabel: string;
 };
 
 export function ExpandableText({
   content,
   defaultLines = 3,
+  showMoreLabel,
+  showLessLabel,
 }: ExpandableTextProps) {
   const [expanded, setExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
-  const t = useTranslations('components.expandableText');
   const textRef = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
@@ -68,7 +72,7 @@ export function ExpandableText({
           onClick={() => setExpanded((prev) => !prev)}
           className="mt-1 text-xs text-primary hover:underline"
         >
-          {expanded ? t('showLess') : t('showMore')}
+          {expanded ? showLessLabel : showMoreLabel}
         </button>
       )}
     </div>

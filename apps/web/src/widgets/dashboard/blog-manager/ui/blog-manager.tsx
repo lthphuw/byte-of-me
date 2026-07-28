@@ -9,8 +9,9 @@ import {
   deleteBlog,
   getPaginatedAdminBlogs,
   updateBlog,
-} from '@/entities';
+} from '@/entities/blog';
 import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
+import { blogKeys } from '@/entities/blog/model/query-keys';
 import { BlogEditorCard } from '@/entities/blog/ui/blog-editor-card';
 import { BlogEditorDialog } from '@/features/dashboard';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
@@ -39,7 +40,7 @@ export function BlogManager() {
     isDeleting,
     isDeletingItem,
   } = useCrudManager<AdminBlog, BlogFormValues>({
-    queryKey: 'blogs',
+    queryKey: blogKeys.adminList(),
     entityLabel: 'Blog',
     pageSize: 12,
     fetchPage: (page, limit) => getPaginatedAdminBlogs(page, limit),

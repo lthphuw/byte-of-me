@@ -1,5 +1,11 @@
 import { redirect } from 'next/navigation';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
 
+import {
+  pickMessages,
+  PROTECTED_MESSAGE_NAMESPACES,
+} from '@/shared/i18n/messages';
 import { getAuthenticatedAdmin } from '@/shared/lib/auth';
 
 
@@ -19,5 +25,11 @@ export default async function ProtectedLayout({
     redirect('/auth/login');
   }
 
-  return children;
+  return (
+    <NextIntlClientProvider
+      messages={pickMessages(await getMessages(), PROTECTED_MESSAGE_NAMESPACES)}
+    >
+      {children}
+    </NextIntlClientProvider>
+  );
 }

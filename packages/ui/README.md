@@ -23,6 +23,19 @@ Consumed as **TypeScript source** (no build step) via Next.js
   `go-back-button`, which depends on the app's next-intl router).
 - `cn` and `sanitizeHtml` live here (`src/lib/`); apps/web re-exports them
   from its `shared/lib` modules for backward compatibility.
+- Every module is reachable by subpath (`@byte-of-me/ui/button`,
+  `@byte-of-me/ui/hooks/use-clipboard`, `@byte-of-me/ui/motion`) as well as
+  through the root barrel. Prefer a subpath in new code — it says what the
+  file actually depends on.
+  Migrating the ~126 existing barrel imports was **measured and rejected**
+  (2026-07-27): with and without the barrel, `/en` initial JS is 1604 KB and
+  `.next/static` is 9.0M, because Turbopack already drops what a page does
+  not reach. Adding `@byte-of-me/ui` to `optimizePackageImports` changed
+  nothing either. The barrel is a readability concern here, not a bundle one,
+  and rewriting every call site risks the module-init cycle that breaks
+  `/api/og` — a failure only `pnpm --filter web build` catches.
+- Rich text is the exception and is **not** in the barrel: `rich-text*` and
+  the editor stay subpath-only so tiptap cannot reach a public page.
 
 ## Known flagged code
 

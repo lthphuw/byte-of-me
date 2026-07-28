@@ -2,6 +2,7 @@
 
 import { Badge } from '@byte-of-me/ui';
 import clsx from 'clsx';
+import Image from 'next/image';
 
 import type { PublicTechStack } from '@/entities/tech-stack/model/types';
 
@@ -26,9 +27,11 @@ export function TechStackClickableBadge({
       onClick={() => onClick?.(tech.slug)}
     >
       {tech.logo?.url && (
-        <img
+        <Image
           src={tech.logo.url}
           alt={tech.name}
+          width={12}
+          height={12}
           className="h-3 w-3 object-contain"
         />
       )}

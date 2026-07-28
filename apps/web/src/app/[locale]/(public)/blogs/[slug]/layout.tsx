@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
-import { getPublicUserProfile } from '@/entities';
 import { getPublicBlogBySlug } from '@/entities/blog/api/get-public-blog-by-slug';
+import { getPublicUserProfile } from '@/entities/user-profile';
 import { host } from '@/shared/config/host';
 import { siteConfig } from '@/shared/config/site';
 

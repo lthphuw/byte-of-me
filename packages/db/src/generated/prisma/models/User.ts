@@ -219,7 +219,6 @@ export type UserWhereInput = {
   interactions?: Prisma.InteractionListRelationFilter
   comments?: Prisma.CommentListRelationFilter
   contactMessages?: Prisma.ContactMessageListRelationFilter
-  pageViews?: Prisma.PageViewListRelationFilter
   blogStatisticLogs?: Prisma.BlogStatisticLogListRelationFilter
 }
 
@@ -245,7 +244,6 @@ export type UserOrderByWithRelationInput = {
   interactions?: Prisma.InteractionOrderByRelationAggregateInput
   comments?: Prisma.CommentOrderByRelationAggregateInput
   contactMessages?: Prisma.ContactMessageOrderByRelationAggregateInput
-  pageViews?: Prisma.PageViewOrderByRelationAggregateInput
   blogStatisticLogs?: Prisma.BlogStatisticLogOrderByRelationAggregateInput
 }
 
@@ -274,7 +272,6 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   interactions?: Prisma.InteractionListRelationFilter
   comments?: Prisma.CommentListRelationFilter
   contactMessages?: Prisma.ContactMessageListRelationFilter
-  pageViews?: Prisma.PageViewListRelationFilter
   blogStatisticLogs?: Prisma.BlogStatisticLogListRelationFilter
 }, "id" | "email">
 
@@ -328,7 +325,6 @@ export type UserCreateInput = {
   interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
 }
 
@@ -354,7 +350,6 @@ export type UserUncheckedCreateInput = {
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
 }
 
@@ -380,7 +375,6 @@ export type UserUpdateInput = {
   interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
 }
 
@@ -406,7 +400,6 @@ export type UserUncheckedUpdateInput = {
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
 }
 
@@ -676,22 +669,6 @@ export type UserUpdateOneRequiredWithoutCommentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCommentsInput, Prisma.UserUpdateWithoutCommentsInput>, Prisma.UserUncheckedUpdateWithoutCommentsInput>
 }
 
-export type UserCreateNestedOneWithoutPageViewsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutPageViewsInput, Prisma.UserUncheckedCreateWithoutPageViewsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPageViewsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneWithoutPageViewsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutPageViewsInput, Prisma.UserUncheckedCreateWithoutPageViewsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPageViewsInput
-  upsert?: Prisma.UserUpsertWithoutPageViewsInput
-  disconnect?: Prisma.UserWhereInput | boolean
-  delete?: Prisma.UserWhereInput | boolean
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPageViewsInput, Prisma.UserUpdateWithoutPageViewsInput>, Prisma.UserUncheckedUpdateWithoutPageViewsInput>
-}
-
 export type UserCreateNestedOneWithoutContactMessagesInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutContactMessagesInput, Prisma.UserUncheckedCreateWithoutContactMessagesInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutContactMessagesInput
@@ -727,7 +704,6 @@ export type UserCreateWithoutAccountsInput = {
   interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
 }
 
@@ -752,7 +728,6 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
 }
 
@@ -793,7 +768,6 @@ export type UserUpdateWithoutAccountsInput = {
   interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
 }
 
@@ -818,7 +792,6 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
 }
 
@@ -843,7 +816,6 @@ export type UserCreateWithoutSessionsInput = {
   interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
 }
 
@@ -868,7 +840,6 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
 }
 
@@ -909,7 +880,6 @@ export type UserUpdateWithoutSessionsInput = {
   interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
 }
 
@@ -934,7 +904,6 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
 }
 
@@ -959,7 +928,6 @@ export type UserCreateWithoutSocialLinksInput = {
   interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
 }
 
@@ -984,7 +952,6 @@ export type UserUncheckedCreateWithoutSocialLinksInput = {
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
 }
 
@@ -1025,7 +992,6 @@ export type UserUpdateWithoutSocialLinksInput = {
   interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
 }
 
@@ -1050,7 +1016,6 @@ export type UserUncheckedUpdateWithoutSocialLinksInput = {
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
 }
 
@@ -1075,7 +1040,6 @@ export type UserCreateWithoutUserProfileInput = {
   interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
 }
 
@@ -1100,7 +1064,6 @@ export type UserUncheckedCreateWithoutUserProfileInput = {
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
 }
 
@@ -1141,7 +1104,6 @@ export type UserUpdateWithoutUserProfileInput = {
   interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
 }
 
@@ -1166,7 +1128,6 @@ export type UserUncheckedUpdateWithoutUserProfileInput = {
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
 }
 
@@ -1191,7 +1152,6 @@ export type UserCreateWithoutEducationsInput = {
   interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
 }
 
@@ -1216,7 +1176,6 @@ export type UserUncheckedCreateWithoutEducationsInput = {
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
 }
 
@@ -1257,7 +1216,6 @@ export type UserUpdateWithoutEducationsInput = {
   interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
 }
 
@@ -1282,7 +1240,6 @@ export type UserUncheckedUpdateWithoutEducationsInput = {
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
 }
 
@@ -1307,7 +1264,6 @@ export type UserCreateWithoutTechStacksInput = {
   interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
 }
 
@@ -1332,7 +1288,6 @@ export type UserUncheckedCreateWithoutTechStacksInput = {
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
 }
 
@@ -1373,7 +1328,6 @@ export type UserUpdateWithoutTechStacksInput = {
   interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
 }
 
@@ -1398,7 +1352,6 @@ export type UserUncheckedUpdateWithoutTechStacksInput = {
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
 }
 
@@ -1423,7 +1376,6 @@ export type UserCreateWithoutWorkExperiencesInput = {
   interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
 }
 
@@ -1448,7 +1400,6 @@ export type UserUncheckedCreateWithoutWorkExperiencesInput = {
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
 }
 
@@ -1489,7 +1440,6 @@ export type UserUpdateWithoutWorkExperiencesInput = {
   interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
 }
 
@@ -1514,7 +1464,6 @@ export type UserUncheckedUpdateWithoutWorkExperiencesInput = {
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
 }
 
@@ -1539,7 +1488,6 @@ export type UserCreateWithoutProjectsInput = {
   interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
 }
 
@@ -1564,7 +1512,6 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
 }
 
@@ -1605,7 +1552,6 @@ export type UserUpdateWithoutProjectsInput = {
   interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
 }
 
@@ -1630,7 +1576,6 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
 }
 
@@ -1655,7 +1600,6 @@ export type UserCreateWithoutBlogsInput = {
   interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
 }
 
@@ -1680,7 +1624,6 @@ export type UserUncheckedCreateWithoutBlogsInput = {
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
 }
 
@@ -1721,7 +1664,6 @@ export type UserUpdateWithoutBlogsInput = {
   interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
 }
 
@@ -1746,7 +1688,6 @@ export type UserUncheckedUpdateWithoutBlogsInput = {
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
 }
 
@@ -1772,7 +1713,6 @@ export type UserCreateWithoutBlogStatisticLogsInput = {
   interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBlogStatisticLogsInput = {
@@ -1797,7 +1737,6 @@ export type UserUncheckedCreateWithoutBlogStatisticLogsInput = {
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBlogStatisticLogsInput = {
@@ -1838,7 +1777,6 @@ export type UserUpdateWithoutBlogStatisticLogsInput = {
   interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBlogStatisticLogsInput = {
@@ -1863,7 +1801,6 @@ export type UserUncheckedUpdateWithoutBlogStatisticLogsInput = {
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMediaInput = {
@@ -1887,7 +1824,6 @@ export type UserCreateWithoutMediaInput = {
   interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
 }
 
@@ -1912,7 +1848,6 @@ export type UserUncheckedCreateWithoutMediaInput = {
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
 }
 
@@ -1953,7 +1888,6 @@ export type UserUpdateWithoutMediaInput = {
   interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
 }
 
@@ -1978,7 +1912,6 @@ export type UserUncheckedUpdateWithoutMediaInput = {
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
 }
 
@@ -2003,7 +1936,6 @@ export type UserCreateWithoutInteractionsInput = {
   media?: Prisma.MediaCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
 }
 
@@ -2028,7 +1960,6 @@ export type UserUncheckedCreateWithoutInteractionsInput = {
   media?: Prisma.MediaUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
 }
 
@@ -2069,7 +2000,6 @@ export type UserUpdateWithoutInteractionsInput = {
   media?: Prisma.MediaUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
 }
 
@@ -2094,7 +2024,6 @@ export type UserUncheckedUpdateWithoutInteractionsInput = {
   media?: Prisma.MediaUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
 }
 
@@ -2119,7 +2048,6 @@ export type UserCreateWithoutCommentsInput = {
   media?: Prisma.MediaCreateNestedManyWithoutUserInput
   interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
 }
 
@@ -2144,7 +2072,6 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   media?: Prisma.MediaUncheckedCreateNestedManyWithoutUserInput
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
   contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
 }
 
@@ -2185,7 +2112,6 @@ export type UserUpdateWithoutCommentsInput = {
   media?: Prisma.MediaUpdateManyWithoutUserNestedInput
   interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
 }
 
@@ -2209,123 +2135,6 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
   media?: Prisma.MediaUncheckedUpdateManyWithoutUserNestedInput
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
-  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutUserNestedInput
-  blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
-}
-
-export type UserCreateWithoutPageViewsInput = {
-  id?: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  role?: string
-  email: string
-  name?: string | null
-  image?: string | null
-  emailVerified?: Date | string | null
-  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  userProfile?: Prisma.UserProfileCreateNestedOneWithoutUserInput
-  socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
-  blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
-  educations?: Prisma.EducationCreateNestedManyWithoutUserInput
-  workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
-  projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
-  techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
-  media?: Prisma.MediaCreateNestedManyWithoutUserInput
-  interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
-  comments?: Prisma.CommentCreateNestedManyWithoutUserInput
-  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
-  blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
-}
-
-export type UserUncheckedCreateWithoutPageViewsInput = {
-  id?: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  role?: string
-  email: string
-  name?: string | null
-  image?: string | null
-  emailVerified?: Date | string | null
-  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  userProfile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput
-  socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
-  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
-  educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
-  workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
-  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
-  techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
-  media?: Prisma.MediaUncheckedCreateNestedManyWithoutUserInput
-  interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
-  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
-  blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
-}
-
-export type UserCreateOrConnectWithoutPageViewsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutPageViewsInput, Prisma.UserUncheckedCreateWithoutPageViewsInput>
-}
-
-export type UserUpsertWithoutPageViewsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutPageViewsInput, Prisma.UserUncheckedUpdateWithoutPageViewsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutPageViewsInput, Prisma.UserUncheckedCreateWithoutPageViewsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutPageViewsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutPageViewsInput, Prisma.UserUncheckedUpdateWithoutPageViewsInput>
-}
-
-export type UserUpdateWithoutPageViewsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
-  userProfile?: Prisma.UserProfileUpdateOneWithoutUserNestedInput
-  socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
-  blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
-  educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
-  workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
-  projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
-  techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
-  media?: Prisma.MediaUpdateManyWithoutUserNestedInput
-  interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
-  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
-  blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
-}
-
-export type UserUncheckedUpdateWithoutPageViewsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
-  userProfile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput
-  socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
-  blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
-  educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
-  workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
-  projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
-  techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
-  media?: Prisma.MediaUncheckedUpdateManyWithoutUserNestedInput
-  interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
   contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
 }
@@ -2351,7 +2160,6 @@ export type UserCreateWithoutContactMessagesInput = {
   media?: Prisma.MediaCreateNestedManyWithoutUserInput
   interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
 }
 
@@ -2376,7 +2184,6 @@ export type UserUncheckedCreateWithoutContactMessagesInput = {
   media?: Prisma.MediaUncheckedCreateNestedManyWithoutUserInput
   interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
-  pageViews?: Prisma.PageViewUncheckedCreateNestedManyWithoutUserInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
 }
 
@@ -2417,7 +2224,6 @@ export type UserUpdateWithoutContactMessagesInput = {
   media?: Prisma.MediaUpdateManyWithoutUserNestedInput
   interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
 }
 
@@ -2442,7 +2248,6 @@ export type UserUncheckedUpdateWithoutContactMessagesInput = {
   media?: Prisma.MediaUncheckedUpdateManyWithoutUserNestedInput
   interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
-  pageViews?: Prisma.PageViewUncheckedUpdateManyWithoutUserNestedInput
   blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
 }
 
@@ -2464,7 +2269,6 @@ export type UserCountOutputType = {
   interactions: number
   comments: number
   contactMessages: number
-  pageViews: number
   blogStatisticLogs: number
 }
 
@@ -2481,7 +2285,6 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   interactions?: boolean | UserCountOutputTypeCountInteractionsArgs
   comments?: boolean | UserCountOutputTypeCountCommentsArgs
   contactMessages?: boolean | UserCountOutputTypeCountContactMessagesArgs
-  pageViews?: boolean | UserCountOutputTypeCountPageViewsArgs
   blogStatisticLogs?: boolean | UserCountOutputTypeCountBlogStatisticLogsArgs
 }
 
@@ -2582,13 +2385,6 @@ export type UserCountOutputTypeCountContactMessagesArgs<ExtArgs extends runtime.
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountPageViewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PageViewWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
 export type UserCountOutputTypeCountBlogStatisticLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.BlogStatisticLogWhereInput
 }
@@ -2616,7 +2412,6 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   interactions?: boolean | Prisma.User$interactionsArgs<ExtArgs>
   comments?: boolean | Prisma.User$commentsArgs<ExtArgs>
   contactMessages?: boolean | Prisma.User$contactMessagesArgs<ExtArgs>
-  pageViews?: boolean | Prisma.User$pageViewsArgs<ExtArgs>
   blogStatisticLogs?: boolean | Prisma.User$blogStatisticLogsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -2669,7 +2464,6 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   interactions?: boolean | Prisma.User$interactionsArgs<ExtArgs>
   comments?: boolean | Prisma.User$commentsArgs<ExtArgs>
   contactMessages?: boolean | Prisma.User$contactMessagesArgs<ExtArgs>
-  pageViews?: boolean | Prisma.User$pageViewsArgs<ExtArgs>
   blogStatisticLogs?: boolean | Prisma.User$blogStatisticLogsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -2692,7 +2486,6 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     interactions: Prisma.$InteractionPayload<ExtArgs>[]
     comments: Prisma.$CommentPayload<ExtArgs>[]
     contactMessages: Prisma.$ContactMessagePayload<ExtArgs>[]
-    pageViews: Prisma.$PageViewPayload<ExtArgs>[]
     blogStatisticLogs: Prisma.$BlogStatisticLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -3111,7 +2904,6 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   interactions<T extends Prisma.User$interactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$interactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InteractionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   comments<T extends Prisma.User$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   contactMessages<T extends Prisma.User$contactMessagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$contactMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContactMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  pageViews<T extends Prisma.User$pageViewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pageViewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PageViewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   blogStatisticLogs<T extends Prisma.User$blogStatisticLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$blogStatisticLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlogStatisticLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3847,30 +3639,6 @@ export type User$contactMessagesArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.ContactMessageScalarFieldEnum | Prisma.ContactMessageScalarFieldEnum[]
-}
-
-/**
- * User.pageViews
- */
-export type User$pageViewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the PageView
-   */
-  select?: Prisma.PageViewSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the PageView
-   */
-  omit?: Prisma.PageViewOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PageViewInclude<ExtArgs> | null
-  where?: Prisma.PageViewWhereInput
-  orderBy?: Prisma.PageViewOrderByWithRelationInput | Prisma.PageViewOrderByWithRelationInput[]
-  cursor?: Prisma.PageViewWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.PageViewScalarFieldEnum | Prisma.PageViewScalarFieldEnum[]
 }
 
 /**

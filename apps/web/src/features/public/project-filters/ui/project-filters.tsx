@@ -5,11 +5,10 @@ import { Button, useDebounce } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { TagClickableBadge, useTagInfiniteQuery } from '@/entities/tag';
-import {
-  TechStackClickableBadge,
-  useTechStackInfiniteQuery,
-} from '@/entities/tech-stack';
+import { TagClickableBadge } from '@/entities/tag';
+import { useTagInfiniteQuery } from '@/entities/tag/query';
+import { TechStackClickableBadge } from '@/entities/tech-stack';
+import { useTechStackInfiniteQuery } from '@/entities/tech-stack/query';
 import { FilterSearchInput } from '@/shared/ui';
 
 export interface FilterValues {

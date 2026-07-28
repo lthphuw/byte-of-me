@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { Button ,
   Checkbox,
   Dialog,
@@ -16,19 +15,19 @@ import { Button ,
   FormLabel,
   FormMessage, fromEditorContent, MultiSelect, toEditorContent } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
-import { Plus, X } from 'lucide-react';
 
-import { uploadSingleMedia } from '@/entities';
+import { ProjectCoauthorFields } from './project-coauthor-fields';
+
+import { uploadSingleMedia } from '@/entities/media';
 import {
   type AdminProject,
   type ProjectFromValues,
   projectSchema,
 } from '@/entities/project/model';
-import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
-import { getAllAdminTechStack } from '@/entities/tech-stack/api/get-all-admin-tech-stacks';
+import { useResetOnOpen } from '@/shared/hooks/use-reset-on-open';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
+import { useProjectReferenceOptions } from '@/widgets/dashboard/project-manager/lib/use-project-reference-options';
 
 interface ProjectDialogProps {
   open: boolean;
@@ -45,25 +44,7 @@ export function ProjectDialog({
   onSubmit,
   loading,
 }: ProjectDialogProps) {
-  const { data: tagsData } = useQuery({
-    queryKey: ['admin-tags-list', 1],
-    queryFn: () => getPaginatedAdminTags(1, 100),
-    enabled: open,
-  });
-
-  const { data: techData } = useQuery({
-    queryKey: ['admin-techstacks-list'],
-    queryFn: () => getAllAdminTechStack(),
-    enabled: open,
-  });
-
-  const tagOptions =
-    tagsData?.data?.data.map((t) => ({
-      label: t.translations?.[0]?.name || 'Unknown',
-      value: t.id,
-    })) || [];
-  const techOptions =
-    techData?.data?.map((t) => ({ label: t.name, value: t.id })) || [];
+  const { tagOptions, techOptions } = useProjectReferenceOptions(open);
 
   const form = useForm<ProjectFromValues>({
     resolver: zodResolver(projectSchema),
@@ -81,54 +62,28 @@ export function ProjectDialog({
     },
   });
 
-  const {
-    fields: coauthorFields,
-    append: appendCoauthor,
-    remove: removeCoauthor,
-  } = useFieldArray({
-    control: form.control,
-    name: 'coauthors',
-  });
-
-  useEffect(() => {
-    if (initialData && open) {
-      form.reset({
-        ...initialData,
-        githubLink: initialData.githubLink || '',
-        liveLink: initialData.liveLink || '',
-        // <input type="date"> only accepts yyyy-MM-dd — a full ISO string
-        // renders as an empty field.
-        startDate: initialData.startDate?.toISOString().slice(0, 10) || '',
-        endDate: initialData.endDate?.toISOString().slice(0, 10) || '',
-        isPublished: initialData.isPublished,
-        techStackIds: initialData.techStacks?.map((t) => t.techStackId) || [],
-        tagIds: initialData.tags?.map((t) => t.tagId) || [],
-        coauthors:
-          initialData.coauthors?.map((c) => ({
-            fullName: c.coauthor.fullName,
-            email: c.coauthor.email || '',
-          })) || [],
-        translations: initialData.translations.map((t) => ({
-          language: t.language,
-          title: t.title,
-          description: t.description || '',
-        })),
-      });
-    } else if (!initialData && open) {
-      form.reset({
-        slug: '',
-        githubLink: '',
-        liveLink: '',
-        startDate: '',
-        endDate: '',
-        isPublished: false,
-        techStackIds: [],
-        tagIds: [],
-        coauthors: [],
-        translations: [{ language: 'en', title: '', description: '' }],
-      });
-    }
-  }, [initialData, form, open]);
+  useResetOnOpen(form, open, initialData, (data) => ({
+    ...data,
+    githubLink: data.githubLink || '',
+    liveLink: data.liveLink || '',
+    // <input type="date"> only accepts yyyy-MM-dd — a full ISO string
+    // renders as an empty field.
+    startDate: data.startDate?.toISOString().slice(0, 10) || '',
+    endDate: data.endDate?.toISOString().slice(0, 10) || '',
+    isPublished: data.isPublished,
+    techStackIds: data.techStacks?.map((t) => t.techStackId) || [],
+    tagIds: data.tags?.map((t) => t.tagId) || [],
+    coauthors:
+      data.coauthors?.map((c) => ({
+        fullName: c.coauthor.fullName,
+        email: c.coauthor.email || '',
+      })) || [],
+    translations: data.translations.map((t) => ({
+      language: t.language,
+      title: t.title,
+      description: t.description || '',
+    })),
+  }));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -246,49 +201,7 @@ export function ProjectDialog({
               />
             </div>
 
-            <div className="space-y-4 border-t pt-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Co-authors</span>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => appendCoauthor({ fullName: '', email: '' })}
-                >
-                  <Plus /> Add Co-author
-                </Button>
-              </div>
-
-              {coauthorFields.map((field, index) => (
-                <div
-                  key={field.id}
-                  className="grid grid-cols-1 items-start gap-4 md:grid-cols-[1fr_1fr_auto]"
-                >
-                  <TextField
-                    control={form.control}
-                    name={`coauthors.${index}.fullName`}
-                    label="Name"
-                    placeholder="Jane Doe"
-                  />
-                  <TextField
-                    control={form.control}
-                    name={`coauthors.${index}.email`}
-                    label="Email"
-                    type="email"
-                    placeholder="jane@example.com"
-                  />
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    className="md:mt-8"
-                    onClick={() => removeCoauthor(index)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
+            <ProjectCoauthorFields control={form.control} />
 
             <div className="space-y-4 border-t pt-4">
               <span className="text-sm font-medium">Content Translations</span>
