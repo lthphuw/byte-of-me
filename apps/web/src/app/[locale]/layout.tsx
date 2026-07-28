@@ -19,7 +19,11 @@ import {
   ROOT_MESSAGE_NAMESPACES,
 } from '@/shared/i18n/messages';
 import { routing } from '@/shared/i18n/routing';
+import { buildSiteJsonLd } from '@/shared/lib/metadata';
 import { cn } from '@/shared/lib/utils';
+// Imported by path, not through '@/shared/ui': that barrel reaches the rich
+// text editor, and the locale layout wraps every public page.
+import { JsonLd } from '@/shared/ui/json-ld';
 
 
 
@@ -151,6 +155,8 @@ export default async function LocaleLayout({
   // shared/i18n/messages.ts.
   const messages = pickMessages(await getMessages(), ROOT_MESSAGE_NAMESPACES);
 
+  const t = await getTranslations('metadata');
+
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
@@ -167,6 +173,9 @@ export default async function LocaleLayout({
             </SessionProvider>
           </GlobalProvider>
         </NextIntlClientProvider>
+        <JsonLd
+          data={buildSiteJsonLd({ locale, description: t('description') })}
+        />
         <Analytics />
       </body>
     </html>

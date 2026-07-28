@@ -31,7 +31,7 @@ export function BlogsContent() {
   const isAdmin = session?.user?.role === 'ADMIN';
   const [showDrafts, setShowDrafts] = useState(false);
   const includeDrafts = isAdmin && showDrafts;
-  const { data, isLoading, isFetching, isPlaceholderData } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     // The drafts variant only exists after an admin interaction, so it may
     // fetch live; the base key hydrates from the server prefetch in
     // blogs/page.tsx.
@@ -58,7 +58,13 @@ export function BlogsContent() {
   const hasActiveFilters =
     filters?.search?.length > 0 || filters?.tagSlugs?.length > 0;
 
-  const showSkeletons = isLoading || (isFetching && !isPlaceholderData);
+  // Only when there is genuinely nothing to show. `isFetching` cannot be part
+  // of this: the hydrated entry carries `dataUpdatedAt` from the *build*, so by
+  // the time anyone visits it is always older than `staleTime` and refetches on
+  // mount. Including it blanked a fully rendered list behind skeletons on every
+  // first load, until a filter click produced placeholder data that hid them
+  // again. A background refetch now updates the list in place.
+  const showSkeletons = isLoading;
 
   const toggleTag = (slug: string) => {
     setPage(1);

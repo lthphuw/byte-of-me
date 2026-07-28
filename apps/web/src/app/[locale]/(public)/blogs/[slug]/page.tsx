@@ -6,6 +6,7 @@ import { getPublishedBlogSlugs } from '@/entities/blog/api/get-published-blog-sl
 import { host } from '@/shared/config/host';
 import { routing } from '@/shared/i18n/routing';
 import type { LocaleType } from '@/shared/types';
+import { JsonLd } from '@/shared/ui/json-ld';
 import { BlogDetailsContent } from '@/widgets/public';
 
 export async function generateStaticParams() {
@@ -34,8 +35,7 @@ export default async function BlogDetailPage({
     notFound();
   }
 
-  // Structured data for search engines. `</script>`-safe: every `<` in the
-  // payload is escaped, so stored content can never close the tag early.
+  // Structured data for search engines. Escaping lives in <JsonLd>.
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -56,12 +56,7 @@ export default async function BlogDetailPage({
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
-        }}
-      />
+      <JsonLd data={jsonLd} />
       <BlogDetailsContent blog={blog} />
     </>
   );

@@ -2,6 +2,50 @@ import type { Metadata } from 'next';
 
 import { host } from '@/shared/config/host';
 import { siteConfig } from '@/shared/config/site';
+import type { JsonLdObject } from '@/shared/ui/json-ld';
+
+/**
+ * Site-level structured data, rendered once in the locale layout so every page
+ * carries it.
+ *
+ * Only the blog post route described itself to search engines; the other twelve
+ * URLs shipped no JSON-LD at all, so nothing tied the site and its author
+ * together as entities. The two nodes are linked by `@id` rather than nested,
+ * which lets the `BlogPosting` on a post reference the same Person without
+ * repeating it.
+ */
+export function buildSiteJsonLd({
+  locale,
+  description,
+}: {
+  locale: string;
+  description: string;
+}): JsonLdObject {
+  const personId = `${siteConfig.url}/#person`;
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        '@id': `${siteConfig.url}/#website`,
+        url: siteConfig.url,
+        name: siteConfig.name,
+        description,
+        inLanguage: locale,
+        publisher: { '@id': personId },
+      },
+      {
+        '@type': 'Person',
+        '@id': personId,
+        name: 'lthphuw',
+        url: siteConfig.url,
+        email: siteConfig.email,
+        sameAs: [siteConfig.links.github],
+      },
+    ],
+  };
+}
 
 interface PublicPageMetadataInput {
   /** Route segment below the locale, e.g. `about`. */

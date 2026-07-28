@@ -32,7 +32,7 @@ export function ProjectsContent() {
     filters.tagSlugs.length > 0 ||
     filters.techStackSlugs.length > 0;
 
-  const { data, isLoading, isFetching, isPlaceholderData } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     queryKey: projectKeys.publicList(page, filters),
     queryFn: () => getPaginatedPublicProjects({ ...filters, page, limit: 8 }),
     placeholderData: (previousData) => previousData,
@@ -46,7 +46,10 @@ export function ProjectsContent() {
     hasMore: false,
   };
 
-  const showSkeletons = isLoading || (isFetching && !isPlaceholderData);
+  // Same reasoning as the blogs list: the server-prefetched entry hydrates with
+  // the build timestamp, so it is stale on arrival and refetches on mount.
+  // Gating on `isFetching` hid the already-rendered list behind skeletons.
+  const showSkeletons = isLoading;
 
   const toggleTag = (slug: string) => {
     setPage(1);

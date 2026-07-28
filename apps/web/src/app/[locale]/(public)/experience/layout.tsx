@@ -11,18 +11,24 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations('metadata.experience');
 
-  return buildPublicPageMetadata({
-    segment: 'experience',
-    locale,
-    title: t('title'),
-    description: t('description'),
-    keywords: [
-      'Kinh nghiệm',
-      'Việc làm',
-      'Kinh nghiệm việc làm',
-      'Experience',
-    ],
-  });
+  return {
+    ...buildPublicPageMetadata({
+      segment: 'experience',
+      locale,
+      title: t('title'),
+      description: t('description'),
+      keywords: [
+        'Kinh nghiệm',
+        'Việc làm',
+        'Kinh nghiệm việc làm',
+        'Experience',
+      ],
+    }),
+    // The page body redirects to the homepage, so this URL answers 200 with a
+    // `meta refresh` and no content. Without `noindex` Google indexes that empty
+    // shell under the title "Experience". Drop this block when the page returns.
+    robots: { index: false, follow: true },
+  };
 }
 
 interface ExperienceLayoutProps {
