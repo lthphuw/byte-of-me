@@ -1,5 +1,9 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
+  "globalDependencies": [
+    "eslint.config.mjs",
+    "packages/config/typescript/*.json"
+  ],
   "tasks": {
     "check-types": {
       "dependsOn": [
@@ -70,11 +74,7 @@
       ],
       "cache": false
     },
-    "lint": {
-      "dependsOn": [
-        "^lint"
-      ]
-    },
+    "lint": {},
     "test": {
       "dependsOn": [
         "^build"

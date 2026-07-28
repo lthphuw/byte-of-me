@@ -10,7 +10,19 @@ const storageHost = process.env.SUPABASE_S3_STORAGE_PUBLIC_ENDPOINT
 
 const nextConfig = {
   reactStrictMode: true,
+
+  // One header per response that tells an attacker the stack and nobody else
+  // anything.
+  poweredByHeader: false,
+
   images: {
+    // AVIF first, WebP as the fallback for the browsers that lack it. Next only
+    // serves the first format the client accepts, so this costs nothing on the
+    // request path — it only adds one more encode on a cache miss.
+    formats: ['image/avif', 'image/webp'],
+    // Uploaded images are content-addressed by Supabase, so a URL's bytes never
+    // change; the 60s default makes the optimizer re-encode far more than needed.
+    minimumCacheTTL: 31536000,
     remotePatterns: storageHost
       ? [
           {
@@ -27,6 +39,10 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '3mb',
     },
+    // 87 MB of `.map` files across .next/server, all of it shipped inside the
+    // serverless function. Stack traces stay readable through the framework's
+    // own frames; the trade is deploy size and cold start, which users feel.
+    serverSourceMaps: false,
     // Rewrites `import { X } from 'pkg'` into a direct deep import per symbol.
     // These are all barrel packages: without this, importing one icon pulls the
     // module graph for the whole set, which the bundler then has to prove is
@@ -79,10 +95,19 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // Public pages only. `api` must be excluded here: NextAuth serves
-        // per-user session/CSRF JSON under /api/auth, and a shared CDN that
-        // honors `public, s-maxage` would replay one user's session to another.
-        source: '/((?!api|.*dashboard).*)/:path*',
+        // Public pages only. Two exclusions matter here:
+        //
+        // `api` — NextAuth serves per-user session/CSRF JSON under /api/auth,
+        // and a shared CDN that honors `public, s-maxage` would replay one
+        // user's session to another.
+        //
+        // `_next` — this rule OVERRIDES the framework's own header rather than
+        // adding to it, and /_next/static filenames already carry a content
+        // hash. Without the exclusion those assets answered with `s-maxage`
+        // and no `max-age` at all, so browsers revalidated every chunk on
+        // every navigation instead of reading their own disk cache. Leaving
+        // them out restores `public, max-age=31536000, immutable`.
+        source: '/((?!api|_next|.*dashboard).*)/:path*',
         headers: [
           {
             key: 'Cache-Control',
@@ -91,11 +116,27 @@ const nextConfig = {
         ],
       },
       {
+        // Everything under /api is per-user or per-request — except `og`, which
+        // is handled by the next rule.
         source: '/api/:path*',
         headers: [
           {
             key: 'Cache-Control',
             value: 'private, no-store',
+          },
+        ],
+      },
+      {
+        // Social preview cards: a pure function of the query string, rendered
+        // through satori on every miss. Scrapers (Slack, iMessage, Twitter)
+        // refetch these constantly, so `no-store` from the rule above meant
+        // re-rendering the same card forever. Declared after that rule because
+        // the last matching header wins.
+        source: '/api/og',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, s-maxage=86400, immutable',
           },
         ],
       },
