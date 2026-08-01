@@ -128,13 +128,6 @@
     "thereAreNoProjectsYet": "Hiện chưa có dự án nào",
     "loadingProjectList": "Đang tải danh sách dự án",
     "failedToLoadProjectList": "Không thể tải danh sách dự án. Vui lòng thử lại.",
-    "noProjectsMatchSelectedFilters": "Không có dự án nào phù hợp với bộ lọc đã chọn",
-    "noProjectsMatchCurrentSearchAndFilters": "Không tìm thấy dự án phù hợp với tìm kiếm và bộ lọc hiện tại",
-    "youveReachedTheEndOfTheProjectList": "Bạn đã xem hết tất cả dự án",
-    "clearFilters": "Xoá bộ lọc",
-    "clearSearch": "Xoá tìm kiếm",
-    "noProjectsYet": "Chưa có dự án",
-    "youCanStartByCreatingANewProject": "Bạn có thể bắt đầu bằng cách tạo một dự án mới",
     "backToProjects": "Quay lại danh sách dự án",
     "noProjectsFound": "Chưa có dự án nào được thêm vào.",
     "noProjectsMatchYourSearch": "Không tìm thấy dự án nào khớp với bộ lọc của bạn.",
@@ -303,6 +296,442 @@
       "messageLabel": "Nội dung",
       "noSubjectProvided": "Không có tiêu đề",
       "close": "Đóng"
+    },
+    "blog": {
+      "title": "Bài viết",
+      "description": "Tạo và quản lý bài viết, bản nháp và nội dung đã xuất bản.",
+      "createButton": "Bài viết mới",
+      "emptyTitle": "Chưa có bài viết nào",
+      "emptyDescription": "Tạo bài viết đầu tiên của bạn.",
+      "deleteTitle": "Xóa bài viết?",
+      "deleteDescription": "Hành động này không thể hoàn tác.",
+      "loadError": "Không thể tải bài viết này.",
+      "dialog": {
+        "editTitle": "Chỉnh sửa bài viết",
+        "createTitle": "Tạo bài viết",
+        "editDescription": "Cập nhật bài viết và các bản dịch, sau đó lưu lại.",
+        "createDescription": "Viết bài, thêm bản dịch và xuất bản khi sẵn sàng.",
+        "retry": "Thử lại",
+        "loadingLabel": "Đang tải bài viết",
+        "cancelButton": "Hủy",
+        "saveButton": "Lưu thay đổi",
+        "createSubmitButton": "Tạo bài viết"
+      },
+      "toast": {
+        "created": "Đã tạo bài viết",
+        "updated": "Đã cập nhật bài viết",
+        "deleted": "Đã xóa bài viết",
+        "saveError": "Lưu bài viết thất bại",
+        "deleteError": "Không thể xóa bài viết"
+      },
+      "form": {
+        "draftFound": "Đã tìm thấy bản nháp chưa lưu lúc {time}.",
+        "restore": "Khôi phục",
+        "discard": "Xóa bản nháp",
+        "contentTranslationsTitle": "Bản dịch nội dung",
+        "titleLabel": "Tiêu đề",
+        "titlePlaceholder": "Tiêu đề bài viết...",
+        "descriptionLabel": "Mô tả ngắn",
+        "descriptionPlaceholder": "Tóm tắt ngắn gọn về bài viết...",
+        "bodyLabel": "Nội dung bài viết",
+        "savePost": "Lưu bài viết"
+      },
+      "meta": {
+        "slugLabel": "Slug",
+        "slugPlaceholder": "my-awesome-blog",
+        "projectLabel": "Dự án liên quan",
+        "projectPlaceholder": "Chọn dự án (không bắt buộc)",
+        "projectNone": "Không có",
+        "publishedLabel": "Đã xuất bản",
+        "coverImageLabel": "Ảnh bìa",
+        "tagsLabel": "Thẻ",
+        "tagsPlaceholder": "Chọn thẻ..."
+      },
+      "overview": {
+        "viewsChartTitle": "Lượt xem — 30 ngày qua",
+        "noViewsYet": "Chưa có lượt xem nào",
+        "topPostsTitle": "Bài viết xem nhiều nhất",
+        "dayViewsLabel": "{date}: {count, plural, =0 {Chưa có lượt xem nào} other {# lượt xem}}",
+        "topBlogViewsLabel": "{title}: {count, plural, =0 {Chưa có lượt xem nào} other {# lượt xem}}",
+        "likesLabel": "Lượt thích",
+        "clapsLabel": "Lượt vỗ tay",
+        "blogViewsLabel": "Lượt xem bài viết",
+        "allTimeSub": "Tổng cộng",
+        "last30DaysSub": "{count, number} trong 30 ngày qua"
+      }
+    },
+    "comment": {
+      "title": "Bình luận",
+      "description": "Kiểm duyệt bình luận trên bài viết và dự án của bạn",
+      "emptyTitle": "Chưa có bình luận nào",
+      "emptyDescription": "Bình luận trên bài viết và dự án của bạn sẽ hiển thị tại đây.",
+      "avatarFallbackAlt": "Người dùng",
+      "source": {
+        "blog": "Bài viết: {title}",
+        "project": "Dự án: {title}",
+        "untitledProject": "Chưa đặt tên",
+        "unknown": "Không rõ nguồn"
+      },
+      "status": {
+        "hidden": "Đã ẩn"
+      },
+      "actions": {
+        "restore": "Khôi phục",
+        "hide": "Ẩn"
+      },
+      "toast": {
+        "hidden": "Đã ẩn bình luận",
+        "restored": "Đã khôi phục bình luận",
+        "updateError": "Có lỗi khi cập nhật bình luận"
+      },
+      "dialog": {
+        "hideTitle": "Ẩn bình luận",
+        "hideDescription": "Bình luận này sẽ không còn hiển thị với khách truy cập. Bạn có thể khôi phục lại sau."
+      }
+    },
+    "common": {
+      "nav": {
+        "soonBadge": "Sắp ra mắt"
+      },
+      "stats": {
+        "messagesLabel": "Tin nhắn",
+        "messagesSub": "{count, number} mới",
+        "projectsLabel": "Dự án",
+        "projectsSub": "Đang hoạt động",
+        "blogsLabel": "Bài viết",
+        "blogsSub": "Nội dung blog",
+        "educationLabel": "Học vấn",
+        "educationSub": "Chứng chỉ",
+        "companiesLabel": "Công ty",
+        "techStackLabel": "Công nghệ",
+        "tagsLabel": "Thẻ"
+      }
+    },
+    "company": {
+      "title": "Kinh nghiệm làm việc",
+      "description": "Quản lý quá trình công tác và hồ sơ công ty của bạn",
+      "createButton": "Thêm kinh nghiệm",
+      "emptyTitle": "Chưa có kinh nghiệm làm việc",
+      "emptyDescription": "Bắt đầu bằng cách thêm công ty đầu tiên bạn từng làm việc cùng.",
+      "emptyAction": "Thêm mục đầu tiên",
+      "present": "Hiện tại",
+      "rolesBadge": "{count} vai trò",
+      "techStackBadge": "{count, number} công nghệ",
+      "deleteTitle": "Xóa kinh nghiệm làm việc?",
+      "deleteDescription": "Bạn có chắc chắn muốn xóa <name></name> cùng tất cả các vai trò của công ty này không?",
+      "toast": {
+        "created": "Đã tạo kinh nghiệm làm việc",
+        "updated": "Đã cập nhật kinh nghiệm làm việc",
+        "deleted": "Đã xóa kinh nghiệm làm việc",
+        "saveError": "Lưu kinh nghiệm làm việc thất bại",
+        "deleteError": "Không thể xóa kinh nghiệm làm việc"
+      },
+      "dialog": {
+        "createTitle": "Thêm kinh nghiệm làm việc",
+        "editTitle": "Chỉnh sửa kinh nghiệm làm việc",
+        "logoLabel": "Logo công ty",
+        "companyLabel": "Tên công ty",
+        "locationLabel": "Địa điểm",
+        "startDateLabel": "Ngày bắt đầu",
+        "endDateLabel": "Ngày kết thúc",
+        "techStackLabel": "Công nghệ sử dụng",
+        "techStackPlaceholder": "Chọn công nghệ",
+        "translationsTitle": "Bản dịch",
+        "descriptionLabel": "Mô tả",
+        "rolesTitle": "Vai trò",
+        "addRoleButton": "Thêm vai trò",
+        "saveButton": "Lưu"
+      },
+      "role": {
+        "fallbackTitle": "Vai trò {index, number}",
+        "removeButton": "Xóa vai trò",
+        "startDateLabel": "Ngày bắt đầu",
+        "endDateLabel": "Ngày kết thúc",
+        "titleLabel": "Chức danh",
+        "descriptionLabel": "Mô tả",
+        "tasksTitle": "Công việc",
+        "addTaskButton": "Thêm công việc"
+      },
+      "task": {
+        "sortLabel": "Thứ tự",
+        "contentLabel": "Công việc",
+        "removeButton": "Xóa công việc"
+      }
+    },
+    "education": {
+      "title": "Học vấn",
+      "description": "Quản lý quá trình học tập của bạn",
+      "createButton": "Thêm học vấn",
+      "emptyTitle": "Chưa có thông tin học vấn",
+      "emptyDescription": "Bắt đầu bằng cách thêm thành tích học tập đầu tiên của bạn.",
+      "emptyAction": "Thêm mục đầu tiên",
+      "untitled": "Mục học vấn chưa đặt tên",
+      "present": "Hiện tại",
+      "ongoing": "Đang học",
+      "achievementCount": "{count, plural, =1 {1 thành tích} other {# thành tích}}",
+      "deleteTitle": "Xóa thông tin học vấn?",
+      "deleteDescription": "Bạn có chắc chắn muốn xóa <name></name> không?",
+      "toast": {
+        "created": "Đã thêm thông tin học vấn",
+        "updated": "Đã cập nhật thông tin học vấn",
+        "deleted": "Đã xóa thông tin học vấn",
+        "saveError": "Lưu thông tin học vấn thất bại",
+        "deleteError": "Không thể xóa thông tin học vấn"
+      },
+      "dialog": {
+        "createTitle": "Thêm học vấn",
+        "editTitle": "Chỉnh sửa học vấn",
+        "createDescription": "Thêm trường học hoặc bằng cấp, sau đó liệt kê những thành tích bạn đạt được.",
+        "editDescription": "Cập nhật mục này và các thành tích được liệt kê bên dưới.",
+        "logoLabel": "Logo trường / tổ chức",
+        "startDateLabel": "Ngày bắt đầu",
+        "endDateLabel": "Ngày kết thúc",
+        "translationsTitle": "Bản dịch",
+        "translationsDescription": "Mỗi tab tương ứng một ngôn ngữ. Khách truy cập sẽ thấy tab khớp với ngôn ngữ của họ.",
+        "schoolLabel": "Trường học / Bằng cấp",
+        "descriptionLabel": "Mô tả",
+        "descriptionPlaceholder": "Tóm tắt ngắn gọn về chương trình học này…",
+        "cancelButton": "Hủy",
+        "saveButton": "Lưu thay đổi",
+        "createSubmitButton": "Thêm học vấn"
+      },
+      "achievements": {
+        "title": "Thành tích",
+        "reorderHint": "Kéo để sắp xếp lại — đây là thứ tự khách truy cập sẽ thấy.",
+        "addButton": "Thêm",
+        "emptyText": "Chưa có thành tích nào.",
+        "addFirstButton": "Thêm mục đầu tiên",
+        "untitled": "Thành tích chưa đặt tên",
+        "reorderAriaLabel": "Sắp xếp lại thành tích {index, number} trong {total, number}",
+        "removeAriaLabel": "Xóa thành tích",
+        "imagesLabel": "Hình ảnh",
+        "titleLabel": "Tiêu đề",
+        "contentLabel": "Nội dung",
+        "contentPlaceholder": "Mô tả thành tích này…"
+      }
+    },
+    "media": {
+      "title": "Thư viện Media",
+      "description": "Nơi lưu trữ tập trung hình ảnh và banner cho portfolio của bạn.",
+      "addButton": "Thêm Media",
+      "empty": {
+        "title": "Chưa có media nào",
+        "description": "Thư viện của bạn đang trống. Hãy tải lên hình ảnh đầu tiên để bắt đầu."
+      },
+      "dialog": {
+        "uploadTitle": "Tải lên Media",
+        "deleteTitle": "Xóa Media",
+        "deleteDescription": "Thao tác này sẽ xóa vĩnh viễn tệp media này. Hành động này không thể hoàn tác."
+      },
+      "picker": {
+        "libraryLabel": "Thư viện",
+        "uploadButton": "Tải lên",
+        "uploadAssetsTitle": "Tải lên tệp",
+        "clearAll": "Xóa tất cả",
+        "selectMedia": "Chọn Media",
+        "selectedCount": "Đã chọn {count}",
+        "moreCount": "+ {count} nữa",
+        "clickToManage": "Nhấp để quản lý",
+        "clickToChange": "Nhấp để thay đổi",
+        "chooseFromLibrary": "Tải lên hoặc chọn từ thư viện",
+        "selectedAlt": "Đã chọn",
+        "loadMore": "Tải thêm"
+      },
+      "upload": {
+        "dropzoneText": "Nhấp hoặc kéo thả hình ảnh vào đây",
+        "invalidTypeTitle": "Sai định dạng",
+        "invalidTypeDescription": "{fileName} không phải là hình ảnh.",
+        "fileTooLargeTitle": "Tệp quá lớn",
+        "fileTooLargeDescription": "{fileName} vượt quá {maxSize, number}MB.",
+        "successTitle": "Thành công",
+        "successDescription": "Tất cả hình ảnh đã được tải lên.",
+        "uploadFailedTitle": "Tải lên thất bại",
+        "uploadButton": "Tải lên {count} tệp"
+      },
+      "toast": {
+        "uploadSuccess": "Tải lên thành công",
+        "uploadError": "Tải lên thất bại",
+        "deleteSuccess": "Đã xóa media",
+        "deleteError": "Không thể xóa media"
+      }
+    },
+    "project": {
+      "title": "Dự án",
+      "description": "Quản lý bộ sưu tập dự án, case study và liên kết triển khai.",
+      "createButton": "Dự án mới",
+      "emptyTitle": "Chưa có dự án nào",
+      "emptyDescription": "Tạo dự án đầu tiên để giới thiệu công việc của bạn.",
+      "deleteTitle": "Xóa dự án?",
+      "deleteDescription": "Hành động này không thể hoàn tác. Dự án và toàn bộ dữ liệu liên quan sẽ bị xóa vĩnh viễn khỏi máy chủ.",
+      "dialog": {
+        "createTitle": "Dự án mới",
+        "editTitle": "Chỉnh sửa dự án",
+        "slugLabel": "Slug",
+        "slugPlaceholder": "my-awesome-project",
+        "startDateLabel": "Ngày bắt đầu",
+        "endDateLabel": "Ngày kết thúc",
+        "githubLinkLabel": "Liên kết GitHub",
+        "githubLinkPlaceholder": "https://github.com/...",
+        "liveLinkLabel": "Link demo",
+        "liveLinkPlaceholder": "https://...",
+        "publishedLabel": "Đã xuất bản",
+        "techStackLabel": "Công nghệ sử dụng",
+        "techStackPlaceholder": "Chọn công nghệ",
+        "tagsLabel": "Thẻ",
+        "tagsPlaceholder": "Chọn thẻ",
+        "translationsLabel": "Nội dung đa ngôn ngữ",
+        "titleLabel": "Tiêu đề",
+        "descriptionLabel": "Mô tả",
+        "descriptionPlaceholder": "Dự án này là gì và làm được điều gì…",
+        "saveButton": "Lưu dự án",
+        "savingButton": "Đang lưu..."
+      },
+      "coauthors": {
+        "title": "Đồng tác giả",
+        "addButton": "Thêm đồng tác giả",
+        "nameLabel": "Họ tên",
+        "namePlaceholder": "Nguyễn Văn A",
+        "emailLabel": "Email",
+        "emailPlaceholder": "nguyenvana@example.com",
+        "removeButton": "Xóa đồng tác giả"
+      },
+      "toast": {
+        "created": "Đã tạo dự án",
+        "updated": "Đã cập nhật dự án",
+        "deleted": "Đã xóa dự án",
+        "saveError": "Lưu dự án thất bại",
+        "deleteError": "Không thể xóa dự án"
+      }
+    },
+    "tag": {
+      "title": "Thẻ",
+      "description": "Tạo và quản lý danh mục tùy chỉnh để phân loại nội dung của bạn.",
+      "createButton": "Tạo thẻ mới",
+      "emptyTitle": "Chưa có thẻ nào",
+      "emptyDescription": "Tạo thẻ để sắp xếp thư viện nội dung của bạn.",
+      "emptyAction": "Tạo thẻ đầu tiên",
+      "deleteTitle": "Xóa thẻ",
+      "deleteDescription": "Thao tác này sẽ xóa vĩnh viễn thẻ <name></name>. Hành động này không thể hoàn tác.",
+      "dialog": {
+        "createTitle": "Tạo thẻ",
+        "editTitle": "Chỉnh sửa thẻ",
+        "slugLabel": "Slug",
+        "slugPlaceholder": "reactjs",
+        "translationsLabel": "Bản dịch",
+        "addButton": "Thêm",
+        "languageLabel": "Ngôn ngữ",
+        "languagePlaceholder": "en",
+        "nameLabel": "Tên",
+        "namePlaceholder": "React",
+        "cancelButton": "Hủy",
+        "saveButton": "Lưu"
+      },
+      "toast": {
+        "created": "Đã tạo thẻ",
+        "updated": "Đã cập nhật thẻ",
+        "deleted": "Đã xóa thẻ",
+        "saveError": "Lưu thẻ thất bại",
+        "deleteError": "Không thể xóa thẻ"
+      }
+    },
+    "techStack": {
+      "title": "Công nghệ",
+      "description": "Quản lý danh sách công nghệ, framework và công cụ bạn sử dụng.",
+      "createButton": "Thêm công nghệ",
+      "emptyTitle": "Chưa có công nghệ nào",
+      "otherGroup": "Khác",
+      "deleteTitle": "Xóa công nghệ",
+      "deleteDescription": "Bạn có chắc muốn xóa <name></name>? Thao tác này sẽ ẩn công nghệ này khỏi phần giới thiệu công nghệ của bạn.",
+      "dialog": {
+        "createTitle": "Thêm công nghệ",
+        "editTitle": "Chỉnh sửa công nghệ",
+        "nameLabel": "Tên",
+        "slugLabel": "Slug",
+        "groupLabel": "Nhóm",
+        "logoLabel": "Logo",
+        "saveButton": "Lưu"
+      },
+      "toast": {
+        "created": "Đã thêm công nghệ",
+        "updated": "Đã cập nhật công nghệ",
+        "deleted": "Đã xóa công nghệ",
+        "saveError": "Lưu công nghệ thất bại",
+        "deleteError": "Không thể xóa công nghệ"
+      }
+    },
+    "userProfile": {
+      "title": "Cài đặt hồ sơ",
+      "description": "Quản lý thông tin cá nhân chung của bạn.",
+      "resetButton": "Đặt lại",
+      "cancelButton": "Hủy",
+      "saveButton": "Lưu",
+      "translations": {
+        "heading": "Bản dịch",
+        "addLanguage": "Thêm ngôn ngữ",
+        "newTabLabel": "MỚI",
+        "languageLabel": "Ngôn ngữ",
+        "languagePlaceholder": "en, vi..."
+      },
+      "commonInfo": {
+        "heading": "Thông tin chung",
+        "description": "Thiết lập hồ sơ tổng quát",
+        "birthdateLabel": "Ngày sinh"
+      },
+      "identity": {
+        "sectionTitle": "Thông tin cá nhân",
+        "firstNameLabel": "Tên",
+        "lastNameLabel": "Họ",
+        "displayNameLabel": "Tên hiển thị"
+      },
+      "content": {
+        "sectionTitle": "Nội dung",
+        "greetingLabel": "Lời chào",
+        "taglineLabel": "Câu giới thiệu",
+        "taglinePlaceholder": "Chào, mình là...",
+        "bioLabel": "Tiểu sử ngắn",
+        "bioPlaceholder": "Lập trình viên Fullstack..."
+      },
+      "quote": {
+        "sectionTitle": "Trích dẫn",
+        "quoteLabel": "Trích dẫn",
+        "quotePlaceholder": "Nhập một câu trích dẫn truyền cảm hứng...",
+        "authorLabel": "Tác giả"
+      },
+      "aboutMe": {
+        "sectionTitle": "Giới thiệu bản thân"
+      },
+      "socialLinks": {
+        "heading": "Liên kết mạng xã hội",
+        "description": "Thêm hồ sơ mạng xã hội của bạn",
+        "addLink": "Thêm liên kết",
+        "emptyTitle": "Chưa có liên kết mạng xã hội nào",
+        "emptyAction": "Thêm liên kết đầu tiên",
+        "platformPlaceholder": "GitHub",
+        "urlPlaceholder": "https://...",
+        "removeConfirm": "Xóa liên kết này?"
+      },
+      "toast": {
+        "updated": "Đã cập nhật hồ sơ",
+        "saveError": "Lưu thất bại"
+      }
+    },
+    "shared": {
+      "translationTabs": {
+        "addLanguage": "Thêm ngôn ngữ",
+        "removeLanguage": "Xóa ngôn ngữ",
+        "languageLabel": "Ngôn ngữ",
+        "languagePlaceholder": "en, vi..."
+      },
+      "managerListState": {
+        "loading": "Đang tải…",
+        "errorTitle": "Đã xảy ra lỗi",
+        "errorDescription": "Không thể tải danh sách. Vui lòng thử lại.",
+        "retry": "Thử lại"
+      },
+      "confirmDelete": {
+        "actionText": "Xóa",
+        "cancelText": "Hủy"
+      }
     }
   },
   "auth": {

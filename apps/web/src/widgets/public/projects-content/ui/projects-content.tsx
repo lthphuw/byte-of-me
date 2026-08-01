@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Pagination } from '@byte-of-me/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
@@ -14,19 +13,14 @@ import {
   projectKeys,
   ProjectTimelineItemSkeleton,
 } from '@/entities/project';
-import { ProjectFilters } from '@/features/public';
+import { ProjectFilters, useProjectFilters } from '@/features/public';
 import { ListPageHeader } from '@/shared/ui';
 import { ProjectsShell } from '@/widgets/public/projects-content/ui/projects-shell';
 import { ProjectsTimeline } from '@/widgets/public/projects-content/ui/projects-timeline';
 
 export function ProjectsContent() {
   const t = useTranslations('project');
-  const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState({
-    tagSlugs: [] as string[],
-    techStackSlugs: [] as string[],
-    search: '',
-  });
+  const { filters, page, updateFilters, setPage } = useProjectFilters();
   const hasActiveFilters =
     filters.search.length > 0 ||
     filters.tagSlugs.length > 0 ||
@@ -52,23 +46,19 @@ export function ProjectsContent() {
   const showSkeletons = isLoading;
 
   const toggleTag = (slug: string) => {
-    setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      tagSlugs: prev.tagSlugs.includes(slug)
-        ? prev.tagSlugs.filter((s) => s !== slug)
-        : [...prev.tagSlugs, slug],
-    }));
+    const nextTags = filters.tagSlugs.includes(slug)
+      ? filters.tagSlugs.filter((s) => s !== slug)
+      : [...filters.tagSlugs, slug];
+
+    updateFilters({ ...filters, tagSlugs: nextTags });
   };
 
   const toggleTech = (slug: string) => {
-    setPage(1);
-    setFilters((prev) => ({
-      ...prev,
-      techStackSlugs: prev.techStackSlugs.includes(slug)
-        ? prev.techStackSlugs.filter((s) => s !== slug)
-        : [...prev.techStackSlugs, slug],
-    }));
+    const nextTech = filters.techStackSlugs.includes(slug)
+      ? filters.techStackSlugs.filter((s) => s !== slug)
+      : [...filters.techStackSlugs, slug];
+
+    updateFilters({ ...filters, techStackSlugs: nextTech });
   };
 
   return (
@@ -78,13 +68,7 @@ export function ProjectsContent() {
         description={t('pageDescription')}
         count={t('count', { count: pagination.totalCount })}
       >
-        <ProjectFilters
-          value={filters}
-          onChange={(next) => {
-            setPage(1);
-            setFilters(next);
-          }}
-        />
+        <ProjectFilters value={filters} onChange={updateFilters} />
       </ListPageHeader>
 
       {showSkeletons ? (

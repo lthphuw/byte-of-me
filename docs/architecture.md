@@ -126,7 +126,7 @@ flowchart TB
 
 Solid arrows are runtime dependencies; dashed arrows are build-time only — `@byte-of-me/config` ships no code, only `tsconfig` presets that each workspace extends by relative path.
 
-Every package is consumed as **TypeScript source** via `transpilePackages`, so there is no build step before `pnpm dev`. Turborepo still runs `build` for the packages that emit declarations (`db`, `storage`, `logger`) because `check-types` and `test` depend on `^build`.
+Every package is consumed as **TypeScript source** via `transpilePackages`, so there is no build step before `bun run dev`. Turborepo still runs `build` for the packages that emit declarations (`db`, `storage`, `logger`) because `check-types` and `test` depend on `^build`.
 
 `@byte-of-me/ui` uses **subpath exports** rather than one barrel — `./rich-text-editor`, `./rich-text`, `./lib/sanitize`. That is deliberate: importing the barrel from a public-site client component would drag all of TipTap into the visitor's bundle.
 
@@ -310,11 +310,51 @@ Blog view counts deliberately sit outside all of this: `trackBlogView` writes a 
 | Add a page | `apps/web/src/app/[locale]/(public)/` + a widget in `widgets/public/` |
 | Add a dashboard section | `app/[locale]/(protected)/dashboard/` + `widgets/dashboard/` + `features/dashboard/` |
 | Change what a domain model can do | `entities/<model>/api/` — one file per operation, each starting with a guard |
-| Add a UI string | `apps/web/messages/en.json` **and** `vi.json` (types regenerate on build) |
+| Add a UI string | `apps/web/messages/en.json` **and** `vi.json` (types regenerate on build; `i18n-parity.spec.ts` fails if you touch only one) |
+| Add a dashboard editor | A **separate by-id read** for the form — never reuse the list row. See below |
 | Add a translatable content field | `packages/db/prisma/schema.prisma` → the `*Translation` model → migration |
 | Add a shared component | `packages/ui/src/` + an entry in `exports` if it should be deep-imported |
 | Change cache behaviour | `next.config.js` `headers()` for edge, `CACHE_TAGS` for data |
 | Change who can do something | `src/shared/lib/auth/session.ts` |
+
+---
+
+## List reads and edit reads are separate
+
+A dashboard manager renders a list; clicking Edit opens a dialog. The tempting shortcut is
+to hand the list row straight to the dialog as `initialData` — and blogs did exactly that,
+which forced the list query to carry every post's full TipTap body (20 posts × 2 locales)
+so the editor would have something to open.
+
+That coupling is worse than the wasted bytes: narrowing the list query then empties the
+editor, and the next Save writes that emptiness over a published post.
+
+```mermaid
+flowchart LR
+    subgraph before["Before — one read, two jobs"]
+        L1["getPaginatedAdminBlogs<br/>full content ×20 ×2 locales"] --> C1["Blog cards"]
+        L1 --> D1["Editor dialog"]
+    end
+
+    subgraph after["After — one read per job"]
+        L2["getPaginatedAdminBlogs<br/>id · language · title · description"] --> C2["Blog cards"]
+        E2["getAdminBlogById<br/>full record, on open"] --> D2["Editor dialog"]
+    end
+
+    classDef app fill:#4338ca,stroke:#a5b4fc,color:#eef2ff
+    classDef guard fill:#be123c,stroke:#fda4af,color:#fff1f2
+    class L1,C1,D1,L2,C2,C2,E2 app
+    class D2 guard
+```
+
+The dialog is a trust boundary of its own: it must not mount the form until the full record
+has arrived. The guard is `Boolean(editing) && !fullRecord` — one condition covering
+loading, fetch failure **and** idle, because any of the three leaves the form holding a
+partial row.
+
+`project`, `tag`, `company` and `user-profile` still reuse their list rows. Their
+translatable fields are short, so today it is only wasted bytes — but the failure mode is
+identical the moment one of them grows.
 
 ---
 

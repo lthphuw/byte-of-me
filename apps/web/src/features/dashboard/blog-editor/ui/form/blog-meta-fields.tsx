@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@byte-of-me/ui';
+import { useTranslations } from 'next-intl';
 
 import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import type { AdminProject } from '@/entities/project/model';
@@ -39,14 +40,15 @@ export function BlogMetaFields({
   isProjectLoading,
   isTagLoading,
 }: BlogMetaFieldsProps) {
+  const t = useTranslations('dashboard.blog');
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       <div className="space-y-4">
         <TextField
           control={control}
           name="slug"
-          label="Slug"
-          placeholder="my-awesome-blog"
+          label={t('meta.slugLabel')}
+          placeholder={t('meta.slugPlaceholder')}
         />
 
         <FormField
@@ -57,17 +59,17 @@ export function BlogMetaFields({
               <Loading />
             ) : (
               <FormItem>
-                <FormLabel>Related Project</FormLabel>
+                <FormLabel>{t('meta.projectLabel')}</FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={field.onChange}
                     value={field.value || 'none'}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a projectSchema (optional)" />
+                      <SelectValue placeholder={t('meta.projectPlaceholder')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
+                      <SelectItem value="none">{t('meta.projectNone')}</SelectItem>
 
                       {projects?.map((project) => (
                         <SelectItem key={project.id} value={project.id}>
@@ -95,7 +97,7 @@ export function BlogMetaFields({
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel>Published</FormLabel>
+                <FormLabel>{t('meta.publishedLabel')}</FormLabel>
               </div>
             </FormItem>
           )}
@@ -108,7 +110,7 @@ export function BlogMetaFields({
           name="coverImageId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Cover Image</FormLabel>
+              <FormLabel>{t('meta.coverImageLabel')}</FormLabel>
               <FormControl>
                 <MediaSelect
                   value={field.value ?? undefined}
@@ -128,13 +130,13 @@ export function BlogMetaFields({
               <Loading />
             ) : (
               <FormItem>
-                <FormLabel>Tags</FormLabel>
+                <FormLabel>{t('meta.tagsLabel')}</FormLabel>
                 <FormControl>
                   <MultiSelect
                     options={tagOptions}
                     selected={field.value || []}
                     onValueChange={field.onChange}
-                    placeholder="Select tags..."
+                    placeholder={t('meta.tagsPlaceholder')}
                   />
                 </FormControl>
                 <FormMessage />

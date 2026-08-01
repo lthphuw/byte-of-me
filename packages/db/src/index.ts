@@ -15,10 +15,18 @@ const globalForPrisma = global as unknown as {
   prisma?: PrismaClient;
 };
 
-export function createPrismaClient() {
-  const adapter = new PrismaPg({ connectionString });
+export interface PrismaDeps {
+  PrismaClient: typeof PrismaClient;
+  PrismaPg: typeof PrismaPg;
+}
 
-  const client = new PrismaClient({
+export function createPrismaClient(deps: Partial<PrismaDeps> = {}) {
+  const Client = deps.PrismaClient ?? PrismaClient;
+  const Adapter = deps.PrismaPg ?? PrismaPg;
+
+  const adapter = new Adapter({ connectionString });
+
+  const client = new Client({
     adapter,
     log: [
       { emit: 'event', level: 'query' },

@@ -299,6 +299,442 @@ declare const messages: {
       "messageLabel": "Message",
       "noSubjectProvided": "No subject provided",
       "close": "Close"
+    },
+    "blog": {
+      "title": "Blog Posts",
+      "description": "Create and manage your articles, drafts, and published content.",
+      "createButton": "New Blog",
+      "emptyTitle": "No blogs found",
+      "emptyDescription": "Create your first blog.",
+      "deleteTitle": "Delete Blog?",
+      "deleteDescription": "This action cannot be undone.",
+      "loadError": "Failed to load this post.",
+      "dialog": {
+        "editTitle": "Edit blog",
+        "createTitle": "Create blog",
+        "editDescription": "Update the post and its translations, then save.",
+        "createDescription": "Write the post, add translations, and publish when ready.",
+        "retry": "Retry",
+        "loadingLabel": "Loading blog",
+        "cancelButton": "Cancel",
+        "saveButton": "Save changes",
+        "createSubmitButton": "Create post"
+      },
+      "toast": {
+        "created": "Blog created",
+        "updated": "Blog updated",
+        "deleted": "Blog deleted",
+        "saveError": "Failed to save blog",
+        "deleteError": "Could not delete blog"
+      },
+      "form": {
+        "draftFound": "Unsaved draft from {time} found.",
+        "restore": "Restore",
+        "discard": "Discard",
+        "contentTranslationsTitle": "Content Translations",
+        "titleLabel": "Title",
+        "titlePlaceholder": "Post title...",
+        "descriptionLabel": "Short Description",
+        "descriptionPlaceholder": "Brief summary of the post...",
+        "bodyLabel": "Body Content",
+        "savePost": "Save Post"
+      },
+      "meta": {
+        "slugLabel": "Slug",
+        "slugPlaceholder": "my-awesome-blog",
+        "projectLabel": "Related Project",
+        "projectPlaceholder": "Select a project (optional)",
+        "projectNone": "None",
+        "publishedLabel": "Published",
+        "coverImageLabel": "Cover Image",
+        "tagsLabel": "Tags",
+        "tagsPlaceholder": "Select tags..."
+      },
+      "overview": {
+        "viewsChartTitle": "Views — last 30 days",
+        "noViewsYet": "No views yet",
+        "topPostsTitle": "Top posts",
+        "dayViewsLabel": "{date}: {count, plural, =0 {No views} one {# view} other {# views}}",
+        "topBlogViewsLabel": "{title}: {count, plural, =0 {No views} one {# view} other {# views}}",
+        "likesLabel": "Likes",
+        "clapsLabel": "Claps",
+        "blogViewsLabel": "Blog Views",
+        "allTimeSub": "All time",
+        "last30DaysSub": "{count, number} in last 30 days"
+      }
+    },
+    "comment": {
+      "title": "Comments",
+      "description": "Moderate comments left on your blogs and projects",
+      "emptyTitle": "No comments yet",
+      "emptyDescription": "Comments on your blogs and projects will show up here.",
+      "avatarFallbackAlt": "User",
+      "source": {
+        "blog": "Blog: {title}",
+        "project": "Project: {title}",
+        "untitledProject": "Untitled",
+        "unknown": "Unknown source"
+      },
+      "status": {
+        "hidden": "Hidden"
+      },
+      "actions": {
+        "restore": "Restore",
+        "hide": "Hide"
+      },
+      "toast": {
+        "hidden": "Comment hidden",
+        "restored": "Comment restored",
+        "updateError": "Error updating comment"
+      },
+      "dialog": {
+        "hideTitle": "Hide Comment",
+        "hideDescription": "This comment will no longer be visible to visitors. You can restore it later."
+      }
+    },
+    "common": {
+      "nav": {
+        "soonBadge": "Soon"
+      },
+      "stats": {
+        "messagesLabel": "Messages",
+        "messagesSub": "{count, number} new",
+        "projectsLabel": "Projects",
+        "projectsSub": "Live works",
+        "blogsLabel": "Blogs",
+        "blogsSub": "Articles",
+        "educationLabel": "Education",
+        "educationSub": "Certificates",
+        "companiesLabel": "Companies",
+        "techStackLabel": "Tech Stack",
+        "tagsLabel": "Tags"
+      }
+    },
+    "company": {
+      "title": "Work Experience",
+      "description": "Maintain your professional timeline and company records",
+      "createButton": "Add Experience",
+      "emptyTitle": "No work experience",
+      "emptyDescription": "Start by adding the first company you worked with.",
+      "emptyAction": "Add Your First Entry",
+      "present": "Present",
+      "rolesBadge": "{count, plural, =1 {# Role} other {# Roles}}",
+      "techStackBadge": "{count, number} Tech",
+      "deleteTitle": "Delete work experience?",
+      "deleteDescription": "Are you sure you want to delete <name></name> and all of its roles?",
+      "toast": {
+        "created": "Work experience created",
+        "updated": "Work experience updated",
+        "deleted": "Work experience deleted",
+        "saveError": "Failed to save work experience",
+        "deleteError": "Could not delete work experience"
+      },
+      "dialog": {
+        "createTitle": "Add Work Experience",
+        "editTitle": "Edit Work Experience",
+        "logoLabel": "Company Logo",
+        "companyLabel": "Company Name",
+        "locationLabel": "Location",
+        "startDateLabel": "Start Date",
+        "endDateLabel": "End Date",
+        "techStackLabel": "Tech Stack",
+        "techStackPlaceholder": "Select tech stack",
+        "translationsTitle": "Translations",
+        "descriptionLabel": "Description",
+        "rolesTitle": "Roles",
+        "addRoleButton": "Add Role",
+        "saveButton": "Save"
+      },
+      "role": {
+        "fallbackTitle": "Role {index, number}",
+        "removeButton": "Remove role",
+        "startDateLabel": "Start Date",
+        "endDateLabel": "End Date",
+        "titleLabel": "Role Title",
+        "descriptionLabel": "Description",
+        "tasksTitle": "Tasks",
+        "addTaskButton": "Add Task"
+      },
+      "task": {
+        "sortLabel": "Sort",
+        "contentLabel": "Task",
+        "removeButton": "Remove task"
+      }
+    },
+    "education": {
+      "title": "Education",
+      "description": "Manage your academic background",
+      "createButton": "Add Education",
+      "emptyTitle": "No education entries",
+      "emptyDescription": "Start by adding your first academic achievement.",
+      "emptyAction": "Add Your First Entry",
+      "untitled": "Untitled Education",
+      "present": "Present",
+      "ongoing": "Ongoing",
+      "achievementCount": "{count, plural, =1 {1 Achievement} other {# Achievements}}",
+      "deleteTitle": "Delete education?",
+      "deleteDescription": "Are you sure you want to delete <name></name>?",
+      "toast": {
+        "created": "Education created",
+        "updated": "Education updated",
+        "deleted": "Education deleted",
+        "saveError": "Failed to save education",
+        "deleteError": "Could not delete education"
+      },
+      "dialog": {
+        "createTitle": "Add education",
+        "editTitle": "Edit education",
+        "createDescription": "Add a school or degree, then list what you achieved there.",
+        "editDescription": "Update this entry and the achievements listed under it.",
+        "logoLabel": "Institution Logo",
+        "startDateLabel": "Start Date",
+        "endDateLabel": "End Date",
+        "translationsTitle": "Translations",
+        "translationsDescription": "One tab per language. Visitors see the tab matching their locale.",
+        "schoolLabel": "School / Degree",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "A short summary of this program…",
+        "cancelButton": "Cancel",
+        "saveButton": "Save changes",
+        "createSubmitButton": "Add education"
+      },
+      "achievements": {
+        "title": "Achievements",
+        "reorderHint": "Drag the handle to reorder — this is the order visitors see.",
+        "addButton": "Add",
+        "emptyText": "No achievements yet.",
+        "addFirstButton": "Add the first one",
+        "untitled": "Untitled achievement",
+        "reorderAriaLabel": "Reorder achievement {index, number} of {total, number}",
+        "removeAriaLabel": "Remove achievement",
+        "imagesLabel": "Images",
+        "titleLabel": "Title",
+        "contentLabel": "Content",
+        "contentPlaceholder": "Describe this achievement…"
+      }
+    },
+    "media": {
+      "title": "Media Library",
+      "description": "Centralized storage for your portfolio assets and banner images.",
+      "addButton": "Add Media",
+      "empty": {
+        "title": "No media found",
+        "description": "Your library is empty. Upload your first image to get started."
+      },
+      "dialog": {
+        "uploadTitle": "Upload Media",
+        "deleteTitle": "Delete Media",
+        "deleteDescription": "This will permanently delete this media file. This action cannot be undone."
+      },
+      "picker": {
+        "libraryLabel": "Library",
+        "uploadButton": "Upload",
+        "uploadAssetsTitle": "Upload Assets",
+        "clearAll": "Clear All",
+        "selectMedia": "Select Media",
+        "selectedCount": "{count, plural, =1 {1 selected} other {# selected}}",
+        "moreCount": "{count, plural, =1 {+ 1 more} other {+ # more}}",
+        "clickToManage": "Click to manage",
+        "clickToChange": "Click to change",
+        "chooseFromLibrary": "Upload or choose from library",
+        "selectedAlt": "Selected",
+        "loadMore": "Load More"
+      },
+      "upload": {
+        "dropzoneText": "Click or drag images here",
+        "invalidTypeTitle": "Invalid type",
+        "invalidTypeDescription": "{fileName} is not an image.",
+        "fileTooLargeTitle": "File too large",
+        "fileTooLargeDescription": "{fileName} exceeds {maxSize, number}MB.",
+        "successTitle": "Success",
+        "successDescription": "All images uploaded.",
+        "uploadFailedTitle": "Upload failed",
+        "uploadButton": "{count, plural, =1 {Upload 1 File} other {Upload # Files}}"
+      },
+      "toast": {
+        "uploadSuccess": "Upload successful",
+        "uploadError": "Upload failed",
+        "deleteSuccess": "Media deleted",
+        "deleteError": "Could not delete media"
+      }
+    },
+    "project": {
+      "title": "Projects",
+      "description": "Manage your portfolio gallery, case studies, and deployment links.",
+      "createButton": "New Project",
+      "emptyTitle": "No projects found",
+      "emptyDescription": "Create your first project to showcase your work.",
+      "deleteTitle": "Delete Project?",
+      "deleteDescription": "This action cannot be undone. This will permanently delete the project and remove its data from our servers.",
+      "dialog": {
+        "createTitle": "New Project",
+        "editTitle": "Edit Project",
+        "slugLabel": "Slug",
+        "slugPlaceholder": "my-awesome-project",
+        "startDateLabel": "Start Date",
+        "endDateLabel": "End Date",
+        "githubLinkLabel": "GitHub Link",
+        "githubLinkPlaceholder": "https://github.com/...",
+        "liveLinkLabel": "Live Link",
+        "liveLinkPlaceholder": "https://...",
+        "publishedLabel": "Published",
+        "techStackLabel": "Tech Stack",
+        "techStackPlaceholder": "Select tech stack",
+        "tagsLabel": "Tags",
+        "tagsPlaceholder": "Select tags",
+        "translationsLabel": "Content Translations",
+        "titleLabel": "Title",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "What this project is, and what it does…",
+        "saveButton": "Save Project",
+        "savingButton": "Saving..."
+      },
+      "coauthors": {
+        "title": "Co-authors",
+        "addButton": "Add Co-author",
+        "nameLabel": "Name",
+        "namePlaceholder": "Jane Doe",
+        "emailLabel": "Email",
+        "emailPlaceholder": "jane@example.com",
+        "removeButton": "Remove co-author"
+      },
+      "toast": {
+        "created": "Project created",
+        "updated": "Project updated",
+        "deleted": "Project deleted",
+        "saveError": "Failed to save project",
+        "deleteError": "Could not delete project"
+      }
+    },
+    "tag": {
+      "title": "Tags",
+      "description": "Create and manage custom taxonomies to categorize your content.",
+      "createButton": "Create New Tag",
+      "emptyTitle": "No tags found",
+      "emptyDescription": "Create tags to organize your content library.",
+      "emptyAction": "Create First Tag",
+      "deleteTitle": "Delete Tag",
+      "deleteDescription": "This will permanently delete the tag <name></name>. This action cannot be undone.",
+      "dialog": {
+        "createTitle": "Create Tag",
+        "editTitle": "Edit Tag",
+        "slugLabel": "Slug",
+        "slugPlaceholder": "reactjs",
+        "translationsLabel": "Translations",
+        "addButton": "Add",
+        "languageLabel": "Language",
+        "languagePlaceholder": "en",
+        "nameLabel": "Name",
+        "namePlaceholder": "React",
+        "cancelButton": "Cancel",
+        "saveButton": "Save"
+      },
+      "toast": {
+        "created": "Tag created",
+        "updated": "Tag updated",
+        "deleted": "Tag deleted",
+        "saveError": "Failed to save tag",
+        "deleteError": "Could not delete tag"
+      }
+    },
+    "techStack": {
+      "title": "Tech Stack",
+      "description": "Maintain the list of technologies, frameworks, and tools you use.",
+      "createButton": "Add TechStack",
+      "emptyTitle": "No tech stacks found",
+      "otherGroup": "Other",
+      "deleteTitle": "Remove Tech stack",
+      "deleteDescription": "Are you sure you want to remove <name></name>? This will hide it from your tech stack showcase.",
+      "dialog": {
+        "createTitle": "Add Tech Stack",
+        "editTitle": "Edit Tech Stack",
+        "nameLabel": "Name",
+        "slugLabel": "Slug",
+        "groupLabel": "Group",
+        "logoLabel": "Logo",
+        "saveButton": "Save"
+      },
+      "toast": {
+        "created": "Tech stack created",
+        "updated": "Tech stack updated",
+        "deleted": "Tech stack deleted",
+        "saveError": "Failed to save tech stack",
+        "deleteError": "Could not delete tech stack"
+      }
+    },
+    "userProfile": {
+      "title": "Profile Settings",
+      "description": "Manage your global identity.",
+      "resetButton": "Reset",
+      "cancelButton": "Cancel",
+      "saveButton": "Save",
+      "translations": {
+        "heading": "Translations",
+        "addLanguage": "Add Language",
+        "newTabLabel": "NEW",
+        "languageLabel": "Language",
+        "languagePlaceholder": "en, vi..."
+      },
+      "commonInfo": {
+        "heading": "Common Information",
+        "description": "General profile settings",
+        "birthdateLabel": "Birthdate"
+      },
+      "identity": {
+        "sectionTitle": "Identity",
+        "firstNameLabel": "First Name",
+        "lastNameLabel": "Last Name",
+        "displayNameLabel": "Display Name"
+      },
+      "content": {
+        "sectionTitle": "Content",
+        "greetingLabel": "Greeting",
+        "taglineLabel": "Tagline",
+        "taglinePlaceholder": "Hi, I'm...",
+        "bioLabel": "Short Bio",
+        "bioPlaceholder": "Fullstack developer..."
+      },
+      "quote": {
+        "sectionTitle": "Quote",
+        "quoteLabel": "Quote",
+        "quotePlaceholder": "Enter an inspiring quote...",
+        "authorLabel": "Author"
+      },
+      "aboutMe": {
+        "sectionTitle": "About Me"
+      },
+      "socialLinks": {
+        "heading": "Social Links",
+        "description": "Add your social profiles",
+        "addLink": "Add Link",
+        "emptyTitle": "No social links yet",
+        "emptyAction": "Add your first link",
+        "platformPlaceholder": "GitHub",
+        "urlPlaceholder": "https://...",
+        "removeConfirm": "Remove this link?"
+      },
+      "toast": {
+        "updated": "Profile updated",
+        "saveError": "Save failed"
+      }
+    },
+    "shared": {
+      "translationTabs": {
+        "addLanguage": "Add Language",
+        "removeLanguage": "Remove Language",
+        "languageLabel": "Language",
+        "languagePlaceholder": "en, vi..."
+      },
+      "managerListState": {
+        "loading": "Loading…",
+        "errorTitle": "Something went wrong",
+        "errorDescription": "The list could not be loaded. Please try again.",
+        "retry": "Retry"
+      },
+      "confirmDelete": {
+        "actionText": "Delete",
+        "cancelText": "Cancel"
+      }
     }
   },
   "auth": {

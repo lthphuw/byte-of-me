@@ -9,6 +9,7 @@ import {
   EmptyTitle,
   Loading,
 } from '@byte-of-me/ui';
+import { useTranslations } from 'next-intl';
 
 export interface ManagerListStateProps {
   isLoading: boolean;
@@ -28,14 +29,6 @@ export interface ManagerListStateProps {
   children: ReactNode;
 }
 
-/** Default loading body — the block every manager used to hand-write. */
-const DEFAULT_SKELETON = (
-  <div className="flex h-64 flex-col items-center justify-center gap-3">
-    <Loading />
-    <p className="animate-pulse text-xs text-muted-foreground">Loading…</p>
-  </div>
-);
-
 /**
  * The standard list body for dashboard managers:
  * loading → error (with retry) → empty (with CTA) → content.
@@ -52,8 +45,19 @@ export function ManagerListState({
   skeleton,
   children,
 }: ManagerListStateProps) {
+  const t = useTranslations('dashboard.shared');
+
   if (isLoading) {
-    return skeleton ?? DEFAULT_SKELETON;
+    return (
+      skeleton ?? (
+        <div className="flex h-64 flex-col items-center justify-center gap-3">
+          <Loading />
+          <p className="animate-pulse text-xs text-muted-foreground">
+            {t('managerListState.loading')}
+          </p>
+        </div>
+      )
+    );
   }
 
   // Only meaningful once the first page has painted; while `isLoading` the
@@ -71,14 +75,14 @@ export function ManagerListState({
       <div className="flex justify-center py-20">
         <Empty>
           <EmptyHeader>
-            <EmptyTitle>Something went wrong</EmptyTitle>
+            <EmptyTitle>{t('managerListState.errorTitle')}</EmptyTitle>
             <EmptyDescription>
-              The list could not be loaded. Please try again.
+              {t('managerListState.errorDescription')}
             </EmptyDescription>
           </EmptyHeader>
           {onRetry && (
             <Button variant="outline" size="sm" onClick={onRetry}>
-              Retry
+              {t('managerListState.retry')}
             </Button>
           )}
         </Empty>

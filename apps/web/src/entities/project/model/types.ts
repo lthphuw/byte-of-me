@@ -4,13 +4,26 @@ import type { Project } from '@/shared/types/models';
 
 export type AdminProject = Prisma.ProjectGetPayload<{
   include: {
-    translations: true;
+    translations: {
+      select: {
+        id: true;
+        language: true;
+        title: true;
+        description: true;
+      };
+    };
     techStacks: true;
     tags: {
       include: {
         tag: {
           include: {
-            translations: true;
+            translations: {
+              select: {
+                id: true;
+                language: true;
+                name: true;
+              };
+            };
           };
         };
       };

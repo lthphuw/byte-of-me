@@ -4,7 +4,17 @@ import { type Prisma, prisma } from '@byte-of-me/db';
 
 import type { PublicBlog } from '@/entities/blog/model/types';
 import type { PublicProject } from '@/entities/project/model/types';
-import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
+// Direct submodule import, not the `@/shared/api` barrel: that barrel also
+// re-exports `./mailer` and `./s3-storage-api`, which construct a nodemailer
+// transport and an S3 client at module scope. Pulling those in eagerly for
+// every caller of this action is the same barrel-eagerness hazard already
+// fixed once for `@byte-of-me/ui` (see the `cn` re-export in
+// `@/shared/lib/utils`) — same fix here: import the file this action
+// actually needs, directly.
+import {
+  handlePublicAction,
+  withPublicActionHandler,
+} from '@/shared/api/public-action-template';
 import { getAuthenticatedAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import {

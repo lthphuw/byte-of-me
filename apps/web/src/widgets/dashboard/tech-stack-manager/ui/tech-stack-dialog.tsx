@@ -14,6 +14,7 @@ import {
   FormLabel,
   FormMessage, Input , SubmitButton } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 
 import type { AdminTechStack } from '@/entities/tech-stack';
 import {
@@ -36,6 +37,7 @@ export function TechStackDialog({
   onSubmit: (values: TechStackFormValues) => void;
   loading: boolean;
 }) {
+  const t = useTranslations('dashboard.techStack');
   const form = useForm<TechStackFormValues>({
     resolver: zodResolver(techStackSchema),
     defaultValues: {
@@ -60,7 +62,7 @@ export function TechStackDialog({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <DialogHeader>
               <DialogTitle>
-                {initialData ? 'Edit' : 'Add'} Tech Stack
+                {initialData ? t('dialog.editTitle') : t('dialog.createTitle')}
               </DialogTitle>
             </DialogHeader>
 
@@ -71,7 +73,7 @@ export function TechStackDialog({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>{t('dialog.nameLabel')}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -86,7 +88,7 @@ export function TechStackDialog({
                 name="slug"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Slug</FormLabel>
+                    <FormLabel>{t('dialog.slugLabel')}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -102,7 +104,7 @@ export function TechStackDialog({
               name="group"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Group</FormLabel>
+                  <FormLabel>{t('dialog.groupLabel')}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -117,7 +119,7 @@ export function TechStackDialog({
               name="logoId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Logo</FormLabel>
+                  <FormLabel>{t('dialog.logoLabel')}</FormLabel>
                   <FormControl>
                     <MediaSelect
                       value={field.value ?? undefined}
@@ -134,7 +136,7 @@ export function TechStackDialog({
                 loading={loading}
                 disabled={!form.formState.isValid}
               >
-                Save
+                {t('dialog.saveButton')}
               </SubmitButton>
             </DialogFooter>
           </form>

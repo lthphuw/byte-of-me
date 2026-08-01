@@ -12,6 +12,7 @@ import {
 } from '@byte-of-me/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Eye, EyeOff } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { getPaginatedAdminComments } from '@/entities/comment/api/get-paginated-admin-comments';
@@ -23,18 +24,26 @@ import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
 const PAGE_SIZE = 12;
 
-function commentSource(comment: AdminComment): string {
-  if (comment.blog) {
-    return `Blog: ${comment.blog.translations[0]?.title ?? comment.blog.slug}`;
-  }
-  if (comment.project) {
-    return `Project: ${comment.project.translations[0]?.title ?? 'Untitled'}`;
-  }
-  return 'Unknown source';
-}
-
 export function CommentManager() {
+  const t = useTranslations('dashboard.comment');
+  const tShared = useTranslations('dashboard.shared');
   const queryClient = useQueryClient();
+
+  function commentSource(comment: AdminComment): string {
+    if (comment.blog) {
+      return t('source.blog', {
+        title: comment.blog.translations[0]?.title ?? comment.blog.slug,
+      });
+    }
+    if (comment.project) {
+      return t('source.project', {
+        title:
+          comment.project.translations[0]?.title ??
+          t('source.untitledProject'),
+      });
+    }
+    return t('source.unknown');
+  }
 
   const [page, setPage] = useState(1);
   const [commentToHide, setCommentToHide] = useState<AdminComment | null>(
@@ -62,18 +71,15 @@ export function CommentManager() {
       setCommentVisibility(id, hidden),
     onSuccess: (_, { hidden }) => {
       queryClient.invalidateQueries({ queryKey: commentKeys.adminAll() });
-      toast(hidden ? 'Comment hidden' : 'Comment restored');
+      toast(hidden ? t('toast.hidden') : t('toast.restored'));
       setCommentToHide(null);
     },
-    onError: () => toast.error('Error updating comment'),
+    onError: () => toast.error(t('toast.updateError')),
   });
 
   return (
     <div className="space-y-6">
-      <ManagerPageHeader
-        title="Comments"
-        description="Moderate comments left on your blogs and projects"
-      />
+      <ManagerPageHeader title={t('title')} description={t('description')} />
 
       <div className="relative min-h-[300px]">
         <ManagerListState
@@ -82,8 +88,8 @@ export function CommentManager() {
           onRetry={() => refetch()}
           isFetching={isFetching}
           isEmpty={comments.length === 0}
-          emptyTitle="No comments yet"
-          emptyDescription="Comments on your blogs and projects will show up here."
+          emptyTitle={t('emptyTitle')}
+          emptyDescription={t('emptyDescription')}
         >
           <div className="flex flex-col gap-2">
             {comments.map((comment) => (
@@ -94,7 +100,7 @@ export function CommentManager() {
                 <Avatar className="h-8 w-8 shrink-0">
                   <AvatarImage
                     src={comment.user.image ?? undefined}
-                    alt={comment.user.name ?? 'User'}
+                    alt={comment.user.name ?? t('avatarFallbackAlt')}
                   />
                   <AvatarFallback>
                     {(comment.user.name ?? '?').charAt(0).toUpperCase()}
@@ -111,7 +117,7 @@ export function CommentManager() {
                     </span>
                     {comment.isDeleted && (
                       <Badge variant="destructive" className="text-[10px]">
-                        Hidden
+                        {t('status.hidden')}
                       </Badge>
                     )}
                   </div>
@@ -138,7 +144,7 @@ export function CommentManager() {
                       }
                     >
                       <Eye className="h-4 w-4" />
-                      Restore
+                      {t('actions.restore')}
                     </Button>
                   ) : (
                     <Button
@@ -148,7 +154,7 @@ export function CommentManager() {
                       onClick={() => setCommentToHide(comment)}
                     >
                       <EyeOff className="h-4 w-4" />
-                      Hide
+                      {t('actions.hide')}
                     </Button>
                   )}
                 </div>
@@ -176,8 +182,10 @@ export function CommentManager() {
           commentToHide &&
           visibilityMutation.mutate({ id: commentToHide.id, hidden: true })
         }
-        title="Hide Comment"
-        description="This comment will no longer be visible to visitors. You can restore it later."
+        title={t('dialog.hideTitle')}
+        description={t('dialog.hideDescription')}
+        actionText={t('actions.hide')}
+        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

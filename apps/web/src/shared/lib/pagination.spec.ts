@@ -1,4 +1,6 @@
-import { buildPaginatedMeta, clampPagination } from './pagination';
+import { describe, expect, it } from 'bun:test';
+
+import { buildPaginatedMeta, clampPagination, MAX_PAGE } from './pagination';
 
 describe('clampPagination', () => {
   it('passes through in-range values', () => {
@@ -45,6 +47,16 @@ describe('clampPagination', () => {
       page: 1,
       limit: 9,
     });
+  });
+
+  it('caps an absurd page so `skip` stays a value Prisma accepts', () => {
+    expect(clampPagination({ page: Infinity }).page).toBe(MAX_PAGE);
+    expect(clampPagination({ page: 1e12 }).page).toBe(MAX_PAGE);
+    expect(MAX_PAGE * 50).toBeLessThan(2_147_483_647);
+  });
+
+  it('honours a custom page ceiling', () => {
+    expect(clampPagination({ page: 999 }, { maxPage: 10 }).page).toBe(10);
   });
 });
 

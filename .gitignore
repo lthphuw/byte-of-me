@@ -31,6 +31,13 @@ next-env.d.ts
 .vercel/
 
 # =====================
+docs/superpowers  
+.claude
+.superpowers
+CLAUDE.md
+AGENTS.md
+
+# =====================
 # Environment Variables
 # =====================
 .env

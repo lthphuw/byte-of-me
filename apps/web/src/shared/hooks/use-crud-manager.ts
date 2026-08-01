@@ -20,6 +20,26 @@ export type CrudManagerOptions<TItem extends { id: string }, TSaveInput> = {
   queryKey: readonly unknown[];
   /** Human label used in toasts, e.g. 'Tag' → 'Tag created'. */
   entityLabel: string;
+  /**
+   * Whole, pre-translated toast sentences (the i18n path). When supplied,
+   * each string is used verbatim instead of concatenating `entityLabel`
+   * onto an English verb phrase (the legacy, non-i18n fallback below).
+   */
+  messages?: {
+    created: string;
+    updated: string;
+    deleted: string;
+    saveError: string;
+    deleteError: string;
+  };
+  /**
+   * Key of a per-item cache the list query does not cover — e.g.
+   * `blogKeys.detail(item.id)`, the full document the editor loads on demand.
+   * That key is not a descendant of `queryKey`, so invalidating the list would
+   * leave the pre-save document cached; supply this and the entry is dropped
+   * when the item is saved, forcing the next edit to re-fetch.
+   */
+  detailKey?: (item: TItem) => readonly unknown[];
   pageSize?: number;
   create: (values: TSaveInput) => Promise<ApiResponse<unknown>>;
   update: (id: string, values: TSaveInput) => Promise<ApiResponse<unknown>>;
@@ -51,6 +71,8 @@ export type CrudManagerOptions<TItem extends { id: string }, TSaveInput> = {
 export function useCrudManager<TItem extends { id: string }, TSaveInput>({
   queryKey,
   entityLabel,
+  messages,
+  detailKey,
   pageSize = 12,
   fetchPage,
   fetchAll,
@@ -86,23 +108,39 @@ export function useCrudManager<TItem extends { id: string }, TSaveInput>({
     mutationFn: async (values: TSaveInput) =>
       unwrap(await (editing ? update(editing.id, values) : create(values))),
     onSuccess: () => {
+      const saved = editing;
       queryClient.invalidateQueries({ queryKey });
       toast.success(
-        editing ? `${entityLabel} updated` : `${entityLabel} created`
+        messages
+          ? saved
+            ? messages.updated
+            : messages.created
+          : saved
+            ? `${entityLabel} updated`
+            : `${entityLabel} created`
       );
       closeDialog();
+      // Removed rather than invalidated, and after `closeDialog` so the now
+      // disabled observer does not refetch on the way out: an invalidated but
+      // still-present entry would be handed to the editor for one render on
+      // the next open, which is exactly the pre-save document we are dropping.
+      if (saved && detailKey) {
+        queryClient.removeQueries({ queryKey: detailKey(saved) });
+      }
     },
-    onError: () => toast.error(`Failed to save ${lowerLabel}`),
+    onError: () =>
+      toast.error(messages ? messages.saveError : `Failed to save ${lowerLabel}`),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => unwrap(await remove(id)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast.success(`${entityLabel} deleted`);
+      toast.success(messages ? messages.deleted : `${entityLabel} deleted`);
       setItemToDelete(null);
     },
-    onError: () => toast.error(`Could not delete ${lowerLabel}`),
+    onError: () =>
+      toast.error(messages ? messages.deleteError : `Could not delete ${lowerLabel}`),
   });
 
   const openCreateDialog = () => {

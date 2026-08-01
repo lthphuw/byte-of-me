@@ -34,7 +34,15 @@ export async function createTag(
           create: values.translations,
         },
       },
-      include: { translations: true },
+      include: {
+        translations: {
+          select: {
+            id: true,
+            language: true,
+            name: true,
+          },
+        },
+      },
     });
 
     revalidateTag(CACHE_TAGS.TAG, 'max');

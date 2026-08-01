@@ -2,6 +2,7 @@
 
 import { Button , Form , Icons , Tabs, TabsContent, TabsList, TabsTrigger } from '@byte-of-me/ui';
 import { Globe2, Plus, RotateCcw } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { ProfileTranslationCard } from './profile-translation-card';
 import { UserProfileSectionManager } from './user-profile-section-manager';
@@ -18,12 +19,13 @@ export function UserProfileManager({
 }) {
   const { form, fields, activeTab, setActiveTab, isSaving, handlers } =
     useProfileController(initUser);
+  const t = useTranslations('dashboard.userProfile');
 
   return (
     <Form {...form}>
       <ManagerPageHeader
-        title="Profile Settings"
-        description="Manage your global identity."
+        title={t('title')}
+        description={t('description')}
         action={
           <Button
             type="button"
@@ -32,7 +34,7 @@ export function UserProfileManager({
             onClick={handlers.handleReset}
             className="gap-2"
           >
-            <RotateCcw className="h-4 w-4" /> Reset
+            <RotateCcw className="h-4 w-4" /> {t('resetButton')}
           </Button>
         }
       />
@@ -41,7 +43,7 @@ export function UserProfileManager({
       <section className="space-y-4">
         <div className="flex items-center justify-between border-b pb-2">
           <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-            <Globe2 className="h-4 w-4" /> Translations
+            <Globe2 className="h-4 w-4" /> {t('translations.heading')}
           </div>
           <Button
             type="button"
@@ -50,7 +52,7 @@ export function UserProfileManager({
             onClick={handlers.addLanguage}
             className="gap-2 text-primary"
           >
-            <Plus className="h-4 w-4" /> Add Language
+            <Plus className="h-4 w-4" /> {t('translations.addLanguage')}
           </Button>
         </div>
 
@@ -59,7 +61,7 @@ export function UserProfileManager({
             {fields.map((field, index) => (
               <TabsTrigger key={field.id} value={field.id}>
                 {form.watch(`translations.${index}.language`)?.toUpperCase() ||
-                  'NEW'}
+                  t('translations.newTabLabel')}
               </TabsTrigger>
             ))}
           </TabsList>
@@ -82,7 +84,7 @@ export function UserProfileManager({
       {/* Action Bar */}
       <div className="sticky bottom-6 ml-auto flex w-fit justify-end gap-3 rounded-2xl border p-4 shadow-2xl backdrop-blur-xl">
         <Button type="button" variant="ghost" onClick={handlers.handleReset}>
-          Cancel
+          {t('cancelButton')}
         </Button>
         <Button
           onClick={handlers.handleSave}
@@ -90,7 +92,7 @@ export function UserProfileManager({
           className="min-w-[140px]"
         >
           {isSaving && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
-          Save
+          {t('saveButton')}
         </Button>
       </div>
     </Form>

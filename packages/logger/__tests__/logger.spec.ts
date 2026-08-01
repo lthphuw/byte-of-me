@@ -1,14 +1,16 @@
+import { afterEach, beforeEach, describe, expect, it, spyOn } from 'bun:test';
+
 import { Logger, logger } from '../src';
 
 describe('Logger', () => {
-  let log: jest.SpyInstance;
-  let warn: jest.SpyInstance;
-  let error: jest.SpyInstance;
+  let log: ReturnType<typeof spyOn>;
+  let warn: ReturnType<typeof spyOn>;
+  let error: ReturnType<typeof spyOn>;
 
   beforeEach(() => {
-    log = jest.spyOn(console, 'log').mockImplementation(() => {});
-    warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    error = jest.spyOn(console, 'error').mockImplementation(() => {});
+    log = spyOn(console, 'log').mockImplementation(() => {});
+    warn = spyOn(console, 'warn').mockImplementation(() => {});
+    error = spyOn(console, 'error').mockImplementation(() => {});
     // The level is module-global state — reset it so test order can't matter.
     logger.setLogLevel('debug');
     log.mockClear();

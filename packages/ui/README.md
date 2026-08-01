@@ -33,7 +33,7 @@ Consumed as **TypeScript source** (no build step) via Next.js
   not reach. Adding `@byte-of-me/ui` to `optimizePackageImports` changed
   nothing either. The barrel is a readability concern here, not a bundle one,
   and rewriting every call site risks the module-init cycle that breaks
-  `/api/og` — a failure only `pnpm --filter web build` catches.
+  `/api/og` — a failure only `bun run --filter 'web' build` catches.
 - Rich text is the exception and is **not** in the barrel: `rich-text*` and
   the editor stay subpath-only so tiptap cannot reach a public page.
 

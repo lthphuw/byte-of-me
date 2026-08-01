@@ -4,7 +4,13 @@ import type { Tag } from '@/shared/types/models';
 
 export type AdminTag = Prisma.TagGetPayload<{
   include: {
-    translations: true;
+    translations: {
+      select: {
+        id: true;
+        language: true;
+        name: true;
+      };
+    };
   };
 }>;
 

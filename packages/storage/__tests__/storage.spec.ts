@@ -1,19 +1,14 @@
+import { beforeEach, describe, expect, it, mock } from 'bun:test';
 import type { S3Client } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 // eslint-disable-next-line import-alias/import-alias
 import { Storage } from '../src/storage';
 
-jest.mock('@aws-sdk/s3-request-presigner', () => ({
-  getSignedUrl: jest.fn(),
-}));
-
 describe('Storage', () => {
-  const mockSend = jest.fn();
+  const mockSend = mock();
+  const mockSignUrl = mock();
 
-  const mockClient = {
-    send: mockSend,
-  } as unknown as S3Client;
+  const mockClient = { send: mockSend } as unknown as S3Client;
 
   const config = {
     region: 'us-east-1',
@@ -24,8 +19,9 @@ describe('Storage', () => {
   let storage: Storage;
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    storage = new Storage(config, mockClient);
+    mockSend.mockReset();
+    mockSignUrl.mockReset();
+    storage = new Storage(config, mockClient, mockSignUrl as never);
   });
 
   describe('uploadFile', () => {
@@ -62,11 +58,11 @@ describe('Storage', () => {
 
   describe('getPresignedUploadUrl', () => {
     it('should return signed url', async () => {
-      (getSignedUrl as jest.Mock).mockResolvedValueOnce('signed-url');
+      mockSignUrl.mockResolvedValueOnce('signed-url');
 
       const result = await storage.getPresignedUploadUrl('file.txt', 60);
 
-      expect(getSignedUrl).toHaveBeenCalled();
+      expect(mockSignUrl).toHaveBeenCalled();
       expect(result).toBe('signed-url');
     });
   });
@@ -116,11 +112,11 @@ describe('Storage', () => {
     });
 
     it('getPresignedUploadUrl forwards expiresIn', async () => {
-      (getSignedUrl as jest.Mock).mockResolvedValueOnce('signed');
+      mockSignUrl.mockResolvedValueOnce('signed');
 
       await storage.getPresignedUploadUrl('up.bin', 120);
 
-      expect(getSignedUrl).toHaveBeenCalledWith(
+      expect(mockSignUrl).toHaveBeenCalledWith(
         mockClient,
         expect.anything(),
         { expiresIn: 120 }

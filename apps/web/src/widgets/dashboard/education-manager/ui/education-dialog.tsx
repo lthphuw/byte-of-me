@@ -22,6 +22,7 @@ import {
   toEditorContent,
 } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 
 import type { AdminEducation } from '@/entities/education';
 import {
@@ -49,6 +50,7 @@ export function EducationDialog({
   onSubmit,
   loading,
 }: EducationDialogProps) {
+  const t = useTranslations('dashboard.education');
   const form = useForm<EducationFormValues>({
     resolver: zodResolver(educationSchema),
     defaultValues: {
@@ -118,12 +120,12 @@ export function EducationDialog({
       <DialogContent className="flex max-h-[90vh] w-[calc(100vw-2rem)] max-w-2xl flex-col gap-0 overflow-hidden p-0 sm:w-full">
         <DialogHeader className="shrink-0 space-y-1 border-b px-6 py-4 pr-14 text-left">
           <DialogTitle>
-            {initialData ? 'Edit education' : 'Add education'}
+            {initialData ? t('dialog.editTitle') : t('dialog.createTitle')}
           </DialogTitle>
           <DialogDescription>
             {initialData
-              ? 'Update this entry and the achievements listed under it.'
-              : 'Add a school or degree, then list what you achieved there.'}
+              ? t('dialog.editDescription')
+              : t('dialog.createDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -139,7 +141,7 @@ export function EducationDialog({
                 name="logoId"
                 render={({ field }) => (
                   <FormItem className="col-span-2">
-                    <FormLabel>Institution Logo</FormLabel>
+                    <FormLabel>{t('dialog.logoLabel')}</FormLabel>
                     <FormControl>
                       <MediaSelect
                         value={field.value ?? undefined}
@@ -156,7 +158,7 @@ export function EducationDialog({
                 name="startDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Start Date</FormLabel>
+                    <FormLabel>{t('dialog.startDateLabel')}</FormLabel>
                     <DatePicker value={field.value} onChange={field.onChange} />
                     <FormMessage />
                   </FormItem>
@@ -168,7 +170,7 @@ export function EducationDialog({
                 name="endDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>End Date</FormLabel>
+                    <FormLabel>{t('dialog.endDateLabel')}</FormLabel>
                     <DatePicker
                       value={field.value}
                       onChange={(d) => field.onChange(d || null)}
@@ -181,10 +183,11 @@ export function EducationDialog({
 
             <section className="space-y-4 border-t pt-6">
               <div className="space-y-1">
-                <h3 className="text-sm font-medium">Translations</h3>
+                <h3 className="text-sm font-medium">
+                  {t('dialog.translationsTitle')}
+                </h3>
                 <p className="text-xs text-muted-foreground">
-                  One tab per language. Visitors see the tab matching their
-                  locale.
+                  {t('dialog.translationsDescription')}
                 </p>
               </div>
 
@@ -201,7 +204,7 @@ export function EducationDialog({
                     <TextField
                       control={form.control}
                       name={`translations.${i}.title`}
-                      label="School / Degree"
+                      label={t('dialog.schoolLabel')}
                     />
 
                     <FormField
@@ -209,11 +212,11 @@ export function EducationDialog({
                       name={`translations.${i}.description`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Description</FormLabel>
+                          <FormLabel>{t('dialog.descriptionLabel')}</FormLabel>
                           <RichTextEditor
                             compact
                             minHeight={140}
-                            placeholder="A short summary of this program…"
+                            placeholder={t('dialog.descriptionPlaceholder')}
                             className="rounded-md"
                             value={toEditorContent(field.value)}
                             onChange={(json) =>
@@ -239,13 +242,15 @@ export function EducationDialog({
                 variant="outline"
                 onClick={() => onOpenChange(false)}
               >
-                Cancel
+                {t('dialog.cancelButton')}
               </Button>
               <Button type="submit" disabled={loading}>
                 {loading && (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                {initialData ? 'Save changes' : 'Add education'}
+                {initialData
+                  ? t('dialog.saveButton')
+                  : t('dialog.createSubmitButton')}
               </Button>
             </DialogFooter>
           </form>

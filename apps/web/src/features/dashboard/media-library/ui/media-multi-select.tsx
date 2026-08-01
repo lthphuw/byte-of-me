@@ -9,6 +9,7 @@ import { Button ,
   DialogTrigger, Popover, PopoverContent, PopoverTrigger , ScrollArea } from '@byte-of-me/ui';
 import { Check, ChevronDown, ImageIcon, Loader2, Plus, X } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media/query';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
@@ -23,10 +24,14 @@ export function MediaMultiSelect({
   value = [],
   onChange,
 }: MediaMultiSelectProps) {
+  const t = useTranslations('dashboard.media');
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useMediaInfiniteQuery(12);
-  const uploadMutation = useMediaUpload();
+  const uploadMutation = useMediaUpload({
+    uploadSuccess: t('toast.uploadSuccess'),
+    uploadError: t('toast.uploadError'),
+  });
 
   const allMedia = useMemo(
     () => data?.pages.flatMap((page) => page?.data ?? []) || [],
@@ -73,12 +78,14 @@ export function MediaMultiSelect({
 
             <div className="ml-2 flex flex-col items-start text-left">
               <span className="text-sm font-medium">
-                {value.length > 0 ? `${value.length} selected` : 'Select Media'}
+                {value.length > 0
+                  ? t('picker.selectedCount', { count: value.length })
+                  : t('picker.selectMedia')}
               </span>
               <span className="text-xs text-muted-foreground">
                 {value.length > 3
-                  ? `+ ${value.length - 3} more`
-                  : 'Click to manage'}
+                  ? t('picker.moreCount', { count: value.length - 3 })
+                  : t('picker.clickToManage')}
               </span>
             </div>
           </div>
@@ -89,7 +96,7 @@ export function MediaMultiSelect({
       <PopoverContent className="w-[420px] p-0 shadow-xl" align="start">
         <div className="flex items-center justify-between border-b bg-muted/30 p-3">
           <span className="text-xs font-bold uppercase text-muted-foreground">
-            Library
+            {t('picker.libraryLabel')}
           </span>
           <div className="flex gap-2">
             {value.length > 0 && (
@@ -99,18 +106,18 @@ export function MediaMultiSelect({
                 className="h-7 px-2 text-xs hover:text-destructive"
                 onClick={() => onChange([])}
               >
-                Clear All
+                {t('picker.clearAll')}
               </Button>
             )}
             <Dialog open={isUploadOpen} onOpenChange={setIsUploadOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" className="h-7 gap-1 px-2 text-[10px]">
-                  <Plus className="h-3 w-3" /> Upload
+                  <Plus className="h-3 w-3" /> {t('picker.uploadButton')}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Upload Assets</DialogTitle>
+                  <DialogTitle>{t('picker.uploadAssetsTitle')}</DialogTitle>
                 </DialogHeader>
                 <ImageUpload
                   uploadFiles={async (files) => {
@@ -203,7 +210,7 @@ export function MediaMultiSelect({
                 {isFetchingNextPage ? (
                   <Loader2 className="h-3 w-3 animate-spin" />
                 ) : (
-                  'Load More'
+                  t('picker.loadMore')
                 )}
               </Button>
             )}

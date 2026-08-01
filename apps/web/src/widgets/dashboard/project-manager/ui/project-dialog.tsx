@@ -15,6 +15,7 @@ import { Button ,
   FormLabel,
   FormMessage, fromEditorContent, MultiSelect, toEditorContent } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 
 import { ProjectCoauthorFields } from './project-coauthor-fields';
 
@@ -44,6 +45,7 @@ export function ProjectDialog({
   onSubmit,
   loading,
 }: ProjectDialogProps) {
+  const t = useTranslations('dashboard.project');
   const { tagOptions, techOptions } = useProjectReferenceOptions(open);
 
   const form = useForm<ProjectFromValues>({
@@ -94,7 +96,7 @@ export function ProjectDialog({
       <DialogContent className="flex max-h-[90vh] w-[calc(100vw-2rem)] max-w-4xl flex-col gap-0 overflow-hidden p-0 sm:w-full">
         <DialogHeader className="shrink-0 border-b px-6 py-4 pr-14 text-left">
           <DialogTitle>
-            {initialData ? 'Edit Project' : 'New Project'}
+            {initialData ? t('dialog.editTitle') : t('dialog.createTitle')}
           </DialogTitle>
         </DialogHeader>
 
@@ -108,20 +110,20 @@ export function ProjectDialog({
               <TextField
                 control={form.control}
                 name="slug"
-                label="Slug"
-                placeholder="my-awesome-project"
+                label={t('dialog.slugLabel')}
+                placeholder={t('dialog.slugPlaceholder')}
               />
               <div className="grid grid-cols-2 gap-2">
                 <TextField
                   control={form.control}
                   name="startDate"
-                  label="Start Date"
+                  label={t('dialog.startDateLabel')}
                   type="date"
                 />
                 <TextField
                   control={form.control}
                   name="endDate"
-                  label="End Date"
+                  label={t('dialog.endDateLabel')}
                   type="date"
                 />
               </div>
@@ -131,14 +133,14 @@ export function ProjectDialog({
               <TextField
                 control={form.control}
                 name="githubLink"
-                label="GitHub Link"
-                placeholder="https://github.com/..."
+                label={t('dialog.githubLinkLabel')}
+                placeholder={t('dialog.githubLinkPlaceholder')}
               />
               <TextField
                 control={form.control}
                 name="liveLink"
-                label="Live Link"
-                placeholder="https://..."
+                label={t('dialog.liveLinkLabel')}
+                placeholder={t('dialog.liveLinkPlaceholder')}
               />
             </div>
 
@@ -154,7 +156,7 @@ export function ProjectDialog({
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>Published</FormLabel>
+                    <FormLabel>{t('dialog.publishedLabel')}</FormLabel>
                   </div>
                 </FormItem>
               )}
@@ -166,13 +168,13 @@ export function ProjectDialog({
                 name="techStackIds"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tech Stack</FormLabel>
+                    <FormLabel>{t('dialog.techStackLabel')}</FormLabel>
                     <FormControl>
                       <MultiSelect
                         options={techOptions}
                         selected={field.value || []}
                         onValueChange={field.onChange}
-                        placeholder="Select tech stack"
+                        placeholder={t('dialog.techStackPlaceholder')}
                       />
                     </FormControl>
                     <FormMessage />
@@ -186,13 +188,13 @@ export function ProjectDialog({
                 name="tagIds"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tags</FormLabel>
+                    <FormLabel>{t('dialog.tagsLabel')}</FormLabel>
                     <FormControl>
                       <MultiSelect
                         options={tagOptions}
                         selected={field.value || []}
                         onValueChange={field.onChange}
-                        placeholder="Select tags"
+                        placeholder={t('dialog.tagsPlaceholder')}
                       />
                     </FormControl>
                     <FormMessage />
@@ -204,7 +206,9 @@ export function ProjectDialog({
             <ProjectCoauthorFields control={form.control} />
 
             <div className="space-y-4 border-t pt-4">
-              <span className="text-sm font-medium">Content Translations</span>
+              <span className="text-sm font-medium">
+                {t('dialog.translationsLabel')}
+              </span>
 
               <TranslationTabs
                 control={form.control}
@@ -219,18 +223,18 @@ export function ProjectDialog({
                     <TextField
                       control={form.control}
                       name={`translations.${index}.title`}
-                      label="Title"
+                      label={t('dialog.titleLabel')}
                     />
                     <FormField
                       control={form.control}
                       name={`translations.${index}.description`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Description</FormLabel>
+                          <FormLabel>{t('dialog.descriptionLabel')}</FormLabel>
                           <RichTextEditor
                             compact
                             minHeight={140}
-                            placeholder="What this project is, and what it does…"
+                            placeholder={t('dialog.descriptionPlaceholder')}
                             className="rounded-md"
                             value={toEditorContent(field.value)}
                             onChange={(json) =>
@@ -254,7 +258,7 @@ export function ProjectDialog({
                 disabled={loading}
                 className="w-full md:w-auto"
               >
-                {loading ? 'Saving...' : 'Save Project'}
+                {loading ? t('dialog.savingButton') : t('dialog.saveButton')}
               </Button>
             </DialogFooter>
           </form>

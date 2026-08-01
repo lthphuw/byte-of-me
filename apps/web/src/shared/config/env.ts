@@ -33,8 +33,12 @@ export const env = createEnv({
     SUPABASE_S3_STORAGE_SECRET_KEY: z.string(),
     SUPABASE_S3_STORAGE_BUCKET: z.string().default('byte-of-me'),
 
+    // 'test' is included because `bun test` sets NODE_ENV to 'test' before any
+    // preload runs (see apps/web/test-setup.ts) and this schema is validated
+    // eagerly at import time — without it, importing any module that reaches
+    // this file under `bun test` throws "Invalid environment variables".
     NODE_ENV: z
-      .enum(['development', 'production'])
+      .enum(['development', 'production', 'test'])
       .optional()
       .default('development'),
   },

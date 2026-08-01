@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'bun:test';
+
 import { getTranslatedContent } from './i18n-utils';
 
 const en = { language: 'en', title: 'English' };

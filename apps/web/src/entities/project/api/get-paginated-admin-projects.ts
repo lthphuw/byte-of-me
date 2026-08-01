@@ -30,13 +30,29 @@ export async function getPaginatedAdminProjects(
         skip,
         take: limit,
         include: {
-          translations: true,
+          // project-editor-card.tsx and project-dialog.tsx read title and
+          // description only (see AdminProject); createdAt/updatedAt never
+          // reach either.
+          translations: {
+            select: {
+              id: true,
+              language: true,
+              title: true,
+              description: true,
+            },
+          },
           techStacks: true,
           tags: {
             include: {
               tag: {
                 include: {
-                  translations: true,
+                  translations: {
+                    select: {
+                      id: true,
+                      language: true,
+                      name: true,
+                    },
+                  },
                 },
               },
             },

@@ -21,6 +21,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { CompanyRoleItemField } from './company-role-item-field';
 
@@ -50,6 +51,7 @@ export function CompanyDialog({
   onSubmit,
   loading,
 }: CompanyDialogProps) {
+  const t = useTranslations('dashboard.company');
   const { data: techData } = useQuery({
     // Shared with ProjectDialog on purpose — same options data.
     queryKey: techStackKeys.options(),
@@ -137,7 +139,7 @@ export function CompanyDialog({
       <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {initialData ? 'Edit Work Experience' : 'Add Work Experience'}
+            {initialData ? t('dialog.editTitle') : t('dialog.createTitle')}
           </DialogTitle>
         </DialogHeader>
 
@@ -148,7 +150,7 @@ export function CompanyDialog({
               name="logoId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Company Logo</FormLabel>
+                  <FormLabel>{t('dialog.logoLabel')}</FormLabel>
                   <FormControl>
                     <MediaSelect
                       value={field.value ?? undefined}
@@ -164,12 +166,12 @@ export function CompanyDialog({
               <TextField
                 control={form.control}
                 name="company"
-                label="Company Name"
+                label={t('dialog.companyLabel')}
               />
               <TextField
                 control={form.control}
                 name="location"
-                label="Location"
+                label={t('dialog.locationLabel')}
               />
 
               <FormField
@@ -177,7 +179,7 @@ export function CompanyDialog({
                 name="startDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Start Date</FormLabel>
+                    <FormLabel>{t('dialog.startDateLabel')}</FormLabel>
                     <DatePicker value={field.value} onChange={field.onChange} />
                     <FormMessage />
                   </FormItem>
@@ -189,7 +191,7 @@ export function CompanyDialog({
                 name="endDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>End Date</FormLabel>
+                    <FormLabel>{t('dialog.endDateLabel')}</FormLabel>
                     <DatePicker
                       value={field.value ?? undefined}
                       onChange={(d) => field.onChange(d || null)}
@@ -205,13 +207,13 @@ export function CompanyDialog({
               name="techStackIds"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tech Stack</FormLabel>
+                  <FormLabel>{t('dialog.techStackLabel')}</FormLabel>
                   <FormControl>
                     <MultiSelect
                       options={techOptions}
                       selected={field.value || []}
                       onValueChange={field.onChange}
-                      placeholder="Select tech stack"
+                      placeholder={t('dialog.techStackPlaceholder')}
                     />
                   </FormControl>
                   <FormMessage />
@@ -220,7 +222,9 @@ export function CompanyDialog({
             />
 
             <div className="space-y-4 border-t pt-4">
-              <h3 className="text-sm font-medium">Translations</h3>
+              <h3 className="text-sm font-medium">
+                {t('dialog.translationsTitle')}
+              </h3>
               <TranslationTabs
                 control={form.control}
                 name="translations"
@@ -229,7 +233,7 @@ export function CompanyDialog({
                   <TextField
                     control={form.control}
                     name={`translations.${i}.description`}
-                    label="Description"
+                    label={t('dialog.descriptionLabel')}
                   />
                 )}
               />
@@ -237,7 +241,9 @@ export function CompanyDialog({
 
             <div className="space-y-4 border-t pt-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium">Roles</h3>
+                <h3 className="text-sm font-medium">
+                  {t('dialog.rolesTitle')}
+                </h3>
                 <Button
                   type="button"
                   size="sm"
@@ -254,7 +260,7 @@ export function CompanyDialog({
                   }
                 >
                   <Plus className="mr-2 h-3 w-3" />
-                  Add Role
+                  {t('dialog.addRoleButton')}
                 </Button>
               </div>
 
@@ -273,7 +279,7 @@ export function CompanyDialog({
                 {loading && (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 )}{' '}
-                Save
+                {t('dialog.saveButton')}
               </Button>
             </DialogFooter>
           </form>

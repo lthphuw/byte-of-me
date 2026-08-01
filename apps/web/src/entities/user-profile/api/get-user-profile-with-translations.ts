@@ -18,7 +18,25 @@ export async function getAdminUserProfile(): Promise<
       include: {
         userProfile: {
           include: {
-            translations: true,
+            // use-profile-controller.tsx's form reads every one of these
+            // per translation; only the two timestamps and the redundant FK
+            // are dropped.
+            translations: {
+              select: {
+                id: true,
+                language: true,
+                displayName: true,
+                firstName: true,
+                middleName: true,
+                lastName: true,
+                greeting: true,
+                tagLine: true,
+                quote: true,
+                quoteAuthor: true,
+                bio: true,
+                aboutMe: true,
+              },
+            },
           },
         },
         socialLinks: true,

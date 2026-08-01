@@ -1,22 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Button, useDebounce } from '@byte-of-me/ui';
+import { Button } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { useTagInfiniteQuery } from '@/entities/tag/query';
 import { TagClickableBadge } from '@/entities/tag/ui/tag-clickable-badge';
+import type { BlogFilterState } from '@/features/public/blog-filters/lib';
+import { useUrlSyncedSearch } from '@/shared/hooks/use-url-synced-search';
+import type { FilterNavigationOptions } from '@/shared/lib/filter-params';
 import { FilterSearchInput } from '@/shared/ui';
 
-interface FilterValues {
-  tagSlugs: string[];
-  search: string;
-}
-
 interface BlogFiltersProps {
-  value: FilterValues;
-  onChange: (value: FilterValues) => void;
+  value: BlogFilterState;
+  onChange: (
+    value: BlogFilterState,
+    options?: FilterNavigationOptions
+  ) => void;
 }
 
 /**
@@ -28,8 +28,14 @@ export function BlogFilters({ value, onChange }: BlogFiltersProps) {
   const t = useTranslations('components.blogFilters');
   const tShared = useTranslations('components.filters');
 
-  const [search, setSearch] = useState(value.search);
-  const [debounced] = useDebounce(search, 400);
+  // The URL owns the term: the box re-syncs on back/forward and on an in-app
+  // `?q=` link, but ignores the echo of its own debounced write, so keystrokes
+  // typed while that write is in flight survive. See `useUrlSyncedSearch`.
+  const { search, setSearch, resetSearch } = useUrlSyncedSearch({
+    urlSearch: value.search,
+    onCommit: (nextSearch, history) =>
+      onChange({ ...value, search: nextSearch }, { history }),
+  });
 
   const {
     data: tagData,
@@ -37,14 +43,6 @@ export function BlogFilters({ value, onChange }: BlogFiltersProps) {
     hasNextPage: hasNextTags,
     isFetchingNextPage: isFetchingTags,
   } = useTagInfiniteQuery(10);
-
-  // Only the debounced term should trigger a change. `onChange` and `value` are
-  // recreated by the parent on every render, so including them would refire the
-  // filter on each keystroke.
-  useEffect(() => {
-    onChange({ ...value, search: debounced });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debounced]);
 
   const allTags = tagData?.pages.flatMap((page) => page.data) || [];
 
@@ -57,7 +55,7 @@ export function BlogFilters({ value, onChange }: BlogFiltersProps) {
   };
 
   const handleReset = () => {
-    setSearch('');
+    resetSearch();
     onChange({ tagSlugs: [], search: '' });
   };
 

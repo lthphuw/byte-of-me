@@ -15,6 +15,7 @@ import {
 } from '@byte-of-me/ui';
 import { Check, ChevronDown, ImageIcon, Loader2, Plus } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media/query';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
@@ -27,11 +28,15 @@ interface MediaSelectProps {
 }
 
 export function MediaSelect({ value, onChange }: MediaSelectProps) {
+  const t = useTranslations('dashboard.media');
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useMediaInfiniteQuery(12);
-  const uploadMutation = useMediaUpload();
+  const uploadMutation = useMediaUpload({
+    uploadSuccess: t('toast.uploadSuccess'),
+    uploadError: t('toast.uploadError'),
+  });
 
   const allMedia = useMemo(
     () => data?.pages.flatMap((page) => page?.data ?? []) || [],
@@ -54,7 +59,7 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
                   width={40}
                   height={40}
                   className="h-full w-full object-cover"
-                  alt="Selected"
+                  alt={t('picker.selectedAlt')}
                 />
               ) : (
                 <ImageIcon className="h-5 w-5 text-muted-foreground/40" />
@@ -62,12 +67,12 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
             </div>
             <div className="flex flex-col items-start truncate text-left">
               <span className="w-full truncate text-sm font-medium">
-                {selectedMedia ? selectedMedia.fileName : 'Select Media'}
+                {selectedMedia ? selectedMedia.fileName : t('picker.selectMedia')}
               </span>
               <span className="text-xs text-muted-foreground">
                 {selectedMedia
-                  ? 'Click to change'
-                  : 'Upload or choose from library'}
+                  ? t('picker.clickToChange')
+                  : t('picker.chooseFromLibrary')}
               </span>
             </div>
           </div>
@@ -78,7 +83,7 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
       <PopoverContent className="w-[400px] p-0 shadow-xl" align="start">
         <div className="flex items-center justify-between border-b bg-muted/30 p-3">
           <span className="text-xs font-bold uppercase text-muted-foreground">
-            Library
+            {t('picker.libraryLabel')}
           </span>
           <Dialog open={isUploadOpen} onOpenChange={setIsUploadOpen}>
             <DialogTrigger asChild>
@@ -87,12 +92,12 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
                 variant="ghost"
                 className="h-8 gap-1 text-xs text-primary"
               >
-                <Plus className="h-3 w-3" /> Upload
+                <Plus className="h-3 w-3" /> {t('picker.uploadButton')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Upload Assets</DialogTitle>
+                <DialogTitle>{t('picker.uploadAssetsTitle')}</DialogTitle>
               </DialogHeader>
               <ImageUpload
                 uploadFiles={async (files) => {
@@ -155,7 +160,7 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
                 {isFetchingNextPage ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  'Show more'
+                  t('picker.loadMore')
                 )}
               </Button>
             )}

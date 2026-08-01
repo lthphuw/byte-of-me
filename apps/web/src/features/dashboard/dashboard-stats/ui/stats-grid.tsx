@@ -8,6 +8,7 @@ import {
   MessageSquare,
   Tag,
 } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 
 import { getDashboardStats } from '@/features/dashboard/dashboard-stats/lib';
 
@@ -17,42 +18,51 @@ export async function StatsGrid() {
     return null;
   }
   const stats = dataResp.data;
+  const t = await getTranslations('dashboard.common');
 
   const primaryStats = [
     {
-      label: 'Messages',
+      label: t('stats.messagesLabel'),
       value: stats.totalMessages,
-      sub: `${stats.newMessages} new`,
+      sub: t('stats.messagesSub', { count: stats.newMessages }),
       icon: MessageSquare,
       color: 'text-blue-500',
     },
     {
-      label: 'Projects',
+      label: t('stats.projectsLabel'),
       value: stats.totalProjects,
-      sub: 'Live works',
+      sub: t('stats.projectsSub'),
       icon: Briefcase,
       color: 'text-emerald-500',
     },
     {
-      label: 'Blogs',
+      label: t('stats.blogsLabel'),
       value: stats.totalBlogs,
-      sub: 'Articles',
+      sub: t('stats.blogsSub'),
       icon: BookOpen,
       color: 'text-orange-500',
     },
     {
-      label: 'Education',
+      label: t('stats.educationLabel'),
       value: stats.totalEducation,
-      sub: 'Certificates',
+      sub: t('stats.educationSub'),
       icon: GraduationCap,
       color: 'text-purple-500',
     },
   ];
 
   const secondaryStats = [
-    { label: 'Companies', value: stats.totalCompanies, icon: Building2 },
-    { label: 'Tech Stack', value: stats.totalTechStack, icon: Cpu },
-    { label: 'Tags', value: stats.totalTags, icon: Tag },
+    {
+      label: t('stats.companiesLabel'),
+      value: stats.totalCompanies,
+      icon: Building2,
+    },
+    {
+      label: t('stats.techStackLabel'),
+      value: stats.totalTechStack,
+      icon: Cpu,
+    },
+    { label: t('stats.tagsLabel'), value: stats.totalTags, icon: Tag },
   ];
 
   return (

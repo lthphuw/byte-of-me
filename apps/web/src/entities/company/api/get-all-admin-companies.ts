@@ -20,14 +20,36 @@ export async function getAllAdminCompanies(): Promise<
       },
       include: {
         logo: true,
-        translations: true,
+        // CompanyDialog reads `description` only (see AdminCompany).
+        translations: {
+          select: {
+            id: true,
+            language: true,
+            description: true,
+          },
+        },
         techStacks: true,
         roles: {
           include: {
-            translations: true,
+            // CompanyRoleItemField reads title/description only.
+            translations: {
+              select: {
+                id: true,
+                language: true,
+                title: true,
+                description: true,
+              },
+            },
             tasks: {
               include: {
-                translations: true,
+                // CompanyRoleItemField's task rows read content only.
+                translations: {
+                  select: {
+                    id: true,
+                    language: true,
+                    content: true,
+                  },
+                },
               },
               orderBy: {
                 sortOrder: 'desc',

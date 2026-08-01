@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Button, useDebounce } from '@byte-of-me/ui';
+import { Button } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -9,17 +8,17 @@ import { TagClickableBadge } from '@/entities/tag';
 import { useTagInfiniteQuery } from '@/entities/tag/query';
 import { TechStackClickableBadge } from '@/entities/tech-stack';
 import { useTechStackInfiniteQuery } from '@/entities/tech-stack/query';
+import type { ProjectFilterState } from '@/features/public/project-filters/lib';
+import { useUrlSyncedSearch } from '@/shared/hooks/use-url-synced-search';
+import type { FilterNavigationOptions } from '@/shared/lib/filter-params';
 import { FilterSearchInput } from '@/shared/ui';
 
-export interface FilterValues {
-  tagSlugs: string[];
-  techStackSlugs: string[];
-  search: string;
-}
-
 export interface ProjectFiltersProps {
-  value: FilterValues;
-  onChange: (value: FilterValues) => void;
+  value: ProjectFilterState;
+  onChange: (
+    value: ProjectFilterState,
+    options?: FilterNavigationOptions
+  ) => void;
 }
 
 /**
@@ -30,14 +29,13 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
   const t = useTranslations('components.projectFilters');
   const tShared = useTranslations('components.filters');
 
-  const [search, setSearch] = useState(value.search);
-  const [debounced] = useDebounce(search, 400);
-
-  // Only the debounced term should trigger a change — see BlogFilters.
-  useEffect(() => {
-    onChange({ ...value, search: debounced });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debounced]);
+  // Debounced write out, re-sync in on back/forward, echo of our own write
+  // ignored so it cannot eat a keystroke — see `useUrlSyncedSearch`.
+  const { search, setSearch, resetSearch } = useUrlSyncedSearch({
+    urlSearch: value.search,
+    onCommit: (nextSearch, history) =>
+      onChange({ ...value, search: nextSearch }, { history }),
+  });
 
   const {
     data: tagData,
@@ -71,7 +69,7 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
   };
 
   const handleReset = () => {
-    setSearch('');
+    resetSearch();
     onChange({ tagSlugs: [], techStackSlugs: [], search: '' });
   };
 

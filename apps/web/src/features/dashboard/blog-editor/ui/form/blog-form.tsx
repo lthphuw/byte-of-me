@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Button,
@@ -13,6 +13,7 @@ import {
   Icons,
 } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 
 import { BlogMetaFields } from './blog-meta-fields';
 
@@ -36,6 +37,7 @@ export interface BlogFormProps {
 }
 
 export function BlogForm({ initialData, onSubmit, loading, formId }: BlogFormProps) {
+  const t = useTranslations('dashboard.blog');
   const { tagOptions, projects, isTagLoading, isProjectLoading } =
     useBlogReferenceOptions();
 
@@ -58,8 +60,18 @@ export function BlogForm({ initialData, onSubmit, loading, formId }: BlogFormPro
     },
   });
 
+  // Seed the form once per post, not once per `initialData` identity. The
+  // editor renders on `blogKeys.detail(id)`, which TanStack Query refetches on
+  // window focus and on reconnect; every one of those resolves to a fresh
+  // object, and resetting on identity would silently throw away everything the
+  // author has typed since. Only a different post id means "a different record
+  // is being edited", and that also remounts this component (the dialog is
+  // keyed on the id), so the ref starts null exactly when a reset is wanted.
+  const seededBlogId = useRef<string | null>(null);
+
   useEffect(() => {
-    if (!initialData) return;
+    if (!initialData || seededBlogId.current === initialData.id) return;
+    seededBlogId.current = initialData.id;
 
     form.reset({
       slug: initialData.slug,
@@ -109,12 +121,13 @@ export function BlogForm({ initialData, onSubmit, loading, formId }: BlogFormPro
         {autosave.restorable && (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm">
             <span>
-              Unsaved draft from{' '}
-              {autosave.restorable.toLocaleTimeString()} found.
+              {t('form.draftFound', {
+                time: autosave.restorable.toLocaleTimeString(),
+              })}
             </span>
             <span className="flex gap-2">
               <Button type="button" size="sm" onClick={autosave.restore}>
-                Restore
+                {t('form.restore')}
               </Button>
               <Button
                 type="button"
@@ -122,7 +135,7 @@ export function BlogForm({ initialData, onSubmit, loading, formId }: BlogFormPro
                 variant="outline"
                 onClick={autosave.discard}
               >
-                Discard
+                {t('form.discard')}
               </Button>
             </span>
           </div>
@@ -137,7 +150,9 @@ export function BlogForm({ initialData, onSubmit, loading, formId }: BlogFormPro
 
         {/* Translations Section */}
         <div className="space-y-4 border-t pt-4">
-          <h3 className="text-lg font-semibold">Content Translations</h3>
+          <h3 className="text-lg font-semibold">
+            {t('form.contentTranslationsTitle')}
+          </h3>
 
           <TranslationTabs
             control={form.control}
@@ -154,15 +169,15 @@ export function BlogForm({ initialData, onSubmit, loading, formId }: BlogFormPro
                 <TextField
                   control={form.control}
                   name={`translations.${i}.title`}
-                  label="Title"
-                  placeholder="Post title..."
+                  label={t('form.titleLabel')}
+                  placeholder={t('form.titlePlaceholder')}
                 />
 
                 <TextField
                   control={form.control}
                   name={`translations.${i}.description`}
-                  label="Short Description"
-                  placeholder="Brief summary of the post..."
+                  label={t('form.descriptionLabel')}
+                  placeholder={t('form.descriptionPlaceholder')}
                   multiline
                 />
 
@@ -171,7 +186,7 @@ export function BlogForm({ initialData, onSubmit, loading, formId }: BlogFormPro
                   name={`translations.${i}.content`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Body Content</FormLabel>
+                      <FormLabel>{t('form.bodyLabel')}</FormLabel>
                       <FormControl>
                         <div className="rounded-md border">
                           <RichTextEditor
@@ -203,7 +218,7 @@ export function BlogForm({ initialData, onSubmit, loading, formId }: BlogFormPro
               {loading ? (
                 <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
               ) : (
-                'Save Post'
+                t('form.savePost')
               )}
             </Button>
           </div>

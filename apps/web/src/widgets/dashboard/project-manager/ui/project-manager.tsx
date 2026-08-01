@@ -2,6 +2,7 @@
 
 import { Button, ConfirmDeleteDialog, Pagination } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { ProjectDialog } from './project-dialog';
 
@@ -18,6 +19,8 @@ import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
 export function ProjectManager() {
+  const t = useTranslations('dashboard.project');
+  const tShared = useTranslations('dashboard.shared');
   const {
     items: projects,
     pagination,
@@ -42,6 +45,13 @@ export function ProjectManager() {
   } = useCrudManager<AdminProject, ProjectFromValues>({
     queryKey: projectKeys.adminList(),
     entityLabel: 'Project',
+    messages: {
+      created: t('toast.created'),
+      updated: t('toast.updated'),
+      deleted: t('toast.deleted'),
+      saveError: t('toast.saveError'),
+      deleteError: t('toast.deleteError'),
+    },
     pageSize: 12,
     fetchPage: (page, limit) => getPaginatedAdminProjects(page, limit),
     create: createProject,
@@ -52,15 +62,15 @@ export function ProjectManager() {
   const newProjectButton = (
     <Button size="sm" onClick={openCreateDialog}>
       <Plus className="mr-2 h-4 w-4" />
-      New Project
+      {t('createButton')}
     </Button>
   );
 
   return (
     <div className="space-y-6">
       <ManagerPageHeader
-        title="Projects"
-        description="Manage your portfolio gallery, case studies, and deployment links."
+        title={t('title')}
+        description={t('description')}
         action={newProjectButton}
       />
 
@@ -69,8 +79,8 @@ export function ProjectManager() {
         isError={isError}
         onRetry={() => refetch()}
         isEmpty={projects.length === 0}
-        emptyTitle="No projects found"
-        emptyDescription="Create your first project to showcase your work."
+        emptyTitle={t('emptyTitle')}
+        emptyDescription={t('emptyDescription')}
         emptyAction={newProjectButton}
       >
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -114,8 +124,10 @@ export function ProjectManager() {
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
-        title="Delete Project?"
-        description="This action cannot be undone. This will permanently delete the project and remove its data from our servers."
+        title={t('deleteTitle')}
+        description={t('deleteDescription')}
+        actionText={tShared('confirmDelete.actionText')}
+        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

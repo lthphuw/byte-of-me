@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'bun:test';
+
 import { isValidUrl } from './tiptap-utils';
 
 describe('isValidUrl', () => {

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@byte-of-me/ui';
 import { ImageIcon, Loader2, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 export interface ImageUploadProps {
@@ -10,6 +11,7 @@ export interface ImageUploadProps {
 }
 
 export function ImageUpload({ uploadFiles }: ImageUploadProps) {
+  const t = useTranslations('dashboard.media');
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const maxSizeUploadInMbs = 3;
@@ -18,14 +20,19 @@ export function ImageUpload({ uploadFiles }: ImageUploadProps) {
 
     const validFiles = Array.from(incomingFiles).filter((file) => {
       if (!file.type.startsWith('image/')) {
-        toast.error('Invalid type', {
-          description: `${file.name} is not an image.`,
+        toast.error(t('upload.invalidTypeTitle'), {
+          description: t('upload.invalidTypeDescription', {
+            fileName: file.name,
+          }),
         });
         return false;
       }
       if (file.size > maxSizeUploadInMbs * 1024 * 1024) {
-        toast.error('File too large', {
-          description: `${file.name} exceeds ${maxSizeUploadInMbs}MB.`,
+        toast.error(t('upload.fileTooLargeTitle'), {
+          description: t('upload.fileTooLargeDescription', {
+            fileName: file.name,
+            maxSize: maxSizeUploadInMbs,
+          }),
         });
         return false;
       }
@@ -44,10 +51,12 @@ export function ImageUpload({ uploadFiles }: ImageUploadProps) {
     setIsUploading(true);
     try {
       await uploadFiles(files);
-      toast('Success', { description: 'All images uploaded.' });
+      toast(t('upload.successTitle'), {
+        description: t('upload.successDescription'),
+      });
       setFiles([]);
     } catch (error) {
-      toast.error('Upload failed');
+      toast.error(t('upload.uploadFailedTitle'));
     } finally {
       setIsUploading(false);
     }
@@ -65,7 +74,7 @@ export function ImageUpload({ uploadFiles }: ImageUploadProps) {
         onClick={() => document.getElementById('file-upload')?.click()}
       >
         <ImageIcon className="mx-auto h-10 w-10 text-muted-foreground" />
-        <p className="mt-2 text-sm">Click or drag images here</p>
+        <p className="mt-2 text-sm">{t('upload.dropzoneText')}</p>
         <input
           id="file-upload"
           type="file"
@@ -103,7 +112,7 @@ export function ImageUpload({ uploadFiles }: ImageUploadProps) {
         {isUploading ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
         ) : (
-          `Upload ${files.length} Files`
+          t('upload.uploadButton', { count: files.length })
         )}
       </Button>
     </div>

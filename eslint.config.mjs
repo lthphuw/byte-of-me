@@ -54,11 +54,6 @@ export default [
       react: {
         version: 'detect',
       },
-      'import/resolver': {
-        typescript: {
-          project: './tsconfig.json',
-        },
-      },
     },
     rules: {
       /* ---------------- IMPORTS ---------------- */

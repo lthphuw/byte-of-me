@@ -5,6 +5,7 @@ import { type Control, useFieldArray } from 'react-hook-form';
 import { Button } from '@byte-of-me/ui';
 import { Reorder } from 'framer-motion';
 import { Plus, Trophy } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { EducationAchievementItemField } from './education-achievement-item-field';
 
@@ -23,6 +24,7 @@ interface EducationAchievementsFieldProps {
 export function EducationAchievementsField({
   control,
 }: EducationAchievementsFieldProps) {
+  const t = useTranslations('dashboard.education');
   const { fields, append, remove, move } = useFieldArray({
     control,
     name: 'achievements',
@@ -52,17 +54,19 @@ export function EducationAchievementsField({
     <div className="space-y-4 border-t pt-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-medium">Achievements</h3>
+          <h3 className="text-sm font-medium">
+            {t('achievements.title')}
+          </h3>
           {fields.length > 1 && (
             <p className="text-xs text-muted-foreground">
-              Drag the handle to reorder — this is the order visitors see.
+              {t('achievements.reorderHint')}
             </p>
           )}
         </div>
 
         <Button type="button" size="sm" variant="outline" onClick={handleAdd}>
           <Plus className="mr-2 h-3 w-3" />
-          Add
+          {t('achievements.addButton')}
         </Button>
       </div>
 
@@ -70,10 +74,10 @@ export function EducationAchievementsField({
         <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed px-4 py-8 text-center">
           <Trophy className="h-5 w-5 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">
-            No achievements yet.
+            {t('achievements.emptyText')}
           </p>
           <Button type="button" size="sm" variant="ghost" onClick={handleAdd}>
-            Add the first one
+            {t('achievements.addFirstButton')}
           </Button>
         </div>
       ) : (

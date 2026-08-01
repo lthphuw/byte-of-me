@@ -23,8 +23,7 @@ import { BlogsShell } from '@/widgets/public/blogs-content/ui/blogs-shell';
 
 export function BlogsContent() {
   const t = useTranslations('blog');
-  const [page, setPage] = useState(1);
-  const { filters, updateFilters } = useBlogFilters();
+  const { filters, page, updateFilters, setPage } = useBlogFilters();
   // The toggle is only offered to an admin session; the server re-checks the
   // role anyway, so the flag is harmless in anyone else's hands.
   const { data: session } = useSession();
@@ -67,8 +66,6 @@ export function BlogsContent() {
   const showSkeletons = isLoading;
 
   const toggleTag = (slug: string) => {
-    setPage(1);
-
     const nextTags = filters.tagSlugs.includes(slug)
       ? filters.tagSlugs.filter((s) => s !== slug)
       : [...filters.tagSlugs, slug];
@@ -83,13 +80,7 @@ export function BlogsContent() {
         description={t('pageDescription')}
         count={t('count', { count: pagination.totalCount })}
       >
-        <BlogFilters
-          value={filters}
-          onChange={(next) => {
-            setPage(1);
-            updateFilters(next);
-          }}
-        />
+        <BlogFilters value={filters} onChange={updateFilters} />
 
         {isAdmin && (
           <TooltipProvider>
@@ -101,7 +92,11 @@ export function BlogsContent() {
                   size="sm"
                   className="h-8 w-fit gap-2 text-xs"
                   onClick={() => {
-                    setPage(1);
+                    // The drafts variant is a different key with a different
+                    // page count, so page 3 may not exist in it — but `setPage`
+                    // is a URL write now, and on page 1 it would push a history
+                    // entry for the identical URL on every toggle.
+                    if (page !== 1) setPage(1);
                     setShowDrafts((v) => !v);
                   }}
                 >

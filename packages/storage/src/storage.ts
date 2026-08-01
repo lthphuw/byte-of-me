@@ -9,15 +9,19 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { createS3Client } from './s3.factory';
 import type { StorageConfig, UploadFileParams } from './storage.interface';
 
+type SignUrl = typeof getSignedUrl;
+
 export class Storage {
   private readonly client: S3Client;
   private readonly bucket: string;
   private readonly publicEndpoint: string;
+  private readonly signUrl: SignUrl;
 
-  constructor(config: StorageConfig, client?: S3Client) {
+  constructor(config: StorageConfig, client?: S3Client, signUrl?: SignUrl) {
     this.client = client ?? createS3Client(config);
     this.bucket = config.bucket;
     this.publicEndpoint = config.publicEndpoint.replace(/\/$/, '');
+    this.signUrl = signUrl ?? getSignedUrl;
   }
 
   async uploadFile(params: UploadFileParams) {
@@ -54,7 +58,7 @@ export class Storage {
       Key: key,
     });
 
-    return getSignedUrl(this.client, command, {
+    return this.signUrl(this.client, command, {
       expiresIn,
     });
   }

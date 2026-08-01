@@ -4,12 +4,12 @@ import { Badge , Card, CardContent, CardFooter, CardHeader , DeleteButton , Edit
 import { Calendar, Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
 
-import type { AdminBlog } from '@/entities/blog';
+import type { AdminBlogListItem } from '@/entities/blog';
 import { formatDate } from '@/shared/lib/utils';
 
 interface BlogCardProps {
-  blog: AdminBlog;
-  onEdit: (blog: AdminBlog) => void;
+  blog: AdminBlogListItem;
+  onEdit: (blog: AdminBlogListItem) => void;
   onDelete: (id: string) => void;
   isPending?: boolean;
 }

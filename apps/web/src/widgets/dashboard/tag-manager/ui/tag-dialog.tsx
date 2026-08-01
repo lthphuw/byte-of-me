@@ -8,6 +8,7 @@ import { Button , DeleteButton ,
   DialogTitle, Form } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import type { AdminTag } from '@/entities/tag';
 import { type TagFormValues,tagSchema } from '@/entities/tag/model/tag-schema';
@@ -27,6 +28,7 @@ export function TagDialog({
   onSubmit: (values: TagFormValues) => void;
   loading: boolean;
 }) {
+  const t = useTranslations('dashboard.tag');
   const form = useForm<TagFormValues>({
     resolver: zodResolver(tagSchema),
     defaultValues: {
@@ -57,7 +59,9 @@ export function TagDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>{initialData ? 'Edit Tag' : 'Create Tag'}</DialogTitle>
+          <DialogTitle>
+            {initialData ? t('dialog.editTitle') : t('dialog.createTitle')}
+          </DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -69,21 +73,23 @@ export function TagDialog({
             <TextField
               control={form.control}
               name="slug"
-              label="Slug"
-              placeholder="reactjs"
+              label={t('dialog.slugLabel')}
+              placeholder={t('dialog.slugPlaceholder')}
             />
 
             {/* Translations */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium">Translations</p>
+                <p className="text-sm font-medium">
+                  {t('dialog.translationsLabel')}
+                </p>
                 <Button
                   type="button"
                   size="sm"
                   variant="outline"
                   onClick={() => append({ language: '', name: '' })}
                 >
-                  Add
+                  {t('dialog.addButton')}
                 </Button>
               </div>
 
@@ -95,16 +101,16 @@ export function TagDialog({
                   <TextField
                     control={form.control}
                     name={`translations.${index}.language`}
-                    label="Language"
-                    placeholder="en"
+                    label={t('dialog.languageLabel')}
+                    placeholder={t('dialog.languagePlaceholder')}
                     className="w-20"
                   />
 
                   <TextField
                     control={form.control}
                     name={`translations.${index}.name`}
-                    label="Name"
-                    placeholder="React"
+                    label={t('dialog.nameLabel')}
+                    placeholder={t('dialog.namePlaceholder')}
                     className="flex-1"
                   />
 
@@ -120,12 +126,12 @@ export function TagDialog({
                 variant="ghost"
                 onClick={() => onOpenChange(false)}
               >
-                Cancel
+                {t('dialog.cancelButton')}
               </Button>
 
               <Button type="submit" disabled={loading}>
                 {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                Save
+                {t('dialog.saveButton')}
               </Button>
             </div>
           </form>

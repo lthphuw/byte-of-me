@@ -2,6 +2,7 @@
 
 import type { ComponentType } from 'react';
 import { Badge } from '@byte-of-me/ui';
+import { useTranslations } from 'next-intl';
 
 import { Link, usePathname } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
@@ -21,6 +22,7 @@ export function DashboardNavItems({
   onItemClick?: () => void;
 }) {
   const pathname = usePathname();
+  const t = useTranslations('dashboard.common');
 
   return (
     <ul className="space-y-1">
@@ -44,7 +46,7 @@ export function DashboardNavItems({
               <span className="truncate">{item.label}</span>
               {item.soon && (
                 <Badge variant="secondary" className="ml-auto">
-                  Soon
+                  {t('nav.soonBadge')}
                 </Badge>
               )}
             </Link>

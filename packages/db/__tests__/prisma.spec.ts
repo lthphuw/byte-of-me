@@ -1,69 +1,59 @@
 /**
- * The generated client and the pg adapter are mocked: these tests cover the
- * wiring in src/index.ts (adapter passed in, query logging attached, global
- * singleton reuse) — not Prisma itself.
+ * The generated client and the pg adapter are injected via `createPrismaClient`'s
+ * dependency seam: these tests cover the wiring in src/index.ts (adapter passed in,
+ * query logging attached, global singleton reuse) — not Prisma itself.
  */
-const prismaCtor = jest.fn();
-const onSpy = jest.fn();
+import { describe, expect, it, mock } from 'bun:test';
 
-jest.mock('../src/generated/prisma/client', () => ({
-  PrismaClient: class {
-    constructor(options: unknown) {
-      prismaCtor(options);
-    }
-    $on = onSpy;
-  },
-}));
+import { createPrismaClient, prisma } from '../src';
 
-const adapterCtor = jest.fn();
-jest.mock('@prisma/adapter-pg', () => ({
-  PrismaPg: class {
-    constructor(config: unknown) {
-      adapterCtor(config);
-    }
-  },
-}));
-
-describe('Prisma module', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    process.env.DATABASE_URL = 'postgres://test';
-    // Drop the cached singleton between tests.
-    delete (global as { prisma?: unknown }).prisma;
-  });
-
+describe('createPrismaClient', () => {
   it('creates the client through the pg driver adapter', () => {
-    jest.isolateModules(() => {
-      const { createPrismaClient } = require('../src');
-      createPrismaClient();
+    const adapterCtor = mock();
+    const clientCtor = mock();
+
+    class FakeAdapter {
+      constructor(config: unknown) {
+        adapterCtor(config);
+      }
+    }
+    class FakeClient {
+      $on = mock();
+      constructor(options: unknown) {
+        clientCtor(options);
+      }
+    }
+
+    createPrismaClient({
+      PrismaPg: FakeAdapter as never,
+      PrismaClient: FakeClient as never,
     });
 
     expect(adapterCtor).toHaveBeenCalledWith({
-      connectionString: 'postgres://test',
+      connectionString: process.env.DATABASE_URL,
     });
-    expect(prismaCtor).toHaveBeenCalledWith(
+    expect(clientCtor).toHaveBeenCalledWith(
       expect.objectContaining({ adapter: expect.anything() })
     );
   });
 
-  it('subscribes to query events for logging', () => {
-    jest.isolateModules(() => {
-      const { createPrismaClient } = require('../src');
-      createPrismaClient();
+  it('subscribes to query events outside production', () => {
+    const onSpy = mock();
+
+    class FakeAdapter {}
+    class FakeClient {
+      $on = onSpy;
+    }
+
+    createPrismaClient({
+      PrismaPg: FakeAdapter as never,
+      PrismaClient: FakeClient as never,
     });
 
     expect(onSpy).toHaveBeenCalledWith('query', expect.any(Function));
   });
 
-  it('reuses one client across module reloads outside production', () => {
-    jest.isolateModules(() => {
-      require('../src');
-    });
-    jest.isolateModules(() => {
-      require('../src');
-    });
-
-    // Module evaluated twice, but the global cache means one construction.
-    expect(prismaCtor).toHaveBeenCalledTimes(1);
+  it('caches one client on the global outside production', () => {
+    expect((global as { prisma?: unknown }).prisma).toBe(prisma);
   });
 });

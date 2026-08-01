@@ -4,15 +4,36 @@ import { type ReactElement, type ReactNode, useEffect, useState } from 'react';
 import {
   type ArrayPath,
   type Control,
-  type FieldArray,
+  type FieldArrayPathValue,
   type FieldValues,
   useFieldArray,
   useWatch,
 } from 'react-hook-form';
 import { Button, Tabs, TabsContent, TabsList, TabsTrigger } from '@byte-of-me/ui';
 import { Languages, Trash } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { TextField } from './text-field';
+
+/**
+ * One element of the field array at `TName`.
+ *
+ * react-hook-form 7.83 added a `<FieldArray>` component and exports it by name
+ * from the package root, which shadows the same-named type the root also
+ * re-exports via `export * from './types'` — an explicit named export wins over
+ * a star export, so importing `type FieldArray` now resolves to the component
+ * and fails with TS2749. Reconstructed here from `FieldArrayPathValue`, which is
+ * still exported cleanly, using the library's own definition of the type.
+ */
+type FieldArrayItem<
+  T extends FieldValues,
+  TName extends ArrayPath<T>,
+> = FieldArrayPathValue<T, TName> extends
+  | ReadonlyArray<infer U>
+  | null
+  | undefined
+  ? U
+  : never;
 
 export interface TranslationTabsProps<
   T extends FieldValues = FieldValues,
@@ -25,7 +46,7 @@ export interface TranslationTabsProps<
    * Default object appended by the "Add Language" button.
    * Must use `language: ''` so validation feedback can surface.
    */
-  newTranslation: () => FieldArray<T, TName>;
+  newTranslation: () => FieldArrayItem<T, TName>;
   /** Per-language fields rendered below the language input. */
   renderFields: (index: number) => ReactNode;
   className?: string;
@@ -63,6 +84,7 @@ export function TranslationTabs({
   renderFields,
   className,
 }: TranslationTabsProps): ReactElement {
+  const t = useTranslations('dashboard.shared');
   const { fields, append, remove } = useFieldArray({ control, name });
   const [tab, setTab] = useState<string>();
   // Scoped to this array on purpose. An unscoped `useWatch({ control })` makes
@@ -96,7 +118,7 @@ export function TranslationTabs({
           variant="outline"
           onClick={() => append(newTranslation())}
         >
-          <Languages /> Add Language
+          <Languages /> {t('translationTabs.addLanguage')}
         </Button>
       </div>
 
@@ -105,8 +127,8 @@ export function TranslationTabs({
           <TextField
             control={control}
             name={`${name}.${i}.language`}
-            label="Language"
-            placeholder="en, vi..."
+            label={t('translationTabs.languageLabel')}
+            placeholder={t('translationTabs.languagePlaceholder')}
           />
 
           {renderFields(i)}
@@ -121,7 +143,7 @@ export function TranslationTabs({
                 setTab(fields[i === 0 ? 1 : 0]?.id);
               }}
             >
-              <Trash /> Remove Language
+              <Trash /> {t('translationTabs.removeLanguage')}
             </Button>
           )}
         </TabsContent>

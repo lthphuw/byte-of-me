@@ -5,14 +5,33 @@ import type { Media } from '@/shared/types/models';
 export type AdminCompany = Prisma.CompanyGetPayload<{
   include: {
     logo: true;
-    translations: true;
+    translations: {
+      select: {
+        id: true;
+        language: true;
+        description: true;
+      };
+    };
     techStacks: true;
     roles: {
       include: {
-        translations: true;
+        translations: {
+          select: {
+            id: true;
+            language: true;
+            title: true;
+            description: true;
+          };
+        };
         tasks: {
           include: {
-            translations: true;
+            translations: {
+              select: {
+                id: true;
+                language: true;
+                content: true;
+              };
+            };
           };
         };
       };

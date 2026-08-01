@@ -11,6 +11,7 @@ import {
   Separator,
   Textarea,
 } from '@byte-of-me/ui';
+import { useTranslations } from 'next-intl';
 
 import { uploadSingleMedia } from '@/entities/media';
 import type { UserProfileFormValues } from '@/entities/user-profile';
@@ -27,6 +28,8 @@ export function ProfileTranslationCard({
   index,
   onRemove,
 }: ProfileTranslationCardProps) {
+  const t = useTranslations('dashboard.userProfile');
+
   return (
     <div className="space-y-6 rounded-xl border bg-background/50 p-6">
       {/* Header */}
@@ -36,9 +39,13 @@ export function ProfileTranslationCard({
           name={`translations.${index}.language`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Language</FormLabel>
+              <FormLabel>{t('translations.languageLabel')}</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="en, vi..." className="w-32" />
+                <Input
+                  {...field}
+                  placeholder={t('translations.languagePlaceholder')}
+                  className="w-32"
+                />
               </FormControl>
             </FormItem>
           )}
@@ -50,33 +57,33 @@ export function ProfileTranslationCard({
       <Separator />
 
       {/* Identity */}
-      <Section title="Identity">
+      <Section title={t('identity.sectionTitle')}>
         <div className="grid gap-4 md:grid-cols-3">
           <Field
             control={form.control}
             name={`translations.${index}.firstName`}
-            label="First Name"
+            label={t('identity.firstNameLabel')}
           />
           <Field
             control={form.control}
             name={`translations.${index}.lastName`}
-            label="Last Name"
+            label={t('identity.lastNameLabel')}
           />
           <Field
             control={form.control}
             name={`translations.${index}.displayName`}
-            label="Display Name"
+            label={t('identity.displayNameLabel')}
           />
         </div>
       </Section>
 
       {/* Content */}
-      <Section title="Content">
+      <Section title={t('content.sectionTitle')}>
         <div className="grid gap-4 md:grid-cols-1">
           <Field
             control={form.control}
             name={`translations.${index}.greeting`}
-            label="Greeting"
+            label={t('content.greetingLabel')}
           />
 
           <FormField
@@ -84,13 +91,13 @@ export function ProfileTranslationCard({
             name={`translations.${index}.tagLine`}
             render={({ field }) => (
               <FormItem >
-                <FormLabel>Tagline</FormLabel>
+                <FormLabel>{t('content.taglineLabel')}</FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
                     value={field.value ?? ''}
                     className="min-h-[80px] resize-none"
-                    placeholder="Chào, mình là...."
+                    placeholder={t('content.taglinePlaceholder')}
                   />
                 </FormControl>
               </FormItem>
@@ -102,13 +109,13 @@ export function ProfileTranslationCard({
             name={`translations.${index}.bio`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Short Bio</FormLabel>
+                <FormLabel>{t('content.bioLabel')}</FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
                     value={field.value ?? ''}
                     className="min-h-[80px] resize-none"
-                    placeholder="Fullstack developer..."
+                    placeholder={t('content.bioPlaceholder')}
                   />
                 </FormControl>
               </FormItem>
@@ -118,20 +125,20 @@ export function ProfileTranslationCard({
       </Section>
 
       {/* Quote */}
-      <Section title="Quote">
+      <Section title={t('quote.sectionTitle')}>
         <div className="grid gap-4">
           <FormField
             control={form.control}
             name={`translations.${index}.quote`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Quote</FormLabel>
+                <FormLabel>{t('quote.quoteLabel')}</FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
                     value={field.value ?? ''}
                     className="min-h-[80px] resize-none"
-                    placeholder="Enter an inspiring quote..."
+                    placeholder={t('quote.quotePlaceholder')}
                   />
                 </FormControl>
               </FormItem>
@@ -140,13 +147,13 @@ export function ProfileTranslationCard({
           <Field
             control={form.control}
             name={`translations.${index}.quoteAuthor`}
-            label="Author"
+            label={t('quote.authorLabel')}
           />
         </div>
       </Section>
 
       {/* About Me (Rich Text) */}
-      <Section title="About Me">
+      <Section title={t('aboutMe.sectionTitle')}>
         <FormField
           control={form.control}
           name={`translations.${index}.aboutMe`}

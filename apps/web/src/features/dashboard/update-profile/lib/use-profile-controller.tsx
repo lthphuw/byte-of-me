@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import type { AdminUserProfile } from '@/entities/user-profile';
@@ -16,6 +17,7 @@ import {
 } from '@/entities/user-profile/model/user-profile-schema';
 
 export function useProfileController(initUser: AdminUserProfile) {
+  const t = useTranslations('dashboard.userProfile');
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<string>('');
 
@@ -48,13 +50,13 @@ export function useProfileController(initUser: AdminUserProfile) {
       return res.data;
     },
     onSuccess: () => {
-      toast('Profile synchronized');
+      toast(t('toast.updated'));
       queryClient.invalidateQueries({
         queryKey: userProfileKeys.profile(initUser.id),
       });
     },
     onError: (err) => {
-      toast.error('Save failed', {
+      toast.error(t('toast.saveError'), {
         description: err?.message,
       });
     },

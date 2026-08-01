@@ -3,7 +3,7 @@
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
-import type { AdminBlog } from '@/entities/blog';
+import type { AdminBlogListItem } from '@/entities/blog';
 import { requireAdmin } from '@/shared/lib/auth';
 import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
 import { getErrorMessage } from '@/shared/lib/utils';
@@ -13,7 +13,7 @@ import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 export async function getPaginatedAdminBlogs(
   rawPage: number,
   rawLimit: number
-): Promise<ApiResponse<PaginatedData<AdminBlog>>> {
+): Promise<ApiResponse<PaginatedData<AdminBlogListItem>>> {
   try {
     const session = await requireAdmin();
     const userId = session.id;
@@ -28,7 +28,20 @@ export async function getPaginatedAdminBlogs(
         where: { userId },
         include: {
           coverImage: true,
-          translations: true,
+          // Narrowed to what blog-editor-card.tsx renders: never `content`
+          // (a whole TipTap document per translation). The editor dialog
+          // fetches the full row on demand via getAdminBlogById instead of
+          // reusing this list item.
+          translations: {
+            select: {
+              id: true,
+              language: true,
+              title: true,
+              description: true,
+            },
+          },
+          // Left as full includes (per Task 2.2): small columns, and the
+          // tag names are rendered on the card.
           project: {
             include: {
               translations: true,

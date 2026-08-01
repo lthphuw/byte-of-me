@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'bun:test';
+
 import { resolveReorderMove } from './reorder';
 
 /** Apply a resolved move so the result can be compared to the target order. */

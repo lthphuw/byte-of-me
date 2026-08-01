@@ -3,6 +3,7 @@
 import { useFieldArray, type UseFormReturn } from 'react-hook-form';
 import { Button , DeleteButton , FormControl, FormField, FormItem , Input } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
 
@@ -11,6 +12,7 @@ export function SocialLinksSection({
 }: {
   form: UseFormReturn<UserProfileFormValues>;
 }) {
+  const t = useTranslations('dashboard.userProfile');
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'socialLinks',
@@ -21,9 +23,9 @@ export function SocialLinksSection({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold">Social Links</h3>
+          <h3 className="text-sm font-semibold">{t('socialLinks.heading')}</h3>
           <p className="text-sm text-muted-foreground">
-            Add your social profiles
+            {t('socialLinks.description')}
           </p>
         </div>
 
@@ -40,7 +42,7 @@ export function SocialLinksSection({
           }
         >
           <Plus className="mr-1 h-4 w-4" />
-          Add Link
+          {t('socialLinks.addLink')}
         </Button>
       </div>
 
@@ -49,12 +51,12 @@ export function SocialLinksSection({
         {fields.length === 0 && (
           <div className="rounded-lg border py-8 text-center">
             <p className="mb-3 text-sm text-muted-foreground">
-              No social links yet
+              {t('socialLinks.emptyTitle')}
             </p>
             <Button
               onClick={() => append({ platform: '', url: '', sortOrder: 0 })}
             >
-              Add your first link
+              {t('socialLinks.emptyAction')}
             </Button>
           </div>
         )}
@@ -72,7 +74,10 @@ export function SocialLinksSection({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormControl>
-                      <Input placeholder="GitHub" {...field} />
+                      <Input
+                        placeholder={t('socialLinks.platformPlaceholder')}
+                        {...field}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
@@ -87,7 +92,10 @@ export function SocialLinksSection({
                 render={({ field }) => (
                   <FormItem className="space-y-0">
                     <FormControl>
-                      <Input placeholder="https://..." {...field} />
+                      <Input
+                        placeholder={t('socialLinks.urlPlaceholder')}
+                        {...field}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
@@ -97,7 +105,7 @@ export function SocialLinksSection({
             {/* Remove */}
             <DeleteButton
               onClick={() => {
-                if (confirm('Remove this link?')) remove(index);
+                if (confirm(t('socialLinks.removeConfirm'))) remove(index);
               }}
             />
           </div>

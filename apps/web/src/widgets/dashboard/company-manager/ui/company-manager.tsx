@@ -9,6 +9,7 @@ import {
 } from '@byte-of-me/ui';
 import { Briefcase, Plus } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 import { CompanyDialog } from './company-dialog';
 
@@ -24,6 +25,8 @@ import { formatDate } from '@/shared/lib/utils';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
 export function CompanyManager() {
+  const t = useTranslations('dashboard.company');
+  const tShared = useTranslations('dashboard.shared');
   const {
     items: companies,
     isLoading,
@@ -46,6 +49,13 @@ export function CompanyManager() {
   } = useCrudManager<AdminCompany, CompanyFormValues>({
     queryKey: companyKeys.list(),
     entityLabel: 'Work experience',
+    messages: {
+      created: t('toast.created'),
+      updated: t('toast.updated'),
+      deleted: t('toast.deleted'),
+      saveError: t('toast.saveError'),
+      deleteError: t('toast.deleteError'),
+    },
     fetchAll: getAllAdminCompanies,
     create: createCompany,
     update: updateCompany,
@@ -55,12 +65,12 @@ export function CompanyManager() {
   return (
     <div className="space-y-6">
       <ManagerPageHeader
-        title="Work Experience"
-        description="Maintain your professional timeline and company records"
+        title={t('title')}
+        description={t('description')}
         action={
           <Button onClick={openCreateDialog} size="sm" className="gap-2">
             <Plus className="h-4 w-4" />
-            Add Experience
+            {t('createButton')}
           </Button>
         }
       />
@@ -72,18 +82,18 @@ export function CompanyManager() {
           onRetry={() => refetch()}
           isFetching={isFetching}
           isEmpty={companies.length === 0}
-          emptyTitle="No work experience"
-          emptyDescription="Start by adding the first company you worked with."
+          emptyTitle={t('emptyTitle')}
+          emptyDescription={t('emptyDescription')}
           emptyAction={
             <Button variant="outline" size="sm" onClick={openCreateDialog}>
-              Add Your First Entry
+              {t('emptyAction')}
             </Button>
           }
         >
           <div className="grid gap-4">
             {companies.map((company) => {
               const dateRange = `${formatDate(company.startDate)} — ${
-                company.endDate ? formatDate(company.endDate) : 'Present'
+                company.endDate ? formatDate(company.endDate) : t('present')
               }`;
 
               return (
@@ -117,14 +127,15 @@ export function CompanyManager() {
                           variant="secondary"
                           className="px-2 py-0 text-[10px]"
                         >
-                          {company.roles.length}{' '}
-                          {company.roles.length === 1 ? 'Role' : 'Roles'}
+                          {t('rolesBadge', { count: company.roles.length })}
                         </Badge>
                         <Badge
                           variant="secondary"
                           className="px-2 py-0 text-[10px]"
                         >
-                          {company.techStacks.length} Tech
+                          {t('techStackBadge', {
+                            count: company.techStacks.length,
+                          })}
                         </Badge>
                       </div>
                     </div>
@@ -158,9 +169,16 @@ export function CompanyManager() {
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
-        description={`Are you sure you want to delete "${
-          companyToDelete?.company ?? ''
-        }" and all of its roles?`}
+        title={t('deleteTitle')}
+        description={t.rich('deleteDescription', {
+          name: () => (
+            <span className="font-semibold text-foreground">
+              {companyToDelete?.company ?? ''}
+            </span>
+          ),
+        })}
+        actionText={tShared('confirmDelete.actionText')}
+        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

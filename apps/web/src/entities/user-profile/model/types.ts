@@ -4,7 +4,22 @@ export type AdminUserProfile = Prisma.UserGetPayload<{
   include: {
     userProfile: {
       include: {
-        translations: true;
+        translations: {
+          select: {
+            id: true;
+            language: true;
+            displayName: true;
+            firstName: true;
+            middleName: true;
+            lastName: true;
+            greeting: true;
+            tagLine: true;
+            quote: true;
+            quoteAuthor: true;
+            bio: true;
+            aboutMe: true;
+          };
+        };
       };
     };
     socialLinks: true;

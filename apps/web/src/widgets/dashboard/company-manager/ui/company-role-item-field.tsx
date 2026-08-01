@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from '@byte-of-me/ui';
 import { ChevronDown, Plus, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { CompanyTaskItemField } from './company-task-item-field';
 
@@ -32,6 +33,7 @@ export function CompanyRoleItemField({
   control,
   remove,
 }: CompanyRoleItemFieldProps) {
+  const t = useTranslations('dashboard.company');
   const [open, setOpen] = useState(true);
 
   const {
@@ -63,7 +65,9 @@ export function CompanyRoleItemField({
                 !open && '-rotate-90'
               )}
             />
-            <span className="font-medium">{title || `Role ${index + 1}`}</span>
+            <span className="font-medium">
+              {title || t('role.fallbackTitle', { index: index + 1 })}
+            </span>
           </Button>
         </CollapsibleTrigger>
 
@@ -71,6 +75,7 @@ export function CompanyRoleItemField({
           type="button"
           size="icon"
           variant="ghost"
+          aria-label={t('role.removeButton')}
           onClick={() => remove(index)}
         >
           <X className="h-4 w-4" />
@@ -84,7 +89,7 @@ export function CompanyRoleItemField({
             name={`roles.${index}.startDate`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Start Date</FormLabel>
+                <FormLabel>{t('role.startDateLabel')}</FormLabel>
                 <DatePicker
                   value={field.value ?? undefined}
                   onChange={(d) => field.onChange(d || null)}
@@ -99,7 +104,7 @@ export function CompanyRoleItemField({
             name={`roles.${index}.endDate`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>End Date</FormLabel>
+                <FormLabel>{t('role.endDateLabel')}</FormLabel>
                 <DatePicker
                   value={field.value ?? undefined}
                   onChange={(d) => field.onChange(d || null)}
@@ -119,12 +124,12 @@ export function CompanyRoleItemField({
               <TextField
                 control={control}
                 name={`roles.${index}.translations.${i}.title`}
-                label="Role Title"
+                label={t('role.titleLabel')}
               />
               <TextField
                 control={control}
                 name={`roles.${index}.translations.${i}.description`}
-                label="Description"
+                label={t('role.descriptionLabel')}
               />
             </>
           )}
@@ -132,7 +137,7 @@ export function CompanyRoleItemField({
 
         <div className="space-y-4 border-t pt-4">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-medium">Tasks</h4>
+            <h4 className="text-sm font-medium">{t('role.tasksTitle')}</h4>
             <Button
               type="button"
               size="sm"
@@ -145,7 +150,7 @@ export function CompanyRoleItemField({
               }
             >
               <Plus className="mr-2 h-3 w-3" />
-              Add Task
+              {t('role.addTaskButton')}
             </Button>
           </div>
 

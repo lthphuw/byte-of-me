@@ -12,6 +12,7 @@ import {
   Loading,
 } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { useMediaLibrary } from '@/entities/media/query/use-media-library';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
@@ -20,29 +21,36 @@ import { MediaLibrary } from '@/widgets/dashboard/media-manager/ui/media-library
 import { MediaLibraryEmpty } from '@/widgets/dashboard/media-manager/ui/media-library-empty';
 
 export function MediaManager() {
+  const t = useTranslations('dashboard.media');
+  const tShared = useTranslations('dashboard.shared');
   const [page, setPage] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
   const [mediaToDelete, setMediaToDelete] = useState<string | null>(null);
 
-  const { query, upload, remove } = useMediaLibrary(page);
+  const { query, upload, remove } = useMediaLibrary(page, {
+    uploadSuccess: t('toast.uploadSuccess'),
+    uploadError: t('toast.uploadError'),
+    deleteSuccess: t('toast.deleteSuccess'),
+    deleteError: t('toast.deleteError'),
+  });
   const mediaList = query?.data?.data?.data || [];
   const pagination = query?.data?.data?.meta;
 
   return (
     <div className="space-y-6">
       <ManagerPageHeader
-        title="Media Library"
-        description="Centralized storage for your portfolio assets and banner images."
+        title={t('title')}
+        description={t('description')}
         action={
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
               <Button size="sm" className="gap-2">
-                <Plus className="h-4 w-4" /> Add Media
+                <Plus className="h-4 w-4" /> {t('addButton')}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-xl">
               <DialogHeader>
-                <DialogTitle>Upload Media</DialogTitle>
+                <DialogTitle>{t('dialog.uploadTitle')}</DialogTitle>
               </DialogHeader>
               <ImageUpload
                 uploadFiles={async (files) => {
@@ -83,8 +91,10 @@ export function MediaManager() {
             });
           }
         }}
-        title="Delete Media"
-        description="This will permanently delete this media file. This action cannot be undone."
+        title={t('dialog.deleteTitle')}
+        description={t('dialog.deleteDescription')}
+        actionText={tShared('confirmDelete.actionText')}
+        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

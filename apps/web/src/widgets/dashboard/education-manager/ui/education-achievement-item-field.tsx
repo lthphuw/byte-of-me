@@ -22,6 +22,7 @@ import {
   ImageIcon,
   Trash,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
 import { uploadSingleMedia } from '@/entities/media';
@@ -48,6 +49,7 @@ export function EducationAchievementItemField({
   remove,
   defaultOpen = false,
 }: EducationAchievementItemFieldProps) {
+  const t = useTranslations('dashboard.education');
   const dragControls = useDragControls();
   const [open, setOpen] = useState(defaultOpen);
 
@@ -82,7 +84,10 @@ export function EducationAchievementItemField({
         <div className="flex items-center gap-1 p-2">
           <button
             type="button"
-            aria-label={`Reorder achievement ${index + 1} of ${total}`}
+            aria-label={t('achievements.reorderAriaLabel', {
+              index: index + 1,
+              total,
+            })}
             onPointerDown={(event) => dragControls.start(event)}
             // `touch-none` stops a touch drag from scrolling the dialog
             // instead of moving the card.
@@ -109,7 +114,7 @@ export function EducationAchievementItemField({
                   !summary && 'text-muted-foreground'
                 )}
               >
-                {summary || 'Untitled achievement'}
+                {summary || t('achievements.untitled')}
               </span>
 
               {imageCount > 0 && (
@@ -135,7 +140,7 @@ export function EducationAchievementItemField({
             type="button"
             size="icon"
             variant="ghost"
-            aria-label="Remove achievement"
+            aria-label={t('achievements.removeAriaLabel')}
             className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
             onClick={() => remove(index)}
           >
@@ -152,7 +157,7 @@ export function EducationAchievementItemField({
             name={`achievements.${index}.imageIds`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Images</FormLabel>
+                <FormLabel>{t('achievements.imagesLabel')}</FormLabel>
                 <MediaMultiSelect
                   value={field.value ?? []}
                   onChange={field.onChange}
@@ -170,7 +175,7 @@ export function EducationAchievementItemField({
                 <TextField
                   control={control}
                   name={`achievements.${index}.translations.${i}.title`}
-                  label="Title"
+                  label={t('achievements.titleLabel')}
                 />
 
                 <FormField
@@ -178,11 +183,11 @@ export function EducationAchievementItemField({
                   name={`achievements.${index}.translations.${i}.content`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Content</FormLabel>
+                      <FormLabel>{t('achievements.contentLabel')}</FormLabel>
                       <RichTextEditor
                         compact
                         minHeight={140}
-                        placeholder="Describe this achievement…"
+                        placeholder={t('achievements.contentPlaceholder')}
                         className="rounded-md"
                         // Tiptap reads `value` once, on mount. Rendering is
                         // gated by the language tab and the collapsible above,

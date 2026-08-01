@@ -7,13 +7,13 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "pnpm clean && pnpm build:js && pnpm build:types",
-    "build:js": "swc src -d dist --strip-leading-paths",
+    "build": "bun run clean && bun run build:js && bun run build:types",
+    "build:js": "bun build ./src/index.ts --outdir dist --target node --format esm",
     "build:types": "tsc -p tsconfig.build.json",
     "clean": "rm -rf dist",
-    "test": "jest",
+    "test": "bun test",
     "lint": "eslint src",
-    "prepublishOnly": "pnpm build",
+    "prepublishOnly": "bun run build",
     "check-types": "tsc --noEmit",
     "lint:fix": "eslint src --fix"
   },
@@ -22,12 +22,8 @@
     "@aws-sdk/s3-request-presigner": "^3.1009.0"
   },
   "devDependencies": {
-    "@swc/cli": "^0.8.0",
-    "@swc/core": "^1.15.18",
-    "@types/jest": "^29.5.0",
     "@types/node": "^25.5.0",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.1.0",
+    "eslint": "^9.30.0",
     "typescript": "5.8.3"
   },
   "sideEffects": false

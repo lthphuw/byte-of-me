@@ -59,11 +59,11 @@ There is no `middleware.ts`; the locale comes from the `[locale]` segment.
 ## Scripts
 
 ```bash
-pnpm --filter web dev          # next dev --turbopack
-pnpm --filter web build        # next build --turbopack
-pnpm --filter web preview      # build + next start
-pnpm --filter web test         # jest
-pnpm --filter web check-types  # tsc --noEmit
-pnpm --filter web lint         # eslint .
-pnpm --filter web format       # prettier over src
+bun run --filter 'web' dev          # next dev --turbopack
+bun run --filter 'web' build        # next build --turbopack
+bun run --filter 'web' preview      # build + next start
+bun run --filter 'web' test         # bun test
+bun run --filter 'web' check-types  # tsc --noEmit
+bun run --filter 'web' lint         # eslint .
+bun run --filter 'web' format       # prettier over src
 ```

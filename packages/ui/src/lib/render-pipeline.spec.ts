@@ -1,5 +1,6 @@
 // The `/server` entry is the node build — same output, no DOM requirement.
 import { generateHTML } from '@tiptap/html/server';
+import { describe, expect, it } from 'bun:test';
 
 import { renderExtensions } from '../rich-text-editor/tiptap/render-extensions';
 
@@ -39,7 +40,7 @@ const doc = {
     {
       type: 'codeBlock',
       attrs: { language: 'bash' },
-      content: [{ type: 'text', text: 'pnpm check' }],
+      content: [{ type: 'text', text: 'bun run check' }],
     },
   ],
 };

@@ -1,12 +1,15 @@
 'use client';
 
 import { Button, ConfirmDeleteDialog, Pagination } from '@byte-of-me/ui';
+import { useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import {
-  type AdminBlog,
+  type AdminBlogListItem,
   createBlog,
   deleteBlog,
+  getAdminBlogById,
   getPaginatedAdminBlogs,
   updateBlog,
 } from '@/entities/blog';
@@ -18,6 +21,8 @@ import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
 export function BlogManager() {
+  const t = useTranslations('dashboard.blog');
+  const tShared = useTranslations('dashboard.shared');
   const {
     items: blogs,
     pagination,
@@ -39,9 +44,19 @@ export function BlogManager() {
     confirmDelete,
     isDeleting,
     isDeletingItem,
-  } = useCrudManager<AdminBlog, BlogFormValues>({
+  } = useCrudManager<AdminBlogListItem, BlogFormValues>({
     queryKey: blogKeys.adminList(),
     entityLabel: 'Blog',
+    messages: {
+      created: t('toast.created'),
+      updated: t('toast.updated'),
+      deleted: t('toast.deleted'),
+      saveError: t('toast.saveError'),
+      deleteError: t('toast.deleteError'),
+    },
+    // Saving a post leaves `blogKeys.detail(id)` — the document the editor
+    // below loads — holding pre-save content that no list invalidation reaches.
+    detailKey: (blog) => blogKeys.detail(blog.id),
     pageSize: 12,
     fetchPage: (page, limit) => getPaginatedAdminBlogs(page, limit),
     create: createBlog,
@@ -49,18 +64,42 @@ export function BlogManager() {
     remove: deleteBlog,
   });
 
+  // The list row never carries `content` (see AdminBlogListItem), so the
+  // editor dialog needs the full post fetched separately. Disabled entirely
+  // for "New Blog" (`editing` is null there) — no id, no fetch, empty form.
+  const editingBlogQuery = useQuery({
+    queryKey: blogKeys.detail(editing?.id ?? ''),
+    queryFn: () => getAdminBlogById(editing?.id ?? ''),
+    enabled: Boolean(editing),
+  });
+
+  const editingBlogResult = editing ? editingBlogQuery.data : undefined;
+  const fullEditingBlog =
+    editingBlogResult?.success ? editingBlogResult.data : null;
+  // "Not ready" covers both still-loading and a failed fetch — either way
+  // `fullEditingBlog` stays null, and the dialog must not fall through to
+  // mounting the form on a null/partial row.
+  const isEditingBlogNotReady = Boolean(editing) && !fullEditingBlog;
+  const editingBlogLoadError = editing
+    ? editingBlogResult && !editingBlogResult.success
+      ? editingBlogResult.errorMsg
+      : editingBlogQuery.isError
+        ? t('loadError')
+        : null
+    : null;
+
   const newBlogButton = (
     <Button size="sm" onClick={openCreateDialog}>
       <Plus className="mr-2 h-4 w-4" />
-      New Blog
+      {t('createButton')}
     </Button>
   );
 
   return (
     <div className="space-y-6">
       <ManagerPageHeader
-        title="Blog Posts"
-        description="Create and manage your articles, drafts, and published content."
+        title={t('title')}
+        description={t('description')}
         action={newBlogButton}
       />
 
@@ -69,8 +108,8 @@ export function BlogManager() {
         isError={isError}
         onRetry={() => refetch()}
         isEmpty={blogs.length === 0}
-        emptyTitle="No blogs found"
-        emptyDescription="Create your first blog."
+        emptyTitle={t('emptyTitle')}
+        emptyDescription={t('emptyDescription')}
         emptyAction={newBlogButton}
       >
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -98,7 +137,10 @@ export function BlogManager() {
         key={editing?.id ?? 'new'}
         open={isDialogOpen}
         onOpenChange={onDialogOpenChange}
-        initialData={editing}
+        initialData={fullEditingBlog}
+        isLoadingInitialData={isEditingBlogNotReady}
+        loadError={editingBlogLoadError}
+        onRetryLoad={() => editingBlogQuery.refetch()}
         onSubmit={(values) =>
           save({
             ...values,
@@ -117,8 +159,10 @@ export function BlogManager() {
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
-        title="Delete Blog?"
-        description="This action cannot be undone."
+        title={t('deleteTitle')}
+        description={t('deleteDescription')}
+        actionText={tShared('confirmDelete.actionText')}
+        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

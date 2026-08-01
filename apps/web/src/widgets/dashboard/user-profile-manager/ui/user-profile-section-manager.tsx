@@ -2,6 +2,7 @@
 
 import type { UseFormReturn } from 'react-hook-form';
 import { DatePicker , FormControl, FormField, FormItem, FormLabel } from '@byte-of-me/ui';
+import { useTranslations } from 'next-intl';
 
 import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
 
@@ -10,12 +11,14 @@ export function UserProfileSectionManager({
 }: {
   form: UseFormReturn<UserProfileFormValues>;
 }) {
+  const t = useTranslations('dashboard.userProfile');
+
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold">Common Information</h3>
+        <h3 className="text-sm font-semibold">{t('commonInfo.heading')}</h3>
         <p className="text-sm text-muted-foreground">
-          General profile settings
+          {t('commonInfo.description')}
         </p>
       </div>
 
@@ -26,7 +29,7 @@ export function UserProfileSectionManager({
             name="birthdate"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Birthdate</FormLabel>
+                <FormLabel>{t('commonInfo.birthdateLabel')}</FormLabel>
                 <FormControl>
                   <DatePicker
                     value={field.value ? new Date(field.value) : null}

@@ -5,7 +5,7 @@
 # build. Any failing step aborts the script (turbo exits non-zero).
 #
 # Usage:
-#   pnpm check          # from the repo root
+#   bun run check       # from the repo root
 #   sh scripts/check.sh
 #
 set -e

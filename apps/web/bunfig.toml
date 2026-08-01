@@ -1,0 +1,2 @@
+[test]
+preload = ["./next-runtime-stubs.ts", "./test-setup.ts", "./happydom.ts"]

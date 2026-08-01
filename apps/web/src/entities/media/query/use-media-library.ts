@@ -8,7 +8,25 @@ import { getPaginatedMedia } from '@/entities/media/api/get-paginated-media';
 import { uploadMedia } from '@/entities/media/api/upload-media';
 import { mediaKeys } from '@/entities/media/model/query-keys';
 
-export function useMediaLibrary(page = 1) {
+/**
+ * Whole, pre-translated toast sentences (the i18n path). When supplied, each
+ * string is used verbatim instead of the English literal below — mirrors the
+ * `messages` option on `useCrudManager`. This hook lives in `entities/`,
+ * which must not decide which `dashboard.*` namespace owns the copy or call
+ * `useTranslations` itself, so the caller (a widget/feature that already
+ * knows its own namespace) is responsible for passing translated strings.
+ */
+export interface UseMediaLibraryMessages {
+  uploadSuccess: string;
+  uploadError: string;
+  deleteSuccess: string;
+  deleteError: string;
+}
+
+export function useMediaLibrary(
+  page = 1,
+  messages?: UseMediaLibraryMessages
+) {
   const queryClient = useQueryClient();
 
   // Fetching
@@ -26,9 +44,10 @@ export function useMediaLibrary(page = 1) {
     mutationFn: (files: File[]) => uploadMedia(files),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: mediaKeys.all });
-      toast('Upload successful');
+      toast(messages ? messages.uploadSuccess : 'Upload successful');
     },
-    onError: () => toast.error('Upload failed'),
+    onError: () =>
+      toast.error(messages ? messages.uploadError : 'Upload failed'),
   });
 
   // Deleting
@@ -36,9 +55,10 @@ export function useMediaLibrary(page = 1) {
     mutationFn: (id: string) => deleteMedia(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: mediaKeys.all });
-      toast('Media deleted');
+      toast(messages ? messages.deleteSuccess : 'Media deleted');
     },
-    onError: () => toast.error('Could not delete media'),
+    onError: () =>
+      toast.error(messages ? messages.deleteError : 'Could not delete media'),
   });
 
   return { query, upload, remove };

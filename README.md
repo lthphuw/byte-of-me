@@ -26,7 +26,7 @@ A production personal website with a polished public portfolio and a private, mu
 <img src="https://img.shields.io/badge/TipTap_3-000000?logo=tiptap&logoColor=white&style=flat-square" alt="TipTap" />
 <img src="https://img.shields.io/badge/Framer_Motion-0055FF?logo=framer&logoColor=white&style=flat-square" alt="Framer Motion" />
 <img src="https://img.shields.io/badge/Turborepo-EF4444?logo=turborepo&logoColor=white&style=flat-square" alt="Turborepo" />
-<img src="https://img.shields.io/badge/pnpm_10-F69220?logo=pnpm&logoColor=white&style=flat-square" alt="pnpm" />
+<img src="https://img.shields.io/badge/Bun_1.3-000000?logo=bun&logoColor=white&style=flat-square" alt="Bun" />
 
 </div>
 
@@ -74,7 +74,7 @@ The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced 
 - **Server Components first**; server actions for mutations, TanStack Query for client-side server state.
 - **Bundle discipline** — subpath exports keep TipTap out of public-site JS; `optimizePackageImports` deep-imports the barrel packages (`lucide-react`, `react-icons`, `date-fns`, `framer-motion`, …).
 - **Edge caching by route group** — public pages get `s-maxage=3600, stale-while-revalidate=86400`; every dashboard route is `no-store`.
-- **Turborepo + pnpm** workspace with shared, independently-typed packages and a full `type-check → lint → test → build` gate.
+- **Turborepo + Bun** workspace with shared, independently-typed packages and a full `type-check → lint → test → build` gate.
 
 <div align="center">
   <table>
@@ -117,8 +117,8 @@ The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced 
 | **Email** | Nodemailer (SMTP) — sign-in links and contact-form delivery |
 | **Forms & validation** | React Hook Form + Zod; env parsed with `@t3-oss/env-nextjs` |
 | **Analytics** | Vercel Analytics & Speed Insights, Google Analytics (`@next/third-parties`), plus first-party page-view/interaction logging |
-| **Testing** | Jest + ts-jest |
-| **Tooling** | Turborepo, pnpm workspaces, ESLint 9 (flat config), Prettier, Husky + commitlint |
+| **Testing** | `bun test` |
+| **Tooling** | Turborepo, Bun workspaces, ESLint 9 (flat config), Prettier, Husky + commitlint |
 
 ---
 
@@ -173,7 +173,7 @@ byte-of-me/
 └── docker-compose.yml            # Local PostgreSQL 16
 ```
 
-Workspace packages are consumed as **TypeScript source** through Next.js `transpilePackages` — no build step is required before `pnpm dev`.
+Workspace packages are consumed as **TypeScript source** through Next.js `transpilePackages` — no build step is required before `bun run dev`.
 
 ---
 
@@ -191,11 +191,11 @@ There is no `middleware.ts` — the locale lives in the `[locale]` segment, `/` 
 
 ## Getting started
 
-> Requires **Node.js ≥ 20.9** (Next 16's floor; note `.nvmrc` pins v24.4.1), **pnpm 10**, and a PostgreSQL 16 database (Supabase works out of the box; `docker-compose.yml` gives you a local one).
+> Requires **Node.js ≥ 20.9** (Next 16's floor; note `.nvmrc` pins v24.4.1), **Bun 1.3**, and a PostgreSQL 16 database (Supabase works out of the box; `docker-compose.yml` gives you a local one).
 
 ```bash
 # 1. Install dependencies
-pnpm install
+bun install
 
 # 2. Configure environment
 cp apps/web/.env.example  apps/web/.env      # app runtime config
@@ -206,17 +206,17 @@ docker compose up -d postgres
 #   → postgresql://admin:secret@localhost:5432/byte_of_me
 
 # 4. Apply migrations and generate the Prisma client
-pnpm --filter @byte-of-me/db db:migrate:dev
-pnpm generate
+bun run --filter '@byte-of-me/db' db:migrate:dev
+bun run generate
 
 # 5. (Optional) Seed demo content
-pnpm --filter @byte-of-me/db db:seed
+bun run --filter '@byte-of-me/db' db:seed
 #   The seed prints AUTHOR_ID and always uses the same value. Every public
 #   read is scoped to it, so apps/web/.env must carry that exact id or the
 #   site renders empty with no error. The seed is idempotent: re-run freely.
 
 # 6. Run the dev server
-pnpm dev            # http://localhost:3000  → redirects to /en
+bun run dev         # http://localhost:3000  → redirects to /en
 ```
 
 The dashboard lives at `/[locale]/dashboard` and requires an account whose `role` is `ADMIN`. The seed script creates one; otherwise sign in once and flip the role in the database.
@@ -248,26 +248,26 @@ Run from the repo root (Turborepo fans each task out across the workspace):
 
 | Command | Description |
 | --- | --- |
-| `pnpm dev` | Start the app in development (Turbopack) |
-| `pnpm build` | Production build of every package |
-| `pnpm check` | Full gate: type-check → lint → test → build (`scripts/check.sh`) |
-| `pnpm check-types` | Type-check every package |
-| `pnpm lint` | Lint every package |
-| `pnpm lint:fix` | Lint and auto-fix |
-| `pnpm test` | Run the Jest suites |
-| `pnpm generate` | Regenerate the Prisma client (`@byte-of-me/db`) |
+| `bun run dev` | Start the app in development (Turbopack) |
+| `bun run build` | Production build of every package |
+| `bun run check` | Full gate: type-check → lint → test → build (`scripts/check.sh`) |
+| `bun run check-types` | Type-check every package |
+| `bun run lint` | Lint every package |
+| `bun run lint:fix` | Lint and auto-fix |
+| `bun run test` | Run the `bun test` suites |
+| `bun run generate` | Regenerate the Prisma client (`@byte-of-me/db`) |
 
 Package-scoped extras:
 
 | Command | Description |
 | --- | --- |
-| `pnpm --filter web preview` | Production build, then `next start` |
-| `pnpm format` | Prettier over every workspace `src` |
-| `pnpm --filter @byte-of-me/db db:migrate:dev` | Create + apply a migration |
-| `pnpm --filter @byte-of-me/db db:migrate:deploy` | Apply pending migrations (CI/prod) |
-| `pnpm --filter @byte-of-me/db exec prisma migrate reset --force` | Reset the database (destroys all data) |
-| `pnpm --filter @byte-of-me/db db:seed` | Seed demo content (idempotent) |
-| `pnpm --filter @byte-of-me/db exec prisma studio --port 7777` | Browse the database |
+| `bun run --filter 'web' preview` | Production build, then `next start` |
+| `bun run format` | Prettier over every workspace `src` |
+| `bun run --filter '@byte-of-me/db' db:migrate:dev` | Create + apply a migration |
+| `bun run --filter '@byte-of-me/db' db:migrate:deploy` | Apply pending migrations (CI/prod) |
+| `cd packages/db && bunx prisma migrate reset --force` | Reset the database (destroys all data) |
+| `bun run --filter '@byte-of-me/db' db:seed` | Seed demo content (idempotent) |
+| `cd packages/db && bunx prisma studio --port 7777` | Browse the database |
 
 Git hooks (Husky):
 
@@ -289,17 +289,30 @@ The generated client is committed to `packages/db/src/generated/prisma` and re-e
 
 ## Testing
 
-Jest (ts-jest) unit suites live next to the code they cover:
+`bun test` suites live next to the code they cover — **151 tests across 20 files**:
 
-- `apps/web/src/shared/lib/` — `deep-merge`, `i18n-utils`, `pagination`, `reorder`
-- `packages/ui/src/lib/` — `sanitize`, `rich-text-content`
+- `apps/web/src/shared/lib/` — `i18n-utils`, `pagination`, `rate-limit`, `reorder`,
+  `validate-action-input`, `filter-params`, plus `i18n-parity` (fails if `en.json` and
+  `vi.json` disagree on any key)
+- `apps/web/src/features/public/*/lib/` — URL filter parsing and serialisation
+  (`blog-filter-params`, `project-filter-params`)
+- `apps/web/src/entities/blog/api/` — server-action contracts
+- `packages/ui/src/lib/` — `sanitize`, `rich-text-content`, `render-pipeline`,
+  `tiptap-utils`, `utils`
+- `packages/ui/src/*.spec.tsx` — component rendering, via `happy-dom` +
+  `@testing-library/react`
 - `packages/db/__tests__/` — Prisma client wiring
 - `packages/storage/__tests__/` — storage client
+- `packages/logger/__tests__/` — structured logging
 
 ```bash
-pnpm test                       # everything
-pnpm --filter web test          # a single workspace
+bun run test                    # everything
+bun run --filter 'web' test     # a single workspace
 ```
+
+Run tests through those scripts, not `bun test <path>` from the repo root: `bunfig.toml`
+is resolved against the working directory, so running from the root skips each
+workspace's preloads — including the guard that keeps tests off the production database.
 
 ---
 
@@ -307,7 +320,7 @@ pnpm --filter web test          # a single workspace
 
 Built for Vercel:
 
-- `outputFileTracingRoot` points at the monorepo root so pnpm's symlinked `node_modules` are traced correctly; `outputFileTracingExcludes` drops build-only weight (swc, esbuild, typescript, prisma CLI) from the serverless bundles.
+- `outputFileTracingRoot` points at the monorepo root so Bun's symlinked `node_modules` are traced correctly; `outputFileTracingExcludes` targets build-only packages (esbuild, typescript, prisma CLI) in Bun's `node_modules/.bun` store. Measured 2026-08-01: none of them are reachable from a server entry point, so file tracing never pulls them in and the excludes remove nothing today — they are correct, not load-bearing.
 - Remote images are allowed only from the Supabase Storage host configured in `next.config.js`.
 - Server actions accept bodies up to 3 MB (media uploads).
 - Every variable in the **Environment variables** table is declared in `turbo.json` under `build.env` so Turborepo's cache key tracks it.

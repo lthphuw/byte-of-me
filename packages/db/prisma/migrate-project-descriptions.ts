@@ -7,8 +7,8 @@
  * hold a Tiptap document — anything saved after the editor shipped — are
  * left untouched, so the script is safe to run repeatedly.
  *
- *   pnpm --filter @byte-of-me/db exec tsx prisma/migrate-project-descriptions.ts --dry-run
- *   pnpm --filter @byte-of-me/db exec tsx prisma/migrate-project-descriptions.ts
+ *   cd packages/db && bunx tsx prisma/migrate-project-descriptions.ts --dry-run
+ *   cd packages/db && bunx tsx prisma/migrate-project-descriptions.ts
  */
 import { prisma } from '../src';
 

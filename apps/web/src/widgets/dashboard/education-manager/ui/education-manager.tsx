@@ -9,6 +9,7 @@ import {
 } from '@byte-of-me/ui';
 import { GraduationCap, Plus } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 import { EducationDialog } from './education-dialog';
 
@@ -24,6 +25,8 @@ import { formatDate } from '@/shared/lib/utils';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
 export function EducationManager() {
+  const t = useTranslations('dashboard.education');
+  const tShared = useTranslations('dashboard.shared');
   const {
     items: educations,
     isLoading,
@@ -46,6 +49,13 @@ export function EducationManager() {
   } = useCrudManager<AdminEducation, EducationFormValues>({
     queryKey: educationKeys.list(),
     entityLabel: 'Education',
+    messages: {
+      created: t('toast.created'),
+      updated: t('toast.updated'),
+      deleted: t('toast.deleted'),
+      saveError: t('toast.saveError'),
+      deleteError: t('toast.deleteError'),
+    },
     fetchAll: getAllAdminEducations,
     create: createEducation,
     update: updateEducation,
@@ -55,12 +65,12 @@ export function EducationManager() {
   return (
     <div className="space-y-6">
       <ManagerPageHeader
-        title="Education"
-        description="Manage your academic background"
+        title={t('title')}
+        description={t('description')}
         action={
           <Button onClick={openCreateDialog} size="sm" className="gap-2">
             <Plus className="h-4 w-4" />
-            Add Education
+            {t('createButton')}
           </Button>
         }
       />
@@ -72,20 +82,19 @@ export function EducationManager() {
           onRetry={() => refetch()}
           isFetching={isFetching}
           isEmpty={educations.length === 0}
-          emptyTitle="No education entries"
-          emptyDescription="Start by adding your first academic achievement."
+          emptyTitle={t('emptyTitle')}
+          emptyDescription={t('emptyDescription')}
           emptyAction={
             <Button variant="outline" size="sm" onClick={openCreateDialog}>
-              Add Your First Entry
+              {t('emptyAction')}
             </Button>
           }
         >
           <div className="grid gap-4">
             {educations.map((edu) => {
-              const title =
-                edu.translations?.[0]?.title || 'Untitled Education';
+              const title = edu.translations?.[0]?.title || t('untitled');
               const dateRange = `${formatDate(edu.startDate)} — ${
-                edu.endDate ? formatDate(edu.endDate) : 'Present'
+                edu.endDate ? formatDate(edu.endDate) : t('present')
               }`;
 
               return (
@@ -120,10 +129,9 @@ export function EducationManager() {
                           variant="secondary"
                           className="px-2 py-0 text-[10px]"
                         >
-                          {edu.achievements.length}{' '}
-                          {edu.achievements.length === 1
-                            ? 'Achievement'
-                            : 'Achievements'}
+                          {t('achievementCount', {
+                            count: edu.achievements.length,
+                          })}
                         </Badge>
 
                         {!edu.endDate && (
@@ -131,7 +139,7 @@ export function EducationManager() {
                             variant="outline"
                             className="px-2 py-0 text-[10px]"
                           >
-                            Ongoing
+                            {t('ongoing')}
                           </Badge>
                         )}
                       </div>
@@ -166,9 +174,16 @@ export function EducationManager() {
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
-        description={`Are you sure you want to delete "${
-          eduToDelete?.translations?.[0]?.title || 'Untitled Education'
-        }"?`}
+        title={t('deleteTitle')}
+        description={t.rich('deleteDescription', {
+          name: () => (
+            <span className="font-medium text-foreground">
+              {eduToDelete?.translations?.[0]?.title || t('untitled')}
+            </span>
+          ),
+        })}
+        actionText={tShared('confirmDelete.actionText')}
+        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

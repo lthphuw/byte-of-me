@@ -77,19 +77,22 @@ const nextConfig = {
   // needed either: Prisma 7 talks to Postgres through `@prisma/adapter-pg`, so
   // there is no query-engine binary for the plugin to copy.
 
-  // pnpm workspace: without this, file tracing starts at apps/web and Next
+  // Bun workspace: without this, file tracing starts at apps/web and Next
   // cannot follow symlinks into the root node_modules, which on Vercel shows up
   // as a workspace-root warning and mis-traced server bundles.
   outputFileTracingRoot: path.join(import.meta.dirname, '../../'),
   outputFileTracingExcludes: {
     // Nothing server-rendered needs these at runtime; they are pure build-time
-    // or editor-only weight in the serverless function.
+    // or editor-only weight in the serverless function. Bun's isolated linker
+    // stores real package contents under node_modules/.bun/<pkg>@<version>/
+    // node_modules/<pkg>, with flat node_modules/<pkg> symlinks per consumer
+    // pointing at that store — file tracing resolves symlinks to their real
+    // path, so the excludes target the store path directly, the same way the
+    // old pnpm globs targeted node_modules/.pnpm rather than the flat symlinks.
     '**/*': [
-      'node_modules/.pnpm/@swc+core*/**',
-      'node_modules/.pnpm/esbuild*/**',
-      'node_modules/.pnpm/typescript*/**',
-      'node_modules/.pnpm/@esbuild*/**',
-      'node_modules/.pnpm/prisma@*/**',
+      'node_modules/.bun/typescript@*/**',
+      'node_modules/.bun/esbuild@*/**',
+      'node_modules/.bun/prisma@*/**',
     ],
   },
   async headers() {

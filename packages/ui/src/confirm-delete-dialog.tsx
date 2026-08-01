@@ -21,6 +21,7 @@ interface ConfirmDeleteDialogProps {
   title?: string;
   description?: string | React.ReactNode;
   actionText?: string;
+  cancelText?: string;
 }
 
 export function ConfirmDeleteDialog({
@@ -31,6 +32,7 @@ export function ConfirmDeleteDialog({
   title = 'Are you absolutely sure?',
   description = 'This action cannot be undone. This will permanently delete the item.',
   actionText = 'Delete',
+  cancelText = 'Cancel',
 }: ConfirmDeleteDialogProps) {
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
@@ -40,7 +42,7 @@ export function ConfirmDeleteDialog({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isLoading}>{cancelText}</AlertDialogCancel>
           <AlertDialogAction
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             onClick={(e) => {

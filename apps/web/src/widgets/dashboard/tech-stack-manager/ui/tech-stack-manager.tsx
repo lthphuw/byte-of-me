@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import { Button, ConfirmDeleteDialog } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { TechStackDialog } from './tech-stack-dialog';
 
@@ -22,6 +23,8 @@ export function TechStackManager({
 }: {
   initialTechStacks: AdminTechStack[];
 }) {
+  const t = useTranslations('dashboard.techStack');
+  const tShared = useTranslations('dashboard.shared');
   const {
     items: techStacks,
     isLoading,
@@ -43,6 +46,13 @@ export function TechStackManager({
   } = useCrudManager<AdminTechStack, TechStackFormValues>({
     queryKey: techStackKeys.list(),
     entityLabel: 'Tech stack',
+    messages: {
+      created: t('toast.created'),
+      updated: t('toast.updated'),
+      deleted: t('toast.deleted'),
+      saveError: t('toast.saveError'),
+      deleteError: t('toast.deleteError'),
+    },
     fetchAll: getAllAdminTechStack,
     initialItems: initialTechStacks,
     create: addTechStack,
@@ -52,21 +62,21 @@ export function TechStackManager({
 
   const grouped = useMemo(() => {
     return techStacks.reduce<Record<string, AdminTechStack[]>>((acc, item) => {
-      const groupName = item.group || 'Other';
+      const groupName = item.group || t('otherGroup');
       if (!acc[groupName]) acc[groupName] = [];
       acc[groupName].push(item);
       return acc;
     }, {});
-  }, [techStacks]);
+  }, [techStacks, t]);
 
   return (
     <div className="space-y-6">
       <ManagerPageHeader
-        title="Tech Stack"
-        description="Maintain the list of technologies, frameworks, and tools you use."
+        title={t('title')}
+        description={t('description')}
         action={
           <Button onClick={openCreateDialog} size="sm" className="gap-2">
-            <Plus className="h-4 w-4" /> Add TechStack
+            <Plus className="h-4 w-4" /> {t('createButton')}
           </Button>
         }
       />
@@ -76,10 +86,10 @@ export function TechStackManager({
         isError={isError}
         onRetry={() => refetch()}
         isEmpty={techStacks.length === 0}
-        emptyTitle="No tech stacks found"
+        emptyTitle={t('emptyTitle')}
         emptyAction={
           <Button variant="outline" size="sm" onClick={openCreateDialog}>
-            <Plus className="h-4 w-4" /> Add TechStack
+            <Plus className="h-4 w-4" /> {t('createButton')}
           </Button>
         }
       >
@@ -123,16 +133,20 @@ export function TechStackManager({
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
-        title="Remove Tech stack"
+        title={t('deleteTitle')}
         description={
           <p>
-            Are you sure you want to remove{' '}
-            <span className="font-bold text-foreground">
-              {techToDelete?.name}
-            </span>
-            ? This will hide it from your tech stack showcase.
+            {t.rich('deleteDescription', {
+              name: () => (
+                <span className="font-bold text-foreground">
+                  {techToDelete?.name}
+                </span>
+              ),
+            })}
           </p>
         }
+        actionText={tShared('confirmDelete.actionText')}
+        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

@@ -49,6 +49,6 @@ argument (the tests do this).
 ## Scripts
 
 ```bash
-pnpm --filter @byte-of-me/storage test    # jest
-pnpm --filter @byte-of-me/storage build   # swc -> dist + .d.ts
+bun run --filter '@byte-of-me/storage' test    # bun test
+bun run --filter '@byte-of-me/storage' build   # bun build -> dist + tsc .d.ts
 ```

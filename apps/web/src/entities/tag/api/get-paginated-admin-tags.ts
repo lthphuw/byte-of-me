@@ -25,7 +25,15 @@ export async function getPaginatedAdminTags(
     const [tags, totalCount] = await Promise.all([
       prisma.tag.findMany({
         include: {
-          translations: true,
+          // TagCard/TagDialog render `name` only; TagTranslation has no
+          // other content column, so this only drops the two timestamps.
+          translations: {
+            select: {
+              id: true,
+              language: true,
+              name: true,
+            },
+          },
         },
         orderBy: { createdAt: 'desc' },
         skip,

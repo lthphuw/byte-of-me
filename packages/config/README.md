@@ -7,7 +7,7 @@ Shared tooling configuration for the monorepo.
 | Preset | Use for | Extends |
 | --- | --- | --- |
 | `base.json` | Strict defaults every workspace shares | — |
-| `node-library.json` | Node packages built with swc + `tsc` declarations (`logger`, `storage`) | `base.json` |
+| `node-library.json` | Node packages bundled with `bun build` + `tsc` declarations (`logger`, `storage`) | `base.json` |
 | `nextjs.json` | Next.js apps (`apps/web`) | `base.json` |
 
 Workspaces extend the presets with **relative paths** so no install step is

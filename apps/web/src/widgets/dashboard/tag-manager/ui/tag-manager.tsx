@@ -2,6 +2,7 @@
 
 import { Button, ConfirmDeleteDialog, Pagination } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { TagDialog } from './tag-dialog';
 
@@ -19,6 +20,8 @@ import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
 export function TagManager() {
+  const t = useTranslations('dashboard.tag');
+  const tShared = useTranslations('dashboard.shared');
   const {
     items: tags,
     pagination,
@@ -43,6 +46,13 @@ export function TagManager() {
   } = useCrudManager<AdminTag, TagFormValues>({
     queryKey: tagKeys.adminList(),
     entityLabel: 'Tag',
+    messages: {
+      created: t('toast.created'),
+      updated: t('toast.updated'),
+      deleted: t('toast.deleted'),
+      saveError: t('toast.saveError'),
+      deleteError: t('toast.deleteError'),
+    },
     pageSize: 12,
     fetchPage: (page, limit) => getPaginatedAdminTags(page, limit),
     create: createTag,
@@ -53,8 +63,8 @@ export function TagManager() {
   return (
     <div className="space-y-6">
       <ManagerPageHeader
-        title="Tags"
-        description="Create and manage custom taxonomies to categorize your content."
+        title={t('title')}
+        description={t('description')}
         action={
           <Button
             size="sm"
@@ -62,7 +72,7 @@ export function TagManager() {
             className="gap-2 shadow-sm"
           >
             <Plus className="h-4 w-4" />
-            Create New Tag
+            {t('createButton')}
           </Button>
         }
       />
@@ -74,8 +84,8 @@ export function TagManager() {
           onRetry={() => refetch()}
           isFetching={isFetching}
           isEmpty={tags.length === 0}
-          emptyTitle="No tags found"
-          emptyDescription="Create tags to organize your content library."
+          emptyTitle={t('emptyTitle')}
+          emptyDescription={t('emptyDescription')}
           emptyAction={
             <Button
               variant="outline"
@@ -83,7 +93,7 @@ export function TagManager() {
               className="mt-4"
               onClick={openCreateDialog}
             >
-              Create First Tag
+              {t('emptyAction')}
             </Button>
           }
         >
@@ -125,16 +135,16 @@ export function TagManager() {
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
-        title="Delete Tag"
-        description={
-          <>
-            This will permanently delete the tag{' '}
+        title={t('deleteTitle')}
+        description={t.rich('deleteDescription', {
+          name: () => (
             <span className="font-semibold text-foreground">
               "{itemToDelete?.slug}"
             </span>
-            . This action cannot be undone.
-          </>
-        }
+          ),
+        })}
+        actionText={tShared('confirmDelete.actionText')}
+        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );
