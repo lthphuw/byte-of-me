@@ -87,6 +87,8 @@ model User {
   comments          Comment[]
   contactMessages   ContactMessage[]
   blogStatisticLogs BlogStatisticLog[]
+  notes             Note[]
+  noteLabels        NoteLabel[]
 
   @@map("users")
 }
@@ -763,4 +765,82 @@ model ContactMessage {
   @@index([email], map: "idx_contact_email")
   @@index([userId, createdAt], map: "idx_contact_user_created")
   @@map("contact_messages")
+}
+
+// ===============================
+// PRIVATE NOTES
+// ===============================
+
+model Note {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())  @map("created_at")
+  updatedAt DateTime @updatedAt       @map("updated_at")
+
+  title     String
+  content   String  @db.Text                     // stringified Tiptap JSON
+  plainText String  @db.Text @map("plain_text")  // derived from content, never client-supplied
+
+  isPinned   Boolean   @default(false) @map("is_pinned")
+  archivedAt DateTime?                 @map("archived_at")
+
+  parentId String? @map("parent_id")
+  parent   Note?   @relation("NoteTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children Note[]  @relation("NoteTree")
+  position Int     @default(0)
+
+  ownerId String @map("owner_id")
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  outgoingLinks NoteLink[]    @relation("NoteLinkSource")
+  incomingLinks NoteLink[]    @relation("NoteLinkTarget")
+  labels        NoteOnLabel[]
+
+  @@index([ownerId, parentId, position], map: "idx_notes_owner_id_parent_id_position")
+  @@index([ownerId, updatedAt(sort: Desc)], map: "idx_notes_owner_id_updated_at")
+  @@map("notes")
+}
+
+model NoteLink {
+  createdAt DateTime @default(now()) @map("created_at")
+
+  sourceId String @map("source_id")
+  source   Note   @relation("NoteLinkSource", fields: [sourceId], references: [id], onDelete: Cascade)
+
+  targetId String @map("target_id")
+  target   Note   @relation("NoteLinkTarget", fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@id([sourceId, targetId])
+  @@index([targetId], map: "idx_note_links_target_id")
+  @@map("note_links")
+}
+
+model NoteLabel {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt      @map("updated_at")
+
+  name  String
+  color String?
+
+  ownerId String @map("owner_id")
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  notes NoteOnLabel[]
+
+  @@unique([ownerId, name])
+  @@map("note_labels")
+}
+
+model NoteOnLabel {
+  createdAt DateTime @default(now()) @map("created_at")
+
+  noteId String @map("note_id")
+  note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  labelId   String    @map("label_id")
+  label     NoteLabel @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  @@id([noteId, labelId])
+  @@index([labelId], map: "idx_note_on_labels_label_id")
+  @@map("note_on_labels")
 }

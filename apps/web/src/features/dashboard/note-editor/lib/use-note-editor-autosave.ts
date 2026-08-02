@@ -1,0 +1,565 @@
+'use client';
+
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useDebounce } from '@byte-of-me/ui';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
+
+import {
+  getAdminNoteById,
+  type NoteDetail,
+  noteKeys,
+  updateNote,
+  type UpdateNoteInput,
+} from '@/entities/note';
+
+/** One typing pause before a save leaves the browser. */
+export const AUTOSAVE_DEBOUNCE_MS = 1000;
+
+type SaveValues = Omit<UpdateNoteInput, 'id'>;
+/** What every `save.mutate(...)` call passes — the target id travels WITH
+ *  the call, not through the `noteId` closure, specifically so
+ *  `onSuccess`/`onError` (which run whenever the request settles, possibly
+ *  after `noteId` has since changed) know which note they are for. */
+type SaveVariables = { id: string } & SaveValues;
+
+/** What this hook currently believes is the authoritative state for the open
+ *  note: the last `title`/`content` it either seeded from or successfully
+ *  reconciled with the server, and the server row's `updatedAt` (as
+ *  milliseconds) that state corresponds to. */
+interface BufferProvenance {
+  title: string;
+  content: string;
+  updatedAt: number;
+}
+
+export interface UseNoteEditorAutosaveResult {
+  note: NoteDetail | undefined;
+  isPending: boolean;
+  isError: boolean;
+  /** False for exactly the one render where `note` first resolves (or
+   *  switches to a different note) but the seed effect has not yet applied
+   *  it — see `isSeededForCurrentNote`'s own comment inside the hook. The
+   *  caller must treat this the same as `isPending`: rendering the rich-text
+   *  editor before this is true would mount it from the pre-seed `content`
+   *  buffer (`''`, or the PREVIOUS note's body), which — now that the editor
+   *  is keyed on `seedGeneration` too, not just `note.id` — briefly becomes a
+   *  REAL, recorded mount (not just an inert prop that gets overwritten next
+   *  render), because `seedGeneration` bumping one render later changes the
+   *  key and forces a second mount right behind it. */
+  isSeeded: boolean;
+  title: string;
+  setTitle: (value: string) => void;
+  content: string;
+  setContent: (value: string) => void;
+  isSaving: boolean;
+  isSaveError: boolean;
+  /** Bumps every time `content` is (re)seeded — on a note switch, or on the
+   *  I2 catch-up below. The rich-text editor is uncontrolled after mount
+   *  (see `note-editor.tsx`'s own comment on why), so the only way to make
+   *  it show a reseeded document is to force a remount; the caller does that
+   *  by folding this into that element's `key` alongside `note.id`. Without
+   *  it, `key={note.id}` alone never changes on a same-note reseed, so the
+   *  buffer and the visible document silently split — the buffer this hook
+   *  reports catches up, but the editor on screen does not, with nothing
+   *  indicating the two disagree. */
+  seedGeneration: number;
+  /** Resends the current buffer. For the case a failed save leaves nothing
+   *  else to trigger a resend — nothing has changed since, so the regular
+   *  autosave effect below will not fire again on its own. */
+  retry: () => void;
+}
+
+/**
+ * Loads one note and autosaves `title`/`content` back on a debounce.
+ *
+ * The hard part is entirely about WHICH commit `title`/`content` are
+ * trustworthy in, across three transitions that all reuse the same hook
+ * instance: `note` resolving for the first time, `noteId` switching to a
+ * different note while this stays mounted, and this unmounting mid-edit. See
+ * the comment on each ref for the specific failure it closes.
+ */
+export function useNoteEditorAutosave(
+  noteId: string
+): UseNoteEditorAutosaveResult {
+  const t = useTranslations('dashboard.note');
+  const queryClient = useQueryClient();
+
+  const {
+    data: note,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: noteKeys.detail(noteId),
+    queryFn: async () => {
+      const res = await getAdminNoteById(noteId);
+      if (!res.success) throw new Error(res.errorMsg);
+      return res.data;
+    },
+  });
+
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  // See `UseNoteEditorAutosaveResult.seedGeneration`'s own doc comment for
+  // why this exists at all. Bumped in the seed effect below, always on a
+  // note switch and, for a same-note reseed, only when `content`
+  // specifically is about to change — a title-only correction (the common
+  // case: the server trimming what was sent, see the `save.mutate` comment
+  // near the bottom) has no DOM to resync, since the title is a plain
+  // controlled `<input>`, and forcing a remount for it would reset the rich
+  // text editor's undo history for no reason.
+  const [seedGeneration, setSeedGeneration] = useState(0);
+
+  // Which note `title`/`content` currently belong to (`seededNoteId`), and
+  // what this hook currently treats as the authoritative state for that note
+  // (`lastSentRef` — title/content/updatedAt). Both are refs rather than
+  // state: they gate effects and must be readable synchronously inside them,
+  // including inside cleanup functions that run before a re-render would
+  // otherwise let a state read reflect it.
+  //
+  // `seededNoteId` guards the seed effect below on the note's ID, not on
+  // `note` object identity, because `note` gets a new object reference on
+  // every refetch of the SAME note too — window focus, and the refetch
+  // `applySaveResult` triggers after a save. Reseeding whenever `note`
+  // merely changes reference would blow away in-progress keystrokes with
+  // whatever the server last returned; the same shape of bug
+  // `blog-form.tsx`'s `seededBlogId` ref guards against.
+  //
+  // That id-only guard has a second job, though, once a save can land AFTER
+  // the author has switched away and back: it is also why a note revisited
+  // while an earlier save for it is still in flight does not just freeze on
+  // stale text forever. Switching notes and back resets `seededNoteId` to a
+  // DIFFERENT value in between, so returning always re-seeds from whatever
+  // the cache holds AT THAT MOMENT (possibly still the pre-save row, if the
+  // save has not landed yet) — id-only. To let a later-arriving response
+  // still reach the buffer once it lands, the seed effect below also
+  // re-seeds — while STAYING ON THE SAME note, id unchanged — whenever
+  // `note.updatedAt` has advanced past the timestamp recorded here, but
+  // *only* when the buffer has not diverged from what was last recorded
+  // (i.e. nothing has been typed since). That second condition is what keeps
+  // this from becoming the exact bug the id-guard exists to prevent, reached
+  // through a different door: "catch up to newer server data" must never be
+  // allowed to mean "overwrite text the author is mid-typing that the
+  // debounce simply has not sent yet."
+  const seededNoteId = useRef<string | null>(null);
+  const lastSentRef = useRef<BufferProvenance | null>(null);
+
+  // Updated unconditionally every render (not just on renders an effect
+  // happens to run on), so the departure effect further down — whose closure
+  // would otherwise be frozen at whatever render last changed `noteId` — can
+  // always read the actual latest keystroke instead of a stale one.
+  //
+  // Carries WHICH NOTE those values are text for, and that is
+  // `seededNoteId.current` — not `noteId`. The two differ in both directions
+  // and each difference matters:
+  //
+  //   - On the render `noteId` switches in, `title`/`content` still hold the
+  //     DEPARTING note's text (the seed effect has not run yet), and
+  //     `seededNoteId.current` still names that departing note — which is
+  //     exactly the note the flush below is about to send them under.
+  //     Tagging with `noteId` would mislabel them as the new note's and
+  //     silently drop a pending edit on every switch.
+  //   - On a MOUNT render, `title`/`content` are `''`/`''` and
+  //     `seededNoteId.current` is still null, so they are labelled as
+  //     belonging to no note at all — which is the point. The seed effect
+  //     writes `lastSentRef` DURING that same commit's effects, while these
+  //     state values do not reach a render until the next one, so anything
+  //     comparing the two in between weighs a seeded provenance against a
+  //     pre-seed buffer and sees an edit nobody made. React does exactly
+  //     that in development: `reactStrictMode` (next.config.js) runs a fresh
+  //     mount's effects setup → cleanup → setup, so the departure cleanup
+  //     below ran between the seed effect writing `lastSentRef` and the
+  //     seeded text ever being rendered. With a warm query cache — any note
+  //     opened a second time in a session, which is also when `note` is
+  //     available on the very first render — that flushed a blank
+  //     `updateNote` on EVERY open: rejected by `updateNoteSchema`'s
+  //     `title` minimum with a red toast, and, because a flush records what
+  //     it sent, leaving `lastSentRef` claiming blank was sent, so the
+  //     autosave effect wrote the whole untouched note back over itself one
+  //     debounce later. Found by manual smoke testing, not by this hook's
+  //     tests, which never mounted it under StrictMode.
+  const latestBufferRef = useRef<{
+    noteId: string | null;
+    title: string;
+    content: string;
+  }>({ noteId: null, title, content });
+  latestBufferRef.current = { noteId: seededNoteId.current, title, content };
+
+  // Read at render time, so it reflects the END of the PREVIOUS commit's
+  // effects — i.e. it is false for exactly the one render where `noteId` (or
+  // the freshly loaded `note`) has changed but the seed effect below has not
+  // yet applied it. The autosave effect needs that: `title`/`content` still
+  // hold the PREVIOUS note's text in that render (the seed effect's
+  // `setTitle`/`setContent` only take effect starting next render), so
+  // without this gate the autosave effect would compare stale text against
+  // the new note and save one note's body over another's id. Reading the ref
+  // INSIDE the autosave effect instead would not work: effects run in
+  // declaration order within a commit, so by the time the autosave effect's
+  // body runs, the seed effect declared above it has already flipped the ref
+  // for the new note, and the guard would wrongly pass.
+  const isSeededForCurrentNote = seededNoteId.current === noteId;
+
+  // Also computed at render time, and for the same reason
+  // `isSeededForCurrentNote` is: it has to see `lastSentRef` as it stood
+  // BEFORE this commit's effects run, not after. The seed effect below can,
+  // in the same commit, reseed `title`/`content` from a `note` that just
+  // arrived with a newer `updatedAt` (the I2 fix two effects down) — when it
+  // does, it updates `lastSentRef` synchronously, a ref write, but
+  // `title`/`debouncedTitle` do not reflect the reseed until the NEXT
+  // render. The autosave effect further below runs in this SAME commit too
+  // (`note` changing is in both effects' deps), and without this flag it
+  // would read the STALE, pre-reseed `title`/`debouncedTitle` — which still
+  // trivially equal each other, since neither has changed yet — against the
+  // JUST-reseeded `lastSentRef`, see a mismatch that has nothing to do with
+  // an actual edit, and resend the stale pre-reseed buffer. That reproduces
+  // C2's loop through a path C2's own guard cannot see on its own, because
+  // both refs it compares are consistent with EACH OTHER — just not with
+  // the render this commit is about to produce. Confirmed by reproducing it
+  // before adding this flag: a trimmed title kept resending indefinitely,
+  // each cycle bumping `note.updatedAt` and looking newer than the last.
+  const willReseedThisCommit = Boolean(
+    note &&
+      seededNoteId.current === noteId &&
+      lastSentRef.current &&
+      note.updatedAt.getTime() > lastSentRef.current.updatedAt &&
+      title === lastSentRef.current.title &&
+      content === lastSentRef.current.content
+  );
+
+  // DELIBERATE, not incidental: this condition is satisfied after EVERY
+  // successful save that lands while the same note is still open, not only
+  // the switch-away-and-back case above — `onMutate` records the PRE-save
+  // `updatedAt`, `onSuccess` writes a row with a newer one, and (with
+  // nothing typed meanwhile) the buffer still equals what was just sent. The
+  // visible effect: type a title with a trailing space, and about a second
+  // after the save round-trips, the input visibly settles to
+  // `updateNoteSchema`'s trimmed version — the server's canonical form
+  // replacing what was typed, unprompted.
+  //
+  // Kept, not suppressed. A "only reseed when the difference is not just my
+  // own normalisation" version would need either the client re-deriving
+  // exactly what `updateNoteSchema`'s `.trim()` (and anything it grows
+  // later) does — a duplicate of server-side validation logic this codebase
+  // otherwise keeps server-only on purpose — or `onSuccess` reconciling
+  // `lastSentRef` for its own note directly instead of leaving it to this
+  // same general check, which was tried and rejected: it has to skip doing
+  // that the moment `variables.id !== noteId` (the author has switched
+  // away), and at that point nothing updates the DISPLAYED buffer for a
+  // later return visit either — reintroducing I2 for exactly the case this
+  // mechanism exists to fix. Once catching up to newer server data has to
+  // stay general enough to cover "an earlier save lands after a switch back"
+  // (I2's actual bug), it cannot also special-case "unless the newer data is
+  // just my own echo" without either duplicating server logic or carving
+  // out the one case (still-open, own save) that is safe to special-case
+  // while leaving the one that matters (switched away) exactly as general as
+  // before — which is not a simplification, just the same mechanism with
+  // extra bookkeeping bolted on. The remaining cost is bounded by the
+  // `seedGeneration` change just above: a title-only correction like this
+  // no longer forces the rich-text editor to remount (no undo history lost)
+  // — only a genuine content catch-up does, which real normalisation of
+  // `content` cannot even trigger today (`updateNoteSchema` has no transform
+  // on it), so in practice this path only touches the title.
+
+  useEffect(() => {
+    if (!note) return;
+    const noteUpdatedAt = note.updatedAt.getTime();
+
+    if (seededNoteId.current !== noteId) {
+      // A genuinely different note: the previous buffer belongs to a note
+      // that has nothing to do with this one, so it is always overwritten.
+      // Whatever pending edit the OLD note's buffer held was already handed
+      // to the departure effect further down before this can run — all
+      // sibling effects' cleanups in a commit run before any of their
+      // setups, so that effect's cleanup for the note being LEFT always
+      // reads `lastSentRef` before this write below replaces it.
+      seededNoteId.current = noteId;
+      setTitle(note.title);
+      setContent(note.content);
+      setSeedGeneration((generation) => generation + 1);
+      lastSentRef.current = {
+        title: note.title,
+        content: note.content,
+        updatedAt: noteUpdatedAt,
+      };
+      return;
+    }
+
+    // Same note, but the query cache now holds something NEWER than what
+    // this buffer was last built from — a save that was still in flight
+    // when the author switched away has since landed, most commonly. Catch
+    // up, but only when the buffer has not diverged from `lastSentRef` (see
+    // the long comment above `seededNoteId`): if it HAS diverged, there is
+    // an edit sitting in `title`/`content` that is newer than the server
+    // row by definition — the debounce has simply not sent it yet — and
+    // overwriting it here would silently roll it back. This is exactly
+    // `willReseedThisCommit`, computed above at render time.
+    if (willReseedThisCommit) {
+      setTitle(note.title);
+      setContent(note.content);
+      // Only the CONTENT reseed needs a fresh `seedGeneration` — see the
+      // state's own doc comment. Comparing against `content` (this render's
+      // buffer, which `willReseedThisCommit` has already established equals
+      // `lastSentRef.current.content`) rather than `lastSentRef` again is
+      // the same check, just already in scope.
+      if (note.content !== content) {
+        setSeedGeneration((generation) => generation + 1);
+      }
+      lastSentRef.current = {
+        title: note.title,
+        content: note.content,
+        updatedAt: noteUpdatedAt,
+      };
+    }
+  }, [note, noteId, title, content, willReseedThisCommit]);
+
+  const [debouncedTitle, , titleDebounce] = useDebounce(
+    title,
+    AUTOSAVE_DEBOUNCE_MS
+  );
+  const [debouncedContent, , contentDebounce] = useDebounce(
+    content,
+    AUTOSAVE_DEBOUNCE_MS
+  );
+
+  // `useDebounce` returns a brand new `{ cancel, flush }` object every
+  // render, so it cannot be listed in a dependency array without an effect
+  // re-running (tearing down and re-arming) on every keystroke. Refs give
+  // the departure effect below a stable way to reach the CURRENT flush
+  // function without that churn.
+  const titleDebounceRef = useRef(titleDebounce);
+  titleDebounceRef.current = titleDebounce;
+  const contentDebounceRef = useRef(contentDebounce);
+  contentDebounceRef.current = contentDebounce;
+
+  // Same reasoning as `use-url-synced-search.ts`'s `onCommitRef`: read only
+  // inside an effect that deliberately does not re-run on every render, so
+  // it must not close over whatever `t` instance happened to exist when that
+  // effect was declared.
+  const tRef = useRef(t);
+  tRef.current = t;
+
+  const applySaveResult = useCallback(
+    (id: string, data: NoteDetail) => {
+      queryClient.setQueryData(noteKeys.detail(id), data);
+      // Only the tree needs to hear about this — it renders titles, and a
+      // rename must show up there. Invalidating `noteKeys.all` (as an
+      // earlier version of this did) prefix-matches detail AND search too,
+      // which meant every autosave re-fetched the very document it had just
+      // written. Combined with `updateNoteSchema`'s `.trim()` on title, a
+      // trailing space made that re-fetch come back with a DIFFERENT string
+      // than what was sent — which, when the "should I save" check compared
+      // against the server's copy, looked exactly like a fresh unsaved edit
+      // and saved again, forever. Writing the server's response into the
+      // detail key directly (instead of invalidating it) removes that path
+      // entirely — see `lastSentRef` above for the other half of the fix.
+      void queryClient.invalidateQueries({ queryKey: noteKeys.tree(false) });
+      void queryClient.invalidateQueries({ queryKey: noteKeys.tree(true) });
+    },
+    [queryClient]
+  );
+
+  const save = useMutation({
+    mutationFn: async (variables: SaveVariables) => {
+      const { id, ...values } = variables;
+      const res = await updateNote({ id, ...values });
+      if (!res.success) throw new Error(res.errorMsg);
+      return res.data;
+    },
+    // Records what is ABOUT to be sent before the request leaves, so a
+    // second identical debounce firing while this one is still in flight
+    // does not send a duplicate (the C2 loop guard). Runs for every
+    // `mutate()` call — the interactive autosave effect below and `retry`
+    // both go through this, so neither writes `lastSentRef` itself anymore.
+    // Snapshots the PREVIOUS value as context so `onError` can put it back:
+    // without that, a failed send permanently (and wrongly) claims its
+    // content was already communicated, which silently disarms both the
+    // next autosave and the departure effect's flush-on-switch/unmount
+    // guard — both compare against this same ref.
+    onMutate: (variables) => {
+      const previous = lastSentRef.current;
+      lastSentRef.current = {
+        title: variables.title ?? '',
+        content: variables.content ?? '',
+        updatedAt: note?.updatedAt.getTime() ?? previous?.updatedAt ?? 0,
+      };
+      return { previous };
+    },
+    // `variables` is this SPECIFIC call's own — TanStack binds a mutation's
+    // `onSuccess`/`onError` to the variables it was invoked with, not to
+    // whatever `noteId` the surrounding closure has drifted to by the time
+    // the request resolves. Using `variables.id` here (not the `noteId`
+    // parameter) is what stops a save that resolves after the author has
+    // switched notes from writing the OLD note's row into the NEW note's
+    // cache entry — which used to be silently possible because narrowing
+    // `applySaveResult`'s invalidation (see its own comment) meant this
+    // write goes straight into a specific cache key instead of triggering a
+    // broad refetch that would have happened to land on the right key by
+    // querying the URL/args again.
+    onSuccess: (data, variables) => applySaveResult(variables.id, data),
+    onError: (error: Error, _variables, context) => {
+      if (context) {
+        lastSentRef.current = context.previous;
+      }
+      toast.error(t('errors.save'), { description: error.message });
+    },
+  });
+
+  useEffect(() => {
+    if (!note || !isSeededForCurrentNote) return;
+
+    // Deferred to the render the seed effect above's reseed actually lands
+    // on — see `willReseedThisCommit`'s own comment for the exact loop this
+    // closes. `debouncedTitle`/`title` are both still the PRE-reseed values
+    // in this commit, and comparing them against `lastSentRef` (already
+    // updated by the reseed, a ref write, ahead of this effect) would look
+    // like an edit that needs sending when nothing was actually typed.
+    if (willReseedThisCommit) return;
+
+    // The debounce hooks lag `title`/`content` by up to
+    // `AUTOSAVE_DEBOUNCE_MS`: right after the seed effect above applies (or
+    // right after any keystroke), `debouncedTitle`/`debouncedContent` still
+    // hold the OLD value for one or more renders. Firing before they catch
+    // up to the CURRENT buffer is what would send a stale — right after a
+    // note opens, blank — value.
+    if (debouncedTitle !== title || debouncedContent !== content) return;
+
+    // Compared against what was last SENT (`lastSentRef`), never against
+    // `note.title`/`note.content` — the server's copy. `updateNoteSchema`
+    // trims the title, so the server's echo can legitimately differ from
+    // what was sent even when nothing is wrong; comparing against it would
+    // mean a trailing space never stops looking like an unsaved edit and
+    // resends on every refetch, forever. Comparing against "did WE already
+    // send exactly this" instead means the stop condition cannot be
+    // defeated by any normalisation the server does now or ever does later
+    // — it does not depend on the server echoing back what was sent.
+    const sent = lastSentRef.current;
+    if (
+      sent &&
+      debouncedTitle === sent.title &&
+      debouncedContent === sent.content
+    ) {
+      return;
+    }
+
+    save.mutate({ id: noteId, title: debouncedTitle, content: debouncedContent });
+    // `save.mutate` is referentially stable in TanStack Query v5, and its
+    // `mutationFn` closure is refreshed from the latest render — via the
+    // mutation observer's own internal effect, which runs before this one —
+    // so `noteId` inside it is never stale even though `mutate` itself never
+    // changes identity. That is what lets this list `save.mutate` honestly:
+    // depending on the whole `save` object instead would re-fire on every
+    // pending/success/error transition and turn one edit into a save loop.
+    // This does produce an `eslint react-hooks/exhaustive-deps` warning
+    // ("missing dependency: 'save'") — that is expected and accepted, not an
+    // oversight; do not silence it with `eslint-disable`.
+  }, [
+    note,
+    isSeededForCurrentNote,
+    willReseedThisCommit,
+    debouncedTitle,
+    debouncedContent,
+    title,
+    content,
+    noteId,
+    save.mutate,
+  ]);
+
+  // Persists a pending, not-yet-debounced edit at the two moments no LATER
+  // render exists in which the autosave effect above could ever catch it:
+  // switching to a different note (this hook instance survives that; the
+  // effect above is about to start comparing against a NEW note's id, and
+  // would otherwise just discard whatever was still pending for the old
+  // one), and unmounting outright (no render follows at all). Keyed only on
+  // `noteId`, so its cleanup runs exactly on those two transitions. It reads
+  // `latestBufferRef`/`lastSentRef` — refs, always current — rather than the
+  // values closed over when this particular effect instance was declared,
+  // which would otherwise be stale by the time the note is actually left.
+  useEffect(() => {
+    const departingId = noteId;
+
+    return () => {
+      // Settles `useDebounce`'s own internal pending timer so it does not
+      // fire later against whatever the NEXT note's buffers happen to hold.
+      // The save below does not depend on this — it reads the buffer
+      // directly — this only prevents a harmless-but-wasteful dangling
+      // timeout inside the debounce hook itself.
+      titleDebounceRef.current.flush();
+      contentDebounceRef.current.flush();
+
+      const pending = latestBufferRef.current;
+      const sent = lastSentRef.current;
+      if (!sent) return;
+      // Only the departing note's OWN text may be flushed under its id. Any
+      // other provenance means there is nothing here that was typed for it:
+      // `null` is a buffer that no render has seeded yet (see
+      // `latestBufferRef`), and a different id cannot happen from a switch
+      // (the buffer is tagged with the note it holds, and that IS the
+      // departing one at that moment) — both are "nothing to save", never
+      // "save this under that id".
+      if (pending.noteId !== departingId) return;
+      if (pending.title === sent.title && pending.content === sent.content) {
+        return;
+      }
+
+      lastSentRef.current = {
+        title: pending.title,
+        content: pending.content,
+        updatedAt: sent.updatedAt,
+      };
+      void updateNote({
+        id: departingId,
+        title: pending.title,
+        content: pending.content,
+      }).then((res) => {
+        if (res.success) {
+          applySaveResult(departingId, res.data);
+        } else {
+          toast.error(tRef.current('errors.save'), {
+            description: res.errorMsg,
+          });
+        }
+      });
+    };
+    // `applySaveResult` is `useCallback`-stable on `queryClient`, which does
+    // not change identity in this app, so this effect only re-arms on an
+    // actual note switch — not on every render, which is what would happen
+    // if it depended on `t` (a new bound function most renders) directly
+    // instead of through `tRef`.
+  }, [noteId, applySaveResult]);
+
+  const retry = useCallback(() => {
+    if (!note) return;
+    save.mutate({ id: noteId, title, content });
+  }, [note, noteId, title, content, save.mutate]);
+
+  // Scoped to the CURRENTLY OPEN note: `save` (the mutation observer) is one
+  // instance shared across every note this hook instance ever opens, so its
+  // `isPending`/`isError` alone would stay true for note B after a failure
+  // on note A, purely because nothing resets them on a `noteId` change. That
+  // showed a "Not saved" status — and a `retry` that would have silently
+  // written B's own, perfectly fine buffer over B, telling the author their
+  // lost edit on A had been recovered when nothing about A had changed.
+  // `save.variables` is the variables of the MOST RECENT `mutate()` call
+  // (TanStack tracks this per mutation, same mechanism `onSuccess`/`onError`
+  // above rely on), so comparing its `id` against the currently open note is
+  // enough to tell "is this status about the note on screen right now."
+  const isSavingCurrentNote = save.isPending && save.variables?.id === noteId;
+  const isSaveErrorForCurrentNote =
+    save.isError && save.variables?.id === noteId;
+
+  return {
+    note,
+    isPending,
+    isError,
+    isSeeded: isSeededForCurrentNote,
+    title,
+    setTitle,
+    content,
+    setContent,
+    seedGeneration,
+    isSaving: isSavingCurrentNote,
+    isSaveError: isSaveErrorForCurrentNote,
+    retry,
+  };
+}

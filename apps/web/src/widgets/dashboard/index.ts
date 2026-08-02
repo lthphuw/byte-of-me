@@ -5,6 +5,7 @@ export * from './contact-message-gallery';
 export * from './dashboard-sidebar';
 export * from './education-manager';
 export * from './media-manager';
+export * from './note-manager';
 export * from './project-manager';
 export * from './tag-manager';
 export * from './tech-stack-manager';

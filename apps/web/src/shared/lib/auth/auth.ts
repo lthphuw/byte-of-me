@@ -13,8 +13,27 @@ import 'server-only';
 
 import { env } from '@/shared/config/env';
 import { siteConfig } from '@/shared/config/site';
+import {
+  ADMIN_OAUTH_PROVIDER_IDS,
+  isAdminOAuthProviderId,
+} from '@/shared/lib/auth/admin-oauth-providers';
+import { isSiteOwnerEmail } from '@/shared/lib/auth/site-owner';
 import { signInTemplate } from '@/shared/lib/templates/sign-in-template';
 import { getErrorMessage } from '@/shared/lib/utils';
+
+/**
+ * Linking by verified email is what makes the admin OAuth buttons usable at
+ * all. The owner's `User` row is created by the email magic link, so without
+ * this an OAuth sign-in for the same address fails with
+ * `OAuthAccountNotLinked` rather than signing them in.
+ *
+ * "Dangerous" is Auth.js warning that it trusts the provider's word on the
+ * address. Both GitHub and Google only release verified addresses, and the
+ * account this can link into is gated a second time by `isSiteOwnerEmail()`
+ * in the `signIn` callback, so the linking decision is not the only thing
+ * standing between a stranger and the dashboard.
+ */
+const allowDangerousEmailAccountLinking = true;
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -46,15 +65,61 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     GitHub({
       clientId: env.AUTH_GITHUB_ID,
       clientSecret: env.AUTH_GITHUB_SECRET,
+      allowDangerousEmailAccountLinking,
     }),
 
     Google({
       clientId: env.AUTH_GOOGLE_ID,
       clientSecret: env.AUTH_GOOGLE_SECRET,
+      allowDangerousEmailAccountLinking,
+    }),
+
+    // The admin-surface twins. Same OAuth applications, different ids — see
+    // `ADMIN_OAUTH_PROVIDER_IDS` for why the duplication is load-bearing.
+    GitHub({
+      id: ADMIN_OAUTH_PROVIDER_IDS.GITHUB,
+      clientId: env.AUTH_GITHUB_ID,
+      clientSecret: env.AUTH_GITHUB_SECRET,
+      allowDangerousEmailAccountLinking,
+    }),
+
+    Google({
+      id: ADMIN_OAUTH_PROVIDER_IDS.GOOGLE,
+      clientId: env.AUTH_GOOGLE_ID,
+      clientSecret: env.AUTH_GOOGLE_SECRET,
+      allowDangerousEmailAccountLinking,
     }),
   ],
 
   callbacks: {
+    /**
+     * Rejects anyone but the site owner from the admin OAuth buttons.
+     *
+     * This is a UX gate, not the trust boundary — `getAuthenticatedAdmin()`
+     * and `requireAdmin()` remain the boundary (AGENTS §5), and a stranger
+     * who signs in here would only ever receive a `USER` session anyway. What
+     * it buys is a clear refusal instead of a silent sign-in that then bounces
+     * off every protected route with no explanation.
+     *
+     * Only the `-admin` ids are gated. The bare `github` / `google` providers
+     * are what the public comment modal uses and must keep admitting everyone.
+     */
+    async signIn({ user, account }) {
+      if (!account || !isAdminOAuthProviderId(account.provider)) {
+        return true;
+      }
+
+      if (isSiteOwnerEmail(user.email)) {
+        return true;
+      }
+
+      logger.warn(
+        `Admin OAuth sign-in refused: ${account.provider} identity is not the site owner`
+      );
+
+      return false;
+    },
+
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;

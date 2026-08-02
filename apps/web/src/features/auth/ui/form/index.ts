@@ -1,1 +1,1 @@
-export * from './user-auth-form';
+export * from './admin-auth-form';

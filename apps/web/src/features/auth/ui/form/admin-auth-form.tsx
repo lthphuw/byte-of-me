@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import {   Button,
+import {
+  Button,
   Form,
   FormControl,
   FormField,
@@ -23,9 +24,9 @@ import {
 } from '@/features/auth/model/user-auth-login-schema';
 import { cn } from '@/shared/lib/utils';
 
-type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
+type AdminAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
-export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
+export function AdminAuthForm({ className, ...props }: AdminAuthFormProps) {
   const form = useForm<UserAuthLoginFormValues>({
     resolver: zodResolver(userAuthLoginSchema),
     defaultValues: {
@@ -41,13 +42,14 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   const searchParams = useSearchParams();
   const fromParam = searchParams?.get('from');
+
   async function onSubmit(data: UserAuthLoginFormValues) {
     const email = data.email.toLowerCase();
-    const callbackUrl =
-      !fromParam || fromParam.includes('/auth/login')
-        ? '/dashboard'
-        : fromParam;
-    const signInResult = await logInToDashboard(email, callbackUrl);
+    // Passed through raw. Deciding what a missing or hostile `from` means is
+    // `sanitizeCallbackUrl`'s job, server-side — a second copy of that rule
+    // here is both unenforceable (the action is callable directly) and the way
+    // the two versions drift apart.
+    const signInResult = await logInToDashboard(email, fromParam);
 
     if (!signInResult.success) {
       toast.error('Something went wrong.', {

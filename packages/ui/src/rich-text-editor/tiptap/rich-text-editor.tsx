@@ -18,6 +18,7 @@ import { TextStyle } from '@tiptap/extension-text-style';
 import Typography from '@tiptap/extension-typography';
 import Underline from '@tiptap/extension-underline';
 import { Markdown } from '@tiptap/markdown';
+import type { EditorState, Transaction } from '@tiptap/pm/state';
 import {
   type Content,
   EditorContent,
@@ -28,6 +29,7 @@ import {
 import StarterKit from '@tiptap/starter-kit';
 import { common, createLowlight } from 'lowlight';
 
+import { useMediaQuery } from '../../hooks/use-media-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../index';
 import { cn } from '../../lib/utils';
 
@@ -43,6 +45,7 @@ import { Citation } from './extensions/references/citation';
 import { ReferenceList } from './extensions/references/reference-list';
 import { ReferencePanel } from './extensions/references/reference-panel';
 import SearchAndReplace from './extensions/search-and-replace';
+import { MobileEditorTools } from './mobile-tools';
 // Shared with the server-side render schema so both stay identical.
 import { CustomHeading } from './render-extensions';
 import { EditorToolbar } from './toolbars/editor-toolbar';
@@ -97,10 +100,37 @@ export function createExtensions(options?: {
 
 
 
+/**
+ * Why an `onChange` reported what it did.
+ *
+ * `initial` is true for a document the EDITOR produced while opening the one
+ * it was given, rather than one the author edited. That is not hypothetical:
+ * `TableOfContents` (registered below whenever `compact` is false) assigns a
+ * fresh id to every heading that lacks one, from `onCreate`, and Tiptap fires
+ * `onUpdate` for any transaction that changes the document — its own
+ * extensions' included. The reported JSON also carries parse-time attribute
+ * defaults (`textAlign: null`, …), so it is never byte-identical to the
+ * string that was loaded either.
+ *
+ * A consumer cannot recover this from the JSON alone: the initial document
+ * differs from what it seeded, and "ignore the first emit" is wrong because
+ * an editor with nothing to rewrite (no headings) never emits at all, so the
+ * first emit would be the author's first edit. Only the editor knows which
+ * one it is sending, so only the editor can say.
+ *
+ * Ignoring it is a per-consumer decision, deliberately: a form that wants the
+ * normalised document in its state (every `react-hook-form` call site here)
+ * keeps working unchanged, while an autosave that must not write on open
+ * (`note-editor.tsx`) checks the flag.
+ */
+export interface RichTextChangeMeta {
+  initial: boolean;
+}
+
 type RichTextEditorProps = {
   className?: string;
   value?: Content;
-  onChange?: (value: JSONContent) => void;
+  onChange?: (value: JSONContent, meta: RichTextChangeMeta) => void;
   uploadImage?: ImageUploadFn;
   /**
    * Drops the outline/references sidebar and lets the editor size itself to
@@ -110,9 +140,72 @@ type RichTextEditorProps = {
   /** Editing area height floor, in px. Defaults to 600 (full) / 160 (compact). */
   minHeight?: number;
   placeholder?: string;
+  /**
+   * Hides the toolbar and leaves only the writing surface, for a context where
+   * the author composes in markdown and never reaches for a button — the
+   * private notes workspace.
+   *
+   * Formatting is not lost with it: StarterKit's input rules turn `## `,
+   * `**bold**`, `- `, `> ` and friends into real nodes as they are typed, and
+   * the selection bubble bar still appears over a selection.
+   *
+   * Additive on purpose — every other consumer (blog, project, education,
+   * profile) omits it and keeps the toolbar exactly as it was.
+   */
+  chromeless?: boolean;
 };
 
 const COMPACT_MAX_HEIGHT = 360;
+
+/** Files a drop or paste may carry that we will upload as an image. */
+function imageFilesFrom(data: DataTransfer | null): File[] {
+  if (!data) return [];
+  return Array.from(data.files).filter((file) =>
+    file.type.startsWith('image/')
+  );
+}
+
+/**
+ * Uploads dropped/pasted files and inserts each as an image node.
+ *
+ * Positions are resolved against the document as it is at insert time rather
+ * than captured up front: an upload takes a round trip, and anything the
+ * author types meanwhile would shift a stale offset and land the image in the
+ * middle of a word. `at` is only a starting point; after the first insert the
+ * rest follow it.
+ *
+ * A failed upload is skipped rather than aborting the batch — dropping four
+ * screenshots and losing all of them because the second one was too large is
+ * worse than getting three.
+ */
+function insertUploadedImages(
+  view: { state: EditorState; dispatch: (tr: Transaction) => void },
+  files: File[],
+  upload: ImageUploadFn,
+  at?: number
+): void {
+  void (async () => {
+    let insertAt = at;
+
+    for (const file of files) {
+      let src: string;
+      try {
+        src = await upload(file);
+      } catch {
+        // The uploader surfaces its own toast; skip this file and continue.
+        continue;
+      }
+
+      const imageType = view.state.schema.nodes.image;
+      if (!imageType) return;
+
+      const pos = insertAt ?? view.state.selection.from;
+      const node = imageType.create({ src, alt: file.name });
+      view.dispatch(view.state.tr.insert(pos, node));
+      insertAt = pos + node.nodeSize;
+    }
+  })();
+}
 
 export function RichTextEditor({
   className,
@@ -122,7 +215,10 @@ export function RichTextEditor({
   compact = false,
   minHeight,
   placeholder,
+  chromeless = false,
 }: RichTextEditorProps) {
+  // Matches the `md` breakpoint the notes workspace switches its layout at.
+  const isNarrow = useMediaQuery('(max-width: 767px)');
   const [items, setItems] = useState<TableOfContentDataItem[]>([]);
   // Snapshot of the document taken when preview is switched on. The editor
   // stays mounted (hidden) underneath, so toggling back loses nothing.
@@ -133,6 +229,50 @@ export function RichTextEditor({
     // Tiptap 3 stops re-rendering on transactions by default, which leaves
     // every toolbar reading stale `isActive`/`can()`/`getAttributes` state.
     shouldRerenderOnTransaction: true,
+    editorProps: {
+      /**
+       * Drop an image file anywhere on the writing surface and it uploads and
+       * lands where it was dropped — not at the caret, which is usually
+       * somewhere else entirely and is the thing that makes drag-and-drop feel
+       * broken.
+       *
+       * Only claims the event when there is actually an image file AND an
+       * uploader: without that guard this would swallow ProseMirror's own
+       * node drags (moving a paragraph or an existing image within the
+       * document), which arrive through the same handler.
+       */
+      handleDrop(view, event, _slice, moved) {
+        if (moved || !uploadImage) return false;
+
+        const files = imageFilesFrom(
+          (event as DragEvent).dataTransfer ?? null
+        );
+        if (files.length === 0) return false;
+
+        event.preventDefault();
+
+        const dropped = view.posAtCoords({
+          left: (event as DragEvent).clientX,
+          top: (event as DragEvent).clientY,
+        });
+        insertUploadedImages(view, files, uploadImage, dropped?.pos);
+        return true;
+      },
+
+      /** Same contract for a pasted screenshot, inserted at the caret. */
+      handlePaste(view, event) {
+        if (!uploadImage) return false;
+
+        const files = imageFilesFrom(
+          (event as ClipboardEvent).clipboardData ?? null
+        );
+        if (files.length === 0) return false;
+
+        event.preventDefault();
+        insertUploadedImages(view, files, uploadImage);
+        return true;
+      },
+    },
     extensions: [
       ...createExtensions({ uploadImage, placeholder }),
       // The outline is only ever read by the sidebar, so compact mode skips
@@ -150,7 +290,15 @@ export function RichTextEditor({
     ] as Extension[],
     content: value,
     onUpdate: ({ editor }) => {
-      onChange?.(editor.getJSON());
+      // `isInitialized` is Tiptap's own flag, not a heuristic: the editor
+      // sets it true immediately after emitting `create`, and the extension
+      // `onCreate` handlers that rewrite the document (see
+      // `RichTextChangeMeta`) run inside that emit — so it is false for
+      // exactly the updates the editor caused while opening, and true for
+      // everything the author does afterwards. A keystroke cannot land
+      // earlier: `create` is emitted from a `setTimeout(0)` scheduled the
+      // moment the view mounts, before the editor is on screen to type into.
+      onChange?.(editor.getJSON(), { initial: !editor.isInitialized });
     },
   });
 
@@ -163,20 +311,26 @@ export function RichTextEditor({
       // scroll the page/dialog and the toolbar drifts away. `clip` still cuts
       // the rounded corners but lets sticky anchor to the outer scrollport.
       className={cn(
-        'relative flex w-full flex-col overflow-clip border bg-card',
+        'relative flex w-full flex-col overflow-clip',
+        // Chromeless sits inside a surface that already draws its own frame
+        // (the notes workspace), so a card border and fill here would be a box
+        // inside a box. Everywhere else the editor IS the card.
+        chromeless ? 'bg-transparent' : 'border bg-card',
         className
       )}
     >
-      <EditorToolbar
-        editor={editor}
-        compact={compact}
-        previewing={preview !== null}
-        onTogglePreview={
-          compact
-            ? undefined
-            : () => setPreview((p) => (p ? null : editor.getJSON()))
-        }
-      />
+      {!chromeless && (
+        <EditorToolbar
+          editor={editor}
+          compact={compact}
+          previewing={preview !== null}
+          onTogglePreview={
+            compact
+              ? undefined
+              : () => setPreview((p) => (p ? null : editor.getJSON()))
+          }
+        />
+      )}
 
       <div
         // Viewport-relative on tall screens, capped on short ones — a fixed
@@ -204,7 +358,16 @@ export function RichTextEditor({
           {/* Both are page-scale surfaces: a full-width bubble bar and a
               20-item slash palette overwhelm an editor embedded in a form
               card, where the toolbar above already covers everything. */}
-          {!compact && (
+          {/* Both are page-scale surfaces, and both are DESKTOP-only.
+              Mounting Tiptap's `BubbleMenu` at phone width sends React into
+              "Maximum update depth exceeded": its positioning effect dispatches
+              a ProseMirror transaction, the transaction re-renders the editor
+              (`shouldRerenderOnTransaction`), and the effect runs again. It
+              only settles when there is room to place the bar. Reachable from
+              any dialog-hosted editor on a phone; the notes workspace is simply
+              the first surface where the full editor is reachable at that
+              width, which is how it surfaced. */}
+          {!compact && !isNarrow && (
             <>
               <FloatingToolbar editor={editor} />
               <TipTapFloatingMenu editor={editor} />
@@ -265,6 +428,18 @@ export function RichTextEditor({
         </aside>
         )}
       </div>
+
+      {/* Anchored to the editor FRAME, deliberately outside the scrolling
+          column above. Nested inside it, an `absolute inset-0` overlay resizes
+          with the document's scroll height, and that layout change retriggers
+          the bubble menu's positioning effect, which dispatches a ProseMirror
+          transaction, which re-renders — a loop React stops with "Maximum
+          update depth exceeded" the moment a note is opened on a phone.
+          Only chromeless: everywhere else the real toolbar is already on
+          screen at every width. */}
+      {chromeless && (
+        <MobileEditorTools editor={editor} uploadImage={uploadImage} />
+      )}
     </div>
   );
 }

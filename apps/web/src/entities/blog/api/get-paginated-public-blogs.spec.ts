@@ -16,8 +16,15 @@
  * `apps/web/src/shared/lib/rate-limit.spec.ts`.
  */
 import { prisma } from '@byte-of-me/db';
-import { GlobalRegistrator } from '@happy-dom/global-registrator';
-import { beforeAll, beforeEach, describe, expect, it, mock } from 'bun:test';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+} from 'bun:test';
 
 import type * as GetPaginatedPublicBlogsModule from './get-paginated-public-blogs';
 
@@ -28,14 +35,49 @@ import type * as GetPaginatedPublicBlogsModule from './get-paginated-public-blog
 // the env module treat this test process as a browser and refuse every
 // server-only key it holds (`onInvalidAccess`) the moment the action reads
 // one. This spec never renders anything, so the DOM global is dropped
-// before the action is imported — a per-file effect only: `bun test`
-// gives every spec file its own globals, confirmed by having one file set
-// `globalThis` state and a second file observe it unset.
+// before the action is imported.
+//
+// This used to call `GlobalRegistrator.unregister()` (destroying happy-dom's
+// `Window`) with nothing to undo it. `GlobalRegistrator` is process-global,
+// not per-file — confirmed the hard way by `note-editor.spec.tsx`, the first
+// `*.spec.tsx` in this suite: every file that ran after this one in the same
+// `bun test` process saw no `document` at all and `render()` failed outright
+// (contradicting an earlier version of this comment, which claimed each spec
+// file gets its own globals). Re-registering afterward
+// (`GlobalRegistrator.register()`) does not fix it either — that builds a
+// SECOND, different `Window` instance, and anything that had already cached
+// a reference to the FIRST one (`@testing-library/react`, apparently) keeps
+// pointing at a `document` whose `defaultView` `unregister()` had already
+// torn down, so `render()` fails with "window object is not available for
+// the provided node" instead. What actually works, and is what this does
+// now: never destroy the `Window` at all. Only `typeof window` needs to read
+// `'undefined'` for `onInvalidAccess` to back off, so this deletes just the
+// two global BINDINGS `window`/`document` point at (keeping the underlying
+// happy-dom objects alive and untouched) and restores the exact same
+// references afterward — nothing downstream can tell the difference.
+const originalWindow = globalThis.window;
+const originalDocument = globalThis.document;
+
 let getPaginatedPublicBlogs: typeof GetPaginatedPublicBlogsModule.getPaginatedPublicBlogs;
 
 beforeAll(async () => {
-  await GlobalRegistrator.unregister();
+  // `Reflect.deleteProperty`, not the `delete` operator: `delete
+  // globalThis.window` needs `window` to be an optional property of
+  // `globalThis`'s type to type-check, which it is not, so that reads as a
+  // type error `@ts-expect-error` would have to paper over — the first
+  // type-suppression directive anywhere in `apps/web/src` (AGENTS §11.2 bans
+  // `@ts-ignore` by name; a `@ts-expect-error` here is the same class of
+  // problem with no existing precedent to justify it). `Reflect.deleteProperty`
+  // is a plain runtime call, not the operator, so it is not subject to that
+  // restriction and needs no suppression.
+  Reflect.deleteProperty(globalThis, 'window');
+  Reflect.deleteProperty(globalThis, 'document');
   ({ getPaginatedPublicBlogs } = await import('./get-paginated-public-blogs'));
+});
+
+afterAll(() => {
+  globalThis.window = originalWindow;
+  globalThis.document = originalDocument;
 });
 
 const findMany = mock();

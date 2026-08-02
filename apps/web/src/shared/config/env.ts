@@ -7,6 +7,18 @@ export const env = createEnv({
     DIRECT_URL: z.string().min(1),
 
     EMAIL: z.string().email().default('lthphuw@gmail.com'),
+    // The site's sole authorisation identity — who `isSiteOwnerEmail()`
+    // (see `@/shared/lib/auth/session.ts`) admits to the dashboard, /notes,
+    // and every admin server action. Deliberately a *separate* key from
+    // `EMAIL` above: `EMAIL` also does double duty as the public contact
+    // address, the contact-form and comment-notification destination, and
+    // a profile-lookup fallback — reusing it as the auth identity meant a
+    // cosmetic change to the public contact address could silently revoke
+    // the owner's own access. Optional, falling back to `EMAIL` when unset,
+    // so a deployment that has never heard of this key behaves exactly as
+    // before; a required key here would fail env validation at boot and
+    // take the site down on deploy for no operational reason.
+    OWNER_EMAIL: z.string().email().optional(),
     AUTHOR_ID: z.string(),
 
     AUTH_URL: z.string(),
@@ -57,6 +69,7 @@ export const env = createEnv({
     DIRECT_URL: process.env.DIRECT_URL,
 
     EMAIL: process.env.EMAIL,
+    OWNER_EMAIL: process.env.OWNER_EMAIL,
     AUTHOR_ID: process.env.AUTHOR_ID,
     NODE_ENV: process.env.NODE_ENV,
 

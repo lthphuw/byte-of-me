@@ -555,6 +555,47 @@
         "deleteError": "Không thể xóa media"
       }
     },
+    "note": {
+      "title": "Ghi chú",
+      "description": "Ghi chú riêng tư của bạn. Không có gì ở đây được công khai.",
+      "untitled": "Chưa đặt tên",
+      "loading": "Đang tải ghi chú…",
+      "emptySelection": "Chọn một ghi chú hoặc tạo ghi chú mới.",
+      "tree": {
+        "expandAriaLabel": "Mở rộng",
+        "collapseAriaLabel": "Thu gọn"
+      },
+      "fields": {
+        "title": "Tiêu đề ghi chú",
+        "titlePlaceholder": "Chưa đặt tên"
+      },
+      "actions": {
+        "create": "Ghi chú mới",
+        "archive": "Lưu trữ",
+        "restore": "Khôi phục",
+        "delete": "Xóa"
+      },
+      "status": {
+        "saving": "Đang lưu…",
+        "saved": "Đã lưu",
+        "error": "Chưa lưu",
+        "retry": "Thử lại"
+      },
+      "search": {
+        "trigger": "Tìm kiếm ghi chú",
+        "placeholder": "Tìm kiếm ghi chú của bạn…",
+        "loading": "Đang tìm…",
+        "empty": "Không có ghi chú nào khớp."
+      },
+      "empty": {
+        "title": "Chưa có ghi chú nào."
+      },
+      "errors": {
+        "load": "Không tải được ghi chú.",
+        "create": "Không tạo được ghi chú.",
+        "save": "Không lưu được ghi chú."
+      }
+    },
     "project": {
       "title": "Dự án",
       "description": "Quản lý bộ sưu tập dự án, case study và liên kết triển khai.",
@@ -740,7 +781,9 @@
     "signInWithGithub": "Tiếp tục với GitHub",
     "signInWithGoogle": "Tiếp tục với Google",
     "emailPlaceholder": "email@example.com",
-    "sendMagicLink": "Gửi liên kết đăng nhập"
+    "sendMagicLink": "Gửi liên kết đăng nhập",
+    "accessDenied": "Tài khoản đó không có quyền truy cập dashboard này.",
+    "signInFailed": "Không thể hoàn tất đăng nhập. Vui lòng thử lại."
   },
   "email": {
     "signIn": {

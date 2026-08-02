@@ -1,0 +1,50 @@
+import * as z from 'zod';
+
+/**
+ * `plainText` is absent from every schema on purpose. It is derived from
+ * `content` on the server (`richTextToPlainText`); accepting it from the client
+ * would let a caller desynchronise the search index from the document.
+ */
+
+export const createNoteSchema = z.object({
+  title: z.string().trim().min(1, 'Title is required').max(200),
+  parentId: z.string().min(1).nullable().optional(),
+});
+
+export const updateNoteSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().trim().min(1).max(200).optional(),
+  /** Stringified Tiptap JSON. */
+  content: z.string().optional(),
+});
+
+export const moveNoteSchema = z.object({
+  id: z.string().min(1),
+  parentId: z.string().min(1).nullable(),
+  position: z.number().int().min(0),
+});
+
+export const searchNotesSchema = z.object({
+  query: z.string().trim().max(200).default(''),
+  includeArchived: z.boolean().default(false),
+  page: z.number().int().optional(),
+  limit: z.number().int().optional(),
+});
+
+/**
+ * `z.input`, not `z.infer`. These types name what a *caller* passes, and
+ * `z.infer` resolves to the schema's OUTPUT type — where a field carrying
+ * `.default()` has become required, because by then the default has been
+ * applied. Typing `SearchNotesInput` from `z.infer` would force every caller to
+ * pass `query` and `includeArchived` explicitly, which is precisely what those
+ * defaults exist to avoid.
+ *
+ * The three schemas without defaults infer identically either way; they use
+ * `z.input` too so the name and the type agree and nobody has to work out which
+ * schema has a default. Inside an action, `parseInput(...).data` is still the
+ * output type, so the defaults are present where the query is built.
+ */
+export type CreateNoteInput = z.input<typeof createNoteSchema>;
+export type UpdateNoteInput = z.input<typeof updateNoteSchema>;
+export type MoveNoteInput = z.input<typeof moveNoteSchema>;
+export type SearchNotesInput = z.input<typeof searchNotesSchema>;

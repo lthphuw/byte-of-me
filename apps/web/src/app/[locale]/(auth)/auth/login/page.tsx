@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { AuthLogInView } from '@/widgets/auth/auth-log-in-view';
+import { AdminAuthLogInView } from '@/widgets/auth/admin-auth-log-in-view';
 
 export const metadata: Metadata = {
   title: 'Login | Byte of Me',
@@ -28,5 +28,5 @@ export const metadata: Metadata = {
 };
 
 export default function LoginPage() {
-  return <AuthLogInView />;
+  return <AdminAuthLogInView />;
 }

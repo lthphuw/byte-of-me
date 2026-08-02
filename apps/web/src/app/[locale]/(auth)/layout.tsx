@@ -1,9 +1,9 @@
 import React from 'react';
-import { redirect } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getLocale, getMessages } from 'next-intl/server';
 
 import { AUTH_MESSAGE_NAMESPACES, pickMessages } from '@/shared/i18n/messages';
+import { redirect } from '@/shared/i18n/navigation';
 import { getAuthenticatedAdmin } from '@/shared/lib/auth';
 import { PublicSiteFooterSection } from '@/widgets/public/public-site-footer';
 
@@ -16,7 +16,7 @@ interface AuthLayoutProps {
 export default async function AuthLayout({ children }: AuthLayoutProps) {
   const user = await getAuthenticatedAdmin();
   if (user) {
-    redirect('/dashboard');
+    redirect({ href: '/dashboard', locale: await getLocale() });
   }
 
   // min-h-screen, not h-screen + overflow-hidden: the latter clips the form

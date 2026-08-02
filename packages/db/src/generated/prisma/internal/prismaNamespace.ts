@@ -433,7 +433,11 @@ export const ModelName = {
   Interaction: 'Interaction',
   Comment: 'Comment',
   RateLimitHit: 'RateLimitHit',
-  ContactMessage: 'ContactMessage'
+  ContactMessage: 'ContactMessage',
+  Note: 'Note',
+  NoteLink: 'NoteLink',
+  NoteLabel: 'NoteLabel',
+  NoteOnLabel: 'NoteOnLabel'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -449,7 +453,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage"
+    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "note" | "noteLink" | "noteLabel" | "noteOnLabel"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3191,6 +3195,302 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Note: {
+      payload: Prisma.$NotePayload<ExtArgs>
+      fields: Prisma.NoteFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NoteFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NoteFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotePayload>
+        }
+        findFirst: {
+          args: Prisma.NoteFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NoteFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotePayload>
+        }
+        findMany: {
+          args: Prisma.NoteFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotePayload>[]
+        }
+        create: {
+          args: Prisma.NoteCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotePayload>
+        }
+        createMany: {
+          args: Prisma.NoteCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NoteCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotePayload>[]
+        }
+        delete: {
+          args: Prisma.NoteDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotePayload>
+        }
+        update: {
+          args: Prisma.NoteUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotePayload>
+        }
+        deleteMany: {
+          args: Prisma.NoteDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NoteUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NoteUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotePayload>[]
+        }
+        upsert: {
+          args: Prisma.NoteUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NotePayload>
+        }
+        aggregate: {
+          args: Prisma.NoteAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNote>
+        }
+        groupBy: {
+          args: Prisma.NoteGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NoteGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NoteCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NoteCountAggregateOutputType> | number
+        }
+      }
+    }
+    NoteLink: {
+      payload: Prisma.$NoteLinkPayload<ExtArgs>
+      fields: Prisma.NoteLinkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NoteLinkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLinkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NoteLinkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLinkPayload>
+        }
+        findFirst: {
+          args: Prisma.NoteLinkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLinkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NoteLinkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLinkPayload>
+        }
+        findMany: {
+          args: Prisma.NoteLinkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLinkPayload>[]
+        }
+        create: {
+          args: Prisma.NoteLinkCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLinkPayload>
+        }
+        createMany: {
+          args: Prisma.NoteLinkCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NoteLinkCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLinkPayload>[]
+        }
+        delete: {
+          args: Prisma.NoteLinkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLinkPayload>
+        }
+        update: {
+          args: Prisma.NoteLinkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLinkPayload>
+        }
+        deleteMany: {
+          args: Prisma.NoteLinkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NoteLinkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NoteLinkUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLinkPayload>[]
+        }
+        upsert: {
+          args: Prisma.NoteLinkUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLinkPayload>
+        }
+        aggregate: {
+          args: Prisma.NoteLinkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNoteLink>
+        }
+        groupBy: {
+          args: Prisma.NoteLinkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NoteLinkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NoteLinkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NoteLinkCountAggregateOutputType> | number
+        }
+      }
+    }
+    NoteLabel: {
+      payload: Prisma.$NoteLabelPayload<ExtArgs>
+      fields: Prisma.NoteLabelFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NoteLabelFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLabelPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NoteLabelFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLabelPayload>
+        }
+        findFirst: {
+          args: Prisma.NoteLabelFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLabelPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NoteLabelFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLabelPayload>
+        }
+        findMany: {
+          args: Prisma.NoteLabelFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLabelPayload>[]
+        }
+        create: {
+          args: Prisma.NoteLabelCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLabelPayload>
+        }
+        createMany: {
+          args: Prisma.NoteLabelCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NoteLabelCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLabelPayload>[]
+        }
+        delete: {
+          args: Prisma.NoteLabelDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLabelPayload>
+        }
+        update: {
+          args: Prisma.NoteLabelUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLabelPayload>
+        }
+        deleteMany: {
+          args: Prisma.NoteLabelDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NoteLabelUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NoteLabelUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLabelPayload>[]
+        }
+        upsert: {
+          args: Prisma.NoteLabelUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteLabelPayload>
+        }
+        aggregate: {
+          args: Prisma.NoteLabelAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNoteLabel>
+        }
+        groupBy: {
+          args: Prisma.NoteLabelGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NoteLabelGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NoteLabelCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NoteLabelCountAggregateOutputType> | number
+        }
+      }
+    }
+    NoteOnLabel: {
+      payload: Prisma.$NoteOnLabelPayload<ExtArgs>
+      fields: Prisma.NoteOnLabelFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NoteOnLabelFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteOnLabelPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NoteOnLabelFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteOnLabelPayload>
+        }
+        findFirst: {
+          args: Prisma.NoteOnLabelFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteOnLabelPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NoteOnLabelFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteOnLabelPayload>
+        }
+        findMany: {
+          args: Prisma.NoteOnLabelFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteOnLabelPayload>[]
+        }
+        create: {
+          args: Prisma.NoteOnLabelCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteOnLabelPayload>
+        }
+        createMany: {
+          args: Prisma.NoteOnLabelCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NoteOnLabelCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteOnLabelPayload>[]
+        }
+        delete: {
+          args: Prisma.NoteOnLabelDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteOnLabelPayload>
+        }
+        update: {
+          args: Prisma.NoteOnLabelUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteOnLabelPayload>
+        }
+        deleteMany: {
+          args: Prisma.NoteOnLabelDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NoteOnLabelUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NoteOnLabelUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteOnLabelPayload>[]
+        }
+        upsert: {
+          args: Prisma.NoteOnLabelUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteOnLabelPayload>
+        }
+        aggregate: {
+          args: Prisma.NoteOnLabelAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNoteOnLabel>
+        }
+        groupBy: {
+          args: Prisma.NoteOnLabelGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NoteOnLabelGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NoteOnLabelCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NoteOnLabelCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -3703,6 +4003,53 @@ export const ContactMessageScalarFieldEnum = {
 export type ContactMessageScalarFieldEnum = (typeof ContactMessageScalarFieldEnum)[keyof typeof ContactMessageScalarFieldEnum]
 
 
+export const NoteScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  title: 'title',
+  content: 'content',
+  plainText: 'plainText',
+  isPinned: 'isPinned',
+  archivedAt: 'archivedAt',
+  parentId: 'parentId',
+  position: 'position',
+  ownerId: 'ownerId'
+} as const
+
+export type NoteScalarFieldEnum = (typeof NoteScalarFieldEnum)[keyof typeof NoteScalarFieldEnum]
+
+
+export const NoteLinkScalarFieldEnum = {
+  createdAt: 'createdAt',
+  sourceId: 'sourceId',
+  targetId: 'targetId'
+} as const
+
+export type NoteLinkScalarFieldEnum = (typeof NoteLinkScalarFieldEnum)[keyof typeof NoteLinkScalarFieldEnum]
+
+
+export const NoteLabelScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  color: 'color',
+  ownerId: 'ownerId'
+} as const
+
+export type NoteLabelScalarFieldEnum = (typeof NoteLabelScalarFieldEnum)[keyof typeof NoteLabelScalarFieldEnum]
+
+
+export const NoteOnLabelScalarFieldEnum = {
+  createdAt: 'createdAt',
+  noteId: 'noteId',
+  labelId: 'labelId'
+} as const
+
+export type NoteOnLabelScalarFieldEnum = (typeof NoteOnLabelScalarFieldEnum)[keyof typeof NoteOnLabelScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3983,6 +4330,10 @@ export type GlobalOmitConfig = {
   comment?: Prisma.CommentOmit
   rateLimitHit?: Prisma.RateLimitHitOmit
   contactMessage?: Prisma.ContactMessageOmit
+  note?: Prisma.NoteOmit
+  noteLink?: Prisma.NoteLinkOmit
+  noteLabel?: Prisma.NoteLabelOmit
+  noteOnLabel?: Prisma.NoteOnLabelOmit
 }
 
 /* Types for Logging */

@@ -558,6 +558,47 @@ declare const messages: {
         "deleteError": "Could not delete media"
       }
     },
+    "note": {
+      "title": "Notes",
+      "description": "Your private notes. Nothing here is ever published.",
+      "untitled": "Untitled",
+      "loading": "Loading note…",
+      "emptySelection": "Select a note, or create one.",
+      "tree": {
+        "expandAriaLabel": "Expand",
+        "collapseAriaLabel": "Collapse"
+      },
+      "fields": {
+        "title": "Note title",
+        "titlePlaceholder": "Untitled"
+      },
+      "actions": {
+        "create": "New note",
+        "archive": "Archive",
+        "restore": "Restore",
+        "delete": "Delete"
+      },
+      "status": {
+        "saving": "Saving…",
+        "saved": "Saved",
+        "error": "Not saved",
+        "retry": "Retry"
+      },
+      "search": {
+        "trigger": "Search notes",
+        "placeholder": "Search your notes…",
+        "loading": "Searching…",
+        "empty": "No notes match."
+      },
+      "empty": {
+        "title": "No notes yet."
+      },
+      "errors": {
+        "load": "Could not load your notes.",
+        "create": "Could not create the note.",
+        "save": "Could not save the note."
+      }
+    },
     "project": {
       "title": "Projects",
       "description": "Manage your portfolio gallery, case studies, and deployment links.",
@@ -743,7 +784,9 @@ declare const messages: {
     "signInWithGithub": "Continue with GitHub",
     "signInWithGoogle": "Continue with Google",
     "emailPlaceholder": "name@example.com",
-    "sendMagicLink": "Send Magic Link"
+    "sendMagicLink": "Send Magic Link",
+    "accessDenied": "That account is not authorized to access this dashboard.",
+    "signInFailed": "Sign in could not be completed. Please try again."
   },
   "email": {
     "signIn": {

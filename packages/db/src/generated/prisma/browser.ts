@@ -202,3 +202,23 @@ export type RateLimitHit = Prisma.RateLimitHitModel
  * 
  */
 export type ContactMessage = Prisma.ContactMessageModel
+/**
+ * Model Note
+ * 
+ */
+export type Note = Prisma.NoteModel
+/**
+ * Model NoteLink
+ * 
+ */
+export type NoteLink = Prisma.NoteLinkModel
+/**
+ * Model NoteLabel
+ * 
+ */
+export type NoteLabel = Prisma.NoteLabelModel
+/**
+ * Model NoteOnLabel
+ * 
+ */
+export type NoteOnLabel = Prisma.NoteOnLabelModel

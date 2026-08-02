@@ -4,14 +4,29 @@ import { Button , Icons } from '@byte-of-me/ui';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
-import { logInWithGoogle } from '@/features/auth';
+// Imported by path, not from the `@/features/auth` root barrel: the barrel
+// re-exports this very file, so going through it closes an import cycle.
+import { logInToDashboardWithOAuth } from '@/features/auth/lib/log-in-to-dashboard-with-oauth';
+import { logInWithGoogle } from '@/features/auth/lib/log-in-with-google';
+import type { AuthButtonProps } from '@/features/auth/ui/auth-button-props';
 
-export function GoogleAuthButton({ className }: { className?: string }) {
+export function GoogleAuthButton({
+  className,
+  callbackUrl,
+  surface = 'public',
+}: AuthButtonProps) {
   const t = useTranslations('auth');
   const pathname = usePathname();
 
   const handleLogin = async () => {
-    await logInWithGoogle(pathname);
+    const destination = callbackUrl ?? pathname;
+
+    if (surface === 'admin') {
+      await logInToDashboardWithOAuth('google', destination);
+      return;
+    }
+
+    await logInWithGoogle(destination);
   };
 
   return (

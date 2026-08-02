@@ -1,2 +1,34 @@
 [test]
-preload = ["./next-runtime-stubs.ts", "./test-setup.ts", "./happydom.ts"]
+# `lazy-rich-text-editor.test-stub.ts` registers a `Bun.plugin()` that
+# intercepts EVERY import of `@/shared/ui/lazy-rich-text-editor`, for the
+# ENTIRE `bun test` process, not just the spec that needs it
+# (`note-editor.spec.tsx`). Scoping it to that one file was attempted and
+# rejected: Bun resolves a spec file's own top-level imports before any of
+# that file's code runs, so a `plugin()` call placed inside the spec (even
+# in `beforeAll`, ahead of a dynamic `await import()` of the component under
+# test) cannot win the race against a STATIC import elsewhere in the same
+# module graph — see the stub file's own header comment for the full
+# argument. `Bun.plugin.clearAll()` was also considered as an `afterAll`
+# undo; rejected because it deactivates ALL registered plugins process-wide,
+# including the five `next-runtime-stubs.ts` stubs every server-action spec
+# in this suite depends on, not just this one.
+#
+# Concretely, this means the rich-text editor is replaced by a fake
+# (`data-testid="fake-rich-text-editor"`, records mount values, never
+# renders real TipTap) for every `*.spec.tsx` in `apps/web`, forever. Today
+# that is inert because only `note-editor.spec.tsx` renders a component that
+# imports that specifier. The first collision is
+# `apps/web/src/features/dashboard/blog-editor/ui/form/blog-form.tsx:29`
+# (`import { LazyRichTextEditor as RichTextEditor } from
+# '@/shared/ui/lazy-rich-text-editor'`) — the day someone writes
+# `blog-form.spec.tsx`, it silently gets this same fake editor instead of
+# TipTap, with nothing failing to say so. If you hit that: either accept the
+# stub (it may be enough for what that spec needs), or extend the FAKE
+# component/exports in `lazy-rich-text-editor.test-stub.ts` to cover both
+# call sites' needs — do not add a second, competing global stub.
+preload = [
+  "./next-runtime-stubs.ts",
+  "./test-setup.ts",
+  "./happydom.ts",
+  "./src/shared/ui/lazy-rich-text-editor.test-stub.ts",
+]

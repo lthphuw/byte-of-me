@@ -87,7 +87,11 @@ export const ModelName = {
   Interaction: 'Interaction',
   Comment: 'Comment',
   RateLimitHit: 'RateLimitHit',
-  ContactMessage: 'ContactMessage'
+  ContactMessage: 'ContactMessage',
+  Note: 'Note',
+  NoteLink: 'NoteLink',
+  NoteLabel: 'NoteLabel',
+  NoteOnLabel: 'NoteOnLabel'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -577,6 +581,53 @@ export const ContactMessageScalarFieldEnum = {
 } as const
 
 export type ContactMessageScalarFieldEnum = (typeof ContactMessageScalarFieldEnum)[keyof typeof ContactMessageScalarFieldEnum]
+
+
+export const NoteScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  title: 'title',
+  content: 'content',
+  plainText: 'plainText',
+  isPinned: 'isPinned',
+  archivedAt: 'archivedAt',
+  parentId: 'parentId',
+  position: 'position',
+  ownerId: 'ownerId'
+} as const
+
+export type NoteScalarFieldEnum = (typeof NoteScalarFieldEnum)[keyof typeof NoteScalarFieldEnum]
+
+
+export const NoteLinkScalarFieldEnum = {
+  createdAt: 'createdAt',
+  sourceId: 'sourceId',
+  targetId: 'targetId'
+} as const
+
+export type NoteLinkScalarFieldEnum = (typeof NoteLinkScalarFieldEnum)[keyof typeof NoteLinkScalarFieldEnum]
+
+
+export const NoteLabelScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  color: 'color',
+  ownerId: 'ownerId'
+} as const
+
+export type NoteLabelScalarFieldEnum = (typeof NoteLabelScalarFieldEnum)[keyof typeof NoteLabelScalarFieldEnum]
+
+
+export const NoteOnLabelScalarFieldEnum = {
+  createdAt: 'createdAt',
+  noteId: 'noteId',
+  labelId: 'labelId'
+} as const
+
+export type NoteOnLabelScalarFieldEnum = (typeof NoteOnLabelScalarFieldEnum)[keyof typeof NoteOnLabelScalarFieldEnum]
 
 
 export const SortOrder = {
