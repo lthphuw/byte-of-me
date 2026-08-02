@@ -1,5 +1,6 @@
-import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
 import type { Metadata } from 'next';
+
+import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
 
 export async function generateMetadata(): Promise<Metadata> {
   const profileRes = await getUserProfile();

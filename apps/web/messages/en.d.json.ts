@@ -29,7 +29,9 @@ declare const messages: {
   "global": {
     "tableOfContent": "Table of Content",
     "userToggle": {
-      "signOut": "Sign out"
+      "signOut": "Sign out",
+      "admin": "Admin",
+      "viewer": "Viewer"
     },
     "i18nToggle": {
       "toggleLanguage": "Toggle language",

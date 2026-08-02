@@ -8,7 +8,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
- menuTransition, menuVariants } from '@byte-of-me/ui';
+  menuTransition, menuVariants
+} from '@byte-of-me/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, m } from 'framer-motion';
 import { LogOut } from 'lucide-react';
@@ -16,6 +17,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 
 import { logOut } from '@/features/auth';
+import { shortenName } from '@/shared/lib/string';
 
 export function UserActionToggle() {
   const t = useTranslations('global.userToggle');
@@ -25,6 +27,12 @@ export function UserActionToggle() {
   if (!session?.user) return null;
 
   const initials = session.user.email?.slice(0, 2).toUpperCase() || 'U';
+  const role = session.user.role?.toLocaleUpperCase() === 'ADMIN' ?
+    t('admin') :
+    t('viewer');
+  const name = session.user.name ? `${role}: ${shortenName(session.user.name, {
+    variant: 'compact'
+  })}` : role;
 
   const handleLogout = async () => {
     queryClient.clear();
@@ -60,7 +68,7 @@ export function UserActionToggle() {
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">
-                  {session.user.name || session.user.role || 'User'}
+                  {name}
                 </p>
                 <p className="truncate text-xs leading-none text-muted-foreground">
                   {session.user.email}

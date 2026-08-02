@@ -29,7 +29,9 @@ declare const messages: {
   "global": {
     "tableOfContent": "Mục lục",
     "userToggle": {
-      "signOut": "Đăng xuất"
+      "signOut": "Đăng xuất",
+      "admin": "Admin",
+      "viewer": "Viewer"
     },
     "i18nToggle": {
       "toggleLanguage": "Chuyển đổi ngôn ngữ",
