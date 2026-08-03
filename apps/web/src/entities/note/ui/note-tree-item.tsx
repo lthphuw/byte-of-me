@@ -22,6 +22,14 @@ interface NoteTreeItemProps {
   depth?: number;
   onSelect: (id: string) => void;
   onToggle: (id: string) => void;
+  /**
+   * Row actions (archive, delete), rendered at the end of the row.
+   *
+   * A slot rather than an import: the menu is a feature, and an entity that
+   * imported one would invert the layering AGENTS §3 sets out. The widget
+   * that owns the tree passes it down.
+   */
+  renderActions?: (node: NoteTreeNodeWithChildren) => React.ReactNode;
 }
 
 export function NoteTreeItem({
@@ -31,6 +39,7 @@ export function NoteTreeItem({
   depth = 0,
   onSelect,
   onToggle,
+  renderActions,
 }: NoteTreeItemProps) {
   const t = useTranslations('dashboard.note');
   const hasChildren = node.children.length > 0;
@@ -41,7 +50,11 @@ export function NoteTreeItem({
     <li>
       <div
         className={cn(
-          'flex items-center gap-1 rounded-md pr-2 text-sm transition-colors',
+          // `group` so the actions slot can reveal itself on hover; `min-h-9`
+          // so a row is a 36px touch target on a phone, where the old
+          // `py-1.5`-only row was ~26px — below the 44px Apple/Material floor
+          // and genuinely hard to hit next to a sibling row.
+          'group flex min-h-9 items-center gap-1 rounded-md pr-1 text-sm transition-colors md:min-h-0',
           isActive
             ? 'bg-muted font-medium text-foreground'
             : 'text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -53,7 +66,7 @@ export function NoteTreeItem({
           type="button"
           variant="ghost"
           size="icon"
-          className={cn('h-6 w-6 shrink-0', !hasChildren && 'invisible')}
+          className={cn('size-7 shrink-0', !hasChildren && 'invisible')}
           aria-label={
             isExpanded ? t('tree.collapseAriaLabel') : t('tree.expandAriaLabel')
           }
@@ -78,9 +91,11 @@ export function NoteTreeItem({
           aria-current={isActive ? 'true' : undefined}
           className="flex min-w-0 flex-1 items-center gap-2 py-1.5 text-left"
         >
-          <FileText className="h-3.5 w-3.5 shrink-0" />
+          <FileText className="size-3.5 shrink-0" />
           <span className="truncate">{node.title}</span>
         </button>
+
+        {renderActions?.(node)}
       </div>
 
       {hasChildren && isExpanded && (
@@ -94,6 +109,7 @@ export function NoteTreeItem({
               depth={depth + 1}
               onSelect={onSelect}
               onToggle={onToggle}
+              renderActions={renderActions}
             />
           ))}
         </ul>

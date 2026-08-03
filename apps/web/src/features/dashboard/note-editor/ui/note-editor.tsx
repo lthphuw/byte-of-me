@@ -5,17 +5,41 @@ import {
   fromEditorContent,
   toEditorContent,
 } from '@byte-of-me/ui/lib/rich-text-content';
+import { ChevronLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { uploadSingleMedia } from '@/entities/media';
+import { parseNoteHref } from '@/entities/note';
 import { useNoteEditorAutosave } from '@/features/dashboard/note-editor/lib/use-note-editor-autosave';
+import { Link } from '@/shared/i18n/navigation';
 import { LazyRichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
 export interface NoteEditorProps {
   noteId: string;
+  /**
+   * The note list. Rendered as a back arrow below `md`, where the list and
+   * the editor are two screens rather than two panes — on a desktop the tree
+   * is already on screen and the arrow would point at nothing.
+   */
+  backHref?: string;
+  /** Archive/delete menu, passed in by the widget: both are features, and a
+   *  feature importing a sibling feature is a sideways import. */
+  actions?: React.ReactNode;
+  /** Opens another note — used by the `[[` links inside the document. */
+  onOpenNote?: (noteId: string) => void;
+  /** Fired when the author types `[[`; the widget owns the note picker. */
+  onLinkTrigger?: (
+    insertLink: (link: { text: string; href: string }) => void
+  ) => void;
 }
 
-export function NoteEditor({ noteId }: NoteEditorProps) {
+export function NoteEditor({
+  noteId,
+  backHref,
+  actions,
+  onOpenNote,
+  onLinkTrigger,
+}: NoteEditorProps) {
   const t = useTranslations('dashboard.note');
   const {
     note,
@@ -78,16 +102,105 @@ export function NoteEditor({ noteId }: NoteEditorProps) {
   }
 
   return (
-    <div className="flex h-full flex-col gap-4 p-6">
+    // No page padding of its own, and no `gap`: the header, the title and the
+    // writing surface each own their spacing. The previous `p-6` charged 48px
+    // of vertical space on a phone before a single word was visible, on top of
+    // the two stacked bars the old layout put above it.
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="flex items-center gap-1 border-b px-2 py-1.5">
+        {backHref && (
+          <Button
+            asChild
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="shrink-0 md:hidden"
+          >
+            <Link href={backHref} aria-label={t('backToList')}>
+              <ChevronLeft className="size-5" />
+            </Link>
+          </Button>
+        )}
+
+        {/* The save status moved up here from the foot of the editor: down
+            there it was one more row competing with the writing surface for
+            the little height a phone has, and it was below the fold as soon
+            as the document got long. */}
+        <div className="min-w-0 flex-1 px-1">
+          {isSaveError ? (
+            // Persistent, not the transient toast the mutation's `onError`
+            // also shows: `save.isPending` returning to `false` after a
+            // failure must not read as "Saved" — nothing changed on the
+            // server, and nothing else re-fires the save automatically (the
+            // buffer is unchanged since the failed attempt, which is exactly
+            // what the autosave effect treats as "nothing new to send"), so
+            // the only way back is this explicit retry.
+            <p
+              className="flex items-center gap-2 text-xs text-destructive"
+              aria-live="polite"
+            >
+              <span className="truncate">{t('status.error')}</span>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="h-6 shrink-0 px-2"
+                onClick={retry}
+              >
+                {t('status.retry')}
+              </Button>
+            </p>
+          ) : (
+            <p className="truncate text-xs text-muted-foreground" aria-live="polite">
+              {isSaving ? t('status.saving') : t('status.saved')}
+            </p>
+          )}
+        </div>
+
+        {actions}
+      </div>
+
       <input
         value={title}
         onChange={(event) => setTitle(event.target.value)}
         placeholder={t('fields.titlePlaceholder')}
         aria-label={t('fields.title')}
-        className="w-full border-none bg-transparent text-2xl font-semibold outline-none placeholder:text-muted-foreground"
+        // `text-xl` below `md`: at `text-2xl` a two-line note title ate a
+        // tenth of a phone screen on its own.
+        className="w-full shrink-0 border-none bg-transparent px-4 pb-1 pt-3 text-xl font-semibold outline-none placeholder:text-muted-foreground md:px-6 md:pt-5 md:text-2xl"
       />
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div
+        className="min-h-0 flex-1"
+        // Capture phase, deliberately: `@tiptap/extension-link` binds its own
+        // click handler on the editor's DOM node below this, and by default
+        // that handler opens the href in a new tab. React attaches capture
+        // listeners at the root, so this runs first and can claim the event
+        // before ProseMirror sees it — turning a note link into an in-app
+        // navigation instead of a second tab pointing at the same app.
+        //
+        // Only note links are claimed; an ordinary external link in a note
+        // keeps whatever behaviour it has everywhere else.
+        onClickCapture={(event) => {
+          if (!onOpenNote) return;
+
+          const target = event.target;
+          if (!(target instanceof HTMLElement)) return;
+
+          const anchor = target.closest('a[href]');
+          if (!anchor) return;
+
+          // `getAttribute`, not `.href`: the property is resolved against the
+          // page's origin, so a relative note path arrives as a full URL and
+          // the pattern would never match it.
+          const linkedNoteId = parseNoteHref(anchor.getAttribute('href') ?? '');
+          if (!linkedNoteId) return;
+
+          event.preventDefault();
+          event.stopPropagation();
+          onOpenNote(linkedNoteId);
+        }}
+      >
         {/* Keyed on `note.id` AND `seedGeneration`, not `note.id` alone:
             `RichTextEditor` reads `value` only once, to seed Tiptap on
             mount, and never syncs later prop changes into the live
@@ -116,6 +229,16 @@ export function NoteEditor({ noteId }: NoteEditorProps) {
           // bar is chrome the author never reaches for. Selecting text still
           // raises the bubble bar for the things markdown cannot express.
           chromeless
+          // Take the height this pane gives, instead of the editor's own
+          // `h-[min(720px,62dvh)]`. That fixed box was nested inside this
+          // already-scrolling pane, so a phone scrolled a ~60dvh window
+          // inside a full-height column — two scrollbars, and a writing area
+          // a fraction of the screen it was supposedly filling.
+          fill
+          // `[[` opens the note picker the widget owns. Notes are the only
+          // surface that passes this, so `[[` stays two literal brackets in
+          // every other editor in the dashboard.
+          onLinkTrigger={onLinkTrigger}
           // Turns on drag-a-file and paste-a-screenshot: the editor uploads it
           // and inserts it where it landed. Without this prop the handlers
           // decline the event and the browser navigates away to the image.
@@ -150,29 +273,6 @@ export function NoteEditor({ noteId }: NoteEditorProps) {
           }}
         />
       </div>
-
-      {isSaveError ? (
-        // Persistent, not the transient toast the mutation's `onError` also
-        // shows: `save.isPending` returning to `false` after a failure must
-        // not read as "Saved" — nothing changed on the server, and nothing
-        // else re-fires the save automatically (the buffer is unchanged
-        // since the failed attempt, which is exactly what the autosave
-        // effect treats as "nothing new to send"), so the only way back is
-        // this explicit retry.
-        <p
-          className="flex items-center gap-2 text-xs text-destructive"
-          aria-live="polite"
-        >
-          {t('status.error')}
-          <Button type="button" size="sm" variant="outline" onClick={retry}>
-            {t('status.retry')}
-          </Button>
-        </p>
-      ) : (
-        <p className="text-xs text-muted-foreground" aria-live="polite">
-          {isSaving ? t('status.saving') : t('status.saved')}
-        </p>
-      )}
     </div>
   );
 }

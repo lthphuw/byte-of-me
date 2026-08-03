@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { Color } from '@tiptap/extension-color';
 import Highlight from '@tiptap/extension-highlight';
@@ -21,6 +21,7 @@ import { Markdown } from '@tiptap/markdown';
 import type { EditorState, Transaction } from '@tiptap/pm/state';
 import {
   type Content,
+  type Editor,
   EditorContent,
   type Extension,
   type JSONContent,
@@ -41,6 +42,7 @@ import {
   type ImageUploadFn,
 } from './extensions/image';
 import { ImagePlaceholder } from './extensions/image-placeholder';
+import { LinkSuggestion } from './extensions/link-suggestion';
 import { Citation } from './extensions/references/citation';
 import { ReferenceList } from './extensions/references/reference-list';
 import { ReferencePanel } from './extensions/references/reference-panel';
@@ -153,6 +155,33 @@ type RichTextEditorProps = {
    * profile) omits it and keeps the toolbar exactly as it was.
    */
   chromeless?: boolean;
+  /**
+   * Makes the writing surface take the height its parent gives it instead of
+   * the fixed `h-[min(720px,62dvh)]` below.
+   *
+   * That fixed height is right for an editor embedded in a scrolling form —
+   * it stops one long field from pushing the rest of the form off screen. It
+   * is wrong for a surface that *is* the page: inside the notes workspace it
+   * created a second scroll container nested in the page's own, so a phone
+   * ended up with a ~60dvh box scrolling inside a full-height pane, and the
+   * visible writing area was a fraction of the screen.
+   *
+   * Additive like `chromeless`: only the notes workspace passes it, so every
+   * dashboard form keeps the height it has.
+   */
+  fill?: boolean;
+  /**
+   * Opt into the `[[` link trigger.
+   *
+   * Called when the author types `[[` (already removed from the document by
+   * then) and handed the function that inserts the chosen link. The consumer
+   * owns the picker and the data — this component never learns what a "note"
+   * is, only how to insert a link mark — and simply does not call back if the
+   * author dismisses it.
+   */
+  onLinkTrigger?: (
+    insertLink: (link: { text: string; href: string }) => void
+  ) => void;
 };
 
 const COMPACT_MAX_HEIGHT = 360;
@@ -216,10 +245,48 @@ export function RichTextEditor({
   minHeight,
   placeholder,
   chromeless = false,
+  fill = false,
+  onLinkTrigger,
 }: RichTextEditorProps) {
   // Matches the `md` breakpoint the notes workspace switches its layout at.
   const isNarrow = useMediaQuery('(max-width: 767px)');
   const [items, setItems] = useState<TableOfContentDataItem[]>([]);
+
+  // Both refs exist for the same reason: the extension list is built once,
+  // when `useEditor` first runs, so anything it closes over is frozen at that
+  // moment. A consumer's `onLinkTrigger` is typically a fresh closure every
+  // render, and the editor does not exist yet at all. Reading both through
+  // refs at call time keeps the handler current without rebuilding the editor
+  // — which would remount the document and lose the selection.
+  const editorRef = useRef<Editor | null>(null);
+  const onLinkTriggerRef = useRef(onLinkTrigger);
+
+  useEffect(() => {
+    onLinkTriggerRef.current = onLinkTrigger;
+  }, [onLinkTrigger]);
+
+  const handleLinkTrigger = useCallback(() => {
+    onLinkTriggerRef.current?.((link) => {
+      // Inserted at the live selection rather than at the position the
+      // trigger was typed: the picker is a modal dialog, so the document
+      // cannot have moved under it, and reading the selection now avoids
+      // holding a position across an await that could go stale.
+      editorRef.current
+        ?.chain()
+        .focus()
+        .insertContent([
+          {
+            type: 'text',
+            text: link.text,
+            marks: [{ type: 'link', attrs: { href: link.href } }],
+          },
+          // A trailing unmarked space so the author keeps typing outside the
+          // link instead of extending it.
+          { type: 'text', text: ' ' },
+        ])
+        .run();
+    });
+  }, []);
   // Snapshot of the document taken when preview is switched on. The editor
   // stays mounted (hidden) underneath, so toggling back loses nothing.
   const [preview, setPreview] = useState<JSONContent | null>(null);
@@ -275,6 +342,12 @@ export function RichTextEditor({
     },
     extensions: [
       ...createExtensions({ uploadImage, placeholder }),
+      // Registered only when a consumer wants it, so `[[` stays two literal
+      // brackets everywhere else — a code snippet in a blog post is not a
+      // link picker.
+      ...(onLinkTrigger
+        ? [LinkSuggestion.configure({ onTrigger: handleLinkTrigger })]
+        : []),
       // The outline is only ever read by the sidebar, so compact mode skips
       // tracking it entirely.
       ...(compact
@@ -302,6 +375,14 @@ export function RichTextEditor({
     },
   });
 
+  // Assigned in an effect, not during render, so the ref only ever points at
+  // an editor that is actually mounted. Must sit above the early return
+  // below — a hook after a conditional return is a hook that sometimes does
+  // not run.
+  useEffect(() => {
+    editorRef.current = editor ?? null;
+  }, [editor]);
+
   if (!editor) return null;
 
   return (
@@ -312,6 +393,10 @@ export function RichTextEditor({
       // the rounded corners but lets sticky anchor to the outer scrollport.
       className={cn(
         'relative flex w-full flex-col overflow-clip',
+        // `min-h-0` alongside `h-full`: without it this flex column refuses to
+        // shrink below its content's min-content height and the surface
+        // overflows its parent instead of scrolling inside it.
+        fill && 'h-full min-h-0',
         // Chromeless sits inside a surface that already draws its own frame
         // (the notes workspace), so a card border and fill here would be a box
         // inside a box. Everywhere else the editor IS the card.
@@ -335,7 +420,11 @@ export function RichTextEditor({
       <div
         // Viewport-relative on tall screens, capped on short ones — a fixed
         // 600px left the editor cramped inside the near-full-height dialog.
-        className={cn('flex flex-row', !compact && 'h-[min(720px,62dvh)]')}
+        className={cn(
+          'flex flex-row',
+          !compact && !fill && 'h-[min(720px,62dvh)]',
+          !compact && fill && 'min-h-0 flex-1'
+        )}
         style={
           compact
             ? { minHeight: minHeight ?? 160, maxHeight: COMPACT_MAX_HEIGHT }
@@ -350,7 +439,10 @@ export function RichTextEditor({
         <div
           className={cn(
             'relative min-w-0 flex-1 overflow-y-auto p-4 sm:p-6',
-            !compact && 'border-r',
+            // The border divides the writing column from the outline aside;
+            // with that aside gone (chromeless, below) it would just be a
+            // stray line down the right edge of the page.
+            !compact && !chromeless && 'border-r',
             compact && 'p-3 sm:p-4',
             preview !== null && 'hidden'
           )}
@@ -376,7 +468,13 @@ export function RichTextEditor({
           <EditorContent editor={editor} />
         </div>
 
-        {!compact && preview === null && (
+        {/* Not for `chromeless`: the notes workspace already spends 56px on
+            the space rail and 256px on the note tree, and a third 288px
+            column leaves the writing column narrower than the chrome around
+            it. Notes surfaces its own links panel in that slot instead, which
+            is the navigation an author of linked notes actually reaches for.
+            Every other consumer keeps the outline exactly as it was. */}
+        {!compact && !chromeless && preview === null && (
         <aside className="hidden w-72 shrink-0 bg-muted/10 lg:block">
           <Tabs defaultValue="outline" className="flex h-full flex-col">
             <TabsList className="m-3 grid grid-cols-2">

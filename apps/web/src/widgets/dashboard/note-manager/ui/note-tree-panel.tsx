@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Button } from '@byte-of-me/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search } from 'lucide-react';
+import { Archive, ArrowLeft, Plus, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
@@ -14,6 +14,7 @@ import {
   NoteEmpty,
   noteKeys,
   NoteTreeItem,
+  type NoteTreeNode,
   NoteTreeSkeleton,
 } from '@/entities/note';
 
@@ -21,27 +22,49 @@ interface NoteTreePanelProps {
   activeId: string | null;
   onSelect: (id: string) => void;
   onOpenSearch: () => void;
+  /** Shows archived notes instead of live ones — the "trash" view. */
+  includeArchived?: boolean;
+  onToggleArchived?: () => void;
+  /** Space navigation, mounted in this header on phones. */
+  navSlot?: React.ReactNode;
+  /** Per-row actions menu, supplied by the widget so the entity layer below
+   *  never has to import a feature. */
+  renderActions?: (node: NoteTreeNode) => React.ReactNode;
 }
 
 export function NoteTreePanel({
   activeId,
   onSelect,
   onOpenSearch,
+  includeArchived = false,
+  onToggleArchived,
+  navSlot,
+  renderActions,
 }: NoteTreePanelProps) {
   const t = useTranslations('dashboard.note');
   const queryClient = useQueryClient();
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   const { data, isPending, isLoadingError } = useQuery({
-    queryKey: noteKeys.tree(false),
+    queryKey: noteKeys.tree(includeArchived),
     queryFn: async () => {
-      const res = await getNoteTree(false);
+      const res = await getNoteTree(includeArchived);
       if (!res.success) throw new Error(res.errorMsg);
       return res.data;
     },
   });
 
-  const tree = useMemo(() => buildNoteTree(data ?? []), [data]);
+  // The archived view lists only what is archived. `getNoteTree(true)` returns
+  // live notes *and* archived ones — it is "include", not "only" — so without
+  // this filter the trash would show the entire corpus.
+  const rows = useMemo(() => {
+    if (!data) return [];
+    return includeArchived
+      ? data.filter((row) => row.archivedAt !== null)
+      : data;
+  }, [data, includeArchived]);
+
+  const tree = useMemo(() => buildNoteTree(rows), [rows]);
 
   const create = useMutation({
     mutationFn: async () => {
@@ -92,16 +115,19 @@ export function NoteTreePanel({
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-1 border-b p-2">
+        {navSlot}
+
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          className="flex-1 justify-start gap-2"
+          className="min-w-0 flex-1 justify-start gap-2 text-muted-foreground"
           onClick={onOpenSearch}
         >
-          <Search className="h-3.5 w-3.5" />
-          {t('search.trigger')}
+          <Search className="size-3.5 shrink-0" />
+          <span className="truncate">{t('search.trigger')}</span>
         </Button>
+
         <Button
           type="button"
           variant="ghost"
@@ -110,7 +136,7 @@ export function NoteTreePanel({
           disabled={create.isPending}
           onClick={() => create.mutate()}
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="size-4" />
         </Button>
       </div>
 
@@ -150,7 +176,16 @@ export function NoteTreePanel({
         )}
 
         {!isPending && !isLoadingError && tree.length === 0 && (
-          <NoteEmpty onCreate={() => create.mutate()} />
+          // The archived view gets its own copy: `NoteEmpty` invites the
+          // author to write their first note, which is the wrong offer when
+          // what they are actually looking at is an empty wastebasket.
+          includeArchived ? (
+            <p className="p-4 text-sm text-muted-foreground">
+              {t('archive.empty')}
+            </p>
+          ) : (
+            <NoteEmpty onCreate={() => create.mutate()} />
+          )
         )}
 
         {tree.length > 0 && (
@@ -163,11 +198,35 @@ export function NoteTreePanel({
                 expandedIds={expandedIds}
                 onSelect={onSelect}
                 onToggle={toggle}
+                renderActions={renderActions}
               />
             ))}
           </ul>
         )}
       </div>
+
+      {onToggleArchived && (
+        <div className="border-t p-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start gap-2 text-muted-foreground"
+            onClick={onToggleArchived}
+          >
+            {includeArchived ? (
+              <ArrowLeft className="size-3.5 shrink-0" />
+            ) : (
+              <Archive className="size-3.5 shrink-0" />
+            )}
+            <span className="truncate">
+              {includeArchived
+                ? t('actions.hideArchived')
+                : t('actions.showArchived')}
+            </span>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

@@ -9,6 +9,11 @@ export const noteKeys = {
   tree: (includeArchived: boolean) =>
     [...noteKeys.all, 'tree', includeArchived] as const,
   detail: (noteId: string) => [...noteKeys.all, 'detail', noteId] as const,
+  links: (noteId: string) => [...noteKeys.all, 'links', noteId] as const,
+  /** Prefix-matches every `links(noteId)` key. A save rewrites the saved
+   *  note's outgoing links, which changes some OTHER note's backlinks — and
+   *  the id of that other note is not knowable from the save alone. */
+  linksAll: () => [...noteKeys.all, 'links'] as const,
   search: (query: string, page: number) =>
     [...noteKeys.all, 'search', query, page] as const,
   /** Prefix-matches every `search(query, page)` key, for the one caller that

@@ -1,16 +1,29 @@
 /**
- * `NoteManager` composes the tree, the editor and the search palette. Two
- * contracts of its own: the Cmd/Ctrl+K shortcut actually opens the palette
- * (M5 rewrote how that listener decides when to act), and selecting a row
- * in the tree renders the editor for that specific note.
+ * `NoteManager` composes the tree, the editor and the search palette. Its own
+ * contracts: the Cmd/Ctrl+K shortcut actually opens the palette (M5 rewrote
+ * how that listener decides when to act), and choosing a note *navigates* —
+ * selection is the route now, not component state, because a `[[` link in a
+ * document points at `/space/notes/<id>` and has to resolve to a real page.
+ *
+ * `@/shared/i18n/navigation` is stubbed globally in `next-runtime-stubs.ts`;
+ * `__navigations` is that stub's record of every route a component asked for.
  */
 import { prisma } from '@byte-of-me/db';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
 import { NextIntlClientProvider } from 'next-intl';
 
 import { NoteManager } from './note-manager';
+
+import * as navigation from '@/shared/i18n/navigation';
+
+// The real module's types know nothing about the stub's test helpers, which
+// is correct — they exist only under `bun test`. See the stub plugin.
+const { __navigations, __resetNavigation } = navigation as unknown as {
+  __navigations: string[];
+  __resetNavigation: (pathname?: string) => void;
+};
 
 const messages = {
   dashboard: {
@@ -18,13 +31,21 @@ const messages = {
       untitled: 'Untitled',
       loading: 'Loading note…',
       emptySelection: 'Select a note, or create one.',
-      tree: { expandAriaLabel: 'Expand', collapseAriaLabel: 'Collapse' },
+      backToList: 'All notes',
+      tree: {
+        expandAriaLabel: 'Expand',
+        collapseAriaLabel: 'Collapse',
+        actionsAriaLabel: 'Note actions',
+      },
       fields: { title: 'Note title', titlePlaceholder: 'Untitled' },
       actions: {
         create: 'New note',
         archive: 'Archive',
         restore: 'Restore',
         delete: 'Delete',
+        deleteForever: 'Delete permanently',
+        showArchived: 'Archived',
+        hideArchived: 'Back to notes',
       },
       status: {
         saving: 'Saving…',
@@ -38,11 +59,43 @@ const messages = {
         loading: 'Searching…',
         empty: 'No notes match.',
       },
+      archive: { title: 'Archived', empty: 'Nothing archived.' },
+      links: {
+        title: 'Links',
+        outgoing: 'Links out',
+        incoming: 'Mentioned by',
+        empty: 'No links yet.',
+        open: 'Show links',
+        close: 'Hide links',
+        deleted: 'Deleted note',
+        expandAriaLabel: 'Expand links',
+        collapseAriaLabel: 'Collapse links',
+        insert: 'Link to note',
+        pickerPlaceholder: 'Link to a note…',
+        pickerEmpty: 'No notes match.',
+        pickerCreate: 'Create note “{title}”',
+      },
+      delete: {
+        title: 'Delete permanently?',
+        description: '“{title}” will be deleted for good. This cannot be undone.',
+        descriptionWithChildren:
+          '“{title}” and {count, plural, one {its # nested note} other {its # nested notes}} will be deleted for good. This cannot be undone.',
+        confirm: 'Delete permanently',
+        cancel: 'Cancel',
+      },
+      toasts: {
+        archived: 'Moved to archive',
+        restored: 'Note restored',
+        deleted: 'Note deleted',
+      },
       empty: { title: 'No notes yet.' },
       errors: {
         load: 'Could not load your notes.',
         create: 'Could not create the note.',
         save: 'Could not save the note.',
+        archive: 'Could not archive the note.',
+        restore: 'Could not restore the note.',
+        delete: 'Could not delete the note.',
       },
     },
   },
@@ -124,11 +177,17 @@ function makeQueryClient(): QueryClient {
   });
 }
 
-function Harness({ queryClient }: { queryClient: QueryClient }) {
+function Harness({
+  queryClient,
+  noteId = null,
+}: {
+  queryClient: QueryClient;
+  noteId?: string | null;
+}) {
   return (
     <QueryClientProvider client={queryClient}>
       <NextIntlClientProvider locale="en" messages={messages}>
-        <NoteManager />
+        <NoteManager noteId={noteId} />
       </NextIntlClientProvider>
     </QueryClientProvider>
   );
@@ -138,6 +197,7 @@ beforeEach(() => {
   findMany.mockClear();
   findFirstOrThrow.mockClear();
   updateMany.mockClear();
+  __resetNavigation('/space/notes');
 });
 
 afterEach(() => {
@@ -169,12 +229,24 @@ describe('NoteManager', () => {
     ).toBeTruthy();
   });
 
-  test('selecting a tree row renders the editor for that note', async () => {
+  test('selecting a tree row navigates to that note’s route', async () => {
     const queryClient = makeQueryClient();
     render(<Harness queryClient={queryClient} />);
     await screen.findByText('Select a note, or create one.');
 
     fireEvent.click(await screen.findByText('Note A'));
+
+    // The widget does not open the note itself — the route does. Asserting
+    // on the push is the whole contract; rendering the editor is the next
+    // test, driven by the prop the route hands back.
+    await waitFor(() =>
+      expect(__navigations).toEqual(['/space/notes/note-a'])
+    );
+  });
+
+  test('renders the editor for the note the route names', async () => {
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} noteId="note-a" />);
 
     expect(await screen.findByDisplayValue('Note A')).toBeTruthy();
     expect(screen.queryByText('Select a note, or create one.')).toBeNull();
@@ -207,10 +279,7 @@ describe('NoteManager', () => {
   // nothing about that is readable, and in CI it reads as a hung suite.
   test('Ctrl+K inside the note title input does not open the palette', async () => {
     const queryClient = makeQueryClient();
-    render(<Harness queryClient={queryClient} />);
-    await screen.findByText('Select a note, or create one.');
-
-    fireEvent.click(await screen.findByText('Note A'));
+    render(<Harness queryClient={queryClient} noteId="note-a" />);
     const titleInput = await screen.findByDisplayValue('Note A');
 
     fireEvent.keyDown(titleInput, { key: 'k', ctrlKey: true });
@@ -228,10 +297,7 @@ describe('NoteManager', () => {
   // is exactly why this regression was invisible until now.
   test('Cmd+K inside the note title input still opens the palette', async () => {
     const queryClient = makeQueryClient();
-    render(<Harness queryClient={queryClient} />);
-    await screen.findByText('Select a note, or create one.');
-
-    fireEvent.click(await screen.findByText('Note A'));
+    render(<Harness queryClient={queryClient} noteId="note-a" />);
     const titleInput = await screen.findByDisplayValue('Note A');
 
     fireEvent.keyDown(titleInput, { key: 'k', metaKey: true });

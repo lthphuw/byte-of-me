@@ -7,6 +7,7 @@ export * from './education-manager';
 export * from './media-manager';
 export * from './note-manager';
 export * from './project-manager';
+export * from './space-shell';
 export * from './tag-manager';
 export * from './tech-stack-manager';
 export * from './user-profile-manager';

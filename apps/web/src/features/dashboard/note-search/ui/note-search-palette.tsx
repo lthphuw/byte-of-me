@@ -12,20 +12,28 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
-import { noteKeys, searchNotes } from '@/entities/note';
+import { noteKeys, type NoteSearchHit, searchNotes } from '@/entities/note';
 
 const SEARCH_DEBOUNCE_MS = 300;
 
 interface NoteSearchPaletteProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSelect: (noteId: string) => void;
+  /**
+   * The chosen note. The full hit follows the id because the link picker
+   * needs the title to use as the link's text — the palette is the same
+   * component in both roles, opened with a different placeholder.
+   */
+  onSelect: (noteId: string, hit: NoteSearchHit) => void;
+  /** Overrides the search placeholder — see `onSelect`. */
+  placeholder?: string;
 }
 
 export function NoteSearchPalette({
   open,
   onOpenChange,
   onSelect,
+  placeholder,
 }: NoteSearchPaletteProps) {
   const t = useTranslations('dashboard.note');
   const [term, setTerm] = useState('');
@@ -63,7 +71,7 @@ export function NoteSearchPalette({
       <CommandInput
         value={term}
         onValueChange={setTerm}
-        placeholder={t('search.placeholder')}
+        placeholder={placeholder ?? t('search.placeholder')}
       />
       <CommandList>
         {/* Deliberately NOT `CommandEmpty`: it holds a `useRef(true)` "first
@@ -100,7 +108,7 @@ export function NoteSearchPalette({
                 key={hit.id}
                 value={hit.id}
                 onSelect={() => {
-                  onSelect(hit.id);
+                  onSelect(hit.id, hit);
                   onOpenChange(false);
                 }}
               >

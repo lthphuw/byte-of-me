@@ -189,7 +189,29 @@ const updateMany = mock(
 );
 
 Object.defineProperty(prisma, 'note', {
-  value: { findFirstOrThrow, updateMany },
+  value: { findFirstOrThrow, updateMany, findMany: mock(() => Promise.resolve([])) },
+  writable: true,
+  configurable: true,
+});
+
+// `updateNote` rebuilds the saved note's `NoteLink` rows from the document it
+// just wrote, so a content save now reaches two more delegates. Neither is
+// what these tests are about — they exercise the autosave's own decisions —
+// but leaving them real means every content save tries to open a database
+// connection to the deliberately unreachable test URL and fails the save.
+// `$transaction` here takes the array form `updateNote` uses and simply
+// awaits it; the promises inside are already the mocks below.
+Object.defineProperty(prisma, 'noteLink', {
+  value: {
+    deleteMany: mock(() => Promise.resolve({ count: 0 })),
+    createMany: mock(() => Promise.resolve({ count: 0 })),
+  },
+  writable: true,
+  configurable: true,
+});
+
+Object.defineProperty(prisma, '$transaction', {
+  value: mock((operations: Promise<unknown>[]) => Promise.all(operations)),
   writable: true,
   configurable: true,
 });

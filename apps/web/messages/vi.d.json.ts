@@ -566,9 +566,11 @@ declare const messages: {
       "untitled": "Chưa đặt tên",
       "loading": "Đang tải ghi chú…",
       "emptySelection": "Chọn một ghi chú hoặc tạo ghi chú mới.",
+      "backToList": "Tất cả ghi chú",
       "tree": {
         "expandAriaLabel": "Mở rộng",
-        "collapseAriaLabel": "Thu gọn"
+        "collapseAriaLabel": "Thu gọn",
+        "actionsAriaLabel": "Tác vụ ghi chú"
       },
       "fields": {
         "title": "Tiêu đề ghi chú",
@@ -578,7 +580,10 @@ declare const messages: {
         "create": "Ghi chú mới",
         "archive": "Lưu trữ",
         "restore": "Khôi phục",
-        "delete": "Xóa"
+        "delete": "Xóa",
+        "deleteForever": "Xóa vĩnh viễn",
+        "showArchived": "Đã lưu trữ",
+        "hideArchived": "Về danh sách ghi chú"
       },
       "status": {
         "saving": "Đang lưu…",
@@ -592,13 +597,60 @@ declare const messages: {
         "loading": "Đang tìm…",
         "empty": "Không có ghi chú nào khớp."
       },
+      "archive": {
+        "title": "Đã lưu trữ",
+        "empty": "Chưa lưu trữ ghi chú nào."
+      },
+      "delete": {
+        "title": "Xóa vĩnh viễn?",
+        "description": "“{title}” sẽ bị xóa hẳn. Không thể hoàn tác.",
+        "descriptionWithChildren": "“{title}” cùng {count, plural, other {# ghi chú con}} sẽ bị xóa hẳn. Không thể hoàn tác.",
+        "confirm": "Xóa vĩnh viễn",
+        "cancel": "Hủy"
+      },
+      "links": {
+        "title": "Liên kết",
+        "outgoing": "Liên kết đi",
+        "incoming": "Được nhắc đến bởi",
+        "empty": "Chưa có liên kết nào.",
+        "open": "Hiện liên kết",
+        "close": "Ẩn liên kết",
+        "deleted": "Ghi chú đã xóa",
+        "expandAriaLabel": "Mở rộng liên kết",
+        "collapseAriaLabel": "Thu gọn liên kết",
+        "insert": "Liên kết tới ghi chú",
+        "pickerPlaceholder": "Liên kết tới ghi chú…",
+        "pickerEmpty": "Không có ghi chú nào khớp.",
+        "pickerCreate": "Tạo ghi chú “{title}”"
+      },
+      "toasts": {
+        "archived": "Đã chuyển vào lưu trữ",
+        "restored": "Đã khôi phục ghi chú",
+        "deleted": "Đã xóa ghi chú"
+      },
       "empty": {
         "title": "Chưa có ghi chú nào."
       },
       "errors": {
         "load": "Không tải được ghi chú.",
         "create": "Không tạo được ghi chú.",
-        "save": "Không lưu được ghi chú."
+        "save": "Không lưu được ghi chú.",
+        "archive": "Không lưu trữ được ghi chú.",
+        "restore": "Không khôi phục được ghi chú.",
+        "delete": "Không xóa được ghi chú.",
+        "links": "Không tải được liên kết."
+      }
+    },
+    "space": {
+      "title": "Space",
+      "navAriaLabel": "Điều hướng không gian làm việc",
+      "openNav": "Mở điều hướng không gian làm việc",
+      "items": {
+        "notes": "Ghi chú"
+      },
+      "actions": {
+        "dashboard": "Bảng điều khiển",
+        "signOut": "Đăng xuất"
       }
     },
     "project": {

@@ -563,9 +563,11 @@
       "untitled": "Untitled",
       "loading": "Loading note…",
       "emptySelection": "Select a note, or create one.",
+      "backToList": "All notes",
       "tree": {
         "expandAriaLabel": "Expand",
-        "collapseAriaLabel": "Collapse"
+        "collapseAriaLabel": "Collapse",
+        "actionsAriaLabel": "Note actions"
       },
       "fields": {
         "title": "Note title",
@@ -575,7 +577,10 @@
         "create": "New note",
         "archive": "Archive",
         "restore": "Restore",
-        "delete": "Delete"
+        "delete": "Delete",
+        "deleteForever": "Delete permanently",
+        "showArchived": "Archived",
+        "hideArchived": "Back to notes"
       },
       "status": {
         "saving": "Saving…",
@@ -589,13 +594,60 @@
         "loading": "Searching…",
         "empty": "No notes match."
       },
+      "archive": {
+        "title": "Archived",
+        "empty": "Nothing archived."
+      },
+      "delete": {
+        "title": "Delete permanently?",
+        "description": "“{title}” will be deleted for good. This cannot be undone.",
+        "descriptionWithChildren": "“{title}” and {count, plural, one {its # nested note} other {its # nested notes}} will be deleted for good. This cannot be undone.",
+        "confirm": "Delete permanently",
+        "cancel": "Cancel"
+      },
+      "links": {
+        "title": "Links",
+        "outgoing": "Links out",
+        "incoming": "Mentioned by",
+        "empty": "No links yet.",
+        "open": "Show links",
+        "close": "Hide links",
+        "deleted": "Deleted note",
+        "expandAriaLabel": "Expand links",
+        "collapseAriaLabel": "Collapse links",
+        "insert": "Link to note",
+        "pickerPlaceholder": "Link to a note…",
+        "pickerEmpty": "No notes match.",
+        "pickerCreate": "Create note “{title}”"
+      },
+      "toasts": {
+        "archived": "Moved to archive",
+        "restored": "Note restored",
+        "deleted": "Note deleted"
+      },
       "empty": {
         "title": "No notes yet."
       },
       "errors": {
         "load": "Could not load your notes.",
         "create": "Could not create the note.",
-        "save": "Could not save the note."
+        "save": "Could not save the note.",
+        "archive": "Could not archive the note.",
+        "restore": "Could not restore the note.",
+        "delete": "Could not delete the note.",
+        "links": "Could not load links."
+      }
+    },
+    "space": {
+      "title": "Space",
+      "navAriaLabel": "Workspace navigation",
+      "openNav": "Open workspace navigation",
+      "items": {
+        "notes": "Notes"
+      },
+      "actions": {
+        "dashboard": "Dashboard",
+        "signOut": "Sign out"
       }
     },
     "project": {

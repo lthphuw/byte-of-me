@@ -2,6 +2,7 @@ export * from './archive-note';
 export * from './create-note';
 export * from './delete-note';
 export * from './get-admin-note-by-id';
+export * from './get-note-links';
 export * from './get-note-tree';
 export * from './move-note';
 export * from './restore-note';

@@ -355,6 +355,17 @@ export function useNoteEditorAutosave(
       // entirely — see `lastSentRef` above for the other half of the fix.
       void queryClient.invalidateQueries({ queryKey: noteKeys.tree(false) });
       void queryClient.invalidateQueries({ queryKey: noteKeys.tree(true) });
+      // Links, too: `updateNote` rewrites this note's `NoteLink` rows from
+      // the document it just saved, so a `[[` link inserted a second ago is
+      // only visible in the panel after this. Whole prefix rather than this
+      // note's key — adding a link changes the TARGET's backlinks, and which
+      // note that is cannot be read off the save.
+      //
+      // Safe in a way the `noteKeys.all` invalidation this function's comment
+      // above rejects is not: `links` is a separate key that feeds nothing the
+      // save decision reads, so refetching it cannot loop back into another
+      // save. `detail` and `search` are what must stay untouched here.
+      void queryClient.invalidateQueries({ queryKey: noteKeys.linksAll() });
     },
     [queryClient]
   );

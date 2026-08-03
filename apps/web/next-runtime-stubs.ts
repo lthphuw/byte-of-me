@@ -329,3 +329,91 @@ plugin({
     });
   },
 });
+
+plugin({
+  name: 'stub-i18n-navigation',
+  setup(build) {
+    // `@/shared/i18n/navigation` is `createNavigation(routing)`, whose
+    // `useRouter`/`Link` delegate to `next/navigation` — and those read the
+    // App Router context, which only a live Next render provides. Outside
+    // one they throw "invariant expected app router to be mounted" at the
+    // first render, so any component that navigates is untestable without a
+    // stand-in. Same category as the three stubs at the top of this file:
+    // the specs that reach this care about *which route a component asks
+    // for*, never about Next's router itself.
+    //
+    // Registered globally, in the preload, for the ordering reason
+    // `stub-auth-submodule` documents at length: whichever spec's import
+    // graph reaches a navigating component first would otherwise bind that
+    // component's `useRouter` for the whole run.
+    //
+    // Every name the real module exports is present, including the two no
+    // spec uses today (`redirect`, `getPathname`) — Bun enforces named
+    // exports statically even for object-loader modules, so an omitted name
+    // fails at import time in a spec that has nothing to do with it.
+    const pushed: string[] = [];
+    let pathname = '/';
+
+    build.module('@/shared/i18n/navigation', async () => {
+      const React = await import('react');
+
+      return {
+        exports: {
+          /** Routes a spec's component asked for, oldest first. */
+          __navigations: pushed,
+          __resetNavigation: (nextPathname = '/') => {
+            pushed.length = 0;
+            pathname = nextPathname;
+          },
+          usePathname: () => pathname,
+          getPathname: ({ href }: { href: string }) => href,
+          redirect: ({ href }: { href: string }) => {
+            pushed.push(href);
+          },
+          useRouter: () => ({
+            push: (href: string) => {
+              pushed.push(href);
+            },
+            replace: (href: string) => {
+              pushed.push(href);
+            },
+            back: () => {},
+            forward: () => {},
+            refresh: () => {},
+            prefetch: () => {},
+          }),
+          // A real anchor, not a null render: specs find these rows by role
+          // and click them, and `next-intl`'s own `Link` renders an `<a>`
+          // too. `locale` is dropped rather than forwarded — React warns
+          // about unknown DOM attributes, and no spec asserts on it.
+          Link: ({
+            href,
+            children,
+            locale: _locale,
+            ...rest
+          }: {
+            href: string;
+            children?: React.ReactNode;
+            locale?: string;
+          } & Record<string, unknown>) =>
+            React.createElement(
+              'a',
+              {
+                href,
+                ...rest,
+                onClick: (event: React.MouseEvent) => {
+                  event.preventDefault();
+                  pushed.push(href);
+                  (rest.onClick as ((e: React.MouseEvent) => void) | undefined)?.(
+                    event
+                  );
+                },
+              },
+              children
+            ),
+        },
+        loader: 'object',
+      };
+    });
+  },
+});

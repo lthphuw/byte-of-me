@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
+import { SpaceShell } from '@/widgets/dashboard/space-shell';
 
 export async function generateMetadata(): Promise<Metadata> {
   const profileRes = await getUserProfile();
@@ -26,13 +27,5 @@ export default async function SpaceLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="flex min-h-screen flex-col lg:flex-row">
-      <div className="flex min-w-0 flex-1 flex-col overflow-x-clip bg-muted/40">
-        <main className="container relative py-6 lg:py-8">
-          <div className="mx-auto w-full min-w-0 p-4 lg:p-10">{children}</div>
-        </main>
-      </div>
-    </div>
-  );
+  return <SpaceShell>{children}</SpaceShell>;
 }

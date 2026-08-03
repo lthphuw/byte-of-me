@@ -24,6 +24,17 @@ export type NoteDetail = Pick<
   | 'updatedAt'
 >;
 
+/** One end of a note-to-note link, as the links panel renders it. */
+export type NoteLinkRef = Pick<Note, 'id' | 'title' | 'archivedAt'>;
+
+/** One note's immediate neighbourhood in the link graph. */
+export interface NoteLinkGraph {
+  /** Notes this note links to. */
+  outgoing: NoteLinkRef[];
+  /** Notes that link to this note — backlinks. */
+  incoming: NoteLinkRef[];
+}
+
 /** A search result: enough to render a row, never the whole document. */
 export type NoteSearchHit = Pick<Note, 'id' | 'title' | 'updatedAt'> & {
   /** A short window of `plainText` around nothing in particular — just the head. */
