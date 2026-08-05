@@ -148,6 +148,38 @@ export interface NoteGraph {
   edges: NoteGraphEdge[];
 }
 
+/**
+ * The grouped explorer's "everything else" bucket.
+ *
+ * Deliberately a second declaration of the string the explorer feature already
+ * exports: an entity may never import a feature (FSD, AGENTS §3), and this key
+ * is now produced server-side by `getNoteGroupSummaries` and parsed back by
+ * `getNotesInGroup`, so it is entity vocabulary. The feature copy disappears
+ * when the client-side `groupRows` is retired.
+ */
+export const NO_LABEL_GROUP_KEY = 'no-label';
+
+/**
+ * One section of the grouped explorer, counted without loading its rows.
+ *
+ * `count` is the TRUE bucket size from an aggregate, never the number of rows
+ * currently loaded — the sections paginate independently, so a header counting
+ * what it had on screen would both understate the bucket and change as the
+ * reader scrolled.
+ */
+export interface NoteGroupSummary {
+  /** `status:<value>`, `label:<labelId>`, or `NO_LABEL_GROUP_KEY`. */
+  key: string;
+  /**
+   * A status token or a label name. For the unlabeled bucket this is the key
+   * token, not prose: this layer is i18n-free and the caller localizes it.
+   */
+  title: string;
+  /** Set only when the bucket IS a label — drops need the id, not the name. */
+  labelId?: string;
+  count: number;
+}
+
 /** A search result: enough to render a row, never the whole document. */
 export type NoteSearchHit = Pick<Note, 'id' | 'title' | 'updatedAt'> & {
   /** A short window of `plainText` around nothing in particular — just the head. */
