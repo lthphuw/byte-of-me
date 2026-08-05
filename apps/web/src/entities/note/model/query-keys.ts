@@ -6,8 +6,6 @@
  */
 export const noteKeys = {
   all: ['note'] as const,
-  tree: (includeArchived: boolean) =>
-    [...noteKeys.all, 'tree', includeArchived] as const,
   detail: (noteId: string) => [...noteKeys.all, 'detail', noteId] as const,
   links: (noteId: string) => [...noteKeys.all, 'links', noteId] as const,
   /** Prefix-matches every `links(noteId)` key. A save rewrites the saved
@@ -24,6 +22,13 @@ export const noteKeys = {
   /** Prefix-matches every level. What a create/move/archive invalidates: the
    *  row moved between two levels and neither id is worth working out. */
   childrenAll: () => [...noteKeys.all, 'children'] as const,
+
+  /**
+   * The trash: archived notes, flat and newest-first. Its own key rather than
+   * a variant of `children`, because an archived note can have a LIVE parent
+   * and so belongs to no per-level read — see `getArchivedNotes`.
+   */
+  archived: () => [...noteKeys.all, 'archived'] as const,
 
   /** The flat view's cursor-paginated document list. */
   page: (includeArchived: boolean, sort: string) =>
@@ -57,7 +62,7 @@ export const noteKeys = {
    * This exists because the keys do not nest: `tree` is `[…, 'tree', …]` and
    * the per-level reads are `[…, 'children', …]`, so invalidating the first
    * cannot match the second. When the explorer moved to loading one level at
-   * a time, every `invalidateQueries(noteKeys.tree(...))` call site silently
+   * a time, every `invalidateQueries` call site aimed at the old `tree` key
    * stopped refreshing the sidebar — create a note and nothing appeared until
    * a reload. Enumerating the family in one place is what stops the next key
    * from being forgotten the same way.
@@ -68,8 +73,7 @@ export const noteKeys = {
    */
   lists: () =>
     [
-      noteKeys.tree(false),
-      noteKeys.tree(true),
+      noteKeys.archived(),
       noteKeys.childrenAll(),
       noteKeys.pageAll(),
       noteKeys.groupsAll(),

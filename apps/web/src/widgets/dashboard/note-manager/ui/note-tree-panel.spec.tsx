@@ -127,12 +127,15 @@ let table: FakeNoteRow[] = [];
 let corpusImpl: () => Promise<FakeNoteRow[]>;
 /** `getNoteChildren`'s per-level read. */
 let levelImpl: (parentId: string | null) => Promise<FakeNoteRow[]>;
+/** `getArchivedNotes`' flat, newest-first read. */
+let archivedImpl: () => Promise<FakeNoteRow[]>;
 /** `getNotesPage`'s and `getNotesInGroup`'s documents-only reads. */
 let documentsImpl: (args: FindManyArgs) => Promise<FakeNoteRow[]>;
 
 interface FindManyArgs {
   where: {
     parentId?: string | null;
+    archivedAt?: unknown;
     isFolder?: boolean;
     status?: string;
     labels?: { none?: object; some?: { labelId: string } };
@@ -140,6 +143,12 @@ interface FindManyArgs {
 }
 
 const findMany = mock((args: FindManyArgs) => {
+  // The trash: `archivedAt: { not: null }`, and no parent filter at all —
+  // an archived note can have a live parent, which is the whole reason it is
+  // a flat read. Checked first because it is the only shape naming neither
+  // `parentId` nor `isFolder`, and would otherwise fall through to the
+  // whole-table branch and quietly return live notes as well.
+  if (args.where.archivedAt != null) return archivedImpl();
   if ('parentId' in args.where) return levelImpl(args.where.parentId ?? null);
   // The flat view and the grouped sections both list documents, never
   // containers, and both put that in the query rather than filtering the
@@ -195,10 +204,15 @@ function levelCalls(parentId: string | null): number {
   ).length;
 }
 
-/** How many times the WHOLE CORPUS was read — the cost this work removes. */
+/** How many times the WHOLE CORPUS was read — the cost this work removes.
+ *  The trash's own read names neither `parentId` nor `isFolder` either, so it
+ *  has to be excluded explicitly or it would be miscounted as a corpus read. */
 function corpusCalls(): number {
   return findMany.mock.calls.filter(
-    ([args]) => !('parentId' in args.where) && args.where.isFolder === undefined
+    ([args]) =>
+      !('parentId' in args.where) &&
+      args.where.isFolder === undefined &&
+      args.where.archivedAt == null
   ).length;
 }
 
@@ -323,6 +337,9 @@ beforeEach(() => {
   corpusImpl = async () => table;
   levelImpl = async (parentId) =>
     table.filter((note) => note.parentId === parentId);
+  // Flat and newest-first, across every level — no parent filter at all.
+  archivedImpl = async () =>
+    table.filter((note) => note.archivedAt !== null);
   documentsImpl = async (args) => {
     const documents = table.filter(
       (note) => !note.isFolder && note.archivedAt === null
@@ -493,7 +510,9 @@ describe('NoteTreePanel', () => {
     // Archiving cascades DOWN a subtree, so archiving a note that lived inside
     // a live folder leaves an archived row with a live parent. It belongs to no
     // `parentId: null` level, so a per-level read would lose it entirely —
-    // which is why the trash keeps deriving its levels from the corpus.
+    // which is why the trash is a FLAT `getArchivedNotes` list rather than a
+    // tree. This is the invariant that decided that shape; if it ever fails,
+    // the trash has started hiding things the author archived.
     const liveFolder = row({
       id: 'live-folder',
       title: 'Live Folder',

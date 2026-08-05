@@ -27,7 +27,7 @@ const MOUNTED_LIST_KEYS: Array<[string, readonly unknown[]]> = [
   ['flat page', noteKeys.page(false, 'updated')],
   ['group summaries', noteKeys.groups('status', false)],
   ['group rows', noteKeys.groupRows('label', 'label:l1', false)],
-  ['legacy whole corpus', noteKeys.tree(false)],
+  ['trash', noteKeys.archived()],
   // Not a list the explorer renders, but it belongs to this family: it is
   // the cascade count in a PERMANENT-DELETE confirmation, and the client's
   // global 60s staleTime would otherwise let it understate what a delete

@@ -35,18 +35,6 @@ interface NoteTreeItemProps {
   depth?: number;
   /** Passed straight through to this row's own `getNoteChildren` read. */
   includeArchived?: boolean;
-  /**
-   * Pre-resolved levels keyed by parent id. When this prop is present the row
-   * renders `preloadedLevels.get(node.id)` and NEVER fetches.
-   *
-   * The one caller is the archived ("trash") view. `getNoteChildren`'s
-   * `includeArchived` is INCLUDE, not ONLY, and archiving cascades down a
-   * subtree — so an archived note whose parent is still live belongs to no
-   * `parentId: null` level and a per-level read would simply lose it. Until a
-   * server-side archived-only read exists, the trash keeps deriving its levels
-   * from the corpus exactly as it does today; see `note-tree-panel.tsx`.
-   */
-  preloadedLevels?: Map<string, NoteTreeNode[]>;
   onSelect: (id: string) => void;
   onToggle: (id: string) => void;
   /**
@@ -74,7 +62,6 @@ export function NoteTreeItem({
   expandedIds,
   depth = 0,
   includeArchived = false,
-  preloadedLevels,
   onSelect,
   onToggle,
   renderActions,
@@ -84,7 +71,6 @@ export function NoteTreeItem({
   const prefetch = useNotePrefetch();
   const isExpanded = expandedIds.has(node.id);
   const isActive = node.id === activeId;
-  const isPreloaded = preloadedLevels !== undefined;
 
   /**
    * This row's own level, one page at a time.
@@ -108,18 +94,17 @@ export function NoteTreeItem({
     },
     initialPageParam: null as string | null,
     getNextPageParam: (page) => page.nextCursor,
-    enabled: isExpanded && !isPreloaded,
+    enabled: isExpanded,
   });
 
-  const childRows = isPreloaded
-    ? (preloadedLevels.get(node.id) ?? NO_ROWS)
-    : (level.data?.pages.flatMap((page) => page.rows) ?? NO_ROWS);
+  const childRows =
+    level.data?.pages.flatMap((page) => page.rows) ?? NO_ROWS;
 
   // `childCount` rides along on the row itself, so the chevron is correct
   // BEFORE a single child has been fetched — the entire reason that field
   // exists. Deriving it from `childRows` instead would leave every collapsed
   // folder looking like a leaf until the author clicked it to find out.
-  const hasChildren = isPreloaded ? childRows.length > 0 : node.childCount > 0;
+  const hasChildren = node.childCount > 0;
 
   // Hover and keyboard focus both mean "about to open this", and both give
   // the document a head start the click itself cannot. Folders have no
@@ -203,7 +188,7 @@ export function NoteTreeItem({
         // `aria-busy` rather than a live region: the placeholder below is
         // decorative, and this is the standard way to say "the contents of
         // this container are not final yet" without inventing a string.
-        <ul aria-busy={level.isPending && !isPreloaded ? true : undefined}>
+        <ul aria-busy={level.isPending ? true : undefined}>
           {childRows.map((child) => (
             <NoteTreeItem
               key={child.id}
@@ -212,7 +197,6 @@ export function NoteTreeItem({
               expandedIds={expandedIds}
               depth={depth + 1}
               includeArchived={includeArchived}
-              preloadedLevels={preloadedLevels}
               onSelect={onSelect}
               onToggle={onToggle}
               renderActions={renderActions}
@@ -225,7 +209,7 @@ export function NoteTreeItem({
               empty" — a lie the author has no way to distinguish from the
               truth. A skeleton is what the panel already uses to say
               "loading", so the tree says it the same way. */}
-          {!isPreloaded && level.isPending && (
+          {level.isPending && (
             <li
               aria-hidden
               className="py-1"

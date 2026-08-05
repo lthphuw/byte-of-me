@@ -12,21 +12,20 @@ import { Archive, ArrowLeft, FolderPlus, Plus, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
-  buildNoteTree,
+  getArchivedNotes,
   getNoteChildren,
   getNoteLabels,
-  getNoteTree,
   NoteEmpty,
   noteKeys,
   type NotePage,
   NoteTreeItem,
   type NoteTreeNode,
-  type NoteTreeNodeWithChildren,
   NoteTreeSkeleton,
 } from '@/entities/note';
 import { useCreateNote } from '@/features/dashboard/note-actions';
 import {
   ExplorerDnd,
+  ExplorerRow,
   ExplorerViewMenu,
   GroupedRowDndShell,
   GroupSectionDndShell,
@@ -69,35 +68,34 @@ export function NoteTreePanel({
   const mode = includeArchived ? 'tree' : prefs.mode;
 
   /**
-   * The whole-corpus read, now paid for by the ARCHIVED VIEW ALONE.
+   * The trash: archived notes, newest first, one page at a time.
    *
-   * `enabled: includeArchived` is the point at which the explorer stops
-   * scaling with the number of notes owned: the live tree loads one level at a
-   * time, the flat and grouped views page their own rows, and the DnD guard
-   * reads what those already put in the cache — so on a normal dashboard load
-   * this query never runs. The trash still needs it, for the reason `archived`
-   * below sets out at length, and no Task deletes that requirement; Task 8
-   * only removes the callers that had alternatives.
+   * FLAT, where it used to be a tree, and that is the shape the data forces.
+   * Archiving cascades DOWN a subtree, so archiving a note that lived inside a
+   * live folder leaves an archived row whose parent is NOT archived — it
+   * belongs to no level of anything. The old view papered over that by
+   * fetching the entire corpus and letting `buildNoteTree` surface such rows
+   * at the root; rebuilding the hierarchy here would mean fetching every
+   * archived row anyway just to find the parents, which is the read this whole
+   * change removes. A wastebasket ordered by when things went into it is also
+   * what the view is for.
    */
-  const corpus = useQuery({
-    queryKey: noteKeys.tree(includeArchived),
-    queryFn: async () => {
-      const res = await getNoteTree(includeArchived);
+  const archivedList = useInfiniteQuery({
+    queryKey: noteKeys.archived(),
+    queryFn: async ({ pageParam }) => {
+      const res = await getArchivedNotes({ cursor: pageParam });
       if (!res.success) throw new Error(res.errorMsg);
       return res.data;
     },
+    initialPageParam: null as string | null,
+    getNextPageParam: (page) => page.nextCursor,
     enabled: includeArchived,
   });
 
-  // The archived view lists only what is archived. `getNoteTree(true)` returns
-  // live notes *and* archived ones — it is "include", not "only" — so without
-  // this filter the trash would show the entire corpus.
-  const rows = useMemo(() => {
-    if (!corpus.data) return [];
-    return includeArchived
-      ? corpus.data.filter((row) => row.archivedAt !== null)
-      : corpus.data;
-  }, [corpus.data, includeArchived]);
+  const archivedRows = useMemo(
+    () => archivedList.data?.pages.flatMap((page) => page.rows) ?? [],
+    [archivedList.data]
+  );
 
   /**
    * Every note row the per-level caches currently hold, deduplicated by id.
@@ -152,53 +150,20 @@ export function NoteTreePanel({
     [rootLevel.data]
   );
 
-  /**
-   * The archived tree, still derived from the corpus — deliberately.
-   *
-   * `getNoteChildren`'s `includeArchived` is INCLUDE, not ONLY, and archiving
-   * cascades to descendants (`archiveNote`), so the common case — archive a
-   * note that lived inside a live folder — produces an archived row whose
-   * parent is not archived. Today `buildNoteTree` surfaces exactly that row at
-   * the root of the trash, because its parent was filtered out of the set. A
-   * `parentId: null` read cannot see it at all, so per-level fetching would
-   * silently lose most of what the author just archived. The trash is bounded
-   * by how much you archive rather than by how much you own, so it keeps the
-   * corpus path until a server-side archived-only read exists.
-   *
-   * `buildNoteTree` is reused rather than re-derived here: it already handles
-   * the missing-parent and corrupt-cycle rules, and duplicating them would be
-   * the bug AGENTS §11.3 warns about.
-   */
-  const archived = useMemo(() => {
-    const levels = new Map<string, NoteTreeNode[]>();
-    if (!includeArchived) return { roots: [] as NoteTreeNode[], levels };
-
-    const roots = buildNoteTree(rows);
-    const walk = (nodes: NoteTreeNodeWithChildren[]) => {
-      for (const node of nodes) {
-        if (node.children.length === 0) continue;
-        levels.set(node.id, node.children);
-        walk(node.children);
-      }
-    };
-    walk(roots);
-    return { roots: roots as NoteTreeNode[], levels };
-  }, [rows, includeArchived]);
-
   // Whichever query actually feeds what is on screen decides that view's
   // loading, error and empty states. Reading a query nothing on screen came
-  // from would let, say, a corpus failure blank a perfectly good tree.
+  // from would let, say, a trash failure blank a perfectly good tree.
   //
-  // Only the TREE is decided here now. The flat and grouped views each own
-  // their query, so they own their three states too — the panel cannot see
-  // their rows to judge, and `corpus` is disabled (hence permanently
-  // `isPending`) in both, which would otherwise pin a skeleton on screen.
-  const source = includeArchived ? corpus : rootLevel;
+  // Only the TREE and the TRASH are decided here. The flat and grouped views
+  // each own their query, so they own their three states too — the panel
+  // cannot see their rows to judge, and both queries here are disabled (hence
+  // permanently `isPending`) in those modes, which would otherwise pin a
+  // skeleton on screen.
+  const source = includeArchived ? archivedList : rootLevel;
   const isTreeView = mode === 'tree';
   const isPending = isTreeView && source.isPending;
   const isLoadingError = isTreeView && source.isLoadingError;
-  const treeRows = includeArchived ? archived.roots : rootRows;
-  const visibleRows = includeArchived ? rows : rootRows;
+  const visibleRows = includeArchived ? archivedRows : rootRows;
 
   // Label names for the grouped-by-label view; only fetched when shown.
   const { data: labels } = useQuery({
@@ -330,37 +295,52 @@ export function NoteTreePanel({
           )
         )}
 
-        {/* One DndContext across every view; the archived tree renders
-            without shells, so nothing there drags. */}
+        {/* The trash is a flat, newest-first list — see `archivedList`. Rows
+            reuse the flat view's presentational row, and nothing here drags:
+            reordering or re-parenting something already in the bin is not a
+            move anyone means to make. */}
+        {includeArchived && archivedRows.length > 0 && (
+          <ul>
+            {archivedRows.map((node) => (
+              <li key={node.id}>
+                <ExplorerRow
+                  node={node}
+                  isActive={node.id === activeId}
+                  onSelect={onSelect}
+                  actions={renderActions?.(node)}
+                />
+              </li>
+            ))}
+            <li>
+              <InfiniteSentinel
+                hasNextPage={archivedList.hasNextPage}
+                isFetching={archivedList.isFetching}
+                onLoadMore={() => void archivedList.fetchNextPage()}
+              />
+            </li>
+          </ul>
+        )}
+
+        {/* One DndContext across every LIVE view. */}
         <ExplorerDnd
           loadedRows={loadedRows}
           labels={labels ?? []}
           showRootZone={mode === 'tree' && !includeArchived}
         >
-          {treeRows.length > 0 && mode === 'tree' && (
+          {!includeArchived && rootRows.length > 0 && mode === 'tree' && (
             <ul>
-              {treeRows.map((node) => (
+              {rootRows.map((node) => (
                 <NoteTreeItem
                   key={node.id}
                   node={node}
                   activeId={activeId}
                   expandedIds={expandedIds}
-                  includeArchived={includeArchived}
-                  preloadedLevels={
-                    includeArchived ? archived.levels : undefined
-                  }
                   onSelect={onSelect}
                   onToggle={toggle}
                   renderActions={renderActions}
-                  renderRowShell={
-                    includeArchived
-                      ? undefined
-                      : (rowNode, row) => (
-                          <TreeRowDndShell node={rowNode}>
-                            {row}
-                          </TreeRowDndShell>
-                        )
-                  }
+                  renderRowShell={(rowNode, row) => (
+                    <TreeRowDndShell node={rowNode}>{row}</TreeRowDndShell>
+                  )}
                 />
               ))}
 
