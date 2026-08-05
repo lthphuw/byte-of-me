@@ -1,8 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Button } from '@byte-of-me/ui';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import {
+  type InfiniteData,
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { Archive, ArrowLeft, FolderPlus, Plus, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -13,6 +18,7 @@ import {
   getNoteTree,
   NoteEmpty,
   noteKeys,
+  type NotePage,
   NoteTreeItem,
   type NoteTreeNode,
   type NoteTreeNodeWithChildren,
@@ -55,6 +61,7 @@ export function NoteTreePanel({
   renderActions,
 }: NoteTreePanelProps) {
   const t = useTranslations('dashboard.note');
+  const queryClient = useQueryClient();
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const { prefs, update: updatePrefs } = useExplorerPrefs();
   // The archived "trash" view stays a plain tree: pin order and grouping are
@@ -62,15 +69,15 @@ export function NoteTreePanel({
   const mode = includeArchived ? 'tree' : prefs.mode;
 
   /**
-   * INTERIM: the whole-corpus read.
+   * The whole-corpus read, now paid for by the ARCHIVED VIEW ALONE.
    *
-   * The live tree no longer uses it — it loads one level at a time below —
-   * but three things still do, and each is someone else's task: the flat and
-   * grouped views (which still take `rows` as a prop), the DnD cycle guard
-   * inside `ExplorerDnd`, and the archived view (see `archived` below). Task 7
-   * converts those; Task 8 deletes `getNoteTree`. Until then this query is
-   * still paid for on every dashboard load, so the level-at-a-time tree buys
-   * nothing measurable yet — it is the shape that has to land first.
+   * `enabled: includeArchived` is the point at which the explorer stops
+   * scaling with the number of notes owned: the live tree loads one level at a
+   * time, the flat and grouped views page their own rows, and the DnD guard
+   * reads what those already put in the cache — so on a normal dashboard load
+   * this query never runs. The trash still needs it, for the reason `archived`
+   * below sets out at length, and no Task deletes that requirement; Task 8
+   * only removes the callers that had alternatives.
    */
   const corpus = useQuery({
     queryKey: noteKeys.tree(includeArchived),
@@ -79,6 +86,7 @@ export function NoteTreePanel({
       if (!res.success) throw new Error(res.errorMsg);
       return res.data;
     },
+    enabled: includeArchived,
   });
 
   // The archived view lists only what is archived. `getNoteTree(true)` returns
@@ -91,12 +99,32 @@ export function NoteTreePanel({
       : corpus.data;
   }, [corpus.data, includeArchived]);
 
-  // Folders are tree structure, not documents: the flat and grouped views
-  // list what you can READ, so pure containers stay out of them.
-  const documentsOnly = useMemo(
-    () => rows.filter((row) => !row.isFolder),
-    [rows]
-  );
+  /**
+   * Every note row the per-level caches currently hold, deduplicated by id.
+   *
+   * A CALLBACK, not a memo, and `ExplorerDnd` calls it when a drop lands. The
+   * levels settle inside `NoteTreeItem`, a child this panel does not re-render
+   * for, so a value computed here would be missing exactly the folder the
+   * author just expanded — and a drop onto one of its rows would find no
+   * target and quietly do nothing. `getQueriesData` prefix-matches, so one
+   * call covers every level of both the live and the archived tree.
+   */
+  const loadedRows = useCallback((): NoteTreeNode[] => {
+    const entries = queryClient.getQueriesData<
+      InfiniteData<NotePage<NoteTreeNode>>
+    >({ queryKey: noteKeys.childrenAll() });
+
+    // A row can sit in two levels at once — `children(id, false)` and
+    // `children(id, true)` are separate cache entries over overlapping sets —
+    // and `collectDescendantIds` would then count it twice.
+    const byId = new Map<string, NoteTreeNode>();
+    for (const [, data] of entries) {
+      for (const page of data?.pages ?? []) {
+        for (const row of page.rows) byId.set(row.id, row);
+      }
+    }
+    return [...byId.values()];
+  }, [queryClient]);
 
   /**
    * The ROOT level of the live tree — `parentId: null`, one page at a time.
@@ -158,15 +186,19 @@ export function NoteTreePanel({
   }, [rows, includeArchived]);
 
   // Whichever query actually feeds what is on screen decides that view's
-  // loading, error and empty states. In the live tree that is the root level;
-  // in the flat, grouped and archived views it is still the corpus. Reading
-  // both unconditionally would let a corpus failure blank a perfectly good
-  // tree (and vice versa) in a state where nothing on screen came from it.
-  const source = isLevelTree ? rootLevel : corpus;
-  const isPending = source.isPending;
-  const isLoadingError = source.isLoadingError;
-  const visibleRows = isLevelTree ? rootRows : rows;
+  // loading, error and empty states. Reading a query nothing on screen came
+  // from would let, say, a corpus failure blank a perfectly good tree.
+  //
+  // Only the TREE is decided here now. The flat and grouped views each own
+  // their query, so they own their three states too — the panel cannot see
+  // their rows to judge, and `corpus` is disabled (hence permanently
+  // `isPending`) in both, which would otherwise pin a skeleton on screen.
+  const source = includeArchived ? corpus : rootLevel;
+  const isTreeView = mode === 'tree';
+  const isPending = isTreeView && source.isPending;
+  const isLoadingError = isTreeView && source.isLoadingError;
   const treeRows = includeArchived ? archived.roots : rootRows;
+  const visibleRows = includeArchived ? rows : rootRows;
 
   // Label names for the grouped-by-label view; only fetched when shown.
   const { data: labels } = useQuery({
@@ -281,7 +313,11 @@ export function NoteTreePanel({
           <p className="p-4 text-sm text-destructive">{t('errors.load')}</p>
         )}
 
-        {!isPending && !isLoadingError && visibleRows.length === 0 && (
+        {/* `isTreeView` is what keeps this from stacking a second empty state
+            on top of the flat/grouped views, which render their own: outside
+            the tree `isPending`/`isLoadingError` are both false by definition
+            above and `visibleRows` is the disabled root level's zero rows. */}
+        {isTreeView && !isPending && !isLoadingError && visibleRows.length === 0 && (
           // The archived view gets its own copy: `NoteEmpty` invites the
           // author to write their first note, which is the wrong offer when
           // what they are actually looking at is an empty wastebasket.
@@ -297,7 +333,7 @@ export function NoteTreePanel({
         {/* One DndContext across every view; the archived tree renders
             without shells, so nothing there drags. */}
         <ExplorerDnd
-          rows={rows}
+          loadedRows={loadedRows}
           labels={labels ?? []}
           showRootZone={mode === 'tree' && !includeArchived}
         >
@@ -342,23 +378,28 @@ export function NoteTreePanel({
             </ul>
           )}
 
-          {documentsOnly.length > 0 && mode === 'flat' && (
+          {/* No row-count gate on either view any more: each owns its query,
+              so each knows on its own whether it is loading, failed or
+              genuinely empty — and the panel no longer holds the rows it
+              would have counted. */}
+          {mode === 'flat' && (
             <NoteFlatList
-              rows={documentsOnly}
               sort={prefs.sort}
+              includeArchived={includeArchived}
               activeId={activeId}
               onSelect={onSelect}
+              onCreate={() => create.mutate({})}
               renderActions={renderActions}
             />
           )}
 
-          {documentsOnly.length > 0 && mode === 'grouped' && (
+          {mode === 'grouped' && (
             <NoteGroupedList
-              rows={documentsOnly}
               groupBy={prefs.groupBy}
-              labels={labels ?? []}
+              includeArchived={includeArchived}
               activeId={activeId}
               onSelect={onSelect}
+              onCreate={() => create.mutate({})}
               renderActions={renderActions}
               renderSection={(group, section) => (
                 <GroupSectionDndShell key={group.key} group={group}>

@@ -13,13 +13,16 @@
  * happens to fail. Row count alone could not tell these two failures apart
  * from a genuine first-load failure; `isLoadingError` can.
  *
- * Since the tree started loading ONE LEVEL AT A TIME, the fake delegate below
- * serves both read shapes off one fake table: `getNoteTree`'s whole-corpus
- * `findMany` (no `parentId` in the `where`) and `getNoteChildren`'s per-level
- * one (`parentId` present, `null` meaning root). Counting calls per shape is
- * what lets these tests state the contract that actually matters now — a
- * collapsed folder must cost no query, an expanded one must cost exactly one,
- * and re-expanding must cost none.
+ * Since the explorer started loading BY CONTAINER, the fake delegate below
+ * serves every read shape off one fake table, told apart by the `where` each
+ * action builds: `getNoteTree`'s whole-corpus `findMany` (neither `parentId`
+ * nor `isFolder`), `getNoteChildren`'s per-level one (`parentId` present,
+ * `null` meaning root), and the documents-only reads behind the flat and
+ * grouped views (`isFolder: false`, with a status/label filter in the grouped
+ * case). Counting calls per shape is what lets these tests state the contract
+ * that actually matters now — a collapsed folder or section must cost no
+ * query, an expanded one exactly one, re-expanding none, and NO view outside
+ * the archived trash may read the corpus at all.
  */
 import { prisma } from '@byte-of-me/db';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -118,21 +121,45 @@ const FOLDER = row({
 });
 const CHILD = row({ id: 'child-1', title: 'Child One', parentId: 'folder-1' });
 
-/** The fake table both read shapes below are served from. */
+/** The fake table every read shape below is served from. */
 let table: FakeNoteRow[] = [];
 /** `getNoteTree`'s whole-corpus read. */
 let corpusImpl: () => Promise<FakeNoteRow[]>;
 /** `getNoteChildren`'s per-level read. */
 let levelImpl: (parentId: string | null) => Promise<FakeNoteRow[]>;
+/** `getNotesPage`'s and `getNotesInGroup`'s documents-only reads. */
+let documentsImpl: (args: FindManyArgs) => Promise<FakeNoteRow[]>;
 
 interface FindManyArgs {
-  where: { parentId?: string | null };
+  where: {
+    parentId?: string | null;
+    isFolder?: boolean;
+    status?: string;
+    labels?: { none?: object; some?: { labelId: string } };
+  };
 }
 
-const findMany = mock((args: FindManyArgs) =>
-  'parentId' in args.where
-    ? levelImpl(args.where.parentId ?? null)
-    : corpusImpl()
+const findMany = mock((args: FindManyArgs) => {
+  if ('parentId' in args.where) return levelImpl(args.where.parentId ?? null);
+  // The flat view and the grouped sections both list documents, never
+  // containers, and both put that in the query rather than filtering the
+  // result — which is exactly what makes the two shapes distinguishable here.
+  if (args.where.isFolder === false) return documentsImpl(args);
+  return corpusImpl();
+});
+
+/** `getNoteGroupSummaries`' status aggregate — counts, never rows. */
+const groupBy = mock(() =>
+  Promise.resolve([{ status: 'draft', _count: { _all: 0 } }])
+);
+/** The unlabeled bucket's size, counted through "has no join rows". */
+const count = mock(() => Promise.resolve(0));
+/** Serves `getNoteLabels` (id/name/color) and the label aggregate (`_count`)
+ *  alike — one row shape wide enough for both `select`s. */
+const labelFindMany = mock(() =>
+  Promise.resolve(
+    [] as { id: string; name: string; color: string | null; _count: { notes: number } }[]
+  )
 );
 const findFirst = mock(() => Promise.resolve(null));
 const create = mock(
@@ -151,7 +178,12 @@ const create = mock(
 );
 
 Object.defineProperty(prisma, 'note', {
-  value: { findMany, findFirst, create },
+  value: { findMany, findFirst, create, groupBy, count },
+  writable: true,
+  configurable: true,
+});
+Object.defineProperty(prisma, 'noteLabel', {
+  value: { findMany: labelFindMany },
   writable: true,
   configurable: true,
 });
@@ -160,6 +192,20 @@ Object.defineProperty(prisma, 'note', {
 function levelCalls(parentId: string | null): number {
   return findMany.mock.calls.filter(
     ([args]) => 'parentId' in args.where && (args.where.parentId ?? null) === parentId
+  ).length;
+}
+
+/** How many times the WHOLE CORPUS was read — the cost this work removes. */
+function corpusCalls(): number {
+  return findMany.mock.calls.filter(
+    ([args]) => !('parentId' in args.where) && args.where.isFolder === undefined
+  ).length;
+}
+
+/** How many times one grouped bucket's rows were read. */
+function groupRowCalls(match: (where: FindManyArgs['where']) => boolean): number {
+  return findMany.mock.calls.filter(
+    ([args]) => args.where.isFolder === false && match(args.where)
   ).length;
 }
 
@@ -200,6 +246,13 @@ function rowOf(title: string): HTMLElement {
   const li = screen.getByText(title).closest('li');
   if (!li) throw new Error(`No tree row for "${title}"`);
   return li as HTMLElement;
+}
+
+/** A grouped-view section header, found by the bucket title it shows. */
+function sectionHeader(title: string): HTMLButtonElement {
+  const button = screen.getByText(title).closest('button');
+  if (!button) throw new Error(`No grouped section header for "${title}"`);
+  return button as HTMLButtonElement;
 }
 
 /** A row's expand/collapse chevron, whichever label it currently carries. */
@@ -249,14 +302,51 @@ function gateNextCreate(): { release: () => void } {
   return { release };
 }
 
+/**
+ * Puts the explorer in a non-default view. `useExplorerPrefs` reads this in an
+ * effect (never at init — the first render has to match the server HTML), so
+ * the panel always paints the tree for one frame and then snaps to this.
+ */
+function selectView(prefs: {
+  mode: 'tree' | 'flat' | 'grouped';
+  sort?: 'updated' | 'created' | 'title';
+  groupBy?: 'status' | 'label';
+}) {
+  window.localStorage.setItem(
+    'byte-of-me:notes-explorer',
+    JSON.stringify({ sort: 'updated', groupBy: 'status', ...prefs })
+  );
+}
+
 beforeEach(() => {
   table = [NOTE_A, FOLDER, CHILD];
   corpusImpl = async () => table;
   levelImpl = async (parentId) =>
     table.filter((note) => note.parentId === parentId);
+  documentsImpl = async (args) => {
+    const documents = table.filter(
+      (note) => !note.isFolder && note.archivedAt === null
+    );
+    const { status, labels } = args.where;
+    if (typeof status === 'string') {
+      return documents.filter((note) => note.status === status);
+    }
+    if (labels?.none) return documents.filter((note) => note.labels.length === 0);
+    const someLabelId = labels?.some?.labelId;
+    if (someLabelId) {
+      return documents.filter((note) =>
+        note.labels.some((join) => join.labelId === someLabelId)
+      );
+    }
+    return documents;
+  };
+  window.localStorage.clear();
   findMany.mockClear();
   findFirst.mockClear().mockResolvedValue(null);
   create.mockClear();
+  groupBy.mockClear().mockResolvedValue([{ status: 'draft', _count: { _all: 0 } }]);
+  count.mockClear().mockResolvedValue(0);
+  labelFindMany.mockClear().mockResolvedValue([]);
 });
 
 afterEach(() => {
@@ -317,6 +407,10 @@ describe('NoteTreePanel', () => {
     expect(screen.queryByText('Child One')).toBeNull();
     expect(levelCalls(null)).toBe(1);
     expect(levelCalls('folder-1')).toBe(0);
+    // …and the corpus read the panel used to pay for on every dashboard load
+    // does not happen at all outside the archived view. This single number is
+    // what the whole by-container refactor exists to make zero.
+    expect(corpusCalls()).toBe(0);
   });
 
   test('offers the chevron from childCount, before any child has been fetched', async () => {
@@ -519,6 +613,95 @@ describe('NoteTreePanel', () => {
 
     expect(screen.getByText('No notes yet.')).toBeTruthy();
     expect(screen.queryByText('Could not load your notes.')).toBeNull();
+  });
+
+  test('the flat view lists paginated documents across the hierarchy, never the corpus', async () => {
+    selectView({ mode: 'flat' });
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} />);
+
+    // `Child One` sits under a folder nobody expanded: the flat view spans the
+    // whole hierarchy, so `getNotesPage` returns it without any level being
+    // read. Waiting on IT rather than on `Note A` is deliberate — `Note A` is
+    // also a root row, so it is on screen during the one tree frame
+    // `useExplorerPrefs` paints before localStorage is read.
+    expect(await screen.findByText('Child One')).toBeTruthy();
+    // Folders are structure, not documents, and the server drops them.
+    expect(screen.queryByText('Folder One')).toBeNull();
+    expect(corpusCalls()).toBe(0);
+  });
+
+  test('the flat view offers the create-a-note empty state when there are no documents', async () => {
+    // A container and nothing to read inside it: the tree is NOT empty here,
+    // so an empty state on screen can only have come from the flat view.
+    table = [FOLDER];
+    selectView({ mode: 'flat' });
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} />);
+
+    expect(await screen.findByText('No notes yet.')).toBeTruthy();
+  });
+
+  test('a flat-view failure says so instead of looking like an empty list', async () => {
+    documentsImpl = () => Promise.reject(new Error('page down'));
+    selectView({ mode: 'flat' });
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} />);
+
+    expect(await screen.findByText('Could not load your notes.')).toBeTruthy();
+    expect(screen.queryByText('No notes yet.')).toBeNull();
+  });
+
+  test('a grouped section header shows the aggregate count, not the rows it loaded', async () => {
+    // Two draft documents are loadable; the bucket actually holds seven.
+    groupBy.mockResolvedValue([{ status: 'draft', _count: { _all: 7 } }]);
+    selectView({ mode: 'grouped', groupBy: 'status' });
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} />);
+
+    expect(await screen.findByText('Child One')).toBeTruthy();
+    // Sections paginate, so a count taken off the loaded rows would both
+    // understate the bucket and keep climbing as the reader scrolled — the
+    // reason the summaries are a separate aggregate query at all.
+    expect(screen.getByText('7')).toBeTruthy();
+    expect(corpusCalls()).toBe(0);
+  });
+
+  test('collapsing a grouped section stops its row query; re-expanding costs none', async () => {
+    groupBy.mockResolvedValue([{ status: 'draft', _count: { _all: 2 } }]);
+    selectView({ mode: 'grouped', groupBy: 'status' });
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} />);
+    await screen.findByText('Child One');
+
+    const isDraftBucket = (where: FindManyArgs['where']) =>
+      where.status === 'draft';
+    expect(groupRowCalls(isDraftBucket)).toBe(1);
+
+    fireEvent.click(sectionHeader('draft'));
+    await waitFor(() => expect(screen.queryByText('Child One')).toBeNull());
+
+    fireEvent.click(sectionHeader('draft'));
+    expect(await screen.findByText('Child One')).toBeTruthy();
+    // The bucket's page stayed in cache, so unfolding is free.
+    expect(groupRowCalls(isDraftBucket)).toBe(1);
+  });
+
+  test('the unlabeled bucket header is localized, not the raw key token', async () => {
+    labelFindMany.mockResolvedValue([
+      { id: 'label-1', name: 'Ideas', color: null, _count: { notes: 1 } },
+    ]);
+    count.mockResolvedValue(4);
+    selectView({ mode: 'grouped', groupBy: 'label' });
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} />);
+
+    // `getNoteGroupSummaries` returns the key token `no-label` as that
+    // bucket's title on purpose — a server action has no locale to translate
+    // into — so this header is the one place that can turn it into prose.
+    expect(await screen.findByText('No label')).toBeTruthy();
+    expect(screen.queryByText('no-label')).toBeNull();
+    expect(screen.getByText('Ideas')).toBeTruthy();
   });
 
   test('a successful create also invalidates the search cache, not just the tree (M4)', async () => {

@@ -41,13 +41,46 @@ export const DROP_ROOT_ID = 'root';
 export const DROP_GROUP_PREFIX = 'group:';
 
 /**
+ * One past the highest `position` among the LOADED siblings of `parentId`.
+ *
+ * "Loaded" rather than "all", now that a level arrives one page at a time: a
+ * folder whose second page has not been read yet can hold a higher position
+ * than anything here, so this is a hint, not an authority. `moveNote` shifts
+ * every sibling at or after the requested slot down one before it writes, so a
+ * position that collides still lands the row somewhere sane — it just may not
+ * be dead last. The alternative, a count query per drop, buys ordering nobody
+ * can see.
+ */
+function nextPositionUnder(
+  rows: NoteTreeNode[],
+  parentId: string | null
+): number {
+  return (
+    rows
+      .filter((row) => row.parentId === parentId)
+      .reduce((max, row) => Math.max(max, row.position), -1) + 1
+  );
+}
+
+/**
  * The explorer's one drag brain: sensors, the active row (for the overlay),
  * and a drop handler that turns tree drops into `moveNote` and grouped drops
  * into status/label writes. All verification the server does anyway (cycle
  * guard, ownership) is repeated here only where it saves a round trip that
  * would visibly fail.
+ *
+ * `loadedRows` is a GETTER, not an array, and that is load-bearing. The rows
+ * come out of the per-level TanStack caches, and expanding a folder settles a
+ * query inside `NoteTreeItem` — a component the panel does not re-render for.
+ * A snapshot taken at the panel's last render would therefore be missing
+ * exactly the level the author just opened, and dropping onto one of its rows
+ * would find no target and silently do nothing. Reading at drop time cannot go
+ * stale that way.
  */
-export function useNoteDnd(rows: NoteTreeNode[], labels: NoteLabelSummary[]) {
+export function useNoteDnd(
+  loadedRows: () => NoteTreeNode[],
+  labels: NoteLabelSummary[]
+) {
   const t = useTranslations('dashboard.note');
   const queryClient = useQueryClient();
   const [activeNode, setActiveNode] = useState<NoteTreeNode | null>(null);
@@ -111,11 +144,6 @@ export function useNoteDnd(rows: NoteTreeNode[], labels: NoteLabelSummary[]) {
       toast.error(t('errors.save'), { description: error.message }),
   });
 
-  const nextPositionUnder = (parentId: string | null) =>
-    rows
-      .filter((row) => row.parentId === parentId)
-      .reduce((max, row) => Math.max(max, row.position), -1) + 1;
-
   const onDragStart = (event: DragStartEvent) => {
     const data = event.active.data.current as NoteDragData | undefined;
     setActiveNode(data?.node ?? null);
@@ -128,6 +156,8 @@ export function useNoteDnd(rows: NoteTreeNode[], labels: NoteLabelSummary[]) {
     const over = event.over;
     if (!dragged || !over) return;
     const overId = String(over.id);
+    // Read once per drop, not once per render — see the getter note above.
+    const rows = loadedRows();
 
     // ----- Tree drops -----
     if (overId === DROP_ROOT_ID) {
@@ -135,7 +165,7 @@ export function useNoteDnd(rows: NoteTreeNode[], labels: NoteLabelSummary[]) {
       move.mutate({
         id: dragged.id,
         parentId: null,
-        position: nextPositionUnder(null),
+        position: nextPositionUnder(rows, null),
       });
       return;
     }
@@ -151,6 +181,17 @@ export function useNoteDnd(rows: NoteTreeNode[], labels: NoteLabelSummary[]) {
       if (targetId === dragged.id) return;
       // The server's cycle guard would reject this too — checking here just
       // turns a red toast into a silent no-op for an obviously wrong drop.
+      //
+      // This walks only the LOADED rows, not the whole corpus, and that stays
+      // correct rather than getting lucky. A drop target has to be VISIBLE to
+      // be dropped on; a descendant is only visible when every folder above it
+      // is expanded; and an expanded folder has had its level fetched into the
+      // cache these rows come from. So whenever a cyclic drop is even
+      // expressible in the UI, the rows that prove it are already loaded. The
+      // rows that are missing — subtrees nobody has opened — are precisely the
+      // ones `targetId` cannot name. `moveNote` re-checks against the owner's
+      // full ancestry regardless, so the worst case here is a round trip that
+      // ends in a toast instead of a silent no-op.
       if (collectDescendantIds(rows, dragged.id).includes(targetId)) return;
       const target = rows.find((row) => row.id === targetId);
       if (!target) return;
@@ -165,7 +206,7 @@ export function useNoteDnd(rows: NoteTreeNode[], labels: NoteLabelSummary[]) {
         move.mutate({
           id: dragged.id,
           parentId: target.id,
-          position: nextPositionUnder(target.id),
+          position: nextPositionUnder(rows, target.id),
         });
       }
       return;

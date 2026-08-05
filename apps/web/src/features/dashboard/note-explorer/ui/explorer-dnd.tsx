@@ -33,19 +33,23 @@ import { cn } from '@/shared/lib/utils';
  * keep picking the row underneath.
  */
 export function ExplorerDnd({
-  rows,
+  loadedRows,
   labels,
   showRootZone,
   children,
 }: {
-  rows: NoteTreeNode[];
+  /**
+   * Every note row currently in the per-level caches, read at DROP time. See
+   * `useNoteDnd` for why this is a getter and not the array it used to be.
+   */
+  loadedRows: () => NoteTreeNode[];
   labels: NoteLabelSummary[];
   /** The tree view's "move to top level" strip — meaningless elsewhere. */
   showRootZone: boolean;
   children: React.ReactNode;
 }) {
   const { sensors, activeNode, onDragStart, onDragEnd } = useNoteDnd(
-    rows,
+    loadedRows,
     labels
   );
 
