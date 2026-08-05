@@ -2,7 +2,7 @@
 
 import { FileText } from 'lucide-react';
 
-import type { NoteTreeNode } from '@/entities/note';
+import { type NoteTreeNode, useNotePrefetch } from '@/entities/note';
 import { cn } from '@/shared/lib/utils';
 
 /**
@@ -25,6 +25,13 @@ export function ExplorerRow({
   actions?: React.ReactNode;
   className?: string;
 } & Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'>) {
+  const prefetch = useNotePrefetch();
+  // Same head start the tree rows take — see `useNotePrefetch`. These views
+  // only ever list documents, so there is no folder case to skip.
+  const warm = () => {
+    if (!isActive) prefetch(node.id);
+  };
+
   return (
     <div
       className={cn(
@@ -39,6 +46,8 @@ export function ExplorerRow({
       <button
         type="button"
         onClick={() => onSelect(node.id)}
+        onPointerEnter={warm}
+        onFocus={warm}
         aria-current={isActive ? 'true' : undefined}
         className="flex min-w-0 flex-1 items-center gap-2 py-1.5 pl-2 text-left"
       >

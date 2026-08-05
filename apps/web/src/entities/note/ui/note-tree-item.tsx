@@ -5,6 +5,7 @@ import { ChevronRight, FileText, Folder, FolderOpen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { NoteTreeNodeWithChildren } from '@/entities/note/model/note-tree';
+import { useNotePrefetch } from '@/entities/note/model/use-note-prefetch';
 import { cn } from '@/shared/lib/utils';
 
 // Deliberately not a role="tree"/"treeitem" widget: that ARIA pattern
@@ -52,9 +53,18 @@ export function NoteTreeItem({
   renderRowShell,
 }: NoteTreeItemProps) {
   const t = useTranslations('dashboard.note');
+  const prefetch = useNotePrefetch();
   const hasChildren = node.children.length > 0;
   const isExpanded = expandedIds.has(node.id);
   const isActive = node.id === activeId;
+
+  // Hover and keyboard focus both mean "about to open this", and both give
+  // the document a head start the click itself cannot. Folders have no
+  // document to fetch; the note already on screen is already in cache.
+  const warm = () => {
+    if (node.isFolder || isActive) return;
+    prefetch(node.id);
+  };
 
   const row = (
       <div
@@ -94,6 +104,8 @@ export function NoteTreeItem({
           onClick={() =>
             node.isFolder ? onToggle(node.id) : onSelect(node.id)
           }
+          onPointerEnter={warm}
+          onFocus={warm}
           // aria-current (not aria-selected) because there is no surrounding
           // role="tree"/"listbox" to make aria-selected valid — see the note
           // on ARIA scope in the module comment above. This node behaves like
