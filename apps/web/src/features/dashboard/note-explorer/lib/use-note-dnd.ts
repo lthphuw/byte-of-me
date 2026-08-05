@@ -17,15 +17,13 @@ import {
   collectDescendantIds,
   moveNote,
   type NoteLabelSummary,
+  NO_LABEL_GROUP_KEY,
   noteKeys,
   type NoteTreeNode,
   setNoteLabels,
   updateNote,
 } from '@/entities/note';
-import {
-  type ExplorerGroup,
-  NO_LABEL_GROUP_KEY,
-} from '@/features/dashboard/note-explorer/lib/explorer-model';
+import { type ExplorerGroup } from '@/features/dashboard/note-explorer/lib/explorer-model';
 
 /** What travels with a dragged row. */
 export interface NoteDragData {
