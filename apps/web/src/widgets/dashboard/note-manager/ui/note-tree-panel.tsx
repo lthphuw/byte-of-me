@@ -2,18 +2,20 @@
 
 import { useMemo, useState } from 'react';
 import { Button } from '@byte-of-me/ui';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { Archive, ArrowLeft, FolderPlus, Plus, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
   buildNoteTree,
+  getNoteChildren,
   getNoteLabels,
   getNoteTree,
   NoteEmpty,
   noteKeys,
   NoteTreeItem,
   type NoteTreeNode,
+  type NoteTreeNodeWithChildren,
   NoteTreeSkeleton,
 } from '@/entities/note';
 import { useCreateNote } from '@/features/dashboard/note-actions';
@@ -27,6 +29,7 @@ import {
   TreeRowDndShell,
   useExplorerPrefs,
 } from '@/features/dashboard/note-explorer';
+import { InfiniteSentinel } from '@/shared/ui/infinite-sentinel';
 
 interface NoteTreePanelProps {
   activeId: string | null;
@@ -58,7 +61,18 @@ export function NoteTreePanel({
   // live-notes concepts, and the mode menu is hidden there.
   const mode = includeArchived ? 'tree' : prefs.mode;
 
-  const { data, isPending, isLoadingError } = useQuery({
+  /**
+   * INTERIM: the whole-corpus read.
+   *
+   * The live tree no longer uses it — it loads one level at a time below —
+   * but three things still do, and each is someone else's task: the flat and
+   * grouped views (which still take `rows` as a prop), the DnD cycle guard
+   * inside `ExplorerDnd`, and the archived view (see `archived` below). Task 7
+   * converts those; Task 8 deletes `getNoteTree`. Until then this query is
+   * still paid for on every dashboard load, so the level-at-a-time tree buys
+   * nothing measurable yet — it is the shape that has to land first.
+   */
+  const corpus = useQuery({
     queryKey: noteKeys.tree(includeArchived),
     queryFn: async () => {
       const res = await getNoteTree(includeArchived);
@@ -71,13 +85,11 @@ export function NoteTreePanel({
   // live notes *and* archived ones — it is "include", not "only" — so without
   // this filter the trash would show the entire corpus.
   const rows = useMemo(() => {
-    if (!data) return [];
+    if (!corpus.data) return [];
     return includeArchived
-      ? data.filter((row) => row.archivedAt !== null)
-      : data;
-  }, [data, includeArchived]);
-
-  const tree = useMemo(() => buildNoteTree(rows), [rows]);
+      ? corpus.data.filter((row) => row.archivedAt !== null)
+      : corpus.data;
+  }, [corpus.data, includeArchived]);
 
   // Folders are tree structure, not documents: the flat and grouped views
   // list what you can READ, so pure containers stay out of them.
@@ -85,6 +97,76 @@ export function NoteTreePanel({
     () => rows.filter((row) => !row.isFolder),
     [rows]
   );
+
+  /**
+   * The ROOT level of the live tree — `parentId: null`, one page at a time.
+   * Each folder fetches its own level when it expands; see `NoteTreeItem`.
+   */
+  const isLevelTree = mode === 'tree' && !includeArchived;
+  const rootLevel = useInfiniteQuery({
+    queryKey: noteKeys.children(null, includeArchived),
+    queryFn: async ({ pageParam }) => {
+      const res = await getNoteChildren({
+        parentId: null,
+        includeArchived,
+        cursor: pageParam,
+      });
+      if (!res.success) throw new Error(res.errorMsg);
+      return res.data;
+    },
+    initialPageParam: null as string | null,
+    getNextPageParam: (page) => page.nextCursor,
+    enabled: isLevelTree,
+  });
+
+  const rootRows = useMemo(
+    () => rootLevel.data?.pages.flatMap((page) => page.rows) ?? [],
+    [rootLevel.data]
+  );
+
+  /**
+   * The archived tree, still derived from the corpus — deliberately.
+   *
+   * `getNoteChildren`'s `includeArchived` is INCLUDE, not ONLY, and archiving
+   * cascades to descendants (`archiveNote`), so the common case — archive a
+   * note that lived inside a live folder — produces an archived row whose
+   * parent is not archived. Today `buildNoteTree` surfaces exactly that row at
+   * the root of the trash, because its parent was filtered out of the set. A
+   * `parentId: null` read cannot see it at all, so per-level fetching would
+   * silently lose most of what the author just archived. The trash is bounded
+   * by how much you archive rather than by how much you own, so it keeps the
+   * corpus path until a server-side archived-only read exists.
+   *
+   * `buildNoteTree` is reused rather than re-derived here: it already handles
+   * the missing-parent and corrupt-cycle rules, and duplicating them would be
+   * the bug AGENTS §11.3 warns about.
+   */
+  const archived = useMemo(() => {
+    const levels = new Map<string, NoteTreeNode[]>();
+    if (!includeArchived) return { roots: [] as NoteTreeNode[], levels };
+
+    const roots = buildNoteTree(rows);
+    const walk = (nodes: NoteTreeNodeWithChildren[]) => {
+      for (const node of nodes) {
+        if (node.children.length === 0) continue;
+        levels.set(node.id, node.children);
+        walk(node.children);
+      }
+    };
+    walk(roots);
+    return { roots: roots as NoteTreeNode[], levels };
+  }, [rows, includeArchived]);
+
+  // Whichever query actually feeds what is on screen decides that view's
+  // loading, error and empty states. In the live tree that is the root level;
+  // in the flat, grouped and archived views it is still the corpus. Reading
+  // both unconditionally would let a corpus failure blank a perfectly good
+  // tree (and vice versa) in a state where nothing on screen came from it.
+  const source = isLevelTree ? rootLevel : corpus;
+  const isPending = source.isPending;
+  const isLoadingError = source.isLoadingError;
+  const visibleRows = isLevelTree ? rootRows : rows;
+  const treeRows = includeArchived ? archived.roots : rootRows;
 
   // Label names for the grouped-by-label view; only fetched when shown.
   const { data: labels } = useQuery({
@@ -170,14 +252,14 @@ export function NoteTreePanel({
             to reference the other — unlike the note editor's `isSeeded`,
             which is a second, independently-derived boolean and had to be
             ordered ahead of its error check for that reason (see
-            note-editor.tsx's own long comment on it). `tree.length === 0`
-            in the line directly below is consequently a dead second
+            note-editor.tsx's own long comment on it). `visibleRows.length
+            === 0` in the line directly below is consequently a dead second
             conjunct — `isPending` already implies `data === undefined`,
-            hence `tree.length === 0` — kept rather than removed; deleting
-            it buys nothing and this comment is cheaper than a diff. */}
-        {isPending && tree.length === 0 && <NoteTreeSkeleton />}
+            hence no rows — kept rather than removed; deleting it buys
+            nothing and this comment is cheaper than a diff. */}
+        {isPending && visibleRows.length === 0 && <NoteTreeSkeleton />}
 
-        {/* `isLoadingError`, not `isError`/`tree.length === 0`: TanStack
+        {/* `isLoadingError`, not `isError`/`length === 0`: TanStack
             Query v5 distinguishes a failure on the query's FIRST attempt
             (`isLoadingError` — no data has ever arrived) from a failure on
             a BACKGROUND refetch while data already sits in the cache
@@ -189,7 +271,7 @@ export function NoteTreePanel({
             version of this gate used `isError && tree.length === 0`, which
             protects a good, NON-EMPTY tree correctly but gets the other
             case wrong: a legitimately empty tree (no notes yet) also has
-            `tree.length === 0`, so a failed background refetch right after
+            zero rows, so a failed background refetch right after
             creating a first note would show "Could not load your notes."
             instead of the create-a-note empty state, at exactly the
             moment a first-time author needs it least. `isLoadingError`
@@ -199,7 +281,7 @@ export function NoteTreePanel({
           <p className="p-4 text-sm text-destructive">{t('errors.load')}</p>
         )}
 
-        {!isPending && !isLoadingError && tree.length === 0 && (
+        {!isPending && !isLoadingError && visibleRows.length === 0 && (
           // The archived view gets its own copy: `NoteEmpty` invites the
           // author to write their first note, which is the wrong offer when
           // what they are actually looking at is an empty wastebasket.
@@ -219,14 +301,18 @@ export function NoteTreePanel({
           labels={labels ?? []}
           showRootZone={mode === 'tree' && !includeArchived}
         >
-          {tree.length > 0 && mode === 'tree' && (
+          {treeRows.length > 0 && mode === 'tree' && (
             <ul>
-              {tree.map((node) => (
+              {treeRows.map((node) => (
                 <NoteTreeItem
                   key={node.id}
                   node={node}
                   activeId={activeId}
                   expandedIds={expandedIds}
+                  includeArchived={includeArchived}
+                  preloadedLevels={
+                    includeArchived ? archived.levels : undefined
+                  }
                   onSelect={onSelect}
                   onToggle={toggle}
                   renderActions={renderActions}
@@ -241,6 +327,18 @@ export function NoteTreePanel({
                   }
                 />
               ))}
+
+              {/* Root level only: every deeper level carries its own sentinel
+                  inside `NoteTreeItem`. */}
+              {rootLevel.hasNextPage && (
+                <li>
+                  <InfiniteSentinel
+                    hasNextPage={rootLevel.hasNextPage}
+                    isFetching={rootLevel.isFetching}
+                    onLoadMore={() => void rootLevel.fetchNextPage()}
+                  />
+                </li>
+              )}
             </ul>
           )}
 
