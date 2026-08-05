@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 
 import { getNoteTitle } from '@/entities/note';
-import { NoteManager, SpaceNavTrigger } from '@/widgets/dashboard';
 
 /**
  * The tab label carries the note's own title, through `getNoteTitle` — a
@@ -41,15 +40,13 @@ export async function generateMetadata({
   return { ...base, title: 'Notes' };
 }
 
-/** An open note. */
-export default async function NotePage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-
-  return (
-    <NoteManager noteId={id} navSlot={<SpaceNavTrigger className="md:hidden" />} />
-  );
+/**
+ * An open note — as a URL and a tab label, not as a render. The workspace
+ * that draws it is mounted one level up in `notes/layout.tsx` and reads this
+ * segment through `useSelectedLayoutSegment()`, precisely so that opening a
+ * second note does not tear the first one's surroundings down. Rendering the
+ * workspace from here again would restore that teardown.
+ */
+export default function NotePage() {
+  return null;
 }

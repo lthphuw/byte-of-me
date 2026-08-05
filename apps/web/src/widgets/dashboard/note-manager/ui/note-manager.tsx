@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Button,
   Sheet,
@@ -50,7 +50,12 @@ export const NOTES_BASE_PATH = NOTE_HREF_PREFIX.replace(/\/$/, '');
 type InsertLink = (link: { text: string; href: string }) => void;
 
 export interface NoteManagerProps {
-  /** The open note, taken from the route — `null` on the list route itself. */
+  /**
+   * The open note *according to the route* — `null` on the list route
+   * itself. Still the source of truth; just no longer the render input.
+   * Everything below reads `openNoteId`, which lets a click draw the note
+   * before the router has finished agreeing with it.
+   */
   noteId: string | null;
   /**
    * The space navigation trigger, mounted in the list header on phones.
@@ -61,9 +66,39 @@ export interface NoteManagerProps {
   navSlot?: React.ReactNode;
 }
 
-export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
+export function NoteManager({
+  noteId: routeNoteId,
+  navSlot,
+}: NoteManagerProps) {
   const t = useTranslations('dashboard.note');
   const router = useRouter();
+
+  // The note actually on screen. It leads the route rather than following
+  // it: `(protected)/layout.tsx` is `force-dynamic` and the `[id]` page runs
+  // a `getNoteTitle` query for its `generateMetadata`, so a note-to-note
+  // `router.push` measured ~990ms before the URL even changed and ~2s before
+  // the body appeared on a local dev server. Drawing off the click and
+  // letting the URL catch up moves that entire round trip off the critical
+  // path — the router still commits, so `[[` links, reload and Back keep
+  // working exactly as before.
+  const [openNoteId, setOpenNoteId] = useState<string | null>(routeNoteId);
+  // Re-sync during render, not in an effect: an effect would paint one frame
+  // of the stale note first, which is the flicker this whole change exists
+  // to remove. React re-runs this component immediately on a render-phase
+  // `setState` — the documented "adjusting state when a prop changes"
+  // pattern — so nothing downstream ever sees the mismatched pair.
+  //
+  // The route moving is how EVERY non-click selection arrives: Back and
+  // Forward, a reload, the `router.replace(NOTES_BASE_PATH)` the actions
+  // menu fires after deleting the open note, and the push this component
+  // made itself (which lands on the value already showing, so it is a
+  // no-op). All of them must win over an optimistic pick.
+  const lastRouteNoteId = useRef(routeNoteId);
+  if (lastRouteNoteId.current !== routeNoteId) {
+    lastRouteNoteId.current = routeNoteId;
+    setOpenNoteId(routeNoteId);
+  }
+
   const [searchOpen, setSearchOpen] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   const [linksOpen, setLinksOpen] = useState(false);
@@ -74,25 +109,34 @@ export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
   const [outline, setOutline] = useState<OutlineItem[]>([]);
   useEffect(() => {
     setOutline([]);
-  }, [noteId]);
+  }, [openNoteId]);
   // Non-null exactly while the `[[` picker is open. Holding the editor's own
   // insert callback here — rather than a boolean plus a reach back into the
   // editor — is what keeps `packages/ui` from having to know what a note is:
   // it hands out "how to insert a link", and this decides what to insert.
   const [insertLink, setInsertLink] = useState<InsertLink | null>(null);
 
-  // Selection is the URL, not state. Three things depend on it: a `[[` link
-  // in a document points at `/space/notes/<id>` and has to resolve to
-  // something; the mobile master–detail below wants the browser's own Back
-  // button rather than a hand-rolled one; and a reload should reopen the note
-  // the author was writing.
+  // Selection is still the URL — three things depend on it: a `[[` link in a
+  // document points at `/space/notes/<id>` and has to resolve to something;
+  // the mobile master–detail below wants the browser's own Back button
+  // rather than a hand-rolled one; and a reload should reopen the note the
+  // author was writing. The local `setOpenNoteId` is not a second source of
+  // truth, it is the same answer arriving sooner.
   const openNote = useCallback(
     (id: string) => {
       setLinksOpen(false);
+      setOpenNoteId(id);
       router.push(`${NOTES_BASE_PATH}/${id}`);
     },
     [router]
   );
+
+  // Leaving the open note (delete, archive) is the same move in reverse:
+  // clear locally, then let the route follow.
+  const closeNote = useCallback(() => {
+    setOpenNoteId(null);
+    router.replace(NOTES_BASE_PATH);
+  }, [router]);
 
   // The palette's "New note" — the same mutation the tree panel's `+` uses.
   const createFromPalette = useCreateNote(openNote);
@@ -111,13 +155,14 @@ export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
   });
 
   const activeNode = useMemo(
-    () => (noteId ? rows?.find((row) => row.id === noteId) : undefined),
-    [rows, noteId]
+    () => (openNoteId ? rows?.find((row) => row.id === openNoteId) : undefined),
+    [rows, openNoteId]
   );
 
   const activeDescendantCount = useMemo(
-    () => (noteId && rows ? collectDescendantIds(rows, noteId).length : 0),
-    [rows, noteId]
+    () =>
+      openNoteId && rows ? collectDescendantIds(rows, openNoteId).length : 0,
+    [rows, openNoteId]
   );
 
   // Cmd/Ctrl+K opens search from anywhere on the page.
@@ -206,11 +251,11 @@ export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
       <aside
         className={cn(
           'flex min-h-0 w-full shrink-0 flex-col border-r bg-background md:flex md:w-64',
-          noteId && 'hidden'
+          openNoteId && 'hidden'
         )}
       >
         <NoteTreePanel
-          activeId={noteId}
+          activeId={openNoteId}
           includeArchived={showArchived}
           onToggleArchived={() => setShowArchived((current) => !current)}
           onSelect={openNote}
@@ -231,7 +276,7 @@ export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
                 // Only the note currently open needs the route changed out
                 // from under it; archiving some other row leaves the author
                 // exactly where they were.
-                if (removedId === noteId) router.replace(NOTES_BASE_PATH);
+                if (removedId === openNoteId) closeNote();
               }}
               // Always visible on touch, hover-revealed on desktop: a phone
               // has no hover state to reveal it with, and a control that
@@ -245,16 +290,16 @@ export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
       <main
         className={cn(
           'flex min-h-0 min-w-0 flex-1 flex-col bg-background md:flex',
-          !noteId && 'hidden'
+          !openNoteId && 'hidden'
         )}
       >
-        {noteId ? (
+        {openNoteId ? (
           <NoteEditor
-            key={noteId}
-            noteId={noteId}
+            key={openNoteId}
+            noteId={openNoteId}
             backHref={NOTES_BASE_PATH}
             onOpenNote={openNote}
-            propertiesSlot={<NotePropertiesPanel noteId={noteId} />}
+            propertiesSlot={<NotePropertiesPanel noteId={openNoteId} />}
             onOpenCheatSheet={() => setCheatSheetOpen(true)}
             onOutlineChange={setOutline}
             // `setState(() => fn)`, not `setState(fn)`: React treats a bare
@@ -276,14 +321,14 @@ export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
                 </Button>
 
                 <NoteActionsMenu
-                  noteId={noteId}
+                  noteId={openNoteId}
                   title={activeNode?.title ?? t('untitled')}
                   isArchived={activeNode?.archivedAt != null}
                   isPinned={activeNode?.isPinned ?? false}
                   isFolder={activeNode?.isFolder ?? false}
                   onCreatedInside={openNote}
                   descendantCount={activeDescendantCount}
-                  onRemoved={() => router.replace(NOTES_BASE_PATH)}
+                  onRemoved={closeNote}
                 />
               </>
             }
@@ -299,29 +344,32 @@ export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
           occupy (see `chromeless` in `rich-text-editor.tsx`). Desktop only —
           below `lg` the same panel is a sheet, opened from the editor header,
           because a third column at that width leaves nothing for the text. */}
-      {noteId && (
+      {openNoteId && (
         <aside className="hidden w-72 shrink-0 border-l bg-background lg:flex lg:flex-col">
           <SidebarTabs
             tocLabel={t('sidebar.toc')}
             linksLabel={t('sidebar.links')}
             outline={outline}
-            noteId={noteId}
+            noteId={openNoteId}
             onOpen={openNote}
           />
         </aside>
       )}
 
-      <Sheet open={linksOpen && noteId !== null} onOpenChange={setLinksOpen}>
+      <Sheet
+        open={linksOpen && openNoteId !== null}
+        onOpenChange={setLinksOpen}
+      >
         <SheetContent side="right" className="w-80 p-0 lg:hidden">
           <SheetTitle className="border-b px-3 py-3 text-sm font-semibold">
             {t('sidebar.title')}
           </SheetTitle>
-          {noteId && (
+          {openNoteId && (
             <SidebarTabs
               tocLabel={t('sidebar.toc')}
               linksLabel={t('sidebar.links')}
               outline={outline}
-              noteId={noteId}
+              noteId={openNoteId}
               onOpen={openNote}
             />
           )}

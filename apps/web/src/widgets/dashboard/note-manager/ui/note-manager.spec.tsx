@@ -266,9 +266,10 @@ describe('NoteManager', () => {
 
     fireEvent.click(await screen.findByText('Note A'));
 
-    // The widget does not open the note itself — the route does. Asserting
-    // on the push is the whole contract; rendering the editor is the next
-    // test, driven by the prop the route hands back.
+    // The URL still has to change — a `[[` link points at
+    // `/space/notes/<id>`, reloads must reopen the note, and Back has to
+    // work. What changed in P1 is only that the widget no longer *waits*
+    // for the push to come back before showing the note (next test).
     await waitFor(() =>
       expect(__navigations).toEqual(['/space/notes/note-a'])
     );
@@ -280,6 +281,43 @@ describe('NoteManager', () => {
 
     expect(await screen.findByDisplayValue('Note A')).toBeTruthy();
     expect(screen.queryByText('Select a note, or create one.')).toBeNull();
+  });
+
+  // P1: selection used to be *only* the route, so every click paid a full
+  // server round-trip before anything moved — measured at ~990ms to the URL
+  // change and ~2s to content on a local dev server, because
+  // `(protected)/layout.tsx` is `force-dynamic` and the `[id]` page runs a
+  // `getNoteTitle` query for its `generateMetadata`. The route is still the
+  // source of truth; it is just no longer on the critical path for drawing
+  // the note the author just clicked.
+  test('opens the chosen note immediately, without waiting for the route', async () => {
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} />);
+    await screen.findByText('Select a note, or create one.');
+
+    fireEvent.click(await screen.findByText('Note A'));
+
+    // `noteId` is deliberately never re-passed: this asserts the editor
+    // mounts off the optimistic selection alone.
+    expect(await screen.findByDisplayValue('Note A')).toBeTruthy();
+  });
+
+  // The other half of that contract: an optimistic selection must not
+  // outlive the route it was guessing at. Back/forward, and the
+  // `router.replace` the actions menu fires after deleting the open note,
+  // both arrive as nothing but a changed `noteId` prop.
+  test('follows the route when it changes underneath the optimistic pick', async () => {
+    const queryClient = makeQueryClient();
+    const { rerender } = render(
+      <Harness queryClient={queryClient} noteId="note-a" />
+    );
+    await screen.findByDisplayValue('Note A');
+
+    rerender(<Harness queryClient={queryClient} noteId={null} />);
+
+    expect(
+      await screen.findByText('Select a note, or create one.')
+    ).toBeTruthy();
   });
 
   // M5: `event.key === 'k'` (a strict literal) silently missed `'K'` —

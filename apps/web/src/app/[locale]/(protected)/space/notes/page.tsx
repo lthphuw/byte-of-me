@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
 
-import { NoteManager, SpaceNavTrigger } from '@/widgets/dashboard';
-
 export const metadata: Metadata = {
   title: 'Notes',
   description: 'Private notes. Never published.',
@@ -17,13 +15,12 @@ export const metadata: Metadata = {
 };
 
 /**
- * The list route. On a phone this *is* the screen — the tree fills it and no
- * editor is shown; on `md` and up it is the tree plus an empty right pane.
- * Opening a note navigates to `notes/[id]`, so the browser's Back button
- * returns here on its own.
+ * The list route. The screen itself is `NotesLayout`'s `NoteWorkspace`,
+ * which stays mounted across every note the author opens; this page renders
+ * nothing and exists for the metadata above and for the URL. On a phone the
+ * workspace shows the tree alone here — the editor pane is hidden by CSS,
+ * not unmounted — so the browser's own Back button returns from a note.
  */
-export default async function NotesPage() {
-  return (
-    <NoteManager noteId={null} navSlot={<SpaceNavTrigger className="md:hidden" />} />
-  );
+export default function NotesPage() {
+  return null;
 }
