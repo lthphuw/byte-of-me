@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Button,
   Sheet,
@@ -19,8 +19,8 @@ import { useTranslations } from 'next-intl';
 import { NoteTreePanel } from './note-tree-panel';
 
 import {
-  collectDescendantIds,
-  getNoteTree,
+  getAdminNoteById,
+  getDescendantCount,
   NOTE_HREF_PREFIX,
   noteHref,
   noteKeys,
@@ -141,30 +141,6 @@ export function NoteManager({
   // The palette's "New note" — the same mutation the tree panel's `+` uses.
   const createFromPalette = useCreateNote(openNote);
 
-  // The same query key the tree panel uses, so TanStack serves both
-  // subscribers from one fetch. It is read here for two things the panel
-  // cannot answer for the *open* note: whether it is archived, and how many
-  // notes the cascade would take with it on a permanent delete.
-  const { data: rows } = useQuery({
-    queryKey: noteKeys.tree(showArchived),
-    queryFn: async () => {
-      const res = await getNoteTree(showArchived);
-      if (!res.success) throw new Error(res.errorMsg);
-      return res.data;
-    },
-  });
-
-  const activeNode = useMemo(
-    () => (openNoteId ? rows?.find((row) => row.id === openNoteId) : undefined),
-    [rows, openNoteId]
-  );
-
-  const activeDescendantCount = useMemo(
-    () =>
-      openNoteId && rows ? collectDescendantIds(rows, openNoteId).length : 0,
-    [rows, openNoteId]
-  );
-
   // Cmd/Ctrl+K opens search from anywhere on the page.
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -262,16 +238,13 @@ export function NoteManager({
           onOpenSearch={() => setSearchOpen(true)}
           navSlot={navSlot}
           renderActions={(node) => (
-            <NoteActionsMenu
+            <NoteActionsMenuWithCount
               noteId={node.id}
               title={node.title}
               isArchived={node.archivedAt !== null}
               isPinned={node.isPinned}
               isFolder={node.isFolder}
               onCreatedInside={openNote}
-              descendantCount={
-                rows ? collectDescendantIds(rows, node.id).length : 0
-              }
               onRemoved={(removedId) => {
                 // Only the note currently open needs the route changed out
                 // from under it; archiving some other row leaves the author
@@ -320,14 +293,10 @@ export function NoteManager({
                   <Network className="size-4" />
                 </Button>
 
-                <NoteActionsMenu
+                <OpenNoteActions
                   noteId={openNoteId}
-                  title={activeNode?.title ?? t('untitled')}
-                  isArchived={activeNode?.archivedAt != null}
-                  isPinned={activeNode?.isPinned ?? false}
-                  isFolder={activeNode?.isFolder ?? false}
+                  untitledLabel={t('untitled')}
                   onCreatedInside={openNote}
-                  descendantCount={activeDescendantCount}
                   onRemoved={closeNote}
                 />
               </>
@@ -457,5 +426,131 @@ function SidebarTabs({
         <NoteLinksPanel noteId={noteId} onOpen={onOpen} />
       </TabsContent>
     </Tabs>
+  );
+}
+
+/**
+ * The editor header's actions menu, for whichever note is open.
+ *
+ * The four things the menu needs about that note — title, archived, pinned,
+ * folder — used to be looked up by scanning `getNoteTree`'s whole-corpus
+ * result for the one matching row. They all live on `NoteDetail` too, and the
+ * editor mounted directly below has `noteKeys.detail(noteId)` open anyway, so
+ * reading the same key with the same `queryFn` costs nothing: TanStack serves
+ * both subscribers from the one fetch. Scanning an entire corpus to answer a
+ * question about a single known id was the expensive way round.
+ *
+ * A separate component purely so `noteId` is non-null here. The alternative is
+ * a placeholder key plus `enabled`, which puts a cache entry under an id that
+ * does not exist and makes the parent's null-handling everyone else's problem.
+ */
+function OpenNoteActions({
+  noteId,
+  untitledLabel,
+  onCreatedInside,
+  onRemoved,
+}: {
+  noteId: string;
+  /** `t('untitled')`, passed down: this is below the `useTranslations` call. */
+  untitledLabel: string;
+  onCreatedInside: (noteId: string) => void;
+  onRemoved: () => void;
+}) {
+  const { data: note } = useQuery({
+    queryKey: noteKeys.detail(noteId),
+    queryFn: async () => {
+      const res = await getAdminNoteById(noteId);
+      if (!res.success) throw new Error(res.errorMsg);
+      return res.data;
+    },
+  });
+
+  return (
+    <NoteActionsMenuWithCount
+      noteId={noteId}
+      title={note?.title ?? untitledLabel}
+      isArchived={note?.archivedAt != null}
+      isPinned={note?.isPinned ?? false}
+      isFolder={note?.isFolder ?? false}
+      onCreatedInside={onCreatedInside}
+      onRemoved={onRemoved}
+    />
+  );
+}
+
+/**
+ * `NoteActionsMenu`, with its descendant count fetched when the author
+ * actually reaches for the menu.
+ *
+ * The count is read in exactly one place: the delete confirmation, where it is
+ * the difference between "this note will be deleted" and "this note and the
+ * eleven under it will be deleted". It used to come from
+ * `collectDescendantIds` walking the corpus in memory — which only worked
+ * because the sidebar held every note the author owns, the read this whole
+ * change removes. Once the tree loads one level at a time, a collapsed
+ * folder's subtree is not in the browser at all, so the question goes to the
+ * database instead (`getDescendantCount`, one recursive CTE).
+ *
+ * Fetched lazily, and that is the point of this wrapper. `renderActions` runs
+ * for EVERY visible row, so a query mounted unconditionally would be one
+ * request per note on screen — trading a single corpus read for a burst of
+ * small ones is not a win. `armed` flips on the first pointer-down or focus
+ * anywhere inside, which is the gesture that opens the menu: radix opens its
+ * trigger on `pointerdown`, and a keyboard user has to focus it before
+ * pressing anything. So exactly the rows whose menus were opened cost a
+ * request, and the fetch starts while the dropdown is still animating in.
+ *
+ * The wrapper `<span>` exists only to carry those two capture handlers.
+ * `NoteActionsMenu` owns the menu's open state and would be the natural place
+ * to hook, but it is outside this task's scope; `display: contents` keeps the
+ * span out of layout entirely, so the row's hover-reveal (`md:group-hover`
+ * classes on the button, resolved against an ancestor `group`) is unaffected.
+ *
+ * Before the count lands the menu is passed `0`, which renders the plain
+ * single-note wording and swaps to the counted one when the query resolves.
+ * That window is one round trip that begins when the menu opens and the
+ * author still has to cross the dropdown to the destructive item; the
+ * alternative — blocking the dialog on a fetch — is a spinner inside a
+ * confirmation, which is worse for the case it is meant to protect.
+ */
+function NoteActionsMenuWithCount({
+  noteId,
+  ...props
+}: Omit<React.ComponentProps<typeof NoteActionsMenu>, 'descendantCount'>) {
+  const [armed, setArmed] = useState(false);
+
+  // Re-armed per note, in the render-phase style this file already uses for
+  // `openNoteId`. Tree rows are keyed by id so they remount, but the header's
+  // menu is one long-lived instance that follows whichever note is open —
+  // without this, opening any menu once would leave every note opened
+  // afterwards fetching a count nothing has asked to see.
+  const lastNoteId = useRef(noteId);
+  if (lastNoteId.current !== noteId) {
+    lastNoteId.current = noteId;
+    setArmed(false);
+  }
+
+  const { data: descendantCount } = useQuery({
+    queryKey: noteKeys.descendantCount(noteId),
+    queryFn: async () => {
+      const res = await getDescendantCount(noteId);
+      if (!res.success) throw new Error(res.errorMsg);
+      return res.data;
+    },
+    enabled: armed,
+  });
+
+  return (
+    <span
+      className="contents"
+      onPointerDownCapture={() => setArmed(true)}
+      onFocusCapture={() => setArmed(true)}
+    >
+      <NoteActionsMenu
+        {...props}
+        noteId={noteId}
+        descendantCount={descendantCount ?? 0}
+      />
+    </span>
   );
 }

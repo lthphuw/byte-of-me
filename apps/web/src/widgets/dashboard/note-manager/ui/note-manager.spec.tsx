@@ -10,7 +10,14 @@
  */
 import { prisma } from '@byte-of-me/db';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
 import { NextIntlClientProvider } from 'next-intl';
 
@@ -163,9 +170,39 @@ const NOTE_A: FakeNoteDetail = {
 
 const notesById = new Map<string, FakeNoteDetail>([[NOTE_A.id, NOTE_A]]);
 
-const findMany = mock(() =>
-  Promise.resolve(
-    Array.from(notesById.values()).map(
+/**
+ * How many notes hang under `FOLDER_F`, transitively.
+ *
+ * Deliberately NOT represented as rows anywhere in this file: the folder stays
+ * collapsed for the whole suite, so its children are never fetched and the
+ * browser has nothing to count. That is the post-pagination state the delete
+ * confirmation has to keep working in — see the collapsed-folder test below.
+ */
+const FOLDER_DESCENDANTS = 3;
+
+/** A root-level row the tree renders and never expands. */
+const FOLDER_F = {
+  id: 'folder-f',
+  title: 'Folder F',
+  parentId: null,
+  position: 1,
+  isPinned: false,
+  archivedAt: null,
+  createdAt: new Date('2026-01-01T00:00:00.000Z'),
+  updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+  status: 'draft',
+  isFolder: true,
+  labels: [],
+  _count: { children: FOLDER_DESCENDANTS },
+};
+
+// One level of the tree, as `getNoteChildren` reads it. The mock ignores
+// `where`, so every level would return the same rows — which is fine here
+// precisely because nothing in this suite ever expands anything, and the
+// recorded `args` are what the collapsed-folder test asserts on.
+const findMany = mock((_args?: { where?: { parentId?: string | null } }) =>
+  Promise.resolve([
+    ...Array.from(notesById.values()).map(
       ({ id, title, parentId, position, isPinned, archivedAt, updatedAt, createdAt, status, isFolder }) => ({
         id,
         title,
@@ -180,8 +217,9 @@ const findMany = mock(() =>
         labels: [],
         _count: { children: 0 },
       })
-    )
-  )
+    ),
+    FOLDER_F,
+  ])
 );
 const count = mock(() => Promise.resolve(0));
 const findFirst = mock(() => Promise.resolve(null));
@@ -195,6 +233,24 @@ const updateMany = mock(() => Promise.resolve({ count: 1 }));
 
 Object.defineProperty(prisma, 'note', {
   value: { findMany, count, findFirst, create, findFirstOrThrow, updateMany },
+  writable: true,
+  configurable: true,
+});
+
+// `getDescendantCount` is a recursive CTE, so it goes through `$queryRaw`
+// rather than the `note` delegate — replaced wholesale for the same reason
+// (Prisma 7 synthesizes a fresh function on every access, so `spyOn` is
+// bypassed; AGENTS §10). `$queryRaw` is a tagged template, so the note id
+// arrives as the first interpolated value; answering per-id is what lets the
+// two menus below assert different counts.
+const descendantCounts = new Map<string, number>([
+  [FOLDER_F.id, FOLDER_DESCENDANTS],
+]);
+const queryRaw = mock((_sql: TemplateStringsArray, noteId?: string) =>
+  Promise.resolve([{ count: descendantCounts.get(noteId ?? '') ?? 0 }])
+);
+Object.defineProperty(prisma, '$queryRaw', {
+  value: queryRaw,
   writable: true,
   configurable: true,
 });
@@ -228,6 +284,7 @@ beforeEach(() => {
   findMany.mockClear();
   findFirstOrThrow.mockClear();
   updateMany.mockClear();
+  queryRaw.mockClear();
   __resetNavigation('/space/notes');
 });
 
@@ -373,6 +430,69 @@ describe('NoteManager', () => {
 
     expect(
       await screen.findByPlaceholderText('Search your notes…')
+    ).toBeTruthy();
+  });
+
+  // The whole reason this widget stopped reading the corpus. `FOLDER_F` is
+  // never expanded, so its three descendants exist NOWHERE in the browser —
+  // the `collectDescendantIds` walk this replaces could only ever have
+  // answered 0 — and the confirmation still has to name them, because the
+  // database cascade takes them either way.
+  test('counts a collapsed folder’s subtree for the delete confirmation', async () => {
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} />);
+
+    const folderRow = (await screen.findByText('Folder F')).closest('div');
+    expect(folderRow === null).toBe(false);
+
+    // `pointerdown`, not `click`: radix opens a dropdown on pointer-down, and
+    // that is deliberately the same event the widget arms the count query on
+    // — so a row whose menu is never opened never costs a request, which is
+    // what makes a per-row count affordable at all.
+    fireEvent.pointerDown(
+      within(folderRow as HTMLElement).getByLabelText('Note actions'),
+      { button: 0, ctrlKey: false }
+    );
+    fireEvent.click(
+      await screen.findByRole('menuitem', { name: 'Delete permanently' })
+    );
+
+    expect(
+      await screen.findByText(/and its 3 nested notes will be deleted/)
+    ).toBeTruthy();
+
+    // ...and it got there without the folder's level ever being read: no
+    // query asked for `parentId: 'folder-f'`. If that ever stops holding, the
+    // test is passing for the pre-pagination reason.
+    const levelsRead = findMany.mock.calls.map(
+      ([args]) => args?.where?.parentId
+    );
+    expect(levelsRead).not.toContain(FOLDER_F.id);
+  });
+
+  // The open note's header menu used to find its title, pinned and archived
+  // state by scanning that same corpus for the one row matching the route.
+  // They all live on `NoteDetail`, which the editor mounted directly below
+  // fetches anyway — so the same key serves both and nothing extra is paid.
+  test('the open note’s actions menu reads its facts from the note detail', async () => {
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} noteId="note-a" />);
+    await screen.findByDisplayValue('Note A');
+
+    // The editor's own header menu, not one of the tree's: the tree lives in
+    // the sibling `<aside>`.
+    fireEvent.pointerDown(
+      within(screen.getByRole('main')).getByLabelText('Note actions'),
+      { button: 0, ctrlKey: false }
+    );
+    fireEvent.click(
+      await screen.findByRole('menuitem', { name: 'Delete permanently' })
+    );
+
+    // The title comes from the detail row, and a leaf gets the uncounted
+    // copy — the count is per-note, not a single number reused everywhere.
+    expect(
+      await screen.findByText(/“Note A” will be deleted for good/)
     ).toBeTruthy();
   });
 });
