@@ -63,8 +63,11 @@ export function useNoteDnd(rows: NoteTreeNode[], labels: NoteLabelSummary[]) {
   );
 
   const invalidateTrees = () => {
-    void queryClient.invalidateQueries({ queryKey: noteKeys.tree(false) });
-    void queryClient.invalidateQueries({ queryKey: noteKeys.tree(true) });
+    // Every list-shaped key, not just the tree: the explorer now reads
+    // per-level `children` keys, which `tree` does not prefix-match.
+    for (const queryKey of noteKeys.lists()) {
+      void queryClient.invalidateQueries({ queryKey });
+    }
   };
 
   const move = useMutation({

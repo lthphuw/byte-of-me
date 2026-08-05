@@ -353,8 +353,11 @@ export function useNoteEditorAutosave(
       // and saved again, forever. Writing the server's response into the
       // detail key directly (instead of invalidating it) removes that path
       // entirely — see `lastSentRef` above for the other half of the fix.
-      void queryClient.invalidateQueries({ queryKey: noteKeys.tree(false) });
-      void queryClient.invalidateQueries({ queryKey: noteKeys.tree(true) });
+      // Every list-shaped key, not just the tree: the explorer now reads
+      // per-level `children` keys, which `tree` does not prefix-match.
+      for (const queryKey of noteKeys.lists()) {
+        void queryClient.invalidateQueries({ queryKey });
+      }
       // Links, too: `updateNote` rewrites this note's `NoteLink` rows from
       // the document it just saved, so a `[[` link inserted a second ago is
       // only visible in the panel after this. Whole prefix rather than this

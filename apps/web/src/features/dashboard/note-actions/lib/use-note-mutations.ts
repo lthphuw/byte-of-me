@@ -31,8 +31,11 @@ function useInvalidateNoteLists() {
   const queryClient = useQueryClient();
 
   return () => {
-    void queryClient.invalidateQueries({ queryKey: noteKeys.tree(false) });
-    void queryClient.invalidateQueries({ queryKey: noteKeys.tree(true) });
+    // Every list-shaped key, not just the tree: the explorer now reads
+    // per-level `children` keys, which `tree` does not prefix-match.
+    for (const queryKey of noteKeys.lists()) {
+      void queryClient.invalidateQueries({ queryKey });
+    }
     void queryClient.invalidateQueries({ queryKey: noteKeys.searchAll() });
     // Create/archive/restore/delete all change the NODE set the graph plots
     // — and deleting a note takes its links with it, so the edge set moves
@@ -99,8 +102,11 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
       // `useNoteProperties`) — the row differs from the buffer only in
       // `isPinned`/`updatedAt`, so the autosave's reseed guard stays inert.
       queryClient.setQueryData(noteKeys.detail(data.id), data);
-      void queryClient.invalidateQueries({ queryKey: noteKeys.tree(false) });
-      void queryClient.invalidateQueries({ queryKey: noteKeys.tree(true) });
+      // Every list-shaped key, not just the tree: the explorer now reads
+      // per-level `children` keys, which `tree` does not prefix-match.
+      for (const queryKey of noteKeys.lists()) {
+        void queryClient.invalidateQueries({ queryKey });
+      }
     },
     onError: (error: Error) => {
       toast.error(t('errors.save'), { description: error.message });

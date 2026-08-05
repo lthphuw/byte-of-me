@@ -51,8 +51,11 @@ export function useNoteProperties(noteId: string) {
       queryClient.setQueryData(noteKeys.detail(noteId), data);
       // The tree groups by status in the explorer's grouped view (Phase B),
       // so a status change has to reach it.
-      void queryClient.invalidateQueries({ queryKey: noteKeys.tree(false) });
-      void queryClient.invalidateQueries({ queryKey: noteKeys.tree(true) });
+      // Every list-shaped key, not just the tree: the explorer now reads
+      // per-level `children` keys, which `tree` does not prefix-match.
+      for (const queryKey of noteKeys.lists()) {
+        void queryClient.invalidateQueries({ queryKey });
+      }
     },
     onError: (error: Error) => {
       toast.error(t('errors.save'), { description: error.message });
@@ -84,8 +87,11 @@ export function useNoteProperties(noteId: string) {
         (old: (typeof query)['data']) => (old ? { ...old, labels } : old)
       );
       void queryClient.invalidateQueries({ queryKey: noteKeys.labels() });
-      void queryClient.invalidateQueries({ queryKey: noteKeys.tree(false) });
-      void queryClient.invalidateQueries({ queryKey: noteKeys.tree(true) });
+      // Every list-shaped key, not just the tree: the explorer now reads
+      // per-level `children` keys, which `tree` does not prefix-match.
+      for (const queryKey of noteKeys.lists()) {
+        void queryClient.invalidateQueries({ queryKey });
+      }
     },
     onError: (error: Error) => {
       toast.error(t('errors.save'), { description: error.message });

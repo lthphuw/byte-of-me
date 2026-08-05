@@ -46,6 +46,32 @@ export const noteKeys = {
 
   /** The owner's label list — one entry, names/colors for every consumer. */
   labels: () => [...noteKeys.all, 'labels'] as const,
+
+  /**
+   * Every key that renders a LIST of notes, for a mutation that changed which
+   * notes exist or what a row says about one.
+   *
+   * This exists because the keys do not nest: `tree` is `[…, 'tree', …]` and
+   * the per-level reads are `[…, 'children', …]`, so invalidating the first
+   * cannot match the second. When the explorer moved to loading one level at
+   * a time, every `invalidateQueries(noteKeys.tree(...))` call site silently
+   * stopped refreshing the sidebar — create a note and nothing appeared until
+   * a reload. Enumerating the family in one place is what stops the next key
+   * from being forgotten the same way.
+   *
+   * Deliberately EXCLUDES `detail` and `search`: `use-note-editor-autosave`
+   * documents at length why refetching the open note's detail around a
+   * debounced save reopens a save loop.
+   */
+  lists: () =>
+    [
+      noteKeys.tree(false),
+      noteKeys.tree(true),
+      noteKeys.childrenAll(),
+      noteKeys.pageAll(),
+      noteKeys.groupsAll(),
+      noteKeys.groupRowsAll(),
+    ] as const,
   /**
    * The whole knowledge graph — one entry.
    *
