@@ -43,6 +43,16 @@ const messages = {
   dashboard: {
     note: {
       untitled: 'Untitled',
+      explorer: {
+        viewMode: 'View',
+        modes: { tree: 'Tree', flat: 'Flat list', grouped: 'Grouped' },
+        sortLabel: 'Sort by',
+        sort: { updated: 'Last edited', created: 'Date created', title: 'Title' },
+        groupByLabel: 'Group by',
+        groupBy: { status: 'Status', label: 'Label' },
+        noLabel: 'No label',
+        dropToRoot: 'Drop here to move to top level',
+      },
       search: { trigger: 'Search notes' },
       actions: { create: 'New note' },
       tree: { expandAriaLabel: 'Expand', collapseAriaLabel: 'Collapse' },
@@ -63,6 +73,10 @@ interface FakeNoteRow {
   isPinned: boolean;
   archivedAt: Date | null;
   updatedAt: Date;
+  createdAt: Date;
+  status: string;
+  isFolder: boolean;
+  labels: { labelId: string }[];
 }
 
 const NOTE_A: FakeNoteRow = {
@@ -73,6 +87,10 @@ const NOTE_A: FakeNoteRow = {
   isPinned: false,
   archivedAt: null,
   updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+  createdAt: new Date('2026-01-01T00:00:00.000Z'),
+  status: 'draft',
+  isFolder: false,
+  labels: [],
 };
 
 let findManyImpl: () => Promise<FakeNoteRow[]>;
@@ -85,6 +103,10 @@ const create = mock(
       content: '',
       createdAt: new Date(),
       updatedAt: new Date(),
+      status: 'draft',
+      properties: null,
+      isFolder: false,
+      labels: [],
       ...args.data,
     })
 );
@@ -150,6 +172,10 @@ function gateNextCreate(): { release: () => void } {
       content: '',
       createdAt: new Date(),
       updatedAt: new Date(),
+      status: 'draft',
+      properties: null,
+      isFolder: false,
+      labels: [],
       ...args.data,
     };
   });

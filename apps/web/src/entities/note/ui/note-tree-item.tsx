@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@byte-of-me/ui';
-import { ChevronRight, FileText } from 'lucide-react';
+import { ChevronRight, FileText, Folder, FolderOpen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { NoteTreeNodeWithChildren } from '@/entities/note/model/note-tree';
@@ -30,6 +30,15 @@ interface NoteTreeItemProps {
    * that owns the tree passes it down.
    */
   renderActions?: (node: NoteTreeNodeWithChildren) => React.ReactNode;
+  /**
+   * Wraps the ROW (not the children list) — how the drag-and-drop feature
+   * attaches its handles and drop targets without this entity ever importing
+   * dnd-kit. Same layering rule as `renderActions`.
+   */
+  renderRowShell?: (
+    node: NoteTreeNodeWithChildren,
+    row: React.ReactNode
+  ) => React.ReactNode;
 }
 
 export function NoteTreeItem({
@@ -40,14 +49,14 @@ export function NoteTreeItem({
   onSelect,
   onToggle,
   renderActions,
+  renderRowShell,
 }: NoteTreeItemProps) {
   const t = useTranslations('dashboard.note');
   const hasChildren = node.children.length > 0;
   const isExpanded = expandedIds.has(node.id);
   const isActive = node.id === activeId;
 
-  return (
-    <li>
+  const row = (
       <div
         className={cn(
           // `group` so the actions slot can reveal itself on hover; `min-h-9`
@@ -80,7 +89,11 @@ export function NoteTreeItem({
 
         <button
           type="button"
-          onClick={() => onSelect(node.id)}
+          // A folder has no document to open — clicking it expands it, the
+          // way Obsidian's file explorer behaves.
+          onClick={() =>
+            node.isFolder ? onToggle(node.id) : onSelect(node.id)
+          }
           // aria-current (not aria-selected) because there is no surrounding
           // role="tree"/"listbox" to make aria-selected valid — see the note
           // on ARIA scope in the module comment above. This node behaves like
@@ -91,12 +104,25 @@ export function NoteTreeItem({
           aria-current={isActive ? 'true' : undefined}
           className="flex min-w-0 flex-1 items-center gap-2 py-1.5 text-left"
         >
-          <FileText className="size-3.5 shrink-0" />
+          {node.isFolder ? (
+            isExpanded ? (
+              <FolderOpen className="size-3.5 shrink-0" />
+            ) : (
+              <Folder className="size-3.5 shrink-0" />
+            )
+          ) : (
+            <FileText className="size-3.5 shrink-0" />
+          )}
           <span className="truncate">{node.title}</span>
         </button>
 
         {renderActions?.(node)}
       </div>
+  );
+
+  return (
+    <li>
+      {renderRowShell ? renderRowShell(node, row) : row}
 
       {hasChildren && isExpanded && (
         <ul>
@@ -110,6 +136,7 @@ export function NoteTreeItem({
               onSelect={onSelect}
               onToggle={onToggle}
               renderActions={renderActions}
+              renderRowShell={renderRowShell}
             />
           ))}
         </ul>

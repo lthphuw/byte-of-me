@@ -63,7 +63,9 @@ export function SpaceNavTrigger({ className }: { className?: string }) {
           <nav className="flex-1 space-y-1 px-3">
             {items.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname.startsWith(item.href);
+              const isActive = item.exact
+                ? pathname === item.href
+                : pathname.startsWith(item.href);
 
               return (
                 <Link

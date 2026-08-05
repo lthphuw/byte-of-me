@@ -60,6 +60,22 @@ const messages = {
         empty: 'No notes match.',
       },
       archive: { title: 'Archived', empty: 'Nothing archived.' },
+      sidebar: {
+        title: 'Note panel',
+        toc: 'Contents',
+        links: 'Links',
+        tocEmpty: 'Headings you add will show up here.',
+      },
+      explorer: {
+        viewMode: 'View',
+        modes: { tree: 'Tree', flat: 'Flat list', grouped: 'Grouped' },
+        sortLabel: 'Sort by',
+        sort: { updated: 'Last edited', created: 'Date created', title: 'Title' },
+        groupByLabel: 'Group by',
+        groupBy: { status: 'Status', label: 'Label' },
+        noLabel: 'No label',
+        dropToRoot: 'Drop here to move to top level',
+      },
       links: {
         title: 'Links',
         outgoing: 'Links out',
@@ -109,11 +125,17 @@ interface FakeNoteTreeRow {
   isPinned: boolean;
   archivedAt: Date | null;
   updatedAt: Date;
+  status: string;
+  isFolder: boolean;
+  labels: { labelId: string }[];
 }
 
-interface FakeNoteDetail extends FakeNoteTreeRow {
+interface FakeNoteDetail extends Omit<FakeNoteTreeRow, 'labels'> {
   content: string;
   createdAt: Date;
+  properties: Record<string, unknown> | null;
+  // Detail rows join through to the label itself, unlike tree rows.
+  labels: { label: { id: string; name: string; color: string | null } }[];
 }
 
 function doc(text: string): string {
@@ -133,6 +155,10 @@ const NOTE_A: FakeNoteDetail = {
   archivedAt: null,
   createdAt: new Date('2026-01-01T00:00:00.000Z'),
   updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+  status: 'draft',
+  properties: null,
+  isFolder: false,
+  labels: [],
 };
 
 const notesById = new Map<string, FakeNoteDetail>([[NOTE_A.id, NOTE_A]]);
@@ -140,7 +166,7 @@ const notesById = new Map<string, FakeNoteDetail>([[NOTE_A.id, NOTE_A]]);
 const findMany = mock(() =>
   Promise.resolve(
     Array.from(notesById.values()).map(
-      ({ id, title, parentId, position, isPinned, archivedAt, updatedAt }) => ({
+      ({ id, title, parentId, position, isPinned, archivedAt, updatedAt, createdAt, status, isFolder }) => ({
         id,
         title,
         parentId,
@@ -148,6 +174,10 @@ const findMany = mock(() =>
         isPinned,
         archivedAt,
         updatedAt,
+        createdAt,
+        status,
+        isFolder,
+        labels: [],
       })
     )
   )

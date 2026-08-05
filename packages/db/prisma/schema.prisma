@@ -780,6 +780,23 @@ model Note {
   content   String  @db.Text                     // stringified Tiptap JSON
   plainText String  @db.Text @map("plain_text")  // derived from content, never client-supplied
 
+  /// Free-form workflow state ("draft", "active", "done", …) — groupable in the
+  /// explorer; the trash mechanism stays `archivedAt`, not a status value.
+  status String @default("draft")
+
+  /// Free-form key→scalar map (the note's "frontmatter"). Serialized to real
+  /// YAML only at .md export time; queries and grouped views read columns.
+  properties Json?
+
+  /// Generated in SQL (see the add_note_search_vector migration) from
+  /// title + plain_text; Prisma never writes it. `simple` config on purpose:
+  /// the corpus is mixed EN/VI and language stemming would lie.
+  searchVector Unsupported("tsvector")? @map("search_vector")
+
+  /// A pure container in the same tree (Obsidian-style folder): no document
+  /// of its own, excluded from search/flat/grouped views, expand-on-click.
+  isFolder Boolean @default(false) @map("is_folder")
+
   isPinned   Boolean   @default(false) @map("is_pinned")
   archivedAt DateTime?                 @map("archived_at")
 

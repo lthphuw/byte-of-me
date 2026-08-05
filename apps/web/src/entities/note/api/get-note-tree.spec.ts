@@ -51,6 +51,10 @@ const noteRow = {
   isPinned: false,
   archivedAt: null,
   updatedAt: new Date('2026-08-01T00:00:00.000Z'),
+  createdAt: new Date('2026-08-01T00:00:00.000Z'),
+  status: 'draft',
+  isFolder: false,
+  labels: [{ labelId: 'label-1' }],
 };
 
 describe('getNoteTree', () => {

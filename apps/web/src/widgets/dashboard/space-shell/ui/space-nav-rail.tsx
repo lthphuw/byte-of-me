@@ -48,7 +48,9 @@ export function SpaceNavRail() {
             const Icon = item.icon;
             // `startsWith`, not equality: an open note lives at
             // `/space/notes/<id>` and must keep its section lit.
-            const isActive = pathname.startsWith(item.href);
+            const isActive = item.exact
+              ? pathname === item.href
+              : pathname.startsWith(item.href);
 
             return (
               <Tooltip key={item.href}>

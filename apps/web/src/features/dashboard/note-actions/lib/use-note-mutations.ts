@@ -4,7 +4,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { archiveNote, deleteNote, noteKeys, restoreNote } from '@/entities/note';
+import {
+  archiveNote,
+  createNote,
+  deleteNote,
+  noteKeys,
+  restoreNote,
+  updateNote,
+} from '@/entities/note';
 
 /**
  * Invalidates every list a note can appear in, and only those.
@@ -75,6 +82,26 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
     },
   });
 
+  const pin = useMutation({
+    mutationFn: async (input: { id: string; isPinned: boolean }) => {
+      const res = await updateNote(input);
+      if (!res.success) throw new Error(res.errorMsg);
+      return res.data;
+    },
+    onSuccess: (data) => {
+      // Straight into the detail key, the way every other `updateNote`
+      // caller applies its result (see `applySaveResult` in the autosave and
+      // `useNoteProperties`) — the row differs from the buffer only in
+      // `isPinned`/`updatedAt`, so the autosave's reseed guard stays inert.
+      queryClient.setQueryData(noteKeys.detail(data.id), data);
+      void queryClient.invalidateQueries({ queryKey: noteKeys.tree(false) });
+      void queryClient.invalidateQueries({ queryKey: noteKeys.tree(true) });
+    },
+    onError: (error: Error) => {
+      toast.error(t('errors.save'), { description: error.message });
+    },
+  });
+
   const remove = useMutation({
     mutationFn: async (id: string) => {
       const res = await deleteNote(id);
@@ -98,5 +125,67 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
     },
   });
 
-  return { archive, restore, remove };
+  return { archive, restore, remove, pin };
+}
+
+/**
+ * The one create-note mutation, shared by the tree panel's `+` button and the
+ * command palette's "New note" action — two implementations of one thing is
+ * the bug AGENTS §11.3 names, and this used to live inline in the panel.
+ *
+ * `searchAll` IS invalidated, unlike in the autosave's `applySaveResult`: the
+ * empty-term search (what the palette runs on open) lists every note by
+ * `updatedAt desc`, so a brand-new note belongs at the top of it — and, being
+ * new, no previously cached search result holds a stale copy to race with.
+ */
+export function useCreateNote(onCreated?: (noteId: string) => void) {
+  const t = useTranslations('dashboard.note');
+  const invalidateLists = useInvalidateNoteLists();
+
+  return useMutation({
+    /** No variables = an untitled root note; pass `parentId` to create
+     *  inside a folder (or any note), `isFolder` for an Obsidian folder. */
+    mutationFn: async (
+      variables: { parentId?: string | null; isFolder?: boolean } = {}
+    ) => {
+      const res = await createNote({
+        title: variables.isFolder ? t('untitledFolder') : t('untitled'),
+        parentId: variables.parentId ?? null,
+        isFolder: variables.isFolder ?? false,
+      });
+      if (!res.success) throw new Error(res.errorMsg);
+      return res.data;
+    },
+    onSuccess: (note) => {
+      invalidateLists();
+      // Folders have no document to open — they get renamed in place
+      // instead of navigating to an editor that means nothing for them.
+      if (!note.isFolder) onCreated?.(note.id);
+    },
+    onError: (error: Error) => {
+      toast.error(t('errors.create'), { description: error.message });
+    },
+  });
+}
+
+/** Renames a note/folder from the tree, without opening the editor. */
+export function useRenameNote() {
+  const t = useTranslations('dashboard.note');
+  const queryClient = useQueryClient();
+  const invalidateLists = useInvalidateNoteLists();
+
+  return useMutation({
+    mutationFn: async (input: { id: string; title: string }) => {
+      const res = await updateNote(input);
+      if (!res.success) throw new Error(res.errorMsg);
+      return res.data;
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(noteKeys.detail(data.id), data);
+      invalidateLists();
+    },
+    onError: (error: Error) => {
+      toast.error(t('errors.save'), { description: error.message });
+    },
+  });
 }

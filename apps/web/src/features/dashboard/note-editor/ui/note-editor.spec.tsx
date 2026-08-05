@@ -91,6 +91,7 @@ import { AUTOSAVE_DEBOUNCE_MS } from '@/features/dashboard/note-editor/lib/use-n
 // `LazyRichTextEditor` (reached through the intercepted specifier) reads
 // from.
 import {
+  __getCurrentProps,
   __getMountedValues,
   __resetMountedValues,
   __typeInBody,
@@ -124,6 +125,14 @@ const messages = {
         error: 'Not saved',
         retry: 'Retry',
       },
+      view: {
+        label: 'Editor view',
+        editor: 'Editor',
+        markdown: 'Markdown',
+      },
+      cheatSheet: {
+        open: 'Markdown help',
+      },
     },
   },
 } as const;
@@ -138,6 +147,10 @@ interface FakeNoteRow {
   archivedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  status: string;
+  properties: Record<string, string | number | boolean> | null;
+  isFolder: boolean;
+  labels: { label: { id: string; name: string; color: string | null } }[];
 }
 
 function doc(text: string): string {
@@ -157,6 +170,10 @@ const NOTE_A: FakeNoteRow = {
   archivedAt: null,
   createdAt: new Date('2026-01-01T00:00:00.000Z'),
   updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+  status: 'draft',
+  properties: null,
+  isFolder: false,
+  labels: [],
 };
 
 const NOTE_B: FakeNoteRow = {
@@ -169,6 +186,10 @@ const NOTE_B: FakeNoteRow = {
   archivedAt: null,
   createdAt: new Date('2026-01-01T00:00:00.000Z'),
   updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+  status: 'draft',
+  properties: null,
+  isFolder: false,
+  labels: [],
 };
 
 let notesById: Map<string, FakeNoteRow>;
@@ -1062,5 +1083,74 @@ describe('NoteEditor autosave (keyed — matches production)', () => {
       updateMany.mock.calls.length - 1
     ] as [{ where: { id: string }; data: Record<string, unknown> }];
     expect(lastCall[0].data.title).toBe('Note A EDITEDX');
+  });
+});
+
+describe('NoteEditor raw-markdown view toggle', () => {
+  // Contract: the header's segmented control drives the editor's
+  // `markdownMode` prop — the actual textarea swap is the shared component's
+  // behavior, covered in `packages/ui`. What can break HERE is the wiring
+  // (state → prop) and the reset-on-switch (via the widget's `key={noteId}`).
+  test('the Markdown button turns raw mode on, the Editor button back off', async () => {
+    const queryClient = makeQueryClient();
+    render(<Harness noteId={NOTE_A.id} queryClient={queryClient} keyed />);
+    await screen.findByDisplayValue('Note A');
+
+    expect(__getCurrentProps()?.markdownMode).toBe(false);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Markdown' }));
+    expect(__getCurrentProps()?.markdownMode).toBe(true);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Editor' }));
+    expect(__getCurrentProps()?.markdownMode).toBe(false);
+  });
+
+  test('raw mode resets when switching notes under the keyed shape', async () => {
+    const queryClient = makeQueryClient();
+    const { rerender } = render(
+      <Harness noteId={NOTE_A.id} queryClient={queryClient} keyed />
+    );
+    await screen.findByDisplayValue('Note A');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Markdown' }));
+    expect(__getCurrentProps()?.markdownMode).toBe(true);
+
+    await act(async () => {
+      rerender(<Harness noteId={NOTE_B.id} queryClient={queryClient} keyed />);
+    });
+    await screen.findByDisplayValue('Note B');
+
+    // A fresh instance mounted (key change) — its own local state, WYSIWYG.
+    expect(__getCurrentProps()?.markdownMode).toBe(false);
+  });
+});
+
+describe('NoteEditor cheat-sheet trigger', () => {
+  // The DIALOG belongs to the widget; the editor's contract is only "the
+  // help button asks for it" — and stays absent when nothing would answer.
+  test('the help button calls onOpenCheatSheet', async () => {
+    const queryClient = makeQueryClient();
+    const onOpen = mock();
+    render(
+      <QueryClientProvider client={queryClient}>
+        <NextIntlClientProvider locale="en" messages={messages}>
+          <NoteEditor noteId={NOTE_A.id} onOpenCheatSheet={onOpen} />
+        </NextIntlClientProvider>
+      </QueryClientProvider>
+    );
+    await screen.findByDisplayValue('Note A');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Markdown help' }));
+    expect(onOpen).toHaveBeenCalledTimes(1);
+  });
+
+  test('no help button renders without the callback', async () => {
+    const queryClient = makeQueryClient();
+    render(<Harness noteId={NOTE_A.id} queryClient={queryClient} />);
+    await screen.findByDisplayValue('Note A');
+
+    expect(
+      screen.queryByRole('button', { name: 'Markdown help' })
+    ).toBeNull();
   });
 });

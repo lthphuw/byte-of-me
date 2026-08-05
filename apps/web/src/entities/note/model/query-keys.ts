@@ -14,6 +14,8 @@ export const noteKeys = {
    *  note's outgoing links, which changes some OTHER note's backlinks — and
    *  the id of that other note is not knowable from the save alone. */
   linksAll: () => [...noteKeys.all, 'links'] as const,
+  /** The owner's label list — one entry, names/colors for every consumer. */
+  labels: () => [...noteKeys.all, 'labels'] as const,
   search: (query: string, page: number) =>
     [...noteKeys.all, 'search', query, page] as const,
   /** Prefix-matches every `search(query, page)` key, for the one caller that

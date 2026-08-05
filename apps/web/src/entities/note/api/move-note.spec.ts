@@ -17,8 +17,19 @@ beforeAll(async () => {
 
 const findMany = mock();
 const update = mock();
+const updateMany = mock();
 Object.defineProperty(prisma, 'note', {
-  value: { findMany, update },
+  value: { findMany, update, updateMany },
+  writable: true,
+  configurable: true,
+});
+
+// The array form the move's make-room shift + write travel in.
+const transaction = mock((operations: Promise<unknown>[]) =>
+  Promise.all(operations)
+);
+Object.defineProperty(prisma, '$transaction', {
+  value: transaction,
   writable: true,
   configurable: true,
 });
@@ -32,6 +43,8 @@ describe('moveNote', () => {
       { id: 'c', parentId: 'b' },
     ]);
     update.mockReset().mockResolvedValue({ id: 'a' });
+    updateMany.mockReset().mockResolvedValue({ count: 0 });
+    transaction.mockClear();
   });
 
   it('refuses to re-parent a note under its own descendant', async () => {
@@ -48,6 +61,27 @@ describe('moveNote', () => {
 
     expect(res.success).toBe(true);
     expect(update).toHaveBeenCalledTimes(1);
+  });
+
+  it('makes room at the target slot before writing', async () => {
+    await moveNote({ id: 'c', parentId: 'a', position: 2 });
+
+    // Siblings at/after the slot shift down one — excluding the moved note
+    // itself — so "insert before X" cannot tie with X and fall through to
+    // the title tiebreaker.
+    const shiftWhere = updateMany.mock.calls[0]?.[0]?.where as Record<
+      string,
+      unknown
+    >;
+    expect(shiftWhere.parentId).toBe('a');
+    expect(shiftWhere.position).toEqual({ gte: 2 });
+    expect(shiftWhere.id).toEqual({ not: 'c' });
+    expect(shiftWhere.ownerId).toBe('admin-1');
+    const shiftData = updateMany.mock.calls[0]?.[0]?.data as Record<
+      string,
+      unknown
+    >;
+    expect(shiftData.position).toEqual({ increment: 1 });
   });
 
   it('scopes the ancestry lookup to the calling owner', async () => {

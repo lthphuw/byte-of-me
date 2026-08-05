@@ -42,10 +42,25 @@ export async function moveNote(
       };
     }
 
-    await prisma.note.update({
-      where: { id, ownerId: session.id },
-      data: { parentId, position },
-    });
+    // Make room first: siblings at/after the target slot shift down one, so
+    // "insert before X" is deterministic instead of tying with X's position
+    // and falling through to the title tiebreaker. Positions only have to
+    // order, not be contiguous, so the growing gaps are harmless.
+    await prisma.$transaction([
+      prisma.note.updateMany({
+        where: {
+          ownerId: session.id,
+          parentId,
+          position: { gte: position },
+          id: { not: id },
+        },
+        data: { position: { increment: 1 } },
+      }),
+      prisma.note.update({
+        where: { id, ownerId: session.id },
+        data: { parentId, position },
+      }),
+    ]);
 
     return { success: true, data: null };
   } catch (error) {

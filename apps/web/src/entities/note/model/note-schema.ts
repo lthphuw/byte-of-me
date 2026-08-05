@@ -9,19 +9,42 @@ import * as z from 'zod';
 export const createNoteSchema = z.object({
   title: z.string().trim().min(1, 'Title is required').max(200),
   parentId: z.string().min(1).nullable().optional(),
+  /** An Obsidian-style folder: a pure container in the same tree. */
+  isFolder: z.boolean().optional(),
 });
+
+/** Scalar a note property can hold — mirrors `NotePropertyValue` in types.ts. */
+export const notePropertyValueSchema = z.union([
+  z.string().max(500),
+  z.number().finite(),
+  z.boolean(),
+]);
 
 export const updateNoteSchema = z.object({
   id: z.string().min(1),
   title: z.string().trim().min(1).max(200).optional(),
   /** Stringified Tiptap JSON. */
   content: z.string().optional(),
+  status: z.string().trim().min(1).max(50).optional(),
+  properties: z
+    .record(z.string().trim().min(1).max(60), notePropertyValueSchema)
+    .refine((rec) => Object.keys(rec).length <= 40, {
+      message: 'Too many properties',
+    })
+    .optional(),
+  isPinned: z.boolean().optional(),
 });
 
 export const moveNoteSchema = z.object({
   id: z.string().min(1),
   parentId: z.string().min(1).nullable(),
   position: z.number().int().min(0),
+});
+
+export const setNoteLabelsSchema = z.object({
+  noteId: z.string().min(1),
+  /** The COMPLETE next label set — replace semantics, not merge. */
+  names: z.array(z.string().trim().min(1).max(40)).max(20),
 });
 
 export const searchNotesSchema = z.object({
@@ -47,4 +70,5 @@ export const searchNotesSchema = z.object({
 export type CreateNoteInput = z.input<typeof createNoteSchema>;
 export type UpdateNoteInput = z.input<typeof updateNoteSchema>;
 export type MoveNoteInput = z.input<typeof moveNoteSchema>;
+export type SetNoteLabelsInput = z.input<typeof setNoteLabelsSchema>;
 export type SearchNotesInput = z.input<typeof searchNotesSchema>;

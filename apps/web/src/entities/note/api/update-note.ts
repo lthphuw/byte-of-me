@@ -25,7 +25,7 @@ export async function updateNote(
   if (!parsed.ok) {
     return { success: false, errorMsg: parsed.errorMsg };
   }
-  const { id, title, content } = parsed.data;
+  const { id, title, content, status, properties, isPinned } = parsed.data;
 
   try {
     // `updateMany` rather than `update`: it takes a full `where`, so ownership
@@ -35,6 +35,9 @@ export async function updateNote(
       where: { id, ownerId: session.id },
       data: {
         ...(title === undefined ? {} : { title }),
+        ...(status === undefined ? {} : { status }),
+        ...(properties === undefined ? {} : { properties }),
+        ...(isPinned === undefined ? {} : { isPinned }),
         // `plainText` is always derived here and never accepted from the
         // client, so the search index cannot drift from the document.
         ...(content === undefined
@@ -104,10 +107,19 @@ export async function updateNote(
         archivedAt: true,
         createdAt: true,
         updatedAt: true,
+        status: true,
+        properties: true,
+        isFolder: true,
+        labels: {
+          select: { label: { select: { id: true, name: true, color: true } } },
+        },
       },
     });
 
-    return { success: true, data: note };
+    return {
+      success: true,
+      data: { ...note, labels: note.labels.map((row) => row.label) },
+    };
   } catch (error) {
     const errorMsg = getErrorMessage(error, 'Failed to save note');
     logger.error(`Update note error: ${errorMsg}`);

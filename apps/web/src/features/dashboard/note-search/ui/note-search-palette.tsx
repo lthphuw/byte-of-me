@@ -16,6 +16,50 @@ import { noteKeys, type NoteSearchHit, searchNotes } from '@/entities/note';
 
 const SEARCH_DEBOUNCE_MS = 300;
 
+/**
+ * `searchNotes` marks FTS matches with `<<`/`>>` (plain-text markers chosen
+ * server-side precisely so nothing here parses HTML). Split on them and wrap
+ * the odd segments in <mark>.
+ */
+function renderSnippet(snippet: string): React.ReactNode {
+  if (!snippet.includes('<<')) return snippet;
+  return snippet.split(/<<|>>/).map((segment, index) =>
+    index % 2 === 1 ? (
+      // eslint-disable-next-line react/no-array-index-key -- segments are positional by construction
+      <mark key={index} className="rounded-sm bg-primary/25 text-inherit">
+        {segment}
+      </mark>
+    ) : (
+      segment
+    )
+  );
+}
+
+/** Case-insensitive first-occurrence highlight for the title row. */
+function renderTitle(title: string, term: string): React.ReactNode {
+  const trimmed = term.trim();
+  if (!trimmed) return title;
+  const at = title.toLowerCase().indexOf(trimmed.toLowerCase());
+  if (at === -1) return title;
+  return (
+    <>
+      {title.slice(0, at)}
+      <mark className="rounded-sm bg-primary/25 text-inherit">
+        {title.slice(at, at + trimmed.length)}
+      </mark>
+      {title.slice(at + trimmed.length)}
+    </>
+  );
+}
+
+/** A quick action offered above the results while the query is empty. */
+export interface PaletteAction {
+  id: string;
+  label: string;
+  icon?: React.ReactNode;
+  onSelect: () => void;
+}
+
 interface NoteSearchPaletteProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -27,6 +71,13 @@ interface NoteSearchPaletteProps {
   onSelect: (noteId: string, hit: NoteSearchHit) => void;
   /** Overrides the search placeholder — see `onSelect`. */
   placeholder?: string;
+  /**
+   * Launch-point commands (new note, cheat sheet, …). Only the SEARCH role
+   * passes these — never the `[[` link picker, where "New note" would insert
+   * nothing and confuse the flow. Hidden the moment the author types: typing
+   * means they are searching, and actions are not search results.
+   */
+  actions?: PaletteAction[];
 }
 
 export function NoteSearchPalette({
@@ -34,6 +85,7 @@ export function NoteSearchPalette({
   onOpenChange,
   onSelect,
   placeholder,
+  actions,
 }: NoteSearchPaletteProps) {
   const t = useTranslations('dashboard.note');
   const [term, setTerm] = useState('');
@@ -74,6 +126,25 @@ export function NoteSearchPalette({
         placeholder={placeholder ?? t('search.placeholder')}
       />
       <CommandList>
+        {actions && actions.length > 0 && term === '' && (
+          <CommandGroup heading={t('search.actionsHeading')}>
+            {actions.map((action) => (
+              <CommandItem
+                key={action.id}
+                value={`action:${action.id}`}
+                onSelect={() => {
+                  // Close FIRST: an action may open its own dialog, and two
+                  // stacked dialogs fight over focus and the Escape key.
+                  onOpenChange(false);
+                  action.onSelect();
+                }}
+              >
+                {action.icon}
+                <span>{action.label}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        )}
         {/* Deliberately NOT `CommandEmpty`: it holds a `useRef(true)` "first
             render" guard and returns null on its own mount no matter what
             `filtered.count` is — it only ever shows starting on a LATER
@@ -113,9 +184,11 @@ export function NoteSearchPalette({
                 }}
               >
                 <div className="flex min-w-0 flex-col">
-                  <span className="truncate font-medium">{hit.title}</span>
+                  <span className="truncate font-medium">
+                    {renderTitle(hit.title, debouncedTerm)}
+                  </span>
                   <span className="truncate text-xs text-muted-foreground">
-                    {hit.snippet}
+                    {renderSnippet(hit.snippet)}
                   </span>
                 </div>
               </CommandItem>

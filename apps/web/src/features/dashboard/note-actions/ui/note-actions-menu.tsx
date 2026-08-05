@@ -11,22 +11,47 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   Button,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  Input,
 } from '@byte-of-me/ui';
-import { Archive, ArchiveRestore, MoreVertical, Trash2 } from 'lucide-react';
+import {
+  Archive,
+  ArchiveRestore,
+  FilePlus,
+  FolderPlus,
+  MoreVertical,
+  Pencil,
+  Pin,
+  PinOff,
+  Trash2,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { useNoteMutations } from '@/features/dashboard/note-actions/lib/use-note-mutations';
+import {
+  useCreateNote,
+  useNoteMutations,
+  useRenameNote,
+} from '@/features/dashboard/note-actions/lib/use-note-mutations';
 import { cn } from '@/shared/lib/utils';
 
 interface NoteActionsMenuProps {
   noteId: string;
   title: string;
   isArchived: boolean;
+  isPinned: boolean;
+  /** Folders get rename + create-inside items; the row itself never opens. */
+  isFolder?: boolean;
+  /** Opens a note created INSIDE this one ("New note inside"). */
+  onCreatedInside?: (noteId: string) => void;
   /**
    * How many notes hang below this one. Only used in the delete confirmation,
    * where it is the difference between "delete this note" and "delete this
@@ -42,13 +67,28 @@ export function NoteActionsMenu({
   noteId,
   title,
   isArchived,
+  isPinned,
+  isFolder = false,
+  onCreatedInside,
   descendantCount,
   onRemoved,
   className,
 }: NoteActionsMenuProps) {
   const t = useTranslations('dashboard.note');
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const { archive, restore, remove } = useNoteMutations({ onRemoved });
+  const [renameOpen, setRenameOpen] = useState(false);
+  const [renameValue, setRenameValue] = useState(title);
+  const { archive, restore, remove, pin } = useNoteMutations({ onRemoved });
+  const createInside = useCreateNote(onCreatedInside);
+  const rename = useRenameNote();
+
+  const commitRename = () => {
+    const next = renameValue.trim();
+    if (next && next !== title) {
+      rename.mutate({ id: noteId, title: next });
+    }
+    setRenameOpen(false);
+  };
 
   return (
     <>
@@ -70,6 +110,59 @@ export function NoteActionsMenu({
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end" className="w-48">
+          {/* Create-inside for live rows: any row can hold children (the
+              tree is one hierarchy), but folders are where it matters. */}
+          {!isArchived && (
+            <>
+              <DropdownMenuItem
+                disabled={createInside.isPending}
+                onSelect={() => createInside.mutate({ parentId: noteId })}
+              >
+                <FilePlus className="mr-2 size-4" />
+                {t('actions.newNoteInside')}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={createInside.isPending}
+                onSelect={() =>
+                  createInside.mutate({ parentId: noteId, isFolder: true })
+                }
+              >
+                <FolderPlus className="mr-2 size-4" />
+                {t('actions.newFolderInside')}
+              </DropdownMenuItem>
+              {/* Folders never open an editor, so this is their only rename
+                  path; notes rename through the editor title. */}
+              {isFolder && (
+                <DropdownMenuItem
+                  onSelect={() => {
+                    setRenameValue(title);
+                    setRenameOpen(true);
+                  }}
+                >
+                  <Pencil className="mr-2 size-4" />
+                  {t('actions.rename')}
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+            </>
+          )}
+
+          {/* Pinning an archived note is meaningless — the trash view does
+              not honour pin order — so the item only shows for live notes. */}
+          {!isArchived && (
+            <DropdownMenuItem
+              disabled={pin.isPending}
+              onSelect={() => pin.mutate({ id: noteId, isPinned: !isPinned })}
+            >
+              {isPinned ? (
+                <PinOff className="mr-2 size-4" />
+              ) : (
+                <Pin className="mr-2 size-4" />
+              )}
+              {isPinned ? t('actions.unpin') : t('actions.pin')}
+            </DropdownMenuItem>
+          )}
+
           {isArchived ? (
             <DropdownMenuItem
               disabled={restore.isPending}
@@ -132,6 +225,44 @@ export function NoteActionsMenu({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Rename, opened from state like the delete confirmation above and
+          for the same radix focus-handoff reason. */}
+      <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{t('rename.title')}</DialogTitle>
+          </DialogHeader>
+          <Input
+            value={renameValue}
+            onChange={(event) => setRenameValue(event.target.value)}
+            aria-label={t('rename.label')}
+            maxLength={200}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                commitRename();
+              }
+            }}
+          />
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setRenameOpen(false)}
+            >
+              {t('rename.cancel')}
+            </Button>
+            <Button
+              type="button"
+              disabled={rename.isPending || renameValue.trim() === ''}
+              onClick={commitRename}
+            >
+              {t('rename.save')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -2,14 +2,13 @@
 
 import { useMemo, useState } from 'react';
 import { Button } from '@byte-of-me/ui';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Archive, ArrowLeft, Plus, Search } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { Archive, ArrowLeft, FolderPlus, Plus, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
 
 import {
   buildNoteTree,
-  createNote,
+  getNoteLabels,
   getNoteTree,
   NoteEmpty,
   noteKeys,
@@ -17,6 +16,17 @@ import {
   type NoteTreeNode,
   NoteTreeSkeleton,
 } from '@/entities/note';
+import { useCreateNote } from '@/features/dashboard/note-actions';
+import {
+  ExplorerDnd,
+  ExplorerViewMenu,
+  GroupedRowDndShell,
+  GroupSectionDndShell,
+  NoteFlatList,
+  NoteGroupedList,
+  TreeRowDndShell,
+  useExplorerPrefs,
+} from '@/features/dashboard/note-explorer';
 
 interface NoteTreePanelProps {
   activeId: string | null;
@@ -42,8 +52,11 @@ export function NoteTreePanel({
   renderActions,
 }: NoteTreePanelProps) {
   const t = useTranslations('dashboard.note');
-  const queryClient = useQueryClient();
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const { prefs, update: updatePrefs } = useExplorerPrefs();
+  // The archived "trash" view stays a plain tree: pin order and grouping are
+  // live-notes concepts, and the mode menu is hidden there.
+  const mode = includeArchived ? 'tree' : prefs.mode;
 
   const { data, isPending, isLoadingError } = useQuery({
     queryKey: noteKeys.tree(includeArchived),
@@ -66,39 +79,28 @@ export function NoteTreePanel({
 
   const tree = useMemo(() => buildNoteTree(rows), [rows]);
 
-  const create = useMutation({
-    mutationFn: async () => {
-      const res = await createNote({ title: t('untitled'), parentId: null });
+  // Folders are tree structure, not documents: the flat and grouped views
+  // list what you can READ, so pure containers stay out of them.
+  const documentsOnly = useMemo(
+    () => rows.filter((row) => !row.isFolder),
+    [rows]
+  );
+
+  // Label names for the grouped-by-label view; only fetched when shown.
+  const { data: labels } = useQuery({
+    queryKey: noteKeys.labels(),
+    queryFn: async () => {
+      const res = await getNoteLabels();
       if (!res.success) throw new Error(res.errorMsg);
       return res.data;
     },
-    onSuccess: (note) => {
-      // Both tree variants, not `noteKeys.all`: `use-note-editor-autosave.ts`'s
-      // `applySaveResult` documents why a broad invalidation is a bug waiting
-      // to happen for AUTOSAVE — it prefix-matches `detail` too, and repeating
-      // on every debounced save turned into an infinite resend loop. A create
-      // is one-shot, not recurring, so that specific loop cannot reproduce,
-      // and it does not touch any note's `detail` entry, so that key is
-      // still skipped here.
-      //
-      // `searchAll` IS included, unlike in that autosave comment: the empty-
-      // term search (what the palette runs on open) lists every note by
-      // `updatedAt desc`, so a note created since the query was last cached
-      // belongs at the very top of that list — and, being brand new, it was
-      // never part of ANY previously cached search result, so there is no
-      // stale copy of it to conflict with. That is exactly the condition
-      // `applySaveResult` could not rely on: a save invalidating `search`
-      // would race against a query cached with the note's OWN pre-save text
-      // still showing.
-      void queryClient.invalidateQueries({ queryKey: noteKeys.tree(false) });
-      void queryClient.invalidateQueries({ queryKey: noteKeys.tree(true) });
-      void queryClient.invalidateQueries({ queryKey: noteKeys.searchAll() });
-      onSelect(note.id);
-    },
-    onError: (error: Error) => {
-      toast.error(t('errors.create'), { description: error.message });
-    },
+    enabled: mode === 'grouped' && prefs.groupBy === 'label',
   });
+
+  // Shared with the command palette's "New note" action — the invalidation
+  // rationale (both trees + searchAll, never `noteKeys.all`) lives on the
+  // hook itself in `features/dashboard/note-actions`.
+  const create = useCreateNote(onSelect);
 
   const toggle = (id: string) => {
     setExpandedIds((current) => {
@@ -128,13 +130,35 @@ export function NoteTreePanel({
           <span className="truncate">{t('search.trigger')}</span>
         </Button>
 
+        {!includeArchived && (
+          <ExplorerViewMenu
+            mode={prefs.mode}
+            sort={prefs.sort}
+            groupBy={prefs.groupBy}
+            onChange={updatePrefs}
+          />
+        )}
+
+        {!includeArchived && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label={t('actions.newFolder')}
+            disabled={create.isPending}
+            onClick={() => create.mutate({ isFolder: true })}
+          >
+            <FolderPlus className="size-4" />
+          </Button>
+        )}
+
         <Button
           type="button"
           variant="ghost"
           size="icon"
           aria-label={t('actions.create')}
           disabled={create.isPending}
-          onClick={() => create.mutate()}
+          onClick={() => create.mutate({})}
         >
           <Plus className="size-4" />
         </Button>
@@ -184,25 +208,73 @@ export function NoteTreePanel({
               {t('archive.empty')}
             </p>
           ) : (
-            <NoteEmpty onCreate={() => create.mutate()} />
+            <NoteEmpty onCreate={() => create.mutate({})} />
           )
         )}
 
-        {tree.length > 0 && (
-          <ul>
-            {tree.map((node) => (
-              <NoteTreeItem
-                key={node.id}
-                node={node}
-                activeId={activeId}
-                expandedIds={expandedIds}
-                onSelect={onSelect}
-                onToggle={toggle}
-                renderActions={renderActions}
-              />
-            ))}
-          </ul>
-        )}
+        {/* One DndContext across every view; the archived tree renders
+            without shells, so nothing there drags. */}
+        <ExplorerDnd
+          rows={rows}
+          labels={labels ?? []}
+          showRootZone={mode === 'tree' && !includeArchived}
+        >
+          {tree.length > 0 && mode === 'tree' && (
+            <ul>
+              {tree.map((node) => (
+                <NoteTreeItem
+                  key={node.id}
+                  node={node}
+                  activeId={activeId}
+                  expandedIds={expandedIds}
+                  onSelect={onSelect}
+                  onToggle={toggle}
+                  renderActions={renderActions}
+                  renderRowShell={
+                    includeArchived
+                      ? undefined
+                      : (rowNode, row) => (
+                          <TreeRowDndShell node={rowNode}>
+                            {row}
+                          </TreeRowDndShell>
+                        )
+                  }
+                />
+              ))}
+            </ul>
+          )}
+
+          {documentsOnly.length > 0 && mode === 'flat' && (
+            <NoteFlatList
+              rows={documentsOnly}
+              sort={prefs.sort}
+              activeId={activeId}
+              onSelect={onSelect}
+              renderActions={renderActions}
+            />
+          )}
+
+          {documentsOnly.length > 0 && mode === 'grouped' && (
+            <NoteGroupedList
+              rows={documentsOnly}
+              groupBy={prefs.groupBy}
+              labels={labels ?? []}
+              activeId={activeId}
+              onSelect={onSelect}
+              renderActions={renderActions}
+              renderSection={(group, section) => (
+                <GroupSectionDndShell key={group.key} group={group}>
+                  {section}
+                </GroupSectionDndShell>
+              )}
+              renderRowShell={(group, node, row) => (
+                <GroupedRowDndShell group={group} node={node}>
+                  {row}
+                </GroupedRowDndShell>
+              )}
+            />
+          )}
+        </ExplorerDnd>
       </div>
 
       {onToggleArchived && (

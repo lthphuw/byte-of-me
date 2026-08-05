@@ -55,6 +55,7 @@ export async function createNote(
         plainText: '',
         parentId,
         position: (lastSibling?.position ?? -1) + 1,
+        isFolder: data.isFolder ?? false,
       },
       select: {
         id: true,
@@ -66,10 +67,19 @@ export async function createNote(
         archivedAt: true,
         createdAt: true,
         updatedAt: true,
+        status: true,
+        properties: true,
+        isFolder: true,
+        labels: {
+          select: { label: { select: { id: true, name: true, color: true } } },
+        },
       },
     });
 
-    return { success: true, data: note };
+    return {
+      success: true,
+      data: { ...note, labels: note.labels.map((row) => row.label) },
+    };
   } catch (error) {
     const errorMsg = getErrorMessage(error, 'Failed to create note');
     logger.error(`Create note error: ${errorMsg}`);

@@ -35,6 +35,12 @@ export async function getNoteTree(
         isPinned: true,
         archivedAt: true,
         updatedAt: true,
+        createdAt: true,
+        status: true,
+        isFolder: true,
+        // Join-row ids only — label names come from `getNoteLabels`, once,
+        // instead of repeating on every one of N rows.
+        labels: { select: { labelId: true } },
       },
       orderBy: [
         { isPinned: 'desc' },
@@ -44,7 +50,13 @@ export async function getNoteTree(
       ],
     });
 
-    return { success: true, data: notes };
+    return {
+      success: true,
+      data: notes.map(({ labels, ...note }) => ({
+        ...note,
+        labelIds: labels.map((row) => row.labelId),
+      })),
+    };
   } catch (error) {
     const errorMsg = getErrorMessage(error, 'Failed to load notes');
     logger.error(`Get note tree error: ${errorMsg}`);

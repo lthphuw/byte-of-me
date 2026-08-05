@@ -36,6 +36,10 @@ Object.defineProperty(prisma, 'note', {
 });
 
 const noteRow = {
+  status: 'draft',
+  properties: null,
+  isFolder: false,
+  labels: [{ label: { id: 'label-1', name: 'reading', color: null } }],
   id: 'note-1',
   title: 'Kafka internals',
   content: JSON.stringify({

@@ -110,6 +110,10 @@ describe('updateNote', () => {
       archivedAt: null,
       createdAt: new Date('2026-08-01T00:00:00.000Z'),
       updatedAt: new Date('2026-08-01T00:00:00.000Z'),
+      status: 'draft',
+      properties: null,
+      isFolder: false,
+      labels: [],
     });
   });
 
@@ -188,6 +192,44 @@ describe('updateNote', () => {
 
     expect(linkDeleteMany).not.toHaveBeenCalled();
     expect(linkCreateMany).not.toHaveBeenCalled();
+  });
+
+  it('persists status, properties and isPinned when provided', async () => {
+    const res = await updateNote({
+      id: 'note-1',
+      status: 'active',
+      properties: { mood: 'good', priority: 2, done: false },
+      isPinned: true,
+    });
+
+    expect(res.success).toBe(true);
+    const data = updateMany.mock.calls[0]?.[0]?.data as Record<string, unknown>;
+    expect(data.status).toBe('active');
+    expect(data.properties).toEqual({ mood: 'good', priority: 2, done: false });
+    expect(data.isPinned).toBe(true);
+    // No content in the input → the search index and the links are untouched.
+    expect(data.plainText).toBeUndefined();
+    expect(linkDeleteMany).not.toHaveBeenCalled();
+  });
+
+  it('omits status, properties and isPinned from the write when absent', async () => {
+    await updateNote({ id: 'note-1', title: 'Kafka internals' });
+
+    const data = updateMany.mock.calls[0]?.[0]?.data as Record<string, unknown>;
+    expect('status' in data).toBe(false);
+    expect('properties' in data).toBe(false);
+    expect('isPinned' in data).toBe(false);
+  });
+
+  it('rejects an oversized properties map through errorMsg', async () => {
+    const properties = Object.fromEntries(
+      Array.from({ length: 41 }, (_, i) => [`k${i}`, 'v'])
+    );
+
+    const res = await updateNote({ id: 'note-1', properties });
+
+    expect(res.success).toBe(false);
+    expect(updateMany).not.toHaveBeenCalled();
   });
 
   it('does not touch links when the note belongs to someone else', async () => {

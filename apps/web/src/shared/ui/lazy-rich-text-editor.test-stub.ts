@@ -71,6 +71,12 @@ interface FakeRichTextChangeMeta {
 interface FakeRichTextEditorProps {
   value?: unknown;
   onChange?: (json: unknown, meta: FakeRichTextChangeMeta) => void;
+  /** Recorded (see `__getCurrentProps`) so a spec can assert the raw-markdown
+   *  toggle actually reaches the editor. The stub renders nothing either way —
+   *  raw mode is the real component's behavior, not this double's. */
+  markdownMode?: boolean;
+  /** Recorded only; the stub never reports an outline. */
+  onOutlineChange?: (items: unknown[]) => void;
 }
 
 // What each mounted instance of the fake editor was seeded with, in mount
@@ -89,15 +95,22 @@ let mountedValues: unknown[] = [];
 // collection keyed by instance.
 let currentValue: unknown;
 let currentOnChange: FakeRichTextEditorProps['onChange'];
+let currentProps: FakeRichTextEditorProps | undefined;
 
 export function __getMountedValues(): unknown[] {
   return mountedValues;
+}
+
+/** The props of the CURRENTLY mounted instance, as of its latest render. */
+export function __getCurrentProps(): FakeRichTextEditorProps | undefined {
+  return currentProps;
 }
 
 export function __resetMountedValues(): void {
   mountedValues = [];
   currentValue = undefined;
   currentOnChange = undefined;
+  currentProps = undefined;
 }
 
 /** Best-effort plain-text reader for the small subset of Tiptap JSON this
@@ -214,6 +227,7 @@ function FakeRichTextEditor(props: FakeRichTextEditorProps) {
     currentValue = openedWithRef.current;
   }
   currentOnChange = props.onChange;
+  currentProps = props;
 
   // The real editor REPORTS that normalised document through `onUpdate` while
   // it opens — verified against the real component, not assumed: Tiptap emits
@@ -253,6 +267,7 @@ plugin({
       exports: {
         LazyRichTextEditor: FakeRichTextEditor,
         __getMountedValues,
+        __getCurrentProps,
         __resetMountedValues,
         __typeInBody,
       },

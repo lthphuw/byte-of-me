@@ -1,11 +1,19 @@
 'use client';
 
-import { Button } from '@byte-of-me/ui';
+import { useState } from 'react';
+import {
+  Button,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@byte-of-me/ui';
+import type { OutlineItem } from '@byte-of-me/ui/rich-text-editor';
 import {
   fromEditorContent,
   toEditorContent,
 } from '@byte-of-me/ui/lib/rich-text-content';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, CircleHelp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { uploadSingleMedia } from '@/entities/media';
@@ -31,6 +39,15 @@ export interface NoteEditorProps {
   onLinkTrigger?: (
     insertLink: (link: { text: string; href: string }) => void
   ) => void;
+  /** The properties panel, passed in by the widget for the same sideways-
+   *  import reason as `actions`: `note-properties` is a sibling feature. */
+  propertiesSlot?: React.ReactNode;
+  /** Opens the markdown cheat-sheet. The DIALOG belongs to the widget (the
+   *  command palette must reach it with no note open); this only asks. */
+  onOpenCheatSheet?: () => void;
+  /** The heading outline, re-reported as it changes — the widget's ToC tab
+   *  renders from it. Pass-through to the shared editor. */
+  onOutlineChange?: (items: OutlineItem[]) => void;
 }
 
 export function NoteEditor({
@@ -39,8 +56,14 @@ export function NoteEditor({
   actions,
   onOpenNote,
   onLinkTrigger,
+  propertiesSlot,
+  onOpenCheatSheet,
+  onOutlineChange,
 }: NoteEditorProps) {
   const t = useTranslations('dashboard.note');
+  // Raw markdown source vs WYSIWYG. Resets on note switch for free: the
+  // widget mounts this component with `key={noteId}`.
+  const [rawMode, setRawMode] = useState(false);
   const {
     note,
     isPending,
@@ -157,6 +180,58 @@ export function NoteEditor({
           )}
         </div>
 
+        {/* Editor ⇄ raw-markdown view. A segmented pair rather than one
+            mode-named button: the label always says where you ARE, so a
+            toggle reading "Markdown" is ambiguous about which side it means. */}
+        <div
+          role="group"
+          aria-label={t('view.label')}
+          className="flex shrink-0 items-center gap-0.5 rounded-md border p-0.5"
+        >
+          <Button
+            type="button"
+            size="sm"
+            variant={rawMode ? 'ghost' : 'secondary'}
+            className="h-6 px-2 text-xs"
+            aria-pressed={!rawMode}
+            onClick={() => setRawMode(false)}
+          >
+            {t('view.editor')}
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={rawMode ? 'secondary' : 'ghost'}
+            className="h-6 px-2 text-xs"
+            aria-pressed={rawMode}
+            onClick={() => setRawMode(true)}
+          >
+            {t('view.markdown')}
+          </Button>
+        </div>
+
+        {onOpenCheatSheet && (
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-7 shrink-0"
+                  aria-label={t('cheatSheet.open')}
+                  onClick={onOpenCheatSheet}
+                >
+                  <CircleHelp className="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                {t('cheatSheet.open')}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+
         {actions}
       </div>
 
@@ -169,6 +244,8 @@ export function NoteEditor({
         // tenth of a phone screen on its own.
         className="w-full shrink-0 border-none bg-transparent px-4 pb-1 pt-3 text-xl font-semibold outline-none placeholder:text-muted-foreground md:px-6 md:pt-5 md:text-2xl"
       />
+
+      {propertiesSlot}
 
       <div
         className="min-h-0 flex-1"
@@ -229,6 +306,11 @@ export function NoteEditor({
           // bar is chrome the author never reaches for. Selecting text still
           // raises the bubble bar for the things markdown cannot express.
           chromeless
+          // Notes are the workspace where formulas live; `$…$` and `$$…$$`
+          // render as KaTeX while typing. Other editors keep `$` literal.
+          withMath
+          markdownMode={rawMode}
+          onOutlineChange={onOutlineChange}
           // Take the height this pane gives, instead of the editor's own
           // `h-[min(720px,62dvh)]`. That fixed box was nested inside this
           // already-scrolling pane, so a phone scrolled a ~60dvh window

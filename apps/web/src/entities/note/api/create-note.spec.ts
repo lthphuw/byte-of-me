@@ -44,6 +44,10 @@ const createdRow = {
   archivedAt: null,
   createdAt: new Date('2026-08-02T00:00:00.000Z'),
   updatedAt: new Date('2026-08-02T00:00:00.000Z'),
+  status: 'draft',
+  properties: null,
+  isFolder: false,
+  labels: [],
 };
 
 describe('createNote', () => {

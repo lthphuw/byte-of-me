@@ -1,13 +1,19 @@
 'use client';
 
 import type { ComponentType } from 'react';
-import { NotebookPen } from 'lucide-react';
+import { LayoutGrid, NotebookPen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 export interface SpaceNavItem {
   href: string;
   label: string;
   icon: ComponentType<{ className?: string }>;
+  /**
+   * Match the active state by equality instead of `startsWith`. The hub lives
+   * at `/space`, which is a prefix of every other space route — prefix
+   * matching would light it up permanently.
+   */
+  exact?: boolean;
 }
 
 /**
@@ -25,6 +31,7 @@ export function useSpaceNavItems(): SpaceNavItem[] {
   const t = useTranslations('dashboard.space');
 
   return [
+    { href: '/space', label: t('items.hub'), icon: LayoutGrid, exact: true },
     { href: '/space/notes', label: t('items.notes'), icon: NotebookPen },
   ];
 }

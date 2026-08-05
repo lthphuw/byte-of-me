@@ -564,6 +564,7 @@ declare const messages: {
       "title": "Ghi chú",
       "description": "Ghi chú riêng tư của bạn. Không có gì ở đây được công khai.",
       "untitled": "Chưa đặt tên",
+      "untitledFolder": "Thư mục mới",
       "loading": "Đang tải ghi chú…",
       "emptySelection": "Chọn một ghi chú hoặc tạo ghi chú mới.",
       "backToList": "Tất cả ghi chú",
@@ -578,6 +579,12 @@ declare const messages: {
       },
       "actions": {
         "create": "Ghi chú mới",
+        "newFolder": "Thư mục mới",
+        "newNoteInside": "Ghi chú mới bên trong",
+        "newFolderInside": "Thư mục mới bên trong",
+        "rename": "Đổi tên",
+        "pin": "Ghim",
+        "unpin": "Bỏ ghim",
         "archive": "Lưu trữ",
         "restore": "Khôi phục",
         "delete": "Xóa",
@@ -591,11 +598,101 @@ declare const messages: {
         "error": "Chưa lưu",
         "retry": "Thử lại"
       },
+      "view": {
+        "label": "Chế độ soạn thảo",
+        "editor": "Soạn thảo",
+        "markdown": "Markdown"
+      },
+      "properties": {
+        "title": "Thuộc tính",
+        "status": "Trạng thái",
+        "statusPlaceholder": "vd. draft",
+        "presets": {
+          "draft": "Nháp",
+          "active": "Đang làm",
+          "done": "Hoàn thành"
+        },
+        "key": "Tên thuộc tính",
+        "keyPlaceholder": "Tên",
+        "value": "Giá trị thuộc tính",
+        "valuePlaceholder": "Giá trị",
+        "valueFor": "Giá trị của {key}",
+        "add": "Thêm thuộc tính",
+        "remove": "Xoá {key}",
+        "labels": "Nhãn",
+        "labelsPlaceholder": "Thêm nhãn…",
+        "removeLabel": "Xoá nhãn {name}"
+      },
+      "cheatSheet": {
+        "open": "Trợ giúp Markdown",
+        "title": "Bảng cú pháp Markdown",
+        "description": "Gõ những cú pháp này khi viết — chúng biến thành định dạng ngay lập tức.",
+        "noSyntax": "Kéo thả / dán",
+        "sections": {
+          "basics": "Cơ bản",
+          "blocks": "Khối",
+          "linksMedia": "Liên kết & phương tiện",
+          "tables": "Bảng",
+          "math": "Công thức toán"
+        },
+        "rows": {
+          "heading": "Tiêu đề — mỗi cấp một dấu #, sau đó là dấu cách.",
+          "bold": "Chữ đậm.",
+          "italic": "Chữ nghiêng.",
+          "strike": "Gạch ngang.",
+          "code": "Mã trong dòng.",
+          "quote": "Trích dẫn — gõ > rồi dấu cách.",
+          "list": "Danh sách gạch đầu dòng hoặc đánh số.",
+          "fence": "Khối mã — ba dấu backtick, ngôn ngữ tuỳ chọn.",
+          "rule": "Đường kẻ ngang.",
+          "noteLink": "Liên kết đến ghi chú khác — gõ [[ rồi chọn.",
+          "image": "Kéo thả tệp ảnh hoặc dán ảnh chụp màn hình để chèn.",
+          "table": "Dán bảng markdown và nó trở thành bảng thật.",
+          "mathInline": "Công thức trong dòng, hiển thị ngay khi gõ.",
+          "mathBlock": "Khối công thức trên dòng riêng, kiểu hiển thị lớn."
+        }
+      },
+      "rename": {
+        "title": "Đổi tên",
+        "label": "Tên mới",
+        "save": "Lưu",
+        "cancel": "Huỷ"
+      },
+      "sidebar": {
+        "title": "Bảng ghi chú",
+        "toc": "Mục lục",
+        "links": "Liên kết",
+        "tocEmpty": "Các tiêu đề bạn thêm sẽ hiện ở đây."
+      },
+      "explorer": {
+        "viewMode": "Chế độ xem",
+        "modes": {
+          "tree": "Cây",
+          "flat": "Danh sách phẳng",
+          "grouped": "Nhóm"
+        },
+        "sortLabel": "Sắp xếp theo",
+        "sort": {
+          "updated": "Sửa gần nhất",
+          "created": "Ngày tạo",
+          "title": "Tiêu đề"
+        },
+        "groupByLabel": "Nhóm theo",
+        "groupBy": {
+          "status": "Trạng thái",
+          "label": "Nhãn"
+        },
+        "noLabel": "Không nhãn",
+        "dropToRoot": "Thả vào đây để đưa lên cấp cao nhất"
+      },
       "search": {
         "trigger": "Tìm kiếm ghi chú",
         "placeholder": "Tìm kiếm ghi chú của bạn…",
         "loading": "Đang tìm…",
-        "empty": "Không có ghi chú nào khớp."
+        "empty": "Không có ghi chú nào khớp.",
+        "actionsHeading": "Hành động",
+        "actionNewNote": "Ghi chú mới",
+        "actionCheatSheet": "Trợ giúp Markdown"
       },
       "archive": {
         "title": "Đã lưu trữ",
@@ -646,11 +743,34 @@ declare const messages: {
       "navAriaLabel": "Điều hướng không gian làm việc",
       "openNav": "Mở điều hướng không gian làm việc",
       "items": {
+        "hub": "Tổng quan",
         "notes": "Ghi chú"
       },
       "actions": {
         "dashboard": "Bảng điều khiển",
         "signOut": "Đăng xuất"
+      },
+      "hub": {
+        "greeting": "Chào mừng trở lại, {name}",
+        "subtitle": "Không gian làm việc riêng tư của bạn",
+        "stats": {
+          "ariaLabel": "Thống kê không gian làm việc",
+          "notes": "Ghi chú",
+          "links": "Liên kết giữa các ghi chú",
+          "archived": "Trong thùng rác"
+        },
+        "recent": {
+          "title": "Chỉnh sửa gần đây",
+          "empty": "Chưa có gì ở đây — hãy tạo ghi chú đầu tiên của bạn.",
+          "untitled": "Chưa có tiêu đề"
+        },
+        "modules": {
+          "notesTitle": "Ghi chú",
+          "notesDescription": "Ghi chú liên kết với backlink, công thức toán và markdown."
+        },
+        "errors": {
+          "load": "Không tải được tổng quan không gian làm việc. Tải lại để thử lại."
+        }
       }
     },
     "project": {

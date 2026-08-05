@@ -43,6 +43,7 @@ import {
 } from './extensions/image';
 import { ImagePlaceholder } from './extensions/image-placeholder';
 import { LinkSuggestion } from './extensions/link-suggestion';
+import { NotesBlockMath, NotesInlineMath } from './extensions/math';
 import { Citation } from './extensions/references/citation';
 import { ReferenceList } from './extensions/references/reference-list';
 import { ReferencePanel } from './extensions/references/reference-panel';
@@ -53,6 +54,9 @@ import { CustomHeading } from './render-extensions';
 import { EditorToolbar } from './toolbars/editor-toolbar';
 
 import './tiptap.css';
+// Unconditional import in a file that is already a lazy chunk public pages
+// never load; only the `withMath` option below gates the extension itself.
+import 'katex/dist/katex.min.css';
 
 // The editor is already a lazy chunk, so the full common grammar set is fine.
 const lowlight = createLowlight(common);
@@ -62,6 +66,8 @@ const DEFAULT_PLACEHOLDER = "Write, type '/' for commands";
 export function createExtensions(options?: {
   uploadImage?: ImageUploadFn;
   placeholder?: string;
+  /** Registers KaTeX math nodes (`$…$` inline, `$$…$$` block). Opt-in. */
+  withMath?: boolean;
 }) {
   return [
     StarterKit.configure({
@@ -97,6 +103,14 @@ export function createExtensions(options?: {
     Markdown,
     Citation,
     ReferenceList,
+    // A typo inside a formula must render as an error message in red, not
+    // throw out of ProseMirror's render path and blank the editor.
+    ...(options?.withMath
+      ? [
+          NotesInlineMath.configure({ katexOptions: { throwOnError: false } }),
+          NotesBlockMath.configure({ katexOptions: { throwOnError: false } }),
+        ]
+      : []),
   ];
 }
 
@@ -127,6 +141,16 @@ export function createExtensions(options?: {
  */
 export interface RichTextChangeMeta {
   initial: boolean;
+}
+
+/** One heading in the document, as the outline/ToC consumers render it. */
+export interface OutlineItem {
+  /** The heading element's DOM id — scroll targets resolve through it. */
+  id: string;
+  level: number;
+  text: string;
+  /** The heading the viewport currently sits under. */
+  isActive: boolean;
 }
 
 type RichTextEditorProps = {
@@ -182,6 +206,29 @@ type RichTextEditorProps = {
   onLinkTrigger?: (
     insertLink: (link: { text: string; href: string }) => void
   ) => void;
+  /**
+   * Registers the KaTeX math nodes — `$…$` inline, `$$…$$` block, rendered
+   * live as the author types. Additive like `chromeless`: only the notes
+   * workspace passes it, so every other editor keeps `$` a literal dollar.
+   */
+  withMath?: boolean;
+  /**
+   * The document's heading outline, re-reported whenever it changes. What the
+   * notes workspace renders its ToC tab from: the TableOfContents extension is
+   * registered for every non-compact editor, but chromeless surfaces hide the
+   * built-in outline aside, so this hands the same data to a consumer-owned
+   * panel instead.
+   */
+  onOutlineChange?: (items: OutlineItem[]) => void;
+  /**
+   * Swaps the writing surface for the document's raw markdown source in a
+   * monospace textarea. The Tiptap editor stays mounted (hidden) underneath —
+   * the document remains the single source of truth: entering raw mode
+   * serializes it, edits are debounced back into it through the Markdown
+   * extension (so `onChange` and any autosave keep working), and leaving raw
+   * mode simply reveals the editor again.
+   */
+  markdownMode?: boolean;
 };
 
 const COMPACT_MAX_HEIGHT = 360;
@@ -247,6 +294,9 @@ export function RichTextEditor({
   chromeless = false,
   fill = false,
   onLinkTrigger,
+  withMath = false,
+  markdownMode = false,
+  onOutlineChange,
 }: RichTextEditorProps) {
   // Matches the `md` breakpoint the notes workspace switches its layout at.
   const isNarrow = useMediaQuery('(max-width: 767px)');
@@ -264,6 +314,14 @@ export function RichTextEditor({
   useEffect(() => {
     onLinkTriggerRef.current = onLinkTrigger;
   }, [onLinkTrigger]);
+
+  // Same frozen-extension-list reason as `onLinkTriggerRef` above: the ToC
+  // extension's onUpdate closure is built once, so it reads the CURRENT
+  // consumer callback through a ref.
+  const onOutlineChangeRef = useRef(onOutlineChange);
+  useEffect(() => {
+    onOutlineChangeRef.current = onOutlineChange;
+  }, [onOutlineChange]);
 
   const handleLinkTrigger = useCallback(() => {
     onLinkTriggerRef.current?.((link) => {
@@ -290,6 +348,13 @@ export function RichTextEditor({
   // Snapshot of the document taken when preview is switched on. The editor
   // stays mounted (hidden) underneath, so toggling back loses nothing.
   const [preview, setPreview] = useState<JSONContent | null>(null);
+
+  // The raw-markdown buffer. Non-null exactly while `markdownMode` is on —
+  // seeded from the document on entry, cleared on exit. Kept as local state
+  // (not derived per render) so typing in the textarea does not re-serialize
+  // the whole document on every keystroke.
+  const [rawText, setRawText] = useState<string | null>(null);
+  const rawDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -341,7 +406,7 @@ export function RichTextEditor({
       },
     },
     extensions: [
-      ...createExtensions({ uploadImage, placeholder }),
+      ...createExtensions({ uploadImage, placeholder, withMath }),
       // Registered only when a consumer wants it, so `[[` stays two literal
       // brackets everywhere else — a code snippet in a blog post is not a
       // link picker.
@@ -357,6 +422,14 @@ export function RichTextEditor({
               getIndex: getHierarchicalIndexes,
               onUpdate(content) {
                 setItems(content);
+                onOutlineChangeRef.current?.(
+                  content.map((item) => ({
+                    id: item.id,
+                    level: item.level ?? 1,
+                    text: item.textContent,
+                    isActive: Boolean(item.isActive),
+                  }))
+                );
               },
             }),
           ]),
@@ -383,7 +456,60 @@ export function RichTextEditor({
     editorRef.current = editor ?? null;
   }, [editor]);
 
+  // The raw text most recently typed but not yet parsed into the document.
+  // Exists so leaving raw mode (or unmounting) can FLUSH the pending edit
+  // instead of cancelling it — a debounce that simply dies loses the last
+  // 800ms of typing.
+  const pendingRawRef = useRef<string | null>(null);
+
+  const flushRaw = useCallback(() => {
+    if (rawDebounceRef.current) {
+      clearTimeout(rawDebounceRef.current);
+      rawDebounceRef.current = null;
+    }
+    if (pendingRawRef.current !== null) {
+      editorRef.current?.commands.setContent(pendingRawRef.current, {
+        contentType: 'markdown',
+        emitUpdate: true,
+      });
+      pendingRawRef.current = null;
+    }
+  }, []);
+
+  const applyRaw = useCallback(
+    (raw: string) => {
+      setRawText(raw);
+      pendingRawRef.current = raw;
+      if (rawDebounceRef.current) clearTimeout(rawDebounceRef.current);
+      // Debounced, not per-keystroke: parsing the whole document through the
+      // Markdown extension on every character would make the textarea lag on
+      // long notes. `emitUpdate: true` keeps the consumer's onChange (and any
+      // autosave behind it) in the loop for edits made in raw mode.
+      rawDebounceRef.current = setTimeout(flushRaw, 800);
+    },
+    [flushRaw]
+  );
+
+  // Entering raw mode serializes the CURRENT document; leaving it flushes any
+  // pending raw edit and reveals the editor again.
+  useEffect(() => {
+    const currentEditor = editorRef.current;
+    if (!currentEditor) return;
+    if (markdownMode) {
+      setRawText(currentEditor.getMarkdown());
+    } else {
+      flushRaw();
+      setRawText(null);
+    }
+  }, [markdownMode, flushRaw, editor]);
+
+  // Unmount: a pending raw edit still lands in the document, so the consumer's
+  // onChange has seen it even if the author closes mid-debounce.
+  useEffect(() => flushRaw, [flushRaw]);
+
   if (!editor) return null;
+
+  const rawActive = markdownMode && rawText !== null;
 
   return (
     <div
@@ -459,13 +585,26 @@ export function RichTextEditor({
               any dialog-hosted editor on a phone; the notes workspace is simply
               the first surface where the full editor is reachable at that
               width, which is how it surfaced. */}
-          {!compact && !isNarrow && (
+          {!compact && !isNarrow && !rawActive && (
             <>
               <FloatingToolbar editor={editor} />
               <TipTapFloatingMenu editor={editor} />
             </>
           )}
-          <EditorContent editor={editor} />
+          {rawActive && (
+            <textarea
+              value={rawText ?? ''}
+              onChange={(event) => applyRaw(event.target.value)}
+              spellCheck={false}
+              aria-label="Markdown source"
+              className="min-h-full w-full resize-none bg-transparent font-mono text-sm leading-relaxed outline-none"
+            />
+          )}
+          {/* Hidden, not unmounted: the document underneath is what raw edits
+              parse back into, and what WYSIWYG mode reveals again. */}
+          <div className={cn(rawActive && 'hidden')}>
+            <EditorContent editor={editor} />
+          </div>
         </div>
 
         {/* Not for `chromeless`: the notes workspace already spends 56px on
@@ -535,7 +674,7 @@ export function RichTextEditor({
           update depth exceeded" the moment a note is opened on a phone.
           Only chromeless: everywhere else the real toolbar is already on
           screen at every width. */}
-      {chromeless && (
+      {chromeless && !rawActive && (
         <MobileEditorTools editor={editor} uploadImage={uploadImage} />
       )}
     </div>

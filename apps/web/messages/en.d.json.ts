@@ -564,6 +564,7 @@ declare const messages: {
       "title": "Notes",
       "description": "Your private notes. Nothing here is ever published.",
       "untitled": "Untitled",
+      "untitledFolder": "New folder",
       "loading": "Loading note…",
       "emptySelection": "Select a note, or create one.",
       "backToList": "All notes",
@@ -578,6 +579,12 @@ declare const messages: {
       },
       "actions": {
         "create": "New note",
+        "newFolder": "New folder",
+        "newNoteInside": "New note inside",
+        "newFolderInside": "New folder inside",
+        "rename": "Rename",
+        "pin": "Pin",
+        "unpin": "Unpin",
         "archive": "Archive",
         "restore": "Restore",
         "delete": "Delete",
@@ -591,11 +598,101 @@ declare const messages: {
         "error": "Not saved",
         "retry": "Retry"
       },
+      "view": {
+        "label": "Editor view",
+        "editor": "Editor",
+        "markdown": "Markdown"
+      },
+      "properties": {
+        "title": "Properties",
+        "status": "Status",
+        "statusPlaceholder": "e.g. draft",
+        "presets": {
+          "draft": "Draft",
+          "active": "Active",
+          "done": "Done"
+        },
+        "key": "Property name",
+        "keyPlaceholder": "Name",
+        "value": "Property value",
+        "valuePlaceholder": "Value",
+        "valueFor": "Value of {key}",
+        "add": "Add property",
+        "remove": "Remove {key}",
+        "labels": "Labels",
+        "labelsPlaceholder": "Add label…",
+        "removeLabel": "Remove label {name}"
+      },
+      "cheatSheet": {
+        "open": "Markdown help",
+        "title": "Markdown cheat sheet",
+        "description": "Type these as you write — they turn into formatting instantly.",
+        "noSyntax": "Drag & drop / paste",
+        "sections": {
+          "basics": "Basics",
+          "blocks": "Blocks",
+          "linksMedia": "Links & media",
+          "tables": "Tables",
+          "math": "Math"
+        },
+        "rows": {
+          "heading": "Heading — one # per level, then a space.",
+          "bold": "Bold text.",
+          "italic": "Italic text.",
+          "strike": "Strikethrough.",
+          "code": "Inline code.",
+          "quote": "Blockquote — type > then a space.",
+          "list": "Bulleted or numbered list.",
+          "fence": "Code block — three backticks, optional language.",
+          "rule": "Horizontal divider.",
+          "noteLink": "Link to another note — type [[ and pick one.",
+          "image": "Drop an image file or paste a screenshot to insert it.",
+          "table": "Paste a markdown table and it becomes a real table.",
+          "mathInline": "Inline math, rendered as you type.",
+          "mathBlock": "Math block on its own line, in display style."
+        }
+      },
+      "rename": {
+        "title": "Rename",
+        "label": "New name",
+        "save": "Save",
+        "cancel": "Cancel"
+      },
+      "sidebar": {
+        "title": "Note panel",
+        "toc": "Contents",
+        "links": "Links",
+        "tocEmpty": "Headings you add will show up here."
+      },
+      "explorer": {
+        "viewMode": "View",
+        "modes": {
+          "tree": "Tree",
+          "flat": "Flat list",
+          "grouped": "Grouped"
+        },
+        "sortLabel": "Sort by",
+        "sort": {
+          "updated": "Last edited",
+          "created": "Date created",
+          "title": "Title"
+        },
+        "groupByLabel": "Group by",
+        "groupBy": {
+          "status": "Status",
+          "label": "Label"
+        },
+        "noLabel": "No label",
+        "dropToRoot": "Drop here to move to top level"
+      },
       "search": {
         "trigger": "Search notes",
         "placeholder": "Search your notes…",
         "loading": "Searching…",
-        "empty": "No notes match."
+        "empty": "No notes match.",
+        "actionsHeading": "Actions",
+        "actionNewNote": "New note",
+        "actionCheatSheet": "Markdown help"
       },
       "archive": {
         "title": "Archived",
@@ -646,11 +743,34 @@ declare const messages: {
       "navAriaLabel": "Workspace navigation",
       "openNav": "Open workspace navigation",
       "items": {
+        "hub": "Overview",
         "notes": "Notes"
       },
       "actions": {
         "dashboard": "Dashboard",
         "signOut": "Sign out"
+      },
+      "hub": {
+        "greeting": "Welcome back, {name}",
+        "subtitle": "Your private workspace",
+        "stats": {
+          "ariaLabel": "Workspace statistics",
+          "notes": "Notes",
+          "links": "Links between notes",
+          "archived": "In trash"
+        },
+        "recent": {
+          "title": "Recently edited",
+          "empty": "Nothing here yet — create your first note.",
+          "untitled": "Untitled"
+        },
+        "modules": {
+          "notesTitle": "Notes",
+          "notesDescription": "Interconnected notes with backlinks, math, and markdown."
+        },
+        "errors": {
+          "load": "Couldn't load your workspace overview. Reload to try again."
+        }
       }
     },
     "project": {

@@ -6,9 +6,14 @@ import {
   Sheet,
   SheetContent,
   SheetTitle,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '@byte-of-me/ui';
+import type { OutlineItem } from '@byte-of-me/ui/rich-text-editor';
 import { useQuery } from '@tanstack/react-query';
-import { Network } from 'lucide-react';
+import { CircleHelp, Network, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { NoteTreePanel } from './note-tree-panel';
@@ -20,9 +25,17 @@ import {
   noteHref,
   noteKeys,
 } from '@/entities/note';
-import { NoteActionsMenu } from '@/features/dashboard/note-actions';
-import { NoteEditor } from '@/features/dashboard/note-editor';
+import {
+  NoteActionsMenu,
+  useCreateNote,
+} from '@/features/dashboard/note-actions';
+import {
+  MarkdownCheatSheetDialog,
+  NoteEditor,
+  NoteOutline,
+} from '@/features/dashboard/note-editor';
 import { NoteLinksPanel } from '@/features/dashboard/note-links';
+import { NotePropertiesPanel } from '@/features/dashboard/note-properties';
 import { NoteSearchPalette } from '@/features/dashboard/note-search';
 import { useRouter } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
@@ -54,6 +67,14 @@ export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   const [linksOpen, setLinksOpen] = useState(false);
+  const [cheatSheetOpen, setCheatSheetOpen] = useState(false);
+  // The open note's heading outline — reported by the editor, rendered by
+  // the sidebar's ToC tab. Cleared on note switch so a heading-less note
+  // never shows the previous note's outline while its editor mounts.
+  const [outline, setOutline] = useState<OutlineItem[]>([]);
+  useEffect(() => {
+    setOutline([]);
+  }, [noteId]);
   // Non-null exactly while the `[[` picker is open. Holding the editor's own
   // insert callback here — rather than a boolean plus a reach back into the
   // editor — is what keeps `packages/ui` from having to know what a note is:
@@ -72,6 +93,9 @@ export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
     },
     [router]
   );
+
+  // The palette's "New note" — the same mutation the tree panel's `+` uses.
+  const createFromPalette = useCreateNote(openNote);
 
   // The same query key the tree panel uses, so TanStack serves both
   // subscribers from one fetch. It is read here for two things the panel
@@ -154,6 +178,20 @@ export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [searchOpen]);
 
+  // Cmd/Ctrl+/ opens the markdown cheat-sheet. Simpler than the Cmd+K
+  // handler above on purpose: `/` has no native text-field binding with
+  // either modifier held, so there is no editable-target carve-out to make.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== '/' || !(event.metaKey || event.ctrlKey)) return;
+      event.preventDefault();
+      setCheatSheetOpen(true);
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, []);
+
   return (
     <div className="flex min-h-0 flex-1">
       {/* Master–detail, by CSS rather than by unmounting: below `md` exactly
@@ -183,6 +221,9 @@ export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
               noteId={node.id}
               title={node.title}
               isArchived={node.archivedAt !== null}
+              isPinned={node.isPinned}
+              isFolder={node.isFolder}
+              onCreatedInside={openNote}
               descendantCount={
                 rows ? collectDescendantIds(rows, node.id).length : 0
               }
@@ -213,6 +254,9 @@ export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
             noteId={noteId}
             backHref={NOTES_BASE_PATH}
             onOpenNote={openNote}
+            propertiesSlot={<NotePropertiesPanel noteId={noteId} />}
+            onOpenCheatSheet={() => setCheatSheetOpen(true)}
+            onOutlineChange={setOutline}
             // `setState(() => fn)`, not `setState(fn)`: React treats a bare
             // function argument as an updater and would call it immediately
             // with the previous state — storing a callback needs the extra
@@ -235,6 +279,9 @@ export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
                   noteId={noteId}
                   title={activeNode?.title ?? t('untitled')}
                   isArchived={activeNode?.archivedAt != null}
+                  isPinned={activeNode?.isPinned ?? false}
+                  isFolder={activeNode?.isFolder ?? false}
+                  onCreatedInside={openNote}
                   descendantCount={activeDescendantCount}
                   onRemoved={() => router.replace(NOTES_BASE_PATH)}
                 />
@@ -254,19 +301,30 @@ export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
           because a third column at that width leaves nothing for the text. */}
       {noteId && (
         <aside className="hidden w-72 shrink-0 border-l bg-background lg:flex lg:flex-col">
-          <h2 className="border-b px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            {t('links.title')}
-          </h2>
-          <NoteLinksPanel noteId={noteId} onOpen={openNote} />
+          <SidebarTabs
+            tocLabel={t('sidebar.toc')}
+            linksLabel={t('sidebar.links')}
+            outline={outline}
+            noteId={noteId}
+            onOpen={openNote}
+          />
         </aside>
       )}
 
       <Sheet open={linksOpen && noteId !== null} onOpenChange={setLinksOpen}>
         <SheetContent side="right" className="w-80 p-0 lg:hidden">
           <SheetTitle className="border-b px-3 py-3 text-sm font-semibold">
-            {t('links.title')}
+            {t('sidebar.title')}
           </SheetTitle>
-          {noteId && <NoteLinksPanel noteId={noteId} onOpen={openNote} />}
+          {noteId && (
+            <SidebarTabs
+              tocLabel={t('sidebar.toc')}
+              linksLabel={t('sidebar.links')}
+              outline={outline}
+              noteId={noteId}
+              onOpen={openNote}
+            />
+          )}
         </SheetContent>
       </Sheet>
 
@@ -274,6 +332,20 @@ export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
         open={searchOpen}
         onOpenChange={setSearchOpen}
         onSelect={openNote}
+        actions={[
+          {
+            id: 'new-note',
+            label: t('search.actionNewNote'),
+            icon: <Plus className="mr-2 size-4" />,
+            onSelect: () => createFromPalette.mutate({}),
+          },
+          {
+            id: 'cheat-sheet',
+            label: t('search.actionCheatSheet'),
+            icon: <CircleHelp className="mr-2 size-4" />,
+            onSelect: () => setCheatSheetOpen(true),
+          },
+        ]}
       />
 
       {/* The `[[` picker: the same palette, opened for a different purpose.
@@ -294,6 +366,48 @@ export function NoteManager({ noteId, navSlot }: NoteManagerProps) {
           setInsertLink(null);
         }}
       />
+
+      <MarkdownCheatSheetDialog
+        open={cheatSheetOpen}
+        onOpenChange={setCheatSheetOpen}
+      />
     </div>
+  );
+}
+
+/**
+ * The right sidebar's tab pair — one implementation for the `lg+` aside and
+ * the below-`lg` sheet. PRD tab three (References) joins in Phase D with the
+ * document uploads it lists.
+ */
+function SidebarTabs({
+  tocLabel,
+  linksLabel,
+  outline,
+  noteId,
+  onOpen,
+}: {
+  tocLabel: string;
+  linksLabel: string;
+  outline: OutlineItem[];
+  noteId: string;
+  onOpen: (id: string) => void;
+}) {
+  return (
+    <Tabs defaultValue="toc" className="flex h-full min-h-0 flex-col">
+      <TabsList className="m-2 grid shrink-0 grid-cols-2">
+        <TabsTrigger value="toc">{tocLabel}</TabsTrigger>
+        <TabsTrigger value="links">{linksLabel}</TabsTrigger>
+      </TabsList>
+      <TabsContent value="toc" className="mt-0 min-h-0 flex-1 overflow-y-auto">
+        <NoteOutline items={outline} />
+      </TabsContent>
+      <TabsContent
+        value="links"
+        className="mt-0 min-h-0 flex-1 overflow-y-auto"
+      >
+        <NoteLinksPanel noteId={noteId} onOpen={onOpen} />
+      </TabsContent>
+    </Tabs>
   );
 }

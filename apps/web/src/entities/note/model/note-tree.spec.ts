@@ -86,6 +86,10 @@ describe('buildNoteTree', () => {
       isPinned: false,
       archivedAt: null,
       updatedAt: FIXED_UPDATED_AT,
+      createdAt: FIXED_UPDATED_AT,
+      status: 'draft',
+      isFolder: false,
+      labelIds: [],
       ...overrides,
     };
   }
@@ -161,6 +165,10 @@ describe('buildNoteTree', () => {
       'isPinned',
       'archivedAt',
       'updatedAt',
+      'createdAt',
+      'status',
+      'isFolder',
+      'labelIds',
     ];
     expect(Object.keys(flat[0]!)).toEqual(expectedKeys);
     expect(Object.keys(flat[1]!)).toEqual(expectedKeys);
