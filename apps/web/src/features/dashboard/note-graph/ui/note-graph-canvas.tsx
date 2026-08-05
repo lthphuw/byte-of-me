@@ -377,6 +377,16 @@ export function NoteGraphCanvas({ graph, onOpen }: NoteGraphCanvasProps) {
     pointer.id = null;
     pointer.node = null;
     pointer.pinchDistance = null;
+    // The PRIMARY pointer ending ends the whole gesture, so any secondary
+    // still on the books is stale. Leaving them was a one-way trip: `others`
+    // is what the move handler checks to decide it is mid-pinch, so a single
+    // leftover entry routed every subsequent one-finger drag into the pinch
+    // branch and panning never worked again for the life of the page.
+    //
+    // Easy to hit for real, not just in a test: lift the two fingers close
+    // enough together and the primary's `pointerup` arrives first, or the
+    // browser sends `pointercancel` for one of them and nothing else.
+    pointer.others.clear();
     requestDraw();
   };
 
