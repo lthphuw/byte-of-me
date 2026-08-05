@@ -149,25 +149,38 @@ describe('NoteSearchPalette', () => {
     expect(screen.getByText('Kafka notes')).toBeTruthy();
   });
 
-  test('shows the loading copy while the search is still in flight', async () => {
-    const { release } = gateNextFindMany([]);
-    const queryClient = makeQueryClient();
-    render(<Harness open queryClient={queryClient} />);
+  test(
+    'shows the loading copy while the search is still in flight',
+    async () => {
+      const { release } = gateNextFindMany([]);
+      const queryClient = makeQueryClient();
+      render(<Harness open queryClient={queryClient} />);
 
-    expect(screen.getByText('Searching…')).toBeTruthy();
-    expect(screen.queryByText('No notes match.')).toBeNull();
-    expect(screen.queryByText('Could not load your notes.')).toBeNull();
+      expect(screen.getByText('Searching…')).toBeTruthy();
+      expect(screen.queryByText('No notes match.')).toBeNull();
+      expect(screen.queryByText('Could not load your notes.')).toBeNull();
 
-    // Let the gated fetch settle fully before the test (and its cleanup)
-    // ends — otherwise the eventual state update can land after this test
-    // has already moved on, surfacing as an act() warning attributed to
-    // whichever test happens to be running when the microtask finally
-    // flushes.
-    release();
-    await waitFor(() => {
-      expect(screen.queryByText('Searching…')).toBeNull();
-    });
-  });
+      // Let the gated fetch settle fully before the test (and its cleanup)
+      // ends — otherwise the eventual state update can land after this test
+      // has already moved on, surfacing as an act() warning attributed to
+      // whichever test happens to be running when the microtask finally
+      // flushes.
+      release();
+      await waitFor(
+        () => {
+          expect(screen.queryByText('Searching…')).toBeNull();
+        },
+        // Generous on purpose: under `turbo run test` all five workspaces'
+        // suites share the CPU, and this settle has been observed taking
+        // >10s wall-clock there while passing in ~100ms standalone. The
+        // widened window only matters on the failure path — a green run
+        // exits as soon as the copy disappears.
+        { timeout: 15_000 }
+      );
+    },
+    // bun's per-test cap must outlast the waitFor above.
+    20_000
+  );
 
   test('shows the load-error copy when the search fails', async () => {
     findManyImpl = () => Promise.reject(new Error('db down'));
