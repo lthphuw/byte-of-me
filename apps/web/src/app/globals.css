@@ -10,6 +10,44 @@
   }
 }
 
+/**
+ * A subtree pinned to the light palette regardless of the theme on <html>.
+ *
+ * Built for the print view. Paper has no dark mode: an author writing at
+ * night has `.dark` on <html>, which sets `--foreground` to near-white, and
+ * every heading and bold run inside the exported note then renders white on
+ * white — invisible on screen and blank in the PDF. Observed exactly that on
+ * `/print/notes/[id]` before this existed.
+ *
+ * The values are the `:root` block's, repeated because `.dark` is set on an
+ * ANCESTOR: custom properties cascade, so the only way to win for a subtree
+ * is to redeclare them on it. Only the tokens that reach rendered prose are
+ * listed; keep this in step with `:root` below if the palette changes.
+ */
+.force-light-surface {
+  color-scheme: light;
+
+  --background: 0 0% 100%;
+  --foreground: 0 0% 3.9%;
+  --muted: 0 0% 96.1%;
+  --muted-foreground: 0 0% 45.1%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 3.9%;
+  --border: 0 0% 89.8%;
+  --input: 0 0% 89.8%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 3.9%;
+  --primary: 0 0% 9%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 96.1%;
+  --secondary-foreground: 0 0% 9%;
+  --accent: 0 0% 96.1%;
+  --accent-foreground: 0 0% 9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 0 0% 3.9%;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -135,4 +173,56 @@ html {
   mask-repeat: no-repeat;
   mask-position: center;
   mask-size: contain;
+}
+
+/* The print view (`/print/notes/[id]`). Chrome's "Save as PDF" is the export
+   mechanism for PRD §3.2, so these rules ARE the PDF's layout. */
+@media print {
+  /* The page renders no chrome of its own, but portals mount at the document
+     root and land on the page regardless of where the route put them. */
+  [data-sonner-toaster],
+  nextjs-portal {
+    display: none !important;
+  }
+
+  @page {
+    margin: 18mm 16mm;
+  }
+
+  /* Chrome drops backgrounds when printing. In these three places the fill
+     carries meaning rather than decoration — an unfilled code block and its
+     surrounding prose become indistinguishable, and a highlight disappears
+     entirely. */
+  pre,
+  mark,
+  th {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* A heading stranded at the foot of a page, and an equation sliced in half
+     across a page break, are the two things that make an exported PDF read
+     as broken rather than as a document. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid-page;
+  }
+
+  .katex-display,
+  pre,
+  table,
+  figure,
+  img,
+  blockquote {
+    break-inside: avoid;
+  }
+
+  /* Long code lines are clipped by the page box otherwise — there is no
+     horizontal scrolling on paper. */
+  pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
 }

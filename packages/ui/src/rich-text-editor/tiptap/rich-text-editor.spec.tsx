@@ -24,7 +24,10 @@ import { cleanup, render } from '@testing-library/react';
 import type { JSONContent } from '@tiptap/react';
 import { afterEach, describe, expect, test } from 'bun:test';
 
-import { RichTextEditor } from './rich-text-editor';
+import {
+  RichTextEditor,
+  type RichTextEditorApi,
+} from './rich-text-editor';
 
 const PLAIN_DOC: JSONContent = {
   type: 'doc',
@@ -142,5 +145,46 @@ describe('RichTextEditor onChange', () => {
 
     expect(emits.length).toBeGreaterThan(0);
     expect(emits.every((emit) => emit.initial === false)).toBe(true);
+  });
+});
+
+/**
+ * `onEditorApi` is how the notes workspace reaches the markdown serializer
+ * for `.md` export. The revocation half matters as much as the handing-out
+ * half: the consumer stores the API on a ref, and an API left behind after
+ * unmount points at a destroyed Tiptap instance.
+ */
+describe('RichTextEditor onEditorApi', () => {
+  test('hands over a markdown serializer, then revokes it on unmount', async () => {
+    const seen: (RichTextEditorApi | null)[] = [];
+    let unmount: (() => void) | undefined;
+
+    await React.act(async () => {
+      unmount = render(
+        <RichTextEditor
+          value={HEADING_DOC}
+          onChange={() => {}}
+          onEditorApi={(api) => seen.push(api)}
+        />
+      ).unmount;
+    });
+    await React.act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    const api = seen.find((entry) => entry !== null);
+    expect(api).toBeDefined();
+
+    const markdown = api?.getMarkdown() ?? '';
+    // The heading and the paragraph both survive the round trip — this is
+    // the actual document, not an empty editor reporting success.
+    expect(markdown).toContain('Reading list');
+    expect(markdown).toContain('Body');
+
+    await React.act(async () => {
+      unmount?.();
+    });
+
+    expect(seen[seen.length - 1]).toBeNull();
   });
 });

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   Button,
   Tooltip,
@@ -8,7 +8,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@byte-of-me/ui';
-import type { OutlineItem } from '@byte-of-me/ui/rich-text-editor';
+import type {
+  OutlineItem,
+  RichTextEditorApi,
+} from '@byte-of-me/ui/rich-text-editor';
 import {
   fromEditorContent,
   toEditorContent,
@@ -19,6 +22,7 @@ import { useTranslations } from 'next-intl';
 import { uploadSingleMedia } from '@/entities/media';
 import { parseNoteHref } from '@/entities/note';
 import { useNoteEditorAutosave } from '@/features/dashboard/note-editor/lib/use-note-editor-autosave';
+import { NoteExportMenu } from '@/features/dashboard/note-editor/ui/note-export-menu';
 import { Link } from '@/shared/i18n/navigation';
 import { LazyRichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
@@ -64,6 +68,10 @@ export function NoteEditor({
   // Raw markdown source vs WYSIWYG. Resets on note switch for free: the
   // widget mounts this component with `key={noteId}`.
   const [rawMode, setRawMode] = useState(false);
+  // The live editor's serializers, published by `onEditorApi` below. Null
+  // until Tiptap has mounted, and null again once it unmounts — the export
+  // menu treats both as "not ready" rather than crashing.
+  const editorApiRef = useRef<RichTextEditorApi | null>(null);
   const {
     note,
     isPending,
@@ -232,6 +240,8 @@ export function NoteEditor({
           </TooltipProvider>
         )}
 
+        <NoteExportMenu note={note} apiRef={editorApiRef} />
+
         {actions}
       </div>
 
@@ -311,6 +321,12 @@ export function NoteEditor({
           withMath
           markdownMode={rawMode}
           onOutlineChange={onOutlineChange}
+          // The markdown serializer, for `.md` export. Stored on a ref rather
+          // than in state: nothing renders differently once it arrives, and a
+          // setState here would re-render the editor's whole parent on mount.
+          onEditorApi={(api) => {
+            editorApiRef.current = api;
+          }}
           // Take the height this pane gives, instead of the editor's own
           // `h-[min(720px,62dvh)]`. That fixed box was nested inside this
           // already-scrolling pane, so a phone scrolled a ~60dvh window

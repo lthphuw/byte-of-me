@@ -50,6 +50,11 @@ export const PROTECTED_MESSAGE_NAMESPACES = [
   'global',
 ] as const;
 
+/** The print view (`/print/notes/[id]`): one button label, nothing else.
+ *  Narrower than the protected list on purpose — the page renders no chrome,
+ *  and there is no `error.tsx` beneath it to widen this for. */
+export const PRINT_MESSAGE_NAMESPACES = ['dashboard'] as const;
+
 /**
  * Narrow a resolved catalogue to the given top-level namespaces. Kept inline
  * rather than pulling in a `pick` dependency; missing namespaces are skipped so

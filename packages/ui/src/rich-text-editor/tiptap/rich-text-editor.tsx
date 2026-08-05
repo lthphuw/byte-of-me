@@ -229,7 +229,30 @@ type RichTextEditorProps = {
    * mode simply reveals the editor again.
    */
   markdownMode?: boolean;
+  /**
+   * Handed the editor's serializers once it exists, and `null` when it goes
+   * away.
+   *
+   * A callback rather than an imperative handle on a `ref`: the Tiptap
+   * instance is created asynchronously, so a consumer reading a ref at the
+   * wrong moment gets `null` with nothing to distinguish "not ready yet" from
+   * "broken". Being told when it becomes available removes that ambiguity.
+   */
+  onEditorApi?: (api: RichTextEditorApi | null) => void;
 };
+
+/** What a consumer can ask the live editor for. */
+export interface RichTextEditorApi {
+  /**
+   * The current document, serialized to markdown.
+   *
+   * Flushes any pending raw-mode edit first. The textarea's buffer is NOT in
+   * the document until `flushRaw` runs (it is debounced by 800ms), so calling
+   * this mid-edit would otherwise serialize the PRE-edit document and write
+   * the wrong thing to an exported file, silently.
+   */
+  getMarkdown: () => string;
+}
 
 const COMPACT_MAX_HEIGHT = 360;
 
@@ -297,6 +320,7 @@ export function RichTextEditor({
   withMath = false,
   markdownMode = false,
   onOutlineChange,
+  onEditorApi,
 }: RichTextEditorProps) {
   // Matches the `md` breakpoint the notes workspace switches its layout at.
   const isNarrow = useMediaQuery('(max-width: 767px)');
@@ -506,6 +530,26 @@ export function RichTextEditor({
   // Unmount: a pending raw edit still lands in the document, so the consumer's
   // onChange has seen it even if the author closes mid-debounce.
   useEffect(() => flushRaw, [flushRaw]);
+
+  // Hand the consumer the serializers, and revoke them on the way out. The
+  // callback goes through a ref for the same reason `onLinkTrigger` does: it
+  // is a fresh closure each render, and depending on it directly here would
+  // re-run this effect every render — publishing and revoking the API on a
+  // loop.
+  const onEditorApiRef = useRef(onEditorApi);
+  onEditorApiRef.current = onEditorApi;
+
+  useEffect(() => {
+    if (!editor) return;
+    const api: RichTextEditorApi = {
+      getMarkdown: () => {
+        flushRaw();
+        return editor.getMarkdown();
+      },
+    };
+    onEditorApiRef.current?.(api);
+    return () => onEditorApiRef.current?.(null);
+  }, [editor, flushRaw]);
 
   if (!editor) return null;
 
