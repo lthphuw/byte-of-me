@@ -84,6 +84,75 @@ const RenderImagePlaceholder = Node.create({
   },
 });
 
+/**
+ * The two math nodes the notes editor persists (`@tiptap/extension-mathematics`
+ * via `extensions/math.ts`), as render-side schema.
+ *
+ * They were missing, and the failure mode was not "equations do not show" —
+ * `generateHTML` throws on an unknown node type, `renderRichTextHtml` catches
+ * that and falls back to escaping the input, and the input there is an
+ * OBJECT, so `escapeHtml` returned `''`. A note containing a single `$x$`
+ * therefore rendered as a **completely blank document** on every server
+ * surface. Measured directly against `renderRichTextHtml` before this
+ * existed: `length 0`.
+ *
+ * The LaTeX is emitted as a `data-latex` attribute rather than as rendered
+ * KaTeX. KaTeX's markup is a deep span tree positioned entirely with inline
+ * `style`, and `sanitize.ts` drops `style` on purpose — serving KaTeX from
+ * here would mean loosening that for every rendered document. The client
+ * turns these placeholders into real formulas instead; see
+ * `MathRenderer`. Anything that renders this HTML without that pass shows the
+ * LaTeX source, which is legible and honest rather than blank.
+ */
+const RenderInlineMath = Node.create({
+  name: 'inlineMath',
+  group: 'inline',
+  inline: true,
+  atom: true,
+  addAttributes() {
+    return { latex: { default: '' } };
+  },
+  parseHTML() {
+    return [{ tag: 'span[data-type="inline-math"]' }];
+  },
+  renderHTML({ HTMLAttributes, node }) {
+    const latex = String(node.attrs.latex ?? '');
+    return [
+      'span',
+      mergeAttributes(HTMLAttributes, {
+        'data-type': 'inline-math',
+        'data-latex': latex,
+        class: 'math-inline',
+      }),
+      latex,
+    ];
+  },
+});
+
+const RenderBlockMath = Node.create({
+  name: 'blockMath',
+  group: 'block',
+  atom: true,
+  addAttributes() {
+    return { latex: { default: '' } };
+  },
+  parseHTML() {
+    return [{ tag: 'div[data-type="block-math"]' }];
+  },
+  renderHTML({ HTMLAttributes, node }) {
+    const latex = String(node.attrs.latex ?? '');
+    return [
+      'div',
+      mergeAttributes(HTMLAttributes, {
+        'data-type': 'block-math',
+        'data-latex': latex,
+        class: 'math-block',
+      }),
+      latex,
+    ];
+  },
+});
+
 export const renderExtensions = [
   StarterKit.configure({
     heading: false,
@@ -111,4 +180,6 @@ export const renderExtensions = [
   TableKit.configure({ table: { resizable: false } }),
   CitationBase,
   ReferenceListBase,
+  RenderInlineMath,
+  RenderBlockMath,
 ];

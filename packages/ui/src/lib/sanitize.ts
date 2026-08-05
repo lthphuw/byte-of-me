@@ -18,6 +18,10 @@ const ALLOWED_ATTRS = new Set([
   'rowspan', 'start', 'type', 'width', 'height', 'id', 'aria-label',
   'data-citation', 'data-citation-link', 'data-reference-list',
   'data-reference-backlink',
+  // The LaTeX source of a math node, and which flavour it is. Carries no
+  // script — it is read back by `MathRenderer`, which hands it to KaTeX with
+  // `throwOnError: false`. KaTeX itself is the parser, not this.
+  'data-latex', 'data-type',
 ]);
 
 const VOID_TAGS = new Set(['br', 'hr', 'img']);
