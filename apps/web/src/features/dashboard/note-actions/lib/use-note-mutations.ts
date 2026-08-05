@@ -34,6 +34,11 @@ function useInvalidateNoteLists() {
     void queryClient.invalidateQueries({ queryKey: noteKeys.tree(false) });
     void queryClient.invalidateQueries({ queryKey: noteKeys.tree(true) });
     void queryClient.invalidateQueries({ queryKey: noteKeys.searchAll() });
+    // Create/archive/restore/delete all change the NODE set the graph plots
+    // — and deleting a note takes its links with it, so the edge set moves
+    // too. The tree keys above cannot stand in for this: the graph excludes
+    // folders and archived notes, so it is a different question entirely.
+    void queryClient.invalidateQueries({ queryKey: noteKeys.graph() });
   };
 }
 

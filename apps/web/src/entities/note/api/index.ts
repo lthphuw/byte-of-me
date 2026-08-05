@@ -3,6 +3,7 @@ export * from './create-note';
 export * from './delete-note';
 export * from './delete-note-label';
 export * from './get-admin-note-by-id';
+export * from './get-note-graph';
 export * from './get-note-labels';
 export * from './get-note-links';
 export * from './get-note-title';

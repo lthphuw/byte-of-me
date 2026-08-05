@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@byte-of-me/ui';
-import { Archive, ArrowRight, Link2, NotebookPen } from 'lucide-react';
+import { Archive, ArrowRight, Link2, NotebookPen, Share2 } from 'lucide-react';
 import { getFormatter, getTranslations } from 'next-intl/server';
 
 import { getSpaceStats } from '@/entities/note';
@@ -120,6 +120,32 @@ export async function SpaceHub({ navSlot }: { navSlot?: React.ReactNode }) {
                     </CardTitle>
                     <CardDescription>
                       {t('modules.notesDescription')}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+
+              {/* A LINK, not an embedded canvas. The hub is an RSC whose whole
+                  job is to be instant, and mounting a live force simulation on
+                  it would ship d3 plus a running physics loop to a page the
+                  author only passes through. The spec's "mini-graph card"
+                  (§6.6) is satisfied by the entry point; embedding the canvas
+                  is deliberately deferred. */}
+              <Link
+                href="/space/graph"
+                className="group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Card className="h-full transition-colors group-hover:border-primary/40 group-hover:bg-muted/40">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between text-base">
+                      <span className="flex items-center gap-2">
+                        <Share2 className="size-4" />
+                        {t('modules.graphTitle')}
+                      </span>
+                      <ArrowRight className="size-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                    </CardTitle>
+                    <CardDescription>
+                      {t('modules.graphDescription')}
                     </CardDescription>
                   </CardHeader>
                 </Card>

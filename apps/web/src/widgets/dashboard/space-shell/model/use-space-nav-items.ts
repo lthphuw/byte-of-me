@@ -1,7 +1,7 @@
 'use client';
 
 import type { ComponentType } from 'react';
-import { LayoutGrid, NotebookPen } from 'lucide-react';
+import { LayoutGrid, NotebookPen, Share2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 export interface SpaceNavItem {
@@ -33,5 +33,6 @@ export function useSpaceNavItems(): SpaceNavItem[] {
   return [
     { href: '/space', label: t('items.hub'), icon: LayoutGrid, exact: true },
     { href: '/space/notes', label: t('items.notes'), icon: NotebookPen },
+    { href: '/space/graph', label: t('items.graph'), icon: Share2 },
   ];
 }

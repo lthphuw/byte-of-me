@@ -96,6 +96,34 @@ export interface SpaceStats {
   recentNotes: SpaceRecentNote[];
 }
 
+/**
+ * One node in the knowledge graph. Deliberately no `content`/`plainText`:
+ * this draws circles and, past a zoom threshold, titles — the same
+ * narrow-select discipline `getNoteTree` and `getSpaceStats` follow.
+ * `degree` is computed server-side because the client would otherwise walk
+ * every edge once per node to find it.
+ */
+export interface NoteGraphNode {
+  id: string;
+  title: string;
+  status: string;
+  labelIds: string[];
+  /** Links touching this node in EITHER direction. Zero means orphan. */
+  degree: number;
+}
+
+/** One directed link. Both ends are guaranteed to exist in `NoteGraph.nodes`. */
+export interface NoteGraphEdge {
+  source: string;
+  target: string;
+}
+
+/** The whole owner-scoped graph, in one payload. */
+export interface NoteGraph {
+  nodes: NoteGraphNode[];
+  edges: NoteGraphEdge[];
+}
+
 /** A search result: enough to render a row, never the whole document. */
 export type NoteSearchHit = Pick<Note, 'id' | 'title' | 'updatedAt'> & {
   /** A short window of `plainText` around nothing in particular — just the head. */

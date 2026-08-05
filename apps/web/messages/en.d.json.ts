@@ -736,6 +736,21 @@ declare const messages: {
         "restore": "Could not restore the note.",
         "delete": "Could not delete the note.",
         "links": "Could not load links."
+      },
+      "graph": {
+        "title": "Knowledge graph",
+        "description": "Every note, and the links between them.",
+        "empty": "No notes to plot yet — write a few and connect them with [[.",
+        "loadError": "Couldn't load the graph. Reload to try again.",
+        "legendHint": "Scroll to zoom, drag to pan, click a node to open it.",
+        "nodeCount": "{count, plural, one {# note} other {# notes}}",
+        "edgeCount": "{count, plural, one {# link} other {# links}}"
+      },
+      "export": {
+        "label": "Export",
+        "markdown": "Download .md",
+        "pdf": "Print / Save as PDF",
+        "notReady": "The note is still loading."
       }
     },
     "space": {
@@ -744,7 +759,8 @@ declare const messages: {
       "openNav": "Open workspace navigation",
       "items": {
         "hub": "Overview",
-        "notes": "Notes"
+        "notes": "Notes",
+        "graph": "Graph"
       },
       "actions": {
         "dashboard": "Dashboard",
@@ -766,7 +782,9 @@ declare const messages: {
         },
         "modules": {
           "notesTitle": "Notes",
-          "notesDescription": "Interconnected notes with backlinks, math, and markdown."
+          "notesDescription": "Interconnected notes with backlinks, math, and markdown.",
+          "graphTitle": "Knowledge graph",
+          "graphDescription": "See how your notes connect — and which ones don't yet."
         },
         "errors": {
           "load": "Couldn't load your workspace overview. Reload to try again."

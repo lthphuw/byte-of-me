@@ -736,6 +736,21 @@ declare const messages: {
         "restore": "Không khôi phục được ghi chú.",
         "delete": "Không xóa được ghi chú.",
         "links": "Không tải được liên kết."
+      },
+      "graph": {
+        "title": "Sơ đồ tri thức",
+        "description": "Toàn bộ ghi chú và các liên kết giữa chúng.",
+        "empty": "Chưa có ghi chú nào để vẽ — hãy viết vài ghi chú và nối chúng bằng [[.",
+        "loadError": "Không tải được sơ đồ. Hãy tải lại trang.",
+        "legendHint": "Cuộn để phóng to, kéo để di chuyển, nhấp vào một điểm để mở ghi chú.",
+        "nodeCount": "{count, plural, other {# ghi chú}}",
+        "edgeCount": "{count, plural, other {# liên kết}}"
+      },
+      "export": {
+        "label": "Xuất",
+        "markdown": "Tải xuống .md",
+        "pdf": "In / Lưu thành PDF",
+        "notReady": "Ghi chú đang được tải."
       }
     },
     "space": {
@@ -744,7 +759,8 @@ declare const messages: {
       "openNav": "Mở điều hướng không gian làm việc",
       "items": {
         "hub": "Tổng quan",
-        "notes": "Ghi chú"
+        "notes": "Ghi chú",
+        "graph": "Sơ đồ"
       },
       "actions": {
         "dashboard": "Bảng điều khiển",
@@ -766,7 +782,9 @@ declare const messages: {
         },
         "modules": {
           "notesTitle": "Ghi chú",
-          "notesDescription": "Ghi chú liên kết với backlink, công thức toán và markdown."
+          "notesDescription": "Ghi chú liên kết với backlink, công thức toán và markdown.",
+          "graphTitle": "Sơ đồ tri thức",
+          "graphDescription": "Xem các ghi chú kết nối với nhau ra sao — và ghi chú nào chưa."
         },
         "errors": {
           "load": "Không tải được tổng quan không gian làm việc. Tải lại để thử lại."

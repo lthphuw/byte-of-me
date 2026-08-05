@@ -366,6 +366,9 @@ export function useNoteEditorAutosave(
       // save decision reads, so refetching it cannot loop back into another
       // save. `detail` and `search` are what must stay untouched here.
       void queryClient.invalidateQueries({ queryKey: noteKeys.linksAll() });
+      // The graph draws those same links, and is safe here for the same
+      // reason `links` is: nothing the save decision reads comes from it.
+      void queryClient.invalidateQueries({ queryKey: noteKeys.graph() });
     },
     [queryClient]
   );
