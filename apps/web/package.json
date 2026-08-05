@@ -72,6 +72,7 @@
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
     "cmdk": "catalog:",
+    "d3-force": "^3.0.0",
     "date-fns": "catalog:",
     "embla-carousel-react": "catalog:",
     "framer-motion": "catalog:",
@@ -97,6 +98,7 @@
   "devDependencies": {
     "@eslint/js": "^9.30.1",
     "@tailwindcss/typography": "^0.5.16",
+    "@types/d3-force": "^3.0.10",
     "@types/node": "^25.5.0",
     "@types/nodemailer": "^7.0.4",
     "@types/react": "19.2.14",
