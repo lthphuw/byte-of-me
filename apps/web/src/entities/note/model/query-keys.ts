@@ -43,6 +43,9 @@ export const noteKeys = {
    *  actions menu opens, because a collapsed folder's subtree is not loaded. */
   descendantCount: (noteId: string) =>
     [...noteKeys.all, 'descendant-count', noteId] as const,
+  /** Prefix-matches every note's count — which note gained or lost a
+   *  descendant is not knowable from a create or a move. */
+  descendantCountAll: () => [...noteKeys.all, 'descendant-count'] as const,
 
   /** The owner's label list — one entry, names/colors for every consumer. */
   labels: () => [...noteKeys.all, 'labels'] as const,
@@ -71,6 +74,10 @@ export const noteKeys = {
       noteKeys.pageAll(),
       noteKeys.groupsAll(),
       noteKeys.groupRowsAll(),
+      // The delete confirmation's cascade count. It is read on a DESTRUCTIVE
+      // path, so a stale one is not a cosmetic bug: understating what a
+      // permanent delete takes is the worst direction to be wrong in.
+      noteKeys.descendantCountAll(),
     ] as const,
   /**
    * The whole knowledge graph — one entry.

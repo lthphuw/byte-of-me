@@ -538,6 +538,12 @@ function NoteActionsMenuWithCount({
       return res.data;
     },
     enabled: armed,
+    // Overrides the client's global 60s. This number is the sentence
+    // "and its N nested notes" in a PERMANENT-DELETE confirmation, and a
+    // cached one understates what is about to be destroyed: open the dialog,
+    // cancel, add two notes to that folder, reopen inside the window, and the
+    // author is told 3 while 5 are deleted. Always ask.
+    staleTime: 0,
   });
 
   return (
