@@ -1,40 +1,16 @@
-<div align="center">
-
 # Byte of Me
 
-**A multilingual portfolio & headless CMS — logged one byte at a time.**
+**A multilingual portfolio, headless CMS, and private knowledge base — logged one byte at a time.**
 
-A production personal website with a polished public portfolio and a private, multilingual content dashboard. Built as a TypeScript monorepo on Next.js 16 and the App Router.
+A production personal website with a public portfolio, a multilingual content dashboard, and a private notes workspace. Built as a TypeScript monorepo on Next.js 16 and the App Router.
 
-[**🌐 Live — phu-lth.space**](https://phu-lth.space/)
-
-<br />
-
-<img src="https://img.shields.io/badge/Next.js_16-000000?logo=next.js&logoColor=white&style=flat-square" alt="Next.js" />
-<img src="https://img.shields.io/badge/React_19-20232A?logo=react&logoColor=61DAFB&style=flat-square" alt="React" />
-<img src="https://img.shields.io/badge/TypeScript_5.8-3178C6?logo=typescript&logoColor=white&style=flat-square" alt="TypeScript" />
-<img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white&style=flat-square" alt="Tailwind CSS" />
-<img src="https://img.shields.io/badge/shadcn/ui-000000?logo=shadcnui&logoColor=fff&style=flat-square" alt="shadcn/ui" />
-<br />
-<img src="https://img.shields.io/badge/Prisma_7-2D3748?logo=prisma&logoColor=white&style=flat-square" alt="Prisma" />
-<img src="https://img.shields.io/badge/PostgreSQL_16-4169E1?logo=postgresql&logoColor=white&style=flat-square" alt="PostgreSQL" />
-<img src="https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=fff&style=flat-square" alt="Supabase" />
-<img src="https://img.shields.io/badge/TanStack_Query-FF4154?logo=react-query&logoColor=fff&style=flat-square" alt="TanStack Query" />
-<img src="https://img.shields.io/badge/Auth.js_v5-000000?logo=nextdotjs&logoColor=white&style=flat-square" alt="Auth.js" />
-<br />
-<img src="https://img.shields.io/badge/next--intl_4-EC4899?logoColor=white&style=flat-square" alt="next-intl" />
-<img src="https://img.shields.io/badge/TipTap_3-000000?logo=tiptap&logoColor=white&style=flat-square" alt="TipTap" />
-<img src="https://img.shields.io/badge/Framer_Motion-0055FF?logo=framer&logoColor=white&style=flat-square" alt="Framer Motion" />
-<img src="https://img.shields.io/badge/Turborepo-EF4444?logo=turborepo&logoColor=white&style=flat-square" alt="Turborepo" />
-<img src="https://img.shields.io/badge/Bun_1.3-000000?logo=bun&logoColor=white&style=flat-square" alt="Bun" />
-
-</div>
+Live at [phu-lth.space](https://phu-lth.space/).
 
 ---
 
 ## Overview
 
-**Byte of Me** is a personal portfolio that doubles as its own content platform. Visitors get a fast, animated, fully bilingual (English / Tiếng Việt) site; the owner gets a private dashboard to write blog posts, manage projects and work history, and translate everything — without touching code or redeploying.
+**Byte of Me** is a personal portfolio that doubles as its own content platform. Visitors get a fast, animated, fully bilingual (English / Tiếng Việt) site; the owner gets a private dashboard to write blog posts, manage projects and work history, and translate everything — without touching code or redeploying — plus a private, Obsidian-style workspace for interlinked notes.
 
 The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced Design](https://feature-sliced.design/) on the frontend and shared workspace packages for the database, storage, logging, UI kit, and tooling config.
 
@@ -46,7 +22,7 @@ The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced 
 
 ## Highlights
 
-### 🎨 Public portfolio
+### Public portfolio
 - **Home, About, Experience, Projects, Blogs, Contact** — server-rendered, SEO-friendly, and richly animated with Framer Motion.
 - **Full-featured blog** — cover hero, author byline, breadcrumb, table of contents, reading-progress bar, related posts, related project, prev/next navigation, and per-post **likes, claps, and threaded comments**.
 - **Filterable, paginated** project and blog listings with shareable, URL-based filters.
@@ -54,7 +30,21 @@ The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced 
 - **Contact form** that persists the message and delivers it over SMTP (Nodemailer).
 - **SEO & sharing built in** — dynamic OG images (`/api/og`, Satori), `sitemap.ts`, `robots.ts`, PWA `manifest.ts`, per-route metadata.
 
-### 🔐 Private CMS dashboard
+### Private notes workspace
+
+A second private surface at `/space`, separate from the CMS: nothing here is ever published.
+
+- **Obsidian-style editor** — WYSIWYG markdown (typing `# ` becomes a heading), a raw-source toggle, and **live KaTeX** for inline `$…$` and block `$$…$$` math.
+- **Bi-directional links** — type `[[` to link a note; each note shows both its outgoing links and its backlinks.
+- **Knowledge graph** at `/space/graph` — a `d3-force` simulation on a `devicePixelRatio`-aware canvas. Nodes are sized by link count, unlinked notes are drawn dimmer rather than hidden, hovering highlights a neighbourhood, and clicking opens the note. Wheel and pinch zoom hold the point under the cursor; the simulation pauses while the tab is hidden.
+- **Three explorer views** — a folder tree, a flat list, or grouped by status or label — with drag-and-drop reordering, re-parenting, and moves between groups (mouse and touch).
+- **Full-text search** over titles and bodies, backed by a Postgres generated `tsvector` column and a GIN index, with highlighted snippets.
+- **Everything paginates.** The tree loads one level per folder as it expands, the flat and grouped views scroll infinitely, and the trash reads only what is archived — so the sidebar's cost does not grow with the number of notes owned.
+- **Properties** — free-form status, labels, and key→value frontmatter, groupable in the explorer.
+- **Export** — `.md` with hand-emitted YAML frontmatter, or a chromeless print view that Chrome's "Save as PDF" turns into a text-true document with real KaTeX glyphs.
+- Command palette (`Cmd/Ctrl+K`) and a markdown cheat-sheet (`Cmd/Ctrl+/`).
+
+### Private CMS dashboard
 - Manage **blogs, projects, companies & roles, education, tags, tech stacks, media, comments, social links, user profile, and translations** from one place.
 - **Analytics** — dashboard stats plus a per-blog analytics overview backed by page-view and interaction logs.
 - **Comment moderation** — hide/show any comment on any post.
@@ -62,14 +52,14 @@ The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced 
 - **Media library** backed by S3-compatible object storage (Supabase Storage).
 - Protected by **Auth.js v5** — magic-link email, GitHub, and Google sign-in, with `ADMIN`/`USER` roles.
 
-### 🌍 Two-layer internationalization
+### Two-layer internationalization
 - **Static UI** strings (buttons, labels, nav, validation) via **next-intl** locale files, precompiled at build time with generated TypeScript declarations (`messages/en.d.json.ts`) so message keys are type-checked.
 - **Dynamic content** (blogs, projects, experience, education, tags…) translated and stored **in PostgreSQL** via per-model `*Translation` tables, editable from the dashboard.
 - Locales: `en` (default) and `vi`, carried in the `[locale]` route segment.
 
 > These two systems are never mixed — UI strings never live in the database, and content never lives in locale JSON.
 
-### ⚡ Engineered for quality
+### Engineered for quality
 - **Feature-Sliced Design** architecture with clear `app → widgets → features → entities → shared` boundaries.
 - **Server Components first**; server actions for mutations, TanStack Query for client-side server state.
 - **Bundle discipline** — subpath exports keep TipTap out of public-site JS; `optimizePackageImports` deep-imports the barrel packages (`lucide-react`, `react-icons`, `date-fns`, `framer-motion`, …).
@@ -113,7 +103,8 @@ The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced 
 | **Auth** | Auth.js / NextAuth v5 — email magic link, GitHub & Google OAuth, JWT sessions, role-based |
 | **i18n** | next-intl v4 (UI) + database translations (content) |
 | **Storage** | `@byte-of-me/storage` — S3-compatible client (AWS SDK v3) pointed at Supabase Storage |
-| **Editor** | TipTap 3 + lowlight/highlight.js |
+| **Editor** | TipTap 3 + lowlight/highlight.js, KaTeX for maths, `@tiptap/markdown` |
+| **Visualization** | `d3-force` on a hand-drawn canvas (knowledge graph) |
 | **Email** | Nodemailer (SMTP) — sign-in links and contact-form delivery |
 | **Forms & validation** | React Hook Form + Zod; env parsed with `@t3-oss/env-nextjs` |
 | **Analytics** | Vercel Analytics & Speed Insights, Google Analytics (`@next/third-parties`), plus first-party page-view/interaction logging |
@@ -124,16 +115,16 @@ The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced 
 
 ## Architecture
 
-> 📐 **[docs/architecture.md](docs/architecture.md)** has the full picture as diagrams — system context, package graph, FSD layers, request & trust flow, and the two-layer i18n model.
+> **[docs/architecture.md](docs/architecture.md)** has the full picture as diagrams — system context, package graph, FSD layers, request & trust flow, and the two-layer i18n model.
 
 The frontend follows **Feature-Sliced Design** — each layer may only depend on the layers below it, keeping features isolated and reusable:
 
 | Layer | Responsibility | Examples |
 | --- | --- | --- |
 | `app/` | App Router routes, layouts, providers, route handlers | `(public)`, `(protected)/dashboard`, `(auth)`, `api/og` |
-| `widgets/` | Composite page sections | `public-site-header`, `blog-details-content`, `blog-manager` |
-| `features/` | User-facing capabilities | `blog-comment`, `blog-filters`, `blog-editor`, `media-library` |
-| `entities/` | Domain models with their server API + UI | `blog`, `project`, `company`, `tag`, `translation` |
+| `widgets/` | Composite page sections | `public-site-header`, `blog-manager`, `note-manager`, `space-graph` |
+| `features/` | User-facing capabilities | `blog-comment`, `note-editor`, `note-explorer`, `note-graph`, `media-library` |
+| `entities/` | Domain models with their server API + UI | `blog`, `note`, `project`, `company`, `tag` |
 | `shared/` | Config, i18n, libs, primitives, hooks | `config/env`, `i18n/routing`, `lib/auth`, `api/s3-storage-api` |
 
 ```
@@ -145,7 +136,7 @@ byte-of-me/
 │           ├── app/
 │           │   ├── [locale]/
 │           │   │   ├── (public)/         # about · blogs/[slug] · contact · experience · projects
-│           │   │   ├── (protected)/      # dashboard/* (admin only)
+│           │   │   ├── (protected)/      # dashboard/* · space/* · print/* (admin only)
 │           │   │   ├── (auth)/           # auth/login
 │           │   │   └── [...rest]/        # 404 catch-all
 │           │   ├── api/
@@ -157,8 +148,8 @@ byte-of-me/
 │           ├── widgets/          # auth · dashboard · public
 │           ├── features/         # auth · dashboard · public
 │           ├── entities/         # blog, comment, company, contact-message, education,
-│           │                     # media, project, social-link, tag, tech-stack,
-│           │                     # translation, user-profile
+│           │                     # media, note, project, social-link, tag,
+│           │                     # tech-stack, user-profile
 │           └── shared/           # api · config · hooks · i18n · lib · types · ui
 ├── packages/
 │   ├── ui/                       # Shared component & design system (@byte-of-me/ui)
@@ -273,13 +264,15 @@ Git hooks (Husky):
 
 - **commit-msg** — commitlint (Conventional Commits).
 - **pre-commit** — `turbo run check-types lint`.
-- **pre-push** — `turbo run build`.
+- **pre-push** — `turbo run test build`.
 
 ---
 
 ## Database
 
-The schema lives in `packages/db/prisma/schema.prisma` and covers auth (Auth.js tables), profile & social links, education & achievements, companies → roles → tasks, projects & co-authors, blogs, tags, media, comments, interactions, page views, contact messages, and a generic `Translation` table.
+The schema lives in `packages/db/prisma/schema.prisma` and covers auth (Auth.js tables), profile & social links, education & achievements, companies → roles → tasks, projects & co-authors, blogs, tags, media, comments, interactions, page views, contact messages, a generic `Translation` table, and the private notes graph (`Note`, `NoteLink`, `NoteLabel`, `NoteOnLabel`).
+
+`Note` carries a generated `tsvector` column with a GIN index behind it, which is what full-text search reads; Prisma never writes that column.
 
 Content models pair with a `*Translation` sibling (`BlogTranslation`, `ProjectTranslation`, `CompanyTranslation`, …) keyed by `language`, which is how dynamic content is localized.
 
@@ -289,21 +282,23 @@ The generated client is committed to `packages/db/src/generated/prisma` and re-e
 
 ## Testing
 
-`bun test` suites live next to the code they cover — **151 tests across 20 files**:
+`bun test` suites live next to the code they cover — **470 tests across 53 files**:
 
+- `apps/web/src/entities/*/api/` — server-action contracts: owner scoping, narrow
+  selects, cursor pagination, and the recursive delete-cascade count
+- `apps/web/src/entities/note/model/` — tree walks, and a key-coverage spec that fails
+  if a mutation stops invalidating a list the explorer renders
+- `apps/web/src/features/**/lib/` — URL filter parsing, the explorer's pure geometry,
+  the knowledge graph's viewport maths, and the `.md` frontmatter emitter
+- `apps/web/src/widgets/dashboard/note-manager/` — the explorer's query contracts: a
+  collapsed folder costs no query, a section header shows the aggregate count rather
+  than the rows it loaded, and no view outside the trash ever reads the whole corpus
 - `apps/web/src/shared/lib/` — `i18n-utils`, `pagination`, `rate-limit`, `reorder`,
   `validate-action-input`, `filter-params`, plus `i18n-parity` (fails if `en.json` and
   `vi.json` disagree on any key)
-- `apps/web/src/features/public/*/lib/` — URL filter parsing and serialisation
-  (`blog-filter-params`, `project-filter-params`)
-- `apps/web/src/entities/blog/api/` — server-action contracts
-- `packages/ui/src/lib/` — `sanitize`, `rich-text-content`, `render-pipeline`,
-  `tiptap-utils`, `utils`
-- `packages/ui/src/*.spec.tsx` — component rendering, via `happy-dom` +
-  `@testing-library/react`
-- `packages/db/__tests__/` — Prisma client wiring
-- `packages/storage/__tests__/` — storage client
-- `packages/logger/__tests__/` — structured logging
+- `packages/ui/` — `sanitize`, `rich-text-content`, the render pipeline, and component
+  rendering via `happy-dom` + `@testing-library/react`
+- `packages/db` · `packages/storage` · `packages/logger` — client wiring
 
 ```bash
 bun run test                    # everything
@@ -331,7 +326,7 @@ Built for Vercel:
 
 Start with [docs/architecture.md](docs/architecture.md) for how the system fits together, including a "where to change what" table.
 
-Project-wide rules for contributors (and AI assistants) are documented in [CLAUDE.md](CLAUDE.md) — the short version: respect the FSD boundaries, never mix the two translation systems, no `any` and no `@ts-ignore`, prefer Server Components, search before adding a utility, and don't add dependencies that aren't needed.
+The short version: respect the FSD boundaries, never mix the two translation systems, no `any` and no `@ts-ignore`, prefer Server Components, search before adding a utility, and don't add dependencies that aren't needed. Commits follow Conventional Commits, enforced by commitlint.
 
 Per-package notes: [`packages/db`](packages/db/README.md) · [`packages/ui`](packages/ui/README.md) · [`packages/storage`](packages/storage/README.md) · [`packages/logger`](packages/logger/README.md) · [`packages/config`](packages/config/README.md)
 
@@ -340,7 +335,7 @@ Per-package notes: [`packages/db`](packages/db/README.md) · [`packages/ui`](pac
 ## Author
 
 **Phu Luong Thanh Hoang** ([@lthphuw](https://github.com/lthphuw))
-🌐 [phu-lth.space](https://phu-lth.space/) · ✉️ lthphuw@gmail.com
+[phu-lth.space](https://phu-lth.space/) · lthphuw@gmail.com
 
 ## License
 
