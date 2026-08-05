@@ -77,6 +77,7 @@ interface FakeNoteRow {
   status: string;
   isFolder: boolean;
   labels: { labelId: string }[];
+  _count: { children: number };
 }
 
 const NOTE_A: FakeNoteRow = {
@@ -91,6 +92,7 @@ const NOTE_A: FakeNoteRow = {
   status: 'draft',
   isFolder: false,
   labels: [],
+  _count: { children: 0 },
 };
 
 let findManyImpl: () => Promise<FakeNoteRow[]>;

@@ -14,6 +14,36 @@ export const noteKeys = {
    *  note's outgoing links, which changes some OTHER note's backlinks — and
    *  the id of that other note is not knowable from the save alone. */
   linksAll: () => [...noteKeys.all, 'links'] as const,
+  /**
+   * ONE LEVEL of the tree — `parentId: null` is the root level. The explorer
+   * loads a folder's children when it expands, so each level is its own cache
+   * entry and a collapsed folder costs nothing.
+   */
+  children: (parentId: string | null, includeArchived: boolean) =>
+    [...noteKeys.all, 'children', includeArchived, parentId] as const,
+  /** Prefix-matches every level. What a create/move/archive invalidates: the
+   *  row moved between two levels and neither id is worth working out. */
+  childrenAll: () => [...noteKeys.all, 'children'] as const,
+
+  /** The flat view's cursor-paginated document list. */
+  page: (includeArchived: boolean, sort: string) =>
+    [...noteKeys.all, 'page', includeArchived, sort] as const,
+  pageAll: () => [...noteKeys.all, 'page'] as const,
+
+  /** The grouped view's bucket list — keys, titles and TRUE counts. */
+  groups: (groupBy: string, includeArchived: boolean) =>
+    [...noteKeys.all, 'groups', includeArchived, groupBy] as const,
+  groupsAll: () => [...noteKeys.all, 'groups'] as const,
+  /** Rows inside one bucket, fetched when that section expands. */
+  groupRows: (groupBy: string, key: string, includeArchived: boolean) =>
+    [...noteKeys.all, 'group-rows', includeArchived, groupBy, key] as const,
+  groupRowsAll: () => [...noteKeys.all, 'group-rows'] as const,
+
+  /** How many notes a permanent delete would take with it. Fetched when the
+   *  actions menu opens, because a collapsed folder's subtree is not loaded. */
+  descendantCount: (noteId: string) =>
+    [...noteKeys.all, 'descendant-count', noteId] as const,
+
   /** The owner's label list — one entry, names/colors for every consumer. */
   labels: () => [...noteKeys.all, 'labels'] as const,
   /**

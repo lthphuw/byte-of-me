@@ -41,6 +41,10 @@ export async function getNoteTree(
         // Join-row ids only — label names come from `getNoteLabels`, once,
         // instead of repeating on every one of N rows.
         labels: { select: { labelId: true } },
+        // Carried only so this legacy whole-corpus read still satisfies
+        // `NoteTreeNode` while the explorer migrates to `getNoteChildren`.
+        // This action is deleted once the last caller is gone.
+        _count: { select: { children: true } },
       },
       orderBy: [
         { isPinned: 'desc' },
@@ -52,9 +56,10 @@ export async function getNoteTree(
 
     return {
       success: true,
-      data: notes.map(({ labels, ...note }) => ({
+      data: notes.map(({ labels, _count, ...note }) => ({
         ...note,
         labelIds: labels.map((row) => row.labelId),
+        childCount: _count.children,
       })),
     };
   } catch (error) {

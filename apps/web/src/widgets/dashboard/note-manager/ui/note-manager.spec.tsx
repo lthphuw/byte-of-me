@@ -178,6 +178,7 @@ const findMany = mock(() =>
         status,
         isFolder,
         labels: [],
+        _count: { children: 0 },
       })
     )
   )

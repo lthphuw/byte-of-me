@@ -90,6 +90,7 @@ describe('buildNoteTree', () => {
       status: 'draft',
       isFolder: false,
       labelIds: [],
+      childCount: 0,
       ...overrides,
     };
   }
@@ -169,6 +170,7 @@ describe('buildNoteTree', () => {
       'status',
       'isFolder',
       'labelIds',
+      'childCount',
     ];
     expect(Object.keys(flat[0]!)).toEqual(expectedKeys);
     expect(Object.keys(flat[1]!)).toEqual(expectedKeys);

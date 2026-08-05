@@ -22,6 +22,7 @@ function row(overrides: Partial<NoteTreeNode> & { id: string }): NoteTreeNode {
     status: 'draft',
     isFolder: false,
     labelIds: [],
+    childCount: 0,
     ...overrides,
   };
 }

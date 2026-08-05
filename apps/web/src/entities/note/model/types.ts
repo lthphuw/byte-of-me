@@ -22,7 +22,31 @@ export type NoteTreeNode = Pick<
   | 'createdAt'
   | 'status'
   | 'isFolder'
-> & { labelIds: string[] };
+> & {
+  labelIds: string[];
+  /**
+   * How many notes sit directly under this one.
+   *
+   * The tree loads one level at a time, so a collapsed folder's children have
+   * never been fetched — without this the expand chevron would either be
+   * missing on real folders or offered on empty ones until the author clicked
+   * to find out. A count is one `_count` on a query that was happening anyway.
+   */
+  childCount: number;
+};
+
+/**
+ * One page of a cursor-paginated list.
+ *
+ * `nextCursor` is the id of the last row returned, or `null` when the list is
+ * exhausted — the caller passes it straight back as `cursor`. An id rather
+ * than an offset because rows shift under a reader who is creating and moving
+ * notes, and an offset silently skips or repeats when they do.
+ */
+export interface NotePage<T> {
+  rows: T[];
+  nextCursor: string | null;
+}
 
 /** Scalar the properties panel can hold. Arrays/objects are deliberately out. */
 export type NotePropertyValue = string | number | boolean;

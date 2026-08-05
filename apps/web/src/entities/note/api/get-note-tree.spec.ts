@@ -55,6 +55,7 @@ const noteRow = {
   status: 'draft',
   isFolder: false,
   labels: [{ labelId: 'label-1' }],
+  _count: { children: 0 },
 };
 
 describe('getNoteTree', () => {
