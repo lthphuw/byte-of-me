@@ -1,5 +1,6 @@
 export * from './lib/explorer-model';
 export * from './lib/use-explorer-prefs';
+export * from './lib/use-explorer-queries';
 export * from './lib/use-explorer-tree';
 export * from './lib/use-note-dnd';
 export * from './lib/use-tree-keyboard';

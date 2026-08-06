@@ -25,7 +25,7 @@ function renderSnippet(snippet: string): React.ReactNode {
   if (!snippet.includes('<<')) return snippet;
   return snippet.split(/<<|>>/).map((segment, index) =>
     index % 2 === 1 ? (
-      // eslint-disable-next-line react/no-array-index-key -- segments are positional by construction
+       
       <mark key={index} className="rounded-sm bg-primary/25 text-inherit">
         {segment}
       </mark>

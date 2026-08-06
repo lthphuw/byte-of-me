@@ -4,7 +4,6 @@ import {
   collectDescendantIds,
   wouldCreateCycle,
 } from './note-tree';
-import type { NoteTreeNode } from './types';
 
 // a → b → c, plus an unrelated root d
 const rows = [

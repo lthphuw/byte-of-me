@@ -5,7 +5,8 @@
  * is clamped, and the empty query is a recents list that never reaches
  * `$queryRaw` at all.
  */
-import { prisma, Prisma } from '@byte-of-me/db';
+import type { Prisma } from '@byte-of-me/db';
+import { prisma } from '@byte-of-me/db';
 import { beforeAll, beforeEach, describe, expect, it, mock } from 'bun:test';
 
 import type * as SearchNotesModule from './search-notes';

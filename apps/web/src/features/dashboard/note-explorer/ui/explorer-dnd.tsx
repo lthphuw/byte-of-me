@@ -10,6 +10,7 @@ import {
 import { FileText } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import type { NoteLabelSummary, NoteTreeNode } from '@/entities/note';
 import {
   type ExplorerGroup,
 } from '@/features/dashboard/note-explorer/lib/explorer-model';
@@ -21,8 +22,6 @@ import {
   type NoteDragData,
   useNoteDnd,
 } from '@/features/dashboard/note-explorer/lib/use-note-dnd';
-
-import type { NoteLabelSummary, NoteTreeNode } from '@/entities/note';
 import { cn } from '@/shared/lib/utils';
 
 /**

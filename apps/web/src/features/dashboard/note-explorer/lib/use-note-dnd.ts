@@ -16,9 +16,9 @@ import { toast } from 'sonner';
 import {
   collectDescendantIds,
   moveNote,
-  type NoteLabelSummary,
   NO_LABEL_GROUP_KEY,
   noteKeys,
+  type NoteLabelSummary,
   type NoteTreeNode,
   setNoteLabels,
   updateNote,

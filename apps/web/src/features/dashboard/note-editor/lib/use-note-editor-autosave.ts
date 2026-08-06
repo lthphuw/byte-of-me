@@ -422,6 +422,27 @@ export function useNoteEditorAutosave(
     },
   });
 
+  /**
+   * The save, as a plain stable function.
+   *
+   * `mutate` is referentially stable in TanStack Query v5, and its
+   * `mutationFn` closure is refreshed from the latest render — via the
+   * mutation observer's own internal effect, which runs before the effects
+   * below — so `noteId` inside it is never stale even though `mutate` itself
+   * never changes identity.
+   *
+   * Destructured HERE rather than written as `save.mutate` in each dependency
+   * array, which is what the two effects below used to do. That form is
+   * correct but `react-hooks/exhaustive-deps` cannot see it: the rule works on
+   * whole objects, so it asked for `save` — and depending on `save` would
+   * re-fire on every pending/success/error transition and turn one edit into a
+   * save loop. The warning was previously documented as expected and accepted,
+   * with an explicit instruction not to reach for `eslint-disable`. This is the
+   * third option: a dependency that is both honest AND machine-checkable, so
+   * the arrays below are now verified rather than merely argued for.
+   */
+  const { mutate: saveNote } = save;
+
   useEffect(() => {
     if (!note || !isSeededForCurrentNote) return;
 
@@ -459,17 +480,10 @@ export function useNoteEditorAutosave(
       return;
     }
 
-    save.mutate({ id: noteId, title: debouncedTitle, content: debouncedContent });
-    // `save.mutate` is referentially stable in TanStack Query v5, and its
-    // `mutationFn` closure is refreshed from the latest render — via the
-    // mutation observer's own internal effect, which runs before this one —
-    // so `noteId` inside it is never stale even though `mutate` itself never
-    // changes identity. That is what lets this list `save.mutate` honestly:
-    // depending on the whole `save` object instead would re-fire on every
-    // pending/success/error transition and turn one edit into a save loop.
-    // This does produce an `eslint react-hooks/exhaustive-deps` warning
-    // ("missing dependency: 'save'") — that is expected and accepted, not an
-    // oversight; do not silence it with `eslint-disable`.
+    // `saveNote`, not `save.mutate`: same function, but as a dependency the
+    // linter can actually check. See its declaration for why depending on the
+    // whole `save` object would turn one edit into a save loop.
+    saveNote({ id: noteId, title: debouncedTitle, content: debouncedContent });
   }, [
     note,
     isSeededForCurrentNote,
@@ -479,7 +493,7 @@ export function useNoteEditorAutosave(
     title,
     content,
     noteId,
-    save.mutate,
+    saveNote,
   ]);
 
   // Persists a pending, not-yet-debounced edit at the two moments no LATER
@@ -547,8 +561,8 @@ export function useNoteEditorAutosave(
 
   const retry = useCallback(() => {
     if (!note) return;
-    save.mutate({ id: noteId, title, content });
-  }, [note, noteId, title, content, save.mutate]);
+    saveNote({ id: noteId, title, content });
+  }, [note, noteId, title, content, saveNote]);
 
   // Scoped to the CURRENTLY OPEN note: `save` (the mutation observer) is one
   // instance shared across every note this hook instance ever opens, so its

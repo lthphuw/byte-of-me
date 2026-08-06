@@ -317,27 +317,6 @@ function gateLevel(parentId: string | null): { release: () => void } {
   return { release };
 }
 
-function gateNextCreate(): { release: () => void } {
-  let release: () => void = () => {};
-  const gate = new Promise<void>((resolve) => {
-    release = resolve;
-  });
-  create.mockImplementationOnce(async (args: { data: Record<string, unknown> }) => {
-    await gate;
-    return {
-      id: 'new-note-id',
-      content: '',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      status: 'draft',
-      properties: null,
-      isFolder: false,
-      labels: [],
-      ...args.data,
-    };
-  });
-  return { release };
-}
 
 /**
  * Puts the explorer in a non-default view. `useExplorerPrefs` reads this in an

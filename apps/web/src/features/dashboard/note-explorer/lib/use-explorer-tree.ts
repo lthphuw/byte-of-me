@@ -46,6 +46,29 @@ export interface ExplorerTree extends NoteExplorerControls {
  * — a provider would buy indirection and nothing else. Rows receive the whole
  * thing as a single `explorer` prop; see `NoteExplorerControls` for why that is
  * one prop instead of eight.
+ *
+ * ## Re-render cost, measured — do not "optimise" this without re-measuring
+ *
+ * Because the returned object changes identity whenever any of this state
+ * changes, moving the selection re-renders EVERY row, not just the two whose
+ * highlight actually moved. That was measured rather than assumed: a 19-row
+ * tree, driven through `NoteTreePanel` with a render counter in `NoteRow`,
+ * produced exactly 19 row renders per selection change and ~7.9ms per change
+ * under happy-dom — roughly 0.4ms per row, and a real browser is several times
+ * faster than that.
+ *
+ * It was left alone deliberately. Making it 2 renders instead of 19 means rows
+ * subscribing to slices of this state rather than receiving it — a
+ * `useSyncExternalStore` selector store — because `React.memo` cannot help a
+ * component that RECURSES: a child's `isSelected` changing has to reach it
+ * through a parent whose own props did not change. That is a real rewrite of
+ * the tree's data flow, in the file that has already produced three regressions
+ * (double-submit on Enter, click bubbling through ancestor rows, and
+ * `asChild` losing its handler), for a few milliseconds on a tree that is
+ * twenty rows in practice.
+ *
+ * Re-open it when a tree gets big enough for the number to matter — the
+ * measurement above is the baseline to compare against.
  */
 export function useExplorerTree({
   onCreate,

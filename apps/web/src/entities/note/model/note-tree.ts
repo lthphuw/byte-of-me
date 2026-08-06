@@ -1,4 +1,3 @@
-import type { NoteTreeNode } from './types';
 
 /** The minimum a note row must expose for the tree walks below. */
 export type NoteParentRef = { id: string; parentId: string | null };

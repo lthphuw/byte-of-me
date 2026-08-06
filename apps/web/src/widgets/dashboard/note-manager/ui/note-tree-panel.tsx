@@ -1,26 +1,11 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Button } from '@byte-of-me/ui';
-import {
-  type InfiniteData,
-  useInfiniteQuery,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
 import { Archive, ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import {
-  getArchivedNotes,
-  getNoteChildren,
-  getNoteLabels,
-  NoteEmpty,
-  noteKeys,
-  type NotePage,
-  type NoteTreeNode,
-  NoteTreeSkeleton,
-} from '@/entities/note';
+import { NoteEmpty, type NoteTreeNode, NoteTreeSkeleton } from '@/entities/note';
 import {
   useCreateNote,
   useNoteMutations,
@@ -37,6 +22,7 @@ import {
   NoteTreeList,
   RevealActiveNote,
   useExplorerPrefs,
+  useExplorerQueries,
   useExplorerTree,
   useTreeKeyboard,
   useVisibleTreeRows,
@@ -98,105 +84,26 @@ export function NoteTreePanel({
   revealFolderId,
 }: NoteTreePanelProps) {
   const t = useTranslations('dashboard.note');
-  const queryClient = useQueryClient();
   const { prefs, update: updatePrefs } = useExplorerPrefs();
   // The archived "trash" view stays a plain list: pin order and grouping are
   // live-notes concepts, and the mode menu is hidden there.
   const mode = includeArchived ? 'tree' : prefs.mode;
   const isTreeView = mode === 'tree';
 
-  /** The trash: archived notes, newest first, one page at a time. */
-  const archivedList = useInfiniteQuery({
-    queryKey: noteKeys.archived(),
-    queryFn: async ({ pageParam }) => {
-      const res = await getArchivedNotes({ cursor: pageParam });
-      if (!res.success) throw new Error(res.errorMsg);
-      return res.data;
-    },
-    initialPageParam: null as string | null,
-    getNextPageParam: (page) => page.nextCursor,
-    enabled: includeArchived,
-  });
-
-  const archivedRows = useMemo(
-    () => archivedList.data?.pages.flatMap((page) => page.rows) ?? [],
-    [archivedList.data]
-  );
-
-  /**
-   * The ROOT level of the live tree — `parentId: null`, one page at a time.
-   * Each folder fetches its own level when it expands; see `NoteTreeItem`.
-   */
-  const rootLevel = useInfiniteQuery({
-    queryKey: noteKeys.children(null, includeArchived),
-    queryFn: async ({ pageParam }) => {
-      const res = await getNoteChildren({
-        parentId: null,
-        includeArchived,
-        cursor: pageParam,
-      });
-      if (!res.success) throw new Error(res.errorMsg);
-      return res.data;
-    },
-    initialPageParam: null as string | null,
-    getNextPageParam: (page) => page.nextCursor,
-    enabled: isTreeView && !includeArchived,
-  });
-
-  const rootRows = useMemo(
-    () => rootLevel.data?.pages.flatMap((page) => page.rows) ?? [],
-    [rootLevel.data]
-  );
-
-  /**
-   * Every note row the per-level caches currently hold, deduplicated by id.
-   *
-   * A CALLBACK, not a memo, and `ExplorerDnd` calls it when a drop lands. The
-   * levels settle inside `NoteTreeItem`, a child this panel does not re-render
-   * for, so a value computed here would be missing exactly the folder the
-   * author just expanded — and a drop onto one of its rows would find no
-   * target and quietly do nothing. `getQueriesData` prefix-matches, so one
-   * call covers every level of both the live and the archived tree.
-   */
-  const loadedRows = useCallback((): NoteTreeNode[] => {
-    const entries = queryClient.getQueriesData<
-      InfiniteData<NotePage<NoteTreeNode>>
-    >({ queryKey: noteKeys.childrenAll() });
-
-    // A row can sit in two levels at once — `children(id, false)` and
-    // `children(id, true)` are separate cache entries over overlapping sets.
-    const byId = new Map<string, NoteTreeNode>();
-    for (const [, data] of entries) {
-      for (const page of data?.pages ?? []) {
-        for (const row of page.rows) byId.set(row.id, row);
-      }
-    }
-    return [...byId.values()];
-  }, [queryClient]);
-
-  // Whichever query actually feeds what is on screen decides that view's
-  // loading, error and empty states. Reading a query nothing on screen came
-  // from would let, say, a trash failure blank a perfectly good tree.
-  //
-  // Only the TREE and the TRASH are decided here. The flat and grouped views
-  // each own their query, so they own their three states too — the panel
-  // cannot see their rows to judge, and both queries here are disabled (hence
-  // permanently `isPending`) in those modes, which would otherwise pin a
-  // skeleton on screen.
-  const source = includeArchived ? archivedList : rootLevel;
-  const isPending = isTreeView && source.isPending;
-  const isLoadingError = isTreeView && source.isLoadingError;
-  const visibleRows = includeArchived ? archivedRows : rootRows;
-
-  // Label names for the grouped-by-label view; only fetched when shown.
-  const { data: labels } = useQuery({
-    queryKey: noteKeys.labels(),
-    queryFn: async () => {
-      const res = await getNoteLabels();
-      if (!res.success) throw new Error(res.errorMsg);
-      return res.data;
-    },
-    enabled: mode === 'grouped' && prefs.groupBy === 'label',
+  const {
+    archivedList,
+    archivedRows,
+    rootLevel,
+    rootRows,
+    labels,
+    loadedRows,
+    isPending,
+    isLoadingError,
+    visibleRows,
+  } = useExplorerQueries({
+    mode,
+    includeArchived,
+    groupByLabel: prefs.groupBy === 'label',
   });
 
   // Destructured to their `mutate` functions, which TanStack keeps stable —

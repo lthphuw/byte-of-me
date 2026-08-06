@@ -1,6 +1,6 @@
 'use server';
 
-import { prisma, Prisma } from '@byte-of-me/db';
+import { Prisma,prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
 import {
