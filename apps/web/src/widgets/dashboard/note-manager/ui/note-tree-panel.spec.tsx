@@ -66,7 +66,14 @@ const messages = {
       },
       search: { trigger: 'Search notes' },
       actions: { create: 'New note', newFolder: 'New folder' },
-      tree: { expandAriaLabel: 'Expand', collapseAriaLabel: 'Collapse' },
+      tree: {
+        expandAriaLabel: 'Expand',
+        collapseAriaLabel: 'Collapse',
+        treeAriaLabel: 'Note tree',
+        draftNoteLabel: 'New note name',
+        draftFolderLabel: 'New folder name',
+        renameInputLabel: 'Rename',
+      },
       empty: { title: 'No notes yet.' },
       archive: { empty: 'Nothing archived.' },
       errors: {
@@ -278,6 +285,22 @@ function chevronOf(title: string): HTMLButtonElement {
   return button as HTMLButtonElement;
 }
 
+/**
+ * Opens a draft row from the header button, types a name, and presses Enter —
+ * the whole create gesture, which is now three steps rather than one click.
+ *
+ * `label` picks which draft: "New note name" or "New folder name".
+ */
+function commitDraft(label: string, title: string) {
+  const trigger = label === 'New folder name' ? 'New folder' : 'New note';
+  if (!screen.queryByLabelText(label)) {
+    fireEvent.click(screen.getByRole('button', { name: trigger }));
+  }
+  const input = screen.getByLabelText(label);
+  fireEvent.change(input, { target: { value: title } });
+  fireEvent.keyDown(input, { key: 'Enter' });
+}
+
 /** Resolves the NEXT read of one level only once `release()` runs — same
  *  technique as `note-editor.spec.tsx`'s `gateNextUpdateMany`. */
 function gateLevel(parentId: string | null): { release: () => void } {
@@ -437,8 +460,14 @@ describe('NoteTreePanel', () => {
 
     // `aria-expanded` is set only on rows that HAVE children, so its presence
     // is the observable form of "this row offers an expand affordance".
-    expect(chevronOf('Folder One').getAttribute('aria-expanded')).toBe('false');
-    expect(chevronOf('Note A').getAttribute('aria-expanded')).toBeNull();
+    //
+    // Read from the `treeitem`, not from the chevron button: the tree now
+    // claims the full `role="tree"` pattern, and that pattern puts
+    // `aria-expanded` on the item rather than on a control inside it. The
+    // contract this test defends is unchanged — only the element carrying it
+    // moved, and it moved to the one the ARIA spec names.
+    expect(rowOf('Folder One').getAttribute('aria-expanded')).toBe('false');
+    expect(rowOf('Note A').getAttribute('aria-expanded')).toBeNull();
     // …and the folder's own level still has not been read to work that out.
     expect(levelCalls('folder-1')).toBe(0);
   });
@@ -538,26 +567,85 @@ describe('NoteTreePanel', () => {
     expect(levelCalls('live-folder')).toBe(0);
   });
 
-  test('disables the create button while a create is pending', async () => {
-    const { release } = gateNextCreate();
+  test('the create button opens a draft row and writes nothing yet', async () => {
     const queryClient = makeQueryClient();
     render(<Harness queryClient={queryClient} />);
     await screen.findByText('Note A');
 
-    // No `@testing-library/jest-dom` matchers are registered in this
-    // harness (checked: no other spec in the repo uses `toBeDisabled` or
-    // `toBeInTheDocument`), so the `disabled` DOM property is read directly.
-    const createButton = screen.getByRole(
-      'button',
-      { name: 'New note' }
-    ) as HTMLButtonElement;
-    expect(createButton.disabled).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: 'New note' }));
 
-    fireEvent.click(createButton);
-    await waitFor(() => expect(createButton.disabled).toBe(true));
+    // The row IS the naming step now. Nothing has been written: the previous
+    // flow created an "Untitled" note immediately and left the author to rename
+    // it, which is the round trip this replaces.
+    expect(screen.getByLabelText('New note name')).toBeTruthy();
+    expect(create).not.toHaveBeenCalled();
+  });
 
-    release();
-    await waitFor(() => expect(createButton.disabled).toBe(false));
+  test('escaping a draft row leaves nothing behind', async () => {
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} />);
+    await screen.findByText('Note A');
+
+    fireEvent.click(screen.getByRole('button', { name: 'New note' }));
+    const input = screen.getByLabelText('New note name');
+    fireEvent.change(input, { target: { value: 'Half typed' } });
+    fireEvent.keyDown(input, { key: 'Escape' });
+
+    await waitFor(() =>
+      expect(screen.queryByLabelText('New note name')).toBeNull()
+    );
+    // The whole point of a draft: abandoning it costs the database nothing.
+    expect(create).not.toHaveBeenCalled();
+  });
+
+  test('a committed draft is created already named, at the root', async () => {
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} />);
+    await screen.findByText('Note A');
+
+    commitDraft('New note name', 'Sprint plan');
+
+    await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
+    const args = create.mock.calls[0]?.[0] as { data: Record<string, unknown> };
+    expect(args.data.title).toBe('Sprint plan');
+    expect(args.data.parentId).toBeNull();
+    expect(args.data.isFolder).toBe(false);
+  });
+
+  test('a draft opened with a folder selected is created INSIDE that folder', async () => {
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} />);
+    await screen.findByText('Folder One');
+
+    // Clicking a folder selects it (and expands it). That selection is what
+    // decides where the next note is written — before this, both header
+    // buttons wrote to the root unconditionally and every new note inside a
+    // folder began with a drag.
+    fireEvent.click(screen.getByText('Folder One'));
+    fireEvent.click(screen.getByRole('button', { name: 'New note' }));
+    commitDraft('New note name', 'Retro');
+
+    await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
+    const args = create.mock.calls[0]?.[0] as { data: Record<string, unknown> };
+    expect(args.data.parentId).toBe('folder-1');
+  });
+
+  test('clicking a nested row selects THAT row, not the folder it sits in', async () => {
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} />);
+    await screen.findByText('Folder One');
+
+    fireEvent.click(screen.getByText('Folder One'));
+    expect(await screen.findByText('Child One')).toBeTruthy();
+
+    fireEvent.click(screen.getByText('Child One'));
+
+    // A child's `li` is nested inside its parent's, so a row click bubbles
+    // through every ancestor row — and the outermost handler runs last and
+    // wins. In the running app this looked like F2 renaming the top-level
+    // folder after clicking a note three levels down.
+    expect(rowOf('Child One').getAttribute('aria-selected')).toBe('true');
+    expect(rowOf('Folder One').getAttribute('aria-selected')).toBe('false');
   });
 
   test('shows an errors.create toast when create fails', async () => {
@@ -570,7 +658,7 @@ describe('NoteTreePanel', () => {
     render(<Harness queryClient={queryClient} />);
     await screen.findByText('Note A');
 
-    fireEvent.click(screen.getByRole('button', { name: 'New note' }));
+    commitDraft('New note name', 'Doomed');
 
     await waitFor(() => {
       expect(toastErrorSpy).toHaveBeenCalledWith(
@@ -740,7 +828,7 @@ describe('NoteTreePanel', () => {
     render(<Harness queryClient={queryClient} />);
     await screen.findByText('Note A');
 
-    fireEvent.click(screen.getByRole('button', { name: 'New note' }));
+    commitDraft('New note name', 'Fresh');
 
     await waitFor(() => {
       expect(

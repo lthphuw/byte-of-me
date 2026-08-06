@@ -52,6 +52,19 @@ export const noteKeys = {
    *  descendant is not knowable from a create or a move. */
   descendantCountAll: () => [...noteKeys.all, 'descendant-count'] as const,
 
+  /** The chain of parents above a note, root first. Read by the editor
+   *  header's breadcrumb, and by the explorer when it has to expand every
+   *  collapsed folder on the path to a note opened from the palette or a
+   *  `[[` link. */
+  ancestors: (noteId: string) =>
+    [...noteKeys.all, 'ancestors', noteId] as const,
+  /** Prefix-matches every note's chain. A MOVE re-parents the moved note AND
+   *  everything under it, and a folder RENAME relabels every crumb below it —
+   *  in both cases the notes whose breadcrumb just changed are exactly the
+   *  ones whose ids the mutation does not know. Same reason `childrenAll`
+   *  exists. */
+  ancestorsAll: () => [...noteKeys.all, 'ancestors'] as const,
+
   /** The owner's label list — one entry, names/colors for every consumer. */
   labels: () => [...noteKeys.all, 'labels'] as const,
 
@@ -82,6 +95,13 @@ export const noteKeys = {
       // path, so a stale one is not a cosmetic bug: understating what a
       // permanent delete takes is the worst direction to be wrong in.
       noteKeys.descendantCountAll(),
+      // Breadcrumbs and the reveal path. A move re-parents a whole subtree
+      // and a folder rename relabels every crumb beneath it, so a chain that
+      // is not refetched shows a path the note no longer has. Safe in this
+      // family for the reason `use-note-editor-autosave` gives for `links`:
+      // nothing the save decision reads comes from it, so refetching cannot
+      // loop back into another save.
+      noteKeys.ancestorsAll(),
     ] as const,
   /**
    * The whole knowledge graph — one entry.

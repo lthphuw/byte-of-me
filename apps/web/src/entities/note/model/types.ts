@@ -35,6 +35,61 @@ export type NoteTreeNode = Pick<
   childCount: number;
 };
 
+/** An unsaved new row, open in the tree but not yet in the database. */
+export interface NoteDraft {
+  /** The level it will be created in. `null` is the root level. */
+  parentId: string | null;
+  isFolder: boolean;
+}
+
+/**
+ * Everything the tree's interaction state hands to a row.
+ *
+ * ONE prop rather than eight. Selection, expansion, the draft row and the
+ * in-place rename all move together as the author works, and threading them
+ * separately through a component that recurses at every depth is how
+ * `NoteTreeItem`'s prop list grew in the first place.
+ *
+ * Declared HERE, in the entity, and IMPLEMENTED in
+ * `features/dashboard/note-explorer` — the same direction `renderActions` and
+ * `renderRowShell` already run in. An entity stating the contract it expects to
+ * be handed keeps the layering (AGENTS §3) intact; an entity importing the
+ * feature's hook to borrow its return type would invert it.
+ *
+ * `selectedId` is deliberately NOT the note open in the editor. That one comes
+ * from the URL and is passed separately as `activeId`. VSCode keeps the same
+ * two apart, and the difference is load-bearing: what a new note is created
+ * next to is the SELECTION, which is why creating one no longer always lands at
+ * the root.
+ */
+export interface NoteExplorerControls {
+  selectedId: string | null;
+  expandedIds: ReadonlySet<string>;
+  /** Non-null while a draft row is open somewhere in the tree. */
+  draft: NoteDraft | null;
+  /** The row being renamed in place, if any. */
+  renamingId: string | null;
+  /**
+   * Set for exactly as long as a reveal is outstanding.
+   *
+   * The row with this id scrolls itself into view when it MOUNTS and then
+   * clears the flag. Deliberately not a timer: the row does not exist until its
+   * level query resolves, so any delay would be a guess — and under CDP a
+   * backgrounded tab clamps timers to 1 Hz, which turns that guess into a
+   * second of nothing happening.
+   */
+  revealId: string | null;
+  select: (id: string) => void;
+  toggle: (id: string) => void;
+  /** Commits the draft. An empty title cancels rather than creating. */
+  submitDraft: (title: string) => void;
+  cancelDraft: () => void;
+  startRename: (id: string) => void;
+  submitRename: (id: string, title: string) => void;
+  cancelRename: () => void;
+  clearReveal: () => void;
+}
+
 /**
  * One page of a cursor-paginated list.
  *
@@ -185,3 +240,14 @@ export type NoteSearchHit = Pick<Note, 'id' | 'title' | 'updatedAt'> & {
   /** A short window of `plainText` around nothing in particular — just the head. */
   snippet: string;
 };
+
+/**
+ * One rung of a note's ancestor chain, as `getNoteAncestors` returns it: root
+ * first, immediate parent last, the note itself never included.
+ *
+ * `isFolder` is carried because the two consumers do different things with a
+ * rung — the explorer expands it to reveal a note opened from the palette or a
+ * `[[` link, the editor header renders it as a breadcrumb crumb — and a
+ * non-folder parent is legal in this tree (any note can hold children).
+ */
+export type NoteAncestor = Pick<Note, 'id' | 'title' | 'isFolder'>;

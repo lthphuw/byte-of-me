@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Button } from '@byte-of-me/ui';
 import {
   type InfiniteData,
@@ -13,26 +13,36 @@ import { useTranslations } from 'next-intl';
 
 import {
   getArchivedNotes,
+  getNoteAncestors,
   getNoteChildren,
   getNoteLabels,
   NoteEmpty,
   noteKeys,
   type NotePage,
+  NoteRowInput,
   NoteTreeItem,
   type NoteTreeNode,
   NoteTreeSkeleton,
 } from '@/entities/note';
-import { useCreateNote } from '@/features/dashboard/note-actions';
 import {
+  useCreateNote,
+  useNoteMutations,
+  useRenameNote,
+} from '@/features/dashboard/note-actions';
+import {
+  type ArrowKey,
   ExplorerDnd,
   ExplorerRow,
   ExplorerViewMenu,
+  flattenVisibleRows,
   GroupedRowDndShell,
   GroupSectionDndShell,
+  navigate,
   NoteFlatList,
   NoteGroupedList,
   TreeRowDndShell,
   useExplorerPrefs,
+  useExplorerTree,
 } from '@/features/dashboard/note-explorer';
 import { InfiniteSentinel } from '@/shared/ui/infinite-sentinel';
 
@@ -45,9 +55,31 @@ interface NoteTreePanelProps {
   onToggleArchived?: () => void;
   /** Space navigation, mounted in this header on phones. */
   navSlot?: React.ReactNode;
-  /** Per-row actions menu, supplied by the widget so the entity layer below
-   *  never has to import a feature. */
-  renderActions?: (node: NoteTreeNode) => React.ReactNode;
+  /**
+   * Per-row actions menu, supplied by the widget so the entity layer below
+   * never has to import a feature.
+   *
+   * `startRename` is handed BACK to the widget because the menu's "Rename"
+   * item now begins an in-place edit in this tree rather than opening a
+   * dialog — the state it needs lives here, and the widget is the only thing
+   * allowed to build the menu.
+   */
+  renderActions?: (
+    node: NoteTreeNode,
+    startRename: (noteId: string) => void
+  ) => React.ReactNode;
+  /** The same menu again, as a right-click wrapper. Same layering reason. */
+  renderContextMenu?: (
+    node: NoteTreeNode,
+    row: React.ReactNode,
+    startRename: (noteId: string) => void
+  ) => React.ReactNode;
+  /**
+   * A folder to open the tree onto — what the editor's breadcrumb asks for
+   * when a crumb is clicked. Distinct from `activeId`, which is a note and
+   * arrives from the URL.
+   */
+  revealFolderId?: string | null;
 }
 
 export function NoteTreePanel({
@@ -58,10 +90,11 @@ export function NoteTreePanel({
   onToggleArchived,
   navSlot,
   renderActions,
+  renderContextMenu,
+  revealFolderId,
 }: NoteTreePanelProps) {
   const t = useTranslations('dashboard.note');
   const queryClient = useQueryClient();
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const { prefs, update: updatePrefs } = useExplorerPrefs();
   // The archived "trash" view stays a plain tree: pin order and grouping are
   // live-notes concepts, and the mode menu is hidden there.
@@ -176,21 +209,170 @@ export function NoteTreePanel({
     enabled: mode === 'grouped' && prefs.groupBy === 'label',
   });
 
+  const rename = useRenameNote();
+  const { archive } = useNoteMutations();
+
+  /**
+   * The create mutation, reached through a ref.
+   *
+   * `useExplorerTree` needs a way to write a committed draft, and the mutation
+   * needs `explorer.select` to make the new row the selection — each wants the
+   * other first. A ref breaks the knot without either hook learning the other's
+   * internals. `mutate` is referentially stable in TanStack v5, so this settles
+   * once rather than on every render.
+   */
+  const createRef = useRef<
+    (input: {
+      parentId: string | null;
+      isFolder: boolean;
+      title: string;
+    }) => void
+  >(() => {});
+
+  const explorer = useExplorerTree({
+    onCreate: (input) => createRef.current(input),
+    onRename: (input) => rename.mutate(input),
+  });
+
   // Shared with the command palette's "New note" action — the invalidation
   // rationale (both trees + searchAll, never `noteKeys.all`) lives on the
   // hook itself in `features/dashboard/note-actions`.
-  const create = useCreateNote(onSelect);
+  const create = useCreateNote(
+    onSelect,
+    // Folders included, which `onSelect` deliberately excludes: a new folder
+    // has nothing to open but should still become the selection, so pressing
+    // `n` again puts the next note inside it.
+    (note) => explorer.select(note.id)
+  );
 
-  const toggle = (id: string) => {
-    setExpandedIds((current) => {
-      const next = new Set(current);
-      if (next.has(id)) {
-        next.delete(id);
+  useEffect(() => {
+    createRef.current = create.mutate;
+  }, [create.mutate]);
+
+  /**
+   * Every row the tree is drawing, in screen order — what the arrow keys walk.
+   *
+   * Read straight out of the per-level caches rather than tracked separately:
+   * the levels settle inside `NoteTreeItem`, a child this panel does not
+   * re-render for, so a list kept here would go stale the moment a folder
+   * expanded. Same reasoning, and the same cache, as `loadedRows` above.
+   */
+  const keyboardRows = useMemo(
+    () =>
+      flattenVisibleRows(rootRows, explorer.expandedIds, (parentId) => {
+        const level = queryClient.getQueryData<
+          InfiniteData<NotePage<NoteTreeNode>>
+        >(noteKeys.children(parentId, includeArchived));
+        return level?.pages.flatMap((page) => page.rows);
+      }),
+    [rootRows, explorer.expandedIds, queryClient, includeArchived]
+  );
+
+  const selectedNode =
+    keyboardRows.find((row) => row.node.id === explorer.selectedId)?.node ??
+    null;
+
+  // The two slots, bound to this tree's rename. `NoteTreeItem` keeps the
+  // simpler two-argument signatures it already had; the extra argument stops
+  // here.
+  const renderRowActions = useCallback(
+    (node: NoteTreeNode) => renderActions?.(node, explorer.startRename),
+    [renderActions, explorer.startRename]
+  );
+
+  // `?? row` is load-bearing: this wrapper is ALWAYS passed down, so when the
+  // widget supplies no menu the optional call returns `undefined` — and a
+  // wrapper that returns undefined does not render an unwrapped row, it renders
+  // nothing at all. Every row in the tree vanished until this fallback existed.
+  const renderRowContextMenu = useCallback(
+    (node: NoteTreeNode, row: React.ReactNode) =>
+      renderContextMenu?.(node, row, explorer.startRename) ?? row,
+    [renderContextMenu, explorer.startRename]
+  );
+
+  /**
+   * True when the note the editor is showing is nowhere on screen.
+   *
+   * That is the ordinary case for anything opened from outside the tree — the
+   * command palette, a `[[` link, or a reload straight onto a note buried in
+   * folders that all start collapsed. Before this, the explorer simply said
+   * nothing about where the open note lived.
+   */
+  const needsReveal =
+    isTreeView &&
+    !includeArchived &&
+    activeId !== null &&
+    !keyboardRows.some((row) => row.node.id === activeId);
+
+  /**
+   * The tree's keyboard model, bound on the scroll container so it sees every
+   * row's bubbled event without any row having to register itself.
+   *
+   * `Cmd+N` is NOT among these bindings and cannot be: browsers consume it
+   * before a page ever sees a `keydown`, so `preventDefault` has nothing to
+   * prevent. VSCode can bind it because it is not in a browser. The bare keys
+   * below are the web equivalent, and they are safe precisely because they only
+   * apply while focus is inside the tree — the draft and rename inputs stop
+   * their own keystrokes from reaching here (see `NoteRowInput`).
+   */
+  const onTreeKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+    const key = event.key;
+
+    if (
+      key === 'ArrowUp' ||
+      key === 'ArrowDown' ||
+      key === 'ArrowLeft' ||
+      key === 'ArrowRight'
+    ) {
+      const intent = navigate(
+        key as ArrowKey,
+        keyboardRows,
+        explorer.selectedId,
+        explorer.expandedIds
+      );
+      // Only swallow the key when it actually did something, so a tree that
+      // cannot move left still lets the page scroll.
+      if (Object.keys(intent).length === 0) return;
+      event.preventDefault();
+      if (intent.selectId) explorer.select(intent.selectId);
+      if (intent.expandId) explorer.expand(intent.expandId);
+      if (intent.collapseId) explorer.collapse(intent.collapseId);
+      return;
+    }
+
+    if (key === 'Enter') {
+      if (!selectedNode) return;
+      event.preventDefault();
+      if (selectedNode.isFolder) {
+        explorer.toggle(selectedNode.id);
       } else {
-        next.add(id);
+        onSelect(selectedNode.id);
       }
-      return next;
-    });
+      return;
+    }
+
+    // `n` / `Shift+N`, the browser-safe stand-ins for Cmd+N / Cmd+Shift+N.
+    if (key === 'n' || key === 'N') {
+      if (includeArchived) return;
+      event.preventDefault();
+      explorer.startDraft(event.shiftKey, selectedNode);
+      return;
+    }
+
+    if (key === 'F2') {
+      if (!selectedNode) return;
+      event.preventDefault();
+      explorer.startRename(selectedNode.id);
+      return;
+    }
+
+    if (key === 'Delete' || key === 'Backspace') {
+      if (!selectedNode || includeArchived) return;
+      event.preventDefault();
+      archive.mutate(selectedNode.id);
+    }
   };
 
   return (
@@ -218,14 +400,17 @@ export function NoteTreePanel({
           />
         )}
 
+        {/* Both buttons open a DRAFT ROW now rather than writing an
+            "Untitled" note straight away, and both aim at the explorer's
+            selection rather than unconditionally at the root — the two things
+            that made every new note start with a rename and a drag. */}
         {!includeArchived && (
           <Button
             type="button"
             variant="ghost"
             size="icon"
             aria-label={t('actions.newFolder')}
-            disabled={create.isPending}
-            onClick={() => create.mutate({ isFolder: true })}
+            onClick={() => explorer.startDraft(true, selectedNode)}
           >
             <FolderPlus className="size-4" />
           </Button>
@@ -236,14 +421,40 @@ export function NoteTreePanel({
           variant="ghost"
           size="icon"
           aria-label={t('actions.create')}
-          disabled={create.isPending}
-          onClick={() => create.mutate({})}
+          onClick={() => explorer.startDraft(false, selectedNode)}
         >
           <Plus className="size-4" />
         </Button>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto p-1">
+      {/* The key handler sits on the SCROLLER, not on each row: rows focus
+          themselves through a roving tabindex and their keydowns bubble here,
+          so nothing has to register itself and the handler sees the whole tree.
+          Bindings are scoped to this subtree by construction — outside it, no
+          row has focus, so nothing fires. */}
+      <div
+        className="min-h-0 flex-1 overflow-y-auto p-1"
+        onKeyDown={onTreeKeyDown}
+      >
+        {needsReveal && activeId && (
+          <RevealActiveNote noteId={activeId} onReveal={explorer.reveal} />
+        )}
+
+        {/* The same lookup for a folder the breadcrumb pointed at. `key` is
+            what makes clicking a DIFFERENT crumb re-run it: the component is
+            otherwise identical and React would keep the resolved instance. The
+            target folder joins its own ancestor list here, because revealing a
+            folder means opening it, not just scrolling to it. */}
+        {revealFolderId && (
+          <RevealActiveNote
+            key={revealFolderId}
+            noteId={revealFolderId}
+            onReveal={(id, ancestorIds) =>
+              explorer.reveal(id, [...ancestorIds, id])
+            }
+          />
+        )}
+
         {/* `isPending` and `isLoadingError` are mutually exclusive branches
             of the same TanStack `status` enum, so neither gate below needs
             to reference the other — unlike the note editor's `isSeeded`,
@@ -291,7 +502,7 @@ export function NoteTreePanel({
               {t('archive.empty')}
             </p>
           ) : (
-            <NoteEmpty onCreate={() => create.mutate({})} />
+            <NoteEmpty onCreate={() => explorer.startDraft(false, null)} />
           )
         )}
 
@@ -307,7 +518,7 @@ export function NoteTreePanel({
                   node={node}
                   isActive={node.id === activeId}
                   onSelect={onSelect}
-                  actions={renderActions?.(node)}
+                  actions={renderRowActions(node)}
                 />
               </li>
             ))}
@@ -327,36 +538,61 @@ export function NoteTreePanel({
           labels={labels ?? []}
           showRootZone={mode === 'tree' && !includeArchived}
         >
-          {!includeArchived && rootRows.length > 0 && mode === 'tree' && (
-            <ul>
-              {rootRows.map((node) => (
-                <NoteTreeItem
-                  key={node.id}
-                  node={node}
-                  activeId={activeId}
-                  expandedIds={expandedIds}
-                  onSelect={onSelect}
-                  onToggle={toggle}
-                  renderActions={renderActions}
-                  renderRowShell={(rowNode, row) => (
-                    <TreeRowDndShell node={rowNode}>{row}</TreeRowDndShell>
-                  )}
-                />
-              ))}
-
-              {/* Root level only: every deeper level carries its own sentinel
-                  inside `NoteTreeItem`. */}
-              {rootLevel.hasNextPage && (
-                <li>
-                  <InfiniteSentinel
-                    hasNextPage={rootLevel.hasNextPage}
-                    isFetching={rootLevel.isFetching}
-                    onLoadMore={() => void rootLevel.fetchNextPage()}
+          {/* The row-count gate now also lets a ROOT-LEVEL draft through: an
+              author with no notes at all still has to be able to type the name
+              of their first one, and the empty state above hands off to exactly
+              that. */}
+          {!includeArchived &&
+            mode === 'tree' &&
+            (rootRows.length > 0 || explorer.draft?.parentId === null) && (
+              <ul role="tree" aria-label={t('tree.treeAriaLabel')}>
+                {rootRows.map((node) => (
+                  <NoteTreeItem
+                    key={node.id}
+                    node={node}
+                    activeId={activeId}
+                    explorer={explorer}
+                    onSelect={onSelect}
+                    renderActions={renderRowActions}
+                    renderContextMenu={renderRowContextMenu}
+                    renderRowShell={(rowNode, row) => (
+                      <TreeRowDndShell node={rowNode}>{row}</TreeRowDndShell>
+                    )}
                   />
-                </li>
-              )}
-            </ul>
-          )}
+                ))}
+
+                {/* The root level's draft. Deeper levels render their own
+                    inside `NoteTreeItem`, next to the children they belong
+                    among. */}
+                {explorer.draft?.parentId === null && (
+                  <li>
+                    <NoteRowInput
+                      depth={0}
+                      isFolder={explorer.draft.isFolder}
+                      label={
+                        explorer.draft.isFolder
+                          ? t('tree.draftFolderLabel')
+                          : t('tree.draftNoteLabel')
+                      }
+                      onSubmit={explorer.submitDraft}
+                      onCancel={explorer.cancelDraft}
+                    />
+                  </li>
+                )}
+
+                {/* Root level only: every deeper level carries its own sentinel
+                    inside `NoteTreeItem`. */}
+                {rootLevel.hasNextPage && (
+                  <li>
+                    <InfiniteSentinel
+                      hasNextPage={rootLevel.hasNextPage}
+                      isFetching={rootLevel.isFetching}
+                      onLoadMore={() => void rootLevel.fetchNextPage()}
+                    />
+                  </li>
+                )}
+              </ul>
+            )}
 
           {/* No row-count gate on either view any more: each owns its query,
               so each knows on its own whether it is loading, failed or
@@ -369,7 +605,7 @@ export function NoteTreePanel({
               activeId={activeId}
               onSelect={onSelect}
               onCreate={() => create.mutate({})}
-              renderActions={renderActions}
+              renderActions={renderRowActions}
             />
           )}
 
@@ -380,7 +616,7 @@ export function NoteTreePanel({
               activeId={activeId}
               onSelect={onSelect}
               onCreate={() => create.mutate({})}
-              renderActions={renderActions}
+              renderActions={renderRowActions}
               renderSection={(group, section) => (
                 <GroupSectionDndShell key={group.key} group={group}>
                   {section}
@@ -420,4 +656,51 @@ export function NoteTreePanel({
       )}
     </div>
   );
+}
+
+/**
+ * Opens the tree onto the note the editor is showing.
+ *
+ * A separate component purely so `noteId` is non-null here — the same shape,
+ * and for the same reason, as `OpenNoteActions` in `note-manager.tsx`. The
+ * alternative is a placeholder key plus `enabled`, which parks a cache entry
+ * under an id that does not exist.
+ *
+ * It renders nothing. The one thing it does is turn an ancestor chain into
+ * expanded folders and a selection; the row itself handles scrolling, on mount,
+ * when it sees its own id in `revealId` — see `NoteExplorerControls`.
+ *
+ * It unmounts as soon as the row becomes visible, because the condition that
+ * mounts it (`needsReveal`) stops holding. That is also what stops this from
+ * looping: `data` keeps its identity across the renders while the newly
+ * expanded levels load, so the effect below does not re-fire.
+ */
+function RevealActiveNote({
+  noteId,
+  onReveal,
+}: {
+  noteId: string;
+  onReveal: (id: string, ancestorIds: readonly string[]) => void;
+}) {
+  const { data } = useQuery({
+    queryKey: noteKeys.ancestors(noteId),
+    queryFn: async () => {
+      const res = await getNoteAncestors(noteId);
+      if (!res.success) throw new Error(res.errorMsg);
+      return res.data;
+    },
+  });
+
+  useEffect(() => {
+    if (!data) return;
+    onReveal(
+      noteId,
+      data.map((ancestor) => ancestor.id)
+    );
+  }, [data, noteId, onReveal]);
+
+  // A failed lookup is deliberately silent: the note is open and readable, the
+  // tree just does not scroll to it. Interrupting the author with a toast about
+  // a navigational nicety would be the louder bug.
+  return null;
 }

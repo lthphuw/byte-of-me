@@ -8,20 +8,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@byte-of-me/ui';
-import type {
-  OutlineItem,
-  RichTextEditorApi,
-} from '@byte-of-me/ui/rich-text-editor';
 import {
   fromEditorContent,
   toEditorContent,
 } from '@byte-of-me/ui/lib/rich-text-content';
+import type {
+  OutlineItem,
+  RichTextEditorApi,
+} from '@byte-of-me/ui/rich-text-editor';
 import { ChevronLeft, CircleHelp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { uploadSingleMedia } from '@/entities/media';
 import { parseNoteHref } from '@/entities/note';
 import { useNoteEditorAutosave } from '@/features/dashboard/note-editor/lib/use-note-editor-autosave';
+import { NoteEditorSkeleton } from '@/features/dashboard/note-editor/ui/note-editor-skeleton';
 import { NoteExportMenu } from '@/features/dashboard/note-editor/ui/note-export-menu';
 import { Link } from '@/shared/i18n/navigation';
 import { LazyRichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
@@ -52,6 +53,9 @@ export interface NoteEditorProps {
   /** The heading outline, re-reported as it changes — the widget's ToC tab
    *  renders from it. Pass-through to the shared editor. */
   onOutlineChange?: (items: OutlineItem[]) => void;
+  /** The note's folder path, drawn above the title. A slot, like the two
+   *  above: resolving ancestors is a query and the widget owns queries. */
+  breadcrumbSlot?: React.ReactNode;
 }
 
 export function NoteEditor({
@@ -63,6 +67,7 @@ export function NoteEditor({
   propertiesSlot,
   onOpenCheatSheet,
   onOutlineChange,
+  breadcrumbSlot,
 }: NoteEditorProps) {
   const t = useTranslations('dashboard.note');
   // Raw markdown source vs WYSIWYG. Resets on note switch for free: the
@@ -116,9 +121,10 @@ export function NoteEditor({
   // so a same-note reseed — I2 — has something to remount to; see the
   // editor's own comment below).
   if (isPending || !isSeeded) {
-    return (
-      <div className="p-6 text-sm text-muted-foreground">{t('loading')}</div>
-    );
+    // A skeleton in the shape of the editor, not a line of text in the corner.
+    // The text version told the author nothing about what was arriving and
+    // moved the whole layout when it did.
+    return <NoteEditorSkeleton />;
   }
 
   // Defensive, not reachable in practice: `isPending`/`isError`/`isSeeded`
@@ -244,6 +250,13 @@ export function NoteEditor({
 
         {actions}
       </div>
+
+      {/* The path this note sits at. Above the title rather than in the header
+          bar: that bar is already four controls wide on a phone, and a
+          breadcrumb belongs with the thing it names. Passed in as a slot for
+          the usual reason — resolving a note's ancestors is a query, and the
+          widget owns queries. */}
+      {breadcrumbSlot}
 
       <input
         value={title}

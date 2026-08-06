@@ -568,7 +568,11 @@
       "tree": {
         "expandAriaLabel": "Mở rộng",
         "collapseAriaLabel": "Thu gọn",
-        "actionsAriaLabel": "Tác vụ ghi chú"
+        "actionsAriaLabel": "Tác vụ ghi chú",
+        "treeAriaLabel": "Cây ghi chú",
+        "draftNoteLabel": "Tên ghi chú mới",
+        "draftFolderLabel": "Tên thư mục mới",
+        "renameInputLabel": "Đổi tên"
       },
       "fields": {
         "title": "Tiêu đề ghi chú",
@@ -680,7 +684,11 @@
           "label": "Nhãn"
         },
         "noLabel": "Không nhãn",
-        "dropToRoot": "Thả vào đây để đưa lên cấp cao nhất"
+        "dropToRoot": "Thả vào đây để đưa lên cấp cao nhất",
+        "resizeAriaLabel": "Kéo để đổi độ rộng danh sách ghi chú",
+        "collapseSidebar": "Ẩn danh sách ghi chú",
+        "expandSidebar": "Hiện danh sách ghi chú",
+        "breadcrumbAriaLabel": "Vị trí ghi chú"
       },
       "search": {
         "trigger": "Tìm kiếm ghi chú",
@@ -732,7 +740,8 @@
         "archive": "Không lưu trữ được ghi chú.",
         "restore": "Không khôi phục được ghi chú.",
         "delete": "Không xóa được ghi chú.",
-        "links": "Không tải được liên kết."
+        "links": "Không tải được liên kết.",
+        "ancestors": "Không tải được vị trí của ghi chú."
       },
       "graph": {
         "title": "Sơ đồ tri thức",

@@ -149,18 +149,44 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
  * `updatedAt desc`, so a brand-new note belongs at the top of it — and, being
  * new, no previously cached search result holds a stale copy to race with.
  */
-export function useCreateNote(onCreated?: (noteId: string) => void) {
+export function useCreateNote(
+  onCreated?: (noteId: string) => void,
+  /**
+   * Fired for EVERY created row, folders included — unlike `onCreated`, which
+   * fires only for notes because it means "open this in the editor" and a
+   * folder has no document to open.
+   *
+   * The tree uses it to make the new row the explorer's selection, so that
+   * pressing `n` twice creates two siblings rather than two rows in whatever
+   * was selected before.
+   */
+  onCreatedRow?: (note: { id: string; isFolder: boolean }) => void
+) {
   const t = useTranslations('dashboard.note');
   const invalidateLists = useInvalidateNoteLists();
 
   return useMutation({
-    /** No variables = an untitled root note; pass `parentId` to create
-     *  inside a folder (or any note), `isFolder` for an Obsidian folder. */
+    /**
+     * No variables = an untitled root note; pass `parentId` to create
+     * inside a folder (or any note), `isFolder` for an Obsidian folder.
+     *
+     * `title` is optional and defaults to the placeholder, so every existing
+     * caller is unaffected (AGENTS §11.6). It exists for the tree's draft row,
+     * which asks for the name BEFORE the note exists — the author types it into
+     * the row itself and this creates the note already named, instead of
+     * creating an "Untitled" one and renaming it a moment later.
+     */
     mutationFn: async (
-      variables: { parentId?: string | null; isFolder?: boolean } = {}
+      variables: {
+        parentId?: string | null;
+        isFolder?: boolean;
+        title?: string;
+      } = {}
     ) => {
       const res = await createNote({
-        title: variables.isFolder ? t('untitledFolder') : t('untitled'),
+        title:
+          variables.title ??
+          (variables.isFolder ? t('untitledFolder') : t('untitled')),
         parentId: variables.parentId ?? null,
         isFolder: variables.isFolder ?? false,
       });
@@ -169,6 +195,7 @@ export function useCreateNote(onCreated?: (noteId: string) => void) {
     },
     onSuccess: (note) => {
       invalidateLists();
+      onCreatedRow?.(note);
       // Folders have no document to open — they get renamed in place
       // instead of navigating to an editor that means nothing for them.
       if (!note.isFolder) onCreated?.(note.id);

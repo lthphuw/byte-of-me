@@ -5,6 +5,7 @@ export * from './delete-note-label';
 export * from './get-admin-note-by-id';
 export * from './get-archived-notes';
 export * from './get-descendant-count';
+export * from './get-note-ancestors';
 export * from './get-note-children';
 export * from './get-note-graph';
 export * from './get-note-group-summaries';

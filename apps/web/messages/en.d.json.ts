@@ -571,7 +571,11 @@ declare const messages: {
       "tree": {
         "expandAriaLabel": "Expand",
         "collapseAriaLabel": "Collapse",
-        "actionsAriaLabel": "Note actions"
+        "actionsAriaLabel": "Note actions",
+        "treeAriaLabel": "Note tree",
+        "draftNoteLabel": "New note name",
+        "draftFolderLabel": "New folder name",
+        "renameInputLabel": "Rename"
       },
       "fields": {
         "title": "Note title",
@@ -683,7 +687,11 @@ declare const messages: {
           "label": "Label"
         },
         "noLabel": "No label",
-        "dropToRoot": "Drop here to move to top level"
+        "dropToRoot": "Drop here to move to top level",
+        "resizeAriaLabel": "Resize the note list",
+        "collapseSidebar": "Hide note list",
+        "expandSidebar": "Show note list",
+        "breadcrumbAriaLabel": "Note location"
       },
       "search": {
         "trigger": "Search notes",
@@ -735,7 +743,8 @@ declare const messages: {
         "archive": "Could not archive the note.",
         "restore": "Could not restore the note.",
         "delete": "Could not delete the note.",
-        "links": "Could not load links."
+        "links": "Could not load links.",
+        "ancestors": "Could not load the note's location."
       },
       "graph": {
         "title": "Knowledge graph",

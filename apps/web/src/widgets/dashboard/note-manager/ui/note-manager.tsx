@@ -1,5 +1,6 @@
 'use client';
 
+import type { CSSProperties } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Button,
@@ -13,7 +14,7 @@ import {
 } from '@byte-of-me/ui';
 import type { OutlineItem } from '@byte-of-me/ui/rich-text-editor';
 import { useQuery } from '@tanstack/react-query';
-import { CircleHelp, Network, Plus } from 'lucide-react';
+import { CircleHelp, Network, PanelLeftOpen, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { NoteTreePanel } from './note-tree-panel';
@@ -27,16 +28,19 @@ import {
 } from '@/entities/note';
 import {
   NoteActionsMenu,
+  NoteRowContextMenu,
   useCreateNote,
 } from '@/features/dashboard/note-actions';
 import {
   MarkdownCheatSheetDialog,
+  NoteBreadcrumb,
   NoteEditor,
   NoteOutline,
 } from '@/features/dashboard/note-editor';
 import { NoteLinksPanel } from '@/features/dashboard/note-links';
 import { NotePropertiesPanel } from '@/features/dashboard/note-properties';
 import { NoteSearchPalette } from '@/features/dashboard/note-search';
+import { useResizablePanel } from '@/shared/hooks/use-resizable-panel';
 import { useRouter } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 
@@ -101,6 +105,38 @@ export function NoteManager({
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
+  /** Set by a breadcrumb click; the tree opens onto that folder. */
+  const [revealFolderId, setRevealFolderId] = useState<string | null>(null);
+
+  /**
+   * The explorer pane's width, dragged and remembered.
+   *
+   * Its own storage key rather than a fourth field on `useExplorerPrefs`: the
+   * two have different lifetimes and different failure modes, and a corrupt
+   * width should not take the author's view mode down with it.
+   */
+  const sidebar = useResizablePanel({
+    storageKey: 'byte-of-me:notes-sidebar',
+    min: 200,
+    max: 480,
+    defaultWidth: 256,
+  });
+
+  // Cmd/Ctrl+B collapses the explorer, the way it does in VSCode. Simple like
+  // the cheat-sheet binding rather than guarded like Cmd+K: `b` has no native
+  // text-field binding under either modifier, so there is no editable-target
+  // carve-out to make.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key.toLowerCase() !== 'b') return;
+      if (!(event.metaKey || event.ctrlKey)) return;
+      event.preventDefault();
+      sidebar.setCollapsed(!sidebar.isCollapsed);
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [sidebar]);
   const [linksOpen, setLinksOpen] = useState(false);
   const [cheatSheetOpen, setCheatSheetOpen] = useState(false);
   // The open note's heading outline — reported by the editor, rendered by
@@ -225,9 +261,14 @@ export function NoteManager({
           `+` (see `SheetContent`'s `hideClose`), and it also meant the editor
           was always one overlay away from the list rather than one screen. */}
       <aside
+        // The width is a CSS variable so the Tailwind class can stay in the
+        // class list and stay breakpoint-scoped: below `md` this pane is the
+        // whole screen and the dragged width means nothing.
+        style={{ '--notes-sidebar-w': `${sidebar.width}px` } as CSSProperties}
         className={cn(
-          'flex min-h-0 w-full shrink-0 flex-col border-r bg-background md:flex md:w-64',
-          openNoteId && 'hidden'
+          'flex min-h-0 w-full shrink-0 flex-col border-r bg-background md:flex md:w-[var(--notes-sidebar-w)]',
+          openNoteId && 'hidden',
+          sidebar.isCollapsed && 'md:hidden'
         )}
       >
         <NoteTreePanel
@@ -237,14 +278,15 @@ export function NoteManager({
           onSelect={openNote}
           onOpenSearch={() => setSearchOpen(true)}
           navSlot={navSlot}
-          renderActions={(node) => (
+          revealFolderId={revealFolderId}
+          renderActions={(node, startRename) => (
             <NoteActionsMenuWithCount
               noteId={node.id}
               title={node.title}
               isArchived={node.archivedAt !== null}
               isPinned={node.isPinned}
-              isFolder={node.isFolder}
               onCreatedInside={openNote}
+              onRename={startRename}
               onRemoved={(removedId) => {
                 // Only the note currently open needs the route changed out
                 // from under it; archiving some other row leaves the author
@@ -257,8 +299,53 @@ export function NoteManager({
               className="opacity-100 transition-opacity md:opacity-0 md:focus-visible:opacity-100 md:group-focus-within:opacity-100 md:group-hover:opacity-100"
             />
           )}
+          renderContextMenu={(node, row, startRename) => (
+            <NoteRowContextMenuWithCount
+              noteId={node.id}
+              title={node.title}
+              isArchived={node.archivedAt !== null}
+              isPinned={node.isPinned}
+              onCreatedInside={openNote}
+              onRename={startRename}
+              onRemoved={(removedId) => {
+                if (removedId === openNoteId) closeNote();
+              }}
+            >
+              {row}
+            </NoteRowContextMenuWithCount>
+          )}
         />
       </aside>
+
+      {/* The drag handle, between the two panes. Desktop only: below `md` the
+          panes are two screens and there is no boundary to drag. Its own
+          element rather than a border on the aside, because a 1px border is
+          not a pointer target — this is 4px wide and lights up on hover. */}
+      {!sidebar.isCollapsed && (
+        <div
+          {...sidebar.separatorProps}
+          aria-label={t('explorer.resizeAriaLabel')}
+          className="hidden w-1 shrink-0 cursor-col-resize bg-transparent transition-colors hover:bg-primary/40 focus-visible:bg-primary/60 focus-visible:outline-none md:block"
+        />
+      )}
+
+      {/* Collapsed, the explorer leaves a rail behind rather than vanishing.
+          A keyboard shortcut is not a way back for someone who collapsed the
+          pane by accident, and with no note open there would otherwise be
+          nothing on screen at all. */}
+      {sidebar.isCollapsed && (
+        <div className="hidden shrink-0 flex-col border-r bg-background p-1 md:flex">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label={t('explorer.expandSidebar')}
+            onClick={() => sidebar.setCollapsed(false)}
+          >
+            <PanelLeftOpen className="size-4" />
+          </Button>
+        </div>
+      )}
 
       <main
         className={cn(
@@ -273,6 +360,12 @@ export function NoteManager({
             backHref={NOTES_BASE_PATH}
             onOpenNote={openNote}
             propertiesSlot={<NotePropertiesPanel noteId={openNoteId} />}
+            breadcrumbSlot={
+              <NoteBreadcrumb
+                noteId={openNoteId}
+                onOpenFolder={setRevealFolderId}
+              />
+            }
             onOpenCheatSheet={() => setCheatSheetOpen(true)}
             onOutlineChange={setOutline}
             // `setState(() => fn)`, not `setState(fn)`: React treats a bare
@@ -471,7 +564,6 @@ function OpenNoteActions({
       title={note?.title ?? untitledLabel}
       isArchived={note?.archivedAt != null}
       isPinned={note?.isPinned ?? false}
-      isFolder={note?.isFolder ?? false}
       onCreatedInside={onCreatedInside}
       onRemoved={onRemoved}
     />
@@ -513,10 +605,7 @@ function OpenNoteActions({
  * alternative — blocking the dialog on a fetch — is a spinner inside a
  * confirmation, which is worse for the case it is meant to protect.
  */
-function NoteActionsMenuWithCount({
-  noteId,
-  ...props
-}: Omit<React.ComponentProps<typeof NoteActionsMenu>, 'descendantCount'>) {
+function useArmedDescendantCount(noteId: string) {
   const [armed, setArmed] = useState(false);
 
   // Re-armed per note, in the render-phase style this file already uses for
@@ -530,7 +619,7 @@ function NoteActionsMenuWithCount({
     setArmed(false);
   }
 
-  const { data: descendantCount } = useQuery({
+  const { data } = useQuery({
     queryKey: noteKeys.descendantCount(noteId),
     queryFn: async () => {
       const res = await getDescendantCount(noteId);
@@ -546,16 +635,58 @@ function NoteActionsMenuWithCount({
     staleTime: 0,
   });
 
+  // Before the count lands the menu is passed `0`, which renders the plain
+  // single-note wording and swaps to the counted one when the query resolves.
+  // That window is one round trip that begins when the menu opens and the
+  // author still has to cross the dropdown to the destructive item; the
+  // alternative — blocking the dialog on a fetch — is a spinner inside a
+  // confirmation, which is worse for the case it is meant to protect.
+  return { descendantCount: data ?? 0, arm: () => setArmed(true) };
+}
+
+function NoteActionsMenuWithCount({
+  noteId,
+  ...props
+}: Omit<React.ComponentProps<typeof NoteActionsMenu>, 'descendantCount'>) {
+  const { descendantCount, arm } = useArmedDescendantCount(noteId);
+
   return (
     <span
       className="contents"
-      onPointerDownCapture={() => setArmed(true)}
-      onFocusCapture={() => setArmed(true)}
+      onPointerDownCapture={arm}
+      onFocusCapture={arm}
     >
       <NoteActionsMenu
         {...props}
         noteId={noteId}
-        descendantCount={descendantCount ?? 0}
+        descendantCount={descendantCount}
+      />
+    </span>
+  );
+}
+
+/**
+ * The right-click menu, armed the same lazy way.
+ *
+ * `onContextMenuCapture` rather than the pointer handler above: a right-click
+ * does produce a `pointerdown`, but capture on the event that actually opens
+ * this menu is the honest hook, and it fires before radix's own trigger
+ * handler — so the count request is already in flight while the menu animates
+ * in. `display: contents` keeps this wrapper out of layout, exactly as it does
+ * for the dropdown's.
+ */
+function NoteRowContextMenuWithCount({
+  noteId,
+  ...props
+}: Omit<React.ComponentProps<typeof NoteRowContextMenu>, 'descendantCount'>) {
+  const { descendantCount, arm } = useArmedDescendantCount(noteId);
+
+  return (
+    <span className="contents" onContextMenuCapture={arm}>
+      <NoteRowContextMenu
+        {...props}
+        noteId={noteId}
+        descendantCount={descendantCount}
       />
     </span>
   );
