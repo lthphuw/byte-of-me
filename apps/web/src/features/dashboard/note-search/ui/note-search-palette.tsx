@@ -25,7 +25,11 @@ function renderSnippet(snippet: string): React.ReactNode {
   if (!snippet.includes('<<')) return snippet;
   return snippet.split(/<<|>>/).map((segment, index) =>
     index % 2 === 1 ? (
-       
+      // `index` as the key: the segments ARE positional by construction —
+      // `split` on the highlight delimiters, so segment N is always the same
+      // piece of the same snippet. (This used to carry an
+      // `eslint-disable-next-line react/no-array-index-key`; the rule is not
+      // enabled here, so the directive was dead, but the reasoning is not.)
       <mark key={index} className="rounded-sm bg-primary/25 text-inherit">
         {segment}
       </mark>

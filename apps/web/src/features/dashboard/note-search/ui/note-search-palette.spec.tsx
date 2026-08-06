@@ -17,7 +17,6 @@ import {
   fireEvent,
   render,
   screen,
-  waitFor,
 } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
 import { NextIntlClientProvider } from 'next-intl';
@@ -160,26 +159,25 @@ describe('NoteSearchPalette', () => {
       expect(screen.queryByText('No notes match.')).toBeNull();
       expect(screen.queryByText('Could not load your notes.')).toBeNull();
 
-      // Let the gated fetch settle fully before the test (and its cleanup)
-      // ends — otherwise the eventual state update can land after this test
-      // has already moved on, surfacing as an act() warning attributed to
-      // whichever test happens to be running when the microtask finally
-      // flushes.
+      // The contract above is already proven; what is left is hygiene. The
+      // gated fetch has to settle before this test ends, or its resolution
+      // lands mid-way through a LATER test and surfaces as an act() warning
+      // attributed to whichever one happens to be running.
+      //
+      // UNMOUNT FIRST, then release. With no mounted tree there is no render
+      // to wait for, so this no longer depends on wall-clock at all. The
+      // previous version released while mounted and waited for the loading
+      // copy to disappear — a chain of gate → queryFn → TanStack → React that
+      // was already widened to a 15s `waitFor` once, and under
+      // `turbo run test` (five workspaces sharing the CPU) went on to blow
+      // even the 20s per-test cap at 25.2s. A settle that has to be given a
+      // bigger number every year is measuring the machine, not the code.
+      cleanup();
       release();
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Searching…')).toBeNull();
-        },
-        // Generous on purpose: under `turbo run test` all five workspaces'
-        // suites share the CPU, and this settle has been observed taking
-        // >10s wall-clock there while passing in ~100ms standalone. The
-        // widened window only matters on the failure path — a green run
-        // exits as soon as the copy disappears.
-        { timeout: 15_000 }
-      );
-    },
-    // bun's per-test cap must outlast the waitFor above.
-    20_000
+      // One macrotask yield: enough for the gate's `await` and the action's
+      // own microtasks to drain. Bounded, and not polling for a condition.
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
   );
 
   test('shows the load-error copy when the search fails', async () => {
