@@ -246,9 +246,20 @@ Object.defineProperty(prisma, 'note', {
 const descendantCounts = new Map<string, number>([
   [FOLDER_F.id, FOLDER_DESCENDANTS],
 ]);
-const queryRaw = mock((_sql: TemplateStringsArray, noteId?: string) =>
-  Promise.resolve([{ count: descendantCounts.get(noteId ?? '') ?? 0 }])
-);
+// TWO actions now share `$queryRaw` — `getDescendantCount` and
+// `getNoteAncestors` — so the mock has to tell them apart by the SQL it is
+// handed. Answering both with the count shape fed the editor's breadcrumb a
+// list of rows with no `id`, which React reported as a missing-key warning
+// from `BreadcrumbList`: a real signal that this mock had quietly become
+// ambiguous, not noise to silence.
+const queryRaw = mock((sql: TemplateStringsArray, noteId?: string) => {
+  const text = sql.join('');
+  if (text.includes('ancestors')) {
+    // No breadcrumb in these tests: every fixture note is at the root.
+    return Promise.resolve([]);
+  }
+  return Promise.resolve([{ count: descendantCounts.get(noteId ?? '') ?? 0 }]);
+});
 Object.defineProperty(prisma, '$queryRaw', {
   value: queryRaw,
   writable: true,

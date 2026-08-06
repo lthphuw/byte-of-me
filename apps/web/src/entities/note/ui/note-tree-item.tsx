@@ -1,9 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Button } from '@byte-of-me/ui';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { ChevronRight, FileText, Folder, FolderOpen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { getNoteChildren } from '@/entities/note/api/get-note-children';
@@ -13,14 +11,9 @@ import type {
   NoteTreeNode,
 } from '@/entities/note/model/types';
 import { useNotePrefetch } from '@/entities/note/model/use-note-prefetch';
+import { NoteRow } from '@/entities/note/ui/note-row';
 import { NoteRowInput } from '@/entities/note/ui/note-row-input';
-import {
-  NOTE_ROW_BODY_CLASS,
-  NOTE_ROW_CHEVRON_CLASS,
-  NOTE_ROW_CLASS,
-  NOTE_ROW_ICON_CLASS,
-  noteRowIndent,
-} from '@/entities/note/ui/note-row-shell';
+import { noteRowIndent } from '@/entities/note/ui/note-row-shell';
 import { NoteRowSkeleton } from '@/entities/note/ui/note-tree-skeleton';
 import { cn } from '@/shared/lib/utils';
 import { InfiniteSentinel } from '@/shared/ui/infinite-sentinel';
@@ -185,76 +178,28 @@ export function NoteTreeItem({
   }, [isSelected]);
 
   const row = (
-    <div
-      className={cn(
-        NOTE_ROW_CLASS,
-        isActive
-          ? 'bg-muted font-medium text-foreground'
-          : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-      )}
-      style={noteRowIndent(depth)}
-    >
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        tabIndex={-1}
-        className={cn(NOTE_ROW_CHEVRON_CLASS, !hasChildren && 'invisible')}
-        aria-label={
-          isExpanded ? t('tree.collapseAriaLabel') : t('tree.expandAriaLabel')
-        }
-        onClick={(event) => {
-          // The row behind this button also selects; expanding must not be
-          // read as "the author picked this note".
-          event.stopPropagation();
+    <NoteRow
+      node={node}
+      depth={depth}
+      isActive={isActive}
+      isExpanded={isExpanded}
+      hasChildren={hasChildren}
+      onToggle={() => explorer.toggle(node.id)}
+      // A folder has no document to open — clicking it expands it, the way
+      // Obsidian's file explorer behaves. Either way it becomes the explorer's
+      // selection, which is what decides where the next new note is written.
+      onActivate={() => {
+        explorer.select(node.id);
+        if (node.isFolder) {
           explorer.toggle(node.id);
-        }}
-      >
-        <ChevronRight
-          className={cn(
-            'h-3.5 w-3.5 transition-transform',
-            isExpanded && 'rotate-90'
-          )}
-        />
-      </Button>
-
-      <button
-        type="button"
-        tabIndex={-1}
-        // A folder has no document to open — clicking it expands it, the
-        // way Obsidian's file explorer behaves. Either way it becomes the
-        // explorer's selection, which is what decides where the next new
-        // note is written.
-        onClick={() => {
-          explorer.select(node.id);
-          if (node.isFolder) {
-            explorer.toggle(node.id);
-          } else {
-            onSelect(node.id);
-          }
-        }}
-        onDoubleClick={() => explorer.startRename(node.id)}
-        onPointerEnter={warm}
-        onFocus={warm}
-        // See the module comment: this is the note OPEN in the editor, which is
-        // a different question from the explorer's selection above.
-        aria-current={isActive ? 'true' : undefined}
-        className={NOTE_ROW_BODY_CLASS}
-      >
-        {node.isFolder ? (
-          isExpanded ? (
-            <FolderOpen className={NOTE_ROW_ICON_CLASS} />
-          ) : (
-            <Folder className={NOTE_ROW_ICON_CLASS} />
-          )
-        ) : (
-          <FileText className={NOTE_ROW_ICON_CLASS} />
-        )}
-        <span className="truncate">{node.title}</span>
-      </button>
-
-      {renderActions?.(node)}
-    </div>
+        } else {
+          onSelect(node.id);
+        }
+      }}
+      onStartRename={() => explorer.startRename(node.id)}
+      onWarm={warm}
+      actions={renderActions?.(node)}
+    />
   );
 
   // Renaming replaces the row outright rather than overlaying it, so the drag

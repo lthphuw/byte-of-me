@@ -1,5 +1,6 @@
 'use client';
 
+import { Fragment } from 'react';
 import {
   Breadcrumb,
   BreadcrumbEllipsis,
@@ -31,6 +32,10 @@ interface NoteBreadcrumbProps {
  * Renders nothing at all for a root-level note. An empty crumb bar would be a
  * row of padding saying "this note is not anywhere", and most notes in a young
  * workspace are at the root.
+ *
+ * `BreadcrumbSeparator` is an `<li>`, like `BreadcrumbItem` — so separators are
+ * SIBLINGS of the items, never nested inside them. Nesting them produced `<li>`
+ * inside `<li>` and a React key warning pointing here.
  */
 export function NoteBreadcrumb({ noteId, onOpenFolder }: NoteBreadcrumbProps) {
   const t = useTranslations('dashboard.note');
@@ -61,26 +66,30 @@ export function NoteBreadcrumb({ noteId, onOpenFolder }: NoteBreadcrumbProps) {
     >
       <BreadcrumbList className="gap-1 text-xs sm:gap-1">
         {shown.map((ancestor, index) => (
-          <BreadcrumbItem key={ancestor.id}>
+          <Fragment key={ancestor.id}>
+            {index > 0 && <BreadcrumbSeparator />}
+
             {/* The ellipsis stands where the dropped crumbs were: after the
                 root, before the tail. */}
             {isTruncated && index === 1 && (
               <>
-                <BreadcrumbEllipsis className="size-3" />
+                <BreadcrumbItem>
+                  <BreadcrumbEllipsis className="size-4" />
+                </BreadcrumbItem>
                 <BreadcrumbSeparator />
               </>
             )}
 
-            <button
-              type="button"
-              className="max-w-[12ch] truncate rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:max-w-[20ch]"
-              onClick={() => onOpenFolder?.(ancestor.id)}
-            >
-              {ancestor.title}
-            </button>
-
-            {index < shown.length - 1 && <BreadcrumbSeparator />}
-          </BreadcrumbItem>
+            <BreadcrumbItem>
+              <button
+                type="button"
+                className="max-w-[12ch] truncate rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:max-w-[20ch]"
+                onClick={() => onOpenFolder?.(ancestor.id)}
+              >
+                {ancestor.title}
+              </button>
+            </BreadcrumbItem>
+          </Fragment>
         ))}
       </BreadcrumbList>
     </Breadcrumb>
