@@ -26,8 +26,9 @@ import type { CSSProperties } from 'react';
 export const NOTE_ROW_BOX_CLASS =
   'flex min-h-9 items-center gap-1 rounded-md pr-1 md:min-h-0';
 
-/** The box plus what only a real, interactive row needs. */
-export const NOTE_ROW_CLASS = `group ${NOTE_ROW_BOX_CLASS} text-sm transition-colors`;
+/** The box plus what only a real, interactive row needs. `relative` positions
+ *  the open note's accent bar; see `NOTE_ROW_ACTIVE_CLASS`. */
+export const NOTE_ROW_CLASS = `group relative ${NOTE_ROW_BOX_CLASS} text-sm transition-colors`;
 
 /**
  * The keyboard focus ring, drawn on the ROW box.
@@ -60,15 +61,37 @@ export const NOTE_ROW_FOCUS_CLASS =
  * one, which matters because nothing else on screen says where `n` is about to
  * write the next note.
  *
- * So it shares `isActive`'s background, and the two stay apart by WEIGHT
- * instead: the open note is the only row in `font-medium`. That is the same
- * trade VSCode makes — its `inactiveSelectionBackground` is the same wash as an
- * open file's — and it keeps the pair of states the `aria-selected` /
- * `aria-current` note in `note-tree-item.tsx` describes legible without a second
- * colour. Applied only when the row is not already active, so the two never
- * fight over one background.
+ * THE WASH NOW MEANS EXACTLY ONE THING: this row is the cursor. It used to be
+ * shared with the open note, with the two kept apart by weight alone — the same
+ * trade VSCode makes with its `inactiveSelectionBackground`. In this theme that
+ * did not read: with a note open and a folder clicked, two rows carried an
+ * identical `bg-muted` and the author reported the folder as "still focused"
+ * after clicking a file. Verified in the browser before this changed.
+ *
+ * So the two states now use different channels rather than the same one at two
+ * weights — see `NOTE_ROW_ACTIVE_CLASS` for the open note's half. The pair the
+ * `aria-selected` / `aria-current` note in `note-tree-item.tsx` describes is
+ * unchanged; only the paint is.
  */
 export const NOTE_ROW_SELECTED_CLASS = 'bg-muted text-foreground';
+
+/**
+ * The note open in the editor — the OTHER half of the pair above.
+ *
+ * Weight, brightness and a 2px bar at the pane's edge, deliberately with no
+ * background of its own: a wash here would be indistinguishable from
+ * `NOTE_ROW_SELECTED_CLASS`, which is the bug this split exists to fix. The bar
+ * is drawn by an element rather than a `before:` pseudo so it does not depend
+ * on Tailwind's generated `content`, and it sits at `left-0` — outside the
+ * depth indent — so every open note marks the same column no matter how deep
+ * it is, the way VSCode's dirty/active gutter does.
+ */
+export const NOTE_ROW_ACTIVE_CLASS = 'font-medium text-foreground';
+
+/** The bar itself. Its own constant so the skeleton and the rename input can
+ *  never accidentally draw one. */
+export const NOTE_ROW_ACTIVE_BAR_CLASS =
+  'pointer-events-none absolute inset-y-1 left-0 w-0.5 rounded-full bg-primary';
 
 /**
  * Where the expand chevron sits — reserved even on a leaf, so titles align.

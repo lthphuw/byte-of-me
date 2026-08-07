@@ -7,6 +7,8 @@ import { useTranslations } from 'next-intl';
 
 import type { NoteTreeNode } from '@/entities/note/model/types';
 import {
+  NOTE_ROW_ACTIVE_BAR_CLASS,
+  NOTE_ROW_ACTIVE_CLASS,
   NOTE_ROW_BODY_CLASS,
   NOTE_ROW_CHEVRON_CLASS,
   NOTE_ROW_CLASS,
@@ -90,14 +92,17 @@ export const NoteRow = forwardRef<HTMLDivElement, NoteRowProps>(function NoteRow
       className={cn(
         NOTE_ROW_CLASS,
         NOTE_ROW_FOCUS_CLASS,
-        isActive
-          ? 'bg-muted font-medium text-foreground'
-          : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-        isSelected && !isActive && NOTE_ROW_SELECTED_CLASS,
+        'text-muted-foreground hover:bg-muted hover:text-foreground',
+        // Order matters: the cursor's wash is applied last so it wins the
+        // background on the common row that is both open AND selected.
+        isActive && NOTE_ROW_ACTIVE_CLASS,
+        isSelected && NOTE_ROW_SELECTED_CLASS,
         className
       )}
       style={noteRowIndent(depth)}
     >
+      {isActive && <span aria-hidden className={NOTE_ROW_ACTIVE_BAR_CLASS} />}
+
       <Button
         type="button"
         variant="ghost"

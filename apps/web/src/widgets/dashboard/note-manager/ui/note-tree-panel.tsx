@@ -1,17 +1,22 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@byte-of-me/ui';
 import { Archive, ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { NoteEmpty, type NoteTreeNode, NoteTreeSkeleton } from '@/entities/note';
+import {
+  NoteEmpty,
+  type NoteTreeNode,
+  NoteTreeSkeleton,
+} from '@/entities/note';
 import {
   useCreateNote,
   useNoteMutations,
   useRenameNote,
 } from '@/features/dashboard/note-actions';
 import {
+  ExplorerBlankMenu,
   ExplorerDnd,
   ExplorerHeader,
   GroupedRowDndShell,
@@ -183,12 +188,64 @@ export function NoteTreePanel({
     [renderContextMenu, explorer.startRename]
   );
 
-  /** True when the note the editor is showing is nowhere on screen. */
-  const needsReveal =
-    isTreeView &&
-    !includeArchived &&
-    activeId !== null &&
-    !treeRows.some((row) => row.node.id === activeId);
+  /**
+   * The note a reveal is still owed for — a REQUEST, not a standing condition,
+   * and that distinction is the entire fix for the folder that would not stay
+   * shut.
+   *
+   * This used to be recomputed every render as "is the open note among the
+   * visible rows", which is exactly what collapsing the folder the open note
+   * lives in makes false. `RevealActiveNote` then mounted with its ancestor
+   * query already cached, fired on its first commit, and re-expanded
+   * everything — measured in the browser with a MutationObserver on
+   * `aria-expanded`: collapsed, then back open 107ms later, with the selection
+   * yanked off the folder the author had just clicked onto the note.
+   *
+   * A reveal is owed when THE OPEN NOTE CHANGES — a reload onto a note buried
+   * in collapsed folders, the command palette, a `[[` link, Back/Forward — and
+   * it is settled either by the reveal landing or by the row turning out to be
+   * on screen already. Collapsing a folder is neither, so it now asks for
+   * nothing.
+   *
+   * Adjusted during render rather than in an effect, the same
+   * "state derived from a prop" pattern `note-manager.tsx` uses for
+   * `openNoteId`: an effect would leave one commit in which the request still
+   * looks outstanding, which is one commit in which the tree would re-expand.
+   */
+  const [revealTarget, setRevealTarget] = useState<string | null>(activeId);
+  const lastActiveId = useRef(activeId);
+  if (lastActiveId.current !== activeId) {
+    lastActiveId.current = activeId;
+    setRevealTarget(activeId);
+  }
+  if (
+    revealTarget !== null &&
+    treeRows.some((row) => row.node.id === revealTarget)
+  ) {
+    setRevealTarget(null);
+  }
+
+  /** True when the note the editor is showing is nowhere on screen AND the
+   *  tree has not already been opened onto it once. */
+  const needsReveal = isTreeView && !includeArchived && revealTarget !== null;
+
+  // Clears the request as it satisfies it, so a refetch of the ancestor chain
+  // — which every save invalidates, via `noteKeys.lists()` — cannot re-fire
+  // this against a tree the author has since collapsed by hand.
+  //
+  // `reveal` is destructured rather than called as `explorer.reveal` for the
+  // reason `use-note-editor-autosave.ts` destructures `mutate`: a member CALL
+  // makes `react-hooks/exhaustive-deps` ask for the whole object, and
+  // depending on `explorer` would re-arm this on every selection change. This
+  // form is both honest and machine-checkable.
+  const { reveal } = explorer;
+  const onRevealActive = useCallback(
+    (id: string, ancestorIds: readonly string[]) => {
+      setRevealTarget(null);
+      reveal(id, ancestorIds);
+    },
+    [reveal]
+  );
 
   return (
     <div className="flex h-full flex-col">
@@ -205,125 +262,134 @@ export function NoteTreePanel({
           themselves through a roving tabindex and their keydowns bubble here,
           so nothing has to register itself and the handler sees the whole
           tree. */}
-      <div className="min-h-0 flex-1 overflow-y-auto p-1" onKeyDown={onKeyDown}>
-        {needsReveal && activeId && (
-          <RevealActiveNote noteId={activeId} onReveal={explorer.reveal} />
-        )}
+      <div className="min-h-0 flex-1 overflow-y-auto" onKeyDown={onKeyDown}>
+        {/* The padding moved from the scroller onto the surface below, so the
+            gutter is part of the right-clickable background rather than a
+            dead 4px frame around it. */}
+        <ExplorerBlankMenu
+          disabled={includeArchived}
+          onStartDraft={(isFolder) => explorer.startDraft(isFolder, null)}
+          onClickBlank={explorer.deselect}
+        >
+          {needsReveal && revealTarget && (
+            <RevealActiveNote noteId={revealTarget} onReveal={onRevealActive} />
+          )}
 
-        {/* The same lookup for a folder the breadcrumb pointed at. `key` is
+          {/* The same lookup for a folder the breadcrumb pointed at. `key` is
             what makes clicking a DIFFERENT crumb re-run it: the component is
             otherwise identical and React would keep the resolved instance. The
             target folder joins its own ancestor list here, because revealing a
             folder means opening it, not just scrolling to it. */}
-        {revealFolderId && (
-          <RevealActiveNote
-            key={revealFolderId}
-            noteId={revealFolderId}
-            onReveal={(id, ancestorIds) =>
-              explorer.reveal(id, [...ancestorIds, id])
-            }
-          />
-        )}
+          {revealFolderId && (
+            <RevealActiveNote
+              key={revealFolderId}
+              noteId={revealFolderId}
+              onReveal={(id, ancestorIds) =>
+                explorer.reveal(id, [...ancestorIds, id])
+              }
+            />
+          )}
 
-        {isPending && <NoteTreeSkeleton />}
+          {isPending && <NoteTreeSkeleton />}
 
-        {/* `isLoadingError`, not `isError`: TanStack v5 distinguishes a failure
+          {/* `isLoadingError`, not `isError`: TanStack v5 distinguishes a failure
             on the query's FIRST attempt (no data has ever arrived) from one on
             a BACKGROUND refetch, where the previous rows are left in place. A
             create invalidates this exact query, so one transient refetch
             failure must not replace a perfectly good tree — nor a legitimately
             EMPTY one, whose zero rows a count-based gate cannot tell apart from
             a first-load failure. */}
-        {isLoadingError && (
-          <p className="p-4 text-sm text-destructive">{t('errors.load')}</p>
-        )}
+          {isLoadingError && (
+            <p className="p-4 text-sm text-destructive">{t('errors.load')}</p>
+          )}
 
-        {/* `isTreeView` keeps this from stacking a second empty state on top of
+          {/* `isTreeView` keeps this from stacking a second empty state on top of
             the flat/grouped views, which render their own. */}
-        {isTreeView &&
-          !isPending &&
-          !isLoadingError &&
-          visibleRows.length === 0 &&
-          // The archived view gets its own copy: `NoteEmpty` invites the author
-          // to write their first note, which is the wrong offer when what they
-          // are looking at is an empty wastebasket.
-          (includeArchived ? (
-            <p className="p-4 text-sm text-muted-foreground">
-              {t('archive.empty')}
-            </p>
-          ) : (
-            <NoteEmpty onCreate={() => explorer.startDraft(false, null)} />
-          ))}
+          {isTreeView &&
+            !isPending &&
+            !isLoadingError &&
+            visibleRows.length === 0 &&
+            // The archived view gets its own copy: `NoteEmpty` invites the author
+            // to write their first note, which is the wrong offer when what they
+            // are looking at is an empty wastebasket.
+            (includeArchived ? (
+              <p className="p-4 text-sm text-muted-foreground">
+                {t('archive.empty')}
+              </p>
+            ) : (
+              <NoteEmpty onCreate={() => explorer.startDraft(false, null)} />
+            ))}
 
-        {includeArchived && (
-          <NoteTrashList
-            rows={archivedRows}
-            activeId={activeId}
-            onSelect={onSelect}
-            hasNextPage={archivedList.hasNextPage}
-            isFetching={archivedList.isFetching}
-            onLoadMore={() => void archivedList.fetchNextPage()}
-            renderActions={renderRowActions}
-          />
-        )}
+          {includeArchived && (
+            <NoteTrashList
+              rows={archivedRows}
+              activeId={activeId}
+              onSelect={onSelect}
+              hasNextPage={archivedList.hasNextPage}
+              isFetching={archivedList.isFetching}
+              onLoadMore={() => void archivedList.fetchNextPage()}
+              renderActions={renderRowActions}
+            />
+          )}
 
-        {/* One DndContext across every LIVE view. */}
-        {!includeArchived && (
-          <ExplorerDnd
-            loadedRows={loadedRows}
-            labels={labels ?? []}
-            showRootZone={isTreeView}
-          >
-            {isTreeView && (
-              <NoteTreeList
-                rootRows={rootRows}
-                activeId={activeId}
-                explorer={explorer}
-                onSelect={onSelect}
-                hasNextPage={rootLevel.hasNextPage}
-                isFetching={rootLevel.isFetching}
-                onLoadMore={() => void rootLevel.fetchNextPage()}
-                renderActions={renderRowActions}
-                renderContextMenu={renderRowContextMenu}
-              />
-            )}
+          {/* One DndContext across every LIVE view. */}
+          {!includeArchived && (
+            <ExplorerDnd
+              loadedRows={loadedRows}
+              labels={labels ?? []}
+              showRootZone={isTreeView}
+            >
+              {isTreeView && (
+                <NoteTreeList
+                  rootRows={rootRows}
+                  activeId={activeId}
+                  explorer={explorer}
+                  onSelect={onSelect}
+                  hasNextPage={rootLevel.hasNextPage}
+                  isFetching={rootLevel.isFetching}
+                  onLoadMore={() => void rootLevel.fetchNextPage()}
+                  renderActions={renderRowActions}
+                  renderContextMenu={renderRowContextMenu}
+                />
+              )}
 
-            {/* No row-count gate on either view: each owns its query, so each
+              {/* No row-count gate on either view: each owns its query, so each
                 knows on its own whether it is loading, failed or genuinely
                 empty. */}
-            {mode === 'flat' && (
-              <NoteFlatList
-                sort={prefs.sort}
-                includeArchived={false}
-                activeId={activeId}
-                onSelect={onSelect}
-                onCreate={() => explorer.startDraft(false, null)}
-                renderActions={renderRowActions}
-              />
-            )}
+              {mode === 'flat' && (
+                <NoteFlatList
+                  sort={prefs.sort}
+                  includeArchived={false}
+                  activeId={activeId}
+                  onSelect={onSelect}
+                  onCreate={() => explorer.startDraft(false, null)}
+                  renderActions={renderRowActions}
+                />
+              )}
 
-            {mode === 'grouped' && (
-              <NoteGroupedList
-                groupBy={prefs.groupBy}
-                includeArchived={false}
-                activeId={activeId}
-                onSelect={onSelect}
-                onCreate={() => explorer.startDraft(false, null)}
-                renderActions={renderRowActions}
-                renderSection={(group, section) => (
-                  <GroupSectionDndShell key={group.key} group={group}>
-                    {section}
-                  </GroupSectionDndShell>
-                )}
-                renderRowShell={(group, node, row) => (
-                  <GroupedRowDndShell group={group} node={node}>
-                    {row}
-                  </GroupedRowDndShell>
-                )}
-              />
-            )}
-          </ExplorerDnd>
-        )}
+              {mode === 'grouped' && (
+                <NoteGroupedList
+                  groupBy={prefs.groupBy}
+                  includeArchived={false}
+                  activeId={activeId}
+                  onSelect={onSelect}
+                  onCreate={() => explorer.startDraft(false, null)}
+                  renderActions={renderRowActions}
+                  renderSection={(group, section) => (
+                    <GroupSectionDndShell key={group.key} group={group}>
+                      {section}
+                    </GroupSectionDndShell>
+                  )}
+                  renderRowShell={(group, node, row) => (
+                    <GroupedRowDndShell group={group} node={node}>
+                      {row}
+                    </GroupedRowDndShell>
+                  )}
+                />
+              )}
+            </ExplorerDnd>
+          )}
+        </ExplorerBlankMenu>
       </div>
 
       {onToggleArchived && (

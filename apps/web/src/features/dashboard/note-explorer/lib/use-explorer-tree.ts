@@ -32,6 +32,17 @@ export interface ExplorerTree extends NoteExplorerControls {
   expand: (id: string) => void;
   collapse: (id: string) => void;
   /**
+   * Drops the explorer's cursor entirely — what clicking the empty space
+   * below the rows means. Nothing else in the tree can reach this state: every
+   * row click replaces the selection rather than clearing it, so without this
+   * the last row clicked stayed highlighted for the rest of the session.
+   *
+   * Deliberately leaves an open draft or rename alone. Those hold text the
+   * author typed, and a stray click on the background is not a reason to throw
+   * it away — the inputs handle their own commit and cancel.
+   */
+  deselect: () => void;
+  /**
    * Opens every folder on the path to a note, selects it, and asks for it to
    * be scrolled into view. `ancestorIds` comes from `getNoteAncestors`.
    */
@@ -110,6 +121,8 @@ export function useExplorerTree({
     });
   }, []);
 
+  const deselect = useCallback(() => setSelectedId(null), []);
+
   const select = useCallback((id: string) => {
     setSelectedId(id);
     // Selecting elsewhere abandons an open draft, the way clicking away from a
@@ -168,6 +181,14 @@ export function useExplorerTree({
 
   const reveal = useCallback((id: string, ancestorIds: readonly string[]) => {
     setExpandedIds((current) => {
+      // Same bail-out `expand` and `collapse` make, for the same reason: a
+      // reveal whose folders are all open already must not hand back a new
+      // Set. This object's identity is what every row re-renders on (see the
+      // measurement on this hook), and a reveal can be re-requested by a
+      // refetch of the ancestor chain — which every save invalidates.
+      if (ancestorIds.every((ancestorId) => current.has(ancestorId))) {
+        return current;
+      }
       const next = new Set(current);
       for (const ancestorId of ancestorIds) next.add(ancestorId);
       return next;
@@ -186,6 +207,7 @@ export function useExplorerTree({
       renamingId,
       revealId,
       select,
+      deselect,
       toggle,
       expand,
       collapse,
@@ -205,6 +227,7 @@ export function useExplorerTree({
       renamingId,
       revealId,
       select,
+      deselect,
       toggle,
       expand,
       collapse,

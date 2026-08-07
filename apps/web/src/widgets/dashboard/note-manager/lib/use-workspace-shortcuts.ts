@@ -10,6 +10,19 @@ interface WorkspaceShortcuts {
   onToggleSidebar: () => void;
 }
 
+/** Anything that swallows keystrokes as text: an input, a textarea, or
+ *  anywhere inside a contenteditable region (`isContentEditable` is inherited,
+ *  so this is true for the nodes *inside* the rich-text editor too, not just
+ *  its root). */
+function isEditableTarget(target: EventTarget | null): boolean {
+  return (
+    target instanceof HTMLElement &&
+    (target.isContentEditable ||
+      target.tagName === 'INPUT' ||
+      target.tagName === 'TEXTAREA')
+  );
+}
+
 /**
  * The three page-wide shortcuts: Cmd/Ctrl+K, Cmd/Ctrl+/ and Cmd/Ctrl+B.
  *
@@ -54,14 +67,8 @@ export function useWorkspaceShortcuts({
         // Bailing out for BOTH modifiers over an editable target — an earlier
         // fix — left Cmd+K dead in that one place and handed the keystroke to
         // the browser instead (Chrome on macOS focuses the omnibox).
-        if (event.ctrlKey && !event.metaKey) {
-          const target = event.target;
-          const isEditable =
-            target instanceof HTMLElement &&
-            (target.isContentEditable ||
-              target.tagName === 'INPUT' ||
-              target.tagName === 'TEXTAREA');
-          if (isEditable) return;
+        if (event.ctrlKey && !event.metaKey && isEditableTarget(event.target)) {
+          return;
         }
 
         event.preventDefault();
@@ -69,8 +76,8 @@ export function useWorkspaceShortcuts({
         return;
       }
 
-      // `/` and `b` need no editable-target carve-out: neither has a native
-      // text-field binding under either modifier.
+      // `/` needs no editable-target carve-out: it has no native text-field
+      // binding under either modifier, and nothing in the app claims it.
       if (key === '/') {
         event.preventDefault();
         onOpenCheatSheet();
@@ -78,6 +85,15 @@ export function useWorkspaceShortcuts({
       }
 
       if (key === 'b') {
+        // Cmd/Ctrl+B is BOLD inside the rich-text editor, and that binding
+        // wins wherever text is being typed. Tiptap handles the keystroke on
+        // the editor's own DOM node, which is below this listener in the
+        // bubble path — so both fired for one press: the word went bold AND
+        // the explorer collapsed out from under the author. `preventDefault`
+        // here cannot undo the bold that already happened; only declining the
+        // key can. Everywhere else on the page it still toggles the sidebar,
+        // which is the only place that toggle has no competitor.
+        if (isEditableTarget(event.target)) return;
         event.preventDefault();
         onToggleSidebar();
       }

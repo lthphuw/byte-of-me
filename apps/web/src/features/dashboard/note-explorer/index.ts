@@ -4,6 +4,7 @@ export * from './lib/use-explorer-queries';
 export * from './lib/use-explorer-tree';
 export * from './lib/use-note-dnd';
 export * from './lib/use-tree-keyboard';
+export * from './ui/explorer-blank-menu';
 export * from './ui/explorer-dnd';
 export * from './ui/explorer-header';
 export * from './ui/explorer-row';

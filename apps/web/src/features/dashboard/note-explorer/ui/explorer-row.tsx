@@ -2,7 +2,11 @@
 
 import { FileText } from 'lucide-react';
 
-import { type NoteTreeNode, useNotePrefetch } from '@/entities/note';
+import {
+  NOTE_ROW_ACTIVE_BAR_CLASS,
+  type NoteTreeNode,
+  useNotePrefetch,
+} from '@/entities/note';
 import { cn } from '@/shared/lib/utils';
 
 /**
@@ -10,6 +14,12 @@ import { cn } from '@/shared/lib/utils';
  * `note-tree-item.tsx`) minus the expand chevron, plus an indent-free layout.
  * DnD hooks arrive from the outside as plain props so this stays
  * presentational.
+ *
+ * Keeps the WASH for the open note, unlike the tree row, and that is not a
+ * drift: these views have no cursor of their own — nothing here is selectable
+ * apart from opening it — so there is no second state for the wash to be
+ * confused with. The accent bar is shared so the open note marks the same
+ * column whichever view the author switches to.
  */
 export function ExplorerRow({
   node,
@@ -35,7 +45,7 @@ export function ExplorerRow({
   return (
     <div
       className={cn(
-        'group flex min-h-9 items-center gap-1 rounded-md px-1 text-sm transition-colors md:min-h-0',
+        'group relative flex min-h-9 items-center gap-1 rounded-md px-1 text-sm transition-colors md:min-h-0',
         isActive
           ? 'bg-muted font-medium text-foreground'
           : 'text-muted-foreground hover:bg-muted hover:text-foreground',
@@ -43,6 +53,8 @@ export function ExplorerRow({
       )}
       {...rest}
     >
+      {isActive && <span aria-hidden className={NOTE_ROW_ACTIVE_BAR_CLASS} />}
+
       <button
         type="button"
         onClick={() => onSelect(node.id)}

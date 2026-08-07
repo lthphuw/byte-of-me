@@ -193,8 +193,23 @@ const create = mock(
     })
 );
 
+/**
+ * `getNoteAncestors`' recursive CTE — the ONE read that does not go through
+ * `prisma.note`, which is why it needs its own stub. `RevealActiveNote` is the
+ * caller: it turns this chain into expanded folders on the path to the open
+ * note.
+ */
+const queryRaw = mock(() =>
+  Promise.resolve([{ id: 'folder-1', title: 'Folder One', is_folder: true }])
+);
+
 Object.defineProperty(prisma, 'note', {
   value: { findMany, findFirst, create, groupBy, count },
+  writable: true,
+  configurable: true,
+});
+Object.defineProperty(prisma, '$queryRaw', {
+  value: queryRaw,
   writable: true,
   configurable: true,
 });
@@ -243,16 +258,19 @@ function Harness({
   queryClient,
   onSelect = () => {},
   includeArchived = false,
+  activeId = null,
 }: {
   queryClient: QueryClient;
   onSelect?: (id: string) => void;
   includeArchived?: boolean;
+  /** The note open in the editor. Non-null is what arms the reveal path. */
+  activeId?: string | null;
 }) {
   return (
     <QueryClientProvider client={queryClient}>
       <NextIntlClientProvider locale="en" messages={messages}>
         <NoteTreePanel
-          activeId={null}
+          activeId={activeId}
           onSelect={onSelect}
           onOpenSearch={() => {}}
           includeArchived={includeArchived}
@@ -625,6 +643,58 @@ describe('NoteTreePanel', () => {
     // folder after clicking a note three levels down.
     expect(rowOf('Child One').getAttribute('aria-selected')).toBe('true');
     expect(rowOf('Folder One').getAttribute('aria-selected')).toBe('false');
+  });
+
+  test('the tree opens onto the note the editor has open', async () => {
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} activeId="child-1" />);
+
+    // Nothing was clicked: the open note is three levels from anything on
+    // screen, so `RevealActiveNote` resolves its ancestor chain and expands
+    // the path to it. This is the behaviour the collapse test below must not
+    // regress in the course of fixing it.
+    expect(await screen.findByText('Child One')).toBeTruthy();
+    expect(rowOf('Folder One').getAttribute('aria-expanded')).toBe('true');
+  });
+
+  test('collapsing the folder the open note lives in leaves it collapsed', async () => {
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} activeId="child-1" />);
+    await screen.findByText('Child One');
+
+    fireEvent.click(chevronOf('Folder One'));
+
+    // The bug this closes: "is the open note among the visible rows" was
+    // recomputed every render and used as the reveal condition — and
+    // collapsing this folder is exactly what makes it false. The reveal then
+    // re-fired off a warm ancestor cache and re-opened the folder about
+    // 100ms later, with the selection yanked back onto the note. Measured in
+    // the browser with a MutationObserver on `aria-expanded` before the fix.
+    //
+    // `waitFor` on a NEGATIVE, deliberately: the re-expand was asynchronous,
+    // so a single synchronous assertion here passed even while the bug was
+    // live. This has to stay true through the commits that follow.
+    await waitFor(() => {
+      expect(rowOf('Folder One').getAttribute('aria-expanded')).toBe('false');
+    });
+    expect(screen.queryByText('Child One')).toBeNull();
+  });
+
+  test('clicking the empty space below the rows clears the selection', async () => {
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} />);
+    await screen.findByText('Note A');
+
+    fireEvent.click(screen.getByText('Note A'));
+    expect(rowOf('Note A').getAttribute('aria-selected')).toBe('true');
+
+    // The surface the rows sit on, which is also the only element a press on
+    // the background can report as its target — see `ExplorerBlankMenu`.
+    const surface = screen.getByRole('tree').parentElement;
+    if (!surface) throw new Error('No explorer surface');
+    fireEvent.mouseDown(surface);
+
+    expect(rowOf('Note A').getAttribute('aria-selected')).toBe('false');
   });
 
   test('shows an errors.create toast when create fails', async () => {
