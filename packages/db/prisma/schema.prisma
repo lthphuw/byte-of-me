@@ -788,9 +788,13 @@ model Note {
   /// YAML only at .md export time; queries and grouped views read columns.
   properties Json?
 
-  /// Generated in SQL (see the add_note_search_vector migration) from
-  /// title + plain_text; Prisma never writes it. `simple` config on purpose:
-  /// the corpus is mixed EN/VI and language stemming would lie.
+  /// Generated in SQL from title + plain_text; Prisma never writes it.
+  /// `simple` config on purpose: the corpus is mixed EN/VI and language
+  /// stemming would lie — measured, `đây` stems to `đâi` and `máy` to `mái`.
+  /// TWO vectors concatenated since widen_note_search_vector: the text as
+  /// written, plus the same text with joining punctuation turned into spaces,
+  /// so `apps/web/src` is findable both whole and as its parts. See that
+  /// migration for the numbers.
   searchVector Unsupported("tsvector")? @map("search_vector")
 
   /// A pure container in the same tree (Obsidian-style folder): no document

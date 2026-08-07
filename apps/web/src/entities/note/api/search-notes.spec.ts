@@ -98,6 +98,49 @@ describe('searchNotes', () => {
     }
   });
 
+  it('matches the trailing term as a PREFIX, so typing finds something', async () => {
+    // `zebr`, not `archi`: the latter is a substring of `"archived_at"`, so
+    // the "never inlined" assertion below would fail on the filter clause
+    // rather than on anything this test is about.
+    await searchNotes({ query: 'zebr', includeArchived: false });
+
+    for (const statement of sentStatements()) {
+      // The rewrite runs on `websearch_to_tsquery`'s OUTPUT, never on the
+      // author's text — which is what keeps `to_tsquery` (it throws on
+      // malformed input; `websearch_to_tsquery` never does) safe to use here.
+      expect(statement.sql).toContain('websearch_to_tsquery');
+      expect(statement.sql).toContain("':*'");
+      expect(statement.sql).toContain('regexp_replace');
+      // Still a bound parameter, never inlined.
+      expect(statement.values).toContain('zebr');
+      expect(statement.sql).not.toContain('zebr');
+    }
+  });
+
+  it('leaves a NEGATED trailing term alone', async () => {
+    await searchNotes({ query: 'notes -archived', includeArchived: false });
+
+    for (const statement of sentStatements()) {
+      // The negative lookbehind is the whole point: without it
+      // `!'archived'` becomes `!'archived':*` and the query silently
+      // excludes every note containing "architecture" too — a narrow
+      // exclusion widened into one the author never wrote.
+      expect(statement.sql).toContain('(?<!!)');
+      expect(statement.values).toContain('notes -archived');
+    }
+  });
+
+  it('caps the reported total instead of counting every match', async () => {
+    await searchNotes({ query: 'x', includeArchived: false });
+
+    const [, count] = sentStatements();
+    // An exact count visits every matching row: measured at 50k notes, 843ms
+    // for a term in every row versus 4.1ms capped, while the index lookup
+    // itself stayed at 0.1ms. The inner LIMIT is what bounds the walk.
+    expect(count.sql).toContain('count(*)');
+    expect(count.values).toContain(1000);
+  });
+
   it('excludes archived notes by default, includes them when asked', async () => {
     await searchNotes({ query: 'x', includeArchived: false });
     for (const statement of sentStatements()) {
