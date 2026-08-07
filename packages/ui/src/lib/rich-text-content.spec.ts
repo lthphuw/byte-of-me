@@ -110,6 +110,66 @@ describe('richTextToPlainText', () => {
     );
   });
 
+  it('separates SIBLING blocks, so the words either side stay whole', () => {
+    // The regression this closes: every level joined with '', so the last
+    // word of one list item welded onto the first word of the next. In the
+    // notes corpus that produced tokens like `data.Step` and
+    // `motionpackages` — Postgres indexed the weld and neither real word
+    // could be found again. One item cannot show it; two can.
+    const richDoc = JSON.stringify({
+      type: 'doc',
+      content: [
+        {
+          type: 'bulletList',
+          content: [
+            {
+              type: 'listItem',
+              content: [
+                {
+                  type: 'paragraph',
+                  content: [{ type: 'text', text: 'passes through the data.' }],
+                },
+              ],
+            },
+            {
+              type: 'listItem',
+              content: [
+                {
+                  type: 'paragraph',
+                  content: [{ type: 'text', text: 'Step Size defines epochs.' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(richTextToPlainText(richDoc)).toBe(
+      'passes through the data. Step Size defines epochs.'
+    );
+  });
+
+  it('keeps an inline run welded, so a mark does not split a word', () => {
+    // The other side of the same rule: marks cut a sentence into several
+    // text nodes, and separating THOSE would put a space inside a word.
+    const richDoc = JSON.stringify({
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            { type: 'text', text: 'Conv' },
+            { type: 'text', marks: [{ type: 'bold' }], text: 'NeXt' },
+            { type: 'text', text: ' V2' },
+          ],
+        },
+      ],
+    });
+
+    expect(richTextToPlainText(richDoc)).toBe('ConvNeXt V2');
+  });
+
   it('skips blocks with no text, such as empty paragraphs', () => {
     const richDoc = JSON.stringify({
       type: 'doc',

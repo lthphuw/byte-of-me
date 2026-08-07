@@ -53,12 +53,33 @@ export function richTextToPlainText(value?: string | null): string {
 
   const collect = (node: JSONContent): string => {
     if (node.type === 'text') return node.text ?? '';
-    return (node.content ?? []).map(collect).join('');
+
+    const children = node.content ?? [];
+    // An INLINE run — a paragraph's text nodes, the pieces a mark splits a
+    // sentence into — must concatenate with nothing between them, or `Byte`
+    // + ` of Me` becomes `Byte  of Me`. Anything else is a run of BLOCKS
+    // (list items, the paragraphs inside one, table cells) and needs a gap.
+    //
+    // Joining every level with '' is what shipped, and it welded the last
+    // word of each block onto the first word of the next: two list items
+    // reading `…through the data.` and `Step Size: …` produced
+    // `data.Step`, which Postgres's full-text parser then tokenised as a
+    // single `host` token. Neither `data` nor `Step` was searchable
+    // afterwards. Measured against the real corpus before this changed: 300
+    // words present in the text were missing from `search_vector`.
+    const inlineOnly = children.every((child) => child.type === 'text');
+    return children.map(collect).join(inlineOnly ? '' : ' ');
   };
 
-  return (doc.content ?? [])
-    .map(collect)
-    .filter(Boolean)
-    .join(' ')
-    .trim();
+  return (
+    (doc.content ?? [])
+      .map(collect)
+      .filter(Boolean)
+      .join(' ')
+      // Collapse the runs the separators above can double up (an empty
+      // hard break between two text nodes, a block that collects to
+      // nothing) rather than leaking them into an excerpt.
+      .replace(/\s+/g, ' ')
+      .trim()
+  );
 }
