@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { type InfiniteData, useQueryClient } from '@tanstack/react-query';
 
 import {
@@ -22,6 +22,12 @@ import {
  * Read straight out of the per-level caches rather than tracked separately: the
  * levels settle inside `NoteTreeItem`, a child the panel does not re-render
  * for, so a list kept in the panel would go stale the moment a folder expanded.
+ *
+ * That reasoning was right about the problem and wrong about the solution.
+ * `getQueryData` is a plain read — it subscribes to nothing — so the memo below
+ * kept whatever the cache held at the instant the folder expanded, which is
+ * NOTHING: the level query has not resolved yet, and when it does, not one of
+ * this hook's dependencies changes. `useLevelVersion` is what closes that gap.
  */
 export function useVisibleTreeRows(
   rootRows: readonly NoteTreeNode[],
@@ -29,6 +35,7 @@ export function useVisibleTreeRows(
   includeArchived: boolean
 ): VisibleRow[] {
   const queryClient = useQueryClient();
+  const levelVersion = useLevelVersion(queryClient);
 
   return useMemo(
     () =>
@@ -38,8 +45,78 @@ export function useVisibleTreeRows(
         >(noteKeys.children(parentId, includeArchived));
         return level?.pages.flatMap((page) => page.rows);
       }),
-    [rootRows, expandedIds, queryClient, includeArchived]
+    // `levelVersion` is not read in the body and is not meant to be: it is the
+    // subscription token that makes the non-reactive `getQueryData` reads above
+    // re-run when a level lands. Dropping it is the bug described on the hook.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [rootRows, expandedIds, queryClient, includeArchived, levelVersion]
   );
+}
+
+/**
+ * A counter bumped whenever a TREE LEVEL's cache entry changes.
+ *
+ * ## What went wrong without it, measured
+ *
+ * A tree of four root folders, one expanded with three notes inside. The DOM
+ * had seven `treeitem`s; `rows` had four. Every consequence follows from that
+ * one gap:
+ *
+ * - ArrowDown stepped from the open folder straight to the NEXT ROOT FOLDER,
+ *   over three visible children.
+ * - Clicking a child selected it, but `navigate` could not find its id in
+ *   `rows`, and `index === -1` is the branch that means "nothing is selected" —
+ *   which it answers by jumping to the first row. So one arrow key after a
+ *   mouse click threw the cursor back to the top of the tree.
+ * - `selectedNode` went `null` for the same reason, and `selectedNode` is what
+ *   F2, Delete/Backspace and `n` all guard on. Every one of them quietly did
+ *   nothing on a child row, with no error to explain it.
+ *
+ * ## Why a cache subscription rather than lifting the queries
+ *
+ * The panel could own every expanded level itself with `useQueries` and get
+ * reactivity for free — but then a level is fetched by the panel AND by the
+ * `NoteTreeItem` that draws it, and the two would have to be kept in step
+ * forever. The rows already live in exactly one place; only the notification
+ * was missing.
+ */
+function useLevelVersion(queryClient: ReturnType<typeof useQueryClient>) {
+  const [version, setVersion] = useState(0);
+
+  useEffect(() => {
+    const prefix = noteKeys.childrenAll();
+
+    return queryClient.getQueryCache().subscribe((event) => {
+      // `updated`/`success` and nothing else, for two separate reasons.
+      //
+      // The other event types are USELESS here: a fetch start is precisely the
+      // moment the rows have not arrived, and an observer mount carries no data
+      // at all — reacting to either re-runs the walk against the same cache and
+      // re-renders every row for nothing.
+      //
+      // `added` is worse than useless, it is illegal. TanStack creates the
+      // query object inside `useInfiniteQuery` DURING RENDER, so the `added`
+      // event fires while `NoteTreeItem` is rendering — and this hook lives in
+      // `NoteTreePanel`, an ancestor. React refused it outright: "Cannot update
+      // a component (NoteTreePanel) while rendering a different component
+      // (NoteTreeItem)", and the expand it fired from never completed.
+      //
+      // Nothing is lost by dropping them. A level's rows can only appear via a
+      // resolved fetch or a `setQueryData`, and both dispatch `success`; a level
+      // can only be GC'd once nothing observes it, which means the folder was
+      // collapsed — and `expandedIds` changing already re-runs the memo.
+      if (event.type !== 'updated' || event.action.type !== 'success') return;
+
+      // `childrenAll()` rather than a literal, for the reason `query-keys.ts`
+      // opens with. It is a prefix, so this is a prefix test.
+      const key = event.query.queryKey;
+      if (prefix.some((part, index) => key[index] !== part)) return;
+
+      setVersion((current) => current + 1);
+    });
+  }, [queryClient]);
+
+  return version;
 }
 
 interface UseTreeKeyboardOptions {

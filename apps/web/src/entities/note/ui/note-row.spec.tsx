@@ -57,6 +57,7 @@ function renderRow(extra: Record<string, unknown> = {}) {
         node={NODE}
         depth={0}
         isActive={false}
+        isSelected={false}
         isExpanded={false}
         hasChildren={false}
         onToggle={onToggle}

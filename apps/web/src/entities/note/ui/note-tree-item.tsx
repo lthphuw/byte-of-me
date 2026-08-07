@@ -15,7 +15,6 @@ import { NoteRow } from '@/entities/note/ui/note-row';
 import { NoteRowInput } from '@/entities/note/ui/note-row-input';
 import { noteRowIndent } from '@/entities/note/ui/note-row-shell';
 import { NoteRowSkeleton } from '@/entities/note/ui/note-tree-skeleton';
-import { cn } from '@/shared/lib/utils';
 import { InfiniteSentinel } from '@/shared/ui/infinite-sentinel';
 
 /** Shared empty level, so a row with no children re-renders referentially stable. */
@@ -182,6 +181,7 @@ export function NoteTreeItem({
       node={node}
       depth={depth}
       isActive={isActive}
+      isSelected={isSelected}
       isExpanded={isExpanded}
       hasChildren={hasChildren}
       onToggle={() => explorer.toggle(node.id)}
@@ -243,13 +243,13 @@ export function NoteTreeItem({
       aria-selected={isSelected}
       aria-expanded={hasChildren ? isExpanded : undefined}
       tabIndex={isSelected ? 0 : -1}
-      // The selection ring is on the `li` rather than the row div so it also
-      // frames the rename input, and so the focus ring and the selection ring
-      // are the same box.
-      className={cn(
-        'rounded-md outline-none',
-        isSelected && 'ring-1 ring-ring ring-offset-0'
-      )}
+      // Focus stays HERE — the roving tabindex needs one element per row and
+      // this is it — but nothing is painted here any more. This `li` wraps the
+      // row AND, when the folder is open, its whole children list, so a ring on
+      // it drew a box around the entire subtree. `group/row` is how the row
+      // below reaches this element's focus state instead; see
+      // `NOTE_ROW_FOCUS_CLASS`.
+      className="group/row rounded-md outline-none"
       // `stopPropagation` is REQUIRED, not tidiness. A child's `li` is nested
       // inside its parent's `li` — that is what makes the tree a tree — so a
       // click on a row bubbles through every ancestor row's handler, and the

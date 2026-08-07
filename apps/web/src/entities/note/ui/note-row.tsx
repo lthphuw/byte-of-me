@@ -10,7 +10,9 @@ import {
   NOTE_ROW_BODY_CLASS,
   NOTE_ROW_CHEVRON_CLASS,
   NOTE_ROW_CLASS,
+  NOTE_ROW_FOCUS_CLASS,
   NOTE_ROW_ICON_CLASS,
+  NOTE_ROW_SELECTED_CLASS,
   noteRowIndent,
 } from '@/entities/note/ui/note-row-shell';
 import { cn } from '@/shared/lib/utils';
@@ -20,6 +22,8 @@ interface NoteRowOwnProps {
   depth: number;
   /** The note open in the editor — NOT the explorer's selection. */
   isActive: boolean;
+  /** The explorer's cursor. The other half of the pair `isActive` starts. */
+  isSelected: boolean;
   isExpanded: boolean;
   hasChildren: boolean;
   onToggle: () => void;
@@ -46,9 +50,9 @@ type NoteRowProps = NoteRowOwnProps &
  * arrives as a prop. Splitting it out keeps the recursive component about the
  * TREE (levels, expansion, children, drafts) and this one about a ROW.
  *
- * The selection ring is deliberately NOT here: it belongs on the `li`, so that
- * it also frames the rename input this row is replaced by, and so the focus
- * ring and the selection ring are the same box.
+ * Selection and keyboard focus ARE drawn here, and used not to be — they were
+ * on the `li` above, which also contains this row's children list, so both
+ * framed the whole open subtree. See `NOTE_ROW_FOCUS_CLASS`.
  *
  * FORWARDS ITS REF AND ITS EXTRA PROPS, and that is load-bearing. This row is
  * what the right-click menu's `ContextMenuTrigger asChild` wraps, and Radix
@@ -64,6 +68,7 @@ export const NoteRow = forwardRef<HTMLDivElement, NoteRowProps>(function NoteRow
     node,
     depth,
     isActive,
+    isSelected,
     isExpanded,
     hasChildren,
     onToggle,
@@ -84,9 +89,11 @@ export const NoteRow = forwardRef<HTMLDivElement, NoteRowProps>(function NoteRow
       {...rest}
       className={cn(
         NOTE_ROW_CLASS,
+        NOTE_ROW_FOCUS_CLASS,
         isActive
           ? 'bg-muted font-medium text-foreground'
           : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+        isSelected && !isActive && NOTE_ROW_SELECTED_CLASS,
         className
       )}
       style={noteRowIndent(depth)}

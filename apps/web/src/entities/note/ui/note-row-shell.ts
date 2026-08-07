@@ -30,6 +30,47 @@ export const NOTE_ROW_BOX_CLASS =
 export const NOTE_ROW_CLASS = `group ${NOTE_ROW_BOX_CLASS} text-sm transition-colors`;
 
 /**
+ * The keyboard focus ring, drawn on the ROW box.
+ *
+ * It used to live on the `<li>`, which is the focusable element (roving
+ * tabindex) — but that `li` also CONTAINS this row's children list, so the ring
+ * boxed the entire open subtree instead of the row. Verified in the browser:
+ * selecting a folder and expanding it drew one rectangle around the folder and
+ * all three of its notes. The `li` keeps the focus; only the paint moved down
+ * here, via a named group so it survives the drag and context-menu wrappers
+ * that sit in between.
+ *
+ * `focus-visible`, not `focus`, and that distinction is the whole fix for what
+ * the author reported. Checked in Chrome on this very tree: after a mouse click
+ * the `li` matches `:focus` but NOT `:focus-visible`; after an arrow key it
+ * matches both. So clicking a row no longer leaves a ring behind, and arrowing
+ * onto one still says where the keyboard is — which is the only case a focus
+ * ring is FOR.
+ */
+export const NOTE_ROW_FOCUS_CLASS =
+  'group-focus-visible/row:ring-1 group-focus-visible/row:ring-ring';
+
+/**
+ * The explorer's cursor — the row F2, Delete and `n` would act on.
+ *
+ * It has to be VISIBLE, and that is the whole reason this is not the `bg-muted/60`
+ * it started as. `--muted` and `--accent` are both `0 0% 96.1%` in the light
+ * theme, so 60% of either over a white background lands around 97.7% — measured
+ * in the running app, a selected folder was indistinguishable from an unselected
+ * one, which matters because nothing else on screen says where `n` is about to
+ * write the next note.
+ *
+ * So it shares `isActive`'s background, and the two stay apart by WEIGHT
+ * instead: the open note is the only row in `font-medium`. That is the same
+ * trade VSCode makes — its `inactiveSelectionBackground` is the same wash as an
+ * open file's — and it keeps the pair of states the `aria-selected` /
+ * `aria-current` note in `note-tree-item.tsx` describes legible without a second
+ * colour. Applied only when the row is not already active, so the two never
+ * fight over one background.
+ */
+export const NOTE_ROW_SELECTED_CLASS = 'bg-muted text-foreground';
+
+/**
  * Where the expand chevron sits — reserved even on a leaf, so titles align.
  *
  * 36px, and that number is MEASURED, not chosen. The chevron is a shadcn
