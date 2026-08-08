@@ -56,6 +56,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   act,
   cleanup,
+  configure,
   fireEvent,
   render,
   screen,
@@ -281,6 +282,47 @@ async function wait(ms: number) {
 const SETTLE_MS = AUTOSAVE_DEBOUNCE_MS + 300;
 
 /**
+ * Bun's per-test timeout for the tests that wait out the real debounce.
+ *
+ * Bun defaults to 5s per test. The tests below sit through one to three real
+ * `SETTLE_MS` waits — up to ~3.9s of deliberate waiting — plus renders, a
+ * mocked round trip and `waitFor` polling. That fits inside 5s on an idle
+ * machine and does not on a busy one: the pre-push hook runs `turbo` across
+ * every workspace, so the production build competes for the same cores, and
+ * "switching noteId never sends the previous note title/content under the new
+ * id (warm cache)" died there at 10.8s while passing in ~1.5s run alone.
+ *
+ * Derived from the debounce rather than picked, so it tracks the thing it is
+ * actually waiting for. A generous ceiling costs nothing when tests pass —
+ * Bun only spends it on a test that is already failing.
+ *
+ * Honestly stated: the failure was NOT reproduced locally. A full cold
+ * `turbo run test build` passes here with or without this ceiling, and
+ * saturating all 11 cores with busy loops did not reproduce it either — a
+ * Next production build competes for memory and I/O, not just CPU. What is
+ * certain is the mechanism, because the failing run named it: "this test
+ * timed out after 5000ms", which is Bun's per-test limit, against a test that
+ * spends 2.6s of that budget on deliberate waiting before doing any work.
+ * Raising the ceiling cannot make a broken assertion pass — `waitFor` still
+ * polls the same conditions — so this removes a demonstrated failure mode
+ * without weakening what the tests check.
+ *
+ * NOT fixed by shortening the debounce or faking timers: the header explains
+ * why real timers are used here, and that decision was verified rather than
+ * assumed.
+ */
+const DEBOUNCE_TEST_TIMEOUT_MS = AUTOSAVE_DEBOUNCE_MS * 30;
+
+/**
+ * `waitFor`'s own budget, kept BELOW the per-test ceiling above.
+ *
+ * The order matters for diagnostics: at 15s `waitFor` fails first and names
+ * the condition that never held, which is a real error message. If Bun's
+ * timeout fired first all anyone would learn is "this test timed out".
+ */
+configure({ asyncUtilTimeout: AUTOSAVE_DEBOUNCE_MS * 15 });
+
+/**
  * Holds the NEXT `updateMany` call open until `release()` is called, so a
  * test can control exactly what happens WHILE a save is in flight — the
  * interleaving NEW-1 and I2 both need and the fixed real-timer waits above
@@ -356,7 +398,7 @@ describe('NoteEditor autosave', () => {
     // there is nothing new to send.
     await wait(SETTLE_MS);
     expect(updateMany).not.toHaveBeenCalled();
-  });
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 
   test('switching noteId never sends the previous note title/content under the new id (cold fetch)', async () => {
     const queryClient = makeQueryClient();
@@ -402,7 +444,7 @@ describe('NoteEditor autosave', () => {
         expect(args.data.title).not.toBe('Note A edited');
       }
     }
-  });
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 
   test('switching noteId never sends the previous note title/content under the new id (warm cache)', async () => {
     const queryClient = makeQueryClient();
@@ -451,7 +493,7 @@ describe('NoteEditor autosave', () => {
         expect(args.data.title).not.toBe('Note A edited again');
       }
     }
-  });
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 
   test('the rich-text editor mounts with the loaded note content, not the previous buffer', async () => {
     const queryClient = makeQueryClient();
@@ -493,7 +535,7 @@ describe('NoteEditor autosave', () => {
     await wait(SETTLE_MS);
 
     expect(updateMany).toHaveBeenCalledTimes(1);
-  });
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 
   test('a rejected save leaves a non-"Saved" status, with a retry control', async () => {
     updateMany.mockImplementationOnce(() =>
@@ -516,7 +558,7 @@ describe('NoteEditor autosave', () => {
     });
     expect(screen.getByText('Not saved')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Retry' })).toBeTruthy();
-  });
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 
   test('unmounting with a pending debounce flushes the edit instead of dropping it', async () => {
     const queryClient = makeQueryClient();
@@ -584,7 +626,7 @@ describe('NoteEditor autosave', () => {
     // from the specific `mutate()` call that resolved.
     expect(detailB?.id).toBe(NOTE_B.id);
     expect(detailB?.title).toBe('Note B');
-  });
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 
   test('a save that lands after returning to its note updates the buffer instead of being silently rolled back', async () => {
     const queryClient = makeQueryClient();
@@ -631,7 +673,7 @@ describe('NoteEditor autosave', () => {
       updateMany.mock.calls.length - 1
     ] as [{ where: { id: string }; data: Record<string, unknown> }];
     expect(lastCall[0].data.title).toBe('Note A EDITEDX');
-  });
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 
   test('a failed save does not disarm the departure flush on a later switch', async () => {
     const queryClient = makeQueryClient();
@@ -665,7 +707,7 @@ describe('NoteEditor autosave', () => {
     ] as [{ where: { id: string }; data: Record<string, unknown> }];
     expect(lastCall[0].where.id).toBe(NOTE_A.id);
     expect(lastCall[0].data.title).toBe('Will fail then switch');
-  });
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 
   test('a failed save does not disarm the departure flush on unmount', async () => {
     const queryClient = makeQueryClient();
@@ -694,7 +736,7 @@ describe('NoteEditor autosave', () => {
     ] as [{ where: { id: string }; data: Record<string, unknown> }];
     expect(lastCall[0].where.id).toBe(NOTE_A.id);
     expect(lastCall[0].data.title).toBe('Will fail then close');
-  });
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 
   test('a failed save status does not stick to a different note after switching', async () => {
     const queryClient = makeQueryClient();
@@ -724,7 +766,7 @@ describe('NoteEditor autosave', () => {
 
     expect(screen.queryByText('Not saved')).toBeNull();
     expect(screen.getByText('Saved')).toBeTruthy();
-  });
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 
   test('a BODY save that lands after returning to its note updates the editor, not just the hook buffer', async () => {
     // This is the test round 2's five did not, and could not, express: every
@@ -787,7 +829,7 @@ describe('NoteEditor autosave', () => {
       updateMany.mock.calls.length - 1
     ] as [{ where: { id: string }; data: Record<string, unknown> }];
     expect(lastCall[0].data.content).toContain('Body A SAVED');
-  });
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 
   test('a successful save settles the title to the server\'s normalised form (deliberate — see use-note-editor-autosave.ts)', async () => {
     // Locks in the round-3 decision on item 3: the reseed mechanism that
@@ -823,7 +865,7 @@ describe('NoteEditor autosave', () => {
     await waitFor(() => {
       expect(input.value).toBe('Trimmed Title');
     });
-  });
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 
   test('a load failure shows the error copy, not the loading copy forever (cold)', async () => {
     findFirstOrThrow.mockImplementationOnce(() =>
@@ -895,7 +937,7 @@ describe('NoteEditor — opening a note saves nothing', () => {
 
     expect(updateMany).not.toHaveBeenCalled();
     expect(errorToast).not.toHaveBeenCalled();
-  });
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 
   test('reopening a note already in the query cache saves nothing (StrictMode)', async () => {
     // The reported repro: click a note you have opened before in this
@@ -934,7 +976,7 @@ describe('NoteEditor — opening a note saves nothing', () => {
 
     expect(errorToast).not.toHaveBeenCalled();
     expect(updateMany).not.toHaveBeenCalled();
-  });
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 });
 
 /**
@@ -1007,7 +1049,7 @@ describe('NoteEditor autosave (keyed — matches production)', () => {
         expect(args.data.title).not.toBe('Note A edited');
       }
     }
-  });
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 
   test('the rich-text editor mounts with the loaded note content, not the previous buffer (keyed)', async () => {
     const queryClient = makeQueryClient();
@@ -1083,7 +1125,7 @@ describe('NoteEditor autosave (keyed — matches production)', () => {
       updateMany.mock.calls.length - 1
     ] as [{ where: { id: string }; data: Record<string, unknown> }];
     expect(lastCall[0].data.title).toBe('Note A EDITEDX');
-  });
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 });
 
 describe('NoteEditor raw-markdown view toggle', () => {
