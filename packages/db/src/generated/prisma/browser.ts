@@ -222,3 +222,15 @@ export type NoteLabel = Prisma.NoteLabelModel
  * 
  */
 export type NoteOnLabel = Prisma.NoteOnLabelModel
+/**
+ * Model NoteShare
+ * A grant of access to one note, or — when that note is a folder — to its
+ * whole subtree.
+ * 
+ * Inheritance is resolved by climbing the tree at read time
+ * (`resolveNoteAccess`), NEVER materialised into a row per descendant. That
+ * is what makes moving a note into or out of a shared folder correct with
+ * nothing to synchronise, and what leaves a delete no orphaned grant to
+ * clean up — the cascade below takes them.
+ */
+export type NoteShare = Prisma.NoteShareModel

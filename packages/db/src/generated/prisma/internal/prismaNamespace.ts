@@ -437,7 +437,8 @@ export const ModelName = {
   Note: 'Note',
   NoteLink: 'NoteLink',
   NoteLabel: 'NoteLabel',
-  NoteOnLabel: 'NoteOnLabel'
+  NoteOnLabel: 'NoteOnLabel',
+  NoteShare: 'NoteShare'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -453,7 +454,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "note" | "noteLink" | "noteLabel" | "noteOnLabel"
+    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "note" | "noteLink" | "noteLabel" | "noteOnLabel" | "noteShare"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3491,6 +3492,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    NoteShare: {
+      payload: Prisma.$NoteSharePayload<ExtArgs>
+      fields: Prisma.NoteShareFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NoteShareFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteSharePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NoteShareFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteSharePayload>
+        }
+        findFirst: {
+          args: Prisma.NoteShareFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteSharePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NoteShareFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteSharePayload>
+        }
+        findMany: {
+          args: Prisma.NoteShareFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteSharePayload>[]
+        }
+        create: {
+          args: Prisma.NoteShareCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteSharePayload>
+        }
+        createMany: {
+          args: Prisma.NoteShareCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NoteShareCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteSharePayload>[]
+        }
+        delete: {
+          args: Prisma.NoteShareDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteSharePayload>
+        }
+        update: {
+          args: Prisma.NoteShareUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteSharePayload>
+        }
+        deleteMany: {
+          args: Prisma.NoteShareDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NoteShareUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NoteShareUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteSharePayload>[]
+        }
+        upsert: {
+          args: Prisma.NoteShareUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteSharePayload>
+        }
+        aggregate: {
+          args: Prisma.NoteShareAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNoteShare>
+        }
+        groupBy: {
+          args: Prisma.NoteShareGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NoteShareGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NoteShareCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NoteShareCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -4053,6 +4128,20 @@ export const NoteOnLabelScalarFieldEnum = {
 export type NoteOnLabelScalarFieldEnum = (typeof NoteOnLabelScalarFieldEnum)[keyof typeof NoteOnLabelScalarFieldEnum]
 
 
+export const NoteShareScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  noteId: 'noteId',
+  email: 'email',
+  recipientId: 'recipientId',
+  role: 'role',
+  invitedById: 'invitedById'
+} as const
+
+export type NoteShareScalarFieldEnum = (typeof NoteShareScalarFieldEnum)[keyof typeof NoteShareScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -4368,6 +4457,7 @@ export type GlobalOmitConfig = {
   noteLink?: Prisma.NoteLinkOmit
   noteLabel?: Prisma.NoteLabelOmit
   noteOnLabel?: Prisma.NoteOnLabelOmit
+  noteShare?: Prisma.NoteShareOmit
 }
 
 /* Types for Logging */

@@ -91,7 +91,8 @@ export const ModelName = {
   Note: 'Note',
   NoteLink: 'NoteLink',
   NoteLabel: 'NoteLabel',
-  NoteOnLabel: 'NoteOnLabel'
+  NoteOnLabel: 'NoteOnLabel',
+  NoteShare: 'NoteShare'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -631,6 +632,20 @@ export const NoteOnLabelScalarFieldEnum = {
 } as const
 
 export type NoteOnLabelScalarFieldEnum = (typeof NoteOnLabelScalarFieldEnum)[keyof typeof NoteOnLabelScalarFieldEnum]
+
+
+export const NoteShareScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  noteId: 'noteId',
+  email: 'email',
+  recipientId: 'recipientId',
+  role: 'role',
+  invitedById: 'invitedById'
+} as const
+
+export type NoteShareScalarFieldEnum = (typeof NoteShareScalarFieldEnum)[keyof typeof NoteShareScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -2,21 +2,14 @@ import { prisma } from '@byte-of-me/db';
 
 import 'server-only';
 
+// The module path, NOT `@/entities/note-share`. That barrel re-exports
+// `./api`, whose actions import this very file — going through it would close
+// a cycle between the slice barrel and its own api layer.
+import type {
+  NoteAccess,
+  NoteShareRole,
+} from '@/entities/note-share/model/types';
 import { getAuthenticatedUser, normalizeEmail } from '@/shared/lib/auth';
-
-/** "VIEWER" is the safe reading of anything that is not exactly "EDITOR". */
-export type NoteShareRole = 'VIEWER' | 'EDITOR';
-
-export interface NoteAccess {
-  /**
-   * The note's owner. Every downstream query scopes to THIS, never to the
-   * caller — a share recipient owns nothing on this surface.
-   */
-  ownerId: string;
-  role: NoteShareRole;
-  /** The highest granting node — the root of the subtree this caller may see. */
-  rootId: string;
-}
 
 /** What the raw CTE returns — snake_case, straight off the table. */
 interface AccessRow {
