@@ -1,20 +1,14 @@
 'use client';
 
-import { Fragment } from 'react';
-import {
-  Breadcrumb,
-  BreadcrumbEllipsis,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from '@byte-of-me/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
-import { getNoteAncestors, type NoteAncestor, noteKeys } from '@/entities/note';
-
-/** Beyond this, the middle of the path collapses to an ellipsis. */
-const MAX_CRUMBS = 3;
+import {
+  getNoteAncestors,
+  NOTE_CRUMB_CLASS,
+  NoteBreadcrumbTrail,
+  noteKeys,
+} from '@/entities/note';
 
 interface NoteBreadcrumbProps {
   noteId: string;
@@ -49,49 +43,24 @@ export function NoteBreadcrumb({ noteId, onOpenFolder }: NoteBreadcrumbProps) {
     },
   });
 
-  if (!ancestors || ancestors.length === 0) return null;
-
-  // Keep the FIRST and the last two: the root anchors the path and the nearest
-  // folders are what the author is actually working in. The middle is what a
-  // deep path can afford to lose.
-  const isTruncated = ancestors.length > MAX_CRUMBS;
-  const shown: NoteAncestor[] = isTruncated
-    ? [ancestors[0] as NoteAncestor, ...ancestors.slice(-2)]
-    : ancestors;
+  if (!ancestors) return null;
 
   return (
-    <Breadcrumb
-      aria-label={t('explorer.breadcrumbAriaLabel')}
-      className="shrink-0 px-4 pt-3 md:px-6 md:pt-4"
-    >
-      <BreadcrumbList className="gap-1 text-xs sm:gap-1">
-        {shown.map((ancestor, index) => (
-          <Fragment key={ancestor.id}>
-            {index > 0 && <BreadcrumbSeparator />}
-
-            {/* The ellipsis stands where the dropped crumbs were: after the
-                root, before the tail. */}
-            {isTruncated && index === 1 && (
-              <>
-                <BreadcrumbItem>
-                  <BreadcrumbEllipsis className="size-4" />
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-              </>
-            )}
-
-            <BreadcrumbItem>
-              <button
-                type="button"
-                className="max-w-[12ch] truncate rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:max-w-[20ch]"
-                onClick={() => onOpenFolder?.(ancestor.id)}
-              >
-                {ancestor.title}
-              </button>
-            </BreadcrumbItem>
-          </Fragment>
-        ))}
-      </BreadcrumbList>
-    </Breadcrumb>
+    <NoteBreadcrumbTrail
+      ancestors={ancestors}
+      ariaLabel={t('explorer.breadcrumbAriaLabel')}
+      className="px-4 pt-3 md:px-6 md:pt-4"
+      // A BUTTON here, not a link: the folder is already on screen and the
+      // crumb selects and expands it rather than navigating anywhere.
+      renderCrumb={(ancestor) => (
+        <button
+          type="button"
+          className={NOTE_CRUMB_CLASS}
+          onClick={() => onOpenFolder?.(ancestor.id)}
+        >
+          {ancestor.title}
+        </button>
+      )}
+    />
   );
 }

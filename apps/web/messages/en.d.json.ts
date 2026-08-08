@@ -1041,6 +1041,8 @@ declare const messages: {
     },
     "note": {
       "notFound": "This note is no longer available.",
+      "sharedWithYouLabel": "Shared with you",
+      "breadcrumbAriaLabel": "Note path",
       "expand": "Expand",
       "collapse": "Collapse",
       "loading": "Loading…",

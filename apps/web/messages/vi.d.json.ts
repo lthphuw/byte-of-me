@@ -1041,6 +1041,8 @@ declare const messages: {
     },
     "note": {
       "notFound": "Ghi chú này không còn khả dụng.",
+      "sharedWithYouLabel": "Được chia sẻ với bạn",
+      "breadcrumbAriaLabel": "Đường dẫn ghi chú",
       "expand": "Mở rộng",
       "collapse": "Thu gọn",
       "loading": "Đang tải…",

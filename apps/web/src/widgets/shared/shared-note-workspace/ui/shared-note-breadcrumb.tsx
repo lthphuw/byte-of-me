@@ -1,8 +1,9 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
+import { NOTE_CRUMB_CLASS, NoteBreadcrumbTrail } from '@/entities/note';
 import {
   getSharedNoteAncestors,
   noteShareKeys,
@@ -14,12 +15,18 @@ import { Link } from '@/shared/i18n/navigation';
  * The path from the share root down to the open note.
  *
  * The chain arrives already bounded — `getSharedNoteAncestors` stops the walk
- * at the share root server-side. Nothing is truncated here and nothing is
- * prepended: a crumb this component invented would be a folder name the
- * server deliberately withheld.
+ * at the share root server-side. Nothing is truncated for secrecy here and
+ * nothing is prepended: a crumb this component invented would be a folder
+ * name the server deliberately withheld.
+ *
+ * The trail itself is the entity's, shared with the owner's editor header.
+ * Only the crumb differs — a LINK here, because a rung is a route change,
+ * where the owner's is a button that selects a folder already on screen.
  */
 export function SharedNoteBreadcrumb({ noteId }: { noteId: string }) {
-  const ancestors = useQuery({
+  const t = useTranslations('share.note');
+
+  const { data: ancestors } = useQuery({
     queryKey: noteShareKeys.ancestors(noteId),
     queryFn: async () => {
       const res = await getSharedNoteAncestors(noteId);
@@ -28,23 +35,17 @@ export function SharedNoteBreadcrumb({ noteId }: { noteId: string }) {
     },
   });
 
-  if (!ancestors.data?.length) {
-    return null;
-  }
+  if (!ancestors) return null;
 
   return (
-    <nav className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
-      {ancestors.data.map((rung, index) => (
-        <span key={rung.id} className="flex items-center gap-1">
-          {index > 0 ? <ChevronRight className="size-3" /> : null}
-          <Link
-            href={sharedNoteHref(rung.id)}
-            className="max-w-40 truncate transition-colors hover:text-foreground"
-          >
-            {rung.title}
-          </Link>
-        </span>
-      ))}
-    </nav>
+    <NoteBreadcrumbTrail
+      ancestors={ancestors}
+      ariaLabel={t('breadcrumbAriaLabel')}
+      renderCrumb={(ancestor) => (
+        <Link href={sharedNoteHref(ancestor.id)} className={NOTE_CRUMB_CLASS}>
+          {ancestor.title}
+        </Link>
+      )}
+    />
   );
 }

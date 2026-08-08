@@ -4,7 +4,12 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
-import { NoteRow, type NoteTreeNode } from '@/entities/note';
+import {
+  NoteRow,
+  NoteRowSkeleton,
+  type NoteTreeNode,
+  NoteTreeSkeleton,
+} from '@/entities/note';
 import {
   getSharedNoteChildren,
   noteShareKeys,
@@ -59,12 +64,17 @@ export function SharedNoteTree({
     });
 
   if (level.isPending) {
-    return (
-      <ul className="flex flex-col gap-1 px-1 py-1" aria-hidden>
-        {[0, 1].map((row) => (
-          <li key={row} className="h-7 animate-pulse rounded-md bg-muted" />
-        ))}
-      </ul>
+    // The entity's own placeholder, not a hand-rolled one. It derives its box
+    // from `note-row-shell.ts` — the single definition every row-shaped thing
+    // shares — so the loading rail lines up with the loaded one instead of
+    // drifting from it, which is exactly what a local copy would do.
+    return depth === 0 ? (
+      <NoteTreeSkeleton />
+    ) : (
+      <>
+        <NoteRowSkeleton depth={depth} index={0} />
+        <NoteRowSkeleton depth={depth} index={1} />
+      </>
     );
   }
 

@@ -10,6 +10,7 @@ import {
   sharedNoteHref,
 } from '@/entities/note-share';
 import { Link } from '@/shared/i18n/navigation';
+import { SharedInboxSkeleton } from '@/widgets/shared/shared-note-workspace/ui/shared-note-skeleton';
 
 /**
  * Everything shared with the signed-in address, as entry points.
@@ -36,13 +37,7 @@ export function SharedInboxView() {
         <p className="text-sm text-muted-foreground">{t('description')}</p>
       </header>
 
-      {inbox.isPending ? (
-        <ul className="flex flex-col gap-2" aria-hidden>
-          {[0, 1, 2].map((row) => (
-            <li key={row} className="h-14 animate-pulse rounded-md bg-muted" />
-          ))}
-        </ul>
-      ) : null}
+      {inbox.isPending ? <SharedInboxSkeleton /> : null}
 
       {inbox.isError ? (
         <p className="text-sm text-destructive">{t('failed')}</p>
