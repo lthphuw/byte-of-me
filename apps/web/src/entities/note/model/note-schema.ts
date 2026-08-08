@@ -39,6 +39,16 @@ export const moveNoteSchema = z.object({
   id: z.string().min(1),
   parentId: z.string().min(1).nullable(),
   position: z.number().int().min(0),
+  /**
+   * Set by the confirmation the explorer shows when the destination sits
+   * inside a shared subtree — moving in there grants access to everyone who
+   * can already open it.
+   *
+   * Optional so every existing caller keeps working unchanged (AGENTS §11.6);
+   * its ABSENCE is what `moveNote` refuses on, so a caller that has not been
+   * taught about sharing fails closed rather than exposing a note silently.
+   */
+  acknowledgeSharedDestination: z.boolean().optional(),
 });
 
 export const setNoteLabelsSchema = z.object({

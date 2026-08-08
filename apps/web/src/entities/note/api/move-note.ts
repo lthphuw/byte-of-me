@@ -23,7 +23,7 @@ export async function moveNote(
   if (!parsed.ok) {
     return { success: false, errorMsg: parsed.errorMsg };
   }
-  const { id, parentId, position } = parsed.data;
+  const { id, parentId, position, acknowledgeSharedDestination } = parsed.data;
 
   try {
     // The whole owner's ancestry in one query. A note under its own descendant
@@ -40,6 +40,40 @@ export async function moveNote(
         success: false,
         errorMsg: 'A note cannot be moved inside one of its own children',
       };
+    }
+
+    // Moving INTO a shared subtree grants access to everyone who can already
+    // open the destination. That IS the correct semantics — it is the same
+    // property that makes moving OUT revoke access with nothing to clean up —
+    // but it is silent, and a mis-drop is the likeliest way a note leaks.
+    //
+    // Checked here as well as in the explorer's confirmation because a server
+    // action is an addressable endpoint that never renders that dialog
+    // (AGENTS §5). `LIMIT 1`: this only needs to know WHETHER anyone is
+    // affected; `getMoveShareExposure` is what tells the dialog who.
+    if (parentId !== null && !acknowledgeSharedDestination) {
+      const exposed = await prisma.$queryRaw<{ email: string }[]>`
+        WITH RECURSIVE chain AS (
+          SELECT n.id, n.parent_id, n.owner_id
+          FROM notes n
+          WHERE n.id = ${parentId} AND n.owner_id = ${session.id}
+          UNION ALL
+          SELECT p.id, p.parent_id, p.owner_id
+          FROM chain c
+          JOIN notes p ON p.id = c.parent_id AND p.owner_id = c.owner_id
+        )
+        SELECT s.email
+        FROM chain c
+        JOIN note_shares s ON s.note_id = c.id
+        LIMIT 1
+      `;
+
+      if (exposed.length > 0) {
+        return {
+          success: false,
+          errorMsg: 'Destination is shared; confirm before moving',
+        };
+      }
     }
 
     // Make room first: siblings at/after the target slot shift down one, so

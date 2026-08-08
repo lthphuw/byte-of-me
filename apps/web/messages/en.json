@@ -708,8 +708,15 @@
         "title": "Delete permanently?",
         "description": "“{title}” will be deleted for good. This cannot be undone.",
         "descriptionWithChildren": "“{title}” and {count, plural, one {its # nested note} other {its # nested notes}} will be deleted for good. This cannot be undone.",
+        "descriptionShared": "{count, plural, one {# person} other {# people}} can currently open this. Deleting it removes their access too.",
         "confirm": "Delete permanently",
         "cancel": "Cancel"
+      },
+      "move": {
+        "sharedTitle": "Move into a shared folder?",
+        "sharedDescription": "“{title}” will become visible to {count, plural, one {# person} other {# people}} who can already open the destination.",
+        "sharedConfirm": "Move anyway",
+        "sharedCancel": "Cancel"
       },
       "share": {
         "title": "Share “{title}”",

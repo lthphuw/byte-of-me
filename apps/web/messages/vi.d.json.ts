@@ -711,8 +711,15 @@ declare const messages: {
         "title": "Xóa vĩnh viễn?",
         "description": "“{title}” sẽ bị xóa hẳn. Không thể hoàn tác.",
         "descriptionWithChildren": "“{title}” cùng {count, plural, other {# ghi chú con}} sẽ bị xóa hẳn. Không thể hoàn tác.",
+        "descriptionShared": "Hiện có {count, plural, other {# người}} mở được mục này. Xóa đi thì họ cũng mất quyền.",
         "confirm": "Xóa vĩnh viễn",
         "cancel": "Hủy"
+      },
+      "move": {
+        "sharedTitle": "Chuyển vào thư mục đang được chia sẻ?",
+        "sharedDescription": "“{title}” sẽ hiện ra với {count, plural, other {# người}} vốn đã mở được thư mục đích.",
+        "sharedConfirm": "Vẫn chuyển",
+        "sharedCancel": "Hủy"
       },
       "share": {
         "title": "Chia sẻ “{title}”",

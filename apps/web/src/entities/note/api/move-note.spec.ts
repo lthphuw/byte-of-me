@@ -34,8 +34,18 @@ Object.defineProperty(prisma, '$transaction', {
   configurable: true,
 });
 
+// The destination's share-exposure walk. Empty by default: most moves land
+// somewhere nobody has been given.
+const queryRaw = mock();
+Object.defineProperty(prisma, '$queryRaw', {
+  value: queryRaw,
+  writable: true,
+  configurable: true,
+});
+
 describe('moveNote', () => {
   beforeEach(() => {
+    queryRaw.mockReset().mockResolvedValue([]);
     // a → b → c
     findMany.mockReset().mockResolvedValue([
       { id: 'a', parentId: null },
@@ -89,5 +99,39 @@ describe('moveNote', () => {
 
     const where = findMany.mock.calls[0]?.[0]?.where as Record<string, unknown>;
     expect(where.ownerId).toBe('admin-1');
+  });
+
+  it('refuses a destination inside a shared subtree without acknowledgement', async () => {
+    // Not an attacker — the owner's own slip. Dragging a note into a folder
+    // somebody else can already open is silent exposure, and a caller that
+    // has not been taught about sharing must fail closed.
+    queryRaw.mockResolvedValue([{ email: 'bob@example.com' }]);
+
+    const res = await moveNote({ id: 'c', parentId: 'a', position: 0 });
+
+    expect(res.success).toBe(false);
+    expect(transaction).not.toHaveBeenCalled();
+  });
+
+  it('performs the move once the exposure is acknowledged', async () => {
+    queryRaw.mockResolvedValue([{ email: 'bob@example.com' }]);
+
+    const res = await moveNote({
+      id: 'c',
+      parentId: 'a',
+      position: 0,
+      acknowledgeSharedDestination: true,
+    });
+
+    expect(res.success).toBe(true);
+    expect(transaction).toHaveBeenCalled();
+  });
+
+  it('does not check exposure for a move to the root level', async () => {
+    // The root is not a note and can carry no grant, so there is nothing to
+    // expose and no reason to pay for the walk.
+    await moveNote({ id: 'c', parentId: null, position: 0 });
+
+    expect(queryRaw).not.toHaveBeenCalled();
   });
 });

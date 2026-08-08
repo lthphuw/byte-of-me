@@ -23,7 +23,27 @@ import {
   setNoteLabels,
   updateNote,
 } from '@/entities/note';
+import {
+  getMoveShareExposure,
+  type NoteShareExposure,
+} from '@/entities/note-share';
 import { type ExplorerGroup } from '@/features/dashboard/note-explorer/lib/explorer-model';
+
+/** What a move needs, before it is known whether it has to be confirmed. */
+interface MoveInput {
+  id: string;
+  parentId: string | null;
+  position: number;
+  acknowledgeSharedDestination?: boolean;
+}
+
+/** A move held back until the author agrees to expose the note. */
+export interface PendingMove {
+  input: MoveInput;
+  /** The dragged note's title, for the confirmation's wording. */
+  title: string;
+  exposure: NoteShareExposure;
+}
 
 /** What travels with a dragged row. */
 export interface NoteDragData {
@@ -102,11 +122,7 @@ export function useNoteDnd(
   };
 
   const move = useMutation({
-    mutationFn: async (input: {
-      id: string;
-      parentId: string | null;
-      position: number;
-    }) => {
+    mutationFn: async (input: MoveInput) => {
       const res = await moveNote(input);
       if (!res.success) throw new Error(res.errorMsg);
     },
@@ -114,6 +130,48 @@ export function useNoteDnd(
     onError: (error: Error) =>
       toast.error(t('errors.save'), { description: error.message }),
   });
+
+  const [pendingMove, setPendingMove] = useState<PendingMove | null>(null);
+
+  /**
+   * Every tree drop goes through here rather than straight to `move.mutate`.
+   *
+   * Moving into a shared subtree grants access to everyone who can already
+   * open the destination — correct, and the same property that makes moving
+   * OUT revoke access for free, but silent. So the destination is checked
+   * first and the drop is held until the author agrees.
+   *
+   * The root level can carry no grant, so it skips the round trip entirely.
+   * And if the check itself fails, the move is attempted anyway: `moveNote`
+   * repeats the check and refuses an unacknowledged exposure on its own, so
+   * the worst case is a red toast rather than either a blocked drag or a
+   * silent leak.
+   */
+  const requestMove = (input: MoveInput, title: string) => {
+    if (input.parentId === null) {
+      move.mutate(input);
+      return;
+    }
+
+    void getMoveShareExposure({
+      noteId: input.id,
+      parentId: input.parentId,
+    }).then((res) => {
+      if (res.success && res.data.shareCount > 0) {
+        setPendingMove({ input, title, exposure: res.data });
+        return;
+      }
+      move.mutate(input);
+    });
+  };
+
+  const confirmPendingMove = () => {
+    if (!pendingMove) return;
+    move.mutate({ ...pendingMove.input, acknowledgeSharedDestination: true });
+    setPendingMove(null);
+  };
+
+  const cancelPendingMove = () => setPendingMove(null);
 
   const setStatus = useMutation({
     mutationFn: async (input: { id: string; status: string }) => {
@@ -195,17 +253,23 @@ export function useNoteDnd(
       if (!target) return;
 
       if (isBefore) {
-        move.mutate({
-          id: dragged.id,
-          parentId: target.parentId,
-          position: target.position,
-        });
+        requestMove(
+          {
+            id: dragged.id,
+            parentId: target.parentId,
+            position: target.position,
+          },
+          dragged.title
+        );
       } else {
-        move.mutate({
-          id: dragged.id,
-          parentId: target.id,
-          position: nextPositionUnder(rows, target.id),
-        });
+        requestMove(
+          {
+            id: dragged.id,
+            parentId: target.id,
+            position: nextPositionUnder(rows, target.id),
+          },
+          dragged.title
+        );
       }
       return;
     }
@@ -244,5 +308,13 @@ export function useNoteDnd(
     }
   };
 
-  return { sensors, activeNode, onDragStart, onDragEnd };
+  return {
+    sensors,
+    activeNode,
+    onDragStart,
+    onDragEnd,
+    pendingMove,
+    confirmPendingMove,
+    cancelPendingMove,
+  };
 }

@@ -1,6 +1,16 @@
 'use client';
 
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@byte-of-me/ui';
+import {
   DndContext,
   DragOverlay,
   pointerWithin,
@@ -47,10 +57,16 @@ export function ExplorerDnd({
   showRootZone: boolean;
   children: React.ReactNode;
 }) {
-  const { sensors, activeNode, onDragStart, onDragEnd } = useNoteDnd(
-    loadedRows,
-    labels
-  );
+  const t = useTranslations('dashboard.note.move');
+  const {
+    sensors,
+    activeNode,
+    onDragStart,
+    onDragEnd,
+    pendingMove,
+    confirmPendingMove,
+    cancelPendingMove,
+  } = useNoteDnd(loadedRows, labels);
 
   return (
     <DndContext
@@ -71,6 +87,37 @@ export function ExplorerDnd({
           </div>
         )}
       </DragOverlay>
+
+      {/* Held back until the author agrees to expose the note. `moveNote`
+          refuses an unacknowledged move on its own, so this dialog is the
+          explanation, not the guard (AGENTS §5). */}
+      <AlertDialog
+        open={pendingMove !== null}
+        onOpenChange={(next) => {
+          if (!next) cancelPendingMove();
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('sharedTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingMove
+                ? t('sharedDescription', {
+                    title: pendingMove.title,
+                    count: pendingMove.exposure.shareCount,
+                  })
+                : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('sharedCancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmPendingMove}>
+              {t('sharedConfirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DndContext>
   );
 }

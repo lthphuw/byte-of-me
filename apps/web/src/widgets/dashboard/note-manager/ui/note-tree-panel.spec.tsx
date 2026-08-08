@@ -66,6 +66,16 @@ const messages = {
       },
       search: { trigger: 'Search notes' },
       actions: { create: 'New note', newFolder: 'New folder' },
+      // `ExplorerDnd` reads this namespace unconditionally, for the
+      // confirmation it shows when a drop would expose a note to a shared
+      // folder. Without it every render here logs a MISSING_MESSAGE.
+      move: {
+        sharedTitle: 'Move into a shared folder?',
+        sharedDescription:
+          '“{title}” will become visible to {count, plural, one {# person} other {# people}} who can already open the destination.',
+        sharedConfirm: 'Move anyway',
+        sharedCancel: 'Cancel',
+      },
       tree: {
         expandAriaLabel: 'Expand',
         collapseAriaLabel: 'Collapse',

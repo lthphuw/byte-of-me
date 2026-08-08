@@ -51,8 +51,35 @@ const messages = {
         restore: 'Restore',
         delete: 'Delete',
         deleteForever: 'Delete permanently',
+        share: 'Share',
         showArchived: 'Archived',
         hideArchived: 'Back to notes',
+      },
+      // Read unconditionally by ExplorerDnd and ShareNoteDialog respectively.
+      move: {
+        sharedTitle: 'Move into a shared folder?',
+        sharedDescription:
+          '“{title}” will become visible to {count, plural, one {# person} other {# people}} who can already open the destination.',
+        sharedConfirm: 'Move anyway',
+        sharedCancel: 'Cancel',
+      },
+      share: {
+        title: 'Share “{title}”',
+        descriptionNote:
+          'People you invite can open this note only. Nothing else in your space becomes visible to them.',
+        descriptionFolder:
+          'People you invite can open this folder and everything inside it — including notes you move in later.',
+        emailLabel: 'Email address',
+        emailPlaceholder: 'name@example.com',
+        roleViewer: 'Can view',
+        roleEditor: 'Can edit',
+        invite: 'Invite',
+        pending: 'Pending',
+        accepted: 'Accepted',
+        revoke: 'Remove access',
+        empty: 'Not shared with anyone yet.',
+        loading: 'Loading people…',
+        failed: 'Could not load who has access.',
       },
       status: {
         saving: 'Saving…',
@@ -103,6 +130,8 @@ const messages = {
         description: '“{title}” will be deleted for good. This cannot be undone.',
         descriptionWithChildren:
           '“{title}” and {count, plural, one {its # nested note} other {its # nested notes}} will be deleted for good. This cannot be undone.',
+        descriptionShared:
+          '{count, plural, one {# person} other {# people}} can currently open this. Deleting it removes their access too.',
         confirm: 'Delete permanently',
         cancel: 'Cancel',
       },

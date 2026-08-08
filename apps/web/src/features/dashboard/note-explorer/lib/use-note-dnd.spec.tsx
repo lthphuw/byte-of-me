@@ -21,7 +21,23 @@ import { useNoteDnd } from './use-note-dnd';
 import type { NoteTreeNode } from '@/entities/note';
 
 const messages = {
-  dashboard: { note: { errors: { save: 'Could not save the note.' } } },
+  dashboard: {
+    note: {
+      errors: { save: 'Could not save the note.' },
+      // ExplorerDnd reads this namespace unconditionally, for the
+      // confirmation shown when a drop would expose a note to a shared folder.
+      // Values must match `messages/en.json` EXACTLY: next-intl generates
+      // literal types from the catalogue, so a paraphrase here is a type
+      // error rather than a harmless stand-in.
+      move: {
+        sharedTitle: 'Move into a shared folder?',
+        sharedDescription:
+          '“{title}” will become visible to {count, plural, one {# person} other {# people}} who can already open the destination.',
+        sharedConfirm: 'Move anyway',
+        sharedCancel: 'Cancel',
+      },
+    },
+  },
 } as const;
 
 const AT = new Date('2026-01-01T00:00:00.000Z');

@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
 import { getDescendantCount, noteKeys } from '@/entities/note';
+import { getNoteShareExposure, noteShareKeys } from '@/entities/note-share';
 import { useNoteMutations } from '@/features/dashboard/note-actions/lib/use-note-mutations';
 
 interface DeleteNoteDialogProps {
@@ -62,6 +63,21 @@ export function DeleteNoteDialog({
     staleTime: 0,
   });
 
+  const { data: exposure } = useQuery({
+    queryKey: noteShareKeys.exposure(noteId),
+    queryFn: async () => {
+      const res = await getNoteShareExposure(noteId);
+      if (!res.success) throw new Error(res.errorMsg);
+      return res.data;
+    },
+    enabled: open,
+    // Same reasoning as the count above, and for the same reason it matters
+    // more here than anywhere else: this sentence says whose access is about
+    // to disappear, and a cached one that understates it is wrong in the
+    // direction that costs somebody their document.
+    staleTime: 0,
+  });
+
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
@@ -81,6 +97,15 @@ export function DeleteNoteDialog({
                 })
               : t('delete.description', { title })}
           </AlertDialogDescription>
+
+          {/* A sibling of the description, not a child of it:
+              `AlertDialogDescription` renders a <p>, and a second block
+              element inside one is invalid HTML that React will reparent. */}
+          {exposure && exposure.shareCount > 0 ? (
+            <p className="text-sm text-destructive">
+              {t('delete.descriptionShared', { count: exposure.shareCount })}
+            </p>
+          ) : null}
         </AlertDialogHeader>
 
         <AlertDialogFooter>
