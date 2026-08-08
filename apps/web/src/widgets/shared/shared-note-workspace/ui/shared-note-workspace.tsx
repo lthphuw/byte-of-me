@@ -72,18 +72,23 @@ export function SharedNoteWorkspace({ noteId }: { noteId: string }) {
     <div className="container mx-auto flex flex-1 flex-col gap-4 py-6 md:flex-row md:gap-8">
       {showTree ? (
         <aside className="w-full shrink-0 md:w-64">
-          <Link
-            href="/shared"
-            className="mb-2 block text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
-          >
-            {t('backToInbox')}
-          </Link>
           <SharedNoteTree parentId={data.rootId} activeId={data.id} />
         </aside>
       ) : null}
 
       <main className="flex min-w-0 flex-1 flex-col gap-4">
         <header className="flex flex-col gap-2">
+          {/* Always rendered, never inside the tree block. A single-note share
+              draws no tree, and with the only link to the inbox nested in it a
+              recipient landing straight from an invitation had no way out of
+              the page at all. */}
+          <Link
+            href="/shared"
+            className="w-fit text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
+          >
+            {t('backToInbox')}
+          </Link>
+
           <SharedNoteBreadcrumb noteId={data.id} />
           <h1 className="text-2xl font-semibold tracking-tight">
             {data.title}

@@ -41,28 +41,44 @@ export async function getSharedNoteAncestors(
     return { success: false, errorMsg: 'Not found' };
   }
 
+  // The note IS the share root — a single-note share, or the shared folder
+  // opened at its own top. There is nothing visible above it, so there is
+  // nothing to walk and no query worth paying for.
+  if (access.rootId === parsedId.data) {
+    return { success: true, data: [] };
+  }
+
   try {
     // Owner scoping is inside the walk on every level, for the reason
     // `getNoteAncestors` records: the walk STOPS at the first row that owner
     // does not hold rather than climbing past it and dropping the row later.
     //
-    // The `WHERE a.id <> rootId` on the recursive arm is the extra bound this
-    // version needs: once the walk has emitted the share root it does not
-    // climb beyond it. `depth` counts up from the immediate parent, so
-    // `ORDER BY depth DESC` hands the chain back root-first.
+    // The walk is seeded with the NOTE ITSELF at depth 0 and the bound sits on
+    // the row being climbed FROM (`c.id <> rootId`), so the share root is the
+    // last rung emitted and nothing above it is ever produced. `depth > 0`
+    // then drops the note itself, and `ORDER BY depth DESC` hands the chain
+    // back root-first.
+    //
+    // Seeding with the note's PARENT instead — which this did at first — puts
+    // one rung outside the bound before the guard can apply: for a note whose
+    // parent is already at or above the root, the anchor emitted it anyway and
+    // the recursion climbed the owner's whole tree from there. A single-note
+    // share reported `Onky > Projects > Camera AI > Face-anti spoofing`.
     const rows = await prisma.$queryRaw<AncestorRow[]>`
-      WITH RECURSIVE ancestors AS (
-        SELECT p.id, p.title, p.is_folder, p.parent_id, 1 AS depth
+      WITH RECURSIVE chain AS (
+        SELECT n.id, n.title, n.is_folder, n.parent_id, 0 AS depth
         FROM notes n
-        JOIN notes p ON p.id = n.parent_id AND p.owner_id = ${access.ownerId}
         WHERE n.id = ${parsedId.data} AND n.owner_id = ${access.ownerId}
         UNION ALL
-        SELECT p.id, p.title, p.is_folder, p.parent_id, a.depth + 1
-        FROM ancestors a
-        JOIN notes p ON p.id = a.parent_id AND p.owner_id = ${access.ownerId}
-        WHERE a.id <> ${access.rootId}
+        SELECT p.id, p.title, p.is_folder, p.parent_id, c.depth + 1
+        FROM chain c
+        JOIN notes p ON p.id = c.parent_id AND p.owner_id = ${access.ownerId}
+        WHERE c.id <> ${access.rootId}
       )
-      SELECT id, title, is_folder FROM ancestors ORDER BY depth DESC
+      SELECT id, title, is_folder
+      FROM chain
+      WHERE depth > 0
+      ORDER BY depth DESC
     `;
 
     return {

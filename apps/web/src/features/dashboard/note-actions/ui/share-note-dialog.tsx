@@ -111,7 +111,17 @@ export function ShareNoteDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      {/*
+        `min-w-0` on every child that has to shrink, and it is load-bearing.
+        `DialogContent` is `grid w-full max-w-lg`, and a grid item's default
+        `min-width: auto` means it cannot shrink below its own min-content
+        width. An email address is one unbreakable token, so a long one sized
+        the column past the dialog and pushed `Invite` and `Remove access`
+        outside the panel — measured: 652px of content in a 512px dialog.
+        It also explains why the invite row looked fine until the first grant
+        appeared: nothing had forced the column wide yet.
+      */}
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('title', { title })}</DialogTitle>
           <DialogDescription>
@@ -124,7 +134,7 @@ export function ShareNoteDialog({
         </DialogHeader>
 
         <form
-          className="flex flex-col gap-2 sm:flex-row"
+          className="flex min-w-0 flex-col gap-2 sm:flex-row"
           onSubmit={(event) => {
             event.preventDefault();
             if (email.trim()) invite.mutate();
@@ -171,9 +181,9 @@ export function ShareNoteDialog({
           <p className="text-sm text-muted-foreground">{t('empty')}</p>
         ) : null}
 
-        <ul className="flex flex-col gap-2">
+        <ul className="flex min-w-0 flex-col gap-2">
           {shares.data?.map((share) => (
-            <li key={share.id} className="flex items-center gap-2">
+            <li key={share.id} className="flex min-w-0 items-center gap-2">
               <span className="min-w-0 flex-1 truncate text-sm">
                 {share.email}
               </span>

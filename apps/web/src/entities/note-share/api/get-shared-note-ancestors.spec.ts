@@ -82,6 +82,29 @@ describe('getSharedNoteAncestors', () => {
     expect(walkValues).toContain('owner-1');
   });
 
+  it('returns an empty chain when the note IS the share root', async () => {
+    // The regression this defends. A single-note share, or opening a shared
+    // folder itself, has NOTHING visible above it — the note is the root. The
+    // first version seeded the walk with the note's parent unconditionally and
+    // only guarded the recursive arm, so it emitted a rung already above the
+    // root and then climbed the owner's whole tree from there: a note shared
+    // on its own showed `Onky > Projects > Camera AI > Face-anti spoofing`.
+    //
+    // It survived the original tests because the folder used to exercise them
+    // sat at the top level and had no parent for the seed to find.
+    queryRaw.mockResolvedValueOnce([
+      { root_id: 'note-1', owner_id: 'owner-1', depth: 0, role: 'VIEWER' },
+    ]);
+
+    const res = await getSharedNoteAncestors('note-1');
+
+    expect(res.success).toBe(true);
+    if (!res.success) throw new Error('unreachable');
+    expect(res.data).toEqual([]);
+    // And it does not pay for a walk whose answer is known.
+    expect(queryRaw).toHaveBeenCalledTimes(1);
+  });
+
   it('returns Not found for a note with no grant', async () => {
     queryRaw.mockResolvedValueOnce([]);
 
