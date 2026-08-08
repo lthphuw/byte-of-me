@@ -11,6 +11,7 @@ import {
   parseSharedNoteHref,
   rewriteNoteLinks,
   SHARED_NOTE_HREF_PREFIX,
+  stripUnreachableNoteLinks,
 } from './rewrite-note-links';
 
 function docWithHrefs(...hrefs: string[]): string {
@@ -135,6 +136,42 @@ describe('rewriteNoteLinks', () => {
 
   it('returns the input unchanged when it is not parseable JSON', () => {
     expect(rewriteNoteLinks('not json', 'toShared')).toBe('not json');
+  });
+});
+
+describe('stripUnreachableNoteLinks', () => {
+  const shared = (...hrefs: string[]) =>
+    rewriteNoteLinks(docWithHrefs(...hrefs), 'toShared');
+
+  it('drops a link to a note outside the share', () => {
+    const out = stripUnreachableNoteLinks(
+      shared('/space/notes/inside', '/space/notes/stranger'),
+      ['inside']
+    );
+
+    expect(hrefsIn(out)).toEqual([`${SHARED_NOTE_HREF_PREFIX}inside`]);
+  });
+
+  it('keeps the text of the link it drops', () => {
+    // The author wrote that text into their own document; only the target is
+    // withheld, not the sentence around it.
+    const out = stripUnreachableNoteLinks(shared('/space/notes/stranger'), []);
+
+    expect(out).toContain('"text":"link"');
+  });
+
+  it('leaves external links alone', () => {
+    // They carry no note id, so there is nothing to be unreachable.
+    const out = stripUnreachableNoteLinks(
+      shared('https://example.com', 'mailto:a@b.c'),
+      []
+    );
+
+    expect(hrefsIn(out)).toEqual(['https://example.com', 'mailto:a@b.c']);
+  });
+
+  it('returns the input unchanged when it is not parseable JSON', () => {
+    expect(stripUnreachableNoteLinks('not json', [])).toBe('not json');
   });
 });
 

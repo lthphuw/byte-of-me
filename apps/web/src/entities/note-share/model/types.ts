@@ -77,10 +77,24 @@ export type SharedNoteDetail = Pick<
   rootId: string;
   /**
    * The note ids linked from this document that the caller may actually
-   * reach. Every other link mark in `content` renders as plain text — the
-   * content itself keeps the mark, so an editor save round-trips losslessly.
+   * reach. `content` keeps every mark regardless, so an editor save
+   * round-trips losslessly; `html` below is where the unreachable ones are
+   * already gone.
    */
   linkableIds: string[];
+  /**
+   * The document rendered to HTML, with unreachable note links already
+   * downgraded to plain text.
+   *
+   * Rendered on the SERVER and shipped as a string, which is the pattern
+   * `rich-text.tsx` prescribes for rich text arriving through a server
+   * action: `renderRichTextHtml` pulls in the whole Tiptap extension schema
+   * (~1 MB), and a viewer must never pay for the editor they cannot use.
+   *
+   * Null for an EDITOR, who mounts the real editor over `content` instead and
+   * would only be paying for a render nothing prints.
+   */
+  html: string | null;
 };
 
 /**

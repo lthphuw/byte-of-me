@@ -2,10 +2,17 @@
 
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
+// The directive-free render module, NOT `@byte-of-me/ui` or
+// `./rich-text-editor` — `rich-text.tsx` records that importing the schema
+// from the editor entry registers it as a client reference and ships it.
+import { renderRichTextHtml } from '@byte-of-me/ui/rich-text-render';
 
 import { extractNoteLinkIds } from '@/entities/note';
 import { resolveNoteAccess } from '@/entities/note-share/lib/resolve-note-access';
-import { rewriteNoteLinks } from '@/entities/note-share/model/rewrite-note-links';
+import {
+  rewriteNoteLinks,
+  stripUnreachableNoteLinks,
+} from '@/entities/note-share/model/rewrite-note-links';
 import type { SharedNoteDetail } from '@/entities/note-share/model/types';
 import { requireUser } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
@@ -60,19 +67,31 @@ export async function getSharedNoteById(
       return { success: false, errorMsg: 'Not found' };
     }
 
+    // Rewritten, not filtered — `rewriteNoteLinks` records why an
+    // out-of-scope mark has to stay in the document an editor saves back.
+    const shared = rewriteNoteLinks(note.content, 'toShared');
+    const linkableIds = await resolveLinkableIds({
+      content: note.content,
+      access,
+    });
+
     return {
       success: true,
       data: {
         ...note,
-        // Rewritten, not filtered — `rewriteNoteLinks` records why an
-        // out-of-scope mark has to stay in the document.
-        content: rewriteNoteLinks(note.content, 'toShared'),
+        content: shared,
         role: access.role,
         rootId: access.rootId,
-        linkableIds: await resolveLinkableIds({
-          content: note.content,
-          access,
-        }),
+        linkableIds,
+        // Rendered here, on the server, and only for a viewer. See the field's
+        // own comment: `renderRichTextHtml` drags the whole Tiptap schema in,
+        // and a viewer must never pay for the editor they cannot use.
+        html:
+          access.role === 'EDITOR'
+            ? null
+            : renderRichTextHtml(
+                stripUnreachableNoteLinks(shared, linkableIds)
+              ),
       },
     };
   } catch (error) {

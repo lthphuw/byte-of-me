@@ -1034,6 +1034,8 @@ declare const messages: {
     },
     "note": {
       "notFound": "This note is no longer available.",
+      "expand": "Expand",
+      "collapse": "Collapse",
       "loading": "Loading…",
       "readOnly": "You have view-only access.",
       "backToInbox": "Shared with you",

@@ -31,6 +31,83 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
+/** Walk a parsed Tiptap document, visiting every node exactly once. */
+function walkNodes(doc: unknown, visit: (node: Record<string, unknown>) => void) {
+  const seen = new WeakSet<object>();
+  const stack: unknown[] = [doc];
+
+  while (stack.length > 0) {
+    const node = stack.pop();
+
+    if (Array.isArray(node)) {
+      stack.push(...node);
+      continue;
+    }
+
+    if (!isRecord(node) || seen.has(node)) {
+      continue;
+    }
+    seen.add(node);
+
+    visit(node);
+    stack.push(...Object.values(node));
+  }
+}
+
+/**
+ * Turn every note link the caller cannot reach into plain text.
+ *
+ * Applied to the copy that is RENDERED for a viewer, never to the copy an
+ * editor saves back — `rewriteNoteLinks` explains why removing a mark from
+ * the round-tripped document would destroy the owner's links permanently.
+ *
+ * The mark is dropped rather than merely made unclickable in CSS. A
+ * `pointer-events: none` rule is a styling choice a reader can defeat with
+ * devtools, and the claim being made here is that the target is not reachable
+ * — that has to be true of the markup, not of its presentation.
+ *
+ * Only note links are considered: an external URL or a `mailto:` carries no
+ * id, so `parseSharedNoteHref` returns null and the mark is left alone.
+ */
+export function stripUnreachableNoteLinks(
+  content: string,
+  reachableIds: readonly string[]
+): string {
+  let doc: unknown;
+
+  try {
+    doc = JSON.parse(content);
+  } catch {
+    return content;
+  }
+
+  const reachable = new Set(reachableIds);
+
+  walkNodes(doc, (node) => {
+    if (!Array.isArray(node.marks)) {
+      return;
+    }
+
+    node.marks = node.marks.filter((mark) => {
+      if (!isRecord(mark) || mark.type !== 'link' || !isRecord(mark.attrs)) {
+        return true;
+      }
+
+      const href = mark.attrs.href;
+      if (typeof href !== 'string') {
+        return true;
+      }
+
+      const id = parseSharedNoteHref(href);
+
+      // Not a note link at all, or one that resolves inside the share.
+      return id === null || reachable.has(id);
+    });
+  });
+
+  return JSON.stringify(doc);
+}
+
 /**
  * Remap every note link in a Tiptap document between the owner's route and
  * the shared surface's.
@@ -63,42 +140,26 @@ export function rewriteNoteLinks(
     return content;
   }
 
-  const seen = new WeakSet<object>();
-  const stack: unknown[] = [doc];
-
-  while (stack.length > 0) {
-    const node = stack.pop();
-
-    if (Array.isArray(node)) {
-      stack.push(...node);
-      continue;
+  walkNodes(doc, (node) => {
+    if (node.type !== 'link' || !isRecord(node.attrs)) {
+      return;
     }
 
-    if (!isRecord(node) || seen.has(node)) {
-      continue;
-    }
-    seen.add(node);
-
-    if (node.type === 'link' && isRecord(node.attrs)) {
-      const href = node.attrs.href;
-
-      if (typeof href === 'string') {
-        const id =
-          direction === 'toShared'
-            ? parseNoteHref(href)
-            : parseSharedNoteHref(href);
-
-        if (id) {
-          node.attrs.href =
-            direction === 'toShared'
-              ? `${SHARED_NOTE_HREF_PREFIX}${id}`
-              : `${NOTE_HREF_PREFIX}${id}`;
-        }
-      }
+    const href = node.attrs.href;
+    if (typeof href !== 'string') {
+      return;
     }
 
-    stack.push(...Object.values(node));
-  }
+    const id =
+      direction === 'toShared' ? parseNoteHref(href) : parseSharedNoteHref(href);
+
+    if (id) {
+      node.attrs.href =
+        direction === 'toShared'
+          ? `${SHARED_NOTE_HREF_PREFIX}${id}`
+          : `${NOTE_HREF_PREFIX}${id}`;
+    }
+  });
 
   return JSON.stringify(doc);
 }

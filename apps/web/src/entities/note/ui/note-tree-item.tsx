@@ -198,6 +198,8 @@ export function NoteTreeItem({
       }}
       onStartRename={() => explorer.startRename(node.id)}
       onWarm={warm}
+      expandLabel={t('tree.expandAriaLabel')}
+      collapseLabel={t('tree.collapseAriaLabel')}
       actions={renderActions?.(node)}
     />
   );

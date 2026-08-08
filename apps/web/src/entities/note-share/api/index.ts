@@ -9,3 +9,4 @@ export * from './get-shared-note-children';
 export * from './revoke-note-share';
 export * from './share-note';
 export * from './update-note-share-role';
+export * from './update-shared-note';

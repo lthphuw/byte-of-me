@@ -3,7 +3,6 @@
 import { forwardRef } from 'react';
 import { Button } from '@byte-of-me/ui';
 import { ChevronRight, FileText, Folder, FolderOpen } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 
 import type { NoteTreeNode } from '@/entities/note/model/types';
 import {
@@ -35,6 +34,18 @@ interface NoteRowOwnProps {
   /** Hover/focus prefetch — "about to open this". */
   onWarm: () => void;
   actions?: React.ReactNode;
+  /**
+   * The chevron's accessible name, in both states.
+   *
+   * Passed in rather than translated here, which is the same direction
+   * `NoteExplorerControls` runs in and for the same reason. This row is
+   * presentational, and reaching into `dashboard.note` from inside it made it
+   * silently unusable anywhere that namespace is not mounted — the shared
+   * surface deliberately withholds it, and every row threw MISSING_MESSAGE
+   * until the labels moved out here.
+   */
+  expandLabel: string;
+  collapseLabel: string;
 }
 
 /**
@@ -78,13 +89,13 @@ export const NoteRow = forwardRef<HTMLDivElement, NoteRowProps>(function NoteRow
     onStartRename,
     onWarm,
     actions,
+    expandLabel,
+    collapseLabel,
     className,
     ...rest
   },
   ref
 ) {
-  const t = useTranslations('dashboard.note');
-
   return (
     <div
       ref={ref}
@@ -109,9 +120,7 @@ export const NoteRow = forwardRef<HTMLDivElement, NoteRowProps>(function NoteRow
         size="icon"
         tabIndex={-1}
         className={cn(NOTE_ROW_CHEVRON_CLASS, !hasChildren && 'invisible')}
-        aria-label={
-          isExpanded ? t('tree.collapseAriaLabel') : t('tree.expandAriaLabel')
-        }
+        aria-label={isExpanded ? collapseLabel : expandLabel}
         onClick={(event) => {
           // The row behind this button also selects; expanding must not be
           // read as "the author picked this note".

@@ -1034,6 +1034,8 @@ declare const messages: {
     },
     "note": {
       "notFound": "Ghi chú này không còn khả dụng.",
+      "expand": "Mở rộng",
+      "collapse": "Thu gọn",
       "loading": "Đang tải…",
       "readOnly": "Bạn chỉ có quyền xem.",
       "backToInbox": "Được chia sẻ với bạn",

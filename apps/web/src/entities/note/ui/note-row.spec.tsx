@@ -56,6 +56,8 @@ function renderRow(extra: Record<string, unknown> = {}) {
       <NoteRow
         node={NODE}
         depth={0}
+        expandLabel="Expand"
+        collapseLabel="Collapse"
         isActive={false}
         isSelected={false}
         isExpanded={false}
