@@ -13,6 +13,22 @@ const DEFAULT_DESTINATION = '/dashboard';
 const SIGN_IN_PATH = '/auth/login';
 
 /**
+ * Both defaults above name the OWNER's flow, and neither fits a share
+ * recipient: `/dashboard` bounces anyone who is not the site owner, and the
+ * loop guard has to name `/invite` instead.
+ *
+ * Overrides rather than a second function, so there is still exactly one
+ * place deciding what an absent or hostile `?from=` means — the property this
+ * module's doc comment above exists to protect.
+ */
+interface SanitizeCallbackUrlOptions {
+  /** Where to land when nothing better is known. */
+  defaultDestination?: string;
+  /** This flow's own sign-in page; landing back on it is an immediate loop. */
+  signInPath?: string;
+}
+
+/**
  * Turn an untrusted `?from=` value into a safe, locale-prefixed internal path.
  *
  * Every sign-in entry point funnels through this one function — the email magic
@@ -39,20 +55,27 @@ const SIGN_IN_PATH = '/auth/login';
  */
 export function sanitizeCallbackUrl(
   candidate: string | null | undefined,
-  locale: string
+  locale: string,
+  options: SanitizeCallbackUrlOptions = {}
 ): string {
-  const path = stripLocalePrefix(toInternalPath(candidate));
+  const destination = options.defaultDestination ?? DEFAULT_DESTINATION;
+  const signInPath = options.signInPath ?? SIGN_IN_PATH;
 
-  if (path === SIGN_IN_PATH || path.startsWith(`${SIGN_IN_PATH}/`)) {
-    return `/${locale}${DEFAULT_DESTINATION}`;
+  const path = stripLocalePrefix(toInternalPath(candidate, destination));
+
+  if (path === signInPath || path.startsWith(`${signInPath}/`)) {
+    return `/${locale}${destination}`;
   }
 
   return `/${locale}${path}`;
 }
 
-function toInternalPath(candidate: string | null | undefined): string {
+function toInternalPath(
+  candidate: string | null | undefined,
+  fallback: string
+): string {
   if (!candidate || hasControlCharacter(candidate)) {
-    return DEFAULT_DESTINATION;
+    return fallback;
   }
 
   const isInternalPath =
@@ -60,7 +83,7 @@ function toInternalPath(candidate: string | null | undefined): string {
     !candidate.startsWith('//') &&
     !candidate.startsWith('/\\');
 
-  return isInternalPath ? candidate : DEFAULT_DESTINATION;
+  return isInternalPath ? candidate : fallback;
 }
 
 /**
