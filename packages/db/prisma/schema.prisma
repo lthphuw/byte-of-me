@@ -90,6 +90,9 @@ model User {
   notes             Note[]
   noteLabels        NoteLabel[]
 
+  noteSharesReceived NoteShare[] @relation("NoteShareRecipient")
+  noteSharesSent     NoteShare[] @relation("NoteShareInviter")
+
   @@map("users")
 }
 
@@ -815,6 +818,7 @@ model Note {
   outgoingLinks NoteLink[]    @relation("NoteLinkSource")
   incomingLinks NoteLink[]    @relation("NoteLinkTarget")
   labels        NoteOnLabel[]
+  shares        NoteShare[]
 
   @@index([ownerId, parentId, position], map: "idx_notes_owner_id_parent_id_position")
   @@index([ownerId, updatedAt(sort: Desc)], map: "idx_notes_owner_id_updated_at")
@@ -864,4 +868,45 @@ model NoteOnLabel {
   @@id([noteId, labelId])
   @@index([labelId], map: "idx_note_on_labels_label_id")
   @@map("note_on_labels")
+}
+
+/// A grant of access to one note, or — when that note is a folder — to its
+/// whole subtree.
+///
+/// Inheritance is resolved by climbing the tree at read time
+/// (`resolveNoteAccess`), NEVER materialised into a row per descendant. That
+/// is what makes moving a note into or out of a shared folder correct with
+/// nothing to synchronise, and what leaves a delete no orphaned grant to
+/// clean up — the cascade below takes them.
+model NoteShare {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt      @map("updated_at")
+
+  noteId String @map("note_id")
+  note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  /// The grant is bound to the ADDRESS, not to a `User` row: it is issued
+  /// before the recipient has ever signed in, and may be issued to someone who
+  /// never does. Always written through `normalizeEmail()`, which is also what
+  /// the lookup compares against — see `shared/lib/auth/normalize-email.ts`.
+  email String
+
+  /// Claimed on the recipient's first visit to the shared surface. Null means
+  /// the invitation is still pending, which is what the owner's dialog shows.
+  recipientId String? @map("recipient_id")
+  recipient   User?   @relation("NoteShareRecipient", fields: [recipientId], references: [id], onDelete: SetNull)
+
+  /// "VIEWER" | "EDITOR". A String, matching `User.role`, rather than
+  /// introducing this schema's first enum. Readers narrow it fail-closed: only
+  /// an exact "EDITOR" grants write, so a value written by a future migration
+  /// this code has not seen reads as VIEWER.
+  role String @default("VIEWER")
+
+  invitedById String @map("invited_by_id")
+  invitedBy   User   @relation("NoteShareInviter", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  @@unique([noteId, email])
+  @@index([email], map: "idx_note_shares_email")
+  @@map("note_shares")
 }
