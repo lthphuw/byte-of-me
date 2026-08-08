@@ -590,6 +590,7 @@
         "restore": "Khôi phục",
         "delete": "Xóa",
         "deleteForever": "Xóa vĩnh viễn",
+        "share": "Chia sẻ",
         "showArchived": "Đã lưu trữ",
         "hideArchived": "Về danh sách ghi chú"
       },
@@ -709,6 +710,22 @@
         "descriptionWithChildren": "“{title}” cùng {count, plural, other {# ghi chú con}} sẽ bị xóa hẳn. Không thể hoàn tác.",
         "confirm": "Xóa vĩnh viễn",
         "cancel": "Hủy"
+      },
+      "share": {
+        "title": "Chia sẻ “{title}”",
+        "descriptionNote": "Người được mời chỉ mở được ghi chú này. Không có gì khác trong space của bạn hiện ra với họ.",
+        "descriptionFolder": "Người được mời mở được thư mục này và mọi thứ bên trong — kể cả ghi chú bạn chuyển vào sau này.",
+        "emailLabel": "Địa chỉ email",
+        "emailPlaceholder": "ten@example.com",
+        "roleViewer": "Chỉ xem",
+        "roleEditor": "Được sửa",
+        "invite": "Mời",
+        "pending": "Chờ nhận",
+        "accepted": "Đã nhận",
+        "revoke": "Thu hồi quyền",
+        "empty": "Chưa chia sẻ với ai.",
+        "loading": "Đang tải danh sách…",
+        "failed": "Không tải được danh sách người có quyền."
       },
       "links": {
         "title": "Liên kết",

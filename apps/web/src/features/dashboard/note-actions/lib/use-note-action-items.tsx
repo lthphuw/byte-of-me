@@ -8,6 +8,7 @@ import {
   Pencil,
   Pin,
   PinOff,
+  Share2,
   Trash2,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -52,6 +53,8 @@ export interface NoteActionsTarget {
   onRemoved?: (noteId: string) => void;
   /** Opens the permanent-delete confirmation, which the caller owns. */
   onRequestDelete: () => void;
+  /** Opens the share dialog, which the caller owns for the same reason. */
+  onRequestShare: () => void;
   /** Called when the rename item is chosen, before `onRename`. */
   onRenameRequested?: () => void;
 }
@@ -74,6 +77,7 @@ export function useNoteActionItems({
   onRename,
   onRemoved,
   onRequestDelete,
+  onRequestShare,
   onRenameRequested,
 }: NoteActionsTarget): NoteActionItem[] {
   const t = useTranslations('dashboard.note');
@@ -119,6 +123,20 @@ export function useNoteActionItems({
         },
       });
     }
+
+    // Live rows only. An archived note is in the trash and `resolveNoteAccess`
+    // refuses it anyway, so offering to share one would open a dialog whose
+    // invitations lead nowhere until it is restored.
+    items.push({
+      id: 'share',
+      icon: <Share2 className="mr-2 size-4" />,
+      label: t('actions.share'),
+      separatorBefore: true,
+      // Opened by the CALLER, from state that outlives this menu — see the
+      // delete item below for why a dialog mounted inside a closing Radix menu
+      // loses its focus trap.
+      onSelect: onRequestShare,
+    });
 
     items.push({
       id: 'pin',

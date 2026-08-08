@@ -15,14 +15,17 @@ import { useTranslations } from 'next-intl';
 import type { NoteActionsTarget } from '@/features/dashboard/note-actions/lib/use-note-action-items';
 import { DeleteNoteDialog } from '@/features/dashboard/note-actions/ui/delete-note-dialog';
 import { NoteMenuItems } from '@/features/dashboard/note-actions/ui/note-menu-items';
+import { ShareNoteDialog } from '@/features/dashboard/note-actions/ui/share-note-dialog';
 import { cn } from '@/shared/lib/utils';
 
 export type NoteActionsMenuProps = Omit<
   NoteActionsTarget,
-  'onRequestDelete' | 'onRenameRequested'
+  'onRequestDelete' | 'onRequestShare' | 'onRenameRequested'
 > & {
-  /** Shown in the delete confirmation. */
+  /** Shown in the delete confirmation and the share dialog. */
   title: string;
+  /** Changes the share dialog's wording; a folder grant covers its subtree. */
+  isFolder: boolean;
   className?: string;
 };
 
@@ -37,11 +40,13 @@ export type NoteActionsMenuProps = Omit<
  */
 export function NoteActionsMenu({
   title,
+  isFolder,
   className,
   ...target
 }: NoteActionsMenuProps) {
   const t = useTranslations('dashboard.note');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   /**
    * Set for exactly one close, by the rename item.
@@ -88,6 +93,7 @@ export function NoteActionsMenu({
             Item={DropdownMenuItem}
             Separator={DropdownMenuSeparator}
             onRequestDelete={() => setConfirmOpen(true)}
+            onRequestShare={() => setShareOpen(true)}
             onRenameRequested={() => {
               renameRequested.current = true;
             }}
@@ -101,6 +107,14 @@ export function NoteActionsMenu({
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
         onRemoved={target.onRemoved}
+      />
+
+      <ShareNoteDialog
+        noteId={target.noteId}
+        title={title}
+        isFolder={isFolder}
+        open={shareOpen}
+        onOpenChange={setShareOpen}
       />
     </>
   );

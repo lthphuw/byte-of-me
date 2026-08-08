@@ -46,6 +46,7 @@ export function NoteEditorActions({
     <NoteActionsMenu
       noteId={noteId}
       title={note?.title ?? t('untitled')}
+      isFolder={note?.isFolder ?? false}
       isArchived={note?.archivedAt != null}
       isPinned={note?.isPinned ?? false}
       onCreatedInside={onCreatedInside}

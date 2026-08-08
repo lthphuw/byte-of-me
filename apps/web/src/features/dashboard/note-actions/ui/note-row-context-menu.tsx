@@ -13,12 +13,15 @@ import {
 import type { NoteActionsTarget } from '@/features/dashboard/note-actions/lib/use-note-action-items';
 import { DeleteNoteDialog } from '@/features/dashboard/note-actions/ui/delete-note-dialog';
 import { NoteMenuItems } from '@/features/dashboard/note-actions/ui/note-menu-items';
+import { ShareNoteDialog } from '@/features/dashboard/note-actions/ui/share-note-dialog';
 
 type NoteRowContextMenuProps = Omit<
   NoteActionsTarget,
-  'onRequestDelete' | 'onRenameRequested'
+  'onRequestDelete' | 'onRequestShare' | 'onRenameRequested'
 > & {
   title: string;
+  /** Changes the share dialog's wording; a folder grant covers its subtree. */
+  isFolder: boolean;
   children: React.ReactNode;
 };
 
@@ -38,10 +41,12 @@ type NoteRowContextMenuProps = Omit<
  */
 export function NoteRowContextMenu({
   title,
+  isFolder,
   children,
   ...target
 }: NoteRowContextMenuProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const renameRequested = useRef(false);
   // `(pointer: coarse)` rather than a width breakpoint: what matters is the
   // input device, not the screen. A tablet with a mouse should keep the menu; a
@@ -69,6 +74,7 @@ export function NoteRowContextMenu({
             Item={ContextMenuItem}
             Separator={ContextMenuSeparator}
             onRequestDelete={() => setConfirmOpen(true)}
+            onRequestShare={() => setShareOpen(true)}
             onRenameRequested={() => {
               renameRequested.current = true;
             }}
@@ -82,6 +88,14 @@ export function NoteRowContextMenu({
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
         onRemoved={target.onRemoved}
+      />
+
+      <ShareNoteDialog
+        noteId={target.noteId}
+        title={title}
+        isFolder={isFolder}
+        open={shareOpen}
+        onOpenChange={setShareOpen}
       />
     </>
   );

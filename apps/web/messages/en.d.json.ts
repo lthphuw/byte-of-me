@@ -593,6 +593,7 @@ declare const messages: {
         "restore": "Restore",
         "delete": "Delete",
         "deleteForever": "Delete permanently",
+        "share": "Share",
         "showArchived": "Archived",
         "hideArchived": "Back to notes"
       },
@@ -712,6 +713,22 @@ declare const messages: {
         "descriptionWithChildren": "“{title}” and {count, plural, one {its # nested note} other {its # nested notes}} will be deleted for good. This cannot be undone.",
         "confirm": "Delete permanently",
         "cancel": "Cancel"
+      },
+      "share": {
+        "title": "Share “{title}”",
+        "descriptionNote": "People you invite can open this note only. Nothing else in your space becomes visible to them.",
+        "descriptionFolder": "People you invite can open this folder and everything inside it — including notes you move in later.",
+        "emailLabel": "Email address",
+        "emailPlaceholder": "name@example.com",
+        "roleViewer": "Can view",
+        "roleEditor": "Can edit",
+        "invite": "Invite",
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "revoke": "Remove access",
+        "empty": "Not shared with anyone yet.",
+        "loading": "Loading people…",
+        "failed": "Could not load who has access."
       },
       "links": {
         "title": "Links",

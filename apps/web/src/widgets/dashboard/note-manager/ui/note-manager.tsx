@@ -191,6 +191,7 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
             <NoteActionsMenu
               noteId={node.id}
               title={node.title}
+              isFolder={node.isFolder}
               isArchived={node.archivedAt !== null}
               isPinned={node.isPinned}
               onCreatedInside={openNote}
@@ -207,6 +208,7 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
             <NoteRowContextMenu
               noteId={node.id}
               title={node.title}
+              isFolder={node.isFolder}
               isArchived={node.archivedAt !== null}
               isPinned={node.isPinned}
               onCreatedInside={openNote}
