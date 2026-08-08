@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { env } from '@/shared/config/env';
+import { normalizeEmail } from '@/shared/lib/auth/normalize-email';
 
 /**
  * The single source of truth for "is this address the site owner's."
@@ -23,7 +24,11 @@ import { env } from '@/shared/config/env';
  *
  * Comparison is case-insensitive and trimmed: providers vary in how they
  * present an address, and a case difference locking the owner out of their
- * own dashboard would be a silent, confusing failure.
+ * own dashboard would be a silent, confusing failure. That rule now lives in
+ * `normalizeEmail()`, one level further out, because note-share grants key on
+ * an address too — this gate and the grant lookup have to agree about what
+ * "the same address" means, and the only way to guarantee that is to leave
+ * them one implementation to disagree over.
  *
  * It lives in its own module rather than in `./session.ts` because `./auth.ts`
  * needs it too, and `./session.ts` already imports `./auth.ts` — putting it
@@ -32,8 +37,8 @@ import { env } from '@/shared/config/env';
  * delicate.
  */
 export function isSiteOwnerEmail(email: string | null | undefined): boolean {
-  const ownerEmail = (env.OWNER_EMAIL ?? env.EMAIL).trim().toLowerCase();
-  const candidate = email?.trim().toLowerCase();
+  const ownerEmail = normalizeEmail(env.OWNER_EMAIL ?? env.EMAIL);
+  const candidate = normalizeEmail(email);
 
   return !!candidate && candidate === ownerEmail;
 }

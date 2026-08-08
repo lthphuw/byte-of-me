@@ -271,6 +271,13 @@ plugin({
       const { sanitizeCallbackUrl } = await import(
         '@/shared/lib/auth/callback-url'
       );
+      // Same reasoning again: `normalizeEmail` is what `isSiteOwnerEmail`
+      // above and every note-share grant lookup compare through, so a
+      // hand-copied stub that stopped trimming would let a spec "prove" a
+      // guard that no longer matches production.
+      const { normalizeEmail } = await import(
+        '@/shared/lib/auth/normalize-email'
+      );
       const { ADMIN_OAUTH_PROVIDER_IDS, isAdminOAuthProviderId } = await import(
         '@/shared/lib/auth/admin-oauth-providers'
       );
@@ -286,6 +293,7 @@ plugin({
             testUser = user;
           },
           isSiteOwnerEmail,
+          normalizeEmail,
           sanitizeCallbackUrl,
           ADMIN_OAUTH_PROVIDER_IDS,
           isAdminOAuthProviderId,
