@@ -56,19 +56,34 @@ export const PROTECTED_MESSAGE_NAMESPACES = [
 export const PRINT_MESSAGE_NAMESPACES = ['dashboard'] as const;
 
 /**
- * The share surfaces: `/invite` and everything under `/shared`.
+ * Everything under `/shared` — the recipient's reading surface.
  *
- * One list rather than two identical ones — both groups render the same
- * chrome and read the same `share` namespace, and two lists that must stay
- * equal are two lists that eventually will not. `dashboard` is deliberately
- * absent: a recipient is not an admin, and shipping that namespace to them
- * would leak the CMS's entire vocabulary into a guest's RSC payload.
+ * `dashboard` is deliberately absent: a recipient is not an admin, and
+ * shipping that namespace would put the CMS's entire vocabulary into a
+ * guest's RSC payload.
  */
 export const SHARE_MESSAGE_NAMESPACES = [
   'components',
   'error',
   'global',
   'share',
+] as const;
+
+/**
+ * `/invite`, the recipient's sign-in screen.
+ *
+ * The share list plus `auth`, and that addition is not cosmetic: the OAuth
+ * buttons are the ones the public comment modal uses and they read
+ * `auth.signInWithGithub` / `auth.signInWithGoogle` from inside. Without the
+ * namespace both rendered their raw key path — a sign-in page telling the
+ * visitor to press `auth.signInWithGithub`.
+ *
+ * Kept separate from the list above rather than widening it, because the
+ * reading surface has no sign-in form on it and no reason to carry the copy.
+ */
+export const INVITE_MESSAGE_NAMESPACES = [
+  ...SHARE_MESSAGE_NAMESPACES,
+  'auth',
 ] as const;
 
 /**

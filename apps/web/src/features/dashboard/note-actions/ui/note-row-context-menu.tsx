@@ -14,6 +14,7 @@ import type { NoteActionsTarget } from '@/features/dashboard/note-actions/lib/us
 import { DeleteNoteDialog } from '@/features/dashboard/note-actions/ui/delete-note-dialog';
 import { NoteMenuItems } from '@/features/dashboard/note-actions/ui/note-menu-items';
 import { ShareNoteDialog } from '@/features/dashboard/note-actions/ui/share-note-dialog';
+import { isModalOpen } from '@/shared/lib/is-modal-open';
 
 type NoteRowContextMenuProps = Omit<
   NoteActionsTarget,
@@ -58,7 +59,23 @@ export function NoteRowContextMenu({
   return (
     <>
       <ContextMenu>
-        <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
+        {/*
+          `onContextMenu` is intercepted rather than left to Radix, for the
+          same invariant `isModalOpen` was written for: a dialog owns the
+          input while it is open. Observed — with the share dialog open, a
+          right-click ANYWHERE on the page (the editor pane, the empty space
+          beside it) reopened this row's menu on top of the dialog, offering
+          Archive and Delete for a note the author was not even looking at.
+          Radix's own dismissable layer does not cover the context menu here.
+        */}
+        <ContextMenuTrigger
+          asChild
+          onContextMenu={(event) => {
+            if (isModalOpen()) event.preventDefault();
+          }}
+        >
+          {children}
+        </ContextMenuTrigger>
         <ContextMenuContent
           className="w-48"
           // See `NoteActionsMenu` for why a rename has to suppress the focus

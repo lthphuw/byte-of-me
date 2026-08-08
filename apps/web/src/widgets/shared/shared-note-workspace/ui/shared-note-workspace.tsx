@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { RichTextHtml } from '@byte-of-me/ui/rich-text-html';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { Folder } from 'lucide-react';
+import { useSelectedLayoutSegment } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -21,25 +23,39 @@ const AUTOSAVE_DELAY_MS = 800;
 /**
  * One shared note, with the tree of its share root beside it.
  *
- * Mounted per page rather than per layout: each share opens its own root, so
- * unlike the owner's workspace there is no cross-note tree state worth
- * preserving across a change of `[id]`.
+ * Mounted from `notes/layout.tsx`, NOT from the page — a layout survives a
+ * change of child segment and a page does not. Mounting it in the page meant
+ * every click on a sibling note tore down the tree, the breadcrumb and the
+ * document together and refetched each level, which reads as the whole screen
+ * reloading to move between two notes in the same shared folder.
  */
-export function SharedNoteWorkspace({ noteId }: { noteId: string }) {
+export function SharedNoteWorkspace() {
   const t = useTranslations('share.note');
+  // The segment directly below the layout that mounts this. Reading it here
+  // rather than taking a prop is what lets the layout stay mounted across a
+  // note switch — see `notes/layout.tsx`.
+  const noteId = useSelectedLayoutSegment();
 
   const note = useQuery({
-    queryKey: noteShareKeys.detail(noteId),
+    queryKey: noteShareKeys.detail(noteId ?? ''),
     queryFn: async () => {
-      const res = await getSharedNoteById(noteId);
+      const res = await getSharedNoteById(noteId ?? '');
       if (!res.success) throw new Error(res.errorMsg);
       return res.data;
     },
+    enabled: noteId !== null,
     // The editor writes through this same key, so a refetch around a
     // debounced save is exactly the loop `use-note-editor-autosave` documents
     // at length. Nothing else changes this note under the recipient.
     refetchOnWindowFocus: false,
   });
+
+  // `/shared/notes` with no id below it. The layout renders on that URL too,
+  // and without this the query would fire for an empty id and report the
+  // note as missing.
+  if (noteId === null) {
+    return null;
+  }
 
   if (note.isPending) {
     return (
@@ -71,7 +87,15 @@ export function SharedNoteWorkspace({ noteId }: { noteId: string }) {
   return (
     <div className="container mx-auto flex flex-1 flex-col gap-4 py-6 md:flex-row md:gap-8">
       {showTree ? (
-        <aside className="w-full shrink-0 md:w-64">
+        <aside className="flex w-full shrink-0 flex-col gap-2 md:w-64">
+          {/* Names what was actually shared. The breadcrumb stops at the root
+              and says nothing about what is above it — correct, but it left
+              the recipient with a path and no idea where it began. */}
+          <p className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Folder className="size-3.5 shrink-0" />
+            <span className="truncate font-medium">{data.rootTitle}</span>
+          </p>
+
           <SharedNoteTree parentId={data.rootId} activeId={data.id} />
         </aside>
       ) : null}

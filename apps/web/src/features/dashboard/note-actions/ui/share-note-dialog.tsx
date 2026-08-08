@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from '@byte-of-me/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -161,7 +162,15 @@ export function ShareNoteDialog({
                 <SelectItem value="EDITOR">{t('roleEditor')}</SelectItem>
               </SelectContent>
             </Select>
+            {/* The spinner, not just the disabled state. Inviting sends mail,
+                so it is the slowest button in the app — several seconds when
+                the SMTP host is unhappy — and a button that only greys out
+                reads as "nothing happened", which is what invites a second
+                click on a request already in flight. */}
             <Button type="submit" disabled={invite.isPending}>
+              {invite.isPending ? (
+                <Loader2 className="mr-2 size-4 animate-spin" />
+              ) : null}
               {t('invite')}
             </Button>
           </div>
@@ -192,6 +201,11 @@ export function ShareNoteDialog({
               </span>
               <Select
                 value={share.role}
+                // Pending state is matched to THIS row, not to the mutation as
+                // a whole: `changeRole.isPending` is true for whichever row is
+                // in flight, and using it bare would freeze every row's select
+                // while one of them saved.
+                disabled={changeRole.variables?.shareId === share.id && changeRole.isPending}
                 onValueChange={(next) =>
                   changeRole.mutate({
                     shareId: share.id,
@@ -212,9 +226,13 @@ export function ShareNoteDialog({
                 variant="ghost"
                 size="sm"
                 className="shrink-0 text-destructive"
-                disabled={revoke.isPending}
+                // Same per-row scoping as the select above.
+                disabled={revoke.variables === share.id && revoke.isPending}
                 onClick={() => revoke.mutate(share.id)}
               >
+                {revoke.variables === share.id && revoke.isPending ? (
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                ) : null}
                 {t('revoke')}
               </Button>
             </li>

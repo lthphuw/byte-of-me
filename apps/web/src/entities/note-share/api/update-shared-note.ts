@@ -109,6 +109,11 @@ export async function updateSharedNote(
         content: rewriteNoteLinks(note.content, 'toShared'),
         role: access.role,
         rootId: access.rootId,
+        // The save response is not what draws the shell — `getSharedNoteById`
+        // is, and its value is already on screen. Echoing this note's own
+        // label keeps the type honest without a second read per keystroke.
+        rootTitle: note.title,
+        rootIsFolder: note.isFolder,
         // Empty on a save, deliberately. The client already holds the set from
         // its initial `getSharedNoteById`, and a save cannot make a target
         // reachable that was not already — recomputing it would put a second

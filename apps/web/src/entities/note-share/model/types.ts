@@ -76,6 +76,16 @@ export type SharedNoteDetail = Pick<
   role: NoteShareRole;
   rootId: string;
   /**
+   * The share root's own title, and whether it is a folder.
+   *
+   * The recipient otherwise had no way to tell WHAT they had been given: the
+   * breadcrumb stops at the root and deliberately does not name anything
+   * above it, so a note two levels down inside a shared folder showed a path
+   * with no indication of where that path began.
+   */
+  rootTitle: string;
+  rootIsFolder: boolean;
+  /**
    * The note ids linked from this document that the caller may actually
    * reach. `content` keeps every mark regardless, so an editor save
    * round-trips losslessly; `html` below is where the unreachable ones are

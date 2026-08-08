@@ -10,6 +10,7 @@ import {
 import { FolderPlus, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { isModalOpen } from '@/shared/lib/is-modal-open';
 import { cn } from '@/shared/lib/utils';
 
 interface ExplorerBlankMenuProps {
@@ -88,7 +89,15 @@ export function ExplorerBlankMenu({
 
   return (
     <ContextMenu>
-      <ContextMenuTrigger className={surfaceClass} onMouseDown={onMouseDown}>
+      {/* A dialog owns the input while it is open — see `NoteRowContextMenu`
+          for the same guard and what it was observed doing without one. */}
+      <ContextMenuTrigger
+        className={surfaceClass}
+        onMouseDown={onMouseDown}
+        onContextMenu={(event) => {
+          if (isModalOpen()) event.preventDefault();
+        }}
+      >
         {children}
       </ContextMenuTrigger>
 

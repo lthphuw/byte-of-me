@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
 
-import { SharedNoteWorkspace } from '@/widgets/shared/shared-note-workspace';
-
 /**
- * A STATIC title, deliberately — unlike `space/notes/[id]`, which resolves
- * the note's own through `getNoteTitle`.
+ * A STATIC title, deliberately — unlike `space/notes/[id]`, which resolves the
+ * note's own through `getNoteTitle`.
  *
  * Metadata is produced before any access check has run, so resolving a title
  * here would hand one to anyone who guessed an id, through the browser tab of
@@ -23,17 +21,11 @@ export const metadata: Metadata = {
 };
 
 /**
- * The workspace is mounted in the PAGE here, not in the layout as
- * `space/notes` does. That layout exists to survive a change of `[id]` and
- * keep the tree's expansion state; here each share opens its own root and the
- * tree is scoped to it, so there is no cross-note state worth preserving.
+ * An open shared note — as a URL and a tab label, not as a render. The
+ * workspace that draws it is mounted one level up in `notes/layout.tsx` and
+ * reads this segment through `useSelectedLayoutSegment()`, precisely so that
+ * opening a second note does not tear the first one's surroundings down.
  */
-export default async function SharedNotePage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-
-  return <SharedNoteWorkspace noteId={id} />;
+export default function SharedNotePage() {
+  return null;
 }

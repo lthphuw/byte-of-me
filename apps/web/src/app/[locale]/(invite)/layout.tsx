@@ -1,7 +1,10 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 
-import { pickMessages, SHARE_MESSAGE_NAMESPACES } from '@/shared/i18n/messages';
+import {
+  INVITE_MESSAGE_NAMESPACES,
+  pickMessages,
+} from '@/shared/i18n/messages';
 import { redirect } from '@/shared/i18n/navigation';
 import { getAuthenticatedUser } from '@/shared/lib/auth';
 
@@ -37,7 +40,7 @@ export default async function InviteLayout({
   // `overflow-hidden` so `position: sticky` still works in anything below.
   return (
     <NextIntlClientProvider
-      messages={pickMessages(await getMessages(), SHARE_MESSAGE_NAMESPACES)}
+      messages={pickMessages(await getMessages(), INVITE_MESSAGE_NAMESPACES)}
     >
       <div className="flex min-h-screen flex-col overflow-x-clip">
         <main className="container flex flex-1 flex-col">{children}</main>
