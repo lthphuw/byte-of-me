@@ -1013,6 +1013,38 @@ declare const messages: {
     "accessDenied": "Tài khoản đó không có quyền truy cập dashboard này.",
     "signInFailed": "Không thể hoàn tất đăng nhập. Vui lòng thử lại."
   },
+  "share": {
+    "invite": {
+      "title": "Mở ghi chú được chia sẻ",
+      "description": "Đăng nhập bằng đúng địa chỉ email đã được chia sẻ. Link gửi tới địa chỉ khác sẽ không mở được.",
+      "emailPlaceholder": "ten@example.com",
+      "submit": "Gửi link cho tôi",
+      "sent": "Nếu địa chỉ đó đã được mời, link đăng nhập đang trên đường tới. Nhớ kiểm tra cả hộp thư rác.",
+      "failed": "Có lỗi xảy ra. Vui lòng thử lại.",
+      "orContinueWith": "Hoặc tiếp tục với"
+    },
+    "inbox": {
+      "title": "Được chia sẻ với bạn",
+      "description": "Những ghi chú và thư mục người khác cho bạn quyền truy cập.",
+      "empty": "Chưa có gì được chia sẻ với bạn.",
+      "failed": "Không tải được danh sách được chia sẻ.",
+      "sharedBy": "Chia sẻ bởi {owner}",
+      "roleViewer": "Chỉ xem",
+      "roleEditor": "Được sửa"
+    },
+    "note": {
+      "notFound": "Ghi chú này không còn khả dụng.",
+      "loading": "Đang tải…",
+      "readOnly": "Bạn chỉ có quyền xem.",
+      "backToInbox": "Được chia sẻ với bạn",
+      "saving": "Đang lưu…",
+      "saved": "Đã lưu",
+      "saveFailed": "Chưa lưu được",
+      "outOfScopeLink": "Link này trỏ ra ngoài phạm vi được chia sẻ với bạn.",
+      "emptyFolder": "Thư mục này trống.",
+      "selectNote": "Chọn một ghi chú."
+    }
+  },
   "email": {
     "signIn": {
       "title": "Đăng nhập vào tài khoản",

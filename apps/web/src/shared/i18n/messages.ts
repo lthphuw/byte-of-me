@@ -56,6 +56,22 @@ export const PROTECTED_MESSAGE_NAMESPACES = [
 export const PRINT_MESSAGE_NAMESPACES = ['dashboard'] as const;
 
 /**
+ * The share surfaces: `/invite` and everything under `/shared`.
+ *
+ * One list rather than two identical ones — both groups render the same
+ * chrome and read the same `share` namespace, and two lists that must stay
+ * equal are two lists that eventually will not. `dashboard` is deliberately
+ * absent: a recipient is not an admin, and shipping that namespace to them
+ * would leak the CMS's entire vocabulary into a guest's RSC payload.
+ */
+export const SHARE_MESSAGE_NAMESPACES = [
+  'components',
+  'error',
+  'global',
+  'share',
+] as const;
+
+/**
  * Narrow a resolved catalogue to the given top-level namespaces. Kept inline
  * rather than pulling in a `pick` dependency; missing namespaces are skipped so
  * a locale file that lags behind `en.json` still renders.

@@ -1010,6 +1010,38 @@
     "accessDenied": "That account is not authorized to access this dashboard.",
     "signInFailed": "Sign in could not be completed. Please try again."
   },
+  "share": {
+    "invite": {
+      "title": "Open a shared note",
+      "description": "Sign in with the email address the note was shared with. A link sent to any other address will not open it.",
+      "emailPlaceholder": "name@example.com",
+      "submit": "Send me a link",
+      "sent": "If that address has been invited, a sign-in link is on its way. Check your spam folder too.",
+      "failed": "Something went wrong. Please try again.",
+      "orContinueWith": "Or continue with"
+    },
+    "inbox": {
+      "title": "Shared with you",
+      "description": "Notes and folders other people have given you access to.",
+      "empty": "Nothing has been shared with you yet.",
+      "failed": "Could not load what has been shared with you.",
+      "sharedBy": "Shared by {owner}",
+      "roleViewer": "Can view",
+      "roleEditor": "Can edit"
+    },
+    "note": {
+      "notFound": "This note is no longer available.",
+      "loading": "Loading…",
+      "readOnly": "You have view-only access.",
+      "backToInbox": "Shared with you",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "saveFailed": "Not saved",
+      "outOfScopeLink": "This link points outside what was shared with you.",
+      "emptyFolder": "This folder is empty.",
+      "selectNote": "Select a note."
+    }
+  },
   "email": {
     "signIn": {
       "title": "Sign in to your account",
