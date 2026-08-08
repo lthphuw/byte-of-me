@@ -11,11 +11,22 @@
  * wholesale, matching `get-note-ancestors.spec.ts`.
  */
 import { prisma } from '@byte-of-me/db';
-import { beforeAll, beforeEach, describe, expect, it, mock } from 'bun:test';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+} from 'bun:test';
 
 import type * as ResolveNoteAccessModule from './resolve-note-access';
 
-import { setTestUser } from '@/shared/lib/auth/set-test-user.test-helper';
+import {
+  resetTestUser,
+  setTestUser,
+} from '@/shared/lib/auth/set-test-user.test-helper';
 
 let resolveNoteAccess: typeof ResolveNoteAccessModule.resolveNoteAccess;
 
@@ -37,6 +48,11 @@ describe('resolveNoteAccess', () => {
     queryRaw.mockReset().mockResolvedValue([]);
     setTestUser(RECIPIENT);
   });
+
+  // The stub holds ONE identity for the whole `bun test` process. Leaving it
+  // as a non-owner makes `requireAdmin()` throw in every spec that runs after
+  // this file — see `resetTestUser`.
+  afterAll(resetTestUser);
 
   it('resolves a direct grant on the note itself', async () => {
     queryRaw.mockResolvedValue([

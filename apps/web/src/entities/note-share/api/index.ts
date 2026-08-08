@@ -1,3 +1,5 @@
-// Filled by the actions that follow. Explicitly empty rather than absent so
-// the slice barrel below can star it from the first commit.
-export {};
+export * from './get-note-share-exposure';
+export * from './get-note-shares';
+export * from './revoke-note-share';
+export * from './share-note';
+export * from './update-note-share-role';

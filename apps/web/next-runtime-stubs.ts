@@ -223,11 +223,13 @@ plugin({
     // `getAuthenticatedAdmin` (owner role + owner identity). A stub that
     // matched on role alone would let every note spec pass against a guard
     // that no longer exists.
-    let testUser: TestUser | null = {
+    const DEFAULT_TEST_USER: TestUser = {
       id: 'admin-1',
       role: 'ADMIN',
       email: env.OWNER_EMAIL ?? env.EMAIL,
     };
+
+    let testUser: TestUser | null = { ...DEFAULT_TEST_USER };
 
     // `build.module` accepts an async factory, and that factory runs lazily
     // at *resolution* time (when something first imports `@/shared/lib/auth`),
@@ -291,6 +293,26 @@ plugin({
         exports: {
           __setTestUser: (user: TestUser | null) => {
             testUser = user;
+          },
+          /**
+           * Put the identity back to the site owner.
+           *
+           * `testUser` is a single mutable shared by every spec in the
+           * process, so a file that switches to a non-owner and does not put
+           * it back leaves `requireAdmin()` throwing for every spec that runs
+           * after it — an "Unauthorized" thrown from a completely unrelated
+           * action, with nothing pointing at the file that caused it. That
+           * happened the first time a note-share spec needed a non-owner
+           * caller. Any spec calling `__setTestUser` must pair it with this
+           * in `afterAll`.
+           *
+           * It restores the constant above rather than a caller-supplied
+           * value so no spec can hand-copy the default identity and drift
+           * from it — the same argument this file makes about
+           * `isSiteOwnerEmail`.
+           */
+          __resetTestUser: () => {
+            testUser = { ...DEFAULT_TEST_USER };
           },
           isSiteOwnerEmail,
           normalizeEmail,

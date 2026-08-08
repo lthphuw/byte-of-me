@@ -9,6 +9,7 @@ export interface TestUser {
 
 interface StubbedAuthBarrel {
   __setTestUser: (user: TestUser | null) => void;
+  __resetTestUser: () => void;
 }
 
 /**
@@ -32,3 +33,18 @@ interface StubbedAuthBarrel {
  */
 export const setTestUser = (authBarrel as unknown as StubbedAuthBarrel)
   .__setTestUser;
+
+/**
+ * Put the identity back to the site owner. **Every spec that calls
+ * `setTestUser` must call this in `afterAll`.**
+ *
+ * `bun test` runs every spec file in one process and the stub holds a single
+ * mutable identity, so a file that switches to a non-owner and does not
+ * restore it leaves `requireAdmin()` throwing for every spec that runs after
+ * it. The symptom is an "Unauthorized" raised from an unrelated action, in a
+ * file that passes perfectly well on its own — which is exactly how it was
+ * found: six note-share specs green in isolation, sixty-four unrelated ones
+ * red in the full run.
+ */
+export const resetTestUser = (authBarrel as unknown as StubbedAuthBarrel)
+  .__resetTestUser;

@@ -996,6 +996,13 @@ declare const messages: {
       "button": "Sign in",
       "expire": "This link will expire in 24 hours.",
       "ignore": "If you did not request this email, you can safely ignore it."
+    },
+    "sharedNote": {
+      "subject": "{name} shared a note with you",
+      "title": "A note has been shared with you",
+      "description": "{owner} shared \"{title}\" with you. Sign in with this email address to open it.",
+      "button": "Open the note",
+      "ignore": "If you weren't expecting this, you can safely ignore this email."
     }
   }
 };
