@@ -715,6 +715,13 @@ declare const messages: {
         "confirm": "Xóa vĩnh viễn",
         "cancel": "Hủy"
       },
+      "archiveConfirm": {
+        "title": "Chuyển “{title}” vào lưu trữ?",
+        "description": "Bạn có thể khôi phục lại trong mục Đã lưu trữ.",
+        "descriptionWithChildren": "{count, plural, other {# ghi chú con}} sẽ đi theo. Bạn có thể khôi phục lại trong mục Đã lưu trữ.",
+        "confirm": "Chuyển vào lưu trữ",
+        "cancel": "Hủy"
+      },
       "move": {
         "sharedTitle": "Chuyển vào thư mục đang được chia sẻ?",
         "sharedDescription": "“{title}” sẽ hiện ra với {count, plural, other {# người}} vốn đã mở được thư mục đích.",

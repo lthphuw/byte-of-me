@@ -11,6 +11,7 @@ import {
   NoteTreeSkeleton,
 } from '@/entities/note';
 import {
+  ArchiveNoteDialog,
   useCreateNote,
   useNoteMutations,
   useRenameNote,
@@ -163,12 +164,26 @@ export function NoteTreePanel({
     includeArchived
   );
 
+  /**
+   * The row Delete/Backspace has asked to archive, held until confirmed.
+   *
+   * The keystroke used to call `archive.mutate` straight through. That was
+   * defended as acceptable because archiving is reversible — but reversible is
+   * not the same as small: the mutation cascades, so one unconfirmed keypress
+   * on a folder took the folder and every note under it. It did exactly that
+   * to a nine-note subtree, and the author's only clue was a toast.
+   */
+  const [archiveTarget, setArchiveTarget] = useState<NoteTreeNode | null>(null);
+
   const { selectedNode, onKeyDown } = useTreeKeyboard({
     rows: treeRows,
     explorer,
     includeArchived,
     onOpenNote: onSelect,
-    onArchive: archive.mutate,
+    onArchive: (noteId) =>
+      setArchiveTarget(
+        treeRows.find((row) => row.node.id === noteId)?.node ?? null
+      ),
   });
 
   // The two slots, bound to this tree's rename. The lists below keep the
@@ -414,6 +429,17 @@ export function NoteTreePanel({
           </Button>
         </div>
       )}
+
+      <ArchiveNoteDialog
+        node={archiveTarget}
+        onOpenChange={(open) => {
+          if (!open) setArchiveTarget(null);
+        }}
+        onConfirm={(noteId) => {
+          archive.mutate(noteId);
+          setArchiveTarget(null);
+        }}
+      />
     </div>
   );
 }

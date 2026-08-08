@@ -715,6 +715,13 @@ declare const messages: {
         "confirm": "Delete permanently",
         "cancel": "Cancel"
       },
+      "archiveConfirm": {
+        "title": "Move “{title}” to the archive?",
+        "description": "You can restore it from the Archived view.",
+        "descriptionWithChildren": "{count, plural, one {Its # nested note} other {Its # nested notes}} will go with it. You can restore them from the Archived view.",
+        "confirm": "Move to archive",
+        "cancel": "Cancel"
+      },
       "move": {
         "sharedTitle": "Move into a shared folder?",
         "sharedDescription": "“{title}” will become visible to {count, plural, one {# person} other {# people}} who can already open the destination.",

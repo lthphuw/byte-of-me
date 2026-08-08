@@ -15,6 +15,7 @@ import {
   navigate,
   type VisibleRow,
 } from '@/features/dashboard/note-explorer/lib/explorer-model';
+import { isModalOpen } from '@/shared/lib/is-modal-open';
 
 /**
  * Every row the tree is drawing, in screen order — what the arrow keys walk.
@@ -167,6 +168,15 @@ export function useTreeKeyboard({
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+    // A dialog owns the keyboard while it is open, and the tree's focus trap
+    // is not enough to guarantee that here. Radix returns focus to a menu's
+    // trigger when the menu closes, and the note menu's trigger sits INSIDE
+    // this scroller — so opening the share dialog from that menu left focus on
+    // an element whose keydowns still bubbled into this handler. Observed:
+    // Delete with the share dialog open archived the folder behind it, taking
+    // its whole subtree along.
+    if (isModalOpen()) return;
 
     const key = event.key;
 

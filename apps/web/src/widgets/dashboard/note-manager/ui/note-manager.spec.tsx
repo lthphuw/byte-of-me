@@ -55,7 +55,16 @@ const messages = {
         showArchived: 'Archived',
         hideArchived: 'Back to notes',
       },
-      // Read unconditionally by ExplorerDnd and ShareNoteDialog respectively.
+      // Read unconditionally by ArchiveNoteDialog, ExplorerDnd and
+      // ShareNoteDialog respectively — all three mount with the panel.
+      archiveConfirm: {
+        title: 'Move “{title}” to the archive?',
+        description: 'You can restore it from the Archived view.',
+        descriptionWithChildren:
+          '{count, plural, one {Its # nested note} other {Its # nested notes}} will go with it. You can restore them from the Archived view.',
+        confirm: 'Move to archive',
+        cancel: 'Cancel',
+      },
       move: {
         sharedTitle: 'Move into a shared folder?',
         sharedDescription:

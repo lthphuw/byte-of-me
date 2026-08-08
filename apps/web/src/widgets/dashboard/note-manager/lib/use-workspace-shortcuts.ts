@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react';
 
+import { isModalOpen } from '@/shared/lib/is-modal-open';
+
 interface WorkspaceShortcuts {
   /** True while the search palette is open — the Cmd+K binding needs to know. */
   searchOpen: boolean;
@@ -43,6 +45,12 @@ export function useWorkspaceShortcuts({
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (!(event.metaKey || event.ctrlKey)) return;
+
+      // A dialog owns the keyboard while it is open. These three are bound on
+      // `document` precisely so they work wherever focus is, which also means
+      // nothing else stops them — Cmd+K opened the search palette stacked on
+      // top of the share dialog, with two focus traps fighting over the page.
+      if (isModalOpen()) return;
 
       // `.toLowerCase()`, not a literal: `event.key` is uppercase with Shift
       // held or CapsLock on, and a strict `=== 'k'` silently missed both.

@@ -64,6 +64,14 @@ const messages = {
         noLabel: 'No label',
         dropToRoot: 'Drop here to move to top level',
       },
+      archiveConfirm: {
+        title: 'Move “{title}” to the archive?',
+        description: 'You can restore it from the Archived view.',
+        descriptionWithChildren:
+          '{count, plural, one {Its # nested note} other {Its # nested notes}} will go with it. You can restore them from the Archived view.',
+        confirm: 'Move to archive',
+        cancel: 'Cancel',
+      },
       search: { trigger: 'Search notes' },
       actions: { create: 'New note', newFolder: 'New folder' },
       // `ExplorerDnd` reads this namespace unconditionally, for the
