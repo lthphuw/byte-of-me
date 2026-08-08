@@ -95,6 +95,22 @@ Object.defineProperty(prisma, '$transaction', {
 });
 
 /**
+ * The share-exposure walk, on both halves of the same guard: the one
+ * `requestMove` runs before a drop to decide whether to confirm, and the one
+ * `moveNote` repeats server-side. Empty means "the destination is shared with
+ * nobody", which is the case every test here is about — the confirmation
+ * itself is covered by `move-note.spec.ts`.
+ *
+ * Without this the drop hangs on a real connection attempt and every
+ * assertion times out, which reads as "the move never happened".
+ */
+Object.defineProperty(prisma, '$queryRaw', {
+  value: () => Promise.resolve([]),
+  writable: true,
+  configurable: true,
+});
+
+/**
  * A drop, as dnd-kit reports it. Only the four fields `onDragEnd` reads are
  * populated; the double assertion is what keeps the other twenty out of a test
  * that does not care about them.
