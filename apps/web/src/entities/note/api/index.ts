@@ -2,6 +2,7 @@ export * from './archive-note';
 export * from './create-note';
 export * from './delete-note';
 export * from './delete-note-label';
+export * from './ensure-note-folder-path';
 export * from './get-admin-note-by-id';
 export * from './get-archived-notes';
 export * from './get-descendant-count';
