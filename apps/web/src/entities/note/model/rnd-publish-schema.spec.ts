@@ -81,8 +81,13 @@ describe('rndPublishSchema', () => {
     expect(rndPublishSchema.safeParse(bad).success).toBe(false);
   });
 
+  // A mid-path variant, not a leading "..": the leading-alphanumeric regex
+  // already rejects a path starting with "..", so a test that only ever
+  // used that shape would never actually reach the ".." refine below.
   it('rejects a deleted path that escapes the project', () => {
-    expect(rndPublishSchema.safeParse(payload({ deleted: ['../x.md'] })).success).toBe(false);
+    expect(
+      rndPublishSchema.safeParse(payload({ deleted: ['assets/../../../etc/passwd.md'] })).success,
+    ).toBe(false);
   });
 
   // The regex alone rejects a *leading* "..", since the first character must
@@ -92,6 +97,34 @@ describe('rndPublishSchema', () => {
   it('rejects a path that escapes the project via a mid-path ".." segment', () => {
     const bad = payload();
     bad.files[0].path = 'assets/../../../etc/passwd.md';
+    expect(rndPublishSchema.safeParse(bad).success).toBe(false);
+  });
+
+  // The regex permits repeated slashes (nothing in the character class rules
+  // them out), and the ".." refine doesn't fire either — split('/') on this
+  // string never produces the literal segment "..". The `//` refine is the
+  // only thing standing between this payload and acceptance.
+  it('rejects a path with an empty path segment (double slash)', () => {
+    const bad = payload();
+    bad.files[0].path = 'assets//file.md';
+    expect(rndPublishSchema.safeParse(bad).success).toBe(false);
+  });
+
+  // notesRoot is combined with each file's path server-side to build the
+  // write target (see rndFilePath's doc comment) — a traversing notesRoot is
+  // exactly as dangerous as a traversing file path, and nothing else in the
+  // schema constrains it.
+  it('rejects a notesRoot that contains a ".." segment', () => {
+    expect(rndPublishSchema.safeParse(payload({ notesRoot: '../../etc' })).success).toBe(false);
+  });
+
+  // Only the "title absent" branch is covered elsewhere. A whitespace-only
+  // title is `typeof === 'string'`, so without the `.trim().length > 0`
+  // clause specifically, this would pass straight through and land as a
+  // blank note title in the vault.
+  it('rejects a whitespace-only frontmatter title', () => {
+    const bad = payload();
+    bad.files[0].frontmatter = { title: '   ' };
     expect(rndPublishSchema.safeParse(bad).success).toBe(false);
   });
 });
