@@ -7,6 +7,7 @@ import { PublicSiteFooterNav } from '@/features/public/public-site-footer/ui/pub
 import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
 import { cn, ensureValidUrl } from '@/shared/lib/utils';
+import { BrandMark } from '@/shared/ui/brand-mark';
 
 
 
@@ -31,7 +32,7 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
       <div className="container mx-auto flex max-w-[100%] flex-col items-center justify-between gap-6 px-8 md:flex-row md:px-12">
         <div className="flex flex-col items-center gap-2 md:items-start">
           <Link href={Routes.Homepage} aria-label={t('home')}>
-            <Icons.logo />
+            <BrandMark />
           </Link>
 
           <h2 className="flex gap-1 text-center text-sm md:text-left">

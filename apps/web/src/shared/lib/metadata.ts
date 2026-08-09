@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 
 import { host } from '@/shared/config/host';
 import { siteConfig } from '@/shared/config/site';
+import type { BrandLayer } from '@/shared/lib/brand-mark';
 import type { JsonLdObject } from '@/shared/ui/json-ld';
 
 /**
@@ -47,9 +48,6 @@ export function buildSiteJsonLd({
   };
 }
 
-/** The three access layers the site is split into, each with its own favicon. */
-export type IconLayer = 'public' | 'cms' | 'space';
-
 /**
  * Builds the complete icon set for an access layer.
  *
@@ -72,7 +70,7 @@ export type IconLayer = 'public' | 'cms' | 'space';
  * Related constraint: never add `app/favicon.ico` or `app/icon.*`. Next injects
  * file-convention icons automatically and they would defeat these overrides.
  */
-export function buildIconSet(layer: IconLayer): Metadata['icons'] {
+export function buildIconSet(layer: BrandLayer): Metadata['icons'] {
   return {
     icon: [
       { url: `/icons/mark-${layer}.svg`, type: 'image/svg+xml' },

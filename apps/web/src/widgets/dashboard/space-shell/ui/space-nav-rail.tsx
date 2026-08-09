@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  Icons,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -13,6 +12,7 @@ import { useTranslations } from 'next-intl';
 import { logOutDashboard } from '@/features/auth/lib';
 import { Link, usePathname } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
+import { BrandMark } from '@/shared/ui/brand-mark';
 import { useSpaceNavItems } from '@/widgets/dashboard/space-shell/model/use-space-nav-items';
 
 /**
@@ -40,7 +40,7 @@ export function SpaceNavRail() {
           aria-label={t('actions.dashboard')}
           className="mb-2 flex size-9 items-center justify-center rounded-md"
         >
-          <Icons.logo />
+          <BrandMark layer="space" />
         </Link>
 
         <nav className="flex flex-col items-center gap-1">

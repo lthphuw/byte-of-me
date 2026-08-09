@@ -21,7 +21,6 @@ import {
   File,
   FileText,
   FileUser,
-  Fingerprint,
   FolderCog,
   FolderSearch,
   Frown,
@@ -83,8 +82,11 @@ const RemoteSVG = ({
   />
 );
 
+// No `logo` here on purpose. This map is a grab-bag of borrowed glyphs, and
+// the brand mark is not one — it has its own geometry, its own layer variants,
+// and it has to stay in step with the favicons. It lives in the app, at
+// `@/shared/ui/brand-mark`.
 export const Icons = {
-  logo: Fingerprint,
   close: X,
   spinner: Loader2,
   sad: Frown,

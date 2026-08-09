@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import {
   Button,
-  Icons,
   Sheet,
   SheetContent,
   SheetTitle,
@@ -15,6 +14,7 @@ import { useTranslations } from 'next-intl';
 import { logOutDashboard } from '@/features/auth/lib';
 import { Link, usePathname } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
+import { BrandMark } from '@/shared/ui/brand-mark';
 import { useSpaceNavItems } from '@/widgets/dashboard/space-shell/model/use-space-nav-items';
 
 /**
@@ -53,7 +53,7 @@ export function SpaceNavTrigger({ className }: { className?: string }) {
         <div className="flex h-full flex-col">
           <div className="flex items-center gap-3 px-4 py-5">
             <div className="flex size-7 items-center justify-center rounded-md">
-              <Icons.logo />
+              <BrandMark layer="space" />
             </div>
             <span className="text-base font-bold tracking-tight">
               {t('title')}

@@ -1,6 +1,5 @@
 'use client';
 
-import { Icons } from '@byte-of-me/ui';
 import { m } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -10,6 +9,7 @@ import {
   GoogleAuthButton,
   InviteAuthForm,
 } from '@/features/auth/ui';
+import { BrandMark } from '@/shared/ui/brand-mark';
 
 /**
  * The share recipient's sign-in screen.
@@ -39,7 +39,7 @@ export function InviteLogInView() {
         className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[380px]"
       >
         <div className="flex flex-col space-y-2 text-center">
-          <Icons.logo className="mx-auto mb-2 h-8 w-8" />
+          <BrandMark className="mx-auto mb-2 h-8 w-8" />
           <h1 className="text-2xl font-semibold tracking-tight">
             {t('title')}
           </h1>

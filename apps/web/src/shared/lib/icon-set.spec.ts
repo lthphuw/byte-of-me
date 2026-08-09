@@ -3,9 +3,14 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import { buildIconSet, type IconLayer } from './metadata';
+import {
+  BRAND_LAYERS,
+  FAVICON_FILES,
+  renderFaviconSvg,
+} from './brand-mark';
+import { buildIconSet } from './metadata';
 
-const LAYERS: IconLayer[] = ['public', 'cms', 'space'];
+const ICONS_DIR = path.join(import.meta.dir, '../../../public/icons');
 
 /**
  * These tests exist because of a measured Next.js behaviour, not a hypothetical
@@ -16,7 +21,7 @@ const LAYERS: IconLayer[] = ['public', 'cms', 'space'];
  */
 describe('buildIconSet', () => {
   it('gives every layer the full set, so no override can drop an entry', () => {
-    for (const layer of LAYERS) {
+    for (const layer of BRAND_LAYERS) {
       const set = buildIconSet(layer);
       expect(set).toMatchObject({
         shortcut: expect.any(String),
@@ -27,7 +32,7 @@ describe('buildIconSet', () => {
   });
 
   it('lists SVG before PNG, because only SVG can invert on a dark tab strip', () => {
-    for (const layer of LAYERS) {
+    for (const layer of BRAND_LAYERS) {
       const icon = (buildIconSet(layer) as { icon: { type?: string }[] }).icon;
       expect(icon[0]?.type).toBe('image/svg+xml');
       expect(icon.slice(1).every((entry) => entry.type === 'image/png')).toBe(true);
@@ -35,7 +40,7 @@ describe('buildIconSet', () => {
   });
 
   it('points each layer at its own assets', () => {
-    for (const layer of LAYERS) {
+    for (const layer of BRAND_LAYERS) {
       const icon = (buildIconSet(layer) as { icon: { url: string }[] }).icon;
       expect(icon.map((entry) => entry.url)).toEqual([
         `/icons/mark-${layer}.svg`,
@@ -46,7 +51,9 @@ describe('buildIconSet', () => {
   });
 
   it('shares one apple-touch icon across layers — the home screen is not per-space', () => {
-    const apples = LAYERS.map((layer) => (buildIconSet(layer) as { apple: string }).apple);
+    const apples = BRAND_LAYERS.map(
+      (layer) => (buildIconSet(layer) as { apple: string }).apple,
+    );
     expect(new Set(apples).size).toBe(1);
   });
 
@@ -54,7 +61,7 @@ describe('buildIconSet', () => {
     const publicDir = path.join(import.meta.dir, '../../../public');
     const missing: string[] = [];
 
-    for (const layer of LAYERS) {
+    for (const layer of BRAND_LAYERS) {
       const set = buildIconSet(layer) as {
         icon: { url: string }[];
         shortcut: string;
@@ -65,36 +72,53 @@ describe('buildIconSet', () => {
       }
     }
 
-    // If this fails after editing an SVG, the fix is `bun run gen:icons`.
+    // If this fails after editing the mark, the fix is `bun run gen:icons`.
     expect(missing).toEqual([]);
   });
 
-  it('has rasters generated from the current SVGs, not a stale run', () => {
-    // The generation step is manual (`bun run gen:icons`) and nothing in the
-    // build enforces it, so editing an SVG and forgetting to re-run it would
-    // otherwise ship stale PNGs with every file still present and no failure.
+  it('gives the three layers distinct tab favicons', () => {
+    const svgs = BRAND_LAYERS.map(
+      (layer) => (buildIconSet(layer) as { icon: { url: string }[] }).icon[0]!.url,
+    );
+    expect(new Set(svgs).size).toBe(BRAND_LAYERS.length);
+  });
+});
+
+/**
+ * The generation step is manual (`bun run gen:icons`) and nothing in the build
+ * enforces it, so editing the mark and forgetting to re-run it would otherwise
+ * ship stale assets with every file still present and no failure. These two
+ * tests cover the two halves of that gap.
+ */
+describe('generated icon assets', () => {
+  it('match what brand-mark.ts currently describes', () => {
+    const drifted = FAVICON_FILES.filter(
+      (file) =>
+        readFileSync(path.join(ICONS_DIR, file), 'utf8') !== renderFaviconSvg(file),
+    );
+
+    expect(drifted).toEqual([]);
+  });
+
+  it('have rasters built from those SVGs, not an earlier run', () => {
     // Digests, not re-rasterised bytes: sharp's PNG output is not guaranteed
-    // identical across platforms, a sha256 of the source is.
-    const iconsDir = path.join(import.meta.dir, '../../../public/icons');
+    // identical across platforms or versions, a sha256 of the source is. The
+    // lockfile is written by the same run that writes the PNGs, so a match
+    // proves the two came from the same source text.
     const lockPath = path.join(import.meta.dir, '../../../../../scripts/icons.lock.json');
     const locked = JSON.parse(readFileSync(lockPath, 'utf8')) as Record<string, string>;
+
+    expect(Object.keys(locked).sort()).toEqual([...FAVICON_FILES].sort());
 
     const stale = Object.entries(locked)
       .filter(([name, digest]) => {
         const actual = createHash('sha256')
-          .update(readFileSync(path.join(iconsDir, name)))
+          .update(readFileSync(path.join(ICONS_DIR, name)))
           .digest('hex');
         return actual !== digest;
       })
       .map(([name]) => name);
 
     expect(stale).toEqual([]);
-  });
-
-  it('gives the three layers distinct tab favicons', () => {
-    const svgs = LAYERS.map(
-      (layer) => (buildIconSet(layer) as { icon: { url: string }[] }).icon[0]!.url,
-    );
-    expect(new Set(svgs).size).toBe(LAYERS.length);
   });
 });

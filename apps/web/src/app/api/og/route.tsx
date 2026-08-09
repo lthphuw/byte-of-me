@@ -3,11 +3,16 @@ import { readFile } from 'node:fs/promises';
 
 import { host } from '@/shared/config/host';
 import { siteConfig } from '@/shared/config/site';
+import {
+  MARK_LAYERS,
+  MARK_PATH,
+  MARK_VIEWBOX,
+} from '@/shared/lib/brand-mark';
 import { getErrorMessage } from '@/shared/lib/utils';
 
 /**
  * Social preview card. Mirrors the site's own vocabulary rather than a generic
- * centred layout: the neutral greyscale palette, the fingerprint mark, a
+ * centred layout: the neutral greyscale palette, the brand mark, a
  * left-aligned editorial block, and the same Cal Sans used for headings.
  */
 
@@ -74,25 +79,18 @@ export async function GET(request: Request) {
         >
           {/* Identity row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            {/* The bare mark, from the same module the favicons are generated
+                from. A card is not a tab, so there is no enclosure to encode. */}
             <svg
               width="40"
               height="40"
-              viewBox="0 0 24 24"
+              viewBox={`0 0 ${MARK_VIEWBOX} ${MARK_VIEWBOX}`}
               fill="none"
               stroke={FOREGROUND}
-              strokeWidth="2"
+              strokeWidth={MARK_LAYERS.public.mark.strokeWidth}
               strokeLinecap="round"
-              strokeLinejoin="round"
             >
-              <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4" />
-              <path d="M14 13.12c0 2.38 0 6.38-1 8.88" />
-              <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02" />
-              <path d="M2 12a10 10 0 0 1 18-6" />
-              <path d="M2 16h.01" />
-              <path d="M21.8 16c.2-2 .131-5.354 0-6" />
-              <path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2" />
-              <path d="M8.65 22c.21-.66.45-1.32.57-2" />
-              <path d="M9 6.8a6 6 0 0 1 9 5.2v2" />
+              <path transform={MARK_LAYERS.public.mark.transform} d={MARK_PATH} />
             </svg>
             <div
               style={{

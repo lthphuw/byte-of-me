@@ -18,6 +18,7 @@ import { DashboardNavItems } from './dashboard-nav-items';
 import { logOutDashboard } from '@/features/auth/lib';
 import { Link, usePathname, useRouter } from '@/shared/i18n/navigation';
 import { purgeEntireCache } from '@/shared/lib/revalidate';
+import { BrandMark } from '@/shared/ui/brand-mark';
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const t = useTranslations('dashboard.sidebar');
@@ -116,7 +117,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 px-6 py-7">
         <div className="flex size-7 items-center justify-center rounded-md">
-          <Icons.logo />
+          <BrandMark layer="cms" />
         </div>
         <h1 className="text-base font-bold tracking-tight">Byte of Me</h1>
       </div>
@@ -208,7 +209,7 @@ export function DashboardSidebar() {
 
         <div className="flex items-center gap-2">
           <div className="flex size-6 items-center justify-center rounded-md">
-            <Icons.logo />
+            <BrandMark layer="cms" />
           </div>
           <span className="text-base font-bold tracking-tight">
             Byte of Me

@@ -13,6 +13,7 @@ import {
 import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
+import { BrandMark } from '@/shared/ui/brand-mark';
 
 export function AdminAuthLogInView() {
   const t = useTranslations('auth');
@@ -59,7 +60,9 @@ export function AdminAuthLogInView() {
         className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]"
       >
         <div className="flex flex-col space-y-2 text-center">
-          <Icons.logo className="mx-auto mb-2 h-8 w-8" />
+          {/* Bare mark, not the CMS variant: the enclosure says which layer
+              you are in, and at the gate you are not in one yet. */}
+          <BrandMark className="mx-auto mb-2 h-8 w-8" />
           <h1 className="text-2xl font-semibold tracking-tight">
             Welcome back
           </h1>
