@@ -21,6 +21,13 @@ export const env = createEnv({
     OWNER_EMAIL: z.string().email().optional(),
     AUTHOR_ID: z.string(),
 
+    // The R&D notebook's ingest credential. Both keys are optional so a
+    // deployment that has never heard of them boots unchanged — but the route
+    // refuses every request while either is unset. An absent token must read
+    // as "closed", never as "no auth required".
+    RND_PUBLISH_TOKEN: z.string().min(32).optional(),
+    RND_PUBLISH_OWNER_EMAIL: z.string().email().optional(),
+
     AUTH_URL: z.string(),
     AUTH_SECRET: z.string(),
 
@@ -72,6 +79,9 @@ export const env = createEnv({
     OWNER_EMAIL: process.env.OWNER_EMAIL,
     AUTHOR_ID: process.env.AUTHOR_ID,
     NODE_ENV: process.env.NODE_ENV,
+
+    RND_PUBLISH_TOKEN: process.env.RND_PUBLISH_TOKEN,
+    RND_PUBLISH_OWNER_EMAIL: process.env.RND_PUBLISH_OWNER_EMAIL,
 
     AUTH_URL: process.env.AUTH_URL,
     AUTH_SECRET: process.env.AUTH_SECRET,
