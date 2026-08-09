@@ -202,12 +202,21 @@ export async function publishRndProject(
       for (const { file, doc, result } of upserts) {
         const linked = rewriteRndLinks(doc, file.path, idByPath);
         const content = JSON.stringify(linked);
-        if (content === JSON.stringify(doc)) continue; // nothing to rewrite
 
-        await tx.note.update({
-          where: { id: result.noteId },
-          data: { content, plainText: richTextToPlainText(content) },
-        });
+        // Only the document write is conditional on the rewrite having
+        // changed anything. The NoteLink rebuild below is NOT — it runs on
+        // every note in `upserts`, same as `update-note.ts:61` gates on a
+        // write having happened, never on content having changed. A rewrite
+        // that removes the last link, or a document authored with an
+        // already-absolute `/space/notes/<id>` href (which `resolveRndPath`
+        // leaves untouched, so the rewrite is a no-op), would otherwise never
+        // clear or create the corresponding NoteLink rows.
+        if (content !== JSON.stringify(doc)) {
+          await tx.note.update({
+            where: { id: result.noteId },
+            data: { content, plainText: richTextToPlainText(content) },
+          });
+        }
 
         // Same contract as `update-note.ts`: links are rebuilt from the
         // document, never patched. Self-links are dropped, and a target is
@@ -255,7 +264,12 @@ export async function publishRndProject(
 
     return { success: true, data: outcome };
   } catch (error) {
-    logger.error('publishRndProject failed', { project: input.project, error });
-    return { success: false, errorMsg: getErrorMessage(error) };
+    // Interpolated, like every other action in this directory (`archive-note.ts`,
+    // `create-note.ts`, `update-note.ts`, `move-note.ts`, ...) — passing `error`
+    // as a structured field serializes an `Error` instance to `{}`, throwing
+    // away the one thing an operator needs after a failed publish.
+    const errorMsg = getErrorMessage(error);
+    logger.error(`Publish rnd project error: ${errorMsg}`);
+    return { success: false, errorMsg };
   }
 }

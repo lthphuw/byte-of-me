@@ -1,8 +1,11 @@
 // `publish-rnd-project` is intentionally NOT re-exported here. This barrel is
 // reachable from client components (via entities/note/index.ts), and every
-// module below is shielded from the client bundle by its own `'use server'`
-// directive. That one is a plain server module — see its own header comment —
-// so re-exporting it would drag prisma (and pg) into the browser bundle.
+// module below is either a `'use server'` action or has no runtime server
+// imports (`ensure-note-folder-path.ts` only imports `Prisma` as a type,
+// which erases at compile time) — so nothing here drags server-only code into
+// the client bundle. `publish-rnd-project` is neither: a plain server module
+// — see its own header comment — that value-imports `prisma`, so re-exporting
+// it would drag prisma (and pg) into the browser bundle.
 // `app/api/rnd/publish/route.ts` imports it by its own path instead.
 export * from './archive-note';
 export * from './create-note';

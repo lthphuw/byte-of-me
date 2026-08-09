@@ -226,6 +226,11 @@ describe('publishRndProject', () => {
     expect(serialized).toContain('rnd_project');
     expect(serialized).toContain('face-anti-spoofing');
     expect(serialized).toContain('rnd_path');
+    // The project key alone is not enough: without `ownerId` too, archiving
+    // would reach into another owner's note that happens to share the same
+    // `rnd_project`/`rnd_path` pair — the exact blast radius the project key
+    // exists to prevent, just moved one level up.
+    expect(archiving?.where.ownerId).toBe('owner_1');
   });
 
   it('moves a note when its file moves, instead of forking a second note', async () => {
@@ -303,6 +308,77 @@ describe('publishRndProject', () => {
       .map((c) => c[0] as { data: { sourceId: string; targetId: string }[] })
       .find((a) => a.data.some((row) => row.sourceId === sourceId));
     expect(createCall?.data).toEqual([{ sourceId, targetId }]);
+
+    // The target lookup is scoped to this owner. Without it, a document that
+    // pastes in someone else's note id as a link target would turn into a
+    // real cross-owner NoteLink edge the moment `findMany` happened to return
+    // a match for it.
+    const targetLookup = findMany.mock.calls.map((c) => c[0] as { where: Record<string, unknown> })[0];
+    expect(targetLookup?.where.ownerId).toBe('owner_1');
+  });
+
+  // Blind-spot: the fix for the no-op-rewrite gap above only exercises a
+  // document that already has a link. A document with NO links at all never
+  // triggers a rewrite either (nothing to rewrite), so it exercises the exact
+  // same code path the no-op case does — reusing that path for a link removal
+  // is the whole point of the fix.
+  it('rebuilds NoteLink rows even when the document has no links to rewrite', async () => {
+    await publishRndProject(
+      'owner_1',
+      input([{ path: '00-overview.md', frontmatter: { title: 'Overview' }, markdown: 'no links here\n' }])
+    );
+
+    const noteId = createdNoteId('Overview');
+    if (!noteId) throw new Error('expected the note to have been created');
+
+    expect(linkDeleteMany).toHaveBeenCalledWith({ where: { sourceId: noteId } });
+  });
+
+  // Minor: no test published a document that links to itself, so the
+  // self-link filter (`.filter((id) => id !== result.noteId)`) was unpinned.
+  it('drops a self-link rather than writing a NoteLink to itself', async () => {
+    findMany.mockImplementation((args: { where?: { id?: { in?: string[] } } }) =>
+      Promise.resolve((args.where?.id?.in ?? []).map((id) => ({ id })))
+    );
+
+    await publishRndProject(
+      'owner_1',
+      input([
+        {
+          path: '00-overview.md',
+          frontmatter: { title: 'Overview' },
+          markdown: 'see [itself](./00-overview.md)\n',
+        },
+      ])
+    );
+
+    const noteId = createdNoteId('Overview');
+    if (!noteId) throw new Error('expected the note to have been created');
+
+    const createCall = linkCreateMany.mock.calls
+      .map((c) => c[0] as { data: { sourceId: string; targetId: string }[] })
+      .find((a) => a.data.some((row) => row.sourceId === noteId));
+    expect(createCall).toBeUndefined();
+  });
+
+  // Blind-spot: every existing `findFirst` mock ignores its arguments, so
+  // nothing pins the identity lookup to `ownerId`. Without it, the lookup
+  // would match another owner's note sharing the same `rnd_project` /
+  // `rnd_path` pair and silently overwrite it.
+  it('scopes the identity lookup to this owner', async () => {
+    await publishRndProject(
+      'owner_1',
+      input([{ path: '00-overview.md', frontmatter: { title: 'Overview' }, markdown: 'x' }])
+    );
+
+    // The identity lookup is the only `findFirst` call whose `where` carries
+    // the `AND` of rnd_project/rnd_path conditions — the folder lookups ask
+    // for `isFolder: true`, and the position lookup carries `orderBy` instead.
+    const identityLookup = findFirst.mock.calls
+      .map((c) => c[0] as { where: Record<string, unknown> })
+      .find((args) => Array.isArray(args.where.AND));
+
+    expect(identityLookup?.where.ownerId).toBe('owner_1');
   });
 
   // Blind-spot: the earlier "stores rnd_path in properties" test never checks
