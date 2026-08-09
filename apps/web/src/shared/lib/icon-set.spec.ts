@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
-import { existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { buildIconSet, type IconLayer } from './metadata';
@@ -66,6 +67,28 @@ describe('buildIconSet', () => {
 
     // If this fails after editing an SVG, the fix is `bun run gen:icons`.
     expect(missing).toEqual([]);
+  });
+
+  it('has rasters generated from the current SVGs, not a stale run', () => {
+    // The generation step is manual (`bun run gen:icons`) and nothing in the
+    // build enforces it, so editing an SVG and forgetting to re-run it would
+    // otherwise ship stale PNGs with every file still present and no failure.
+    // Digests, not re-rasterised bytes: sharp's PNG output is not guaranteed
+    // identical across platforms, a sha256 of the source is.
+    const iconsDir = path.join(import.meta.dir, '../../../public/icons');
+    const lockPath = path.join(import.meta.dir, '../../../../../scripts/icons.lock.json');
+    const locked = JSON.parse(readFileSync(lockPath, 'utf8')) as Record<string, string>;
+
+    const stale = Object.entries(locked)
+      .filter(([name, digest]) => {
+        const actual = createHash('sha256')
+          .update(readFileSync(path.join(iconsDir, name)))
+          .digest('hex');
+        return actual !== digest;
+      })
+      .map(([name]) => name);
+
+    expect(stale).toEqual([]);
   });
 
   it('gives the three layers distinct tab favicons', () => {

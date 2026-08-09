@@ -11,6 +11,7 @@
  * default, which would rasterise them at 24x24 and then upscale — blurry. So
  * the density is scaled to the target instead of resizing after the fact.
  */
+import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import pngToIco from 'png-to-ico';
@@ -19,6 +20,27 @@ import sharp from 'sharp';
 const ROOT = path.join(import.meta.dir, '..');
 const PUBLIC_DIR = path.join(ROOT, 'apps/web/public');
 const ICONS_DIR = path.join(PUBLIC_DIR, 'icons');
+
+/**
+ * Digest of every SVG source, written after a successful run and asserted by
+ * `icon-set.spec.ts`.
+ *
+ * Without it, editing an SVG and forgetting to re-run this script ships stale
+ * rasters silently — the files still exist, so an existence check passes and
+ * nothing fails. Comparing digests rather than re-rasterising in the test keeps
+ * the check deterministic: sharp's PNG bytes are not guaranteed identical
+ * across platforms or versions, but a sha256 of the source text is.
+ *
+ * It lives beside the generator rather than in public/ so it is not served.
+ */
+const LOCKFILE = path.join(ROOT, 'scripts/icons.lock.json');
+const SVG_SOURCES = [
+  'mark-public.svg',
+  'mark-cms.svg',
+  'mark-space.svg',
+  'apple-touch.svg',
+  'maskable.svg',
+];
 
 const VIEWBOX = 24;
 const BASE_DPI = 72;
@@ -61,5 +83,14 @@ const icoFrames = await Promise.all(
 );
 await writeFile(pub('favicon.ico'), await pngToIco(icoFrames));
 console.log(`  ${path.relative(ROOT, pub('favicon.ico'))}  ${icoSizes.join('/')}`);
+
+const digests: Record<string, string> = {};
+for (const name of SVG_SOURCES) {
+  digests[name] = createHash('sha256')
+    .update(await readFile(icons(name)))
+    .digest('hex');
+}
+await writeFile(LOCKFILE, `${JSON.stringify(digests, null, 2)}\n`);
+console.log(`  ${path.relative(ROOT, LOCKFILE)}  ${SVG_SOURCES.length} sources`);
 
 console.log('Done.');
