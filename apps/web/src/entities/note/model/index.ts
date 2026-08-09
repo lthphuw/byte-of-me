@@ -3,5 +3,6 @@ export * from './note-schema';
 export * from './note-tree';
 export * from './query-keys';
 export * from './rnd-links';
+export * from './rnd-publish-schema';
 export * from './types';
 export * from './use-note-prefetch';
