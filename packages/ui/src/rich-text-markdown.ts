@@ -36,9 +36,11 @@ const BLOCK_MATH = /^\$\$([\s\S]+?)\$\$$/;
  * nodes defined in this package, not a markdown construct marked knows — so a
  * parsed document carries `$x^2$` as characters. Rewriting the *parsed tree*
  * rather than pre-processing the markdown string means the delimiters are only
- * interpreted in real text nodes: a `$` inside a fenced code block or an inline
- * code span is never reached, because those are not text nodes with marks this
- * walk descends into.
+ * interpreted where they are meant to be: a fenced code block's content is
+ * skipped as a whole node (`codeBlock` is never recursed into), and a text
+ * node carrying the `code` mark — an inline code span — is passed through
+ * unsplit. Both are explicit checks below; neither is a side effect of the
+ * walk's shape.
  */
 function applyMath(node: JSONContent): JSONContent {
   if (!node.content) return node;
@@ -46,6 +48,13 @@ function applyMath(node: JSONContent): JSONContent {
   const content: JSONContent[] = [];
 
   for (const child of node.content) {
+    // Fenced code: leave the block's text children untouched. A `$` here is
+    // source code, not prose.
+    if (child.type === 'codeBlock') {
+      content.push(child);
+      continue;
+    }
+
     // A paragraph that is nothing but `$$…$$` becomes a block equation.
     if (child.type === 'paragraph' && child.content?.length === 1) {
       const only = child.content[0];
@@ -60,7 +69,12 @@ function applyMath(node: JSONContent): JSONContent {
       }
     }
 
-    if (child.type === 'text' && typeof child.text === 'string') {
+    // An inline code span is a text node carrying the `code` mark. Leave it
+    // alone too — a `$` there is source code, not prose, same reasoning as
+    // the fenced case above.
+    const hasCodeMark = child.marks?.some((mark) => mark.type === 'code') ?? false;
+
+    if (child.type === 'text' && typeof child.text === 'string' && !hasCodeMark) {
       content.push(...splitInlineMath(child));
       continue;
     }

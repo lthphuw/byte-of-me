@@ -72,4 +72,25 @@ describe('parseMarkdownToTiptap', () => {
     expect(html.length).toBeGreaterThan(0);
     expect(html).toContain('data-type="inline-math"');
   });
+
+  it('leaves a $ inside a fenced code block literal', () => {
+    const doc = parseMarkdownToTiptap('```js\nconst formula = "$x^2$";\n```\n');
+    expect(typesIn(doc).has('inlineMath')).toBe(false);
+    const codeBlock = firstOfType(doc, 'codeBlock');
+    expect(codeBlock?.content?.[0]?.text).toContain('$x^2$');
+
+    const html = renderRichTextHtml(JSON.stringify(doc));
+    expect(html).toContain('$x^2$');
+    expect(html).not.toContain('data-type="inline-math"');
+  });
+
+  it('leaves a $ inside an inline code span literal, and keeps the code mark', () => {
+    const doc = parseMarkdownToTiptap('Use `$x^2$` in code.');
+    expect(typesIn(doc).has('inlineMath')).toBe(false);
+    expect(typesIn(doc).has('mark:code')).toBe(true);
+
+    const html = renderRichTextHtml(JSON.stringify(doc));
+    expect(html).toContain('$x^2$');
+    expect(html).not.toContain('data-type="inline-math"');
+  });
 });
