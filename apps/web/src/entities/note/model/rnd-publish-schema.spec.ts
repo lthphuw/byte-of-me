@@ -63,6 +63,12 @@ describe('rndPublishSchema', () => {
     expect(rndPublishSchema.safeParse(bad).success).toBe(false);
   });
 
+  it('rejects author-supplied rnd_project, which the server owns', () => {
+    const bad = payload();
+    bad.files[0].frontmatter = { title: 'Overview', rnd_project: 'someone-elses-project' };
+    expect(rndPublishSchema.safeParse(bad).success).toBe(false);
+  });
+
   it('accepts `generated`, which the results generator writes', () => {
     const ok = payload();
     ok.files[0].frontmatter = { title: 'Results', generated: true };

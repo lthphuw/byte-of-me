@@ -45,8 +45,8 @@ const rndFile = z.object({
     .refine((fm) => typeof fm.title === 'string' && fm.title.trim().length > 0, {
       message: 'frontmatter.title is required',
     })
-    .refine((fm) => !('rnd_path' in fm), {
-      message: 'rnd_path is written by the server and may not be supplied',
+    .refine((fm) => !('rnd_path' in fm) && !('rnd_project' in fm), {
+      message: 'rnd_path and rnd_project are written by the server and may not be supplied',
     }),
   // Generous, but bounded: an experiment note with a large metrics table is
   // still far under this, and an unbounded body is a memory bug waiting for a
