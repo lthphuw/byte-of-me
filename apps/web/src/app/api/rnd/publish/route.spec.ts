@@ -4,6 +4,7 @@ import { afterEach, beforeAll, describe, expect, it, mock } from 'bun:test';
 import { isAuthorizedRndToken, POST } from './route';
 
 import { env } from '@/shared/config/env';
+import { normalizeEmail } from '@/shared/lib/auth';
 
 describe('isAuthorizedRndToken', () => {
   const token = 'a'.repeat(40);
@@ -30,6 +31,22 @@ describe('isAuthorizedRndToken', () => {
 
   it('accepts the configured token', () => {
     expect(isAuthorizedRndToken(`Bearer ${token}`, token)).toBe(true);
+  });
+
+  // env.ts no longer enforces a minimum length on RND_PUBLISH_TOKEN (a
+  // set-but-short value there would fail env validation at import time and
+  // take the whole site down at boot — see the comment on that field). The
+  // 32-character floor moved here, so it has to be pinned here: a configured
+  // token under that length must be treated as no token at all, even when it
+  // matches the header exactly — matching is not enough to authorize.
+  it('rejects a configured token shorter than 32 characters, even when it matches the header exactly', () => {
+    const shortToken = 'a'.repeat(31);
+    expect(isAuthorizedRndToken(`Bearer ${shortToken}`, shortToken)).toBe(false);
+  });
+
+  it('accepts a configured token at exactly the 32-character floor', () => {
+    const floorToken = 'a'.repeat(32);
+    expect(isAuthorizedRndToken(`Bearer ${floorToken}`, floorToken)).toBe(true);
   });
 });
 
@@ -117,9 +134,14 @@ describe('POST', () => {
     expect(json).toEqual({ success: false, errorMsg: 'Unauthorized' });
   });
 
+  // `env.EMAIL` is the site owner address in this test environment (no
+  // `OWNER_EMAIL` override is set — see `apps/web/.env`), so these three use
+  // it rather than an arbitrary address: the new `isSiteOwnerEmail` gate
+  // (Finding 4) would otherwise 401 every one of them before they ever
+  // reached the code path each test means to exercise.
   it('returns 400 for a body that is not JSON', async () => {
     env.RND_PUBLISH_TOKEN = validToken;
-    env.RND_PUBLISH_OWNER_EMAIL = 'owner@example.com';
+    env.RND_PUBLISH_OWNER_EMAIL = env.EMAIL;
 
     const res = await POST(request('not json'));
 
@@ -128,7 +150,7 @@ describe('POST', () => {
 
   it('returns 400 for well-formed JSON that fails the schema', async () => {
     env.RND_PUBLISH_TOKEN = validToken;
-    env.RND_PUBLISH_OWNER_EMAIL = 'owner@example.com';
+    env.RND_PUBLISH_OWNER_EMAIL = env.EMAIL;
 
     const res = await POST(request(JSON.stringify({})));
 
@@ -137,7 +159,7 @@ describe('POST', () => {
 
   it('returns a generic 401 when the owner email matches no user, revealing nothing about whether the address exists', async () => {
     env.RND_PUBLISH_TOKEN = validToken;
-    env.RND_PUBLISH_OWNER_EMAIL = 'owner@example.com';
+    env.RND_PUBLISH_OWNER_EMAIL = env.EMAIL;
     findFirst.mockResolvedValueOnce(null);
 
     const res = await POST(request(JSON.stringify(validBody)));
@@ -145,5 +167,46 @@ describe('POST', () => {
 
     expect(res.status).toBe(401);
     expect(json).toEqual({ success: false, errorMsg: 'Unauthorized' });
+  });
+
+  // Every other write path into the vault routes through `isSiteOwnerEmail()`
+  // (`docs/notes.md` §1: the vault is identity-gated, "even a second ADMIN
+  // row cannot enter"). Before this fix, RND_PUBLISH_OWNER_EMAIL was resolved
+  // to ANY User row — a typo naming another registered user would publish
+  // straight into their vault. `findFirst` is primed to resolve a real owner,
+  // same defensive pattern as the owner-email-unset test above: if the gate
+  // were ever removed, this would fall through to a real (unmocked)
+  // `publishRndProject` call and surface as a 500 against the unreachable
+  // test database — a status this test would catch — rather than coincide
+  // with the 401 this test expects for the right reason.
+  it('returns 401 when RND_PUBLISH_OWNER_EMAIL does not match the site owner, even though it matches a registered user', async () => {
+    env.RND_PUBLISH_TOKEN = validToken;
+    env.RND_PUBLISH_OWNER_EMAIL = 'someone-else@example.com';
+    findFirst.mockResolvedValueOnce({ id: 'owner_1' });
+
+    const res = await POST(request(JSON.stringify(validBody)));
+    const json = await res.json();
+
+    expect(res.status).toBe(401);
+    expect(json).toEqual({ success: false, errorMsg: 'Unauthorized' });
+    // Asserted before the lookup, not just before the write: the owner
+    // lookup itself must never run for a non-owner address.
+    expect(findFirst).not.toHaveBeenCalled();
+  });
+
+  // `User.email` is written by Auth.js from the provider's raw value and
+  // nothing in this repo lowercases it — an exact-match lookup would 401 the
+  // owner permanently the day their address is stored with different casing.
+  it('looks the owner up case-insensitively', async () => {
+    env.RND_PUBLISH_TOKEN = validToken;
+    env.RND_PUBLISH_OWNER_EMAIL = env.EMAIL;
+    findFirst.mockResolvedValueOnce({ id: 'owner_1' });
+
+    await POST(request(JSON.stringify(validBody)));
+
+    expect(findFirst).toHaveBeenCalledWith({
+      where: { email: { equals: normalizeEmail(env.EMAIL), mode: 'insensitive' } },
+      select: { id: true },
+    });
   });
 });

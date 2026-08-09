@@ -25,7 +25,16 @@ export const env = createEnv({
     // deployment that has never heard of them boots unchanged — but the route
     // refuses every request while either is unset. An absent token must read
     // as "closed", never as "no auth required".
-    RND_PUBLISH_TOKEN: z.string().min(32).optional(),
+    //
+    // No `.min(32)` here, on purpose — same reasoning as `OWNER_EMAIL` above:
+    // a set-but-short token would fail THIS schema at import time and take
+    // the whole site down at boot over a config typo, not just this one
+    // route. The 32-character floor is still enforced, but where it's
+    // actually a security property rather than a boot gate: inside
+    // `isAuthorizedRndToken` (`app/api/rnd/publish/route.ts`), which treats
+    // a too-short configured token as unconfigured — fail-closed on this one
+    // route, without a short value anywhere taking down the site.
+    RND_PUBLISH_TOKEN: z.string().optional(),
     RND_PUBLISH_OWNER_EMAIL: z.string().email().optional(),
 
     AUTH_URL: z.string(),
