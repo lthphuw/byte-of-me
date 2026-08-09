@@ -32,6 +32,14 @@ describe('resolveRndPath', () => {
     expect(resolveRndPath('00-overview.md', '/space/notes/abc')).toBe(null);
     expect(resolveRndPath('00-overview.md', './figure.png')).toBe(null);
   });
+
+  // The two cases above that end in a non-.md suffix short-circuit on the
+  // extension check alone, so they never exercise the scheme guard. An
+  // absolute URL that happens to end in `.md` (a real link to a repo's raw
+  // README, for instance) is the case that guard actually exists for.
+  it('refuses a scheme-prefixed link even when it ends in .md', () => {
+    expect(resolveRndPath('00-overview.md', 'https://example.com/readme.md')).toBe(null);
+  });
 });
 
 /** A document with one link, the shape `parseMarkdownToTiptap` produces. */
