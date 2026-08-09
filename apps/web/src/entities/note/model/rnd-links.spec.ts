@@ -40,6 +40,16 @@ describe('resolveRndPath', () => {
   it('refuses a scheme-prefixed link even when it ends in .md', () => {
     expect(resolveRndPath('00-overview.md', 'https://example.com/readme.md')).toBe(null);
   });
+
+  // Same asymmetry as the scheme case, but for the other branch of the
+  // compound guard: an absolute app route (`/space/notes/abc` above) is
+  // rejected on the `.md` check before ever reaching `startsWith('/')`. An
+  // absolute path that also ends in `.md` is what actually exercises it —
+  // and it is the dangerous one: strip the leading slash and this is an
+  // exact match for a real relative path.
+  it('refuses an absolute path even when it ends in .md', () => {
+    expect(resolveRndPath('00-overview.md', '/experiments/exp-001.md')).toBe(null);
+  });
 });
 
 /** A document with one link, the shape `parseMarkdownToTiptap` produces. */
@@ -86,6 +96,16 @@ describe('rewriteRndLinks', () => {
   it('leaves an unknown target untouched rather than inventing an id', () => {
     const out = rewriteRndLinks(docLinkingTo('./99-missing.md'), '00-overview.md', ids);
     expect(hrefsIn(out)).toEqual(['./99-missing.md']);
+  });
+
+  // The dangerous case: stripping the leading slash from this href would
+  // land on 'experiments/exp-001.md' — a real key in `ids`, the same one
+  // the first test above resolves. If the absolute-path guard in
+  // `resolveRndPath` were ever lost, this link would be silently rewritten
+  // as though it were a relative sibling link.
+  it('leaves an absolute app-route-shaped link untouched, even though stripping the slash would match a real id', () => {
+    const out = rewriteRndLinks(docLinkingTo('/experiments/exp-001.md'), '00-overview.md', ids);
+    expect(hrefsIn(out)).toEqual(['/experiments/exp-001.md']);
   });
 
   it('does not mutate the input document', () => {
