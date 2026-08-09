@@ -1,4 +1,26 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# AGENTS.md §12 forbids `Co-authored-by` and attribution trailers. That rule is
+# prose, and agent harnesses inject those lines from their own system prompts —
+# so it held on most commits and silently failed on four. Strip them here
+# instead: a hook does not forget.
+msg="$1"
+tmp="$msg.stripped"
+
+# Both patterns are anchored, because an unanchored one ate a body line that
+# merely quoted a trailer as an example and left the sentence cut in half. The
+# leading `[^[:alnum:][:space:]]*` skips a decoration such as the robot emoji
+# that "Generated with [Claude Code]" arrives with.
+grep -viE \
+  -e '^[[:space:]]*co-authored-by:' \
+  -e '^[[:space:]]*[^[:alnum:][:space:]]*[[:space:]]*(generated|made|created) (with|by)[[:space:]]' \
+  "$msg" > "$tmp" || true
+
+# Removing a trailer block leaves trailing blank lines behind; drop them.
+awk '{ line[NR] = $0 }
+     END { for (i = NR; i > 0; i--) if (line[i] ~ /[^[:space:]]/) { last = i; break }
+           for (i = 1; i <= last; i++) print line[i] }' "$tmp" > "$msg"
+rm -f "$tmp"
+
 npx commitlint --edit $1
