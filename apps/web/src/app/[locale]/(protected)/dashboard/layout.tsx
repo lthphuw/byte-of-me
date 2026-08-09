@@ -1,4 +1,16 @@
+import type { Metadata } from 'next';
+
+import { buildIconSet } from '@/shared/lib/metadata';
 import { DashboardSidebar } from '@/widgets/dashboard/dashboard-sidebar/ui/dashboard-sidebar';
+
+/**
+ * The CMS gets its own favicon so a dashboard tab is distinguishable from the
+ * public site and from the vault at 16px. Only `icons` is set here; every other
+ * metadata field still comes from the locale layout.
+ */
+export const metadata: Metadata = {
+  icons: buildIconSet('cms'),
+};
 
 export default async function DashboardLayout({
   children,

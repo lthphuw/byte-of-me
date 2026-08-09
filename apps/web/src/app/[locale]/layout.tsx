@@ -19,7 +19,7 @@ import {
   ROOT_MESSAGE_NAMESPACES,
 } from '@/shared/i18n/messages';
 import { routing } from '@/shared/i18n/routing';
-import { buildSiteJsonLd } from '@/shared/lib/metadata';
+import { buildIconSet,buildSiteJsonLd } from '@/shared/lib/metadata';
 import { cn } from '@/shared/lib/utils';
 // Imported by path, not through '@/shared/ui': that barrel reaches the rich
 // text editor, and the locale layout wraps every public page.
@@ -106,11 +106,7 @@ export async function generateMetadata({
       creator: '@lthphuw',
       images: [siteConfig.ogImage],
     },
-    icons: {
-      icon: '/favicon.ico',
-      shortcut: '/favicon-16x16.png',
-      apple: '/apple-touch-icon.png',
-    },
+    icons: buildIconSet('public'),
     robots: {
       index: true,
       follow: true,

@@ -18,10 +18,12 @@ const icons: MetadataRoute.Manifest['icons'] = [
     sizes: '180x180',
     type: 'image/png',
   },
+  // Was `/favicon.ico` declared as 24x24 — a size that file has never
+  // contained. Points at a real PNG at its real size instead.
   {
-    src: '/favicon.ico',
-    sizes: '24x24',
-    type: 'image/x-icon',
+    src: '/icons/mark-public-32.png',
+    sizes: '32x32',
+    type: 'image/png',
   },
 ];
 

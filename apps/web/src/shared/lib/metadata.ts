@@ -47,6 +47,43 @@ export function buildSiteJsonLd({
   };
 }
 
+/** The three access layers the site is split into, each with its own favicon. */
+export type IconLayer = 'public' | 'cms' | 'space';
+
+/**
+ * Builds the complete icon set for an access layer.
+ *
+ * A nested layout's `icons` REPLACES the parent's outright — same wholesale
+ * semantics as `openGraph` above. Measured on Next 16.2.3: adding
+ * `icons: { icon: '…' }` to a nested layout dropped the root's `shortcut` and
+ * `apple-touch-icon` links entirely. So a layer cannot declare just the part it
+ * wants to change; it has to restate everything. This helper is the only place
+ * that knows what "everything" is.
+ *
+ * SVG is listed first because it is the only format that can invert itself on a
+ * dark tab strip (each file carries its own prefers-color-scheme rule). The
+ * PNGs are the fallback for browsers that skip it, and they cannot adapt —
+ * those browsers get the dark-ink mark on every theme.
+ *
+ * `apple` is deliberately shared across layers: the manifest scope is the whole
+ * locale, so there is one installed app and one home-screen icon. Only the tab
+ * favicon varies.
+ *
+ * Related constraint: never add `app/favicon.ico` or `app/icon.*`. Next injects
+ * file-convention icons automatically and they would defeat these overrides.
+ */
+export function buildIconSet(layer: IconLayer): Metadata['icons'] {
+  return {
+    icon: [
+      { url: `/icons/mark-${layer}.svg`, type: 'image/svg+xml' },
+      { url: `/icons/mark-${layer}-32.png`, sizes: '32x32', type: 'image/png' },
+      { url: `/icons/mark-${layer}-16.png`, sizes: '16x16', type: 'image/png' },
+    ],
+    shortcut: `/icons/mark-${layer}-32.png`,
+    apple: '/apple-touch-icon.png',
+  };
+}
+
 interface PublicPageMetadataInput {
   /** Route segment below the locale, e.g. `about`. */
   segment: string;

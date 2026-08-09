@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Byte of me">
+  <!-- Public layer: bare stroke, no enclosure.
+       The stroke colour is set twice on purpose — the presentation attribute is
+       what SVG rasterisers without CSS support fall back to, the class is what
+       lets the browser invert the mark on a dark tab strip. -->
+  <style>
+    .ink { stroke: #0a0a0a }
+    @media (prefers-color-scheme: dark) { .ink { stroke: #fafafa } }
+  </style>
+  <path class="ink" transform="translate(-0.4 0.7)"
+        d="M3.1 20.4C2.7 18 2.5 15.9 2.5 14C2.5 6.8 8 2.2 14.2 2.2C19.4 2.2 22.3 6 22.3 10.4C22.3 15.4 18.4 18.8 13.6 18.8C9.8 18.8 7.2 16.3 7.2 13.2C7.2 10.6 9.2 8.6 11.8 8.6C13.8 8.6 15.2 10 15.2 11.8"
+        fill="none" stroke="#0a0a0a" stroke-width="2.3" stroke-linecap="round"/>
+</svg>

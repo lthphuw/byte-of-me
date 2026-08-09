@@ -27,9 +27,9 @@
       "type": "image/png"
     },
     {
-      "src": "/favicon.ico",
-      "sizes": "24x24",
-      "type": "image/x-icon"
+      "src": "/icons/mark-public-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
     }
   ],
   "categories": [

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Byte of me — dashboard">
+  <!-- CMS layer: the mark gains a frame. Enclosure encodes access level.
+       This is the densest cell in the system — a frame wrapped around a spiral
+       inside a 16px box. Three variants were rasterised at true 16px and
+       compared: matching the two stroke weights (the obvious choice) produced
+       the muddiest result, because frame and mark then compete. What reads is
+       a deliberately dominant frame (2.0) with the mark pulled in smaller
+       (0.58) to buy separation, even though that makes the mark itself
+       smaller than in the other two layers. -->
+  <style>
+    .ink { stroke: #0a0a0a }
+    @media (prefers-color-scheme: dark) { .ink { stroke: #fafafa } }
+  </style>
+  <rect class="ink" x="1.1" y="1.1" width="21.8" height="21.8" rx="5.2"
+        fill="none" stroke="#0a0a0a" stroke-width="2"/>
+  <path class="ink" transform="translate(4.78 5.4) scale(0.58)"
+        d="M3.1 20.4C2.7 18 2.5 15.9 2.5 14C2.5 6.8 8 2.2 14.2 2.2C19.4 2.2 22.3 6 22.3 10.4C22.3 15.4 18.4 18.8 13.6 18.8C9.8 18.8 7.2 16.3 7.2 13.2C7.2 10.6 9.2 8.6 11.8 8.6C13.8 8.6 15.2 10 15.2 11.8"
+        fill="none" stroke="#0a0a0a" stroke-width="3.1" stroke-linecap="round"/>
+</svg>

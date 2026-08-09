@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
+import { buildIconSet } from '@/shared/lib/metadata';
 import { SpaceShell } from '@/widgets/dashboard/space-shell';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -10,6 +11,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `Space | Welcome, ${userName}`,
     description: 'Personal workspace to manage notes, schedule.',
+    // The most enclosed layer of the mark: knocked out of a solid plate, so a
+    // vault tab is the one silhouette that reads instantly in a crowded strip.
+    icons: buildIconSet('space'),
     robots: {
       index: false,
       follow: false,
