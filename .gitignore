@@ -72,3 +72,6 @@ packages/db/node_modules
 .idea
 
 dist/
+
+# Project documentation lives in the private notes vault, not in the repo.
+docs/notes.md
