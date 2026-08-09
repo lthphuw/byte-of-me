@@ -2,7 +2,7 @@
 
 import { type ContactMessage, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
-import { escapeHtml, sanitizeHtml } from '@byte-of-me/ui';
+import { escapeHtml, sanitizeHtml } from '@byte-of-me/ui/lib/sanitize';
 import { revalidateTag } from 'next/cache';
 import { headers } from 'next/headers';
 import { after } from 'next/server';

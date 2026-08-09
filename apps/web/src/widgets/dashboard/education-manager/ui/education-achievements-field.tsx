@@ -10,7 +10,7 @@ import { useTranslations } from 'next-intl';
 import { EducationAchievementItemField } from './education-achievement-item-field';
 
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
-import { resolveReorderMove } from '@/shared/lib/reorder';
+import { resolveReorderMove } from '@/widgets/dashboard/education-manager/lib/resolve-reorder-move';
 
 interface EducationAchievementsFieldProps {
   control: Control<EducationFormValues>;

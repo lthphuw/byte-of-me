@@ -1,6 +1,6 @@
 import { describe, expect,it } from 'bun:test';
 
-import { shortenName } from './string';
+import { shortenName } from './shorten-name';
 
 describe('string.utils - shortenName', () => {
   describe('Edge Cases & Invalid Inputs', () => {

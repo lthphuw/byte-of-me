@@ -17,8 +17,8 @@ import { DashboardNavItems } from './dashboard-nav-items';
 
 import { logOutDashboard } from '@/features/auth/lib';
 import { Link, usePathname, useRouter } from '@/shared/i18n/navigation';
-import { purgeEntireCache } from '@/shared/lib/revalidate';
 import { BrandMark } from '@/shared/ui/brand-mark';
+import { purgeEntireCache } from '@/widgets/dashboard/dashboard-sidebar/lib/purge-entire-cache';
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const t = useTranslations('dashboard.sidebar');

@@ -17,7 +17,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 
 import { logOut } from '@/features/auth';
-import { shortenName } from '@/shared/lib/string';
+import { shortenName } from '@/widgets/public/public-site-header/lib/shorten-name';
 
 export function UserActionToggle() {
   const t = useTranslations('global.userToggle');

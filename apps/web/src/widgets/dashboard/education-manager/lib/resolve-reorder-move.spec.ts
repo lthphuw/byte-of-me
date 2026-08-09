@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { resolveReorderMove } from './reorder';
+import { resolveReorderMove } from './resolve-reorder-move';
 
 /** Apply a resolved move so the result can be compared to the target order. */
 function applyMove(ids: string[], move: { from: number; to: number }) {
