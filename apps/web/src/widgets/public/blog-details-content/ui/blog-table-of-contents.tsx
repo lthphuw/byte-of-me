@@ -6,6 +6,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@byte-of-me/ui';
+import { scrollIntoViewBehavior } from '@byte-of-me/ui/lib/prefers-reduced-motion';
 import { ChevronDown, List } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
@@ -98,7 +99,9 @@ export function BlogTableOfContents({
   if (headings.length < 2) return null;
 
   const jumpTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: scrollIntoViewBehavior() });
     history.replaceState(null, '', `#${id}`);
   };
 

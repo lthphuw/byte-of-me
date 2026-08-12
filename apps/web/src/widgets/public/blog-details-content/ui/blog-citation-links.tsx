@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { scrollIntoViewBehavior } from '@byte-of-me/ui/lib/prefers-reduced-motion';
 
 const FLASH_CLASS = 'is-flash';
 const FLASH_MS = 1600;
@@ -17,10 +18,6 @@ export function BlogCitationLinks({ targetId }: { targetId: string }) {
   useEffect(() => {
     const container = document.getElementById(targetId);
     if (!container) return;
-
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches;
 
     // Remembers which marker a reader used, so `↩` returns to that exact spot.
     const origins = new Map<string, HTMLElement>();
@@ -43,7 +40,7 @@ export function BlogCitationLinks({ targetId }: { targetId: string }) {
       if (!element) return false;
 
       element.scrollIntoView({
-        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        behavior: scrollIntoViewBehavior(),
         block: 'center',
       });
 

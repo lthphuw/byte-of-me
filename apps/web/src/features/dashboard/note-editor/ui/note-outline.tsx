@@ -1,5 +1,6 @@
 'use client';
 
+import { scrollIntoViewBehavior } from '@byte-of-me/ui/lib/prefers-reduced-motion';
 import type { OutlineItem } from '@byte-of-me/ui/rich-text-editor';
 import { useTranslations } from 'next-intl';
 
@@ -30,7 +31,10 @@ export function NoteOutline({ items }: { items: OutlineItem[] }) {
           onClick={() => {
             document
               .getElementById(item.id)
-              ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              ?.scrollIntoView({
+                behavior: scrollIntoViewBehavior(),
+                block: 'start',
+              });
           }}
           className={cn(
             '-ml-px border-l-2 border-transparent px-3 py-1 text-left text-xs transition-colors hover:border-primary hover:text-primary',

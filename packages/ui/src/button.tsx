@@ -18,7 +18,13 @@ const buttonVariants = cva(
         secondary:
           'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'text-primary underline-offset-4 hover:underline',
+        // Underlined at rest, not on hover. The palette is achromatic, so
+        // `text-primary` (9% lightness) is all but identical to body text at
+        // 3.9% — a hover-only underline left "View all projects" on the
+        // homepage looking like a sentence, and touch devices never hover at
+        // all. The underline is the affordance; removing it on hover is the
+        // state change. WCAG 1.4.1: do not rely on color alone.
+        link: 'text-primary underline underline-offset-4 hover:no-underline',
       },
       size: {
         default: 'h-9 px-4 py-2',

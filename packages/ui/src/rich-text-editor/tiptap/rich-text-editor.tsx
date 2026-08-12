@@ -32,6 +32,7 @@ import { common, createLowlight } from 'lowlight';
 
 import { useMediaQuery } from '../../hooks/use-media-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../index';
+import { scrollIntoViewBehavior } from '../../lib/prefers-reduced-motion';
 import { cn } from '../../lib/utils';
 
 import { EditorPreview } from './editor-preview';
@@ -678,7 +679,7 @@ export function RichTextEditor({
                       e?.preventDefault();
 
                       const el = document.getElementById(item.id);
-                      el?.scrollIntoView({ behavior: 'smooth' });
+                      el?.scrollIntoView({ behavior: scrollIntoViewBehavior() });
                     }}
                     className={cn(
                       'text-xs text-left px-4 py-1 hover:text-primary transition-all border-l-2 -ml-[1px] border-transparent hover:border-primary',

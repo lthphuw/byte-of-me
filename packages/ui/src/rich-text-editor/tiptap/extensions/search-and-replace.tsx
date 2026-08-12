@@ -8,6 +8,8 @@ import type { Node as PMNode } from '@tiptap/pm/model';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet, type EditorView } from '@tiptap/pm/view';
 
+import { scrollIntoViewBehavior } from '../../../lib/prefers-reduced-motion';
+
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     search: {
@@ -204,7 +206,10 @@ const replaceAll = (
 const scrollResultIntoView = (view: EditorView, from: number) => {
   const { node } = view.domAtPos(from);
   const element = node instanceof Element ? node : node.parentElement;
-  element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  element?.scrollIntoView({
+    behavior: scrollIntoViewBehavior(),
+    block: 'center',
+  });
 };
 
 const selectNext = (editor: CoreEditor) => {

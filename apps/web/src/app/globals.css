@@ -151,6 +151,21 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Smooth scrolling is a vestibular trigger (WCAG 2.3.3), and this rule applies
+   to every anchor jump and every `scrollIntoView()` that does not name a
+   behavior of its own.
+
+   It does NOT cover a call that passes `behavior: 'smooth'` explicitly — CSS
+   only decides the behavior when the caller says `'auto'` or stays silent. Those
+   call sites go through `scrollIntoViewBehavior()` in
+   `@byte-of-me/ui/lib/prefers-reduced-motion` instead. Both halves are needed;
+   neither one covers the other. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 .fi {
   display: inline-block;
   width: 100% !important;
