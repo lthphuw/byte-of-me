@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Image, { type ImageOptions } from '@tiptap/extension-image';
+import type { ImageOptions } from '@tiptap/extension-image';
 import {
   type NodeViewProps,
   NodeViewWrapper,
@@ -33,15 +33,23 @@ import {
 } from '../../../index';
 import { cn } from '../../../lib/utils';
 
+import { ImageBase, type ImageUploadFn } from './image-base';
+import { ImageCaption } from './image-caption';
+import { imageUploadFn } from './upload-images';
 import { useImageUpload } from './use-image-upload';
 
-export type ImageUploadFn = (file: File) => Promise<string>;
+export type { ImageUploadFn };
 
 type ExtendedImageOptions = ImageOptions & {
   uploadFn?: ImageUploadFn;
 };
 
-export const ImageExtension = Image.extend<ExtendedImageOptions>({
+/**
+ * Editable image node: the schema and HTML from `image-base.ts` — which the
+ * server render registers directly — plus the node view and the upload option,
+ * which only the editor needs.
+ */
+export const ImageExtension = ImageBase.extend<ExtendedImageOptions>({
   addOptions() {
     const parent = this.parent?.();
 
@@ -58,19 +66,6 @@ export const ImageExtension = Image.extend<ExtendedImageOptions>({
     };
   },
 
-  addAttributes() {
-    return {
-      src: { default: null },
-      alt: { default: null },
-      title: { default: null },
-      width: { default: '100%' },
-      height: { default: null },
-      align: { default: 'center' },
-      caption: { default: '' },
-      aspectRatio: { default: null },
-    };
-  },
-
   addNodeView() {
     return ReactNodeViewRenderer(TiptapImage);
   },
@@ -80,7 +75,7 @@ function TiptapImage(props: NodeViewProps) {
   const { node, editor, selected, deleteNode, updateAttributes } = props;
 
   const imageRef = useRef<HTMLImageElement | null>(null);
-  const nodeRef = useRef<HTMLDivElement | null>(null);
+  const nodeRef = useRef<HTMLElement | null>(null);
 
   const [uploadingBlob, setUploadingBlob] = useState(false);
   // Track the last uploaded blob src (not a boolean) so replacing the image
@@ -91,9 +86,7 @@ function TiptapImage(props: NodeViewProps) {
   const [imageUrl, setImageUrl] = useState('');
   const [openedMore, setOpenedMore] = useState(false);
 
-  const uploadFn: ImageUploadFn | undefined =
-    editor.extensionManager.extensions.find((ext) => ext.name === 'image')
-      ?.options?.uploadFn;
+  const uploadFn = imageUploadFn(editor);
 
   /**
    * 🔥 AUTO UPLOAD blob → S3
@@ -176,7 +169,10 @@ function TiptapImage(props: NodeViewProps) {
   };
 
   return (
+    // A real `<figure>`, so the caption below can be a real `<figcaption>` —
+    // in the editor as well as on the published page.
     <NodeViewWrapper
+      as="figure"
       ref={nodeRef}
       className={cn(
         'relative flex flex-col rounded-md border-2 border-transparent',
@@ -294,6 +290,17 @@ function TiptapImage(props: NodeViewProps) {
           </div>
         )}
       </div>
+
+      {/* The raw attribute, not the trimmed reading: a controlled input fed
+          `caption.trim()` swallows the space the author just typed. */}
+      <ImageCaption
+        caption={
+          typeof node.attrs.caption === 'string' ? node.attrs.caption : ''
+        }
+        editable={editor.isEditable}
+        placeholder="Add a caption"
+        onChange={(caption) => updateAttributes({ caption })}
+      />
     </NodeViewWrapper>
   );
 }

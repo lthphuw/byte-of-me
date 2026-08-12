@@ -115,6 +115,24 @@ export function RichTextHtml({
         '[&_img]:my-6 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-2xl [&_img]:shadow-sm',
         '[&_figure]:my-6 [&_figure]:max-w-full',
 
+        // A row of images (`imageGroup`). Column first, row from `sm` — at
+        // 375px two images side by side are two illegible thumbnails, and the
+        // alternative (letting them shrink) is what puts a horizontal
+        // scrollbar on the page. `min-w-0` on the items is what actually
+        // allows the shrink; flex children default to their content width.
+        '[&_.image-group-items]:flex [&_.image-group-items]:flex-col [&_.image-group-items]:gap-3',
+        'sm:[&_.image-group-items]:flex-row sm:[&_.image-group-items]:items-start',
+        '[&_.image-group-items>*]:min-w-0 [&_.image-group-items>*]:flex-1',
+        // The row owns the vertical rhythm; its images and any per-image
+        // figure inside it must not add their own.
+        '[&_.image-group-items_img]:my-0 [&_.image-group-items_img]:w-full',
+        '[&_.image-group-items>figure]:my-0',
+
+        // Captions. Real `<figcaption>`s, quiet and centred under what they
+        // describe.
+        '[&_figcaption]:mt-2 [&_figcaption]:text-center [&_figcaption]:text-sm',
+        '[&_figcaption]:text-neutral-500 dark:[&_figcaption]:text-neutral-400',
+
         // Inline code
         '[&_code:not(pre_code)]:rounded-md',
         '[&_code:not(pre_code)]:bg-neutral-100',

@@ -17,6 +17,7 @@ import { Button, Input, Tabs, TabsContent, TabsList, TabsTrigger, } from '../../
 import { isValidUrl, NODE_HANDLES_SELECTED_STYLE_CLASSNAME, } from '../../../lib/tiptap-utils';
 import { cn } from '../../../lib/utils';
 
+import { resolveImages } from './upload-images';
 import { useImageUpload } from './use-image-upload';
 
 export interface ImagePlaceholderOptions {
@@ -83,10 +84,12 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
   const [urlError, setUrlError] = useState(false);
   const [isDragActive, setIsDragActive] = useState(false);
 
+  const [insertingMany, setInsertingMany] = useState(false);
+
   const {
     previewUrl,
     fileInputRef,
-    handleFileChange,
+    handleFileChange: handleSingleFileChange,
     handleRemove,
     uploading,
     error,
@@ -104,6 +107,30 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
       setIsExpanded(false);
     },
   });
+
+  /**
+   * One picker for both shapes: one file becomes an image, several become a
+   * row of images side by side. There is no separate "insert a row" button
+   * because there is no separate decision — the author picks the files they
+   * want next to each other, and the count says the rest.
+   */
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length < 2) return handleSingleFileChange(e);
+
+    void (async () => {
+      setInsertingMany(true);
+      try {
+        const images = await resolveImages(editor, files);
+        if (images.length > 0) {
+          editor.chain().focus().setImageGroup(images).run();
+          setIsExpanded(false);
+        }
+      } finally {
+        setInsertingMany(false);
+      }
+    })();
+  };
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -127,12 +154,14 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
     e.stopPropagation();
     setIsDragActive(false);
 
-    const file = e.dataTransfer.files[0];
-    if (file) {
+    // Every dropped file, not just the first: dropping two images here is the
+    // same gesture as picking two in the dialog, and produces the same row.
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
       const input = fileInputRef.current;
       if (input) {
         const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(file);
+        files.forEach((file) => dataTransfer.items.add(file));
         input.files = dataTransfer.files;
         handleFileChange({
           target: input,
@@ -258,6 +287,7 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
                         ref={fileInputRef}
                         type="file"
                         accept="image/*"
+                        multiple
                         onChange={handleFileChange}
                         className="hidden"
                         id="image-upload"
@@ -266,13 +296,17 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
                         htmlFor="image-upload"
                         className="flex cursor-pointer flex-col items-center gap-4"
                       >
-                        <Upload className="h-8 w-8 text-muted-foreground" />
+                        {insertingMany ? (
+                          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                        ) : (
+                          <Upload className="h-8 w-8 text-muted-foreground" />
+                        )}
                         <div>
                           <p className="text-sm font-medium">
                             Click to upload or drag and drop
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            SVG, PNG, JPG or GIF
+                            SVG, PNG, JPG or GIF — pick several for a row
                           </p>
                         </div>
                       </label>

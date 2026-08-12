@@ -42,6 +42,7 @@ import {
   ImageExtension,
   type ImageUploadFn,
 } from './extensions/image';
+import { ImageGroup } from './extensions/image-group';
 import { ImagePlaceholder } from './extensions/image-placeholder';
 import { LinkSuggestion } from './extensions/link-suggestion';
 import { NotesBlockMath, NotesInlineMath } from './extensions/math';
@@ -49,6 +50,7 @@ import { Citation } from './extensions/references/citation';
 import { ReferenceList } from './extensions/references/reference-list';
 import { ReferencePanel } from './extensions/references/reference-panel';
 import SearchAndReplace from './extensions/search-and-replace';
+import { imageFilesFrom, uploadImages } from './extensions/upload-images';
 import { MobileEditorTools } from './mobile-tools';
 // Shared with the server-side render schema so both stay identical.
 import { CustomHeading } from './render-extensions';
@@ -95,6 +97,11 @@ export function createExtensions(options?: {
     Color,
     Highlight.configure({ multicolor: true }),
     ImageExtension.configure({ uploadFn: options?.uploadImage }),
+    // Two or more images side by side, with one caption for the row. Every
+    // editor built from this list gets it — full, compact (the dashboard
+    // dialogs) and chromeless (notes) — because the row is a document node,
+    // not a chrome feature.
+    ImageGroup,
     ImagePlaceholder,
     SearchAndReplace,
     Typography,
@@ -257,14 +264,6 @@ export interface RichTextEditorApi {
 
 const COMPACT_MAX_HEIGHT = 360;
 
-/** Files a drop or paste may carry that we will upload as an image. */
-function imageFilesFrom(data: DataTransfer | null): File[] {
-  if (!data) return [];
-  return Array.from(data.files).filter((file) =>
-    file.type.startsWith('image/')
-  );
-}
-
 /**
  * Uploads dropped/pasted files and inserts each as an image node.
  *
@@ -274,9 +273,11 @@ function imageFilesFrom(data: DataTransfer | null): File[] {
  * middle of a word. `at` is only a starting point; after the first insert the
  * rest follow it.
  *
- * A failed upload is skipped rather than aborting the batch — dropping four
- * screenshots and losing all of them because the second one was too large is
- * worse than getting three.
+ * A failed upload is skipped rather than aborting the batch, and reported —
+ * `uploadImages` owns both halves. It used to skip silently here, on the
+ * strength of a comment claiming the uploader raised its own toast:
+ * `uploadSingleMedia` only throws, so a refused file (wrong type, over 3 MB)
+ * left the author with no image and no explanation.
  */
 function insertUploadedImages(
   view: { state: EditorState; dispatch: (tr: Transaction) => void },
@@ -285,22 +286,15 @@ function insertUploadedImages(
   at?: number
 ): void {
   void (async () => {
+    const uploaded = await uploadImages(files, upload);
     let insertAt = at;
 
-    for (const file of files) {
-      let src: string;
-      try {
-        src = await upload(file);
-      } catch {
-        // The uploader surfaces its own toast; skip this file and continue.
-        continue;
-      }
-
+    for (const image of uploaded) {
       const imageType = view.state.schema.nodes.image;
       if (!imageType) return;
 
       const pos = insertAt ?? view.state.selection.from;
-      const node = imageType.create({ src, alt: file.name });
+      const node = imageType.create(image);
       view.dispatch(view.state.tr.insert(pos, node));
       insertAt = pos + node.nodeSize;
     }
@@ -401,9 +395,7 @@ export function RichTextEditor({
       handleDrop(view, event, _slice, moved) {
         if (moved || !uploadImage) return false;
 
-        const files = imageFilesFrom(
-          (event as DragEvent).dataTransfer ?? null
-        );
+        const files = imageFilesFrom((event as DragEvent).dataTransfer?.files);
         if (files.length === 0) return false;
 
         event.preventDefault();
@@ -421,7 +413,7 @@ export function RichTextEditor({
         if (!uploadImage) return false;
 
         const files = imageFilesFrom(
-          (event as ClipboardEvent).clipboardData ?? null
+          (event as ClipboardEvent).clipboardData?.files
         );
         if (files.length === 0) return false;
 

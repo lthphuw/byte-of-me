@@ -315,6 +315,43 @@
   transform: translateY(-2px);
 }
 
+/* Rows of images (the `imageGroup` node).
+ *
+ * The layout sits on `.image-group-items > *`, not on `.image-group-items`
+ * itself: ReactNodeViewRenderer puts its own element between the one
+ * `NodeViewContent` renders and the child node views, so that inner element —
+ * the row's only child — is what actually holds the images.
+ *
+ * Scoped to `.ProseMirror` so it cannot reach the preview pane, which renders
+ * through the published-page styles in `rich-text-html.tsx` and must keep
+ * matching them exactly. Same breakpoint as those styles: stacked below 640px,
+ * side by side above it.
+ */
+.ProseMirror .image-group-items > * {
+  display: flex;
+  flex-direction: column;
+  gap: var(--editor-spacing-3, 0.75rem);
+}
+
+@media (min-width: 640px) {
+  .ProseMirror .image-group-items > * {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.ProseMirror .image-group-items > * > * {
+  flex: 1 1 0;
+  /* Flex children default to their content width; without this a wide image
+     refuses to shrink and the row overflows the writing column. */
+  min-width: 0;
+}
+
+.ProseMirror .image-group-items img {
+  width: 100%;
+  margin: 0;
+}
+
 /* Horizontal Rule */
 .ProseMirror hr {
   margin: var(--editor-spacing-8) 0;

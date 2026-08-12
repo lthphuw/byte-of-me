@@ -112,9 +112,11 @@ const groups: CommandGroupType[] = [
       },
       {
         title: 'Image',
-        description: 'Insert an image',
+        // Picking more than one file in the dialog inserts them as a row, so
+        // the one entry covers both shapes — see `image-placeholder.tsx`.
+        description: 'Insert one image, or several side by side',
         icon: ImageIcon,
-        keywords: 'image picture photo',
+        keywords: 'image picture photo row gallery side by side',
         command: (editor) =>
           editor.chain().focus().insertImagePlaceholder().run(),
       },

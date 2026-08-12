@@ -66,6 +66,82 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
     expect(html).toContain('language-bash');
   });
 
+  it('renders a captioned image as a figure with a real figcaption', () => {
+    const captioned = sanitizeHtml(
+      generateHTML(
+        {
+          type: 'doc',
+          content: [
+            {
+              type: 'image',
+              attrs: { src: 'https://example.test/a.png', alt: 'A', caption: 'Fig 1' },
+            },
+          ],
+        },
+        renderExtensions
+      )
+    );
+
+    expect(captioned).toContain('<figure');
+    expect(captioned).toContain('<figcaption');
+    expect(captioned).toContain('Fig 1');
+    expect(captioned).toContain('<img');
+  });
+
+  it('leaves an image with no caption as the bare img it has always been', () => {
+    // Every document already in the database is this shape. The figure wrapper
+    // must be additive, not a rewrite of what is stored.
+    const plain = sanitizeHtml(
+      generateHTML(
+        {
+          type: 'doc',
+          content: [
+            { type: 'image', attrs: { src: 'https://example.test/a.png', alt: 'A' } },
+          ],
+        },
+        renderExtensions
+      )
+    );
+
+    expect(plain).toContain('<img');
+    expect(plain).not.toContain('<figure');
+    expect(plain).not.toContain('<figcaption');
+  });
+
+  it('renders a row of images as one figure, with the caption outside the row', () => {
+    // The whole reason `render-extensions.ts` shares the editor's node
+    // definitions: a node the editor can persist but the render schema does
+    // not know makes `generateHTML` throw, and `renderRichTextHtml` then falls
+    // back to escaping — blanking the document, not just the images.
+    const row = sanitizeHtml(
+      generateHTML(
+        {
+          type: 'doc',
+          content: [
+            {
+              type: 'imageGroup',
+              attrs: { caption: 'Before and after' },
+              content: [
+                { type: 'image', attrs: { src: 'https://example.test/a.png', alt: 'A' } },
+                { type: 'image', attrs: { src: 'https://example.test/b.png', alt: 'B' } },
+              ],
+            },
+          ],
+        },
+        renderExtensions
+      )
+    );
+
+    expect(row).toContain('class="image-group"');
+    expect(row).toContain('class="image-group-items"');
+    expect(row.match(/<img/g)).toHaveLength(2);
+    expect(row.match(/<figcaption/g)).toHaveLength(1);
+    expect(row).toContain('Before and after');
+    // The caption describes the row, so it must sit after the images rather
+    // than inside the element that lays them out side by side.
+    expect(row.indexOf('<figcaption')).toBeGreaterThan(row.lastIndexOf('<img'));
+  });
+
   it('does not throw on a doc using every base node', () => {
     const full = {
       type: 'doc',

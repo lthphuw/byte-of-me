@@ -149,6 +149,121 @@ describe('RichTextEditor onChange', () => {
 });
 
 /**
+ * A row of images is a document node, so it has to survive being *opened* —
+ * the render pipeline test in `lib/render-pipeline.spec.ts` covers the
+ * published page, and this covers the editor's own node views, which are the
+ * half that can fail on `NodeViewContent` without the schema being wrong.
+ */
+describe('RichTextEditor image rows', () => {
+  test('opens a stored row with both images and an editable row caption', async () => {
+    let container: HTMLElement | undefined;
+
+    await React.act(async () => {
+      container = render(
+        <RichTextEditor
+          value={{
+            type: 'doc',
+            content: [
+              {
+                type: 'imageGroup',
+                attrs: { caption: 'Before and after' },
+                content: [
+                  {
+                    type: 'image',
+                    attrs: { src: 'https://example.test/a.png', alt: 'A' },
+                  },
+                  {
+                    type: 'image',
+                    attrs: { src: 'https://example.test/b.png', alt: 'B' },
+                  },
+                ],
+              },
+            ],
+          }}
+          onChange={() => {}}
+        />
+      ).container;
+    });
+    await React.act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    // The class the published page lays the row out with — the editor uses the
+    // same one so the two cannot drift.
+    expect(container?.querySelector('.image-group-items')).not.toBeNull();
+    expect(container?.querySelectorAll('img')).toHaveLength(2);
+
+    const rowCaption = container?.querySelector<HTMLInputElement>(
+      'input[aria-label="Caption for this row"]'
+    );
+    expect(rowCaption?.value).toBe('Before and after');
+
+    // A real figcaption, not a styled div — in the editor as well as in the
+    // rendered article.
+    expect(rowCaption?.closest('figcaption')).not.toBeNull();
+  });
+
+  test('deleting the last image of a row removes the row itself', async () => {
+    let container: HTMLElement | undefined;
+
+    await React.act(async () => {
+      container = render(
+        <RichTextEditor
+          value={{
+            type: 'doc',
+            content: [
+              {
+                type: 'imageGroup',
+                attrs: { caption: 'One left' },
+                content: [
+                  {
+                    type: 'image',
+                    attrs: { src: 'https://example.test/a.png', alt: 'A' },
+                  },
+                ],
+              },
+            ],
+          }}
+          onChange={() => {}}
+        />
+      ).container;
+    });
+    await React.act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    type EditableWithEditor = Element & {
+      editor?: {
+        commands: {
+          setNodeSelection: (pos: number) => boolean;
+          deleteSelection: () => boolean;
+        };
+        getJSON: () => JSONContent;
+      };
+    };
+    const editor = (
+      container?.querySelector('.tiptap') as EditableWithEditor | null
+    )?.editor;
+    expect(editor).toBeDefined();
+
+    await React.act(async () => {
+      // Position 1 is the image inside the row: what clicking it selects, and
+      // what the delete key then acts on.
+      editor?.commands.setNodeSelection(1);
+      editor?.commands.deleteSelection();
+    });
+
+    // The row's content is `image*`, so ProseMirror leaves an EMPTY row behind
+    // rather than repairing it with a blank image node (what `image+` did —
+    // measured). The cleanup plugin has to take it from there, or the author
+    // is left with an empty captioned figure they never asked for.
+    const types = JSON.stringify(editor?.getJSON());
+    expect(types).not.toContain('imageGroup');
+    expect(types).not.toContain('One left');
+  });
+});
+
+/**
  * `onEditorApi` is how the notes workspace reaches the markdown serializer
  * for `.md` export. The revocation half matters as much as the handing-out
  * half: the consumer stores the API on a ref, and an API left behind after

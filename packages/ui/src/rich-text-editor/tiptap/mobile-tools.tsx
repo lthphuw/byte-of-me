@@ -19,6 +19,7 @@ import {
 import { cn } from '../../lib/utils';
 
 import type { ImageUploadFn } from './extensions/image';
+import { imageFilesFrom, resolveImages } from './extensions/upload-images';
 
 /**
  * The touch counterpart to drag-and-drop and markdown input rules.
@@ -111,14 +112,12 @@ export function MobileEditorTools({
   const [open, setOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  const insertImage = async (file: File) => {
-    if (!uploadImage) return;
-    try {
-      const src = await uploadImage(file);
-      editor.chain().focus().setImage({ src, alt: file.name }).run();
-    } catch {
-      // The uploader raises its own toast.
-    }
+  // One picked image is inserted on its own, several become a row — the same
+  // rule the image placeholder follows on a desktop, so the gesture means the
+  // same thing on both.
+  const insertImages = async (files: File[]) => {
+    const images = await resolveImages(editor, files);
+    if (images.length > 0) editor.chain().focus().setImageGroup(images).run();
   };
 
   return (
@@ -188,14 +187,15 @@ export function MobileEditorTools({
           ref={fileInput}
           type="file"
           accept="image/*"
+          multiple
           className="hidden"
           onChange={(event) => {
-            const file = event.target.files?.[0];
+            const files = imageFilesFrom(event.target.files);
             // Reset first: picking the same file twice in a row fires no
             // change event otherwise, so the second insert silently does
             // nothing.
             event.target.value = '';
-            if (file) void insertImage(file);
+            if (files.length > 0) void insertImages(files);
           }}
         />
       )}

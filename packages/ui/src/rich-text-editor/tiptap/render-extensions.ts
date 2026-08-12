@@ -16,7 +16,6 @@ import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { Color } from '@tiptap/extension-color';
 import Heading from '@tiptap/extension-heading';
 import Highlight from '@tiptap/extension-highlight';
-import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
@@ -28,6 +27,7 @@ import Underline from '@tiptap/extension-underline';
 import StarterKit from '@tiptap/starter-kit';
 import { common, createLowlight } from 'lowlight';
 
+import { ImageBase, ImageGroupBase } from './extensions/image-base';
 import { CitationBase } from './extensions/references/citation-base';
 import { ReferenceListBase } from './extensions/references/reference-list-base';
 
@@ -53,22 +53,12 @@ export const CustomHeading = Heading.extend({
   },
 });
 
-// Same node name and attribute set as the editor's `ImageExtension`, without
-// its React node view. Base renderHTML emits the <img> from these attrs.
-const RenderImage = Image.extend({
-  addAttributes() {
-    return {
-      src: { default: null },
-      alt: { default: null },
-      title: { default: null },
-      width: { default: '100%' },
-      height: { default: null },
-      align: { default: 'center' },
-      caption: { default: '' },
-      aspectRatio: { default: null },
-    };
-  },
-});
+// The image nodes come from `extensions/image-base.ts` — the same module the
+// editor's `ImageExtension` and `ImageGroup` extend, minus their node views.
+// This file used to re-declare the image's attribute set and ask the next
+// reader to keep the two copies in step; sharing the definition is what makes
+// "a captioned image renders a <figcaption>, a row renders a <figure>" true on
+// the published page and in the print views, not only inside the editor.
 
 // Schema stub for the editor's upload-in-progress node. It should never be
 // persisted, but if one slips into a stored document the render must not
@@ -172,7 +162,8 @@ export const renderExtensions = [
   Link,
   Color,
   Highlight.configure({ multicolor: true }),
-  RenderImage,
+  ImageBase,
+  ImageGroupBase,
   RenderImagePlaceholder,
   Typography,
   // resizable off: column widths are an editing affordance; rendered tables

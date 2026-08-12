@@ -1,6 +1,8 @@
 import type { JSONContent } from '@tiptap/core';
+import { MarkdownManager } from '@tiptap/markdown';
 import { describe, expect, it } from 'bun:test';
 
+import { renderExtensions } from './rich-text-editor/tiptap/render-extensions';
 import { parseMarkdownToTiptap } from './rich-text-markdown';
 import { renderRichTextHtml } from './rich-text-render';
 
@@ -92,5 +94,48 @@ describe('parseMarkdownToTiptap', () => {
     const html = renderRichTextHtml(JSON.stringify(doc));
     expect(html).toContain('$x^2$');
     expect(html).not.toContain('data-type="inline-math"');
+  });
+});
+
+/**
+ * The notes workspace round-trips the whole document through markdown every
+ * time the author toggles raw mode, and exports `.md` through the same
+ * serializer. `@tiptap/markdown` renders a node type it has no handler for as
+ * the empty string — silently — so a node without `renderMarkdown` does not
+ * fail loudly, it deletes the author's images.
+ */
+describe('markdown serialization of the image nodes', () => {
+  const manager = new MarkdownManager({ extensions: renderExtensions });
+
+  it('keeps every image of a row, and its caption', () => {
+    const markdown = manager.serialize({
+      type: 'doc',
+      content: [
+        {
+          type: 'imageGroup',
+          attrs: { caption: 'Before and after' },
+          content: [
+            { type: 'image', attrs: { src: 'a.png', alt: 'A' } },
+            { type: 'image', attrs: { src: 'b.png', alt: 'B' } },
+          ],
+        },
+      ],
+    });
+
+    expect(markdown).toContain('![A](a.png)');
+    expect(markdown).toContain('![B](b.png)');
+    expect(markdown).toContain('Before and after');
+  });
+
+  it("keeps a single image's caption", () => {
+    const markdown = manager.serialize({
+      type: 'doc',
+      content: [
+        { type: 'image', attrs: { src: 'a.png', alt: 'A', caption: 'Fig 1' } },
+      ],
+    });
+
+    expect(markdown).toContain('![A](a.png)');
+    expect(markdown).toContain('Fig 1');
   });
 });
