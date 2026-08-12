@@ -6,6 +6,12 @@ import { ImageIcon, Loader2, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
+import {
+  ACCEPTED_IMAGE_MIME_TYPES,
+  MAX_IMAGE_SIZE_BYTES,
+  MAX_IMAGE_SIZE_MB,
+} from '@/entities/media/model/upload-constraints';
+
 export interface ImageUploadProps {
   uploadFiles: (files: File[]) => Promise<void>;
 }
@@ -14,12 +20,13 @@ export function ImageUpload({ uploadFiles }: ImageUploadProps) {
   const t = useTranslations('dashboard.media');
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  const maxSizeUploadInMbs = 3;
   const handleFiles = (incomingFiles: FileList | null) => {
     if (!incomingFiles) return;
 
     const validFiles = Array.from(incomingFiles).filter((file) => {
-      if (!file.type.startsWith('image/')) {
+      // The shared list, not `startsWith('image/')`: the server accepts a fixed
+      // set, and letting a format through here only moves the rejection later.
+      if (!ACCEPTED_IMAGE_MIME_TYPES.includes(file.type as never)) {
         toast.error(t('upload.invalidTypeTitle'), {
           description: t('upload.invalidTypeDescription', {
             fileName: file.name,
@@ -27,11 +34,11 @@ export function ImageUpload({ uploadFiles }: ImageUploadProps) {
         });
         return false;
       }
-      if (file.size > maxSizeUploadInMbs * 1024 * 1024) {
+      if (file.size > MAX_IMAGE_SIZE_BYTES) {
         toast.error(t('upload.fileTooLargeTitle'), {
           description: t('upload.fileTooLargeDescription', {
             fileName: file.name,
-            maxSize: maxSizeUploadInMbs,
+            maxSize: MAX_IMAGE_SIZE_MB,
           }),
         });
         return false;

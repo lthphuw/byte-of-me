@@ -16,6 +16,7 @@ import {
   MoreVertical,
   Trash,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import {
   Button,
@@ -124,14 +125,26 @@ function TiptapImage(props: NodeViewProps) {
           src: uploadedUrl, // ✅ replace with S3
         });
       } catch (err) {
-        console.error('Upload failed', err);
+        // A failed upload must not leave the node holding its `blob:` src.
+        // That URL resolves only in the tab that minted it, so the author goes
+        // on seeing their image, saves the document, and every reader gets a
+        // broken one — the failure surfaces later, somewhere else, as corrupt
+        // content. This used to be a `console.error` and nothing else.
+        //
+        // Removing the node is the honest outcome: the image genuinely is not
+        // there. The message carries the server's reason, so "larger than 3 MB"
+        // reaches the author instead of a silent gap.
+        toast.error(
+          err instanceof Error && err.message ? err.message : 'Upload failed'
+        );
+        deleteNode();
       } finally {
         setUploadingBlob(false);
       }
     };
 
     upload();
-  }, [node.attrs.src, uploadFn, updateAttributes]);
+  }, [node.attrs.src, uploadFn, updateAttributes, deleteNode]);
 
   /**
    * Manual upload (replace image)

@@ -19,7 +19,7 @@ import { useTranslations } from 'next-intl';
 
 import { ProjectCoauthorFields } from './project-coauthor-fields';
 
-import { uploadSingleMedia } from '@/entities/media';
+import { createScopedImageUploader } from '@/entities/media';
 import {
   type AdminProject,
   type ProjectFromValues,
@@ -29,6 +29,10 @@ import { useResetOnOpen } from '@/shared/hooks/use-reset-on-open';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { useProjectReferenceOptions } from '@/widgets/dashboard/project-manager/lib/use-project-reference-options';
+
+/** Images pasted into this editor land under the `project` prefix in storage. */
+const uploadImage = createScopedImageUploader('project');
+
 
 interface ProjectDialogProps {
   open: boolean;
@@ -240,7 +244,7 @@ export function ProjectDialog({
                             onChange={(json) =>
                               field.onChange(fromEditorContent(json))
                             }
-                            uploadImage={uploadSingleMedia}
+                            uploadImage={uploadImage}
                           />
                           <FormMessage />
                         </FormItem>

@@ -22,11 +22,15 @@ import {
   blogFormSchema,
   type BlogFormValues,
 } from '@/entities/blog/model/blog-schema';
-import { uploadSingleMedia } from '@/entities/media/api/upload-single-media';
+import { createScopedImageUploader } from '@/entities/media/api/upload-single-media';
 import { useBlogReferenceOptions } from '@/features/dashboard/blog-editor/lib/use-blog-reference-options';
 import { useFormAutosave } from '@/shared/hooks/use-form-autosave';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
+
+/** Images pasted into this editor land under the `blog` prefix in storage. */
+const uploadImage = createScopedImageUploader('blog');
+
 
 export interface BlogFormProps {
   initialData?: AdminBlog;
@@ -192,7 +196,7 @@ export function BlogForm({ initialData, onSubmit, loading, formId }: BlogFormPro
                           <RichTextEditor
                             value={field.value}
                             onChange={field.onChange}
-                            uploadImage={uploadSingleMedia}
+                            uploadImage={uploadImage}
                           />
                         </div>
                       </FormControl>

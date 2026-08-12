@@ -37,7 +37,16 @@ const nextConfig = {
 
   experimental: {
     serverActions: {
-      bodySizeLimit: '3mb',
+      // Sized from the media rules, not picked round: MAX_IMAGE_SIZE_MB (3) ×
+      // MAX_UPLOAD_BATCH (5) plus multipart overhead.
+      //
+      // It used to be '3mb', exactly one image's worth. A single file at the
+      // limit already exceeded it once multipart framing was added, so Next
+      // rejected the request at the framework boundary — before the action ran
+      // and before any of our validation could say which file was too big or
+      // why. The upload just failed. Keeping headroom here is what lets
+      // `findUploadViolation` be the thing that answers.
+      bodySizeLimit: '20mb',
     },
     // 87 MB of `.map` files across .next/server, all of it shipped inside the
     // serverless function. Stack traces stay readable through the framework's

@@ -19,13 +19,17 @@ import type {
 import { ChevronLeft, CircleHelp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { uploadSingleMedia } from '@/entities/media';
+import { createScopedImageUploader } from '@/entities/media';
 import { parseNoteHref } from '@/entities/note';
 import { useNoteEditorAutosave } from '@/features/dashboard/note-editor/lib/use-note-editor-autosave';
 import { NoteEditorSkeleton } from '@/features/dashboard/note-editor/ui/note-editor-skeleton';
 import { NoteExportMenu } from '@/features/dashboard/note-editor/ui/note-export-menu';
 import { Link } from '@/shared/i18n/navigation';
 import { LazyRichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
+
+/** Images pasted into this editor land under the `note` prefix in storage. */
+const uploadImage = createScopedImageUploader('note');
+
 
 export interface NoteEditorProps {
   noteId: string;
@@ -353,7 +357,7 @@ export function NoteEditor({
           // Turns on drag-a-file and paste-a-screenshot: the editor uploads it
           // and inserts it where it landed. Without this prop the handlers
           // decline the event and the browser navigates away to the image.
-          uploadImage={uploadSingleMedia}
+          uploadImage={uploadImage}
           onChange={(json, meta) => {
             // `meta.initial` marks the document the EDITOR produced while
             // opening this one — heading ids the table-of-contents extension

@@ -13,9 +13,13 @@ import {
 } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
-import { uploadSingleMedia } from '@/entities/media';
+import { createScopedImageUploader } from '@/entities/media';
 import type { UserProfileFormValues } from '@/entities/user-profile';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
+
+/** Images pasted into this editor land under the `profile` prefix in storage. */
+const uploadImage = createScopedImageUploader('profile');
+
 
 interface ProfileTranslationCardProps {
   form: UseFormReturn<UserProfileFormValues>;
@@ -163,7 +167,7 @@ export function ProfileTranslationCard({
                 <RichTextEditor
                   value={field.value}
                   onChange={field.onChange}
-                  uploadImage={uploadSingleMedia}
+                  uploadImage={uploadImage}
                 />
               </FormControl>
             </FormItem>

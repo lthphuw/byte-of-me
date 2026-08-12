@@ -29,11 +29,15 @@ import {
   type EducationFormValues,
   educationSchema,
 } from '@/entities/education/model/education-schema';
-import { uploadSingleMedia } from '@/entities/media';
+import { createScopedImageUploader } from '@/entities/media';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { EducationAchievementsField } from '@/widgets/dashboard/education-manager/ui/education-achievements-field';
+
+/** Images pasted into this editor land under the `education` prefix in storage. */
+const uploadImage = createScopedImageUploader('education');
+
 
 interface EducationDialogProps {
   open: boolean;
@@ -222,7 +226,7 @@ export function EducationDialog({
                             onChange={(json) =>
                               field.onChange(fromEditorContent(json))
                             }
-                            uploadImage={uploadSingleMedia}
+                            uploadImage={uploadImage}
                           />
                           <FormMessage />
                         </FormItem>
