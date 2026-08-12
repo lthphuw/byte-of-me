@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
 import { Button } from '@byte-of-me/ui';
 import { Printer } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+
+import { usePrintOnFontsReady } from '@/shared/hooks/use-print-on-fonts-ready';
 
 export interface NotePrintTriggerProps {
   /**
@@ -23,28 +24,14 @@ export interface NotePrintTriggerProps {
 /**
  * The print affordance for `/print/notes/[id]`.
  *
- * The auto-open waits on `document.fonts.ready`, and that wait is not
- * cosmetic: KaTeX renders equations with its own web fonts, so printing
- * before they resolve puts fallback glyphs in the PDF — the maths comes out
- * in the wrong typeface with the wrong metrics, which is precisely the
- * fidelity the spec asks for (§7, Phase C exit criteria).
+ * The auto-open waits on `document.fonts.ready` — see
+ * `usePrintOnFontsReady` for why that wait is load-bearing rather than
+ * cosmetic (§7, Phase C exit criteria).
  */
 export function NotePrintTrigger({ auto = false }: NotePrintTriggerProps) {
   const t = useTranslations('dashboard.note');
 
-  useEffect(() => {
-    if (!auto) return;
-    let cancelled = false;
-
-    void document.fonts.ready.then(() => {
-      // The tab can be closed, or navigated away from, inside the font wait.
-      if (!cancelled) window.print();
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [auto]);
+  usePrintOnFontsReady(auto);
 
   return (
     // `print:hidden` — the control must not appear in its own output.

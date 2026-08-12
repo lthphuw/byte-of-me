@@ -1,5 +1,5 @@
  
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, isAfter, isSameDay } from 'date-fns';
 import { enUS, vi } from 'date-fns/locale';
 
 
@@ -52,6 +52,35 @@ export function formatDate(
   const date = new Date(dateString);
 
   return new Intl.DateTimeFormat(locale, options).format(date);
+}
+
+/**
+ * Whether an `updatedAt` is worth showing beside the date a post already
+ * displays.
+ *
+ * Compared by CALENDAR DAY, not by timestamp. Every save bumps
+ * `Blog.updatedAt`, so publish-day activity — write, publish, fix a typo —
+ * would otherwise stamp "Updated" with the post's own date, which tells a
+ * reader nothing. Only a later day is a real revision.
+ *
+ * Both parameters are widened past `Date` on purpose: these values reach the
+ * UI through Next's data cache, and a cache hit hands Dates back serialized
+ * as strings (the same reason `blogs/[slug]/page.tsx` re-wraps them for
+ * JSON-LD).
+ */
+export function isMeaningfullyUpdated(
+  createdAt: string | Date | null | undefined,
+  updatedAt: string | Date | null | undefined
+): boolean {
+  if (!createdAt || !updatedAt) return false;
+
+  const created = new Date(createdAt);
+  const updated = new Date(updatedAt);
+  if (Number.isNaN(created.getTime()) || Number.isNaN(updated.getTime())) {
+    return false;
+  }
+
+  return isAfter(updated, created) && !isSameDay(updated, created);
 }
 
 export function getRelativeTime(date: Date, locale: string) {

@@ -19,7 +19,13 @@ export function BlogActionBar({
   noCommentAppear?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between gap-2 py-2">
+    // `flex-wrap`: measured at 375px (the narrowest supported viewport) in
+    // Vietnamese, the widest locale — the container leaves 311px and the five
+    // controls need 335px, so without this the PDF link is clipped by the
+    // layout's `overflow-x-clip`. Wrapping drops the comment/share/PDF group
+    // onto its own line instead; the buttons carry `whitespace-nowrap`, so
+    // they cannot shrink to fit.
+    <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 py-2">
       <div className={'ml-[-4px] flex items-center gap-2'}>
         <Suspense fallback={<InteractionButtonLoading />}>
           <LikeButtonWrapper blogId={blogId} blogSlug={blogSlug} />
@@ -31,6 +37,7 @@ export function BlogActionBar({
       </div>
 
       <BlogCommentShareActions
+        slug={blogSlug}
         title={title}
         noCommentAppear={noCommentAppear}
       />

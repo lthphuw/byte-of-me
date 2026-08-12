@@ -56,6 +56,18 @@ export const PROTECTED_MESSAGE_NAMESPACES = [
 export const PRINT_MESSAGE_NAMESPACES = ['dashboard'] as const;
 
 /**
+ * The public print view (`/print/blogs/[slug]`): one button label.
+ *
+ * `dashboard` is deliberately absent — the same reason it is absent from
+ * `SHARE_MESSAGE_NAMESPACES`. This page is anonymous, and a visitor has no
+ * business receiving the CMS's vocabulary in their RSC payload. That, plus
+ * FSD's audience grouping, is why the page renders `BlogPrintTrigger`
+ * (reading `blogDetails`) instead of reusing the dashboard's
+ * `NotePrintTrigger`.
+ */
+export const PUBLIC_PRINT_MESSAGE_NAMESPACES = ['blogDetails'] as const;
+
+/**
  * Everything under `/shared` — the recipient's reading surface.
  *
  * `dashboard` is deliberately absent: a recipient is not an admin, and

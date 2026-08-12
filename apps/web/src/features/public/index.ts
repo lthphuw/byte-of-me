@@ -5,6 +5,7 @@ export * from './blog-analytics';
 export * from './blog-author-card';
 export * from './blog-comment';
 export * from './blog-filters';
+export * from './blog-print';
 export * from './blog-related-posts';
 export * from './blog-related-project'
 export * from './blog-stats';

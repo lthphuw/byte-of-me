@@ -8,15 +8,32 @@ import {
 } from '@byte-of-me/ui';
 import { Calendar, TagIcon } from 'lucide-react';
 import Image from 'next/image';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 import type { PublicBlog } from '@/entities/blog';
 import { BlogLiveStats, BlogLiveStatsSkeleton } from '@/features/public';
 import { Link } from '@/shared/i18n/navigation';
-import { formatDate } from '@/shared/lib/utils';
+import { formatDate, isMeaningfullyUpdated } from '@/shared/lib/utils';
 import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-action-bar';
 
-export function BlogContentHeader({ blog }: { blog: PublicBlog }) {
+export async function BlogContentHeader({ blog }: { blog: PublicBlog }) {
+  const [locale, t] = await Promise.all([
+    getLocale(),
+    getTranslations('blogDetails'),
+  ]);
   const author = blog.author;
+
+  // `Blog.updatedAt`, not `BlogTranslation.updatedAt`. `updateBlog` replaces
+  // the translation rows wholesale (deleteMany + createMany) on every save,
+  // so a translation's timestamp is its INSERT time — identical for every
+  // locale and reset even when that locale's text did not change. The blog
+  // row's `@updatedAt` is the only stamp that means "this post was revised",
+  // and it is already what the page's JSON-LD reports as `dateModified`.
+  //
+  // Compared against the date actually printed below (published, falling back
+  // to created) so the two can never disagree on screen.
+  const publishedOn = blog.publishedDate ?? blog.createdAt;
+  const showUpdated = isMeaningfullyUpdated(publishedOn, blog.updatedAt);
 
   return (
     <header className="w-full">
@@ -73,8 +90,32 @@ export function BlogContentHeader({ blog }: { blog: PublicBlog }) {
         {blog.publishedDate && (
           <div className="flex items-center gap-1 text-muted-foreground">
             <Calendar className="h-4 w-4" />
-            {formatDate(blog.publishedDate)}
+            {/* Localised, like every other date on the site (see
+                `blog-card.tsx`): this was formatting to en-US on the
+                Vietnamese page. */}
+            {formatDate(blog.publishedDate, locale)}
           </div>
+        )}
+
+        {/* `.meta-label` — the same 11px stamp the blog grid and the project
+            timeline use, so the revision date reads as metadata rather than
+            as a second byline. Absent entirely when the post has not been
+            revised since it went out; an "updated" equal to the published
+            date is noise. */}
+        {showUpdated && (
+          <time
+            dateTime={new Date(blog.updatedAt).toISOString()}
+            className="meta-label"
+          >
+            {t('updatedOn', {
+              date:
+                formatDate(blog.updatedAt, locale, {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                }) ?? '',
+            })}
+          </time>
         )}
 
         <Separator orientation="vertical" className="hidden h-4 md:block" />
