@@ -128,6 +128,46 @@ const nextConfig = {
         ],
       },
       {
+        // Every signed-in surface, back to `private, no-store`.
+        //
+        // The rule above excludes `dashboard` by name, which read as "the
+        // private half is covered". It is not: `/[locale]/space/**` (the notes
+        // workspace) and `/[locale]/print/notes/[id]` are `(protected)` routes
+        // that contain no such segment, so they matched the public rule and
+        // answered `public, s-maxage=3600, stale-while-revalidate=86400`.
+        //
+        // That is worse than an over-eager cache. Next serves dynamic routes
+        // `private, no-store` by default; a `headers()` entry REPLACES that
+        // default rather than adding to it (the note about `_next` above is the
+        // same mechanism). So an admin opening a private note authorised every
+        // shared cache in front of the app to keep that HTML for an hour and
+        // hand it to whoever asked for the URL next — `requireAdmin` never runs
+        // on a cache hit.
+        //
+        // Declared after the public rule because the last matching header wins.
+        // `:path*` matches zero segments, so `/en/space` is covered as well as
+        // `/en/space/notes/xxx`.
+        //
+        // Listed per surface rather than as one alternation over the first
+        // segment: `/[locale]/print` holds BOTH the private notes export and
+        // the public article export, and a pattern matching the segment would
+        // have taken the article's CDN caching away with it.
+        source: '/:locale/space/:path*',
+        headers: [{ key: 'Cache-Control', value: 'private, no-store' }],
+      },
+      {
+        // The notes export specifically — `/[locale]/print/blogs/*` next to it
+        // is published content and stays publicly cacheable.
+        source: '/:locale/print/notes/:path*',
+        headers: [{ key: 'Cache-Control', value: 'private, no-store' }],
+      },
+      {
+        // Already excluded from the public rule by name; stated positively so
+        // the private set is one list rather than a pattern to reason about.
+        source: '/:locale/dashboard/:path*',
+        headers: [{ key: 'Cache-Control', value: 'private, no-store' }],
+      },
+      {
         // Everything under /api is per-user or per-request — except `og`, which
         // is handled by the next rule.
         source: '/api/:path*',
