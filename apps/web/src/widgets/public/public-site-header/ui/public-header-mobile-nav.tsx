@@ -2,7 +2,9 @@
 
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { itemVariants,useLockBody  } from '@byte-of-me/ui';
+// Subpath, not the package barrel: this widget renders in the header of every
+// public page, and the barrel reaches the rich text editor.
+import { useLockBody } from '@byte-of-me/ui/hooks/use-lock-body';
 import { AnimatePresence, m, type Variants } from 'framer-motion';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -30,7 +32,42 @@ const containerVariants: Variants = {
       staggerChildren: 0.05,
     },
   },
-  exit: { scale: 0.95, y: -10 },
+  // A short ease-in tween, NOT the entrance spring. A spring keeps settling
+  // long after it looks finished, and the panel stayed on screen through it —
+  // which is what made dismissing the menu feel like it was waiting for the
+  // navigation rather than responding to the tap. Same principle the
+  // collapsible keyframes already follow: enter eases out, exit eases in and
+  // runs shorter.
+  //
+  // Transform only, deliberately, for the same reason the entrance carries no
+  // opacity (see below): fading the panel makes it a backdrop root and the
+  // frosted glass would flatten on the way out.
+  exit: {
+    scale: 0.95,
+    y: -10,
+    transition: { duration: 0.14, ease: 'easeIn' },
+  },
+};
+
+/**
+ * The entrance stagger, without an exit.
+ *
+ * The shared `itemVariants` carries `exit: { opacity: 0, y: 10 }`, and on the
+ * way out the container's `staggerChildren` walked the links through it one by
+ * one while the panel itself was still leaving — the links blanked first and
+ * the empty panel lingered behind them. Omitting `exit` here leaves the panel
+ * as the only thing that animates out, so the menu departs as one object.
+ *
+ * Local rather than a change to the shared variant, which other surfaces use
+ * for entrances where its exit is fine.
+ */
+const linkVariants: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring', stiffness: 130, damping: 10 },
+  },
 };
 
 interface PublicHeaderMobileNavProps {
@@ -56,7 +93,7 @@ export const PublicHeaderMobileNav = ({
   React.useEffect(() => {
     if (!isOpen) return;
 
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: PointerEvent) => {
       const target = event.target as Node;
       if (
         menuRef.current &&
@@ -68,8 +105,12 @@ export const PublicHeaderMobileNav = ({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    // `pointerdown`, not `mousedown`: on touch the mouse events are compatibility
+    // events the browser synthesizes only after the gesture resolves, so a tap
+    // outside the panel waited on that round trip before anything happened.
+    // `pointerdown` fires on the touch itself and covers mouse and pen too.
+    document.addEventListener('pointerdown', handleClickOutside);
+    return () => document.removeEventListener('pointerdown', handleClickOutside);
   }, [isOpen, onOpenChange, triggerRef]);
   if (typeof window === 'undefined') return null;
 
@@ -93,7 +134,7 @@ export const PublicHeaderMobileNav = ({
           <div className="grid gap-4">
             <nav className="grid gap-1">
               {items.map((item, index) => (
-                <m.div key={item.href + index} variants={itemVariants}>
+                <m.div key={item.href + index} variants={linkVariants}>
                   <Link
                     href={item.disabled ? '#' : item.href}
                     onClick={() => onOpenChange(false)}
