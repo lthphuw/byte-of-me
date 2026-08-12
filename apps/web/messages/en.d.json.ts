@@ -175,7 +175,7 @@ declare const messages: {
     "share": "Share",
     "pdf": "PDF",
     "downloadPdf": "Download PDF",
-    "updatedOn": "Updated {date}",
+    "updatedOn": "updated {date}",
     "comments": "Comments",
     "loadMoreComments": "Loading more...",
     "loadMore": "Load more",

@@ -16,6 +16,17 @@ import { Link } from '@/shared/i18n/navigation';
 import { formatDate, isMeaningfullyUpdated } from '@/shared/lib/utils';
 import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-action-bar';
 
+/**
+ * Both dates in the header use this. The published date used to fall back to
+ * `formatDate`'s month-and-year default while the revision date printed a day
+ * as well, so the two disagreed about what a date looks like on the same line.
+ */
+const FULL_DATE: Intl.DateTimeFormatOptions = {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+};
+
 export async function BlogContentHeader({ blog }: { blog: PublicBlog }) {
   const [locale, t] = await Promise.all([
     getLocale(),
@@ -87,35 +98,42 @@ export async function BlogContentHeader({ blog }: { blog: PublicBlog }) {
           <Separator orientation="vertical" className="hidden h-4 md:block" />
         )}
 
-        {blog.publishedDate && (
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <Calendar className="h-4 w-4" />
-            {/* Localised, like every other date on the site (see
-                `blog-card.tsx`): this was formatting to en-US on the
-                Vietnamese page. */}
-            {formatDate(blog.publishedDate, locale)}
-          </div>
-        )}
+        {/* One date cluster, not two.
 
-        {/* `.meta-label` — the same 11px stamp the blog grid and the project
-            timeline use, so the revision date reads as metadata rather than
-            as a second byline. Absent entirely when the post has not been
-            revised since it went out; an "updated" equal to the published
-            date is noise. */}
-        {showUpdated && (
-          <time
-            dateTime={new Date(blog.updatedAt).toISOString()}
-            className="meta-label"
-          >
-            {t('updatedOn', {
-              date:
-                formatDate(blog.updatedAt, locale, {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric',
-                }) ?? '',
-            })}
-          </time>
+            The revision stamp used to sit beside this as a separate
+            `.meta-label` — 11px and letter-spaced against the published date's
+            14px, and printed "1 Aug 2026" against the other's "Apr 2026". Two
+            sizes and two formats for one piece of information, which read as
+            something bolted on rather than as part of the byline. Both dates
+            now share the icon, the size and the format, joined by a middle dot,
+            so the line says one thing: when this was written, and when it last
+            changed.
+
+            Localised, like every other date on the site (see `blog-card.tsx`):
+            this was formatting to en-US on the Vietnamese page. */}
+        {blog.publishedDate && (
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Calendar className="h-4 w-4 shrink-0" />
+
+            <span className="flex flex-wrap items-center gap-x-1.5">
+              <time dateTime={new Date(blog.publishedDate).toISOString()}>
+                {formatDate(blog.publishedDate, locale, FULL_DATE)}
+              </time>
+
+              {/* Absent entirely when the post has not been revised since it
+                  went out — an "updated" equal to the published date is noise. */}
+              {showUpdated && (
+                <>
+                  <span aria-hidden>·</span>
+                  <time dateTime={new Date(blog.updatedAt).toISOString()}>
+                    {t('updatedOn', {
+                      date: formatDate(blog.updatedAt, locale, FULL_DATE) ?? '',
+                    })}
+                  </time>
+                </>
+              )}
+            </span>
+          </div>
         )}
 
         <Separator orientation="vertical" className="hidden h-4 md:block" />

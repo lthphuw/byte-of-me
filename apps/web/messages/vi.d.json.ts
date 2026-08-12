@@ -175,7 +175,7 @@ declare const messages: {
     "share": "Chia sẻ",
     "pdf": "PDF",
     "downloadPdf": "Tải PDF",
-    "updatedOn": "Cập nhật {date}",
+    "updatedOn": "cập nhật {date}",
     "comments": "Bình luận",
     "loadMoreComments": "Đang tải thêm...",
     "loadMore": "Xem thêm",
