@@ -19,12 +19,12 @@ export function BlogActionBar({
   noCommentAppear?: boolean;
 }) {
   return (
-    // `flex-wrap`: measured at 375px (the narrowest supported viewport) in
-    // Vietnamese, the widest locale — the container leaves 311px and the five
-    // controls need 335px, so without this the PDF link is clipped by the
-    // layout's `overflow-x-clip`. Wrapping drops the comment/share/PDF group
-    // onto its own line instead; the buttons carry `whitespace-nowrap`, so
-    // they cannot shrink to fit.
+    // `flex-wrap` is the backstop, not the primary fit: the five controls fit
+    // one line at 375px (the narrowest supported viewport) now that
+    // comment/share/PDF go icon-only below `sm`. It stays because the buttons
+    // carry `whitespace-nowrap` and cannot shrink — a five-digit like count or
+    // a longer locale would otherwise push the PDF link past the layout's
+    // `overflow-x-clip` and cut it off silently.
     <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 py-2">
       <div className={'ml-[-4px] flex items-center gap-2'}>
         <Suspense fallback={<InteractionButtonLoading />}>
