@@ -75,8 +75,29 @@ async function open(value: JSONContent, compact = false): Promise<Emit[]> {
   // the extension `onCreate` handlers that change the document run inside
   // that emit — so the initial `onUpdate` lands a macrotask after render,
   // not during it.
+  //
+  // Waited on as a condition, not as a duration. This was a flat 50ms sleep,
+  // which is a bet on how long mounting takes: it held when the suite ran
+  // alone and lost under `turbo run test build`, where the build has the CPU
+  // and the two tests that assert on the initial emit failed on every push
+  // while passing on every isolated run. The editor also mounts more
+  // extensions than it used to, so the bet had been getting worse.
   await React.act(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    const deadline = Date.now() + 5000;
+
+    // The expensive part is the view mounting; wait for it to exist rather
+    // than guessing at it.
+    while (!document.querySelector('.ProseMirror') && Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
+
+    // Then the create macrotask, and whatever the `onCreate` handlers do
+    // inside it. A document that needs no rewrite emits nothing at all, so
+    // this cannot wait on `emits` alone — it drains a bounded number of
+    // macrotasks so "silent" is a conclusion rather than a race.
+    for (let i = 0; i < 10 && emits.length === 0; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
   });
 
   return emits;
