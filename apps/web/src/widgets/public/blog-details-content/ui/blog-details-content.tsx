@@ -39,7 +39,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
             it stays optically centred on the page, and the rail fills the right
             margin instead of pushing the text off-centre.
           */}
-          <div className="grid grid-cols-1 gap-x-8 xl:grid-cols-[1fr_minmax(0,720px)_1fr]">
+          <div className="grid grid-cols-1 gap-x-6 md:gap-x-10 xl:grid-cols-[1fr_minmax(0,720px)_1fr]">
             {/* Main column */}
             <div className="mx-auto w-full min-w-0 max-w-[720px] xl:col-start-2 xl:mx-0">
               <BlogBreadcrumb title={blog.title} />
@@ -53,7 +53,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
                 {/* Collapsed by default so the article still starts above the
                     fold, and sticky so it stays reachable while reading
                     (hidden when < 2 headings) */}
-                <div className="sticky top-24 z-30 mt-6 xl:hidden">
+                <div className="sticky top-24 z-30 mt-4 md:mt-6 xl:hidden">
                   <BlogTableOfContents
                     targetId={ARTICLE_ID}
                     label={t('tableOfContents')}
@@ -61,11 +61,11 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
                   />
                 </div>
 
-                <div className="mb-8 md:mb-10" />
+                <div className="mb-8 md:mb-12" />
                 <BlogContent blog={blog} />
               </div>
 
-              <div className="mt-4 md:mt-8" />
+              <div className="mt-4 md:mt-6" />
               <BlogActionBar
                 blogId={blog.id}
                 blogSlug={blog.slug}
@@ -74,7 +74,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
               />
 
               {/* Author */}
-              <Separator className="my-8 md:my-10" />
+              <Separator className="my-8 md:my-12" />
               <Suspense fallback={<Skeleton className="h-28 w-full rounded-xl" />}>
                 <BlogAuthorCard
                   author={blog.author}
@@ -85,7 +85,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
               {/* Related project */}
               {blog.projectId && (
                 <>
-                  <Separator className="my-8 md:my-10" />
+                  <Separator className="my-8 md:my-12" />
                   <Suspense
                     fallback={
                       <RelatedProjectCardSkeleton label={t('relatedProject')} />
@@ -100,7 +100,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
               )}
 
               {/* Related posts */}
-              <Separator className="my-8 md:my-10" />
+              <Separator className="my-8 md:my-12" />
               <Suspense
                 fallback={<Skeleton className="h-64 w-full rounded-xl" />}
               >
@@ -112,7 +112,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
               </Suspense>
 
               {/* Prev / Next */}
-              <div className="mt-8 md:mt-10" />
+              <div className="mt-8 md:mt-12" />
               <Suspense
                 fallback={<Skeleton className="h-20 w-full rounded-xl" />}
               >
@@ -125,7 +125,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
               </Suspense>
 
               {/* Comments */}
-              <Separator className="my-8 md:my-10" />
+              <Separator className="my-8 md:my-12" />
               <BlogCommentSection blogId={blog.id} />
             </div>
 

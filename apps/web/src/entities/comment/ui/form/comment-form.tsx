@@ -51,7 +51,7 @@ export function CommentForm({
     <div className="relative">
         <div
           className={cn(
-            'flex w-full flex-col gap-3 rounded-xl border bg-muted/20 p-4 shadow-sm transition',
+            'flex w-full flex-col gap-4 rounded-xl border bg-muted/20 p-4 shadow-sm transition md:gap-6',
             !isAuthenticated && 'pointer-events-none opacity-80'
           )}
         >
@@ -99,7 +99,7 @@ export function CommentForm({
 
         {!isAuthenticated && (
           <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-background/70 backdrop-blur-[2px]">
-            <div className="flex flex-col items-center gap-3 text-center">
+            <div className="flex flex-col items-center gap-4 text-center md:gap-6">
               <p className="text-sm text-muted-foreground">
                 {t('mustSignInToComment')}
               </p>

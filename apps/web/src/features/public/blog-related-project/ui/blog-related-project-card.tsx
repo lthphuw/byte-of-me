@@ -28,7 +28,7 @@ export async function BlogRelatedProjectCard({
 
   return (
     <div className="related-project">
-      <p className="mb-3 text-sm font-semibold text-muted-foreground">
+      <p className="mb-2 text-sm font-semibold text-muted-foreground">
         {label}
       </p>
       <Card className="p-4 transition hover:border-primary/50">

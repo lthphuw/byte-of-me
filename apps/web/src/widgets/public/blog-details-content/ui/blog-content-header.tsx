@@ -47,9 +47,13 @@ export async function BlogContentHeader({ blog }: { blog: PublicBlog }) {
   const showUpdated = isMeaningfullyUpdated(publishedOn, blog.updatedAt);
 
   return (
-    <header className="w-full">
+    // One rhythm for the header instead of five hand-tuned margins: the parts
+    // are "elements inside a block" and the title/description pair is
+    // "title → subtitle" (AGENTS.md §14, the public rhythm). The margins this
+    // replaces were 32/16/12/20/16px — no two of them a step apart.
+    <header className="w-full space-y-4 md:space-y-6">
       {blog.coverImage && (
-        <div className="relative mb-8 aspect-[2/1] w-full overflow-hidden rounded-2xl border bg-muted">
+        <div className="relative aspect-[2/1] w-full overflow-hidden rounded-2xl border bg-muted">
           <Image
             src={blog.coverImage.url}
             alt={blog.title}
@@ -62,7 +66,7 @@ export async function BlogContentHeader({ blog }: { blog: PublicBlog }) {
       )}
 
       {blog.tags.length > 0 && (
-        <div className="mb-4 flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2">
           {blog.tags.map((tag) => (
             <Link key={tag.id} href={`/blogs?tags=${tag.slug}`}>
               <Badge variant="secondary" className="gap-1 rounded-full">
@@ -73,15 +77,17 @@ export async function BlogContentHeader({ blog }: { blog: PublicBlog }) {
         </div>
       )}
 
-      <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-        {blog.title}
-      </h1>
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+          {blog.title}
+        </h1>
 
-      {blog.description && (
-        <p className="mt-3 text-lg text-muted-foreground">{blog.description}</p>
-      )}
+        {blog.description && (
+          <p className="text-lg text-muted-foreground">{blog.description}</p>
+        )}
+      </div>
 
-      <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 pb-3 text-sm">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
         {author?.name && (
           <div className="flex items-center gap-2">
             <Avatar className="h-7 w-7">
@@ -144,7 +150,7 @@ export async function BlogContentHeader({ blog }: { blog: PublicBlog }) {
       </div>
 
       <BlogActionBar blogId={blog.id} blogSlug={blog.slug} title={blog.title} />
-      <Separator className="mt-4" />
+      <Separator />
     </header>
   );
 }

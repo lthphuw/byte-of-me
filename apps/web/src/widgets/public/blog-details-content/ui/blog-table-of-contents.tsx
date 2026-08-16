@@ -168,7 +168,7 @@ export function BlogTableOfContents({
 
   return (
     <nav aria-label={label} className="text-sm">
-      <p className="mb-3 font-semibold text-muted-foreground">{label}</p>
+      <p className="mb-2 font-semibold text-muted-foreground">{label}</p>
       {list}
     </nav>
   );

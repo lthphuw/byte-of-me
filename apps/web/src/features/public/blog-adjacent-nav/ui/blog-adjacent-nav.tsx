@@ -21,11 +21,11 @@ export async function BlogAdjacentNav({
   if (!prev && !next) return null;
 
   return (
-    <nav className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <nav className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:gap-10">
       {prev ? (
         <Link
           href={`/blogs/${prev.slug}`}
-          className="group flex flex-col gap-1 rounded-xl border p-4 transition hover:border-primary/50"
+          className="group flex flex-col gap-2 rounded-xl border p-4 transition hover:border-primary/50"
         >
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
             <ArrowLeft className="h-3 w-3" />
@@ -42,7 +42,7 @@ export async function BlogAdjacentNav({
       {next ? (
         <Link
           href={`/blogs/${next.slug}`}
-          className="group flex flex-col items-end gap-1 rounded-xl border p-4 text-right transition hover:border-primary/50"
+          className="group flex flex-col items-end gap-2 rounded-xl border p-4 text-right transition hover:border-primary/50"
         >
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
             {nextLabel}

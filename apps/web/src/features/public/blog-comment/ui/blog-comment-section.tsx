@@ -173,7 +173,7 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
   }, [data]);
 
   return (
-    <div id="comments" className="space-y-8">
+    <div id="comments" className="space-y-8 md:space-y-12">
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}

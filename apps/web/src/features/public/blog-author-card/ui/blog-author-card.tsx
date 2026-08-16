@@ -24,7 +24,7 @@ export async function BlogAuthorCard({
         <AvatarImage src={author?.avatar ?? undefined} alt={name} />
         <AvatarFallback>{name.charAt(0).toUpperCase() || '?'}</AvatarFallback>
       </Avatar>
-      <div className="space-y-1">
+      <div className="space-y-2">
         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {label}
         </p>

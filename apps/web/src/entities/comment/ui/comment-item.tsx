@@ -66,7 +66,11 @@ export function CommentItem({
 
         {/* HEADER */}
         <div className="flex min-w-0 items-center justify-between gap-2">
-          <div className="flex min-w-0 flex-col gap-0 text-sm md:flex-row md:items-center md:gap-2">
+          {/* Flat `gap-2`: 8px is the "label → value" step and the public
+              rhythm keeps anything at or below 8px off the breakpoints, so the
+              name/timestamp pair no longer collapses to 0 on narrow screens
+              purely because it stacks there. */}
+          <div className="flex min-w-0 flex-col gap-2 text-sm md:flex-row md:items-center">
             <span className="truncate font-medium">
               {comment.user.name || 'Anonymous'}
             </span>
@@ -88,7 +92,7 @@ export function CommentItem({
           )}
         </div>
 
-        <p className="col-span-2 mt-2 flex items-center gap-1 text-sm leading-relaxed text-foreground/90">
+        <p className="col-span-2 mt-2 flex items-center gap-2 text-sm leading-relaxed text-foreground/90">
           {comment.userReplied && (
             <Link
               href={`#comment-${comment.parentId}`}
@@ -100,7 +104,7 @@ export function CommentItem({
           {comment.content}
         </p>
 
-        <div className="col-span-2 mt-3 flex items-center gap-2">
+        <div className="col-span-2 mt-2 flex items-center gap-2">
           <Button
             size="sm"
             variant="ghost"

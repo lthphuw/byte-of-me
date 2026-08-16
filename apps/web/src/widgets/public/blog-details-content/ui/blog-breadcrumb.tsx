@@ -10,7 +10,7 @@ export async function BlogBreadcrumb({ title }: { title: string }) {
   return (
     <nav
       aria-label="Breadcrumb"
-      className="mb-6 flex items-center gap-1.5 text-sm text-muted-foreground"
+      className="mb-6 flex items-center gap-2 text-sm text-muted-foreground"
     >
       {/* The two labels never shrink and never wrap. Everything here was
           `flex-shrink: 1`, so a narrow viewport squeezed them down to their

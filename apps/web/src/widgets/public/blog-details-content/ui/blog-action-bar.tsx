@@ -25,7 +25,11 @@ export function BlogActionBar({
     // carry `whitespace-nowrap` and cannot shrink — a five-digit like count or
     // a longer locale would otherwise push the PDF link past the layout's
     // `overflow-x-clip` and cut it off silently.
-    <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 py-2">
+    //
+    // `gap-2` on both axes, not `gap-y-1`: these are inline buttons, and the
+    // 4px the wrapped row used to get was under the 8px minimum between touch
+    // targets (AGENTS.md §14).
+    <div className="flex flex-wrap items-center justify-between gap-2 py-2">
       <div className={'ml-[-4px] flex items-center gap-2'}>
         <Suspense fallback={<InteractionButtonLoading />}>
           <LikeButtonWrapper blogId={blogId} blogSlug={blogSlug} />

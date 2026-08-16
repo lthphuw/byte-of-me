@@ -23,12 +23,15 @@ export function CommentList({
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {comments.map((root) => {
         const replies = root.children || [];
 
         return (
-          <div key={root.id} className="space-y-3">
+          // A thread holds its reply form and its replies at the "label →
+          // value" step, so they read as belonging to the comment above them
+          // rather than as further items in the list.
+          <div key={root.id} className="space-y-2">
             <CommentItem
               comment={root}
               onReply={(c) => setActiveReplyId(c.id)}
@@ -55,7 +58,7 @@ export function CommentList({
 
             {/* REPLIES */}
             {replies.length > 0 && (
-              <div className="ml-3 space-y-3 border-l pl-6">
+              <div className="ml-3 space-y-4 border-l pl-6 md:space-y-6">
                 {replies.map((reply) => (
                   <div key={reply.id} className="space-y-2">
                     <CommentItem
