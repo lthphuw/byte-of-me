@@ -13,23 +13,23 @@ export function AboutContent() {
   return (
     <AboutShell>
       <div className="space-y-16 md:space-y-24">
-          <RevealSection>
-            <Suspense fallback={<AboutMeLoading />}>
-              <AboutMe />
-            </Suspense>
-          </RevealSection>
+        <RevealSection>
+          <Suspense fallback={<AboutMeLoading />}>
+            <AboutMe />
+          </Suspense>
+        </RevealSection>
 
-          <RevealSection>
-            <Suspense fallback={<AboutEducationLoading />}>
-              <AboutEducation />
-            </Suspense>
-          </RevealSection>
+        <RevealSection>
+          <Suspense fallback={<AboutEducationLoading />}>
+            <AboutEducation />
+          </Suspense>
+        </RevealSection>
 
-          <RevealSection>
-            <Suspense fallback={<AboutTechStackLoading />}>
-              <AboutTechStack />
-            </Suspense>
-          </RevealSection>
+        <RevealSection>
+          <Suspense fallback={<AboutTechStackLoading />}>
+            <AboutTechStack />
+          </Suspense>
+        </RevealSection>
       </div>
     </AboutShell>
   );

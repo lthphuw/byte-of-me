@@ -11,7 +11,7 @@ export function EducationSection({
   educations: PublicEducation[];
 }) {
   return (
-    <section className="space-y-8">
+    <section className="space-y-8 md:space-y-12">
       {educations.map((edu) => (
         <EducationItem key={edu.id} edu={edu} />
       ))}

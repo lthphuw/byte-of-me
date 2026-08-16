@@ -17,12 +17,15 @@ export function TechStackSection({
   );
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="grid gap-6 md:grid-cols-2 md:gap-10">
       {Object.entries(grouped).map(([group, items]) => (
-        <div key={group} className="space-y-4 rounded-xl border p-5">
+        <div
+          key={group}
+          className="space-y-4 rounded-xl border p-5 md:space-y-6"
+        >
           <h3 className="text-sm font-medium text-muted-foreground">{group}</h3>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2">
             {items.map((tech) => (
               <TechStackBadge key={tech.id} tech={tech} />
             ))}

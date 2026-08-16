@@ -14,7 +14,7 @@ export async function AboutTechStack() {
   const techStacks = techStacksResp.data?.techStacks || [];
 
   return (
-    <section className="space-y-8">
+    <section className="space-y-8 md:space-y-12">
       <div className="flex items-center gap-4">
         <h2 className="text-2xl font-bold tracking-tight md:text-4xl">
           {t('about.section.skillsTechStack')}

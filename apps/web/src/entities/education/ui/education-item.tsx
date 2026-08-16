@@ -12,9 +12,9 @@ export function EducationItem({ edu }: { edu: PublicEducation }) {
   const isOngoing = !endYear;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex items-start gap-3 md:gap-4">
+      <div className="flex items-start gap-4 md:gap-6">
         <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-muted/40">
           {edu.logo ? (
             <Image
@@ -29,7 +29,7 @@ export function EducationItem({ edu }: { edu: PublicEducation }) {
           )}
         </div>
 
-        <div className="min-w-0 space-y-1">
+        <div className="min-w-0 space-y-2">
           <h3 className="text-base font-semibold leading-snug md:text-lg">
             {edu.title}
           </h3>
@@ -56,7 +56,7 @@ export function EducationItem({ edu }: { edu: PublicEducation }) {
       {/* Achievements — a timeline rail keeps a long list readable and makes
           the authored order legible at a glance. */}
       {edu.achievements.length > 0 && (
-        <ol className="relative space-y-5 pl-5 md:pl-6">
+        <ol className="relative space-y-4 pl-5 md:space-y-6 md:pl-6">
           <span
             aria-hidden
             className="absolute bottom-2 left-[3px] top-2 w-px bg-border"
