@@ -51,6 +51,20 @@ export const Flags: Record<
   ),
 };
 
+/**
+ * Switches the interface language.
+ *
+ * In `shared/ui` rather than beside the public header it was written for,
+ * because the dashboard and the notes workspace need the same control and a
+ * widget may not import from a sibling widget. The dashboard used to carry its
+ * own hand-rolled version — a Globe button that swapped between exactly two
+ * locales — which meant adding a third language would have half-worked.
+ *
+ * Each option is a real `Link` to the same pathname under a different locale,
+ * not a router call: it is navigation, so it should be a link that middle-click
+ * and "open in new tab" both understand, and `next-intl` writes the locale
+ * cookie on the way through.
+ */
 export function I18nToggle() {
   const t = useTranslations('global.i18nToggle');
   const locale = useLocale() as LocaleType;

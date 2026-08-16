@@ -8,14 +8,17 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@byte-of-me/ui';
-import { LayoutDashboard, LogOut, Menu } from 'lucide-react';
+import { LayoutDashboard, LogOut, Menu, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { logOutDashboard } from '@/features/auth/lib';
 import { Link, usePathname } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import { BrandMark } from '@/shared/ui/brand-mark';
+import { ColorSchemeModeToggle } from '@/shared/ui/color-scheme-toggle';
+import { I18nToggle } from '@/shared/ui/language-toggle';
 import { useSpaceNavItems } from '@/widgets/dashboard/space-shell/model/use-space-nav-items';
+import { useSettingsDialog } from '@/widgets/dashboard/space-shell/ui/space-settings-provider';
 
 /**
  * The mobile half of the space navigation: a hamburger that opens the same
@@ -32,6 +35,7 @@ export function SpaceNavTrigger({ className }: { className?: string }) {
   const items = useSpaceNavItems();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { open: openSettings } = useSettingsDialog();
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -88,6 +92,30 @@ export function SpaceNavTrigger({ className }: { className?: string }) {
           </nav>
 
           <div className="mt-auto space-y-1 border-t border-border/40 p-3">
+            {/* A row of icons rather than two more labelled lines: these are
+                the only controls here that show their current value in the
+                trigger itself — a flag and a sun or a moon — so a text label
+                beside them would repeat what the icon already says. */}
+            <div className="flex items-center gap-1 pb-1">
+              <ColorSchemeModeToggle />
+              <I18nToggle />
+            </div>
+
+            {/* The rail's settings button had no counterpart here, so on a
+                phone the dialog could only be reached by keyboard shortcut —
+                which is to say not at all. */}
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                openSettings();
+              }}
+              className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              <Settings className="size-4" />
+              <span>{t('settings.open')}</span>
+            </button>
+
             <Link
               href="/dashboard"
               onClick={() => setOpen(false)}

@@ -9,22 +9,21 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@byte-of-me/ui';
-import { DatabaseZap, ExternalLink, Globe, LogOut, Menu } from 'lucide-react';
-import { useLocale, useTranslations } from 'next-intl';
+import { DatabaseZap, ExternalLink, LogOut, Menu } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { DashboardNavItems } from './dashboard-nav-items';
 
 import { logOutDashboard } from '@/features/auth/lib';
-import { Link, usePathname, useRouter } from '@/shared/i18n/navigation';
+import { Link } from '@/shared/i18n/navigation';
 import { BrandMark } from '@/shared/ui/brand-mark';
+import { ColorSchemeModeToggle } from '@/shared/ui/color-scheme-toggle';
+import { I18nToggle } from '@/shared/ui/language-toggle';
 import { purgeEntireCache } from '@/widgets/dashboard/dashboard-sidebar/lib/purge-entire-cache';
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const t = useTranslations('dashboard.sidebar');
-  const locale = useLocale();
-  const router = useRouter();
-  const pathname = usePathname();
 
   const menuGroups = [
     {
@@ -108,11 +107,6 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     }
   };
 
-  const toggleLanguage = () => {
-    const nextLocale = locale === 'en' ? 'vi' : 'en';
-    router.replace(pathname, { locale: nextLocale });
-  };
-
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 px-6 py-7">
@@ -134,19 +128,18 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       <div className="mt-auto space-y-1 border-t border-border/40 p-4">
-        {/* Language Switcher Button */}
-        <button
-          onClick={toggleLanguage}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
-        >
-          <Globe className="size-4" />
-          <span className="flex-1 text-left">
-            {locale === 'en' ? 'Tiếng Việt' : 'English'}
-          </span>
-          <span className="text-[10px] font-bold uppercase opacity-50">
-            {locale}
-          </span>
-        </button>
+        {/* Theme and language, the two shared toggles the public header and
+            the space rail also use.
+
+            This replaced a hand-rolled Globe button that swapped between
+            exactly two locales — correct today and quietly wrong the moment a
+            third is added, since "the other language" stops being a single
+            answer. The theme control is new here: until the toggles moved into
+            `shared/ui` the dashboard had no way to leave dark mode at all. */}
+        <div className="flex items-center gap-1 pb-1">
+          <ColorSchemeModeToggle />
+          <I18nToggle />
+        </div>
 
         <button
           onClick={handleClearCache}

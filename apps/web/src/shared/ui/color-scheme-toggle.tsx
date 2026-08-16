@@ -17,6 +17,21 @@ import { useTheme } from 'next-themes';
 
 import { cn } from '@/shared/lib/utils';
 
+/**
+ * Light / dark / follow the system.
+ *
+ * In `shared/ui` rather than beside the public header it was written for,
+ * because the dashboard and the notes workspace need the same control and a
+ * widget may not import from a sibling widget. Until this moved, the theme
+ * could only be changed from the marketing site — every authenticated surface
+ * inherited whatever choice was made out there and offered no way to change it.
+ *
+ * The state lives in `next-themes`, which is mounted at the app root, so this
+ * works from any route with nothing else to wire up. Deliberately NOT stored in
+ * `workspace_settings` with the editor preferences: the theme has to be applied
+ * before the first paint to avoid a flash of the wrong one, which is what
+ * next-themes' blocking script does and a database round trip cannot.
+ */
 export function ColorSchemeModeToggle() {
   const t = useTranslations('global.modeToggle');
   const { theme, setTheme, resolvedTheme } = useTheme();

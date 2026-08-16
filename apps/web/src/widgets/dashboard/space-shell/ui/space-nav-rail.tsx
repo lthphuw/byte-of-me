@@ -13,6 +13,8 @@ import { logOutDashboard } from '@/features/auth/lib';
 import { Link, usePathname } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import { BrandMark } from '@/shared/ui/brand-mark';
+import { ColorSchemeModeToggle } from '@/shared/ui/color-scheme-toggle';
+import { I18nToggle } from '@/shared/ui/language-toggle';
 import { useSpaceNavItems } from '@/widgets/dashboard/space-shell/model/use-space-nav-items';
 import { useSettingsDialog } from '@/widgets/dashboard/space-shell/ui/space-settings-provider';
 
@@ -78,6 +80,18 @@ export function SpaceNavRail() {
         </nav>
 
         <div className="mt-auto flex flex-col items-center gap-1">
+          {/* Theme and language, the same two controls the public header
+              carries — until they moved into `shared/ui` they existed only out
+              there, so the only way to leave dark mode while writing was to go
+              back to the marketing site. Both are icon buttons with their own
+              dropdowns, which is exactly the shape this rail is made of.
+
+              Above the divider-less group below rather than among the
+              destinations above: neither is a place you can navigate to, and
+              the rail lights the current one. */}
+          <ColorSchemeModeToggle />
+          <I18nToggle />
+
           {/* Not in `useSpaceNavItems` with the others: every entry in that
               list is a route the rail can light up as current, and this one
               opens a dialog over whatever page you are on. Putting it in the
