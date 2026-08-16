@@ -43,9 +43,12 @@ export function UserActionToggle() {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
+        {/* `min-h-11 min-w-11` below `md`: the avatar measured 40x36 on a phone
+            (the default size's `h-9` wins over `size-10`), under §14's 44px
+            minimum. Scoped to mobile so the desktop circle keeps its size. */}
         <Button
           variant="ghost"
-          className="relative size-10 rounded-full bg-muted p-0 text-muted-foreground transition-all hover:scale-105 hover:bg-muted/80"
+          className="relative size-10 min-h-11 min-w-11 rounded-full bg-muted p-0 text-muted-foreground transition-all hover:scale-105 hover:bg-muted/80 md:min-h-0 md:min-w-0"
         >
           <span className="text-xs font-semibold">{initials}</span>
         </Button>

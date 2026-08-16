@@ -132,14 +132,20 @@ export const PublicHeaderMobileNav = ({
               className="pointer-events-auto overflow-hidden rounded-2xl border border-border p-4 shadow-xl backdrop-blur-xl container-bg"
             >
           <div className="grid gap-4">
-            <nav className="grid gap-1">
+            {/* `gap-2`, not `gap-1`: 4px between two 44px targets is half of
+                §14's minimum separation, and a mis-tap here navigates. */}
+            <nav className="grid gap-2">
               {items.map((item, index) => (
                 <m.div key={item.href + index} variants={linkVariants}>
                   <Link
                     href={item.disabled ? '#' : item.href}
                     onClick={() => onOpenChange(false)}
                     className={cn(
-                      'flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent',
+                      // `min-h-11`: `px-3 py-2` around a 20px line box is a
+                      // 36px row, and this panel is a touch-only surface —
+                      // §14's 44px minimum applies to it before anything else
+                      // in the header.
+                      'flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent',
                       item.href.startsWith(`/${segment}`) ||
                         (!segment && item.href === Routes.Homepage)
                         ? 'text-foreground font-semibold'

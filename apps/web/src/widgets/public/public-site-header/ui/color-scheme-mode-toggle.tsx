@@ -36,10 +36,17 @@ export function ColorSchemeModeToggle() {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
+        {/* `min-h-11 min-w-11` below `md`: the rendered control measured 36x36
+            on a phone (`h-9 w-9` from the icon size wins over `size-10` — the
+            `size-*` utility ships before `h-*`/`w-*` in Tailwind's output, and
+            tailwind-merge v1 does not know the utility to collapse them), under
+            §14's 44px minimum. `min-*` rather than a bigger `size-*` so the
+            desktop box and the icon are both left alone, and the island's
+            `gap-2` keeps the 8px separation. */}
         <Button
           variant="ghost"
           size="icon"
-          className="relative size-10 overflow-hidden p-0 focus-visible:ring-1"
+          className="relative size-10 min-h-11 min-w-11 overflow-hidden p-0 focus-visible:ring-1 md:min-h-0 md:min-w-0"
         >
           <div className="relative">
             {!mounted ? (

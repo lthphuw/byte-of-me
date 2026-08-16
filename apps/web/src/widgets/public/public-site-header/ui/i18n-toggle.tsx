@@ -61,10 +61,13 @@ export function I18nToggle() {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
+        {/* `min-h-11 min-w-11` below `md`: measured 36x36 on a phone, under
+            §14's 44px minimum. See the same note on ColorSchemeModeToggle —
+            only the hit area grows, the flag keeps its `size-6`. */}
         <Button
           variant="ghost"
           size="icon"
-          className="relative flex size-10 items-center justify-center focus-visible:bg-accent focus-visible:ring-0"
+          className="relative flex size-10 min-h-11 min-w-11 items-center justify-center focus-visible:bg-accent focus-visible:ring-0 md:min-h-0 md:min-w-0"
         >
           <div className="relative flex size-6 items-center justify-center overflow-hidden rounded-sm">
             <AnimatePresence mode="wait" initial={false}>

@@ -94,7 +94,7 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
             variant="ghost"
             size="sm"
             onClick={handleReset}
-            className="h-9 shrink-0 px-3 text-xs text-muted-foreground"
+            className="h-11 shrink-0 px-3 text-xs text-muted-foreground md:h-9"
           >
             {t('reset')}
           </Button>
