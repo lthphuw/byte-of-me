@@ -36,6 +36,56 @@ const COLLAPSE_TRANSITION: Transition = { duration: 0.12, ease: 'easeIn' };
 const INSTANT_TRANSITION: Transition = { duration: 0 };
 
 /**
+ * How far the search for the clipped text block descends. A paragraph sits one
+ * level under the wrapper, a list item or a blockquote's paragraph two — the
+ * spare levels are for prose wrappers, and the bound is what keeps a deeply
+ * nested tree from being walked on every resize.
+ */
+const MAX_BLOCK_DESCENT = 4;
+
+/**
+ * The first block-level descendant that actually renders text — the one whose
+ * line grid the clamp cuts through.
+ *
+ * The wrapper `div` is the wrong element to measure: it carries only inherited
+ * defaults (16px/24px on /projects), while the `<p>` the prose styles render
+ * inside it is 15px/28px. Snapping 104px to the wrapper's 24px gave 96px, which
+ * is 3.43 lines of the real 28px grid — the clamp landed 43% into the fourth
+ * line and sliced it through the glyphs, exactly the fault this whole function
+ * exists to prevent.
+ *
+ * Only block-level children are followed. An inline child (`<strong>`, `<a>`)
+ * does not establish the line box — its block container's strut does — so
+ * descending into one would report a grid the text is not laid out on. Lists and
+ * blockquotes keep their text a level deeper than a paragraph does, hence a
+ * descent rather than a single `firstElementChild` lookup.
+ *
+ * `null` when nothing under the wrapper renders text: an image or a table has no
+ * line grid to snap to, and the caller keeps the raw height for those.
+ */
+function findTextBlock(root: HTMLElement): HTMLElement | null {
+  let textBlock: HTMLElement | null = null;
+  let current = root;
+
+  for (let depth = 0; depth < MAX_BLOCK_DESCENT; depth += 1) {
+    const child = Array.from(current.children).find((candidate) => {
+      if (!(candidate instanceof HTMLElement)) return false;
+      if (!candidate.textContent?.trim()) return false;
+
+      const { display } = getComputedStyle(candidate);
+      return display !== 'none' && !display.startsWith('inline');
+    });
+
+    if (!(child instanceof HTMLElement)) break;
+
+    textBlock = child;
+    current = child;
+  }
+
+  return textBlock;
+}
+
+/**
  * The clamp height, rounded DOWN to a whole number of text lines.
  *
  * This is what lets the collapsed state end in a clean cut instead of a fade.
@@ -50,7 +100,10 @@ const INSTANT_TRANSITION: Transition = { duration: 0 };
  * image or a table has no meaningful line grid to snap to.
  */
 function snapToLineGrid(element: HTMLElement, collapsedHeight: number): number {
-  const lineHeight = Number.parseFloat(getComputedStyle(element).lineHeight);
+  const textBlock = findTextBlock(element);
+  if (!textBlock) return collapsedHeight;
+
+  const lineHeight = Number.parseFloat(getComputedStyle(textBlock).lineHeight);
 
   if (!Number.isFinite(lineHeight) || lineHeight <= 0) return collapsedHeight;
   if (lineHeight > collapsedHeight) return collapsedHeight;
@@ -161,7 +214,7 @@ export function ExpandableRichText({
       </m.div>
 
       {isOverflowing && (
-        <div className="mt-2 border-t border-border pt-2">
+        <div className="mt-2 border-t border-border">
           <button
             type="button"
             onClick={toggle}
@@ -171,7 +224,17 @@ export function ExpandableRichText({
             // achromatic, so `text-primary` alone is indistinguishable from body
             // text and a hover-only underline does not exist on touch at all.
             // `items-start` + wrapping, because the Vietnamese labels are longer.
-            className="inline-flex cursor-pointer items-start gap-1 text-left text-xs font-medium text-primary underline underline-offset-4 hover:no-underline"
+            //
+            // `py-3.5` is a touch target, not spacing: the label is a 16px line
+            // box, which measured 83×16 — well under the 44×44 minimum. 16 + 2×14
+            // is exactly 44. Padding rather than an inset pseudo-element, because
+            // the hit area has to occupy real layout space here; the tech-stack
+            // badges below are themselves tappable and sit only 12px away, and an
+            // overlay would have covered them and swallowed their taps. The
+            // wrapper's `pt-2` moved into this padding for the same reason — the
+            // gap under the rule is now clickable instead of dead space. Type
+            // scale and weight are untouched, so the label looks identical.
+            className="inline-flex cursor-pointer items-start gap-1 py-3.5 text-left text-xs font-medium text-primary underline underline-offset-4 hover:no-underline"
           >
             {expanded ? t('showLess') : t('showMore')}
             <m.span
