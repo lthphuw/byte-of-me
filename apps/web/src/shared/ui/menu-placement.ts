@@ -18,10 +18,18 @@ export interface MenuPlacement {
   side?: 'top' | 'right' | 'bottom' | 'left';
   /** How it lines up along that edge. */
   align?: 'start' | 'center' | 'end';
+  /**
+   * Classes for the menu surface itself. Exists for one reason: the menu is
+   * portalled to `document.body`, so no ancestor of the trigger can lift it
+   * over a surface that outranks the shadcn default of `z-50`. A caller inside
+   * an overlay of its own has to say so — see the mobile nav drawer, which
+   * sits at `z-9999` and swallowed these menus whole until it did.
+   */
+  menuClassName?: string;
 }
 
 /** Below a trigger, right edges flush — what a top header wants. */
 export const DEFAULT_MENU_PLACEMENT = {
   side: 'bottom',
   align: 'end',
-} as const satisfies Required<MenuPlacement>;
+} as const satisfies Pick<Required<MenuPlacement>, 'side' | 'align'>;

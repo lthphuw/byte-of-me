@@ -22,6 +22,9 @@ import {
   type MenuPlacement,
 } from '@/shared/ui/menu-placement';
 
+/** Matches the theme toggle's swap — the two sit side by side. */
+const FLAG_SWAP = { type: 'spring', stiffness: 400, damping: 30 } as const;
+
 const flagVariants = {
   initial: { opacity: 0, scale: 0.9, y: 8 },
   animate: { opacity: 1, scale: 1, y: 0 },
@@ -60,20 +63,17 @@ export const Flags: Record<
 /**
  * Switches the interface language.
  *
- * In `shared/ui` rather than beside the public header it was written for,
- * because the dashboard and the notes workspace need the same control and a
- * widget may not import from a sibling widget. The dashboard used to carry its
- * own hand-rolled version — a Globe button that swapped between exactly two
- * locales — which meant adding a third language would have half-worked.
+ * In `shared/ui` because three shells need it. Replaced a hand-rolled Globe
+ * button in the dashboard that swapped between exactly two locales.
  *
- * Each option is a real `Link` to the same pathname under a different locale,
- * not a router call: it is navigation, so it should be a link that middle-click
- * and "open in new tab" both understand, and `next-intl` writes the locale
+ * Each option is a real `Link`, not a router call: it is navigation, so
+ * middle-click and open-in-new-tab should work, and next-intl writes the locale
  * cookie on the way through.
  */
 export function I18nToggle({
   side = DEFAULT_MENU_PLACEMENT.side,
   align = DEFAULT_MENU_PLACEMENT.align,
+  menuClassName,
 }: MenuPlacement = {}) {
   const t = useTranslations('global.i18nToggle');
   const locale = useLocale() as LocaleType;
@@ -84,13 +84,13 @@ export function I18nToggle({
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        {/* `min-h-11 min-w-11` below `md`: measured 36x36 on a phone, under
-            §14's 44px minimum. See the same note on ColorSchemeModeToggle —
-            only the hit area grows, the flag keeps its `size-6`. */}
+        {/* `min-h-11 min-w-11` below `md`: measured 36x36, under §14's 44px
+            minimum. Only the hit area grows. No hover fill there either — see
+            ColorSchemeModeToggle, which also explains the matching 24px mark. */}
         <Button
           variant="ghost"
           size="icon"
-          className="relative flex size-10 min-h-11 min-w-11 items-center justify-center focus-visible:bg-accent focus-visible:ring-0 md:min-h-0 md:min-w-0"
+          className="relative flex size-10 min-h-11 min-w-11 items-center justify-center hover:bg-transparent focus-visible:bg-accent focus-visible:ring-0 md:min-h-0 md:min-w-0 md:hover:bg-accent"
         >
           <div className="relative flex size-6 items-center justify-center overflow-hidden rounded-sm">
             <AnimatePresence mode="wait" initial={false}>
@@ -100,7 +100,7 @@ export function I18nToggle({
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+                transition={FLAG_SWAP}
                 className="absolute inset-0 flex items-center justify-center"
               >
                 <CurrentFlag className="size-full object-cover shadow-sm" />
@@ -115,7 +115,10 @@ export function I18nToggle({
         side={side}
         align={align}
         sideOffset={8}
-        className="min-w-[180px] overflow-hidden border-muted/50 bg-popover shadow-lg container-bg"
+        className={cn(
+          'min-w-[180px] overflow-hidden border-muted/50 bg-popover shadow-lg container-bg',
+          menuClassName
+        )}
         forceMount
       >
         <AnimatePresence>

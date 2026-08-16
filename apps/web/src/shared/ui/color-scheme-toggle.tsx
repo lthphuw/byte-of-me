@@ -23,23 +23,24 @@ import {
 } from '@/shared/ui/menu-placement';
 
 /**
+ * Snappy on purpose. The old spring (stiffness 150, damping 15) is ζ≈0.6 —
+ * underdamped, ~0.5s to settle plus an overshoot, so picking a theme looked
+ * like the button was thinking about it. ζ≈0.75 arrives in about half that.
+ */
+const ICON_SWAP = { type: 'spring', stiffness: 400, damping: 30 } as const;
+
+/**
  * Light / dark / follow the system.
  *
- * In `shared/ui` rather than beside the public header it was written for,
- * because the dashboard and the notes workspace need the same control and a
- * widget may not import from a sibling widget. Until this moved, the theme
- * could only be changed from the marketing site — every authenticated surface
- * inherited whatever choice was made out there and offered no way to change it.
- *
- * The state lives in `next-themes`, which is mounted at the app root, so this
- * works from any route with nothing else to wire up. Deliberately NOT stored in
- * `workspace_settings` with the editor preferences: the theme has to be applied
- * before the first paint to avoid a flash of the wrong one, which is what
+ * In `shared/ui` because the dashboard and the notes workspace need it too, and
+ * a widget may not import from a sibling widget. Not stored in
+ * `workspace_settings`: the theme must apply before first paint, which
  * next-themes' blocking script does and a database round trip cannot.
  */
 export function ColorSchemeModeToggle({
   side = DEFAULT_MENU_PLACEMENT.side,
   align = DEFAULT_MENU_PLACEMENT.align,
+  menuClassName,
 }: MenuPlacement = {}) {
   const t = useTranslations('global.modeToggle');
   const { theme, setTheme, resolvedTheme } = useTheme();
@@ -59,22 +60,26 @@ export function ColorSchemeModeToggle({
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        {/* `min-h-11 min-w-11` below `md`: the rendered control measured 36x36
-            on a phone (`h-9 w-9` from the icon size wins over `size-10` — the
-            `size-*` utility ships before `h-*`/`w-*` in Tailwind's output, and
-            tailwind-merge v1 does not know the utility to collapse them), under
-            §14's 44px minimum. `min-*` rather than a bigger `size-*` so the
-            desktop box and the icon are both left alone, and the island's
-            `gap-2` keeps the 8px separation. */}
+        {/* No hover fill below `md`: a ghost background is a pointer
+            affordance, and on a phone it only ever flashed grey under a finger.
+            The 44x44 box stays, invisible — that is §14's touch target, and
+            shrinking it to match how small this now looks is the trade the rule
+            exists to prevent.
+
+            `[&_svg]:size-6` because the mark rendered at 16px next to a 24px
+            flag. It asked for `size={28}`, but that sets an attribute and the
+            variant's own `[&_svg]:size-4` is a descendant selector, so CSS won.
+            Matching the flag also closes most of the apparent gap between them:
+            what reads as space between two icons is mostly box padding. */}
         <Button
           variant="ghost"
           size="icon"
-          className="relative size-10 min-h-11 min-w-11 overflow-hidden p-0 focus-visible:ring-1 md:min-h-0 md:min-w-0"
+          className="relative size-10 min-h-11 min-w-11 overflow-hidden p-0 hover:bg-transparent focus-visible:ring-1 [&_svg]:size-6 md:min-h-0 md:min-w-0 md:hover:bg-accent"
         >
           <div className="relative">
             {!mounted ? (
               <div className="absolute inset-0 flex items-center justify-center opacity-0">
-                <Icons.sun size={28} />
+                <Icons.sun />
               </div>
             ) : (
               <AnimatePresence mode="wait" initial={false}>
@@ -85,10 +90,10 @@ export function ColorSchemeModeToggle({
                     initial="initial"
                     animate="animate"
                     exit="exit"
-                    transition={{ type: 'spring', stiffness: 150, damping: 15 }}
+                    transition={ICON_SWAP}
                     className="absolute inset-0 flex items-center justify-center"
                   >
-                    <Icons.sun size={28} />
+                    <Icons.sun />
                   </m.div>
                 ) : (
                   <m.div
@@ -97,10 +102,10 @@ export function ColorSchemeModeToggle({
                     initial="initial"
                     animate="animate"
                     exit="exit"
-                    transition={{ type: 'spring', stiffness: 150, damping: 15 }}
+                    transition={ICON_SWAP}
                     className="absolute inset-0 flex items-center justify-center"
                   >
-                    <Icons.moon size={28} />
+                    <Icons.moon />
                   </m.div>
                 )}
               </AnimatePresence>
@@ -115,7 +120,10 @@ export function ColorSchemeModeToggle({
         side={side}
         align={align}
         sideOffset={8}
-        className="z-50 min-w-[160px] space-y-2 overflow-hidden rounded-md border border-muted/50 bg-popover  shadow-lg container-bg"
+        className={cn(
+          'z-50 min-w-[160px] space-y-2 overflow-hidden rounded-md border border-muted/50 bg-popover shadow-lg container-bg',
+          menuClassName
+        )}
       >
         {items.map((item, index) => {
           const isActive = theme === item.value;

@@ -110,17 +110,22 @@ export const PublicHeaderMobileNav = ({
     // outside the panel waited on that round trip before anything happened.
     // `pointerdown` fires on the touch itself and covers mouse and pen too.
     document.addEventListener('pointerdown', handleClickOutside);
-    return () => document.removeEventListener('pointerdown', handleClickOutside);
+    return () =>
+      document.removeEventListener('pointerdown', handleClickOutside);
   }, [isOpen, onOpenChange, triggerRef]);
   if (typeof window === 'undefined') return null;
 
   return createPortal(
     <AnimatePresence mode="wait" initial={false}>
       {isOpen && (
-        // top-[72px]: island bottom is 64px on mobile in both states, +8px gap.
-        // The `container` shell aligns the panel with the page content column.
+        // top-16 (64px): the island's bottom is 56px on mobile in BOTH states
+        // — `AT_REST_MOBILE` is 0 + 56 and `DOCKED_MOBILE` is 8 + 48, kept
+        // equal on purpose — plus an 8px gap. That invariant is what lets this
+        // be one number instead of a branch on `docked`; if either geometry
+        // changes, this changes with it.
         <m.div
-          className="pointer-events-none fixed inset-x-0 top-[72px] z-[9999] md:hidden"
+          className="pointer-events-none fixed inset-x-0 top-16 z-[9999] md:hidden"
+          style={{ paddingRight: 'var(--scrollbar-lock, 0px)' }}
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -129,36 +134,38 @@ export const PublicHeaderMobileNav = ({
           <div className="container">
             <div
               ref={menuRef}
-              className="pointer-events-auto overflow-hidden rounded-2xl border border-border p-4 shadow-xl backdrop-blur-xl container-bg"
+              className="pointer-events-auto overflow-hidden rounded-2xl border border-border p-2 shadow-xl backdrop-blur-xl container-bg"
             >
-          <div className="grid gap-4">
-            {/* `gap-2`, not `gap-1`: 4px between two 44px targets is half of
-                §14's minimum separation, and a mis-tap here navigates. */}
-            <nav className="grid gap-2">
-              {items.map((item, index) => (
-                <m.div key={item.href + index} variants={linkVariants}>
-                  <Link
-                    href={item.disabled ? '#' : item.href}
-                    onClick={() => onOpenChange(false)}
-                    className={cn(
-                      // `min-h-11`: `px-3 py-2` around a 20px line box is a
-                      // 36px row, and this panel is a touch-only surface —
-                      // §14's 44px minimum applies to it before anything else
-                      // in the header.
-                      'flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent',
-                      item.href.startsWith(`/${segment}`) ||
-                        (!segment && item.href === Routes.Homepage)
-                        ? 'text-foreground font-semibold'
-                        : 'text-foreground/60'
-                    )}
-                  >
-                    {t(item.title as Parameters<typeof t>[0])}
-                  </Link>
-                </m.div>
-              ))}
-            </nav>
-            {children}
-          </div>
+              <div className="grid gap-2">
+                {/* No gap between rows. §14's 8px separation guards small
+                    buttons packed side by side; a vertical list of full-width
+                    44px rows is the shape that rule is protecting, and the 8px
+                    only made five links read as five unrelated cards. */}
+                <nav className="grid">
+                  {items.map((item, index) => (
+                    <m.div key={item.href + index} variants={linkVariants}>
+                      <Link
+                        href={item.disabled ? '#' : item.href}
+                        onClick={() => onOpenChange(false)}
+                        className={cn(
+                          // `min-h-11`: `px-3 py-2` around a 20px line box is a
+                          // 36px row, and this panel is a touch-only surface —
+                          // §14's 44px minimum applies to it before anything else
+                          // in the header.
+                          'flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent',
+                          item.href.startsWith(`/${segment}`) ||
+                            (!segment && item.href === Routes.Homepage)
+                            ? 'text-foreground font-semibold'
+                            : 'text-foreground/60'
+                        )}
+                      >
+                        {t(item.title as Parameters<typeof t>[0])}
+                      </Link>
+                    </m.div>
+                  ))}
+                </nav>
+                {children}
+              </div>
             </div>
           </div>
         </m.div>

@@ -31,7 +31,8 @@ declare const messages: {
     "userToggle": {
       "signOut": "Đăng xuất",
       "admin": "Admin",
-      "viewer": "Viewer"
+      "viewer": "Viewer",
+      "openAccount": "Mở menu tài khoản"
     },
     "i18nToggle": {
       "toggleLanguage": "Chuyển đổi ngôn ngữ",

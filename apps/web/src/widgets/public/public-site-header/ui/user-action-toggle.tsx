@@ -1,63 +1,52 @@
 'use client';
 
 import {
-  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  menuTransition, menuVariants
+  menuTransition,
+  menuVariants,
 } from '@byte-of-me/ui';
-import { useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, m } from 'framer-motion';
 import { LogOut } from 'lucide-react';
-import { signOut, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 
-import { logOut } from '@/features/auth';
-import { shortenName } from '@/widgets/public/public-site-header/lib/shorten-name';
+import { useAccount } from '@/widgets/public/public-site-header/lib/use-account';
+import { UserAvatar } from '@/widgets/public/public-site-header/ui/user-avatar';
 
+/**
+ * The account control, for a pointer. Desktop only; a phone gets
+ * `PublicHeaderAccountPanel` at the foot of the nav menu.
+ *
+ * A plain `button`, not the `Button` component — the variant system's `h-9` is
+ * what made the previous trigger an ellipse. `group` lets the avatar's ring
+ * react to hover and focus without declaring either twice.
+ */
 export function UserActionToggle() {
   const t = useTranslations('global.userToggle');
-  const { data: session } = useSession();
-  const queryClient = useQueryClient();
+  const { account, signOutEverywhere } = useAccount();
 
-  if (!session?.user) return null;
-
-  const initials = session.user.email?.slice(0, 2).toUpperCase() || 'U';
-  const role = session.user.role?.toLocaleUpperCase() === 'ADMIN' ?
-    t('admin') :
-    t('viewer');
-  const name = session.user.name ? `${role}: ${shortenName(session.user.name, {
-    variant: 'compact'
-  })}` : role;
-
-  const handleLogout = async () => {
-    queryClient.clear();
-    await Promise.all([logOut(), signOut({ redirect: false })]);
-    window.location.reload();
-  };
+  if (!account) return null;
 
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        {/* `min-h-11 min-w-11` below `md`: the avatar measured 40x36 on a phone
-            (the default size's `h-9` wins over `size-10`), under §14's 44px
-            minimum. Scoped to mobile so the desktop circle keeps its size. */}
-        <Button
-          variant="ghost"
-          className="relative size-10 min-h-11 min-w-11 rounded-full bg-muted p-0 text-muted-foreground transition-all hover:scale-105 hover:bg-muted/80 md:min-h-0 md:min-w-0"
+        <button
+          type="button"
+          aria-label={t('openAccount')}
+          className="group flex size-9 items-center justify-center rounded-full focus-visible:outline-none"
         >
-          <span className="text-xs font-semibold">{initials}</span>
-        </Button>
+          <UserAvatar account={account} />
+        </button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
         align="end"
-        className="w-56 overflow-hidden shadow-lg container-bg"
-        sideOffset={8}
+        sideOffset={12}
+        className="w-60 overflow-hidden shadow-lg container-bg"
         forceMount
       >
         <AnimatePresence mode="wait" initial={false}>
@@ -68,21 +57,27 @@ export function UserActionToggle() {
             exit="exit"
             transition={menuTransition}
           >
+            {/* Repeated in full: the trigger is two letters, and "which
+                account is this" is worth answering before offering to end the
+                session. */}
             <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-2">
-                <p className="text-sm font-medium leading-none">
-                  {name}
-                </p>
-                <p className="truncate text-xs leading-none text-muted-foreground">
-                  {session.user.email}
-                </p>
+              <div className="flex items-center gap-3">
+                <UserAvatar account={account} />
+                <div className="min-w-0 space-y-1">
+                  <p className="truncate text-sm font-medium leading-none">
+                    {account.name}
+                  </p>
+                  <p className="truncate text-xs leading-none text-muted-foreground">
+                    {account.email}
+                  </p>
+                </div>
               </div>
             </DropdownMenuLabel>
 
             <DropdownMenuSeparator />
 
             <DropdownMenuItem
-              onClick={handleLogout}
+              onClick={() => void signOutEverywhere()}
               className="cursor-pointer gap-2"
             >
               <LogOut className="size-4" />
