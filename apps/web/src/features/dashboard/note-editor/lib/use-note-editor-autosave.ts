@@ -18,8 +18,21 @@ import {
   type UpdateNoteInput,
   writeLocalNote,
 } from '@/entities/note';
+import {
+  AUTOSAVE_SPEED_MS,
+  useWorkspaceSettings,
+} from '@/entities/workspace-settings';
 
-/** One typing pause before a save leaves the browser. */
+/**
+ * One typing pause before a save leaves the browser.
+ *
+ * Still exported, and still the number every comment in this file reasons
+ * about, but no longer the only possible value: the author can pick from
+ * `AUTOSAVE_SPEED_MS` in workspace settings, and this is what `normal` maps to.
+ * Nothing about the save pipeline depends on the specific figure — the local
+ * write-through happens before the debounce either way, so a longer delay costs
+ * network round trips, never text.
+ */
 export const AUTOSAVE_DEBOUNCE_MS = 1000;
 
 type SaveValues = Omit<UpdateNoteInput, 'id'>;
@@ -119,6 +132,7 @@ export function useNoteEditorAutosave(
 ): UseNoteEditorAutosaveResult {
   const t = useTranslations('dashboard.note');
   const queryClient = useQueryClient();
+  const { settings: workspaceSettings } = useWorkspaceSettings();
 
   const {
     data: note,
@@ -488,13 +502,20 @@ export function useNoteEditorAutosave(
     }
   }, [note, noteId, title, content, willReseedThisCommit]);
 
-  const [debouncedTitle, , titleDebounce] = useDebounce(
-    title,
-    AUTOSAVE_DEBOUNCE_MS
-  );
+  // Read from settings rather than taken as a prop: three components sit
+  // between the provider and this hook, and none of them has any other reason
+  // to know about autosave. `useWorkspaceSettings` falls back to the defaults
+  // outside a provider, so every existing spec that renders the editor bare
+  // keeps the 1000ms it was written against.
+  //
+  // `useDebounce` lists `wait` in its effect deps, so changing the setting
+  // re-arms the pending timer instead of waiting for a remount.
+  const autosaveDelayMs = AUTOSAVE_SPEED_MS[workspaceSettings.autosaveSpeed];
+
+  const [debouncedTitle, , titleDebounce] = useDebounce(title, autosaveDelayMs);
   const [debouncedContent, , contentDebounce] = useDebounce(
     content,
-    AUTOSAVE_DEBOUNCE_MS
+    autosaveDelayMs
   );
 
   // `useDebounce` returns a brand new `{ cancel, flush }` object every

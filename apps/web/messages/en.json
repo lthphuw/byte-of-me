@@ -620,6 +620,12 @@
         "formatted": "Markdown tidied up.",
         "alreadyClean": "Markdown is already tidy."
       },
+      "relabel": {
+        "prompt": "{count, plural, one {# note still shows the old name} other {# notes still show the old name}}.",
+        "confirm": "Update labels",
+        "done": "{count, plural, one {Updated # note} other {Updated # notes}}.",
+        "failed": "Could not update link labels"
+      },
       "properties": {
         "title": "Properties",
         "status": "Status",
@@ -758,6 +764,7 @@
       },
       "links": {
         "title": "Links",
+        "loading": "Loading links…",
         "outgoing": "Links out",
         "incoming": "Mentioned by",
         "empty": "No links yet.",
@@ -843,6 +850,105 @@
           "load": "Couldn't load your workspace overview. Reload to try again."
         },
         "loading": "Loading workspace…"
+      },
+      "settings": {
+        "title": "Workspace settings",
+        "description": "How the notes workspace looks and behaves. Changes save on their own.",
+        "open": "Settings",
+        "openWithShortcut": "Settings (⌘,)",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "saveError": "Could not save",
+        "groups": {
+          "appearance": "Appearance",
+          "editing": "Editing",
+          "links": "Links",
+          "maintenance": "Maintenance"
+        },
+        "appearance": {
+          "density": {
+            "label": "Density",
+            "description": "How much space sits between paragraphs, headings and list items.",
+            "options": {
+              "comfortable": "Comfortable",
+              "compact": "Compact"
+            }
+          },
+          "typeScale": {
+            "label": "Text size",
+            "description": "Body size on the writing surface. Stays at 16px on phones — below that, iOS zooms the page whenever you tap into the editor.",
+            "options": {
+              "small": "Small",
+              "medium": "Medium",
+              "large": "Large"
+            }
+          },
+          "readableLineLength": {
+            "label": "Readable line length",
+            "description": "Caps the writing column so a line stays short enough to read comfortably. Turn off to use the full width of the pane."
+          }
+        },
+        "editing": {
+          "autosaveSpeed": {
+            "label": "Autosave delay",
+            "description": "How long the editor waits after your last keystroke before saving. Your text is written to this browser immediately either way.",
+            "options": {
+              "fast": "Fast (0.4s)",
+              "normal": "Normal (1s)",
+              "relaxed": "Relaxed (2.5s)"
+            }
+          },
+          "spellCheck": {
+            "label": "Spell check",
+            "description": "Let the browser underline words it does not recognise."
+          },
+          "formatOnExit": {
+            "label": "Tidy markdown when leaving Markdown view",
+            "description": "Runs the clean-up automatically when you switch back to the editor, instead of only when you press the button."
+          },
+          "formatOnPaste": {
+            "label": "Tidy pasted markdown",
+            "description": "Cleans up what you paste into the Markdown view. Only the pasted text is touched — never what you already wrote."
+          }
+        },
+        "links": {
+          "updateOnRename": {
+            "label": "Update link labels on rename",
+            "description": "When you rename a note, what should happen to links in other notes that still show its old name.",
+            "options": {
+              "always": "Always update",
+              "ask": "Ask me",
+              "never": "Never"
+            },
+            "note": "Only the visible text is ever changed, and only where it is still an exact copy of the old title — a label you wrote yourself is left alone. Links never break: they point at the note's id, not its name."
+          }
+        },
+        "maintenance": {
+          "intro": "Whole-vault jobs. Each runs in batches in the background, reports real progress, and can be stopped at any point — everything already processed stays processed.",
+          "run": "Run",
+          "cancel": "Stop",
+          "progress": "{processed, number} of {total, number} notes",
+          "cancelled": "Stopped after {processed, number} notes.",
+          "failed": "Job failed",
+          "jobs": {
+            "staleLinks": {
+              "title": "Find links showing an old name",
+              "description": "Lists links whose label no longer matches the title of the note they point at. A report only — nothing is rewritten, because a label you wrote yourself is indistinguishable from one left behind by a rename.",
+              "result": "{count, plural, =0 {No mismatched labels found.} one {# link shows a different name.} other {# links show a different name.}}",
+              "row": "shows “{label}”, now “{title}”"
+            },
+            "linkGraph": {
+              "title": "Rebuild the link graph",
+              "description": "Recomputes which note links to which, from the documents themselves. What the Graph page and the Links panel read from.",
+              "result": "{count, plural, =0 {Everything was already correct.} one {Repaired # note.} other {Repaired # notes.}}"
+            },
+            "searchIndex": {
+              "title": "Rebuild the search index",
+              "description": "Recomputes the plain-text copy of each note that search runs against. Only notes whose text actually differs are written, so this does not disturb the “recently updated” ordering.",
+              "result": "{count, plural, =0 {Everything was already correct.} one {Repaired # note.} other {Repaired # notes.}}"
+            }
+          }
+        }
       }
     },
     "project": {

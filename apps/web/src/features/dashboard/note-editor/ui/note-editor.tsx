@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Button,
   Tooltip,
@@ -21,6 +21,7 @@ import { toast } from 'sonner';
 
 import { createScopedImageUploader } from '@/entities/media';
 import { parseNoteHref } from '@/entities/note';
+import { useWorkspaceSettings } from '@/entities/workspace-settings';
 import { useNoteEditorAutosave } from '@/features/dashboard/note-editor/lib/use-note-editor-autosave';
 import { NoteEditorSkeleton } from '@/features/dashboard/note-editor/ui/note-editor-skeleton';
 import { NoteExportMenu } from '@/features/dashboard/note-editor/ui/note-export-menu';
@@ -60,6 +61,21 @@ export interface NoteEditorProps {
   /** The note's folder path, drawn above the title. A slot, like the two
    *  above: resolving ancestors is a query and the widget owns queries. */
   breadcrumbSlot?: React.ReactNode;
+  /**
+   * The title stopped changing, and it is not what it was when this note
+   * opened. What the widget hangs the inbound-link relabel on.
+   *
+   * Reported on BLUR rather than on every save, and that is the whole design.
+   * The title field autosaves as it is typed, so a per-save trigger would
+   * rewrite every other note's link labels to `Kiế`, then `Kiến`, then
+   * `Kiến t` — one fan-out across the vault per keystroke pause. Leaving the
+   * field is the one moment the author has finished naming the thing.
+   *
+   * A callback rather than a direct call because the relabel lives in
+   * `note-actions`, a sibling feature: the same sideways-import rule that puts
+   * `actions` and `propertiesSlot` above in the widget's hands.
+   */
+  onTitleCommitted?: (previousTitle: string, nextTitle: string) => void;
 }
 
 export function NoteEditor({
@@ -72,6 +88,7 @@ export function NoteEditor({
   onOpenCheatSheet,
   onOutlineChange,
   breadcrumbSlot,
+  onTitleCommitted,
 }: NoteEditorProps) {
   const t = useTranslations('dashboard.note');
   // Raw markdown source vs WYSIWYG. Resets on note switch for free: the
@@ -81,6 +98,21 @@ export function NoteEditor({
   // until Tiptap has mounted, and null again once it unmounts — the export
   // menu treats both as "not ready" rather than crashing.
   const editorApiRef = useRef<RichTextEditorApi | null>(null);
+  const { settings } = useWorkspaceSettings();
+  /**
+   * The title as it stood the last time anyone was told about it — the note's
+   * name on open, and then whatever the previous blur reported.
+   *
+   * Not derived from `note.title`: that field follows the autosave, so by the
+   * time the author leaves the input the server copy already holds the NEW
+   * name and the old one is gone. The relabel is defined entirely in terms of
+   * the old one, so it has to be remembered here.
+   *
+   * A ref rather than state because nothing renders from it, and it must not
+   * reset on the re-render the title save causes. It survives a note switch
+   * for free: the widget mounts this component with `key={noteId}`.
+   */
+  const committedTitleRef = useRef<string | null>(null);
   const {
     note,
     isPending,
@@ -98,6 +130,16 @@ export function NoteEditor({
     resolveConflict,
   } = useNoteEditorAutosave(noteId);
   const format = useFormatter();
+
+  // Seeded once, from the first resolved read. `note` is undefined while the
+  // query is pending, and the component returns a skeleton for those renders —
+  // so this cannot go in the render body above without running before there is
+  // anything to record.
+  useEffect(() => {
+    if (committedTitleRef.current === null && note) {
+      committedTitleRef.current = note.title;
+    }
+  }, [note]);
 
   // Error is checked FIRST, before the loading gate below, deliberately:
   // `isSeeded` can NEVER become true after a load failure — the seed effect
@@ -377,6 +419,28 @@ export function NoteEditor({
       <input
         value={title}
         onChange={(event) => setTitle(event.target.value)}
+        // Leaving the field is what counts as "you have finished naming this",
+        // and it is the only trigger — see `onTitleCommitted`'s doc comment for
+        // why a per-save one would fan out across the vault once per keystroke
+        // pause.
+        //
+        // The relabel deliberately does NOT wait for the title's own save to
+        // land. It rewrites other notes' anchor text from the two strings it is
+        // handed, so it does not depend on the rename having been stored; and
+        // making it wait would mean holding the author's blur behind a network
+        // round trip for a tidy-up that is supposed to be invisible. If that
+        // save then fails, the editor already says so persistently and offers a
+        // retry — the labels are momentarily ahead of the title, not lost.
+        onBlur={() => {
+          const previous = committedTitleRef.current;
+          if (previous === null) return;
+
+          const next = title.trim();
+          if (!next || next === previous) return;
+
+          committedTitleRef.current = next;
+          onTitleCommitted?.(previous, next);
+        }}
         placeholder={t('fields.titlePlaceholder')}
         aria-label={t('fields.title')}
         // `text-xl` below `md`: at `text-2xl` a two-line note title ate a
@@ -388,6 +452,26 @@ export function NoteEditor({
 
       <div
         className="min-h-0 flex-1"
+        // The three appearance settings, applied as data attributes on an
+        // ANCESTOR rather than as props.
+        //
+        // `editor-surface.css` writes its variants as descendant selectors
+        // (`[data-editor-density='compact'] .ProseMirror`), so any ancestor
+        // works — which means the whole appearance group costs three attributes
+        // here and nothing at all inside `packages/ui`. That package has no
+        // business knowing this app has a settings table.
+        //
+        // The default of each is expressed as NO attribute, not as an explicit
+        // value: the unset state is what the base rules already describe, and
+        // an explicit `data-editor-density="comfortable"` would need a matching
+        // CSS rule that exists only to undo the one above it.
+        data-editor-density={
+          settings.density === 'compact' ? 'compact' : undefined
+        }
+        data-editor-type={
+          settings.typeScale === 'medium' ? undefined : settings.typeScale
+        }
+        data-editor-measure={settings.readableLineLength ? undefined : 'full'}
         // Capture phase, deliberately: `@tiptap/extension-link` binds its own
         // click handler on the editor's DOM node below this, and by default
         // that handler opens the href in a new tab. React attaches capture
@@ -452,6 +536,13 @@ export function NoteEditor({
           // render as KaTeX while typing. Other editors keep `$` literal.
           withMath
           markdownMode={rawMode}
+          spellCheck={settings.spellCheck}
+          // The automatic halves of the markdown clean-up. The manual button in
+          // the header stays regardless — these only decide whether the same
+          // tidy also runs at two moments where it cannot land under a live
+          // caret: leaving the pane, and the instant a paste arrives.
+          formatMarkdownOnExit={settings.formatMarkdownOnExit}
+          formatMarkdownOnPaste={settings.formatMarkdownOnPaste}
           onOutlineChange={onOutlineChange}
           // The markdown serializer, for `.md` export. Stored on a ref rather
           // than in state: nothing renders differently once it arrives, and a

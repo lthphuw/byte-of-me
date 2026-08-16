@@ -85,7 +85,15 @@ export interface NoteExplorerControls {
   submitDraft: (title: string) => void;
   cancelDraft: () => void;
   startRename: (id: string) => void;
-  submitRename: (id: string, title: string) => void;
+  /**
+   * `previousTitle` travels WITH the commit because nothing downstream can
+   * recover it: by the time the mutation settles the row already shows the new
+   * name, and the relabel of inbound link labels is defined entirely in terms
+   * of the old one (it rewrites only anchors whose text is still a verbatim
+   * copy of it). The row that renders the rename input is the last place that
+   * still knows.
+   */
+  submitRename: (id: string, title: string, previousTitle: string) => void;
   cancelRename: () => void;
   clearReveal: () => void;
 }

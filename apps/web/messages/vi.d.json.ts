@@ -623,6 +623,12 @@ declare const messages: {
         "formatted": "Đã dọn dẹp markdown.",
         "alreadyClean": "Markdown đã gọn sẵn rồi."
       },
+      "relabel": {
+        "prompt": "{count, plural, other {# note còn đang hiện tên cũ}}.",
+        "confirm": "Cập nhật nhãn",
+        "done": "{count, plural, other {Đã cập nhật # note}}.",
+        "failed": "Không cập nhật được nhãn link"
+      },
       "properties": {
         "title": "Thuộc tính",
         "status": "Trạng thái",
@@ -761,6 +767,7 @@ declare const messages: {
       },
       "links": {
         "title": "Liên kết",
+        "loading": "Đang tải liên kết…",
         "outgoing": "Liên kết đi",
         "incoming": "Được nhắc đến bởi",
         "empty": "Chưa có liên kết nào.",
@@ -846,6 +853,105 @@ declare const messages: {
           "load": "Không tải được tổng quan không gian làm việc. Tải lại để thử lại."
         },
         "loading": "Đang tải không gian làm việc…"
+      },
+      "settings": {
+        "title": "Cài đặt không gian",
+        "description": "Không gian ghi chú trông và chạy ra sao. Thay đổi được lưu tự động.",
+        "open": "Cài đặt",
+        "openWithShortcut": "Cài đặt (⌘,)",
+        "saving": "Đang lưu…",
+        "saved": "Đã lưu",
+        "saveError": "Không lưu được",
+        "groups": {
+          "appearance": "Trình bày",
+          "editing": "Soạn thảo",
+          "links": "Liên kết",
+          "maintenance": "Bảo trì"
+        },
+        "appearance": {
+          "density": {
+            "label": "Mật độ",
+            "description": "Khoảng cách giữa các đoạn văn, tiêu đề và mục danh sách.",
+            "options": {
+              "comfortable": "Thoải mái",
+              "compact": "Gọn"
+            }
+          },
+          "typeScale": {
+            "label": "Cỡ chữ",
+            "description": "Cỡ chữ thân bài. Trên điện thoại luôn giữ 16px — nhỏ hơn thì iOS sẽ phóng to trang mỗi lần bạn chạm vào vùng soạn thảo.",
+            "options": {
+              "small": "Nhỏ",
+              "medium": "Vừa",
+              "large": "Lớn"
+            }
+          },
+          "readableLineLength": {
+            "label": "Giới hạn bề rộng dòng",
+            "description": "Chặn bề ngang cột viết để một dòng đủ ngắn cho dễ đọc. Tắt đi để dùng hết bề rộng khung."
+          }
+        },
+        "editing": {
+          "autosaveSpeed": {
+            "label": "Độ trễ tự lưu",
+            "description": "Editor đợi bao lâu sau phím cuối cùng rồi mới lưu. Dù chọn gì, chữ của bạn vẫn được ghi xuống trình duyệt ngay lập tức.",
+            "options": {
+              "fast": "Nhanh (0,4s)",
+              "normal": "Thường (1s)",
+              "relaxed": "Thư thả (2,5s)"
+            }
+          },
+          "spellCheck": {
+            "label": "Kiểm tra chính tả",
+            "description": "Cho trình duyệt gạch chân những từ nó không nhận ra."
+          },
+          "formatOnExit": {
+            "label": "Dọn markdown khi rời chế độ Markdown",
+            "description": "Tự dọn khi bạn chuyển về editor, thay vì chỉ dọn khi bấm nút."
+          },
+          "formatOnPaste": {
+            "label": "Dọn markdown khi dán",
+            "description": "Dọn phần bạn dán vào chế độ Markdown. Chỉ đụng đoạn vừa dán — không đụng chữ bạn đã viết."
+          }
+        },
+        "links": {
+          "updateOnRename": {
+            "label": "Cập nhật nhãn link khi đổi tên",
+            "description": "Khi bạn đổi tên một note, các link ở note khác còn đang hiện tên cũ sẽ được xử lý thế nào.",
+            "options": {
+              "always": "Luôn cập nhật",
+              "ask": "Hỏi tôi",
+              "never": "Không bao giờ"
+            },
+            "note": "Chỉ chữ hiển thị bị đổi, và chỉ ở những chỗ nó còn là bản sao chính xác của tiêu đề cũ — nhãn bạn tự viết được giữ nguyên. Link không bao giờ gãy: nó trỏ theo id của note, không theo tên."
+          }
+        },
+        "maintenance": {
+          "intro": "Các việc quét toàn kho. Mỗi việc chạy theo lô ở nền, báo tiến độ thật, và dừng được bất cứ lúc nào — phần đã xử lý vẫn giữ nguyên.",
+          "run": "Chạy",
+          "cancel": "Dừng",
+          "progress": "{processed, number}/{total, number} note",
+          "cancelled": "Đã dừng sau {processed, number} note.",
+          "failed": "Việc chạy thất bại",
+          "jobs": {
+            "staleLinks": {
+              "title": "Tìm link còn hiện tên cũ",
+              "description": "Liệt kê những link có nhãn không còn khớp tiêu đề của note nó trỏ tới. Chỉ báo cáo, không sửa gì — vì nhãn bạn tự viết và nhãn sót lại sau một lần đổi tên là không phân biệt được.",
+              "result": "{count, plural, =0 {Không có nhãn nào lệch.} other {# link đang hiện tên khác.}}",
+              "row": "đang hiện “{label}”, nay là “{title}”"
+            },
+            "linkGraph": {
+              "title": "Dựng lại đồ thị link",
+              "description": "Tính lại note nào liên kết tới note nào, dựa thẳng vào nội dung tài liệu. Đây là thứ trang Graph và panel Liên kết đọc từ đó.",
+              "result": "{count, plural, =0 {Mọi thứ vốn đã đúng.} other {Đã sửa # note.}}"
+            },
+            "searchIndex": {
+              "title": "Dựng lại chỉ mục tìm kiếm",
+              "description": "Tính lại bản văn bản thuần của từng note mà tìm kiếm chạy trên đó. Chỉ ghi những note thật sự khác, nên không làm xáo thứ tự “cập nhật gần đây”.",
+              "result": "{count, plural, =0 {Mọi thứ vốn đã đúng.} other {Đã sửa # note.}}"
+            }
+          }
+        }
       }
     },
     "project": {

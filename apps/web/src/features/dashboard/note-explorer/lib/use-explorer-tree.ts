@@ -22,7 +22,11 @@ interface UseExplorerTreeOptions {
     title: string;
   }) => void;
   /** Same arrangement for the rename mutation. */
-  onRename: (input: { id: string; title: string }) => void;
+  onRename: (input: {
+    id: string;
+    title: string;
+    previousTitle: string;
+  }) => void;
 }
 
 /** `NoteExplorerControls` plus the parts only the panel drives. */
@@ -171,9 +175,9 @@ export function useExplorerTree({
   const cancelRename = useCallback(() => setRenamingId(null), []);
 
   const submitRename = useCallback(
-    (id: string, title: string) => {
+    (id: string, title: string, previousTitle: string) => {
       const trimmed = title.trim();
-      if (trimmed) onRename({ id, title: trimmed });
+      if (trimmed) onRename({ id, title: trimmed, previousTitle });
       setRenamingId(null);
     },
     [onRename]

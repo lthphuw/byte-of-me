@@ -1,4 +1,5 @@
 import { SpaceNavRail } from './space-nav-rail';
+import { SpaceSettingsProvider } from './space-settings-provider';
 
 /**
  * The chrome every `/space` page sits inside.
@@ -21,10 +22,15 @@ import { SpaceNavRail } from './space-nav-rail';
  */
 export function SpaceShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-dvh overflow-x-clip bg-muted/40">
-      <SpaceNavRail />
+    // The settings dialog is hosted around BOTH the rail and the content, not
+    // inside either: the rail opens it, a page's mobile nav sheet opens it, and
+    // the keyboard opens it with no trigger on screen at all.
+    <SpaceSettingsProvider>
+      <div className="flex h-dvh overflow-x-clip bg-muted/40">
+        <SpaceNavRail />
 
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col">{children}</div>
-    </div>
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">{children}</div>
+      </div>
+    </SpaceSettingsProvider>
   );
 }

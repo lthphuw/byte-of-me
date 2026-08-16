@@ -13,6 +13,7 @@ import {
   restoreNote,
   updateNote,
 } from '@/entities/note';
+import { useRelabelInboundLinks } from '@/features/dashboard/note-actions/lib/use-relabel-inbound-links';
 
 /**
  * Invalidates every list a note can appear in, and only those.
@@ -219,16 +220,36 @@ export function useRenameNote() {
   const t = useTranslations('dashboard.note');
   const queryClient = useQueryClient();
   const invalidateLists = useInvalidateNoteLists();
+  const relabelInboundLinks = useRelabelInboundLinks();
 
   return useMutation({
-    mutationFn: async (input: { id: string; title: string }) => {
-      const res = await updateNote(input);
+    mutationFn: async (input: {
+      id: string;
+      title: string;
+      /**
+       * The name the row carried before this edit.
+       *
+       * Optional so no existing caller breaks, but without it the inbound-link
+       * relabel below cannot run: the whole safety of that operation rests on
+       * matching anchors whose text is still an exact copy of the OLD title,
+       * and nothing on the server remembers what that was a moment ago.
+       */
+      previousTitle?: string;
+    }) => {
+      const res = await updateNote({ id: input.id, title: input.title });
       if (!res.success) throw new Error(res.errorMsg);
-      return res.data;
+      return { note: res.data, previousTitle: input.previousTitle };
     },
-    onSuccess: (data) => {
+    onSuccess: ({ note: data, previousTitle }) => {
       queryClient.setQueryData(noteKeys.detail(data.id), data);
       invalidateLists();
+
+      // Fired and NOT awaited. The rename is done and the tree has already
+      // re-read; tidying up other notes' labels happens behind that, and must
+      // never be something the author waits on. See the hook for the policy.
+      if (previousTitle !== undefined) {
+        relabelInboundLinks(data.id, previousTitle, data.title);
+      }
     },
     onError: (error: Error) => {
       toast.error(t('errors.save'), { description: error.message });

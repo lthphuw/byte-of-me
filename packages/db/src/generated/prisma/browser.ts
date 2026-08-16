@@ -234,3 +234,22 @@ export type NoteOnLabel = Prisma.NoteOnLabelModel
  * clean up — the cascade below takes them.
  */
 export type NoteShare = Prisma.NoteShareModel
+/**
+ * Model WorkspaceSettings
+ * Everything the notes workspace remembers ABOUT an author rather than about
+ * their notes: editor density, autosave delay, what a rename should do to
+ * inbound link labels.
+ * 
+ * One JSON column rather than a column per setting, and that is a deliberate
+ * trade. The set will keep growing, and a column apiece means a migration
+ * apiece against a production database; a blob means one migration ever. What
+ * it gives up is querying BY a setting, which nothing does or will — these are
+ * read as a whole, once per page load, for exactly one owner.
+ * 
+ * The shape is not enforced here, so it is enforced at the boundary instead:
+ * `entities/workspace-settings/model/settings-schema.ts` parses this with zod
+ * and merges the result over defaults. A row written by an older version of
+ * the app, or a field this version has never heard of, therefore reads as the
+ * default rather than breaking the workspace.
+ */
+export type WorkspaceSettings = Prisma.WorkspaceSettingsModel

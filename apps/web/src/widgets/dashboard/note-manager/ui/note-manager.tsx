@@ -16,6 +16,7 @@ import {
   NoteActionsMenu,
   NoteRowContextMenu,
   useCreateNote,
+  useRelabelInboundLinks,
 } from '@/features/dashboard/note-actions';
 import {
   MarkdownCheatSheetDialog,
@@ -181,6 +182,12 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
   // so it leaves that one to the editor's own autosave.
   useNoteSyncQueue(openNoteId);
 
+  // Brings other notes' link LABELS back in step after a rename. Mounted at
+  // the widget for the same reason the sync queue is: the two places a rename
+  // can happen — a tree row and the editor's title field — are two different
+  // features, and this is the layer that can reach both.
+  const relabelInboundLinks = useRelabelInboundLinks();
+
   return (
     <div className="flex min-h-0 flex-1">
       {/* Master–detail, by CSS rather than by unmounting: below `md` exactly
@@ -298,6 +305,14 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
             }
             onOpenCheatSheet={() => setCheatSheetOpen(true)}
             onOutlineChange={setOutline}
+            // Renaming from the editor's title field, rather than from a tree
+            // row. Wired HERE because `note-actions` and `note-editor` are
+            // sibling features, the same reason `propertiesSlot` and `actions`
+            // above are passed in rather than imported — the widget is the
+            // layer allowed to know about both.
+            onTitleCommitted={(previousTitle, nextTitle) =>
+              relabelInboundLinks(openNoteId, previousTitle, nextTitle)
+            }
             // `setState(() => fn)`, not `setState(fn)`: React treats a bare
             // function argument as an updater and would call it immediately
             // with the previous state — storing a callback needs the wrapper.

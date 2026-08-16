@@ -473,9 +473,110 @@
   --lead-2: 1.125rem;
   --lead-3: 1rem;
   --lead-4: 0.875rem;
-  --size: 0.875rem;
   --leading: 1.6;
   padding: 0;
+}
+
+/*
+ * The compact TYPE size, gated the same way `[data-editor-type='small']` is
+ * below, and for the same reason — but this one is a repair rather than a
+ * precaution.
+ *
+ * `--size` was declared in the block above when this file replaced the two
+ * vendored stylesheets. That is (0,2,0); the 16px floor further down is a bare
+ * `.ProseMirror` inside `@media (max-width: 640px)`, which is (0,1,0) because a
+ * media query contributes no specificity. So the compact rule won on phones and
+ * dropped the contact form's message box to 14px — and iOS Safari zooms the
+ * whole page whenever a focused editable computes under 16px, which is the
+ * behaviour that box's own comment in `rich-text-editor-lite.tsx` says it exists
+ * to avoid. The stylesheets this replaced did not have the bug: both declared
+ * the small size at (0,1,0), so the narrow-viewport block outranked it by
+ * source order.
+ *
+ * Gating it to wide viewports makes the two blocks non-overlapping, so on a
+ * phone the compact size simply does not exist and the floor applies.
+ */
+@media (min-width: 641px) {
+  [data-editor-density='compact'] .ProseMirror {
+    --size: 0.875rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Type scale
+ *
+ * Body size and nothing else. The rhythm tokens, the heading ladder and
+ * `--size-code` are all absolute `rem`, so moving the type leaves every one of
+ * them exactly where the density variant put it — which is the point: scale
+ * and density are two independent knobs, not one enum with six values. The one
+ * thing that does follow is INLINE code, which is `0.9em` and so stays
+ * proportional to the text it sits in, which is what `em` is there for.
+ *
+ * `medium` is the base declared on `.ProseMirror` above and deliberately has
+ * NO rule of its own. A surface with no attribute must render byte-identically
+ * to one asked for the default, so there is nothing here to get out of step.
+ *
+ * ---- Why `small` is behind a min-width query ----
+ *
+ * This is load-bearing, not tidiness, and it will read as redundant to anyone
+ * who has not traced the specificity:
+ *
+ *   [data-editor-type='small'] .ProseMirror   →  (0,2,0)
+ *   .ProseMirror  (in the narrow block below) →  (0,1,0)
+ *
+ * A media query contributes NOTHING to specificity, so an ungated attribute
+ * rule wins inside the narrow block and drags a phone's body text down to
+ * 14px. That block restates `--size: 1rem` for one reason only — iOS Safari
+ * zooms the whole page the moment a focused editable computes under 16px, and
+ * a contenteditable is no exception — so beating it is not a smaller-looking
+ * editor, it is the viewport jumping every time the author taps into the note.
+ *
+ * The two queries never overlap (<=640px / >=641px), so on a phone the small
+ * scale simply does not exist and the floor holds. Merging this rule back out
+ * of the media query is the "simplification" that reintroduces the zoom.
+ *
+ * At a fractional width between the two (640.5px, which fractional device
+ * pixel ratios and browser zoom do produce) neither query matches and the base
+ * 15px stands. That is not a hole this rule opens: a default editor already
+ * renders 15px at that width, because the narrow block it would otherwise
+ * inherit from does not match either.
+ *
+ * `large` needs no such gate. 17px is already above the floor, so letting it
+ * win inside the narrow block is exactly what an author who asked for large
+ * type wants. The asymmetry is the rule, not an oversight.
+ *
+ * (`[data-editor-density='compact']` above has the same shape and no gate, so
+ * it does override the floor to 14px. That predates these variants and is left
+ * alone here rather than changed in passing — but it is the same failure mode,
+ * and worth knowing about before the pattern is copied a third time.)
+ * ------------------------------------------------------------------------ */
+
+@media (min-width: 641px) {
+  [data-editor-type='small'] .ProseMirror {
+    --size: 0.875rem;
+  }
+}
+
+[data-editor-type='large'] .ProseMirror {
+  --size: 1.0625rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * Measure
+ *
+ * `max-width: 90ch` on `.ProseMirror` is the readable line length, and it is
+ * the right default: past roughly that width the eye loses the start of the
+ * next line. `full` hands the column whatever width the pane gives it, for an
+ * author working in wide tables or side-by-side image rows where the ceiling
+ * is the thing in the way.
+ *
+ * `max-width`, not `width`: the surface keeps its `margin: 0 auto`, so with no
+ * ceiling to centre against it simply fills the pane. Same declaration the
+ * print block already makes, for the same reason.
+ * ------------------------------------------------------------------------ */
+
+[data-editor-measure='full'] .ProseMirror {
+  max-width: none;
 }
 
 /* ---------------------------------------------------------------------------

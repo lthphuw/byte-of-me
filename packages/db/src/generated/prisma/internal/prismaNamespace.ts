@@ -438,7 +438,8 @@ export const ModelName = {
   NoteLink: 'NoteLink',
   NoteLabel: 'NoteLabel',
   NoteOnLabel: 'NoteOnLabel',
-  NoteShare: 'NoteShare'
+  NoteShare: 'NoteShare',
+  WorkspaceSettings: 'WorkspaceSettings'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -454,7 +455,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "note" | "noteLink" | "noteLabel" | "noteOnLabel" | "noteShare"
+    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "note" | "noteLink" | "noteLabel" | "noteOnLabel" | "noteShare" | "workspaceSettings"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3566,6 +3567,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    WorkspaceSettings: {
+      payload: Prisma.$WorkspaceSettingsPayload<ExtArgs>
+      fields: Prisma.WorkspaceSettingsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WorkspaceSettingsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceSettingsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WorkspaceSettingsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceSettingsPayload>
+        }
+        findFirst: {
+          args: Prisma.WorkspaceSettingsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceSettingsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WorkspaceSettingsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceSettingsPayload>
+        }
+        findMany: {
+          args: Prisma.WorkspaceSettingsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceSettingsPayload>[]
+        }
+        create: {
+          args: Prisma.WorkspaceSettingsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceSettingsPayload>
+        }
+        createMany: {
+          args: Prisma.WorkspaceSettingsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WorkspaceSettingsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceSettingsPayload>[]
+        }
+        delete: {
+          args: Prisma.WorkspaceSettingsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceSettingsPayload>
+        }
+        update: {
+          args: Prisma.WorkspaceSettingsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceSettingsPayload>
+        }
+        deleteMany: {
+          args: Prisma.WorkspaceSettingsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WorkspaceSettingsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WorkspaceSettingsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceSettingsPayload>[]
+        }
+        upsert: {
+          args: Prisma.WorkspaceSettingsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkspaceSettingsPayload>
+        }
+        aggregate: {
+          args: Prisma.WorkspaceSettingsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWorkspaceSettings>
+        }
+        groupBy: {
+          args: Prisma.WorkspaceSettingsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WorkspaceSettingsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WorkspaceSettingsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WorkspaceSettingsCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -4142,6 +4217,17 @@ export const NoteShareScalarFieldEnum = {
 export type NoteShareScalarFieldEnum = (typeof NoteShareScalarFieldEnum)[keyof typeof NoteShareScalarFieldEnum]
 
 
+export const WorkspaceSettingsScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  ownerId: 'ownerId',
+  preferences: 'preferences'
+} as const
+
+export type WorkspaceSettingsScalarFieldEnum = (typeof WorkspaceSettingsScalarFieldEnum)[keyof typeof WorkspaceSettingsScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -4156,6 +4242,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -4458,6 +4551,7 @@ export type GlobalOmitConfig = {
   noteLabel?: Prisma.NoteLabelOmit
   noteOnLabel?: Prisma.NoteOnLabelOmit
   noteShare?: Prisma.NoteShareOmit
+  workspaceSettings?: Prisma.WorkspaceSettingsOmit
 }
 
 /* Types for Logging */

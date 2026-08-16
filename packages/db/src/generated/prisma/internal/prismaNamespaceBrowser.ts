@@ -92,7 +92,8 @@ export const ModelName = {
   NoteLink: 'NoteLink',
   NoteLabel: 'NoteLabel',
   NoteOnLabel: 'NoteOnLabel',
-  NoteShare: 'NoteShare'
+  NoteShare: 'NoteShare',
+  WorkspaceSettings: 'WorkspaceSettings'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -648,6 +649,17 @@ export const NoteShareScalarFieldEnum = {
 export type NoteShareScalarFieldEnum = (typeof NoteShareScalarFieldEnum)[keyof typeof NoteShareScalarFieldEnum]
 
 
+export const WorkspaceSettingsScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  ownerId: 'ownerId',
+  preferences: 'preferences'
+} as const
+
+export type WorkspaceSettingsScalarFieldEnum = (typeof WorkspaceSettingsScalarFieldEnum)[keyof typeof WorkspaceSettingsScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -662,6 +674,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

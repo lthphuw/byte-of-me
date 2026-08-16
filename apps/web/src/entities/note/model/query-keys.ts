@@ -7,6 +7,21 @@
 export const noteKeys = {
   all: ['note'] as const,
   detail: (noteId: string) => [...noteKeys.all, 'detail', noteId] as const,
+  /**
+   * Prefix-matches every note's document.
+   *
+   * Exists for exactly one caller, and is dangerous for everyone else: a
+   * relabel-on-rename rewrites the CONTENT of notes whose ids the rename does
+   * not know, so their cached documents are stale and there is no narrower way
+   * to say so.
+   *
+   * Reach for it with `removeQueries`, never `invalidateQueries`.
+   * `use-note-editor-autosave.ts` documents at length why making the OPEN
+   * note's detail refetch around a debounced save reopens a save loop;
+   * `removeQueries` drops the inactive entries outright and leaves the active
+   * one to the autosave's own reconciliation.
+   */
+  detailAll: () => [...noteKeys.all, 'detail'] as const,
   links: (noteId: string) => [...noteKeys.all, 'links', noteId] as const,
   /** Prefix-matches every `links(noteId)` key. A save rewrites the saved
    *  note's outgoing links, which changes some OTHER note's backlinks — and

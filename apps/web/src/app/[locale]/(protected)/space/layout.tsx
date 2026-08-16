@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 
 import { getOwnerDisplayName } from '@/entities/user-profile/api/get-owner-display-name';
+import { WorkspaceSettingsProvider } from '@/entities/workspace-settings';
+import { getWorkspaceSettings } from '@/entities/workspace-settings/api/get-workspace-settings';
 import { buildIconSet } from '@/shared/lib/metadata';
 import { SpaceShell } from '@/widgets/dashboard/space-shell';
 
@@ -51,5 +53,20 @@ export default async function SpaceLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <SpaceShell>{children}</SpaceShell>;
+  // Read on the SERVER and seeded into the provider, never fetched after
+  // hydration. Density, type scale and line length are layout: fetched from the
+  // client, the workspace would paint once at the defaults and then jump — the
+  // same flash `use-explorer-prefs.ts` documents itself as accepting, which is
+  // the reason these live in a table instead of another localStorage key.
+  //
+  // Imported by its own path rather than through `@/entities/workspace-settings`
+  // because it is a plain server module that value-imports prisma; the barrel is
+  // client-reachable. Its own `api/index.ts` says the same thing at more length.
+  const settings = await getWorkspaceSettings();
+
+  return (
+    <WorkspaceSettingsProvider initial={settings}>
+      <SpaceShell>{children}</SpaceShell>
+    </WorkspaceSettingsProvider>
+  );
 }

@@ -1,3 +1,5 @@
+export * from './maintenance';
+export * from './note-link-audit';
 export * from './note-links';
 export * from './note-local-store';
 export * from './note-schema';

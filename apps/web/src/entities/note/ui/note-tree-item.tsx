@@ -213,7 +213,9 @@ export function NoteTreeItem({
       isFolder={node.isFolder}
       defaultValue={node.title}
       label={t('tree.renameInputLabel')}
-      onSubmit={(value) => explorer.submitRename(node.id, value)}
+      onSubmit={(value) =>
+        explorer.submitRename(node.id, value, node.title)
+      }
       onCancel={explorer.cancelRename}
     />
   ) : (

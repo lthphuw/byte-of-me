@@ -1,6 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  // Aliased, not imported under its own name: `handlePaste` below casts to the
+  // DOM's global `ClipboardEvent`, and importing React's synthetic one would
+  // shadow it — the two are not assignable to each other, so the shadowing
+  // does not stay quiet, it breaks the cast.
+  type ClipboardEvent as ReactClipboardEvent,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { Color } from '@tiptap/extension-color';
 import Highlight from '@tiptap/extension-highlight';
@@ -239,6 +250,41 @@ type RichTextEditorProps = {
    */
   markdownMode?: boolean;
   /**
+   * Browser spell checking, on the writing surface and on the raw-markdown
+   * pane alike.
+   *
+   * Defaults to `true`, which is what a contenteditable does with no attribute
+   * at all — so every existing consumer keeps the behaviour it has. The pane
+   * is the exception: it hardcoded `spellCheck={false}` and now follows this
+   * prop, because "spell check is off" being true of half the same editor
+   * depending on which tab is showing is not a setting, it is a bug an author
+   * reports as "it stopped underlining my typos".
+   *
+   * Applied to the live view as well as at mount — see the effect below for
+   * why that takes a second write rather than falling out of the prop.
+   */
+  spellCheck?: boolean;
+  /**
+   * Tidy the raw-markdown source when LEAVING raw mode, just before the
+   * pending edit is committed to the document.
+   *
+   * Off by default: an author who has not asked for a formatter must never
+   * find their source rewritten. Exit is the one honest moment to run one —
+   * it is a commit point the author chose, whereas formatting on a debounce or
+   * on save fires mid-sentence and moves the text under a live caret.
+   */
+  formatMarkdownOnExit?: boolean;
+  /**
+   * Tidy a PASTED fragment as it lands in the raw-markdown pane, and nothing
+   * else in it.
+   *
+   * Off by default, and deliberately narrower than {@link formatMarkdownOnExit}:
+   * the text worth tidying is the README / chat answer / half a wiki page an
+   * author just pasted, complete with tabs, `*` bullets and `#Heading`. What
+   * they have already written by hand is left exactly as they wrote it.
+   */
+  formatMarkdownOnPaste?: boolean;
+  /**
    * Handed the editor's serializers once it exists, and `null` when it goes
    * away.
    *
@@ -337,6 +383,9 @@ export function RichTextEditor({
   onLinkTrigger,
   withMath = false,
   markdownMode = false,
+  spellCheck = true,
+  formatMarkdownOnExit = false,
+  formatMarkdownOnPaste = false,
   onOutlineChange,
   onEditorApi,
 }: RichTextEditorProps) {
@@ -404,6 +453,20 @@ export function RichTextEditor({
     // every toolbar reading stale `isActive`/`can()`/`getAttributes` state.
     shouldRerenderOnTransaction: true,
     editorProps: {
+      /*
+       * The only DOM attributes this editor sets on the editable element.
+       * Tiptap merges this with its own `role="textbox"` rather than replacing
+       * it, so adding to this object is safe — replacing `editorProps` whole
+       * later on would not be.
+       *
+       * `'true'`, not the absence of the attribute, for the default: an
+       * explicit value is what makes the OFF case reachable at all, and a
+       * contenteditable with no `spellcheck` already behaves as `true`.
+       */
+      attributes: {
+        spellcheck: spellCheck ? 'true' : 'false',
+      },
+
       /**
        * Drop an image file anywhere on the writing surface and it uploads and
        * lands where it was dropped — not at the caret, which is usually
@@ -496,6 +559,25 @@ export function RichTextEditor({
     editorRef.current = editor ?? null;
   }, [editor]);
 
+  // Re-applied to the LIVE view, because `editorProps` above is frozen at the
+  // value the editor mounted with: `useEditor` keeps its options on a ref and
+  // only ever calls `setOptions` when its `deps` change (they never do here) —
+  // so a consumer flipping this setting would see nothing happen until
+  // something else remounted the editor.
+  //
+  // Written straight onto the editable element rather than through
+  // `editor.setOptions({ editorProps })`, which shallow-merges: passing an
+  // `editorProps` object would replace the one holding `handleDrop` and
+  // `handlePaste`, and the attributes ProseMirror recomputes from it would
+  // drop the `role="textbox"` Tiptap adds inside `createView`. A direct write
+  // survives, because ProseMirror only removes attributes that were in its own
+  // previously computed set.
+  useEffect(() => {
+    const dom = editor?.view?.dom;
+    if (!dom) return;
+    dom.setAttribute('spellcheck', spellCheck ? 'true' : 'false');
+  }, [editor, spellCheck]);
+
   // The raw text most recently typed but not yet parsed into the document.
   // Exists so leaving raw mode (or unmounting) can FLUSH the pending edit
   // instead of cancelling it — a debounce that simply dies loses the last
@@ -537,6 +619,74 @@ export function RichTextEditor({
     [flushRaw]
   );
 
+  const rawTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+  // Where the caret has to land after a formatted paste. The textarea is
+  // CONTROLLED, so React assigns `value` on the render that follows
+  // `applyRaw` — and assigning `value` collapses the selection to the end of
+  // the text. Without this, pasting into the middle of a long note throws the
+  // author to the bottom of the pane on every paste.
+  const pendingCaretRef = useRef<number | null>(null);
+
+  // Layout, not passive: the restore has to happen in the same frame as the
+  // assignment that moved it, or the caret is visibly at the wrong end for a
+  // paint. No dependency array — the request is one-shot and cleared as it is
+  // served, so the cost of running is a null check.
+  useLayoutEffect(() => {
+    const caret = pendingCaretRef.current;
+    if (caret === null) return;
+    pendingCaretRef.current = null;
+    rawTextareaRef.current?.setSelectionRange(caret, caret);
+  });
+
+  /**
+   * A paste into the raw-markdown pane, formatted before it lands.
+   *
+   * Only the pasted FRAGMENT goes through the formatter, spliced into the
+   * pane's text at the selection. Running the formatter over the whole pane
+   * instead would be far simpler and is the wrong contract: it would rewrite
+   * lines the author typed by hand, at a moment they were not thinking about
+   * formatting at all.
+   *
+   * With no `text/plain` on the clipboard — a file, an image, an HTML-only
+   * fragment — this does nothing and the browser's own paste runs, which is
+   * the only handler that knows what to do with any of those.
+   */
+  const handleRawPaste = useCallback(
+    (event: ReactClipboardEvent<HTMLTextAreaElement>) => {
+      if (!formatMarkdownOnPaste) return;
+
+      const pasted = event.clipboardData.getData('text/plain');
+      if (pasted === '') return;
+
+      const { selectionStart, selectionEnd, value } = event.currentTarget;
+      const formatted = formatMarkdown(pasted);
+      // `formatMarkdown` terminates its output with exactly one newline,
+      // because it formats DOCUMENTS. A fragment pasted into the middle of a
+      // sentence is not a document, and that newline would break the line the
+      // author pasted into — so it is kept only when the clipboard text
+      // carried one of its own.
+      const insert = pasted.endsWith('\n')
+        ? formatted
+        : formatted.replace(/\n$/, '');
+
+      event.preventDefault();
+      pendingCaretRef.current = selectionStart + insert.length;
+      applyRaw(
+        `${value.slice(0, selectionStart)}${insert}${value.slice(selectionEnd)}`
+      );
+    },
+    [applyRaw, formatMarkdownOnPaste]
+  );
+
+  // Read through a ref, and NOT listed in the effect's deps below. That effect
+  // re-serializes the document into the pane whenever it runs with
+  // `markdownMode` on, so depending on this prop would mean that toggling the
+  // setting mid-edit replaces the author's uncommitted raw text with a
+  // serialization of the document as it stood up to 800ms ago — precisely the
+  // edit loss `pendingRawRef` exists to prevent.
+  const formatOnExitRef = useRef(formatMarkdownOnExit);
+  formatOnExitRef.current = formatMarkdownOnExit;
+
   // Entering raw mode serializes the CURRENT document; leaving it flushes any
   // pending raw edit and reveals the editor again.
   useEffect(() => {
@@ -545,6 +695,34 @@ export function RichTextEditor({
     if (markdownMode) {
       setRawText(currentEditor.getMarkdown());
     } else {
+      /*
+       * Format BEFORE the flush, by rewriting the buffer `flushRaw` is about
+       * to read. Formatting after it would parse the unformatted text into the
+       * document first and then have nothing left to act on; formatting a copy
+       * would drop whatever the author typed in the last 800ms.
+       *
+       * Which text: the pending buffer if there is one, otherwise the pane's
+       * committed text. Falling back matters — whether a debounce happened to
+       * have fired before the toggle is a race, and a formatter that runs or
+       * does not run depending on how fast the author clicked is one nobody
+       * trusts.
+       *
+       * The `pending === null && formatted === committed` case is left alone
+       * on purpose: the document already holds that text, so committing it
+       * again would be a doc transaction, an `onChange`, and an autosave write
+       * for a document that did not change. `formatMarkdown` is idempotent, so
+       * this comparison is a real answer rather than an optimisation.
+       */
+      if (formatOnExitRef.current) {
+        const pending = pendingRawRef.current;
+        const source = pending ?? rawTextRef.current;
+        if (source !== null) {
+          const formatted = formatMarkdown(source);
+          if (pending !== null || formatted !== rawTextRef.current) {
+            pendingRawRef.current = formatted;
+          }
+        }
+      }
       flushRaw();
       setRawText(null);
     }
@@ -680,9 +858,14 @@ export function RichTextEditor({
           )}
           {rawActive && (
             <textarea
+              ref={rawTextareaRef}
               value={rawText ?? ''}
               onChange={(event) => applyRaw(event.target.value)}
-              spellCheck={false}
+              // Always attached; the handler returns immediately when the
+              // option is off, which leaves the browser's own paste in place
+              // rather than a re-implementation of it.
+              onPaste={handleRawPaste}
+              spellCheck={spellCheck}
               aria-label="Markdown source"
               className="min-h-full w-full resize-none bg-transparent font-mono text-sm leading-relaxed outline-none"
             />

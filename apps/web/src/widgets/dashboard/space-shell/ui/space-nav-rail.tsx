@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@byte-of-me/ui';
-import { LayoutDashboard, LogOut } from 'lucide-react';
+import { LayoutDashboard, LogOut, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { logOutDashboard } from '@/features/auth/lib';
@@ -14,6 +14,7 @@ import { Link, usePathname } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import { BrandMark } from '@/shared/ui/brand-mark';
 import { useSpaceNavItems } from '@/widgets/dashboard/space-shell/model/use-space-nav-items';
+import { useSettingsDialog } from '@/widgets/dashboard/space-shell/ui/space-settings-provider';
 
 /**
  * Desktop-only icon rail, 56px wide.
@@ -28,6 +29,7 @@ export function SpaceNavRail() {
   const t = useTranslations('dashboard.space');
   const items = useSpaceNavItems();
   const pathname = usePathname();
+  const { open: openSettings } = useSettingsDialog();
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -76,6 +78,27 @@ export function SpaceNavRail() {
         </nav>
 
         <div className="mt-auto flex flex-col items-center gap-1">
+          {/* Not in `useSpaceNavItems` with the others: every entry in that
+              list is a route the rail can light up as current, and this one
+              opens a dialog over whatever page you are on. Putting it in the
+              bottom group alongside Dashboard and Sign out also matches where
+              a settings control is looked for. */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={openSettings}
+                aria-label={t('settings.open')}
+                className="flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <Settings className="size-[18px]" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              {t('settings.openWithShortcut')}
+            </TooltipContent>
+          </Tooltip>
+
           <Tooltip>
             <TooltipTrigger asChild>
               <Link

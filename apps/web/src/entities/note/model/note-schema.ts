@@ -35,6 +35,32 @@ export const updateNoteSchema = z.object({
   isPinned: z.boolean().optional(),
 });
 
+/**
+ * A rename's follow-up: rewrite the anchor text of every link pointing AT
+ * this note, in the notes that link to it.
+ *
+ * `previousTitle` is deliberately NOT trimmed, while `nextTitle` is. They are
+ * two different things wearing the same type. `previousTitle` is matched
+ * character-for-character against text stored inside somebody's document, so
+ * trimming it here would silently widen the match past what
+ * `relabelNoteLinks` promises — and the whole value of that promise is that a
+ * hand-edited label survives. `nextTitle` is text about to be written, and is
+ * trimmed for the same reason `createNoteSchema`/`updateNoteSchema` trim
+ * `title`: the label must end up identical to the title that was persisted,
+ * or the next rename will not recognise its own handiwork.
+ *
+ * `dryRun` is optional rather than defaulted so the shape stays additive
+ * (§11.6) and the dangerous value — actually writing — is never the one a
+ * caller gets by leaving the field out incorrectly; it is the one they get by
+ * calling the action at all, which is already the point of calling it.
+ */
+export const relabelInboundNoteLinksSchema = z.object({
+  noteId: z.string().min(1),
+  previousTitle: z.string().min(1).max(200),
+  nextTitle: z.string().trim().min(1).max(200),
+  dryRun: z.boolean().optional(),
+});
+
 export const moveNoteSchema = z.object({
   id: z.string().min(1),
   parentId: z.string().min(1).nullable(),
@@ -79,6 +105,35 @@ export const searchNotesSchema = z.object({
  */
 export type CreateNoteInput = z.input<typeof createNoteSchema>;
 export type UpdateNoteInput = z.input<typeof updateNoteSchema>;
+export type RelabelInboundNoteLinksInput = z.input<
+  typeof relabelInboundNoteLinksSchema
+>;
 export type MoveNoteInput = z.input<typeof moveNoteSchema>;
 export type SetNoteLabelsInput = z.input<typeof setNoteLabelsSchema>;
 export type SearchNotesInput = z.input<typeof searchNotesSchema>;
+
+/**
+ * Input to every whole-vault maintenance batch — `rebuildLinkGraph`,
+ * `rebuildSearchIndex`, `scanStaleNoteLinks`.
+ *
+ * `limit` is deliberately unbounded here. A page size out of range is not a bad
+ * request; it is a progress bar asking for more work than it should get, and
+ * failing a job halfway through over an argument the server can simply correct
+ * would strand the vault with half its derived data rebuilt. `clampBatchLimit`
+ * in `model/maintenance.ts` does the correcting, as `getNotesPage` does for its
+ * own page size.
+ *
+ * `cursor` refuses the empty string rather than reading it as "start". These
+ * jobs are resumable and the cursor is the only thing carrying that state: a
+ * caller that sends `''` has lost its place, and silently restarting from the
+ * top would look like progress while re-doing work already done.
+ *
+ * No `BatchJobInput` alias is exported from here on purpose — that name already
+ * belongs to `model/maintenance.ts`, where it is dependency-free so the client
+ * driving the progress bar can name it without pulling zod into the bundle. Two
+ * names for one shape is how the two drift.
+ */
+export const batchJobSchema = z.object({
+  cursor: z.string().min(1).nullable().optional(),
+  limit: z.number().optional(),
+});
