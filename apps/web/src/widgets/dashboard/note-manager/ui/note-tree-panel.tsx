@@ -68,6 +68,18 @@ interface NoteTreePanelProps {
    * arrives from the URL.
    */
   revealFolderId?: string | null;
+  /**
+   * Fired once the tree has opened onto `revealFolderId`, so the widget can
+   * retire the request. Without it the request stands forever and re-imposes
+   * itself on every render — see the prop's own comment in `note-manager.tsx`.
+   */
+  onFolderRevealed?: () => void;
+  /**
+   * The note that just left the tree — archived from HERE, by
+   * Delete/Backspace. The widget decides whether that means closing the editor
+   * (it was the open note) or nothing at all.
+   */
+  onRemoved?: (noteId: string) => void;
 }
 
 /**
@@ -88,6 +100,8 @@ export function NoteTreePanel({
   renderActions,
   renderContextMenu,
   revealFolderId,
+  onFolderRevealed,
+  onRemoved,
 }: NoteTreePanelProps) {
   const t = useTranslations('dashboard.note');
   const { prefs, update: updatePrefs } = useExplorerPrefs();
@@ -115,7 +129,10 @@ export function NoteTreePanel({
   // Destructured to their `mutate` functions, which TanStack keeps stable —
   // that is what lets the callbacks below have honest dependency arrays.
   const { mutate: renameNote } = useRenameNote();
-  const { archive } = useNoteMutations();
+  // `onRemoved` matters here even though this panel only reaches `archive`:
+  // the row menus get the same callback through `renderActions`, and the two
+  // paths archiving the SAME note must end the same way.
+  const { archive } = useNoteMutations({ onRemoved });
 
   /**
    * The create mutation, reached through a ref.
@@ -262,6 +279,38 @@ export function NoteTreePanel({
     [reveal]
   );
 
+  /**
+   * The same, for the folder a breadcrumb crumb pointed at. The target folder
+   * joins its own ancestor list, because revealing a folder means opening it,
+   * not just scrolling to it.
+   *
+   * `useCallback`, not an inline arrow, and that is the fix rather than a
+   * tidy-up: `RevealActiveNote` lists `onReveal` in its effect's dependency
+   * array, so a fresh identity every render re-ran the effect every render.
+   * Paired with a `revealFolderId` that was never cleared, one breadcrumb
+   * click armed a permanent `explorer.reveal` — and that closes an actual
+   * render loop, not just a selection that drifts. `NoteTreeItem` calls
+   * `explorer.clearReveal()` once it has scrolled the revealed row into view
+   * (see its effect on `revealId`); clearing changes `explorer`'s identity,
+   * which re-renders this panel, which hands `RevealActiveNote` a new
+   * `onReveal`, which re-fires the effect, which sets `revealId` again.
+   * Measured: `note-tree-panel.spec.tsx`'s breadcrumb-reveal test run against
+   * the pre-fix file aborts with React's "Maximum update depth exceeded" and
+   * hangs the suite.
+   *
+   * Retiring the request (`onFolderRevealed`) is the other half. Either alone
+   * still leaves a reveal that can re-fire against a tree the author has
+   * since changed by hand — the same distinction `revealTarget` above draws
+   * between a request and a standing condition.
+   */
+  const onRevealFolder = useCallback(
+    (id: string, ancestorIds: readonly string[]) => {
+      onFolderRevealed?.();
+      reveal(id, [...ancestorIds, id]);
+    },
+    [onFolderRevealed, reveal]
+  );
+
   return (
     <div className="flex h-full flex-col">
       <ExplorerHeader
@@ -290,18 +339,16 @@ export function NoteTreePanel({
             <RevealActiveNote noteId={revealTarget} onReveal={onRevealActive} />
           )}
 
-          {/* The same lookup for a folder the breadcrumb pointed at. `key` is
-            what makes clicking a DIFFERENT crumb re-run it: the component is
-            otherwise identical and React would keep the resolved instance. The
-            target folder joins its own ancestor list here, because revealing a
-            folder means opening it, not just scrolling to it. */}
+          {/* The same lookup for a folder the breadcrumb pointed at.
+            `onRevealFolder` retires the request as it satisfies it, so this
+            unmounts on its own the moment the tree opens — which is also what
+            makes clicking the SAME crumb twice work, with no `key` needed:
+            the request goes back to `null` in between, so the second click is
+            a genuine mount rather than a re-render of a resolved instance. */}
           {revealFolderId && (
             <RevealActiveNote
-              key={revealFolderId}
               noteId={revealFolderId}
-              onReveal={(id, ancestorIds) =>
-                explorer.reveal(id, [...ancestorIds, id])
-              }
+              onReveal={onRevealFolder}
             />
           )}
 
@@ -351,7 +398,7 @@ export function NoteTreePanel({
           {!includeArchived && (
             <ExplorerDnd
               loadedRows={loadedRows}
-              labels={labels ?? []}
+              labels={labels}
               showRootZone={isTreeView}
             >
               {isTreeView && (

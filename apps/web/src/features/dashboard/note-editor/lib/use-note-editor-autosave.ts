@@ -496,20 +496,23 @@ export function useNoteEditorAutosave(
     saveNote,
   ]);
 
-  // Persists a pending, not-yet-debounced edit at the two moments no LATER
-  // render exists in which the autosave effect above could ever catch it:
-  // switching to a different note (this hook instance survives that; the
-  // effect above is about to start comparing against a NEW note's id, and
-  // would otherwise just discard whatever was still pending for the old
-  // one), and unmounting outright (no render follows at all). Keyed only on
-  // `noteId`, so its cleanup runs exactly on those two transitions. It reads
-  // `latestBufferRef`/`lastSentRef` — refs, always current — rather than the
-  // values closed over when this particular effect instance was declared,
-  // which would otherwise be stale by the time the note is actually left.
-  useEffect(() => {
-    const departingId = noteId;
-
-    return () => {
+  /**
+   * Sends whatever is sitting in the buffer for `departingId` right now,
+   * bypassing the debounce entirely.
+   *
+   * A named function rather than the body of the departure effect below,
+   * because the page being HIDDEN needs the identical treatment and two
+   * copies of this reconciliation is exactly the duplication that lets one
+   * of them drift. It reads `latestBufferRef`/`lastSentRef` — refs, always
+   * current — rather than values closed over at declaration time, which
+   * would be stale by the time it actually runs.
+   *
+   * Deliberately NOT routed through `save.mutate`: the mutation observer
+   * belongs to a component that may be unmounting as this runs, and
+   * `onSuccess`/`onError` on a dead observer never fire.
+   */
+  const flushPending = useCallback(
+    (departingId: string) => {
       // Settles `useDebounce`'s own internal pending timer so it does not
       // fire later against whatever the NEXT note's buffers happen to hold.
       // The save below does not depend on this — it reads the buffer
@@ -551,13 +554,71 @@ export function useNoteEditorAutosave(
           });
         }
       });
-    };
+    },
     // `applySaveResult` is `useCallback`-stable on `queryClient`, which does
-    // not change identity in this app, so this effect only re-arms on an
-    // actual note switch — not on every render, which is what would happen
-    // if it depended on `t` (a new bound function most renders) directly
-    // instead of through `tRef`.
-  }, [noteId, applySaveResult]);
+    // not change identity in this app, so this settles once — not on every
+    // render, which is what would happen if it depended on `t` (a new bound
+    // function most renders) directly instead of through `tRef`.
+    [applySaveResult]
+  );
+
+  // Persists a pending, not-yet-debounced edit at the two moments no LATER
+  // render exists in which the autosave effect above could ever catch it:
+  // switching to a different note (this hook instance survives that; the
+  // effect above is about to start comparing against a NEW note's id, and
+  // would otherwise just discard whatever was still pending for the old
+  // one), and unmounting outright (no render follows at all). Keyed only on
+  // `noteId`, so its cleanup runs exactly on those two transitions.
+  useEffect(() => {
+    const departingId = noteId;
+    return () => flushPending(departingId);
+  }, [noteId, flushPending]);
+
+  /**
+   * The third moment: the page going away without React ever unmounting
+   * anything — a reload, a tab close, the OS backgrounding a phone browser.
+   *
+   * None of those run the cleanup above, so up to `AUTOSAVE_DEBOUNCE_MS` of
+   * typing was simply lost, silently, with the status line still reading
+   * "Saved". `visibilitychange` is the binding that actually fires in all
+   * three cases — `beforeunload` is skipped outright on mobile when the OS
+   * discards a backgrounded tab, which is where this loss is most likely.
+   * `pagehide` is kept alongside it for a same-tab navigation away, which
+   * can retire the page without ever marking it hidden first.
+   *
+   * Both may fire for one departure, and that is harmless: the first sends,
+   * records what it sent in `lastSentRef`, and the second then finds the
+   * buffer equal to it and returns without a second request.
+   *
+   * `updateNote` is a server action, i.e. an ordinary `fetch` that cannot
+   * carry `keepalive`, so a request started this late is best-effort — the
+   * browser may still cut it off. Best-effort is the whole gain over the
+   * previous behaviour, which never even tried.
+   */
+  useEffect(() => {
+    const onLeaving = (event: Event) => {
+      // The visibility test applies to `visibilitychange` ONLY, which fires
+      // for becoming visible again too — coming back to the tab must not
+      // send. `pagehide` gets no such test on purpose: it only ever means
+      // the page is being retired, and on a same-tab navigation it can fire
+      // while the document still reports itself `visible`, so sharing the
+      // guard would skip exactly the case `pagehide` was added for.
+      if (
+        event.type === 'visibilitychange' &&
+        document.visibilityState === 'visible'
+      ) {
+        return;
+      }
+      flushPending(noteId);
+    };
+
+    document.addEventListener('visibilitychange', onLeaving);
+    window.addEventListener('pagehide', onLeaving);
+    return () => {
+      document.removeEventListener('visibilitychange', onLeaving);
+      window.removeEventListener('pagehide', onLeaving);
+    };
+  }, [noteId, flushPending]);
 
   const retry = useCallback(() => {
     if (!note) return;

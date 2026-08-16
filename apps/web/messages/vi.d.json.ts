@@ -567,6 +567,7 @@ declare const messages: {
       "untitledFolder": "Thư mục mới",
       "loading": "Đang tải ghi chú…",
       "emptySelection": "Chọn một ghi chú hoặc tạo ghi chú mới.",
+      "folderNotEditable": "Đây là thư mục — không có nội dung để chỉnh sửa.",
       "backToList": "Tất cả ghi chú",
       "tree": {
         "expandAriaLabel": "Mở rộng",
@@ -784,7 +785,8 @@ declare const messages: {
         "loadError": "Không tải được sơ đồ. Hãy tải lại trang.",
         "legendHint": "Cuộn để phóng to, kéo để di chuyển, nhấp vào một điểm để mở ghi chú.",
         "nodeCount": "{count, plural, other {# ghi chú}}",
-        "edgeCount": "{count, plural, other {# liên kết}}"
+        "edgeCount": "{count, plural, other {# liên kết}}",
+        "loading": "Đang tải sơ đồ tri thức…"
       },
       "export": {
         "label": "Xuất",
@@ -828,7 +830,8 @@ declare const messages: {
         },
         "errors": {
           "load": "Không tải được tổng quan không gian làm việc. Tải lại để thử lại."
-        }
+        },
+        "loading": "Đang tải không gian làm việc…"
       }
     },
     "project": {

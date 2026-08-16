@@ -567,6 +567,7 @@ declare const messages: {
       "untitledFolder": "New folder",
       "loading": "Loading note…",
       "emptySelection": "Select a note, or create one.",
+      "folderNotEditable": "This is a folder — it has no document to edit.",
       "backToList": "All notes",
       "tree": {
         "expandAriaLabel": "Expand",
@@ -784,7 +785,8 @@ declare const messages: {
         "loadError": "Couldn't load the graph. Reload to try again.",
         "legendHint": "Scroll to zoom, drag to pan, click a node to open it.",
         "nodeCount": "{count, plural, one {# note} other {# notes}}",
-        "edgeCount": "{count, plural, one {# link} other {# links}}"
+        "edgeCount": "{count, plural, one {# link} other {# links}}",
+        "loading": "Loading knowledge graph…"
       },
       "export": {
         "label": "Export",
@@ -828,7 +830,8 @@ declare const messages: {
         },
         "errors": {
           "load": "Couldn't load your workspace overview. Reload to try again."
-        }
+        },
+        "loading": "Loading workspace…"
       }
     },
     "project": {

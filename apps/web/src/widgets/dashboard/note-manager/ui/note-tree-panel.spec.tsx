@@ -24,6 +24,7 @@
  * query, an expanded one exactly one, re-expanding none, and NO view outside
  * the archived trash may read the corpus at all.
  */
+import { useState } from 'react';
 import { prisma } from '@byte-of-me/db';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
@@ -221,8 +222,11 @@ const queryRaw = mock(() =>
   Promise.resolve([{ id: 'folder-1', title: 'Folder One', is_folder: true }])
 );
 
+/** `archiveNote`'s write — it stamps the target and its descendants. */
+const updateMany = mock(() => Promise.resolve({ count: 1 }));
+
 Object.defineProperty(prisma, 'note', {
-  value: { findMany, findFirst, create, groupBy, count },
+  value: { findMany, findFirst, create, groupBy, count, updateMany },
   writable: true,
   configurable: true,
 });
@@ -277,13 +281,25 @@ function Harness({
   onSelect = () => {},
   includeArchived = false,
   activeId = null,
+  initialRevealFolderId = null,
+  onRemoved,
 }: {
   queryClient: QueryClient;
   onSelect?: (id: string) => void;
   includeArchived?: boolean;
   /** The note open in the editor. Non-null is what arms the reveal path. */
   activeId?: string | null;
+  /**
+   * A breadcrumb click, as the editor delivers one. Held in STATE here, and
+   * cleared by `onFolderRevealed`, because that pairing is the contract under
+   * test — `NoteManager` owns exactly this state and exactly this reset.
+   */
+  initialRevealFolderId?: string | null;
+  /** Told which note left the tree, so the widget can close the editor. */
+  onRemoved?: (noteId: string) => void;
 }) {
+  const [revealFolderId, setRevealFolderId] = useState(initialRevealFolderId);
+
   return (
     <QueryClientProvider client={queryClient}>
       <NextIntlClientProvider locale="en" messages={messages}>
@@ -292,6 +308,9 @@ function Harness({
           onSelect={onSelect}
           onOpenSearch={() => {}}
           includeArchived={includeArchived}
+          revealFolderId={revealFolderId}
+          onFolderRevealed={() => setRevealFolderId(null)}
+          onRemoved={onRemoved}
         />
       </NextIntlClientProvider>
     </QueryClientProvider>
@@ -402,6 +421,7 @@ beforeEach(() => {
   groupBy.mockClear().mockResolvedValue([{ status: 'draft', _count: { _all: 0 } }]);
   count.mockClear().mockResolvedValue(0);
   labelFindMany.mockClear().mockResolvedValue([]);
+  updateMany.mockClear().mockResolvedValue({ count: 1 });
 });
 
 afterEach(() => {
@@ -696,6 +716,66 @@ describe('NoteTreePanel', () => {
       expect(rowOf('Folder One').getAttribute('aria-expanded')).toBe('false');
     });
     expect(screen.queryByText('Child One')).toBeNull();
+  });
+
+  test('a breadcrumb reveal opens the folder and then lets go of the selection', async () => {
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} initialRevealFolderId="folder-1" />);
+
+    // The reveal itself still has to work: the crumb's folder opens and
+    // becomes the cursor, which is the whole point of clicking one.
+    expect(await screen.findByText('Child One')).toBeTruthy();
+    await waitFor(() => {
+      expect(rowOf('Folder One').getAttribute('aria-selected')).toBe('true');
+    });
+
+    fireEvent.click(screen.getByText('Note A'));
+
+    // The regression, and it is a RENDER LOOP rather than the cosmetic
+    // snap-back it first looked like. `revealFolderId` was never cleared and
+    // `onReveal` was an inline arrow, so `RevealActiveNote` stayed mounted
+    // with a new callback identity every render — and it lists `onReveal` in
+    // its effect's deps. That closes a cycle with `NoteTreeItem`, which calls
+    // `explorer.clearReveal()` once it has scrolled the revealed row into
+    // view: reveal sets `revealId`, the row clears it, clearing changes
+    // `explorer`'s identity, the panel re-renders, the effect re-fires on a
+    // fresh `onReveal`, and reveal sets `revealId` again. Running this exact
+    // test against the pre-fix panel does not merely fail — React aborts with
+    // "Maximum update depth exceeded", and the file times out.
+    //
+    // `waitFor` on the settled state, matching the collapse test above: the
+    // cursor moves a render later either way, so a single synchronous
+    // assertion here would pass even while the bug was live.
+    await waitFor(() => {
+      expect(rowOf('Note A').getAttribute('aria-selected')).toBe('true');
+    });
+    expect(rowOf('Folder One').getAttribute('aria-selected')).toBe('false');
+  });
+
+  test('Delete on a row reports the archived note, the way the row menu does', async () => {
+    const queryClient = makeQueryClient();
+    const onRemoved = mock((_noteId: string) => {});
+    render(<Harness queryClient={queryClient} onRemoved={onRemoved} />);
+    await screen.findByText('Note A');
+
+    fireEvent.click(screen.getByText('Note A'));
+    fireEvent.keyDown(rowOf('Note A'), { key: 'Delete' });
+
+    // The confirmation is not optional — archiving cascades, so the keystroke
+    // asks first (see `archiveTarget` in the panel).
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Move to archive' })
+    );
+
+    // The regression: this panel built its mutations with `useNoteMutations()`
+    // and no `onRemoved`, while the row menus were handed one. Archiving the
+    // OPEN note from the keyboard therefore left the editor mounted on a note
+    // that had just left the tree — and still autosaving into it, since
+    // `updateNote` does not refuse an archived row. Two ways to do one thing,
+    // ending differently.
+    await waitFor(() => {
+      expect(onRemoved).toHaveBeenCalledWith('note-a');
+    });
   });
 
   test('clicking the empty space below the rows clears the selection', async () => {

@@ -49,16 +49,21 @@ export function useExplorerPrefs() {
     }
   }, []);
 
+  // The write is OUTSIDE the updater. A `setState` updater has to be a pure
+  // function of its argument — React is free to call it more than once for a
+  // single update (it does, under StrictMode) and to discard the result of a
+  // render it decides to throw away, so a `localStorage.setItem` in there is
+  // a side effect on a code path with no guarantee about how often it runs.
+  // Merging against `prefs` from this render instead gives the write exactly
+  // one occurrence per call, which is what it means.
   const update = (next: Partial<ExplorerPrefs>) => {
-    setPrefs((current) => {
-      const merged = { ...current, ...next };
-      try {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-      } catch {
-        // Quota/staleness — the in-memory pref still applies this session.
-      }
-      return merged;
-    });
+    const merged = { ...prefs, ...next };
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+    } catch {
+      // Quota/staleness — the in-memory pref still applies this session.
+    }
+    setPrefs(merged);
   };
 
   return { prefs, update };

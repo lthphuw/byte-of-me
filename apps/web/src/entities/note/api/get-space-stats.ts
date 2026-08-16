@@ -14,22 +14,51 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
  * documents never travel to draw a list of titles.
  */
 export async function getSpaceStats(): Promise<ApiResponse<SpaceStats>> {
-  const session = await requireAdmin();
-
   try {
+    // Guarded INSIDE the try, unlike every sibling action in this directory,
+    // and the difference is the caller rather than the policy. The others are
+    // called from client components, where a thrown `Unauthorized` becomes a
+    // rejected promise their `useQuery` renders as an error state. This one is
+    // awaited by `SpaceHub`, a server component, inside a bare `Promise.all` —
+    // so the throw escaped the RSC entirely and replaced the whole page with
+    // the root `error.tsx`, while the in-place `errors.load` message the hub
+    // already renders for a failed read stayed unreachable for the most likely
+    // failure of all (a session expiring between the layout's `auth()` and
+    // this query). `getNoteTitle` has the same RSC caller and solves it the
+    // other way, with a `try` at the call site in `[id]/page.tsx`.
+    const session = await requireAdmin();
+
     const [noteCount, archivedCount, linkCount, recentNotes] =
       await prisma.$transaction([
+        // `isFolder: false` — the card is labelled "Notes", and a folder is
+        // not one. Without it the hub counted the tree's scaffolding as
+        // documents and disagreed with `/space/graph`, which plots the same
+        // corpus and has always excluded folders.
         prisma.note.count({
-          where: { ownerId: session.id, archivedAt: null },
+          where: { ownerId: session.id, archivedAt: null, isFolder: false },
         }),
+        // Folders deliberately INCLUDED here, for the opposite reason: this
+        // number stands for what the trash view shows, and `getArchivedNotes`
+        // lists archived folders alongside archived notes.
         prisma.note.count({
           where: { ownerId: session.id, archivedAt: { not: null } },
         }),
+        // Both ends live, matching `getNoteGraph`'s edge set. Scoping only the
+        // source counted links leaving notes the author had already archived —
+        // edges the graph does not draw — so the hub and the graph reported
+        // different link totals for the same vault.
         prisma.noteLink.count({
-          where: { source: { ownerId: session.id } },
+          where: {
+            source: { ownerId: session.id, archivedAt: null },
+            target: { ownerId: session.id, archivedAt: null },
+          },
         }),
+        // Folders excluded here too, and here it is not just a count being
+        // honest: every row in this list is rendered as a link to
+        // `/space/notes/<id>`, and a folder behind that URL opens the editor
+        // on a row that has no document to edit.
         prisma.note.findMany({
-          where: { ownerId: session.id, archivedAt: null },
+          where: { ownerId: session.id, archivedAt: null, isFolder: false },
           orderBy: { updatedAt: 'desc' },
           take: 5,
           select: { id: true, title: true, status: true, updatedAt: true },

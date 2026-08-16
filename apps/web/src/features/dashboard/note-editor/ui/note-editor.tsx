@@ -142,6 +142,26 @@ export function NoteEditor({
     );
   }
 
+  // A folder has no document, so it must never reach the editor. Nothing in
+  // the UI routes one here — tree rows toggle instead of opening, `searchNotes`
+  // filters `isFolder: false`, `useCreateNote` skips `onCreated` for folders,
+  // and the graph and the hub's recents both exclude them — but
+  // `/space/notes/<folderId>` is still a URL that can be typed or bookmarked,
+  // and mounting on one meant the first keystroke wrote `content` and
+  // `plainText` onto a folder row and had `updateNote` rebuild its links from
+  // a document it should never have carried.
+  //
+  // Safe to gate AFTER `useNoteEditorAutosave`: the seed makes `lastSentRef`
+  // equal to the buffer, and with nothing on screen to type into, the autosave
+  // effect never sees a divergence to send.
+  if (note.isFolder) {
+    return (
+      <div className="p-6 text-sm text-muted-foreground">
+        {t('folderNotEditable')}
+      </div>
+    );
+  }
+
   return (
     // No page padding of its own, and no `gap`: the header, the title and the
     // writing surface each own their spacing. The previous `p-6` charged 48px

@@ -9,7 +9,7 @@ import { Archive, ArrowRight, Link2, NotebookPen, Share2 } from 'lucide-react';
 import { getFormatter, getTranslations } from 'next-intl/server';
 
 import { getSpaceStats } from '@/entities/note';
-import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
+import { getOwnerDisplayName } from '@/entities/user-profile/api/get-owner-display-name';
 import { Link } from '@/shared/i18n/navigation';
 
 /**
@@ -22,11 +22,14 @@ export async function SpaceHub({ navSlot }: { navSlot?: React.ReactNode }) {
   const t = await getTranslations('dashboard.space.hub');
   const format = await getFormatter();
 
-  const [statsRes, profileRes] = await Promise.all([
+  // The greeting name only. `space/layout.tsx`'s `generateMetadata` asks for
+  // the same thing in the same request, and `getOwnerDisplayName` is
+  // `cache()`d, so the pair costs one query rather than two full profile
+  // joins — see that function's own comment.
+  const [statsRes, userName] = await Promise.all([
     getSpaceStats(),
-    getUserProfile(),
+    getOwnerDisplayName(),
   ]);
-  const userName = profileRes.data?.displayName || 'Admin';
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto">

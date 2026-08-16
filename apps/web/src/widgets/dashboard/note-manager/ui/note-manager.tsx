@@ -92,8 +92,19 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
   const [cheatSheetOpen, setCheatSheetOpen] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   const [linksOpen, setLinksOpen] = useState(false);
-  /** Set by a breadcrumb click; the tree opens onto that folder. */
+  /**
+   * Set by a breadcrumb click; the tree opens onto that folder.
+   *
+   * A one-shot REQUEST, cleared the moment the tree satisfies it — the same
+   * shape (and for the same reason) as `revealTarget` in `note-tree-panel.tsx`.
+   * It used to be left set forever, which turned the reveal into a standing
+   * condition and, with the inline `onReveal` the panel used to pass, an
+   * unbounded render loop between the reveal and the row that clears it. See
+   * `onRevealFolder` in `note-tree-panel.tsx` for the full cycle and the
+   * measurement.
+   */
   const [revealFolderId, setRevealFolderId] = useState<string | null>(null);
+  const onFolderRevealed = useCallback(() => setRevealFolderId(null), []);
   // The open note's heading outline — reported by the editor, rendered by the
   // sidebar's ToC tab. Cleared on note switch so a heading-less note never
   // shows the previous note's outline while its editor mounts.
@@ -187,6 +198,13 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
           onOpenSearch={() => setSearchOpen(true)}
           navSlot={navSlot}
           revealFolderId={revealFolderId}
+          onFolderRevealed={onFolderRevealed}
+          // The tree's own Delete/Backspace archive needs this for the same
+          // reason the row menus below do: archiving the note the editor is
+          // showing has to close the editor. Without it the keyboard path left
+          // the editor open on a note that had just left the tree, still
+          // autosaving into it — `updateNote` does not refuse an archived row.
+          onRemoved={onRowRemoved}
           renderActions={(node, startRename) => (
             <NoteActionsMenu
               noteId={node.id}

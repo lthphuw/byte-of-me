@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   CommandDialog,
   CommandGroup,
@@ -93,6 +93,25 @@ export function NoteSearchPalette({
 }: NoteSearchPaletteProps) {
   const t = useTranslations('dashboard.note');
   const [term, setTerm] = useState('');
+
+  // Closing clears the term. Both palettes stay MOUNTED for the whole session
+  // (the widget renders them unconditionally and drives them with `open`), so
+  // without this the input kept the last query: reopening with Cmd+K showed
+  // stale results for something the author had already found, and typing `[[`
+  // a second time offered the previous link picker's search instead of an
+  // empty one.
+  //
+  // Adjusted during render rather than in an effect — the same "state derived
+  // from a prop" pattern `note-manager.tsx` and `note-tree-panel.tsx` use —
+  // because an effect would leave one commit showing the stale term. It also
+  // cannot live in an `onOpenChange` wrapper: both close paths below call the
+  // `onOpenChange` PROP directly, so the dialog's own handler never runs for
+  // them.
+  const lastOpen = useRef(open);
+  if (lastOpen.current !== open) {
+    lastOpen.current = open;
+    if (!open) setTerm('');
+  }
   // `useDebounce` returns a 3-tuple ([value, cancel, { cancel, flush }]);
   // only the debounced value itself is needed here.
   const [debouncedTerm] = useDebounce(term, SEARCH_DEBOUNCE_MS);
