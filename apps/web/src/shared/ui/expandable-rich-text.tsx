@@ -229,8 +229,11 @@ export function ExpandableRichText({
             // box, which measured 83×16 — well under the 44×44 minimum. 16 + 2×14
             // is exactly 44. Padding rather than an inset pseudo-element, because
             // the hit area has to occupy real layout space here; the tech-stack
-            // badges below are themselves tappable and sit only 12px away, and an
-            // overlay would have covered them and swallowed their taps. The
+            // badges below are themselves tappable and sit 16px away on mobile
+            // (24px from `md`, since the surrounding stack is the `gap-4 md:gap-6`
+            // rhythm role), and an overlay would have covered them and swallowed
+            // their taps. That separation only ever grows, never shrinks, so the
+            // reasoning holds wherever this component is reused. The
             // wrapper's `pt-2` moved into this padding for the same reason — the
             // gap under the rule is now clickable instead of dead space. Type
             // scale and weight are untouched, so the label looks identical.

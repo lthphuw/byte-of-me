@@ -36,7 +36,10 @@ export function ListPageHeader({
         className
       )}
     >
-      <div className="space-y-1.5 md:space-y-2">
+      {/* `space-y-2` flat, per the title → subtitle role in AGENTS.md §14: the
+          rhythm scale stays flat at or below 8px, so the old
+          `space-y-1.5 md:space-y-2` was a 6→8px step nothing could perceive. */}
+      <div className="space-y-2">
         <h1 className="font-heading text-3xl tracking-tight md:text-5xl">
           {title}
         </h1>
