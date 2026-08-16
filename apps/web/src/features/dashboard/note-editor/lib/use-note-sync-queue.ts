@@ -6,6 +6,8 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import {
+  deleteLocalNote,
+  getAdminNoteById,
   listDirtyLocalNotes,
   markLocalNoteSynced,
   noteKeys,
@@ -54,6 +56,33 @@ export function useNoteSyncQueue(openNoteId: string | null) {
       // Sending the stored copy from here would race all three, and could
       // resolve a conflict the banner is still asking about.
       if (local.id === openNoteIdRef.current) continue;
+
+      // What the server currently holds, BEFORE writing anything. One extra
+      // read per dirty note, which costs nothing in practice because a dirty
+      // note means a save that failed, and those are rare — while pushing
+      // without looking is wrong in two distinct ways:
+      //
+      //  - The note may be GONE, deleted from another device. `updateNote`
+      //    would fail, the loop would break on it, and because the record
+      //    stays dirty it would break on the same note on every future drain
+      //    — one deleted note jamming the queue for every other. Its local
+      //    copy is dropped here instead, which is also the only thing that
+      //    ever cleans up after a delete made elsewhere.
+      //
+      //  - The server row may have MOVED ON, which is precisely the conflict
+      //    `use-note-editor-autosave`'s banner exists to put to the author.
+      //    Pushing here would answer that question silently and in favour of
+      //    this browser — reintroducing, through the back door, the exact
+      //    loss the banner was built to prevent. Left dirty on purpose: the
+      //    editor raises the banner the moment the note is opened.
+      const current = await getAdminNoteById(local.id);
+
+      if (!current.success) {
+        await deleteLocalNote(local.id);
+        continue;
+      }
+
+      if (current.data.updatedAt.getTime() > local.baseUpdatedAt) continue;
 
       const res = await updateNote({
         id: local.id,

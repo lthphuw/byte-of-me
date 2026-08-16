@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import {
   archiveNote,
   createNote,
+  deleteLocalNote,
   deleteNote,
   noteKeys,
   restoreNote,
@@ -127,6 +128,13 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
       // does not know — the tree invalidation above is what removes them from
       // view, and a stale detail entry for an unreachable note is harmless.
       queryClient.removeQueries({ queryKey: noteKeys.detail(id) });
+      // The browser's own copy goes too. A stale in-memory cache entry is
+      // harmless; a stale IndexedDB record is not, because `useNoteSyncQueue`
+      // reads those back and would try to resend a note that no longer
+      // exists. Descendants are again not knowable from here — the queue
+      // drops any local copy whose note the server no longer returns, which
+      // is what actually cleans up after a cascade.
+      void deleteLocalNote(id);
       invalidateLists();
       toast.success(t('toasts.deleted'));
       onRemoved?.(id);
