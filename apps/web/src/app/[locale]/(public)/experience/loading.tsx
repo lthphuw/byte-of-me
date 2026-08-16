@@ -11,7 +11,7 @@ export default function ExperienceLoading() {
             <Skeleton className="h-9 w-56 md:h-11" />
           </div>
 
-          <div className="mt-10 space-y-12">
+          <div className="mt-10 space-y-8 md:space-y-12">
             {Array.from({ length: 3 }).map((_, i) => (
               <div
                 key={i}

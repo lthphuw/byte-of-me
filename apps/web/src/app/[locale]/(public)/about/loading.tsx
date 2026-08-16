@@ -6,7 +6,7 @@ import { AboutShell } from '@/widgets/public/about-content/ui';
 export default function AboutLoading() {
   return (
     <AboutShell>
-      <div className="flex w-full flex-col gap-8  px-0 py-12 md:px-8">
+      <div className="flex w-full flex-col gap-8 px-0 py-12 md:gap-12 md:px-8">
         <Skeleton className={cn('w-full h-20')} />
         <Skeleton className={cn('w-full h-12')} />
 
@@ -18,7 +18,9 @@ export default function AboutLoading() {
         <Skeleton className={cn('w-[40%] h-10')} />
 
         <Skeleton className={cn('w-[30%] h-12')} />
-        <div className={`mx-auto grid w-full grid-cols-1 gap-6 md:grid-cols-2`}>
+        <div
+          className={`mx-auto grid w-full grid-cols-1 gap-6 md:grid-cols-2 md:gap-10`}
+        >
           <Skeleton className={cn('h-64')} />
           <Skeleton className={cn('h-64')} />
           <Skeleton className={cn('h-64')} />

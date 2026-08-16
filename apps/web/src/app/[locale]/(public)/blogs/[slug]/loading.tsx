@@ -8,26 +8,46 @@ export default function BlogDetailsLoading() {
       <div className="flex w-full min-w-0 flex-col items-center overflow-hidden py-8 md:px-8 md:py-12">
         {/* Matches the article's reading measure so nothing shifts on load. */}
         <div className="w-full min-w-0 max-w-[720px]">
-          {/* TITLE SKELETON */}
-          <div className="space-y-2">
-            <Skeleton className="h-10 w-full md:h-12" />
-            <Skeleton className="h-10 w-2/3 md:h-12" />
+          {/*
+            The groups below mirror `BlogContentHeader`, which stacks its
+            children at the `space-y-4 md:space-y-6` rhythm role with the
+            title/description pair grouped at `space-y-2`. The `space-y-2`
+            *inside* each group is line simulation, not rhythm — those bars
+            stand in for wrapped lines of a single heading or paragraph, so
+            they deliberately stay off the rhythm scale.
+          */}
+          <div className="space-y-4 md:space-y-6">
+            {/* TITLE SKELETON */}
+            <div className="space-y-2">
+              <Skeleton className="h-10 w-full md:h-12" />
+              <Skeleton className="h-10 w-2/3 md:h-12" />
+            </div>
+
+            {/* DESCRIPTION SKELETON */}
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-full" />
+              <Skeleton className="h-5 w-5/6" />
+            </div>
+
+            {/* METADATA SKELETON (Date, Reading Time) */}
+            <div className="flex items-center gap-x-4 gap-y-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+
+            {/* TAGS SKELETON */}
+            <div className="flex flex-wrap gap-2">
+              <Skeleton className="h-6 w-16 rounded-full" />
+              <Skeleton className="h-6 w-20 rounded-full" />
+              <Skeleton className="h-6 w-14 rounded-full" />
+            </div>
           </div>
 
-          {/* DESCRIPTION SKELETON */}
-          <div className="mt-4 space-y-2">
-            <Skeleton className="h-5 w-full" />
-            <Skeleton className="h-5 w-5/6" />
-          </div>
-
-          {/* METADATA SKELETON (Date, Reading Time) */}
-          <div className="mt-6 flex items-center gap-4">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-4 w-24" />
-          </div>
+          {/* Header → article: the same step the real page uses. */}
+          <div className="mb-8 md:mb-12" />
 
           {/* CONTENT SKELETON (Rich Text Mockup) */}
-          <div className="mt-8 space-y-4">
+          <div className="space-y-4">
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-3/4" />
@@ -38,17 +58,10 @@ export default function BlogDetailsLoading() {
             </div>
           </div>
 
-          {/* TAGS SKELETON */}
-          <div className="mt-6 flex flex-wrap gap-2">
-            <Skeleton className="h-6 w-16 rounded-full" />
-            <Skeleton className="h-6 w-20 rounded-full" />
-            <Skeleton className="h-6 w-14 rounded-full" />
-          </div>
-
           {/* PROJECT CARD SKELETON */}
-          <div className="mt-10">
-            <Separator className="my-10" />
-            <Skeleton className="mb-4 h-4 w-32" /> {/* Label */}
+          <div>
+            <Separator className="my-8 md:my-12" />
+            <Skeleton className="mb-2 h-4 w-32" /> {/* Label */}
             <Card className="overflow-hidden p-4">
               <div className="space-y-3">
                 <Skeleton className="h-5 w-40" /> {/* Project Title */}
