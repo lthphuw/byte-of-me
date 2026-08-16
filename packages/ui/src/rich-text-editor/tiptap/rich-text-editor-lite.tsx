@@ -7,7 +7,7 @@ import StarterKit from '@tiptap/starter-kit';
 
 import { cn } from '../../lib/utils';
 
-import './tiptap-lite.css';
+import './editor-surface.css';
 
 type Props = {
   value?: string;
@@ -52,7 +52,13 @@ export function RichTextEditorLite({ value, onChange, className }: Props) {
   if (!editor) return null;
 
   return (
-    <div className={cn('w-full', className)}>
+    // A message box on a contact form, not a document: `compact` selects the
+    // tighter half of `editor-surface.css`. That attribute is the entire
+    // remainder of what `tiptap-lite.css` was — a ~440-line copy of the full
+    // stylesheet differing in two declarations, which (being reachable from
+    // this package's barrel) also shipped alongside the original on every page
+    // with an editor and overrode it wherever it happened to load second.
+    <div data-editor-density="compact" className={cn('w-full', className)}>
       {/* Minimal toolbar */}
       <div className="mb-2 flex gap-2">
         <button

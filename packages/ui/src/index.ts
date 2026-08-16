@@ -41,7 +41,7 @@ export * from './progress';
 // puts tiptap back into every client bundle through the same side-effect
 // path. Import it by subpath: `@byte-of-me/ui/rich-text`.
 // `./rich-text-editor` is NOT re-exported here on purpose. It imports
-// `tiptap.css`, and that side effect blocks tree-shaking — so every client
+// `editor-surface.css`, and that side effect blocks tree-shaking — so every client
 // component importing anything from this barrel used to drag the whole editor
 // (~1 MB of tiptap/prosemirror/lowlight) into its bundle, public pages
 // included. Import it by its subpath instead: `@byte-of-me/ui/rich-text-editor`.

@@ -24,7 +24,7 @@ import {
 } from '@/entities/contact-message';
 
 // Loaded on demand, and via Lite's own subpath (`…/rich-text-editor-lite`, not
-// the `…/rich-text-editor` barrel whose `import './tiptap.css'` side effect
+// the `…/rich-text-editor` barrel whose `import './editor-surface.css'` side effect
 // drags the full editor along). This form sits on the public homepage, and a
 // static import would put tiptap core + prosemirror (~570 KB raw) into its
 // initial JS; deferred, the editor arrives after hydration while the rest of

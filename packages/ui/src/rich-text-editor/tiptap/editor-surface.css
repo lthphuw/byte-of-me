@@ -1,0 +1,532 @@
+/*
+ * The writing surface.
+ *
+ * Replaces `tiptap.css` + `tiptap-lite.css`, which were a vendored starter
+ * stylesheet and a near-verbatim copy of it: ~440 lines each, differing in
+ * exactly two declarations (`.ProseMirror` padding, `.ProseMirror p`
+ * font-size). Both were reachable from `…/rich-text-editor`'s barrel, so both
+ * shipped in the same chunk on every page that mounts any editor, and the copy
+ * loaded second silently won every conflicting declaration.
+ *
+ * That is not a hypothetical. Measured on `/space/notes/<id>` before this
+ * file existed: the notes editor imports the FULL editor, whose sheet asks for
+ * 18px body text and 4rem/2rem padding — and rendered at 14px with 16px
+ * padding, because `tiptap-lite.css` came after it in the bundle. Every
+ * dashboard editor was being styled by the contact form's stylesheet.
+ *
+ * Two rules keep it from growing back into that:
+ *
+ *  1. ONE sheet. Density differences are a `data-editor-density` attribute on
+ *     the host, not a second file.
+ *  2. Colour comes from the app's own tokens (`hsl(var(--foreground))` and
+ *     friends, defined in `apps/web/src/app/globals.css`). The starter shipped
+ *     a parallel hardcoded palette plus a `.dark` block that restated all of
+ *     it; both were a second copy of the theme that could — and did — drift.
+ *     The only colours declared here are the author-facing text/highlight
+ *     swatches, which are a palette the writer picks from, not theme values.
+ */
+
+:root {
+  /*
+   * The colour picker's swatches (`toolbars/color-and-highlight.tsx` reads
+   * these by name). Default and Gray resolve to the app's own text tokens so
+   * "Default" always means the theme's body colour; the named hues are fixed,
+   * because an author who paints a word red means red in both themes.
+   */
+  --editor-text-default: hsl(var(--foreground));
+  --editor-text-gray: hsl(var(--muted-foreground));
+  --editor-text-brown: hsl(25 95% 53%);
+  --editor-text-orange: hsl(24 95% 53%);
+  --editor-text-yellow: hsl(48 96% 53%);
+  --editor-text-green: hsl(142 71% 45%);
+  --editor-text-blue: hsl(221 83% 53%);
+  --editor-text-purple: hsl(269 97% 85%);
+  --editor-text-pink: hsl(336 80% 58%);
+  --editor-text-red: hsl(0 84% 60%);
+
+  /* Highlight swatches. Tinted backgrounds behind text, so unlike the text
+     hues above these DO need a dark-theme pass — a 96%-lightness wash is
+     invisible on a near-black page. */
+  --editor-highlight-default: hsl(var(--muted));
+  --editor-highlight-gray: hsl(var(--muted));
+  --editor-highlight-brown: hsl(43 96% 96%);
+  --editor-highlight-orange: hsl(33 100% 96%);
+  --editor-highlight-yellow: hsl(54 100% 96%);
+  --editor-highlight-green: hsl(142 71% 96%);
+  --editor-highlight-blue: hsl(217 91% 96%);
+  --editor-highlight-purple: hsl(269 97% 96%);
+  --editor-highlight-pink: hsl(336 80% 96%);
+  --editor-highlight-red: hsl(0 84% 96%);
+}
+
+.dark {
+  --editor-highlight-brown: hsl(43 96% 10%);
+  --editor-highlight-orange: hsl(33 100% 10%);
+  --editor-highlight-yellow: hsl(54 100% 10%);
+  --editor-highlight-green: hsl(142 71% 10%);
+  --editor-highlight-blue: hsl(217 91% 10%);
+  --editor-highlight-purple: hsl(269 97% 10%);
+  --editor-highlight-pink: hsl(336 80% 10%);
+  --editor-highlight-red: hsl(0 84% 10%);
+}
+
+/* ---------------------------------------------------------------------------
+ * The surface
+ * ------------------------------------------------------------------------ */
+
+.ProseMirror {
+  /*
+   * The vertical rhythm, as one set of tokens. Every gap in the document is
+   * one of these, and nothing below hardcodes a length — which is what makes
+   * the density variants at the bottom of this file two lines each instead of
+   * a second stylesheet.
+   *
+   * `--flow` is the ordinary gap between two sibling blocks. It is deliberately
+   * well under one line box (12px against a ~25px line): a gap at or above the
+   * leading reads as a blank line, and a document where every paragraph is
+   * separated by a blank line has no rhythm left to spend on grouping.
+   */
+  --flow: 0.75rem;
+  /* Fenced blocks, quotes, tables, media. They carry their own frame, so they
+     need clearance the surrounding text does not. */
+  --flow-block: 1rem;
+  /* Inside a list item, and between list items. */
+  --flow-tight: 0.25rem;
+  /* Above a rule — the one element whose whole job is separation. */
+  --flow-rule: 1.5rem;
+
+  /* Space ABOVE each heading level. The ladder is what makes the outline
+     legible at a glance: an h2 opens a section, an h4 opens a paragraph. */
+  --lead-1: 2rem;
+  --lead-2: 1.75rem;
+  --lead-3: 1.375rem;
+  --lead-4: 1.125rem;
+  /*
+   * Space BELOW every heading — small on purpose, and the single most
+   * important number here.
+   *
+   * A heading belongs to what follows it, so it must sit closer to its own
+   * content than to the block above. The starter expressed that intent with
+   * per-level `margin-bottom` (16/16/12/8px) and then lost it: the following
+   * paragraph's 24px `margin-top` collapsed against it and won every time.
+   * Measured on the real page, EVERY gap in the document came out 24px or
+   * 32px — h1→p, p→p, h3→p, h4→p, p→ul, ul→p all identical. The hierarchy
+   * existed only in the source.
+   */
+  --trail: 0.375rem;
+
+  --indent: 1.5rem;
+
+  /* 15px, not the 18px the starter asked for or the 14px it actually
+     rendered. 18px is a blog-post measure and this is a workspace; 14px is
+     below what a document surface should ask anyone to read. */
+  --size: 0.9375rem;
+  --leading: 1.7;
+  --size-code: 0.8125rem;
+
+  max-width: 90ch;
+  /* No inline padding: the host already pads (`p-4 sm:p-6` in
+     `rich-text-editor.tsx`), and the second helping was what made the notes
+     body text sit 16px right of the title input above it. */
+  padding: 0.25rem 0;
+  margin: 0 auto;
+  position: relative;
+
+  font-size: var(--size);
+  line-height: var(--leading);
+  color: hsl(var(--foreground));
+  caret-color: hsl(var(--foreground));
+
+  outline: none;
+  /* Tiptap's default `min-height: 100vh` turns every editor into a page-tall
+     scroll area regardless of the box it was given. */
+  min-height: unset !important;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ProseMirror:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.ProseMirror .selection,
+.ProseMirror *::selection {
+  background-color: hsl(var(--primary) / 0.14);
+}
+
+.ProseMirror .is-editor-empty::before,
+.is-editor-empty::before {
+  color: hsl(var(--muted-foreground));
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * Rhythm
+ *
+ * Every block starts at zero margin, and each gap is then declared exactly
+ * once, on the LATER of the two blocks. Nothing collapses, because nothing has
+ * a bottom margin to collapse with — so what the source says is what the page
+ * does. That is the whole reason the heading `--trail` above now survives.
+ *
+ * The reset is `:where()` (zero specificity) so a node view, an extension, or
+ * a consumer's class overrides it without an arms race.
+ * ------------------------------------------------------------------------ */
+
+.ProseMirror :where(p, h1, h2, h3, h4, h5, h6, ul, ol, li, pre, blockquote,
+    table, figure, img, hr, .react-renderer) {
+  margin: 0;
+}
+
+.ProseMirror > * + * {
+  margin-top: var(--flow);
+}
+
+.ProseMirror > * + h1 {
+  margin-top: var(--lead-1);
+}
+.ProseMirror > * + h2 {
+  margin-top: var(--lead-2);
+}
+.ProseMirror > * + h3 {
+  margin-top: var(--lead-3);
+}
+.ProseMirror > * + h4 {
+  margin-top: var(--lead-4);
+}
+
+/*
+ * Deliberately AFTER the four rules above, and deliberately the same
+ * specificity: a heading directly under another heading (`## ` then `### `)
+ * matches both, the tie goes to source order, and this one wins. That is the
+ * behaviour you want — a subheading opening immediately under its parent is
+ * part of the same block of thought, not a new section.
+ */
+.ProseMirror > :is(h1, h2, h3, h4) + * {
+  margin-top: var(--trail);
+}
+
+/*
+ * Framed blocks, either side: they carry a border or a fill, so they read as
+ * cramped at the gap a bare paragraph is happy with.
+ *
+ * Split in two by SPECIFICITY, not by taste. The node-view wrappers are class
+ * selectors (0,2,0) and the elements are type selectors (0,1,1); keeping them
+ * apart is what lets the `hr` pair below — also 0,1,1, also later in the file
+ * — win the tie for `blockquote + hr` and give a section break its full
+ * clearance. Merged into one list, the class would have dragged that case down
+ * to `--flow-block` for no stated reason.
+ */
+.ProseMirror > * + :is(pre, blockquote, table, figure) {
+  margin-top: var(--flow-block);
+}
+.ProseMirror > :is(pre, blockquote, table, figure) + * {
+  margin-top: var(--flow-block);
+}
+
+.ProseMirror > * + :is(.react-renderer, .katex-display) {
+  margin-top: var(--flow-block);
+}
+.ProseMirror > :is(.react-renderer, .katex-display) + * {
+  margin-top: var(--flow-block);
+}
+
+.ProseMirror > * + hr,
+.ProseMirror > hr + * {
+  margin-top: var(--flow-rule);
+}
+
+/* ---------------------------------------------------------------------------
+ * Headings
+ * ------------------------------------------------------------------------ */
+
+.ProseMirror :is(h1, h2, h3, h4) {
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: hsl(var(--foreground));
+  /* Anchor landing clearance for the ToC. */
+  scroll-margin-top: 3rem;
+}
+
+.ProseMirror h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.ProseMirror h2 {
+  font-size: 1.375rem;
+}
+.ProseMirror h3 {
+  font-size: 1.125rem;
+}
+.ProseMirror h4 {
+  font-size: 1rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * Inline
+ * ------------------------------------------------------------------------ */
+
+.ProseMirror a {
+  color: hsl(var(--foreground));
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: hsl(var(--muted-foreground) / 0.5);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.ProseMirror a:hover {
+  text-decoration-color: hsl(var(--foreground));
+}
+
+.ProseMirror code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+  background-color: hsl(var(--muted));
+  padding: 0.15em 0.35em;
+  border-radius: calc(var(--radius) - 4px);
+  color: hsl(var(--foreground));
+}
+
+/* ---------------------------------------------------------------------------
+ * Blocks
+ * ------------------------------------------------------------------------ */
+
+.ProseMirror pre {
+  padding: 0.75rem 0.875rem;
+  background-color: hsl(var(--muted) / 0.5);
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+
+.ProseMirror pre code {
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  font-size: var(--size-code);
+  line-height: 1.6;
+}
+
+.ProseMirror blockquote {
+  padding: 0.125rem 0 0.125rem 1rem;
+  border-left: 3px solid hsl(var(--border));
+  color: hsl(var(--muted-foreground));
+}
+
+/* Multi-paragraph quotes still need internal rhythm; `--flow` rather than
+   `--flow-tight` because these are paragraphs, not list items. */
+.ProseMirror blockquote > * + * {
+  margin-top: var(--flow);
+}
+
+.ProseMirror hr {
+  border: none;
+  border-top: 1px solid hsl(var(--border));
+}
+
+/* ---------------------------------------------------------------------------
+ * Lists
+ *
+ * The gap between two bullets was 16px — the same as the gap between two
+ * paragraphs, which is why a list read as a stack of paragraphs with dots
+ * rather than as one object. `--flow-tight` binds the items together; the list
+ * as a whole still gets `--flow` from the sibling rule above.
+ * ------------------------------------------------------------------------ */
+
+.ProseMirror :is(ul, ol) {
+  padding-left: var(--indent);
+}
+
+.ProseMirror li + li {
+  margin-top: var(--flow-tight);
+}
+
+/* A nested list, and a second paragraph inside one item. Both are children of
+   `li`, which the sibling rules at the top never reach (they are scoped to
+   direct children of `.ProseMirror`). */
+.ProseMirror li > * + * {
+  margin-top: var(--flow-tight);
+}
+
+.ProseMirror ul {
+  list-style-type: disc;
+}
+.ProseMirror ul ul {
+  list-style-type: circle;
+}
+.ProseMirror ul ul ul {
+  list-style-type: square;
+}
+.ProseMirror ol {
+  list-style-type: decimal;
+}
+.ProseMirror ol ol {
+  list-style-type: lower-alpha;
+}
+.ProseMirror ol ol ol {
+  list-style-type: lower-roman;
+}
+
+/* ---------------------------------------------------------------------------
+ * Tables
+ * ------------------------------------------------------------------------ */
+
+.ProseMirror table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  overflow: hidden;
+}
+
+.ProseMirror :is(th, td) {
+  border: 1px solid hsl(var(--border));
+  padding: 0.35rem 0.6rem;
+  vertical-align: top;
+  position: relative;
+}
+
+.ProseMirror th {
+  background: hsl(var(--muted) / 0.5);
+  font-weight: 600;
+  text-align: left;
+}
+
+.ProseMirror .selectedCell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: hsl(var(--primary) / 0.08);
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * Media
+ * ------------------------------------------------------------------------ */
+
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+}
+
+/* Rows of images (the `imageGroup` node).
+ *
+ * The layout sits on `.image-group-items > *`, not on `.image-group-items`
+ * itself: ReactNodeViewRenderer puts its own element between the one
+ * `NodeViewContent` renders and the child node views, so that inner element —
+ * the row's only child — is what actually holds the images.
+ *
+ * Scoped to `.ProseMirror` so it cannot reach the preview pane, which renders
+ * through the published-page styles in `rich-text-html.tsx` and must keep
+ * matching them exactly. Same breakpoint as those styles: stacked below 640px,
+ * side by side above it.
+ */
+.ProseMirror .image-group-items > * {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .ProseMirror .image-group-items > * {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.ProseMirror .image-group-items > * > * {
+  flex: 1 1 0;
+  /* Flex children default to their content width; without this a wide image
+     refuses to shrink and the row overflows the writing column. */
+  min-width: 0;
+}
+
+.ProseMirror .image-group-items img {
+  width: 100%;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * Density
+ *
+ * What used to be `tiptap-lite.css`. An editor embedded in a form card (the
+ * contact form's message box, any `compact` editor in a dialog) is a field,
+ * not a document: it wants the same rules at a smaller scale, and overriding
+ * four tokens is the whole difference.
+ * ------------------------------------------------------------------------ */
+
+[data-editor-density='compact'] .ProseMirror {
+  --flow: 0.5rem;
+  --flow-block: 0.75rem;
+  --flow-rule: 1rem;
+  --lead-1: 1.25rem;
+  --lead-2: 1.125rem;
+  --lead-3: 1rem;
+  --lead-4: 0.875rem;
+  --size: 0.875rem;
+  --leading: 1.6;
+  padding: 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * Narrow viewports
+ *
+ * The rhythm scales down; the TYPE does not go below 16px. iOS Safari zooms
+ * the page whenever a focused editable computes under 16px, and a
+ * contenteditable is no exception — the same threshold `RichTextEditorLite`
+ * and the shared `Input` already handle. The starter's mobile block set the
+ * body to 1rem for what looks like this reason and never wrote it down.
+ * ------------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  .ProseMirror {
+    --flow: 0.625rem;
+    --flow-block: 0.875rem;
+    --flow-rule: 1.25rem;
+    --lead-1: 1.5rem;
+    --lead-2: 1.25rem;
+    --lead-3: 1.125rem;
+    --lead-4: 1rem;
+    --indent: 1.25rem;
+    --size: 1rem;
+    --size-code: 0.875rem;
+  }
+
+  .ProseMirror h1 {
+    font-size: 1.5rem;
+  }
+  .ProseMirror h2 {
+    font-size: 1.25rem;
+  }
+  .ProseMirror h3 {
+    font-size: 1.0625rem;
+  }
+  .ProseMirror h4 {
+    font-size: 1rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Print
+ *
+ * `/print/notes/[id]` renders through `rich-text-html.tsx`, not through this
+ * surface — but a browser print of a page with an editor on it should still
+ * not paste a scroll box into the paper.
+ * ------------------------------------------------------------------------ */
+
+@media print {
+  .ProseMirror {
+    padding: 0;
+    max-width: none;
+  }
+}

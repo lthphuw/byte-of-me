@@ -56,7 +56,7 @@ import { MobileEditorTools } from './mobile-tools';
 import { CustomHeading } from './render-extensions';
 import { EditorToolbar } from './toolbars/editor-toolbar';
 
-import './tiptap.css';
+import './editor-surface.css';
 // Unconditional import in a file that is already a lazy chunk public pages
 // never load; only the `withMath` option below gates the extension itself.
 import 'katex/dist/katex.min.css';
@@ -550,6 +550,11 @@ export function RichTextEditor({
 
   return (
     <div
+      // Picks the tighter of the two rhythms in `editor-surface.css`. An
+      // editor embedded in a form card is a FIELD — it gets the document
+      // rules at a smaller scale rather than a stylesheet of its own, which
+      // is what the deleted `tiptap-lite.css` used to be.
+      data-editor-density={compact ? 'compact' : undefined}
       // `overflow-clip`, NOT `overflow-hidden`: hidden makes this element a
       // scroll container, which traps the toolbar's `sticky top-0` inside it —
       // scroll the page/dialog and the toolbar drifts away. `clip` still cuts
