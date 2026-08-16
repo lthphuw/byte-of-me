@@ -34,8 +34,14 @@ export function RichTextEditorLite({ value, onChange, className }: Props) {
     content: value || '',
     editorProps: {
       attributes: {
+        // `text-base md:text-sm`, not a bare `text-sm`: iOS Safari zooms the
+        // page when a focused field computes under 16px, and a contenteditable
+        // is no exception. The viewport no longer sets `maximum-scale=1` (that
+        // blocked pinch-zoom, WCAG 1.4.4), so this is the only thing stopping
+        // the page jumping the moment someone taps into the message box.
+        // Matches how the shared `Input` already handles the same threshold.
         class:
-          'w-full min-h-[120px] max-h-[200px] overflow-y-auto rounded-md border text-sm focus:outline-none',
+          'w-full min-h-[120px] max-h-[200px] overflow-y-auto rounded-md border text-base focus:outline-none md:text-sm',
       },
     },
     onUpdate: ({ editor }) => {
