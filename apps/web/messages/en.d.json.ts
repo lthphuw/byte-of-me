@@ -257,6 +257,8 @@ declare const messages: {
   },
   "dashboard": {
     "sidebar": {
+      "navAriaLabel": "Dashboard navigation",
+      "openNav": "Open dashboard navigation",
       "groups": {
         "overview": "Overview",
         "portfolio": "Portfolio Content",

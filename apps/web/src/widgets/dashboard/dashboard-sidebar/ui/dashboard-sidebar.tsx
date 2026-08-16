@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import {
   Button,
-  Icons,
   Sheet,
   SheetContent,
   SheetTitle,
@@ -11,123 +10,40 @@ import {
 } from '@byte-of-me/ui';
 import { DatabaseZap, ExternalLink, LogOut, Menu } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
 
 import { DashboardNavItems } from './dashboard-nav-items';
+import { DashboardNavRail } from './dashboard-nav-rail';
 
 import { logOutDashboard } from '@/features/auth/lib';
 import { Link } from '@/shared/i18n/navigation';
 import { BrandMark } from '@/shared/ui/brand-mark';
 import { ColorSchemeModeToggle } from '@/shared/ui/color-scheme-toggle';
 import { I18nToggle } from '@/shared/ui/language-toggle';
-import type { MenuPlacement } from '@/shared/ui/menu-placement';
-import { purgeEntireCache } from '@/widgets/dashboard/dashboard-sidebar/lib/purge-entire-cache';
+import { useClearCache } from '@/widgets/dashboard/dashboard-sidebar/lib/use-clear-cache';
+import { useDashboardNavGroups } from '@/widgets/dashboard/dashboard-sidebar/model/use-dashboard-nav-groups';
 
 /**
- * `menuPlacement` is threaded in rather than decided here because this exact
- * markup renders twice, in two places with different room around them: a
- * 260px column pinned to the left of a wide window, and a 288px drawer over a
- * phone. The toggles' menus have to open in different directions in the two,
- * and the component cannot tell which one it is inside.
+ * The phone's copy of the navigation: the same destinations the rail shows,
+ * with their names.
+ *
+ * Labelled here and icon-only on the desktop rail, which is not an
+ * inconsistency but the point of each. The rail is for a set you have
+ * memorised and want out of the way; a drawer is opened deliberately, covers
+ * the screen while it is open, and costs nothing to make legible. The notes
+ * workspace splits the same way, and this is where the icons' names live for
+ * anyone who has not learned them yet.
  */
-function SidebarContent({
-  onNavigate,
-  menuPlacement,
-}: {
-  onNavigate?: () => void;
-  menuPlacement: MenuPlacement;
-}) {
+function DashboardDrawerContent({ onNavigate }: { onNavigate: () => void }) {
   const t = useTranslations('dashboard.sidebar');
-
-  const menuGroups = [
-    {
-      label: t('groups.overview'),
-      items: [
-        {
-          href: '/dashboard',
-          label: t('items.dashboard'),
-          icon: Icons.dashboard,
-        },
-        {
-          href: '/dashboard/user-profile',
-          label: t('items.profile'),
-          icon: Icons.userCircle,
-        },
-      ],
-    },
-    {
-      label: t('groups.portfolio'),
-      items: [
-        {
-          href: '/dashboard/projects',
-          label: t('items.projects'),
-          icon: Icons.projects,
-        },
-        {
-          href: '/dashboard/blogs',
-          label: t('items.blogs'),
-          icon: Icons.blogs,
-        },
-        {
-          href: '/dashboard/comments',
-          label: t('items.comments'),
-          icon: Icons.comments,
-        },
-        {
-          href: '/dashboard/media',
-          label: t('items.media'),
-          icon: Icons.media,
-        },
-      ],
-    },
-    {
-      label: t('groups.resume'),
-      items: [
-        {
-          href: '/dashboard/companies',
-          label: t('items.companies'),
-          icon: Icons.companies,
-        },
-        {
-          href: '/dashboard/educations',
-          label: t('items.education'),
-          icon: Icons.education,
-        },
-        {
-          href: '/dashboard/tech-stacks',
-          label: t('items.techStacks'),
-          icon: Icons.techStacks,
-        },
-      ],
-    },
-    {
-      label: t('groups.configuration'),
-      items: [
-        { href: '/dashboard/tags', label: t('items.tags'), icon: Icons.tags },
-      ],
-    },
-  ];
-
-  const handleClearCache = async () => {
-    try {
-      await purgeEntireCache();
-      toast(t('actions.cacheSuccess'), {
-        description: t('actions.cacheSuccessDesc'),
-      });
-    } catch (error) {
-      toast.error(t('actions.cacheError'), {
-        description: t('actions.cacheErrorDesc'),
-      });
-    }
-  };
+  const groups = useDashboardNavGroups();
+  const clearCache = useClearCache();
 
   return (
     <div className="flex h-full flex-col">
       {/* `span`, not the `h1` this used to be. Every dashboard page has its own
-          `h1` — "Welcome back, …" on this one — so the sidebar's was a second
-          top-level heading on every screen, and a reader jumping by headings
-          landed on the product name before the page. The space drawer has
-          always used a span here; this is the same markup. */}
+          `h1` — "Welcome back, …" on the landing one — so the sidebar's was a
+          second top-level heading on every screen, and a reader jumping by
+          headings landed on the product name before the page. */}
       <div className="flex items-center gap-3 px-4 py-5">
         <div className="flex size-7 items-center justify-center rounded-md">
           <BrandMark layer="cms" />
@@ -137,13 +53,11 @@ function SidebarContent({
 
       {/* The four group names are still here, still read out, and no longer
           drawn: a hairline says "these belong together" as well as a caption
-          does, and four uppercase captions in a 200px column were most of what
-          made this sidebar look busy next to the notes workspace. Deleting the
-          headings outright would have been the easy version and the wrong one
-          — it would flatten ten destinations into one undifferentiated list
-          for anyone navigating by heading. */}
+          does. Deleting the headings outright would have been the easy version
+          and the wrong one — it would flatten ten destinations into one
+          undifferentiated list for anyone navigating by heading. */}
       <nav className="flex-1 space-y-3 overflow-y-auto px-3 py-2">
-        {menuGroups.map((group) => (
+        {groups.map((group) => (
           <div
             key={group.label}
             className="space-y-1 border-t border-border/40 pt-3 first:border-t-0 first:pt-0"
@@ -155,22 +69,23 @@ function SidebarContent({
       </nav>
 
       <div className="mt-auto space-y-1 border-t border-border/40 p-3">
-        {/* Theme and language, the two shared toggles the public header and
-            the space rail also use.
+        {/* A row of icons rather than two more labelled lines: these are the
+            only controls here that show their current value in the trigger
+            itself — a flag and a sun or a moon — so a text label beside them
+            would repeat what the icon already says.
 
-            This replaced a hand-rolled Globe button that swapped between
-            exactly two locales — correct today and quietly wrong the moment a
-            third is added, since "the other language" stops being a single
-            answer. The theme control is new here: until the toggles moved into
-            `shared/ui` the dashboard had no way to leave dark mode at all. */}
+            `side="top"`: a menu opening to the right of a 256px drawer has
+            barely a sliver of screen to land in. Upwards it stays inside the
+            drawer it belongs to. */}
         <div className="flex items-center gap-1 pb-1">
-          <ColorSchemeModeToggle {...menuPlacement} />
-          <I18nToggle {...menuPlacement} />
+          <ColorSchemeModeToggle side="top" align="start" />
+          <I18nToggle side="top" align="start" />
         </div>
 
         <button
-          onClick={handleClearCache}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+          type="button"
+          onClick={() => void clearCache()}
+          className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <DatabaseZap className="size-4" />
           <span>{t('actions.clearCache')}</span>
@@ -179,16 +94,16 @@ function SidebarContent({
         <Link
           target="_blank"
           href="/"
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <ExternalLink className="size-4" />
           <span>{t('actions.viewSite')}</span>
         </Link>
 
-        <form action={logOutDashboard} className="pt-2">
+        <form action={logOutDashboard}>
           <button
             type="submit"
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground/80 transition-all hover:bg-muted/80 hover:text-foreground"
+            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <LogOut className="size-4" />
             <span>{t('actions.signOut')}</span>
@@ -199,29 +114,23 @@ function SidebarContent({
   );
 }
 
+/**
+ * The dashboard's navigation, in its two shapes: a 56px icon rail from `lg`
+ * up, and a hamburger opening a labelled drawer below it.
+ */
 export function DashboardSidebar() {
+  const t = useTranslations('dashboard.sidebar');
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
     <>
-      {/* Desktop sidebar.
-          200px rather than 260px. Ten labelled destinations still fit — the
-          longest, "Media Library", uses about two thirds of the text column —
-          and the 60px goes to the content, which is the part of a CMS anyone
-          is actually looking at. */}
-      <aside className="sticky top-0 z-40 hidden h-screen w-[200px] shrink-0 border-r border-border/50 bg-card lg:block">
-        {/* Sideways, because the controls sit at the foot of a full-height
-            column: dropping downwards from there opens into the bottom edge of
-            the window. `align="end"` puts the menu's own bottom edge on the
-            button's, so it grows up the sidebar rather than off the screen. */}
-        <SidebarContent menuPlacement={{ side: 'right', align: 'end' }} />
-      </aside>
+      <DashboardNavRail />
 
       {/* Mobile topbar */}
       <div className="sticky top-0 z-40 flex items-center gap-2 border-b border-border/50 bg-background/80 px-2 py-2 backdrop-blur lg:hidden">
         <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Open navigation">
+            <Button variant="ghost" size="icon" aria-label={t('openNav')}>
               <Menu className="size-5" />
             </Button>
           </SheetTrigger>
@@ -232,13 +141,9 @@ export function DashboardSidebar() {
             className="w-64 p-0"
             aria-describedby={undefined}
           >
-            <SheetTitle className="sr-only">Navigation</SheetTitle>
-            {/* Upwards in the drawer — see the note on the desktop copy.
-                Right would put the menu in the sliver of screen beside a
-                288px sheet. */}
-            <SidebarContent
+            <SheetTitle className="sr-only">{t('navAriaLabel')}</SheetTitle>
+            <DashboardDrawerContent
               onNavigate={() => setMobileNavOpen(false)}
-              menuPlacement={{ side: 'top', align: 'start' }}
             />
           </SheetContent>
         </Sheet>

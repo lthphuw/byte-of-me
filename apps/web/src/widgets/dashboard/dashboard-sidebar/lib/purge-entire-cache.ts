@@ -6,7 +6,6 @@ import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 
-
 /**
  * Revalidates the entire application by targeting the root layout.
  */

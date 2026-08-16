@@ -257,6 +257,8 @@ declare const messages: {
   },
   "dashboard": {
     "sidebar": {
+      "navAriaLabel": "Điều hướng bảng điều khiển",
+      "openNav": "Mở điều hướng bảng điều khiển",
       "groups": {
         "overview": "Tổng quan",
         "portfolio": "Nội dung Portfolio",
