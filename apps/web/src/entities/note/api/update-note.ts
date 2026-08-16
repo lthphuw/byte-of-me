@@ -46,10 +46,9 @@ export async function updateNote(
       },
     });
 
-    // Links are rebuilt from the document, never patched incrementally: the
-    // document is the single source of truth for what it links to, and a
-    // delete-then-insert of this note's own rows cannot drift from it the way
-    // a diff can.
+    // Links are derived from the document, never patched incrementally — see
+    // the rebuild further down for the shape of that, and for the read that
+    // now lets an unchanged link set skip the write entirely.
     //
     // Two gates, and both matter. `content !== undefined`, because the
     // autosave sends title and body separately and a rename must not rewrite
@@ -76,23 +75,53 @@ export async function updateNote(
           })
         : [];
 
-      await prisma.$transaction([
-        prisma.noteLink.deleteMany({ where: { sourceId: id } }),
-        ...(targets.length
-          ? [
-              prisma.noteLink.createMany({
-                data: targets.map((target) => ({
-                  sourceId: id,
-                  targetId: target.id,
-                })),
-                // A document can carry the same link twice; `extractNoteLinkIds`
-                // already dedupes, so this is belt and braces against a future
-                // caller that does not.
-                skipDuplicates: true,
-              }),
-            ]
-          : []),
-      ]);
+      // What this note already links to — one indexed read on `sourceId`.
+      //
+      // It buys the ability to do NOTHING, which is the common case and was
+      // previously the expensive one: an autosave fires on every pause in
+      // typing, and prose almost never moves a `[[` link, yet every one of
+      // those saves ran a delete-and-reinsert transaction. A note with no
+      // links at all — most of them — still paid an unconditional
+      // `deleteMany`. A select on an indexed column costs far less than a
+      // write transaction, which takes locks and WAL whether or not it
+      // changes a row.
+      //
+      // Both sides are sorted id lists, so the comparison is exact rather
+      // than heuristic: same length and same members in the same order means
+      // the stored edges already ARE what the document says.
+      const existing = await prisma.noteLink.findMany({
+        where: { sourceId: id },
+        select: { targetId: true },
+      });
+      const previousIds = existing.map((row) => row.targetId).sort();
+      const nextIds = targets.map((target) => target.id).sort();
+      const unchanged =
+        previousIds.length === nextIds.length &&
+        previousIds.every((targetId, index) => targetId === nextIds[index]);
+
+      // Rebuilt wholesale, never patched incrementally, when it does change:
+      // the document is the single source of truth for what it links to, and
+      // a delete-then-insert of this note's own rows cannot drift from it the
+      // way a diff can.
+      if (!unchanged) {
+        await prisma.$transaction([
+          prisma.noteLink.deleteMany({ where: { sourceId: id } }),
+          ...(nextIds.length
+            ? [
+                prisma.noteLink.createMany({
+                  data: nextIds.map((targetId) => ({
+                    sourceId: id,
+                    targetId,
+                  })),
+                  // A document can carry the same link twice;
+                  // `extractNoteLinkIds` already dedupes, so this is belt and
+                  // braces against a future caller that does not.
+                  skipDuplicates: true,
+                }),
+              ]
+            : []),
+        ]);
+      }
     }
 
     const note = await prisma.note.findFirstOrThrow({

@@ -216,15 +216,20 @@ Object.defineProperty(prisma, 'note', {
   configurable: true,
 });
 
-// `updateNote` rebuilds the saved note's `NoteLink` rows from the document it
-// just wrote, so a content save now reaches two more delegates. Neither is
-// what these tests are about — they exercise the autosave's own decisions —
-// but leaving them real means every content save tries to open a database
-// connection to the deliberately unreachable test URL and fails the save.
+// `updateNote` derives the saved note's `NoteLink` rows from the document it
+// just wrote, so a content save reaches three more delegates: it READS the
+// stored edges to decide whether anything moved, and only then deletes and
+// re-inserts. None is what these tests are about — they exercise the
+// autosave's own decisions — but leaving them real means every content save
+// tries to open a database connection to the deliberately unreachable test
+// URL and fails the save. `findMany` resolving to `[]` against documents that
+// carry no links is the "nothing changed" answer, so these saves skip the
+// write entirely, which is what production does too.
 // `$transaction` here takes the array form `updateNote` uses and simply
 // awaits it; the promises inside are already the mocks below.
 Object.defineProperty(prisma, 'noteLink', {
   value: {
+    findMany: mock(() => Promise.resolve([])),
     deleteMany: mock(() => Promise.resolve({ count: 0 })),
     createMany: mock(() => Promise.resolve({ count: 0 })),
   },
@@ -583,6 +588,65 @@ describe('NoteEditor autosave', () => {
     expect(args.where.id).toBe(NOTE_A.id);
     expect(args.data.title).toBe('Typed just before closing');
   });
+
+  test('a title save disturbs the row-label caches and nothing wider', async () => {
+    const queryClient = makeQueryClient();
+    const invalidate = spyOn(queryClient, 'invalidateQueries');
+    render(<Harness noteId={NOTE_A.id} queryClient={queryClient} />);
+    await screen.findByDisplayValue('Note A');
+    invalidate.mockClear();
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Note title' }), {
+      target: { value: 'Note A renamed' },
+    });
+    await wait(SETTLE_MS);
+    await waitFor(() => expect(updateMany).toHaveBeenCalledTimes(1));
+
+    const invalidated = invalidate.mock.calls.map(([args]) =>
+      JSON.stringify((args as { queryKey: readonly unknown[] }).queryKey)
+    );
+
+    // The four row-label families, and only those. `ancestors` in particular
+    // must NOT be here: `getNoteAncestors` walks upward from the note's
+    // PARENT, so a note's own title appears in no ancestor chain — refetching
+    // every breadcrumb on every rename was pure waste.
+    expect(invalidated.sort()).toEqual(
+      noteKeys
+        .listLabels()
+        .map((queryKey) => JSON.stringify(queryKey))
+        .sort()
+    );
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
+
+  test('a body save touches links and the graph, never the tree', async () => {
+    const queryClient = makeQueryClient();
+    const invalidate = spyOn(queryClient, 'invalidateQueries');
+    render(<Harness noteId={NOTE_A.id} queryClient={queryClient} />);
+    await screen.findByDisplayValue('Note A');
+    invalidate.mockClear();
+
+    await act(async () => {
+      __typeInBody(' more prose');
+    });
+    await wait(SETTLE_MS);
+    await waitFor(() => expect(updateMany).toHaveBeenCalledTimes(1));
+
+    const invalidated = invalidate.mock.calls.map(([args]) =>
+      JSON.stringify((args as { queryKey: readonly unknown[] }).queryKey)
+    );
+
+    // Writing prose changes no row's label and moves no row, so the explorer
+    // has nothing to re-read. This is the whole point of the narrowing: an
+    // autosave fires on every pause in typing, and each of these keys had an
+    // ACTIVE query behind it on `/space/notes/<id>` — the root level, one per
+    // expanded folder, the breadcrumb — so every pause cost three to five
+    // extra server actions, each with its own `requireAdmin()`.
+    expect(invalidated).toContain(JSON.stringify(noteKeys.linksAll()));
+    expect(invalidated).toContain(JSON.stringify(noteKeys.graph()));
+    for (const queryKey of noteKeys.listLabels()) {
+      expect(invalidated).not.toContain(JSON.stringify(queryKey));
+    }
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
 
   test('a save that resolves after switching notes writes into its OWN cache key, not the note switched to', async () => {
     const queryClient = makeQueryClient();

@@ -25,8 +25,22 @@ Object.defineProperty(prisma, 'note', {
 
 const linkDeleteMany = mock();
 const linkCreateMany = mock();
+/**
+ * The edges this note ALREADY has. `updateNote` reads them before deciding
+ * whether to rewrite anything, so that a save which did not move a `[[` link
+ * — every save made while typing prose — skips the delete/insert transaction.
+ * Defaults to "none stored", which is what makes the tests below still see a
+ * write for a document that introduces links.
+ */
+const linkFindMany = mock<
+  () => Promise<{ targetId: string }[]>
+>(() => Promise.resolve([]));
 Object.defineProperty(prisma, 'noteLink', {
-  value: { deleteMany: linkDeleteMany, createMany: linkCreateMany },
+  value: {
+    deleteMany: linkDeleteMany,
+    createMany: linkCreateMany,
+    findMany: linkFindMany,
+  },
   writable: true,
   configurable: true,
 });
@@ -97,6 +111,7 @@ describe('updateNote', () => {
         (args: { where: { id: { in: string[] } } }) =>
           Promise.resolve(args.where.id.in.map((id) => ({ id })))
       );
+    linkFindMany.mockReset().mockResolvedValue([]);
     linkDeleteMany.mockReset().mockResolvedValue({ count: 0 });
     linkCreateMany.mockReset().mockResolvedValue({ count: 0 });
     transaction.mockClear();
@@ -177,12 +192,51 @@ describe('updateNote', () => {
   });
 
   it('clears existing links when the document no longer has any', async () => {
+    // The note DOES currently link somewhere; the new document does not. The
+    // stored edges have to go, which is a real change and so a real write.
+    linkFindMany.mockResolvedValue([{ targetId: 'note-2' }]);
+
     await updateNote({ id: 'note-1', content: tiptapDoc });
 
     expect(linkDeleteMany).toHaveBeenCalledWith({
       where: { sourceId: 'note-1' },
     });
     expect(linkCreateMany).not.toHaveBeenCalled();
+  });
+
+  it('writes nothing when the document links to exactly what is stored', async () => {
+    // The shape of nearly every autosave: prose typed into a note whose `[[`
+    // links did not move. This used to run a delete-and-reinsert transaction
+    // on every pause in typing — and a note with NO links paid an
+    // unconditional `deleteMany` for the same reason. One indexed read now
+    // answers the question instead, and the write is skipped outright.
+    linkFindMany.mockResolvedValue([
+      { targetId: 'note-3' },
+      { targetId: 'note-2' },
+    ]);
+
+    await updateNote({ id: 'note-1', content: docLinkingTo('note-2', 'note-3') });
+
+    expect(linkDeleteMany).not.toHaveBeenCalled();
+    expect(linkCreateMany).not.toHaveBeenCalled();
+    // Order must not matter: the comparison sorts both sides, so the stored
+    // rows arriving in a different order than the document lists them is not
+    // a difference.
+    expect(transaction).not.toHaveBeenCalled();
+  });
+
+  it('rewrites when one link is added to an existing set', async () => {
+    linkFindMany.mockResolvedValue([{ targetId: 'note-2' }]);
+
+    await updateNote({ id: 'note-1', content: docLinkingTo('note-2', 'note-3') });
+
+    expect(linkDeleteMany).toHaveBeenCalledWith({
+      where: { sourceId: 'note-1' },
+    });
+    expect(createdLinks()).toEqual([
+      { sourceId: 'note-1', targetId: 'note-2' },
+      { sourceId: 'note-1', targetId: 'note-3' },
+    ]);
   });
 
   it('leaves links alone when only the title changes', async () => {

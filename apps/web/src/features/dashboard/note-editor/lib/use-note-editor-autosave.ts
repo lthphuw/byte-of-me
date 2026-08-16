@@ -339,39 +339,64 @@ export function useNoteEditorAutosave(
   const tRef = useRef(t);
   tRef.current = t;
 
+  /**
+   * Reconciles the cache with a save that landed.
+   *
+   * `changed` is what this particular save actually altered, measured against
+   * what was last successfully communicated (`lastSentRef` before the send) —
+   * NOT against the server's echo, for the reason the autosave effect gives
+   * further down. It exists because invalidation here is not free: TanStack
+   * refetches every ACTIVE query a key matches, and on `/space/notes/<id>`
+   * that is the root level, one query per expanded folder, and the
+   * breadcrumb's ancestor chain. Firing all of them on every pause in typing
+   * cost three to five extra server actions per second of writing, each
+   * paying its own `requireAdmin()` and Prisma round trip — for a tree whose
+   * shape a save never changes. Now a content-only save touches no list key
+   * at all, and a title-only save touches only the row-label family.
+   */
   const applySaveResult = useCallback(
-    (id: string, data: NoteDetail) => {
+    (
+      id: string,
+      data: NoteDetail,
+      changed: { title: boolean; content: boolean }
+    ) => {
+      // Writing the server's response into the detail key directly — rather
+      // than invalidating it — is load-bearing, and predates the narrowing
+      // above. Invalidating `noteKeys.all` (as an earlier version did)
+      // prefix-matches detail AND search, so every autosave re-fetched the
+      // very document it had just written. Combined with `updateNoteSchema`'s
+      // `.trim()` on title, a trailing space made that re-fetch come back with
+      // a DIFFERENT string than what was sent — which, when the "should I
+      // save" check compared against the server's copy, looked exactly like a
+      // fresh unsaved edit and saved again, forever. See `lastSentRef` above
+      // for the other half of the fix.
       queryClient.setQueryData(noteKeys.detail(id), data);
-      // Only the tree needs to hear about this — it renders titles, and a
-      // rename must show up there. Invalidating `noteKeys.all` (as an
-      // earlier version of this did) prefix-matches detail AND search too,
-      // which meant every autosave re-fetched the very document it had just
-      // written. Combined with `updateNoteSchema`'s `.trim()` on title, a
-      // trailing space made that re-fetch come back with a DIFFERENT string
-      // than what was sent — which, when the "should I save" check compared
-      // against the server's copy, looked exactly like a fresh unsaved edit
-      // and saved again, forever. Writing the server's response into the
-      // detail key directly (instead of invalidating it) removes that path
-      // entirely — see `lastSentRef` above for the other half of the fix.
-      // Every list-shaped key, not just the tree: the explorer now reads
-      // per-level `children` keys, which `tree` does not prefix-match.
-      for (const queryKey of noteKeys.lists()) {
-        void queryClient.invalidateQueries({ queryKey });
+
+      // A row's label moved, so the views that draw rows have to re-read.
+      // `listLabels()`, not `lists()`: see that factory for which keys it
+      // leaves out and why each is safe. Every list-shaped key it DOES name,
+      // not just the tree — the explorer reads per-level `children` keys,
+      // which a `tree` key does not prefix-match.
+      if (changed.title) {
+        for (const queryKey of noteKeys.listLabels()) {
+          void queryClient.invalidateQueries({ queryKey });
+        }
       }
-      // Links, too: `updateNote` rewrites this note's `NoteLink` rows from
-      // the document it just saved, so a `[[` link inserted a second ago is
-      // only visible in the panel after this. Whole prefix rather than this
-      // note's key — adding a link changes the TARGET's backlinks, and which
-      // note that is cannot be read off the save.
+
+      // Links are rebuilt from the document, so only a content save can move
+      // them. Whole prefix rather than this note's key — adding a link changes
+      // the TARGET's backlinks, and which note that is cannot be read off the
+      // save.
       //
-      // Safe in a way the `noteKeys.all` invalidation this function's comment
-      // above rejects is not: `links` is a separate key that feeds nothing the
-      // save decision reads, so refetching it cannot loop back into another
-      // save. `detail` and `search` are what must stay untouched here.
-      void queryClient.invalidateQueries({ queryKey: noteKeys.linksAll() });
-      // The graph draws those same links, and is safe here for the same
-      // reason `links` is: nothing the save decision reads comes from it.
-      void queryClient.invalidateQueries({ queryKey: noteKeys.graph() });
+      // Safe in a way the `noteKeys.all` invalidation rejected above is not:
+      // `links` feeds nothing the save decision reads, so refetching it cannot
+      // loop back into another save. The graph draws those same links and is
+      // safe for the same reason. `detail` and `search` are what must stay
+      // untouched here.
+      if (changed.content) {
+        void queryClient.invalidateQueries({ queryKey: noteKeys.linksAll() });
+        void queryClient.invalidateQueries({ queryKey: noteKeys.graph() });
+      }
     },
     [queryClient]
   );
@@ -413,7 +438,18 @@ export function useNoteEditorAutosave(
     // write goes straight into a specific cache key instead of triggering a
     // broad refetch that would have happened to land on the right key by
     // querying the URL/args again.
-    onSuccess: (data, variables) => applySaveResult(variables.id, data),
+    // `context.previous` is `lastSentRef` as it stood BEFORE `onMutate`
+    // overwrote it — i.e. the last state this hook knows the server agreed
+    // with. Diffing THAT against what was sent is what tells the cache which
+    // half of the note actually moved. `previous` is null only on a save that
+    // precedes any seed, which cannot happen (the autosave effect gates on
+    // `isSeededForCurrentNote`); treating that as "both changed" keeps the
+    // conservative behaviour anyway.
+    onSuccess: (data, variables, context) =>
+      applySaveResult(variables.id, data, {
+        title: context?.previous?.title !== variables.title,
+        content: context?.previous?.content !== variables.content,
+      }),
     onError: (error: Error, _variables, context) => {
       if (context) {
         lastSentRef.current = context.previous;
@@ -536,6 +572,14 @@ export function useNoteEditorAutosave(
         return;
       }
 
+      // Captured before `lastSentRef` is overwritten below — same diff the
+      // mutation's `onSuccess` takes from `context.previous`, for the same
+      // reason: it decides which cache families this save has to disturb.
+      const changed = {
+        title: pending.title !== sent.title,
+        content: pending.content !== sent.content,
+      };
+
       lastSentRef.current = {
         title: pending.title,
         content: pending.content,
@@ -547,7 +591,7 @@ export function useNoteEditorAutosave(
         content: pending.content,
       }).then((res) => {
         if (res.success) {
-          applySaveResult(departingId, res.data);
+          applySaveResult(departingId, res.data, changed);
         } else {
           toast.error(tRef.current('errors.save'), {
             description: res.errorMsg,

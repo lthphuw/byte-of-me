@@ -104,6 +104,37 @@ export const noteKeys = {
       noteKeys.ancestorsAll(),
     ] as const,
   /**
+   * The strictly narrower cousin of `lists()`: every key that renders a note's
+   * TITLE in a row, for a mutation that changed only what a row says — not
+   * which rows exist, nor where they sit.
+   *
+   * That is exactly an autosave. `use-note-editor-autosave` used to invalidate
+   * the whole `lists()` family on every save, and with TanStack refetching
+   * ACTIVE queries, one pause in typing cost a re-read of the root level, of
+   * every expanded folder, and of the breadcrumb chain — three to five extra
+   * server actions, each paying its own `requireAdmin()` and its own round
+   * trip, for a tree whose shape had not moved.
+   *
+   * What is deliberately absent, and why each one is safe to leave alone:
+   *
+   *  - `ancestors` — the chain is built by `getNoteAncestors` from the note's
+   *    PARENT upward (`JOIN notes p ON p.id = n.parent_id`), so it never
+   *    contains the note itself. Renaming a note changes no ancestor list.
+   *    A FOLDER rename does, but that arrives through `useRenameNote`, which
+   *    keeps the full `lists()` family for precisely this reason.
+   *  - `archived` — a save targets a live note. Archiving is its own mutation.
+   *  - `descendantCount` — a save moves nothing, so no subtree changes size.
+   *
+   * `detail` and `search` stay out for the reason `lists()` gives.
+   */
+  listLabels: () =>
+    [
+      noteKeys.childrenAll(),
+      noteKeys.pageAll(),
+      noteKeys.groupsAll(),
+      noteKeys.groupRowsAll(),
+    ] as const,
+  /**
    * The whole knowledge graph — one entry.
    *
    * Invalidated by anything that changes the NODE set (create, archive,
