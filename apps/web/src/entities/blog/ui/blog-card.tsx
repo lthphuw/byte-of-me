@@ -69,7 +69,7 @@ export function BlogCard({ blog, onTagClick }: BlogCardProps) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-3 p-5">
+      <div className="flex flex-1 flex-col gap-4 p-5 md:gap-6">
         <p className="meta-label">{meta}</p>
 
         <h3 className="font-heading text-xl leading-snug tracking-tight">
@@ -96,7 +96,7 @@ export function BlogCard({ blog, onTagClick }: BlogCardProps) {
         {blog.tags.length > 0 && (
           // z-10 lifts the tags above the card-wide link overlay so they stay
           // clickable as filters.
-          <div className="relative z-10 mt-auto flex flex-wrap gap-1.5 pt-2">
+          <div className="relative z-10 mt-auto flex flex-wrap gap-2 pt-2">
             {blog.tags.map((tag) => (
               <button
                 key={tag.id}

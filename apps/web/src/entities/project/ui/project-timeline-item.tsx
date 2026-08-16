@@ -54,8 +54,8 @@ export function ProjectTimelineItem({
         )}
       />
 
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+      <div className="flex flex-col gap-4 md:gap-6">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
           <h3 className="font-heading text-xl tracking-tight">
             {project.title}
             <span className="sr-only">
@@ -78,7 +78,7 @@ export function ProjectTimelineItem({
         )}
 
         {project.techStacks.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {project.techStacks.map((tech) => (
               <TechStackClickableBadge
                 key={tech.id}
@@ -90,7 +90,7 @@ export function ProjectTimelineItem({
         )}
 
         {project.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {project.tags.map((tag) => (
               <TagClickableBadge key={tag.id} tag={tag} onClick={onTagClick} />
             ))}

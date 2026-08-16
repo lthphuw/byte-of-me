@@ -114,7 +114,7 @@ export function BlogsContent() {
       </ListPageHeader>
 
       {showSkeletons ? (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-10">
           {Array.from({ length: 4 }).map((_, i) => (
             <BlogCardSkeleton key={i} />
           ))}
@@ -125,7 +125,7 @@ export function BlogsContent() {
         </div>
       ) : (
         <div
-          className={`grid grid-cols-1 gap-6 transition-opacity duration-300 md:grid-cols-2 ${
+          className={`grid grid-cols-1 gap-6 transition-opacity duration-300 md:grid-cols-2 md:gap-10 ${
             isPlaceholderData
               ? 'pointer-events-none opacity-50 grayscale-[50%]'
               : 'opacity-100'

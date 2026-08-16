@@ -62,7 +62,7 @@ export function BlogFilters({ value, onChange }: BlogFiltersProps) {
   const hasFilters = value.tagSlugs.length > 0 || search.length > 0;
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4 md:gap-6">
       <div className="flex items-center gap-2">
         <FilterSearchInput
           value={search}
@@ -85,7 +85,7 @@ export function BlogFilters({ value, onChange }: BlogFiltersProps) {
       </div>
 
       {allTags.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-2">
           {allTags.map((tag) => (
             <TagClickableBadge
               key={tag.id}

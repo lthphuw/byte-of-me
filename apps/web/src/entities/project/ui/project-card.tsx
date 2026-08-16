@@ -40,8 +40,8 @@ export function ProjectCard({
 
   return (
     <Card className="group flex h-full flex-col rounded-2xl border-border/60 bg-card transition-all duration-300 hover:border-border hover:shadow-md">
-      <CardContent className="flex flex-1 flex-col gap-3 p-5">
-        <div className="space-y-1">
+      <CardContent className="flex flex-1 flex-col gap-4 p-5 md:gap-6">
+        <div className="space-y-2">
           <h3 className="line-clamp-1 font-heading text-lg tracking-tight">
             {project.title}
           </h3>
@@ -56,7 +56,7 @@ export function ProjectCard({
 
         {!compact && (
           <div className="mt-auto space-y-2 pt-2">
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-2">
               {project.techStacks.map((tech) => (
                 <TechStackClickableBadge
                   key={tech.id}
@@ -66,7 +66,7 @@ export function ProjectCard({
               ))}
             </div>
 
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-2">
               {project.tags.map((tag) => (
                 <TagClickableBadge
                   key={tag.id}

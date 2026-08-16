@@ -79,7 +79,7 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
     search.length > 0;
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4 md:gap-6">
       <div className="flex items-center gap-2">
         <FilterSearchInput
           value={search}
@@ -102,10 +102,10 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
       </div>
 
       {allTags.length > 0 && (
-        <div className="space-y-1.5 sm:flex sm:items-start sm:gap-x-2 sm:space-y-0">
+        <div className="space-y-2 sm:flex sm:items-start sm:gap-x-2 sm:space-y-0">
           <span className="block pt-1 meta-label sm:w-20 sm:shrink-0">{t('tags')}</span>
 
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-2">
 
             {allTags.map((tag) => (
               <TagClickableBadge
@@ -133,10 +133,10 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
       )}
 
       {allTechStacks.length > 0 && (
-        <div className="space-y-1.5 sm:flex sm:items-start sm:gap-x-2 sm:space-y-0">
+        <div className="space-y-2 sm:flex sm:items-start sm:gap-x-2 sm:space-y-0">
           <span className="block pt-1 meta-label sm:w-20 sm:shrink-0">{t('techStack')}</span>
 
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-2">
 
             {allTechStacks.map((tech) => (
               <TechStackClickableBadge

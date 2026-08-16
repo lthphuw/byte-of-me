@@ -50,10 +50,10 @@ export function ProjectsTimeline({
   const groups = useMemo(() => groupByStartYear(projects), [projects]);
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-8 md:gap-12">
       {groups.map(([year, items]) => (
         <section key={year ?? 'undated'}>
-          <div className="mb-6 flex items-center gap-4">
+          <div className="mb-4 flex items-center gap-4 md:mb-6">
             {/* Spelled out rather than `meta-label` + `text-sm`: both set a
                 font size, and which one wins depends on CSS emission order
                 rather than the order they appear in here. */}
@@ -71,7 +71,7 @@ export function ProjectsTimeline({
                 key={project.id}
                 as="li"
                 index={index}
-                className="relative pb-12 pl-8 last:pb-0"
+                className="relative pb-8 pl-8 last:pb-0 md:pb-12"
               >
                 <ProjectTimelineItem
                   project={project}
