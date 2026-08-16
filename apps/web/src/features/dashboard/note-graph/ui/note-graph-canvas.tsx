@@ -1,6 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Button } from '@byte-of-me/ui';
+import { Crosshair } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import type { NoteGraph } from '@/entities/note';
 import {
@@ -19,6 +22,30 @@ import { useGraphSimulation } from '@/features/dashboard/note-graph/lib/use-grap
 
 /** Screen px a pointer must travel before a press counts as a drag, not a click. */
 const DRAG_THRESHOLD = 4;
+
+/**
+ * How long the view takes to travel back to the fitted framing.
+ *
+ * Long enough to be followed — the point of animating a reset at all is that
+ * the author can see WHERE they were relative to where they now are, which a
+ * jump cut throws away — and short enough not to be a wait.
+ */
+const RESET_DURATION_MS = 320;
+
+interface FitOptions {
+  /** Reframe even if the one-shot auto-fit has already run. */
+  force?: boolean;
+  /** Travel to the new framing rather than cutting to it. */
+  animate?: boolean;
+}
+
+/**
+ * Checked at the moment of the gesture rather than through a hook, because
+ * that is when the answer matters and the setting can change mid-session.
+ */
+function prefersReducedMotion(): boolean {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
 
 export interface NoteGraphCanvasProps {
   graph: NoteGraph;
@@ -41,6 +68,7 @@ export interface NoteGraphCanvasProps {
  * carry hue in both themes, which is exactly what they exist for.
  */
 export function NoteGraphCanvas({ graph, onOpen }: NoteGraphCanvasProps) {
+  const t = useTranslations('dashboard.note.graph');
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const viewportRef = useRef<Viewport>({ x: 0, y: 0, scale: 1 });
   const hoverRef = useRef<PositionedNode | null>(null);
@@ -79,8 +107,18 @@ export function NoteGraphCanvas({ graph, onOpen }: NoteGraphCanvasProps) {
   // needs `nodesRef`, which the hook itself returns. The ref breaks the cycle
   // without a forward reference into a `const` that has not initialised yet.
   const hasFittedRef = useRef(false);
-  const fitRef = useRef<(force?: boolean) => void>(() => {});
+  const fitRef = useRef<(options?: FitOptions) => void>(() => {});
   const onSettle = useCallback(() => fitRef.current(), []);
+
+  // The reset animation's own frame handle, kept apart from `frameRef`: that
+  // one coalesces paint requests and is cleared by the frame it booked, while
+  // this one is a loop that has to survive across frames to be cancellable.
+  // Sharing a single handle would have each cancel the other.
+  const tweenRef = useRef<number | null>(null);
+  const cancelTween = useCallback(() => {
+    if (tweenRef.current !== null) cancelAnimationFrame(tweenRef.current);
+    tweenRef.current = null;
+  }, []);
 
   const { nodesRef, setDragged, reheat } = useGraphSimulation(
     graph,
@@ -91,16 +129,43 @@ export function NoteGraphCanvas({ graph, onOpen }: NoteGraphCanvasProps) {
   // Frames the graph in the canvas. `force` bypasses the once-per-graph gate
   // that keeps a later settle — after a drag, say — from yanking the view
   // away from wherever the author has panned it.
-  fitRef.current = (force = false) => {
+  fitRef.current = ({ force = false, animate = false } = {}) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     if (hasFittedRef.current && !force) return;
     const width = canvas.clientWidth;
     const height = canvas.clientHeight;
     if (width === 0 || height === 0) return;
-    viewportRef.current = fitViewport(nodesRef.current, width, height);
+
+    const target = fitViewport(nodesRef.current, width, height);
     hasFittedRef.current = true;
-    requestDraw();
+    cancelTween();
+
+    // The automatic first fit asks for no animation, and should not: there is
+    // nothing to travel FROM but the arbitrary pre-settle framing, which was
+    // never meant to be looked at. Only a reset the author asked for animates.
+    if (!animate || prefersReducedMotion()) {
+      viewportRef.current = target;
+      requestDraw();
+      return;
+    }
+
+    const from = { ...viewportRef.current };
+    const start = performance.now();
+    const step = (now: number) => {
+      const progress = Math.min(1, (now - start) / RESET_DURATION_MS);
+      // easeOutCubic: leaves quickly, arrives gently. A linear tween on a
+      // pan reads as the canvas being dragged by something else.
+      const eased = 1 - (1 - progress) ** 3;
+      viewportRef.current = {
+        x: from.x + (target.x - from.x) * eased,
+        y: from.y + (target.y - from.y) * eased,
+        scale: from.scale + (target.scale - from.scale) * eased,
+      };
+      requestDraw();
+      tweenRef.current = progress < 1 ? requestAnimationFrame(step) : null;
+    };
+    tweenRef.current = requestAnimationFrame(step);
   };
 
   // Reassigned every render so the closure always sees the current `graph`.
@@ -247,8 +312,26 @@ export function NoteGraphCanvas({ graph, onOpen }: NoteGraphCanvasProps) {
   useEffect(
     () => () => {
       if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+      // Clearing the handle is the whole point of this line, and leaving it
+      // out cost the graph every one of its pixels.
+      //
+      // `frameRef` is the coalescing guard for `requestDraw`: non-null means
+      // "a frame is already booked, do nothing". Cancelling the frame without
+      // resetting it leaves the guard latched shut against a frame that will
+      // now never arrive to unlatch it — every later `requestDraw` returns
+      // immediately and the canvas is never painted again.
+      //
+      // Unmounting normally would make that harmless, since a remount brings
+      // fresh refs. StrictMode is the case that bites: React runs the effects,
+      // tears them down and runs them again on the SAME fiber, so the refs
+      // survive. In dev the graph therefore mounted, booked a frame, cancelled
+      // it, and rendered an empty canvas — 55 notes counted in the corner and
+      // nothing drawn — with its backing store still at the 300x150 default,
+      // proving `draw` had not run even once.
+      frameRef.current = null;
+      cancelTween();
     },
-    []
+    [cancelTween]
   );
 
   const localPoint = (event: { clientX: number; clientY: number }) => {
@@ -274,6 +357,10 @@ export function NoteGraphCanvas({ graph, onOpen }: NoteGraphCanvasProps) {
   const onPointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
     const point = localPoint(event);
     const pointer = pointerRef.current;
+    // Touching the canvas ends the reset animation. A tween that kept writing
+    // the viewport underneath a pan would drag the graph away from the finger
+    // holding it.
+    cancelTween();
 
     if (pointer.id !== null) {
       // A second finger: this becomes a pinch, and whatever the first finger
@@ -391,6 +478,7 @@ export function NoteGraphCanvas({ graph, onOpen }: NoteGraphCanvasProps) {
   };
 
   const onWheel = (event: React.WheelEvent<HTMLCanvasElement>) => {
+    cancelTween();
     // Exponential, so a zoom out and the matching zoom in cancel exactly.
     zoomAt(localPoint(event), Math.exp(-event.deltaY * 0.0015));
     requestDraw();
@@ -414,9 +502,33 @@ export function NoteGraphCanvas({ graph, onOpen }: NoteGraphCanvasProps) {
         // around inside a viewport the author may have panned away from.
         onDoubleClick={() => {
           reheat();
-          fitRef.current(true);
+          fitRef.current({ force: true, animate: true });
         }}
       />
+
+      {/* The way back. A graph is trivially easy to get lost in — a few wheel
+          notches past the last node and the screen is empty with nothing on it
+          to steer by, which is a dead end rather than a state you can undo.
+          The double-click gesture already reframed, but a gesture nobody is
+          told about rescues nobody, so the same thing is a visible control.
+          It reframes only: re-running the layout as well would answer "put it
+          back" by moving every node somewhere new.
+
+          Bottom-right, in the corner every map application puts its view
+          controls. The legend beside it is pushed left by exactly this
+          button's width — see `NoteGraph`. */}
+      <Button
+        type="button"
+        variant="outline"
+        size="icon"
+        className="absolute bottom-3 right-3 size-8 bg-background/80 backdrop-blur"
+        onClick={() => fitRef.current({ force: true, animate: true })}
+        title={t('resetView')}
+      >
+        <Crosshair className="size-4" aria-hidden="true" />
+        <span className="sr-only">{t('resetView')}</span>
+      </Button>
+
       {hoverTitle && (
         <p className="pointer-events-none absolute bottom-3 left-3 max-w-[70%] truncate rounded-md border bg-background/90 px-2 py-1 text-xs shadow-sm">
           {hoverTitle}

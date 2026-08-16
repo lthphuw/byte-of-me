@@ -805,6 +805,7 @@ declare const messages: {
         "empty": "No notes to plot yet — write a few and connect them with [[.",
         "loadError": "Couldn't load the graph. Reload to try again.",
         "legendHint": "Scroll to zoom, drag to pan, click a node to open it.",
+        "resetView": "Reset the view",
         "nodeCount": "{count, plural, one {# note} other {# notes}}",
         "edgeCount": "{count, plural, one {# link} other {# links}}",
         "loading": "Loading knowledge graph…"

@@ -805,6 +805,7 @@ declare const messages: {
         "empty": "Chưa có ghi chú nào để vẽ — hãy viết vài ghi chú và nối chúng bằng [[.",
         "loadError": "Không tải được sơ đồ. Hãy tải lại trang.",
         "legendHint": "Cuộn để phóng to, kéo để di chuyển, nhấp vào một điểm để mở ghi chú.",
+        "resetView": "Đưa sơ đồ về giữa",
         "nodeCount": "{count, plural, other {# ghi chú}}",
         "edgeCount": "{count, plural, other {# liên kết}}",
         "loading": "Đang tải sơ đồ tri thức…"

@@ -59,8 +59,13 @@ export function NoteGraph({ onOpen }: NoteGraphProps) {
       </div>
 
       {/* Desktop only: the hint describes a mouse, and the space it costs is
-          the scarcest thing on a phone. */}
-      <p className="pointer-events-none absolute bottom-3 right-3 hidden text-xs text-muted-foreground md:block">
+          the scarcest thing on a phone.
+
+          `right-14` clears the reset button in the corner beneath it, and
+          `bottom-4` centres this single line against that button's 32px rather
+          than aligning their boxes — matching baselines is what makes the two
+          read as one control strip instead of two things that collided. */}
+      <p className="pointer-events-none absolute bottom-4 right-14 hidden text-xs text-muted-foreground md:block">
         {t('legendHint')}
       </p>
     </div>
