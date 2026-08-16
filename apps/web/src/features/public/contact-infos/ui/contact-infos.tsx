@@ -11,6 +11,31 @@ import {
 import { env } from '@/shared/config/env';
 import { Link } from '@/shared/i18n/navigation';
 
+/**
+ * The line under a channel's name exists to identify the account, the way the
+ * email row shows the address itself. Repeating the platform name there — what
+ * the LinkedIn and GitHub rows used to do — carries no information, so derive a
+ * readable profile address from the stored URL instead: host without `www.`,
+ * plus the path. Never a hardcoded handle (§11.7); the URL comes from the
+ * social-link records.
+ *
+ * Returns undefined when the URL is not parseable or resolves to nothing
+ * readable, and the row then renders with its label alone rather than a blank
+ * second line.
+ */
+function toProfileAddress(url: string): string | undefined {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return undefined;
+  }
+
+  const host = parsed.host.replace(/^www\./, '');
+  const path = parsed.pathname.replace(/\/+$/, '');
+  return `${host}${path}` || undefined;
+}
+
 export async function ContactInfos() {
   const t = await getTranslations('contact');
   const contactsResp = await getAllPublicContacts();
@@ -38,19 +63,19 @@ export async function ContactInfos() {
     linkedIn && {
       href: linkedIn,
       label: 'LinkedIn',
-      description: t('linkedIn'),
+      description: toProfileAddress(linkedIn),
       icon: Icons.linkedin,
     },
     github && {
       href: github,
       label: 'GitHub',
-      description: t('gitHub'),
+      description: toProfileAddress(github),
       icon: Icons.github,
     },
   ].filter(Boolean) as {
     href: string;
     label: string;
-    description: string;
+    description?: string;
     icon: React.ComponentType<{ size?: number }>;
   }[];
 
@@ -84,9 +109,11 @@ export async function ContactInfos() {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm font-medium">{item.label}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {item.description}
-                  </span>
+                  {item.description ? (
+                    <span className="text-xs text-muted-foreground">
+                      {item.description}
+                    </span>
+                  ) : null}
                 </div>
                 <span className="ml-auto text-xs text-muted-foreground opacity-60 transition">
                   ↗

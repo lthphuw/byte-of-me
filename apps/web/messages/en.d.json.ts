@@ -50,6 +50,7 @@ declare const messages: {
       "all": "All"
     },
     "header": {
+      "skipToContent": "Skip to main content",
       "nav": {
         "home": "Home",
         "about": "About",
@@ -206,8 +207,6 @@ declare const messages: {
     "letsWorkTogether": "Let’s work together",
     "feelFreeToReachOutThroughAnyChannel": "Feel free to reach out through any channel",
     "sendMeAnEmail": "Send me an email",
-    "linkedIn": "LinkedIn",
-    "gitHub": "GitHub",
     "or": "Or",
     "sendMeADirectMessage": "Send me a direct message"
   },

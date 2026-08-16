@@ -50,6 +50,7 @@ declare const messages: {
       "all": "Tất cả"
     },
     "header": {
+      "skipToContent": "Chuyển đến nội dung chính",
       "nav": {
         "home": "Trang chủ",
         "about": "Giới thiệu",
@@ -206,8 +207,6 @@ declare const messages: {
     "letsWorkTogether": "Cùng nhau hợp tác",
     "feelFreeToReachOutThroughAnyChannel": "Bạn có thể liên hệ với tôi qua bất kỳ kênh nào",
     "sendMeAnEmail": "Gửi email cho tôi",
-    "linkedIn": "LinkedIn",
-    "gitHub": "GitHub",
     "or": "Hoặc là",
     "sendMeADirectMessage": "Để lại tin nhắn"
   },
