@@ -81,7 +81,7 @@ export function ContactForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto max-w-4xl space-y-4"
+        className="mx-auto max-w-4xl space-y-4 md:space-y-6"
       >
         {/* Every field below carries `h-11 md:h-9`: the shared Input defaults to
             h-9 (36px), which is under the 44px touch minimum this public form has

@@ -12,7 +12,7 @@ import { RevealSection } from '@/shared/ui';
 export async function ContactContent() {
   return (
     <ContactShell>
-      <div className="mx-auto w-full max-w-md space-y-8">
+      <div className="mx-auto w-full max-w-md space-y-16 md:space-y-24">
         <RevealSection id="contact-info">
           <Suspense fallback={<ContactInfosLoading />}>
             <ContactInfos />

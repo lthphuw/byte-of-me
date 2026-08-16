@@ -90,7 +90,7 @@ export function ColorSchemeModeToggle() {
 
       <DropdownMenuContent
         align="end"
-        className="z-50 min-w-[160px] space-y-1 overflow-hidden rounded-md border border-muted/50 bg-popover  shadow-lg container-bg"
+        className="z-50 min-w-[160px] space-y-2 overflow-hidden rounded-md border border-muted/50 bg-popover  shadow-lg container-bg"
       >
         {items.map((item, index) => {
           const isActive = theme === item.value;

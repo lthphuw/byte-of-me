@@ -44,7 +44,7 @@ export function PublicHeaderMainNav({
       </Link>
 
       {navItems.length > 0 && (
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-2 md:flex">
           {/* `asChild`, not <Link><Button>: the nested form renders
               <a><button>, which is invalid (interactive inside interactive) and
               cost keyboard users two Tab stops per nav item. The Slot merges

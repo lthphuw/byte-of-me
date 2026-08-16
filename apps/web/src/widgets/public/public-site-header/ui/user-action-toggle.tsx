@@ -69,7 +69,7 @@ export function UserActionToggle() {
             transition={menuTransition}
           >
             <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
+              <div className="flex flex-col space-y-2">
                 <p className="text-sm font-medium leading-none">
                   {name}
                 </p>

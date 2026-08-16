@@ -29,7 +29,7 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
 
   return (
     <footer className={cn('py-8 relative z-20', className)}>
-      <div className="container mx-auto flex max-w-[100%] flex-col items-center justify-between gap-6 px-8 md:flex-row md:px-12">
+      <div className="container mx-auto flex max-w-[100%] flex-col items-center justify-between gap-6 px-8 md:flex-row md:gap-10 md:px-12">
         <div className="flex flex-col items-center gap-2 md:items-start">
           <Link href={Routes.Homepage} aria-label={t('home')}>
             <BrandMark />

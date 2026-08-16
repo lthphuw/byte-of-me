@@ -18,7 +18,7 @@ export function PublicSiteFooterNav() {
 
   return (
     <nav
-      className="flex flex-wrap items-center justify-center gap-2 md:items-start md:gap-6"
+      className="flex flex-wrap items-center justify-center gap-2 md:items-start"
       aria-label={t('navigation')}
     >
       {globalConfig.footer.nav.map((item, idx) => (

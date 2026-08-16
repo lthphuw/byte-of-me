@@ -79,7 +79,7 @@ export function ExperienceCompanyItem({
       </div>
 
       {/* Content */}
-      <div className={cn('min-w-0', isLast ? 'pb-0' : 'pb-10 md:pb-12')}>
+      <div className={cn('min-w-0', isLast ? 'pb-0' : 'pb-8 md:pb-12')}>
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           <h2 className="text-lg font-semibold tracking-tight md:text-xl">
             {company.company}
@@ -105,7 +105,7 @@ export function ExperienceCompanyItem({
 
         {/* Roles */}
         {company.roles.length > 0 && (
-          <div className="mt-6 space-y-6 border-l border-dashed border-border pl-5 md:pl-6">
+          <div className="mt-6 space-y-4 border-l border-dashed border-border pl-5 md:space-y-6 md:pl-6">
             {company.roles.map((role) => (
               <div key={role.id} className="relative">
                 <span
@@ -129,7 +129,7 @@ export function ExperienceCompanyItem({
                 )}
 
                 {role.tasks.length > 0 && (
-                  <ul className="mt-2.5 space-y-1.5">
+                  <ul className="mt-2.5 space-y-2">
                     {role.tasks.map((task) => (
                       <li
                         key={task.id}

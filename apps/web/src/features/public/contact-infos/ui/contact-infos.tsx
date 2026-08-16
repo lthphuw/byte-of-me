@@ -82,7 +82,7 @@ export async function ContactInfos() {
   if (contacts.length === 0) return null;
 
   return (
-    <div className="w-full max-w-md space-y-8">
+    <div className="w-full max-w-md space-y-8 md:space-y-12">
       {/* Header */}
       <ContactHeaderMotion id="contact-info">
         <h1 className="font-heading text-3xl tracking-tight md:text-5xl">
