@@ -565,6 +565,15 @@
       "loading": "Đang tải ghi chú…",
       "emptySelection": "Chọn một ghi chú hoặc tạo ghi chú mới.",
       "folderNotEditable": "Đây là thư mục — không có nội dung để chỉnh sửa.",
+      "conflict": {
+        "title": "Ghi chú này đã đổi ở nơi khác",
+        "description": "Một thiết bị khác đã lưu lúc {serverAt}. Trình duyệt này vẫn giữ bản sửa lúc {localAt} chưa từng lên tới server.",
+        "keepMine": "Giữ bản của tôi",
+        "takeServer": "Lấy bản kia"
+      },
+      "sync": {
+        "recovered": "{count, plural, other {Đã khôi phục # ghi chú chưa lưu}}"
+      },
       "backToList": "Tất cả ghi chú",
       "tree": {
         "expandAriaLabel": "Mở rộng",

@@ -565,6 +565,15 @@
       "loading": "Loading note…",
       "emptySelection": "Select a note, or create one.",
       "folderNotEditable": "This is a folder — it has no document to edit.",
+      "conflict": {
+        "title": "This note changed somewhere else",
+        "description": "Another device saved it {serverAt}. This browser still holds edits from {localAt} that never reached the server.",
+        "keepMine": "Keep mine",
+        "takeServer": "Use theirs"
+      },
+      "sync": {
+        "recovered": "{count, plural, one {Recovered # unsaved note} other {Recovered # unsaved notes}}"
+      },
       "backToList": "All notes",
       "tree": {
         "expandAriaLabel": "Expand",

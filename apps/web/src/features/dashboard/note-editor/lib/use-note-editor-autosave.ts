@@ -39,6 +39,20 @@ interface BufferProvenance {
   updatedAt: number;
 }
 
+/**
+ * Two versions of one note that cannot both be kept: edits this browser never
+ * managed to send, and a server row that moved on without them.
+ *
+ * Only ever raised for a LOCAL copy marked dirty — an ordinary "the server is
+ * ahead" is a silent catch-up, not a question, and always was.
+ */
+export interface NoteEditConflict {
+  /** When the other device's version was written. */
+  serverUpdatedAt: Date;
+  /** When this browser last stored the unsent edits. */
+  localSavedAt: Date;
+}
+
 export interface UseNoteEditorAutosaveResult {
   note: NoteDetail | undefined;
   isPending: boolean;
@@ -81,6 +95,14 @@ export interface UseNoteEditorAutosaveResult {
    *  else to trigger a resend — nothing has changed since, so the regular
    *  autosave effect below will not fire again on its own. */
   retry: () => void;
+  /**
+   * Non-null while unsent local edits and a newer server row are both in
+   * play. Autosave is suspended for as long as it is — see the guard in the
+   * autosave effect.
+   */
+  conflict: NoteEditConflict | null;
+  /** The author's answer. Takes the banner down either way. */
+  resolveConflict: (choice: 'keep-mine' | 'take-server') => void;
 }
 
 /**
@@ -140,11 +162,42 @@ export function useNoteEditorAutosave(
    * this note, which is a conflict rather than a catch-up; detecting it needs
    * `LocalNote.dirty` and a decision from the author, and is not yet wired.
    */
+  /**
+   * The server row this buffer's UNSENT edits were made on top of, when the
+   * buffer came from a local copy that had some.
+   *
+   * `null` in the ordinary case — nothing unsent, so nothing to conflict.
+   * Non-null it is the common ancestor: if the server's row turns out to be
+   * newer than this, another device has written the note since these edits
+   * were made, and the two versions cannot both be right.
+   *
+   * State, not a ref, because both writes have to reach the screen: the read
+   * below resolves asynchronously and must be able to raise the banner, and
+   * resolving the conflict must be able to take it down.
+   */
+  const [conflictBase, setConflictBase] = useState<{
+    /** `updatedAt` of the server row those unsent edits were made on top of. */
+    base: number;
+    /** When this browser stored them, for the banner to name. */
+    savedAt: number;
+  } | null>(null);
+
   useEffect(() => {
     let cancelled = false;
 
+    // A different note means the previous note's unsent-edit provenance is
+    // meaningless here. Cleared before the read below can resolve, so a stale
+    // base can never be compared against a new note's row.
+    setConflictBase(null);
+
     void readLocalNote(noteId).then((local) => {
       if (cancelled || !local) return;
+      // Recorded even when the cache already holds a server row: the question
+      // "were there unsent edits, and what were they based on" is about the
+      // stored copy, not about who won the race to fill the cache.
+      if (local.dirty) {
+        setConflictBase({ base: local.baseUpdatedAt, savedAt: local.savedAt });
+      }
       if (queryClient.getQueryData(noteKeys.detail(noteId))) return;
       queryClient.setQueryData(noteKeys.detail(noteId), local.detail);
     });
@@ -297,13 +350,52 @@ export function useNoteEditorAutosave(
   // the render this commit is about to produce. Confirmed by reproducing it
   // before adding this flag: a trimmed title kept resending indefinitely,
   // each cycle bumping `note.updatedAt` and looking newer than the last.
+  /**
+   * Another device wrote this note while this browser was holding edits it
+   * never managed to send.
+   *
+   * The catch-up below cannot tell this apart from its own case on its own,
+   * and that is the point of `conflictBaseRef`. Both look identical from
+   * inside the hook: the server's row is newer than what the buffer was built
+   * from, and the buffer equals what was last "sent". The difference is
+   * whether those edits ever reached the server at all — and only the local
+   * store knows, because only it survives the reload that lost them.
+   *
+   * Reseeding here would be a silent data loss: the author's unsent
+   * paragraph replaced by a version that never contained it, with nothing on
+   * screen to say so. `use-form-autosave.ts` already states the house
+   * position on exactly this — restoring is the author's decision, never
+   * automatic, because the snapshot may be older than what the server has.
+   * Here neither side is safely older, which is why it is a question rather
+   * than a rule.
+   */
+  const hasConflict = Boolean(
+    note &&
+      seededNoteId.current === noteId &&
+      conflictBase !== null &&
+      note.updatedAt.getTime() > conflictBase.base
+  );
+
+  /** The banner's data, or `null` when there is nothing to ask about. */
+  const conflict: NoteEditConflict | null =
+    hasConflict && note && conflictBase
+      ? {
+          serverUpdatedAt: note.updatedAt,
+          localSavedAt: new Date(conflictBase.savedAt),
+        }
+      : null;
+
   const willReseedThisCommit = Boolean(
     note &&
       seededNoteId.current === noteId &&
       lastSentRef.current &&
       note.updatedAt.getTime() > lastSentRef.current.updatedAt &&
       title === lastSentRef.current.title &&
-      content === lastSentRef.current.content
+      content === lastSentRef.current.content &&
+      // Hold the buffer where it is until the author has chosen. Everything
+      // else about this commit stays true; what changes is that the newer
+      // server row is no longer automatically the right answer.
+      !hasConflict
   );
 
   // DELIBERATE, not incidental: this condition is satisfied after EVERY
@@ -604,6 +696,14 @@ export function useNoteEditorAutosave(
   useEffect(() => {
     if (!note || !isSeededForCurrentNote) return;
 
+    // Nothing leaves this browser while the author has an unanswered question
+    // on screen. Without this the debounce would resolve the conflict by
+    // itself, in favour of the local buffer, roughly a second after the
+    // banner appeared — overwriting the other device's version before it had
+    // been read, which is the mirror image of the loss the banner exists to
+    // prevent.
+    if (hasConflict) return;
+
     // Deferred to the render the seed effect above's reseed actually lands
     // on — see `willReseedThisCommit`'s own comment for the exact loop this
     // closes. `debouncedTitle`/`title` are both still the PRE-reseed values
@@ -662,6 +762,7 @@ export function useNoteEditorAutosave(
     saveNote,
     // `useCallback`-stable on `queryClient`, so it never re-arms this effect.
     storeLocally,
+    hasConflict,
   ]);
 
   /**
@@ -801,6 +902,62 @@ export function useNoteEditorAutosave(
     };
   }, [noteId, flushPending]);
 
+  /**
+   * The author's answer to the conflict banner.
+   *
+   * `keep-mine` SENDS the buffer, rather than merely re-arming the autosave
+   * and hoping. Nothing about the buffer changed when the author clicked, so
+   * the ordinary "is there anything new to send" check would find the buffer
+   * equal to what was last recorded and do nothing at all — the edit would
+   * sit on screen looking saved, forever. Going through `saveNote` also
+   * rebases correctly for free: `onMutate` records what it sends against
+   * `note.updatedAt`, which is the server row this now deliberately replaces.
+   *
+   * `take-server` reseeds from the server row and bumps `seedGeneration`, so
+   * the visible document is remounted onto it — the same mechanism a
+   * post-save catch-up uses. The local copy is overwritten and marked clean,
+   * with `writeLocalNote` rather than `cacheServerNote` because the stored
+   * record is dirty and `cacheServerNote` would (correctly, in every other
+   * situation) refuse to touch it.
+   *
+   * Either way `conflictBase` goes back to null, which takes the banner down
+   * and re-arms the autosave.
+   */
+  const resolveConflict = useCallback(
+    (choice: 'keep-mine' | 'take-server') => {
+      if (!note) return;
+      const serverUpdatedAt = note.updatedAt.getTime();
+
+      if (choice === 'take-server') {
+        setTitle(note.title);
+        setContent(note.content);
+        setSeedValue(toEditorContent(note.content));
+        setSeedGeneration((generation) => generation + 1);
+        lastSentRef.current = {
+          title: note.title,
+          content: note.content,
+          updatedAt: serverUpdatedAt,
+        };
+        void writeLocalNote({
+          id: noteId,
+          detail: note,
+          baseUpdatedAt: serverUpdatedAt,
+          dirty: false,
+          savedAt: Date.now(),
+        });
+      } else {
+        // `title`/`content` are deliberately untouched — the whole point of
+        // this branch is that what is on screen wins. Stored locally first,
+        // the same ordering every other send uses.
+        storeLocally(noteId, { title, content });
+        saveNote({ id: noteId, title, content });
+      }
+
+      setConflictBase(null);
+    },
+    [note, noteId, title, content, saveNote, storeLocally]
+  );
+
   const retry = useCallback(() => {
     if (!note) return;
     saveNote({ id: noteId, title, content });
@@ -835,5 +992,7 @@ export function useNoteEditorAutosave(
     isSaving: isSavingCurrentNote,
     isSaveError: isSaveErrorForCurrentNote,
     retry,
+    conflict,
+    resolveConflict,
   };
 }

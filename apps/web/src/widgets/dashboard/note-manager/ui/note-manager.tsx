@@ -21,6 +21,7 @@ import {
   MarkdownCheatSheetDialog,
   NoteBreadcrumb,
   NoteEditor,
+  useNoteSyncQueue,
 } from '@/features/dashboard/note-editor';
 import { NotePropertiesPanel } from '@/features/dashboard/note-properties';
 import { NoteSearchPalette } from '@/features/dashboard/note-search';
@@ -172,6 +173,13 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
 
   // The palette's "New note" — the same mutation the tree panel's `+` uses.
   const createFromPalette = useCreateNote(openNote);
+
+  // Resends anything the browser is still holding unsent edits for. Mounted
+  // HERE, not in the editor: it has to survive a note switch and to run even
+  // with no note open, which is exactly the case where the notes that failed
+  // to save are the ones nobody is looking at. It is told which note is open
+  // so it leaves that one to the editor's own autosave.
+  useNoteSyncQueue(openNoteId);
 
   return (
     <div className="flex min-h-0 flex-1">

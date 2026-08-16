@@ -16,7 +16,7 @@ import type {
   RichTextEditorApi,
 } from '@byte-of-me/ui/rich-text-editor';
 import { ChevronLeft, CircleHelp } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { createScopedImageUploader } from '@/entities/media';
 import { parseNoteHref } from '@/entities/note';
@@ -93,7 +93,10 @@ export function NoteEditor({
     isSaving,
     isSaveError,
     retry,
+    conflict,
+    resolveConflict,
   } = useNoteEditorAutosave(noteId);
+  const format = useFormatter();
 
   // Error is checked FIRST, before the loading gate below, deliberately:
   // `isSeeded` can NEVER become true after a load failure — the seed effect
@@ -279,6 +282,53 @@ export function NoteEditor({
           breadcrumb belongs with the thing it names. Passed in as a slot for
           the usual reason — resolving a note's ancestors is a query, and the
           widget owns queries. */}
+      {/* Two versions of this note that cannot both survive. Placed under the
+          header rather than in a dialog on purpose: the document underneath is
+          the author's own unsent version, and being able to READ it is most of
+          what makes the choice answerable. A modal would cover the evidence.
+          Autosave stays suspended while this is up — see the hook. */}
+      {conflict && (
+        <div
+          role="alert"
+          className="flex shrink-0 flex-col gap-2 border-b border-amber-500/40 bg-amber-500/10 px-4 py-3 sm:flex-row sm:items-center sm:justify-between md:px-6"
+        >
+          <div className="min-w-0">
+            <p className="text-sm font-medium">{t('conflict.title')}</p>
+            <p className="text-xs text-muted-foreground">
+              {t('conflict.description', {
+                serverAt: format.dateTime(conflict.serverUpdatedAt, {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                }),
+                localAt: format.dateTime(conflict.localSavedAt, {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                }),
+              })}
+            </p>
+          </div>
+
+          <div className="flex shrink-0 gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={() => resolveConflict('keep-mine')}
+            >
+              {t('conflict.keepMine')}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => resolveConflict('take-server')}
+            >
+              {t('conflict.takeServer')}
+            </Button>
+          </div>
+        </div>
+      )}
+
       {breadcrumbSlot}
 
       <input
