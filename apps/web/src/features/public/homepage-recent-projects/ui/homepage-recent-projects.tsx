@@ -27,11 +27,15 @@ export async function HomepageRecentProjects() {
           </p>
         </div>
 
-        <Link href={Routes.Projects}>
-          <Button variant="link" className="h-auto p-0 text-sm md:text-base">
-            {t('viewAllProjects')}
-          </Button>
-        </Link>
+        {/* `asChild`, not <Link><Button>: the nested form renders <a><button>,
+            which is invalid and costs two tab stops. */}
+        <Button
+          variant="link"
+          className="h-auto p-0 text-sm md:text-base"
+          asChild
+        >
+          <Link href={Routes.Projects}>{t('viewAllProjects')}</Link>
+        </Button>
       </div>
 
       {/* Content */}

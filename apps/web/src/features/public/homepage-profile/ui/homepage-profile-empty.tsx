@@ -19,9 +19,11 @@ export function HomepageProfileEmpty() {
         </p>
       </div>
 
-      <Link href={Routes.Homepage}>
-        <Button variant="outline">Return Home</Button>
-      </Link>
+      {/* `asChild`, not <Link><Button>: the nested form renders <a><button>,
+          which is invalid and costs two tab stops. */}
+      <Button variant="outline" asChild>
+        <Link href={Routes.Homepage}>Return Home</Link>
+      </Button>
     </section>
   );
 }

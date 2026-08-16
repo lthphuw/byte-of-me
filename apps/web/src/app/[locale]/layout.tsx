@@ -124,7 +124,9 @@ export async function generateMetadata({
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
+  // Deliberately no `maximumScale`: it emits `maximum-scale=1`, which stops
+  // pinch-zoom on mobile Safari and fails WCAG 1.4.4 (Resize text). Nothing
+  // here needs a locked scale — do not add it back.
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: 'white' },
     { media: '(prefers-color-scheme: dark)', color: 'black' },

@@ -18,17 +18,24 @@ export async function HomepageContactCta() {
       <p className="mx-auto max-w-xl text-sm text-muted-foreground md:text-base">
         {t('alwaysInterestedInThoughtfulProjectsAndGoodCollaboration')}
       </p>
+      {/* `asChild`, not <Link><Button>: the nested form renders <a><button>,
+          which is invalid and gives every CTA two tab stops. */}
       <div className="flex flex-col justify-center gap-3 pt-2 sm:flex-row">
-        <Link href={`${Routes.Contact}#contact-send-message`}>
-          <Button size="lg" className="w-full px-8 sm:w-auto">
+        <Button size="lg" className="w-full px-8 sm:w-auto" asChild>
+          <Link href={`${Routes.Contact}#contact-send-message`}>
             {t('emailMe')}
-          </Button>
-        </Link>
-        <Link href={`${Routes.Contact}#contact-info`}>
-          <Button size="lg" variant="outline" className="w-full px-8 sm:w-auto">
+          </Link>
+        </Button>
+        <Button
+          size="lg"
+          variant="outline"
+          className="w-full px-8 sm:w-auto"
+          asChild
+        >
+          <Link href={`${Routes.Contact}#contact-info`}>
             {t('contactDetails')}
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
     </section>
   );

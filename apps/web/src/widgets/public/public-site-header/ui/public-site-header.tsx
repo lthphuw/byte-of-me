@@ -7,6 +7,7 @@ import { ColorSchemeModeToggle } from './color-scheme-mode-toggle';
 import { HeaderIsland, useIslandGeometry } from './header-island';
 import { I18nToggle } from './i18n-toggle';
 import { PublicHeaderMainNav } from './public-header-main-nav';
+import { PublicHeaderSkipLink } from './public-header-skip-link';
 import { UserActionToggle } from './user-action-toggle';
 
 import { globalConfig } from '@/shared/config/global';
@@ -39,6 +40,10 @@ export function PublicSiteHeader() {
   // column, not the viewport, so the header tracks the content at any width.
   return (
     <header>
+      {/* First in the DOM, and the header is the first thing the public layout
+          renders — so this is the document's first tab stop. */}
+      <PublicHeaderSkipLink />
+
       <div className="pointer-events-none fixed inset-x-0 top-0 z-50">
         <div className="container relative">
           <HeaderIsland side="left" docked={docked} geometry={geometry}>

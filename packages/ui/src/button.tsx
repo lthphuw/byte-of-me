@@ -53,7 +53,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        type={'button'}
+        // Only when this really renders a <button>. Under `asChild` the Slot
+        // forwards every prop to its child, which is almost always a <Link>,
+        // and `type` is not a valid attribute on an anchor — three of them
+        // carried `type="button"` on /en/projects. `undefined` renders no
+        // attribute at all, and `{...props}` still lets a caller pass
+        // `type="submit"`.
+        type={asChild ? undefined : 'button'}
         {...props}
       />
     );

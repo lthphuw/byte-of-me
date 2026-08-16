@@ -55,14 +55,17 @@ export async function HomepageProfile() {
           </div>
 
           <div className="space-y-4">
-            <Link href={Routes.About}>
-              <Button
-                variant="link"
-                className="group h-auto p-0 text-sm md:text-base"
-              >
+            {/* `asChild`, not <Link><Button>: the nested form renders
+                <a><button>, which is invalid and costs two tab stops. */}
+            <Button
+              variant="link"
+              className="group h-auto p-0 text-sm md:text-base"
+              asChild
+            >
+              <Link href={Routes.About}>
                 {t('moreAboutMyJourney')} <Route className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
 

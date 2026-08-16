@@ -45,33 +45,39 @@ export function PublicHeaderMainNav({
 
       {navItems.length > 0 && (
         <nav className="hidden items-center gap-1 md:flex">
+          {/* `asChild`, not <Link><Button>: the nested form renders
+              <a><button>, which is invalid (interactive inside interactive) and
+              cost keyboard users two Tab stops per nav item. The Slot merges
+              the button's classes onto the link, so this is one element with
+              the same styling. */}
           {navItems.map((item) => (
-            <Link
+            <Button
               key={item.href}
-              href={item.disabled ? '#' : item.href}
-              locale={locale}
+              asChild
+              variant="ghost"
+              className={cn(
+                'text-md font-medium',
+                item.href.startsWith(`/${segment}`)
+                  ? 'text-foreground font-semibold'
+                  : 'text-foreground/60'
+              )}
             >
-              <Button
-                variant="ghost"
-                className={cn(
-                  'text-md font-medium',
-                  item.href.startsWith(`/${segment}`)
-                    ? 'text-foreground font-semibold'
-                    : 'text-foreground/60'
-                )}
-              >
+              <Link href={item.disabled ? '#' : item.href} locale={locale}>
                 {t(item.title as Parameters<typeof t>[0])}
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           ))}
         </nav>
       )}
 
       <div className="relative z-[10000] shrink-0 md:hidden">
+        {/* `min-h-11`: the logo's own line box is 24px tall, so the only tap
+            target on a phone's header-left measured 116x24, well under the 44px
+            minimum (§14). Only the box grows; the mark is untouched. */}
         <m.button
           ref={triggerRef}
           onClick={() => setOpen((prev) => !prev)}
-          className="flex items-center gap-2"
+          className="flex min-h-11 items-center gap-2"
         >
           <PublicHeaderLogo minimized={minimized} />
         </m.button>

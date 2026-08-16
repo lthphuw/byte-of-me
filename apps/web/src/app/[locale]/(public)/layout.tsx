@@ -50,7 +50,15 @@ export default async function PublicLayout({
           {/* min-w-0: as a grid item, <main> must be allowed to shrink below its
               content's min-content, otherwise wide children (e.g. blog code
               blocks) force it past the viewport on mobile. */}
-          <main className="flex w-full min-w-0 flex-1 flex-col">{children}</main>
+          {/* id is the skip link's target (PublicHeaderSkipLink). Keeping it on
+              the element means the link degrades to a plain fragment jump with
+              no JS, rather than depending on the runtime querySelector. */}
+          <main
+            id="main-content"
+            className="flex w-full min-w-0 flex-1 flex-col"
+          >
+            {children}
+          </main>
         </div>
         <PublicSiteFooterSection />
       </div>
