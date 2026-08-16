@@ -63,9 +63,10 @@ export function ProjectsContent() {
 
   return (
     <ProjectsShell>
+      {/* No `description`, same as Blogs: the strapline restated the page title
+          in more words. The count is the subtitle. */}
       <ListPageHeader
         title={t('pageTitle')}
-        description={t('pageDescription')}
         count={t('count', { count: pagination.totalCount })}
       >
         <ProjectFilters value={filters} onChange={updateFilters} />

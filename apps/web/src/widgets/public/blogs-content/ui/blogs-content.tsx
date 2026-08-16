@@ -75,9 +75,11 @@ export function BlogsContent() {
 
   return (
     <BlogsShell>
+      {/* No `description`: the strapline was write-around-the-subject filler
+          that said less than the post titles underneath it. The count alone is
+          the subtitle. Projects drops its strapline for the same reason. */}
       <ListPageHeader
         title={t('pageTitle')}
-        description={t('pageDescription')}
         count={t('count', { count: pagination.totalCount })}
       >
         <BlogFilters value={filters} onChange={updateFilters} />

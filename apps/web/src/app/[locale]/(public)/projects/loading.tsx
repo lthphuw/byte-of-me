@@ -24,9 +24,11 @@ export default function ProjectsLoading() {
       {/* Mirrors ListPageHeader: title/subtitle pair, then the filter row,
           over a rule. */}
       <div className="flex flex-col gap-4 border-b border-border/60 pb-5 md:gap-6 md:pb-6">
+        {/* Title over the count line. There is no description strapline, so
+            the second bar stands in for "8 projects", not a sentence. */}
         <div className="space-y-2">
           <Skeleton className="h-9 w-56 md:h-12 md:w-72" />
-          <Skeleton className="h-5 w-72 md:h-6 md:w-96" />
+          <Skeleton className="h-5 w-24 md:h-6 md:w-28" />
         </div>
         <Skeleton className="h-11 w-full sm:max-w-xs md:h-9" />
       </div>

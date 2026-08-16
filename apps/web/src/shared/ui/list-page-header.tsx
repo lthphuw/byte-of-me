@@ -4,6 +4,13 @@ import { cn } from '@/shared/lib/utils';
 
 interface ListPageHeaderProps {
   title: string;
+  /**
+   * Optional strapline under the title. Currently passed by nobody: Blogs and
+   * Projects both dropped theirs because the copy restated the page title in
+   * more words. Kept because it is a reasonable thing for a page header to
+   * accept, but if it is still unused next time you are in here, delete it
+   * along with the `·` separator below.
+   */
   description?: string;
   /** Result count, e.g. "12 posts". Shown next to the description. */
   count?: string;

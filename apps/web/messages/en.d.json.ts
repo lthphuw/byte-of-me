@@ -138,7 +138,6 @@ declare const messages: {
     "noProjectsFound": "No projects have been added yet.",
     "noProjectsMatchYourSearch": "No projects match your current filters or search query.",
     "pageTitle": "Projects",
-    "pageDescription": "Things I have designed, built and shipped",
     "count": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
     "present": "Present",
     "liveDemo": "Live demo",
@@ -155,7 +154,6 @@ declare const messages: {
     "noBlogsFound": "No blogs found yet. Stay tuned for future posts!",
     "noBlogsMatchYourSearch": "No blogs match your current search or filters.",
     "pageTitle": "Blog",
-    "pageDescription": "Notes on building for the web — CMS work, monorepos and the things that broke along the way",
     "count": "{count, plural, =0 {No posts} one {# post} other {# posts}}",
     "showDrafts": "Drafts",
     "showDraftsHint": "Admin only — visitors never see drafts"
