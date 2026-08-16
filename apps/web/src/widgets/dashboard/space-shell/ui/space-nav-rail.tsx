@@ -88,9 +88,16 @@ export function SpaceNavRail() {
 
               Above the divider-less group below rather than among the
               destinations above: neither is a place you can navigate to, and
-              the rail lights the current one. */}
-          <ColorSchemeModeToggle />
-          <I18nToggle />
+              the rail lights the current one.
+
+              `side="right"` because everything in a 56px rail has to open
+              sideways — the default drop-downwards belongs to a header with a
+              page under it. Here it would open into the bottom edge of the
+              window and be rescued by collision detection, which lands the
+              menu somewhere nobody chose. Right, centred, is also exactly
+              where this rail's own tooltips appear. */}
+          <ColorSchemeModeToggle side="right" align="center" />
+          <I18nToggle side="right" align="center" />
 
           {/* Not in `useSpaceNavItems` with the others: every entry in that
               list is a route the rail can light up as current, and this one
@@ -123,7 +130,9 @@ export function SpaceNavRail() {
                 <LayoutDashboard className="size-[18px]" />
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right">{t('actions.dashboard')}</TooltipContent>
+            <TooltipContent side="right">
+              {t('actions.dashboard')}
+            </TooltipContent>
           </Tooltip>
 
           <form action={logOutDashboard}>

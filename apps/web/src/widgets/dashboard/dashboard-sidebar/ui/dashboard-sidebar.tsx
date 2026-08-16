@@ -20,9 +20,23 @@ import { Link } from '@/shared/i18n/navigation';
 import { BrandMark } from '@/shared/ui/brand-mark';
 import { ColorSchemeModeToggle } from '@/shared/ui/color-scheme-toggle';
 import { I18nToggle } from '@/shared/ui/language-toggle';
+import type { MenuPlacement } from '@/shared/ui/menu-placement';
 import { purgeEntireCache } from '@/widgets/dashboard/dashboard-sidebar/lib/purge-entire-cache';
 
-function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+/**
+ * `menuPlacement` is threaded in rather than decided here because this exact
+ * markup renders twice, in two places with different room around them: a
+ * 260px column pinned to the left of a wide window, and a 288px drawer over a
+ * phone. The toggles' menus have to open in different directions in the two,
+ * and the component cannot tell which one it is inside.
+ */
+function SidebarContent({
+  onNavigate,
+  menuPlacement,
+}: {
+  onNavigate?: () => void;
+  menuPlacement: MenuPlacement;
+}) {
   const t = useTranslations('dashboard.sidebar');
 
   const menuGroups = [
@@ -137,8 +151,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             answer. The theme control is new here: until the toggles moved into
             `shared/ui` the dashboard had no way to leave dark mode at all. */}
         <div className="flex items-center gap-1 pb-1">
-          <ColorSchemeModeToggle />
-          <I18nToggle />
+          <ColorSchemeModeToggle {...menuPlacement} />
+          <I18nToggle {...menuPlacement} />
         </div>
 
         <button
@@ -179,7 +193,11 @@ export function DashboardSidebar() {
     <>
       {/* Desktop sidebar */}
       <aside className="sticky top-0 z-40 hidden h-screen w-[260px] shrink-0 border-r border-border/50 bg-card lg:block">
-        <SidebarContent />
+        {/* Sideways, because the controls sit at the foot of a full-height
+            column: dropping downwards from there opens into the bottom edge of
+            the window. `align="end"` puts the menu's own bottom edge on the
+            button's, so it grows up the sidebar rather than off the screen. */}
+        <SidebarContent menuPlacement={{ side: 'right', align: 'end' }} />
       </aside>
 
       {/* Mobile topbar */}
@@ -196,7 +214,13 @@ export function DashboardSidebar() {
             aria-describedby={undefined}
           >
             <SheetTitle className="sr-only">Navigation</SheetTitle>
-            <SidebarContent onNavigate={() => setMobileNavOpen(false)} />
+            {/* Upwards in the drawer — see the note on the desktop copy.
+                Right would put the menu in the sliver of screen beside a
+                288px sheet. */}
+            <SidebarContent
+              onNavigate={() => setMobileNavOpen(false)}
+              menuPlacement={{ side: 'top', align: 'start' }}
+            />
           </SheetContent>
         </Sheet>
 
@@ -204,9 +228,7 @@ export function DashboardSidebar() {
           <div className="flex size-6 items-center justify-center rounded-md">
             <BrandMark layer="cms" />
           </div>
-          <span className="text-base font-bold tracking-tight">
-            Byte of Me
-          </span>
+          <span className="text-base font-bold tracking-tight">Byte of Me</span>
         </div>
       </div>
     </>

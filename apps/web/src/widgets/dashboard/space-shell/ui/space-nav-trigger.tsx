@@ -51,7 +51,11 @@ export function SpaceNavTrigger({ className }: { className?: string }) {
         </Button>
       </SheetTrigger>
 
-      <SheetContent side="left" className="w-64 p-0" aria-describedby={undefined}>
+      <SheetContent
+        side="left"
+        className="w-64 p-0"
+        aria-describedby={undefined}
+      >
         <SheetTitle className="sr-only">{t('navAriaLabel')}</SheetTitle>
 
         <div className="flex h-full flex-col">
@@ -95,10 +99,16 @@ export function SpaceNavTrigger({ className }: { className?: string }) {
             {/* A row of icons rather than two more labelled lines: these are
                 the only controls here that show their current value in the
                 trigger itself — a flag and a sun or a moon — so a text label
-                beside them would repeat what the icon already says. */}
+                beside them would repeat what the icon already says.
+
+                `side="top"`, not the rail's `right`: this is a 256px drawer
+                over a phone, and a menu opening to the right of it has barely
+                a hundred pixels of screen to land in. Upwards it stays inside
+                the drawer it belongs to, over the destinations rather than
+                over the page. */}
             <div className="flex items-center gap-1 pb-1">
-              <ColorSchemeModeToggle />
-              <I18nToggle />
+              <ColorSchemeModeToggle side="top" align="start" />
+              <I18nToggle side="top" align="start" />
             </div>
 
             {/* The rail's settings button had no counterpart here, so on a

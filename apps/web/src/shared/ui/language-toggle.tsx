@@ -7,13 +7,19 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
- menuTransition, menuVariants } from '@byte-of-me/ui';
+  menuTransition,
+  menuVariants,
+} from '@byte-of-me/ui';
 import { AnimatePresence, m } from 'framer-motion';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { languageNames, supportedLanguages } from '@/shared/config/language';
 import { Link, usePathname } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
+import {
+  DEFAULT_MENU_PLACEMENT,
+  type MenuPlacement,
+} from '@/shared/ui/menu-placement';
 import type { LocaleType } from '@/shared/types';
 
 const flagVariants = {
@@ -65,7 +71,10 @@ export const Flags: Record<
  * and "open in new tab" both understand, and `next-intl` writes the locale
  * cookie on the way through.
  */
-export function I18nToggle() {
+export function I18nToggle({
+  side = DEFAULT_MENU_PLACEMENT.side,
+  align = DEFAULT_MENU_PLACEMENT.align,
+}: MenuPlacement = {}) {
   const t = useTranslations('global.i18nToggle');
   const locale = useLocale() as LocaleType;
   const pathname = usePathname();
@@ -103,7 +112,8 @@ export function I18nToggle() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        align="end"
+        side={side}
+        align={align}
         sideOffset={8}
         className="min-w-[180px] overflow-hidden border-muted/50 bg-popover shadow-lg container-bg"
         forceMount

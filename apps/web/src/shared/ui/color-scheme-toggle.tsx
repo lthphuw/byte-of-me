@@ -10,12 +10,17 @@ import {
   Icons,
   iconSwitchVariants,
   menuTransition,
-  menuVariants} from '@byte-of-me/ui';
+  menuVariants,
+} from '@byte-of-me/ui';
 import { AnimatePresence, m } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 
 import { cn } from '@/shared/lib/utils';
+import {
+  DEFAULT_MENU_PLACEMENT,
+  type MenuPlacement,
+} from '@/shared/ui/menu-placement';
 
 /**
  * Light / dark / follow the system.
@@ -32,7 +37,10 @@ import { cn } from '@/shared/lib/utils';
  * before the first paint to avoid a flash of the wrong one, which is what
  * next-themes' blocking script does and a database round trip cannot.
  */
-export function ColorSchemeModeToggle() {
+export function ColorSchemeModeToggle({
+  side = DEFAULT_MENU_PLACEMENT.side,
+  align = DEFAULT_MENU_PLACEMENT.align,
+}: MenuPlacement = {}) {
   const t = useTranslations('global.modeToggle');
   const { theme, setTheme, resolvedTheme } = useTheme();
 
@@ -69,33 +77,33 @@ export function ColorSchemeModeToggle() {
                 <Icons.sun size={28} />
               </div>
             ) : (
-            <AnimatePresence mode="wait" initial={false}>
-              {resolvedTheme === 'light' ? (
-                <m.div
-                  key="sun"
-                  variants={iconSwitchVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={{ type: 'spring', stiffness: 150, damping: 15 }}
-                  className="absolute inset-0 flex items-center justify-center"
-                >
-                  <Icons.sun size={28} />
-                </m.div>
-              ) : (
-                <m.div
-                  key="moon"
-                  variants={iconSwitchVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={{ type: 'spring', stiffness: 150, damping: 15 }}
-                  className="absolute inset-0 flex items-center justify-center"
-                >
-                  <Icons.moon size={28} />
-                </m.div>
-              )}
-            </AnimatePresence>
+              <AnimatePresence mode="wait" initial={false}>
+                {resolvedTheme === 'light' ? (
+                  <m.div
+                    key="sun"
+                    variants={iconSwitchVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ type: 'spring', stiffness: 150, damping: 15 }}
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
+                    <Icons.sun size={28} />
+                  </m.div>
+                ) : (
+                  <m.div
+                    key="moon"
+                    variants={iconSwitchVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ type: 'spring', stiffness: 150, damping: 15 }}
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
+                    <Icons.moon size={28} />
+                  </m.div>
+                )}
+              </AnimatePresence>
             )}
           </div>
 
@@ -104,7 +112,9 @@ export function ColorSchemeModeToggle() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        align="end"
+        side={side}
+        align={align}
+        sideOffset={8}
         className="z-50 min-w-[160px] space-y-2 overflow-hidden rounded-md border border-muted/50 bg-popover  shadow-lg container-bg"
       >
         {items.map((item, index) => {
