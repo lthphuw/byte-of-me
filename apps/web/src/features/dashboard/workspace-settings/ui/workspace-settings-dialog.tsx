@@ -60,7 +60,10 @@ export function WorkspaceSettingsDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[85dvh] gap-0 overflow-hidden p-0 sm:max-w-2xl">
-        <DialogHeader className="space-y-1 border-b px-6 py-4">
+        {/* `pr-12`, not `px-6`: `DialogContent` positions its own close button
+            absolutely in the top-right corner, so a header row that runs to the
+            full width puts the save indicator underneath it. */}
+        <DialogHeader className="space-y-1 border-b py-4 pl-6 pr-12">
           <div className="flex items-center justify-between gap-3">
             <DialogTitle>{t('title')}</DialogTitle>
             <SaveIndicator isSaving={isSaving} saveError={saveError} />
