@@ -9,8 +9,8 @@ import {
   useIslandGeometry,
 } from './header-island';
 import { PublicHeaderAccountIsland } from './public-header-account-island';
-import { PublicHeaderMainNav } from './public-header-main-nav';
 import { PublicHeaderAccountPanel } from './public-header-account-panel';
+import { PublicHeaderMainNav } from './public-header-main-nav';
 import { PublicHeaderSkipLink } from './public-header-skip-link';
 
 import { globalConfig } from '@/shared/config/global';

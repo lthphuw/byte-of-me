@@ -74,7 +74,7 @@ export function ColorSchemeModeToggle({
         <Button
           variant="ghost"
           size="icon"
-          className="relative size-10 min-h-11 min-w-11 overflow-hidden p-0 hover:bg-transparent focus-visible:ring-1 [&_svg]:size-6 md:min-h-0 md:min-w-0 md:hover:bg-accent"
+          className="relative size-10 min-h-11 min-w-11 overflow-hidden p-0 hover:bg-transparent focus-visible:ring-1 md:min-h-0 md:min-w-0 md:hover:bg-accent [&_svg]:size-6"
         >
           <div className="relative">
             {!mounted ? (
