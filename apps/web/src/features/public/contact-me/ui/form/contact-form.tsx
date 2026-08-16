@@ -83,6 +83,12 @@ export function ContactForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="mx-auto max-w-4xl space-y-4"
       >
+        {/* Every field below carries `h-11 md:h-9`: the shared Input defaults to
+            h-9 (36px), which is under the 44px touch minimum this public form has
+            to meet. The default itself stays at 36px on purpose — the dashboard
+            forms are deliberately dense — so the height is raised per surface,
+            and only below md where the pointer is a finger. */}
+
         {/* Name */}
         <FormField
           control={form.control}
@@ -93,7 +99,12 @@ export function ContactForm() {
                 Name <span className="text-destructive">*</span>
               </FormLabel>
               <FormControl>
-                <Input placeholder="Your name" {...field} />
+                <Input
+                  autoComplete="name"
+                  placeholder="Your name"
+                  className="h-11 md:h-9"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -110,7 +121,13 @@ export function ContactForm() {
                 Email <span className="text-destructive">*</span>
               </FormLabel>
               <FormControl>
-                <Input placeholder="email@example.com" {...field} />
+                <Input
+                  type="email"
+                  autoComplete="email"
+                  placeholder="email@example.com"
+                  className="h-11 md:h-9"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -124,8 +141,15 @@ export function ContactForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Subject</FormLabel>
+              {/* No autoComplete: the HTML autofill token list has nothing for a
+                  message subject, and `off` would suppress the browser's own
+                  previously-entered suggestions, which are the useful ones here. */}
               <FormControl>
-                <Input placeholder="What is this regarding?" {...field} />
+                <Input
+                  placeholder="What is this regarding?"
+                  className="h-11 md:h-9"
+                  {...field}
+                />
               </FormControl>
               <FormMessage className="text-xs" />
             </FormItem>
