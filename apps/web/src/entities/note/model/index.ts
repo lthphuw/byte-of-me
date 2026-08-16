@@ -1,4 +1,5 @@
 export * from './note-links';
+export * from './note-local-store';
 export * from './note-schema';
 export * from './note-tree';
 export * from './query-keys';

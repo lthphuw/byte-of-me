@@ -8,11 +8,15 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import {
+  cacheServerNote,
   getAdminNoteById,
+  markLocalNoteSynced,
   type NoteDetail,
   noteKeys,
+  readLocalNote,
   updateNote,
   type UpdateNoteInput,
+  writeLocalNote,
 } from '@/entities/note';
 
 /** One typing pause before a save leaves the browser. */
@@ -56,7 +60,6 @@ export interface UseNoteEditorAutosaveResult {
   setContent: (value: string) => void;
   isSaving: boolean;
   isSaveError: boolean;
-  /**
   /** Bumps every time `content` is (re)seeded — on a note switch, or on the
    *  I2 catch-up below. The rich-text editor is uncontrolled after mount
    *  (see `note-editor.tsx`'s own comment on why), so the only way to make
@@ -104,9 +107,52 @@ export function useNoteEditorAutosave(
     queryFn: async () => {
       const res = await getAdminNoteById(noteId);
       if (!res.success) throw new Error(res.errorMsg);
+      // Keep the browser's copy current so the NEXT open of this note paints
+      // from disk. `cacheServerNote`, not `writeLocalNote`: it declines when
+      // the stored copy still holds unsent edits, which are by definition
+      // newer than anything a read can return.
+      void cacheServerNote(noteId, res.data);
       return res.data;
     },
   });
+
+  /**
+   * Paints from the browser's own copy while the read above is still in
+   * flight — the local-first half of this editor.
+   *
+   * `(protected)/layout.tsx` is `force-dynamic` and `getAdminNoteById` pays an
+   * auth check plus a query on every call, which `use-note-prefetch.ts`
+   * measured at roughly a second on the first open of any note. IndexedDB
+   * answers in single-digit milliseconds, so seeding the query cache from it
+   * lets the document appear immediately and the network settle underneath.
+   *
+   * Guarded on the cache being EMPTY: a hover prefetch or an earlier visit may
+   * already have put the server's row there, and that row is at least as fresh
+   * as this one. Nothing is overwritten, so this can only ever turn a
+   * skeleton into text sooner.
+   *
+   * Local edits are safe from the read that follows. The seed effect below
+   * records `lastSentRef.updatedAt` from whatever it seeded — the local copy's
+   * base — and the I2 catch-up only reseeds when the server's row is STRICTLY
+   * newer than that. A server row at the same `updatedAt` (the ordinary case,
+   * the local copy being an unsent edit ON TOP of it) therefore changes
+   * nothing on screen. A server row that IS newer means another device wrote
+   * this note, which is a conflict rather than a catch-up; detecting it needs
+   * `LocalNote.dirty` and a decision from the author, and is not yet wired.
+   */
+  useEffect(() => {
+    let cancelled = false;
+
+    void readLocalNote(noteId).then((local) => {
+      if (cancelled || !local) return;
+      if (queryClient.getQueryData(noteKeys.detail(noteId))) return;
+      queryClient.setQueryData(noteKeys.detail(noteId), local.detail);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [noteId, queryClient]);
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -391,6 +437,35 @@ export function useNoteEditorAutosave(
    * shape a save never changes. Now a content-only save touches no list key
    * at all, and a title-only save touches only the row-label family.
    */
+  /**
+   * Stores the buffer in the browser's own copy of the note, and marks it as
+   * carrying edits the server has not seen.
+   *
+   * Called immediately BEFORE every network attempt, never after, because
+   * this is the write that cannot be cut off. A server action is an ordinary
+   * `fetch`, so a save started as the tab closes is best-effort; an IndexedDB
+   * put on the same event is local and lands. That ordering is what turns
+   * "up to one debounce of typing is lost on a tab close" into "it is on disk
+   * and still queued".
+   *
+   * `note` supplies the fields the buffer does not carry, so the stored
+   * record is a complete `NoteDetail` — see `LocalNote.detail`.
+   */
+  const storeLocally = useCallback(
+    (id: string, buffer: { title: string; content: string }) => {
+      const base = queryClient.getQueryData<NoteDetail>(noteKeys.detail(id));
+      if (!base) return;
+      void writeLocalNote({
+        id,
+        detail: { ...base, title: buffer.title, content: buffer.content },
+        baseUpdatedAt: base.updatedAt.getTime(),
+        dirty: true,
+        savedAt: Date.now(),
+      });
+    },
+    [queryClient]
+  );
+
   const applySaveResult = useCallback(
     (
       id: string,
@@ -408,6 +483,16 @@ export function useNoteEditorAutosave(
       // fresh unsaved edit and saved again, forever. See `lastSentRef` above
       // for the other half of the fix.
       queryClient.setQueryData(noteKeys.detail(id), data);
+
+      // The browser's copy is now based on the row the server just wrote, and
+      // is clean unless the author typed again while this was in flight —
+      // `markLocalNoteSynced` decides that inside one transaction, against
+      // what is actually stored, rather than trusting this callback's view.
+      void markLocalNoteSynced(id, {
+        title: data.title,
+        content: data.content,
+        updatedAt: data.updatedAt.getTime(),
+      });
 
       // A row's label moved, so the views that draw rows have to re-read.
       // `listLabels()`, not `lists()`: see that factory for which keys it
@@ -553,6 +638,14 @@ export function useNoteEditorAutosave(
       return;
     }
 
+    // The browser's own copy, written before the request goes out — see
+    // `storeLocally`. If the save fails or never lands, this is what still
+    // holds the edit, and what `listDirtyLocalNotes` will offer back.
+    storeLocally(noteId, {
+      title: debouncedTitle,
+      content: debouncedContent,
+    });
+
     // `saveNote`, not `save.mutate`: same function, but as a dependency the
     // linter can actually check. See its declaration for why depending on the
     // whole `save` object would turn one edit into a save loop.
@@ -567,6 +660,8 @@ export function useNoteEditorAutosave(
     content,
     noteId,
     saveNote,
+    // `useCallback`-stable on `queryClient`, so it never re-arms this effect.
+    storeLocally,
   ]);
 
   /**
@@ -622,6 +717,10 @@ export function useNoteEditorAutosave(
         content: pending.content,
         updatedAt: sent.updatedAt,
       };
+      // Local first, and on this path that ordering is the whole point: this
+      // runs on `visibilitychange`/`pagehide`, where the request below may
+      // never leave.
+      storeLocally(departingId, pending);
       void updateNote({
         id: departingId,
         title: pending.title,
@@ -636,11 +735,12 @@ export function useNoteEditorAutosave(
         }
       });
     },
-    // `applySaveResult` is `useCallback`-stable on `queryClient`, which does
-    // not change identity in this app, so this settles once — not on every
-    // render, which is what would happen if it depended on `t` (a new bound
-    // function most renders) directly instead of through `tRef`.
-    [applySaveResult]
+    // `applySaveResult` and `storeLocally` are both `useCallback`-stable on
+    // `queryClient`, which does not change identity in this app, so this
+    // settles once — not on every render, which is what would happen if it
+    // depended on `t` (a new bound function most renders) directly instead of
+    // through `tRef`.
+    [applySaveResult, storeLocally]
   );
 
   // Persists a pending, not-yet-debounced edit at the two moments no LATER
