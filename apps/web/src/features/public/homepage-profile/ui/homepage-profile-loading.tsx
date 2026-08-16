@@ -13,7 +13,7 @@ export function HomepageProfileLoading() {
   return (
     <div className="space-y-8 md:space-y-12">
       {/* HERO SECTION SKELETON */}
-      <div className="mx-auto max-w-3xl space-y-5 text-left md:space-y-8">
+      <div className="mx-auto max-w-3xl space-y-4 text-left md:space-y-6">
         {/* GreetingWriter Skeleton */}
         <Skeleton className="h-10 w-48 md:h-14 md:w-80" />
         <div className="space-y-3">
@@ -23,10 +23,10 @@ export function HomepageProfileLoading() {
       </div>
 
       {/* ABOUT / MY STORY SKELETON */}
-      <div className="grid items-start gap-10 md:grid-cols-2 md:gap-14">
+      <div className="grid items-start gap-6 md:grid-cols-2 md:gap-10">
         {/* Left Column (Bio) */}
-        <div className="space-y-6 md:space-y-8">
-          <div className="space-y-4 md:space-y-5">
+        <div className="space-y-4 md:space-y-6">
+          <div className="space-y-2">
             <Skeleton className="h-4 w-28 uppercase tracking-widest" />{' '}
             {/* myStory Label */}
             <div className="space-y-3">

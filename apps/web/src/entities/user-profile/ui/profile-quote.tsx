@@ -21,7 +21,7 @@ export function ProfileQuote({
       className={cn(
         'relative p-6 bg-muted/50 rounded-xl shadow-sm',
         'text-base md:text-md italic text-foreground leading-relaxed',
-        'flex flex-col gap-4 items-center',
+        'flex flex-col gap-4 md:gap-6 items-center',
         className
       )}
       style={style}

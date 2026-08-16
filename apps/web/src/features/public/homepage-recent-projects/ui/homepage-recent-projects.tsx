@@ -17,8 +17,8 @@ export async function HomepageRecentProjects() {
   return (
     <section id="projects" className="space-y-8 md:space-y-12">
       {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between md:gap-4">
-        <div className="space-y-1 md:space-y-2">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between md:gap-10">
+        <div className="space-y-2">
           <h2 className="text-xl font-semibold md:text-3xl">
             {t('selectedProjects')}
           </h2>
@@ -40,13 +40,13 @@ export async function HomepageRecentProjects() {
 
       {/* Content */}
       {!hasProjects ? (
-        <div className="grid gap-4 md:grid-cols-2 md:gap-6">
+        <div className="grid gap-6 md:grid-cols-2 md:gap-10">
           <div className="col-span-full py-10">
             <ProjectEmpty />
           </div>
         </div>
       ) : (
-        <StaggerList className="grid gap-4 md:grid-cols-2 md:gap-6">
+        <StaggerList className="grid gap-6 md:grid-cols-2 md:gap-10">
           {recentProjects.map((project) => (
             <StaggerItem key={project.id}>
               <ProjectCard project={project} />

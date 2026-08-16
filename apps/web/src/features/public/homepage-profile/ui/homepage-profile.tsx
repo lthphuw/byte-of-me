@@ -28,7 +28,7 @@ export async function HomepageProfile() {
       {/* HERO SECTION */}
       <section
         id="hero"
-        className="mx-auto max-w-3xl space-y-5 text-left md:space-y-8"
+        className="mx-auto max-w-3xl space-y-4 text-left md:space-y-6"
       >
         <Greeting text={profile.greeting || ''} />
         <p className="text-base text-muted-foreground md:text-xl">
@@ -39,12 +39,12 @@ export async function HomepageProfile() {
       {/* ABOUT / MY STORY */}
       <section
         id="about"
-        className={`grid items-start gap-10 md:gap-14 ${
+        className={`grid items-start gap-6 md:gap-10 ${
           hasQuote ? 'md:grid-cols-2' : 'mx-auto max-w-3xl grid-cols-1'
         }`}
       >
-        <div className="space-y-6 md:space-y-8">
-          <div className="space-y-4 md:space-y-5">
+        <div className="space-y-4 md:space-y-6">
+          <div className="space-y-2">
             <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground md:text-sm">
               {t('myStory')}
             </h2>

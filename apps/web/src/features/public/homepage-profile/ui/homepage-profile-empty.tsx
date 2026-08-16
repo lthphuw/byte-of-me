@@ -6,7 +6,7 @@ import { Link } from '@/shared/i18n/navigation';
 
 export function HomepageProfileEmpty() {
   return (
-    <section className="flex flex-col items-center justify-center space-y-6 py-20 text-center">
+    <section className="flex flex-col items-center justify-center space-y-4 py-20 text-center md:space-y-6">
       <div className="rounded-full bg-muted p-6">
         <UserCircle2 className="h-12 w-12 text-muted-foreground/50" />
       </div>

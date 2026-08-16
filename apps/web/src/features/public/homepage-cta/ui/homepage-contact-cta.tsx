@@ -20,7 +20,7 @@ export async function HomepageContactCta() {
       </p>
       {/* `asChild`, not <Link><Button>: the nested form renders <a><button>,
           which is invalid and gives every CTA two tab stops. */}
-      <div className="flex flex-col justify-center gap-3 pt-2 sm:flex-row">
+      <div className="flex flex-col justify-center gap-2 pt-2 sm:flex-row">
         <Button size="lg" className="w-full px-8 sm:w-auto" asChild>
           <Link href={`${Routes.Contact}#contact-send-message`}>
             {t('emailMe')}
