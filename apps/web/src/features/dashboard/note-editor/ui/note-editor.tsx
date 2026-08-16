@@ -10,7 +10,6 @@ import {
 } from '@byte-of-me/ui';
 import {
   fromEditorContent,
-  toEditorContent,
 } from '@byte-of-me/ui/lib/rich-text-content';
 import type {
   OutlineItem,
@@ -88,9 +87,9 @@ export function NoteEditor({
     isSeeded,
     title,
     setTitle,
-    content,
     setContent,
     seedGeneration,
+    seedValue,
     isSaving,
     isSaveError,
     retry,
@@ -338,15 +337,18 @@ export function NoteEditor({
             document it already had, silently splitting the two with nothing
             on screen indicating they disagree.
 
-            `value` is seeded from `content` (the hook's buffer), not
-            `note.content` directly: `seedGeneration` only bumps in the same
-            effect call that seeds `content`, so by the render this key
-            actually changes in, `content` has ALREADY been updated to match
-            — no lag, unlike reading `note.content` independently, which
-            would depend on `note` itself not having moved on since. */}
+            `value` is `seedValue` — the hook's own parsed copy of the buffer
+            it seeded, produced in the same effect call that bumps
+            `seedGeneration`, so by the render this key actually changes in it
+            has ALREADY been updated to match. That is the same guarantee the
+            previous `toEditorContent(content)` had (and for the same reason);
+            what it drops is re-deriving it on every OTHER render. Measured:
+            that inline call re-parsed the whole document on every keystroke —
+            0.07ms at 21KB, 0.27ms at 83KB, 1.08ms at 334KB — for a prop
+            `RichTextEditor` reads exactly once, on mount. */}
         <LazyRichTextEditor
           key={`${note.id}:${seedGeneration}`}
-          value={toEditorContent(content)}
+          value={seedValue}
           // No toolbar, unlike every other editor in this dashboard: a note is
           // composed in markdown — StarterKit's input rules turn `## `,
           // `**bold**`, `- ` and `> ` into real nodes as they are typed — so the
