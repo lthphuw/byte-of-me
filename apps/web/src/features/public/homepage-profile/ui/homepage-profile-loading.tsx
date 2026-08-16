@@ -1,8 +1,17 @@
 import { Skeleton } from '@byte-of-me/ui';
 
+/**
+ * The root spacing must stay in step with `HomepageProfile`, which this stands
+ * in for. It read `space-y-16 md:space-y-28` (64/112px) against the real
+ * component's `space-y-8 md:space-y-12` (32/48px), so the hero and the story
+ * block sat more than twice as far apart while loading and the page visibly
+ * jumped upward the moment the profile resolved. Every other class in this file
+ * already mirrors its counterpart; this root was the outlier, and
+ * `md:space-y-28` was a value used nowhere else in the app.
+ */
 export function HomepageProfileLoading() {
   return (
-    <div className="space-y-16 md:space-y-28">
+    <div className="space-y-8 md:space-y-12">
       {/* HERO SECTION SKELETON */}
       <div className="mx-auto max-w-3xl space-y-5 text-left md:space-y-8">
         {/* GreetingWriter Skeleton */}
