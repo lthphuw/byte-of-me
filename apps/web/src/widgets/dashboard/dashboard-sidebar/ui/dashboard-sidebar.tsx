@@ -123,25 +123,38 @@ function SidebarContent({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3 px-6 py-7">
+      {/* `span`, not the `h1` this used to be. Every dashboard page has its own
+          `h1` — "Welcome back, …" on this one — so the sidebar's was a second
+          top-level heading on every screen, and a reader jumping by headings
+          landed on the product name before the page. The space drawer has
+          always used a span here; this is the same markup. */}
+      <div className="flex items-center gap-3 px-4 py-5">
         <div className="flex size-7 items-center justify-center rounded-md">
           <BrandMark layer="cms" />
         </div>
-        <h1 className="text-base font-bold tracking-tight">Byte of Me</h1>
+        <span className="text-base font-bold tracking-tight">Byte of Me</span>
       </div>
 
-      <nav className="flex-1 space-y-6 overflow-y-auto px-4 py-2">
+      {/* The four group names are still here, still read out, and no longer
+          drawn: a hairline says "these belong together" as well as a caption
+          does, and four uppercase captions in a 200px column were most of what
+          made this sidebar look busy next to the notes workspace. Deleting the
+          headings outright would have been the easy version and the wrong one
+          — it would flatten ten destinations into one undifferentiated list
+          for anyone navigating by heading. */}
+      <nav className="flex-1 space-y-3 overflow-y-auto px-3 py-2">
         {menuGroups.map((group) => (
-          <div key={group.label} className="space-y-2">
-            <h2 className="px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-              {group.label}
-            </h2>
+          <div
+            key={group.label}
+            className="space-y-1 border-t border-border/40 pt-3 first:border-t-0 first:pt-0"
+          >
+            <h2 className="sr-only">{group.label}</h2>
             <DashboardNavItems items={group.items} onItemClick={onNavigate} />
           </div>
         ))}
       </nav>
 
-      <div className="mt-auto space-y-1 border-t border-border/40 p-4">
+      <div className="mt-auto space-y-1 border-t border-border/40 p-3">
         {/* Theme and language, the two shared toggles the public header and
             the space rail also use.
 
@@ -191,8 +204,12 @@ export function DashboardSidebar() {
 
   return (
     <>
-      {/* Desktop sidebar */}
-      <aside className="sticky top-0 z-40 hidden h-screen w-[260px] shrink-0 border-r border-border/50 bg-card lg:block">
+      {/* Desktop sidebar.
+          200px rather than 260px. Ten labelled destinations still fit — the
+          longest, "Media Library", uses about two thirds of the text column —
+          and the 60px goes to the content, which is the part of a CMS anyone
+          is actually looking at. */}
+      <aside className="sticky top-0 z-40 hidden h-screen w-[200px] shrink-0 border-r border-border/50 bg-card lg:block">
         {/* Sideways, because the controls sit at the foot of a full-height
             column: dropping downwards from there opens into the bottom edge of
             the window. `align="end"` puts the menu's own bottom edge on the
@@ -208,9 +225,11 @@ export function DashboardSidebar() {
               <Menu className="size-5" />
             </Button>
           </SheetTrigger>
+          {/* `w-64`, the width the space drawer already uses — the two are the
+              same drawer on the same phone and had no reason to differ. */}
           <SheetContent
             side="left"
-            className="w-72 p-0"
+            className="w-64 p-0"
             aria-describedby={undefined}
           >
             <SheetTitle className="sr-only">Navigation</SheetTitle>

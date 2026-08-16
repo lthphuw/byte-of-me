@@ -16,11 +16,11 @@ import { useLocale, useTranslations } from 'next-intl';
 import { languageNames, supportedLanguages } from '@/shared/config/language';
 import { Link, usePathname } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
+import type { LocaleType } from '@/shared/types';
 import {
   DEFAULT_MENU_PLACEMENT,
   type MenuPlacement,
 } from '@/shared/ui/menu-placement';
-import type { LocaleType } from '@/shared/types';
 
 const flagVariants = {
   initial: { opacity: 0, scale: 0.9, y: 8 },
