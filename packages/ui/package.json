@@ -9,6 +9,7 @@
     "./lib/sanitize": "./src/lib/sanitize.ts",
     "./lib/prefers-reduced-motion": "./src/lib/prefers-reduced-motion.ts",
     "./lib/rich-text-content": "./src/lib/rich-text-content.ts",
+    "./lib/markdown-format": "./src/lib/markdown-format.ts",
     "./rich-text-editor": "./src/rich-text-editor/index.ts",
     "./rich-text": "./src/rich-text.tsx",
     "./rich-text-html": "./src/rich-text-html.tsx",

@@ -15,8 +15,9 @@ import type {
   OutlineItem,
   RichTextEditorApi,
 } from '@byte-of-me/ui/rich-text-editor';
-import { ChevronLeft, CircleHelp } from 'lucide-react';
+import { ChevronLeft, CircleHelp, Sparkles } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import { createScopedImageUploader } from '@/entities/media';
 import { parseNoteHref } from '@/entities/note';
@@ -249,6 +250,48 @@ export function NoteEditor({
             {t('view.markdown')}
           </Button>
         </div>
+
+        {/* Tidies the raw source: whitespace, tabs, blank-line runs, list
+            markers, heading spacing, table padding.
+
+            Only rendered in markdown mode, and only ever run on demand. The
+            editor's OWN serializer already emits close-to-canonical markdown,
+            so there is nothing here to fix on the way in — what needs tidying
+            is text the author pasted from somewhere else, and only they know
+            when that happened. Running it automatically would also fight the
+            caret: reformatting under someone mid-sentence is how a formatter
+            becomes the thing you turn off. */}
+        {rawMode && (
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-7 shrink-0"
+                  aria-label={t('markdown.format')}
+                  onClick={() => {
+                    const result = editorApiRef.current?.formatMarkdown();
+                    // `unchanged` is a real answer, not a failure: the
+                    // formatter is idempotent, so "already tidy" is worth
+                    // saying rather than leaving the click looking dead.
+                    if (result === 'formatted') {
+                      toast.success(t('markdown.formatted'));
+                    } else if (result === 'unchanged') {
+                      toast.info(t('markdown.alreadyClean'));
+                    }
+                  }}
+                >
+                  <Sparkles className="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                {t('markdown.format')}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
 
         {onOpenCheatSheet && (
           <TooltipProvider delayDuration={200}>

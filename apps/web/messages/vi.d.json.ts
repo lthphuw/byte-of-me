@@ -618,6 +618,11 @@ declare const messages: {
         "editor": "Soạn thảo",
         "markdown": "Markdown"
       },
+      "markdown": {
+        "format": "Dọn dẹp markdown",
+        "formatted": "Đã dọn dẹp markdown.",
+        "alreadyClean": "Markdown đã gọn sẵn rồi."
+      },
       "properties": {
         "title": "Thuộc tính",
         "status": "Trạng thái",

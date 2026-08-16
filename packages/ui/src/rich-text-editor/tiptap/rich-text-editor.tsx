@@ -32,6 +32,7 @@ import { common, createLowlight } from 'lowlight';
 
 import { useMediaQuery } from '../../hooks/use-media-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../index';
+import { formatMarkdown } from '../../lib/markdown-format';
 import { scrollIntoViewBehavior } from '../../lib/prefers-reduced-motion';
 import { cn } from '../../lib/utils';
 
@@ -249,6 +250,15 @@ type RichTextEditorProps = {
   onEditorApi?: (api: RichTextEditorApi | null) => void;
 };
 
+/** The outcome of {@link RichTextEditorApi.formatMarkdown}. */
+export type FormatMarkdownResult =
+  /** The pane's text was rewritten. */
+  | 'formatted'
+  /** Already tidy — the formatter is idempotent, so this is a real answer. */
+  | 'unchanged'
+  /** Raw mode is off, so there is no source text to tidy. */
+  | 'unavailable';
+
 /** What a consumer can ask the live editor for. */
 export interface RichTextEditorApi {
   /**
@@ -260,6 +270,19 @@ export interface RichTextEditorApi {
    * the wrong thing to an exported file, silently.
    */
   getMarkdown: () => string;
+  /**
+   * Tidies the raw-markdown pane in place: whitespace, list markers, heading
+   * spacing, table padding. See `lib/markdown-format` for exactly how little
+   * it is allowed to touch.
+   *
+   * Only meaningful in raw mode, and deliberately not automatic. What the
+   * SERIALIZER produces is already close to canonical — measured on a real
+   * note: no trailing whitespace, no tabs, no runs of blank lines, `-` bullets
+   * throughout — so running this on entry would be a no-op that costs a parse.
+   * The text worth tidying is what an author PASTES into the pane, and only
+   * they know when they have done that.
+   */
+  formatMarkdown: () => FormatMarkdownResult;
 }
 
 const COMPACT_MAX_HEIGHT = 360;
@@ -493,6 +516,13 @@ export function RichTextEditor({
     }
   }, []);
 
+  // The pane's text, readable from a STABLE callback. `formatMarkdown` below
+  // is published on the consumer-facing api, which is handed over in an effect
+  // — depending on `rawText` directly would republish (and revoke) that api on
+  // every keystroke in raw mode.
+  const rawTextRef = useRef<string | null>(null);
+  rawTextRef.current = rawText;
+
   const applyRaw = useCallback(
     (raw: string) => {
       setRawText(raw);
@@ -532,6 +562,20 @@ export function RichTextEditor({
   const onEditorApiRef = useRef(onEditorApi);
   onEditorApiRef.current = onEditorApi;
 
+  const formatRaw = useCallback((): FormatMarkdownResult => {
+    // The PENDING buffer wins over committed state: an author who pastes and
+    // immediately hits Format is inside the 800ms debounce, and the paste is
+    // precisely the text they want tidied.
+    const current = pendingRawRef.current ?? rawTextRef.current;
+    if (current === null) return 'unavailable';
+
+    const next = formatMarkdown(current);
+    if (next === current) return 'unchanged';
+
+    applyRaw(next);
+    return 'formatted';
+  }, [applyRaw]);
+
   useEffect(() => {
     if (!editor) return;
     const api: RichTextEditorApi = {
@@ -539,10 +583,11 @@ export function RichTextEditor({
         flushRaw();
         return editor.getMarkdown();
       },
+      formatMarkdown: formatRaw,
     };
     onEditorApiRef.current?.(api);
     return () => onEditorApiRef.current?.(null);
-  }, [editor, flushRaw]);
+  }, [editor, flushRaw, formatRaw]);
 
   if (!editor) return null;
 

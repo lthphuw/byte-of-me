@@ -618,6 +618,11 @@ declare const messages: {
         "editor": "Editor",
         "markdown": "Markdown"
       },
+      "markdown": {
+        "format": "Clean up markdown",
+        "formatted": "Markdown tidied up.",
+        "alreadyClean": "Markdown is already tidy."
+      },
       "properties": {
         "title": "Properties",
         "status": "Status",
