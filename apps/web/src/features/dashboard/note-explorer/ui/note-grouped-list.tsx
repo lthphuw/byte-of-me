@@ -12,6 +12,7 @@ import {
   NoteEmpty,
   type NoteGroupSummary,
   noteKeys,
+  NoteRowSkeleton,
   type NoteTreeNode,
   NoteTreeSkeleton,
 } from '@/entities/note';
@@ -245,9 +246,40 @@ function GroupSection({
             );
           })}
 
+          {/* The `aria-busy` above was only ever HALF the fix, and the half a
+              sighted author cannot hear. An open section whose first page is
+              still in flight drew literally nothing: an empty `<ul>` under an
+              expanded header, which reads as "this bucket is empty" and is
+              indistinguishable from the truth — the very thing the `aria-busy`
+              comment above says it is guarding against. `NoteTreeItem` has
+              carried both halves since it was written; only the placeholder
+              rows were missing here. */}
+          {list.isPending && (
+            // Wrapped in `<li>` because `NoteRowSkeleton` is a `div`, and a
+            // `div` may not be a direct child of a `ul`. Same reason the
+            // sentinel below carries its own wrapper.
+            <li aria-hidden>
+              <NoteRowSkeleton index={0} />
+              <NoteRowSkeleton index={1} />
+            </li>
+          )}
+
           {list.isLoadingError && (
             <li className="px-1 py-1 text-xs text-destructive">
               {t('errors.load')}
+            </li>
+          )}
+
+          {/* The NEXT page, in flight. `isFetchingNextPage` and not the
+              broader `isFetching`: every create, rename and status change
+              invalidates this key, and a background refetch of page one must
+              not push a pair of placeholder rows onto the end of a list the
+              author is reading. The sentinel itself is `h-px` and invisible,
+              so without this a section that pages simply stopped at the last
+              loaded row until the next page landed. */}
+          {list.isFetchingNextPage && (
+            <li aria-hidden>
+              <NoteRowSkeleton index={0} />
             </li>
           )}
 

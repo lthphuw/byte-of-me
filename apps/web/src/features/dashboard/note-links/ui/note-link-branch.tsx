@@ -6,6 +6,9 @@ import { useQuery } from '@tanstack/react-query';
 import { ChevronRight, CornerDownRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { noteLinkIndent } from './note-link-row-shell';
+import { NoteLinkRowSkeleton } from './note-links-skeleton';
+
 import {
   getNoteLinks,
   noteKeys,
@@ -48,7 +51,7 @@ export function NoteLinkBranch({
   // Lazy by construction: `enabled` keeps the request from leaving until the
   // author actually opens this branch, so drawing the first level costs one
   // query rather than a walk of the whole graph.
-  const { data } = useQuery({
+  const { data, isPending, isLoadingError } = useQuery({
     queryKey: noteKeys.links(note.id),
     queryFn: async () => {
       const res = await getNoteLinks(note.id);
@@ -60,11 +63,17 @@ export function NoteLinkBranch({
 
   const children = data?.outgoing ?? [];
 
+  // A DISABLED query is `isPending` forever — TanStack has no separate "idle"
+  // status in v5 — so the flag on its own says nothing about whether anything
+  // is in flight. Gated on the branch actually being open, it means what it
+  // reads as: the author expanded this row and its children have not arrived.
+  const isLoadingChildren = isExpanded && canExpand && isPending;
+
   return (
     <li>
       <div
         className="group flex min-h-8 items-center gap-1 rounded-md text-sm"
-        style={{ paddingLeft: `${depth * 12}px` }}
+        style={noteLinkIndent(depth)}
       >
         <Button
           type="button"
@@ -108,8 +117,12 @@ export function NoteLinkBranch({
         </button>
       </div>
 
-      {isExpanded && children.length > 0 && (
-        <ul>
+      {isExpanded && canExpand && (
+        // `aria-busy` rather than a live region, matching `NoteTreeItem`: the
+        // placeholder below is decorative, and this is the standard way to say
+        // "the contents of this container are not final yet" without inventing
+        // a string.
+        <ul aria-busy={isLoadingChildren ? true : undefined}>
           {children.map((child) => (
             <NoteLinkBranch
               key={child.id}
@@ -119,6 +132,39 @@ export function NoteLinkBranch({
               onOpen={onOpen}
             />
           ))}
+
+          {/* Expanding used to render literally nothing until the fetch
+              landed: the chevron rotated, the row stayed put, and an author on
+              a slow connection could not tell a request in flight from a note
+              that links to nothing. Both look identical when the answer is an
+              empty list. The placeholder is row-SHAPED and indented one level
+              in, for the reason `note-row-shell.ts` records for the tree — a
+              bar in no column does not read as an arriving child. */}
+          {isLoadingChildren && (
+            // Wrapped in `<li>` because `NoteLinkRowSkeleton` is a `div`, and
+            // a `div` may not be a direct child of a `ul`. Same reason
+            // `NoteTreeItem` wraps its own placeholder rows.
+            <li aria-hidden>
+              <NoteLinkRowSkeleton depth={depth + 1} index={0} />
+              <NoteLinkRowSkeleton depth={depth + 1} index={1} />
+            </li>
+          )}
+
+          {/* `isLoadingError`, not `isError`: a failed BACKGROUND refetch — a
+              save invalidates every link key — leaves the children already on
+              screen in place rather than replacing them with an error line.
+              Same distinction `note-tree-panel.tsx` documents at length.
+              Without this the branch failed SILENTLY: an unreachable server
+              collapsed the subtree back to nothing, which is exactly the
+              "you have nothing here" reading a failure must never produce. */}
+          {isLoadingError && (
+            <li
+              className="py-1 text-xs text-destructive"
+              style={noteLinkIndent(depth + 1)}
+            >
+              {t('errors.links')}
+            </li>
+          )}
         </ul>
       )}
     </li>

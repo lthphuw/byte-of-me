@@ -34,10 +34,32 @@ export function NotePropertiesPanel({ noteId }: { noteId: string }) {
 
   // Nothing to render until the note is here — the editor around this panel
   // already shows its own loading state for the same query.
+  //
+  // Re-verified rather than assumed, because "some other component handles it"
+  // is exactly the claim that rots: `NoteEditor` renders `propertiesSlot` only
+  // AFTER its own `isError` / `isPending || !isSeeded` guards have returned,
+  // and it reads `noteKeys.detail(noteId)` — the same key `useNoteProperties`
+  // reads. So this panel cannot mount while that query is pending or failed,
+  // and adding a placeholder here would be dead code that never paints. If the
+  // slot ever moves outside those guards, this branch needs a skeleton band
+  // the height of the collapsed disclosure, or the editor's title will jump
+  // when the panel appears.
   if (!note) return null;
 
   const properties = parseNoteProperties(note.properties);
   const entries = Object.entries(properties);
+
+  // The status a click has ALREADY chosen, before the round trip lands.
+  //
+  // Without it the preset chips gave no feedback whatsoever: `note.status`
+  // only changes once `updateNote` returns, so clicking "Done" left every chip
+  // exactly as it was for the length of the request and the author's honest
+  // reading was that the click had missed. `save.variables` is the input of
+  // the mutation currently in flight, so this is the value that is about to be
+  // true — not an optimistic write to the cache, which would have to be rolled
+  // back on failure.
+  const pendingStatus = save.isPending ? save.variables.status : undefined;
+  const shownStatus = pendingStatus ?? note.status;
 
   const commitStatus = (raw: string) => {
     const next = raw.trim();
@@ -58,6 +80,23 @@ export function NotePropertiesPanel({ noteId }: { noteId: string }) {
   };
 
   const labelNames = note.labels.map((label) => label.name);
+
+  // Labels the in-flight `setNoteLabels` is ADDING — names it was handed that
+  // the note does not carry yet.
+  //
+  // Typing a label and pressing Enter used to clear the input and then show
+  // nothing at all until the round trip landed, so on anything slower than
+  // localhost the label read as having been swallowed. A removal hands back a
+  // SHORTER list, so this is empty for one and the chips simply stay put until
+  // the server agrees — which is the correct reading of a delete in flight.
+  //
+  // Read off `saveLabels.variables` rather than written into the query cache:
+  // an optimistic cache write would have to be rolled back on failure, and the
+  // detail key it would have to write into is the one `useNoteEditorAutosave`
+  // reseeds the editor buffer from.
+  const pendingLabelNames = saveLabels.isPending
+    ? saveLabels.variables.filter((name) => !labelNames.includes(name))
+    : [];
 
   const addLabel = () => {
     const name = draftLabel.trim();
@@ -89,7 +128,14 @@ export function NotePropertiesPanel({ noteId }: { noteId: string }) {
       </button>
 
       {open && (
-        <div className="flex flex-col gap-2 pb-3 text-sm">
+        // `aria-busy` while either write is in flight. The panel commits on
+        // blur and on Enter, with no submit button and no toast on success, so
+        // without this there is no signal at all — visual or announced — that
+        // the value the author just typed is still on its way to the server.
+        <div
+          className="flex flex-col gap-2 pb-3 text-sm"
+          aria-busy={save.isPending || saveLabels.isPending ? true : undefined}
+        >
           {/* Status: free text + quick-pick chips. */}
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
             <span className="w-28 shrink-0 text-xs text-muted-foreground">
@@ -119,7 +165,10 @@ export function NotePropertiesPanel({ noteId }: { noteId: string }) {
                   key={preset}
                   type="button"
                   size="sm"
-                  variant={note.status === preset ? 'secondary' : 'ghost'}
+                  // `shownStatus`, not `note.status`: the chip has to light up
+                  // on the click, not when the server answers. See where it is
+                  // computed.
+                  variant={shownStatus === preset ? 'secondary' : 'ghost'}
                   className="h-6 px-2 text-xs"
                   onClick={() => commitStatus(preset)}
                 >
@@ -156,6 +205,24 @@ export function NotePropertiesPanel({ noteId }: { noteId: string }) {
                   </button>
                 </span>
               ))}
+
+              {/* A label that has been submitted but not yet acknowledged.
+                  Drawn as the chip it is about to become — same box, same
+                  text — rather than as a bare `Skeleton`, because the name is
+                  already known: a grey bar would say less than the word does,
+                  and the chip would then have to change size when it lands.
+                  `animate-pulse` and no remove button are what mark it as not
+                  yet real; per AGENTS §14 loading feedback keeps moving under
+                  reduced motion on purpose. */}
+              {pendingLabelNames.map((name) => (
+                <span
+                  key={`pending:${name}`}
+                  className="inline-flex animate-pulse items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground"
+                >
+                  {name}
+                </span>
+              ))}
+
               <Input
                 value={draftLabel}
                 onChange={(event) => setDraftLabel(event.target.value)}

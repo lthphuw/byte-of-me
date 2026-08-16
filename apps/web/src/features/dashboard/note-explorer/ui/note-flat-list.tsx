@@ -7,6 +7,7 @@ import {
   getNotesPage,
   NoteEmpty,
   noteKeys,
+  NoteRowSkeleton,
   type NoteTreeNode,
   NoteTreeSkeleton,
 } from '@/entities/note';
@@ -73,7 +74,11 @@ export function NoteFlatList({
   if (rows.length === 0) return <NoteEmpty onCreate={onCreate} />;
 
   return (
-    <ul>
+    // `aria-busy` while the NEXT page is in flight, matching `NoteTreeItem`
+    // and the grouped view's sections: the placeholder row below is
+    // decorative, and this is the standard way to say "the contents of this
+    // container are not final yet" without inventing a string.
+    <ul aria-busy={list.isFetchingNextPage ? true : undefined}>
       {rows.map((node) => (
         <li key={node.id}>
           <ExplorerRow
@@ -84,6 +89,22 @@ export function NoteFlatList({
           />
         </li>
       ))}
+
+      {/* The NEXT page, in flight. `isFetchingNextPage` and not the broader
+          `isFetching`: every create and rename invalidates this key, and a
+          background refetch of page one must not push a placeholder row onto
+          the end of a list the author is reading — the same discipline
+          `note-tree-panel.tsx` documents for not replacing loaded rows. The
+          sentinel below is `h-px` and invisible, so without this the list
+          simply stopped at the last loaded row, with nothing to say another
+          page was on its way. */}
+      {list.isFetchingNextPage && (
+        // Wrapped in `<li>` because `NoteRowSkeleton` is a `div` — it also
+        // serves the tree, which is a `ul` too.
+        <li aria-hidden>
+          <NoteRowSkeleton index={rows.length} />
+        </li>
+      )}
 
       {/* The `hasNextPage` test is repeated out here (the sentinel also
           renders nothing without it) so a `<div>` never becomes a direct

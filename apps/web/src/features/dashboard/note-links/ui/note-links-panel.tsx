@@ -1,11 +1,11 @@
 'use client';
 
-import { Skeleton } from '@byte-of-me/ui';
 import { useQuery } from '@tanstack/react-query';
 import { CornerUpLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { NoteLinkBranch } from './note-link-branch';
+import { NoteLinksSkeleton } from './note-links-skeleton';
 
 import { getNoteLinks, noteKeys } from '@/entities/note';
 import { cn } from '@/shared/lib/utils';
@@ -39,14 +39,20 @@ export function NoteLinksPanel({ noteId, onOpen }: NoteLinksPanelProps) {
   const incoming = data?.incoming ?? [];
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto p-3">
-      {isPending && (
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-6 w-full" />
-          <Skeleton className="h-6 w-4/5" />
-        </div>
-      )}
+    // `aria-busy` + a name on the container, matching `NoteEditorSkeleton` and
+    // `SpaceHubSkeleton`. The name says "Loading links…" rather than reusing
+    // the panel's heading: `aria-busy` alone announces as "Links, busy", which
+    // is a state bolted onto a noun, where the loading string is a sentence.
+    // The placeholder bars themselves stay decorative — but the container must
+    // NOT be, which is the failure `SpaceHubSkeleton` records: an `aria-hidden`
+    // subtree with nothing in its place leaves a screen reader on a pane with
+    // no perceivable content and no indication that anything is on its way.
+    <div
+      className="flex h-full min-h-0 flex-col overflow-y-auto p-3"
+      aria-busy={isPending ? true : undefined}
+      aria-label={isPending ? t('links.loading') : undefined}
+    >
+      {isPending && <NoteLinksSkeleton />}
 
       {isLoadingError && (
         <p className="text-sm text-destructive">{t('errors.links')}</p>

@@ -12,6 +12,8 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
+import { NoteSearchSkeleton } from './note-search-skeleton';
+
 import { noteKeys, type NoteSearchHit, searchNotes } from '@/entities/note';
 
 const SEARCH_DEBOUNCE_MS = 300;
@@ -116,7 +118,13 @@ export function NoteSearchPalette({
   // only the debounced value itself is needed here.
   const [debouncedTerm] = useDebounce(term, SEARCH_DEBOUNCE_MS);
 
-  const { data, isPending, isError } = useQuery({
+  // `isLoadingError`, not `isError` — the same distinction `note-tree-panel`
+  // and `NoteGraph` document. Both palettes stay MOUNTED for the whole
+  // session, so a warm entry can be refetched underneath results the author is
+  // already reading (a window refocus does exactly this): a failed BACKGROUND
+  // refetch must leave those results on screen rather than blanking them to an
+  // error line. `isError` blanked them.
+  const { data, isPending, isLoadingError } = useQuery({
     queryKey: noteKeys.search(debouncedTerm, 1),
     queryFn: async () => {
       const res = await searchNotes({
@@ -184,18 +192,23 @@ export function NoteSearchPalette({
             filtered for it to count. Plain nodes keyed directly off the
             query flags render correctly on every render, including the
             first one and a cache-only reopen. */}
-        {isPending && (
-          <div className="py-6 text-center text-sm">{t('search.loading')}</div>
-        )}
-        {isError && (
+        {/* A result-SHAPED placeholder rather than the centred "Searching…"
+            line this used to be. A line of copy in a `py-6` box says nothing
+            about how many results are coming or where they will sit, and every
+            row jumped upward the moment they arrived — the exact shift a
+            placeholder exists to prevent. The string itself is not lost: it is
+            the container's accessible name, so a screen reader still hears
+            "Searching…" while the bars stay decorative. */}
+        {isPending && <NoteSearchSkeleton label={t('search.loading')} />}
+        {isLoadingError && (
           <div className="py-6 text-center text-sm text-destructive">
             {t('errors.load')}
           </div>
         )}
-        {!isPending && !isError && data?.data.length === 0 && (
+        {!isPending && !isLoadingError && data?.data.length === 0 && (
           <div className="py-6 text-center text-sm">{t('search.empty')}</div>
         )}
-        {!isPending && !isError && data && data.data.length > 0 && (
+        {!isPending && !isLoadingError && data && data.data.length > 0 && (
           <CommandGroup>
             {data.data.map((hit) => (
               <CommandItem

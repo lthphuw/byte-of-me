@@ -149,13 +149,21 @@ describe('NoteSearchPalette', () => {
   });
 
   test(
-    'shows the loading copy while the search is still in flight',
+    'shows the loading placeholder while the search is still in flight',
     async () => {
       const { release } = gateNextFindMany([]);
       const queryClient = makeQueryClient();
       render(<Harness open queryClient={queryClient} />);
 
-      expect(screen.getByText('Searching…')).toBeTruthy();
+      // By NAME, not by text. The pending state is a skeleton now — result-
+      // shaped bars instead of a centred "Searching…" line — so the string
+      // lives on the container's `aria-label` rather than in the document
+      // text. The contract this test defends is unchanged and is the reason
+      // the file exists: on the FIRST render, with `CommandEmpty` out of the
+      // picture, the palette says something is in flight and says neither
+      // "no matches" nor "it failed".
+      const pending = screen.getByLabelText('Searching…');
+      expect(pending.getAttribute('aria-busy')).toBe('true');
       expect(screen.queryByText('No notes match.')).toBeNull();
       expect(screen.queryByText('Could not load your notes.')).toBeNull();
 
@@ -187,7 +195,10 @@ describe('NoteSearchPalette', () => {
     render(<Harness open queryClient={queryClient} />);
 
     expect(await screen.findByText('Could not load your notes.')).toBeTruthy();
-    expect(screen.queryByText('Searching…')).toBeNull();
+    // `queryByLabelText`, not `queryByText`: the pending state is a skeleton
+    // whose string is an `aria-label`, so a text query would pass whether or
+    // not the placeholder was still on screen — a vacuous assertion.
+    expect(screen.queryByLabelText('Searching…')).toBeNull();
     expect(screen.queryByText('No notes match.')).toBeNull();
   });
 
@@ -196,7 +207,8 @@ describe('NoteSearchPalette', () => {
     render(<Harness open queryClient={queryClient} />);
 
     expect(await screen.findByText('No notes match.')).toBeTruthy();
-    expect(screen.queryByText('Searching…')).toBeNull();
+    // See the load-error test: the placeholder is named, not written out.
+    expect(screen.queryByLabelText('Searching…')).toBeNull();
     expect(screen.queryByText('Could not load your notes.')).toBeNull();
   });
 

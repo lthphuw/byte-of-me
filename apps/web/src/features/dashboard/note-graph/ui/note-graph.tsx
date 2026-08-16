@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { getNoteGraph, noteKeys } from '@/entities/note';
 import { NoteGraphCanvas } from '@/features/dashboard/note-graph/ui/note-graph-canvas';
+import { NoteGraphSkeleton } from '@/features/dashboard/note-graph/ui/note-graph-skeleton';
 
 export interface NoteGraphProps {
   onOpen: (noteId: string) => void;
@@ -35,8 +36,13 @@ export function NoteGraph({ onOpen }: NoteGraphProps) {
     return <p className="p-6 text-sm text-destructive">{t('loadError')}</p>;
   }
 
+  // A graph-SHAPED placeholder, not the full-bleed grey wash this used to be.
+  // See `NoteGraphSkeleton` for what the wash got wrong; the short version is
+  // that "something is grey here" is indistinguishable from a canvas that
+  // failed to paint, and an `aria-hidden` wash left a screen reader with
+  // nothing at all on the route.
   if (isPending) {
-    return <div className="size-full animate-pulse bg-muted/30" aria-hidden />;
+    return <NoteGraphSkeleton />;
   }
 
   if (data.nodes.length === 0) {

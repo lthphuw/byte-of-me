@@ -2,6 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 
+import { NoteGraphSkeleton } from '@/features/dashboard/note-graph';
+
 /**
  * The graph's frame while its RSC payload is in flight. The canvas has its
  * own pending state for the *data* (the query in `NoteGraph`); this covers
@@ -25,7 +27,13 @@ export default function SpaceGraphLoading() {
       aria-busy="true"
       aria-label={t('loading')}
     >
-      <div className="size-full animate-pulse bg-muted/30" aria-hidden />
+      {/* The SAME skeleton `NoteGraph` shows while its query runs, rather than
+          a plain pulsing plate. Two different placeholders for two consecutive
+          waits meant the route fallback drew a grey wash, then swapped it for a
+          sketch of clusters, then swapped THAT for the canvas — three distinct
+          screens for one navigation. A grey wash is also indistinguishable from
+          a canvas that failed to paint at all. */}
+      <NoteGraphSkeleton />
     </div>
   );
 }
