@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback, useRef, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -26,6 +27,68 @@ import {
   SettingSelect,
   SettingSwitch,
 } from '@/features/dashboard/workspace-settings/ui/setting-row';
+import { cn } from '@/shared/lib/utils';
+
+/**
+ * What every tab panel shares: no top margin (the viewport supplies the
+ * spacing) and a short fade-and-rise on arrival.
+ *
+ * Radix unmounts the panel that is leaving, so the one arriving is always a
+ * fresh node and the enter animation runs on every switch without any state of
+ * its own. It moves by a quarter of a rem — enough to read as "this is new
+ * content", not so much that it competes with the height tween underneath it.
+ */
+const PANEL = 'mt-0 duration-200 animate-in fade-in-0 slide-in-from-bottom-1';
+
+/**
+ * Measures the visible panel and reports its natural height.
+ *
+ * A `ResizeObserver` rather than a measurement per tab change, because the
+ * height moves for reasons other than switching tabs: a maintenance job grows
+ * a progress bar while it runs, and the Vietnamese descriptions wrap to a
+ * different number of lines than the English ones. Anything that changes the
+ * panel's size should move the frame with it.
+ *
+ * `offsetHeight` rather than the entry's `contentRect`: the measured element
+ * carries the panel's own padding, and `contentRect` reports the content box,
+ * which would leave the viewport exactly one `pb-6` too short and permanently
+ * scrollable by 24px.
+ */
+function usePanelHeight() {
+  const [panelHeight, setPanelHeight] = useState<number>();
+  const observerRef = useRef<ResizeObserver | null>(null);
+
+  // A CALLBACK ref, not `useRef` plus an effect, and the difference is the
+  // whole feature. `Dialog` renders its content through a portal only while
+  // it is open, but this component — and therefore any mount effect in it —
+  // runs from the moment the workspace loads, when the panel does not exist
+  // and `ref.current` is still null. An effect keyed on `[]` would look once,
+  // find nothing, and never be given a second chance; the panels then sized
+  // themselves and the tween never ran at all. React calls a callback ref
+  // when the node actually arrives.
+  const panelRef = useCallback((element: HTMLDivElement | null) => {
+    observerRef.current?.disconnect();
+    observerRef.current = null;
+
+    if (!element) {
+      // Back to `auto` on close, so reopening measures the tab it is actually
+      // showing rather than tweening down from whatever was open last time.
+      setPanelHeight(undefined);
+      return;
+    }
+
+    // Safe against a feedback loop, which is the usual hazard here: the height
+    // this produces is applied to the element's PARENT, and a block child of a
+    // fixed-height block parent still takes its own content height.
+    const observer = new ResizeObserver(() => {
+      setPanelHeight(element.offsetHeight);
+    });
+    observer.observe(element);
+    observerRef.current = observer;
+  }, []);
+
+  return { panelRef, panelHeight };
+}
 
 /**
  * Everything the workspace remembers about how the author likes to work.
@@ -46,6 +109,21 @@ import {
  * provider, so by the time this dialog can be opened they are already in
  * memory. What it does need is a SAVING state, because every change is written
  * in the background — see the indicator in the header.
+ *
+ * ## The tab strip does not move
+ *
+ * The four panels are quite different heights — one control in Links, four in
+ * Editing, three job cards in Maintenance. `DialogContent` centres itself
+ * vertically, so a taller panel used to push the title and the tab strip
+ * UPWARDS by half the difference: the row you just clicked slid out from under
+ * the pointer, and the next click landed somewhere else. Switching tabs must
+ * change what is below the strip and nothing above it.
+ *
+ * So the top edge is pinned (`top-[8dvh] translate-y-0`, replacing the
+ * `top-1/2 -translate-y-1/2` centring) and the panel viewport grows downwards
+ * into the space under it. Height is transitioned rather than snapped, which is
+ * what makes the growth read as the panel resizing rather than the dialog
+ * being replaced.
  */
 export function WorkspaceSettingsDialog({
   open,
@@ -56,10 +134,14 @@ export function WorkspaceSettingsDialog({
 }) {
   const t = useTranslations('dashboard.space.settings');
   const { settings, update, isSaving, saveError } = useWorkspaceSettings();
+  const { panelRef, panelHeight } = usePanelHeight();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85dvh] gap-0 overflow-hidden p-0 sm:max-w-2xl">
+      {/* `top-[8dvh] translate-y-0` overrides the centring — see the note on
+          the tab strip above. The dialog then hangs from a fixed line near the
+          top of the viewport, so nothing above the panels can move. */}
+      <DialogContent className="top-[8dvh] max-h-[85dvh] translate-y-0 gap-0 overflow-hidden p-0 sm:max-w-2xl">
         {/* `pr-12`, not `px-6`: `DialogContent` positions its own close button
             absolutely in the top-right corner, so a header row that runs to the
             full width puts the save indicator underneath it. */}
@@ -87,108 +169,130 @@ export function WorkspaceSettingsDialog({
             </TabsTrigger>
           </TabsList>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-6">
-            <TabsContent value="appearance" className="mt-0 divide-y">
-              <SettingSelect
-                label={t('appearance.density.label')}
-                description={t('appearance.density.description')}
-                value={settings.density}
-                options={EDITOR_DENSITIES.map((value) => ({
-                  value,
-                  label: t(`appearance.density.options.${value}`),
-                }))}
-                onValueChange={(density) => update({ density })}
-              />
+          {/* Two elements, not one: the OUTER is the viewport, and it is the
+              one carrying the animated height, while the INNER is measured at
+              its natural size. Setting a height on the element being measured
+              would feed its own output back into itself.
 
-              <SettingSelect
-                label={t('appearance.typeScale.label')}
-                description={t('appearance.typeScale.description')}
-                value={settings.typeScale}
-                options={EDITOR_TYPE_SCALES.map((value) => ({
-                  value,
-                  label: t(`appearance.typeScale.options.${value}`),
-                }))}
-                onValueChange={(typeScale) => update({ typeScale })}
-              />
+              Deliberately NOT `flex-1`, which is what it wanted to be and what
+              silently broke this: `flex-1` is `flex: 1 1 0%`, and a flex basis
+              of zero replaces `height` as the main size. The inline height was
+              applied, correct, and completely ignored — the panels sized
+              themselves from content and nothing ever tweened.
 
-              <SettingSwitch
-                label={t('appearance.readableLineLength.label')}
-                description={t('appearance.readableLineLength.description')}
-                checked={settings.readableLineLength}
-                onCheckedChange={(readableLineLength) =>
-                  update({ readableLineLength })
-                }
-              />
-            </TabsContent>
+              `max-h` rather than clamping the inline value, so the ceiling
+              holds on the very first frame too, before anything is measured. It
+              is what is left of the dialog once the header and the tab strip
+              have taken theirs; past that a tall panel scrolls. */}
+          <div
+            className="max-h-[calc(85dvh_-_9rem)] overflow-y-auto transition-[height] duration-300 ease-out motion-reduce:transition-none"
+            style={
+              panelHeight === undefined ? undefined : { height: panelHeight }
+            }
+          >
+            <div ref={panelRef} className="px-6 pb-6">
+              <TabsContent value="appearance" className={cn(PANEL, 'divide-y')}>
+                <SettingSelect
+                  label={t('appearance.density.label')}
+                  description={t('appearance.density.description')}
+                  value={settings.density}
+                  options={EDITOR_DENSITIES.map((value) => ({
+                    value,
+                    label: t(`appearance.density.options.${value}`),
+                  }))}
+                  onValueChange={(density) => update({ density })}
+                />
 
-            <TabsContent value="editing" className="mt-0 divide-y">
-              <SettingSelect
-                label={t('editing.autosaveSpeed.label')}
-                description={t('editing.autosaveSpeed.description')}
-                value={settings.autosaveSpeed}
-                options={AUTOSAVE_SPEEDS.map((value) => ({
-                  value,
-                  label: t(`editing.autosaveSpeed.options.${value}`),
-                }))}
-                onValueChange={(autosaveSpeed) => update({ autosaveSpeed })}
-              />
+                <SettingSelect
+                  label={t('appearance.typeScale.label')}
+                  description={t('appearance.typeScale.description')}
+                  value={settings.typeScale}
+                  options={EDITOR_TYPE_SCALES.map((value) => ({
+                    value,
+                    label: t(`appearance.typeScale.options.${value}`),
+                  }))}
+                  onValueChange={(typeScale) => update({ typeScale })}
+                />
 
-              <SettingSwitch
-                label={t('editing.spellCheck.label')}
-                description={t('editing.spellCheck.description')}
-                checked={settings.spellCheck}
-                onCheckedChange={(spellCheck) => update({ spellCheck })}
-              />
+                <SettingSwitch
+                  label={t('appearance.readableLineLength.label')}
+                  description={t('appearance.readableLineLength.description')}
+                  checked={settings.readableLineLength}
+                  onCheckedChange={(readableLineLength) =>
+                    update({ readableLineLength })
+                  }
+                />
+              </TabsContent>
 
-              <SettingSwitch
-                label={t('editing.formatOnExit.label')}
-                description={t('editing.formatOnExit.description')}
-                checked={settings.formatMarkdownOnExit}
-                onCheckedChange={(formatMarkdownOnExit) =>
-                  update({ formatMarkdownOnExit })
-                }
-              />
+              <TabsContent value="editing" className={cn(PANEL, 'divide-y')}>
+                <SettingSelect
+                  label={t('editing.autosaveSpeed.label')}
+                  description={t('editing.autosaveSpeed.description')}
+                  value={settings.autosaveSpeed}
+                  options={AUTOSAVE_SPEEDS.map((value) => ({
+                    value,
+                    label: t(`editing.autosaveSpeed.options.${value}`),
+                  }))}
+                  onValueChange={(autosaveSpeed) => update({ autosaveSpeed })}
+                />
 
-              <SettingSwitch
-                label={t('editing.formatOnPaste.label')}
-                description={t('editing.formatOnPaste.description')}
-                checked={settings.formatMarkdownOnPaste}
-                onCheckedChange={(formatMarkdownOnPaste) =>
-                  update({ formatMarkdownOnPaste })
-                }
-              />
-            </TabsContent>
+                <SettingSwitch
+                  label={t('editing.spellCheck.label')}
+                  description={t('editing.spellCheck.description')}
+                  checked={settings.spellCheck}
+                  onCheckedChange={(spellCheck) => update({ spellCheck })}
+                />
 
-            <TabsContent value="links" className="mt-0 divide-y">
-              <SettingSelect
-                label={t('links.updateOnRename.label')}
-                description={t('links.updateOnRename.description')}
-                value={settings.updateLinksOnRename}
-                options={RENAME_LINK_POLICIES.map((value) => ({
-                  value,
-                  label: t(`links.updateOnRename.options.${value}`),
-                }))}
-                onValueChange={(updateLinksOnRename) =>
-                  update({ updateLinksOnRename })
-                }
-              />
+                <SettingSwitch
+                  label={t('editing.formatOnExit.label')}
+                  description={t('editing.formatOnExit.description')}
+                  checked={settings.formatMarkdownOnExit}
+                  onCheckedChange={(formatMarkdownOnExit) =>
+                    update({ formatMarkdownOnExit })
+                  }
+                />
 
-              {/* Stated in the panel rather than left for the author to
+                <SettingSwitch
+                  label={t('editing.formatOnPaste.label')}
+                  description={t('editing.formatOnPaste.description')}
+                  checked={settings.formatMarkdownOnPaste}
+                  onCheckedChange={(formatMarkdownOnPaste) =>
+                    update({ formatMarkdownOnPaste })
+                  }
+                />
+              </TabsContent>
+
+              <TabsContent value="links" className={cn(PANEL, 'divide-y')}>
+                <SettingSelect
+                  label={t('links.updateOnRename.label')}
+                  description={t('links.updateOnRename.description')}
+                  value={settings.updateLinksOnRename}
+                  options={RENAME_LINK_POLICIES.map((value) => ({
+                    value,
+                    label: t(`links.updateOnRename.options.${value}`),
+                  }))}
+                  onValueChange={(updateLinksOnRename) =>
+                    update({ updateLinksOnRename })
+                  }
+                />
+
+                {/* Stated in the panel rather than left for the author to
                   discover: the reason this setting is only about LABELS is
                   that a note link's href carries the note's id, so renaming
                   can never break navigation. Without that sentence the whole
                   setting reads as though links might break. */}
-              <p className="py-4 text-xs leading-relaxed text-muted-foreground">
-                {t('links.updateOnRename.note')}
-              </p>
-            </TabsContent>
+                <p className="py-4 text-xs leading-relaxed text-muted-foreground">
+                  {t('links.updateOnRename.note')}
+                </p>
+              </TabsContent>
 
-            {/* Its own tab rather than a section at the foot of another: these
+              {/* Its own tab rather than a section at the foot of another: these
                 rewrite rows across the whole vault, and they should not sit one
                 flick of the wheel below a font-size control. */}
-            <TabsContent value="maintenance" className="mt-0">
-              <MaintenancePanel />
-            </TabsContent>
+              <TabsContent value="maintenance" className={PANEL}>
+                <MaintenancePanel />
+              </TabsContent>
+            </div>
           </div>
         </Tabs>
       </DialogContent>
