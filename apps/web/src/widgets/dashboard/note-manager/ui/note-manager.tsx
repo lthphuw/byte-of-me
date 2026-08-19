@@ -1,9 +1,14 @@
 'use client';
 
 import type { CSSProperties } from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Button, Sheet, SheetContent, SheetTitle } from '@byte-of-me/ui';
-import type { OutlineItem } from '@byte-of-me/ui/rich-text-editor';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Button,
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  useMediaQuery,
+} from '@byte-of-me/ui';
 import { CircleHelp, Network, PanelLeftOpen, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -11,7 +16,11 @@ import { NoteEditorActions } from './note-editor-actions';
 import { NoteSidebarTabs } from './note-sidebar-tabs';
 import { NoteTreePanel } from './note-tree-panel';
 
-import { NOTE_HREF_PREFIX, noteHref } from '@/entities/note';
+import {
+  NOTE_HREF_PREFIX,
+  noteHref,
+  type NoteTreeNode,
+} from '@/entities/note';
 import {
   NoteActionsMenu,
   NoteRowContextMenu,
@@ -29,7 +38,29 @@ import { NoteSearchPalette } from '@/features/dashboard/note-search';
 import { useResizablePanel } from '@/shared/hooks/use-resizable-panel';
 import { useRouter } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
+import {
+  type NoteOutlineStore,
+  useNoteOutline,
+  useNoteOutlineStore,
+} from '@/widgets/dashboard/note-manager/lib/note-outline-store';
 import { useWorkspaceShortcuts } from '@/widgets/dashboard/note-manager/lib/use-workspace-shortcuts';
+
+/**
+ * Memoised at the point of use rather than inside `note-tree-panel.tsx`, so the
+ * panel stays a plain component for anyone reading it.
+ *
+ * What this buys: dragging the explorer's edge re-renders THIS widget on every
+ * pointer move, and so did every outline report before the store below. The
+ * tree does not care about either, and re-rendering it means re-rendering every
+ * row. It only helps while the props below stay referentially stable, which is
+ * why the four callbacks it receives are `useCallback`ed.
+ *
+ * This does NOT touch the measured re-render cost `use-explorer-tree.ts`
+ * documents — that is about rows re-rendering INSIDE the panel when the tree's
+ * own state moves, which `React.memo` cannot help and which this does not
+ * change.
+ */
+const MemoNoteTreePanel = memo(NoteTreePanel);
 
 /**
  * Where a note lives. The same string `noteHref` builds for a `[[` link, so
@@ -95,6 +126,16 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
   const [showArchived, setShowArchived] = useState(false);
   const [linksOpen, setLinksOpen] = useState(false);
   /**
+   * The links sheet is `lg:hidden`, but its OVERLAY and its scroll lock are
+   * not: crossing the breakpoint with it open left a dimmed, unscrollable page
+   * with an invisible focus trap on it and nothing visible to dismiss. Closing
+   * it costs nothing — the same panel is a permanent column at that width.
+   */
+  const isLinksColumnVisible = useMediaQuery('(min-width: 1024px)');
+  useEffect(() => {
+    if (isLinksColumnVisible) setLinksOpen(false);
+  }, [isLinksColumnVisible]);
+  /**
    * Set by a breadcrumb click; the tree opens onto that folder.
    *
    * A one-shot REQUEST, cleared the moment the tree satisfies it — the same
@@ -110,10 +151,16 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
   // The open note's heading outline — reported by the editor, rendered by the
   // sidebar's ToC tab. Cleared on note switch so a heading-less note never
   // shows the previous note's outline while its editor mounts.
-  const [outline, setOutline] = useState<OutlineItem[]>([]);
+  //
+  // A store rather than `useState`, and that is a fix rather than a
+  // preference: TipTap reports the outline on every `docChanged` transaction,
+  // so as state here every keystroke re-rendered the tree, every row, both
+  // palettes and the editor for a value only the Contents tab reads. See
+  // `note-outline-store.ts`.
+  const outlineStore = useNoteOutlineStore();
   useEffect(() => {
-    setOutline([]);
-  }, [openNoteId]);
+    outlineStore.set([]);
+  }, [openNoteId, outlineStore]);
   // Non-null exactly while the `[[` picker is open. Holding the editor's own
   // insert callback here — rather than a boolean plus a reach back into the
   // editor — is what keeps `packages/ui` from having to know what a note is.
@@ -175,6 +222,63 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
   // The palette's "New note" — the same mutation the tree panel's `+` uses.
   const createFromPalette = useCreateNote(openNote);
 
+  // The four callbacks below used to be inline arrows. They are hoisted for
+  // one reason: `MemoNoteTreePanel` compares props, and a fresh closure on
+  // every render makes that comparison always fail.
+  const onToggleArchived = useCallback(
+    () => setShowArchived((current) => !current),
+    []
+  );
+  const onOpenSearch = useCallback(() => setSearchOpen(true), []);
+
+  const renderRowActions = useCallback(
+    (node: NoteTreeNode, startRename: (noteId: string) => void) => (
+      <NoteActionsMenu
+        noteId={node.id}
+        title={node.title}
+        isFolder={node.isFolder}
+        isArchived={node.archivedAt !== null}
+        isPinned={node.isPinned}
+        onCreatedInside={openNote}
+        onRename={startRename}
+        onRemoved={onRowRemoved}
+        // The ONLY caller that passes this. The row owns the tab stop (roving
+        // tabindex), so the trigger inside it must stay out of the tab order —
+        // and the editor header's copy of this menu must not, which is what
+        // hardcoding it in the component cost.
+        tabIndex={-1}
+        // Always visible on touch, hover-revealed on desktop: a phone has
+        // no hover state to reveal it with, and it is the ONLY way to the
+        // menu there — long-press belongs to dragging. See
+        // `NoteRowContextMenu`.
+        className="opacity-100 transition-opacity md:opacity-0 md:focus-visible:opacity-100 md:group-focus-within:opacity-100 md:group-hover:opacity-100"
+      />
+    ),
+    [openNote, onRowRemoved]
+  );
+
+  const renderRowContextMenu = useCallback(
+    (
+      node: NoteTreeNode,
+      row: React.ReactNode,
+      startRename: (noteId: string) => void
+    ) => (
+      <NoteRowContextMenu
+        noteId={node.id}
+        title={node.title}
+        isFolder={node.isFolder}
+        isArchived={node.archivedAt !== null}
+        isPinned={node.isPinned}
+        onCreatedInside={openNote}
+        onRename={startRename}
+        onRemoved={onRowRemoved}
+      >
+        {row}
+      </NoteRowContextMenu>
+    ),
+    [openNote, onRowRemoved]
+  );
+
   // Resends anything the browser is still holding unsent edits for. Mounted
   // HERE, not in the editor: it has to survive a note switch and to run even
   // with no note open, which is exactly the case where the notes that failed
@@ -190,6 +294,13 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
 
   return (
     <div className="flex min-h-0 flex-1">
+      {/* `/space` and `/space/graph` both name themselves; this screen had no
+          `h1` at all, so its heading outline started at the tree's own labels
+          and a screen reader's "what page am I on" had no answer. Visually
+          hidden because the workspace is chrome-less by design — the title bar
+          the eye uses is the browser tab. */}
+      <h1 className="sr-only">{t('title')}</h1>
+
       {/* Master–detail, by CSS rather than by unmounting: below `md` exactly
           one of these two panes is on screen at a time, and which one is
           decided by the route. Both stay mounted so crossing the breakpoint —
@@ -205,12 +316,12 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
           sidebar.isCollapsed && 'md:hidden'
         )}
       >
-        <NoteTreePanel
+        <MemoNoteTreePanel
           activeId={openNoteId}
           includeArchived={showArchived}
-          onToggleArchived={() => setShowArchived((current) => !current)}
+          onToggleArchived={onToggleArchived}
           onSelect={openNote}
-          onOpenSearch={() => setSearchOpen(true)}
+          onOpenSearch={onOpenSearch}
           navSlot={navSlot}
           revealFolderId={revealFolderId}
           onFolderRevealed={onFolderRevealed}
@@ -220,37 +331,8 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
           // the editor open on a note that had just left the tree, still
           // autosaving into it — `updateNote` does not refuse an archived row.
           onRemoved={onRowRemoved}
-          renderActions={(node, startRename) => (
-            <NoteActionsMenu
-              noteId={node.id}
-              title={node.title}
-              isFolder={node.isFolder}
-              isArchived={node.archivedAt !== null}
-              isPinned={node.isPinned}
-              onCreatedInside={openNote}
-              onRename={startRename}
-              onRemoved={onRowRemoved}
-              // Always visible on touch, hover-revealed on desktop: a phone has
-              // no hover state to reveal it with, and it is the ONLY way to the
-              // menu there — long-press belongs to dragging. See
-              // `NoteRowContextMenu`.
-              className="opacity-100 transition-opacity md:opacity-0 md:focus-visible:opacity-100 md:group-focus-within:opacity-100 md:group-hover:opacity-100"
-            />
-          )}
-          renderContextMenu={(node, row, startRename) => (
-            <NoteRowContextMenu
-              noteId={node.id}
-              title={node.title}
-              isFolder={node.isFolder}
-              isArchived={node.archivedAt !== null}
-              isPinned={node.isPinned}
-              onCreatedInside={openNote}
-              onRename={startRename}
-              onRemoved={onRowRemoved}
-            >
-              {row}
-            </NoteRowContextMenu>
-          )}
+          renderActions={renderRowActions}
+          renderContextMenu={renderRowContextMenu}
         />
       </aside>
 
@@ -304,7 +386,7 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
               />
             }
             onOpenCheatSheet={() => setCheatSheetOpen(true)}
-            onOutlineChange={setOutline}
+            onOutlineChange={outlineStore.set}
             // Renaming from the editor's title field, rather than from a tree
             // row. Wired HERE because `note-actions` and `note-editor` are
             // sibling features, the same reason `propertiesSlot` and `actions`
@@ -351,8 +433,8 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
           nothing for the text. */}
       {openNoteId && (
         <aside className="hidden w-72 shrink-0 border-l bg-background lg:flex lg:flex-col">
-          <NoteSidebarTabs
-            outline={outline}
+          <OutlineSidebarTabs
+            store={outlineStore}
             noteId={openNoteId}
             onOpen={openNote}
           />
@@ -365,8 +447,8 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
             {t('sidebar.title')}
           </SheetTitle>
           {openNoteId && (
-            <NoteSidebarTabs
-              outline={outline}
+            <OutlineSidebarTabs
+              store={outlineStore}
               noteId={openNoteId}
               onOpen={openNote}
             />
@@ -417,4 +499,23 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
       />
     </div>
   );
+}
+
+/**
+ * The only subscriber to the outline store — and the whole point of it being a
+ * store. A keystroke now re-renders this leaf and the Contents list under it,
+ * instead of the workspace.
+ */
+function OutlineSidebarTabs({
+  store,
+  noteId,
+  onOpen,
+}: {
+  store: NoteOutlineStore;
+  noteId: string;
+  onOpen: (id: string) => void;
+}) {
+  const outline = useNoteOutline(store);
+
+  return <NoteSidebarTabs outline={outline} noteId={noteId} onOpen={onOpen} />;
 }

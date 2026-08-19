@@ -26,6 +26,7 @@ import { useNoteEditorAutosave } from '@/features/dashboard/note-editor/lib/use-
 import { NoteEditorSkeleton } from '@/features/dashboard/note-editor/ui/note-editor-skeleton';
 import { NoteExportMenu } from '@/features/dashboard/note-editor/ui/note-export-menu';
 import { Link } from '@/shared/i18n/navigation';
+import { cn } from '@/shared/lib/utils';
 import { LazyRichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
 /** Images pasted into this editor land under the `note` prefix in storage. */
@@ -232,34 +233,57 @@ export function NoteEditor({
             there it was one more row competing with the writing surface for
             the little height a phone has, and it was below the fold as soon
             as the document got long. */}
-        <div className="min-w-0 flex-1 px-1">
-          {isSaveError ? (
-            // Persistent, not the transient toast the mutation's `onError`
-            // also shows: `save.isPending` returning to `false` after a
-            // failure must not read as "Saved" — nothing changed on the
-            // server, and nothing else re-fires the save automatically (the
-            // buffer is unchanged since the failed attempt, which is exactly
-            // what the autosave effect treats as "nothing new to send"), so
-            // the only way back is this explicit retry.
-            <p
-              className="flex items-center gap-2 text-xs text-destructive"
-              aria-live="polite"
+        {/* ONE live region, always mounted. It used to be two elements swapped
+            on `isSaveError`, which meant the error region was INSERTED into the
+            DOM at the moment it had something to say — NVDA and JAWS only
+            announce changes inside a region that was already there, so the one
+            message that mattered was the one never spoken. The surviving region
+            had the opposite problem: it read "Saving…" then "Saved" on every
+            debounce, talking over the author mid-sentence.
+            So the visible text and the announced text are separated: the eye
+            gets all three states, the screen reader only the transitions worth
+            interrupting for — settled, or failed. */}
+        <div className="flex min-w-0 flex-1 items-center gap-2 px-1">
+          <p
+            role="status"
+            aria-live="polite"
+            className={cn(
+              'min-w-0 truncate text-xs',
+              isSaveError ? 'text-destructive' : 'text-muted-foreground'
+            )}
+          >
+            <span aria-hidden="true">
+              {isSaveError
+                ? t('status.error')
+                : isSaving
+                  ? t('status.saving')
+                  : t('status.saved')}
+            </span>
+            <span className="sr-only">
+              {isSaveError ? t('status.error') : isSaving ? '' : t('status.saved')}
+            </span>
+          </p>
+
+          {/* Persistent, not the transient toast the mutation's `onError`
+              also shows: `save.isPending` returning to `false` after a
+              failure must not read as "Saved" — nothing changed on the
+              server, and nothing else re-fires the save automatically (the
+              buffer is unchanged since the failed attempt, which is exactly
+              what the autosave effect treats as "nothing new to send"), so
+              the only way back is this explicit retry.
+
+              Outside the status element rather than inside it: a button in a
+              live region is read out as part of the announcement. */}
+          {isSaveError && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="h-6 shrink-0 px-2"
+              onClick={retry}
             >
-              <span className="truncate">{t('status.error')}</span>
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                className="h-6 shrink-0 px-2"
-                onClick={retry}
-              >
-                {t('status.retry')}
-              </Button>
-            </p>
-          ) : (
-            <p className="truncate text-xs text-muted-foreground" aria-live="polite">
-              {isSaving ? t('status.saving') : t('status.saved')}
-            </p>
+              {t('status.retry')}
+            </Button>
           )}
         </div>
 

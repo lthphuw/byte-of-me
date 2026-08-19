@@ -47,7 +47,7 @@ export function DeleteNoteDialog({
   const t = useTranslations('dashboard.note');
   const { remove } = useNoteMutations({ onRemoved });
 
-  const { data: descendantCount } = useQuery({
+  const { data: descendantCount, isError: countFailed } = useQuery({
     queryKey: noteKeys.descendantCount(noteId),
     queryFn: async () => {
       const res = await getDescendantCount(noteId);
@@ -63,7 +63,7 @@ export function DeleteNoteDialog({
     staleTime: 0,
   });
 
-  const { data: exposure } = useQuery({
+  const { data: exposure, isError: exposureFailed } = useQuery({
     queryKey: noteShareKeys.exposure(noteId),
     queryFn: async () => {
       const res = await getNoteShareExposure(noteId);
@@ -105,6 +105,15 @@ export function DeleteNoteDialog({
             <p className="text-sm text-destructive">
               {t('delete.descriptionShared', { count: exposure.shareCount })}
             </p>
+          ) : null}
+
+          {/* A failed fetch is NOT the same answer as a zero. Without this the
+              dialog silently fell back to the single-note wording and dropped
+              the "N people lose access" line entirely — understating the blast
+              radius in exactly the direction the two `staleTime: 0` notes
+              above exist to prevent. Said out loud instead. */}
+          {countFailed || exposureFailed ? (
+            <p className="text-sm text-destructive">{t('delete.impactUnknown')}</p>
           ) : null}
         </AlertDialogHeader>
 

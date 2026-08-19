@@ -1,11 +1,11 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { Button } from '@byte-of-me/ui';
 import { Crosshair } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import type { NoteGraph } from '@/entities/note';
+import { type NoteGraph, noteHref } from '@/entities/note';
 import {
   clampScale,
   fitViewport,
@@ -31,6 +31,17 @@ const DRAG_THRESHOLD = 4;
  * jump cut throws away — and short enough not to be a wait.
  */
 const RESET_DURATION_MS = 320;
+
+/** Screen px the keyboard cursor keeps between its node and the canvas edge. */
+const CURSOR_MARGIN = 56;
+
+/** Arrow key → the direction it travels in, in world units (y grows downward). */
+const ARROW_STEPS: Record<string, readonly [number, number] | undefined> = {
+  ArrowLeft: [-1, 0],
+  ArrowRight: [1, 0],
+  ArrowUp: [0, -1],
+  ArrowDown: [0, 1],
+};
 
 interface FitOptions {
   /** Reframe even if the one-shot auto-fit has already run. */
@@ -93,6 +104,21 @@ export function NoteGraphCanvas({ graph, onOpen }: NoteGraphCanvasProps) {
   // rendered as real DOM so it is selectable and reaches assistive tech —
   // text painted into a canvas reaches neither.
   const [hoverTitle, setHoverTitle] = useState<string | null>(null);
+
+  /**
+   * The KEYBOARD cursor — a second, independent pointer into the graph.
+   *
+   * Kept apart from `hoverRef` rather than folded into it: hover is a pointer
+   * position that must not survive the pointer leaving, and this one has to
+   * survive everything except Escape. It is React state (not a ref like the
+   * rest of the interaction bookkeeping) because two pieces of real DOM read
+   * it — the title chip and the live region — and canvas pixels reach no
+   * assistive technology at all.
+   */
+  const [focusedId, setFocusedId] = useState<string | null>(null);
+  const hintId = useId();
+  const focusedTitle =
+    graph.nodes.find((node) => node.id === focusedId)?.title ?? null;
 
   const requestDraw = useCallback(() => {
     if (frameRef.current !== null) return;
@@ -267,6 +293,16 @@ export function NoteGraphCanvas({ graph, onOpen }: NoteGraphCanvasProps) {
       context.arc(at.x, at.y, radius, 0, Math.PI * 2);
       context.fill();
 
+      // The keyboard cursor, drawn as a ring rather than a fill so it reads as
+      // "here" on top of whatever the node already says about itself.
+      if (node.id === focusedId) {
+        context.lineWidth = 2;
+        context.strokeStyle = hsl(accent, 1);
+        context.beginPath();
+        context.arc(at.x, at.y, radius + 4, 0, Math.PI * 2);
+        context.stroke();
+      }
+
       if (withLabels && !dimmed) {
         const label =
           node.title.length > 28 ? `${node.title.slice(0, 27)}…` : node.title;
@@ -291,6 +327,7 @@ export function NoteGraphCanvas({ graph, onOpen }: NoteGraphCanvasProps) {
     const canvas = canvasRef.current;
     if (!canvas) return;
     hasFittedRef.current = false;
+    setFocusedId(null);
     viewportRef.current = {
       x: canvas.clientWidth / 2,
       y: canvas.clientHeight / 2,
@@ -298,6 +335,14 @@ export function NoteGraphCanvas({ graph, onOpen }: NoteGraphCanvasProps) {
     };
     requestDraw();
   }, [graph, requestDraw]);
+
+  // The cursor moved, so the ring has to. An effect rather than a `requestDraw`
+  // inside the key handler: `drawRef.current` is reassigned during render, and
+  // only by the time effects run is the closure the one that knows where the
+  // cursor now is.
+  useEffect(() => {
+    requestDraw();
+  }, [focusedId, requestDraw]);
 
   // The canvas is CSS-sized, so nothing else tells us the backing store and
   // the centre offset are now wrong.
@@ -477,6 +522,114 @@ export function NoteGraphCanvas({ graph, onOpen }: NoteGraphCanvasProps) {
     requestDraw();
   };
 
+  /** Pans just far enough to bring a node the cursor jumped to into view. */
+  const revealNode = (node: PositionedNode) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    const at = worldToScreen(node, viewportRef.current);
+    if (
+      at.x >= CURSOR_MARGIN &&
+      at.y >= CURSOR_MARGIN &&
+      at.x <= width - CURSOR_MARGIN &&
+      at.y <= height - CURSOR_MARGIN
+    ) {
+      return;
+    }
+    // Same reason a pointer press cancels it: a tween still writing the
+    // viewport would drag the graph out from under the cursor.
+    cancelTween();
+    viewportRef.current = {
+      ...viewportRef.current,
+      x: viewportRef.current.x + (width / 2 - at.x),
+      y: viewportRef.current.y + (height / 2 - at.y),
+    };
+  };
+
+  /**
+   * Moves the cursor to the nearest node in the direction pressed.
+   *
+   * Geometric rather than list order, because the thing on screen is a map:
+   * "the note to the right of this one" is the only reading of Right that
+   * matches what the author can see. Candidates are restricted to a 90° cone
+   * (`across <= along`) and then scored so that travelling sideways costs
+   * double — without that a node barely inside the cone but very close wins
+   * over the one the author was obviously pointing at.
+   */
+  const moveFocus = (dx: number, dy: number) => {
+    const nodes = nodesRef.current;
+    if (nodes.length === 0) return;
+
+    const current = nodes.find((node) => node.id === focusedId) ?? null;
+    if (!current) {
+      // No cursor yet: start from whatever is nearest the middle of the view,
+      // which is where the eye already is.
+      const canvas = canvasRef.current;
+      const centre = {
+        x: (canvas?.clientWidth ?? 0) / 2,
+        y: (canvas?.clientHeight ?? 0) / 2,
+      };
+      let nearest: PositionedNode | null = null;
+      let nearestDistance = Infinity;
+      for (const node of nodes) {
+        const at = worldToScreen(node, viewportRef.current);
+        const distance = Math.hypot(at.x - centre.x, at.y - centre.y);
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          nearest = node;
+        }
+      }
+      if (!nearest) return;
+      revealNode(nearest);
+      setFocusedId(nearest.id);
+      return;
+    }
+
+    let best: PositionedNode | null = null;
+    let bestScore = Infinity;
+    for (const node of nodes) {
+      if (node.id === current.id) continue;
+      const ox = node.x - current.x;
+      const oy = node.y - current.y;
+      const along = ox * dx + oy * dy;
+      if (along <= 0) continue;
+      const across = Math.abs(ox * dy - oy * dx);
+      if (across > along) continue;
+      const score = along + across * 2;
+      if (score < bestScore) {
+        bestScore = score;
+        best = node;
+      }
+    }
+
+    if (!best) return;
+    revealNode(best);
+    setFocusedId(best.id);
+  };
+
+  const onKeyDown = (event: React.KeyboardEvent<HTMLCanvasElement>) => {
+    const step = ARROW_STEPS[event.key];
+    if (step) {
+      // The canvas fills a scrolling pane; without this the arrow keys scroll
+      // it instead of moving the cursor.
+      event.preventDefault();
+      moveFocus(step[0], step[1]);
+      return;
+    }
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      if (!focusedId) return;
+      event.preventDefault();
+      onOpen(focusedId);
+      return;
+    }
+
+    // Releases the cursor without leaving the canvas, so the arrow keys go
+    // back to the page and Tab still resumes from here.
+    if (event.key === 'Escape') setFocusedId(null);
+  };
+
   const onWheel = (event: React.WheelEvent<HTMLCanvasElement>) => {
     cancelTween();
     // Exponential, so a zoom out and the matching zoom in cancel exactly.
@@ -488,10 +641,26 @@ export function NoteGraphCanvas({ graph, onOpen }: NoteGraphCanvasProps) {
     <div className="relative size-full">
       <canvas
         ref={canvasRef}
+        // Focusable, named, and told to pass keystrokes through. Without these
+        // the whole page was mouse-only: a canvas is one opaque element with
+        // no accessible name and nothing inside it to reach.
+        //
+        // `role="application"` rather than `img`, because this element is an
+        // interactive widget with its own key bindings — a screen reader has
+        // to stop intercepting the arrow keys for the cursor below to exist.
+        // The list further down is what browse mode navigates instead.
+        tabIndex={0}
+        role="application"
+        aria-label={t('canvasLabel')}
+        aria-describedby={hintId}
         // `touch-none` hands every touch gesture to the handlers above.
         // Without it the browser claims them for scrolling and pan/pinch
         // never fire at all.
-        className="size-full touch-none"
+        className="size-full touch-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+        onKeyDown={onKeyDown}
+        // Leaving takes the cursor with it: a ring painted while the canvas is
+        // not focused claims a position the arrow keys no longer move.
+        onBlur={() => setFocusedId(null)}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -529,11 +698,44 @@ export function NoteGraphCanvas({ graph, onOpen }: NoteGraphCanvasProps) {
         <span className="sr-only">{t('resetView')}</span>
       </Button>
 
-      {hoverTitle && (
+      {/* The keyboard cursor takes precedence over the pointer's: if both are
+          somewhere, the one the author is steering is the one being steered. */}
+      {(focusedTitle ?? hoverTitle) && (
         <p className="pointer-events-none absolute bottom-3 left-3 max-w-[70%] truncate rounded-md border bg-background/90 px-2 py-1 text-xs shadow-sm">
-          {hoverTitle}
+          {focusedTitle ?? hoverTitle}
         </p>
       )}
+
+      {/* The text alternative — the whole graph, as something that can be read
+          and navigated rather than looked at.
+          Announced separately from the chip above: only the KEYBOARD cursor
+          belongs in a live region, because a mouse moving across a dense
+          cluster would otherwise announce a note per pixel. */}
+      <p className="sr-only" role="status" aria-live="polite">
+        {focusedTitle}
+      </p>
+      <div className="sr-only">
+        <p id={hintId}>{t('keyboardHint')}</p>
+        <p>{t('noteListLabel')}</p>
+        <ul>
+          {graph.nodes.map((node) => (
+            <li key={node.id}>
+              {/* A real `href`, the same one a `[[` link stores, so the note
+                  has an address here too — the click is still intercepted so
+                  the graph page navigates the way every other route does. */}
+              <a
+                href={noteHref(node.id)}
+                onClick={(event) => {
+                  event.preventDefault();
+                  onOpen(node.id);
+                }}
+              >
+                {node.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

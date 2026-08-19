@@ -8,6 +8,13 @@
  * component's own comment for the mechanism. `NoteTreePanel` needs no
  * comparable spec for that second failure mode because it never used
  * `CommandEmpty` (or any cmdk primitive) to begin with.
+ *
+ * `searchNotes` runs for real against a faked `prisma.$queryRaw`, the way
+ * `search-notes.spec.ts` fakes it: BOTH of that action's paths are raw
+ * statements now (the empty-query "recents" path became one too), so a fake
+ * on the `note` DELEGATE stubs nothing the action reaches and every render
+ * below opened a real connection — the failure `test-setup.ts` exists to make
+ * loud. `Object.defineProperty`, not `spyOn`, for the reason AGENTS §10 gives.
  */
 import { prisma } from '@byte-of-me/db';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -38,11 +45,12 @@ const messages = {
   },
 } as const;
 
-interface FakeNoteRow {
+/** A row off `searchNotes`'s raw statements — snake_case, as Postgres returns it. */
+interface FakeFtsRow {
   id: string;
   title: string;
-  updatedAt: Date;
-  plainText: string;
+  updated_at: Date;
+  snippet: string;
 }
 
 // Shaped like the app's real cuids — no lexical relationship whatsoever to
@@ -51,19 +59,18 @@ interface FakeNoteRow {
 // this string against "kafka" would fuzzy-match nothing and hide the item
 // outright. That is the entire failure `shouldFilter={false}` on the
 // `Command` this component renders exists to prevent.
-const KAFKA_NOTE: FakeNoteRow = {
+const KAFKA_NOTE: FakeFtsRow = {
   id: 'ckv3x9f7a0001abcdefgh1234',
   title: 'Kafka notes',
-  updatedAt: new Date('2026-08-01T00:00:00.000Z'),
-  plainText: 'consumer group rebalance protocol',
+  updated_at: new Date('2026-08-01T00:00:00.000Z'),
+  snippet: 'consumer group rebalance protocol',
 };
 
-let findManyImpl: () => Promise<FakeNoteRow[]>;
-const findMany = mock(() => findManyImpl());
-const count = mock(() => Promise.resolve(0));
+let queryRawImpl: () => Promise<FakeFtsRow[]>;
+const queryRaw = mock(() => queryRawImpl());
 
-Object.defineProperty(prisma, 'note', {
-  value: { findMany, count },
+Object.defineProperty(prisma, '$queryRaw', {
+  value: queryRaw,
   writable: true,
   configurable: true,
 });
@@ -96,15 +103,15 @@ function Harness({
   );
 }
 
-/** Resolves the NEXT `findMany` call only once `release()` runs, so a test
+/** Resolves the NEXT `$queryRaw` call only once `release()` runs, so a test
  *  can assert on exactly what is on screen while the search is still in
  *  flight — same technique as `note-editor.spec.tsx`'s `gateNextUpdateMany`. */
-function gateNextFindMany(rows: FakeNoteRow[]): { release: () => void } {
+function gateNextQueryRaw(rows: FakeFtsRow[]): { release: () => void } {
   let release: () => void = () => {};
   const gate = new Promise<void>((resolve) => {
     release = resolve;
   });
-  findManyImpl = async () => {
+  queryRawImpl = async () => {
     await gate;
     return rows;
   };
@@ -112,10 +119,8 @@ function gateNextFindMany(rows: FakeNoteRow[]): { release: () => void } {
 }
 
 beforeEach(() => {
-  findManyImpl = () => Promise.resolve([]);
-  findMany.mockClear();
-  count.mockClear();
-  count.mockResolvedValue(0);
+  queryRawImpl = () => Promise.resolve([]);
+  queryRaw.mockClear();
 });
 
 afterEach(() => {
@@ -124,8 +129,7 @@ afterEach(() => {
 
 describe('NoteSearchPalette', () => {
   test('a result whose id does not resemble the query still renders (shouldFilter contract)', async () => {
-    findManyImpl = () => Promise.resolve([KAFKA_NOTE]);
-    count.mockResolvedValue(1);
+    queryRawImpl = () => Promise.resolve([KAFKA_NOTE]);
 
     const queryClient = makeQueryClient();
     render(<Harness open queryClient={queryClient} />);
@@ -151,7 +155,7 @@ describe('NoteSearchPalette', () => {
   test(
     'shows the loading placeholder while the search is still in flight',
     async () => {
-      const { release } = gateNextFindMany([]);
+      const { release } = gateNextQueryRaw([]);
       const queryClient = makeQueryClient();
       render(<Harness open queryClient={queryClient} />);
 
@@ -189,7 +193,7 @@ describe('NoteSearchPalette', () => {
   );
 
   test('shows the load-error copy when the search fails', async () => {
-    findManyImpl = () => Promise.reject(new Error('db down'));
+    queryRawImpl = () => Promise.reject(new Error('db down'));
 
     const queryClient = makeQueryClient();
     render(<Harness open queryClient={queryClient} />);
@@ -225,10 +229,10 @@ describe('NoteSearchPalette', () => {
     });
 
     // Still within `staleTime`: no second fetch. This is what makes the
-    // scenario the one under test — a second `findMany` call would mean
+    // scenario the one under test — a second `$queryRaw` call would mean
     // this accidentally exercised a refetch instead of the pure warm-cache
     // render I2 was about.
-    expect(findMany).toHaveBeenCalledTimes(1);
+    expect(queryRaw).toHaveBeenCalledTimes(1);
     expect(screen.getByText('No notes match.')).toBeTruthy();
   });
 });

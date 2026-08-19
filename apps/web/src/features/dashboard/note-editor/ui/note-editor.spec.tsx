@@ -107,7 +107,7 @@ import {
 // trade-off for a component spec that would otherwise need a new tsconfig
 // alias just to reach one file outside `src/`. Values match `en.json`
 // exactly (checked against it directly) because several assertions below
-// query on the literal rendered text (`screen.getByText('Saved')` etc.).
+// query on the literal rendered text (`screen.getAllByText('Saved')` etc.).
 const messages = {
   dashboard: {
     note: {
@@ -133,6 +133,21 @@ const messages = {
       },
       cheatSheet: {
         open: 'Markdown help',
+      },
+      // The header's export dropdown. Nothing below asserts on these, but the
+      // subset has to cover every key the rendered tree ASKS for: a missing one
+      // is not a failure, it renders the key path and floods the run with
+      // `MISSING_MESSAGE` stack traces that bury the real assertion error.
+      export: {
+        label: 'Export',
+        markdown: 'Download .md',
+        pdf: 'Print / Save as PDF',
+        notReady: 'The note is still loading.',
+      },
+      markdown: {
+        format: 'Clean up markdown',
+        formatted: 'Markdown tidied up.',
+        alreadyClean: 'Markdown is already tidy.',
       },
     },
   },
@@ -558,10 +573,17 @@ describe('NoteEditor autosave', () => {
     await wait(SETTLE_MS);
     await waitFor(() => expect(updateMany).toHaveBeenCalledTimes(1));
 
+    // `*AllByText`, not the singular queries: the status is ONE live region
+    // carrying the copy twice — a visible `aria-hidden` span and an `sr-only`
+    // one, so the eye gets all three states and the screen reader only the
+    // transitions worth interrupting for (see `note-editor.tsx`). A singular
+    // text query is ambiguous by construction against that. The contract is
+    // unchanged: the status says the save failed, never "Saved", and offers
+    // the retry.
     await waitFor(() => {
-      expect(screen.queryByText('Saved')).toBeNull();
+      expect(screen.queryAllByText('Saved')).toHaveLength(0);
     });
-    expect(screen.getByText('Not saved')).toBeTruthy();
+    expect(screen.getAllByText('Not saved').length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: 'Retry' })).toBeTruthy();
   }, DEBOUNCE_TEST_TIMEOUT_MS);
 
@@ -817,10 +839,11 @@ describe('NoteEditor autosave', () => {
     });
     await wait(SETTLE_MS);
     await waitFor(() => expect(updateMany).toHaveBeenCalledTimes(1));
+    // Two spans carry the status copy — see the retry test above.
     await waitFor(() => {
-      expect(screen.queryByText('Saved')).toBeNull();
+      expect(screen.queryAllByText('Saved')).toHaveLength(0);
     });
-    expect(screen.getByText('Not saved')).toBeTruthy();
+    expect(screen.getAllByText('Not saved').length).toBeGreaterThan(0);
 
     // Switch to B: B is fine, the failure belongs to A and must not follow.
     await act(async () => {
@@ -828,8 +851,8 @@ describe('NoteEditor autosave', () => {
     });
     await screen.findByDisplayValue('Note B');
 
-    expect(screen.queryByText('Not saved')).toBeNull();
-    expect(screen.getByText('Saved')).toBeTruthy();
+    expect(screen.queryAllByText('Not saved')).toHaveLength(0);
+    expect(screen.getAllByText('Saved').length).toBeGreaterThan(0);
   }, DEBOUNCE_TEST_TIMEOUT_MS);
 
   test('a BODY save that lands after returning to its note updates the editor, not just the hook buffer', async () => {

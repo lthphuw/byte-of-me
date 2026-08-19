@@ -7,9 +7,10 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  DialogTitle,
   useDebounce,
 } from '@byte-of-me/ui';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
 import { NoteSearchSkeleton } from './note-search-skeleton';
@@ -136,6 +137,11 @@ export function NoteSearchPalette({
       return res.data;
     },
     enabled: open,
+    // The key carries `debouncedTerm`, so every 300ms pause is a NEW cache
+    // entry and the results blanked to a skeleton while the next one loaded —
+    // one full flash per typed word. Keeping the previous term's rows on
+    // screen makes the list settle instead of strobing.
+    placeholderData: keepPreviousData,
   });
 
   return (
@@ -151,6 +157,13 @@ export function NoteSearchPalette({
       // `contains` filter as the sole source of truth for what matches.
       shouldFilter={false}
     >
+      {/* `CommandDialog` renders a bare `DialogContent`, which leaves both
+          roles of this palette — search and the `[[` link picker — as dialogs
+          with no accessible name (Radix logs an error for it). Visually
+          hidden: the input's placeholder already says this on screen. */}
+      <DialogTitle className="sr-only">
+        {placeholder ?? t('search.placeholder')}
+      </DialogTitle>
       <CommandInput
         value={term}
         onValueChange={setTerm}
@@ -199,7 +212,10 @@ export function NoteSearchPalette({
             placeholder exists to prevent. The string itself is not lost: it is
             the container's accessible name, so a screen reader still hears
             "Searching…" while the bars stay decorative. */}
-        {isPending && <NoteSearchSkeleton label={t('search.loading')} />}
+        {/* `!data` as well as `isPending`: with `keepPreviousData` the previous
+            term's rows are still worth showing while the next term loads, and
+            only a first load has nothing to leave on screen. */}
+        {isPending && !data && <NoteSearchSkeleton label={t('search.loading')} />}
         {isLoadingError && (
           <div className="py-6 text-center text-sm text-destructive">
             {t('errors.load')}

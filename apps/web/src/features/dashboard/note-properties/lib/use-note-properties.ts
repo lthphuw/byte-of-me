@@ -47,13 +47,21 @@ export function useNoteProperties(noteId: string) {
       if (!res.success) throw new Error(res.errorMsg);
       return res.data;
     },
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       queryClient.setQueryData(noteKeys.detail(noteId), data);
-      // The tree groups by status in the explorer's grouped view (Phase B),
-      // so a status change has to reach it.
-      // Every list-shaped key, not just the tree: the explorer now reads
-      // per-level `children` keys, which `tree` does not prefix-match.
-      for (const queryKey of noteKeys.lists()) {
+      // The explorer's grouped view buckets by status, so a status change
+      // moves this row between buckets and changes both bucket counts —
+      // that, and nothing else. A PROPERTIES edit changes nothing any list
+      // draws: no row renders a property.
+      //
+      // This used to invalidate the whole `lists()` family, which is exactly
+      // the cost `applySaveResult` in `use-note-editor-autosave.ts` documents
+      // narrowing away: the root level, every expanded folder, `page`,
+      // `groups`, `group-rows`, `descendantCountAll` and `ancestorsAll` — one
+      // server action each, each paying its own `requireAdmin()` — for a tree
+      // whose shape had not moved.
+      if (variables.status === undefined) return;
+      for (const queryKey of [noteKeys.groupsAll(), noteKeys.groupRowsAll()]) {
         void queryClient.invalidateQueries({ queryKey });
       }
     },
@@ -87,9 +95,10 @@ export function useNoteProperties(noteId: string) {
         (old: (typeof query)['data']) => (old ? { ...old, labels } : old)
       );
       void queryClient.invalidateQueries({ queryKey: noteKeys.labels() });
-      // Every list-shaped key, not just the tree: the explorer now reads
-      // per-level `children` keys, which `tree` does not prefix-match.
-      for (const queryKey of noteKeys.lists()) {
+      // Same narrowing as the status edit above, for the same reason: the
+      // grouped view can bucket by label, and no row renders a label, so the
+      // grouped view is the only list a label change can move.
+      for (const queryKey of [noteKeys.groupsAll(), noteKeys.groupRowsAll()]) {
         void queryClient.invalidateQueries({ queryKey });
       }
     },

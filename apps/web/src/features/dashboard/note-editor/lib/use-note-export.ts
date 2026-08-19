@@ -21,6 +21,15 @@ import {
 export const NOTE_PRINT_PATH = '/print/notes';
 
 /**
+ * How long the Blob URL outlives the click that used it.
+ *
+ * Revoking in the same tick as `anchor.click()` aborts the download in Firefox
+ * and Safari: only Chrome has read the blob by the time the handler returns.
+ * One second is far past the read and still bounds the buffer.
+ */
+const REVOKE_DELAY_MS = 1000;
+
+/**
  * The two export paths from the editor header.
  *
  * Both need the note metadata; only markdown needs the live editor, because
@@ -53,7 +62,7 @@ export function useNoteExport(
     document.body.append(anchor);
     anchor.click();
     anchor.remove();
-    URL.revokeObjectURL(url);
+    window.setTimeout(() => URL.revokeObjectURL(url), REVOKE_DELAY_MS);
   }, [note, apiRef, t]);
 
   const openPrintView = useCallback(() => {

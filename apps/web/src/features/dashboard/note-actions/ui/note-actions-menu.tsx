@@ -27,6 +27,13 @@ export type NoteActionsMenuProps = Omit<
   /** Changes the share dialog's wording; a folder grant covers its subtree. */
   isFolder: boolean;
   className?: string;
+  /**
+   * Only the tree passes `-1`: its rows own the tab stop (roving tabindex, see
+   * `note-tree-item.tsx`), so the trigger inside a row must stay out of the tab
+   * order. Everywhere else — the editor header above all — leaving this unset
+   * is what gives Share/Pin/Archive/Delete a keyboard path at all.
+   */
+  tabIndex?: number;
 };
 
 /**
@@ -42,6 +49,7 @@ export function NoteActionsMenu({
   title,
   isFolder,
   className,
+  tabIndex,
   ...target
 }: NoteActionsMenuProps) {
   const t = useTranslations('dashboard.note');
@@ -67,7 +75,7 @@ export function NoteActionsMenu({
             type="button"
             variant="ghost"
             size="icon"
-            tabIndex={-1}
+            tabIndex={tabIndex}
             aria-label={t('tree.actionsAriaLabel')}
             // `stopPropagation`: in the tree this button sits inside the row
             // that selects a note, and opening the menu must not also open the

@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -22,6 +23,7 @@ import {
   RENAME_LINK_POLICIES,
   useWorkspaceSettings,
 } from '@/entities/workspace-settings';
+import { useHasRunningBatchJob } from '@/features/dashboard/workspace-settings/lib/use-batch-job';
 import { MaintenancePanel } from '@/features/dashboard/workspace-settings/ui/maintenance-panel';
 import {
   SettingSelect,
@@ -37,6 +39,9 @@ import { cn } from '@/shared/lib/utils';
  * fresh node and the enter animation runs on every switch without any state of
  * its own. It moves by a quarter of a rem — enough to read as "this is new
  * content", not so much that it competes with the height tween underneath it.
+ *
+ * Maintenance is the exception: it is `forceMount`ed (see below), so it is
+ * never a fresh node and animates only once, when the dialog opens.
  */
 const PANEL = 'mt-0 duration-200 animate-in fade-in-0 slide-in-from-bottom-1';
 
@@ -136,8 +141,29 @@ export function WorkspaceSettingsDialog({
   const { settings, update, isSaving, saveError } = useWorkspaceSettings();
   const { panelRef, panelHeight } = usePanelHeight();
 
+  /**
+   * Closing the dialog unmounts the maintenance panel, and unmounting cancels
+   * a running job — so the first close attempt during one is answered with a
+   * warning instead of a close, and only the second goes through.
+   *
+   * A banner rather than a confirmation dialog: a modal on top of a modal
+   * means two focus traps arguing over Escape, which is the key most people
+   * are pressing when they arrive here.
+   */
+  const hasRunningJob = useHasRunningBatchJob();
+  const [closeWarned, setCloseWarned] = useState(false);
+
+  const requestOpenChange = (next: boolean) => {
+    if (!next && hasRunningJob && !closeWarned) {
+      setCloseWarned(true);
+      return;
+    }
+    setCloseWarned(false);
+    onOpenChange(next);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={requestOpenChange}>
       {/* `top-[8dvh] translate-y-0` overrides the centring — see the note on
           the tab strip above. The dialog then hangs from a fixed line near the
           top of the viewport, so nothing above the panels can move. */}
@@ -152,6 +178,27 @@ export function WorkspaceSettingsDialog({
           </div>
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
+
+        {hasRunningJob && closeWarned && (
+          <div
+            role="alert"
+            className="flex flex-col gap-2 border-b border-amber-500/40 bg-amber-500/10 px-6 py-3 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <p className="text-xs leading-relaxed">{t('closeWhileRunning')}</p>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="shrink-0"
+              onClick={() => {
+                setCloseWarned(false);
+                onOpenChange(false);
+              }}
+            >
+              {t('closeAnyway')}
+            </Button>
+          </div>
+        )}
 
         <Tabs defaultValue="appearance" className="flex min-h-0 flex-col">
           {/* An explicit grid rather than the default inline row: the Vietnamese
@@ -288,8 +335,25 @@ export function WorkspaceSettingsDialog({
 
               {/* Its own tab rather than a section at the foot of another: these
                 rewrite rows across the whole vault, and they should not sit one
-                flick of the wheel below a font-size control. */}
-              <TabsContent value="maintenance" className={PANEL}>
+                flick of the wheel below a font-size control.
+
+                `forceMount` is not a rendering preference. Radix unmounts the
+                panel that leaves, and `useBatchJob`'s unmount cleanup sets
+                `cancelledRef` — so glancing at another tab while a whole-vault
+                job ran stopped it dead, discarded the progress, and said
+                nothing. The panel now stays mounted and Radix only hides it;
+                the cost is that this one tab's enter animation runs once per
+                dialog open instead of per switch.
+
+                `data-[state=inactive]:hidden` is REQUIRED with it, not
+                decoration: Radix writes `hidden={!present}`, and `forceMount`
+                makes `present` true unconditionally — so without this rule the
+                maintenance panel renders on top of every other tab. */}
+              <TabsContent
+                value="maintenance"
+                forceMount
+                className={cn(PANEL, 'data-[state=inactive]:hidden')}
+              >
                 <MaintenancePanel />
               </TabsContent>
             </div>

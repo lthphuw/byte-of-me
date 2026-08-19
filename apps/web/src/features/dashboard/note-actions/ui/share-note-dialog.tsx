@@ -238,6 +238,23 @@ export function ShareNoteDialog({
             </li>
           ))}
         </ul>
+
+        {/* A failed revoke or role change looks EXACTLY like a successful one:
+            the list is re-read from the server, so the row simply stays as it
+            was, and the author walks away believing access is gone when it is
+            not. `role="alert"` because nothing else on screen moves — unlike
+            the invite above, which at least has a spinner and a cleared field
+            to say something happened. */}
+        {revoke.error ? (
+          <p role="alert" className="text-sm text-destructive">
+            {t('revokeFailed')} — {revoke.error.message}
+          </p>
+        ) : null}
+        {changeRole.error ? (
+          <p role="alert" className="text-sm text-destructive">
+            {t('roleFailed')} — {changeRole.error.message}
+          </p>
+        ) : null}
       </DialogContent>
     </Dialog>
   );

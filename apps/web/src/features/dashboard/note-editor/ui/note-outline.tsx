@@ -29,12 +29,21 @@ export function NoteOutline({ items }: { items: OutlineItem[] }) {
           key={item.id}
           type="button"
           onClick={() => {
-            document
-              .getElementById(item.id)
-              ?.scrollIntoView({
-                behavior: scrollIntoViewBehavior(),
-                block: 'start',
-              });
+            const heading = document.getElementById(item.id);
+            if (!heading) return;
+
+            // Focus as well as scroll. Scrolling alone changes nothing anyone
+            // navigating by keyboard or screen reader can perceive: the next
+            // Tab still resumes in this list and the reading cursor never
+            // left it. `-1` takes focus programmatically without putting the
+            // heading in the tab order; `preventScroll` leaves the travel to
+            // the call below, which honours reduced motion.
+            heading.setAttribute('tabindex', '-1');
+            heading.focus({ preventScroll: true });
+            heading.scrollIntoView({
+              behavior: scrollIntoViewBehavior(),
+              block: 'start',
+            });
           }}
           className={cn(
             '-ml-px border-l-2 border-transparent px-3 py-1 text-left text-xs transition-colors hover:border-primary hover:text-primary',
