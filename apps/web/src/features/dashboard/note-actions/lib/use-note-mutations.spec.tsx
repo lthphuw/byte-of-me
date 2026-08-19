@@ -80,10 +80,16 @@ Object.defineProperty(prisma, 'note', {
 /** Resolves the NEXT read of the level only once `release()` runs. */
 let gateLevel: (() => void) | null = null;
 let levelReads = 0;
+/**
+ * Side effects of `onSuccess`, in the order they actually happened. Only the
+ * relative order matters — see the ordering test at the bottom of this file.
+ */
+let effects: string[] = [];
 
 async function readLevel(): Promise<{ rows: []; nextCursor: null }> {
   levelReads += 1;
   if (levelReads > 1) {
+    effects.push('invalidate');
     await new Promise<void>((resolve) => {
       gateLevel = resolve;
     });
@@ -92,8 +98,8 @@ async function readLevel(): Promise<{ rows: []; nextCursor: null }> {
 }
 
 /** The level the tree would draw a pending row in, exactly as the panel reads it. */
-function Probe() {
-  const createNote = useCreateNote();
+function Probe({ onCreated }: { onCreated?: (noteId: string) => void }) {
+  const createNote = useCreateNote(onCreated);
   const pending = useMutationState({
     filters: { mutationKey: CREATE_NOTE_MUTATION_KEY, status: 'pending' },
     select: (mutation) => createTargetParentId(mutation.state.variables),
@@ -119,7 +125,7 @@ function Probe() {
   );
 }
 
-function renderProbe() {
+function renderProbe(onCreated?: (noteId: string) => void) {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },
@@ -130,7 +136,7 @@ function renderProbe() {
   return render(
     <QueryClientProvider client={queryClient}>
       <NextIntlClientProvider locale="en" messages={messages}>
-        <Probe />
+        <Probe onCreated={onCreated} />
       </NextIntlClientProvider>
     </QueryClientProvider>
   );
@@ -143,6 +149,7 @@ function pendingLevels(): string {
 beforeEach(() => {
   levelReads = 0;
   gateLevel = null;
+  effects = [];
   findFirst.mockClear();
   create.mockClear();
 });
@@ -176,6 +183,32 @@ describe('useCreateNote', () => {
 
     gateLevel?.();
 
+    await waitFor(() => expect(pendingLevels()).toBe(''));
+  });
+
+  /**
+   * The create-and-open that created the note and then never opened it.
+   *
+   * `onCreated` is where the caller navigates, and it has to be called BEFORE
+   * the level invalidation goes out — not because of anything TanStack does,
+   * but because `router.push` and every server action share one queue in
+   * Next's app router, and a navigation dispatched on top of a single pending
+   * action strands everything dispatched after it (the file under test carries
+   * the full mechanism and the measurement). The order of these two effects is
+   * the whole difference between a note that opens and a note that leaves the
+   * editor on its skeleton for good, so it is asserted rather than left to
+   * read as arbitrary.
+   */
+  test('opens the new note before invalidating the level it landed in', async () => {
+    renderProbe(() => effects.push('open'));
+    await waitFor(() => expect(levelReads).toBe(1));
+
+    fireEvent.click(screen.getByRole('button', { name: 'create' }));
+
+    await waitFor(() => expect(effects).toContain('invalidate'));
+    expect(effects).toEqual(['open', 'invalidate']);
+
+    gateLevel?.();
     await waitFor(() => expect(pendingLevels()).toBe(''));
   });
 });

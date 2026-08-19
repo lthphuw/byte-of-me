@@ -1,5 +1,6 @@
 'use client';
 
+import { useMutationState } from '@tanstack/react-query';
 import {
   Archive,
   ArchiveRestore,
@@ -14,6 +15,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import {
+  CREATE_NOTE_MUTATION_KEY,
   useCreateNote,
   useNoteMutations,
 } from '@/features/dashboard/note-actions/lib/use-note-mutations';
@@ -86,6 +88,27 @@ export function useNoteActionItems({
   const { archive, restore, pin } = useNoteMutations({ onRemoved });
   const createInside = useCreateNote(onCreatedInside);
 
+  /**
+   * Whether a create is already running — read from the MUTATION CACHE, not
+   * from `createInside.isPending`.
+   *
+   * `isPending` cannot work here and never did: Radix unmounts this menu's
+   * content the moment an item is chosen, so the re-render that would turn the
+   * flag on is never committed and the item is only ever rendered enabled.
+   * Reopening the menu mid-create therefore offered "New note inside" again,
+   * and taking it created a second note and fired a second `router.push` on
+   * top of the first — the double-navigation shape `note-row-input.tsx`
+   * already records as having left the editor showing a skeleton.
+   *
+   * The cache outlives the observer, which is the same reason
+   * `note-tree-panel.tsx` reads its pending rows from here.
+   */
+  const pendingCreates = useMutationState({
+    filters: { mutationKey: CREATE_NOTE_MUTATION_KEY, status: 'pending' },
+    select: (mutation) => mutation.mutationId,
+  });
+  const isCreating = pendingCreates.length > 0;
+
   const items: NoteActionItem[] = [];
 
   // Create-inside for live rows: any row can hold children (the tree is one
@@ -96,14 +119,14 @@ export function useNoteActionItems({
         id: 'new-note-inside',
         icon: <FilePlus className="mr-2 size-4" />,
         label: t('actions.newNoteInside'),
-        disabled: createInside.isPending,
+        disabled: isCreating,
         onSelect: () => createInside.mutate({ parentId: noteId }),
       },
       {
         id: 'new-folder-inside',
         icon: <FolderPlus className="mr-2 size-4" />,
         label: t('actions.newFolderInside'),
-        disabled: createInside.isPending,
+        disabled: isCreating,
         onSelect: () =>
           createInside.mutate({ parentId: noteId, isFolder: true }),
       }

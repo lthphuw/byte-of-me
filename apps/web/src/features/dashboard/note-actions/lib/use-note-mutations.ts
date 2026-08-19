@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import {
   archiveNote,
   createNote,
+  DELETE_NOTE_MUTATION_KEY,
   deleteLocalNote,
   deleteNote,
   noteKeys,
@@ -14,6 +15,36 @@ import {
   updateNote,
 } from '@/entities/note';
 import { useRelabelInboundLinks } from '@/features/dashboard/note-actions/lib/use-relabel-inbound-links';
+
+/**
+ * Why every callback below moves its navigation AHEAD of `invalidateLists()`.
+ *
+ * `router.push` and every server action share ONE queue in Next's app router
+ * (`client/components/app-router-instance.js`). A navigation is dispatched
+ * with priority: `dispatchAction` marks whatever is pending as `discarded`,
+ * splices the navigation in ahead of it and runs it immediately — but it does
+ * NOT move `actionQueue.last` onto the navigation. When the queue held exactly
+ * one action (`pending === last`), `last` is left pointing at the discarded
+ * node, which is no longer on the chain: every action dispatched from then
+ * until the queue drains is appended to `discarded.next` and is never sent at
+ * all. And because each dispatch hands React a fresh promise to wait on, React
+ * ends up waiting on an orphan's — so the navigation's own resolved state
+ * never commits and the URL never changes either.
+ *
+ * Measured in the browser with the queue traced, on "new note inside":
+ * `createNote` → `getNoteChildren` (the only active level query; pending ===
+ * last) → `navigate` (discards it, `last` left on the discarded node) →
+ * `getAdminNoteById` and one further read dispatched and never issued. The
+ * editor's own read never leaving the browser is why the pane sat on
+ * `NoteEditorSkeleton` forever, and no `pushState` ever ran despite the
+ * navigation's own RSC request coming back 200.
+ *
+ * Dispatching the navigation FIRST — the mutation's own action has just
+ * resolved, so the queue is empty at that moment — takes the `pending === null`
+ * branch instead, which does set `last`. The invalidations then chain off the
+ * navigation and all run. It is also the order the path that always worked
+ * (clicking a row that already exists) has used all along.
+ */
 
 /**
  * Invalidates every list a note can appear in, and only those.
@@ -62,6 +93,11 @@ interface UseNoteMutationsOptions {
    * Called once the note is gone from wherever it was — the caller decides
    * whether that means navigating away (the note was the one open) or nothing
    * at all (it was another row in the tree).
+   *
+   * Fired once per note the operation actually took, not once per click.
+   * Archiving a folder cascades to its whole subtree, and the open note is as
+   * likely to be a DESCENDANT of the archived row as to be the row itself —
+   * see `archive` below.
    */
   onRemoved?: (noteId: string) => void;
 }
@@ -75,12 +111,26 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
     mutationFn: async (id: string) => {
       const res = await archiveNote(id);
       if (!res.success) throw new Error(res.errorMsg);
-      return id;
+      // The whole cascade, not the id that was clicked — see below.
+      return res.data;
     },
-    onSuccess: (id) => {
+    onSuccess: (archivedIds) => {
+      // EVERY archived id, because archiving cascades down the subtree and
+      // the caller's "was this the note I have open?" test is an id
+      // comparison. Reporting only the row that was clicked left the editor
+      // open on a descendant that had just gone to the trash: the URL still
+      // named it, the tree no longer listed it, and the autosave kept writing
+      // into it — `updateNote` does not refuse an archived row. Closing the
+      // editor is the behaviour a direct archive of the open note has always
+      // had; which row the author clicked is an implementation detail of the
+      // cascade, not a different intent.
+      //
+      // Ahead of the invalidation: archiving the OPEN note navigates away, and
+      // a navigation dispatched behind a burst of server actions can be
+      // stranded. See the note at the top of this file.
+      for (const archivedId of archivedIds) onRemoved?.(archivedId);
       void invalidateLists();
       toast.success(t('toasts.archived'));
-      onRemoved?.(id);
     },
     onError: (error: Error) => {
       toast.error(t('errors.archive'), { description: error.message });
@@ -126,6 +176,12 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
   });
 
   const remove = useMutation({
+    // Keyed so the delete is findable in the MUTATION cache by note id. The
+    // editor's departure flush is what asks: it runs on the unmount this
+    // delete causes, and has no other way to tell "the pane is closing, send
+    // what is pending" apart from "this note is gone, send nothing". See
+    // `hasNoteBeenDeleted`.
+    mutationKey: DELETE_NOTE_MUTATION_KEY,
     mutationFn: async (id: string) => {
       const res = await deleteNote(id);
       if (!res.success) throw new Error(res.errorMsg);
@@ -146,9 +202,10 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
       // drops any local copy whose note the server no longer returns, which
       // is what actually cleans up after a cascade.
       void deleteLocalNote(id);
+      // Ahead of the invalidation, for the reason `archive` above is.
+      onRemoved?.(id);
       void invalidateLists();
       toast.success(t('toasts.deleted'));
-      onRemoved?.(id);
     },
     onError: (error: Error) => {
       toast.error(t('errors.delete'), { description: error.message });
@@ -235,16 +292,19 @@ export function useCreateNote(
       return res.data;
     },
     onSuccess: (note) => {
-      const levels = invalidateLists();
       onCreatedRow?.(note);
       // Folders have no document to open — they get renamed in place
       // instead of navigating to an editor that means nothing for them.
+      //
+      // BEFORE the invalidation, and that ordering IS the fix for a
+      // create-and-open that created the note and then never opened it. See
+      // the note at the top of this file for the router queue this races.
       if (!note.isFolder) onCreated?.(note.id);
       // RETURNED, so the mutation stays pending until the level has re-read —
       // otherwise the tree's pending row goes one round trip before the real
       // one arrives. `invalidateQueries` swallows a failed refetch rather than
       // rejecting, so this cannot turn a created note into a failure toast.
-      return levels;
+      return invalidateLists();
     },
     onError: (error: Error) => {
       toast.error(t('errors.create'), { description: error.message });
