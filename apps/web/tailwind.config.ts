@@ -41,6 +41,8 @@ export default {
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
+          // Readable error TEXT (`text-destructive-text`). DEFAULT is a fill.
+          text: 'hsl(var(--destructive-text))',
         },
         muted: {
           DEFAULT: 'hsl(var(--muted))',

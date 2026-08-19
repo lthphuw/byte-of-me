@@ -96,6 +96,7 @@ export function EducationAchievementsField({
               total={fields.length}
               control={control}
               remove={remove}
+              move={move}
               defaultOpen={index === openOnMountIndex}
             />
           ))}

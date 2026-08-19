@@ -1,12 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import type { Control, Path, UseFormReturn } from 'react-hook-form';
 import {
+  ConfirmDeleteDialog,
   DeleteButton,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
   Input,
   Separator,
   Textarea,
@@ -20,6 +23,15 @@ import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text
 /** Images pasted into this editor land under the `profile` prefix in storage. */
 const uploadImage = createScopedImageUploader('profile');
 
+/** The editor's empty document, which is what an untouched "About me" holds. */
+function hasRichText(value: unknown): boolean {
+  if (!value) return false;
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed !== '' && trimmed !== '<p></p>';
+  }
+  return true;
+}
 
 interface ProfileTranslationCardProps {
   form: UseFormReturn<UserProfileFormValues>;
@@ -33,6 +45,34 @@ export function ProfileTranslationCard({
   onRemove,
 }: ProfileTranslationCardProps) {
   const t = useTranslations('dashboard.userProfile');
+  const tShared = useTranslations('dashboard.shared');
+  // Holds the language code being confirmed — nothing here subscribes to the
+  // form, so the label has to be captured at click time to be current.
+  const [confirmingLanguage, setConfirmingLanguage] = useState<string | null>(
+    null
+  );
+
+  // Removing a language drops its name, bio, quote and whole "About me"
+  // document at once. `getValues` rather than a watch: this only has to be
+  // right at click time, and a subscription here would re-render the card —
+  // and its editor — on every keystroke.
+  const handleRemove = () => {
+    const values = form.getValues(`translations.${index}`);
+    const hasContent =
+      [
+        values?.firstName,
+        values?.lastName,
+        values?.displayName,
+        values?.greeting,
+        values?.tagLine,
+        values?.bio,
+        values?.quote,
+        values?.quoteAuthor,
+      ].some((value) => Boolean(value?.trim())) || hasRichText(values?.aboutMe);
+
+    if (hasContent) setConfirmingLanguage(values?.language ?? '');
+    else onRemove();
+  };
 
   return (
     <div className="space-y-6 rounded-xl border bg-background/50 p-6">
@@ -51,11 +91,15 @@ export function ProfileTranslationCard({
                   className="w-32"
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
 
-        <DeleteButton onClick={onRemove}/>
+        <DeleteButton
+          label={t('translations.removeLanguageLabel')}
+          onClick={handleRemove}
+        />
       </div>
 
       <Separator />
@@ -94,7 +138,7 @@ export function ProfileTranslationCard({
             control={form.control}
             name={`translations.${index}.tagLine`}
             render={({ field }) => (
-              <FormItem >
+              <FormItem>
                 <FormLabel>{t('content.taglineLabel')}</FormLabel>
                 <FormControl>
                   <Textarea
@@ -104,6 +148,7 @@ export function ProfileTranslationCard({
                     placeholder={t('content.taglinePlaceholder')}
                   />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -122,6 +167,7 @@ export function ProfileTranslationCard({
                     placeholder={t('content.bioPlaceholder')}
                   />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -145,6 +191,7 @@ export function ProfileTranslationCard({
                     placeholder={t('quote.quotePlaceholder')}
                   />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -170,10 +217,27 @@ export function ProfileTranslationCard({
                   uploadImage={uploadImage}
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
       </Section>
+
+      <ConfirmDeleteDialog
+        isOpen={confirmingLanguage !== null}
+        onClose={() => setConfirmingLanguage(null)}
+        onConfirm={() => {
+          setConfirmingLanguage(null);
+          onRemove();
+        }}
+        title={t('translations.removeConfirmTitle')}
+        description={t('translations.removeConfirmDescription', {
+          language:
+            confirmingLanguage?.toUpperCase() || t('translations.newTabLabel'),
+        })}
+        actionText={tShared('confirmDelete.actionText')}
+        cancelText={tShared('confirmDelete.cancelText')}
+      />
     </div>
   );
 }
@@ -212,6 +276,7 @@ function Field({ control, name, label, className }: FieldProps) {
           <FormControl>
             <Input {...field} value={field.value ?? ''} />
           </FormControl>
+          <FormMessage />
         </FormItem>
       )}
     />

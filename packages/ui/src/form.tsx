@@ -12,7 +12,7 @@ import {
 import type * as LabelPrimitive from '@radix-ui/react-label';
 import { Slot } from '@radix-ui/react-slot';
 
-import { Label } from './index';
+import { Label } from './label';
 import { cn } from './lib/utils';
 
 const Form = FormProvider;
@@ -156,11 +156,17 @@ const FormMessage = React.forwardRef<
     return null;
   }
 
+  // `text-destructive` is the destructive BUTTON FILL and clears only ~3.8:1
+  // (light) / ~2.0:1 (dark) as text. This is a form's only feedback channel,
+  // so it uses `--destructive-text`, the readable sibling token.
   return (
     <p
       ref={ref}
       id={formMessageId}
-      className={cn('text-[0.8rem] font-medium text-destructive', className)}
+      className={cn(
+        'text-[0.8rem] font-medium text-destructive-text',
+        className
+      )}
       {...props}
     >
       {body}

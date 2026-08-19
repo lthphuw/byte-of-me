@@ -6,6 +6,7 @@ import {
   DatePicker,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -19,7 +20,6 @@ import {
   MultiSelect,
 } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -30,9 +30,8 @@ import {
   companySchema,
 } from '@/entities/company/model/company-schema';
 import type { AdminCompany } from '@/entities/company/model/types';
-import { getAllAdminTechStack } from '@/entities/tech-stack/api/get-all-admin-tech-stacks';
-import { techStackKeys } from '@/entities/tech-stack/model/query-keys';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
+import { useTechStackOptions } from '@/features/dashboard/tech-stack-management';
 import { useResetOnOpen } from '@/shared/hooks/use-reset-on-open';
 import { TextField, TranslationTabs } from '@/shared/ui';
 
@@ -52,15 +51,14 @@ export function CompanyDialog({
   loading,
 }: CompanyDialogProps) {
   const t = useTranslations('dashboard.company');
-  const { data: techData } = useQuery({
-    // Shared with ProjectDialog on purpose — same options data.
-    queryKey: techStackKeys.options(),
-    queryFn: () => getAllAdminTechStack(),
-    enabled: open,
-  });
-
-  const techOptions =
-    techData?.data?.map((t) => ({ label: t.name, value: t.id })) || [];
+  const tShared = useTranslations('dashboard.shared');
+  // Shared with ProjectDialog on purpose — same query key, same mapping.
+  const {
+    options: techOptions,
+    isLoading: isTechLoading,
+    isError: isTechError,
+    refetch: refetchTech,
+  } = useTechStackOptions(open);
 
   const form = useForm<CompanyFormValues>({
     resolver: zodResolver(companySchema),
@@ -84,6 +82,10 @@ export function CompanyDialog({
     control: form.control,
     name: 'roles',
   });
+
+  // No `onInvalid` handler revealing the erroring language tab: TranslationTabs
+  // subscribes to its own errors and reveals itself, at every nesting level.
+  const handleSubmit = form.handleSubmit(onSubmit);
 
   useResetOnOpen(form, open, initialData, (data) => ({
     id: data.id,
@@ -141,10 +143,15 @@ export function CompanyDialog({
           <DialogTitle>
             {initialData ? t('dialog.editTitle') : t('dialog.createTitle')}
           </DialogTitle>
+          <DialogDescription>
+            {initialData
+              ? t('dialog.editDescription')
+              : t('dialog.createDescription')}
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <FormField
               control={form.control}
               name="logoId"
@@ -180,7 +187,12 @@ export function CompanyDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('dialog.startDateLabel')}</FormLabel>
-                    <DatePicker value={field.value} onChange={field.onChange} />
+                    <FormControl>
+                      <DatePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -192,10 +204,12 @@ export function CompanyDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('dialog.endDateLabel')}</FormLabel>
-                    <DatePicker
-                      value={field.value ?? undefined}
-                      onChange={(d) => field.onChange(d || null)}
-                    />
+                    <FormControl>
+                      <DatePicker
+                        value={field.value ?? undefined}
+                        onChange={(d) => field.onChange(d || null)}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -213,9 +227,28 @@ export function CompanyDialog({
                       options={techOptions}
                       selected={field.value || []}
                       onValueChange={field.onChange}
-                      placeholder={t('dialog.techStackPlaceholder')}
+                      placeholder={
+                        isTechLoading
+                          ? t('dialog.techStackLoading')
+                          : t('dialog.techStackPlaceholder')
+                      }
                     />
                   </FormControl>
+                  {/* An empty option list otherwise reads as "no tech stacks
+                      exist", and saving from it drops every association. */}
+                  {isTechError && (
+                    <div className="flex items-center gap-2 text-[0.8rem] font-medium text-destructive">
+                      <span>{t('dialog.techStackError')}</span>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={refetchTech}
+                      >
+                        {tShared('managerListState.retry')}
+                      </Button>
+                    </div>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}

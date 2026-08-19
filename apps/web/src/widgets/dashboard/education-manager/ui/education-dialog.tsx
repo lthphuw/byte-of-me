@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Button,
@@ -22,6 +21,7 @@ import {
   toEditorContent,
 } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
+import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 
 import type { AdminEducation } from '@/entities/education';
@@ -31,13 +31,33 @@ import {
 } from '@/entities/education/model/education-schema';
 import { createScopedImageUploader } from '@/entities/media';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
+import { useResetOnOpen } from '@/shared/hooks/use-reset-on-open';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
-import { EducationAchievementsField } from '@/widgets/dashboard/education-manager/ui/education-achievements-field';
 
 /** Images pasted into this editor land under the `education` prefix in storage. */
 const uploadImage = createScopedImageUploader('education');
 
+/**
+ * The achievements list pulls framer-motion's `Reorder`/`useDragControls`,
+ * which need the projection/layout system — the heavy half of the library, and
+ * far heavier than the `m` import the rest of the app uses. It only ever
+ * renders inside this dialog's `DialogContent`, which Radix does not mount
+ * while closed, so loading it lazily keeps drag-and-drop out of the
+ * `/dashboard/educations` first paint.
+ */
+const EducationAchievementsField = dynamic(
+  () =>
+    import(
+      '@/widgets/dashboard/education-manager/ui/education-achievements-field'
+    ).then((mod) => mod.EducationAchievementsField),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="min-h-[120px] w-full animate-pulse rounded-md border bg-muted/30" />
+    ),
+  }
+);
 
 interface EducationDialogProps {
   open: boolean;
@@ -69,7 +89,7 @@ export function EducationDialog({
 
   // Achievement order is whatever the list shows, so `sortOrder` is stamped
   // from the position at submit time rather than tracked as an editable field.
-  const handleSubmit = (values: EducationFormValues) =>
+  const handleValid = (values: EducationFormValues) =>
     onSubmit({
       ...values,
       achievements: values.achievements.map((achievement, index) => ({
@@ -78,39 +98,33 @@ export function EducationDialog({
       })),
     });
 
-  useEffect(() => {
-    if (!open) return;
+  // No `onInvalid` handler revealing the erroring language tab: TranslationTabs
+  // subscribes to its own errors and reveals itself, at every nesting level.
+  const handleSubmit = form.handleSubmit(handleValid);
 
-    if (initialData) {
-      form.reset({
-        id: initialData.id,
-        sortOrder: initialData.sortOrder ?? 0,
-        startDate: initialData.startDate
-          ? new Date(initialData.startDate)
-          : new Date(),
-        endDate: initialData.endDate ? new Date(initialData.endDate) : null,
-        logoId: initialData.logoId ?? null,
+  useResetOnOpen(form, open, initialData, (data) => ({
+    id: data.id,
+    sortOrder: data.sortOrder ?? 0,
+    startDate: data.startDate ? new Date(data.startDate) : new Date(),
+    endDate: data.endDate ? new Date(data.endDate) : null,
+    logoId: data.logoId ?? null,
 
+    translations:
+      data.translations?.length > 0
+        ? data.translations
+        : [{ language: 'en', title: '', description: '' }],
+
+    achievements:
+      data.achievements?.map((a) => ({
+        id: a.id,
+        sortOrder: a.sortOrder ?? 0,
         translations:
-          initialData.translations?.length > 0
-            ? initialData.translations
-            : [{ language: 'en', title: '', description: '' }],
-
-        achievements:
-          initialData.achievements?.map((a) => ({
-            id: a.id,
-            sortOrder: a.sortOrder ?? 0,
-            translations:
-              a.translations?.length > 0
-                ? a.translations
-                : [{ language: 'en', title: '', content: '' }],
-            imageIds: a.images?.map((it) => it.mediaId) ?? [],
-          })) ?? [],
-      });
-    } else {
-      form.reset();
-    }
-  }, [initialData, open, form]);
+          a.translations?.length > 0
+            ? a.translations
+            : [{ language: 'en', title: '', content: '' }],
+        imageIds: a.images?.map((it) => it.mediaId) ?? [],
+      })) ?? [],
+  }));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -135,7 +149,7 @@ export function EducationDialog({
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(handleSubmit)}
+            onSubmit={handleSubmit}
             className="flex min-h-0 flex-1 flex-col"
           >
             <div className="min-w-0 flex-1 space-y-8 overflow-y-auto px-6 py-5">
@@ -163,7 +177,12 @@ export function EducationDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('dialog.startDateLabel')}</FormLabel>
-                    <DatePicker value={field.value} onChange={field.onChange} />
+                    <FormControl>
+                      <DatePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -175,10 +194,12 @@ export function EducationDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('dialog.endDateLabel')}</FormLabel>
-                    <DatePicker
-                      value={field.value}
-                      onChange={(d) => field.onChange(d || null)}
-                    />
+                    <FormControl>
+                      <DatePicker
+                        value={field.value}
+                        onChange={(d) => field.onChange(d || null)}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -217,17 +238,19 @@ export function EducationDialog({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>{t('dialog.descriptionLabel')}</FormLabel>
-                          <RichTextEditor
-                            compact
-                            minHeight={140}
-                            placeholder={t('dialog.descriptionPlaceholder')}
-                            className="rounded-md"
-                            value={toEditorContent(field.value)}
-                            onChange={(json) =>
-                              field.onChange(fromEditorContent(json))
-                            }
-                            uploadImage={uploadImage}
-                          />
+                          <FormControl>
+                            <RichTextEditor
+                              compact
+                              minHeight={140}
+                              placeholder={t('dialog.descriptionPlaceholder')}
+                              className="rounded-md"
+                              value={toEditorContent(field.value)}
+                              onChange={(json) =>
+                                field.onChange(fromEditorContent(json))
+                              }
+                              uploadImage={uploadImage}
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}

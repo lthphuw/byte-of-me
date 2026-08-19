@@ -27,6 +27,7 @@ export function ProjectManager() {
     isLoading,
     isError,
     refetch,
+    isFetching,
     isPlaceholderData,
     setPage,
     editing,
@@ -74,33 +75,53 @@ export function ProjectManager() {
         action={newProjectButton}
       />
 
-      <ManagerListState
-        isLoading={isLoading}
-        isError={isError}
-        onRetry={() => refetch()}
-        isEmpty={projects.length === 0}
-        emptyTitle={t('emptyTitle')}
-        emptyDescription={t('emptyDescription')}
-        emptyAction={newProjectButton}
-      >
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {projects.map((project) => (
-            <ProjectEditorCard
-              key={project.id}
-              project={project}
-              onEdit={openEditDialog}
-              onDelete={() => requestDelete(project)}
-              isPending={isDeletingItem(project)}
-            />
-          ))}
-        </div>
-      </ManagerListState>
+      {/* `relative` so ManagerListState's background-refetch spinner has
+          something to anchor to while paging keeps the previous page. */}
+      <div className="relative min-h-[200px]">
+        <ManagerListState
+          isLoading={isLoading}
+          isError={isError}
+          onRetry={() => refetch()}
+          isFetching={isFetching}
+          isEmpty={projects.length === 0}
+          emptyTitle={t('emptyTitle')}
+          emptyDescription={t('emptyDescription')}
+          emptyAction={newProjectButton}
+        >
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {projects.map((project) => (
+              <ProjectEditorCard
+                key={project.id}
+                project={project}
+                labels={{
+                  noDescription: t('card.noDescription'),
+                  edit: t('editLabel', { name: project.slug }),
+                  delete: t('deleteLabel', { name: project.slug }),
+                  githubLink: t('card.githubLinkLabel', {
+                    name: project.slug,
+                  }),
+                  liveLink: t('card.liveLinkLabel', { name: project.slug }),
+                }}
+                onEdit={openEditDialog}
+                onDelete={() => requestDelete(project)}
+                isPending={isDeletingItem(project)}
+              />
+            ))}
+          </div>
+        </ManagerListState>
+      </div>
 
       {projects.length > 0 && (
         <Pagination
           pagination={pagination}
           setPage={setPage}
           isPlaceholderData={isPlaceholderData}
+          pageLabel={tShared('pagination.pageLabel', {
+            page: pagination?.currentPage ?? 1,
+            totalPages: pagination?.totalPages ?? 1,
+          })}
+          previousLabel={tShared('pagination.previous')}
+          nextLabel={tShared('pagination.next')}
         />
       )}
 

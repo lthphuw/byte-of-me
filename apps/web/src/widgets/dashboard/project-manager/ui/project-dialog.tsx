@@ -5,6 +5,7 @@ import { Button ,
   Checkbox,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -91,6 +92,10 @@ export function ProjectDialog({
     })),
   }));
 
+  // No `onInvalid` handler revealing the erroring language tab: TranslationTabs
+  // subscribes to its own errors and reveals itself, at every nesting level.
+  const handleSubmit = form.handleSubmit(onSubmit);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {/* Same shell as the education dialog: fixed header and footer around a
@@ -98,15 +103,20 @@ export function ProjectDialog({
           the flex item sizes to the editor toolbar's button row and drags the
           dialog past its own max-width (horizontal overflow). */}
       <DialogContent className="flex max-h-[90vh] w-[calc(100vw-2rem)] max-w-4xl flex-col gap-0 overflow-hidden p-0 sm:w-full">
-        <DialogHeader className="shrink-0 border-b px-6 py-4 pr-14 text-left">
+        <DialogHeader className="shrink-0 space-y-1 border-b px-6 py-4 pr-14 text-left">
           <DialogTitle>
             {initialData ? t('dialog.editTitle') : t('dialog.createTitle')}
           </DialogTitle>
+          <DialogDescription>
+            {initialData
+              ? t('dialog.editDescription')
+              : t('dialog.createDescription')}
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={handleSubmit}
             className="flex min-h-0 flex-1 flex-col"
           >
             <div className="min-w-0 flex-1 space-y-6 overflow-y-auto px-6 py-5">
@@ -235,17 +245,19 @@ export function ProjectDialog({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>{t('dialog.descriptionLabel')}</FormLabel>
-                          <RichTextEditor
-                            compact
-                            minHeight={140}
-                            placeholder={t('dialog.descriptionPlaceholder')}
-                            className="rounded-md"
-                            value={toEditorContent(field.value)}
-                            onChange={(json) =>
-                              field.onChange(fromEditorContent(json))
-                            }
-                            uploadImage={uploadImage}
-                          />
+                          <FormControl>
+                            <RichTextEditor
+                              compact
+                              minHeight={140}
+                              placeholder={t('dialog.descriptionPlaceholder')}
+                              className="rounded-md"
+                              value={toEditorContent(field.value)}
+                              onChange={(json) =>
+                                field.onChange(fromEditorContent(json))
+                              }
+                              uploadImage={uploadImage}
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -257,6 +269,14 @@ export function ProjectDialog({
             </div>
 
             <DialogFooter className="shrink-0 gap-2 border-t bg-muted/30 px-6 py-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full md:w-auto"
+                onClick={() => onOpenChange(false)}
+              >
+                {t('dialog.cancelButton')}
+              </Button>
               <Button
                 type="submit"
                 disabled={loading}

@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import {
   Button,
+  type ButtonProps,
   Dialog,
   DialogContent,
   DialogHeader,
@@ -22,12 +23,22 @@ import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload'
 import { cn } from '@/shared/lib/utils';
 import type { Media } from '@/shared/types/models';
 
-interface MediaSelectProps {
+type MediaSelectProps = Omit<
+  ButtonProps,
+  'value' | 'onChange' | 'children' | 'asChild'
+> & {
   value?: string | null;
   onChange: (media: Media | null) => void;
-}
+};
 
-export function MediaSelect({ value, onChange }: MediaSelectProps) {
+export function MediaSelect({
+  value,
+  onChange,
+  className,
+  // `id` and the aria-* attributes arrive from <FormControl>'s Slot; dropping
+  // them left <FormLabel htmlFor> pointing at nothing and the error unlinked.
+  ...triggerProps
+}: MediaSelectProps) {
   const t = useTranslations('dashboard.media');
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [open, setOpen] = useState(false);
@@ -49,7 +60,11 @@ export function MediaSelect({ value, onChange }: MediaSelectProps) {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="h-14 w-full justify-between border-2 border-dashed px-3 transition-all hover:border-primary hover:bg-primary/5"
+          {...triggerProps}
+          className={cn(
+            'h-14 w-full justify-between border-2 border-dashed px-3 transition-all hover:border-primary hover:bg-primary/5',
+            className
+          )}
         >
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded border bg-background">

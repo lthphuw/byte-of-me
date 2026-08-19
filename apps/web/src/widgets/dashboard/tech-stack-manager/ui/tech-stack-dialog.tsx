@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -64,6 +65,11 @@ export function TechStackDialog({
               <DialogTitle>
                 {initialData ? t('dialog.editTitle') : t('dialog.createTitle')}
               </DialogTitle>
+              <DialogDescription>
+                {initialData
+                  ? t('dialog.editDescription')
+                  : t('dialog.createDescription')}
+              </DialogDescription>
             </DialogHeader>
 
             <div className="grid grid-cols-2 gap-4">
@@ -132,10 +138,11 @@ export function TechStackDialog({
             />
 
             <DialogFooter>
-              <SubmitButton
-                loading={loading}
-                disabled={!form.formState.isValid}
-              >
+              {/* Deliberately not gated on `formState.isValid`: nothing is
+                  touched on open, so Save sat greyed out with no message
+                  explaining why. Let `handleSubmit` run and surface the
+                  errors, as every other dialog here does. */}
+              <SubmitButton loading={loading}>
                 {t('dialog.saveButton')}
               </SubmitButton>
             </DialogFooter>

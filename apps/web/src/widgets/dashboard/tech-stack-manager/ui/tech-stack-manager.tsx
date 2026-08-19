@@ -14,7 +14,7 @@ import { getAllAdminTechStack } from '@/entities/tech-stack/api/get-all-admin-te
 import { updateTechStack } from '@/entities/tech-stack/api/update-tech-stack';
 import { techStackKeys } from '@/entities/tech-stack/model/query-keys';
 import type { TechStackFormValues } from '@/entities/tech-stack/model/tech-stack-schema';
-import { TechStackCard } from '@/features/dashboard';
+import { TechStackCard } from '@/features/dashboard/tech-stack-management';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
@@ -30,6 +30,7 @@ export function TechStackManager({
     isLoading,
     isError,
     refetch,
+    isFetching,
     editing: editingTech,
     isDialogOpen,
     onDialogOpenChange,
@@ -81,43 +82,48 @@ export function TechStackManager({
         }
       />
 
-      <ManagerListState
-        isLoading={isLoading}
-        isError={isError}
-        onRetry={() => refetch()}
-        isEmpty={techStacks.length === 0}
-        emptyTitle={t('emptyTitle')}
-        emptyAction={
-          <Button variant="outline" size="sm" onClick={openCreateDialog}>
-            <Plus className="h-4 w-4" /> {t('createButton')}
-          </Button>
-        }
-      >
-        <div className="columns-1 gap-6 space-y-6 md:columns-2 lg:columns-3">
-          {Object.entries(grouped).map(([group, items]) => (
-            <section
-              key={group}
-              className="break-inside-avoid space-y-3 rounded-xl border bg-card p-4 shadow-sm"
-            >
-              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-                {group}
-              </h3>
+      {/* `relative` so ManagerListState's background-refetch spinner has
+          something to anchor to. */}
+      <div className="relative min-h-[200px]">
+        <ManagerListState
+          isLoading={isLoading}
+          isError={isError}
+          onRetry={() => refetch()}
+          isFetching={isFetching}
+          isEmpty={techStacks.length === 0}
+          emptyTitle={t('emptyTitle')}
+          emptyAction={
+            <Button variant="outline" size="sm" onClick={openCreateDialog}>
+              <Plus className="h-4 w-4" /> {t('createButton')}
+            </Button>
+          }
+        >
+          <div className="columns-1 gap-6 space-y-6 md:columns-2 lg:columns-3">
+            {Object.entries(grouped).map(([group, items]) => (
+              <section
+                key={group}
+                className="break-inside-avoid space-y-3 rounded-xl border bg-card p-4 shadow-sm"
+              >
+                <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                  {group}
+                </h3>
 
-              <div className="space-y-2">
-                {items.map((tech) => (
-                  <TechStackCard
-                    key={tech.id}
-                    techStack={tech}
-                    onEdit={() => openEditDialog(tech)}
-                    onDelete={() => requestDelete(tech)}
-                    isDeleting={isDeletingItem(tech)}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      </ManagerListState>
+                <div className="space-y-2">
+                  {items.map((tech) => (
+                    <TechStackCard
+                      key={tech.id}
+                      techStack={tech}
+                      onEdit={() => openEditDialog(tech)}
+                      onDelete={() => requestDelete(tech)}
+                      isDeleting={isDeletingItem(tech)}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </ManagerListState>
+      </div>
 
       <TechStackDialog
         key={editingTech?.id || 'new'}

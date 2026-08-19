@@ -9,7 +9,7 @@ import {
 } from '@byte-of-me/ui';
 import { GraduationCap, Plus } from 'lucide-react';
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { EducationDialog } from './education-dialog';
 
@@ -21,12 +21,14 @@ import { updateEducation } from '@/entities/education/api/update-education';
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
 import { educationKeys } from '@/entities/education/model/query-keys';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
+import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { formatDate } from '@/shared/lib/utils';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
 export function EducationManager() {
   const t = useTranslations('dashboard.education');
   const tShared = useTranslations('dashboard.shared');
+  const locale = useLocale();
   const {
     items: educations,
     isLoading,
@@ -92,7 +94,12 @@ export function EducationManager() {
         >
           <div className="grid gap-4">
             {educations.map((edu) => {
-              const title = edu.translations?.[0]?.title || t('untitled');
+              // Admin reads keep every locale ordered `language: 'asc'`, so
+              // the first row is always English — resolve against the
+              // dashboard's own locale instead.
+              const title =
+                getTranslatedContent(edu.translations, locale)?.title ||
+                t('untitled');
               const dateRange = `${formatDate(edu.startDate)} — ${
                 edu.endDate ? formatDate(edu.endDate) : t('present')
               }`;
@@ -147,8 +154,12 @@ export function EducationManager() {
                   </div>
 
                   <div className="flex shrink-0 items-center gap-2 transition-opacity sm:opacity-0 sm:focus-within:opacity-100 sm:group-hover:opacity-100">
-                    <EditButton onClick={() => openEditDialog(edu)} />
+                    <EditButton
+                      label={t('editLabel', { name: title })}
+                      onClick={() => openEditDialog(edu)}
+                    />
                     <DeleteButton
+                      label={t('deleteLabel', { name: title })}
                       isSubmitting={isDeletingItem(edu)}
                       onClick={() => requestDelete(edu)}
                     />
@@ -178,7 +189,10 @@ export function EducationManager() {
         description={t.rich('deleteDescription', {
           name: () => (
             <span className="font-medium text-foreground">
-              {eduToDelete?.translations?.[0]?.title || t('untitled')}
+              {(eduToDelete &&
+                getTranslatedContent(eduToDelete.translations, locale)
+                  ?.title) ||
+                t('untitled')}
             </span>
           ),
         })}

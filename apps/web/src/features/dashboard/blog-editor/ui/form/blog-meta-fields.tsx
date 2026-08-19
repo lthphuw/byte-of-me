@@ -60,25 +60,28 @@ export function BlogMetaFields({
             ) : (
               <FormItem>
                 <FormLabel>{t('meta.projectLabel')}</FormLabel>
-                <FormControl>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value || 'none'}
-                  >
+                {/* FormControl wraps the trigger, not Select's root: the root
+                    renders no DOM, so `id`/`aria-*` fell on the floor and the
+                    label pointed at nothing. */}
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value || 'none'}
+                >
+                  <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder={t('meta.projectPlaceholder')} />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">{t('meta.projectNone')}</SelectItem>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="none">{t('meta.projectNone')}</SelectItem>
 
-                      {projects?.map((project) => (
-                        <SelectItem key={project.id} value={project.id}>
-                          {project.translations?.[0]?.title || project.slug}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
+                    {projects?.map((project) => (
+                      <SelectItem key={project.id} value={project.id}>
+                        {project.translations?.[0]?.title || project.slug}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { type KeyboardEvent, useState } from 'react';
 import { type Control, useWatch } from 'react-hook-form';
 import {
   Badge,
@@ -8,6 +8,8 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
+  ConfirmDeleteDialog,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
@@ -27,6 +29,7 @@ import { useTranslations } from 'next-intl';
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
 import { createScopedImageUploader } from '@/entities/media';
 import { MediaMultiSelect } from '@/features/dashboard/media-library/ui/media-multi-select';
+import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-submit';
 import { cn } from '@/shared/lib/utils';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
@@ -42,6 +45,8 @@ interface EducationAchievementItemFieldProps {
   total: number;
   control: Control<EducationFormValues>;
   remove: (index: number) => void;
+  /** `useFieldArray`'s `move` — the keyboard path onto the same reorder. */
+  move: (from: number, to: number) => void;
   defaultOpen?: boolean;
 }
 
@@ -51,11 +56,21 @@ export function EducationAchievementItemField({
   total,
   control,
   remove,
+  move,
   defaultOpen = false,
 }: EducationAchievementItemFieldProps) {
   const t = useTranslations('dashboard.education');
+  const tShared = useTranslations('dashboard.shared');
   const dragControls = useDragControls();
   const [open, setOpen] = useState(defaultOpen);
+  const [confirmingRemove, setConfirmingRemove] = useState(false);
+
+  // These rows are collapsed by default, and a collapsed one UNMOUNTS its
+  // fields — so the language tabs inside cannot reveal an invalid field until
+  // the card itself is open. Same submit signal, one level up.
+  useRevealOnInvalidSubmit(control, `achievements.${index}`, () =>
+    setOpen(true)
+  );
 
   // `useWatch`, not `form.watch`: the latter re-renders the whole dialog — and
   // therefore every other achievement's editor — on each keystroke.
@@ -68,6 +83,30 @@ export function EducationAchievementItemField({
     name: `achievements.${index}.imageIds`,
   });
   const imageCount = imageIds?.length ?? 0;
+
+  // A row the user just added and never typed into is not worth a
+  // confirmation; both values are already subscribed above, so this is free.
+  const hasContent = Boolean(summary) || imageCount > 0;
+
+  const handleRemove = () => {
+    if (hasContent) setConfirmingRemove(true);
+    else remove(index);
+  };
+
+  // Pointer drag is framer-motion's; this is the keyboard half of the same
+  // reorder, so the list is not mouse-only.
+  const handleGripKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    const to =
+      event.key === 'ArrowUp'
+        ? index - 1
+        : event.key === 'ArrowDown'
+          ? index + 1
+          : null;
+
+    if (to === null || to < 0 || to >= total) return;
+    event.preventDefault();
+    move(index, to);
+  };
 
   return (
     <Reorder.Item
@@ -93,6 +132,7 @@ export function EducationAchievementItemField({
               total,
             })}
             onPointerDown={(event) => dragControls.start(event)}
+            onKeyDown={handleGripKeyDown}
             // `touch-none` stops a touch drag from scrolling the dialog
             // instead of moving the card.
             className="flex h-8 w-6 shrink-0 cursor-grab touch-none select-none items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground active:cursor-grabbing"
@@ -146,7 +186,7 @@ export function EducationAchievementItemField({
             variant="ghost"
             aria-label={t('achievements.removeAriaLabel')}
             className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
-            onClick={() => remove(index)}
+            onClick={handleRemove}
           >
             <Trash className="h-4 w-4" />
           </Button>
@@ -162,10 +202,13 @@ export function EducationAchievementItemField({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('achievements.imagesLabel')}</FormLabel>
-                <MediaMultiSelect
-                  value={field.value ?? []}
-                  onChange={field.onChange}
-                />
+                <FormControl>
+                  <MediaMultiSelect
+                    value={field.value ?? []}
+                    onChange={field.onChange}
+                  />
+                </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -188,20 +231,22 @@ export function EducationAchievementItemField({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('achievements.contentLabel')}</FormLabel>
-                      <RichTextEditor
-                        compact
-                        minHeight={140}
-                        placeholder={t('achievements.contentPlaceholder')}
-                        className="rounded-md"
-                        // Tiptap reads `value` once, on mount. Rendering is
-                        // gated by the language tab and the collapsible above,
-                        // so a remount always picks up the current form value.
-                        value={toEditorContent(field.value)}
-                        onChange={(json) =>
-                          field.onChange(fromEditorContent(json))
-                        }
-                        uploadImage={uploadImage}
-                      />
+                      <FormControl>
+                        <RichTextEditor
+                          compact
+                          minHeight={140}
+                          placeholder={t('achievements.contentPlaceholder')}
+                          className="rounded-md"
+                          // Tiptap reads `value` once, on mount. Rendering is
+                          // gated by the language tab and the collapsible above,
+                          // so a remount always picks up the current form value.
+                          value={toEditorContent(field.value)}
+                          onChange={(json) =>
+                            field.onChange(fromEditorContent(json))
+                          }
+                          uploadImage={uploadImage}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -212,6 +257,21 @@ export function EducationAchievementItemField({
           </div>
         </CollapsibleContent>
       </Collapsible>
+
+      <ConfirmDeleteDialog
+        isOpen={confirmingRemove}
+        onClose={() => setConfirmingRemove(false)}
+        onConfirm={() => {
+          setConfirmingRemove(false);
+          remove(index);
+        }}
+        title={t('achievements.removeConfirmTitle')}
+        description={t('achievements.removeConfirmDescription', {
+          name: summary || t('achievements.untitled'),
+        })}
+        actionText={tShared('confirmDelete.actionText')}
+        cancelText={tShared('confirmDelete.cancelText')}
+      />
     </Reorder.Item>
   );
 }

@@ -45,6 +45,7 @@
   --accent-foreground: 0 0% 9%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 0 0% 98%;
+  --destructive-text: 0 74% 42%;
   --ring: 0 0% 3.9%;
 }
 
@@ -76,6 +77,12 @@
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
+
+    /* Error TEXT, not the destructive button fill. `--destructive` is tuned as
+       a fill behind white and measures only 3.76:1 as text on `--background`;
+       this clears 6.42:1 light / 7.20:1 dark. Keep the two apart — retuning
+       `--destructive` would repaint every destructive button. */
+    --destructive-text: 0 74% 42%;
 
     --ring: 0 0% 3.9%;
 
@@ -119,6 +126,7 @@
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
+    --destructive-text: 0 90% 71%;
 
     --ring: 0 0% 83.1%;
 

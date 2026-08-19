@@ -108,6 +108,7 @@ export function CompanyManager() {
                           src={company.logo.url}
                           alt={company.company}
                           fill
+                          sizes="56px"
                           className="object-contain p-2"
                         />
                       ) : (
@@ -141,9 +142,13 @@ export function CompanyManager() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
-                    <EditButton onClick={() => openEditDialog(company)} />
+                  <div className="flex items-center gap-2 transition-opacity sm:opacity-0 sm:focus-within:opacity-100 sm:group-hover:opacity-100">
+                    <EditButton
+                      label={t('editLabel', { name: company.company })}
+                      onClick={() => openEditDialog(company)}
+                    />
                     <DeleteButton
+                      label={t('deleteLabel', { name: company.company })}
                       isSubmitting={isDeletingItem(company)}
                       onClick={() => requestDelete(company)}
                     />

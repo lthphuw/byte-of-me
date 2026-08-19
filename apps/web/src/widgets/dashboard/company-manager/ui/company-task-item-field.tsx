@@ -3,6 +3,7 @@
 import type { Control } from 'react-hook-form';
 import {
   Button,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
@@ -49,13 +50,17 @@ export function CompanyTaskItemField({
         render={({ field }) => (
           <FormItem>
             <FormLabel>{t('task.sortLabel')}</FormLabel>
-            <Input
-              type="number"
-              value={Number(field.value)}
-              onChange={(e) =>
-                field.onChange(e.target.value === '' ? 0 : Number(e.target.value))
-              }
-            />
+            <FormControl>
+              <Input
+                type="number"
+                value={Number(field.value)}
+                onChange={(e) =>
+                  field.onChange(
+                    e.target.value === '' ? 0 : Number(e.target.value)
+                  )
+                }
+              />
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}

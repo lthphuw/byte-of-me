@@ -112,14 +112,18 @@ export function BlogForm({ initialData, onSubmit, loading, formId }: BlogFormPro
     `blog-draft:${initialData?.id ?? 'new'}`
   );
 
+  // No `onInvalid` handler revealing the erroring language tab: TranslationTabs
+  // subscribes to its own errors and reveals itself, at every nesting level.
+  const handleSubmit = form.handleSubmit((values) => {
+    autosave.clear();
+    onSubmit(values);
+  });
+
   return (
     <Form {...form}>
       <form
         id={formId}
-        onSubmit={form.handleSubmit((values) => {
-          autosave.clear();
-          onSubmit(values);
-        })}
+        onSubmit={handleSubmit}
         className="space-y-6"
       >
         {autosave.restorable && (
@@ -191,15 +195,19 @@ export function BlogForm({ initialData, onSubmit, loading, formId }: BlogFormPro
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('form.bodyLabel')}</FormLabel>
-                      <FormControl>
-                        <div className="rounded-md border">
+                      {/* FormControl sits INSIDE the frame, not around it: its
+                          Slot injects the id the label points at, and a label
+                          has to resolve to something focusable — this div is
+                          not. The frame itself is unchanged. */}
+                      <div className="rounded-md border">
+                        <FormControl>
                           <RichTextEditor
                             value={field.value}
                             onChange={field.onChange}
                             uploadImage={uploadImage}
                           />
-                        </div>
-                      </FormControl>
+                        </FormControl>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}

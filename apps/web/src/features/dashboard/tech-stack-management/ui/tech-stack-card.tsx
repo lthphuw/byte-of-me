@@ -2,6 +2,7 @@
 
 import { DeleteButton , EditButton } from '@byte-of-me/ui';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 import type { AdminTechStack } from '@/entities/tech-stack';
 
@@ -17,6 +18,8 @@ export function TechStackCard({
   onEdit,
   isDeleting,
 }: TechStackCardProps) {
+  const t = useTranslations('dashboard.techStack');
+
   return (
     <div
       key={techStack.id}
@@ -29,6 +32,7 @@ export function TechStackCard({
               src={techStack.logo.url}
               alt={techStack.name}
               fill
+              sizes="32px"
               className="object-contain"
             />
           </div>
@@ -40,8 +44,12 @@ export function TechStackCard({
       </div>
 
       <div className="flex gap-1">
-        <EditButton onClick={() => onEdit(techStack)} />
+        <EditButton
+          label={t('editLabel', { name: techStack.name })}
+          onClick={() => onEdit(techStack)}
+        />
         <DeleteButton
+          label={t('deleteLabel', { name: techStack.name })}
           isSubmitting={isDeleting}
           onClick={() => onDelete(techStack)}
         />

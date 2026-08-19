@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { Button ,
+  type ButtonProps,
   Dialog,
   DialogContent,
   DialogHeader,
@@ -15,14 +16,21 @@ import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media/query';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import { cn } from '@/shared/lib/utils';
 
-interface MediaMultiSelectProps {
+type MediaMultiSelectProps = Omit<
+  ButtonProps,
+  'value' | 'onChange' | 'children' | 'asChild'
+> & {
   value?: string[];
   onChange: (ids: string[]) => void;
-}
+};
 
 export function MediaMultiSelect({
   value = [],
   onChange,
+  className,
+  // `id` and the aria-* attributes arrive from <FormControl>'s Slot; dropping
+  // them left <FormLabel htmlFor> pointing at nothing and the error unlinked.
+  ...triggerProps
 }: MediaMultiSelectProps) {
   const t = useTranslations('dashboard.media');
   const [isUploadOpen, setIsUploadOpen] = useState(false);
@@ -52,7 +60,11 @@ export function MediaMultiSelect({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="min-h-[56px] w-full justify-between border-2 border-dashed px-3 transition-all hover:border-primary hover:bg-primary/5"
+          {...triggerProps}
+          className={cn(
+            'min-h-[56px] w-full justify-between border-2 border-dashed px-3 transition-all hover:border-primary hover:bg-primary/5',
+            className
+          )}
         >
           <div className="flex flex-wrap items-center gap-2 py-1">
             {selectedMedia.length > 0 ? (

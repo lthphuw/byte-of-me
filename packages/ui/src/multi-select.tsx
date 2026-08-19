@@ -3,32 +3,42 @@
 import * as React from 'react';
 import { Check, ChevronsUpDown, X } from 'lucide-react';
 
-import { Badge , Button ,
+import { Badge } from './badge';
+import { Button, type ButtonProps } from './button';
+import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList, Popover, PopoverContent, PopoverTrigger } from './index';
+  CommandList,
+} from './command';
 import { cn } from './lib/utils';
+import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
 export interface Option {
   label: string;
   value: string;
 }
 
-interface MultiSelectProps {
+export type MultiSelectProps = Omit<
+  ButtonProps,
+  'value' | 'onChange' | 'children' | 'asChild'
+> & {
   options: Option[];
   selected: string[];
   onValueChange: (value: string[]) => void;
   placeholder?: string;
-}
+};
 
 export function MultiSelect({
   options,
   selected = [],
   onValueChange,
   placeholder = 'Select items...',
+  className,
+  // `id` and the aria-* attributes arrive from <FormControl>'s Slot.
+  ...triggerProps
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -41,9 +51,13 @@ export function MultiSelect({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
+          {...triggerProps}
           role="combobox"
           aria-expanded={open}
-          className="h-auto min-h-10 w-full justify-between hover:bg-background"
+          className={cn(
+            'h-auto min-h-10 w-full justify-between hover:bg-background',
+            className
+          )}
         >
           <div className="flex flex-wrap gap-1">
             {selected.length > 0 ? (

@@ -1,11 +1,27 @@
 'use client';
 
+import { useState } from 'react';
 import { useFieldArray, type UseFormReturn } from 'react-hook-form';
-import { Button , DeleteButton , FormControl, FormField, FormItem , Input } from '@byte-of-me/ui';
+import {
+  Button,
+  ConfirmDeleteDialog,
+  DeleteButton,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+} from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
+
+interface PendingRemoval {
+  index: number;
+  platform: string;
+}
 
 export function SocialLinksSection({
   form,
@@ -13,10 +29,24 @@ export function SocialLinksSection({
   form: UseFormReturn<UserProfileFormValues>;
 }) {
   const t = useTranslations('dashboard.userProfile');
+  const tShared = useTranslations('dashboard.shared');
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'socialLinks',
   });
+  const [pendingRemoval, setPendingRemoval] = useState<PendingRemoval | null>(
+    null
+  );
+
+  // Was a native `confirm()`: blocking, unstyled and suppressible in some
+  // browsers. A row the user just added and never filled in skips it.
+  const requestRemove = (index: number) => {
+    const link = form.getValues(`socialLinks.${index}`);
+    const platform = link?.platform?.trim() ?? '';
+
+    if (platform || link?.url?.trim()) setPendingRemoval({ index, platform });
+    else remove(index);
+  };
 
   return (
     <div className="space-y-4">
@@ -64,21 +94,27 @@ export function SocialLinksSection({
         {fields.map((field, index) => (
           <div
             key={field.id}
-            className="flex items-center gap-3 rounded-lg border bg-background/50 p-3"
+            className="flex items-start gap-3 rounded-lg border bg-background/50 p-3"
           >
-            {/* Platform */}
+            {/* Platform. The row is compact and self-evident on sight, so the
+                labels are `sr-only` — but a placeholder is not a label, and
+                without one these inputs are unnamed to a screen reader. */}
             <div className="w-32">
               <FormField
                 control={form.control}
                 name={`socialLinks.${index}.platform`}
                 render={({ field }) => (
                   <FormItem className="space-y-0">
+                    <FormLabel className="sr-only">
+                      {t('socialLinks.platformLabel')}
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder={t('socialLinks.platformPlaceholder')}
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -91,12 +127,16 @@ export function SocialLinksSection({
                 name={`socialLinks.${index}.url`}
                 render={({ field }) => (
                   <FormItem className="space-y-0">
+                    <FormLabel className="sr-only">
+                      {t('socialLinks.urlLabel')}
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder={t('socialLinks.urlPlaceholder')}
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -104,13 +144,27 @@ export function SocialLinksSection({
 
             {/* Remove */}
             <DeleteButton
-              onClick={() => {
-                if (confirm(t('socialLinks.removeConfirm'))) remove(index);
-              }}
+              label={t('socialLinks.removeLabel')}
+              onClick={() => requestRemove(index)}
             />
           </div>
         ))}
       </div>
+
+      <ConfirmDeleteDialog
+        isOpen={pendingRemoval !== null}
+        onClose={() => setPendingRemoval(null)}
+        onConfirm={() => {
+          if (pendingRemoval) remove(pendingRemoval.index);
+          setPendingRemoval(null);
+        }}
+        title={t('socialLinks.removeConfirm')}
+        description={t('socialLinks.removeConfirmDescription', {
+          platform: pendingRemoval?.platform || t('socialLinks.unnamedLink'),
+        })}
+        actionText={tShared('confirmDelete.actionText')}
+        cancelText={tShared('confirmDelete.cancelText')}
+      />
     </div>
   );
 }
