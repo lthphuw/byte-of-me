@@ -42,11 +42,21 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  * for every attribute cleared here (`Link.class`, `Highlight.color`, a table
  * cell's `colwidth`), so the result is exactly the document the editor would
  * have produced had the paste never carried the value.
+ *
+ * `''` counts as already-default and is left alone. Tiptap keeps a parsed
+ * attribute unless it is `null`/`undefined`, so a plain `<mark>` stores
+ * `color: ''` — and `''` and `null` render identically. Rewriting one to the
+ * other is the diff-that-looks-real this file refuses to produce below: it
+ * costs a write and an `@updatedAt` bump, and the flat view sorts on
+ * `updatedAt`, so it reorders the author's list for a document nobody can see
+ * the difference in. `colwidth` cannot reach here — its `parseHTML` yields an
+ * int array or `null`, never a string.
  */
 function clearAttribute(target: Record<string, unknown>, name: string): number {
   const attrs = target.attrs;
   if (!isRecord(attrs)) return 0;
-  if (attrs[name] === null || attrs[name] === undefined) return 0;
+  const value = attrs[name];
+  if (value === null || value === undefined || value === '') return 0;
 
   attrs[name] = null;
   return 1;
@@ -58,10 +68,20 @@ function clearAttribute(target: Record<string, unknown>, name: string): number {
  * Removed:
  * - every `textStyle` mark. This editor registers `TextStyle` only so `Color`
  *   has somewhere to live (no `FontFamily`, no `FontSize`), so the mark carries
- *   nothing but the source's text colour.
- * - `highlight`'s `color`. The mark itself stays: `<mark>` is semantic, and
- *   dropping it would lose the fact that a passage was marked at all — the same
- *   line the paste path draws.
+ *   nothing but the source's text colour. It often carries no colour at all:
+ *   `TextStyle` matches ANY `<span style>` and `Color` stores
+ *   `element.style.color` verbatim, so a colourless span is stored as
+ *   `color: ''`. Those marks go and are counted like the rest, which is why an
+ *   audit that looks for colours reports fewer dirty notes than this rewrites.
+ *   That is the opposite of what `clearAttribute` does with `''`, on purpose:
+ *   an empty `textStyle` is a mark with no rendered effect at all, and
+ *   `stripPastedPresentation` now removes the `style` attribute
+ *   `TextStyle.parseHTML` requires, so no new ones arrive and clearing the
+ *   stored ones converges instead of restamping the same notes every run.
+ * - `highlight`'s `color`, unless it is already `null` or the `''` a plain
+ *   `<mark>` parses to. The mark itself stays: `<mark>` is semantic, and
+ *   dropping it would lose the fact that a passage was marked at all — the
+ *   same line the paste path draws.
  * - `colwidth` on table cells. The table extension is configured
  *   `resizable: false`, so this editor cannot produce one; every value stored is
  *   a column width from somebody else's grid.
