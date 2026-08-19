@@ -17,8 +17,8 @@ import { ForceLightTheme } from '@/shared/ui/force-light-theme';
  * `space/notes/layout.tsx` draws the entire notes workspace, and a page whose
  * only job is to become a clean PDF must inherit neither.
  *
- * The provider carries `dashboard` alone. One client component renders here
- * (`NotePrintTrigger`, for its button label) and it reads nothing else —
+ * The provider carries `dashboard.note` alone. One client component renders
+ * here (`NotePrintTrigger`, for its button label) and it reads nothing else —
  * nested providers REPLACE rather than merge, so this list has to be
  * self-sufficient, and there is no `error.tsx` under this route to widen it
  * for.

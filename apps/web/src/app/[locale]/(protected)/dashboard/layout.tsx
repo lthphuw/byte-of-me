@@ -1,6 +1,13 @@
 import type { Metadata } from 'next';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
 
+import {
+  DASHBOARD_MESSAGE_NAMESPACES,
+  pickMessages,
+} from '@/shared/i18n/messages';
 import { buildIconSet } from '@/shared/lib/metadata';
+import { SkipToContentLink } from '@/shared/ui/skip-to-content-link';
 import { DashboardSidebar } from '@/widgets/dashboard/dashboard-sidebar/ui/dashboard-sidebar';
 
 /**
@@ -17,24 +24,48 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="flex min-h-screen flex-col lg:flex-row">
-      {/* Sidebar */}
-      <DashboardSidebar />
+  // The CMS's own message catalogue. Mounted here rather than on
+  // `(protected)/layout.tsx` so the vault's `dashboard.note` / `dashboard.space`
+  // copy — half the namespace — stays off this surface's RSC payload.
+  const messages = pickMessages(
+    await getMessages(),
+    DASHBOARD_MESSAGE_NAMESPACES
+  );
 
-      {/* Main content.
-          overflow-x-clip, not overflow-hidden: `hidden` would make this the
-          nearest scroll container for sticky descendants (the profile editor's
-          save bar), and since the page scrolls on <html> that container never
-          scrolls, so the bar would never stick. */}
-      {/* min-w-0: as a flex item next to the sidebar this box must be allowed
-          to shrink below its content's min-content, or wide children (editor
-          toolbar, tables) push it — and the whole page — past the viewport. */}
-      <div className="flex min-w-0 flex-1 flex-col overflow-x-clip bg-muted/40">
-        <main className="container relative py-6 lg:py-8">
-          <div className="mx-auto w-full min-w-0 p-4 lg:p-10">{children}</div>
-        </main>
+  return (
+    <NextIntlClientProvider messages={messages}>
+      <div className="flex min-h-screen flex-col lg:flex-row">
+        {/* WCAG 2.4.1. The sidebar below is fifteen controls, re-tabbed on every
+            single navigation without this. */}
+        <SkipToContentLink targetId="main-content" />
+
+        {/* Sidebar */}
+        <DashboardSidebar />
+
+        {/* Main content.
+            overflow-x-clip, not overflow-hidden: `hidden` would make this the
+            nearest scroll container for sticky descendants (the profile editor's
+            save bar), and since the page scrolls on <html> that container never
+            scrolls, so the bar would never stick. */}
+        {/* min-w-0: as a flex item next to the sidebar this box must be allowed
+            to shrink below its content's min-content, or wide children (editor
+            toolbar, tables) push it — and the whole page — past the viewport. */}
+        <div className="flex min-w-0 flex-1 flex-col overflow-x-clip bg-muted/40">
+          {/* One padding layer, not two. `container` is `padding: 2rem` at every
+              breakpoint (tailwind.config.ts), and the inner `p-4 lg:p-10` used to
+              stack on top of it: 48px of horizontal padding per side on a 375px
+              phone, 72px at `lg`, before any page drew anything. `space-shell.tsx`
+              names this exact stack as why `/space` abandoned the pattern. The
+              gutter stays; the second helping is gone. */}
+          <main
+            id="main-content"
+            tabIndex={-1}
+            className="container relative py-6 lg:py-8"
+          >
+            <div className="mx-auto w-full min-w-0">{children}</div>
+          </main>
+        </div>
       </div>
-    </div>
+    </NextIntlClientProvider>
   );
 }

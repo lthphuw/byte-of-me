@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
 
 import { getOwnerDisplayName } from '@/entities/user-profile/api/get-owner-display-name';
 import { WorkspaceSettingsProvider } from '@/entities/workspace-settings';
 import { getWorkspaceSettings } from '@/entities/workspace-settings/api/get-workspace-settings';
+import { pickMessages, SPACE_MESSAGE_NAMESPACES } from '@/shared/i18n/messages';
 import { buildIconSet } from '@/shared/lib/metadata';
 import { SpaceShell } from '@/widgets/dashboard/space-shell';
 
@@ -64,9 +67,17 @@ export default async function SpaceLayout({
   // client-reachable. Its own `api/index.ts` says the same thing at more length.
   const settings = await getWorkspaceSettings();
 
+  // The vault's own message catalogue. Mounted here rather than on
+  // `(protected)/layout.tsx` so the CMS's manager copy — the other half of the
+  // `dashboard` namespace, none of which renders here — stays off this
+  // surface's RSC payload, which `force-dynamic` re-sends on every navigation.
+  const messages = pickMessages(await getMessages(), SPACE_MESSAGE_NAMESPACES);
+
   return (
-    <WorkspaceSettingsProvider initial={settings}>
-      <SpaceShell>{children}</SpaceShell>
-    </WorkspaceSettingsProvider>
+    <NextIntlClientProvider messages={messages}>
+      <WorkspaceSettingsProvider initial={settings}>
+        <SpaceShell>{children}</SpaceShell>
+      </WorkspaceSettingsProvider>
+    </NextIntlClientProvider>
   );
 }

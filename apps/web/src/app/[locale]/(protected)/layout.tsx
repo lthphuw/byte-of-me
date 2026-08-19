@@ -1,11 +1,6 @@
 import { headers } from 'next/headers';
-import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages } from 'next-intl/server';
+import { getLocale } from 'next-intl/server';
 
-import {
-  pickMessages,
-  PROTECTED_MESSAGE_NAMESPACES,
-} from '@/shared/i18n/messages';
 import { redirect } from '@/shared/i18n/navigation';
 import {
   getAuthenticatedAdmin,
@@ -54,11 +49,9 @@ export default async function ProtectedLayout({
     });
   }
 
-  return (
-    <NextIntlClientProvider
-      messages={pickMessages(await getMessages(), PROTECTED_MESSAGE_NAMESPACES)}
-    >
-      {children}
-    </NextIntlClientProvider>
-  );
+  // No `NextIntlClientProvider` here. `dashboard/`, `space/` and `print/` each
+  // mount their own with a list narrowed to what that surface renders; see
+  // `shared/i18n/messages.ts`. Every route under this group lives beneath one
+  // of the three, so nothing is left without one.
+  return <>{children}</>;
 }
