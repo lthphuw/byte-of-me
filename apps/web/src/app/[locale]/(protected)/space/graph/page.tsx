@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { SpaceGraphScreen } from '@/widgets/dashboard/space-graph';
+import { SpaceGraphScreen } from '@/widgets/notes/space-graph';
 
 export const metadata: Metadata = {
   title: 'Knowledge graph',

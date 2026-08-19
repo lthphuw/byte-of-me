@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { NoteGraphSkeleton } from '@/features/dashboard/note-graph/ui/note-graph-skeleton';
+import { NoteGraphSkeleton } from '@/features/notes/note-graph/ui/note-graph-skeleton';
 
 /**
  * The graph's frame while its RSC payload is in flight. The canvas has its

@@ -290,7 +290,7 @@ The generated client is committed to `packages/db/src/generated/prisma` and re-e
   if a mutation stops invalidating a list the explorer renders
 - `apps/web/src/features/**/lib/` — URL filter parsing, the explorer's pure geometry,
   the knowledge graph's viewport maths, and the `.md` frontmatter emitter
-- `apps/web/src/widgets/dashboard/note-manager/` — the explorer's query contracts: a
+- `apps/web/src/widgets/notes/note-manager/` — the explorer's query contracts: a
   collapsed folder costs no query, a section header shows the aggregate count rather
   than the rows it loaded, and no view outside the trash ever reads the whole corpus
 - `apps/web/src/shared/lib/` — `i18n-utils`, `pagination`, `rate-limit`, `reorder`,

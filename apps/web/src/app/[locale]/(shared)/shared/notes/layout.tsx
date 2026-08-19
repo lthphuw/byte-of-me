@@ -1,4 +1,4 @@
-import { SharedNoteWorkspace } from '@/widgets/shared/shared-note-workspace';
+import { SharedNoteWorkspace } from '@/widgets/notes/shared-note-workspace';
 
 /**
  * The shared workspace is mounted HERE, not in the page below, for the reason

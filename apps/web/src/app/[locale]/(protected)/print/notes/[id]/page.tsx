@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { getAdminNoteById, getNoteTitle } from '@/entities/note';
-import { NotePrintTrigger } from '@/features/dashboard/note-editor';
+import { NotePrintTrigger } from '@/features/notes/note-editor';
 
 const BASE_METADATA: Metadata = {
   description: 'Private notes. Never published.',

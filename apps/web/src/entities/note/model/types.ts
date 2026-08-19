@@ -51,7 +51,7 @@ export interface NoteDraft {
  * `NoteTreeItem`'s prop list grew in the first place.
  *
  * Declared HERE, in the entity, and IMPLEMENTED in
- * `features/dashboard/note-explorer` — the same direction `renderActions` and
+ * `features/notes/note-explorer` — the same direction `renderActions` and
  * `renderRowShell` already run in. An entity stating the contract it expects to
  * be handed keeps the layering (AGENTS §3) intact; an entity importing the
  * feature's hook to borrow its return type would invert it.

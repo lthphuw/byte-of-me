@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { SharedInboxView } from '@/widgets/shared/shared-note-workspace';
+import { SharedInboxView } from '@/widgets/notes/shared-note-workspace';
 
 export const metadata: Metadata = {
   title: 'Shared with you',
