@@ -42,7 +42,13 @@ export function formatImageSize(bytes: number) {
   );
 }
 
-/** Month + year by default; pass `options` for a fuller date (e.g. post dates). */
+/**
+ * Month + year by default; pass `options` for a fuller date (e.g. post dates).
+ *
+ * The `en-US` default is a trap in a client component: taking it renders
+ * "Jan 2024" to a `vi` reader. Prefer next-intl's `useFormatter().dateTime()`
+ * there, and pass `locale` explicitly everywhere else.
+ */
 export function formatDate(
   dateString: string | Date | undefined | null,
   locale = 'en-US',

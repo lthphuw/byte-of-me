@@ -13,10 +13,12 @@ function DateRange({
   start,
   end,
   className,
+  presentLabel,
 }: {
   start: Maybe<Date>;
   end: Maybe<Date>;
   className?: string;
+  presentLabel: string;
 }) {
   if (!start && !end) return null;
   const isPresent = !!start && !end;
@@ -31,7 +33,7 @@ function DateRange({
       {year(start)}
       {(year(start) || isPresent) && ' — '}
       <span className={cn(isPresent && 'text-primary')}>
-        {end ? year(end) : 'Present'}
+        {end ? year(end) : presentLabel}
       </span>
     </span>
   );
@@ -40,9 +42,12 @@ function DateRange({
 export function ExperienceCompanyItem({
   company,
   isLast,
+  presentLabel,
 }: {
   company: PublicCompany;
   isLast: boolean;
+  /** Passed down by `ExperienceContent`, which already opens the namespace. */
+  presentLabel: string;
 }) {
   const isCurrent = !company.endDate;
 
@@ -88,6 +93,7 @@ export function ExperienceCompanyItem({
             start={company.startDate}
             end={company.endDate}
             className="text-xs"
+            presentLabel={presentLabel}
           />
         </div>
 
@@ -119,6 +125,7 @@ export function ExperienceCompanyItem({
                     start={role.startDate}
                     end={role.endDate}
                     className="text-[11px]"
+                    presentLabel={presentLabel}
                   />
                 </div>
 

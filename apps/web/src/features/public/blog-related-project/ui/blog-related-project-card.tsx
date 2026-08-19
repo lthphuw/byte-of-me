@@ -1,7 +1,7 @@
 import { Card } from '@byte-of-me/ui';
 import { FolderCode } from 'lucide-react';
 import Link from 'next/link';
-import { getLocale } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 import { getPublicProjectById } from '@/entities/project';
 import { Routes } from '@/shared/config/global';
@@ -16,6 +16,7 @@ export async function BlogRelatedProjectCard({
   label: string;
 }) {
   const locale = await getLocale();
+  const t = await getTranslations('project');
   const projectResp = await getPublicProjectById(projectId);
   if (!projectResp.success || !projectResp.data) {
     return null;
@@ -24,7 +25,10 @@ export async function BlogRelatedProjectCard({
   const project = projectResp.data;
 
   const start = formatDate(project.startDate, locale);
-  const end = project.endDate ? formatDate(project.endDate) : 'Present';
+  // `locale` on both ends: it was passed to `start` and forgotten here.
+  const end = project.endDate
+    ? formatDate(project.endDate, locale)
+    : t('present');
 
   return (
     <div className="related-project">

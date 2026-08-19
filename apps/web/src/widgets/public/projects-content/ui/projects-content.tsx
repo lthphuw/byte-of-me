@@ -20,6 +20,7 @@ import { ProjectsTimeline } from '@/widgets/public/projects-content/ui/projects-
 
 export function ProjectsContent() {
   const t = useTranslations('project');
+  const tPagination = useTranslations('components.pagination');
   const { filters, page, updateFilters, setPage } = useProjectFilters();
   const hasActiveFilters =
     filters.search.length > 0 ||
@@ -100,6 +101,12 @@ export function ProjectsContent() {
         setPage={setPage}
         pagination={pagination}
         isPlaceholderData={isPlaceholderData}
+        pageLabel={tPagination('pageLabel', {
+          page: pagination?.currentPage ?? 1,
+          totalPages: pagination?.totalPages ?? 1,
+        })}
+        previousLabel={tPagination('previous')}
+        nextLabel={tPagination('next')}
       />
     </ProjectsShell>
   );

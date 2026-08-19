@@ -6,7 +6,14 @@ import { AchievementItem } from './achievement-item';
 
 import type { PublicEducation } from '@/entities/education/model/types';
 
-export function EducationItem({ edu }: { edu: PublicEducation }) {
+export function EducationItem({
+  edu,
+  labels,
+}: {
+  edu: PublicEducation;
+  /** Copy passed in by the feature: an entity must not pick a namespace. */
+  labels: { present: string; ongoing: string };
+}) {
   const startYear = new Date(edu.startDate).getFullYear();
   const endYear = edu.endDate ? new Date(edu.endDate).getFullYear() : null;
   const isOngoing = !endYear;
@@ -36,13 +43,13 @@ export function EducationItem({ edu }: { edu: PublicEducation }) {
 
           <p className="flex items-center gap-2 text-xs text-muted-foreground md:text-sm">
             <span className="tabular-nums">
-              {startYear} — {endYear ?? 'Present'}
+              {startYear} — {endYear ?? labels.present}
             </span>
 
             {isOngoing && (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Ongoing
+                {labels.ongoing}
               </span>
             )}
           </p>

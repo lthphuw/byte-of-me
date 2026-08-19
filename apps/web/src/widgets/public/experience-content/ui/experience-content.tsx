@@ -54,6 +54,7 @@ export async function ExperienceContent() {
                 <ExperienceCompanyItem
                   company={company}
                   isLast={index === companies.length - 1}
+                  presentLabel={t('present')}
                 />
               </StaggerItem>
             ))}

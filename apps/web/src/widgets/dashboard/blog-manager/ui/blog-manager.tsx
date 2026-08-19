@@ -16,7 +16,7 @@ import {
 import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import { blogKeys } from '@/entities/blog/model/query-keys';
 import { BlogEditorCard } from '@/entities/blog/ui/blog-editor-card';
-import { BlogEditorDialog } from '@/features/dashboard';
+import { BlogEditorDialog } from '@/features/dashboard/blog-editor';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
@@ -130,6 +130,12 @@ export function BlogManager() {
           pagination={pagination}
           setPage={setPage}
           isPlaceholderData={isPlaceholderData}
+          pageLabel={tShared('pagination.pageLabel', {
+            page: pagination?.currentPage ?? 1,
+            totalPages: pagination?.totalPages ?? 1,
+          })}
+          previousLabel={tShared('pagination.previous')}
+          nextLabel={tShared('pagination.next')}
         />
       )}
 

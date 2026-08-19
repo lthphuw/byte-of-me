@@ -23,6 +23,7 @@ import { BlogsShell } from '@/widgets/public/blogs-content/ui/blogs-shell';
 
 export function BlogsContent() {
   const t = useTranslations('blog');
+  const tPagination = useTranslations('components.pagination');
   const { filters, page, updateFilters, setPage } = useBlogFilters();
   // The toggle is only offered to an admin session; the server re-checks the
   // role anyway, so the flag is harmless in anyone else's hands.
@@ -145,6 +146,12 @@ export function BlogsContent() {
         setPage={setPage}
         pagination={pagination}
         isPlaceholderData={isPlaceholderData}
+        pageLabel={tPagination('pageLabel', {
+          page: pagination?.currentPage ?? 1,
+          totalPages: pagination?.totalPages ?? 1,
+        })}
+        previousLabel={tPagination('previous')}
+        nextLabel={tPagination('next')}
       />
     </BlogsShell>
   );
