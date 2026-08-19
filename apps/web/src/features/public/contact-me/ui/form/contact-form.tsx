@@ -1,93 +1,127 @@
 'use client';
 
-import { useTransition } from 'react';
+import { useMemo, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Button,
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
   Icons,
   Input,
+  Textarea,
 } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
-import dynamic from 'next/dynamic';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import {
   type ContactMessageFormValues,
-  contactMessageSchema,
+  createContactMessageSchema,
+  MESSAGE_MAX_LENGTH,
   sendContactMessage,
 } from '@/entities/contact-message';
 
-// Loaded on demand, and via Lite's own subpath (`…/rich-text-editor-lite`, not
-// the `…/rich-text-editor` barrel whose `import './editor-surface.css'` side effect
-// drags the full editor along). This form sits on the public homepage, and a
-// static import would put tiptap core + prosemirror (~570 KB raw) into its
-// initial JS; deferred, the editor arrives after hydration while the rest of
-// the form is already interactive.
-const RichTextEditorLite = dynamic(
-  () =>
-    import('@byte-of-me/ui/rich-text-editor-lite').then(
-      (mod) => mod.RichTextEditorLite
-    ),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="min-h-[120px] w-full animate-pulse rounded-md border bg-muted/30" />
-    ),
-  }
-);
+const EMPTY_VALUES: ContactMessageFormValues = {
+  name: '',
+  email: '',
+  subject: '',
+  message: '',
+};
 
 export function ContactForm() {
+  const t = useTranslations('contact.form');
+  const tValidation = useTranslations('contact.validation');
   const [isPending, startTransition] = useTransition();
+  const [result, setResult] = useState<{ ok: boolean; message: string } | null>(
+    null
+  );
+
+  // The schema carries message *keys*; the locale is only knowable here, since
+  // the entity is shared with the dashboard and cannot call next-intl.
+  const schema = useMemo(
+    () => createContactMessageSchema((key) => tValidation(key)),
+    [tValidation]
+  );
 
   const form = useForm<ContactMessageFormValues>({
-    resolver: zodResolver(contactMessageSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-      subject: '',
-      message: '',
-    },
+    resolver: zodResolver(schema),
+    mode: 'onTouched',
+    defaultValues: EMPTY_VALUES,
   });
 
   const onSubmit = (values: ContactMessageFormValues) => {
+    setResult(null);
+
     startTransition(async () => {
-      const res = await sendContactMessage({
-        ...values,
-        message: values.message ?? '',
-      });
+      const res = await sendContactMessage(values);
 
       if (res.success) {
-        form.reset({
-          name: '',
-          email: '',
-          subject: '',
-          message: '',
-        });
-
-        toast('Message sent!');
-      } else {
-        toast('Failed to send message');
+        form.reset(EMPTY_VALUES);
+        setResult({ ok: true, message: t('successDescription') });
+        toast.success(t('successTitle'));
+        return;
       }
+
+      // The action's `errorMsg` distinguishes rate limit from validation from
+      // 500; the old hardcoded toast collapsed all three into one string.
+      const message = res.errorMsg || t('errorFallback');
+      setResult({ ok: false, message });
+      toast.error(t('errorTitle'), { description: message });
     });
   };
 
   return (
     <Form {...form}>
+      {/* `noValidate`: the email input is `type="email"`, so without it the
+          browser's own bubble fires first — in the OS language, not the site's. */}
+      {/* `gap`, not `space-y`: the live region below is always mounted, and
+          `space-y` would have kept spacing a zero-height first child. */}
       <form
+        noValidate
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto max-w-4xl space-y-4 md:space-y-6"
+        className="flex flex-col gap-4 md:gap-6"
       >
+        {/* Mounted at all times so the success text is announced when it
+            appears; a live region inserted together with its content is not. */}
+        <div role="status" aria-live="polite" className="empty:hidden">
+          {result?.ok ? (
+            <div className="flex items-start gap-2 rounded-md border border-border bg-muted/40 p-3">
+              <Icons.check aria-hidden className="mt-0.5 size-4 shrink-0" />
+              <div className="space-y-2 text-sm">
+                <p className="font-medium">{t('successTitle')}</p>
+                <p className="text-muted-foreground">{result.message}</p>
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        {result && !result.ok ? (
+          <div
+            role="alert"
+            className="flex items-start gap-2 rounded-md border border-destructive/50 p-3"
+          >
+            <Icons.warning
+              aria-hidden
+              className="mt-0.5 size-4 shrink-0 text-destructive"
+            />
+            <div className="space-y-2 text-sm">
+              <p className="font-medium text-destructive">{t('errorTitle')}</p>
+              <p className="text-muted-foreground">{result.message}</p>
+            </div>
+          </div>
+        ) : null}
+
         {/* Every field below carries `h-11 md:h-9`: the shared Input defaults to
             h-9 (36px), which is under the 44px touch minimum this public form has
             to meet. The default itself stays at 36px on purpose — the dashboard
             forms are deliberately dense — so the height is raised per surface,
-            and only below md where the pointer is a finger. */}
+            and only below md where the pointer is a finger. The submit button
+            takes the same pair; it was the one control that missed it. */}
 
         {/* Name */}
         <FormField
@@ -96,12 +130,18 @@ export function ContactForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Name <span className="text-destructive">*</span>
+                {t('name')}{' '}
+                {/* `required` on the input is what a screen reader announces;
+                    the asterisk is the sighted-only duplicate of it. */}
+                <span aria-hidden="true" className="text-destructive">
+                  *
+                </span>
               </FormLabel>
               <FormControl>
                 <Input
+                  required
                   autoComplete="name"
-                  placeholder="Your name"
+                  placeholder={t('namePlaceholder')}
                   className="h-11 md:h-9"
                   {...field}
                 />
@@ -118,13 +158,17 @@ export function ContactForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Email <span className="text-destructive">*</span>
+                {t('email')}{' '}
+                <span aria-hidden="true" className="text-destructive">
+                  *
+                </span>
               </FormLabel>
               <FormControl>
                 <Input
+                  required
                   type="email"
                   autoComplete="email"
-                  placeholder="email@example.com"
+                  placeholder={t('emailPlaceholder')}
                   className="h-11 md:h-9"
                   {...field}
                 />
@@ -140,13 +184,18 @@ export function ContactForm() {
           name="subject"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Subject</FormLabel>
+              <FormLabel>
+                {t('subject')}{' '}
+                <span className="font-normal text-muted-foreground">
+                  ({t('optional')})
+                </span>
+              </FormLabel>
               {/* No autoComplete: the HTML autofill token list has nothing for a
                   message subject, and `off` would suppress the browser's own
                   previously-entered suggestions, which are the useful ones here. */}
               <FormControl>
                 <Input
-                  placeholder="What is this regarding?"
+                  placeholder={t('subjectPlaceholder')}
                   className="h-11 md:h-9"
                   {...field}
                 />
@@ -162,18 +211,27 @@ export function ContactForm() {
           name="message"
           render={({ field }) => (
             <FormItem>
-              <div className="flex items-center justify-between">
-                <FormLabel className="flex items-center gap-1">
-                  Message <span className="text-destructive">*</span>
+              <div className="flex items-center justify-between gap-2">
+                <FormLabel>
+                  {t('message')}{' '}
+                  <span aria-hidden="true" className="text-destructive">
+                    *
+                  </span>
                 </FormLabel>
-                {/*<span className="text-[10px] text-muted-foreground uppercase tracking-wider">*/}
-                {/*  {field.value?.length || 0} / 2000*/}
-                {/*</span>*/}
+                <FormDescription className="text-xs tabular-nums">
+                  {t('messageCounter', {
+                    count: String(field.value.length),
+                    max: String(MESSAGE_MAX_LENGTH),
+                  })}
+                </FormDescription>
               </div>
               <FormControl>
-                <RichTextEditorLite
-                  value={typeof field.value === 'string' ? field.value : ''}
-                  onChange={(val) => field.onChange(val)}
+                <Textarea
+                  required
+                  rows={6}
+                  placeholder={t('messagePlaceholder')}
+                  className="min-h-[9rem] resize-y"
+                  {...field}
                 />
               </FormControl>
               <FormMessage className="text-xs" />
@@ -182,9 +240,13 @@ export function ContactForm() {
         />
 
         {/* Submit */}
-        <Button type="submit" className="w-full" disabled={isPending}>
+        <Button
+          type="submit"
+          className="h-11 w-full md:h-9"
+          disabled={isPending}
+        >
           {isPending && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
-          Send message
+          {isPending ? t('submitting') : t('submit')}
         </Button>
       </form>
     </Form>

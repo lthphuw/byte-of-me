@@ -10,20 +10,18 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations('metadata.contact');
+  const tContact = await getTranslations('contact');
 
   return buildPublicPageMetadata({
     segment: 'contact',
     locale,
     title: t('title'),
     description: t('description'),
-    keywords: [
-      'Việc làm',
-      'Kết nối',
-      'Liên hệ',
-      'Thông tin liên lạc',
-      'Liên lạc',
-      'Contact',
-    ],
+    // Translated, not a fixed Vietnamese list served on the English page too.
+    keywords: tContact('metaKeywords')
+      .split(',')
+      .map((keyword) => keyword.trim())
+      .filter(Boolean),
   });
 }
 
@@ -32,5 +30,5 @@ interface ContactLayoutProps {
 }
 
 export default async function ContactLayout({ children }: ContactLayoutProps) {
-  return <div className="flex flex-col gap-6">{children}</div>;
+  return <>{children}</>;
 }

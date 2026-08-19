@@ -1,10 +1,16 @@
 import React from 'react';
-import { Icons } from '@byte-of-me/ui';
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  Icons,
+} from '@byte-of-me/ui';
 import { getTranslations } from 'next-intl/server';
 
 import { getAllPublicContacts } from '@/entities/social-link/api/get-all-public-contacts';
 import {
-  ContactHeaderMotion,
   ContactItemMotion,
   ContactListMotion,
 } from '@/features/public/contact-infos/ui/contact-motions';
@@ -36,11 +42,42 @@ function toProfileAddress(url: string): string | undefined {
   return `${host}${path}` || undefined;
 }
 
+function ChannelsNotice({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <Empty className="border">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <Icons.contact className="size-10 text-muted-foreground" />
+        </EmptyMedia>
+        <EmptyTitle className="text-muted-foreground">{title}</EmptyTitle>
+        <EmptyDescription>{description}</EmptyDescription>
+      </EmptyHeader>
+    </Empty>
+  );
+}
+
 export async function ContactInfos() {
-  const t = await getTranslations('contact');
+  const t = await getTranslations('contact.channels');
   const contactsResp = await getAllPublicContacts();
+
+  // The heading is rendered by the page, not here, so a failed read no longer
+  // takes the page's only `h1` down with it — but the column still has to say
+  // something rather than vanish (§11.9).
   if (!contactsResp.success) {
-    return null;
+    return (
+      <ChannelsSection title={t('title')}>
+        <ChannelsNotice
+          title={t('errorTitle')}
+          description={t('errorDescription')}
+        />
+      </ChannelsSection>
+    );
   }
 
   const email =
@@ -79,50 +116,84 @@ export async function ContactInfos() {
     icon: React.ComponentType<{ size?: number }>;
   }[];
 
-  if (contacts.length === 0) return null;
+  if (contacts.length === 0) {
+    return (
+      <ChannelsSection title={t('title')}>
+        <ChannelsNotice
+          title={t('emptyTitle')}
+          description={t('emptyDescription')}
+        />
+      </ChannelsSection>
+    );
+  }
 
   return (
-    <div className="w-full max-w-md space-y-8 md:space-y-12">
-      {/* Header */}
-      <ContactHeaderMotion id="contact-info">
-        <h1 className="font-heading text-3xl tracking-tight md:text-5xl">
-          {t('letsWorkTogether')}
-        </h1>
-        <p className="text-sm text-muted-foreground md:text-base">
-          {t('feelFreeToReachOutThroughAnyChannel')}
-        </p>
-      </ContactHeaderMotion>
-
-      {/* Contact items */}
+    <ChannelsSection title={t('title')}>
       <ContactListMotion>
         {contacts.map((item) => {
           const Icon = item.icon;
+          // `mailto:` hands off to a mail client; `target="_blank"` there only
+          // left an empty tab behind.
+          const isExternal = !item.href.startsWith('mailto:');
+
           return (
             <ContactItemMotion key={item.href}>
               <Link
                 href={item.href}
-                target="_blank"
+                target={isExternal ? '_blank' : undefined}
+                rel={isExternal ? 'noopener noreferrer' : undefined}
                 className="group flex items-center gap-4 rounded-lg border border-border px-4 py-3 transition hover:bg-muted/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <div className="flex size-10 items-center justify-center rounded-md border border-border text-muted-foreground transition group-hover:-translate-y-0.5 group-hover:text-foreground">
+                <div className="flex size-10 items-center justify-center rounded-md border border-border text-muted-foreground transition group-hover:-translate-y-0.5 group-hover:text-foreground group-focus-visible:-translate-y-0.5 group-focus-visible:text-foreground">
                   <Icon size={18} />
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium">{item.label}</span>
+                <div className="flex min-w-0 flex-col">
+                  <span className="text-sm font-medium">
+                    {item.label}
+                    {isExternal ? (
+                      <span className="sr-only"> {t('opensInNewTab')}</span>
+                    ) : null}
+                  </span>
                   {item.description ? (
-                    <span className="text-xs text-muted-foreground">
+                    <span className="truncate text-xs text-muted-foreground">
                       {item.description}
                     </span>
                   ) : null}
                 </div>
-                <span className="ml-auto text-xs text-muted-foreground opacity-60 transition">
-                  ↗
-                </span>
+                {isExternal ? (
+                  <Icons.externalLink
+                    aria-hidden
+                    className="ml-auto size-4 shrink-0 text-muted-foreground opacity-60 transition group-hover:opacity-100 group-focus-visible:opacity-100"
+                  />
+                ) : null}
               </Link>
             </ContactItemMotion>
           );
         })}
       </ContactListMotion>
-    </div>
+    </ChannelsSection>
+  );
+}
+
+function ChannelsSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section
+      aria-labelledby="contact-channels-title"
+      className="space-y-4 md:space-y-6"
+    >
+      <h2
+        id="contact-channels-title"
+        className="text-lg font-semibold md:text-xl"
+      >
+        {title}
+      </h2>
+      {children}
+    </section>
   );
 }

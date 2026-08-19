@@ -5,17 +5,17 @@ import { ContactForm } from '@/features/public/contact-me/ui/form';
 
 export async function ContactMe() {
   const t = await getTranslations('contact');
+
   return (
-    <div className="space-y-4 md:space-y-6">
-      <div className="text-center text-xs text-muted-foreground">{t('or')}</div>
+    <section
+      aria-labelledby="contact-form-title"
+      className="space-y-4 rounded-lg border border-border p-4 md:space-y-6 md:p-6"
+    >
+      <h2 id="contact-form-title" className="text-lg font-semibold md:text-xl">
+        {t('sendMeADirectMessage')}
+      </h2>
 
-      <div className="space-y-4 rounded-lg border border-border p-4 md:space-y-6">
-        <p className="text-center text-sm font-medium">
-          {t('sendMeADirectMessage')}
-        </p>
-
-        <ContactForm />
-      </div>
-    </div>
+      <ContactForm />
+    </section>
   );
 }

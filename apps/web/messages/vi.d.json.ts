@@ -126,6 +126,10 @@ declare const messages: {
       "librariesTitle": "Thư viện",
       "programmingLanguagesTitle": "Ngôn ngữ lập trình",
       "databaseTitle": "Cơ sở dữ liệu"
+    },
+    "education": {
+      "present": "Hiện tại",
+      "ongoing": "Đang học"
     }
   },
   "project": {
@@ -205,9 +209,42 @@ declare const messages: {
   "contact": {
     "letsWorkTogether": "Cùng nhau hợp tác",
     "feelFreeToReachOutThroughAnyChannel": "Bạn có thể liên hệ với tôi qua bất kỳ kênh nào",
-    "sendMeAnEmail": "Gửi email cho tôi",
-    "or": "Hoặc là",
-    "sendMeADirectMessage": "Để lại tin nhắn"
+    "sendMeADirectMessage": "Để lại tin nhắn",
+    "metaKeywords": "Liên hệ, Kết nối, Thông tin liên lạc, Liên lạc, Việc làm, Contact",
+    "channels": {
+      "title": "Kênh liên hệ",
+      "opensInNewTab": "(mở trong tab mới)",
+      "errorTitle": "Không tải được kênh liên hệ",
+      "errorDescription": "Danh sách kênh liên hệ hiện chưa tải được. Bạn vẫn có thể dùng biểu mẫu để nhắn tin.",
+      "emptyTitle": "Chưa có kênh liên hệ nào",
+      "emptyDescription": "Hiện chưa có kênh nào được công bố — bạn hãy dùng biểu mẫu bên cạnh nhé."
+    },
+    "form": {
+      "name": "Họ và tên",
+      "namePlaceholder": "Tên của bạn",
+      "email": "Email",
+      "emailPlaceholder": "email@example.com",
+      "subject": "Tiêu đề",
+      "optional": "không bắt buộc",
+      "subjectPlaceholder": "Bạn muốn trao đổi về điều gì?",
+      "message": "Nội dung",
+      "messagePlaceholder": "Hãy cho tôi biết bạn đang nghĩ gì…",
+      "messageCounter": "{count} / {max}",
+      "submit": "Gửi tin nhắn",
+      "submitting": "Đang gửi…",
+      "successTitle": "Đã gửi tin nhắn",
+      "successDescription": "Cảm ơn bạn đã liên hệ — tôi sẽ phản hồi qua địa chỉ email bạn để lại.",
+      "errorTitle": "Chưa gửi được tin nhắn",
+      "errorFallback": "Đã có lỗi xảy ra. Vui lòng thử lại."
+    },
+    "validation": {
+      "nameTooShort": "Tên quá ngắn",
+      "nameTooLong": "Tên quá dài",
+      "emailInvalid": "Địa chỉ email không hợp lệ",
+      "subjectTooLong": "Tiêu đề quá dài",
+      "messageTooShort": "Nội dung phải có ít nhất 10 ký tự",
+      "messageTooLong": "Nội dung quá dài"
+    }
   },
   "homepage": {
     "myStory": "Hành trình của tôi",
@@ -225,7 +262,8 @@ declare const messages: {
   },
   "experience": {
     "title": "Kinh nghiệm làm việc",
-    "updating": "Đang cập nhật..."
+    "updating": "Đang cập nhật...",
+    "present": "Hiện tại"
   },
   "components": {
     "expandableText": {
@@ -254,6 +292,11 @@ declare const messages: {
     },
     "filters": {
       "clearSearch": "Xoá tìm kiếm"
+    },
+    "pagination": {
+      "pageLabel": "Trang {page, number} / {totalPages, number}",
+      "previous": "Trước",
+      "next": "Sau"
     }
   },
   "dashboard": {
@@ -290,7 +333,16 @@ declare const messages: {
     },
     "dashboard": {
       "welcome": "Chào mừng trở lại, {name}! 👋",
-      "description": "Quản lý danh mục cá nhân và theo dõi hiệu suất nội dung của bạn."
+      "description": "Quản lý danh mục cá nhân và theo dõi hiệu suất nội dung của bạn.",
+      "analyticsTitle": "Phân tích",
+      "analyticsDescription": "Lượt xem bài viết, tương tác và lưu lượng truy cập trong một cái nhìn.",
+      "sections": {
+        "profile": "Tóm tắt hồ sơ",
+        "stats": "Tổng quan thống kê",
+        "analytics": "Phân tích",
+        "messages": "Tin nhắn liên hệ"
+      },
+      "sectionError": "Không tải được phần này. Tải lại trang để thử lại."
     },
     "contactGallery": {
       "title": "Yêu cầu gần đây",
@@ -303,7 +355,9 @@ declare const messages: {
       "subjectLabel": "Tiêu đề",
       "messageLabel": "Nội dung",
       "noSubjectProvided": "Không có tiêu đề",
-      "close": "Đóng"
+      "close": "Đóng",
+      "clearSearch": "Xóa nội dung tìm kiếm",
+      "readMessageFrom": "Đọc tin nhắn từ {name}"
     },
     "blog": {
       "title": "Bài viết",
@@ -425,6 +479,8 @@ declare const messages: {
       "present": "Hiện tại",
       "rolesBadge": "{count} vai trò",
       "techStackBadge": "{count, number} công nghệ",
+      "editLabel": "Sửa {name}",
+      "deleteLabel": "Xóa {name}",
       "deleteTitle": "Xóa kinh nghiệm làm việc?",
       "deleteDescription": "Bạn có chắc chắn muốn xóa <name></name> cùng tất cả các vai trò của công ty này không?",
       "toast": {
@@ -437,6 +493,8 @@ declare const messages: {
       "dialog": {
         "createTitle": "Thêm kinh nghiệm làm việc",
         "editTitle": "Chỉnh sửa kinh nghiệm làm việc",
+        "createDescription": "Ghi lại một công ty, khoảng thời gian bạn làm việc ở đó và các vai trò bạn đã đảm nhiệm.",
+        "editDescription": "Cập nhật công ty này, thời gian làm việc và các vai trò được liệt kê bên dưới.",
         "logoLabel": "Logo công ty",
         "companyLabel": "Tên công ty",
         "locationLabel": "Địa điểm",
@@ -444,6 +502,8 @@ declare const messages: {
         "endDateLabel": "Ngày kết thúc",
         "techStackLabel": "Công nghệ sử dụng",
         "techStackPlaceholder": "Chọn công nghệ",
+        "techStackLoading": "Đang tải danh sách công nghệ…",
+        "techStackError": "Không thể tải danh sách công nghệ.",
         "translationsTitle": "Bản dịch",
         "descriptionLabel": "Mô tả",
         "rolesTitle": "Vai trò",
@@ -453,6 +513,8 @@ declare const messages: {
       "role": {
         "fallbackTitle": "Vai trò {index, number}",
         "removeButton": "Xóa vai trò",
+        "removeConfirmTitle": "Xóa vai trò này?",
+        "removeConfirmDescription": "{name} cùng toàn bộ công việc và bản dịch bên trong sẽ bị xóa khỏi biểu mẫu. Thay đổi chỉ được ghi lại khi bạn lưu kinh nghiệm làm việc.",
         "startDateLabel": "Ngày bắt đầu",
         "endDateLabel": "Ngày kết thúc",
         "titleLabel": "Chức danh",
@@ -477,6 +539,8 @@ declare const messages: {
       "present": "Hiện tại",
       "ongoing": "Đang học",
       "achievementCount": "{count, plural, =1 {1 thành tích} other {# thành tích}}",
+      "editLabel": "Sửa {name}",
+      "deleteLabel": "Xóa {name}",
       "deleteTitle": "Xóa thông tin học vấn?",
       "deleteDescription": "Bạn có chắc chắn muốn xóa <name></name> không?",
       "toast": {
@@ -512,6 +576,8 @@ declare const messages: {
         "untitled": "Thành tích chưa đặt tên",
         "reorderAriaLabel": "Sắp xếp lại thành tích {index, number} trong {total, number}",
         "removeAriaLabel": "Xóa thành tích",
+        "removeConfirmTitle": "Xóa thành tích này?",
+        "removeConfirmDescription": "{name} cùng toàn bộ nội dung đã nhập sẽ bị xóa khỏi biểu mẫu. Thay đổi chỉ được ghi lại khi bạn lưu mục học vấn.",
         "imagesLabel": "Hình ảnh",
         "titleLabel": "Tiêu đề",
         "contentLabel": "Nội dung",
@@ -736,6 +802,7 @@ declare const messages: {
         "description": "“{title}” sẽ bị xóa hẳn. Không thể hoàn tác.",
         "descriptionWithChildren": "“{title}” cùng {count, plural, other {# ghi chú con}} sẽ bị xóa hẳn. Không thể hoàn tác.",
         "descriptionShared": "Hiện có {count, plural, other {# người}} mở được mục này. Xóa đi thì họ cũng mất quyền.",
+        "impactUnknown": "Không kiểm tra được thao tác này ảnh hưởng tới những gì. Có thể xóa luôn các ghi chú con, và người khác có thể mất quyền truy cập.",
         "confirm": "Xóa vĩnh viễn",
         "cancel": "Hủy"
       },
@@ -766,7 +833,9 @@ declare const messages: {
         "revoke": "Thu hồi quyền",
         "empty": "Chưa chia sẻ với ai.",
         "loading": "Đang tải danh sách…",
-        "failed": "Không tải được danh sách người có quyền."
+        "failed": "Không tải được danh sách người có quyền.",
+        "revokeFailed": "Chưa thu hồi được quyền truy cập.",
+        "roleFailed": "Chưa đổi được vai trò."
       },
       "links": {
         "title": "Liên kết",
@@ -811,7 +880,11 @@ declare const messages: {
         "resetView": "Đưa sơ đồ về giữa",
         "nodeCount": "{count, plural, other {# ghi chú}}",
         "edgeCount": "{count, plural, other {# liên kết}}",
-        "loading": "Đang tải sơ đồ tri thức…"
+        "truncated": "Chỉ hiển thị một phần — sơ đồ chỉ vẽ những ghi chú được cập nhật gần đây nhất.",
+        "loading": "Đang tải sơ đồ tri thức…",
+        "canvasLabel": "Sơ đồ tri thức, có thể thao tác",
+        "keyboardHint": "Dùng phím mũi tên để chuyển giữa các ghi chú, Enter để mở ghi chú đang chọn, Escape để rời khỏi sơ đồ.",
+        "noteListLabel": "Mọi ghi chú trong sơ đồ:"
       },
       "export": {
         "label": "Xuất",
@@ -866,6 +939,8 @@ declare const messages: {
         "saving": "Đang lưu…",
         "saved": "Đã lưu",
         "saveError": "Không lưu được",
+        "closeWhileRunning": "Một tác vụ bảo trì vẫn đang chạy. Đóng bây giờ sẽ dừng tác vụ và bỏ toàn bộ tiến trình đã chạy.",
+        "closeAnyway": "Vẫn đóng",
         "groups": {
           "appearance": "Trình bày",
           "editing": "Soạn thảo",
@@ -937,7 +1012,15 @@ declare const messages: {
           "progress": "{processed, number}/{total, number} note",
           "cancelled": "Đã dừng sau {processed, number} note.",
           "failed": "Việc chạy thất bại",
+          "confirmRun": "Vâng, cứ chạy",
+          "confirmDismiss": "Giữ nguyên note của tôi",
           "jobs": {
+            "pastedFormatting": {
+              "title": "Xoá định dạng dán từ nơi khác vào",
+              "description": "Ghi lại toàn bộ note, bỏ màu chữ, màu tô nền, độ rộng cột chép theo bảng gốc, và kiểu link mang theo từ trang khác. Mọi thứ có ý nghĩa đều được giữ: bảng, hàng tiêu đề, ô gộp, danh sách, link và nơi nó trỏ tới, khối mã, tiêu đề, chữ đậm, chữ nghiêng và chữ gạch ngang.",
+              "warning": "Không hoàn tác được. Màu bạn tự chọn được lưu y hệt màu đi kèm khi dán, nên việc này xoá cả hai, trong mọi note. Sau khi đã xảy ra thì không có gì phân biệt được nữa, và cũng không có cách nào phục hồi — hãy xuất ra trước những gì bạn còn cần.",
+              "result": "{count, plural, =0 {Đã xem {examined, number} note. Không note nào mang định dạng dán vào.} other {Đã xem {examined, number} note và ghi lại # note.}}"
+            },
             "staleLinks": {
               "title": "Tìm link còn hiện tên cũ",
               "description": "Liệt kê những link có nhãn không còn khớp tiêu đề của note nó trỏ tới. Chỉ báo cáo, không sửa gì — vì nhãn bạn tự viết và nhãn sót lại sau một lần đổi tên là không phân biệt được.",
@@ -964,11 +1047,16 @@ declare const messages: {
       "createButton": "Dự án mới",
       "emptyTitle": "Chưa có dự án nào",
       "emptyDescription": "Tạo dự án đầu tiên để giới thiệu công việc của bạn.",
+      "editLabel": "Sửa {name}",
+      "deleteLabel": "Xóa {name}",
+      "unknownTagLabel": "Thẻ chưa đặt tên",
       "deleteTitle": "Xóa dự án?",
       "deleteDescription": "Hành động này không thể hoàn tác. Dự án và toàn bộ dữ liệu liên quan sẽ bị xóa vĩnh viễn khỏi máy chủ.",
       "dialog": {
         "createTitle": "Dự án mới",
         "editTitle": "Chỉnh sửa dự án",
+        "createDescription": "Mô tả dự án, liên kết với công nghệ và thẻ, sau đó viết nội dung cho từng ngôn ngữ.",
+        "editDescription": "Cập nhật liên kết, thời gian và nội dung theo từng ngôn ngữ của dự án này.",
         "slugLabel": "Slug",
         "slugPlaceholder": "my-awesome-project",
         "startDateLabel": "Ngày bắt đầu",
@@ -987,7 +1075,8 @@ declare const messages: {
         "descriptionLabel": "Mô tả",
         "descriptionPlaceholder": "Dự án này là gì và làm được điều gì…",
         "saveButton": "Lưu dự án",
-        "savingButton": "Đang lưu..."
+        "savingButton": "Đang lưu...",
+        "cancelButton": "Hủy"
       },
       "coauthors": {
         "title": "Đồng tác giả",
@@ -997,6 +1086,11 @@ declare const messages: {
         "emailLabel": "Email",
         "emailPlaceholder": "nguyenvana@example.com",
         "removeButton": "Xóa đồng tác giả"
+      },
+      "card": {
+        "noDescription": "Chưa có mô tả.",
+        "githubLinkLabel": "Mở kho mã GitHub của {name} (mở trong tab mới)",
+        "liveLinkLabel": "Mở trang demo của {name} (mở trong tab mới)"
       },
       "toast": {
         "created": "Đã tạo dự án",
@@ -1043,11 +1137,15 @@ declare const messages: {
       "createButton": "Thêm công nghệ",
       "emptyTitle": "Chưa có công nghệ nào",
       "otherGroup": "Khác",
+      "editLabel": "Sửa {name}",
+      "deleteLabel": "Xóa {name}",
       "deleteTitle": "Xóa công nghệ",
       "deleteDescription": "Bạn có chắc muốn xóa <name></name>? Thao tác này sẽ ẩn công nghệ này khỏi phần giới thiệu công nghệ của bạn.",
       "dialog": {
         "createTitle": "Thêm công nghệ",
         "editTitle": "Chỉnh sửa công nghệ",
+        "createDescription": "Thêm một công nghệ, slug và nhóm mà nó thuộc về.",
+        "editDescription": "Cập nhật tên, slug, nhóm và logo của công nghệ này.",
         "nameLabel": "Tên",
         "slugLabel": "Slug",
         "groupLabel": "Nhóm",
@@ -1068,10 +1166,18 @@ declare const messages: {
       "resetButton": "Đặt lại",
       "cancelButton": "Hủy",
       "saveButton": "Lưu",
+      "reset": {
+        "confirmTitle": "Bỏ các thay đổi chưa lưu?",
+        "confirmDescription": "Mọi chỉnh sửa của bạn, ở tất cả các ngôn ngữ, sẽ được hoàn về hồ sơ đã lưu gần nhất.",
+        "confirmAction": "Bỏ thay đổi"
+      },
       "translations": {
         "heading": "Bản dịch",
         "addLanguage": "Thêm ngôn ngữ",
         "newTabLabel": "MỚI",
+        "removeLanguageLabel": "Xóa ngôn ngữ này",
+        "removeConfirmTitle": "Xóa ngôn ngữ này?",
+        "removeConfirmDescription": "Tên, tiểu sử, trích dẫn và phần \"Giới thiệu bản thân\" của ngôn ngữ {language} sẽ bị xóa khỏi biểu mẫu. Thay đổi chỉ được ghi lại khi bạn lưu hồ sơ.",
         "languageLabel": "Ngôn ngữ",
         "languagePlaceholder": "en, vi..."
       },
@@ -1107,11 +1213,21 @@ declare const messages: {
         "heading": "Liên kết mạng xã hội",
         "description": "Thêm hồ sơ mạng xã hội của bạn",
         "addLink": "Thêm liên kết",
+        "platformLabel": "Nền tảng",
+        "urlLabel": "Đường dẫn",
+        "removeLabel": "Xóa liên kết này",
+        "unnamedLink": "nền tảng này",
         "emptyTitle": "Chưa có liên kết mạng xã hội nào",
         "emptyAction": "Thêm liên kết đầu tiên",
         "platformPlaceholder": "GitHub",
         "urlPlaceholder": "https://...",
-        "removeConfirm": "Xóa liên kết này?"
+        "removeConfirm": "Xóa liên kết này?",
+        "removeConfirmDescription": "Liên kết tới {platform} sẽ bị xóa khỏi biểu mẫu. Thay đổi chỉ được ghi lại khi bạn lưu hồ sơ."
+      },
+      "validation": {
+        "platformRequired": "Vui lòng nhập nền tảng",
+        "urlInvalid": "Nhập đường dẫn https:// đầy đủ, hoặc một địa chỉ email",
+        "languageRequired": "Vui lòng nhập ngôn ngữ"
       },
       "toast": {
         "updated": "Đã cập nhật hồ sơ",
@@ -1134,6 +1250,15 @@ declare const messages: {
       "confirmDelete": {
         "actionText": "Xóa",
         "cancelText": "Hủy"
+      },
+      "pagination": {
+        "pageLabel": "Trang {page, number} / {totalPages, number}",
+        "previous": "Trước",
+        "next": "Sau"
+      },
+      "actions": {
+        "editItem": "Sửa {name}",
+        "deleteItem": "Xóa {name}"
       }
     }
   },

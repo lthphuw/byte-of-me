@@ -123,6 +123,10 @@
       "librariesTitle": "Libraries",
       "programmingLanguagesTitle": "Programming Languages",
       "databaseTitle": "Database"
+    },
+    "education": {
+      "present": "Present",
+      "ongoing": "Ongoing"
     }
   },
   "project": {
@@ -202,9 +206,42 @@
   "contact": {
     "letsWorkTogether": "Let’s work together",
     "feelFreeToReachOutThroughAnyChannel": "Feel free to reach out through any channel",
-    "sendMeAnEmail": "Send me an email",
-    "or": "Or",
-    "sendMeADirectMessage": "Send me a direct message"
+    "sendMeADirectMessage": "Send me a direct message",
+    "metaKeywords": "Contact, Get in touch, Collaboration, Hire me, Email",
+    "channels": {
+      "title": "Channels",
+      "opensInNewTab": "(opens in a new tab)",
+      "errorTitle": "Channels are unavailable",
+      "errorDescription": "The contact channels could not be loaded. The message form still works.",
+      "emptyTitle": "No channels listed yet",
+      "emptyDescription": "Nothing has been published here yet — use the message form instead."
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "email@example.com",
+      "subject": "Subject",
+      "optional": "optional",
+      "subjectPlaceholder": "What is this regarding?",
+      "message": "Message",
+      "messagePlaceholder": "Tell me what you have in mind…",
+      "messageCounter": "{count} / {max}",
+      "submit": "Send message",
+      "submitting": "Sending…",
+      "successTitle": "Message sent",
+      "successDescription": "Thanks for reaching out — I’ll reply to the address you gave.",
+      "errorTitle": "Message not sent",
+      "errorFallback": "Something went wrong. Please try again."
+    },
+    "validation": {
+      "nameTooShort": "Name is too short",
+      "nameTooLong": "Name is too long",
+      "emailInvalid": "Invalid email address",
+      "subjectTooLong": "Subject is too long",
+      "messageTooShort": "Message must be at least 10 characters",
+      "messageTooLong": "Message is too long"
+    }
   },
   "homepage": {
     "myStory": "My story",
@@ -222,7 +259,8 @@
   },
   "experience": {
     "title": "Work Experience",
-    "updating": "Updating..."
+    "updating": "Updating...",
+    "present": "Present"
   },
   "components": {
     "expandableText": {
@@ -251,6 +289,11 @@
     },
     "filters": {
       "clearSearch": "Clear search"
+    },
+    "pagination": {
+      "pageLabel": "Page {page, number} of {totalPages, number}",
+      "previous": "Previous",
+      "next": "Next"
     }
   },
   "dashboard": {
@@ -287,7 +330,16 @@
     },
     "dashboard": {
       "welcome": "Welcome back, {name}! 👋",
-      "description": "Manage your personal portfolio and track your content performance."
+      "description": "Manage your personal portfolio and track your content performance.",
+      "analyticsTitle": "Analytics",
+      "analyticsDescription": "Blog views, engagement, and page traffic at a glance.",
+      "sections": {
+        "profile": "Profile Summary",
+        "stats": "Statistics Overview",
+        "analytics": "Analytics",
+        "messages": "Contact Messages"
+      },
+      "sectionError": "This section could not be loaded. Reload the page to try again."
     },
     "contactGallery": {
       "title": "Recent Inquiries",
@@ -300,7 +352,9 @@
       "subjectLabel": "Subject",
       "messageLabel": "Message",
       "noSubjectProvided": "No subject provided",
-      "close": "Close"
+      "close": "Close",
+      "clearSearch": "Clear search",
+      "readMessageFrom": "Read the message from {name}"
     },
     "blog": {
       "title": "Blog Posts",
@@ -422,6 +476,8 @@
       "present": "Present",
       "rolesBadge": "{count, plural, =1 {# Role} other {# Roles}}",
       "techStackBadge": "{count, number} Tech",
+      "editLabel": "Edit {name}",
+      "deleteLabel": "Delete {name}",
       "deleteTitle": "Delete work experience?",
       "deleteDescription": "Are you sure you want to delete <name></name> and all of its roles?",
       "toast": {
@@ -434,6 +490,8 @@
       "dialog": {
         "createTitle": "Add Work Experience",
         "editTitle": "Edit Work Experience",
+        "createDescription": "Record a company, the dates you were there, and the roles you held.",
+        "editDescription": "Update this company, its dates, and the roles listed under it.",
         "logoLabel": "Company Logo",
         "companyLabel": "Company Name",
         "locationLabel": "Location",
@@ -441,6 +499,8 @@
         "endDateLabel": "End Date",
         "techStackLabel": "Tech Stack",
         "techStackPlaceholder": "Select tech stack",
+        "techStackLoading": "Loading tech stacks…",
+        "techStackError": "Tech stacks could not be loaded.",
         "translationsTitle": "Translations",
         "descriptionLabel": "Description",
         "rolesTitle": "Roles",
@@ -450,6 +510,8 @@
       "role": {
         "fallbackTitle": "Role {index, number}",
         "removeButton": "Remove role",
+        "removeConfirmTitle": "Remove this role?",
+        "removeConfirmDescription": "{name}, together with its tasks and translations, will be removed from this form. Nothing is saved until you save the work experience.",
         "startDateLabel": "Start Date",
         "endDateLabel": "End Date",
         "titleLabel": "Role Title",
@@ -474,6 +536,8 @@
       "present": "Present",
       "ongoing": "Ongoing",
       "achievementCount": "{count, plural, =1 {1 Achievement} other {# Achievements}}",
+      "editLabel": "Edit {name}",
+      "deleteLabel": "Delete {name}",
       "deleteTitle": "Delete education?",
       "deleteDescription": "Are you sure you want to delete <name></name>?",
       "toast": {
@@ -509,6 +573,8 @@
         "untitled": "Untitled achievement",
         "reorderAriaLabel": "Reorder achievement {index, number} of {total, number}",
         "removeAriaLabel": "Remove achievement",
+        "removeConfirmTitle": "Remove this achievement?",
+        "removeConfirmDescription": "{name}, together with everything typed into it, will be removed from this form. Nothing is saved until you save the education entry.",
         "imagesLabel": "Images",
         "titleLabel": "Title",
         "contentLabel": "Content",
@@ -733,6 +799,7 @@
         "description": "“{title}” will be deleted for good. This cannot be undone.",
         "descriptionWithChildren": "“{title}” and {count, plural, one {its # nested note} other {its # nested notes}} will be deleted for good. This cannot be undone.",
         "descriptionShared": "{count, plural, one {# person} other {# people}} can currently open this. Deleting it removes their access too.",
+        "impactUnknown": "Could not check what this affects. It may take nested notes with it, and other people may lose access.",
         "confirm": "Delete permanently",
         "cancel": "Cancel"
       },
@@ -763,7 +830,9 @@
         "revoke": "Remove access",
         "empty": "Not shared with anyone yet.",
         "loading": "Loading people…",
-        "failed": "Could not load who has access."
+        "failed": "Could not load who has access.",
+        "revokeFailed": "Access was not removed.",
+        "roleFailed": "The role was not changed."
       },
       "links": {
         "title": "Links",
@@ -808,7 +877,11 @@
         "resetView": "Reset the view",
         "nodeCount": "{count, plural, one {# note} other {# notes}}",
         "edgeCount": "{count, plural, one {# link} other {# links}}",
-        "loading": "Loading knowledge graph…"
+        "truncated": "Partial view — only the most recently updated notes are plotted.",
+        "loading": "Loading knowledge graph…",
+        "canvasLabel": "Knowledge graph, interactive",
+        "keyboardHint": "Use the arrow keys to move between notes, Enter to open the focused note, and Escape to leave it.",
+        "noteListLabel": "Every note in the graph:"
       },
       "export": {
         "label": "Export",
@@ -863,6 +936,8 @@
         "saving": "Saving…",
         "saved": "Saved",
         "saveError": "Could not save",
+        "closeWhileRunning": "A maintenance job is still running. Closing this stops it and discards the progress it has made.",
+        "closeAnyway": "Close anyway",
         "groups": {
           "appearance": "Appearance",
           "editing": "Editing",
@@ -934,7 +1009,15 @@
           "progress": "{processed, number} of {total, number} notes",
           "cancelled": "Stopped after {processed, number} notes.",
           "failed": "Job failed",
+          "confirmRun": "Yes, run it",
+          "confirmDismiss": "Leave my notes alone",
           "jobs": {
+            "pastedFormatting": {
+              "title": "Clear formatting that came in from a paste",
+              "description": "Rewrites every note, removing text colour, highlight colour, column widths copied from a source table, and link styling carried in from another page. Everything that means something is kept: tables, header rows, merged cells, lists, links and where they point, code blocks, headings, bold, italic and strikethrough.",
+              "warning": "This cannot be undone. A colour you chose yourself is stored exactly like a colour that arrived with a paste, so this removes both, in every note. Nothing can tell them apart after the fact, and there is no way to put them back — export anything you care about first.",
+              "result": "{count, plural, =0 {Examined {examined, number} notes. None of them was carrying pasted formatting.} one {Examined {examined, number} notes and rewrote #.} other {Examined {examined, number} notes and rewrote #.}}"
+            },
             "staleLinks": {
               "title": "Find links showing an old name",
               "description": "Lists links whose label no longer matches the title of the note they point at. A report only — nothing is rewritten, because a label you wrote yourself is indistinguishable from one left behind by a rename.",
@@ -961,11 +1044,16 @@
       "createButton": "New Project",
       "emptyTitle": "No projects found",
       "emptyDescription": "Create your first project to showcase your work.",
+      "editLabel": "Edit {name}",
+      "deleteLabel": "Delete {name}",
+      "unknownTagLabel": "Untitled tag",
       "deleteTitle": "Delete Project?",
       "deleteDescription": "This action cannot be undone. This will permanently delete the project and remove its data from our servers.",
       "dialog": {
         "createTitle": "New Project",
         "editTitle": "Edit Project",
+        "createDescription": "Describe the project, link it to your tech stack and tags, then write the content for each language.",
+        "editDescription": "Update this project's links, dates and per-language content.",
         "slugLabel": "Slug",
         "slugPlaceholder": "my-awesome-project",
         "startDateLabel": "Start Date",
@@ -984,7 +1072,8 @@
         "descriptionLabel": "Description",
         "descriptionPlaceholder": "What this project is, and what it does…",
         "saveButton": "Save Project",
-        "savingButton": "Saving..."
+        "savingButton": "Saving...",
+        "cancelButton": "Cancel"
       },
       "coauthors": {
         "title": "Co-authors",
@@ -994,6 +1083,11 @@
         "emailLabel": "Email",
         "emailPlaceholder": "jane@example.com",
         "removeButton": "Remove co-author"
+      },
+      "card": {
+        "noDescription": "No description available.",
+        "githubLinkLabel": "Open the GitHub repository for {name} (opens in a new tab)",
+        "liveLinkLabel": "Open the live site for {name} (opens in a new tab)"
       },
       "toast": {
         "created": "Project created",
@@ -1040,11 +1134,15 @@
       "createButton": "Add TechStack",
       "emptyTitle": "No tech stacks found",
       "otherGroup": "Other",
+      "editLabel": "Edit {name}",
+      "deleteLabel": "Delete {name}",
       "deleteTitle": "Remove Tech stack",
       "deleteDescription": "Are you sure you want to remove <name></name>? This will hide it from your tech stack showcase.",
       "dialog": {
         "createTitle": "Add Tech Stack",
         "editTitle": "Edit Tech Stack",
+        "createDescription": "Add a technology, its slug, and the group it belongs to.",
+        "editDescription": "Update this technology's name, slug, group and logo.",
         "nameLabel": "Name",
         "slugLabel": "Slug",
         "groupLabel": "Group",
@@ -1065,10 +1163,18 @@
       "resetButton": "Reset",
       "cancelButton": "Cancel",
       "saveButton": "Save",
+      "reset": {
+        "confirmTitle": "Discard unsaved changes?",
+        "confirmDescription": "Every edit you have made, in every language, will be reverted to the last saved profile.",
+        "confirmAction": "Discard changes"
+      },
       "translations": {
         "heading": "Translations",
         "addLanguage": "Add Language",
         "newTabLabel": "NEW",
+        "removeLanguageLabel": "Remove this language",
+        "removeConfirmTitle": "Remove this language?",
+        "removeConfirmDescription": "The {language} name, bio, quote and \"About me\" will be removed from this form. Nothing is saved until you save the profile.",
         "languageLabel": "Language",
         "languagePlaceholder": "en, vi..."
       },
@@ -1104,11 +1210,21 @@
         "heading": "Social Links",
         "description": "Add your social profiles",
         "addLink": "Add Link",
+        "platformLabel": "Platform",
+        "urlLabel": "URL",
+        "removeLabel": "Remove this link",
+        "unnamedLink": "this platform",
         "emptyTitle": "No social links yet",
         "emptyAction": "Add your first link",
         "platformPlaceholder": "GitHub",
         "urlPlaceholder": "https://...",
-        "removeConfirm": "Remove this link?"
+        "removeConfirm": "Remove this link?",
+        "removeConfirmDescription": "The link to {platform} will be removed from this form. Nothing is saved until you save the profile."
+      },
+      "validation": {
+        "platformRequired": "Platform is required",
+        "urlInvalid": "Enter a full https:// address, or an email address",
+        "languageRequired": "Language is required"
       },
       "toast": {
         "updated": "Profile updated",
@@ -1131,6 +1247,15 @@
       "confirmDelete": {
         "actionText": "Delete",
         "cancelText": "Cancel"
+      },
+      "pagination": {
+        "pageLabel": "Page {page, number} of {totalPages, number}",
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "actions": {
+        "editItem": "Edit {name}",
+        "deleteItem": "Delete {name}"
       }
     }
   },

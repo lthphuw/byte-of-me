@@ -5,8 +5,9 @@ import { cn } from '@/shared/lib/utils';
 
 export function ContactShell({ className, ...props }: ShellProps) {
   return (
-    // No max-width: the contact column is capped at `max-w-md` by the content
-    // itself, so a wider cap here only looked like it was doing something.
+    // `max-w-5xl` is now load-bearing: the page is two columns from md up, so
+    // this cap is what sets their width. It used to sit above a `max-w-md`
+    // column that capped itself, which is why it looked inert.
     <ShellBase className={cn('max-w-5xl', className)} {...props} />
   );
 }
