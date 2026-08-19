@@ -451,6 +451,9 @@ model Project {
   comments     Comment[]
 
   @@index([userId, isPublished, startDate], map: "idx_projects_public_list")
+  // The admin list is by owner, newest first — the public index above leads
+  // with `is_published` and cannot serve it.
+  @@index([userId, createdAt(sort: Desc)], map: "idx_projects_user_created_at")
   @@map("projects")
 }
 
@@ -573,6 +576,9 @@ model BlogStatisticLog {
   @@index([blogId, deviceType], map: "idx_blog_logs_device")
   @@index([blogId, countryCode], map: "idx_blog_logs_country")
   @@index([viewerId], map: "idx_blog_view_logs_viewer_id")
+  // The dashboard's 30-day rollup and all-time count filter/scan on time
+  // alone; every index above leads with `blog_id`, so neither could use one.
+  @@index([createdAt(sort: Desc)], map: "idx_blog_view_logs_created_at")
   @@map("blog_view_logs")
 }
 
@@ -590,6 +596,8 @@ model Tag {
   blogs        BlogTag[]
   projects     ProjectTag[]
 
+  // The admin list is a single unscoped page ordered by recency.
+  @@index([createdAt(sort: Desc)], map: "idx_tags_created_at")
   @@map("tags")
 }
 
@@ -669,7 +677,8 @@ model Media {
   educationAchiements AchievementOnMedias[]
   blogs               Blog[]
 
-  @@index([userId], map: "idx_media_user_id")
+  // The library is paged by owner, newest first.
+  @@index([userId, createdAt(sort: Desc)], map: "idx_media_user_created_at")
   @@map("media")
 }
 
@@ -697,6 +706,8 @@ model Interaction {
   @@unique([userId, projectId, type], map: "uq_user_project_interaction")
   @@index([blogId, type], map: "idx_interactions_blog_type")
   @@index([projectId], map: "idx_interactions_project_id")
+  // `groupBy(['type'])` with no filter, for the analytics like/clap totals.
+  @@index([type], map: "idx_interactions_type")
   @@map("interactions")
 }
 
@@ -729,6 +740,8 @@ model Comment {
   @@index([blogId, parentId, isDeleted], map: "idx_comments_blog_thread")
   @@index([projectId], map: "idx_comments_project_id")
   @@index([parentId], map: "idx_comments_parent_id")
+  // The moderation list orders by recency across every blog and project.
+  @@index([createdAt(sort: Desc)], map: "idx_comments_created_at")
   @@map("comments")
 }
 
@@ -823,6 +836,20 @@ model Note {
 
   @@index([ownerId, parentId, position], map: "idx_notes_owner_id_parent_id_position")
   @@index([ownerId, updatedAt(sort: Desc)], map: "idx_notes_owner_id_updated_at")
+  // Every list read asks for `_count: { children }`, which Prisma resolves as a
+  // predicate on the FK alone — `owner_id` leading the index above cannot serve it.
+  @@index([parentId], map: "idx_notes_parent_id")
+  // The trash view: `archivedAt: { not: null }` ordered by `archivedAt desc, id`.
+  @@index([ownerId, archivedAt(sort: Desc), id], map: "idx_notes_owner_archived")
+  // One tree level. The order leads with `isPinned`, so the position index above
+  // supplies rows but not the ordering.
+  @@index([ownerId, parentId, isPinned(sort: Desc), position], map: "idx_notes_owner_parent_pinned")
+  // The flat view's default `updated` sort. `created`/`title` are deliberately
+  // left unindexed — three more indexes on the app's hottest write table is a
+  // worse trade than sorting a page in memory.
+  @@index([ownerId, isFolder, isPinned(sort: Desc), updatedAt(sort: Desc)], map: "idx_notes_owner_flat_updated")
+  // `groupBy(['status'])` for the grouped view's section headers.
+  @@index([ownerId, isFolder, status], map: "idx_notes_owner_status")
   @@map("notes")
 }
 
