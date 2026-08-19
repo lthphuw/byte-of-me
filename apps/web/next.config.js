@@ -66,15 +66,14 @@ const nextConfig = {
       'd3-force',
       '@dnd-kit/core',
       '@tanstack/react-query',
-      // Measured 2026-07-27: adding '@byte-of-me/ui' here changes nothing
-      // (/en initial JS 1604 KB either way, .next/static 9.0M either way).
-      // Turbopack already drops the unreached modules behind our own barrel,
-      // so the barrel is a maintainability concern, not a bundle one.
-      // Caveat (2026-08-19): that measurement predates the removal of the
-      // barrel self-import cycle in packages/ui (index.ts -> form.tsx ->
-      // ./index), which would have defeated the rewrite — the optimizer's
-      // '@byte-of-me/ui/form' re-entered the barrel anyway. Re-run it before
-      // trusting the result.
+      // '@byte-of-me/ui' stays out. Re-measured 2026-08-19, after the barrel
+      // self-import cycle was removed from packages/ui: adding it moves /en
+      // first-load JS by -4 B and total client JS by 0 B, against a 25 B
+      // run-to-run noise floor. Same run: dropping 'lucide-react' (136 import
+      // sites) — or disabling this whole option — also moved under 50 B.
+      // Turbopack shakes these barrels itself, so this list documents which
+      // packages are barrels more than it optimizes anything, and our own
+      // barrel is a maintainability concern rather than a bundle one.
     ],
   },
 
