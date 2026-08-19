@@ -111,9 +111,13 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
-  const parsed = parseInput(rndPublishSchema, body);
+  const parsed = parseInput(rndPublishSchema, body, 'POST /api/rnd/publish');
   if (!parsed.ok) {
-    return Response.json({ success: false, errorMsg: parsed.errorMsg }, { status: 400 });
+    // `detail`, not `errorMsg`: this is a machine API behind a bearer token,
+    // and the caller is a script that needs to know WHICH field it got wrong.
+    // The generic `errorMsg` exists for surfaces a visitor can reach; this is
+    // not one of them, so it opts into the field-level reason explicitly.
+    return Response.json({ success: false, errorMsg: parsed.detail }, { status: 400 });
   }
 
   // Case-insensitive: `User.email` is written by Auth.js from the

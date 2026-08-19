@@ -131,7 +131,12 @@ describe('getPaginatedPublicBlogs', () => {
 
     expect(res.success).toBe(false);
     if (res.success) throw new Error('unreachable');
-    expect(res.errorMsg).toContain('connection refused');
+    // The failure field is `errorMsg` (§8), and it is a fixed sentence: this
+    // used to assert `toContain('connection refused')`, which is the driver's
+    // own message and reached a public page verbatim. `handlePublicAction`
+    // keeps it in the log now — see `shared/api/public-action-template.spec.ts`.
+    expect(res.errorMsg).not.toContain('connection refused');
+    expect(res.errorCode).toBe('unknown');
     expect((res as { error?: unknown }).error).toBeUndefined();
   });
 
