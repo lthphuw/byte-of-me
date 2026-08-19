@@ -5,7 +5,7 @@ import { RichText } from '@byte-of-me/ui/rich-text';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-import { getAdminNoteById } from '@/entities/note';
+import { getAdminNoteById, getNoteTitle } from '@/entities/note';
 import { NotePrintTrigger } from '@/features/dashboard/note-editor';
 
 const BASE_METADATA: Metadata = {
@@ -24,6 +24,10 @@ const BASE_METADATA: Metadata = {
 /**
  * The title becomes the PDF's default filename in Chrome's save dialog, so
  * it is worth getting right — "Notes" for every export would be useless.
+ *
+ * Through `getNoteTitle`, exactly as `space/notes/[id]/page.tsx` does: the
+ * page below already reads the whole document, and `getAdminNoteById` here
+ * fetched a second copy of `content` to look at one field of it.
  */
 export async function generateMetadata({
   params,
@@ -32,9 +36,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   try {
-    const res = await getAdminNoteById(id);
-    if (res.success && res.data.title.trim()) {
-      return { ...BASE_METADATA, title: res.data.title };
+    const res = await getNoteTitle(id);
+    if (res.success && res.data.trim()) {
+      return { ...BASE_METADATA, title: res.data };
     }
   } catch {
     // `requireAdmin` can throw during a metadata pass; the page below is

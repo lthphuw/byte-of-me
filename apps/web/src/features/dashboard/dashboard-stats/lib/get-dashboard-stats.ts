@@ -33,6 +33,7 @@ export async function getDashboardStats(): Promise<
       companyCount,
       techStackCount,
       tagCount,
+      recentMessages,
     ] = await Promise.all([
       prisma.contactMessage.count({ where: { userId } }),
       prisma.project.count({ where: { userId } }),
@@ -41,16 +42,15 @@ export async function getDashboardStats(): Promise<
       prisma.company.count({ where: { userId } }),
       prisma.techStack.count({ where: {} }),
       prisma.tag.count({ where: {} }),
-    ]);
-
-    const recentMessages = await prisma.contactMessage.count({
-      where: {
-        userId,
-        createdAt: {
-          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      prisma.contactMessage.count({
+        where: {
+          userId,
+          createdAt: {
+            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+          },
         },
-      },
-    });
+      }),
+    ]);
 
     return {
       success: true,

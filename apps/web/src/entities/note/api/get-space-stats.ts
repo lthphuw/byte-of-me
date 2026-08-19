@@ -9,9 +9,11 @@ import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
- * The `/space` hub's single aggregate read. One transaction, four queries, all
- * owner-scoped; recents reuse the narrow-select discipline of `getNoteTree` —
- * documents never travel to draw a list of titles.
+ * The `/space` hub's single aggregate read. Four independent owner-scoped
+ * queries in parallel — they need no atomicity, and the array form of
+ * `$transaction` this used to take ran them SERIALLY inside one BEGIN/COMMIT.
+ * Recents reuse the narrow-select discipline of `getNoteTree` — documents
+ * never travel to draw a list of titles.
  */
 export async function getSpaceStats(): Promise<ApiResponse<SpaceStats>> {
   try {
@@ -29,7 +31,7 @@ export async function getSpaceStats(): Promise<ApiResponse<SpaceStats>> {
     const session = await requireAdmin();
 
     const [noteCount, archivedCount, linkCount, recentNotes] =
-      await prisma.$transaction([
+      await Promise.all([
         // `isFolder: false` — the card is labelled "Notes", and a folder is
         // not one. Without it the hub counted the tree's scaffolding as
         // documents and disagreed with `/space/graph`, which plots the same

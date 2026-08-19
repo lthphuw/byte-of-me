@@ -28,21 +28,39 @@ export async function getUserProfile(): Promise<
     const locale = await getLocale();
     logger.debug(`Get user profile ${auth.email} with locale ${locale}`);
 
+    // `select`, not `include`: the mapping below reads thirteen fields, and
+    // `include` returned every `User` and `UserProfile` column behind them.
     const user = await prisma.user.findUniqueOrThrow({
       where: { email },
-      include: {
+      select: {
+        email: true,
+        role: true,
         userProfile: {
-          include: {
+          select: {
+            birthdate: true,
             // Display-only read: one locale (+ 'en' fallback) is enough. The
             // editor uses getAdminUserProfile, which keeps every locale.
             translations: {
               where: { language: { in: getTranslationLanguages(locale) } },
+              select: {
+                language: true,
+                displayName: true,
+                firstName: true,
+                lastName: true,
+                middleName: true,
+                greeting: true,
+                tagLine: true,
+                quote: true,
+                quoteAuthor: true,
+                bio: true,
+                aboutMe: true,
+              },
             },
           },
         },
       },
     });
-    // The row is NOT stringified into the log. It carries the owner's address,
+    // The row is NOT stringified into the log. It carries the owner's
     // birthdate and every translated bio field, and this ran on each `/space/*`
     // request before the callers narrowed to `getOwnerDisplayName` — a full
     // personal profile written to the log line by line, for a message whose

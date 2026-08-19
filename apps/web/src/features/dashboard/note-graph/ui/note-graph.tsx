@@ -56,6 +56,17 @@ export function NoteGraph({ onOpen }: NoteGraphProps) {
       <div className="pointer-events-none absolute right-3 top-3 space-y-0.5 text-right text-xs text-muted-foreground">
         <p>{t('nodeCount', { count: data.nodes.length })}</p>
         <p>{t('edgeCount', { count: data.edges.length })}</p>
+        {/* The counts above are honest about what is DRAWN, which is exactly
+            why this line has to exist: past the read's caps they stop being
+            the size of the vault, and a partial graph looks identical to a
+            complete one. Weight and full foreground contrast rather than a
+            warning hue — the palette is achromatic, so colour is not
+            available as a signal (§14). */}
+        {data.truncated && (
+          <p className="ml-auto max-w-56 font-medium text-foreground">
+            {t('truncated')}
+          </p>
+        )}
       </div>
 
       {/* Desktop only: the hint describes a mouse, and the space it costs is

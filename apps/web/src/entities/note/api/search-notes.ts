@@ -74,7 +74,7 @@ function tsQuery(query: string) {
     END`;
 }
 
-/** What the raw FTS query returns — snake_case, straight off the table. */
+/** What both raw row statements return — snake_case, straight off the table. */
 interface FtsRow {
   id: string;
   title: string;
@@ -95,8 +95,8 @@ interface FtsRow {
  * while the author is still typing the word — see `tsQuery`. The match total
  * is capped — see `COUNT_CAP`.
  *
- * The EMPTY query keeps the old findMany path: it is "list recent notes", not
- * a search, and `websearch_to_tsquery('')` would match nothing.
+ * The EMPTY query takes its own statement: it is "list recent notes", not a
+ * search, and `websearch_to_tsquery('')` would match nothing.
  */
 export async function searchNotes(
   input: SearchNotesInput
@@ -118,37 +118,48 @@ export async function searchNotes(
 
   try {
     if (!query) {
-      const where = {
-        ownerId: session.id,
-        // Folders have no document; listing them as "recent notes" is noise.
-        isFolder: false,
-        ...(includeArchived ? {} : { archivedAt: null }),
-      };
+      const recentsArchivedFilter = includeArchived
+        ? Prisma.empty
+        : Prisma.sql`AND "archived_at" IS NULL`;
 
-      const [rows, totalCount] = await Promise.all([
-        prisma.note.findMany({
-          where,
-          select: {
-            id: true,
-            title: true,
-            updatedAt: true,
-            plainText: true,
-          },
-          orderBy: { updatedAt: 'desc' },
-          skip: (page - 1) * limit,
-          take: limit,
-        }),
-        prisma.note.count({ where }),
-      ]);
+      // `left(plain_text, …)` in SQL rather than `.slice()` in JS: `plain_text`
+      // is `@db.Text`, so every whole document travelled off the server to draw
+      // 180 characters — on the palette's very first, still-empty open.
+      //
+      // No `count(*)` either: nothing reads `meta` (see `COUNT_CAP`), and the
+      // owner-scoped count was the other full scan on that same open. One extra
+      // row is fetched instead, purely so `hasMore` stays honest.
+      //
+      // `is_folder = false` for the reason the FTS path gives: a folder has no
+      // document, so listing one as a "recent note" is noise.
+      const rows = await prisma.$queryRaw<FtsRow[]>(Prisma.sql`
+        SELECT
+          "id",
+          "title",
+          "updated_at",
+          left("plain_text", ${SNIPPET_LENGTH}::int) AS "snippet"
+        FROM "notes"
+        WHERE "owner_id" = ${session.id}
+          AND "is_folder" = false
+          ${recentsArchivedFilter}
+        ORDER BY "updated_at" DESC
+        LIMIT ${limit + 1} OFFSET ${(page - 1) * limit}
+      `);
+
+      const pageRows = rows.slice(0, limit);
+      // A lower bound, to be read the way `COUNT_CAP`'s total is read: enough
+      // to answer `hasMore`, which is all a recents list needs.
+      const totalCount =
+        (page - 1) * limit + pageRows.length + (rows.length > limit ? 1 : 0);
 
       return {
         success: true,
         data: {
-          data: rows.map((row) => ({
+          data: pageRows.map((row) => ({
             id: row.id,
             title: row.title,
-            updatedAt: row.updatedAt,
-            snippet: row.plainText.slice(0, SNIPPET_LENGTH),
+            updatedAt: row.updated_at,
+            snippet: row.snippet,
           })),
           meta: buildPaginatedMeta({ page, limit, totalCount }),
         },

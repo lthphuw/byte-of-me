@@ -2,10 +2,14 @@
 
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
+import { getLocale } from 'next-intl/server';
 
 import { requireAdmin } from '@/shared/lib/auth';
 import { INTERACTION } from '@/shared/lib/constants';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
+import {
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@/shared/lib/i18n-utils';
 import { getErrorMessage } from '@/shared/lib/utils';
 
 const DAYS = 30;
@@ -40,6 +44,8 @@ export async function getAnalyticsOverview(): Promise<
   try {
     await requireAdmin();
 
+    const locale = await getLocale();
+
     const since = new Date();
     since.setUTCHours(0, 0, 0, 0);
     since.setUTCDate(since.getUTCDate() - (DAYS - 1));
@@ -55,8 +61,12 @@ export async function getAnalyticsOverview(): Promise<
         ORDER BY 1 ASC
       `,
 
+      // Windowed to the same 30 days as everything beside it on the card. It
+      // was unbounded, so "top posts" aggregated the whole view log — a full
+      // table scan, and an all-time ranking sitting next to 30-day figures.
       prisma.blogStatisticLog.groupBy({
         by: ['blogId'],
+        where: { createdAt: { gte: since } },
         _count: { _all: true },
         orderBy: { _count: { blogId: 'desc' } },
         take: 5,
@@ -67,6 +77,8 @@ export async function getAnalyticsOverview(): Promise<
         _count: { _all: true },
       }),
 
+      // All-time by definition ("Blog Views / All time"), so it stays a full
+      // count; making it cheap needs a DB index, which is a gated task.
       prisma.blogStatisticLog.count(),
     ]);
 
@@ -91,7 +103,10 @@ export async function getAnalyticsOverview(): Promise<
           select: {
             id: true,
             slug: true,
+            // Display-only, so one locale (+ the 'en' fallback) is enough —
+            // the same rule `getOwnerDisplayName` follows.
             translations: {
+              where: { language: { in: getTranslationLanguages(locale) } },
               select: { language: true, title: true },
             },
           },
@@ -101,7 +116,7 @@ export async function getAnalyticsOverview(): Promise<
     const topBlogs: TopBlog[] = topBlogsRaw.map((row) => {
       const blog = blogs.find((b) => b.id === row.blogId);
       const title =
-        (blog && getTranslatedContent(blog.translations, 'en')?.title) ||
+        (blog && getTranslatedContent(blog.translations, locale)?.title) ||
         blog?.slug ||
         'Untitled';
       return { id: row.blogId, title, views: row._count._all };

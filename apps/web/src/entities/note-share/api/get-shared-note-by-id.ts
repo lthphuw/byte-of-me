@@ -46,37 +46,43 @@ export async function getSharedNoteById(
   }
 
   try {
-    // Scoped to the note's OWNER, taken from the resolver — never to the
-    // caller, who owns nothing on this surface.
-    const note = await prisma.note.findFirst({
-      where: { id: parsedId.data, ownerId: access.ownerId },
-      select: {
-        id: true,
-        title: true,
-        content: true,
-        parentId: true,
-        createdAt: true,
-        updatedAt: true,
-        status: true,
-        properties: true,
-        isFolder: true,
-      },
-    });
+    // Two independent reads, so they go together: the second one needs only
+    // `access.rootId`, never anything off the first. That is also why the
+    // "the note IS the root" short-circuit is a check on `access` — on the id
+    // that was validated — rather than on the row still being fetched.
+    //
+    // Both are scoped to the note's OWNER, taken from the resolver — never to
+    // the caller, who owns nothing on this surface.
+    const [note, rootRow] = await Promise.all([
+      prisma.note.findFirst({
+        where: { id: parsedId.data, ownerId: access.ownerId },
+        select: {
+          id: true,
+          title: true,
+          content: true,
+          parentId: true,
+          createdAt: true,
+          updatedAt: true,
+          status: true,
+          properties: true,
+          isFolder: true,
+        },
+      }),
+      access.rootId === parsedId.data
+        ? null
+        : prisma.note.findFirst({
+            where: { id: access.rootId, ownerId: access.ownerId },
+            select: { title: true, isFolder: true },
+          }),
+    ]);
 
     if (!note) {
       return { success: false, errorMsg: 'Not found' };
     }
 
-    // The share root's own label. Scoped to the same owner as everything else
-    // here; when the note IS the root this is the note itself, and the extra
-    // read is cheap enough not to be worth branching around.
-    const root =
-      access.rootId === note.id
-        ? { title: note.title, isFolder: note.isFolder }
-        : await prisma.note.findFirst({
-            where: { id: access.rootId, ownerId: access.ownerId },
-            select: { title: true, isFolder: true },
-          });
+    // The share root's own label — the note itself when it is the root, and
+    // also when the root row has gone missing underneath the grant.
+    const root = rootRow ?? { title: note.title, isFolder: note.isFolder };
 
     // Rewritten, not filtered — `rewriteNoteLinks` records why an
     // out-of-scope mark has to stay in the document an editor saves back.
@@ -93,8 +99,8 @@ export async function getSharedNoteById(
         content: shared,
         role: access.role,
         rootId: access.rootId,
-        rootTitle: root?.title ?? note.title,
-        rootIsFolder: root?.isFolder ?? note.isFolder,
+        rootTitle: root.title,
+        rootIsFolder: root.isFolder,
         linkableIds,
         // Rendered here, on the server, and only for a viewer. See the field's
         // own comment: `renderRichTextHtml` drags the whole Tiptap schema in,

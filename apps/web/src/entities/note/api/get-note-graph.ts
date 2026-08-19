@@ -9,6 +9,20 @@ import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
+ * Ceilings on one graph payload. Both reads were whole-corpus and unbounded,
+ * so the cost of `/space/graph` grew with the vault forever — and a
+ * force-directed layout stops being readable long before a payload that size
+ * finishes rendering. Nodes are taken newest-first (the `orderBy` below), so
+ * the cap drops the least recently touched notes.
+ *
+ * Overflowing either cap sets `NoteGraph.truncated`, because a partial graph
+ * renders exactly like a complete one and the author has no other way to tell
+ * that notes are missing from it.
+ */
+const MAX_GRAPH_NODES = 1500;
+const MAX_GRAPH_EDGES = 5000;
+
+/**
  * The whole knowledge graph, in one owner-scoped read.
  *
  * Two queries rather than one join: the node set and the edge set are
@@ -30,7 +44,12 @@ export async function getNoteGraph(): Promise<ApiResponse<NoteGraph>> {
   try {
     const owned = { ownerId: session.id, archivedAt: null };
 
-    const [rows, links] = await Promise.all([
+    // One row past each cap, never rendered — the same trick `searchNotes`
+    // uses to keep `hasMore` honest. Comparing `length` against the cap alone
+    // cannot tell "exactly 1500 notes" from "the first 1500 of more", so an
+    // author whose vault landed on the round number would be told forever
+    // that the picture was partial when it was complete.
+    const [nodeRows, linkRows] = await Promise.all([
       prisma.note.findMany({
         where: { ...owned, isFolder: false },
         select: {
@@ -40,6 +59,7 @@ export async function getNoteGraph(): Promise<ApiResponse<NoteGraph>> {
           labels: { select: { labelId: true } },
         },
         orderBy: { updatedAt: 'desc' },
+        take: MAX_GRAPH_NODES + 1,
       }),
       // Both ends owner-scoped, the same guard `getNoteLinks` applies on the
       // way out: a row naming a note the caller does not own would leak that
@@ -47,8 +67,17 @@ export async function getNoteGraph(): Promise<ApiResponse<NoteGraph>> {
       prisma.noteLink.findMany({
         where: { source: owned, target: owned },
         select: { sourceId: true, targetId: true },
+        // Ordered by the composite primary key, so the cap below truncates the
+        // same set on every load instead of whatever Postgres returned first.
+        orderBy: [{ sourceId: 'asc' }, { targetId: 'asc' }],
+        take: MAX_GRAPH_EDGES + 1,
       }),
     ]);
+
+    const truncated =
+      nodeRows.length > MAX_GRAPH_NODES || linkRows.length > MAX_GRAPH_EDGES;
+    const rows = nodeRows.slice(0, MAX_GRAPH_NODES);
+    const links = linkRows.slice(0, MAX_GRAPH_EDGES);
 
     const ids = new Set(rows.map((row) => row.id));
     const degree = new Map<string, number>();
@@ -67,6 +96,7 @@ export async function getNoteGraph(): Promise<ApiResponse<NoteGraph>> {
     return {
       success: true,
       data: {
+        truncated,
         nodes: rows.map((row) => ({
           id: row.id,
           title: row.title,

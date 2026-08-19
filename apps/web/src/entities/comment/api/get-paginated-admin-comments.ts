@@ -15,7 +15,7 @@ export async function getPaginatedAdminComments(
   rawLimit: number = 20
 ): Promise<ApiResponse<PaginatedData<AdminComment>>> {
   try {
-    await requireAdmin();
+    const session = await requireAdmin();
 
     const { page, limit } = clampPagination(
       { page: rawPage, limit: rawLimit },
@@ -23,8 +23,21 @@ export async function getPaginatedAdminComments(
     );
     const skip = (page - 1) * limit;
 
+    // Scoped to the admin's OWN content — both statements had no `where` at
+    // all, so this listed and counted every comment in the database. A comment
+    // always carries the blog or project it was left on (`postComment` sets
+    // `blogId` on replies too), so the owner is reachable through it; a row
+    // attached to neither is not "a comment on your content" and stays out.
+    const where = {
+      OR: [
+        { blog: { userId: session.id } },
+        { project: { userId: session.id } },
+      ],
+    };
+
     const [items, totalCount] = await Promise.all([
       prisma.comment.findMany({
+        where,
         include: {
           user: { select: { id: true, name: true, email: true, image: true } },
           blog: {
@@ -45,7 +58,7 @@ export async function getPaginatedAdminComments(
         skip,
         take: limit,
       }),
-      prisma.comment.count(),
+      prisma.comment.count({ where }),
     ]);
 
     return {

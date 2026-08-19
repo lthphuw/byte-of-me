@@ -2,8 +2,7 @@
  * Search is the only read that touches `plainText`/`search_vector`. What must
  * hold: the raw FTS statements are owner-scoped and parameter-bound (never
  * string-interpolated), archived notes stay out unless asked for, pagination
- * is clamped, and the empty query is a recents list that never reaches
- * `$queryRaw` at all.
+ * is clamped, and the empty query is a recents list rather than a search.
  */
 import type { Prisma } from '@byte-of-me/db';
 import { prisma } from '@byte-of-me/db';
@@ -168,17 +167,41 @@ describe('searchNotes', () => {
     expect(rowsStatement?.values).toContain(0);
   });
 
-  it('treats an empty query as "recent notes" and never runs FTS', async () => {
+  it('treats an empty query as "recent notes" rather than a search', async () => {
+    queryRaw.mockImplementationOnce(() =>
+      Promise.resolve([
+        {
+          id: 'note-1',
+          title: 'Kafka',
+          updated_at: new Date('2026-08-01T00:00:00.000Z'),
+          snippet: 'consumer group rebalance protocol',
+        },
+      ])
+    );
+
     const res = await searchNotes({ query: '', includeArchived: false });
 
     expect(res.success).toBe(true);
     if (!res.success) throw new Error('unreachable');
-    expect(queryRaw).not.toHaveBeenCalled();
-    expect(findMany).toHaveBeenCalledTimes(1);
-    const where = findMany.mock.calls[0]?.[0]?.where as Record<string, unknown>;
-    expect(where.ownerId).toBe('admin-1');
-    expect(where.archivedAt).toBeNull();
-    // Recents carry a plain head-of-document snippet, no markers.
+
+    // One statement, not two: no `count(*)` companion. Both halves used to be
+    // full owner scans on the palette's first, still-empty open.
+    const statements = sentStatements();
+    expect(statements).toHaveLength(1);
+
+    const [recents] = statements;
+    // Recency, not relevance — none of the FTS machinery may appear.
+    expect(recents?.sql).not.toContain('websearch_to_tsquery');
+    expect(recents?.sql).not.toContain('ts_rank');
+    expect(recents?.sql).toContain('ORDER BY "updated_at" DESC');
+    // Owner scope and the body cap travel as bound params, never interpolated.
+    expect(recents?.sql).toContain('left("plain_text"');
+    expect(recents?.values).toContain('admin-1');
+    // A folder has no document, so it is not a "recent note".
+    expect(recents?.sql).toContain('"is_folder" = false');
+    expect(recents?.sql).toContain('"archived_at" IS NULL');
+
+    // Recents carry a plain head-of-document snippet, no highlight markers.
     expect(res.data.data[0]?.snippet).toBe(
       'consumer group rebalance protocol'
     );

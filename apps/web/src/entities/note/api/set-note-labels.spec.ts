@@ -1,7 +1,7 @@
 /**
  * What this spec defends: the ownership gate runs BEFORE any write (a guessed
  * foreign note id must not clear that note's labels), assignment is
- * replace-not-merge, and unknown names are created through upsert.
+ * replace-not-merge, and unknown names are created.
  */
 import { prisma } from '@byte-of-me/db';
 import { beforeAll, beforeEach, describe, expect, it, mock } from 'bun:test';
@@ -21,9 +21,10 @@ Object.defineProperty(prisma, 'note', {
   configurable: true,
 });
 
-const labelUpsert = mock();
+const labelCreateMany = mock();
+const labelFindMany = mock();
 Object.defineProperty(prisma, 'noteLabel', {
-  value: { upsert: labelUpsert },
+  value: { createMany: labelCreateMany, findMany: labelFindMany },
   writable: true,
   configurable: true,
 });
@@ -36,13 +37,13 @@ Object.defineProperty(prisma, 'noteOnLabel', {
   configurable: true,
 });
 
-// The CALLBACK form: `setNoteLabels` upserts sequentially inside one
-// transaction, so the fake hands the callback a `tx` built from the same
-// delegates the assertions read.
+// The CALLBACK form: `setNoteLabels` does its writes inside one transaction,
+// so the fake hands the callback a `tx` built from the same delegates the
+// assertions read.
 const transaction = mock(
   (callback: (tx: unknown) => Promise<unknown>) =>
     callback({
-      noteLabel: { upsert: labelUpsert },
+      noteLabel: { createMany: labelCreateMany, findMany: labelFindMany },
       noteOnLabel: {
         deleteMany: assignmentDeleteMany,
         createMany: assignmentCreateMany,
@@ -58,15 +59,20 @@ Object.defineProperty(prisma, '$transaction', {
 describe('setNoteLabels', () => {
   beforeEach(() => {
     noteFindFirst.mockReset().mockResolvedValue({ id: 'note-1' });
-    labelUpsert
+    labelCreateMany.mockReset().mockResolvedValue({ count: 0 });
+    // Stands in for the unique index: whatever names the read asks for come
+    // back, in an order deliberately unlike the caller's so the reordering the
+    // action does is actually exercised.
+    labelFindMany
       .mockReset()
-      .mockImplementation(
-        (args: { where: { ownerId_name: { name: string } } }) =>
-          Promise.resolve({
-            id: `label-${args.where.ownerId_name.name}`,
-            name: args.where.ownerId_name.name,
+      .mockImplementation((args: { where: { name: { in: string[] } } }) =>
+        Promise.resolve(
+          [...args.where.name.in].reverse().map((name) => ({
+            id: `label-${name}`,
+            name,
             color: null,
-          })
+          }))
+        )
       );
     assignmentDeleteMany.mockReset().mockResolvedValue({ count: 0 });
     assignmentCreateMany.mockReset().mockResolvedValue({ count: 0 });
@@ -81,10 +87,14 @@ describe('setNoteLabels', () => {
 
     expect(res.success).toBe(true);
     if (!res.success) throw new Error('unreachable');
+    // The caller's order, not the read's — the chips render in the order they
+    // come back, and the fake returns them reversed.
     expect(res.data.map((label) => label.name)).toEqual(['reading', 'ml']);
-    const upsertOwner = labelUpsert.mock.calls[0]?.[0]?.where?.ownerId_name
-      ?.ownerId as string;
-    expect(upsertOwner).toBe('admin-1');
+    const created = labelCreateMany.mock.calls[0]?.[0]?.data as Array<{
+      ownerId: string;
+      name: string;
+    }>;
+    expect(created.every((row) => row.ownerId === 'admin-1')).toBe(true);
   });
 
   it('replaces the assignment set instead of merging', async () => {
@@ -107,7 +117,7 @@ describe('setNoteLabels', () => {
 
     expect(assignmentDeleteMany).toHaveBeenCalled();
     expect(assignmentCreateMany).not.toHaveBeenCalled();
-    expect(labelUpsert).not.toHaveBeenCalled();
+    expect(labelCreateMany).not.toHaveBeenCalled();
   });
 
   it('refuses a note the caller does not own, before any write', async () => {
@@ -124,8 +134,17 @@ describe('setNoteLabels', () => {
   });
 
   it('dedupes repeated names before touching the unique constraint', async () => {
-    await setNoteLabels({ noteId: 'note-1', names: ['dup', 'dup'] });
+    const res = await setNoteLabels({
+      noteId: 'note-1',
+      names: ['dup', 'dup'],
+    });
 
-    expect(labelUpsert).toHaveBeenCalledTimes(1);
+    const created = labelCreateMany.mock.calls[0]?.[0]?.data as unknown[];
+    expect(created).toHaveLength(1);
+    // And the duplicate must not reappear on the way out: the caller-order
+    // remap looks each name up, so an undeduped input would return it twice.
+    expect(res.success).toBe(true);
+    if (!res.success) throw new Error('unreachable');
+    expect(res.data).toHaveLength(1);
   });
 });

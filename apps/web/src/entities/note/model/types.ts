@@ -209,6 +209,15 @@ export interface NoteGraphEdge {
 export interface NoteGraph {
   nodes: NoteGraphNode[];
   edges: NoteGraphEdge[];
+  /**
+   * The read hit one of its caps, so this is a SLICE of the vault, not the
+   * vault. Optional because it is additive (§11.6) — an older consumer that
+   * never reads it keeps working — but a caller that draws the graph owes the
+   * author a "this is partial" marker: a capped picture is indistinguishable
+   * from a complete one, and the notes it silently drops are exactly the
+   * orphans and stale corners this view exists to surface.
+   */
+  truncated?: boolean;
 }
 
 /**

@@ -4,7 +4,8 @@
  * document, and an edge set narrowed to nodes actually in the payload — an
  * edge pointing at an archived, foreign or folder note would draw a line to
  * nowhere, and would also inflate the degree of the node at the other end,
- * hiding exactly the orphan the graph exists to surface.
+ * hiding exactly the orphan the graph exists to surface. Plus: a read that hit
+ * either cap says so, because a partial graph looks identical to a whole one.
  *
  * The delegates are replaced wholesale rather than spied on, for the reason
  * `get-note-tree.spec.ts` records: Prisma 7 synthesizes a fresh function per
@@ -121,6 +122,81 @@ describe('getNoteGraph', () => {
     if (!res.success) throw new Error('unreachable');
     expect(res.data.nodes[0]?.labelIds).toEqual(['label-1']);
     expect(res.data.nodes[0]?.status).toBe('done');
+  });
+
+  it('does not flag a graph that fits inside the caps', async () => {
+    const res = await getNoteGraph();
+
+    expect(res.success).toBe(true);
+    if (!res.success) throw new Error('unreachable');
+    expect(res.data.truncated).toBe(false);
+  });
+
+  it('flags the payload as truncated when the node cap is hit, and drops the probe row', async () => {
+    // The cap is not importable — `get-note-graph.ts` is `'use server'`, where
+    // every export has to be an async function — so it is read back off the
+    // `take` the action sent. That is cap + 1: the probe row is what makes the
+    // flag exact, and `take - 1` below is therefore the cap itself.
+    await getNoteGraph();
+    const take = findMany.mock.calls[0]?.[0]?.take as number;
+    expect(take).toBeGreaterThan(1);
+
+    findMany.mockResolvedValue(
+      Array.from({ length: take }, (_, index) => noteRow(`n${index}`))
+    );
+
+    const res = await getNoteGraph();
+
+    expect(res.success).toBe(true);
+    if (!res.success) throw new Error('unreachable');
+    // A capped graph renders exactly like a complete one, so this flag is the
+    // only thing that can tell the author notes are missing from the picture.
+    expect(res.data.truncated).toBe(true);
+    // The probe row is counted, never drawn.
+    expect(res.data.nodes).toHaveLength(take - 1);
+  });
+
+  it('does NOT flag a vault that lands exactly on the cap', async () => {
+    // The case the probe row exists for. Comparing a capped `length` against
+    // the cap cannot separate "exactly this many" from "the first this many of
+    // more", so an author whose vault hit the round number would be told their
+    // complete graph was partial, with nothing they could do about it.
+    await getNoteGraph();
+    const take = findMany.mock.calls[0]?.[0]?.take as number;
+
+    findMany.mockResolvedValue(
+      Array.from({ length: take - 1 }, (_, index) => noteRow(`n${index}`))
+    );
+
+    const res = await getNoteGraph();
+
+    expect(res.success).toBe(true);
+    if (!res.success) throw new Error('unreachable');
+    expect(res.data.truncated).toBe(false);
+    expect(res.data.nodes).toHaveLength(take - 1);
+  });
+
+  it('flags a capped EDGE read even when the membership filter drops them all', async () => {
+    await getNoteGraph();
+    const take = linkFindMany.mock.calls[0]?.[0]?.take as number;
+    expect(take).toBeGreaterThan(0);
+
+    // Both ends outside the node set, so every edge is filtered out and the
+    // payload carries none. The READ still overflowed: reporting truncation
+    // off the surviving `edges` would call this graph complete.
+    linkFindMany.mockResolvedValue(
+      Array.from({ length: take }, (_, index) => ({
+        sourceId: `x${index}`,
+        targetId: `y${index}`,
+      }))
+    );
+
+    const res = await getNoteGraph();
+
+    expect(res.success).toBe(true);
+    if (!res.success) throw new Error('unreachable');
+    expect(res.data.edges).toEqual([]);
+    expect(res.data.truncated).toBe(true);
   });
 
   it('reports failure through errorMsg, never error', async () => {

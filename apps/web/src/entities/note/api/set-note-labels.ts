@@ -45,16 +45,28 @@ export async function setNoteLabels(
     }
 
     const labels = await prisma.$transaction(async (tx) => {
-      const ensured: NoteLabelSummary[] = [];
-      for (const name of names) {
-        ensured.push(
-          await tx.noteLabel.upsert({
-            where: { ownerId_name: { ownerId: session.id, name } },
-            create: { ownerId: session.id, name },
-            update: {},
-            select: { id: true, name: true, color: true },
-          })
-        );
+      // Two statements, not one `upsert` per name: the loop this replaces held
+      // the transaction open for a round trip per label. `@@unique([ownerId,
+      // name])` is both what makes `skipDuplicates` safe here and what serves
+      // the read back.
+      let ensured: NoteLabelSummary[] = [];
+      if (names.length > 0) {
+        await tx.noteLabel.createMany({
+          data: names.map((name) => ({ ownerId: session.id, name })),
+          skipDuplicates: true,
+        });
+
+        const rows = await tx.noteLabel.findMany({
+          where: { ownerId: session.id, name: { in: names } },
+          select: { id: true, name: true, color: true },
+        });
+
+        // Reordered to match `names`: the upsert loop returned the caller's
+        // order, and the chips are rendered in the order they come back.
+        const byName = new Map(rows.map((row) => [row.name, row]));
+        ensured = names
+          .map((name) => byName.get(name))
+          .filter((row): row is NoteLabelSummary => row !== undefined);
       }
 
       // Rebuilt from the input, never diffed — same reasoning as the
