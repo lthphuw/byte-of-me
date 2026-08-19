@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutationState } from '@tanstack/react-query';
+import { useIsMutating, useMutationState } from '@tanstack/react-query';
 import {
   Archive,
   ArchiveRestore,
@@ -15,7 +15,10 @@ import {
 import { useTranslations } from 'next-intl';
 
 import {
+  ARCHIVE_NOTE_MUTATION_KEY,
   CREATE_NOTE_MUTATION_KEY,
+  PIN_NOTE_MUTATION_KEY,
+  RESTORE_NOTE_MUTATION_KEY,
   useCreateNote,
   useNoteMutations,
 } from '@/features/dashboard/note-actions/lib/use-note-mutations';
@@ -109,6 +112,27 @@ export function useNoteActionItems({
   });
   const isCreating = pendingCreates.length > 0;
 
+  /**
+   * The same question for the other three, and it had the same wrong answer.
+   *
+   * `pin.isPending`, `archive.isPending` and `restore.isPending` were all
+   * unreachable for exactly the reason spelled out above: the observer they
+   * live on is unmounted with the menu content, one render before the flag
+   * could turn on, so the item was only ever rendered enabled and reopening
+   * the menu offered the action again. On `archive` that is not cosmetic —
+   * archiving cascades, so a second take re-archives a whole subtree that is
+   * already on its way to the trash.
+   *
+   * `useIsMutating` rather than `useMutationState`: it asks the cache the same
+   * question and returns a count, with no `select` to write. It counts pending
+   * mutations only, which is what "still running" means here.
+   */
+  const isPinning = useIsMutating({ mutationKey: PIN_NOTE_MUTATION_KEY }) > 0;
+  const isArchiving =
+    useIsMutating({ mutationKey: ARCHIVE_NOTE_MUTATION_KEY }) > 0;
+  const isRestoring =
+    useIsMutating({ mutationKey: RESTORE_NOTE_MUTATION_KEY }) > 0;
+
   const items: NoteActionItem[] = [];
 
   // Create-inside for live rows: any row can hold children (the tree is one
@@ -170,7 +194,7 @@ export function useNoteActionItems({
       ),
       label: isPinned ? t('actions.unpin') : t('actions.pin'),
       separatorBefore: true,
-      disabled: pin.isPending,
+      disabled: isPinning,
       onSelect: () => pin.mutate({ id: noteId, isPinned: !isPinned }),
     });
   }
@@ -181,14 +205,14 @@ export function useNoteActionItems({
           id: 'restore',
           icon: <ArchiveRestore className="mr-2 size-4" />,
           label: t('actions.restore'),
-          disabled: restore.isPending,
+          disabled: isRestoring,
           onSelect: () => restore.mutate(noteId),
         }
       : {
           id: 'archive',
           icon: <Archive className="mr-2 size-4" />,
           label: t('actions.archive'),
-          disabled: archive.isPending,
+          disabled: isArchiving,
           onSelect: () => archive.mutate(noteId),
         }
   );

@@ -200,7 +200,16 @@ export function NoteTreePanel({
     select: (mutation) => createTargetParentId(mutation.state.variables),
   });
   const pendingParentIds = useMemo(
-    () => new Set(pendingParents),
+    // `undefined` is "these variables name no level I recognise" — see
+    // `createTargetParentId`. Dropped rather than turned into a level, because
+    // every value that survives here draws a skeleton row somewhere, and a row
+    // in the wrong place is worse than no row at all.
+    () =>
+      new Set(
+        pendingParents.filter(
+          (parentId): parentId is string | null => parentId !== undefined
+        )
+      ),
     [pendingParents]
   );
 
@@ -275,20 +284,44 @@ export function NoteTreePanel({
    */
   const [revealTarget, setRevealTarget] = useState<string | null>(activeId);
   const lastActiveId = useRef(activeId);
+
+  // ONE write, and it compares against the value it is replacing. Both
+  // adjustments used to call `setRevealTarget` on their own: a new request
+  // when `activeId` moved, then a clear when the target turned up among the
+  // visible rows. The second read `revealTarget` — the value from BEFORE the
+  // first one had been applied — so a render in which both fire cleared the
+  // request that had just been made, and the note the author had switched to
+  // was never revealed. Both DO fire together: the row becoming visible and
+  // the route moving are two async updates React is free to batch into one
+  // render, which is exactly what happens when a reveal lands at the same
+  // moment as the next `router.push`.
+  //
+  // Deriving this instead of storing it is not an option, and neither is an
+  // effect. Once settled it must STAY settled however the tree changes
+  // afterwards — recomputing "is the open note visible" is what re-expanded a
+  // folder the author had just collapsed — and an effect would leave one
+  // commit in which the request still looks outstanding, which is one commit
+  // in which `RevealActiveNote` mounts and re-expands it.
+  let nextRevealTarget = revealTarget;
   if (lastActiveId.current !== activeId) {
     lastActiveId.current = activeId;
-    setRevealTarget(activeId);
+    nextRevealTarget = activeId;
   }
   if (
-    revealTarget !== null &&
-    treeRows.some((row) => row.node.id === revealTarget)
+    nextRevealTarget !== null &&
+    treeRows.some((row) => row.node.id === nextRevealTarget)
   ) {
-    setRevealTarget(null);
+    nextRevealTarget = null;
   }
+  if (nextRevealTarget !== revealTarget) setRevealTarget(nextRevealTarget);
 
   /** True when the note the editor is showing is nowhere on screen AND the
-   *  tree has not already been opened onto it once. */
-  const needsReveal = isTreeView && !includeArchived && revealTarget !== null;
+   *  tree has not already been opened onto it once. Read off the value this
+   *  render settled on rather than the state it replaces — the two differ for
+   *  exactly the render that settles them, and that render is the one whose
+   *  answer matters. */
+  const needsReveal =
+    isTreeView && !includeArchived && nextRevealTarget !== null;
 
   // Clears the request as it satisfies it, so a refetch of the ancestor chain
   // — which every save invalidates, via `noteKeys.lists()` — cannot re-fire
@@ -364,8 +397,11 @@ export function NoteTreePanel({
           onStartDraft={(isFolder) => explorer.startDraft(isFolder, null)}
           onClickBlank={explorer.deselect}
         >
-          {needsReveal && revealTarget && (
-            <RevealActiveNote noteId={revealTarget} onReveal={onRevealActive} />
+          {needsReveal && nextRevealTarget && (
+            <RevealActiveNote
+              noteId={nextRevealTarget}
+              onReveal={onRevealActive}
+            />
           )}
 
           {/* The same lookup for a folder the breadcrumb pointed at.

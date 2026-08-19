@@ -40,16 +40,21 @@ import {
   CREATE_NOTE_MUTATION_KEY,
   createTargetParentId,
   useCreateNote,
+  useNoteMutations,
 } from './use-note-mutations';
 
-import { noteKeys } from '@/entities/note';
+import { hasNoteBeenDeleted, noteKeys } from '@/entities/note';
 
 const messages = {
   dashboard: {
     note: {
       untitled: 'Untitled',
       untitledFolder: 'New folder',
-      errors: { create: 'Could not create the note.' },
+      errors: {
+        create: 'Could not create the note.',
+        delete: 'Could not delete the note.',
+      },
+      toasts: { deleted: 'Note deleted' },
     },
   },
 } as const;
@@ -71,8 +76,17 @@ const create = mock((args: { data: Record<string, unknown> }) =>
   })
 );
 
+/** `deleteNote`'s owner-scoped read: folder-1 → child-1. */
+const findMany = mock(() =>
+  Promise.resolve([
+    { id: 'folder-1', parentId: null },
+    { id: 'child-1', parentId: 'folder-1' },
+  ])
+);
+const deleteMany = mock(() => Promise.resolve({ count: 2 }));
+
 Object.defineProperty(prisma, 'note', {
-  value: { findFirst, create },
+  value: { findFirst, create, findMany, deleteMany },
   writable: true,
   configurable: true,
 });
@@ -152,6 +166,8 @@ beforeEach(() => {
   effects = [];
   findFirst.mockClear();
   create.mockClear();
+  findMany.mockClear();
+  deleteMany.mockClear();
 });
 
 afterEach(cleanup);
@@ -210,5 +226,114 @@ describe('useCreateNote', () => {
 
     gateLevel?.();
     await waitFor(() => expect(pendingLevels()).toBe(''));
+  });
+});
+
+/**
+ * What a permanent delete makes knowable, and WHEN.
+ *
+ * The editor's departure flush asks `hasNoteBeenDeleted` from inside the
+ * unmount this delete causes — and that unmount is caused by `onRemoved`,
+ * which runs inside `onSuccess`. So "the note is gone" has to be true at that
+ * instant, not one dispatch later: `Mutation.execute` writes `state.data` only
+ * when it dispatches `success`, i.e. after `onSuccess` has been awaited, so
+ * the cascade cannot be read back off the mutation at the moment it is
+ * needed. It is recorded in the mutation function instead.
+ */
+describe('useNoteMutations remove', () => {
+  /** Reports every id, and what the guard says about the DESCENDANT then. */
+  function DeleteProbe({ onRemoved }: { onRemoved: (noteId: string) => void }) {
+    const { remove } = useNoteMutations({ onRemoved });
+
+    return (
+      <button type="button" onClick={() => remove.mutate('folder-1')}>
+        delete
+      </button>
+    );
+  }
+
+  function renderDeleteProbe(onRemoved: (noteId: string) => void) {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    });
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <NextIntlClientProvider locale="en" messages={messages}>
+          <DeleteProbe onRemoved={onRemoved} />
+        </NextIntlClientProvider>
+      </QueryClientProvider>
+    );
+
+    return queryClient;
+  }
+
+  test('reports every id the cascade destroyed, target first', async () => {
+    const removed: string[] = [];
+    renderDeleteProbe((noteId) => removed.push(noteId));
+
+    fireEvent.click(screen.getByRole('button', { name: 'delete' }));
+
+    await waitFor(() => expect(removed.length).toBe(2));
+    expect(removed).toEqual(['folder-1', 'child-1']);
+  });
+
+  // The descendant, answered at the only moment the flush can ask. Deleting a
+  // FOLDER destroys notes whose ids are nowhere in the mutation's variables,
+  // and an editor open on one of them was still sending its pending keystroke
+  // into a row the database had permanently dropped.
+  test('knows a descendant is gone by the time the editor is told to close', async () => {
+    // One answer per report, in report order — so `[0]` is the answer given
+    // for the FOLDER, i.e. before the descendant's own turn could have
+    // established anything.
+    const guardAnswers: boolean[] = [];
+    const queryClient = renderDeleteProbe(() => {
+      guardAnswers.push(hasNoteBeenDeleted(queryClient, 'child-1'));
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'delete' }));
+
+    await waitFor(() => expect(guardAnswers.length).toBe(2));
+    expect(guardAnswers[0]).toBe(true);
+  });
+});
+
+/**
+ * Which level a pending create is writing into — the answer the tree draws a
+ * skeleton row at.
+ *
+ * The interesting case is the one that is not a create's variables at all. It
+ * used to answer "the root", which is right only for as long as the shape
+ * never changes: rename or re-nest `parentId` and every pending row would have
+ * appeared at the top level instead, a wrong row in a right-looking place with
+ * nothing to trace it by. It says "no level" instead, and the panel draws
+ * nothing.
+ */
+describe('createTargetParentId', () => {
+  test('names the level a create is writing into', () => {
+    expect(createTargetParentId({ parentId: 'folder-1' })).toBe('folder-1');
+  });
+
+  test('reads the root from every way of asking for one', () => {
+    // `mutate({})`, `mutate()`, the draft row's `{ isFolder, title }`, and an
+    // explicit null.
+    expect(createTargetParentId({})).toBeNull();
+    expect(createTargetParentId(undefined)).toBeNull();
+    expect(createTargetParentId({ isFolder: true, title: 'Ideas' })).toBeNull();
+    expect(createTargetParentId({ parentId: null })).toBeNull();
+  });
+
+  test('claims no level for variables it does not recognise', () => {
+    // A renamed or re-nested field, and a variables shape that is not an
+    // object at all. Neither is the root.
+    expect(createTargetParentId({ parent: 'folder-1' })).toBeUndefined();
+    expect(
+      createTargetParentId({ target: { parentId: 'folder-1' } })
+    ).toBeUndefined();
+    expect(createTargetParentId('folder-1')).toBeUndefined();
+    expect(createTargetParentId({ parentId: 7 })).toBeUndefined();
   });
 });

@@ -231,7 +231,8 @@ const messages = {
       },
       delete: {
         title: 'Delete permanently?',
-        description: '“{title}” will be deleted for good. This cannot be undone.',
+        description:
+          '“{title}” will be deleted for good. This cannot be undone.',
         descriptionWithChildren:
           '“{title}” and {count, plural, one {its # nested note} other {its # nested notes}} will be deleted for good. This cannot be undone.',
         descriptionShared:
@@ -287,7 +288,9 @@ function doc(text: string): string {
 
 const AT = new Date('2026-01-01T00:00:00.000Z');
 
-function makeNote(over: Partial<FakeNote> & { id: string; title: string }): FakeNote {
+function makeNote(
+  over: Partial<FakeNote> & { id: string; title: string }
+): FakeNote {
   return {
     content: doc(over.title),
     parentId: null,
@@ -343,7 +346,9 @@ const findMany = mock(
     return Promise.resolve(
       rows
         .filter((row) => row.parentId === parentId)
-        .filter((row) => args.where?.archivedAt !== null || row.archivedAt === null)
+        .filter(
+          (row) => args.where?.archivedAt !== null || row.archivedAt === null
+        )
         .map((row) => ({ ...row, labels: [], _count: { children: 0 } }))
     );
   }
@@ -378,16 +383,40 @@ const updateMany = mock(
   }
 );
 
-const deleteMany = mock((args: { where: { id: string } }) => {
-  const target = notesById.get(args.where.id);
-  if (!target) return Promise.resolve({ count: 0 });
-  // The database cascade, by hand: descendants go with the row.
-  for (const row of [...notesById.values()]) {
-    if (row.parentId === target.id) notesById.delete(row.id);
+/**
+ * `deleteNote` names the whole subtree in its `where` (`{ id: { in: [...] } }`)
+ * so it can REPORT what it destroyed. The rows still go through the FK
+ * cascade, which is why this keeps walking down from whatever it is given
+ * rather than trusting the list: a row created under a doomed folder after
+ * that list was read is deleted by the database all the same, and a fake that
+ * only honoured the list would be a weaker cascade than the real one.
+ */
+const deleteMany = mock(
+  (args: { where: { id: string | { in: string[] } } }) => {
+    const where = args.where.id;
+    const doomed = new Set(typeof where === 'string' ? [where] : where.in);
+
+    for (let grew = true; grew; ) {
+      grew = false;
+      for (const row of notesById.values()) {
+        if (
+          row.parentId !== null &&
+          doomed.has(row.parentId) &&
+          !doomed.has(row.id)
+        ) {
+          doomed.add(row.id);
+          grew = true;
+        }
+      }
+    }
+
+    let count = 0;
+    for (const id of doomed) {
+      if (notesById.delete(id)) count += 1;
+    }
+    return Promise.resolve({ count });
   }
-  notesById.delete(target.id);
-  return Promise.resolve({ count: 1 });
-});
+);
 
 Object.defineProperty(prisma, 'note', {
   value: {
@@ -580,6 +609,77 @@ describe('deleting the open note', () => {
   }, 20_000);
 });
 
+describe('deleting a folder the open note lives in', () => {
+  /**
+   * The same hole `archiveNote` had, in the version that cannot be undone.
+   * `deleteNote` leaned on the database cascade and never learned which
+   * descendants went with the folder, so the widget's "was that my note?"
+   * comparison missed every one of them: the editor stayed open on a
+   * PERMANENTLY deleted note, with the URL still naming it.
+   */
+  test('closes the editor on a descendant of the deleted folder', async () => {
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} noteId="note-in-f" />);
+    await screen.findByDisplayValue('Note In F');
+
+    await openRowMenu('Folder F');
+    fireEvent.click(
+      await screen.findByRole('menuitem', { name: 'Delete permanently' })
+    );
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Delete permanently' })
+    );
+
+    // A boolean rather than `findByText`, for the reason the archive case
+    // above records: a failing query prints the whole rendered tree.
+    await waitFor(() =>
+      expect(screen.queryByText('Select a note, or create one.') !== null).toBe(
+        true
+      )
+    );
+    await waitFor(() => expect(__navigations).toContain('/space/notes'));
+    expect(notesById.has('note-in-f')).toBe(false);
+  }, 20_000);
+
+  /**
+   * And the second half of it: the departure flush.
+   *
+   * `hasNoteBeenDeleted` matched the mutation's VARIABLES, which name the
+   * folder — never the descendant the editor was showing. So the unmount this
+   * delete causes looked like an ordinary pane switch, and the pending
+   * keystroke was sent to a row the database had permanently dropped: a red
+   * "Could not save the note." one beat after "Note deleted", for a note that
+   * no longer exists.
+   *
+   * The edit is made inside the debounce window on purpose — `flushPending`
+   * returns early when nothing is pending, so a settled note cannot reach
+   * this at all.
+   */
+  test('does not save into a descendant it has just deleted', async () => {
+    const queryClient = makeQueryClient();
+    render(<Harness queryClient={queryClient} noteId="note-in-f" />);
+    await screen.findByDisplayValue('Note In F');
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Note title' }), {
+      target: { value: 'Note In F edited' },
+    });
+
+    await openRowMenu('Folder F');
+    fireEvent.click(
+      await screen.findByRole('menuitem', { name: 'Delete permanently' })
+    );
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Delete permanently' })
+    );
+
+    await waitFor(() => expect(deleteMany).toHaveBeenCalled());
+    await settle(1400);
+
+    expect(savesSent().filter((save) => save.id === 'note-in-f')).toEqual([]);
+    expect(errorToast).not.toHaveBeenCalled();
+  }, 20_000);
+});
+
 describe('archiving a folder the open note lives in', () => {
   /**
    * The bug: `archiveNote` cascades to the whole subtree, but only the
@@ -605,9 +705,9 @@ describe('archiving a folder the open note lives in', () => {
     // fails and testing-library prints the entire rendered tree, which buries
     // the one line that says what went wrong.
     await waitFor(() =>
-      expect(
-        screen.queryByText('Select a note, or create one.') !== null
-      ).toBe(true)
+      expect(screen.queryByText('Select a note, or create one.') !== null).toBe(
+        true
+      )
     );
     // The URL has to leave the archived note too, or a reload reopens it.
     await waitFor(() => expect(__navigations).toContain('/space/notes'));

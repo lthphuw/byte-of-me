@@ -59,7 +59,11 @@ const messages = {
         viewMode: 'View',
         modes: { tree: 'Tree', flat: 'Flat list', grouped: 'Grouped' },
         sortLabel: 'Sort by',
-        sort: { updated: 'Last edited', created: 'Date created', title: 'Title' },
+        sort: {
+          updated: 'Last edited',
+          created: 'Date created',
+          title: 'Title',
+        },
         groupByLabel: 'Group by',
         groupBy: { status: 'Status', label: 'Label' },
         noLabel: 'No label',
@@ -120,7 +124,9 @@ interface FakeNoteRow {
 
 const AT = new Date('2026-01-01T00:00:00.000Z');
 
-function row(overrides: Partial<FakeNoteRow> & { id: string; title: string }): FakeNoteRow {
+function row(
+  overrides: Partial<FakeNoteRow> & { id: string; title: string }
+): FakeNoteRow {
   return {
     parentId: null,
     position: 0,
@@ -193,23 +199,27 @@ const count = mock(() => Promise.resolve(0));
  *  alike — one row shape wide enough for both `select`s. */
 const labelFindMany = mock(() =>
   Promise.resolve(
-    [] as { id: string; name: string; color: string | null; _count: { notes: number } }[]
+    [] as {
+      id: string;
+      name: string;
+      color: string | null;
+      _count: { notes: number };
+    }[]
   )
 );
 const findFirst = mock(() => Promise.resolve(null));
-const create = mock(
-  (args: { data: Record<string, unknown> }) =>
-    Promise.resolve({
-      id: 'new-note-id',
-      content: '',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      status: 'draft',
-      properties: null,
-      isFolder: false,
-      labels: [],
-      ...args.data,
-    })
+const create = mock((args: { data: Record<string, unknown> }) =>
+  Promise.resolve({
+    id: 'new-note-id',
+    content: '',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    status: 'draft',
+    properties: null,
+    isFolder: false,
+    labels: [],
+    ...args.data,
+  })
 );
 
 /**
@@ -218,9 +228,21 @@ const create = mock(
  * caller: it turns this chain into expanded folders on the path to the open
  * note.
  */
-const queryRaw = mock(() =>
-  Promise.resolve([{ id: 'folder-1', title: 'Folder One', is_folder: true }])
-);
+/** What `getNoteAncestors`' CTE hands back — snake_case, straight off the
+ *  table. */
+interface AncestorRow {
+  id: string;
+  title: string;
+  is_folder: boolean;
+}
+
+const ancestorsOfChildOne = (
+  _sql: TemplateStringsArray,
+  ..._values: string[]
+): Promise<AncestorRow[]> =>
+  Promise.resolve([{ id: 'folder-1', title: 'Folder One', is_folder: true }]);
+
+const queryRaw = mock(ancestorsOfChildOne);
 
 /** `archiveNote`'s write — it stamps the target and its descendants. */
 const updateMany = mock(() => Promise.resolve({ count: 1 }));
@@ -244,7 +266,8 @@ Object.defineProperty(prisma, 'noteLabel', {
 /** How many times ONE level was read. `null` is the root level. */
 function levelCalls(parentId: string | null): number {
   return findMany.mock.calls.filter(
-    ([args]) => 'parentId' in args.where && (args.where.parentId ?? null) === parentId
+    ([args]) =>
+      'parentId' in args.where && (args.where.parentId ?? null) === parentId
   ).length;
 }
 
@@ -261,7 +284,9 @@ function corpusCalls(): number {
 }
 
 /** How many times one grouped bucket's rows were read. */
-function groupRowCalls(match: (where: FindManyArgs['where']) => boolean): number {
+function groupRowCalls(
+  match: (where: FindManyArgs['where']) => boolean
+): number {
   return findMany.mock.calls.filter(
     ([args]) => args.where.isFolder === false && match(args.where)
   ).length;
@@ -372,7 +397,6 @@ function gateLevel(parentId: string | null): { release: () => void } {
   return { release };
 }
 
-
 /**
  * Puts the explorer in a non-default view. `useExplorerPrefs` reads this in an
  * effect (never at init — the first render has to match the server HTML), so
@@ -395,8 +419,7 @@ beforeEach(() => {
   levelImpl = async (parentId) =>
     table.filter((note) => note.parentId === parentId);
   // Flat and newest-first, across every level — no parent filter at all.
-  archivedImpl = async () =>
-    table.filter((note) => note.archivedAt !== null);
+  archivedImpl = async () => table.filter((note) => note.archivedAt !== null);
   documentsImpl = async (args) => {
     const documents = table.filter(
       (note) => !note.isFolder && note.archivedAt === null
@@ -405,7 +428,8 @@ beforeEach(() => {
     if (typeof status === 'string') {
       return documents.filter((note) => note.status === status);
     }
-    if (labels?.none) return documents.filter((note) => note.labels.length === 0);
+    if (labels?.none)
+      return documents.filter((note) => note.labels.length === 0);
     const someLabelId = labels?.some?.labelId;
     if (someLabelId) {
       return documents.filter((note) =>
@@ -418,10 +442,16 @@ beforeEach(() => {
   findMany.mockClear();
   findFirst.mockClear().mockResolvedValue(null);
   create.mockClear();
-  groupBy.mockClear().mockResolvedValue([{ status: 'draft', _count: { _all: 0 } }]);
+  groupBy
+    .mockClear()
+    .mockResolvedValue([{ status: 'draft', _count: { _all: 0 } }]);
   count.mockClear().mockResolvedValue(0);
   labelFindMany.mockClear().mockResolvedValue([]);
   updateMany.mockClear().mockResolvedValue({ count: 1 });
+  // Restored, not merely cleared: the reveal test below swaps the whole
+  // implementation to answer per note, and a leaked one would hand every
+  // later test the wrong ancestor chain.
+  queryRaw.mockClear().mockImplementation(ancestorsOfChildOne);
 });
 
 afterEach(() => {
@@ -454,9 +484,7 @@ describe('NoteTreePanel', () => {
     const queryClient = makeQueryClient();
     render(<Harness queryClient={queryClient} />);
 
-    expect(
-      await screen.findByText('Could not load your notes.')
-    ).toBeTruthy();
+    expect(await screen.findByText('Could not load your notes.')).toBeTruthy();
   });
 
   test('shows NoteEmpty when the root level loads with zero notes', async () => {
@@ -718,9 +746,84 @@ describe('NoteTreePanel', () => {
     expect(screen.queryByText('Child One')).toBeNull();
   });
 
+  /**
+   * A reveal that settles in the SAME render as the next note switch.
+   *
+   * The panel makes two render-phase adjustments: a new request when
+   * `activeId` moves, and a clear once the requested row turns up among the
+   * visible rows. They used to be two separate `setRevealTarget` calls, and
+   * the second tested `revealTarget` — the value from BEFORE the first had
+   * been applied. So a render in which both fire queued the new request and
+   * then cleared it, and the note the author had just switched to was never
+   * revealed: it stayed buried in its collapsed folder with the editor open
+   * on it.
+   *
+   * Both DO fire together, because both arrive asynchronously and React is
+   * free to batch them: a level landing (or, here, a folder the author
+   * re-opens) and the route moving to the next note. The two updates are put
+   * in one `act` for exactly that reason.
+   */
+  test('keeps a note switch that lands with the previous reveal', async () => {
+    const queryClient = makeQueryClient();
+    // A second buried note, so the note being switched TO is one only a
+    // reveal can bring on screen.
+    const folderTwo = row({
+      id: 'folder-2',
+      title: 'Folder Two',
+      isFolder: true,
+      position: 2,
+      _count: { children: 1 },
+    });
+    const childTwo = row({
+      id: 'child-2',
+      title: 'Child Two',
+      parentId: 'folder-2',
+    });
+    table = [NOTE_A, FOLDER, CHILD, folderTwo, childTwo];
+    // The ancestor chain: never for `child-1`, so its reveal stays OUTSTANDING
+    // and the request is still set when the folder opens by hand. `values[1]`
+    // is the note id — the CTE takes `owner_id` first.
+    queryRaw.mockImplementation((_sql, ...values) => {
+      const noteId = values[1];
+      if (noteId === 'child-1') return new Promise<AncestorRow[]>(() => {});
+      return Promise.resolve([
+        { id: 'folder-2', title: 'Folder Two', is_folder: true },
+      ]);
+    });
+
+    const { rerender } = render(
+      <Harness queryClient={queryClient} activeId={null} />
+    );
+    await screen.findByText('Folder One');
+
+    // Warm this level, then shut it again: re-expanding must not need a
+    // query, or the row would arrive a render later and the two updates
+    // below could not coincide.
+    fireEvent.click(chevronOf('Folder One'));
+    await screen.findByText('Child One');
+    fireEvent.click(chevronOf('Folder One'));
+
+    // The editor opens `Child One`, buried. The reveal is requested and hangs.
+    rerender(<Harness queryClient={queryClient} activeId="child-1" />);
+    await waitFor(() => expect(queryRaw).toHaveBeenCalled());
+
+    // One render: the folder re-opens (settling the old request) and the
+    // editor moves to a note in a DIFFERENT collapsed folder.
+    act(() => {
+      fireEvent.click(chevronOf('Folder One'));
+      rerender(<Harness queryClient={queryClient} activeId="child-2" />);
+    });
+
+    // The request for `child-2` must have survived: its folder opens and the
+    // note the editor is showing is on screen.
+    expect(await screen.findByText('Child Two')).toBeTruthy();
+  });
+
   test('a breadcrumb reveal opens the folder and then lets go of the selection', async () => {
     const queryClient = makeQueryClient();
-    render(<Harness queryClient={queryClient} initialRevealFolderId="folder-1" />);
+    render(
+      <Harness queryClient={queryClient} initialRevealFolderId="folder-1" />
+    );
 
     // The reveal itself still has to work: the crumb's folder opens and
     // becomes the cursor, which is the whole point of clicking one.

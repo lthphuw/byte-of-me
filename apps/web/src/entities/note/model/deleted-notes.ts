@@ -18,6 +18,41 @@ import type { QueryClient } from '@tanstack/react-query';
 export const DELETE_NOTE_MUTATION_KEY = ['note', 'delete'] as const;
 
 /**
+ * Every id a delete has actually destroyed in this tab — the target AND the
+ * descendants the cascade took with it.
+ *
+ * The mutation cache below cannot answer for descendants, and the gap is not
+ * cosmetic: deleting a FOLDER destroys notes whose ids appear nowhere in the
+ * mutation's variables, and the editor is as likely to be open on one of those
+ * as on the row that was clicked. `deleteNote` now returns the whole set, so
+ * the ids exist — they just arrive too late for the one place that keeps them,
+ * `mutation.state.data`, which `Mutation.execute` only writes when it
+ * dispatches `success`, i.e. AFTER `options.onSuccess` has been awaited. The
+ * departure flush is asked during that window (the same fact the
+ * `status !== 'error'` note below records), so reading `state.data` would
+ * answer `undefined` at exactly the moment it is needed.
+ *
+ * Written from the delete's `mutationFn`, the instant the server action
+ * answers and strictly before any `onSuccess` runs, so there is no window in
+ * which a descendant is gone but unrecorded.
+ *
+ * Grows by one short string per note this tab has permanently deleted and is
+ * never pruned. That is deliberate: it is bounded by an author's manual
+ * deletions in one session, and forgetting an id can only cost a save sent to
+ * a row that no longer exists — the exact failure this file exists to prevent.
+ */
+const deletedNoteIds = new Set<string>();
+
+/**
+ * Records a completed hard delete. Confirmed deletions ONLY — a delete that
+ * failed leaves the notes in place, and the author's unsent edit still belongs
+ * to them.
+ */
+export function rememberDeletedNotes(ids: readonly string[]): void {
+  for (const id of ids) deletedNoteIds.add(id);
+}
+
+/**
  * Has this browser just deleted this note?
  *
  * The editor's departure flush has to tell two things apart that arrive as
@@ -47,11 +82,20 @@ export const DELETE_NOTE_MUTATION_KEY = ['note', 'delete'] as const;
  * the same state on its own. Reading that as "deleted" fails in the direction
  * of silently dropping the author's unsent edit, which is the one outcome
  * this whole file exists to prevent.
+ *
+ * Two sources, and each covers what the other cannot. The record above knows
+ * the CASCADE — every descendant a folder delete destroyed — but only once
+ * the server has answered. The mutation cache knows the target from the
+ * moment `mutate` is called, which is what covers a delete still IN FLIGHT:
+ * switching notes mid-delete unmounts the editor while the row is on its way
+ * out, and a flush dispatched into that window is a save nothing can accept.
  */
 export function hasNoteBeenDeleted(
   queryClient: QueryClient,
   noteId: string
 ): boolean {
+  if (deletedNoteIds.has(noteId)) return true;
+
   const deletion = queryClient.getMutationCache().find({
     mutationKey: DELETE_NOTE_MUTATION_KEY,
     exact: true,

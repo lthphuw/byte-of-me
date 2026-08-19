@@ -11,6 +11,7 @@ import {
   deleteLocalNote,
   deleteNote,
   noteKeys,
+  rememberDeletedNotes,
   restoreNote,
   updateNote,
 } from '@/entities/note';
@@ -88,6 +89,30 @@ function useInvalidateNoteLists() {
   };
 }
 
+/**
+ * The keys that make a note mutation findable in the MUTATION CACHE.
+ *
+ * Every one of them exists for the same reason, and it is not cache
+ * housekeeping: the component that needs to know a mutation is running is
+ * usually not the one that started it. Radix unmounts a menu's content the
+ * moment an item is chosen, taking the `useMutation` observer — and its
+ * `isPending` — with it, so a `disabled` flag read off the observer is a
+ * re-render that never happens. The cache outlives the observer, and
+ * `useMutationState` / `useIsMutating` read it.
+ *
+ * Four here and one, `DELETE_NOTE_MUTATION_KEY`, in
+ * `entities/note/model/deleted-notes.ts`. That split is deliberate rather than
+ * a leftover: delete is the only one whose question is asked from ANOTHER
+ * feature (`note-editor`'s departure flush), and a feature importing a sibling
+ * feature is the sideways import AGENTS §3 rules out. The rest are read inside
+ * this feature — by `use-note-action-items.tsx` — or from a widget above it,
+ * which may import downward freely. Keys that are only used here belong here.
+ */
+export const CREATE_NOTE_MUTATION_KEY = ['note', 'create'] as const;
+export const ARCHIVE_NOTE_MUTATION_KEY = ['note', 'archive'] as const;
+export const RESTORE_NOTE_MUTATION_KEY = ['note', 'restore'] as const;
+export const PIN_NOTE_MUTATION_KEY = ['note', 'pin'] as const;
+
 interface UseNoteMutationsOptions {
   /**
    * Called once the note is gone from wherever it was — the caller decides
@@ -108,6 +133,8 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
   const invalidateLists = useInvalidateNoteLists();
 
   const archive = useMutation({
+    // Keyed for the row menus' `disabled` flag — see the key block above.
+    mutationKey: ARCHIVE_NOTE_MUTATION_KEY,
     mutationFn: async (id: string) => {
       const res = await archiveNote(id);
       if (!res.success) throw new Error(res.errorMsg);
@@ -138,6 +165,7 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
   });
 
   const restore = useMutation({
+    mutationKey: RESTORE_NOTE_MUTATION_KEY,
     mutationFn: async (id: string) => {
       const res = await restoreNote(id);
       if (!res.success) throw new Error(res.errorMsg);
@@ -153,6 +181,10 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
   });
 
   const pin = useMutation({
+    // `updateNote` behind it, like the autosave and the properties panel —
+    // but its own key, because what the menu asks is "is a PIN running", not
+    // "is anything saving".
+    mutationKey: PIN_NOTE_MUTATION_KEY,
     mutationFn: async (input: { id: string; isPinned: boolean }) => {
       const res = await updateNote(input);
       if (!res.success) throw new Error(res.errorMsg);
@@ -185,25 +217,44 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
     mutationFn: async (id: string) => {
       const res = await deleteNote(id);
       if (!res.success) throw new Error(res.errorMsg);
-      return id;
+      // Recorded HERE rather than in `onSuccess`, and that placement is the
+      // fix rather than a preference: the departure flush asks
+      // `hasNoteBeenDeleted` from inside the very callback below (closing the
+      // editor is what unmounts it), so anything established there is
+      // established a beat too late for a DESCENDANT — whose id is not the
+      // mutation's variable and so is invisible to the cache lookup. This
+      // runs the instant the server answers, before any callback.
+      rememberDeletedNotes(res.data);
+      // The whole cascade, not the id that was clicked — see below.
+      return res.data;
     },
-    onSuccess: (id) => {
-      // `removeQueries`, not `invalidateQueries`: the note no longer exists,
-      // so refetching its detail would just produce an error state for a
-      // document nobody can open. Descendants go with it through the database
-      // cascade, but their cached details are addressed by ids this callback
-      // does not know — the tree invalidation above is what removes them from
-      // view, and a stale detail entry for an unreachable note is harmless.
-      queryClient.removeQueries({ queryKey: noteKeys.detail(id) });
-      // The browser's own copy goes too. A stale in-memory cache entry is
-      // harmless; a stale IndexedDB record is not, because `useNoteSyncQueue`
-      // reads those back and would try to resend a note that no longer
-      // exists. Descendants are again not knowable from here — the queue
-      // drops any local copy whose note the server no longer returns, which
-      // is what actually cleans up after a cascade.
-      void deleteLocalNote(id);
-      // Ahead of the invalidation, for the reason `archive` above is.
-      onRemoved?.(id);
+    onSuccess: (deletedIds) => {
+      for (const deletedId of deletedIds) {
+        // `removeQueries`, not `invalidateQueries`: the note no longer exists,
+        // so refetching its detail would just produce an error state for a
+        // document nobody can open. Every id the cascade took, now that the
+        // action names them — a stale detail entry for an unreachable note is
+        // harmless, but leaving one behind means the editor can still be
+        // handed a document that has been destroyed.
+        queryClient.removeQueries({ queryKey: noteKeys.detail(deletedId) });
+        // The browser's own copy goes too. A stale in-memory cache entry is
+        // harmless; a stale IndexedDB record is not, because `useNoteSyncQueue`
+        // reads those back and would try to resend a note that no longer
+        // exists. The queue does drop any local copy the server no longer
+        // returns, but that is a round trip and a failed save later; deleting
+        // the descendants' copies outright is the same cleanup without it.
+        void deleteLocalNote(deletedId);
+        // EVERY deleted id, because a hard delete cascades down the subtree
+        // and the caller's "was this the note I have open?" test is an id
+        // comparison — the same reason `archive` above reports its whole set.
+        // Reporting only the row that was clicked left the editor open on a
+        // descendant that had just been destroyed, autosaving into it.
+        //
+        // Ahead of the invalidation: deleting the OPEN note navigates away,
+        // and a navigation dispatched behind a burst of server actions can be
+        // stranded. See the note at the top of this file.
+        onRemoved?.(deletedId);
+      }
       void invalidateLists();
       toast.success(t('toasts.deleted'));
     },
@@ -216,24 +267,65 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
 }
 
 /**
- * Identifies a create in the MUTATION cache, which is what lets the tree draw a
- * pending row for one it did not start itself: the row menu's create runs
- * inside `useNoteActionItems`, whose observer Radix unmounts as the menu
- * closes. The mutation lives on in the cache, where `useMutationState` sees it.
+ * What `useCreateNote` is asked for. Named so `createTargetParentId` below can
+ * be checked against it by the compiler rather than by eye.
  */
-export const CREATE_NOTE_MUTATION_KEY = ['note', 'create'] as const;
+export interface CreateNoteVariables {
+  parentId?: string | null;
+  isFolder?: boolean;
+  title?: string;
+}
+
+/**
+ * Every key those variables carry, as a value the guard below can test
+ * against.
+ *
+ * `satisfies Required<CreateNoteVariables>` is the whole point of it existing:
+ * renaming, removing or ADDING a field on the interface above fails to
+ * type-check here, so the guard cannot silently fall out of step with the
+ * shape it is guarding. The values are placeholders; only the keys are read.
+ */
+const CREATE_NOTE_VARIABLE_TEMPLATE = {
+  parentId: null,
+  isFolder: false,
+  title: '',
+} satisfies Required<CreateNoteVariables>;
 
 /**
  * The level a pending create is writing into, read back from the cache — where
- * variables are `unknown`, because it holds every mutation. `null` is the root,
- * which is also what the palette's argument-less `mutate()` means.
+ * variables are `unknown`, because it holds every mutation.
+ *
+ * Three answers, and the third is the fix. `null` is the ROOT, which is what
+ * `{}`, an absent `parentId` and the palette's argument-less `mutate()` all
+ * mean. A string is that level. `undefined` means "these are not a create's
+ * variables at all", and it used to be folded into `null` — correct only for
+ * as long as the shape above never changes, because a renamed or re-nested
+ * `parentId` would still have answered "the root" rather than "I don't know".
+ * The caller draws a pending skeleton row at whatever level comes back, so
+ * that reads as a row appearing in the wrong place: a rendering glitch to look
+ * at, and nothing to trace it by. `undefined` matches no level, so the
+ * skeleton is simply not drawn — the safe direction for a purely cosmetic row.
  */
-export function createTargetParentId(variables: unknown): string | null {
-  if (variables && typeof variables === 'object' && 'parentId' in variables) {
-    const { parentId } = variables;
-    return typeof parentId === 'string' ? parentId : null;
+export function createTargetParentId(
+  variables: unknown
+): string | null | undefined {
+  // `mutate()` with no argument — the palette's "New note". The mutation
+  // function's own `= {}` default is what makes that the root.
+  if (variables === undefined) return null;
+  if (typeof variables !== 'object' || variables === null) return undefined;
+
+  const keys = Object.keys(variables);
+  if (!keys.every((key) => key in CREATE_NOTE_VARIABLE_TEMPLATE)) {
+    return undefined;
   }
-  return null;
+
+  // No `parentId` key at all is the root: `mutate({})`, and the draft row's
+  // `{ isFolder, title }`.
+  if (!('parentId' in variables)) return null;
+
+  const { parentId } = variables;
+  if (typeof parentId === 'string') return parentId;
+  return parentId === undefined || parentId === null ? null : undefined;
 }
 
 /**
@@ -274,13 +366,7 @@ export function useCreateNote(
      * the row itself and this creates the note already named, instead of
      * creating an "Untitled" one and renaming it a moment later.
      */
-    mutationFn: async (
-      variables: {
-        parentId?: string | null;
-        isFolder?: boolean;
-        title?: string;
-      } = {}
-    ) => {
+    mutationFn: async (variables: CreateNoteVariables = {}) => {
       const res = await createNote({
         title:
           variables.title ??
