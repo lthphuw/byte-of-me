@@ -1315,8 +1315,15 @@ declare const messages: {
       "outOfScopeLink": "Link này trỏ ra ngoài phạm vi được chia sẻ với bạn.",
       "emptyFolder": "Thư mục này trống.",
       "selectNote": "Chọn một ghi chú.",
+      "conflict": {
+        "title": "Ghi chú này đã đổi trong lúc bạn sửa",
+        "description": "Người khác đã lưu lúc {serverAt}. Thay đổi của bạn lúc {localAt} chưa được áp dụng.",
+        "keepMine": "Giữ bản của tôi",
+        "takeServer": "Lấy bản kia"
+      },
       "errors": {
-        "save": "Không lưu được ghi chú."
+        "save": "Không lưu được ghi chú.",
+        "conflict": "Thay đổi của bạn chưa được lưu — người khác đã sửa ghi chú này trước."
       }
     }
   },

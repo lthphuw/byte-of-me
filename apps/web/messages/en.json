@@ -1312,8 +1312,15 @@
       "outOfScopeLink": "This link points outside what was shared with you.",
       "emptyFolder": "This folder is empty.",
       "selectNote": "Select a note.",
+      "conflict": {
+        "title": "This note changed while you were editing",
+        "description": "Someone else saved it {serverAt}. Your changes from {localAt} have not been applied.",
+        "keepMine": "Keep mine",
+        "takeServer": "Use theirs"
+      },
       "errors": {
-        "save": "Could not save the note."
+        "save": "Could not save the note.",
+        "conflict": "Your changes were not saved — someone else edited this note first."
       }
     }
   },

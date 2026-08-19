@@ -127,21 +127,26 @@ export function SharedNoteWorkspace() {
           ) : null}
         </header>
 
-        {isSwitching ? (
+        {/* The editor is checked FIRST, ahead of `isSwitching`, and mounted
+            with no `key` — both deliberate. It used to be keyed on the note
+            id and replaced by the skeleton on every rail click, which meant a
+            fresh Tiptap instance and an empty undo stack each time. It now
+            survives the switch and reseeds itself from these props (see
+            `SharedNoteEditor`), so the whole surface shows the note being
+            LEFT — title, breadcrumb, rail and body together — until the next
+            one arrives, instead of blanking the one column that could still
+            be read. Anything typed in that window still belongs to
+            `data.id`, and is still flushed under it. */}
+        {data.role === 'EDITOR' && !data.isFolder ? (
+          <SharedNoteEditor
+            noteId={data.id}
+            initialContent={data.content}
+            initialUpdatedAt={data.updatedAt}
+          />
+        ) : isSwitching ? (
           <SharedNoteDocumentSkeleton />
         ) : data.isFolder ? (
           <p className="text-sm text-muted-foreground">{t('selectNote')}</p>
-        ) : data.role === 'EDITOR' ? (
-          <SharedNoteEditor
-            // Remounts the editor when the note changes: it is uncontrolled
-            // and reads `value` once, so without this a second note would
-            // open showing the first one's text. The remount is also what
-            // discarded every unsent keystroke until `useSharedNoteAutosave`
-            // grew a departure flush — see that hook.
-            key={data.id}
-            noteId={data.id}
-            initialContent={data.content}
-          />
         ) : (
           // `html` is rendered on the server with unreachable note links
           // already dropped — see `SharedNoteDetail.html` for why the viewer

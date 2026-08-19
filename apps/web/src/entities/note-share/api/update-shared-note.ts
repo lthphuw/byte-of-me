@@ -3,22 +3,71 @@
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { richTextToPlainText } from '@byte-of-me/ui/lib/rich-text-content';
+import * as z from 'zod';
 
 import { extractNoteLinkIds } from '@/entities/note';
 import { resolveNoteAccess } from '@/entities/note-share/lib/resolve-note-access';
-import {
-  type UpdateSharedNoteInput,
-  updateSharedNoteSchema,
-} from '@/entities/note-share/model/note-share-schema';
+import { updateSharedNoteSchema } from '@/entities/note-share/model/note-share-schema';
 import { rewriteNoteLinks } from '@/entities/note-share/model/rewrite-note-links';
-import type {
-  NoteAccess,
-  SharedNoteDetail,
-} from '@/entities/note-share/model/types';
+import type { NoteAccess } from '@/entities/note-share/model/types';
 import { requireUser } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
+
+/**
+ * `updateSharedNoteSchema` plus the concurrency base, extended here rather
+ * than added to the slice's schema file: `baseUpdatedAt` is not part of what a
+ * shared note IS, only of how this one action decides whether a write may
+ * land, and every other consumer of that schema would otherwise carry a field
+ * it never sends.
+ *
+ * Optional, so an older client — or any caller that genuinely has no base —
+ * keeps exactly the last-write-wins behaviour it had before (AGENTS §11.6).
+ * Milliseconds rather than a `Date`, matching how `use-note-editor-autosave`
+ * stores the same value, and exact either way: `notes.updated_at` is
+ * `TIMESTAMP(3)`, so a JS `Date` round-trips it without truncation.
+ */
+const updateSharedNoteWithBaseSchema = updateSharedNoteSchema.extend({
+  baseUpdatedAt: z.number().int().nonnegative().optional(),
+});
+
+export type UpdateSharedNoteWithBaseInput = z.input<
+  typeof updateSharedNoteWithBaseSchema
+>;
+
+/**
+ * What a save can honestly say about itself.
+ *
+ * Deliberately NOT `SharedNoteDetail`. This action used to return one, with
+ * the note's OWN title echoed into `rootTitle` because "the client already has
+ * the real value" — true, but it made the envelope unsafe to write into
+ * `noteShareKeys.detail`, which is a trap rather than a saving. The real root
+ * title would have cost a second row read behind every debounced keystroke,
+ * for a string that is already on screen and that a save cannot change. So the
+ * type narrows to what the save actually knows.
+ *
+ * `conflict` travels as a SUCCESS, not an `errorMsg`: nothing went wrong, the
+ * write was simply declined in favour of asking the author. Routing it through
+ * the failure branch would have shown them a red toast for somebody else's
+ * perfectly good edit.
+ */
+export type SharedNoteSaveResult =
+  | {
+      status: 'saved';
+      id: string;
+      /** The row's new `updatedAt` — the base the caller's next save must
+       *  send, or every subsequent save reports a conflict with itself. */
+      updatedAt: Date;
+    }
+  | {
+      status: 'conflict';
+      /** When the version that beat this save was written. */
+      serverUpdatedAt: Date;
+      /** That version's document, hrefs already rewritten for this surface,
+       *  so the author can be offered it without a second round trip. */
+      serverContent: string;
+    };
 
 /**
  * The only write a non-owner can perform: title and body, nothing else.
@@ -31,15 +80,15 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
  * See `create-note.ts` for why no note action calls `revalidateTag`.
  */
 export async function updateSharedNote(
-  input: UpdateSharedNoteInput
-): Promise<ApiResponse<SharedNoteDetail>> {
+  input: UpdateSharedNoteWithBaseInput
+): Promise<ApiResponse<SharedNoteSaveResult>> {
   await requireUser();
 
-  const parsed = parseInput(updateSharedNoteSchema, input);
+  const parsed = parseInput(updateSharedNoteWithBaseSchema, input);
   if (!parsed.ok) {
     return { success: false, errorMsg: parsed.errorMsg };
   }
-  const { id, title } = parsed.data;
+  const { id, title, baseUpdatedAt } = parsed.data;
 
   const access = await resolveNoteAccess(id);
   if (!access) {
@@ -63,7 +112,19 @@ export async function updateSharedNote(
     // is enforced by the same statement that writes. `update` only accepts a
     // unique selector, which would mean reading first and trusting the gap.
     const { count } = await prisma.note.updateMany({
-      where: { id, ownerId: access.ownerId },
+      where: {
+        id,
+        ownerId: access.ownerId,
+        // Optimistic concurrency, in the same statement that writes — the same
+        // reason `ownerId` is here rather than in a read before it. A row that
+        // has moved past the version this edit was made on is left alone, so
+        // two editors can no longer silently overwrite each other. `lte`, not
+        // `equals`: the caller's base is the row it last SAW, and a base that
+        // is somehow ahead of the row is not a reason to refuse a write.
+        ...(baseUpdatedAt === undefined
+          ? {}
+          : { updatedAt: { lte: new Date(baseUpdatedAt) } }),
+      },
       data: {
         ...(title === undefined ? {} : { title }),
         // `plainText` is always derived here and never accepted from the
@@ -74,56 +135,63 @@ export async function updateSharedNote(
       },
     });
 
+    if (count === 0) {
+      // The write matched nothing. Either the note is gone, or the guard above
+      // held it back — and only the row can say which, so it is read WITH the
+      // document: the author is about to be asked to choose between that
+      // version and their own, and offering it now saves them a round trip
+      // they would have to make with the banner already on screen.
+      const current = await prisma.note.findFirst({
+        where: { id, ownerId: access.ownerId },
+        select: { content: true, updatedAt: true },
+      });
+
+      if (
+        current &&
+        baseUpdatedAt !== undefined &&
+        current.updatedAt.getTime() > baseUpdatedAt
+      ) {
+        return {
+          success: true,
+          data: {
+            status: 'conflict',
+            serverUpdatedAt: current.updatedAt,
+            // Rewritten the same way `getSharedNoteById` rewrites what it
+            // serves, so the caller can seed its editor from this directly.
+            serverContent: rewriteNoteLinks(current.content, 'toShared'),
+          },
+        };
+      }
+
+      return { success: false, errorMsg: 'Not found' };
+    }
+
     // Both gates matter, for the reasons `updateNote` records: `content`
     // because the autosave sends title and body separately and a rename must
-    // not rewrite links, and `count > 0` because a miss means the note does
-    // not exist or is not this owner's, and the delete below would otherwise
-    // clear somebody else's links for an id the caller merely guessed.
-    if (content !== undefined && count > 0) {
+    // not rewrite links, and `count > 0` — established by the branch above —
+    // because a miss means the note does not exist, is not this owner's, or
+    // was refused by the concurrency guard, and the delete below would
+    // otherwise clear links for a save that never landed.
+    if (content !== undefined) {
       await rebuildLinks({ id, content, access });
     }
 
-    const note = await prisma.note.findFirst({
+    // Read back for `updatedAt` alone: it is the base the caller's next save
+    // has to send, and `@updatedAt` means only the row knows it. Everything
+    // else this used to select — title, body, properties — went back down the
+    // wire behind every debounced keystroke for a value the caller already had.
+    const saved = await prisma.note.findFirst({
       where: { id, ownerId: access.ownerId },
-      select: {
-        id: true,
-        title: true,
-        content: true,
-        parentId: true,
-        createdAt: true,
-        updatedAt: true,
-        status: true,
-        properties: true,
-        isFolder: true,
-      },
+      select: { updatedAt: true },
     });
 
-    if (!note) {
+    if (!saved) {
       return { success: false, errorMsg: 'Not found' };
     }
 
     return {
       success: true,
-      data: {
-        ...note,
-        content: rewriteNoteLinks(note.content, 'toShared'),
-        role: access.role,
-        rootId: access.rootId,
-        // The save response is not what draws the shell — `getSharedNoteById`
-        // is, and its value is already on screen. Echoing this note's own
-        // label keeps the type honest without a second read per keystroke.
-        rootTitle: note.title,
-        rootIsFolder: note.isFolder,
-        // Empty on a save, deliberately. The client already holds the set from
-        // its initial `getSharedNoteById`, and a save cannot make a target
-        // reachable that was not already — recomputing it would put a second
-        // subtree walk behind every debounced keystroke.
-        linkableIds: [],
-        // Null for the same reason it is null for any EDITOR: the caller is
-        // holding the live editor, not a rendered copy, so producing one would
-        // drag the whole Tiptap schema through a save path that never prints it.
-        html: null,
-      },
+      data: { status: 'saved', id, updatedAt: saved.updatedAt },
     };
   } catch (error) {
     const errorMsg = getErrorMessage(error, 'Failed to save note');

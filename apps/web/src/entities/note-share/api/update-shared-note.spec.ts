@@ -83,9 +83,15 @@ const SHARED_DOC = JSON.stringify({
   ],
 });
 
+/** The same document as it sits in the owner's row, i.e. with owner hrefs. */
+const OWNER_DOC = SHARED_DOC.replaceAll('/shared/notes/', '/space/notes/');
+
 const EDITOR_GRANT = [
   { root_id: 'folder-a', owner_id: 'owner-1', depth: 1, role: 'EDITOR' },
 ];
+
+/** The version this caller believes it is editing, as milliseconds. */
+const BASE_UPDATED_AT = 1_700_000_000_000;
 
 /** Everything `createMany` was asked to write, flattened for assertions. */
 function writtenTargets(): string[] {
@@ -179,6 +185,97 @@ describe('updateSharedNote', () => {
     await updateSharedNote({ id: 'note-1', content: SHARED_DOC });
 
     expect(writtenTargets()).toEqual(['inside']);
+  });
+
+  it('returns the new updatedAt and nothing that pretends to be the shell', async () => {
+    // The save response used to be a whole `SharedNoteDetail` with the note's
+    // own title echoed into `rootTitle` — a value nothing could safely put in
+    // `noteShareKeys.detail`. It now says only what a save knows.
+    const res = await updateSharedNote({ id: 'note-1', title: 'Renamed' });
+
+    expect(res.success).toBe(true);
+    expect(res.data).toEqual({
+      status: 'saved',
+      id: 'note-1',
+      updatedAt: new Date(0),
+    });
+  });
+
+  it('guards the write with the version the caller was editing', async () => {
+    await updateSharedNote({
+      id: 'note-1',
+      content: SHARED_DOC,
+      baseUpdatedAt: BASE_UPDATED_AT,
+    });
+
+    expect(updateMany.mock.calls[0]?.[0].where).toEqual({
+      id: 'note-1',
+      ownerId: 'owner-1',
+      updatedAt: { lte: new Date(BASE_UPDATED_AT) },
+    });
+  });
+
+  it('writes unguarded when the caller sends no base', async () => {
+    // Backward compatibility: a caller with no base keeps the last-write-wins
+    // behaviour it had, rather than being refused for sending nothing.
+    await updateSharedNote({ id: 'note-1', content: SHARED_DOC });
+
+    expect(updateMany.mock.calls[0]?.[0].where.updatedAt).toBeUndefined();
+  });
+
+  it('reports a conflict instead of overwriting a newer row', async () => {
+    updateMany.mockResolvedValue({ count: 0 });
+    findFirst.mockResolvedValue({
+      content: OWNER_DOC,
+      updatedAt: new Date(BASE_UPDATED_AT + 5_000),
+    });
+
+    const res = await updateSharedNote({
+      id: 'note-1',
+      content: SHARED_DOC,
+      baseUpdatedAt: BASE_UPDATED_AT,
+    });
+
+    expect(res.success).toBe(true);
+    expect(res.data).toEqual({
+      status: 'conflict',
+      serverUpdatedAt: new Date(BASE_UPDATED_AT + 5_000),
+      // Handed back on this surface's own hrefs, so the caller can seed its
+      // editor from it without a second read.
+      serverContent: SHARED_DOC,
+    });
+  });
+
+  it('leaves the link graph alone when the guard refused the write', async () => {
+    // The refused save never touched the document, so rebuilding this note's
+    // outgoing links from it would delete the other editor's rows.
+    updateMany.mockResolvedValue({ count: 0 });
+    findFirst.mockResolvedValue({
+      content: OWNER_DOC,
+      updatedAt: new Date(BASE_UPDATED_AT + 5_000),
+    });
+
+    await updateSharedNote({
+      id: 'note-1',
+      content: SHARED_DOC,
+      baseUpdatedAt: BASE_UPDATED_AT,
+    });
+
+    expect(linkDeleteMany).not.toHaveBeenCalled();
+    expect(transaction).not.toHaveBeenCalled();
+  });
+
+  it('reports not found, not a conflict, when the row is gone', async () => {
+    updateMany.mockResolvedValue({ count: 0 });
+    findFirst.mockResolvedValue(null);
+
+    const res = await updateSharedNote({
+      id: 'note-1',
+      content: SHARED_DOC,
+      baseUpdatedAt: BASE_UPDATED_AT,
+    });
+
+    expect(res.success).toBe(false);
   });
 
   it('keeps a pre-existing out-of-subtree target', async () => {
