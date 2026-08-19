@@ -20,6 +20,7 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import {
+  type ContactMessageFailureCode,
   type ContactMessageFormValues,
   createContactMessageSchema,
   MESSAGE_MAX_LENGTH,
@@ -40,6 +41,23 @@ export function ContactForm() {
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(
     null
   );
+
+  // The action reports *why* it failed as a code; `errorMsg` is English, and a
+  // Vietnamese visitor who hit the rate limit used to be shown it verbatim.
+  // Listed case by case so a code added server-side later falls to `undefined`
+  // and the caller renders `errorMsg` rather than an empty box.
+  const failureMessage = (code: ContactMessageFailureCode | undefined) => {
+    switch (code) {
+      case 'invalid':
+        return t('errors.invalid');
+      case 'rate-limited':
+        return t('errors.rateLimited');
+      case 'unknown':
+        return t('errors.unknown');
+      default:
+        return undefined;
+    }
+  };
 
   // The schema carries message *keys*; the locale is only knowable here, since
   // the entity is shared with the dashboard and cannot call next-intl.
@@ -67,9 +85,8 @@ export function ContactForm() {
         return;
       }
 
-      // The action's `errorMsg` distinguishes rate limit from validation from
-      // 500; the old hardcoded toast collapsed all three into one string.
-      const message = res.errorMsg || t('errorFallback');
+      const message =
+        failureMessage(res.errorCode) || res.errorMsg || t('errors.unknown');
       setResult({ ok: false, message });
       toast.error(t('errorTitle'), { description: message });
     });

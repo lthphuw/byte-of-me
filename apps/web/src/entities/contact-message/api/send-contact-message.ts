@@ -11,6 +11,7 @@ import {
   type ContactMessageFormValues,
   contactMessageSchema,
 } from '@/entities/contact-message/model/contact-message-schema';
+import type { ContactMessageFailureCode } from '@/entities/contact-message/model/types';
 import { mailer } from '@/shared/api';
 import { env } from '@/shared/config/env';
 import { CACHE_TAGS } from '@/shared/lib/constants';
@@ -19,12 +20,15 @@ import { getErrorMessage } from '@/shared/lib/utils';
 import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
+// The form is public and bilingual, so every failure carries a code the client
+// can translate; `errorMsg` stays English for the log and for callers that do
+// not know the codes.
 export async function sendContactMessage(
   values: ContactMessageFormValues
-): Promise<ApiResponse<ContactMessage>> {
+): Promise<ApiResponse<ContactMessage, ContactMessageFailureCode>> {
   const parsed = parseInput(contactMessageSchema, values);
   if (!parsed.ok) {
-    return { success: false, errorMsg: parsed.errorMsg };
+    return { success: false, errorCode: 'invalid', errorMsg: parsed.errorMsg };
   }
 
   // Anonymous write path: throttle per client IP before touching the DB.
@@ -39,6 +43,7 @@ export async function sendContactMessage(
   if (!allowed) {
     return {
       success: false,
+      errorCode: 'rate-limited',
       errorMsg: 'Too many messages sent. Please try again later.',
     };
   }
@@ -58,6 +63,7 @@ export async function sendContactMessage(
     logger.error(`Send contact error: ${getErrorMessage(error)}`);
     return {
       success: false,
+      errorCode: 'unknown',
       errorMsg: 'Something went wrong. Please try again.',
     };
   }
