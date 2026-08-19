@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@byte-of-me/ui';
-import { DatabaseZap, ExternalLink, LogOut } from 'lucide-react';
+import { DatabaseZap, ExternalLink, Loader2, LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { logOutDashboard } from '@/features/auth/lib';
@@ -43,7 +43,7 @@ export function DashboardNavRail() {
   const t = useTranslations('dashboard.sidebar');
   const groups = useDashboardNavGroups();
   const pathname = usePathname();
-  const clearCache = useClearCache();
+  const { clearCache, isPending: cacheClearing } = useClearCache();
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -117,13 +117,24 @@ export function DashboardNavRail() {
 
           <Tooltip>
             <TooltipTrigger asChild>
+              {/* `disabled` plus a spinner, because a full-layout revalidate
+                  takes long enough that an unchanged icon reads as a click
+                  that did not register — and the response to that is a second
+                  click and a second purge. `aria-busy` says the same thing to
+                  a reader that the spin says to an eye. */}
               <button
                 type="button"
                 onClick={() => void clearCache()}
+                disabled={cacheClearing}
+                aria-busy={cacheClearing}
                 aria-label={t('actions.clearCache')}
-                className={RAIL_BUTTON}
+                className={cn(RAIL_BUTTON, 'disabled:opacity-60')}
               >
-                <DatabaseZap className="size-[18px]" />
+                {cacheClearing ? (
+                  <Loader2 className="size-[18px] animate-spin" />
+                ) : (
+                  <DatabaseZap className="size-[18px]" />
+                )}
               </button>
             </TooltipTrigger>
             <TooltipContent side="right">

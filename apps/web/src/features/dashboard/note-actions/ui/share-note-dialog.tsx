@@ -40,11 +40,14 @@ interface ShareNoteDialogProps {
 /**
  * Who can reach this note, and on what terms.
  *
- * The grant list and all three mutations live HERE rather than in the menu, so
- * they exist only while the dialog is open — the same reason
- * `DeleteNoteDialog` keeps its cascade count local. Every row in the tree
- * renders two menu surfaces, and mounting four queries per row for dialogs
- * nobody has opened is the cost that placement avoids.
+ * The grant list and all three mutations live HERE rather than in the menu —
+ * the same placement `DeleteNoteDialog` uses, and worth being exact about what
+ * it buys. The menus render this dialog unconditionally with `open` as a prop,
+ * so the component mounts with the ROW and so do the three mutation observers.
+ * What the placement gates is the FETCH, by `enabled: open` on the grant list:
+ * every row in the tree renders two menu surfaces, and a share list requested
+ * for each of them — for dialogs nobody has opened — is the cost avoided. A
+ * mutation observer that has never been called is idle and issues nothing.
  */
 export function ShareNoteDialog({
   noteId,

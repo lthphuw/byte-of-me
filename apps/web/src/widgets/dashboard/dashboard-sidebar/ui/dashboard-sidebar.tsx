@@ -8,7 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@byte-of-me/ui';
-import { DatabaseZap, ExternalLink, LogOut, Menu } from 'lucide-react';
+import { DatabaseZap, ExternalLink, Loader2, LogOut, Menu } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { DashboardNavItems } from './dashboard-nav-items';
@@ -36,7 +36,7 @@ import { useDashboardNavGroups } from '@/widgets/dashboard/dashboard-sidebar/mod
 function DashboardDrawerContent({ onNavigate }: { onNavigate: () => void }) {
   const t = useTranslations('dashboard.sidebar');
   const groups = useDashboardNavGroups();
-  const clearCache = useClearCache();
+  const { clearCache, isPending: cacheClearing } = useClearCache();
 
   return (
     <div className="flex h-full flex-col">
@@ -82,12 +82,21 @@ function DashboardDrawerContent({ onNavigate }: { onNavigate: () => void }) {
           <I18nToggle side="top" align="start" />
         </div>
 
+        {/* Disabled and spinning while the purge is in flight, for the reason
+            the rail's copy of this button records: without it the click has no
+            visible effect and gets repeated into a second full purge. */}
         <button
           type="button"
           onClick={() => void clearCache()}
-          className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          disabled={cacheClearing}
+          aria-busy={cacheClearing}
+          className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-60"
         >
-          <DatabaseZap className="size-4" />
+          {cacheClearing ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <DatabaseZap className="size-4" />
+          )}
           <span>{t('actions.clearCache')}</span>
         </button>
 

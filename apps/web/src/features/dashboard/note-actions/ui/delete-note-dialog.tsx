@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
 } from '@byte-of-me/ui';
 import { useQuery } from '@tanstack/react-query';
+import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { getDescendantCount, noteKeys } from '@/entities/note';
@@ -30,12 +31,15 @@ interface DeleteNoteDialogProps {
  * honest.
  *
  * Both the count query and the delete mutation live here rather than in the
- * menu, which means they exist only while this dialog is open. That replaced a
- * whole apparatus: the count used to be fetched at ROW level, guarded by an
- * `armed` flag flipped from `onPointerDownCapture`/`onFocusCapture` on a
+ * menu. Be precise about what that does and does not buy: the menus render this
+ * dialog unconditionally and pass `open` as a prop, so the component — and with
+ * it the `useNoteMutations()` observers — mounts with the ROW, not with the
+ * dialog. What is actually gated is the two FETCHES, by `enabled: open`, and
+ * that is the whole point. The count used to be fetched at ROW level, guarded
+ * by an `armed` flag flipped from `onPointerDownCapture`/`onFocusCapture` on a
  * `display: contents` wrapper, purely so that mounting the menu for every
- * visible row did not fire one request per row. Mounting the query where it is
- * actually read makes all of that unnecessary.
+ * visible row did not fire one request per row. `enabled: open` on a query
+ * mounted where it is read makes all of that unnecessary.
  */
 export function DeleteNoteDialog({
   noteId,
@@ -115,15 +119,46 @@ export function DeleteNoteDialog({
           {countFailed || exposureFailed ? (
             <p className="text-sm text-destructive">{t('delete.impactUnknown')}</p>
           ) : null}
+
+          {/* The failure, said in the dialog and not only in a toast. The
+              mutation already fires one, but a toast for a PERMANENT delete is
+              a message that expires: it can be missed, and once it has gone
+              the screen is indistinguishable from a delete that worked. The
+              dialog staying open with the reason on it is the durable half of
+              that signal. No new message key — this string is the server
+              action's own `errorMsg`, the same text the toast carries. */}
+          {remove.isError ? (
+            <p className="text-sm text-destructive">{remove.error.message}</p>
+          ) : null}
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>{t('delete.cancel')}</AlertDialogCancel>
+          <AlertDialogCancel disabled={remove.isPending}>
+            {t('delete.cancel')}
+          </AlertDialogCancel>
           <AlertDialogAction
             disabled={remove.isPending}
-            onClick={() => remove.mutate(noteId)}
+            // `preventDefault`, and it is load-bearing rather than defensive.
+            // `AlertDialogAction` IS `DialogPrimitive.Close`: Radix composes
+            // this handler with `onOpenChange(false)` through
+            // `composeEventHandlers`, which honours `defaultPrevented`. Without
+            // the call the dialog is gone on mousedown, a PERMANENT cascading
+            // delete runs with its own confirmation already off screen, and the
+            // `disabled` above is dead code that can never paint. Same shape as
+            // `ConfirmDeleteDialog` in `packages/ui`.
+            onClick={(e) => {
+              e.preventDefault();
+              // Closed from the per-call callback, so it happens on SUCCESS
+              // only. A failure leaves the dialog standing with the message
+              // above it — closing on failure is how a delete that did not
+              // happen looks exactly like one that did.
+              remove.mutate(noteId, { onSuccess: () => onOpenChange(false) });
+            }}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
+            {remove.isPending && (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            )}{' '}
             {t('delete.confirm')}
           </AlertDialogAction>
         </AlertDialogFooter>
