@@ -1,37 +1,60 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Card, CardContent, CardHeader, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Input, Pagination, ScrollArea, Skeleton, useDebounce } from '@byte-of-me/ui';
-import { RichText } from '@byte-of-me/ui/rich-text';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  Input,
+  Pagination,
+  ScrollArea,
+  Skeleton,
+  useDebounce,
+} from '@byte-of-me/ui';
+import { RichTextHtml } from '@byte-of-me/ui/rich-text-html';
 import { useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
 import { MessageSquare, Search, X } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 
-import type { AdminContactMessage } from '@/entities/contact-message';
+import type { AdminContactMessageWithHtml } from '@/entities/contact-message';
 import { getPaginatedContactMessages } from '@/entities/contact-message/api/get-paginated-contacts';
 import { contactMessageKeys } from '@/entities/contact-message/model/query-keys';
+import { ManagerListState } from '@/shared/ui';
 
 export function ContactMessageGallery() {
   const t = useTranslations('dashboard.contactGallery');
+  const tShared = useTranslations('dashboard.shared');
+  const format = useFormatter();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 400);
 
   const [selectedMessage, setSelectedMessage] =
-    useState<AdminContactMessage | null>(null);
+    useState<AdminContactMessageWithHtml | null>(null);
 
-  const { data, isLoading, isPlaceholderData } = useQuery({
+  const { data, isLoading, isError, refetch, isPlaceholderData } = useQuery({
     queryKey: contactMessageKeys.list(page, debouncedSearch),
-    queryFn: () =>
-      getPaginatedContactMessages(page, 6, {
+    // The action resolves with an ApiResponse rather than throwing, so unwrap
+    // here: reading `success` in the component would leave `isError` false and
+    // render the EMPTY state ("No messages found") on a server failure.
+    queryFn: async () => {
+      const res = await getPaginatedContactMessages(page, 6, {
         search: debouncedSearch,
-      }),
+      });
+      if (!res.success) throw new Error(res.errorMsg);
+      return res.data;
+    },
     placeholderData: (prev) => prev,
   });
 
-  const messages = data?.data?.data || [];
-  const meta = data?.data?.meta;
+  const messages = data?.data ?? [];
+  const meta = data?.meta;
 
   return (
     <div className="space-y-6">
@@ -44,7 +67,7 @@ export function ContactMessageGallery() {
           <p className="text-sm text-muted-foreground">{t('description')}</p>
         </div>
 
-        {!isLoading && (
+        {!isLoading && !isError && (
           <div className="hidden rounded-full bg-muted px-3 py-1 text-[10px] font-bold uppercase tracking-tighter text-muted-foreground md:block">
             {t('messageCount', { count: meta?.totalCount || 0 })}
           </div>
@@ -64,6 +87,8 @@ export function ContactMessageGallery() {
         />
         {search && (
           <button
+            type="button"
+            aria-label={t('clearSearch')}
             onClick={() => setSearch('')}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
           >
@@ -73,23 +98,25 @@ export function ContactMessageGallery() {
       </div>
 
       {/* Gallery */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-[160px] rounded-xl" />
-          ))}
-        </div>
-      ) : messages.length === 0 ? (
-        <div className="py-10 text-center text-muted-foreground">
-          {t('noMessages')}
-        </div>
-      ) : (
+      <ManagerListState
+        isLoading={isLoading}
+        isError={isError}
+        onRetry={() => refetch()}
+        isEmpty={messages.length === 0}
+        emptyTitle={t('noMessages')}
+        skeleton={
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-[160px] rounded-xl" />
+            ))}
+          </div>
+        }
+      >
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {messages.map((msg) => (
             <Card
               key={msg.id}
-              className="group cursor-pointer rounded-2xl transition-colors hover:border-primary/50"
-              onClick={() => setSelectedMessage(msg)}
+              className="group relative rounded-2xl transition-colors focus-within:border-primary/50 hover:border-primary/50"
             >
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
@@ -97,7 +124,9 @@ export function ContactMessageGallery() {
                     {msg.name}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {format(new Date(msg.createdAt), 'dd/MM/yyyy')}
+                    {format.dateTime(new Date(msg.createdAt), {
+                      dateStyle: 'short',
+                    })}
                   </div>
                 </div>
                 <div className="truncate text-sm italic text-muted-foreground">
@@ -110,25 +139,41 @@ export function ContactMessageGallery() {
 
               <CardContent>
                 <div className="relative">
-                  <RichText
+                  <RichTextHtml
+                    variant="compact"
                     className="line-clamp-3 text-sm"
-                    content={msg.message}
+                    html={msg.messageHtml}
                   />
-                  <div className="mt-4 text-[10px] font-medium uppercase tracking-wider text-primary hover:underline">
+                  {/* A real button rather than `onClick` on the card: the
+                      pseudo-element stretches the hit area over the whole card
+                      while keyboard and screen-reader users get one named,
+                      focusable control per message. */}
+                  <button
+                    type="button"
+                    aria-label={t('readMessageFrom', { name: msg.name })}
+                    onClick={() => setSelectedMessage(msg)}
+                    className="mt-4 text-[10px] font-medium uppercase tracking-wider text-primary underline-offset-2 after:absolute after:inset-0 hover:underline focus-visible:underline focus-visible:outline-none"
+                  >
                     {t('clickMore')}
-                  </div>
+                  </button>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
-      )}
+      </ManagerListState>
 
       {/* Pagination */}
       <Pagination
         pagination={meta}
         setPage={setPage}
         isPlaceholderData={isPlaceholderData}
+        pageLabel={tShared('pagination.pageLabel', {
+          page: meta?.currentPage ?? 1,
+          totalPages: meta?.totalPages ?? 1,
+        })}
+        previousLabel={tShared('pagination.previous')}
+        nextLabel={tShared('pagination.next')}
       />
 
       {/* Shared Detail Dialog */}
@@ -150,7 +195,10 @@ export function ContactMessageGallery() {
                     </DialogDescription>
                   </div>
                   <div className="rounded bg-muted px-2 py-1 text-xs text-muted-foreground">
-                    {format(new Date(selectedMessage.createdAt), 'PPP p')}
+                    {format.dateTime(new Date(selectedMessage.createdAt), {
+                      dateStyle: 'long',
+                      timeStyle: 'short',
+                    })}
                   </div>
                 </div>
               </DialogHeader>
@@ -170,7 +218,7 @@ export function ContactMessageGallery() {
                     {t('messageLabel')}
                   </h4>
                   <ScrollArea className="h-[40vh] w-full rounded-md border bg-muted/30 p-4">
-                    <RichText content={selectedMessage.message} />
+                    <RichTextHtml html={selectedMessage.messageHtml} />
                   </ScrollArea>
                 </div>
               </div>

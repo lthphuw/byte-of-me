@@ -13,12 +13,19 @@ import { getTranslations } from 'next-intl/server';
 import { getDashboardStats } from '@/features/dashboard/dashboard-stats/lib';
 
 export async function StatsGrid() {
-  const dataResp = await getDashboardStats();
+  const [dataResp, t, tDashboard] = await Promise.all([
+    getDashboardStats(),
+    getTranslations('dashboard.common'),
+    getTranslations('dashboard.dashboard'),
+  ]);
+  // Not `null`: the section's heading still renders above, so returning
+  // nothing left a labelled region with no content and no explanation.
   if (!dataResp.success || !dataResp.data) {
-    return null;
+    return (
+      <p className="text-sm text-destructive-text">{tDashboard('sectionError')}</p>
+    );
   }
   const stats = dataResp.data;
-  const t = await getTranslations('dashboard.common');
 
   const primaryStats = [
     {

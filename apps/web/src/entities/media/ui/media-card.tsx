@@ -13,6 +13,13 @@ export interface MediaCardProps {
   onDeleteMedia?: (id: string) => void;
   isDeleting?: boolean;
   className?: string;
+  /**
+   * Accessible name for the icon-only delete action. Passed in rather than
+   * translated here: this is an `entities/` component and must not decide
+   * which `dashboard.*` namespace owns the copy (same rule as
+   * `useMediaLibrary`'s toast messages).
+   */
+  deleteLabel?: string;
 }
 
 export function MediaCard({
@@ -20,6 +27,7 @@ export function MediaCard({
   onDeleteMedia,
   isDeleting,
   className,
+  deleteLabel,
 }: MediaCardProps) {
   const isImage = media.mimeType.startsWith('image/');
 
@@ -50,8 +58,11 @@ export function MediaCard({
             </div>
           )}
 
-          {/* Action Overlay: Controlled via Group Hover */}
-          <div className="absolute inset-0 z-20 flex flex-col justify-between bg-black/40 p-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+          {/* Action Overlay. Hover-revealed only from `sm`: on touch there is
+              no hover, so an `opacity-0` overlay stayed invisible yet
+              hit-testable and a tap could fire an unseen Delete.
+              `focus-within` covers the keyboard path. */}
+          <div className="absolute inset-0 z-20 flex flex-col justify-between bg-black/40 p-2 transition-opacity duration-200 sm:opacity-0 sm:focus-within:opacity-100 sm:group-hover:opacity-100">
             {/* Top Toolbar */}
             <div className="flex justify-end gap-1.5">
               <CopyButton
@@ -61,6 +72,7 @@ export function MediaCard({
               {onDeleteMedia && (
                 <DeleteButton
                   isSubmitting={isDeleting}
+                  label={deleteLabel}
                   onClick={() => {
                     onDeleteMedia(media.id);
                   }}
@@ -69,7 +81,7 @@ export function MediaCard({
             </div>
 
             {/* Bottom Info Section */}
-            <div className="translate-y-2 transition-transform duration-300 group-hover:translate-y-0">
+            <div className="transition-transform duration-300 sm:translate-y-2 sm:group-hover:translate-y-0">
               <p className="truncate text-[11px] font-semibold leading-tight text-white drop-shadow-md">
                 {media.fileName}
               </p>

@@ -8,8 +8,10 @@ export async function DashboardProfile() {
     getTranslations('dashboard.dashboard'),
   ]);
 
+  // Not `null`: this is the page's `h1`, so failing silently left the
+  // dashboard with no heading at all.
   if (!profileRes.success || !profileRes.data) {
-    return null;
+    return <p className="text-sm text-destructive-text">{t('sectionError')}</p>;
   }
 
   const userProfile = profileRes.data;

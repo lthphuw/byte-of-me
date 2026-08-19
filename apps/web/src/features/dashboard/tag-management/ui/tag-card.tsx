@@ -2,7 +2,7 @@
 
 import { DeleteButton , EditButton } from '@byte-of-me/ui';
 import { Tag as TagIcon } from 'lucide-react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import type { AdminTag } from '@/entities/tag';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
@@ -16,6 +16,7 @@ interface TagCardProps {
 
 export function TagCard({ tag, onEdit, onDelete, isDeleting }: TagCardProps) {
   const locale = useLocale();
+  const t = useTranslations('dashboard.shared');
   const translated = getTranslatedContent(tag.translations, locale);
   const displayName = translated?.name || tag.slug;
 
@@ -33,9 +34,19 @@ export function TagCard({ tag, onEdit, onDelete, isDeleting }: TagCardProps) {
         </div>
       </div>
 
-      <div className="flex shrink-0 gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-        <EditButton onClick={() => onEdit(tag)} />
-        <DeleteButton isSubmitting={isDeleting} onClick={() => onDelete(tag)} />
+      {/* Hover-revealed only from `sm`: touch has no hover, so `opacity-0`
+          left both actions invisible but tappable. `focus-within` covers the
+          keyboard path. */}
+      <div className="flex shrink-0 gap-1 transition-opacity sm:opacity-0 sm:focus-within:opacity-100 sm:group-hover:opacity-100">
+        <EditButton
+          label={t('actions.editItem', { name: displayName })}
+          onClick={() => onEdit(tag)}
+        />
+        <DeleteButton
+          isSubmitting={isDeleting}
+          label={t('actions.deleteItem', { name: displayName })}
+          onClick={() => onDelete(tag)}
+        />
       </div>
     </div>
   );

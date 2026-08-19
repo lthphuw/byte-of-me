@@ -1,13 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@byte-of-me/ui';
 import { Eye, Hand, Heart } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+import { getFormatter, getTranslations } from 'next-intl/server';
 
 import { getAnalyticsOverview } from '@/features/dashboard/blog-analytics-overview/lib';
 
 const DAY_LABEL_INTERVAL = 5;
 
-function formatDay(date: string): string {
-  return new Date(`${date}T00:00:00Z`).toLocaleDateString('en-US', {
+/** The bar's date, in the reader's locale — `toLocaleDateString('en-US')`
+ *  spelled every month in English on the Vietnamese dashboard. */
+function formatDay(
+  format: Awaited<ReturnType<typeof getFormatter>>,
+  date: string
+): string {
+  return format.dateTime(new Date(`${date}T00:00:00Z`), {
     month: 'short',
     day: 'numeric',
     timeZone: 'UTC',
@@ -19,10 +24,18 @@ function dayOfMonth(date: string): number {
 }
 
 export async function AnalyticsOverview() {
-  const t = await getTranslations('dashboard.blog');
-  const dataResp = await getAnalyticsOverview();
+  const [t, tDashboard, format, dataResp] = await Promise.all([
+    getTranslations('dashboard.blog'),
+    getTranslations('dashboard.dashboard'),
+    getFormatter(),
+    getAnalyticsOverview(),
+  ]);
+  // Not `null`: the "Analytics" heading renders above regardless, so a failed
+  // read left a titled section with nothing under it.
   if (!dataResp.success || !dataResp.data) {
-    return null;
+    return (
+      <p className="text-sm text-destructive-text">{tDashboard('sectionError')}</p>
+    );
   }
   const { viewsByDay, totalViewsLast30Days, topBlogs, likes, claps, blogViews } =
     dataResp.data;
@@ -73,11 +86,11 @@ export async function AnalyticsOverview() {
                       key={d.date}
                       role="img"
                       title={t('overview.dayViewsLabel', {
-                        date: formatDay(d.date),
+                        date: formatDay(format, d.date),
                         count: d.views,
                       })}
                       aria-label={t('overview.dayViewsLabel', {
-                        date: formatDay(d.date),
+                        date: formatDay(format, d.date),
                         count: d.views,
                       })}
                       className={`flex-1 rounded-t ${

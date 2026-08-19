@@ -15,7 +15,7 @@ import {
   tagKeys,
   updateTag,
 } from '@/entities/tag';
-import { TagCard } from '@/features/dashboard';
+import { TagCard } from '@/features/dashboard/tag-management';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
@@ -43,6 +43,7 @@ export function TagManager() {
     cancelDelete,
     confirmDelete,
     isDeleting,
+    isDeletingItem,
   } = useCrudManager<AdminTag, TagFormValues>({
     queryKey: tagKeys.adminList(),
     entityLabel: 'Tag',
@@ -104,7 +105,7 @@ export function TagManager() {
                 tag={tag}
                 onEdit={() => openEditDialog(tag)}
                 onDelete={() => requestDelete(tag)}
-                isDeleting={isDeleting}
+                isDeleting={isDeletingItem(tag)}
               />
             ))}
           </div>
@@ -117,6 +118,12 @@ export function TagManager() {
             pagination={pagination}
             setPage={setPage}
             isPlaceholderData={isPlaceholderData}
+            pageLabel={tShared('pagination.pageLabel', {
+              page: pagination.currentPage,
+              totalPages: pagination.totalPages,
+            })}
+            previousLabel={tShared('pagination.previous')}
+            nextLabel={tShared('pagination.next')}
           />
         </div>
       )}

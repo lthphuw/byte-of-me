@@ -2,8 +2,9 @@ import { Suspense } from 'react';
 import { Separator } from '@byte-of-me/ui';
 import { BarChart3 } from 'lucide-react';
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
-import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
+import { getOwnerDisplayName } from '@/entities/user-profile/api/get-owner-display-name';
 import {
   AnalyticsOverview,
   AnalyticsOverviewLoading,
@@ -15,8 +16,10 @@ import {
 import { ContactMessageGallery } from '@/widgets/dashboard/contact-message-gallery/ui/contact-message-gallery';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const profileRes = await getUserProfile();
-  const userName = profileRes.data?.displayName || 'Admin';
+  // `getOwnerDisplayName`, not `getUserProfile`: a name is all a tab label
+  // needs, and `DashboardProfile` reads the full profile in this same request —
+  // which `getUserProfile`'s `'use server'` puts beyond React `cache()`.
+  const userName = await getOwnerDisplayName();
 
   return {
     title: `Dashboard | Welcome, ${userName}`,
@@ -35,28 +38,30 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function DashboardPage() {
+  const t = await getTranslations('dashboard.dashboard');
+
   return (
     <div className="space-y-10 pb-10">
-      <section aria-label="Profile Summary">
+      <section aria-label={t('sections.profile')}>
         <Suspense fallback={<DashboardProfileLoading />}>
           <DashboardProfile />
         </Suspense>
       </section>
 
-      <section aria-label="Statistics Overview">
+      <section aria-label={t('sections.stats')}>
         <Suspense fallback={<StatsGridLoading />}>
           <StatsGrid />
         </Suspense>
       </section>
 
-      <section aria-label="Analytics" className="space-y-6">
+      <section aria-label={t('sections.analytics')} className="space-y-6">
         <div className="border-b pb-4">
           <h2 className="flex items-center gap-2 text-xl font-semibold tracking-tight">
             <BarChart3 className="h-5 w-5 text-primary" />
-            Analytics
+            {t('analyticsTitle')}
           </h2>
           <p className="text-sm text-muted-foreground">
-            Blog views, engagement, and page traffic at a glance.
+            {t('analyticsDescription')}
           </p>
         </div>
         <Suspense fallback={<AnalyticsOverviewLoading />}>
@@ -66,7 +71,7 @@ export default async function DashboardPage() {
 
       <Separator className="my-8" />
 
-      <section aria-label="Contact Messages" className="space-y-6">
+      <section aria-label={t('sections.messages')} className="space-y-6">
         <ContactMessageGallery />
       </section>
     </div>

@@ -2,6 +2,7 @@
 
 import type { Dispatch, SetStateAction } from 'react';
 import { Pagination } from '@byte-of-me/ui';
+import { useTranslations } from 'next-intl';
 
 import { MediaCard } from '@/entities/media';
 import { cn } from '@/shared/lib/utils';
@@ -14,15 +15,18 @@ export function MediaLibrary({
   isPlaceholderData,
   setPage,
   remove,
-  isRemoving,
+  deletingId,
 }: {
   mediaList: Media[];
   pagination?: PaginatedMetadata;
   isPlaceholderData: boolean;
   setPage: Dispatch<SetStateAction<number>>;
   remove: (id: string) => void;
-  isRemoving: boolean;
+  /** The one id whose deletion is in flight — not a global "a delete is running". */
+  deletingId?: string | null;
 }) {
+  const t = useTranslations('dashboard.shared');
+
   return (
     <div className="space-y-4">
       <div
@@ -36,7 +40,8 @@ export function MediaLibrary({
             key={item.id}
             media={item}
             onDeleteMedia={(id) => remove(id)}
-            isDeleting={isRemoving}
+            isDeleting={deletingId === item.id}
+            deleteLabel={t('actions.deleteItem', { name: item.fileName })}
           />
         ))}
       </div>
@@ -45,6 +50,12 @@ export function MediaLibrary({
         pagination={pagination}
         setPage={setPage}
         isPlaceholderData={isPlaceholderData}
+        pageLabel={t('pagination.pageLabel', {
+          page: pagination?.currentPage ?? 1,
+          totalPages: pagination?.totalPages ?? 1,
+        })}
+        previousLabel={t('pagination.previous')}
+        nextLabel={t('pagination.next')}
       />
     </div>
   );

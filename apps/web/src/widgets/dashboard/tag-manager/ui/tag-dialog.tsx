@@ -29,6 +29,7 @@ export function TagDialog({
   loading: boolean;
 }) {
   const t = useTranslations('dashboard.tag');
+  const tShared = useTranslations('dashboard.shared');
   const form = useForm<TagFormValues>({
     resolver: zodResolver(tagSchema),
     defaultValues: {
@@ -114,7 +115,10 @@ export function TagDialog({
                     className="flex-1"
                   />
 
-                  <DeleteButton onClick={() => remove(index)} />
+                  <DeleteButton
+                    label={tShared('translationTabs.removeLanguage')}
+                    onClick={() => remove(index)}
+                  />
                 </div>
               ))}
             </div>
