@@ -50,6 +50,19 @@ describe('archiveNote', () => {
     expect([...where.id.in].sort()).toEqual(['a', 'b', 'c']);
   });
 
+  // The cascade is computed here and nowhere else, so this is the only place
+  // that can tell the caller which notes just left the tree. Without it the
+  // editor — which may be open on a DESCENDANT rather than on the row that
+  // was clicked — had no way to know it was showing an archived note, and
+  // kept autosaving into one.
+  it('names every id it archived, target first', async () => {
+    const res = await archiveNote('a');
+
+    if (!res.success) throw new Error('unreachable');
+    expect(res.data[0]).toBe('a');
+    expect([...res.data].sort()).toEqual(['a', 'b', 'c']);
+  });
+
   it('sets archivedAt rather than deleting', async () => {
     await archiveNote('a');
 

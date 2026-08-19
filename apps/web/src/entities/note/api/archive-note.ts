@@ -14,9 +14,17 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
  * them behind orphans them in the sidebar, visible with no route back to their
  * parent. `restoreNote` reverses exactly this set.
  *
+ * Returns the ids it archived, target first. The cascade is computed here and
+ * nowhere else, so it is the only place that can tell the caller which notes
+ * just left the tree — and the caller needs that: the editor may be open on a
+ * DESCENDANT of the archived row, and comparing against the target id alone
+ * left it sitting on a note that had gone to the trash, still autosaving into
+ * it. Widening `data` from `null` costs no existing caller anything (AGENTS
+ * §11.6); the envelope is unchanged.
+ *
  * See `create-note.ts` for why no note action calls `revalidateTag`.
  */
-export async function archiveNote(id: string): Promise<ApiResponse<null>> {
+export async function archiveNote(id: string): Promise<ApiResponse<string[]>> {
   const session = await requireAdmin();
 
   const parsedId = parseInput(idSchema, id);
@@ -47,7 +55,7 @@ export async function archiveNote(id: string): Promise<ApiResponse<null>> {
       data: { archivedAt: new Date() },
     });
 
-    return { success: true, data: null };
+    return { success: true, data: ids };
   } catch (error) {
     const errorMsg = getErrorMessage(error, 'Failed to archive note');
     logger.error(`Archive note error: ${errorMsg}`);

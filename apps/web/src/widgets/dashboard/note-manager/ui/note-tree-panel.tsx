@@ -512,14 +512,32 @@ export function NoteTreePanel({
         </div>
       )}
 
+      {/* The dialog no longer dismisses itself (it `preventDefault`s the
+          Radix close), so closing it is this panel's job — and the moment
+          matters. Closing on the CLICK put the confirmation off screen before
+          the subtree-wide archive had been dispatched, which made both the
+          `isPending` spinner and the failure case invisible: a cascading
+          archive that errored left the author looking at a tree that had not
+          changed, with only a toast to say why.
+
+          `onSuccess` ONLY, so a failure leaves the dialog up with its buttons
+          live — the same rule `DeleteNoteDialog` follows, and the reason a
+          destructive action must never silently not happen.
+
+          The per-call form is safe here specifically because this panel owns
+          the observer and stays mounted for the whole flight (it is the
+          always-rendered explorer aside): `MutationObserver` drops per-call
+          callbacks only when `hasListeners()` is false, which is what makes
+          the same form wrong inside the row menus, where Radix unmounts the
+          observer as the menu closes. */}
       <ArchiveNoteDialog
         node={archiveTarget}
+        isPending={archive.isPending}
         onOpenChange={(open) => {
           if (!open) setArchiveTarget(null);
         }}
         onConfirm={(noteId) => {
-          archive.mutate(noteId);
-          setArchiveTarget(null);
+          archive.mutate(noteId, { onSuccess: () => setArchiveTarget(null) });
         }}
       />
     </div>

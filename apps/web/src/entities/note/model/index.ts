@@ -1,3 +1,4 @@
+export * from './deleted-notes';
 export * from './maintenance';
 export * from './note-link-audit';
 export * from './note-links';
