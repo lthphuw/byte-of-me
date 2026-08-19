@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import {
   cacheServerNote,
   getAdminNoteById,
+  hasNoteBeenDeleted,
   markLocalNoteSynced,
   type NoteDetail,
   noteKeys,
@@ -22,6 +23,7 @@ import {
   AUTOSAVE_SPEED_MS,
   useWorkspaceSettings,
 } from '@/entities/workspace-settings';
+import { useDepartureFlush } from '@/shared/hooks/use-departure-flush';
 
 /**
  * One typing pause before a save leaves the browser.
@@ -803,6 +805,21 @@ export function useNoteEditorAutosave(
    */
   const flushPending = useCallback(
     (departingId: string) => {
+      // Deleting the open note unmounts this editor, which is the SAME
+      // departure as closing the pane — and the two need opposite answers.
+      // Without this the delete was followed a beat later by a red "Failed to
+      // save" for the row it had just removed: a real `updateNote` against an
+      // id the server no longer has, and an IndexedDB record rewritten for it
+      // on the way past. First, before the debounce settle below, because
+      // there is no longer anything to send to; the debounce's own timer is
+      // cleared by its hook's unmount cleanup either way.
+      //
+      // This is a suppression of a save that CANNOT succeed, not of failure
+      // reporting: every other `updateNote` here still reports its own error
+      // loudly, and this branch is only reachable after a delete this browser
+      // itself performed.
+      if (hasNoteBeenDeleted(queryClient, departingId)) return;
+
       // Settles `useDebounce`'s own internal pending timer so it does not
       // fire later against whatever the NEXT note's buffers happen to hold.
       // The save below does not depend on this — it reads the buffer
@@ -861,67 +878,29 @@ export function useNoteEditorAutosave(
     // `queryClient`, which does not change identity in this app, so this
     // settles once — not on every render, which is what would happen if it
     // depended on `t` (a new bound function most renders) directly instead of
-    // through `tRef`.
-    [applySaveResult, storeLocally]
+    // through `tRef`. `queryClient` is the same stable value those two close
+    // over, so naming it here adds a dependency the linter can check without
+    // re-arming anything.
+    [applySaveResult, storeLocally, queryClient]
   );
 
-  // Persists a pending, not-yet-debounced edit at the two moments no LATER
+  // Persists a pending, not-yet-debounced edit at every moment no LATER
   // render exists in which the autosave effect above could ever catch it:
   // switching to a different note (this hook instance survives that; the
   // effect above is about to start comparing against a NEW note's id, and
   // would otherwise just discard whatever was still pending for the old
-  // one), and unmounting outright (no render follows at all). Keyed only on
-  // `noteId`, so its cleanup runs exactly on those two transitions.
-  useEffect(() => {
-    const departingId = noteId;
-    return () => flushPending(departingId);
-  }, [noteId, flushPending]);
-
-  /**
-   * The third moment: the page going away without React ever unmounting
-   * anything — a reload, a tab close, the OS backgrounding a phone browser.
-   *
-   * None of those run the cleanup above, so up to `AUTOSAVE_DEBOUNCE_MS` of
-   * typing was simply lost, silently, with the status line still reading
-   * "Saved". `visibilitychange` is the binding that actually fires in all
-   * three cases — `beforeunload` is skipped outright on mobile when the OS
-   * discards a backgrounded tab, which is where this loss is most likely.
-   * `pagehide` is kept alongside it for a same-tab navigation away, which
-   * can retire the page without ever marking it hidden first.
-   *
-   * Both may fire for one departure, and that is harmless: the first sends,
-   * records what it sent in `lastSentRef`, and the second then finds the
-   * buffer equal to it and returns without a second request.
-   *
-   * `updateNote` is a server action, i.e. an ordinary `fetch` that cannot
-   * carry `keepalive`, so a request started this late is best-effort — the
-   * browser may still cut it off. Best-effort is the whole gain over the
-   * previous behaviour, which never even tried.
-   */
-  useEffect(() => {
-    const onLeaving = (event: Event) => {
-      // The visibility test applies to `visibilitychange` ONLY, which fires
-      // for becoming visible again too — coming back to the tab must not
-      // send. `pagehide` gets no such test on purpose: it only ever means
-      // the page is being retired, and on a same-tab navigation it can fire
-      // while the document still reports itself `visible`, so sharing the
-      // guard would skip exactly the case `pagehide` was added for.
-      if (
-        event.type === 'visibilitychange' &&
-        document.visibilityState === 'visible'
-      ) {
-        return;
-      }
-      flushPending(noteId);
-    };
-
-    document.addEventListener('visibilitychange', onLeaving);
-    window.addEventListener('pagehide', onLeaving);
-    return () => {
-      document.removeEventListener('visibilitychange', onLeaving);
-      window.removeEventListener('pagehide', onLeaving);
-    };
-  }, [noteId, flushPending]);
+  // one), unmounting outright, and the page going away without React
+  // unmounting anything at all — a reload, a tab close, a phone OS
+  // discarding a backgrounded tab. Before that last group was covered, up to
+  // `AUTOSAVE_DEBOUNCE_MS` of typing was silently lost with the status line
+  // still reading "Saved".
+  //
+  // `updateNote` is a server action, i.e. an ordinary `fetch` that cannot
+  // carry `keepalive`, so a request started on `pagehide` is best-effort —
+  // the browser may still cut it off. `storeLocally` inside `flushPending`
+  // is what makes that survivable: an IndexedDB put on the same event lands,
+  // and `use-note-sync-queue` sends it on the next visit.
+  useDepartureFlush(noteId, flushPending);
 
   /**
    * The author's answer to the conflict banner.

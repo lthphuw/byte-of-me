@@ -1,26 +1,17 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import { RichTextHtml } from '@byte-of-me/ui/rich-text-html';
-import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { FileText, Folder } from 'lucide-react';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
-import {
-  getSharedNoteById,
-  noteShareKeys,
-  updateSharedNote,
-} from '@/entities/note-share';
+import { getSharedNoteById, noteShareKeys } from '@/entities/note-share';
 import { Link } from '@/shared/i18n/navigation';
-import { cn } from '@/shared/lib/utils';
-import { LazyRichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { SharedNoteBreadcrumb } from '@/widgets/shared/shared-note-workspace/ui/shared-note-breadcrumb';
+import { SharedNoteEditor } from '@/widgets/shared/shared-note-workspace/ui/shared-note-editor';
 import { SharedNoteDocumentSkeleton } from '@/widgets/shared/shared-note-workspace/ui/shared-note-skeleton';
 import { SharedNoteTree } from '@/widgets/shared/shared-note-workspace/ui/shared-note-tree';
-
-/** Matches the owner editor's debounce; see `use-note-editor-autosave`. */
-const AUTOSAVE_DELAY_MS = 800;
 
 /**
  * One shared note, with the tree of its share root beside it.
@@ -144,7 +135,9 @@ export function SharedNoteWorkspace() {
           <SharedNoteEditor
             // Remounts the editor when the note changes: it is uncontrolled
             // and reads `value` once, so without this a second note would
-            // open showing the first one's text.
+            // open showing the first one's text. The remount is also what
+            // discarded every unsent keystroke until `useSharedNoteAutosave`
+            // grew a departure flush — see that hook.
             key={data.id}
             noteId={data.id}
             initialContent={data.content}
@@ -187,85 +180,6 @@ function SharedRootMasthead({
         <Icon className="size-4 shrink-0 text-muted-foreground" />
         <span className="truncate text-sm font-semibold">{title}</span>
       </span>
-    </div>
-  );
-}
-
-/**
- * The editor half, with the same debounced autosave shape the owner's editor
- * uses.
- *
- * `initialContent` is read ONCE, into the uncontrolled editor: feeding the
- * query's value back in on every render would fight the user's cursor, which
- * is the failure `use-note-editor-autosave` describes.
- */
-function SharedNoteEditor({
-  noteId,
-  initialContent,
-}: {
-  noteId: string;
-  initialContent: string;
-}) {
-  const t = useTranslations('share.note');
-  const [pending, setPending] = useState<string | null>(null);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const save = useMutation({
-    mutationFn: async (content: string) => {
-      const res = await updateSharedNote({ id: noteId, content });
-      if (!res.success) throw new Error(res.errorMsg);
-    },
-  });
-
-  useEffect(() => {
-    return () => {
-      if (timer.current) clearTimeout(timer.current);
-    };
-  }, []);
-
-  const scheduleSave = (content: string) => {
-    setPending(content);
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => {
-      save.mutate(content);
-      setPending(null);
-    }, AUTOSAVE_DELAY_MS);
-  };
-
-  const status = save.isError
-    ? t('saveFailed')
-    : save.isPending || pending !== null
-      ? t('saving')
-      : save.isSuccess
-        ? t('saved')
-        : null;
-
-  return (
-    <div className="flex flex-col gap-2">
-      {/* Fixed height so the column does not jump the first time a status
-          appears. */}
-      <div className="h-4 text-xs">
-        {status ? (
-          <span
-            className={cn(
-              'text-muted-foreground',
-              save.isError && 'text-destructive'
-            )}
-          >
-            {status}
-          </span>
-        ) : null}
-      </div>
-
-      {/* `chromeless`: the same toolbar-free writing surface the owner's notes
-          workspace uses. Formatting is not lost with it — StarterKit's input
-          rules still turn `## `, `**bold**` and friends into real nodes. */}
-      <LazyRichTextEditor
-        value={JSON.parse(initialContent)}
-        onChange={(value) => scheduleSave(JSON.stringify(value))}
-        chromeless
-        compact
-      />
     </div>
   );
 }

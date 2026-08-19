@@ -1311,9 +1311,13 @@ declare const messages: {
       "saving": "Saving…",
       "saved": "Saved",
       "saveFailed": "Not saved",
+      "retrySave": "Retry",
       "outOfScopeLink": "This link points outside what was shared with you.",
       "emptyFolder": "This folder is empty.",
-      "selectNote": "Select a note."
+      "selectNote": "Select a note.",
+      "errors": {
+        "save": "Could not save the note."
+      }
     }
   },
   "email": {

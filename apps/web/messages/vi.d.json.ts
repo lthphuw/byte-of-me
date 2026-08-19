@@ -1311,9 +1311,13 @@ declare const messages: {
       "saving": "Đang lưu…",
       "saved": "Đã lưu",
       "saveFailed": "Chưa lưu được",
+      "retrySave": "Thử lại",
       "outOfScopeLink": "Link này trỏ ra ngoài phạm vi được chia sẻ với bạn.",
       "emptyFolder": "Thư mục này trống.",
-      "selectNote": "Chọn một ghi chú."
+      "selectNote": "Chọn một ghi chú.",
+      "errors": {
+        "save": "Không lưu được ghi chú."
+      }
     }
   },
   "email": {
