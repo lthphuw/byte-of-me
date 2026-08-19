@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { MediaManager } from '@/widgets/dashboard';
+import { MediaManager } from '@/widgets/dashboard/media-manager';
 
 
 

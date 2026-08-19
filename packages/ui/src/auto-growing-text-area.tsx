@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 
-import { Textarea } from './index';
 import { cn } from './lib/utils';
+import { Textarea } from './textarea';
 
 export interface AutoGrowingTextAreaProps {
   value: string;

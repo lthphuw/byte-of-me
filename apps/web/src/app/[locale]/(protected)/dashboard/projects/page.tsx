@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { ProjectManager } from '@/widgets/dashboard';
+import { ProjectManager } from '@/widgets/dashboard/project-manager';
 
 
 

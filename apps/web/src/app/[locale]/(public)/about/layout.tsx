@@ -25,5 +25,5 @@ interface AboutLayoutProps {
 }
 
 export default async function AboutLayout({ children }: AboutLayoutProps) {
-  return <div className="flex flex-col gap-6">{children}</div>;
+  return <>{children}</>;
 }

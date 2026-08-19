@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { BlogManager } from '@/widgets/dashboard';
+import { BlogManager } from '@/widgets/dashboard/blog-manager';
 
 export const metadata: Metadata = {
   title: 'Blog Management',

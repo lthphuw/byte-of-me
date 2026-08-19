@@ -3,14 +3,14 @@
 import { type MouseEvent,useCallback } from 'react';
 import { AnimatePresence, m } from 'framer-motion';
 
+import { Button } from './button';
 import { useClipboard } from './hooks/index';
-import {
-  Button,
-  Icons,
-  iconSwitchVariants,
-  springTransition,
-} from './index';
+import { Icons } from './icons';
 import { cn } from './lib/utils';
+// Straight at the token modules, not `./motion` — its barrel pulls in
+// MotionProvider and framer-motion's full feature set.
+import { springTransition } from './motion/transitions';
+import { iconSwitchVariants } from './motion/variants';
 
 export interface CopyButtonProps {
   copyTimeout?: number;

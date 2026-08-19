@@ -63,10 +63,18 @@ const nextConfig = {
       'framer-motion',
       'embla-carousel-react',
       'cmdk',
+      'd3-force',
+      '@dnd-kit/core',
+      '@tanstack/react-query',
       // Measured 2026-07-27: adding '@byte-of-me/ui' here changes nothing
       // (/en initial JS 1604 KB either way, .next/static 9.0M either way).
       // Turbopack already drops the unreached modules behind our own barrel,
       // so the barrel is a maintainability concern, not a bundle one.
+      // Caveat (2026-08-19): that measurement predates the removal of the
+      // barrel self-import cycle in packages/ui (index.ts -> form.tsx ->
+      // ./index), which would have defeated the rewrite — the optimizer's
+      // '@byte-of-me/ui/form' re-entered the barrel anyway. Re-run it before
+      // trusting the result.
     ],
   },
 

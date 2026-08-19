@@ -1,1 +1,1 @@
-export { DashboardPageLoading as default } from '@/shared/ui';
+export { DashboardPageLoading as default } from '@/shared/ui/dashboard-page-loading';

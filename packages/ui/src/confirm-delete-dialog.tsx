@@ -11,7 +11,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from './index';
+} from './alert-dialog';
 
 interface ConfirmDeleteDialogProps {
   isOpen: boolean;

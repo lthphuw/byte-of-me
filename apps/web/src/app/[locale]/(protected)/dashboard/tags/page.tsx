@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { TagManager } from '@/widgets/dashboard';
+import { TagManager } from '@/widgets/dashboard/tag-manager';
 
 
 

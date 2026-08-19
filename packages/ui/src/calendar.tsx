@@ -12,7 +12,7 @@ import {
   ChevronRightIcon,
 } from 'lucide-react';
 
-import { Button, buttonVariants } from './index';
+import { Button, buttonVariants } from './button';
 import { cn } from './lib/utils';
 
 function Calendar({

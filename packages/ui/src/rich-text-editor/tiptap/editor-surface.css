@@ -488,8 +488,9 @@
  * media query contributes no specificity. So the compact rule won on phones and
  * dropped the contact form's message box to 14px — and iOS Safari zooms the
  * whole page whenever a focused editable computes under 16px, which is the
- * behaviour that box's own comment in `rich-text-editor-lite.tsx` says it exists
- * to avoid. The stylesheets this replaced did not have the bug: both declared
+ * behaviour that box's own comment said it existed to avoid. (That box is a
+ * plain `Textarea` now, but the bug outlived it: every editable on a phone
+ * hits the same floor.) The stylesheets this replaced did not have the bug: both declared
  * the small size at (0,1,0), so the narrow-viewport block outranked it by
  * source order.
  *
@@ -584,8 +585,8 @@
  *
  * The rhythm scales down; the TYPE does not go below 16px. iOS Safari zooms
  * the page whenever a focused editable computes under 16px, and a
- * contenteditable is no exception — the same threshold `RichTextEditorLite`
- * and the shared `Input` already handle. The starter's mobile block set the
+ * contenteditable is no exception — the same threshold the shared `Input`
+ * already handles. The starter's mobile block set the
  * body to 1rem for what looks like this reason and never wrote it down.
  * ------------------------------------------------------------------------ */
 

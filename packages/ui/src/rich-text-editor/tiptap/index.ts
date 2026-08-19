@@ -6,4 +6,3 @@ export * from './extensions/references/format';
 export * from './extensions/references/numbering';
 export * from './extensions/references/types';
 export * from './rich-text-editor';
-export * from './rich-text-editor-lite';

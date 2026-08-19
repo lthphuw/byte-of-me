@@ -15,7 +15,6 @@
     "./rich-text-html": "./src/rich-text-html.tsx",
     "./rich-text-render": "./src/rich-text-render.ts",
     "./rich-text-markdown": "./src/rich-text-markdown.ts",
-    "./rich-text-editor-lite": "./src/rich-text-editor/tiptap/rich-text-editor-lite.tsx",
     "./mermaid-blocks": "./src/mermaid-blocks.tsx",
     "./hooks/*": "./src/hooks/*.ts",
     "./motion": "./src/motion/index.ts",

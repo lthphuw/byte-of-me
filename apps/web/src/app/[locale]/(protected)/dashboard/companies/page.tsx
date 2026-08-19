@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { CompanyManager } from '@/widgets/dashboard';
+import { CompanyManager } from '@/widgets/dashboard/company-manager';
 
 export const metadata: Metadata = {
   title: 'Experience',

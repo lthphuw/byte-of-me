@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { EducationManager } from '@/widgets/dashboard';
+import { EducationManager } from '@/widgets/dashboard/education-manager';
 
 
 

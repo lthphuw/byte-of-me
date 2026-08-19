@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { CommentManager } from '@/widgets/dashboard';
+import { CommentManager } from '@/widgets/dashboard/comment-manager';
 
 export const metadata: Metadata = {
   title: 'Comments',
