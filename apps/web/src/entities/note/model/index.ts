@@ -11,3 +11,4 @@ export * from './rnd-links';
 export * from './rnd-publish-schema';
 export * from './types';
 export * from './use-note-prefetch';
+export * from './use-seeded-document';

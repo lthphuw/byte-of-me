@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDebounce } from '@byte-of-me/ui';
-import { toEditorContent } from '@byte-of-me/ui/lib/rich-text-content';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -15,8 +14,10 @@ import {
   type NoteDetail,
   noteKeys,
   readLocalNote,
+  type SeededDocument,
   updateNote,
   type UpdateNoteInput,
+  useSeededDocument,
   writeLocalNote,
 } from '@/entities/note';
 import {
@@ -105,7 +106,7 @@ export interface UseNoteEditorAutosaveResult {
    * the only commits the editor reads it on — so the caller never has to
    * re-derive it per render. See the state's own comment in the hook.
    */
-  seedValue: ReturnType<typeof toEditorContent>;
+  seedValue: SeededDocument['value'];
   /** Resends the current buffer. For the case a failed save leaves nothing
    *  else to trigger a resend — nothing has changed since, so the regular
    *  autosave effect below will not fire again on its own. */
@@ -225,39 +226,17 @@ export function useNoteEditorAutosave(
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  // See `UseNoteEditorAutosaveResult.seedGeneration`'s own doc comment for
-  // why this exists at all. Bumped in the seed effect below, always on a
-  // note switch and, for a same-note reseed, only when `content`
-  // specifically is about to change — a title-only correction (the common
-  // case: the server trimming what was sent, see the `save.mutate` comment
-  // near the bottom) has no DOM to resync, since the title is a plain
-  // controlled `<input>`, and forcing a remount for it would reset the rich
-  // text editor's undo history for no reason.
-  const [seedGeneration, setSeedGeneration] = useState(0);
-  /**
-   * The seeded document, already parsed into the shape the rich-text editor
-   * wants — produced exactly once per seed, in the same effect call that sets
-   * `content`.
-   *
-   * `note-editor.tsx` used to compute this inline as `toEditorContent(content)`
-   * on every render, which meant a `JSON.parse` of the WHOLE document on every
-   * keystroke, for a prop the editor reads only when it mounts (see that
-   * component's own comment on the `key`). Measured on a realistic Tiptap
-   * document: 0.07ms at 21KB, 0.27ms at 83KB, 1.08ms at 334KB — and the more
-   * expensive half of the `fromEditorContent`/`toEditorContent` round trip.
-   *
-   * Carried as state rather than a `useMemo` over `content`, so it changes on
-   * exactly the commits `seedGeneration` does with no dependency array that
-   * lints one way and behaves another. The SERIALIZING half stays where it
-   * is: measured at 0.04–0.46ms, it did not justify reworking the guards
-   * below, and this hook's history is a list of regressions that came from
-   * doing exactly that.
-   *
-   * `ReturnType<typeof toEditorContent>` rather than tiptap's `Content`: that
-   * type lives in `@tiptap/core`, which this app does not depend on directly.
-   */
-  const [seedValue, setSeedValue] =
-    useState<ReturnType<typeof toEditorContent>>('');
+  // The seeded document and the counter that makes the editor take it. See
+  // `useSeededDocument`, which owns the rule that the two never move apart
+  // and the measurements behind parsing once per seed rather than per render.
+  //
+  // Reseeded below on every note switch and, for a same-note catch-up, only
+  // when `content` specifically is about to change — a title-only correction
+  // (the common case: the server trimming what was sent, see the
+  // `save.mutate` comment near the bottom) has no DOM to resync, since the
+  // title is a plain controlled `<input>`, and remounting for it would throw
+  // away the rich text editor's undo history for nothing.
+  const doc = useSeededDocument();
 
   // Which note `title`/`content` currently belong to (`seededNoteId`), and
   // what this hook currently treats as the authoritative state for that note
@@ -465,8 +444,7 @@ export function useNoteEditorAutosave(
       setContent(note.content);
       // Parsed here, beside the buffer it belongs to, so the two can never
       // describe different documents — see `seedValue`'s own comment.
-      setSeedValue(toEditorContent(note.content));
-      setSeedGeneration((generation) => generation + 1);
+      doc.reseed(note.content);
       lastSentRef.current = {
         title: note.title,
         content: note.content,
@@ -493,8 +471,7 @@ export function useNoteEditorAutosave(
       // `lastSentRef.current.content`) rather than `lastSentRef` again is
       // the same check, just already in scope.
       if (note.content !== content) {
-        setSeedValue(toEditorContent(note.content));
-        setSeedGeneration((generation) => generation + 1);
+        doc.reseed(note.content);
       }
       lastSentRef.current = {
         title: note.title,
@@ -502,7 +479,7 @@ export function useNoteEditorAutosave(
         updatedAt: noteUpdatedAt,
       };
     }
-  }, [note, noteId, title, content, willReseedThisCommit]);
+  }, [note, noteId, title, content, willReseedThisCommit, doc]);
 
   // Read from settings rather than taken as a prop: three components sit
   // between the provider and this hook, and none of them has any other reason
@@ -931,8 +908,7 @@ export function useNoteEditorAutosave(
       if (choice === 'take-server') {
         setTitle(note.title);
         setContent(note.content);
-        setSeedValue(toEditorContent(note.content));
-        setSeedGeneration((generation) => generation + 1);
+        doc.reseed(note.content);
         lastSentRef.current = {
           title: note.title,
           content: note.content,
@@ -955,7 +931,7 @@ export function useNoteEditorAutosave(
 
       setConflictBase(null);
     },
-    [note, noteId, title, content, saveNote, storeLocally]
+    [note, noteId, title, content, saveNote, storeLocally, doc]
   );
 
   const retry = useCallback(() => {
@@ -987,8 +963,8 @@ export function useNoteEditorAutosave(
     setTitle,
     content,
     setContent,
-    seedGeneration,
-    seedValue,
+    seedGeneration: doc.generation,
+    seedValue: doc.value,
     isSaving: isSavingCurrentNote,
     isSaveError: isSaveErrorForCurrentNote,
     retry,

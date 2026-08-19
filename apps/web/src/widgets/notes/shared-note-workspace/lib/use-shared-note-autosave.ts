@@ -1,11 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { toEditorContent } from '@byte-of-me/ui/lib/rich-text-content';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
+import { type SeededDocument, useSeededDocument } from '@/entities/note';
 import { updateSharedNote } from '@/entities/note-share';
 import { useDepartureFlush } from '@/shared/hooks/use-departure-flush';
 
@@ -43,7 +43,7 @@ export interface UseSharedNoteAutosaveResult {
    *  not changed since, so no debounce is coming. */
   retry: () => void;
   /** The document to hand the rich-text editor, parsed once per seed. */
-  seedValue: ReturnType<typeof toEditorContent>;
+  seedValue: SeededDocument['value'];
   /** Bumps on every reseed — a different note opening in this same component,
    *  and the reader accepting somebody else's version. The editor is
    *  uncontrolled after mount, so folding this into its `key` is the only way
@@ -141,13 +141,9 @@ export function useSharedNoteAutosave(
   // before any request exists. Every decision to send is made from the refs.
   const [isDirty, setIsDirty] = useState(false);
 
-  // Parsed once per seed rather than per render. `toEditorContent`, not
-  // `JSON.parse`: a note stored before the editor existed holds plain text,
-  // which `JSON.parse` throws on and this turns into a paragraph.
-  const [seedValue, setSeedValue] = useState<
-    ReturnType<typeof toEditorContent>
-  >(() => toEditorContent(initialContent));
-  const [seedGeneration, setSeedGeneration] = useState(0);
+  // The document on screen and the counter that makes the editor take a new
+  // one. See `useSeededDocument` for why they may never move apart.
+  const doc = useSeededDocument(initialContent);
 
   const [conflict, setConflict] = useState<SharedNoteEditConflict | null>(null);
   // The same fact, readable synchronously. `commit` and the departure flush
@@ -324,13 +320,12 @@ export function useSharedNoteAutosave(
     sentRef.current = initialContent;
     baseRef.current = initialUpdatedAt.getTime();
     editedAtRef.current = 0;
-    setSeedValue(toEditorContent(initialContent));
-    setSeedGeneration((generation) => generation + 1);
+    doc.reseed(initialContent);
     setIsDirty(false);
     // The previous note's disagreement says nothing about this one, and
     // leaving it up would suspend autosave on a note it was never about.
     setConflict(null);
-  }, [noteId, initialContent, initialUpdatedAt]);
+  }, [noteId, initialContent, initialUpdatedAt, doc]);
 
   // Covers the sibling-note click (which now changes this hook's key rather
   // than unmounting it, so the cleanup is still the last code that runs for
@@ -387,8 +382,7 @@ export function useSharedNoteAutosave(
       if (choice === 'take-server') {
         bufferRef.current = conflict.serverContent;
         sentRef.current = conflict.serverContent;
-        setSeedValue(toEditorContent(conflict.serverContent));
-        setSeedGeneration((generation) => generation + 1);
+        doc.reseed(conflict.serverContent);
         setIsDirty(false);
       } else {
         const content = bufferRef.current;
@@ -399,7 +393,7 @@ export function useSharedNoteAutosave(
 
       setConflict(null);
     },
-    [conflict, noteId, saveNote]
+    [conflict, noteId, saveNote, doc]
   );
 
   // Scoped to the note on screen RIGHT NOW, for the reason the owner's hook
@@ -417,8 +411,8 @@ export function useSharedNoteAutosave(
     isError: save.isError && isForCurrentNote,
     isSaved: save.isSuccess && isForCurrentNote && !isDirty,
     retry,
-    seedValue,
-    seedGeneration,
+    seedValue: doc.value,
+    seedGeneration: doc.generation,
     conflict,
     resolveConflict,
   };
