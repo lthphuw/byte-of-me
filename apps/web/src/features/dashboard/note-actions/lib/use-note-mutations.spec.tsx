@@ -1,0 +1,181 @@
+/**
+ * What a create says about itself while it is in flight.
+ *
+ * The tree draws its pending row from the MUTATION CACHE rather than from a
+ * `useMutation` result, and that is not a stylistic choice: the row menu's
+ * "New note inside" runs its create from `useNoteActionItems`, a hook Radix
+ * only mounts while the menu is open, so the observer — and its `isPending` —
+ * is gone before the server has answered. Two things have to hold for the row
+ * to appear at all, and both are asserted here:
+ *
+ *  1. a pending create is findable by `CREATE_NOTE_MUTATION_KEY`, and says
+ *     which level it is writing into;
+ *  2. it stays pending until that level has RE-READ, not merely until the
+ *     server answers — otherwise the row vanishes one round trip before the
+ *     real one arrives, which is the gap the author reads as nothing having
+ *     happened.
+ *
+ * The level query here is a plain fake rather than `getNoteChildren`: what is
+ * under test is the invalidation the create hands back, and a fake is the only
+ * way to hold that refetch open long enough to observe.
+ */
+import { prisma } from '@byte-of-me/db';
+import {
+  QueryClient,
+  QueryClientProvider,
+  useInfiniteQuery,
+  useMutationState,
+} from '@tanstack/react-query';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
+import { NextIntlClientProvider } from 'next-intl';
+
+import {
+  CREATE_NOTE_MUTATION_KEY,
+  createTargetParentId,
+  useCreateNote,
+} from './use-note-mutations';
+
+import { noteKeys } from '@/entities/note';
+
+const messages = {
+  dashboard: {
+    note: {
+      untitled: 'Untitled',
+      untitledFolder: 'New folder',
+      errors: { create: 'Could not create the note.' },
+    },
+  },
+} as const;
+
+const AT = new Date('2026-01-01T00:00:00.000Z');
+
+const findFirst = mock(() => Promise.resolve(null));
+const create = mock((args: { data: Record<string, unknown> }) =>
+  Promise.resolve({
+    id: 'new-note-id',
+    content: '',
+    createdAt: AT,
+    updatedAt: AT,
+    status: 'draft',
+    properties: null,
+    isFolder: false,
+    labels: [],
+    ...args.data,
+  })
+);
+
+Object.defineProperty(prisma, 'note', {
+  value: { findFirst, create },
+  writable: true,
+  configurable: true,
+});
+
+/** Resolves the NEXT read of the level only once `release()` runs. */
+let gateLevel: (() => void) | null = null;
+let levelReads = 0;
+
+async function readLevel(): Promise<{ rows: []; nextCursor: null }> {
+  levelReads += 1;
+  if (levelReads > 1) {
+    await new Promise<void>((resolve) => {
+      gateLevel = resolve;
+    });
+  }
+  return { rows: [], nextCursor: null };
+}
+
+/** The level the tree would draw a pending row in, exactly as the panel reads it. */
+function Probe() {
+  const createNote = useCreateNote();
+  const pending = useMutationState({
+    filters: { mutationKey: CREATE_NOTE_MUTATION_KEY, status: 'pending' },
+    select: (mutation) => createTargetParentId(mutation.state.variables),
+  });
+
+  useInfiniteQuery({
+    queryKey: noteKeys.children('folder-1', false),
+    queryFn: readLevel,
+    initialPageParam: null as string | null,
+    getNextPageParam: () => null,
+  });
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => createNote.mutate({ parentId: 'folder-1' })}
+      >
+        create
+      </button>
+      <p data-testid="pending">{pending.join(',')}</p>
+    </div>
+  );
+}
+
+function renderProbe() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <Probe />
+      </NextIntlClientProvider>
+    </QueryClientProvider>
+  );
+}
+
+function pendingLevels(): string {
+  return screen.getByTestId('pending').textContent ?? '';
+}
+
+beforeEach(() => {
+  levelReads = 0;
+  gateLevel = null;
+  findFirst.mockClear();
+  create.mockClear();
+});
+
+afterEach(cleanup);
+
+describe('useCreateNote', () => {
+  test('names the level it is writing into while it is in flight', async () => {
+    renderProbe();
+    // The level's first read has to settle first, so the refetch below is the
+    // one being held open.
+    await waitFor(() => expect(levelReads).toBe(1));
+
+    fireEvent.click(screen.getByRole('button', { name: 'create' }));
+
+    await waitFor(() => expect(pendingLevels()).toBe('folder-1'));
+  });
+
+  test('stays pending until the level it lands in has re-read', async () => {
+    renderProbe();
+    await waitFor(() => expect(levelReads).toBe(1));
+
+    fireEvent.click(screen.getByRole('button', { name: 'create' }));
+
+    // The row exists on the server by now — the refetch it triggered is what
+    // is still outstanding, and the pending row belongs to the author until
+    // the real one can replace it.
+    await waitFor(() => expect(create).toHaveBeenCalled());
+    await waitFor(() => expect(levelReads).toBe(2));
+    expect(pendingLevels()).toBe('folder-1');
+
+    gateLevel?.();
+
+    await waitFor(() => expect(pendingLevels()).toBe(''));
+  });
+});

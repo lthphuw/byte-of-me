@@ -61,6 +61,13 @@ interface NoteTreeItemProps {
   explorer: NoteExplorerControls;
   onSelect: (id: string) => void;
   /**
+   * The levels a create is in flight for. Not part of `NoteExplorerControls`:
+   * it is the state of a MUTATION the tree does not own — the row menu's "New
+   * note inside" runs it too — so it comes from the panel, which can see the
+   * mutation cache.
+   */
+  pendingParentIds?: ReadonlySet<string | null>;
+  /**
    * Row actions (archive, delete), rendered at the end of the row.
    *
    * A slot rather than an import: the menu is a feature, and an entity that
@@ -96,6 +103,7 @@ export function NoteTreeItem({
   includeArchived = false,
   explorer,
   onSelect,
+  pendingParentIds,
   renderActions,
   renderRowShell,
   renderContextMenu,
@@ -110,6 +118,8 @@ export function NoteTreeItem({
   const isRenaming = explorer.renamingId === node.id;
   /** A draft row belongs to THIS level when its parent is this node. */
   const hasDraft = explorer.draft?.parentId === node.id;
+  /** …and so does a create still in flight, which is the draft's next moment. */
+  const isCreatingHere = pendingParentIds?.has(node.id) ?? false;
 
   /**
    * This row's own level, one page at a time.
@@ -236,8 +246,8 @@ export function NoteTreeItem({
 
   // An expanded folder needs its children list even when it has none of its
   // own yet — that is exactly the case where a draft row is being typed into
-  // an empty folder.
-  const showChildren = isExpanded && (hasChildren || hasDraft);
+  // an empty folder, or where the create it committed is still in flight.
+  const showChildren = isExpanded && (hasChildren || hasDraft || isCreatingHere);
 
   return (
     <li
@@ -270,8 +280,12 @@ export function NoteTreeItem({
       {showChildren && (
         // `aria-busy` rather than a live region: the placeholder below is
         // decorative, and this is the standard way to say "the contents of
-        // this container are not final yet" without inventing a string.
-        <ul role="group" aria-busy={level.isPending ? true : undefined}>
+        // this container are not final yet" without inventing a string. A
+        // create landing in this level says the same thing about it.
+        <ul
+          role="group"
+          aria-busy={level.isPending || isCreatingHere ? true : undefined}
+        >
           {childRows.map((child) => (
             <NoteTreeItem
               key={child.id}
@@ -281,6 +295,7 @@ export function NoteTreeItem({
               includeArchived={includeArchived}
               explorer={explorer}
               onSelect={onSelect}
+              pendingParentIds={pendingParentIds}
               renderActions={renderActions}
               renderRowShell={renderRowShell}
               renderContextMenu={renderContextMenu}
@@ -304,6 +319,16 @@ export function NoteTreeItem({
                 onSubmit={explorer.submitDraft}
                 onCancel={explorer.cancelDraft}
               />
+            </li>
+          )}
+
+          {/* The create the draft committed, still in flight — at the end of
+              the level, where the draft stood and where `createNote` puts the
+              real row. Without it the level snaps back to how it looked before
+              the author typed anything. */}
+          {isCreatingHere && (
+            <li aria-hidden>
+              <NoteRowSkeleton depth={depth + 1} index={childRows.length} />
             </li>
           )}
 

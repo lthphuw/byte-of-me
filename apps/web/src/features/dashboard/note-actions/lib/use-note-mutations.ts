@@ -33,10 +33,18 @@ function useInvalidateNoteLists() {
   const queryClient = useQueryClient();
 
   return () => {
+    // The per-level reads, handed back so `useCreateNote` can keep its pending
+    // row until the level has re-read. Only those: awaiting the whole family
+    // would hold that row for the knowledge graph too. The rest is unchanged,
+    // fire-and-forget.
+    let levels: Promise<void> = Promise.resolve();
+
     // Every list-shaped key, not just the tree: the explorer now reads
     // per-level `children` keys, which `tree` does not prefix-match.
     for (const queryKey of noteKeys.lists()) {
-      void queryClient.invalidateQueries({ queryKey });
+      const refetched = queryClient.invalidateQueries({ queryKey });
+      if (queryKey[1] === 'children') levels = refetched;
+      else void refetched;
     }
     void queryClient.invalidateQueries({ queryKey: noteKeys.searchAll() });
     // Create/archive/restore/delete all change the NODE set the graph plots
@@ -44,6 +52,8 @@ function useInvalidateNoteLists() {
     // too. The tree keys above cannot stand in for this: the graph excludes
     // folders and archived notes, so it is a different question entirely.
     void queryClient.invalidateQueries({ queryKey: noteKeys.graph() });
+
+    return levels;
   };
 }
 
@@ -68,7 +78,7 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
       return id;
     },
     onSuccess: (id) => {
-      invalidateLists();
+      void invalidateLists();
       toast.success(t('toasts.archived'));
       onRemoved?.(id);
     },
@@ -84,7 +94,7 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
       return id;
     },
     onSuccess: () => {
-      invalidateLists();
+      void invalidateLists();
       toast.success(t('toasts.restored'));
     },
     onError: (error: Error) => {
@@ -136,7 +146,7 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
       // drops any local copy whose note the server no longer returns, which
       // is what actually cleans up after a cascade.
       void deleteLocalNote(id);
-      invalidateLists();
+      void invalidateLists();
       toast.success(t('toasts.deleted'));
       onRemoved?.(id);
     },
@@ -146,6 +156,27 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
   });
 
   return { archive, restore, remove, pin };
+}
+
+/**
+ * Identifies a create in the MUTATION cache, which is what lets the tree draw a
+ * pending row for one it did not start itself: the row menu's create runs
+ * inside `useNoteActionItems`, whose observer Radix unmounts as the menu
+ * closes. The mutation lives on in the cache, where `useMutationState` sees it.
+ */
+export const CREATE_NOTE_MUTATION_KEY = ['note', 'create'] as const;
+
+/**
+ * The level a pending create is writing into, read back from the cache — where
+ * variables are `unknown`, because it holds every mutation. `null` is the root,
+ * which is also what the palette's argument-less `mutate()` means.
+ */
+export function createTargetParentId(variables: unknown): string | null {
+  if (variables && typeof variables === 'object' && 'parentId' in variables) {
+    const { parentId } = variables;
+    return typeof parentId === 'string' ? parentId : null;
+  }
+  return null;
 }
 
 /**
@@ -175,6 +206,7 @@ export function useCreateNote(
   const invalidateLists = useInvalidateNoteLists();
 
   return useMutation({
+    mutationKey: CREATE_NOTE_MUTATION_KEY,
     /**
      * No variables = an untitled root note; pass `parentId` to create
      * inside a folder (or any note), `isFolder` for an Obsidian folder.
@@ -203,11 +235,16 @@ export function useCreateNote(
       return res.data;
     },
     onSuccess: (note) => {
-      invalidateLists();
+      const levels = invalidateLists();
       onCreatedRow?.(note);
       // Folders have no document to open — they get renamed in place
       // instead of navigating to an editor that means nothing for them.
       if (!note.isFolder) onCreated?.(note.id);
+      // RETURNED, so the mutation stays pending until the level has re-read —
+      // otherwise the tree's pending row goes one round trip before the real
+      // one arrives. `invalidateQueries` swallows a failed refetch rather than
+      // rejecting, so this cannot turn a created note into a failure toast.
+      return levels;
     },
     onError: (error: Error) => {
       toast.error(t('errors.create'), { description: error.message });
@@ -242,7 +279,7 @@ export function useRenameNote() {
     },
     onSuccess: ({ note: data, previousTitle }) => {
       queryClient.setQueryData(noteKeys.detail(data.id), data);
-      invalidateLists();
+      void invalidateLists();
 
       // Fired and NOT awaited. The rename is done and the tree has already
       // re-read; tidying up other notes' labels happens behind that, and must

@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@byte-of-me/ui';
+import { useMutationState } from '@tanstack/react-query';
 import { Archive, ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -12,6 +13,8 @@ import {
 } from '@/entities/note';
 import {
   ArchiveNoteDialog,
+  CREATE_NOTE_MUTATION_KEY,
+  createTargetParentId,
   useCreateNote,
   useNoteMutations,
   useRenameNote,
@@ -174,6 +177,32 @@ export function NoteTreePanel({
   useEffect(() => {
     createRef.current = create.mutate;
   }, [create.mutate]);
+
+  /**
+   * Which levels have a create in flight — `null` is the root.
+   *
+   * From the MUTATION CACHE, not from `create` above: the row menu's "New note
+   * inside" runs its own instance inside `useNoteActionItems`, which Radix
+   * unmounts the moment the item is chosen — taking its `isPending` with it.
+   * The cache outlives the observer, so one subscription covers both paths.
+   *
+   * A pending ROW rather than an optimistic insert: an optimistic row would
+   * have to invent a `NoteTreeNode` and then sit in the level's cache among
+   * real rows a background refetch reorders, which is the "never replace
+   * loaded rows" line this file and `NoteFlatList` draw. A skeleton appended
+   * where `createNote` puts the row (`position = last + 1`) only adds.
+   *
+   * `useMutationState` runs its result through `replaceEqualDeep`, so this
+   * array's identity changes only when the set of pending creates does.
+   */
+  const pendingParents = useMutationState({
+    filters: { mutationKey: CREATE_NOTE_MUTATION_KEY, status: 'pending' },
+    select: (mutation) => createTargetParentId(mutation.state.variables),
+  });
+  const pendingParentIds = useMemo(
+    () => new Set(pendingParents),
+    [pendingParents]
+  );
 
   const treeRows = useVisibleTreeRows(
     rootRows,
@@ -371,6 +400,11 @@ export function NoteTreePanel({
             !isPending &&
             !isLoadingError &&
             visibleRows.length === 0 &&
+            // A first note being written right now is not an empty tree: the
+            // pending row is already on screen, and inviting the author to
+            // create one underneath it would be answering a question they
+            // have just answered.
+            !pendingParentIds.has(null) &&
             // The archived view gets its own copy: `NoteEmpty` invites the author
             // to write their first note, which is the wrong offer when what they
             // are looking at is an empty wastebasket.
@@ -410,6 +444,7 @@ export function NoteTreePanel({
                   hasNextPage={rootLevel.hasNextPage}
                   isFetching={rootLevel.isFetching}
                   onLoadMore={() => void rootLevel.fetchNextPage()}
+                  pendingParentIds={pendingParentIds}
                   renderActions={renderRowActions}
                   renderContextMenu={renderRowContextMenu}
                 />

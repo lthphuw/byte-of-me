@@ -9,6 +9,7 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -64,6 +65,7 @@ import { ReferencePanel } from './extensions/references/reference-panel';
 import SearchAndReplace from './extensions/search-and-replace';
 import { imageFilesFrom, uploadImages } from './extensions/upload-images';
 import { MobileEditorTools } from './mobile-tools';
+import { stripPastedPresentation } from './paste-presentation';
 // Shared with the server-side render schema so both stay identical.
 import { CustomHeading } from './render-extensions';
 import { EditorToolbar } from './toolbars/editor-toolbar';
@@ -294,6 +296,21 @@ type RichTextEditorProps = {
    * "broken". Being told when it becomes available removes that ambiguity.
    */
   onEditorApi?: (api: RichTextEditorApi | null) => void;
+  /**
+   * Accessibility wiring for the writing surface — what `<FormControl>`'s Radix
+   * `Slot` injects into whatever it wraps.
+   *
+   * These land on the CONTENTEDITABLE ProseMirror renders, not on the frame
+   * below: a `<FormLabel htmlFor>` has to resolve to something focusable, and
+   * the wrapper `<div>` is not. Taking a fixed prop list with no rest spread is
+   * what used to swallow them, leaving four labels pointing at nothing and the
+   * error text unlinked from the field it describes.
+   */
+  id?: string;
+  role?: string;
+  'aria-labelledby'?: string;
+  'aria-describedby'?: string;
+  'aria-invalid'?: boolean | 'true' | 'false';
 };
 
 /** The outcome of {@link RichTextEditorApi.formatMarkdown}. */
@@ -388,6 +405,11 @@ export function RichTextEditor({
   formatMarkdownOnPaste = false,
   onOutlineChange,
   onEditorApi,
+  id,
+  role,
+  'aria-labelledby': ariaLabelledBy,
+  'aria-describedby': ariaDescribedBy,
+  'aria-invalid': ariaInvalid,
 }: RichTextEditorProps) {
   // Matches the `md` breakpoint the notes workspace switches its layout at.
   const isNarrow = useMediaQuery('(max-width: 767px)');
@@ -447,6 +469,21 @@ export function RichTextEditor({
   const [rawText, setRawText] = useState<string | null>(null);
   const rawDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // The <FormControl> attributes as ProseMirror wants them: strings, and
+  // absent rather than `"undefined"` when the consumer passed nothing.
+  const surfaceAttributes = useMemo(() => {
+    const attributes: Record<string, string> = {};
+    if (id !== undefined) attributes.id = id;
+    if (role !== undefined) attributes.role = role;
+    if (ariaLabelledBy !== undefined)
+      attributes['aria-labelledby'] = ariaLabelledBy;
+    if (ariaDescribedBy !== undefined)
+      attributes['aria-describedby'] = ariaDescribedBy;
+    if (ariaInvalid !== undefined)
+      attributes['aria-invalid'] = String(ariaInvalid);
+    return attributes;
+  }, [id, role, ariaLabelledBy, ariaDescribedBy, ariaInvalid]);
+
   const editor = useEditor({
     immediatelyRender: false,
     // Tiptap 3 stops re-rendering on transactions by default, which leaves
@@ -465,6 +502,19 @@ export function RichTextEditor({
        */
       attributes: {
         spellcheck: spellCheck ? 'true' : 'false',
+        // So the surface carries them from its first paint. `aria-invalid` and
+        // `aria-describedby` change every time the field's validation does,
+        // and the effect below is what keeps them current.
+        ...surfaceAttributes,
+      },
+
+      /**
+       * Pasted content lands in THIS document's format. See
+       * `paste-presentation.ts` for what "presentation" covers and why the
+       * cleanup has to happen before ProseMirror parses rather than after.
+       */
+      transformPastedHTML(html) {
+        return stripPastedPresentation(html);
       },
 
       /**
@@ -577,6 +627,31 @@ export function RichTextEditor({
     if (!dom) return;
     dom.setAttribute('spellcheck', spellCheck ? 'true' : 'false');
   }, [editor, spellCheck]);
+
+  // The same direct write the spellcheck effect above uses, and kept for the
+  // same reason: whether a change to `editorProps` reaches the live view is
+  // Tiptap's business, not this component's, and a label pointing at a stale
+  // `aria-invalid` is not a failure mode worth leaving to that. Writing the
+  // attribute is idempotent, so this costs nothing when the props already made
+  // it through.
+  const appliedSurfaceAttrsRef = useRef<string[]>([]);
+  useEffect(() => {
+    const dom = editor?.view?.dom;
+    if (!dom) return;
+
+    // Only clears what THIS component wrote: Tiptap puts its own
+    // `role="textbox"` on the same element, and removing that would leave the
+    // surface with no accessible role at all.
+    for (const attribute of appliedSurfaceAttrsRef.current) {
+      if (!(attribute in surfaceAttributes)) dom.removeAttribute(attribute);
+    }
+    for (const [attribute, attributeValue] of Object.entries(
+      surfaceAttributes
+    )) {
+      dom.setAttribute(attribute, attributeValue);
+    }
+    appliedSurfaceAttrsRef.current = Object.keys(surfaceAttributes);
+  }, [editor, surfaceAttributes]);
 
   // The raw text most recently typed but not yet parsed into the document.
   // Exists so leaving raw mode (or unmounting) can FLUSH the pending edit
