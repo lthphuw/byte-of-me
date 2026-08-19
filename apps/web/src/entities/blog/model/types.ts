@@ -4,20 +4,37 @@ import type { PublicProject } from '@/entities/project/model/types';
 import type { Media, Tag } from '@/shared/types/models';
 
 
+/**
+ * The editor's full post. `translations[]` keeps `content` — the language tabs
+ * edit it — but the nested project/tag translations carry only the label each
+ * one is read for, so no locale's `@db.Text` description is loaded.
+ */
 export type AdminBlog = Prisma.BlogGetPayload<{
   include: {
     coverImage: true;
     translations: true;
     project: {
       include: {
-        translations: true;
+        translations: {
+          select: {
+            id: true;
+            language: true;
+            title: true;
+          };
+        };
       };
     };
     tags: {
       include: {
         tag: {
           include: {
-            translations: true;
+            translations: {
+              select: {
+                id: true;
+                language: true;
+                name: true;
+              };
+            };
           };
         };
       };
@@ -46,14 +63,26 @@ export type AdminBlogListItem = Prisma.BlogGetPayload<{
     };
     project: {
       include: {
-        translations: true;
+        translations: {
+          select: {
+            id: true;
+            language: true;
+            title: true;
+          };
+        };
       };
     };
     tags: {
       include: {
         tag: {
           include: {
-            translations: true;
+            translations: {
+              select: {
+                id: true;
+                language: true;
+                name: true;
+              };
+            };
           };
         };
       };

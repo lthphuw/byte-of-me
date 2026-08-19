@@ -29,17 +29,26 @@ export async function getAdminBlogById(id: string): Promise<ApiResponse<AdminBlo
       where: { id, userId: session.id },
       include: {
         coverImage: true,
+        // Every locale, every column — the editor's language tabs edit
+        // `content`, so this one stays a full include.
         translations: true,
+        // The nested translations are only ever read for their label, so they
+        // are narrowed: a full include drags `ProjectTranslation.description`
+        // (`@db.Text`) along for every locale.
         project: {
           include: {
-            translations: true,
+            translations: {
+              select: { id: true, language: true, title: true },
+            },
           },
         },
         tags: {
           include: {
             tag: {
               include: {
-                translations: true,
+                translations: {
+                  select: { id: true, language: true, name: true },
+                },
               },
             },
           },

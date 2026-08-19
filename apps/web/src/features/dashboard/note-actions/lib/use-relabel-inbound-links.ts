@@ -70,8 +70,13 @@ export function useRelabelInboundLinks() {
       // on screen, so invalidation would only mark inactive entries stale and
       // leave them to be refetched anyway — while a detail that IS somehow
       // mounted must not be refetched under a debounced autosave, which is the
-      // hazard `use-note-editor-autosave.ts` documents at length.
-      queryClient.removeQueries({ queryKey: noteKeys.detailAll() });
+      // hazard `use-note-editor-autosave.ts` documents at length. Hence
+      // `type: 'inactive'`: the default (`'all'`) would evict the OPEN note's
+      // detail too, which is the one entry that must survive.
+      queryClient.removeQueries({
+        queryKey: noteKeys.detailAll(),
+        type: 'inactive',
+      });
 
       // Nothing else is invalidated, and each omission is deliberate rather
       // than forgotten. No title changed, so no list key is stale. The link

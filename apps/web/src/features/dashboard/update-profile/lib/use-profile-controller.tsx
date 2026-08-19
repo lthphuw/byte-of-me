@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -12,25 +12,56 @@ import { getAdminUserProfile } from '@/entities/user-profile/api/get-user-profil
 import { saveProfile } from '@/entities/user-profile/api/save-profile';
 import { userProfileKeys } from '@/entities/user-profile/model/query-keys';
 import {
+  createUserProfileSchema,
   type UserProfileFormValues,
-  userProfileSchema,
 } from '@/entities/user-profile/model/user-profile-schema';
+import { firstErroredIndex } from '@/shared/ui';
 
 export function useProfileController(initUser: AdminUserProfile) {
   const t = useTranslations('dashboard.userProfile');
+  const tValidation = useTranslations('dashboard.userProfile.validation');
+  const tShared = useTranslations('dashboard.shared');
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<string>('');
 
-  const { data: response } = useQuery({
+  const {
+    data: user,
+    isError,
+    error,
+  } = useQuery({
     queryKey: userProfileKeys.profile(initUser.id),
-    queryFn: getAdminUserProfile,
-    initialData: { success: true, data: initUser },
+    // getAdminUserProfile resolves (never throws) with an ApiResponse — unwrap
+    // it so a failure sets `isError` instead of yielding `{ success: false }`,
+    // whose missing `data` left `user` undefined and the screen blank.
+    queryFn: async () => {
+      const res = await getAdminUserProfile();
+      if (!res.success) {
+        throw new Error(res.errorMsg);
+      }
+      return res.data;
+    },
+    initialData: initUser,
   });
 
-  const user = response?.data;
+  // A failed refetch is otherwise silent: TanStack keeps the last good profile
+  // on screen, so nothing about the form says it is now out of date.
+  useEffect(() => {
+    if (isError) {
+      toast.error(tShared('managerListState.errorTitle'), {
+        description: error?.message,
+      });
+    }
+  }, [isError, error, tShared]);
+
+  // The schema carries message *keys*; the locale is only knowable here, since
+  // the entity is also parsed server-side and cannot call next-intl.
+  const schema = useMemo(
+    () => createUserProfileSchema((key) => tValidation(key)),
+    [tValidation]
+  );
 
   const form = useForm<UserProfileFormValues>({
-    resolver: zodResolver(userProfileSchema),
+    resolver: zodResolver(schema),
     defaultValues: { birthdate: null, socialLinks: [], translations: [] },
   });
 
@@ -91,8 +122,17 @@ export function useProfileController(initUser: AdminUserProfile) {
     [form, parseAboutMe]
   );
 
+  // Seed once per profile, not on every `user` identity: with the global 60s
+  // staleTime and refetchOnWindowFocus, returning to the tab refetches, and an
+  // unconditional reset would throw away everything typed since. Keyed on the
+  // id (as `blog-form.tsx` does) rather than gated on `isDirty`, because a
+  // reset while pristine is just as unwanted mid-edit.
+  const seededProfileId = useRef<Nullable<string>>(null);
+
   useEffect(() => {
-    if (user) resetForm(user);
+    if (!user || seededProfileId.current === user.id) return;
+    seededProfileId.current = user.id;
+    resetForm(user);
   }, [user, resetForm]);
 
   // Tab Sync
@@ -106,18 +146,29 @@ export function useProfileController(initUser: AdminUserProfile) {
   }, [fields, activeTab]);
 
   // 5. Handlers
-  const handleSave = form.handleSubmit((values) => {
-    const payload = {
-      ...values,
-      translations: values.translations.map((t) => ({
-        ...t,
-        aboutMe:
-          typeof t.aboutMe === 'string' ? t.aboutMe : JSON.stringify(t.aboutMe),
-      })),
-      socialLinks: values.socialLinks.map((s, i) => ({ ...s, sortOrder: i })),
-    };
-    saveMutation.mutate(payload);
-  });
+  const handleSave = form.handleSubmit(
+    (values) => {
+      const payload = {
+        ...values,
+        translations: values.translations.map((t) => ({
+          ...t,
+          aboutMe:
+            typeof t.aboutMe === 'string'
+              ? t.aboutMe
+              : JSON.stringify(t.aboutMe),
+        })),
+        socialLinks: values.socialLinks.map((s, i) => ({ ...s, sortOrder: i })),
+      };
+      saveMutation.mutate(payload);
+    },
+    // A translation error otherwise renders inside an unmounted tab: Save
+    // just appears to do nothing.
+    (errors) => {
+      const index = firstErroredIndex(errors.translations);
+      const id = index === null ? undefined : fields[index]?.id;
+      if (id) setActiveTab(id);
+    }
+  );
 
   return {
     form,

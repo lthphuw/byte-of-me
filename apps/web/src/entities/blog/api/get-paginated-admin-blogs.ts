@@ -40,23 +40,34 @@ export async function getPaginatedAdminBlogs(
               description: true,
             },
           },
-          // Left as full includes (per Task 2.2): small columns, and the
-          // tag names are rendered on the card.
+          // Narrowed for the same reason as `translations` above: a full
+          // include pulls every locale's `ProjectTranslation.description`,
+          // which is `@db.Text`. The card renders only the tag name; nothing
+          // in the admin list or the editor form reads a project translation
+          // beyond its title.
           project: {
             include: {
-              translations: true,
+              translations: {
+                select: { id: true, language: true, title: true },
+              },
             },
           },
           tags: {
             include: {
               tag: {
                 include: {
-                  translations: true,
+                  translations: {
+                    select: { id: true, language: true, name: true },
+                  },
                 },
               },
             },
           },
         },
+        // Postgres gives no order without one, so `skip`/`take` could repeat a
+        // row on one page and drop it from the next. `id` breaks ties because
+        // `publishedDate` is nullable and not unique.
+        orderBy: [{ publishedDate: 'desc' }, { id: 'asc' }],
         skip,
         take: limit,
       }),

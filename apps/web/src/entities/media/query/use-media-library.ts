@@ -37,6 +37,11 @@ export function useMediaLibrary(
         page,
         limit: 12,
       }),
+    // Keep the previous page on screen while the next one loads, as every
+    // other manager does: without it the grid and its pagination control are
+    // replaced by a spinner, and `isPlaceholderData` (which the library dims
+    // the grid with) is never true.
+    placeholderData: (prev) => prev,
   });
 
   // Uploading

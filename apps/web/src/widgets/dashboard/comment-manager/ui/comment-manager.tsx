@@ -12,14 +12,13 @@ import {
 } from '@byte-of-me/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Eye, EyeOff } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { getPaginatedAdminComments } from '@/entities/comment/api/get-paginated-admin-comments';
 import { setCommentVisibility } from '@/entities/comment/api/set-comment-visibility';
 import { commentKeys } from '@/entities/comment/model/query-keys';
 import type { AdminComment } from '@/entities/comment/model/types';
-import { formatDate } from '@/shared/lib/utils';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
 const PAGE_SIZE = 12;
@@ -27,6 +26,7 @@ const PAGE_SIZE = 12;
 export function CommentManager() {
   const t = useTranslations('dashboard.comment');
   const tShared = useTranslations('dashboard.shared');
+  const format = useFormatter();
   const queryClient = useQueryClient();
 
   function commentSource(comment: AdminComment): string {
@@ -51,7 +51,7 @@ export function CommentManager() {
   );
 
   const {
-    data: response,
+    data,
     isLoading,
     isError,
     refetch,
@@ -59,12 +59,19 @@ export function CommentManager() {
     isPlaceholderData,
   } = useQuery({
     queryKey: commentKeys.adminList(page),
-    queryFn: () => getPaginatedAdminComments(page, PAGE_SIZE),
+    // The action resolves with an ApiResponse rather than throwing, so unwrap
+    // here (as `useCrudManager` does): reading `success` in the component
+    // instead would leave `isError` false and render EMPTY on a server failure.
+    queryFn: async () => {
+      const res = await getPaginatedAdminComments(page, PAGE_SIZE);
+      if (!res.success) throw new Error(res.errorMsg);
+      return res.data;
+    },
     placeholderData: (prev) => prev,
   });
 
-  const comments = response?.success ? response.data.data : [];
-  const pagination = response?.success ? response.data.meta : undefined;
+  const comments = data?.data ?? [];
+  const pagination = data?.meta;
 
   const visibilityMutation = useMutation({
     mutationFn: ({ id, hidden }: { id: string; hidden: boolean }) =>
@@ -76,6 +83,12 @@ export function CommentManager() {
     },
     onError: () => toast.error(t('toast.updateError')),
   });
+
+  // The id of the row being toggled, not "a toggle is running": the flag alone
+  // disabled every Restore button on the page while one was in flight.
+  const pendingVisibilityId = visibilityMutation.isPending
+    ? visibilityMutation.variables?.id
+    : undefined;
 
   return (
     <div className="space-y-6">
@@ -113,7 +126,9 @@ export function CommentManager() {
                       {comment.user.name ?? comment.user.email}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {formatDate(comment.createdAt)}
+                      {format.dateTime(new Date(comment.createdAt), {
+                        dateStyle: 'medium',
+                      })}
                     </span>
                     {comment.isDeleted && (
                       <Badge variant="destructive" className="text-[10px]">
@@ -135,7 +150,7 @@ export function CommentManager() {
                       size="sm"
                       variant="outline"
                       className="gap-2"
-                      disabled={visibilityMutation.isPending}
+                      disabled={pendingVisibilityId === comment.id}
                       onClick={() =>
                         visibilityMutation.mutate({
                           id: comment.id,
@@ -151,6 +166,7 @@ export function CommentManager() {
                       size="sm"
                       variant="outline"
                       className="gap-2"
+                      disabled={pendingVisibilityId === comment.id}
                       onClick={() => setCommentToHide(comment)}
                     >
                       <EyeOff className="h-4 w-4" />
@@ -170,6 +186,12 @@ export function CommentManager() {
             pagination={pagination}
             setPage={setPage}
             isPlaceholderData={isPlaceholderData}
+            pageLabel={tShared('pagination.pageLabel', {
+              page: pagination.currentPage,
+              totalPages: pagination.totalPages,
+            })}
+            previousLabel={tShared('pagination.previous')}
+            nextLabel={tShared('pagination.next')}
           />
         </div>
       )}
