@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -16,16 +16,19 @@ import {
   sharedNoteHref,
 } from '@/entities/note-share';
 import { useRouter } from '@/shared/i18n/navigation';
+import { InfiniteSentinel } from '@/shared/ui/infinite-sentinel';
 
 /**
  * One level of the shared tree, recursing on expand.
  *
- * Each level is its own query, mirroring the owner's explorer: a collapsed
- * folder costs nothing until somebody opens it. `NoteRow` is reused as-is —
- * it is purely presentational and `getSharedNoteChildren` already returns the
- * `NoteTreeNode` it expects. `NoteTreeItem` is deliberately NOT reused: it is
- * wired to `NoteExplorerControls`, an interaction contract (drafts, renames,
- * drag) this surface does not have and must not grow.
+ * Each level is its own cursor-paginated query, mirroring the owner's
+ * explorer: a collapsed folder costs nothing until somebody opens it, and an
+ * open one arrives a page at a time instead of in one unbounded read.
+ * `NoteRow` is reused as-is — it is purely presentational and
+ * `getSharedNoteChildren` already returns the `NoteTreeNode` it expects.
+ * `NoteTreeItem` is deliberately NOT reused: it is wired to
+ * `NoteExplorerControls`, an interaction contract (drafts, renames, drag) this
+ * surface does not have and must not grow.
  */
 export function SharedNoteTree({
   parentId,
@@ -43,14 +46,18 @@ export function SharedNoteTree({
     () => new Set()
   );
 
-  const level = useQuery({
+  const level = useInfiniteQuery({
     queryKey: noteShareKeys.children(parentId),
-    queryFn: async () => {
-      const res = await getSharedNoteChildren(parentId);
+    queryFn: async ({ pageParam }) => {
+      const res = await getSharedNoteChildren({ parentId, cursor: pageParam });
       if (!res.success) throw new Error(res.errorMsg);
       return res.data;
     },
+    initialPageParam: null as string | null,
+    getNextPageParam: (page) => page.nextCursor,
   });
+
+  const rows = level.data?.pages.flatMap((page) => page.rows) ?? [];
 
   const toggle = (id: string) =>
     setExpandedIds((current) => {
@@ -78,13 +85,16 @@ export function SharedNoteTree({
     );
   }
 
-  if (level.isError) {
+  // `isLoadingError`, not `isError`: a failed BACKGROUND refetch leaves the
+  // pages already loaded on screen and must not replace them with an error
+  // line. Same distinction the owner's `NoteTreeItem` documents.
+  if (level.isLoadingError) {
     return (
       <p className="px-2 py-1 text-xs text-destructive">{t('notFound')}</p>
     );
   }
 
-  if (level.data.length === 0) {
+  if (rows.length === 0) {
     return depth === 0 ? (
       <p className="px-2 py-1 text-xs text-muted-foreground">
         {t('emptyFolder')}
@@ -94,7 +104,7 @@ export function SharedNoteTree({
 
   return (
     <ul className="flex flex-col">
-      {level.data.map((node: NoteTreeNode) => {
+      {rows.map((node: NoteTreeNode) => {
         const isExpanded = expandedIds.has(node.id);
 
         return (
@@ -135,6 +145,19 @@ export function SharedNoteTree({
           </li>
         );
       })}
+
+      {/* The `hasNextPage` test is repeated out here (the sentinel also
+          renders nothing without it) so a `<div>` never becomes a direct child
+          of this `<ul>`. */}
+      {level.hasNextPage && (
+        <li>
+          <InfiniteSentinel
+            hasNextPage={level.hasNextPage}
+            isFetching={level.isFetching}
+            onLoadMore={() => void level.fetchNextPage()}
+          />
+        </li>
+      )}
     </ul>
   );
 }
