@@ -88,8 +88,17 @@ interface PublicPageMetadataInput {
   locale: string;
   title: string;
   description: string;
-  /** Page-specific keywords; the site-wide list is appended automatically. */
-  keywords?: string[];
+  /**
+   * Page-specific keywords as one comma-separated string, straight from
+   * `metadata.<segment>.keywords`; the site-wide list is appended
+   * automatically.
+   *
+   * A string rather than an array because next-intl message values are strings
+   * — an array in the catalogue turns its indices into keys, which would force
+   * `en` and `vi` to list the *same number* of keywords to satisfy
+   * `i18n-parity.spec.ts`. Splitting here keeps the parse in one place.
+   */
+  keywords?: string;
 }
 
 /**
@@ -100,14 +109,23 @@ interface PublicPageMetadataInput {
  * than merging it with the root layout's, so those pages shipped with no social
  * preview image at all — only the homepage and blog posts had one. Centralising
  * it means a new page cannot repeat the mistake.
+ *
+ * Keywords went the same way. Four of the five layouts hardcoded a bilingual
+ * array — `['Bài viết', 'Blogs']` — so an English visitor was served Vietnamese
+ * terms and vice versa. They now come from `metadata.<segment>.keywords`.
  */
 export function buildPublicPageMetadata({
   segment,
   locale,
   title,
   description,
-  keywords = [],
+  keywords = '',
 }: PublicPageMetadataInput): Metadata {
+  const pageKeywords = keywords
+    .split(',')
+    .map((keyword) => keyword.trim())
+    .filter(Boolean);
+
   const url = `${host}/${locale}/${segment}`;
   const fullTitle = `${title} | ${siteConfig.name}`;
   // Each page gets a card titled after itself rather than one generic image,
@@ -119,7 +137,7 @@ export function buildPublicPageMetadata({
   return {
     title,
     description,
-    keywords: [...keywords, ...siteConfig.keywords].map((key) =>
+    keywords: [...pageKeywords, ...siteConfig.keywords].map((key) =>
       key.toLowerCase()
     ),
     alternates: {

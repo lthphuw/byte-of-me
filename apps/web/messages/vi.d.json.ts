@@ -7,23 +7,28 @@ declare const messages: {
     "description": "Nơi lưu giữ đam mê và kinh nghiệm cá nhân — từng byte một.",
     "about": {
       "title": "Về tôi",
-      "description": "Giới thiệu ngắn gọn về bản thân, học vấn và các công nghệ tôi sử dụng."
+      "description": "Giới thiệu ngắn gọn về bản thân, học vấn và các công nghệ tôi sử dụng.",
+      "keywords": "Về tôi, Giới thiệu bản thân, Học vấn, Công nghệ sử dụng, Hồ sơ cá nhân"
     },
     "experience": {
       "title": "Kinh nghiệm",
-      "description": "Các cột mốc và công việc tôi đã từng đảm nhận."
+      "description": "Các cột mốc và công việc tôi đã từng đảm nhận.",
+      "keywords": "Kinh nghiệm, Kinh nghiệm làm việc, Quá trình công tác, Việc làm, Vị trí đã đảm nhận"
     },
     "projects": {
       "title": "Dự án",
-      "description": "Những sản phẩm cá nhân tôi đã xây dựng."
+      "description": "Những sản phẩm cá nhân tôi đã xây dựng.",
+      "keywords": "Dự án, Dự án cá nhân, Sản phẩm đã làm, Mã nguồn mở, Portfolio"
     },
     "contact": {
       "title": "Liên hệ",
-      "description": "Kết nối với tôi để hợp tác."
+      "description": "Kết nối với tôi để hợp tác.",
+      "keywords": "Liên hệ, Kết nối, Thông tin liên lạc, Hợp tác, Email"
     },
     "blogs": {
       "title": "Blog",
-      "description": "Blogs chia sẻ nhỏ về lập trình."
+      "description": "Blogs chia sẻ nhỏ về lập trình.",
+      "keywords": "Blog, Bài viết, Chia sẻ, Hướng dẫn, Lập trình"
     }
   },
   "global": {
@@ -210,7 +215,6 @@ declare const messages: {
     "letsWorkTogether": "Cùng nhau hợp tác",
     "feelFreeToReachOutThroughAnyChannel": "Bạn có thể liên hệ với tôi qua bất kỳ kênh nào",
     "sendMeADirectMessage": "Để lại tin nhắn",
-    "metaKeywords": "Liên hệ, Kết nối, Thông tin liên lạc, Liên lạc, Việc làm, Contact",
     "channels": {
       "title": "Kênh liên hệ",
       "opensInNewTab": "(mở trong tab mới)",
@@ -235,7 +239,11 @@ declare const messages: {
       "successTitle": "Đã gửi tin nhắn",
       "successDescription": "Cảm ơn bạn đã liên hệ — tôi sẽ phản hồi qua địa chỉ email bạn để lại.",
       "errorTitle": "Chưa gửi được tin nhắn",
-      "errorFallback": "Đã có lỗi xảy ra. Vui lòng thử lại."
+      "errors": {
+        "invalid": "Vui lòng kiểm tra lại các trường phía trên rồi thử lại.",
+        "rateLimited": "Bạn đã gửi quá nhiều tin nhắn. Vui lòng thử lại sau ít phút.",
+        "unknown": "Đã có lỗi xảy ra. Vui lòng thử lại."
+      }
     },
     "validation": {
       "nameTooShort": "Tên quá ngắn",

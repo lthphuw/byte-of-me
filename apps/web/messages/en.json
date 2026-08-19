@@ -4,23 +4,28 @@
     "description": "Showcasing passion, experience, and projects — one byte at a time.",
     "about": {
       "title": "About Me",
-      "description": "A journey through my background, education, and technical stack."
+      "description": "A journey through my background, education, and technical stack.",
+      "keywords": "About me, Introduction, Background, Education, Tech stack"
     },
     "experience": {
       "title": "Experience",
-      "description": "A professional timeline of my roles and hands-on contributions."
+      "description": "A professional timeline of my roles and hands-on contributions.",
+      "keywords": "Experience, Work history, Career timeline, Roles, Employment"
     },
     "projects": {
       "title": "Projects",
-      "description": "A collection of my work, from academic builds to real-world solutions."
+      "description": "A collection of my work, from academic builds to real-world solutions.",
+      "keywords": "Projects, Side projects, Portfolio, Case studies, Open source"
     },
     "contact": {
       "title": "Contact",
-      "description": "Let's connect for collaborations or professional inquiries."
+      "description": "Let's connect for collaborations or professional inquiries.",
+      "keywords": "Contact, Get in touch, Collaboration, Hire me, Email"
     },
     "blogs": {
       "title": "Blog",
-      "description": "Insights, tutorials, and reflections on technology and development."
+      "description": "Insights, tutorials, and reflections on technology and development.",
+      "keywords": "Blog, Articles, Writing, Tutorials, Software development"
     }
   },
   "global": {
@@ -207,7 +212,6 @@
     "letsWorkTogether": "Let’s work together",
     "feelFreeToReachOutThroughAnyChannel": "Feel free to reach out through any channel",
     "sendMeADirectMessage": "Send me a direct message",
-    "metaKeywords": "Contact, Get in touch, Collaboration, Hire me, Email",
     "channels": {
       "title": "Channels",
       "opensInNewTab": "(opens in a new tab)",
@@ -232,7 +236,11 @@
       "successTitle": "Message sent",
       "successDescription": "Thanks for reaching out — I’ll reply to the address you gave.",
       "errorTitle": "Message not sent",
-      "errorFallback": "Something went wrong. Please try again."
+      "errors": {
+        "invalid": "Please check the fields above and try again.",
+        "rateLimited": "Too many messages sent. Please try again in a few minutes.",
+        "unknown": "Something went wrong. Please try again."
+      }
     },
     "validation": {
       "nameTooShort": "Name is too short",

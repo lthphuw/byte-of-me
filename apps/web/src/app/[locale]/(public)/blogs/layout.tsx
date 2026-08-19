@@ -16,7 +16,7 @@ export async function generateMetadata({
     locale,
     title: t('title'),
     description: t('description'),
-    keywords: ['Bài viết', 'Blogs'],
+    keywords: t('keywords'),
   });
 }
 
