@@ -153,6 +153,29 @@ export function WorkspaceSettingsDialog({
   const hasRunningJob = useHasRunningBatchJob();
   const [closeWarned, setCloseWarned] = useState(false);
 
+  /**
+   * The flag is dropped the moment the job it was raised for ends.
+   *
+   * Without this it survives its own warning. The banner used to be drawn on
+   * `hasRunningJob && closeWarned` while the close guard consumed
+   * `closeWarned` alone, so a job finishing between the first Escape and the
+   * next paint took the banner off screen and left the flag armed. What that
+   * cost is not the frame nobody saw: it is the NEXT job. Start another one,
+   * press Escape, and the guard reads "already warned" and closes the dialog —
+   * killing a job whose warning was never shown at all. `useBatchJob`'s own
+   * `mountedRef` is hardened against the same shape of staleness, a flag
+   * outliving the run it describes.
+   *
+   * Adjusted during render rather than from an effect, which is what collapses
+   * the two facts into one: React re-runs this component before committing, so
+   * there is no frame in which the banner is absent while the guard is still
+   * armed — the state that hides the banner is the state that disarms the
+   * guard. An effect would leave exactly one such frame, and one keystroke is
+   * all that frame needs to be worth. (Converges in a single pass: the
+   * assignment can only ever run when `closeWarned` is true.)
+   */
+  if (closeWarned && !hasRunningJob) setCloseWarned(false);
+
   const requestOpenChange = (next: boolean) => {
     if (!next && hasRunningJob && !closeWarned) {
       setCloseWarned(true);
@@ -179,7 +202,12 @@ export function WorkspaceSettingsDialog({
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
-        {hasRunningJob && closeWarned && (
+        {/* `closeWarned` alone, and that is the point rather than a
+            tidy-up: it used to be `hasRunningJob && closeWarned` here against
+            `closeWarned` alone in the guard, which is exactly how the two
+            could disagree. The reset above makes the flag mean "warned about
+            the job running RIGHT NOW", so one condition serves both. */}
+        {closeWarned && (
           <div
             role="alert"
             className="flex flex-col gap-2 border-b border-amber-500/40 bg-amber-500/10 px-6 py-3 sm:flex-row sm:items-center sm:justify-between"

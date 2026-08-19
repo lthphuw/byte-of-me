@@ -68,6 +68,19 @@ Object.defineProperty(prisma, '$queryRaw', {
   configurable: true,
 });
 
+/**
+ * Every note this owner has, as `{ id, parentId }` — the owner-scoped read
+ * `deleteNote` now performs BEFORE the write, so it can name the descendants
+ * the cascade is about to take.
+ *
+ * It is also what decides "Note not found": membership in this list. The
+ * `deleteMany` count cannot answer that any more, because the write targets
+ * the whole subtree rather than one row. Kept consistent with the three
+ * descendants `$queryRaw` reports above, so the fake tells one story.
+ */
+let ownedNotes: { id: string; parentId: string | null }[] = [];
+const findMany = mock(() => Promise.resolve(ownedNotes));
+
 let settleDelete: (result: { count: number }) => void = () => {};
 const deleteMany = mock(
   () =>
@@ -76,7 +89,7 @@ const deleteMany = mock(
     })
 );
 Object.defineProperty(prisma, 'note', {
-  value: { deleteMany },
+  value: { findMany, deleteMany },
   writable: true,
   configurable: true,
 });
@@ -129,7 +142,14 @@ const confirmButton = () =>
 
 beforeEach(() => {
   queryRaw.mockClear();
+  findMany.mockClear();
   deleteMany.mockClear();
+  ownedNotes = [
+    { id: 'note-1', parentId: null },
+    { id: 'child-1', parentId: 'note-1' },
+    { id: 'child-2', parentId: 'note-1' },
+    { id: 'grandchild-1', parentId: 'child-1' },
+  ];
 });
 
 afterEach(() => {
@@ -201,18 +221,20 @@ describe('DeleteNoteDialog', () => {
   });
 
   test('stays open and names the failure when the delete does not happen', async () => {
+    // The action's real failure path, and it MOVED: `deleteNote` now reads the
+    // owner's notes before it writes, so that it can report the ids the
+    // cascade takes, and a target missing from that read is how a note that is
+    // gone — or was never this owner's — comes back. `deleteMany`'s count
+    // cannot say it any more; the write covers a whole subtree.
+    ownedNotes = [];
     const { onOpenChange } = renderDialog();
 
     fireEvent.click(confirmButton());
-    await waitFor(() => {
-      expect(deleteMany).toHaveBeenCalledTimes(1);
-    });
-
-    // The action's real failure path: `deleteMany` matching nothing is how a
-    // note that is gone — or was never this owner's — comes back.
-    settleDelete({ count: 0 });
 
     expect(await screen.findByText('Note not found')).toBeTruthy();
+    // Refused before anything was written, which is the other half of "the
+    // delete did not happen".
+    expect(deleteMany).not.toHaveBeenCalled();
     expect(screen.getByRole('alertdialog')).toBeTruthy();
     // Closing here is how a delete that silently did not happen looks
     // identical to one that did.
