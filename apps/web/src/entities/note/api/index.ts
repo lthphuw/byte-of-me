@@ -33,4 +33,5 @@ export * from './restore-note';
 export * from './scan-stale-note-links';
 export * from './search-notes';
 export * from './set-note-labels';
+export * from './strip-note-presentation';
 export * from './update-note';

@@ -2,6 +2,7 @@ export * from './maintenance';
 export * from './note-link-audit';
 export * from './note-links';
 export * from './note-local-store';
+export * from './note-presentation';
 export * from './note-schema';
 export * from './note-tree';
 export * from './query-keys';

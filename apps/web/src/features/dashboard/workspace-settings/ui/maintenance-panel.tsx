@@ -1,13 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import { Button, Progress } from '@byte-of-me/ui';
-import { Loader2 } from 'lucide-react';
+import { Loader2, TriangleAlert } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
   rebuildLinkGraph,
   rebuildSearchIndex,
   scanStaleNoteLinks,
+  stripNotePresentation,
 } from '@/entities/note';
 import {
   type BatchJobState,
@@ -34,12 +36,22 @@ import {
  * stored distinguishes the two. Renaming can fix labels automatically because
  * there the old title is known; a retrospective sweep does not know it, so it
  * lists what it found and stops.
+ *
+ * ## The one job that is not a repair
+ *
+ * `stripNotePresentation` EDITS documents. The other three recompute derived
+ * data or only read, so the worst they can do is write back what was already
+ * there; that one removes marks, and it cannot tell colour the author applied
+ * from colour a paste brought in — after the fact they are the same mark with
+ * the same attribute. It is therefore last on the panel, carries a standing
+ * warning, and asks a second time before it starts.
  */
 export function MaintenancePanel() {
   const t = useTranslations('dashboard.space.settings.maintenance');
 
   const linkGraph = useBatchJob(rebuildLinkGraph);
   const searchIndex = useBatchJob(rebuildSearchIndex);
+  const pastedFormatting = useBatchJob(stripNotePresentation);
   const staleLinks = useBatchJob(scanStaleNoteLinks, {
     collect: (batch) => batch.stale,
   });
@@ -102,6 +114,23 @@ export function MaintenancePanel() {
           count: searchIndex.state.changed,
         })}
       />
+
+      {/* Last, and the only card carrying a warning. It is the one job here
+          that EDITS documents rather than recomputing something derived from
+          them, so it does not belong above two jobs that cannot lose anything —
+          and it asks twice before it starts. */}
+      <JobCard
+        title={t('jobs.pastedFormatting.title')}
+        description={t('jobs.pastedFormatting.description')}
+        warning={t('jobs.pastedFormatting.warning')}
+        state={pastedFormatting.state}
+        onStart={pastedFormatting.start}
+        onCancel={pastedFormatting.cancel}
+        resultLabel={t('jobs.pastedFormatting.result', {
+          count: pastedFormatting.state.changed,
+          examined: pastedFormatting.state.processed,
+        })}
+      />
     </div>
   );
 }
@@ -109,6 +138,7 @@ export function MaintenancePanel() {
 function JobCard<Extra>({
   title,
   description,
+  warning,
   state,
   onStart,
   onCancel,
@@ -117,6 +147,12 @@ function JobCard<Extra>({
 }: {
   title: string;
   description: string;
+  /**
+   * What this job destroys, for a job that destroys something. Shown from the
+   * moment the card renders — never revealed by the click it is warning about —
+   * and its presence is also what makes Run a two-step control below.
+   */
+  warning?: string;
   state: BatchJobState<Extra>;
   onStart: () => void;
   onCancel: () => void;
@@ -125,6 +161,25 @@ function JobCard<Extra>({
 }) {
   const t = useTranslations('dashboard.space.settings.maintenance');
   const isRunning = state.status === 'running';
+
+  /**
+   * A second press, for a job with a warning.
+   *
+   * The same shape the dialog's close guard uses — an inline confirm rather
+   * than a modal, because a modal on top of a modal means two focus traps
+   * arguing over Escape. Jobs without a warning are unaffected: they start on
+   * the first press exactly as they always did.
+   */
+  const [isConfirming, setIsConfirming] = useState(false);
+
+  const handleStart = () => {
+    if (warning && !isConfirming) {
+      setIsConfirming(true);
+      return;
+    }
+    setIsConfirming(false);
+    onStart();
+  };
 
   // Guarded against a zero denominator rather than letting it be NaN: the very
   // first render of a run has `total: 0`, because the count arrives WITH the
@@ -160,12 +215,43 @@ function JobCard<Extra>({
             size="sm"
             variant="secondary"
             className="shrink-0"
-            onClick={onStart}
+            onClick={handleStart}
           >
             {t('run')}
           </Button>
         )}
       </div>
+
+      {/* The icon is not decoration: the palette is achromatic by design
+          (AGENTS §14), so the amber wash cannot be the only thing marking this
+          as a caution. */}
+      {warning && (
+        <p className="mt-3 flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-2.5 text-xs leading-relaxed">
+          <TriangleAlert className="mt-0.5 size-3.5 shrink-0" />
+          {warning}
+        </p>
+      )}
+
+      {isConfirming && !isRunning && (
+        <div className="mt-3 flex flex-wrap justify-end gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            onClick={() => setIsConfirming(false)}
+          >
+            {t('confirmDismiss')}
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={handleStart}
+          >
+            {t('confirmRun')}
+          </Button>
+        </div>
+      )}
 
       {/* The progress region is announced as a unit rather than as a stream of
           numbers: `aria-live="polite"` on a counter that ticks 25 rows at a
