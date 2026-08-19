@@ -464,64 +464,81 @@ export function NoteTreePanel({
             />
           )}
 
-          {/* One DndContext across every LIVE view. */}
-          {!includeArchived && (
-            <ExplorerDnd
-              loadedRows={loadedRows}
-              labels={labels}
-              showRootZone={isTreeView}
-            >
-              {isTreeView && (
-                <NoteTreeList
-                  rootRows={rootRows}
-                  activeId={activeId}
-                  explorer={explorer}
-                  onSelect={onSelect}
-                  hasNextPage={rootLevel.hasNextPage}
-                  isFetching={rootLevel.isFetching}
-                  onLoadMore={() => void rootLevel.fetchNextPage()}
-                  pendingParentIds={pendingParentIds}
-                  renderActions={renderRowActions}
-                  renderContextMenu={renderRowContextMenu}
-                />
-              )}
+          {/* One DndContext across every LIVE view — and it stays mounted for
+            the archived one too, deliberately.
 
-              {/* No row-count gate on either view: each owns its query, so each
+            It owns the drop that is waiting on the author. Dropping a note
+            into a SHARED folder holds the move back and asks first, and the
+            question can only be asked once `getMoveShareExposure` answers.
+            Unmounting this during that round trip took the pending move with
+            it: the confirmation never appeared, `moveNote` was never called,
+            and the author was told nothing — the note simply stayed where it
+            was. Switching to the archive is the one thing on this panel that
+            can happen while a drag has already been released, so it is the
+            one that reached it.
+
+            An idle DndContext with no draggables or droppables under it costs
+            a context provider and the sensor descriptors; that is the whole
+            price of the guarantee. */}
+          <ExplorerDnd
+            loadedRows={loadedRows}
+            labels={labels}
+            showRootZone={isTreeView && !includeArchived}
+          >
+            {!includeArchived && (
+              <>
+                {isTreeView && (
+                  <NoteTreeList
+                    rootRows={rootRows}
+                    activeId={activeId}
+                    explorer={explorer}
+                    onSelect={onSelect}
+                    hasNextPage={rootLevel.hasNextPage}
+                    isFetching={rootLevel.isFetching}
+                    onLoadMore={() => void rootLevel.fetchNextPage()}
+                    pendingParentIds={pendingParentIds}
+                    renderActions={renderRowActions}
+                    renderContextMenu={renderRowContextMenu}
+                  />
+                )}
+
+                {/* No row-count gate on either view: each owns its query, so each
                 knows on its own whether it is loading, failed or genuinely
                 empty. */}
-              {mode === 'flat' && (
-                <NoteFlatList
-                  sort={prefs.sort}
-                  includeArchived={false}
-                  activeId={activeId}
-                  onSelect={onSelect}
-                  onCreate={() => explorer.startDraft(false, null)}
-                  renderActions={renderRowActions}
-                />
-              )}
+                {mode === 'flat' && (
+                  <NoteFlatList
+                    sort={prefs.sort}
+                    includeArchived={false}
+                    activeId={activeId}
+                    onSelect={onSelect}
+                    onCreate={() => explorer.startDraft(false, null)}
+                    renderActions={renderRowActions}
+                  />
+                )}
 
-              {mode === 'grouped' && (
-                <NoteGroupedList
-                  groupBy={prefs.groupBy}
-                  includeArchived={false}
-                  activeId={activeId}
-                  onSelect={onSelect}
-                  onCreate={() => explorer.startDraft(false, null)}
-                  renderActions={renderRowActions}
-                  renderSection={(group, section) => (
-                    <GroupSectionDndShell key={group.key} group={group}>
-                      {section}
-                    </GroupSectionDndShell>
-                  )}
-                  renderRowShell={(group, node, row) => (
-                    <GroupedRowDndShell group={group} node={node}>
-                      {row}
-                    </GroupedRowDndShell>
-                  )}
-                />
-              )}
-            </ExplorerDnd>
-          )}
+                {mode === 'grouped' && (
+                  <NoteGroupedList
+                    groupBy={prefs.groupBy}
+                    includeArchived={false}
+                    activeId={activeId}
+                    onSelect={onSelect}
+                    onCreate={() => explorer.startDraft(false, null)}
+                    renderActions={renderRowActions}
+                    renderSection={(group, section) => (
+                      <GroupSectionDndShell key={group.key} group={group}>
+                        {section}
+                      </GroupSectionDndShell>
+                    )}
+                    renderRowShell={(group, node, row) => (
+                      <GroupedRowDndShell group={group} node={node}>
+                        {row}
+                      </GroupedRowDndShell>
+                    )}
+                  />
+                )}
+              </>
+            )}
+          </ExplorerDnd>
         </ExplorerBlankMenu>
       </div>
 
