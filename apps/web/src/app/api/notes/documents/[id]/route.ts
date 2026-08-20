@@ -1,8 +1,9 @@
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
+import { resolveNoteAccess } from '@/entities/note-share/lib/resolve-note-access';
 import { privateStorage } from '@/shared/api/s3-storage-api';
-import { requireAdmin } from '@/shared/lib/auth';
+import { requireUser } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 
 /**
@@ -21,8 +22,29 @@ import { getErrorMessage } from '@/shared/lib/utils';
  */
 export const runtime = 'nodejs';
 
+/**
+ * What this route will serve, and the extension each type is named with.
+ *
+ * An allowlist rather than a pass-through, because the value on the left is
+ * what the response is LABELLED with — a type this table does not know is
+ * refused rather than guessed at.
+ *
+ * `image/svg+xml` is deliberately absent. An SVG is a document that can carry
+ * script, and this route is same-origin: serving one would hand any object in
+ * the bucket the ability to run on this domain. Nothing uploads them today,
+ * and whoever changes that has to come here and read this first.
+ */
+const SERVABLE_TYPES: Record<string, string> = {
+  'application/pdf': 'pdf',
+  'image/png': 'png',
+  'image/jpeg': 'jpg',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+  'image/avif': 'avif',
+};
+
 /** Used when a title sanitises down to nothing at all (e.g. `"""`). */
-const FALLBACK_FILE_NAME = 'document.pdf';
+const FALLBACK_FILE_NAME = 'document';
 
 /**
  * The display file name for a row, from its user-supplied `title`.
@@ -32,11 +54,13 @@ const FALLBACK_FILE_NAME = 'document.pdf';
  * spaces here, before either encoding below sees them, rather than being
  * relied upon to survive percent-encoding intact.
  *
- * `.pdf` is appended when the title does not already carry it: `title`
- * defaults to the uploaded file's name but is a free-text label, and a reader
- * who saves the file should not get an extensionless blob.
+ * The extension is appended when the title does not already carry it, and it
+ * comes from the row's MIME type rather than from the title: `title` defaults
+ * to the uploaded file's name but is a free-text label, and a reader who saves
+ * the file should not get an extensionless blob — nor a `.pdf` that is really
+ * a PNG.
  */
-function pdfFileName(title: string): string {
+function displayFileName(title: string, extension: string): string {
   const cleaned = title
     // The rule exists to catch a control character typed into a regex by
     // accident; matching them here is the entire point.
@@ -45,8 +69,10 @@ function pdfFileName(title: string): string {
     .replace(/\s+/g, ' ')
     .trim();
 
-  if (!cleaned) return FALLBACK_FILE_NAME;
-  return /\.pdf$/i.test(cleaned) ? cleaned : `${cleaned}.pdf`;
+  if (!cleaned) return `${FALLBACK_FILE_NAME}.${extension}`;
+  return new RegExp(`\\.${extension}$`, 'i').test(cleaned)
+    ? cleaned
+    : `${cleaned}.${extension}`;
 }
 
 /**
@@ -58,7 +84,7 @@ function pdfFileName(title: string): string {
  * where it does not, because a quoted-string is bytes and a UTF-8 title here
  * is read differently by every client. The real name travels in `filename*`.
  */
-function asciiFileName(name: string): string {
+function asciiFileName(name: string, extension: string): string {
   const ascii = name
     .normalize('NFKD')
     // Combining marks left behind by NFKD — the Vietnamese tone and vowel
@@ -75,7 +101,9 @@ function asciiFileName(name: string): string {
   // extension (`"""` → `.pdf`), which reads as a hidden file rather than a
   // document. The real name is still in `filename*`; this is only the
   // fallback, so a generic one is the right answer.
-  if (!ascii || ascii.startsWith('.')) return FALLBACK_FILE_NAME;
+  if (!ascii || ascii.startsWith('.')) {
+    return `${FALLBACK_FILE_NAME}.${extension}`;
+  }
   return ascii;
 }
 
@@ -102,9 +130,12 @@ function encodeRfc5987(name: string): string {
  * security-relevant part of this file after the ownership check, and it is
  * worth pinning directly as well as through a request.
  */
-export function contentDispositionFor(title: string): string {
-  const name = pdfFileName(title);
-  return `inline; filename="${asciiFileName(name)}"; filename*=UTF-8''${encodeRfc5987(name)}`;
+export function contentDispositionFor(
+  title: string,
+  extension = 'pdf'
+): string {
+  const name = displayFileName(title, extension);
+  return `inline; filename="${asciiFileName(name, extension)}"; filename*=UTF-8''${encodeRfc5987(name)}`;
 }
 
 /**
@@ -150,11 +181,13 @@ export async function GET(
   // Next.js 16: dynamic params arrive as a Promise.
   { params }: { params: Promise<{ id: string }> }
 ): Promise<Response> {
-  let ownerId: string;
+  let viewerId: string;
   try {
-    // The security boundary. Everything below assumes an authenticated site
-    // owner; nothing here may run for anyone else.
-    ({ id: ownerId } = await requireAdmin());
+    // `requireUser`, not `requireAdmin`. Attachments are the owner's, but
+    // INLINE images are part of a note's body — and a note can be shared, so
+    // an admin-only guard would render a shared document with every image
+    // broken. Authorisation is the two-step check below, not the role.
+    ({ id: viewerId } = await requireUser());
   } catch {
     return Response.json(
       { success: false, errorMsg: 'Unauthorized' },
@@ -166,13 +199,38 @@ export async function GET(
 
   const document = await prisma.noteDocument.findUnique({
     where: { id },
-    select: { title: true, fileKey: true, ownerId: true },
+    select: {
+      title: true,
+      fileKey: true,
+      ownerId: true,
+      mimeType: true,
+      noteId: true,
+    },
   });
 
-  // Not `where: { id, ownerId }` — read then compare, so the two cases are
+  if (!document) return notFound();
+
+  // Read then compare, rather than `where: { id, ownerId }`, so both cases are
   // visible here and can be shown to answer identically. See `notFound()` for
-  // why a foreign row is a 404 and not a 403.
-  if (!document || document.ownerId !== ownerId) return notFound();
+  // why a row someone else owns is a 404 and not a 403.
+  if (document.ownerId !== viewerId) {
+    // Not the owner — but possibly someone the note is shared with.
+    // `resolveNoteAccess` is the sharing feature's own boundary: it walks from
+    // the note UP to find a grant, so a grant on any ancestor folder counts
+    // and there is no subtree check here to get wrong.
+    const access = await resolveNoteAccess(document.noteId);
+    if (!access) return notFound();
+  }
+
+  // Refused, not guessed at: the response is LABELLED with this value, and a
+  // type the allowlist does not know could be anything.
+  const extension = SERVABLE_TYPES[document.mimeType];
+  if (!extension) {
+    logger.error(
+      `Note document ${id} has unservable mime type ${document.mimeType}`
+    );
+    return notFound();
+  }
 
   let file: Awaited<ReturnType<typeof privateStorage.getFile>>;
   try {
@@ -196,13 +254,14 @@ export async function GET(
   }
 
   const headers = new Headers({
-    // Hardcoded, never echoed from S3. `ContentType` there is whatever was
-    // written at upload time; trusting it would let an object stored as
-    // `text/html` execute as a same-origin script on this domain.
-    'Content-Type': 'application/pdf',
+    // From OUR row, through the allowlist above — never echoed from S3.
+    // `ContentType` there is whatever was written at upload time; trusting it
+    // would let an object stored as `text/html` execute as a same-origin
+    // script on this domain.
+    'Content-Type': document.mimeType,
     // Closes the sniffing path the hardcoded type leaves open.
     'X-Content-Type-Options': 'nosniff',
-    'Content-Disposition': contentDispositionFor(document.title),
+    'Content-Disposition': contentDispositionFor(document.title, extension),
     // `private`, so no shared cache ever holds an owner-only file. The object
     // is immutable — a re-upload writes a new row with a new key — so the
     // only thing that can go stale at this URL is a deleted attachment, and

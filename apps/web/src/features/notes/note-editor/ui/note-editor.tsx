@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Button,
   Tooltip,
@@ -19,8 +19,8 @@ import { ChevronLeft, CircleHelp, Sparkles } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { createScopedImageUploader } from '@/entities/media';
 import { parseNoteHref } from '@/entities/note';
+import { uploadNoteImage } from '@/entities/note-document';
 import { useWorkspaceSettings } from '@/entities/workspace-settings';
 import { useNoteEditorAutosave } from '@/features/notes/note-editor/lib/use-note-editor-autosave';
 import { NoteEditorSkeleton } from '@/features/notes/note-editor/ui/note-editor-skeleton';
@@ -28,10 +28,6 @@ import { NoteExportMenu } from '@/features/notes/note-editor/ui/note-export-menu
 import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import { LazyRichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
-
-/** Images pasted into this editor land under the `note` prefix in storage. */
-const uploadImage = createScopedImageUploader('note');
-
 
 export interface NoteEditorProps {
   noteId: string;
@@ -100,6 +96,35 @@ export function NoteEditor({
   // menu treats both as "not ready" rather than crashing.
   const editorApiRef = useRef<RichTextEditorApi | null>(null);
   const { settings } = useWorkspaceSettings();
+
+  /**
+   * Where a pasted or dropped image goes, and it is per-NOTE — which is why
+   * this cannot be the module constant it used to be.
+   *
+   * It used to be `createScopedImageUploader('note')`, which writes to the
+   * media library's PUBLIC bucket and returns a public URL. Measured: a `GET`
+   * of one of those objects with no credentials answers 200. Every screenshot
+   * ever pasted into a private note was readable by anyone holding its URL.
+   * Now the bytes go to the private bucket as an INLINE `NoteDocument` and
+   * what lands in the document is an app route, which checks the session.
+   *
+   * Throwing is the contract `ImageUploadFn` expects; the editor turns the
+   * message into a toast naming the file.
+   */
+  const uploadImage = useCallback(
+    async (file: File) => {
+      const body = new FormData();
+      body.append('file', file);
+
+      const res = await uploadNoteImage(noteId, body);
+      if (!res?.success || !res.data) {
+        throw new Error(res?.errorMsg || 'Upload failed');
+      }
+
+      return res.data;
+    },
+    [noteId]
+  );
   /**
    * The title as it stood the last time anyone was told about it — the note's
    * name on open, and then whatever the previous blur reported.

@@ -10,10 +10,15 @@ import { generateFriendlyId } from '@/shared/lib/friendly-id';
  * here and unescaped in every consumer, and the display name already lives in
  * `NoteDocument.title` where renaming it costs nothing.
  *
- * The extension is fixed rather than derived from the MIME type, because
- * `findDocumentViolation` has already refused everything that is not
- * `application/pdf` by the time this is called.
+ * The extension is passed in rather than derived here, because the caller has
+ * already validated the MIME type against its own allowlist and is the only
+ * one that knows which — attachments accept `application/pdf` and nothing
+ * else, inline images accept a handful of raster types.
  */
-export function noteDocumentFileKey(ownerId: string, noteId: string): string {
-  return `users/${ownerId}/notes/${noteId}/${generateFriendlyId()}.pdf`;
+export function noteDocumentFileKey(
+  ownerId: string,
+  noteId: string,
+  extension = 'pdf'
+): string {
+  return `users/${ownerId}/notes/${noteId}/${generateFriendlyId()}.${extension}`;
 }

@@ -117,3 +117,69 @@ export function documentFilesFrom(
 
   return Array.from(files).filter((file) => isAcceptedDocument(file.type));
 }
+
+/**
+ * What may be pasted or dropped INTO a note's body.
+ *
+ * A separate list from the attachment one, and separate from
+ * `entities/media`'s `ACCEPTED_IMAGE_MIME_TYPES`, because the three answer
+ * different questions. The media list is what may go in the public library —
+ * it includes `image/svg+xml`, which is fine for a blog cover served from a
+ * CDN and NOT fine here: an inline note image is served same-origin by
+ * `/api/notes/documents/[id]`, and an SVG is a document that can carry script.
+ * That route's own allowlist refuses SVG too; this is the same rule stated at
+ * the door instead of at the exit.
+ */
+export const ACCEPTED_INLINE_IMAGE_MIME_TYPES = [
+  'image/png',
+  'image/jpeg',
+  'image/webp',
+  'image/gif',
+  'image/avif',
+] as const;
+
+/**
+ * The same 5 MB as an attachment.
+ *
+ * The media library's ceiling is 3 MB, and matching it was tempting. But the
+ * limit that matters is `bodySizeLimit`, which both paths share, and an author
+ * pasting a screenshot has no way to tell which of two limits applies to what
+ * they just pasted. One number for everything a note can hold.
+ */
+export const MAX_INLINE_IMAGE_SIZE_MB = MAX_DOCUMENT_SIZE_MB;
+export const MAX_INLINE_IMAGE_SIZE_BYTES = MAX_DOCUMENT_SIZE_BYTES;
+
+export function isAcceptedInlineImage(mimeType: string): boolean {
+  return (ACCEPTED_INLINE_IMAGE_MIME_TYPES as readonly string[]).includes(
+    mimeType
+  );
+}
+
+/** The first thing wrong with `file`, or `null` if it may be pasted in. */
+export function findInlineImageViolation(
+  file: File
+): DocumentValidationError | null {
+  if (!isAcceptedInlineImage(file.type)) {
+    return { kind: 'type', fileName: file.name };
+  }
+  if (file.size > MAX_INLINE_IMAGE_SIZE_BYTES) {
+    return {
+      kind: 'size',
+      fileName: file.name,
+      maxSizeMb: MAX_INLINE_IMAGE_SIZE_MB,
+    };
+  }
+  return null;
+}
+
+/**
+ * The storage-key extension for an accepted inline image.
+ *
+ * From the MIME type, never from the file name: the editor's own auto-upload
+ * builds its File as `new File([blob], 'image')` with no extension at all —
+ * `entities/media` records that trap, and this path inherits it.
+ */
+export function inlineImageExtension(mimeType: string): string {
+  if (mimeType === 'image/jpeg') return 'jpg';
+  return mimeType.split('/')[1] ?? 'bin';
+}

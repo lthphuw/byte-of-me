@@ -40,6 +40,17 @@ Object.defineProperty(prisma, 'noteDocument', {
   configurable: true,
 });
 
+// `resolveNoteAccess` is not stubbed — it IS the sharing boundary, and a test
+// that replaces it would prove nothing about whether this route consults it.
+// Its raw CTE is stubbed instead, so the real function runs and the fixture
+// decides only whether a grant exists.
+const queryRaw = mock();
+Object.defineProperty(prisma, '$queryRaw', {
+  value: queryRaw,
+  writable: true,
+  configurable: true,
+});
+
 // `privateStorage` is a `Storage` instance; an own property shadows the
 // prototype method the route calls. No S3 client is ever reached.
 const getFile = mock();
@@ -54,6 +65,8 @@ const OWNED_ROW = {
   title: 'report',
   fileKey: 'users/admin-1/notes/note-1/abc.pdf',
   ownerId: 'admin-1',
+  mimeType: 'application/pdf',
+  noteId: 'note-1',
 };
 
 const streamOf = (text: string) =>
@@ -101,6 +114,8 @@ describe('GET /api/notes/documents/[id]', () => {
   beforeEach(() => {
     resetTestUser();
     findUnique.mockReset().mockResolvedValue(OWNED_ROW);
+    // No grant, unless a test says otherwise.
+    queryRaw.mockReset().mockResolvedValue([]);
     getFile.mockReset().mockResolvedValue({
       body: streamOf('%PDF-1.7'),
       // Deliberately wrong, and deliberately ignored — see the 200 test.
@@ -120,13 +135,58 @@ describe('GET /api/notes/documents/[id]', () => {
     expect(findUnique).not.toHaveBeenCalled();
   });
 
-  it('refuses a signed-in caller who is not the site owner', async () => {
+  it('answers 404 for a signed-in stranger with no grant on the note', async () => {
     setTestUser({ id: 'user-2', role: 'USER', email: 'someone@else.test' });
 
     const res = await invoke();
 
-    expect(res.status).toBe(401);
-    expect(findUnique).not.toHaveBeenCalled();
+    expect(res.status).toBe(404);
+    // The grant was actually looked for, rather than the request being refused
+    // on the role alone — that is the whole difference from `requireAdmin`.
+    expect(queryRaw).toHaveBeenCalled();
+    expect(getFile).not.toHaveBeenCalled();
+  });
+
+  // The reason this route is `requireUser` and not `requireAdmin`: an INLINE
+  // image belongs to a note's body, and a shared note whose images all 404 is
+  // a broken share.
+  it('serves a stranger who holds a grant on the note', async () => {
+    setTestUser({ id: 'user-2', role: 'USER', email: 'reader@else.test' });
+    queryRaw.mockResolvedValue([
+      { root_id: 'note-1', owner_id: 'admin-1', depth: 0, role: 'VIEWER' },
+    ]);
+
+    const res = await invoke();
+
+    expect(res.status).toBe(200);
+    expect(getFile).toHaveBeenCalledWith('users/admin-1/notes/note-1/abc.pdf');
+  });
+
+  it('refuses a mime type the allowlist does not carry, rather than guessing', async () => {
+    // `image/svg+xml` is the case that matters: same-origin SVG can carry
+    // script, so it is absent from the table on purpose.
+    findUnique.mockResolvedValue({ ...OWNED_ROW, mimeType: 'image/svg+xml' });
+
+    const res = await invoke();
+
+    expect(res.status).toBe(404);
+    expect(getFile).not.toHaveBeenCalled();
+  });
+
+  it('labels an inline image with its own type and extension', async () => {
+    findUnique.mockResolvedValue({
+      ...OWNED_ROW,
+      title: 'screenshot',
+      mimeType: 'image/png',
+      fileKey: 'users/admin-1/notes/note-1/abc.png',
+    });
+
+    const res = await invoke();
+
+    expect(res.headers.get('Content-Type')).toBe('image/png');
+    expect(asciiFallback(res.headers.get('Content-Disposition') ?? '')).toBe(
+      'screenshot.png'
+    );
   });
 
   // The core disclosure rule. 403 here would confirm that this id names a
