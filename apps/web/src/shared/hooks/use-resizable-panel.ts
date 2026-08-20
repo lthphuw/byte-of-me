@@ -18,6 +18,16 @@ export interface UseResizablePanelParams {
   max: number;
   /** Width before the user has ever dragged, and the double-click reset target. */
   defaultWidth: number;
+  /**
+   * Which edge of the layout the panel is anchored to.
+   *
+   * `'start'` (the default) is a left panel: dragging its separator right
+   * makes it wider. `'end'` is a right panel, where the same gesture makes it
+   * NARROWER — the separator is on its other side. Without this the viewer
+   * pane grew when you pushed the handle into it, which reads as the panel
+   * fighting the pointer.
+   */
+  edge?: 'start' | 'end';
 }
 
 /**
@@ -85,7 +95,12 @@ export function useResizablePanel({
   min,
   max,
   defaultWidth,
+  edge = 'start',
 }: UseResizablePanelParams): ResizablePanel {
+  // +1 for a left panel, -1 for a right one. Applied to the pointer delta and
+  // to the arrow keys alike, so "left arrow narrows what is on the left and
+  // widens what is on the right" — the direction the eye expects in both.
+  const direction = edge === 'end' ? -1 : 1;
   const clampWidth = useCallback(
     (value: number) => Math.min(Math.max(value, min), max),
     [min, max]
@@ -207,9 +222,15 @@ export function useResizablePanel({
       const current = drag.current;
       if (!current || current.pointerId !== event.pointerId) return;
 
-      write({ width: current.startWidth + (event.clientX - current.startX) }, false);
+      write(
+        {
+          width:
+            current.startWidth + direction * (event.clientX - current.startX),
+        },
+        false
+      );
     },
-    [write]
+    [write, direction]
   );
 
   const endDrag = useCallback(
@@ -240,10 +261,10 @@ export function useResizablePanel({
       let next: number;
       switch (event.key) {
         case 'ArrowLeft':
-          next = stateRef.current.width - RESIZE_KEYBOARD_STEP;
+          next = stateRef.current.width - direction * RESIZE_KEYBOARD_STEP;
           break;
         case 'ArrowRight':
-          next = stateRef.current.width + RESIZE_KEYBOARD_STEP;
+          next = stateRef.current.width + direction * RESIZE_KEYBOARD_STEP;
           break;
         case 'Home':
           next = min;
@@ -259,7 +280,7 @@ export function useResizablePanel({
       event.preventDefault();
       write({ width: next }, true);
     },
-    [write, min, max]
+    [write, min, max, direction]
   );
 
   const onDoubleClick = useCallback(() => {

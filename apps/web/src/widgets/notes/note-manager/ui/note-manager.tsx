@@ -4,6 +4,9 @@ import type { CSSProperties } from 'react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
   Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   Sheet,
   SheetContent,
   SheetTitle,
@@ -16,17 +19,18 @@ import { NoteEditorActions } from './note-editor-actions';
 import { NoteSidebarTabs } from './note-sidebar-tabs';
 import { NoteTreePanel } from './note-tree-panel';
 
-import {
-  NOTE_HREF_PREFIX,
-  noteHref,
-  type NoteTreeNode,
-} from '@/entities/note';
+import { NOTE_HREF_PREFIX, noteHref, type NoteTreeNode } from '@/entities/note';
+import { useNoteDocuments } from '@/entities/note-document';
 import {
   NoteActionsMenu,
   NoteRowContextMenu,
   useCreateNote,
   useRelabelInboundLinks,
 } from '@/features/notes/note-actions';
+import {
+  AttachmentDropZone,
+  NoteDocumentViewer,
+} from '@/features/notes/note-attachments';
 import {
   MarkdownCheatSheetDialog,
   NoteBreadcrumb,
@@ -95,7 +99,10 @@ export interface NoteManagerProps {
  * only what spans them — which note is open, how wide the explorer is, and the
  * two overlays (search palette, cheat sheet) either pane can ask for.
  */
-export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) {
+export function NoteManager({
+  noteId: routeNoteId,
+  navSlot,
+}: NoteManagerProps) {
   const t = useTranslations('dashboard.note');
   const router = useRouter();
 
@@ -123,6 +130,21 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [cheatSheetOpen, setCheatSheetOpen] = useState(false);
+  /**
+   * The attachment being read, or null. Owned here rather than in the Files
+   * panel because the reader is a COLUMN at `lg+` and a dialog below it —
+   * neither of which the panel can mount without knowing the layout.
+   *
+   * Cleared when the note changes, in render like `openNoteId` above: an
+   * effect would paint one frame of the previous note's PDF beside the new
+   * note's text.
+   */
+  const [openDocumentId, setOpenDocumentId] = useState<string | null>(null);
+  const lastDocumentNoteId = useRef(openNoteId);
+  if (lastDocumentNoteId.current !== openNoteId) {
+    lastDocumentNoteId.current = openNoteId;
+    setOpenDocumentId(null);
+  }
   const [showArchived, setShowArchived] = useState(false);
   const [linksOpen, setLinksOpen] = useState(false);
   /**
@@ -179,6 +201,41 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
     max: 480,
     defaultWidth: 256,
   });
+
+  /**
+   * The reader's share of the editor column. `edge: 'end'` because it is
+   * anchored on the RIGHT — its separator is on its left, so dragging right
+   * has to narrow it.
+   *
+   * 320 is the floor for both halves: below that a PDF page is unreadable and
+   * a line of prose is a column of syllables.
+   */
+  const viewerPane = useResizablePanel({
+    storageKey: 'byte-of-me:notes-viewer',
+    min: 320,
+    max: 900,
+    defaultWidth: 480,
+    edge: 'end',
+  });
+
+  /**
+   * Read here as well as in the Files panel so the reader can step between
+   * attachments with nothing but itself on screen — below `lg` the panel is
+   * not mounted at all. TanStack serves both from one cache entry.
+   */
+  const { data: documents } = useNoteDocuments(openNoteId);
+  const openDocument =
+    openDocumentId && documents?.some((d) => d.id === openDocumentId)
+      ? openDocumentId
+      : null;
+
+  /**
+   * Below `lg` the reader is a dialog rather than a column, and it is MOUNTED
+   * conditionally rather than hidden by CSS: a dialog that is merely
+   * `lg:hidden` still holds the scroll lock and the focus trap, which is the
+   * bug the links sheet above already documents.
+   */
+  const isViewerColumnVisible = useMediaQuery('(min-width: 1024px)');
 
   const { setCollapsed, isCollapsed } = sidebar;
   useWorkspaceShortcuts({
@@ -339,12 +396,21 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
       {/* The drag handle, between the two panes. Desktop only: below `md` the
           panes are two screens and there is no boundary to drag. Its own
           element rather than a border on the aside, because a 1px border is not
-          a pointer target — this is 4px wide and lights up on hover. */}
+          a pointer target — this is 4px wide and lights up on hover.
+
+          4px is a target for a mouse and for nothing else, so the `::after`
+          widens what can be GRABBED without widening what is DRAWN: ±8px for a
+          pointer, ±20px on a coarse one, which is the 44px an iPad in landscape
+          needs. `pointer: coarse` rather than a breakpoint, because the
+          question is what is doing the pointing, not how wide the screen is —
+          a 1280px tablet and a 1280px laptop want different answers here.
+          Hovering the pseudo-element still lights the strip, so the wider
+          target announces itself. */}
       {!sidebar.isCollapsed && (
         <div
           {...sidebar.separatorProps}
           aria-label={t('explorer.resizeAriaLabel')}
-          className="hidden w-1 shrink-0 cursor-col-resize bg-transparent transition-colors hover:bg-primary/40 focus-visible:bg-primary/60 focus-visible:outline-none md:block"
+          className="relative z-10 hidden w-1 shrink-0 cursor-col-resize bg-transparent transition-colors after:absolute after:inset-y-0 after:-left-2 after:-right-2 after:content-[''] hover:bg-primary/40 focus-visible:bg-primary/60 focus-visible:outline-none md:block [@media(pointer:coarse)]:after:-left-5 [@media(pointer:coarse)]:after:-right-5"
         />
       )}
 
@@ -368,62 +434,98 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
 
       <main
         className={cn(
-          'flex min-h-0 min-w-0 flex-1 flex-col bg-background md:flex',
+          'flex min-h-0 min-w-0 flex-1 bg-background md:flex',
           !openNoteId && 'hidden'
         )}
       >
         {openNoteId ? (
-          <NoteEditor
-            key={openNoteId}
+          <AttachmentDropZone
             noteId={openNoteId}
-            backHref={NOTES_BASE_PATH}
-            onOpenNote={openNote}
-            propertiesSlot={<NotePropertiesPanel noteId={openNoteId} />}
-            breadcrumbSlot={
-              <NoteBreadcrumb
-                noteId={openNoteId}
-                onOpenFolder={setRevealFolderId}
-              />
-            }
-            onOpenCheatSheet={() => setCheatSheetOpen(true)}
-            onOutlineChange={outlineStore.set}
-            // Renaming from the editor's title field, rather than from a tree
-            // row. Wired HERE because `note-actions` and `note-editor` are
-            // sibling features, the same reason `propertiesSlot` and `actions`
-            // above are passed in rather than imported — the widget is the
-            // layer allowed to know about both.
-            onTitleCommitted={(previousTitle, nextTitle) =>
-              relabelInboundLinks(openNoteId, previousTitle, nextTitle)
-            }
-            // `setState(() => fn)`, not `setState(fn)`: React treats a bare
-            // function argument as an updater and would call it immediately
-            // with the previous state — storing a callback needs the wrapper.
-            onLinkTrigger={(insert) => setInsertLink(() => insert)}
-            actions={
-              <>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  aria-label={t('links.open')}
-                  className="size-7 shrink-0 lg:hidden"
-                  onClick={() => setLinksOpen(true)}
-                >
-                  <Network className="size-4" />
-                </Button>
-
-                <NoteEditorActions
+            className="flex min-h-0 min-w-0 flex-1 flex-col"
+          >
+            <NoteEditor
+              key={openNoteId}
+              noteId={openNoteId}
+              backHref={NOTES_BASE_PATH}
+              onOpenNote={openNote}
+              propertiesSlot={<NotePropertiesPanel noteId={openNoteId} />}
+              breadcrumbSlot={
+                <NoteBreadcrumb
                   noteId={openNoteId}
-                  onCreatedInside={openNote}
-                  onRemoved={closeNote}
+                  onOpenFolder={setRevealFolderId}
                 />
-              </>
-            }
-          />
+              }
+              onOpenCheatSheet={() => setCheatSheetOpen(true)}
+              onOutlineChange={outlineStore.set}
+              // Renaming from the editor's title field, rather than from a tree
+              // row. Wired HERE because `note-actions` and `note-editor` are
+              // sibling features, the same reason `propertiesSlot` and `actions`
+              // above are passed in rather than imported — the widget is the
+              // layer allowed to know about both.
+              onTitleCommitted={(previousTitle, nextTitle) =>
+                relabelInboundLinks(openNoteId, previousTitle, nextTitle)
+              }
+              // `setState(() => fn)`, not `setState(fn)`: React treats a bare
+              // function argument as an updater and would call it immediately
+              // with the previous state — storing a callback needs the wrapper.
+              onLinkTrigger={(insert) => setInsertLink(() => insert)}
+              actions={
+                <>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label={t('links.open')}
+                    className="size-7 shrink-0 lg:hidden"
+                    onClick={() => setLinksOpen(true)}
+                  >
+                    <Network className="size-4" />
+                  </Button>
+
+                  <NoteEditorActions
+                    noteId={openNoteId}
+                    onCreatedInside={openNote}
+                    onRemoved={closeNote}
+                  />
+                </>
+              }
+            />
+          </AttachmentDropZone>
         ) : (
-          <div className="flex h-full items-center justify-center p-6 text-sm text-muted-foreground">
+          <div className="flex h-full flex-1 items-center justify-center p-6 text-sm text-muted-foreground">
             {t('emptySelection')}
           </div>
+        )}
+
+        {/* The reader, as a column. Only from `lg` up: at 1024 the tree and
+            this leave 382px a side, which is tight but readable; below it
+            there is nothing left to split and the dialog takes over. The
+            Files aside gives up its 288px for this until `2xl`, where all
+            four columns finally fit — see the aside below. */}
+        {openNoteId && openDocument && (
+          <>
+            <div
+              {...viewerPane.separatorProps}
+              aria-label={t('attachments.resizeAriaLabel')}
+              className="relative z-10 hidden w-1 shrink-0 cursor-col-resize bg-transparent transition-colors after:absolute after:inset-y-0 after:-left-2 after:-right-2 after:content-[''] hover:bg-primary/40 focus-visible:bg-primary/60 focus-visible:outline-none lg:block [@media(pointer:coarse)]:after:-left-5 [@media(pointer:coarse)]:after:-right-5"
+            />
+            <aside
+              style={
+                {
+                  '--notes-viewer-w': `${viewerPane.width}px`,
+                } as CSSProperties
+              }
+              className="hidden min-h-0 shrink-0 bg-background lg:flex lg:w-[var(--notes-viewer-w)]"
+            >
+              <NoteDocumentViewer
+                documents={documents ?? []}
+                activeId={openDocument}
+                onSelect={setOpenDocumentId}
+                onClose={() => setOpenDocumentId(null)}
+                className="min-h-0 flex-1"
+              />
+            </aside>
+          </>
         )}
       </main>
 
@@ -432,16 +534,31 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
           from the editor header, because a third column at that width leaves
           nothing for the text. */}
       {openNoteId && (
-        <aside className="hidden w-72 shrink-0 border-l bg-background lg:flex lg:flex-col">
+        <aside
+          className={cn(
+            'hidden w-72 shrink-0 border-l bg-background',
+            // Four columns do not fit under `2xl`. With the reader open at
+            // 1024 this would leave the editor and the PDF 238px each, so the
+            // panel that was just used to OPEN the file stands down until
+            // there is room for both. The reader's own header carries the
+            // step-between-attachments controls in the meantime.
+            openDocument ? '2xl:flex 2xl:flex-col' : 'lg:flex lg:flex-col'
+          )}
+        >
           <OutlineSidebarTabs
             store={outlineStore}
             noteId={openNoteId}
             onOpen={openNote}
+            activeDocumentId={openDocument}
+            onOpenDocument={setOpenDocumentId}
           />
         </aside>
       )}
 
-      <Sheet open={linksOpen && openNoteId !== null} onOpenChange={setLinksOpen}>
+      <Sheet
+        open={linksOpen && openNoteId !== null}
+        onOpenChange={setLinksOpen}
+      >
         <SheetContent side="right" className="w-80 p-0 lg:hidden">
           <SheetTitle className="border-b px-3 py-3 text-sm font-semibold">
             {t('sidebar.title')}
@@ -451,6 +568,13 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
               store={outlineStore}
               noteId={openNoteId}
               onOpen={openNote}
+              activeDocumentId={openDocument}
+              onOpenDocument={(documentId) => {
+                // The sheet and the reader are both full-screen below `lg`;
+                // leaving the sheet open would put the PDF behind a scrim.
+                setLinksOpen(false);
+                setOpenDocumentId(documentId);
+              }}
             />
           )}
         </SheetContent>
@@ -493,6 +617,35 @@ export function NoteManager({ noteId: routeNoteId, navSlot }: NoteManagerProps) 
         }}
       />
 
+      {/* The reader, below `lg`: a dialog filling the screen. Mounted only
+          when the column is not available, because a dialog hidden with CSS
+          keeps its scroll lock and its focus trap — the same trap the links
+          sheet above records. `hideClose` because the viewer draws its own
+          toolbar; two X buttons an inch apart is a puzzle, not a choice. */}
+      <Dialog
+        open={!isViewerColumnVisible && openDocument !== null}
+        onOpenChange={(next) => !next && setOpenDocumentId(null)}
+      >
+        <DialogContent
+          hideClose
+          aria-describedby={undefined}
+          className="left-0 top-0 grid h-[100dvh] max-h-none w-screen max-w-none translate-x-0 translate-y-0 gap-0 rounded-none border-0 p-0"
+        >
+          <DialogTitle className="sr-only">
+            {t('attachments.title')}
+          </DialogTitle>
+          {openDocument && (
+            <NoteDocumentViewer
+              documents={documents ?? []}
+              activeId={openDocument}
+              onSelect={setOpenDocumentId}
+              onClose={() => setOpenDocumentId(null)}
+              className="min-h-0"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
       <MarkdownCheatSheetDialog
         open={cheatSheetOpen}
         onOpenChange={setCheatSheetOpen}
@@ -510,12 +663,24 @@ function OutlineSidebarTabs({
   store,
   noteId,
   onOpen,
+  activeDocumentId,
+  onOpenDocument,
 }: {
   store: NoteOutlineStore;
   noteId: string;
   onOpen: (id: string) => void;
+  activeDocumentId: string | null;
+  onOpenDocument: (documentId: string) => void;
 }) {
   const outline = useNoteOutline(store);
 
-  return <NoteSidebarTabs outline={outline} noteId={noteId} onOpen={onOpen} />;
+  return (
+    <NoteSidebarTabs
+      outline={outline}
+      noteId={noteId}
+      onOpen={onOpen}
+      activeDocumentId={activeDocumentId}
+      onOpenDocument={onOpenDocument}
+    />
+  );
 }

@@ -160,9 +160,14 @@ export function NavDrawer({
           variant="ghost"
           size="icon"
           aria-label={triggerLabel}
-          // `size-11` overrides the variant's own `h-9 w-9`: this is the one
-          // control that opens navigation on a phone, and it measured 36px.
-          className={cn('size-11 shrink-0', className)}
+          // `min-h-11 min-w-11`, NOT `size-11`. This is the one control that
+          // opens navigation on a phone and it measured 36px, but `size-11`
+          // did not fix it and the comment here used to claim it had:
+          // `tailwind-merge@1.14` has no rule for `size-*`, so it cannot
+          // cancel the variant's `h-9 w-9` and emits all three — and in the
+          // built stylesheet `.h-9` and `.w-9` are declared AFTER `.size-11`,
+          // so at equal specificity they win. `min-*` has no such contest.
+          className={cn('min-h-11 min-w-11 shrink-0', className)}
         >
           <Menu className="size-5" />
         </Button>

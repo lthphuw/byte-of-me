@@ -87,6 +87,45 @@ describe('useResizablePanel', () => {
     expect(separator.getAttribute('aria-valuenow')).toBe(String(DEFAULT_WIDTH + 60));
   });
 
+  describe("edge: 'end'", () => {
+    it('narrows when the pointer moves right, because the panel is on the right', () => {
+      const { separator, panel } = setup({ edge: 'end' });
+
+      drag(separator, 400, 460);
+
+      // The default direction would make this 300. A right-anchored panel
+      // whose separator is pushed INTO it must shrink, or the panel reads as
+      // fighting the pointer.
+      expect(panel().width).toBe(DEFAULT_WIDTH - 60);
+    });
+
+    it('widens when the pointer moves left', () => {
+      const { separator, panel } = setup({ edge: 'end' });
+
+      drag(separator, 400, 360);
+
+      expect(panel().width).toBe(DEFAULT_WIDTH + 40);
+    });
+
+    it('flips the arrow keys too, so both panels answer the same gesture', () => {
+      const { separator, panel } = setup({ edge: 'end' });
+
+      press(separator, 'ArrowLeft');
+
+      expect(panel().width).toBe(DEFAULT_WIDTH + 16);
+    });
+
+    it('leaves Home and End meaning the bounds, not the direction', () => {
+      const { separator, panel } = setup({ edge: 'end' });
+
+      press(separator, 'End');
+      expect(panel().width).toBe(MAX);
+
+      press(separator, 'Home');
+      expect(panel().width).toBe(MIN);
+    });
+  });
+
   it('clamps a drag at both ends', () => {
     const { separator, panel } = setup();
 
