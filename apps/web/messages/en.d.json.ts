@@ -765,6 +765,7 @@ declare const messages: {
         "title": "Note panel",
         "toc": "Contents",
         "links": "Links",
+        "files": "Files",
         "tocEmpty": "Headings you add will show up here."
       },
       "explorer": {
@@ -861,10 +862,40 @@ declare const messages: {
         "pickerEmpty": "No notes match.",
         "pickerCreate": "Create note “{title}”"
       },
+      "attachments": {
+        "title": "Files",
+        "empty": "No files yet.",
+        "dropHint": "Drop a PDF here to attach it.",
+        "dropActive": "Drop to attach",
+        "choose": "Add a PDF",
+        "uploading": "Uploading…",
+        "open": "Open",
+        "openNewTab": "Open in a new tab",
+        "download": "Download",
+        "delete": "Remove",
+        "deleteConfirm": "Remove for good",
+        "deleteConfirmCancel": "Cancel",
+        "close": "Close file",
+        "prev": "Previous file",
+        "next": "Next file",
+        "viewerFallback": "Your browser can't show this PDF here. Open it in a new tab instead.",
+        "count": "{count, plural, =0 {No files} one {# file} other {# files}}",
+        "sizeLabel": "{size} MB",
+        "errors": {
+          "type": "{fileName} is not a PDF.",
+          "size": "{fileName} exceeds {maxSizeMb, number}MB.",
+          "upload": "Could not attach the file.",
+          "load": "Could not load the files."
+        },
+        "resizeAriaLabel": "Resize the reader"
+      },
       "toasts": {
         "archived": "Moved to archive",
         "restored": "Note restored",
-        "deleted": "Note deleted"
+        "deleted": "Note deleted",
+        "attachmentAdded": "File attached",
+        "attachmentRemoved": "File removed",
+        "attachmentIgnored": "{fileName} was not attached — only PDFs can be."
       },
       "empty": {
         "title": "No notes yet."

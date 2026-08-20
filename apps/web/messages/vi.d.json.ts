@@ -765,6 +765,7 @@ declare const messages: {
         "title": "Bảng ghi chú",
         "toc": "Mục lục",
         "links": "Liên kết",
+        "files": "Tệp",
         "tocEmpty": "Các tiêu đề bạn thêm sẽ hiện ở đây."
       },
       "explorer": {
@@ -861,10 +862,40 @@ declare const messages: {
         "pickerEmpty": "Không có ghi chú nào khớp.",
         "pickerCreate": "Tạo ghi chú “{title}”"
       },
+      "attachments": {
+        "title": "Tệp",
+        "empty": "Chưa có tệp nào.",
+        "dropHint": "Kéo tệp PDF vào đây để đính kèm.",
+        "dropActive": "Thả ra để đính kèm",
+        "choose": "Thêm tệp PDF",
+        "uploading": "Đang tải lên…",
+        "open": "Mở",
+        "openNewTab": "Mở trong tab mới",
+        "download": "Tải xuống",
+        "delete": "Xóa",
+        "deleteConfirm": "Xóa hẳn",
+        "deleteConfirmCancel": "Hủy",
+        "close": "Đóng tệp",
+        "prev": "Tệp trước",
+        "next": "Tệp sau",
+        "viewerFallback": "Trình duyệt không mở được PDF này ở đây. Bạn hãy mở trong tab mới.",
+        "count": "{count, plural, =0 {Chưa có tệp nào} other {# tệp}}",
+        "sizeLabel": "{size} MB",
+        "errors": {
+          "type": "{fileName} không phải tệp PDF.",
+          "size": "{fileName} vượt quá {maxSizeMb, number}MB.",
+          "upload": "Không đính kèm được tệp.",
+          "load": "Không tải được danh sách tệp."
+        },
+        "resizeAriaLabel": "Kéo để đổi độ rộng khung đọc"
+      },
       "toasts": {
         "archived": "Đã chuyển vào lưu trữ",
         "restored": "Đã khôi phục ghi chú",
-        "deleted": "Đã xóa ghi chú"
+        "deleted": "Đã xóa ghi chú",
+        "attachmentAdded": "Đã đính kèm tệp",
+        "attachmentRemoved": "Đã xóa tệp",
+        "attachmentIgnored": "Chưa đính kèm {fileName} — chỉ nhận tệp PDF."
       },
       "empty": {
         "title": "Chưa có ghi chú nào."
