@@ -878,9 +878,9 @@ declare const messages: {
         "close": "Close file",
         "prev": "Previous file",
         "next": "Next file",
-        "viewerFallback": "Your browser can't show this PDF here. Open it in a new tab instead.",
+        "viewerFallback": "Not showing? Open it in a new tab — some browsers, iOS Safari in particular, will not render a PDF in place.",
         "count": "{count, plural, =0 {No files} one {# file} other {# files}}",
-        "sizeLabel": "{size} MB",
+        "sizeLabel": "{size} {unit}",
         "errors": {
           "type": "{fileName} is not a PDF.",
           "size": "{fileName} exceeds {maxSizeMb, number}MB.",

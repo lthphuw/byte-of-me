@@ -11,6 +11,7 @@ import {
   findDocumentViolation,
 } from '@/entities/note-document/model/document-constraints';
 import { noteDocumentKeys } from '@/entities/note-document/model/query-keys';
+import type { NoteDocumentSummary } from '@/entities/note-document/model/types';
 
 /**
  * Whole, pre-translated toast sentences (the i18n path). When supplied, each
@@ -67,7 +68,7 @@ export function useUploadNoteDocument(
   const mutation = useMutation({
     mutationFn: async (files: File[]) => {
       const failures: string[] = [];
-      let uploaded = 0;
+      const uploaded: NoteDocumentSummary[] = [];
 
       setPendingNames(files.map((file) => file.name));
 
@@ -83,8 +84,8 @@ export function useUploadNoteDocument(
           formData.append('file', file);
 
           const res = await uploadNoteDocument(noteId, formData);
-          if (res.success) {
-            uploaded += 1;
+          if (res.success && res.data) {
+            uploaded.push(res.data);
           } else {
             failures.push(res.errorMsg);
           }
@@ -101,7 +102,7 @@ export function useUploadNoteDocument(
       setPendingNames([]);
     },
     onSuccess: ({ uploaded, failures }) => {
-      if (uploaded > 0) {
+      if (uploaded.length > 0) {
         queryClient.invalidateQueries({
           queryKey: noteDocumentKeys.list(noteId),
         });
@@ -120,14 +121,22 @@ export function useUploadNoteDocument(
 
   const { mutateAsync } = mutation;
 
+  /**
+   * Uploads the batch and answers with the rows that landed.
+   *
+   * The rows, not a count: a caller that dropped a file onto the writing
+   * surface has to put a link to it in the document, and it can only do that
+   * once the id exists.
+   */
   const upload = useCallback(
-    async (files: File[]) => {
-      if (files.length === 0) return;
+    async (files: File[]): Promise<NoteDocumentSummary[]> => {
+      if (files.length === 0) return [];
 
       // Swallowed on purpose: every outcome is already a toast, and a
       // rejection here would surface as an unhandled promise in the drop
       // handler that called it.
-      await mutateAsync(files).catch(() => undefined);
+      const result = await mutateAsync(files).catch(() => undefined);
+      return result?.uploaded ?? [];
     },
     [mutateAsync]
   );

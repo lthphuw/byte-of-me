@@ -92,4 +92,15 @@ describe('getNoteDocuments', () => {
     expect(res.success).toBe(false);
     expect(findMany).not.toHaveBeenCalled();
   });
+
+  it('asks only for attachments, never for the inline images', async () => {
+    await getNoteDocuments('note-1');
+
+    // The panel is "files the author attached". Inline images are
+    // `NoteDocument` rows too, and without this filter every pasted
+    // screenshot would be listed as an attachment.
+    expect(findMany.mock.calls[0][0].where).toEqual(
+      expect.objectContaining({ kind: 'ATTACHMENT' })
+    );
+  });
 });

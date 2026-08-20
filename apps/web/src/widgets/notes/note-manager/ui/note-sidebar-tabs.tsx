@@ -14,8 +14,10 @@ interface NoteSidebarTabsProps {
   onOpen: (id: string) => void;
   /** The attachment the viewer has open, so its row can show as selected. */
   activeDocumentId: string | null;
-  /** Ask to read one. The widget owns the split pane and the dialog. */
+  /** A row was clicked: go to where the file sits in the note's text. */
   onOpenDocument: (documentId: string) => void;
+  /** The row menu's "open": read the file. */
+  onReadDocument: (documentId: string) => void;
 }
 
 /**
@@ -33,6 +35,7 @@ export function NoteSidebarTabs({
   onOpen,
   activeDocumentId,
   onOpenDocument,
+  onReadDocument,
 }: NoteSidebarTabsProps) {
   const t = useTranslations('dashboard.note.sidebar');
 
@@ -54,6 +57,7 @@ export function NoteSidebarTabs({
           noteId={noteId}
           activeId={activeDocumentId}
           onOpen={onOpenDocument}
+          onRead={onReadDocument}
         />
       </TabsContent>
       <TabsContent

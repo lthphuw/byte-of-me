@@ -20,8 +20,10 @@ export interface NoteAttachmentsPanelProps {
   noteId: string;
   /** The attachment the viewer currently has open, if any. */
   activeId?: string | null;
-  /** Ask to open one; the widget owns the split pane and the dialog. */
+  /** Row click: go to where the file is referenced in the note's text. */
   onOpen: (documentId: string) => void;
+  /** Menu "open": read the file. The widget owns the pane and the dialog. */
+  onRead: (documentId: string) => void;
 }
 
 /**
@@ -38,6 +40,7 @@ export function NoteAttachmentsPanel({
   noteId,
   activeId,
   onOpen,
+  onRead,
 }: NoteAttachmentsPanelProps) {
   const t = useTranslations('dashboard.note');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -106,6 +109,7 @@ export function NoteAttachmentsPanel({
               attachment={attachment}
               isActive={attachment.id === activeId}
               onOpen={onOpen}
+            onRead={onRead}
             />
           ))}
         </ul>

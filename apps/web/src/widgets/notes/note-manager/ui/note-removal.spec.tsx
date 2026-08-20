@@ -44,6 +44,7 @@ import { toast } from 'sonner';
 
 import { NoteManager } from './note-manager';
 
+import { privateStorage } from '@/shared/api/s3-storage-api';
 import * as navigation from '@/shared/i18n/navigation';
 
 const { __navigations, __resetNavigation } = navigation as unknown as {
@@ -428,6 +429,21 @@ Object.defineProperty(prisma, 'note', {
     findFirst: mock(() => Promise.resolve(null)),
     create: mock(() => Promise.reject(new Error('not exercised'))),
   },
+  writable: true,
+  configurable: true,
+});
+
+// `deleteNote` sweeps the attachment objects the cascade cannot take, so it
+// reads this delegate on the way through. Unstubbed, the action reaches for a
+// real database — which is refused here, but only after a timeout that reads
+// like a hang rather than a missing stub.
+Object.defineProperty(prisma, 'noteDocument', {
+  value: { findMany: mock().mockResolvedValue([]) },
+  writable: true,
+  configurable: true,
+});
+Object.defineProperty(privateStorage, 'deleteFile', {
+  value: mock().mockResolvedValue(undefined),
   writable: true,
   configurable: true,
 });

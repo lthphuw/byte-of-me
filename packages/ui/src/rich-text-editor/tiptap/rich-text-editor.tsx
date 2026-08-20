@@ -346,6 +346,21 @@ export interface RichTextEditorApi {
    * they know when they have done that.
    */
   formatMarkdown: () => FormatMarkdownResult;
+  /**
+   * Drops a link into the document at the current selection.
+   *
+   * The same insertion the `[[` picker performs, exposed for consumers that
+   * arrive at a link some other way — a file dropped onto the writing surface,
+   * for instance, which has to leave something behind in the text that the
+   * author can click.
+   *
+   * At the SELECTION, not at a caller-supplied position: an upload is an
+   * await, and a document position held across one can name a place that no
+   * longer exists. A caller that wants the drop point puts the caret there
+   * first — `caretRangeFromPoint` and a DOM selection are enough, since
+   * ProseMirror reads its selection back from the DOM.
+   */
+  insertLink: (link: { text: string; href: string }) => void;
 }
 
 const COMPACT_MAX_HEIGHT = 360;
@@ -436,28 +451,36 @@ export function RichTextEditor({
     onOutlineChangeRef.current = onOutlineChange;
   }, [onOutlineChange]);
 
-  const handleLinkTrigger = useCallback(() => {
-    onLinkTriggerRef.current?.((link) => {
-      // Inserted at the live selection rather than at the position the
-      // trigger was typed: the picker is a modal dialog, so the document
-      // cannot have moved under it, and reading the selection now avoids
-      // holding a position across an await that could go stale.
-      editorRef.current
-        ?.chain()
-        .focus()
-        .insertContent([
-          {
-            type: 'text',
-            text: link.text,
-            marks: [{ type: 'link', attrs: { href: link.href } }],
-          },
-          // A trailing unmarked space so the author keeps typing outside the
-          // link instead of extending it.
-          { type: 'text', text: ' ' },
-        ])
-        .run();
-    });
+  /**
+   * One link, at the live selection.
+   *
+   * Shared by the `[[` picker and the imperative API, because they insert the
+   * same thing and had no business drifting apart.
+   */
+  const insertLink = useCallback((link: { text: string; href: string }) => {
+    // At the live selection rather than at a remembered position: both callers
+    // arrive here after an await — a modal for the picker, an upload for a
+    // dropped file — and a document position held across one can name a place
+    // that no longer exists.
+    editorRef.current
+      ?.chain()
+      .focus()
+      .insertContent([
+        {
+          type: 'text',
+          text: link.text,
+          marks: [{ type: 'link', attrs: { href: link.href } }],
+        },
+        // A trailing unmarked space so the author keeps typing outside the
+        // link instead of extending it.
+        { type: 'text', text: ' ' },
+      ])
+      .run();
   }, []);
+
+  const handleLinkTrigger = useCallback(() => {
+    onLinkTriggerRef.current?.(insertLink);
+  }, [insertLink]);
   // Snapshot of the document taken when preview is switched on. The editor
   // stays mounted (hidden) underneath, so toggling back loses nothing.
   const [preview, setPreview] = useState<JSONContent | null>(null);
@@ -837,10 +860,11 @@ export function RichTextEditor({
         return editor.getMarkdown();
       },
       formatMarkdown: formatRaw,
+      insertLink,
     };
     onEditorApiRef.current?.(api);
     return () => onEditorApiRef.current?.(null);
-  }, [editor, flushRaw, formatRaw]);
+  }, [editor, flushRaw, formatRaw, insertLink]);
 
   if (!editor) return null;
 

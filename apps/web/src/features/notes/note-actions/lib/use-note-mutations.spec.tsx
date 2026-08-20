@@ -44,6 +44,7 @@ import {
 } from './use-note-mutations';
 
 import { hasNoteBeenDeleted, noteKeys } from '@/entities/note';
+import { privateStorage } from '@/shared/api/s3-storage-api';
 
 const messages = {
   dashboard: {
@@ -87,6 +88,21 @@ const deleteMany = mock(() => Promise.resolve({ count: 2 }));
 
 Object.defineProperty(prisma, 'note', {
   value: { findFirst, create, findMany, deleteMany },
+  writable: true,
+  configurable: true,
+});
+
+// `deleteNote` sweeps the attachment objects the cascade cannot take, so it
+// reads this delegate on the way through. Unstubbed, the action reaches for a
+// real database — which is refused here, but only after a timeout that reads
+// like a hang rather than a missing stub.
+Object.defineProperty(prisma, 'noteDocument', {
+  value: { findMany: mock().mockResolvedValue([]) },
+  writable: true,
+  configurable: true,
+});
+Object.defineProperty(privateStorage, 'deleteFile', {
+  value: mock().mockResolvedValue(undefined),
   writable: true,
   configurable: true,
 });

@@ -56,7 +56,7 @@ export function useAttachDocuments(noteId: string) {
   );
 
   const attach = useCallback(
-    (files: FileList | File[] | null | undefined) => {
+    async (files: FileList | File[] | null | undefined) => {
       const documents = documentFilesFrom(files);
 
       // Reference equality, not names: `documentFilesFrom` FILTERS the list it
@@ -67,11 +67,12 @@ export function useAttachDocuments(noteId: string) {
         toast.error(t('toasts.attachmentIgnored', { fileName: file.name }));
       }
 
-      if (documents.length === 0) return;
+      if (documents.length === 0) return [];
 
       // Sequential, one request per file — the entity's hook owns that, along
-      // with the per-file success and failure toasts.
-      void upload(documents);
+      // with the per-file success and failure toasts. The rows come back so a
+      // caller that dropped onto the writing surface can link to them.
+      return upload(documents);
     },
     [t, upload]
   );

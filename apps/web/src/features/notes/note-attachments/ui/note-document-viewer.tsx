@@ -175,6 +175,12 @@ export function NoteDocumentViewer({
         className="min-h-0 w-full flex-1 border-0 bg-muted/30"
       />
 
+      {/* Stated as a CONDITION, not as a verdict. An `<iframe>` reports
+          nothing about whether the plugin inside it painted anything, so this
+          line cannot know — and worded as "your browser can't show this" it
+          contradicted a PDF that was visibly rendering right above it. The
+          escape hatch has to be permanent (iOS Safari renders one unscrollable
+          page), so the sentence has to be true while the document is fine. */}
       <p className="shrink-0 border-t px-3 py-2 text-xs text-muted-foreground">
         {t('viewerFallback')}
       </p>

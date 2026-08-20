@@ -4,6 +4,7 @@ import type { DragEvent, ReactNode } from 'react';
 import { FileUp, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import type { NoteDocumentSummary } from '@/entities/note-document';
 import {
   documentFilesFrom,
   isAcceptedDocument,
@@ -17,6 +18,14 @@ export interface AttachmentDropZoneProps {
   noteId: string;
   /** The editor region this wraps. */
   children: ReactNode;
+  /**
+   * Called with the rows that landed, once each upload has finished.
+   *
+   * The workspace uses it to leave a link in the document. A drop onto the
+   * WRITING SURFACE is a different gesture from a drop onto the Files panel —
+   * the author pointed at a place in their text — so this fires only here.
+   */
+  onAttached?: (documents: NoteDocumentSummary[]) => void;
   className?: string;
 }
 
@@ -56,9 +65,46 @@ function hasDocumentItem(dataTransfer: DataTransfer): boolean {
  * named in a toast, because a drop that half-worked in silence is worse than
  * one that loudly did less than the author asked.
  */
+/**
+ * Moves the caret to a viewport point, so an insertion lands where the author
+ * dropped rather than wherever they were last typing.
+ *
+ * `caretPositionFromPoint` is the standard; `caretRangeFromPoint` is WebKit's
+ * older spelling and still the only one Safari ships. Neither exists in every
+ * environment, and a drop that cannot place the caret is not a failure — the
+ * link simply goes in at the selection the editor already had.
+ */
+function placeCaretAt(x: number, y: number): void {
+  const doc = document as Document & {
+    caretPositionFromPoint?: (
+      x: number,
+      y: number
+    ) => { offsetNode: Node; offset: number } | null;
+    caretRangeFromPoint?: (x: number, y: number) => Range | null;
+  };
+
+  let range: Range | null = null;
+
+  const position = doc.caretPositionFromPoint?.(x, y);
+  if (position) {
+    range = document.createRange();
+    range.setStart(position.offsetNode, position.offset);
+  } else {
+    range = doc.caretRangeFromPoint?.(x, y) ?? null;
+  }
+
+  if (!range) return;
+
+  range.collapse(true);
+  const selection = window.getSelection();
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+}
+
 export function AttachmentDropZone({
   noteId,
   children,
+  onAttached,
   className,
 }: AttachmentDropZoneProps) {
   const t = useTranslations('dashboard.note.attachments');
@@ -105,7 +151,18 @@ export function AttachmentDropZone({
     // A drop fires no `dragleave`, so the overlay has to be taken down here or
     // it stays up over the file it just accepted.
     reset();
-    attach(event.dataTransfer.files);
+
+    // Put the caret where the file landed, BEFORE the upload starts. The link
+    // is inserted at the editor's selection, and the only moment the drop
+    // coordinates exist is right now — by the time the bytes are stored, the
+    // event is gone. ProseMirror reads its selection back from the DOM, so
+    // moving the DOM caret is enough; no editor instance is needed here, which
+    // is what keeps this component out of `packages/ui`.
+    placeCaretAt(event.clientX, event.clientY);
+
+    void attach(event.dataTransfer.files).then((documents) => {
+      if (documents.length > 0) onAttached?.(documents);
+    });
   };
 
   return (

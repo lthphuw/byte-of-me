@@ -34,7 +34,16 @@ export async function getNoteDocuments(
 
   try {
     const documents = await prisma.noteDocument.findMany({
-      where: { noteId: parsedId.data, ownerId: session.id },
+      // `kind: 'ATTACHMENT'` is not a detail — it is what this list MEANS.
+      // Inline images are `NoteDocument` rows too, so without it every
+      // screenshot in the document shows up as an attachment and the panel
+      // stops being a list of things the author attached. The index is
+      // `(note_id, kind, created_at desc)`, so the filter is free.
+      where: {
+        noteId: parsedId.data,
+        ownerId: session.id,
+        kind: 'ATTACHMENT',
+      },
       select: {
         id: true,
         title: true,

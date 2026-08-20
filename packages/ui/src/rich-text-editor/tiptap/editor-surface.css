@@ -632,3 +632,93 @@
     max-width: none;
   }
 }
+
+/* Where the Files panel just sent the reader.
+   A short flash rather than a persistent selection: it answers "which one of
+   these links did I click" and then gets out of the way, because a highlight
+   that stays becomes part of the document to anyone who looks away and back.
+   `prefers-reduced-motion` drops the animation but keeps the mark, so the
+   answer is still given — it just arrives all at once. */
+.ProseMirror a.note-attachment-flash {
+  border-radius: 0.25rem;
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.35);
+  background-color: hsl(var(--primary) / 0.12);
+  animation: note-attachment-flash 1.6s ease-out forwards;
+}
+
+@keyframes note-attachment-flash {
+  0%,
+  60% {
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.35);
+    background-color: hsl(var(--primary) / 0.12);
+  }
+  100% {
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0);
+    background-color: hsl(var(--primary) / 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ProseMirror a.note-attachment-flash {
+    animation: none;
+  }
+}
+
+
+/* An attached file, in the text.
+
+   A styled LINK, not a node type of its own. The chip is entirely this rule:
+   the document still holds an ordinary link, so markdown export, print and the
+   shared read-only surface all carry the attachment without a single new case
+   to handle — and if this stylesheet never loads, the author still has a
+   working link rather than a blank rectangle.
+
+   Keyed on the href prefix because that prefix IS the meaning: it is the only
+   address an attachment has. */
+.ProseMirror a[href^='/api/notes/documents/'] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  vertical-align: baseline;
+  max-width: 100%;
+  padding: 0.125rem 0.5rem 0.125rem 0.375rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.375rem;
+  background-color: hsl(var(--muted) / 0.6);
+  color: hsl(var(--foreground));
+  font-size: 0.875em;
+  line-height: 1.5;
+  text-decoration: none;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+/* A mask rather than a background image, so one asset works on both themes —
+   the glyph takes `currentColor` instead of being baked black. */
+.ProseMirror a[href^='/api/notes/documents/']::before {
+  content: '';
+  flex: none;
+  width: 1em;
+  height: 1em;
+  background-color: currentColor;
+  opacity: 0.65;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/%3E%3Cpath d='M14 2v4a2 2 0 0 0 2 2h4'/%3E%3Cpath d='M10 9H8'/%3E%3Cpath d='M16 13H8'/%3E%3Cpath d='M16 17H8'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/%3E%3Cpath d='M14 2v4a2 2 0 0 0 2 2h4'/%3E%3Cpath d='M10 9H8'/%3E%3Cpath d='M16 13H8'/%3E%3Cpath d='M16 17H8'/%3E%3C/svg%3E");
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+.ProseMirror a[href^='/api/notes/documents/']:hover {
+  border-color: hsl(var(--primary) / 0.5);
+  background-color: hsl(var(--muted));
+}
+
+/* An IMAGE served from the same route is an inline picture, not an attachment
+   — it must not inherit any of the above. Images are `img` elements, so the
+   rules never reach them; this note exists so nobody widens the selector to
+   the route prefix alone and quietly boxes every screenshot. */

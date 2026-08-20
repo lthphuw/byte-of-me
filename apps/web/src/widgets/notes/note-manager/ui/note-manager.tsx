@@ -12,6 +12,7 @@ import {
   SheetTitle,
   useMediaQuery,
 } from '@byte-of-me/ui';
+import type { RichTextEditorApi } from '@byte-of-me/ui/rich-text-editor';
 import { CircleHelp, Network, PanelLeftOpen, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -20,7 +21,10 @@ import { NoteSidebarTabs } from './note-sidebar-tabs';
 import { NoteTreePanel } from './note-tree-panel';
 
 import { NOTE_HREF_PREFIX, noteHref, type NoteTreeNode } from '@/entities/note';
-import { useNoteDocuments } from '@/entities/note-document';
+import {
+  noteDocumentHref,
+  useNoteDocuments,
+} from '@/entities/note-document';
 import {
   NoteActionsMenu,
   NoteRowContextMenu,
@@ -30,6 +34,7 @@ import {
 import {
   AttachmentDropZone,
   NoteDocumentViewer,
+  revealAttachmentInDocument,
 } from '@/features/notes/note-attachments';
 import {
   MarkdownCheatSheetDialog,
@@ -140,6 +145,14 @@ export function NoteManager({
    * note's text.
    */
   const [openDocumentId, setOpenDocumentId] = useState<string | null>(null);
+  /**
+   * The live editor's imperative API, so a file dropped on the writing surface
+   * can leave a link behind in the text.
+   *
+   * A ref, not state: nothing renders differently when it arrives, and a
+   * setState here would re-render the workspace every time an editor mounts.
+   */
+  const editorApiRef = useRef<RichTextEditorApi | null>(null);
   const lastDocumentNoteId = useRef(openNoteId);
   if (lastDocumentNoteId.current !== openNoteId) {
     lastDocumentNoteId.current = openNoteId;
@@ -223,9 +236,20 @@ export function NoteManager({
    * attachments with nothing but itself on screen — below `lg` the panel is
    * not mounted at all. TanStack serves both from one cache entry.
    */
-  const { data: documents } = useNoteDocuments(openNoteId);
+  const { data: documents } = useNoteDocuments(
+    // Only while the reader is actually open. Fetching as soon as a note
+    // opened cost every note switch a request whose result nothing rendered —
+    // the Files panel keeps its own copy, on the same key, and Radix does not
+    // mount an inactive tab's panel at all.
+    openDocumentId ? openNoteId : null
+  );
   const openDocument =
-    openDocumentId && documents?.some((d) => d.id === openDocumentId)
+    openDocumentId &&
+    // Until the list arrives there is nothing to contradict the id, so the
+    // reader opens immediately rather than waiting a request. Once it HAS
+    // arrived, an id missing from it means the attachment was deleted while
+    // it was on screen, and the reader closes.
+    (!documents || documents.some((d) => d.id === openDocumentId))
       ? openDocumentId
       : null;
 
@@ -236,6 +260,24 @@ export function NoteManager({
    * bug the links sheet above already documents.
    */
   const isViewerColumnVisible = useMediaQuery('(min-width: 1024px)');
+
+  /**
+   * What a row in the Files panel does when it is clicked.
+   *
+   * Goes to the place in the TEXT, not to the reader — the panel is a table of
+   * contents for the note's files, and clicking an entry means the same thing
+   * it means in the Contents tab. Reading the file is the row menu's "open",
+   * which sets `openDocumentId` directly.
+   *
+   * A file with no link in the document has nowhere to jump to, which is the
+   * ordinary case for one added through the panel's own button. Then the
+   * reader is the only sensible answer.
+   */
+  const revealDocument = useCallback((documentId: string) => {
+    if (!revealAttachmentInDocument(noteDocumentHref(documentId))) {
+      setOpenDocumentId(documentId);
+    }
+  }, []);
 
   const { setCollapsed, isCollapsed } = sidebar;
   useWorkspaceShortcuts({
@@ -442,6 +484,23 @@ export function NoteManager({
           <AttachmentDropZone
             noteId={openNoteId}
             className="flex min-h-0 min-w-0 flex-1 flex-col"
+            // A file dropped ON THE TEXT leaves a link in the text. Dropping
+            // it on the Files panel does not — there the author pointed at a
+            // list, not at a place in their document.
+            //
+            // A link rather than a node of its own: a link already serializes
+            // to markdown, prints, and renders on the shared surface, so the
+            // attachment survives every one of those paths without a single
+            // new case. A custom node would have needed all four, plus an
+            // answer for what it renders as once the file is deleted.
+            onAttached={(documents) => {
+              for (const document of documents) {
+                editorApiRef.current?.insertLink({
+                  text: document.title,
+                  href: noteDocumentHref(document.id),
+                });
+              }
+            }}
           >
             <NoteEditor
               key={openNoteId}
@@ -456,6 +515,9 @@ export function NoteManager({
                 />
               }
               onOpenCheatSheet={() => setCheatSheetOpen(true)}
+            onEditorApiChange={(api) => {
+              editorApiRef.current = api;
+            }}
               onOutlineChange={outlineStore.set}
               // Renaming from the editor's title field, rather than from a tree
               // row. Wired HERE because `note-actions` and `note-editor` are
@@ -550,7 +612,8 @@ export function NoteManager({
             noteId={openNoteId}
             onOpen={openNote}
             activeDocumentId={openDocument}
-            onOpenDocument={setOpenDocumentId}
+            onOpenDocument={revealDocument}
+            onReadDocument={setOpenDocumentId}
           />
         </aside>
       )}
@@ -569,9 +632,14 @@ export function NoteManager({
               noteId={openNoteId}
               onOpen={openNote}
               activeDocumentId={openDocument}
+              // Both close the sheet first: below `lg` it is full-screen, so
+              // scrolling the editor behind it would be invisible and the
+              // reader would open behind a scrim.
               onOpenDocument={(documentId) => {
-                // The sheet and the reader are both full-screen below `lg`;
-                // leaving the sheet open would put the PDF behind a scrim.
+                setLinksOpen(false);
+                revealDocument(documentId);
+              }}
+              onReadDocument={(documentId) => {
                 setLinksOpen(false);
                 setOpenDocumentId(documentId);
               }}
@@ -665,12 +733,14 @@ function OutlineSidebarTabs({
   onOpen,
   activeDocumentId,
   onOpenDocument,
+  onReadDocument,
 }: {
   store: NoteOutlineStore;
   noteId: string;
   onOpen: (id: string) => void;
   activeDocumentId: string | null;
   onOpenDocument: (documentId: string) => void;
+  onReadDocument: (documentId: string) => void;
 }) {
   const outline = useNoteOutline(store);
 
@@ -681,6 +751,7 @@ function OutlineSidebarTabs({
       onOpen={onOpen}
       activeDocumentId={activeDocumentId}
       onOpenDocument={onOpenDocument}
+      onReadDocument={onReadDocument}
     />
   );
 }

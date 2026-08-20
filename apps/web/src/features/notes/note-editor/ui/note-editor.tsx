@@ -52,6 +52,16 @@ export interface NoteEditorProps {
   /** Opens the markdown cheat-sheet. The DIALOG belongs to the widget (the
    *  command palette must reach it with no note open); this only asks. */
   onOpenCheatSheet?: () => void;
+  /**
+   * The live editor's imperative API, republished as it comes and goes.
+   *
+   * The widget needs it to drop a link into the document when a file is
+   * dropped on the writing surface: `note-attachments` is a sibling feature,
+   * so the drop zone wraps this component from outside and has no way to reach
+   * the editor on its own. Null on unmount, so a stale handle cannot be
+   * called against a document that is gone.
+   */
+  onEditorApiChange?: (api: RichTextEditorApi | null) => void;
   /** The heading outline, re-reported as it changes — the widget's ToC tab
    *  renders from it. Pass-through to the shared editor. */
   onOutlineChange?: (items: OutlineItem[]) => void;
@@ -83,6 +93,7 @@ export function NoteEditor({
   onLinkTrigger,
   propertiesSlot,
   onOpenCheatSheet,
+  onEditorApiChange,
   onOutlineChange,
   breadcrumbSlot,
   onTitleCommitted,
@@ -598,6 +609,7 @@ export function NoteEditor({
           // setState here would re-render the editor's whole parent on mount.
           onEditorApi={(api) => {
             editorApiRef.current = api;
+            onEditorApiChange?.(api);
           }}
           // Take the height this pane gives, instead of the editor's own
           // `h-[min(720px,62dvh)]`. That fixed box was nested inside this

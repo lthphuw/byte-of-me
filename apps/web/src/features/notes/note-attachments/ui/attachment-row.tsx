@@ -39,7 +39,10 @@ export interface AttachmentRowProps {
   /** The one the viewer currently has open, wherever the viewer is. */
   isActive?: boolean;
   /** Ask to open it. The widget owns the split pane and the dialog. */
+  /** The row itself: go to where this file is referenced in the text. */
   onOpen: (documentId: string) => void;
+  /** The menu's "open": read the file, in the reader. */
+  onRead: (documentId: string) => void;
 }
 
 /**
@@ -56,6 +59,7 @@ export function AttachmentRow({
   attachment,
   isActive,
   onOpen,
+  onRead,
 }: AttachmentRowProps) {
   // The whole `dashboard.note` namespace rather than `…note.attachments`: the
   // menu trigger's name is `tree.actionsAriaLabel`, an existing key one level
@@ -121,20 +125,23 @@ export function AttachmentRow({
           <span className="min-w-0 flex-1">
             <span className="block truncate text-sm">{attachment.title}</span>
             <span className="block truncate text-xs text-muted-foreground">
+              {/* The unit is chosen here and the message places it, rather
+                  than the message hardcoding "MB". Fixed megabytes read "0 MB"
+                  for anything under about 5 KB — measured on a real 603-byte
+                  upload — and most of what gets attached is far below the 5 MB
+                  ceiling.
+
+                  The NUMBER still goes through next-intl: `{size}` carries no
+                  ICU `number` skeleton, so a raw number would print with an
+                  English decimal point to a Vietnamese reader, who writes 1,4. */}
               {t('attachments.sizeLabel', {
-                // Megabytes, because the message owns the unit: `sizeLabel` is
-                // "{size} MB" in both locales, so a preformatted "1.4 MB" here
-                // would render "1.4 MB MB".
-                //
-                // Formatted through next-intl rather than handed over as a
-                // number — `{size}` carries no ICU `number` skeleton, so the
-                // typed messages declare it a string and a raw number would
-                // print with an English decimal point to a Vietnamese reader,
-                // who writes 1,4. Two fraction digits because the ceiling is
-                // 5 MB: at one, a 300 KB attachment reads "0 MB".
-                size: format.number(attachment.size / 1024 / 1024, {
-                  maximumFractionDigits: 2,
-                }),
+                size: format.number(
+                  attachment.size >= 1024 * 1024
+                    ? attachment.size / 1024 / 1024
+                    : attachment.size / 1024,
+                  { maximumFractionDigits: 1 }
+                ),
+                unit: attachment.size >= 1024 * 1024 ? 'MB' : 'KB',
               })}
               {' · '}
               {format.dateTime(attachment.createdAt, {
@@ -173,7 +180,7 @@ export function AttachmentRow({
                 (`py-1.5`) is a 32px row. */}
             <DropdownMenuItem
               className="min-h-11"
-              onSelect={() => onOpen(attachment.id)}
+              onSelect={() => onRead(attachment.id)}
             >
               <FileText />
               {t('attachments.open')}

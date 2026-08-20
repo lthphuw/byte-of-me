@@ -875,9 +875,9 @@
         "close": "Đóng tệp",
         "prev": "Tệp trước",
         "next": "Tệp sau",
-        "viewerFallback": "Trình duyệt không mở được PDF này ở đây. Bạn hãy mở trong tab mới.",
+        "viewerFallback": "Không thấy tài liệu? Hãy mở trong tab mới — vài trình duyệt, nhất là Safari trên iOS, không hiển thị PDF ngay tại chỗ.",
         "count": "{count, plural, =0 {Chưa có tệp nào} other {# tệp}}",
-        "sizeLabel": "{size} MB",
+        "sizeLabel": "{size} {unit}",
         "errors": {
           "type": "{fileName} không phải tệp PDF.",
           "size": "{fileName} vượt quá {maxSizeMb, number}MB.",
