@@ -52,29 +52,28 @@ const nextConfig = {
     // serverless function. Stack traces stay readable through the framework's
     // own frames; the trade is deploy size and cold start, which users feel.
     serverSourceMaps: false,
-    // Rewrites `import { X } from 'pkg'` into a direct deep import per symbol.
-    // These are all barrel packages: without this, importing one icon pulls the
-    // module graph for the whole set, which the bundler then has to prove is
-    // dead before dropping it — and it usually can't, because of side effects.
-    optimizePackageImports: [
-      'lucide-react',
-      'react-icons',
-      'date-fns',
-      'framer-motion',
-      'embla-carousel-react',
-      'cmdk',
-      'd3-force',
-      '@dnd-kit/core',
-      '@tanstack/react-query',
-      // '@byte-of-me/ui' stays out. Re-measured 2026-08-19, after the barrel
-      // self-import cycle was removed from packages/ui: adding it moves /en
-      // first-load JS by -4 B and total client JS by 0 B, against a 25 B
-      // run-to-run noise floor. Same run: dropping 'lucide-react' (136 import
-      // sites) — or disabling this whole option — also moved under 50 B.
-      // Turbopack shakes these barrels itself, so this list documents which
-      // packages are barrels more than it optimizes anything, and our own
-      // barrel is a maintainability concern rather than a bundle one.
-    ],
+    // No `optimizePackageImports`. It used to list nine barrel packages, and
+    // it was measured out rather than argued out.
+    //
+    // Method (2026-08-19): noise floor first — the same config built twice
+    // landed 25 B apart out of 9.51 MB — then five clean builds with `.next`
+    // deleted between each, invoking `next build --turbopack` directly in
+    // apps/web so turbo's task cache could not serve a stale result. Next
+    // 16.2.3 no longer prints the Size / First Load JS table, so per-route
+    // numbers were derived from the static JS each prerendered HTML references
+    // and from `page_client-reference-manifest.js` for the dynamic routes. The
+    // config was proved to be read at all by renaming the key and checking
+    // Next printed `(invalid experimental key)` — otherwise "no change" and
+    // "silently ignored" look identical.
+    //
+    // Result: removing the ENTIRE option moved total client JS by 47 B —
+    // 0.0005%, twice the noise floor. Dropping just 'lucide-react', with 136
+    // import sites, moved 5 B. Both builds here are `--turbopack`, and
+    // Turbopack does this tree-shaking itself; the option is a webpack-era
+    // remedy for a problem this bundler does not have.
+    //
+    // Kept as a comment because the list looked useful and was not: anyone
+    // reaching for it as a bundle fix should see the number first.
   },
 
   turbopack: {
