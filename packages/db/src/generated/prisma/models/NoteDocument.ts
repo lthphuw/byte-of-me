@@ -47,6 +47,7 @@ export type NoteDocumentMinAggregateOutputType = {
   fileKey: string | null
   mimeType: string | null
   size: number | null
+  kind: string | null
   noteId: string | null
   ownerId: string | null
 }
@@ -58,6 +59,7 @@ export type NoteDocumentMaxAggregateOutputType = {
   fileKey: string | null
   mimeType: string | null
   size: number | null
+  kind: string | null
   noteId: string | null
   ownerId: string | null
 }
@@ -69,6 +71,7 @@ export type NoteDocumentCountAggregateOutputType = {
   fileKey: number
   mimeType: number
   size: number
+  kind: number
   noteId: number
   ownerId: number
   _all: number
@@ -90,6 +93,7 @@ export type NoteDocumentMinAggregateInputType = {
   fileKey?: true
   mimeType?: true
   size?: true
+  kind?: true
   noteId?: true
   ownerId?: true
 }
@@ -101,6 +105,7 @@ export type NoteDocumentMaxAggregateInputType = {
   fileKey?: true
   mimeType?: true
   size?: true
+  kind?: true
   noteId?: true
   ownerId?: true
 }
@@ -112,6 +117,7 @@ export type NoteDocumentCountAggregateInputType = {
   fileKey?: true
   mimeType?: true
   size?: true
+  kind?: true
   noteId?: true
   ownerId?: true
   _all?: true
@@ -210,6 +216,7 @@ export type NoteDocumentGroupByOutputType = {
   fileKey: string
   mimeType: string
   size: number
+  kind: string
   noteId: string
   ownerId: string
   _count: NoteDocumentCountAggregateOutputType | null
@@ -244,6 +251,7 @@ export type NoteDocumentWhereInput = {
   fileKey?: Prisma.StringFilter<"NoteDocument"> | string
   mimeType?: Prisma.StringFilter<"NoteDocument"> | string
   size?: Prisma.IntFilter<"NoteDocument"> | number
+  kind?: Prisma.StringFilter<"NoteDocument"> | string
   noteId?: Prisma.StringFilter<"NoteDocument"> | string
   ownerId?: Prisma.StringFilter<"NoteDocument"> | string
   note?: Prisma.XOR<Prisma.NoteScalarRelationFilter, Prisma.NoteWhereInput>
@@ -257,6 +265,7 @@ export type NoteDocumentOrderByWithRelationInput = {
   fileKey?: Prisma.SortOrder
   mimeType?: Prisma.SortOrder
   size?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
   noteId?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   note?: Prisma.NoteOrderByWithRelationInput
@@ -273,6 +282,7 @@ export type NoteDocumentWhereUniqueInput = Prisma.AtLeast<{
   title?: Prisma.StringFilter<"NoteDocument"> | string
   mimeType?: Prisma.StringFilter<"NoteDocument"> | string
   size?: Prisma.IntFilter<"NoteDocument"> | number
+  kind?: Prisma.StringFilter<"NoteDocument"> | string
   noteId?: Prisma.StringFilter<"NoteDocument"> | string
   ownerId?: Prisma.StringFilter<"NoteDocument"> | string
   note?: Prisma.XOR<Prisma.NoteScalarRelationFilter, Prisma.NoteWhereInput>
@@ -286,6 +296,7 @@ export type NoteDocumentOrderByWithAggregationInput = {
   fileKey?: Prisma.SortOrder
   mimeType?: Prisma.SortOrder
   size?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
   noteId?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   _count?: Prisma.NoteDocumentCountOrderByAggregateInput
@@ -305,6 +316,7 @@ export type NoteDocumentScalarWhereWithAggregatesInput = {
   fileKey?: Prisma.StringWithAggregatesFilter<"NoteDocument"> | string
   mimeType?: Prisma.StringWithAggregatesFilter<"NoteDocument"> | string
   size?: Prisma.IntWithAggregatesFilter<"NoteDocument"> | number
+  kind?: Prisma.StringWithAggregatesFilter<"NoteDocument"> | string
   noteId?: Prisma.StringWithAggregatesFilter<"NoteDocument"> | string
   ownerId?: Prisma.StringWithAggregatesFilter<"NoteDocument"> | string
 }
@@ -316,6 +328,7 @@ export type NoteDocumentCreateInput = {
   fileKey: string
   mimeType: string
   size: number
+  kind?: string
   note: Prisma.NoteCreateNestedOneWithoutDocumentsInput
   owner: Prisma.UserCreateNestedOneWithoutNoteDocumentsInput
 }
@@ -327,6 +340,7 @@ export type NoteDocumentUncheckedCreateInput = {
   fileKey: string
   mimeType: string
   size: number
+  kind?: string
   noteId: string
   ownerId: string
 }
@@ -338,6 +352,7 @@ export type NoteDocumentUpdateInput = {
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   note?: Prisma.NoteUpdateOneRequiredWithoutDocumentsNestedInput
   owner?: Prisma.UserUpdateOneRequiredWithoutNoteDocumentsNestedInput
 }
@@ -349,6 +364,7 @@ export type NoteDocumentUncheckedUpdateInput = {
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   noteId?: Prisma.StringFieldUpdateOperationsInput | string
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -360,6 +376,7 @@ export type NoteDocumentCreateManyInput = {
   fileKey: string
   mimeType: string
   size: number
+  kind?: string
   noteId: string
   ownerId: string
 }
@@ -371,6 +388,7 @@ export type NoteDocumentUpdateManyMutationInput = {
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type NoteDocumentUncheckedUpdateManyInput = {
@@ -380,6 +398,7 @@ export type NoteDocumentUncheckedUpdateManyInput = {
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   noteId?: Prisma.StringFieldUpdateOperationsInput | string
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -401,6 +420,7 @@ export type NoteDocumentCountOrderByAggregateInput = {
   fileKey?: Prisma.SortOrder
   mimeType?: Prisma.SortOrder
   size?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
   noteId?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
 }
@@ -416,6 +436,7 @@ export type NoteDocumentMaxOrderByAggregateInput = {
   fileKey?: Prisma.SortOrder
   mimeType?: Prisma.SortOrder
   size?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
   noteId?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
 }
@@ -427,6 +448,7 @@ export type NoteDocumentMinOrderByAggregateInput = {
   fileKey?: Prisma.SortOrder
   mimeType?: Prisma.SortOrder
   size?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
   noteId?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
 }
@@ -526,6 +548,7 @@ export type NoteDocumentCreateWithoutOwnerInput = {
   fileKey: string
   mimeType: string
   size: number
+  kind?: string
   note: Prisma.NoteCreateNestedOneWithoutDocumentsInput
 }
 
@@ -536,6 +559,7 @@ export type NoteDocumentUncheckedCreateWithoutOwnerInput = {
   fileKey: string
   mimeType: string
   size: number
+  kind?: string
   noteId: string
 }
 
@@ -575,6 +599,7 @@ export type NoteDocumentScalarWhereInput = {
   fileKey?: Prisma.StringFilter<"NoteDocument"> | string
   mimeType?: Prisma.StringFilter<"NoteDocument"> | string
   size?: Prisma.IntFilter<"NoteDocument"> | number
+  kind?: Prisma.StringFilter<"NoteDocument"> | string
   noteId?: Prisma.StringFilter<"NoteDocument"> | string
   ownerId?: Prisma.StringFilter<"NoteDocument"> | string
 }
@@ -586,6 +611,7 @@ export type NoteDocumentCreateWithoutNoteInput = {
   fileKey: string
   mimeType: string
   size: number
+  kind?: string
   owner: Prisma.UserCreateNestedOneWithoutNoteDocumentsInput
 }
 
@@ -596,6 +622,7 @@ export type NoteDocumentUncheckedCreateWithoutNoteInput = {
   fileKey: string
   mimeType: string
   size: number
+  kind?: string
   ownerId: string
 }
 
@@ -632,6 +659,7 @@ export type NoteDocumentCreateManyOwnerInput = {
   fileKey: string
   mimeType: string
   size: number
+  kind?: string
   noteId: string
 }
 
@@ -642,6 +670,7 @@ export type NoteDocumentUpdateWithoutOwnerInput = {
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   note?: Prisma.NoteUpdateOneRequiredWithoutDocumentsNestedInput
 }
 
@@ -652,6 +681,7 @@ export type NoteDocumentUncheckedUpdateWithoutOwnerInput = {
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   noteId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -662,6 +692,7 @@ export type NoteDocumentUncheckedUpdateManyWithoutOwnerInput = {
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   noteId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -672,6 +703,7 @@ export type NoteDocumentCreateManyNoteInput = {
   fileKey: string
   mimeType: string
   size: number
+  kind?: string
   ownerId: string
 }
 
@@ -682,6 +714,7 @@ export type NoteDocumentUpdateWithoutNoteInput = {
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   owner?: Prisma.UserUpdateOneRequiredWithoutNoteDocumentsNestedInput
 }
 
@@ -692,6 +725,7 @@ export type NoteDocumentUncheckedUpdateWithoutNoteInput = {
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -702,6 +736,7 @@ export type NoteDocumentUncheckedUpdateManyWithoutNoteInput = {
   fileKey?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.IntFieldUpdateOperationsInput | number
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -714,6 +749,7 @@ export type NoteDocumentSelect<ExtArgs extends runtime.Types.Extensions.Internal
   fileKey?: boolean
   mimeType?: boolean
   size?: boolean
+  kind?: boolean
   noteId?: boolean
   ownerId?: boolean
   note?: boolean | Prisma.NoteDefaultArgs<ExtArgs>
@@ -727,6 +763,7 @@ export type NoteDocumentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   fileKey?: boolean
   mimeType?: boolean
   size?: boolean
+  kind?: boolean
   noteId?: boolean
   ownerId?: boolean
   note?: boolean | Prisma.NoteDefaultArgs<ExtArgs>
@@ -740,6 +777,7 @@ export type NoteDocumentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   fileKey?: boolean
   mimeType?: boolean
   size?: boolean
+  kind?: boolean
   noteId?: boolean
   ownerId?: boolean
   note?: boolean | Prisma.NoteDefaultArgs<ExtArgs>
@@ -753,11 +791,12 @@ export type NoteDocumentSelectScalar = {
   fileKey?: boolean
   mimeType?: boolean
   size?: boolean
+  kind?: boolean
   noteId?: boolean
   ownerId?: boolean
 }
 
-export type NoteDocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "title" | "fileKey" | "mimeType" | "size" | "noteId" | "ownerId", ExtArgs["result"]["noteDocument"]>
+export type NoteDocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "title" | "fileKey" | "mimeType" | "size" | "kind" | "noteId" | "ownerId", ExtArgs["result"]["noteDocument"]>
 export type NoteDocumentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   note?: boolean | Prisma.NoteDefaultArgs<ExtArgs>
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -787,6 +826,18 @@ export type $NoteDocumentPayload<ExtArgs extends runtime.Types.Extensions.Intern
     fileKey: string
     mimeType: string
     size: number
+    /**
+     * "ATTACHMENT" — a file the author attached; listed in the Files panel.
+     * "INLINE"     — an image the note's own body references; deliberately NOT
+     * listed, or every pasted screenshot would show up as an
+     * attachment.
+     * 
+     * A String rather than this schema's first enum, matching `NoteShare.role`.
+     * Readers narrow it fail-closed: only an exact "INLINE" is treated as
+     * inline, so a value written by a migration this code has not seen still
+     * behaves like a plain attachment.
+     */
+    kind: string
     noteId: string
     /**
      * Denormalised from the note so the serving route can answer "is this
@@ -1225,6 +1276,7 @@ export interface NoteDocumentFieldRefs {
   readonly fileKey: Prisma.FieldRef<"NoteDocument", 'String'>
   readonly mimeType: Prisma.FieldRef<"NoteDocument", 'String'>
   readonly size: Prisma.FieldRef<"NoteDocument", 'Int'>
+  readonly kind: Prisma.FieldRef<"NoteDocument", 'String'>
   readonly noteId: Prisma.FieldRef<"NoteDocument", 'String'>
   readonly ownerId: Prisma.FieldRef<"NoteDocument", 'String'>
 }

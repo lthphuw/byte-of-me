@@ -886,6 +886,17 @@ model NoteDocument {
   mimeType String @map("mime_type")
   size     Int
 
+  /// "ATTACHMENT" — a file the author attached; listed in the Files panel.
+  /// "INLINE"     — an image the note's own body references; deliberately NOT
+  ///                listed, or every pasted screenshot would show up as an
+  ///                attachment.
+  ///
+  /// A String rather than this schema's first enum, matching `NoteShare.role`.
+  /// Readers narrow it fail-closed: only an exact "INLINE" is treated as
+  /// inline, so a value written by a migration this code has not seen still
+  /// behaves like a plain attachment.
+  kind String @default("ATTACHMENT")
+
   noteId String @map("note_id")
   note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
 
@@ -895,9 +906,11 @@ model NoteDocument {
   ownerId String @map("owner_id")
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-  /// The panel reads one note's attachments, newest first. Nothing else reads
-  /// this table by any other axis.
-  @@index([noteId, createdAt(sort: Desc)], map: "idx_note_documents_note_created")
+  /// The panel reads one note's ATTACHMENT rows, newest first, and the editor
+  /// resolves INLINE ones by id. `kind` sits in the middle so the panel's read
+  /// never pays a filter pass over the inline images, which outnumber the
+  /// attachments once pasted screenshots live here too.
+  @@index([noteId, kind, createdAt(sort: Desc)], map: "idx_note_documents_note_kind_created")
   @@map("note_documents")
 }
 

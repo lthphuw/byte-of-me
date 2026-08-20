@@ -4,7 +4,6 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
-import { generateFriendlyId } from '@/entities/media/lib/friendly-id';
 import {
   describeViolation,
   extensionForMimeType,
@@ -15,6 +14,7 @@ import { supabaseStorage } from '@/shared/api';
 import { env } from '@/shared/config/env';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
+import { generateFriendlyId } from '@/shared/lib/friendly-id';
 import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { Media } from '@/shared/types/models';

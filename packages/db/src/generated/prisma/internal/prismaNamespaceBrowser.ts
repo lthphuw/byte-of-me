@@ -622,6 +622,7 @@ export const NoteDocumentScalarFieldEnum = {
   fileKey: 'fileKey',
   mimeType: 'mimeType',
   size: 'size',
+  kind: 'kind',
   noteId: 'noteId',
   ownerId: 'ownerId'
 } as const
