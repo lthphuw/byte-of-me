@@ -80,8 +80,18 @@ const SheetContent = React.forwardRef<
       className={cn(sheetVariants({ side }), className)}
       {...props}
     >
+      {/* `size-11` (44px) around the glyph, not the bare icon this used to be.
+          Measured on a phone, the tap area was the 16px `X` itself — under a
+          quarter of the 44px minimum, on the one control every sheet has. The
+          icon is still 16px; only the target grew, and `right-2 top-2` keeps
+          the glyph optically where `right-4 top-4` put it.
+
+          `focus-visible`, not `focus`: Radix moves focus here when the sheet
+          opens, so a plain `focus:ring` drew a hard 44px square every time
+          anyone opened a sheet with a mouse. Keyboard users still get the
+          ring; it is the only way they can tell where they are. */}
       {!hideClose && (
-        <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
+        <SheetPrimitive.Close className="absolute right-2 top-2 flex size-11 items-center justify-center rounded-md opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
           <X className="h-4 w-4" />
           <span className="sr-only">Close</span>
         </SheetPrimitive.Close>

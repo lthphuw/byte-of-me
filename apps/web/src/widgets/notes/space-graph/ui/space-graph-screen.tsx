@@ -40,7 +40,7 @@ export function SpaceGraphScreen() {
   return (
     <div className="flex min-h-0 flex-1 flex-col bg-background">
       <header className="flex shrink-0 items-center gap-2 border-b px-3 py-2">
-        <SpaceNavTrigger className="md:hidden" />
+        <SpaceNavTrigger className="lg:hidden" />
         <div className="min-w-0">
           <h1 className="truncate text-sm font-semibold">{t('title')}</h1>
           <p className="hidden truncate text-xs text-muted-foreground sm:block">

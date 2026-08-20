@@ -37,7 +37,7 @@ export function SpaceHubSkeleton() {
             the mobile nav trigger beside the heading, and a placeholder that
             ignores it reflows the title on a phone when the trigger appears. */}
         <div className="flex items-center gap-2">
-          <Skeleton aria-hidden className="size-9 shrink-0 md:hidden" />
+          <Skeleton aria-hidden className="size-11 shrink-0 lg:hidden" />
           <div className="space-y-2">
             <Skeleton aria-hidden className="h-7 w-64" />
             <Skeleton aria-hidden className="h-4 w-40" />

@@ -23,9 +23,16 @@ import { useSettingsDialog } from '@/widgets/notes/space-shell/ui/space-settings
  *
  * Narrow rather than a labelled 260px sidebar like the dashboard's: the notes
  * workspace already owns a 256px tree to the right of this, and two full
- * sidebars side by side leave the editor barely half the window. Mobile gets
- * the same destinations through `SpaceNavTrigger`, which pages mount inside
- * their own header so a phone never stacks two bars.
+ * sidebars side by side leave the editor barely half the window. Below `lg`
+ * the same destinations arrive through `SpaceNavTrigger`, which pages mount
+ * inside their own header so a phone never stacks two bars.
+ *
+ * `lg`, not the `md` this used to be — the dashboard's rail has always
+ * appeared at `lg`, so between 768px and 1023px the two surfaces navigated
+ * differently on the same device: a rail here, a hamburger there. `lg` is the
+ * value both now use, and it is the right one of the two: a rail is icons
+ * with no labels, leaning entirely on hover tooltips to say what they are,
+ * and every device in that band is a touch device with no hover at all.
  */
 export function SpaceNavRail() {
   const t = useTranslations('dashboard.space');
@@ -37,7 +44,7 @@ export function SpaceNavRail() {
     <TooltipProvider delayDuration={200}>
       <aside
         aria-label={t('navAriaLabel')}
-        className="hidden w-14 shrink-0 flex-col items-center gap-1 border-r border-border/50 bg-card py-3 md:flex"
+        className="hidden w-14 shrink-0 flex-col items-center gap-1 border-r border-border/50 bg-card py-3 lg:flex"
       >
         <Link
           href="/dashboard"

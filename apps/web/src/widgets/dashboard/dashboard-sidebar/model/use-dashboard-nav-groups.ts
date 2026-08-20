@@ -3,12 +3,7 @@
 import { Icons } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
-import type { DashboardNavItem } from '@/widgets/dashboard/dashboard-sidebar/ui/dashboard-nav-items';
-
-export interface DashboardNavGroup {
-  label: string;
-  items: DashboardNavItem[];
-}
+import type { NavDrawerGroup } from '@/shared/ui/nav-drawer';
 
 /**
  * The single list the rail and the mobile drawer both render, lifted out of
@@ -27,7 +22,7 @@ export interface DashboardNavGroup {
  * key that does not exist. Same reason `use-space-nav-items.ts` does it this
  * way.
  */
-export function useDashboardNavGroups(): DashboardNavGroup[] {
+export function useDashboardNavGroups(): NavDrawerGroup[] {
   const t = useTranslations('dashboard.sidebar');
 
   return [
@@ -38,6 +33,9 @@ export function useDashboardNavGroups(): DashboardNavGroup[] {
           href: '/dashboard',
           label: t('items.dashboard'),
           icon: Icons.dashboard,
+          // The only entry that needs it: `/dashboard` is a prefix of every
+          // other route here, so prefix matching would light it permanently.
+          exact: true,
         },
         {
           href: '/dashboard/user-profile',

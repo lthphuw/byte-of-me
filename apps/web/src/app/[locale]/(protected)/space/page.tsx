@@ -7,5 +7,5 @@ import { SpaceNavTrigger } from '@/widgets/notes/space-shell';
  * page IS the async boundary.
  */
 export default function SpacePage() {
-  return <SpaceHub navSlot={<SpaceNavTrigger className="md:hidden" />} />;
+  return <SpaceHub navSlot={<SpaceNavTrigger className="lg:hidden" />} />;
 }

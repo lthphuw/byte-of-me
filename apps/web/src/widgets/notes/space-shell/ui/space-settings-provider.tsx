@@ -18,7 +18,7 @@ import { WorkspaceSettingsDialog } from '@/features/notes/workspace-settings';
  * it, because there are three of those: the desktop rail, the mobile nav sheet,
  * and the keyboard. Mounting it per trigger would give the rail's copy and the
  * sheet's copy separate open states, and the keyboard would have no copy at all
- * — the rail is `hidden md:flex`, so a phone would have no way in.
+ * — the rail is `hidden lg:flex`, so a phone would have no way in.
  */
 const SettingsDialogContext = createContext<{ open: () => void } | null>(null);
 

@@ -25,7 +25,7 @@ export default function NotesLayout({
 }) {
   return (
     <>
-      <NoteWorkspace navSlot={<SpaceNavTrigger className="md:hidden" />} />
+      <NoteWorkspace navSlot={<SpaceNavTrigger className="lg:hidden" />} />
       {children}
     </>
   );
