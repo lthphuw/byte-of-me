@@ -213,6 +213,17 @@ export type Note = Prisma.NoteModel
  */
 export type NoteLink = Prisma.NoteLinkModel
 /**
+ * Model NoteDocument
+ * A file attached to one note — PDFs today, nothing else accepted.
+ * 
+ * Deliberately WITHOUT a `url` column. These objects live in the PRIVATE
+ * bucket and are reachable only through `/api/notes/documents/[id]`, which
+ * checks the session before it streams a byte. A column named `url` is an
+ * invitation for some future component to render one, and the whole point of
+ * the private lane is that no such address exists.
+ */
+export type NoteDocument = Prisma.NoteDocumentModel
+/**
  * Model NoteLabel
  * 
  */

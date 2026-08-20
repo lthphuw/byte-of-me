@@ -111,6 +111,60 @@ describe('Storage', () => {
       );
     });
 
+    it('getFile targets the right bucket and key', async () => {
+      const stream = {} as ReadableStream;
+      mockSend.mockResolvedValueOnce({
+        Body: { transformToWebStream: () => stream },
+        ContentType: 'application/pdf',
+        ContentLength: 42,
+      });
+
+      const result = await storage.getFile('users/u1/notes/n1/doc.pdf');
+
+      const command = mockSend.mock.calls[0][0];
+      expect(command.input).toEqual(
+        expect.objectContaining({
+          Bucket: 'test-bucket',
+          Key: 'users/u1/notes/n1/doc.pdf',
+        })
+      );
+      // Identity, not equality: the point is that the SDK's stream is handed
+      // through untouched, so a route can pipe it without buffering.
+      expect(result.body).toBe(stream);
+      expect(result.contentType).toBe('application/pdf');
+      expect(result.contentLength).toBe(42);
+    });
+
+    it('getFile survives an object with no body', async () => {
+      // S3 can answer a GET with no `Body` — a zero-byte object, or a response
+      // the SDK could not stream. Returning `undefined` lets the caller answer
+      // 404 instead of throwing a TypeError inside a route handler.
+      mockSend.mockResolvedValueOnce({ ContentType: 'application/pdf' });
+
+      const result = await storage.getFile('empty.pdf');
+
+      expect(result.body).toBeUndefined();
+    });
+
+    it('copyFileFrom URL-encodes the source and keeps the destination raw', async () => {
+      mockSend.mockResolvedValueOnce({});
+
+      await storage.copyFileFrom(
+        'public-bucket',
+        'users/u1/media/2026/my file.png',
+        'users/u1/notes/n1/my file.png'
+      );
+
+      const command = mockSend.mock.calls[0][0];
+      expect(command.input).toEqual(
+        expect.objectContaining({
+          Bucket: 'test-bucket',
+          CopySource: 'public-bucket/users/u1/media/2026/my%20file.png',
+          Key: 'users/u1/notes/n1/my file.png',
+        })
+      );
+    });
+
     it('getPresignedUploadUrl forwards expiresIn', async () => {
       mockSignUrl.mockResolvedValueOnce('signed');
 

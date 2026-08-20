@@ -89,6 +89,7 @@ model User {
   blogStatisticLogs BlogStatisticLog[]
   notes             Note[]
   noteLabels        NoteLabel[]
+  noteDocuments     NoteDocument[]
   workspaceSettings WorkspaceSettings?
 
   noteSharesReceived NoteShare[] @relation("NoteShareRecipient")
@@ -790,12 +791,12 @@ model ContactMessage {
 
 model Note {
   id        String   @id @default(cuid())
-  createdAt DateTime @default(now())  @map("created_at")
-  updatedAt DateTime @updatedAt       @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   title     String
-  content   String  @db.Text                     // stringified Tiptap JSON
-  plainText String  @db.Text @map("plain_text")  // derived from content, never client-supplied
+  content   String @db.Text // stringified Tiptap JSON
+  plainText String @map("plain_text") @db.Text // derived from content, never client-supplied
 
   /// Free-form workflow state ("draft", "active", "done", …) — groupable in the
   /// explorer; the trash mechanism stays `archivedAt`, not a status value.
@@ -819,7 +820,7 @@ model Note {
   isFolder Boolean @default(false) @map("is_folder")
 
   isPinned   Boolean   @default(false) @map("is_pinned")
-  archivedAt DateTime?                 @map("archived_at")
+  archivedAt DateTime? @map("archived_at")
 
   parentId String? @map("parent_id")
   parent   Note?   @relation("NoteTree", fields: [parentId], references: [id], onDelete: Cascade)
@@ -829,10 +830,11 @@ model Note {
   ownerId String @map("owner_id")
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-  outgoingLinks NoteLink[]    @relation("NoteLinkSource")
-  incomingLinks NoteLink[]    @relation("NoteLinkTarget")
+  outgoingLinks NoteLink[]     @relation("NoteLinkSource")
+  incomingLinks NoteLink[]     @relation("NoteLinkTarget")
   labels        NoteOnLabel[]
   shares        NoteShare[]
+  documents     NoteDocument[]
 
   @@index([ownerId, parentId, position], map: "idx_notes_owner_id_parent_id_position")
   @@index([ownerId, updatedAt(sort: Desc)], map: "idx_notes_owner_id_updated_at")
@@ -867,10 +869,42 @@ model NoteLink {
   @@map("note_links")
 }
 
+/// A file attached to one note — PDFs today, nothing else accepted.
+///
+/// Deliberately WITHOUT a `url` column. These objects live in the PRIVATE
+/// bucket and are reachable only through `/api/notes/documents/[id]`, which
+/// checks the session before it streams a byte. A column named `url` is an
+/// invitation for some future component to render one, and the whole point of
+/// the private lane is that no such address exists.
+model NoteDocument {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+
+  /// Defaults to the uploaded file's name; a display label, not an identifier.
+  title    String
+  fileKey  String @unique @map("file_key")
+  mimeType String @map("mime_type")
+  size     Int
+
+  noteId String @map("note_id")
+  note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  /// Denormalised from the note so the serving route can answer "is this
+  /// yours" with one indexed lookup instead of a join. Safe to duplicate: a
+  /// note never changes owner.
+  ownerId String @map("owner_id")
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  /// The panel reads one note's attachments, newest first. Nothing else reads
+  /// this table by any other axis.
+  @@index([noteId, createdAt(sort: Desc)], map: "idx_note_documents_note_created")
+  @@map("note_documents")
+}
+
 model NoteLabel {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt      @map("updated_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   name  String
   color String?
@@ -890,8 +924,8 @@ model NoteOnLabel {
   noteId String @map("note_id")
   note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
 
-  labelId   String    @map("label_id")
-  label     NoteLabel @relation(fields: [labelId], references: [id], onDelete: Cascade)
+  labelId String    @map("label_id")
+  label   NoteLabel @relation(fields: [labelId], references: [id], onDelete: Cascade)
 
   @@id([noteId, labelId])
   @@index([labelId], map: "idx_note_on_labels_label_id")
@@ -909,7 +943,7 @@ model NoteOnLabel {
 model NoteShare {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt      @map("updated_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   noteId String @map("note_id")
   note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
@@ -957,7 +991,7 @@ model NoteShare {
 model WorkspaceSettings {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt      @map("updated_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   ownerId String @unique @map("owner_id")
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)

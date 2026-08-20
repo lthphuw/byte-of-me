@@ -61,6 +61,17 @@ export const env = createEnv({
     SUPABASE_S3_STORAGE_SECRET_KEY: z.string(),
     SUPABASE_S3_STORAGE_BUCKET: z.string().default('byte-of-me'),
 
+    /**
+     * The bucket for files that must NOT be readable by URL.
+     *
+     * `SUPABASE_S3_STORAGE_BUCKET` above is PUBLIC — its objects answer an
+     * unauthenticated GET with 200, which is correct for a blog cover and
+     * wrong for anything attached to a private note. Note attachments go
+     * here and are served only through `/api/notes/documents/[id]`, which
+     * checks the session first.
+     */
+    SUPABASE_S3_PRIVATE_BUCKET: z.string().default('byte-of-me-private'),
+
     // 'test' is included because `bun test` sets NODE_ENV to 'test' before any
     // preload runs (see apps/web/test-setup.ts) and this schema is validated
     // eagerly at import time — without it, importing any module that reaches
@@ -114,6 +125,7 @@ export const env = createEnv({
     SUPABASE_S3_STORAGE_ACCESS_KEY: process.env.SUPABASE_S3_STORAGE_ACCESS_KEY,
     SUPABASE_S3_STORAGE_SECRET_KEY: process.env.SUPABASE_S3_STORAGE_SECRET_KEY,
     SUPABASE_S3_STORAGE_BUCKET: process.env.SUPABASE_S3_STORAGE_BUCKET,
+    SUPABASE_S3_PRIVATE_BUCKET: process.env.SUPABASE_S3_PRIVATE_BUCKET,
 
     // Client
     NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,

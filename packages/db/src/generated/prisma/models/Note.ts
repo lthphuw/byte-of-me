@@ -291,6 +291,7 @@ export type NoteWhereInput = {
   incomingLinks?: Prisma.NoteLinkListRelationFilter
   labels?: Prisma.NoteOnLabelListRelationFilter
   shares?: Prisma.NoteShareListRelationFilter
+  documents?: Prisma.NoteDocumentListRelationFilter
 }
 
 export type NoteOrderByWithRelationInput = {
@@ -315,6 +316,7 @@ export type NoteOrderByWithRelationInput = {
   incomingLinks?: Prisma.NoteLinkOrderByRelationAggregateInput
   labels?: Prisma.NoteOnLabelOrderByRelationAggregateInput
   shares?: Prisma.NoteShareOrderByRelationAggregateInput
+  documents?: Prisma.NoteDocumentOrderByRelationAggregateInput
 }
 
 export type NoteWhereUniqueInput = Prisma.AtLeast<{
@@ -342,6 +344,7 @@ export type NoteWhereUniqueInput = Prisma.AtLeast<{
   incomingLinks?: Prisma.NoteLinkListRelationFilter
   labels?: Prisma.NoteOnLabelListRelationFilter
   shares?: Prisma.NoteShareListRelationFilter
+  documents?: Prisma.NoteDocumentListRelationFilter
 }, "id">
 
 export type NoteOrderByWithAggregationInput = {
@@ -406,6 +409,7 @@ export type NoteCreateInput = {
   incomingLinks?: Prisma.NoteLinkCreateNestedManyWithoutTargetInput
   labels?: Prisma.NoteOnLabelCreateNestedManyWithoutNoteInput
   shares?: Prisma.NoteShareCreateNestedManyWithoutNoteInput
+  documents?: Prisma.NoteDocumentCreateNestedManyWithoutNoteInput
 }
 
 export type NoteUncheckedCreateInput = {
@@ -428,6 +432,7 @@ export type NoteUncheckedCreateInput = {
   incomingLinks?: Prisma.NoteLinkUncheckedCreateNestedManyWithoutTargetInput
   labels?: Prisma.NoteOnLabelUncheckedCreateNestedManyWithoutNoteInput
   shares?: Prisma.NoteShareUncheckedCreateNestedManyWithoutNoteInput
+  documents?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutNoteInput
 }
 
 export type NoteUpdateInput = {
@@ -450,6 +455,7 @@ export type NoteUpdateInput = {
   incomingLinks?: Prisma.NoteLinkUpdateManyWithoutTargetNestedInput
   labels?: Prisma.NoteOnLabelUpdateManyWithoutNoteNestedInput
   shares?: Prisma.NoteShareUpdateManyWithoutNoteNestedInput
+  documents?: Prisma.NoteDocumentUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateInput = {
@@ -472,6 +478,7 @@ export type NoteUncheckedUpdateInput = {
   incomingLinks?: Prisma.NoteLinkUncheckedUpdateManyWithoutTargetNestedInput
   labels?: Prisma.NoteOnLabelUncheckedUpdateManyWithoutNoteNestedInput
   shares?: Prisma.NoteShareUncheckedUpdateManyWithoutNoteNestedInput
+  documents?: Prisma.NoteDocumentUncheckedUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteCreateManyInput = {
@@ -728,6 +735,20 @@ export type NoteUpdateOneRequiredWithoutIncomingLinksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.NoteUpdateToOneWithWhereWithoutIncomingLinksInput, Prisma.NoteUpdateWithoutIncomingLinksInput>, Prisma.NoteUncheckedUpdateWithoutIncomingLinksInput>
 }
 
+export type NoteCreateNestedOneWithoutDocumentsInput = {
+  create?: Prisma.XOR<Prisma.NoteCreateWithoutDocumentsInput, Prisma.NoteUncheckedCreateWithoutDocumentsInput>
+  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutDocumentsInput
+  connect?: Prisma.NoteWhereUniqueInput
+}
+
+export type NoteUpdateOneRequiredWithoutDocumentsNestedInput = {
+  create?: Prisma.XOR<Prisma.NoteCreateWithoutDocumentsInput, Prisma.NoteUncheckedCreateWithoutDocumentsInput>
+  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutDocumentsInput
+  upsert?: Prisma.NoteUpsertWithoutDocumentsInput
+  connect?: Prisma.NoteWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.NoteUpdateToOneWithWhereWithoutDocumentsInput, Prisma.NoteUpdateWithoutDocumentsInput>, Prisma.NoteUncheckedUpdateWithoutDocumentsInput>
+}
+
 export type NoteCreateNestedOneWithoutLabelsInput = {
   create?: Prisma.XOR<Prisma.NoteCreateWithoutLabelsInput, Prisma.NoteUncheckedCreateWithoutLabelsInput>
   connectOrCreate?: Prisma.NoteCreateOrConnectWithoutLabelsInput
@@ -775,6 +796,7 @@ export type NoteCreateWithoutOwnerInput = {
   incomingLinks?: Prisma.NoteLinkCreateNestedManyWithoutTargetInput
   labels?: Prisma.NoteOnLabelCreateNestedManyWithoutNoteInput
   shares?: Prisma.NoteShareCreateNestedManyWithoutNoteInput
+  documents?: Prisma.NoteDocumentCreateNestedManyWithoutNoteInput
 }
 
 export type NoteUncheckedCreateWithoutOwnerInput = {
@@ -796,6 +818,7 @@ export type NoteUncheckedCreateWithoutOwnerInput = {
   incomingLinks?: Prisma.NoteLinkUncheckedCreateNestedManyWithoutTargetInput
   labels?: Prisma.NoteOnLabelUncheckedCreateNestedManyWithoutNoteInput
   shares?: Prisma.NoteShareUncheckedCreateNestedManyWithoutNoteInput
+  documents?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutNoteInput
 }
 
 export type NoteCreateOrConnectWithoutOwnerInput = {
@@ -863,6 +886,7 @@ export type NoteCreateWithoutChildrenInput = {
   incomingLinks?: Prisma.NoteLinkCreateNestedManyWithoutTargetInput
   labels?: Prisma.NoteOnLabelCreateNestedManyWithoutNoteInput
   shares?: Prisma.NoteShareCreateNestedManyWithoutNoteInput
+  documents?: Prisma.NoteDocumentCreateNestedManyWithoutNoteInput
 }
 
 export type NoteUncheckedCreateWithoutChildrenInput = {
@@ -884,6 +908,7 @@ export type NoteUncheckedCreateWithoutChildrenInput = {
   incomingLinks?: Prisma.NoteLinkUncheckedCreateNestedManyWithoutTargetInput
   labels?: Prisma.NoteOnLabelUncheckedCreateNestedManyWithoutNoteInput
   shares?: Prisma.NoteShareUncheckedCreateNestedManyWithoutNoteInput
+  documents?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutNoteInput
 }
 
 export type NoteCreateOrConnectWithoutChildrenInput = {
@@ -910,6 +935,7 @@ export type NoteCreateWithoutParentInput = {
   incomingLinks?: Prisma.NoteLinkCreateNestedManyWithoutTargetInput
   labels?: Prisma.NoteOnLabelCreateNestedManyWithoutNoteInput
   shares?: Prisma.NoteShareCreateNestedManyWithoutNoteInput
+  documents?: Prisma.NoteDocumentCreateNestedManyWithoutNoteInput
 }
 
 export type NoteUncheckedCreateWithoutParentInput = {
@@ -931,6 +957,7 @@ export type NoteUncheckedCreateWithoutParentInput = {
   incomingLinks?: Prisma.NoteLinkUncheckedCreateNestedManyWithoutTargetInput
   labels?: Prisma.NoteOnLabelUncheckedCreateNestedManyWithoutNoteInput
   shares?: Prisma.NoteShareUncheckedCreateNestedManyWithoutNoteInput
+  documents?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutNoteInput
 }
 
 export type NoteCreateOrConnectWithoutParentInput = {
@@ -973,6 +1000,7 @@ export type NoteUpdateWithoutChildrenInput = {
   incomingLinks?: Prisma.NoteLinkUpdateManyWithoutTargetNestedInput
   labels?: Prisma.NoteOnLabelUpdateManyWithoutNoteNestedInput
   shares?: Prisma.NoteShareUpdateManyWithoutNoteNestedInput
+  documents?: Prisma.NoteDocumentUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateWithoutChildrenInput = {
@@ -994,6 +1022,7 @@ export type NoteUncheckedUpdateWithoutChildrenInput = {
   incomingLinks?: Prisma.NoteLinkUncheckedUpdateManyWithoutTargetNestedInput
   labels?: Prisma.NoteOnLabelUncheckedUpdateManyWithoutNoteNestedInput
   shares?: Prisma.NoteShareUncheckedUpdateManyWithoutNoteNestedInput
+  documents?: Prisma.NoteDocumentUncheckedUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUpsertWithWhereUniqueWithoutParentInput = {
@@ -1031,6 +1060,7 @@ export type NoteCreateWithoutOutgoingLinksInput = {
   incomingLinks?: Prisma.NoteLinkCreateNestedManyWithoutTargetInput
   labels?: Prisma.NoteOnLabelCreateNestedManyWithoutNoteInput
   shares?: Prisma.NoteShareCreateNestedManyWithoutNoteInput
+  documents?: Prisma.NoteDocumentCreateNestedManyWithoutNoteInput
 }
 
 export type NoteUncheckedCreateWithoutOutgoingLinksInput = {
@@ -1052,6 +1082,7 @@ export type NoteUncheckedCreateWithoutOutgoingLinksInput = {
   incomingLinks?: Prisma.NoteLinkUncheckedCreateNestedManyWithoutTargetInput
   labels?: Prisma.NoteOnLabelUncheckedCreateNestedManyWithoutNoteInput
   shares?: Prisma.NoteShareUncheckedCreateNestedManyWithoutNoteInput
+  documents?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutNoteInput
 }
 
 export type NoteCreateOrConnectWithoutOutgoingLinksInput = {
@@ -1078,6 +1109,7 @@ export type NoteCreateWithoutIncomingLinksInput = {
   outgoingLinks?: Prisma.NoteLinkCreateNestedManyWithoutSourceInput
   labels?: Prisma.NoteOnLabelCreateNestedManyWithoutNoteInput
   shares?: Prisma.NoteShareCreateNestedManyWithoutNoteInput
+  documents?: Prisma.NoteDocumentCreateNestedManyWithoutNoteInput
 }
 
 export type NoteUncheckedCreateWithoutIncomingLinksInput = {
@@ -1099,6 +1131,7 @@ export type NoteUncheckedCreateWithoutIncomingLinksInput = {
   outgoingLinks?: Prisma.NoteLinkUncheckedCreateNestedManyWithoutSourceInput
   labels?: Prisma.NoteOnLabelUncheckedCreateNestedManyWithoutNoteInput
   shares?: Prisma.NoteShareUncheckedCreateNestedManyWithoutNoteInput
+  documents?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutNoteInput
 }
 
 export type NoteCreateOrConnectWithoutIncomingLinksInput = {
@@ -1136,6 +1169,7 @@ export type NoteUpdateWithoutOutgoingLinksInput = {
   incomingLinks?: Prisma.NoteLinkUpdateManyWithoutTargetNestedInput
   labels?: Prisma.NoteOnLabelUpdateManyWithoutNoteNestedInput
   shares?: Prisma.NoteShareUpdateManyWithoutNoteNestedInput
+  documents?: Prisma.NoteDocumentUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateWithoutOutgoingLinksInput = {
@@ -1157,6 +1191,7 @@ export type NoteUncheckedUpdateWithoutOutgoingLinksInput = {
   incomingLinks?: Prisma.NoteLinkUncheckedUpdateManyWithoutTargetNestedInput
   labels?: Prisma.NoteOnLabelUncheckedUpdateManyWithoutNoteNestedInput
   shares?: Prisma.NoteShareUncheckedUpdateManyWithoutNoteNestedInput
+  documents?: Prisma.NoteDocumentUncheckedUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUpsertWithoutIncomingLinksInput = {
@@ -1189,6 +1224,7 @@ export type NoteUpdateWithoutIncomingLinksInput = {
   outgoingLinks?: Prisma.NoteLinkUpdateManyWithoutSourceNestedInput
   labels?: Prisma.NoteOnLabelUpdateManyWithoutNoteNestedInput
   shares?: Prisma.NoteShareUpdateManyWithoutNoteNestedInput
+  documents?: Prisma.NoteDocumentUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateWithoutIncomingLinksInput = {
@@ -1208,6 +1244,111 @@ export type NoteUncheckedUpdateWithoutIncomingLinksInput = {
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   children?: Prisma.NoteUncheckedUpdateManyWithoutParentNestedInput
   outgoingLinks?: Prisma.NoteLinkUncheckedUpdateManyWithoutSourceNestedInput
+  labels?: Prisma.NoteOnLabelUncheckedUpdateManyWithoutNoteNestedInput
+  shares?: Prisma.NoteShareUncheckedUpdateManyWithoutNoteNestedInput
+  documents?: Prisma.NoteDocumentUncheckedUpdateManyWithoutNoteNestedInput
+}
+
+export type NoteCreateWithoutDocumentsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  title: string
+  content: string
+  plainText: string
+  status?: string
+  properties?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isFolder?: boolean
+  isPinned?: boolean
+  archivedAt?: Date | string | null
+  position?: number
+  parent?: Prisma.NoteCreateNestedOneWithoutChildrenInput
+  children?: Prisma.NoteCreateNestedManyWithoutParentInput
+  owner: Prisma.UserCreateNestedOneWithoutNotesInput
+  outgoingLinks?: Prisma.NoteLinkCreateNestedManyWithoutSourceInput
+  incomingLinks?: Prisma.NoteLinkCreateNestedManyWithoutTargetInput
+  labels?: Prisma.NoteOnLabelCreateNestedManyWithoutNoteInput
+  shares?: Prisma.NoteShareCreateNestedManyWithoutNoteInput
+}
+
+export type NoteUncheckedCreateWithoutDocumentsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  title: string
+  content: string
+  plainText: string
+  status?: string
+  properties?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isFolder?: boolean
+  isPinned?: boolean
+  archivedAt?: Date | string | null
+  parentId?: string | null
+  position?: number
+  ownerId: string
+  children?: Prisma.NoteUncheckedCreateNestedManyWithoutParentInput
+  outgoingLinks?: Prisma.NoteLinkUncheckedCreateNestedManyWithoutSourceInput
+  incomingLinks?: Prisma.NoteLinkUncheckedCreateNestedManyWithoutTargetInput
+  labels?: Prisma.NoteOnLabelUncheckedCreateNestedManyWithoutNoteInput
+  shares?: Prisma.NoteShareUncheckedCreateNestedManyWithoutNoteInput
+}
+
+export type NoteCreateOrConnectWithoutDocumentsInput = {
+  where: Prisma.NoteWhereUniqueInput
+  create: Prisma.XOR<Prisma.NoteCreateWithoutDocumentsInput, Prisma.NoteUncheckedCreateWithoutDocumentsInput>
+}
+
+export type NoteUpsertWithoutDocumentsInput = {
+  update: Prisma.XOR<Prisma.NoteUpdateWithoutDocumentsInput, Prisma.NoteUncheckedUpdateWithoutDocumentsInput>
+  create: Prisma.XOR<Prisma.NoteCreateWithoutDocumentsInput, Prisma.NoteUncheckedCreateWithoutDocumentsInput>
+  where?: Prisma.NoteWhereInput
+}
+
+export type NoteUpdateToOneWithWhereWithoutDocumentsInput = {
+  where?: Prisma.NoteWhereInput
+  data: Prisma.XOR<Prisma.NoteUpdateWithoutDocumentsInput, Prisma.NoteUncheckedUpdateWithoutDocumentsInput>
+}
+
+export type NoteUpdateWithoutDocumentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  plainText?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  properties?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isFolder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  position?: Prisma.IntFieldUpdateOperationsInput | number
+  parent?: Prisma.NoteUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.NoteUpdateManyWithoutParentNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutNotesNestedInput
+  outgoingLinks?: Prisma.NoteLinkUpdateManyWithoutSourceNestedInput
+  incomingLinks?: Prisma.NoteLinkUpdateManyWithoutTargetNestedInput
+  labels?: Prisma.NoteOnLabelUpdateManyWithoutNoteNestedInput
+  shares?: Prisma.NoteShareUpdateManyWithoutNoteNestedInput
+}
+
+export type NoteUncheckedUpdateWithoutDocumentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  plainText?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  properties?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isFolder?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  position?: Prisma.IntFieldUpdateOperationsInput | number
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  children?: Prisma.NoteUncheckedUpdateManyWithoutParentNestedInput
+  outgoingLinks?: Prisma.NoteLinkUncheckedUpdateManyWithoutSourceNestedInput
+  incomingLinks?: Prisma.NoteLinkUncheckedUpdateManyWithoutTargetNestedInput
   labels?: Prisma.NoteOnLabelUncheckedUpdateManyWithoutNoteNestedInput
   shares?: Prisma.NoteShareUncheckedUpdateManyWithoutNoteNestedInput
 }
@@ -1231,6 +1372,7 @@ export type NoteCreateWithoutLabelsInput = {
   outgoingLinks?: Prisma.NoteLinkCreateNestedManyWithoutSourceInput
   incomingLinks?: Prisma.NoteLinkCreateNestedManyWithoutTargetInput
   shares?: Prisma.NoteShareCreateNestedManyWithoutNoteInput
+  documents?: Prisma.NoteDocumentCreateNestedManyWithoutNoteInput
 }
 
 export type NoteUncheckedCreateWithoutLabelsInput = {
@@ -1252,6 +1394,7 @@ export type NoteUncheckedCreateWithoutLabelsInput = {
   outgoingLinks?: Prisma.NoteLinkUncheckedCreateNestedManyWithoutSourceInput
   incomingLinks?: Prisma.NoteLinkUncheckedCreateNestedManyWithoutTargetInput
   shares?: Prisma.NoteShareUncheckedCreateNestedManyWithoutNoteInput
+  documents?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutNoteInput
 }
 
 export type NoteCreateOrConnectWithoutLabelsInput = {
@@ -1289,6 +1432,7 @@ export type NoteUpdateWithoutLabelsInput = {
   outgoingLinks?: Prisma.NoteLinkUpdateManyWithoutSourceNestedInput
   incomingLinks?: Prisma.NoteLinkUpdateManyWithoutTargetNestedInput
   shares?: Prisma.NoteShareUpdateManyWithoutNoteNestedInput
+  documents?: Prisma.NoteDocumentUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateWithoutLabelsInput = {
@@ -1310,6 +1454,7 @@ export type NoteUncheckedUpdateWithoutLabelsInput = {
   outgoingLinks?: Prisma.NoteLinkUncheckedUpdateManyWithoutSourceNestedInput
   incomingLinks?: Prisma.NoteLinkUncheckedUpdateManyWithoutTargetNestedInput
   shares?: Prisma.NoteShareUncheckedUpdateManyWithoutNoteNestedInput
+  documents?: Prisma.NoteDocumentUncheckedUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteCreateWithoutSharesInput = {
@@ -1331,6 +1476,7 @@ export type NoteCreateWithoutSharesInput = {
   outgoingLinks?: Prisma.NoteLinkCreateNestedManyWithoutSourceInput
   incomingLinks?: Prisma.NoteLinkCreateNestedManyWithoutTargetInput
   labels?: Prisma.NoteOnLabelCreateNestedManyWithoutNoteInput
+  documents?: Prisma.NoteDocumentCreateNestedManyWithoutNoteInput
 }
 
 export type NoteUncheckedCreateWithoutSharesInput = {
@@ -1352,6 +1498,7 @@ export type NoteUncheckedCreateWithoutSharesInput = {
   outgoingLinks?: Prisma.NoteLinkUncheckedCreateNestedManyWithoutSourceInput
   incomingLinks?: Prisma.NoteLinkUncheckedCreateNestedManyWithoutTargetInput
   labels?: Prisma.NoteOnLabelUncheckedCreateNestedManyWithoutNoteInput
+  documents?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutNoteInput
 }
 
 export type NoteCreateOrConnectWithoutSharesInput = {
@@ -1389,6 +1536,7 @@ export type NoteUpdateWithoutSharesInput = {
   outgoingLinks?: Prisma.NoteLinkUpdateManyWithoutSourceNestedInput
   incomingLinks?: Prisma.NoteLinkUpdateManyWithoutTargetNestedInput
   labels?: Prisma.NoteOnLabelUpdateManyWithoutNoteNestedInput
+  documents?: Prisma.NoteDocumentUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateWithoutSharesInput = {
@@ -1410,6 +1558,7 @@ export type NoteUncheckedUpdateWithoutSharesInput = {
   outgoingLinks?: Prisma.NoteLinkUncheckedUpdateManyWithoutSourceNestedInput
   incomingLinks?: Prisma.NoteLinkUncheckedUpdateManyWithoutTargetNestedInput
   labels?: Prisma.NoteOnLabelUncheckedUpdateManyWithoutNoteNestedInput
+  documents?: Prisma.NoteDocumentUncheckedUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteCreateManyOwnerInput = {
@@ -1447,6 +1596,7 @@ export type NoteUpdateWithoutOwnerInput = {
   incomingLinks?: Prisma.NoteLinkUpdateManyWithoutTargetNestedInput
   labels?: Prisma.NoteOnLabelUpdateManyWithoutNoteNestedInput
   shares?: Prisma.NoteShareUpdateManyWithoutNoteNestedInput
+  documents?: Prisma.NoteDocumentUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateWithoutOwnerInput = {
@@ -1468,6 +1618,7 @@ export type NoteUncheckedUpdateWithoutOwnerInput = {
   incomingLinks?: Prisma.NoteLinkUncheckedUpdateManyWithoutTargetNestedInput
   labels?: Prisma.NoteOnLabelUncheckedUpdateManyWithoutNoteNestedInput
   shares?: Prisma.NoteShareUncheckedUpdateManyWithoutNoteNestedInput
+  documents?: Prisma.NoteDocumentUncheckedUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateManyWithoutOwnerInput = {
@@ -1521,6 +1672,7 @@ export type NoteUpdateWithoutParentInput = {
   incomingLinks?: Prisma.NoteLinkUpdateManyWithoutTargetNestedInput
   labels?: Prisma.NoteOnLabelUpdateManyWithoutNoteNestedInput
   shares?: Prisma.NoteShareUpdateManyWithoutNoteNestedInput
+  documents?: Prisma.NoteDocumentUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateWithoutParentInput = {
@@ -1542,6 +1694,7 @@ export type NoteUncheckedUpdateWithoutParentInput = {
   incomingLinks?: Prisma.NoteLinkUncheckedUpdateManyWithoutTargetNestedInput
   labels?: Prisma.NoteOnLabelUncheckedUpdateManyWithoutNoteNestedInput
   shares?: Prisma.NoteShareUncheckedUpdateManyWithoutNoteNestedInput
+  documents?: Prisma.NoteDocumentUncheckedUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateManyWithoutParentInput = {
@@ -1571,6 +1724,7 @@ export type NoteCountOutputType = {
   incomingLinks: number
   labels: number
   shares: number
+  documents: number
 }
 
 export type NoteCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1579,6 +1733,7 @@ export type NoteCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   incomingLinks?: boolean | NoteCountOutputTypeCountIncomingLinksArgs
   labels?: boolean | NoteCountOutputTypeCountLabelsArgs
   shares?: boolean | NoteCountOutputTypeCountSharesArgs
+  documents?: boolean | NoteCountOutputTypeCountDocumentsArgs
 }
 
 /**
@@ -1626,6 +1781,13 @@ export type NoteCountOutputTypeCountSharesArgs<ExtArgs extends runtime.Types.Ext
   where?: Prisma.NoteShareWhereInput
 }
 
+/**
+ * NoteCountOutputType without action
+ */
+export type NoteCountOutputTypeCountDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NoteDocumentWhereInput
+}
+
 
 export type NoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1649,6 +1811,7 @@ export type NoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   incomingLinks?: boolean | Prisma.Note$incomingLinksArgs<ExtArgs>
   labels?: boolean | Prisma.Note$labelsArgs<ExtArgs>
   shares?: boolean | Prisma.Note$sharesArgs<ExtArgs>
+  documents?: boolean | Prisma.Note$documentsArgs<ExtArgs>
   _count?: boolean | Prisma.NoteCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["note"]>
 
@@ -1716,6 +1879,7 @@ export type NoteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   incomingLinks?: boolean | Prisma.Note$incomingLinksArgs<ExtArgs>
   labels?: boolean | Prisma.Note$labelsArgs<ExtArgs>
   shares?: boolean | Prisma.Note$sharesArgs<ExtArgs>
+  documents?: boolean | Prisma.Note$documentsArgs<ExtArgs>
   _count?: boolean | Prisma.NoteCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type NoteIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1737,6 +1901,7 @@ export type $NotePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     incomingLinks: Prisma.$NoteLinkPayload<ExtArgs>[]
     labels: Prisma.$NoteOnLabelPayload<ExtArgs>[]
     shares: Prisma.$NoteSharePayload<ExtArgs>[]
+    documents: Prisma.$NoteDocumentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2166,6 +2331,7 @@ export interface Prisma__NoteClient<T, Null = never, ExtArgs extends runtime.Typ
   incomingLinks<T extends Prisma.Note$incomingLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Note$incomingLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NoteLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   labels<T extends Prisma.Note$labelsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Note$labelsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NoteOnLabelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   shares<T extends Prisma.Note$sharesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Note$sharesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NoteSharePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  documents<T extends Prisma.Note$documentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Note$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NoteDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2746,6 +2912,30 @@ export type Note$sharesArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   distinct?: Prisma.NoteShareScalarFieldEnum | Prisma.NoteShareScalarFieldEnum[]
+}
+
+/**
+ * Note.documents
+ */
+export type Note$documentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the NoteDocument
+   */
+  select?: Prisma.NoteDocumentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the NoteDocument
+   */
+  omit?: Prisma.NoteDocumentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NoteDocumentInclude<ExtArgs> | null
+  where?: Prisma.NoteDocumentWhereInput
+  orderBy?: Prisma.NoteDocumentOrderByWithRelationInput | Prisma.NoteDocumentOrderByWithRelationInput[]
+  cursor?: Prisma.NoteDocumentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NoteDocumentScalarFieldEnum | Prisma.NoteDocumentScalarFieldEnum[]
 }
 
 /**

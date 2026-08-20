@@ -436,6 +436,7 @@ export const ModelName = {
   ContactMessage: 'ContactMessage',
   Note: 'Note',
   NoteLink: 'NoteLink',
+  NoteDocument: 'NoteDocument',
   NoteLabel: 'NoteLabel',
   NoteOnLabel: 'NoteOnLabel',
   NoteShare: 'NoteShare',
@@ -455,7 +456,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "note" | "noteLink" | "noteLabel" | "noteOnLabel" | "noteShare" | "workspaceSettings"
+    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "note" | "noteLink" | "noteDocument" | "noteLabel" | "noteOnLabel" | "noteShare" | "workspaceSettings"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3345,6 +3346,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    NoteDocument: {
+      payload: Prisma.$NoteDocumentPayload<ExtArgs>
+      fields: Prisma.NoteDocumentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NoteDocumentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteDocumentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NoteDocumentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteDocumentPayload>
+        }
+        findFirst: {
+          args: Prisma.NoteDocumentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteDocumentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NoteDocumentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteDocumentPayload>
+        }
+        findMany: {
+          args: Prisma.NoteDocumentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteDocumentPayload>[]
+        }
+        create: {
+          args: Prisma.NoteDocumentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteDocumentPayload>
+        }
+        createMany: {
+          args: Prisma.NoteDocumentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NoteDocumentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteDocumentPayload>[]
+        }
+        delete: {
+          args: Prisma.NoteDocumentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteDocumentPayload>
+        }
+        update: {
+          args: Prisma.NoteDocumentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteDocumentPayload>
+        }
+        deleteMany: {
+          args: Prisma.NoteDocumentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NoteDocumentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NoteDocumentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteDocumentPayload>[]
+        }
+        upsert: {
+          args: Prisma.NoteDocumentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NoteDocumentPayload>
+        }
+        aggregate: {
+          args: Prisma.NoteDocumentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNoteDocument>
+        }
+        groupBy: {
+          args: Prisma.NoteDocumentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NoteDocumentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NoteDocumentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NoteDocumentCountAggregateOutputType> | number
+        }
+      }
+    }
     NoteLabel: {
       payload: Prisma.$NoteLabelPayload<ExtArgs>
       fields: Prisma.NoteLabelFieldRefs
@@ -4182,6 +4257,20 @@ export const NoteLinkScalarFieldEnum = {
 export type NoteLinkScalarFieldEnum = (typeof NoteLinkScalarFieldEnum)[keyof typeof NoteLinkScalarFieldEnum]
 
 
+export const NoteDocumentScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  title: 'title',
+  fileKey: 'fileKey',
+  mimeType: 'mimeType',
+  size: 'size',
+  noteId: 'noteId',
+  ownerId: 'ownerId'
+} as const
+
+export type NoteDocumentScalarFieldEnum = (typeof NoteDocumentScalarFieldEnum)[keyof typeof NoteDocumentScalarFieldEnum]
+
+
 export const NoteLabelScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
@@ -4548,6 +4637,7 @@ export type GlobalOmitConfig = {
   contactMessage?: Prisma.ContactMessageOmit
   note?: Prisma.NoteOmit
   noteLink?: Prisma.NoteLinkOmit
+  noteDocument?: Prisma.NoteDocumentOmit
   noteLabel?: Prisma.NoteLabelOmit
   noteOnLabel?: Prisma.NoteOnLabelOmit
   noteShare?: Prisma.NoteShareOmit

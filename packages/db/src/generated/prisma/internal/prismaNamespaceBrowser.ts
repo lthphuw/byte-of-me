@@ -90,6 +90,7 @@ export const ModelName = {
   ContactMessage: 'ContactMessage',
   Note: 'Note',
   NoteLink: 'NoteLink',
+  NoteDocument: 'NoteDocument',
   NoteLabel: 'NoteLabel',
   NoteOnLabel: 'NoteOnLabel',
   NoteShare: 'NoteShare',
@@ -612,6 +613,20 @@ export const NoteLinkScalarFieldEnum = {
 } as const
 
 export type NoteLinkScalarFieldEnum = (typeof NoteLinkScalarFieldEnum)[keyof typeof NoteLinkScalarFieldEnum]
+
+
+export const NoteDocumentScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  title: 'title',
+  fileKey: 'fileKey',
+  mimeType: 'mimeType',
+  size: 'size',
+  noteId: 'noteId',
+  ownerId: 'ownerId'
+} as const
+
+export type NoteDocumentScalarFieldEnum = (typeof NoteDocumentScalarFieldEnum)[keyof typeof NoteDocumentScalarFieldEnum]
 
 
 export const NoteLabelScalarFieldEnum = {
