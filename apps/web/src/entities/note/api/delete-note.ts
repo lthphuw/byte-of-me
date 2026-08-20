@@ -4,6 +4,7 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
 import { collectDescendantIds } from '@/entities/note/model/note-tree';
+import { privateStorage } from '@/shared/api/s3-storage-api';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
@@ -31,6 +32,11 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
  * own, including any row created under it after this read — listing the ids
  * explicitly in the `where` cannot delete less than the target alone would,
  * and cannot reach outside this owner's rows either.
+ *
+ * Attachment OBJECTS are the one thing the cascade cannot take: it removes
+ * every `NoteDocument` row under the subtree and leaves the files themselves
+ * sitting in the private bucket, unreferenced and unreachable. So their keys
+ * are read alongside the ids, and the objects are removed after the write.
  *
  * Widening `data` from `null` costs no existing caller anything (AGENTS
  * §11.6); the envelope is unchanged.
@@ -64,6 +70,16 @@ export async function deleteNote(id: string): Promise<ApiResponse<string[]>> {
 
     const ids = [parsedId.data, ...collectDescendantIds(rows, parsedId.data)];
 
+    // Read the attachments' storage keys BEFORE the write, for the same
+    // reason the ids are read first: `NoteDocument.noteId` is
+    // `onDelete: Cascade`, so the database takes the ROWS with the subtree
+    // and after that nothing in this process can still say which objects
+    // they pointed at. The bucket has no cascade.
+    const documents = await prisma.noteDocument.findMany({
+      where: { noteId: { in: ids }, ownerId: session.id },
+      select: { fileKey: true },
+    });
+
     // `ownerId` stays on the write even though every id above came from an
     // owner-scoped read. It is the security boundary, not a filter that has
     // become redundant — the walk is client-shaped logic and the guard must
@@ -71,6 +87,28 @@ export async function deleteNote(id: string): Promise<ApiResponse<string[]>> {
     await prisma.note.deleteMany({
       where: { id: { in: ids }, ownerId: session.id },
     });
+
+    // Rows first, objects after — and a failed object delete is logged, not
+    // propagated. The row is already gone, so the caller's delete DID
+    // succeed; an object nobody can reach any more is a storage bill, not a
+    // correctness bug, and failing the action here would tell the author
+    // their note survived when it did not. `allSettled` so one key's failure
+    // does not abandon the rest.
+    if (documents.length > 0) {
+      const results = await Promise.allSettled(
+        documents.map((document) => privateStorage.deleteFile(document.fileKey))
+      );
+
+      results.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          logger.error(
+            `Delete note: orphaned attachment object ${
+              documents[index]?.fileKey
+            }: ${getErrorMessage(result.reason, 'unknown error')}`
+          );
+        }
+      });
+    }
 
     return { success: true, data: ids };
   } catch (error) {
