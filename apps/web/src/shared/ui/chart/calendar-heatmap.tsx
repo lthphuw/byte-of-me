@@ -44,6 +44,7 @@ export function CalendarHeatmap({
       summary={summary}
       rows={points}
       valueLabel={title}
+      formatValue={formatValue}
       className={className}
     >
       <svg
@@ -72,12 +73,7 @@ export function CalendarHeatmap({
                 point.value === null ? 'fill-muted' : 'fill-primary'
               )}
               opacity={point.value === null ? 1 : intensity}
-            >
-              <title>
-                {point.label}
-                {point.value === null ? '' : ` · ${formatValue(point.value)}`}
-              </title>
-            </rect>
+            />
           );
         })}
       </svg>

@@ -47,6 +47,7 @@ export function BarChart({
       summary={summary}
       rows={points}
       valueLabel={title}
+      formatValue={formatValue}
       className={className}
     >
       <p className="mb-1 h-5 text-sm font-medium tabular-nums">

@@ -25,6 +25,7 @@ export function ChartFrame({
   summary,
   rows,
   valueLabel,
+  formatValue,
   className,
   children,
 }: {
@@ -32,6 +33,12 @@ export function ChartFrame({
   summary: string;
   rows: ChartPoint[];
   valueLabel: string;
+  /**
+   * Formats a value for the ACCESSIBLE table. Without it the table reported
+   * raw model units — `450` where the chart itself says `7h 30m` — which makes
+   * the non-visual equivalent worse than the visual one it stands in for.
+   */
+  formatValue?: (value: number) => string;
   className?: string;
   children: React.ReactNode;
 }) {
@@ -71,7 +78,11 @@ export function ChartFrame({
             {rows.map((row) => (
               <tr key={row.label}>
                 <th scope="row">{row.label}</th>
-                <td>{row.value ?? '—'}</td>
+                <td>
+                  {row.value === null
+                    ? '—'
+                    : formatValue?.(row.value) ?? String(row.value)}
+                </td>
               </tr>
             ))}
           </tbody>
