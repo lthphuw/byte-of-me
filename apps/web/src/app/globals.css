@@ -174,7 +174,31 @@
  * These rules give the native ones the same shape as the Radix thumb
  * (`scroll-area.tsx`, kept in step with the token above).
  *
- * `:where(body *)` on purpose, twice over:
+ * The STANDARD properties only, and that is a performance decision rather than
+ * a stylistic one. Defining ANY `::-webkit-scrollbar` rule moves a scroller off
+ * Chromium's compositor `SolidColorScrollbarLayer` and onto a main-thread
+ * PAINTED scrollbar, which Blink re-records every time the thumb moves — once
+ * per scroll frame. The block that used to live here was unscoped, so the note
+ * editor's scroll column and every one of the thirty `.tableWrapper`s on a long
+ * research note was carrying one. `scrollbar-width` and `scrollbar-color` are
+ * honoured by current Chromium and Firefox and buy the same slim themed bar
+ * from the compositor, for nothing.
+ *
+ * The selector is a LIST of panes rather than the `:where(body *)` it replaced,
+ * for the second half of the same reason. `*` as the rightmost compound cannot
+ * be bucketed by tag, class or id, so Blink files the rule in its universal set
+ * and tests it against EVERY element on EVERY style recalc — five rules deep,
+ * each walking ancestors to find `body`, on a ~10,000-node document. Every
+ * selector below is a single bucketable compound instead, so matching one is a
+ * class or tag check with no tree walk.
+ *
+ * `.slim-scroll` is the utility to reach for on a new pane. The rest name the
+ * scrollers that already exist and cannot be given a class from a stylesheet:
+ * Tailwind's own overflow utilities mark every pane in the app that scrolls,
+ * `.tableWrapper` is written by prosemirror-tables' node view, and a `pre` takes
+ * its `overflow-x` from `editor-surface.css`.
+ *
+ * Still `:where()`, and still on purpose, twice over:
  *
  *  - It excludes `html` and `body`, so the BROWSER'S OWN page scrollbar stays
  *    native. That bar is chrome, not content; people aim at it by muscle
@@ -182,46 +206,25 @@
  *  - It contributes no specificity, so Radix's viewport — which hides the
  *    native bar to draw its own — still wins without an `!important`.
  *
- * Note the trade-off this accepts: on a platform with OVERLAY scrollbars (a
- * trackpad Mac), styling `::-webkit-scrollbar` at all turns them into classic
- * bars that take layout width whenever a pane overflows. That is the cost of
- * the affordance, and for the wide tables it is the point — a reader has to be
- * able to see that there are columns off-screen.
+ * What this gives up: on a platform with OVERLAY scrollbars (a trackpad Mac) a
+ * pane no longer grows a permanent classic bar, because forcing one was a side
+ * effect of the `::-webkit-scrollbar` block rather than something the standard
+ * properties can ask for. So a wide table's "there are columns off to the
+ * right" cue now rests entirely on the pinned first column's edge in
+ * `editor-surface.css` — which is what that edge is for, and why it is not
+ * decoration to be tidied away.
  * ------------------------------------------------------------------------ */
 
-:where(body *) {
+:where(
+    .slim-scroll,
+    .overflow-auto,
+    .overflow-x-auto,
+    .overflow-y-auto,
+    .tableWrapper,
+    pre
+  ) {
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) transparent;
-}
-
-:where(body *)::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-/* Transparent, both of them: a filled track draws a permanent grey channel
-   down the side of every pane, which is more furniture than the content. The
-   corner is where a horizontal and a vertical bar meet — unstyled it is an
-   opaque grey square, and a wide, tall table has one. */
-:where(body *)::-webkit-scrollbar-track,
-:where(body *)::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-/* The 2px transparent border is what insets the thumb inside the 10px track:
-   `background-clip: padding-box` keeps the fill off the border box, leaving a
-   6px thumb with breathing room rather than one welded to the pane's edge. */
-:where(body *)::-webkit-scrollbar-thumb {
-  background-color: var(--scrollbar-thumb);
-  background-clip: padding-box;
-  border: 2px solid transparent;
-  border-radius: 9999px;
-}
-
-:where(body *)::-webkit-scrollbar-thumb:hover,
-:where(body *)::-webkit-scrollbar-thumb:active {
-  background-color: var(--scrollbar-thumb-hover);
-  background-clip: padding-box;
 }
 
 html {
@@ -328,9 +331,11 @@ html {
      to scroll past it anyway. */
   .tableWrapper {
     overflow: visible !important;
-    /* The on-screen cap turns a long table into its own scroll pane. On paper
-       that would print 70vh of table and drop the rest. */
-    max-height: none !important;
+    /* On screen this element skips laying out its contents until they are
+       near the viewport. A print job has no viewport to be near, and a
+       skipped table prints as its `contain-intrinsic-size` placeholder — a
+       400px blank. `visible` forces every table to lay out for real. */
+    content-visibility: visible !important;
   }
 
   .tableWrapper table {
@@ -347,11 +352,17 @@ html {
     white-space: normal !important;
   }
 
-  /* Both pinned bands. Sticky inside a print box pins to the wrong thing, and
-     there is nothing to scroll past it anyway. */
-  .tableWrapper tr > :first-child,
-  .tableWrapper tr:first-child > * {
+  /* The row-label column, the one band that still pins. Sticky inside a print
+     box pins to the wrong thing, and there is nothing to scroll past it anyway.
+     Its edge goes with it: that hairline says "this column is covering
+     something", and on paper it is covering nothing.
+
+     The header row used to be listed here too. It no longer pins on screen —
+     see the note above the header-row rule in `editor-surface.css` — so there
+     is nothing left to undo. */
+  .tableWrapper tr > :first-child {
     position: static !important;
+    box-shadow: none !important;
   }
 
   /* Numeric columns keep their alignment — that is typography, not layout —

@@ -141,7 +141,14 @@
   /* Tiptap's default `min-height: 100vh` turns every editor into a page-tall
      scroll area regardless of the box it was given. */
   min-height: unset !important;
-  text-rendering: optimizeLegibility;
+  /* No `text-rendering: optimizeLegibility`, deliberately. It forces kerning
+     and optional ligatures onto every text run, and that shaping is redone
+     whenever a tile is rastered — including the tiles a scroll newly exposes,
+     across the ~13,000 table cells of a long research note. `body` in
+     `globals.css` already asks for `'rlig' 1, 'calt' 1`, which is the part of
+     it worth paying for, and every other surface in the app renders at the
+     default `auto`. A writing surface that shapes text differently from the
+     page it sits on is the bug, not the feature. */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -401,6 +408,20 @@
   overflow-x: auto;
   /* Scrolling a table to its end must not then drag the page sideways. */
   overscroll-behavior-x: contain;
+
+  /* Off-screen tables cost nothing to have. Without this the engine styles,
+     lays out and paints every cell of every table in the document on any
+     invalidation — and a benchmark note is mostly cells. Measured on the
+     survey note (30 tables, 3,738 cells, a 36,000px document): one style
+     invalidation over the writing surface took ~280ms of recalc + layout,
+     and ~43ms with this rule present.
+
+     `auto` on `contain-intrinsic-size`, not a bare length: `auto` makes the
+     element remember the size it last really had, so a table that has been
+     on screen once stops guessing and the scrollbar stops jittering as the
+     reader moves through the document. 400px is only the first guess. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
 }
 
 .ProseMirror table {
@@ -459,9 +480,41 @@
 }
 
 /* Row hover. On a table too wide to see at once, this is what keeps the eye on
-   one row while it travels. */
-.ProseMirror tr:hover > td {
-  background: hsl(var(--muted) / 0.4);
+   one row while it travels.
+
+   Both the gate and the `.tableWrapper:hover` root are there for scrolling
+   cost, not for taste. With the pointer STATIONARY, scrolling moves rows
+   underneath it, so the browser re-runs hit-testing every frame and hands
+   `:hover` to a different `tr` each time — a style invalidation plus a repaint
+   of two rows per frame, on a document that already has 3,738 cells to keep up
+   with. Rooting the selector at the wrapper means none of that is reachable
+   unless the pointer is actually inside a table; the media query drops the rule
+   entirely on touch, where there is no hover to give and the highlight only
+   ever latched onto whichever row was tapped last. */
+@media (hover: hover) and (pointer: fine) {
+  .ProseMirror .tableWrapper:hover tr:hover > td:not(:first-child) {
+    background: hsl(var(--muted) / 0.4);
+  }
+
+  /* The pinned row label needs the SAME tint and a different colour value.
+     `:not(:first-child)` above is what makes this rule necessary rather than
+     redundant: the row-hover selector is (0,4,2) and the pinned column's own
+     `background` is (0,2,1), so before this split the hover tint simply won
+     — and it is translucent. The one cell in the row that must never be
+     see-through was the one cell the hover state made see-through, and the
+     columns scrolling underneath showed straight through the row label.
+
+     `color-mix` rather than an alpha, because that is the whole point: it
+     resolves to what `--muted` at 40% LOOKS like over the surface, as an
+     opaque colour. Same appearance as the cells beside it, nothing behind
+     it. */
+  .ProseMirror .tableWrapper:hover tr:hover > td:first-child {
+    background: color-mix(
+      in srgb,
+      hsl(var(--muted)) 40%,
+      hsl(var(--background))
+    );
+  }
 }
 
 /* A TABLE IS NOT PROSE.
@@ -489,8 +542,8 @@
 }
 
 .ProseMirror th {
-  /* Opaque: this cell pins in both directions below, and a translucent fill
-     would show the row scrolling underneath it. */
+  /* Opaque: a `th` in the first column pins sideways below, and a translucent
+     fill would show the row scrolling underneath it. */
   background: hsl(var(--muted));
   font-weight: 600;
   text-align: left;
@@ -499,29 +552,35 @@
   white-space: nowrap;
 }
 
-/* The header row, pinned to the top of the pane below. */
-.ProseMirror tr:first-child > * {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: hsl(var(--muted));
-}
+/* The header row is NOT pinned, and the table is NOT its own vertical scroll
+   pane. Both were tried together and both are reverted, because the pair made
+   the document unscrollable.
 
-/* The corner belongs to both pinned bands, so it outranks each of them. */
-.ProseMirror tr:first-child > :first-child {
-  z-index: 3;
-}
+   `overflow-x: auto` above is enough to make `overflow-y`'s used value `auto`
+   too (CSS Overflow 3 §3: once one axis is not `visible`, a `visible` other
+   axis computes to `auto`). Adding `max-height: 70vh` then guaranteed that
+   second axis had something to scroll — so every table became a vertical
+   scroll container occupying most of the viewport, and a wheel gesture landing
+   on one scrolled the TABLE to its end before the document moved at all.
 
-/* A long table becomes its own scroll pane, with the header pinned — the
-   spreadsheet behaviour, and the only way to still know what a column is at
-   row 30 of 39. Wide viewports only: on a phone a scroll pane nested in the
-   document is a trap, because a thumb that lands inside it cannot scroll the
-   page past the table. */
-@media (min-width: 768px) {
-  .ProseMirror .tableWrapper {
-    max-height: 70vh;
-  }
-}
+   Measured on the survey note this was written for (30 tables, 3,738 cells):
+   12 tables were vertical traps; with the pointer over one, three wheel ticks
+   moved the page 0px and the table 300px. With the cap removed, the same
+   gesture moved the page 300px and the table 0px. The comment this replaces
+   worried about exactly this trap on phones and gated the cap at `md` — but
+   the trap is the pointer being over a table, not the width of the screen.
+
+   What survives: wide tables still scroll SIDEWAYS, and the row-label column
+   below still pins while they do. That is the affordance that was actually
+   carrying its weight; a pinned header row only ever mattered inside the
+   scroll pane this no longer creates. */
+
+/* No corner rule. The top-left cell used to carry `z-index: 3` so it outranked
+   both pinned bands where they crossed; with the header band gone there is one
+   band left and nothing for it to cross. */
+
+/* No `max-height` here. See the note above the header-row rule: capping the
+   wrapper is what turned every table into a vertical scroll trap. */
 
 /* The row label, pinned while the numbers scroll past it. On a wide table
    this is the difference between reading a row and guessing which one it is;
@@ -537,12 +596,25 @@
   /* And that column is HIDDEN, not absent — a reader has to be able to tell.
      Numeric columns are right-aligned, so what this covers is the leading
      digits: `25.9M` reading as `5.9M` is a plausible wrong number, which is
-     worse than an obviously cut-off one. */
-  box-shadow: 6px 0 6px -6px rgb(0 0 0 / 0.18);
+     worse than an obviously cut-off one. With the scrollbar no longer forced
+     into existence (`globals.css`), this edge is the ONLY thing still saying
+     the table continues.
+
+     A zero-blur hairline, not the blurred shadow it started as. A blur is a
+     raster op per cell, redone for every tile the shadow falls across, and the
+     survey note carries 455 pinned cells. The cue is worth having; three
+     blurred pixels of it are not.
+
+     `--foreground`, not the `rgb(0 0 0 / 0.18)` this was: a black edge against
+     a near-black page is no edge at all, so in dark mode the cue was simply
+     not being given. */
+  box-shadow: 1px 0 0 hsl(var(--foreground) / 0.2);
 }
 
+/* A `th` in the row-label column keeps the header fill while it pins. No
+   `z-index` any more: that only ever ranked it against the header band, which
+   no longer pins (see above), and the pinned cells never overlap each other. */
 .ProseMirror tr > th:first-child {
-  z-index: 2;
   background: hsl(var(--muted));
 }
 

@@ -236,18 +236,24 @@ export function RichTextHtml({
         '[&_tr>:first-child]:shadow-[6px_0_6px_-6px_rgba(0,0,0,0.18)]',
         'dark:[&_tr>:first-child]:shadow-[6px_0_6px_-6px_rgba(0,0,0,0.6)]',
 
-        // A long table becomes its own scroll pane from `md`, with the header
-        // pinned to the top of it — the spreadsheet behaviour, and the only way
-        // to still know what a column is at row 30 of 39.
+        // NO height cap, and NO pinned header row. `overflow-x-auto` above
+        // already makes `overflow-y`'s used value `auto` (CSS Overflow 3 §3),
+        // so capping the height gave every table a second scrolling axis —
+        // and a wheel gesture landing on a table then scrolled the TABLE to
+        // its end before the article moved at all. Measured on the survey
+        // note: with the pointer over a table, three wheel ticks moved the
+        // page 0px. The cap was gated at `md` for exactly this fear on
+        // phones; the trap is the pointer being over a table, not the width
+        // of the screen. Sideways scrolling and the pinned row-label column
+        // above both survive — those are the affordances that earned it.
         //
-        // Capped only from `md`: on a phone a scroll pane nested in the article
-        // is a trap, since a thumb that lands inside it cannot scroll the page
-        // past the table. Below that the table is simply as tall as it is.
-        'md:[&_.tableWrapper]:max-h-[70vh]',
-        '[&_tr:first-child>*]:sticky [&_tr:first-child>*]:top-0 [&_tr:first-child>*]:z-[2]',
-        // The corner belongs to both pinned bands, so it outranks each of them.
-        '[&_tr:first-child>:first-child]:z-[3] [&_tr:first-child>:first-child]:bg-neutral-50',
-        'dark:[&_tr:first-child>:first-child]:bg-neutral-900',
+        // Off-screen tables also stop being laid out and painted: on a note
+        // with thirty of them that is the difference between ~280ms and
+        // ~43ms of recalc per style invalidation. `auto` on the intrinsic
+        // size lets a table that has been on screen once remember its real
+        // height, so the scrollbar settles instead of jittering.
+        '[&_.tableWrapper]:[content-visibility:auto]',
+        '[&_.tableWrapper]:[contain-intrinsic-size:auto_400px]',
 
         // Citation markers — quiet inline chips that invert on hover so it is
         // obvious they are clickable without shouting mid-sentence.
