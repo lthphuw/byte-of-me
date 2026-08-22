@@ -18,6 +18,7 @@ import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-act
 import { BlogBreadcrumb } from '@/widgets/public/blog-details-content/ui/blog-breadcrumb';
 import { BlogCitationLinks } from '@/widgets/public/blog-details-content/ui/blog-citation-links';
 import { BlogContentHeader } from '@/widgets/public/blog-details-content/ui/blog-content-header';
+import { BlogReaderNav } from '@/widgets/public/blog-details-content/ui/blog-reader-nav';
 import { BlogReadingProgress } from '@/widgets/public/blog-details-content/ui/blog-reading-progress';
 import { BlogDetailsShell } from '@/widgets/public/blog-details-content/ui/blog-shells';
 import { BlogTableOfContents } from '@/widgets/public/blog-details-content/ui/blog-table-of-contents';
@@ -46,24 +47,12 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
 
               <BlogContentHeader blog={blog} />
 
-              {/* The narrow-screen table of contents shares a wrapper with the
-                  article body so its `sticky` releases at the end of the post
-                  rather than hovering over the comments below. */}
-              <div>
-                {/* Collapsed by default so the article still starts above the
-                    fold, and sticky so it stays reachable while reading
-                    (hidden when < 2 headings) */}
-                <div className="sticky top-24 z-30 mt-4 md:mt-6 xl:hidden">
-                  <BlogTableOfContents
-                    targetId={ARTICLE_ID}
-                    label={t('tableOfContents')}
-                    variant="collapsible"
-                  />
-                </div>
-
-                <div className="mb-8 md:mb-12" />
-                <BlogContent blog={blog} />
-              </div>
+              {/* Below `xl` the headings and the bibliography live in
+                  `BlogReaderNav` — a button in the corner, rendered at the end
+                  of this file so it is not inside the article's stacking
+                  context. Nothing sits over the text any more. */}
+              <div className="mb-8 md:mb-12" />
+              <BlogContent blog={blog} />
 
               <div className="mt-4 md:mt-6" />
               <BlogActionBar
@@ -141,6 +130,12 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
           </div>
         </div>
       </BlogDetailsShell>
+
+      <BlogReaderNav
+        targetId={ARTICLE_ID}
+        contentsLabel={t('tableOfContents')}
+        referencesLabel={t('references')}
+      />
 
       <BlogCitationLinks targetId={ARTICLE_ID} />
       <BlogAnalytics blogId={blog.id} />

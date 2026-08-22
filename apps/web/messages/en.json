@@ -203,6 +203,7 @@
     "home": "Home",
     "allPosts": "All posts",
     "tableOfContents": "On this page",
+    "references": "References",
     "relatedPosts": "Related posts",
     "previousPost": "Previous",
     "nextPost": "Next",
@@ -763,6 +764,7 @@
         "toc": "Contents",
         "links": "Links",
         "files": "Files",
+        "cite": "Cite",
         "tocEmpty": "Headings you add will show up here."
       },
       "explorer": {

@@ -10,6 +10,7 @@ import { ConfirmDeleteDialog } from '../../../../confirm-delete-dialog';
 import { Input } from '../../../../input';
 import { Label } from '../../../../label';
 
+import { BibtexImport } from './bibtex-import';
 import { formatReferenceLabel } from './format';
 import { readReferencesFromDoc } from './numbering';
 import { ReferenceForm } from './reference-form';
@@ -154,16 +155,19 @@ export function ReferencePanel({ editor }: { editor: Editor }) {
           />
         </div>
       ) : (
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          className="w-full"
-          onClick={() => setState({ mode: 'create' })}
-        >
-          <Plus className="mr-1 h-3.5 w-3.5" />
-          Add reference
-        </Button>
+        <div className="space-y-1">
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="w-full"
+            onClick={() => setState({ mode: 'create' })}
+          >
+            <Plus className="mr-1 h-3.5 w-3.5" />
+            Add reference
+          </Button>
+          <BibtexImport editor={editor} />
+        </div>
       )}
 
       {ordered.length === 0 && state.mode !== 'create' && (

@@ -206,6 +206,7 @@ declare const messages: {
     "home": "Home",
     "allPosts": "All posts",
     "tableOfContents": "On this page",
+    "references": "References",
     "relatedPosts": "Related posts",
     "previousPost": "Previous",
     "nextPost": "Next",
@@ -766,6 +767,7 @@ declare const messages: {
         "toc": "Contents",
         "links": "Links",
         "files": "Files",
+        "cite": "Cite",
         "tocEmpty": "Headings you add will show up here."
       },
       "explorer": {

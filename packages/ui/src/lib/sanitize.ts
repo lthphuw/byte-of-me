@@ -18,6 +18,10 @@ const ALLOWED_ATTRS = new Set([
   'rowspan', 'start', 'type', 'width', 'height', 'id', 'aria-label',
   'data-citation', 'data-citation-link', 'data-reference-list',
   'data-reference-backlink',
+  // Which table columns hold figures, worked out at render time by
+  // `markNumericTableColumns`. Carries no script — the styles read it to
+  // right-align a column of numbers and stop it wrapping.
+  'data-numeric',
   // The LaTeX source of a math node, and which flavour it is. Carries no
   // script — it is read back by `MathRenderer`, which hands it to KaTeX with
   // `throwOnError: false`. KaTeX itself is the parser, not this.

@@ -206,6 +206,7 @@ declare const messages: {
     "home": "Trang chủ",
     "allPosts": "Tất cả bài viết",
     "tableOfContents": "Nội dung",
+    "references": "Tham khảo",
     "relatedPosts": "Bài viết liên quan",
     "previousPost": "Trước",
     "nextPost": "Tiếp",
@@ -766,6 +767,7 @@ declare const messages: {
         "toc": "Mục lục",
         "links": "Liên kết",
         "files": "Tệp",
+        "cite": "Trích dẫn",
         "tocEmpty": "Các tiêu đề bạn thêm sẽ hiện ở đây."
       },
       "explorer": {

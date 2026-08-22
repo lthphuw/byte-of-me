@@ -48,6 +48,11 @@ import { useResizablePanel } from '@/shared/hooks/use-resizable-panel';
 import { useRouter } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import {
+  type NoteEditorStore,
+  useNoteEditor,
+  useNoteEditorStore,
+} from '@/widgets/notes/note-manager/lib/note-editor-store';
+import {
   type NoteOutlineStore,
   useNoteOutline,
   useNoteOutlineStore,
@@ -193,6 +198,9 @@ export function NoteManager({
   // palettes and the editor for a value only the Contents tab reads. See
   // `note-outline-store.ts`.
   const outlineStore = useNoteOutlineStore();
+  // The live editor, for the sidebar's Cite tab. A store for the same reason
+  // the outline is one — see `note-editor-store.ts`.
+  const editorStore = useNoteEditorStore();
   useEffect(() => {
     outlineStore.set([]);
   }, [openNoteId, outlineStore]);
@@ -517,6 +525,7 @@ export function NoteManager({
               onOpenCheatSheet={() => setCheatSheetOpen(true)}
             onEditorApiChange={(api) => {
               editorApiRef.current = api;
+              editorStore.set(api?.editor ?? null);
             }}
               onOutlineChange={outlineStore.set}
               // Renaming from the editor's title field, rather than from a tree
@@ -609,6 +618,7 @@ export function NoteManager({
         >
           <OutlineSidebarTabs
             store={outlineStore}
+            editorStore={editorStore}
             noteId={openNoteId}
             onOpen={openNote}
             activeDocumentId={openDocument}
@@ -629,6 +639,7 @@ export function NoteManager({
           {openNoteId && (
             <OutlineSidebarTabs
               store={outlineStore}
+              editorStore={editorStore}
               noteId={openNoteId}
               onOpen={openNote}
               activeDocumentId={openDocument}
@@ -729,6 +740,7 @@ export function NoteManager({
  */
 function OutlineSidebarTabs({
   store,
+  editorStore,
   noteId,
   onOpen,
   activeDocumentId,
@@ -736,6 +748,7 @@ function OutlineSidebarTabs({
   onReadDocument,
 }: {
   store: NoteOutlineStore;
+  editorStore: NoteEditorStore;
   noteId: string;
   onOpen: (id: string) => void;
   activeDocumentId: string | null;
@@ -743,6 +756,7 @@ function OutlineSidebarTabs({
   onReadDocument: (documentId: string) => void;
 }) {
   const outline = useNoteOutline(store);
+  const editor = useNoteEditor(editorStore);
 
   return (
     <NoteSidebarTabs
@@ -752,6 +766,7 @@ function OutlineSidebarTabs({
       activeDocumentId={activeDocumentId}
       onOpenDocument={onOpenDocument}
       onReadDocument={onReadDocument}
+      editor={editor}
     />
   );
 }

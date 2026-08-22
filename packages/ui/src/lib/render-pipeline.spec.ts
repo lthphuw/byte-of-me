@@ -56,6 +56,15 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
     expect(html).toContain('Public HTML');
   });
 
+  it('wraps a table in the scroll container the styles hang off', () => {
+    // `.tableWrapper` is the horizontal scroll area for wide tables, and the
+    // same class the editor's own node view creates — without it in the
+    // rendered HTML, published tables have no scroll container at all and the
+    // rules in `rich-text-html.tsx` match nothing.
+    expect(html).toContain('class="tableWrapper"');
+    expect(html).toMatch(/<div class="tableWrapper"><table/);
+  });
+
   it('keeps the language class mermaid enhancement keys on', () => {
     expect(html).toContain('language-mermaid');
     expect(html).toContain('flowchart TB');

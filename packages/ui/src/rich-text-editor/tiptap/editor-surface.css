@@ -228,6 +228,19 @@
   margin-top: var(--flow-block);
 }
 
+/*
+ * The table's wrapper, not the table. prosemirror-tables' node view puts a
+ * `div.tableWrapper` between `.ProseMirror` and every `<table>`, so the pair
+ * above — which matches on the element — reaches nothing, and a table would
+ * take the bare `--flow` its neighbours get. Here rather than merged into that
+ * `:is()` list for the reason its comment gives: a class would raise the
+ * selector to (0,2,0) and break the `blockquote + hr` tie below.
+ */
+.ProseMirror > * + .tableWrapper,
+.ProseMirror > .tableWrapper + * {
+  margin-top: var(--flow-block);
+}
+
 .ProseMirror > * + :is(.react-renderer, .katex-display) {
   margin-top: var(--flow-block);
 }
@@ -379,24 +392,158 @@
  * Tables
  * ------------------------------------------------------------------------ */
 
+/* The scroll container. prosemirror-tables' node view already wraps every
+   table in this element, and `renderWrapper` (render-extensions.ts) puts the
+   same wrapper in the published HTML, so these rules and the ones in
+   `rich-text-html.tsx` describe the same box. */
+.ProseMirror .tableWrapper {
+  max-width: 100%;
+  overflow-x: auto;
+  /* Scrolling a table to its end must not then drag the page sideways. */
+  overscroll-behavior-x: contain;
+}
+
 .ProseMirror table {
-  border-collapse: collapse;
-  table-layout: fixed;
+  /* `auto`, not `fixed`: fixed divides the writing column between the columns
+     no matter how many there are, so an eleven-column benchmark table got
+     77px per column and wrapped every heading. Auto sizes to content, and the
+     `min-width` on cells below is what lets it exceed the column and scroll. */
+  table-layout: auto;
+  /* `width: 100%`, not `width: auto` + `min-width: 100%`.
+   *
+   * prosemirror-tables' node view writes an INLINE `min-width` onto the table
+   * (`cellMinWidth` × columns — 75px for a three-column table), and an inline
+   * declaration beats this stylesheet. So `min-width: 100%` here never
+   * applied, `width: auto` shrank the table to its content, and a narrow table
+   * sat 50px short of the writing column looking like a mistake.
+   *
+   * `width` is safe to set because the same node view CLEARS the inline width
+   * in this branch (it only sets one for explicitly-sized columns, which
+   * `resizable: false` never produces). And with `table-layout: auto` a
+   * percentage width is a preference, not a cap: a table whose content needs
+   * more still overflows, which is what the wrapper scrolls. */
   width: 100%;
-  overflow: hidden;
+  min-width: 100%;
+  /* `separate`, not `collapse`: a collapsed table owns its borders, and the
+     sticky first column below would leave its borders behind when it pins. */
+  border-collapse: separate;
+  border-spacing: 0;
+  /* NOT `hidden`. An `overflow: hidden` ancestor between a sticky element and
+     its scroll container silently kills `position: sticky` — that one
+     declaration is what stopped the pinned first column from working. */
+  overflow: visible;
 }
 
 .ProseMirror :is(th, td) {
-  border: 1px solid hsl(var(--border));
-  padding: 0.35rem 0.6rem;
+  /* Hairlines. At full strength, eleven columns of grid read as the subject of
+     the table and the figures as the background. */
+  border-right: 1px solid hsl(var(--border) / 0.7);
+  border-bottom: 1px solid hsl(var(--border) / 0.7);
+  padding: 0.3rem 0.6rem;
   vertical-align: top;
   position: relative;
+  font-variant-numeric: tabular-nums;
+  /* The floor that makes a wide table wide. Without it every cell shrinks to
+     its longest word and nothing ever overflows — so nothing ever scrolls. */
+  min-width: 7ch;
+}
+
+/* Columns of figures, worked out from the content by the numeric-column
+   plugin. A number is read by its last digit, so right-aligned and never
+   wrapped; and it needs a fraction of the width a sentence does, which is
+   where most of an eleven-column table's excess width goes. */
+.ProseMirror :is(th, td)[data-numeric] {
+  text-align: right;
+  white-space: nowrap;
+  min-width: 5ch;
+}
+
+/* Row hover. On a table too wide to see at once, this is what keeps the eye on
+   one row while it travels. */
+.ProseMirror tr:hover > td {
+  background: hsl(var(--muted) / 0.4);
+}
+
+/* A TABLE IS NOT PROSE.
+ *
+ * A grid is scanned, not read, so its rows want to sit closer together than
+ * the writing rhythm around them — 14px on a 1.4 line, which is what Notion
+ * and every spreadsheet use.
+ *
+ * Behind the same `min-width: 641px` gate as the density and type-scale
+ * variants above, and for exactly the reason spelled out there: iOS Safari
+ * zooms the whole page whenever a focused editable computes under 16px, and a
+ * table cell is as editable as anything else here. On a phone the small size
+ * simply does not exist. Moving this rule out of the query is the
+ * "simplification" that reintroduces the zoom.
+ */
+@media (min-width: 641px) {
+  .ProseMirror :is(th, td) {
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+}
+
+.ProseMirror tr:first-child > * {
+  border-top: 1px solid hsl(var(--border));
 }
 
 .ProseMirror th {
-  background: hsl(var(--muted) / 0.5);
+  /* Opaque: this cell pins in both directions below, and a translucent fill
+     would show the row scrolling underneath it. */
+  background: hsl(var(--muted));
   font-weight: 600;
   text-align: left;
+  /* Column headings are labels, not prose: wrapping "Latency (ms)" onto three
+     lines to save 40px makes the table harder to read, not narrower. */
+  white-space: nowrap;
+}
+
+/* The header row, pinned to the top of the pane below. */
+.ProseMirror tr:first-child > * {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: hsl(var(--muted));
+}
+
+/* The corner belongs to both pinned bands, so it outranks each of them. */
+.ProseMirror tr:first-child > :first-child {
+  z-index: 3;
+}
+
+/* A long table becomes its own scroll pane, with the header pinned — the
+   spreadsheet behaviour, and the only way to still know what a column is at
+   row 30 of 39. Wide viewports only: on a phone a scroll pane nested in the
+   document is a trap, because a thumb that lands inside it cannot scroll the
+   page past the table. */
+@media (min-width: 768px) {
+  .ProseMirror .tableWrapper {
+    max-height: 70vh;
+  }
+}
+
+/* The row label, pinned while the numbers scroll past it. On a wide table
+   this is the difference between reading a row and guessing which one it is;
+   on a table that fits, it does nothing at all. */
+.ProseMirror tr > :first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 14ch;
+  border-left: 1px solid hsl(var(--border) / 0.7);
+  /* Opaque, or the column scrolling underneath shows through. */
+  background: hsl(var(--background));
+  /* And that column is HIDDEN, not absent — a reader has to be able to tell.
+     Numeric columns are right-aligned, so what this covers is the leading
+     digits: `25.9M` reading as `5.9M` is a plausible wrong number, which is
+     worse than an obviously cut-off one. */
+  box-shadow: 6px 0 6px -6px rgb(0 0 0 / 0.18);
+}
+
+.ProseMirror tr > th:first-child {
+  z-index: 2;
+  background: hsl(var(--muted));
 }
 
 .ProseMirror .selectedCell::after {

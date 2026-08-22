@@ -19,7 +19,7 @@ import Highlight from '@tiptap/extension-highlight';
 import Link from '@tiptap/extension-link';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
-import { TableKit } from '@tiptap/extension-table';
+import { TableCell, TableHeader, TableKit } from '@tiptap/extension-table';
 import TextAlign from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import Typography from '@tiptap/extension-typography';
@@ -36,6 +36,40 @@ import { ReferenceListBase } from './extensions/references/reference-list-base';
 // into the HTML. Unknown languages (e.g. mermaid) fall through as plain text
 // with their `language-*` class intact, which the mermaid enhancer keys on.
 const lowlight = createLowlight(common);
+
+/**
+ * The one attribute `markNumericTableColumns` sets: this cell sits in a column
+ * of figures, so the styles should right-align it and stop it wrapping.
+ *
+ * On the HEADER as well as the body cell, and that is the point of the shared
+ * definition — alignment belongs to the column, and a left-aligned `AP₅₀`
+ * floating over a right-aligned column of numbers is worse than no alignment
+ * at all.
+ *
+ * Set at render time, never stored — see `numeric-columns.ts` for why. The
+ * editor's own schema deliberately does NOT carry it: nothing persists it, so
+ * nothing needs to parse it back.
+ */
+const numericAttribute = {
+  numeric: {
+    default: false,
+    parseHTML: (element: HTMLElement) => element.hasAttribute('data-numeric'),
+    renderHTML: (attributes: Record<string, unknown>) =>
+      attributes.numeric ? { 'data-numeric': 'true' } : {},
+  },
+};
+
+const NumericTableCell = TableCell.extend({
+  addAttributes() {
+    return { ...this.parent?.(), ...numericAttribute };
+  },
+});
+
+const NumericTableHeader = TableHeader.extend({
+  addAttributes() {
+    return { ...this.parent?.(), ...numericAttribute };
+  },
+});
 
 /** Heading with a persistent `id`, the anchor targets for tables of contents. */
 export const CustomHeading = Heading.extend({
@@ -167,8 +201,23 @@ export const renderExtensions = [
   RenderImagePlaceholder,
   Typography,
   // resizable off: column widths are an editing affordance; rendered tables
-  // just fill the column.
-  TableKit.configure({ table: { resizable: false } }),
+  // size themselves from their content.
+  //
+  // `renderWrapper` puts the `div.tableWrapper` the editor's own node view
+  // already creates into the rendered HTML too, so one set of table rules in
+  // `rich-text-html.tsx` and `editor-surface.css` can describe both. That
+  // wrapper is the horizontal scroll container: a survey table with eleven
+  // columns is wider than any reading column, and the alternative — the
+  // `display: block` this replaces — throws away the table layout algorithm,
+  // which is the thing that keeps columns aligned to each other.
+  TableKit.configure({
+    table: { resizable: false, renderWrapper: true },
+    // Both replaced below, with the one attribute the numeric-column pass sets.
+    tableCell: false,
+    tableHeader: false,
+  }),
+  NumericTableCell,
+  NumericTableHeader,
   CitationBase,
   ReferenceListBase,
   RenderInlineMath,

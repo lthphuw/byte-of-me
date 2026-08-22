@@ -59,12 +59,22 @@ import { ImageGroup } from './extensions/image-group';
 import { ImagePlaceholder } from './extensions/image-placeholder';
 import { LinkSuggestion } from './extensions/link-suggestion';
 import { NotesBlockMath, NotesInlineMath } from './extensions/math';
+import { NumericTableColumns } from './extensions/numeric-columns-plugin';
 import { Citation } from './extensions/references/citation';
 import { ReferenceList } from './extensions/references/reference-list';
 import { ReferencePanel } from './extensions/references/reference-panel';
 import SearchAndReplace from './extensions/search-and-replace';
 import { imageFilesFrom, uploadImages } from './extensions/upload-images';
 import { MobileEditorTools } from './mobile-tools';
+import {
+  anchorMapFor,
+  applyEditorBlock,
+  applyTextareaLine,
+  blockAtLine,
+  type MarkdownAnchorMap,
+  readEditorBlock,
+  readTextareaLine,
+} from './mode-switch-anchor';
 import { stripPastedPresentation } from './paste-presentation';
 // Shared with the server-side render schema so both stay identical.
 import { CustomHeading } from './render-extensions';
@@ -120,6 +130,10 @@ export function createExtensions(options?: {
     SearchAndReplace,
     Typography,
     TableKit.configure({ table: { resizable: false } }),
+    // Right-aligns the columns that hold only figures, by the same rule the
+    // render pass applies to published HTML — so a table looks the same while
+    // it is being written as it does once it is read.
+    NumericTableColumns,
     // Markdown in, markdown understood: pasting a README-style document turns
     // into real headings/lists/tables/code blocks instead of flat text.
     Markdown,
@@ -361,6 +375,17 @@ export interface RichTextEditorApi {
    * ProseMirror reads its selection back from the DOM.
    */
   insertLink: (link: { text: string; href: string }) => void;
+  /**
+   * The live editor, for a consumer that hosts one of the editor's own panels
+   * in chrome of its own.
+   *
+   * The notes workspace is the case this exists for: it runs `chromeless`, so
+   * the editor's References aside never renders, and the panel has to be
+   * mounted in the workspace's sidebar instead. Everything reachable through
+   * this is a Tiptap command — a consumer that only wants text should use the
+   * three methods above, which say what they do.
+   */
+  editor: Editor;
 }
 
 const COMPACT_MAX_HEIGHT = 360;
@@ -718,6 +743,44 @@ export function RichTextEditor({
   );
 
   const rawTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  /*
+   * Keeping the author's place across the WYSIWYG ↔ markdown toggle.
+   *
+   * Both views live in ONE scroll container (the `overflow-y-auto` div below),
+   * so `scrollTop` survives the switch untranslated and lands somewhere else
+   * entirely — a table that is 800px of rendered editor is forty lines of
+   * source. The block index is the unit the two representations share; see
+   * `mode-switch-anchor.ts`, and `markdown-anchor.ts` for why it cannot be
+   * finer than a block.
+   *
+   * Captured inside the mode effect, which runs while the OUTGOING view is
+   * still mounted (`rawActive` needs both `markdownMode` and `rawText`, and
+   * the effect is what sets the second), then served by the layout effect
+   * below once the incoming one has painted.
+   */
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const pendingLineRef = useRef<number | null>(null);
+  const anchorMapRef = useRef<MarkdownAnchorMap | null>(null);
+
+  /*
+   * Where the raw pane is, tracked as it moves rather than read on the way
+   * out.
+   *
+   * Reading it during the exit is what the first attempt did, and it cannot
+   * work: `rawActive` is `markdownMode && rawText !== null`, so the moment the
+   * prop flips the textarea unmounts IN THAT SAME RENDER — before any effect
+   * runs, and layout effects run before passive ones. By the time the mode
+   * effect looked, `rawTextareaRef.current` was null and every switch reported
+   * line 0, which is why the editor kept landing at the top of the document.
+   */
+  const markdownLineRef = useRef(0);
+  const noteMarkdownPosition = useCallback(() => {
+    const textarea = rawTextareaRef.current;
+    if (textarea) {
+      markdownLineRef.current = readTextareaLine(textarea, scrollRef.current);
+    }
+  }, []);
   // Where the caret has to land after a formatted paste. The textarea is
   // CONTROLLED, so React assigns `value` on the render that follows
   // `applyRaw` — and assigning `value` collapses the selection to the end of
@@ -735,6 +798,31 @@ export function RichTextEditor({
     pendingCaretRef.current = null;
     rawTextareaRef.current?.setSelectionRange(caret, caret);
   });
+
+  // Declared here rather than beside the render below, because the layout
+  // effect that follows needs it and hooks cannot sit after `if (!editor)`.
+  const rawActive = markdownMode && rawText !== null;
+
+  /*
+   * Serves whichever anchor the mode effect left behind, once the incoming
+   * view has painted.
+   *
+   * Layout, not passive, and for the same reason the caret restore above is:
+   * the scroll has to be corrected in the frame the new view first appears in,
+   * or the author watches it jump.
+   */
+  useLayoutEffect(() => {
+    if (!rawActive) return;
+
+    const line = pendingLineRef.current;
+    const textarea = rawTextareaRef.current;
+    const map = anchorMapRef.current;
+    if (line === null || !textarea || !map) return;
+
+    pendingLineRef.current = null;
+    applyTextareaLine(textarea, scrollRef.current, map, line);
+    markdownLineRef.current = line;
+  }, [rawActive]);
 
   /**
    * A paste into the raw-markdown pane, formatted before it lands.
@@ -791,7 +879,12 @@ export function RichTextEditor({
     const currentEditor = editorRef.current;
     if (!currentEditor) return;
     if (markdownMode) {
-      setRawText(currentEditor.getMarkdown());
+      const markdown = currentEditor.getMarkdown();
+      const map = anchorMapFor(currentEditor, markdown);
+      anchorMapRef.current = map;
+      pendingLineRef.current =
+        map.startLine[readEditorBlock(currentEditor, scrollRef.current)] ?? 0;
+      setRawText(markdown);
     } else {
       /*
        * Format BEFORE the flush, by rewriting the buffer `flushRaw` is about
@@ -821,8 +914,35 @@ export function RichTextEditor({
           }
         }
       }
+      // The text the flush is about to commit — read after the format block
+      // above, which may have rewritten it.
+      const text = pendingRawRef.current ?? rawTextRef.current;
+      const line = markdownLineRef.current;
+
       flushRaw();
       setRawText(null);
+
+      /*
+       * Applied here rather than through a pending ref and a layout effect:
+       * the WYSIWYG surface is already visible by now (it is only `hidden`
+       * while `rawActive`, which went false in the render that scheduled this
+       * effect), layout is committed, and ProseMirror has applied the flush
+       * synchronously — so the document and its DOM are both the ones being
+       * measured.
+       *
+       * Mapped against the document the flush just produced, not the one that
+       * was there when the pane opened: the author may have rewritten half of
+       * it, and a map built on entry would name blocks that no longer exist.
+       */
+      if (text !== null) {
+        const map = anchorMapFor(currentEditor, text);
+        anchorMapRef.current = map;
+        applyEditorBlock(
+          currentEditor,
+          scrollRef.current,
+          blockAtLine(map, line)
+        );
+      }
     }
   }, [markdownMode, flushRaw, editor]);
 
@@ -861,14 +981,13 @@ export function RichTextEditor({
       },
       formatMarkdown: formatRaw,
       insertLink,
+      editor,
     };
     onEditorApiRef.current?.(api);
     return () => onEditorApiRef.current?.(null);
   }, [editor, flushRaw, formatRaw, insertLink]);
 
   if (!editor) return null;
-
-  const rawActive = markdownMode && rawText !== null;
 
   return (
     <div
@@ -927,6 +1046,10 @@ export function RichTextEditor({
         {/* `min-w-0` keeps a wide line (long URL, table, code block) scrolling
             inside the editor instead of stretching its container. */}
         <div
+          ref={scrollRef}
+          // The raw pane does not scroll — this column does — so the pane's
+          // position is read from here. See `markdownLineRef`.
+          onScroll={rawActive ? noteMarkdownPosition : undefined}
           className={cn(
             'relative min-w-0 flex-1 overflow-y-auto p-4 sm:p-6',
             // The border divides the writing column from the outline aside;
@@ -964,6 +1087,10 @@ export function RichTextEditor({
               // option is off, which leaves the browser's own paste in place
               // rather than a re-implementation of it.
               onPaste={handleRawPaste}
+              // The caret is the anchor whenever it is on screen, so every way
+              // it can move has to keep the tracker current.
+              onSelect={noteMarkdownPosition}
+              onKeyUp={noteMarkdownPosition}
               spellCheck={spellCheck}
               aria-label="Markdown source"
               className="min-h-full w-full resize-none bg-transparent font-mono text-sm leading-relaxed outline-none"

@@ -1,8 +1,3 @@
-// Subpath imports, not the package barrel: both of these are leaves, and the
-// barrel would pull the whole UI package — TipTap included — onto a page that
-// renders one article.
-import { MathRenderer } from '@byte-of-me/ui/math-renderer';
-import { RichText } from '@byte-of-me/ui/rich-text';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
@@ -16,6 +11,9 @@ import { getTranslations } from 'next-intl/server';
 import { getPublicBlogBySlug } from '@/entities/blog/api/get-public-blog-by-slug';
 import { BlogPrintTrigger } from '@/features/public/blog-print';
 import { formatDate, isMeaningfullyUpdated } from '@/shared/lib/utils';
+// Deep path, not the barrel: it would pull the whole shared-ui surface onto a
+// page that renders one article.
+import { PrintableDocument } from '@/shared/ui/printable-document';
 
 const BASE_METADATA: Metadata = {
   // Not indexable, for the same reason the notes print view is not: this is a
@@ -56,20 +54,8 @@ export async function generateMetadata({
 }
 
 /**
- * The printable article.
- *
- * Rendered with `RichText` — the SERVER component — not the editor. It goes
- * through `render-extensions.ts`, so KaTeX markup, tables and images all come
- * out as static HTML and no editor JavaScript reaches the page at all. That
- * is what makes the resulting PDF text-true rather than a screenshot: Chrome
- * is laying out real glyphs from real fonts, and the `@media print` rules in
- * `globals.css` ARE the page layout.
- *
- * `MermaidBlocks` is deliberately absent even though the on-site article
- * renders inside it: it swaps code blocks for drawn SVGs after hydration,
- * which nothing here can wait for — `?print=1` fires on `document.fonts.ready`
- * and would race it. A mermaid block exports as its source, which is at least
- * deterministic.
+ * The printable article. `PrintableDocument` is the page itself — this route
+ * only resolves which article, and how its byline reads.
  */
 export default async function BlogPrintPage({
   params,
@@ -106,33 +92,18 @@ export default async function BlogPrintPage({
     : null;
 
   return (
-    // A plain wrapper, NOT a `prose` container: `RichText` renders its own
-    // `<article class="prose …">`, and nesting one inside another makes the
-    // typography variables resolve twice.
-    <div>
-      <h1 className="mb-1 text-3xl font-bold">{blog.title}</h1>
-
-      <p className="mb-8 mt-0 text-xs text-muted-foreground">
-        {[
-          blog.author?.name,
-          formatDate(publishedOn, locale, dateOptions),
-          updatedLabel,
-        ]
-          .filter(Boolean)
-          .join(' · ')}
-      </p>
-
-      <RichText content={blog.content} />
-
-      {/* Before the print trigger below, deliberately: it renders the maths
-          (and so requests the KaTeX fonts) that the trigger's
-          `document.fonts.ready` wait then has something to wait for. */}
-      <MathRenderer />
-
-      {/* Only the article's action bar (`?print=1`) opens the dialog by
-          itself; a bare visit to this URL renders a readable page with a
-          button. */}
+    <PrintableDocument
+      title={blog.title}
+      byline={[
+        blog.author?.name,
+        formatDate(publishedOn, locale, dateOptions),
+        updatedLabel,
+      ]
+        .filter(Boolean)
+        .join(' · ')}
+      content={blog.content}
+    >
       <BlogPrintTrigger auto={print === '1'} />
-    </div>
+    </PrintableDocument>
   );
 }

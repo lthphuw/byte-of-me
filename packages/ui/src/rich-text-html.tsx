@@ -42,7 +42,7 @@ const compactClasses = [
   '[&_blockquote]:my-3 [&_blockquote]:pl-4',
   '[&_hr]:my-4',
   '[&_pre]:my-3',
-  '[&_table]:my-3',
+  '[&_.tableWrapper]:my-3',
   '[&_img]:my-3 [&_img]:rounded-xl',
   '[&_figure]:my-3',
 ];
@@ -150,13 +150,104 @@ export function RichTextHtml({
         // narrow viewports.
         '[&_pre]:my-6 [&_pre]:max-w-full [&_pre]:overflow-x-auto',
 
-        // Tables — become their own horizontal scroll area on narrow viewports
-        // (display:block lets a wide table scroll instead of widening the page).
-        '[&_table]:my-6 [&_table]:block [&_table]:w-full [&_table]:max-w-full [&_table]:overflow-x-auto [&_table]:border-collapse',
-        '[&_th]:border-b [&_th]:border-neutral-200 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left',
-        'dark:[&_th]:border-neutral-800',
-        '[&_td]:border-b [&_td]:border-neutral-200 [&_td]:px-3 [&_td]:py-2',
-        'dark:[&_td]:border-neutral-800',
+        // Tables.
+        //
+        // The scroll area is `div.tableWrapper`, which `renderWrapper`
+        // (render-extensions.ts) emits around every table and which the
+        // editor's own node view already creates — so this and
+        // `editor-surface.css` describe the same box, and a table looks the
+        // same while it is being written as it does published.
+        //
+        // What this replaces was `table { display: block }`, which scrolled by
+        // throwing the table layout algorithm away: columns stopped aligning
+        // to each other and `width: 100%` stopped meaning anything. The frame
+        // lives on the wrapper, so a scrolled table stays inside a border
+        // instead of appearing to run off the edge of one.
+        '[&_.tableWrapper]:my-6 [&_.tableWrapper]:max-w-full [&_.tableWrapper]:overflow-x-auto',
+        // Scrolling a table to its end must not then drag the page sideways.
+        '[&_.tableWrapper]:overscroll-x-contain',
+        '[&_.tableWrapper]:rounded-xl [&_.tableWrapper]:border [&_.tableWrapper]:border-neutral-200',
+        'dark:[&_.tableWrapper]:border-neutral-800',
+
+        // `table-auto` + `min-w-full`, never `table-fixed`: fixed layout splits
+        // the reading column evenly however many columns there are, so an
+        // eleven-column table got 77px each and wrapped every heading — and,
+        // because it always fitted, it never scrolled either.
+        // `w-full`, matching `editor-surface.css` — see the note there: with
+        // `table-auto` a percentage width is a preference rather than a cap, so
+        // a narrow table fills the column and a wide one still overflows into
+        // the wrapper's scroll.
+        '[&_table]:my-0 [&_table]:w-full [&_table]:min-w-full [&_table]:table-auto',
+        // `border-separate`, because a collapsed table owns its borders and the
+        // pinned column below would leave its own behind when it sticks.
+        '[&_table]:border-separate [&_table]:border-spacing-0',
+
+        // A TABLE IS NOT PROSE, and this is the rule that matters most for
+        // reading one. Every cell holds a `<p>`, so without this each one
+        // inherits the article's reading rhythm — 17px on a 32px line — and a
+        // three-line cell stands 96px tall. A grid is scanned, not read: the
+        // eye needs rows close enough together to track across. 14px on a
+        // 1.45 line is roughly what Notion and every spreadsheet use, and it
+        // takes that same cell down to 60px.
+        '[&_table]:text-[14px] [&_table]:tabular-nums',
+        '[&_th>p]:my-0 [&_th>p]:text-[14px] [&_th>p]:leading-[1.45]',
+        '[&_td>p]:my-0 [&_td>p]:text-[14px] [&_td>p]:leading-[1.45]',
+
+        // The floor that lets a table be wider than its column. Without it
+        // every cell shrinks to its longest word, nothing overflows, and there
+        // is nothing to scroll.
+        '[&_th]:min-w-[7ch] [&_td]:min-w-[7ch]',
+        '[&_th]:px-3 [&_th]:py-1.5 [&_th]:text-left [&_th]:font-semibold',
+        // Headings are labels, not prose: wrapping "Latency (ms)" over three
+        // lines to save 40px makes the table harder to read, not narrower.
+        '[&_th]:whitespace-nowrap [&_th]:bg-neutral-50 dark:[&_th]:bg-neutral-900',
+        '[&_td]:px-3 [&_td]:py-1.5 [&_td]:align-top',
+
+        // Columns of figures, worked out from the content by
+        // `markNumericTableColumns`. A number is read by its last digit, so
+        // right-aligned and never wrapped; and it needs a fraction of the
+        // width a sentence does, which is where most of an eleven-column
+        // table's excess width goes.
+        '[&_[data-numeric]]:text-right [&_[data-numeric]]:whitespace-nowrap',
+        '[&_[data-numeric]]:min-w-[5ch]',
+
+        // Hairlines. At full strength, eleven columns of grid read as the
+        // subject of the table and the figures as the background.
+        '[&_tr>*]:border-b [&_tr>*]:border-neutral-200/70 dark:[&_tr>*]:border-neutral-800/70',
+        '[&_tr>*+*]:border-l [&_tr>*+*]:border-neutral-200/70',
+        'dark:[&_tr>*+*]:border-neutral-800/70',
+        // The wrapper draws the outer frame, so the last row must not double it.
+        '[&_tr:last-child>*]:border-b-0',
+
+        // Row hover. On a table too wide to see at once, this is what keeps
+        // the eye on one row while it travels.
+        '[&_tbody_tr:hover>td]:bg-neutral-50 dark:[&_tbody_tr:hover>td]:bg-neutral-900/60',
+
+        // The row label, pinned while the numbers scroll past it — on a wide
+        // table this is the difference between reading a row and guessing which
+        // one it is. On a table that already fits, it does nothing.
+        '[&_tr>:first-child]:sticky [&_tr>:first-child]:left-0 [&_tr>:first-child]:z-[1]',
+        '[&_tr>:first-child]:min-w-[14ch] [&_tr>:first-child]:bg-background',
+        // The column scrolling underneath is HIDDEN, not absent, and a reader
+        // has to be able to tell. Numeric columns are right-aligned, so what
+        // the pinned column covers is the leading digits — `25.9M` reading as
+        // `5.9M` is a plausible wrong number, which is worse than an obviously
+        // cut-off one. The shadow is what makes the overlap visible.
+        '[&_tr>:first-child]:shadow-[6px_0_6px_-6px_rgba(0,0,0,0.18)]',
+        'dark:[&_tr>:first-child]:shadow-[6px_0_6px_-6px_rgba(0,0,0,0.6)]',
+
+        // A long table becomes its own scroll pane from `md`, with the header
+        // pinned to the top of it — the spreadsheet behaviour, and the only way
+        // to still know what a column is at row 30 of 39.
+        //
+        // Capped only from `md`: on a phone a scroll pane nested in the article
+        // is a trap, since a thumb that lands inside it cannot scroll the page
+        // past the table. Below that the table is simply as tall as it is.
+        'md:[&_.tableWrapper]:max-h-[70vh]',
+        '[&_tr:first-child>*]:sticky [&_tr:first-child>*]:top-0 [&_tr:first-child>*]:z-[2]',
+        // The corner belongs to both pinned bands, so it outranks each of them.
+        '[&_tr:first-child>:first-child]:z-[3] [&_tr:first-child>:first-child]:bg-neutral-50',
+        'dark:[&_tr:first-child>:first-child]:bg-neutral-900',
 
         // Citation markers — quiet inline chips that invert on hover so it is
         // obvious they are clickable without shouting mid-sentence.

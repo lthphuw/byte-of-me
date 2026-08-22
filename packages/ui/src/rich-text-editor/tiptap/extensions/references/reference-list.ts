@@ -16,6 +16,14 @@ declare module '@tiptap/core' {
     referenceList: {
       /** Adds a new entry, or replaces the existing one with the same id. */
       upsertReference: (item: ReferenceItem) => ReturnType;
+      /**
+       * Upserts a whole batch — what a BibTeX paste produces — in one step.
+       *
+       * Not a chain of `upsertReference`: each of those is its own transaction,
+       * so importing twelve entries would cost twelve undo steps, and the first
+       * would have to create the list node the other eleven then read back.
+       */
+      importReferences: (items: ReferenceItem[]) => ReturnType;
       /** Deletes an entry along with every marker that points at it. */
       removeReference: (id: string) => ReturnType;
       /** Renames the bibliography heading. */
@@ -74,6 +82,50 @@ export const ReferenceList = ReferenceListBase.extend({
             index === -1
               ? [...items, item]
               : items.map((entry, at) => (at === index ? item : entry));
+
+          if (dispatch) {
+            tr.setNodeMarkup(found.pos, undefined, {
+              ...found.node.attrs,
+              items: next,
+            });
+            dispatch(tr);
+          }
+
+          return true;
+        },
+
+      importReferences:
+        (items) =>
+        ({ state, tr, dispatch }) => {
+          const incoming = items.filter((item) => item.id && item.title);
+          if (!incoming.length) return false;
+
+          const found = findReferenceList(state.doc);
+
+          if (!found) {
+            if (dispatch) {
+              const type = state.schema.nodes[REFERENCE_LIST_NAME];
+              tr.insert(
+                state.doc.content.size,
+                type.create({
+                  title: DEFAULT_REFERENCES_TITLE,
+                  items: incoming,
+                })
+              );
+              dispatch(tr);
+            }
+            return true;
+          }
+
+          // An entry keeps its position when re-imported: a `.bib` pasted a
+          // second time is a correction, not a reordering, and moving the
+          // entry would renumber every citation after it.
+          const next = normalizeReferenceItems(found.node.attrs.items);
+          for (const item of incoming) {
+            const index = next.findIndex((entry) => entry.id === item.id);
+            if (index === -1) next.push(item);
+            else next[index] = item;
+          }
 
           if (dispatch) {
             tr.setNodeMarkup(found.pos, undefined, {

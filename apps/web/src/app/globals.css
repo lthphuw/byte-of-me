@@ -88,6 +88,13 @@
 
     --radius: 0.5rem;
 
+    /* Scrollbars. Neutral alpha rather than a palette token: a thumb sits on
+       whatever the pane behind it happens to be — a card, the page, a muted
+       toolbar — and only a translucent grey reads the same on all of them.
+       `--border` was the obvious candidate and is far too faint to find. */
+    --scrollbar-thumb: hsl(0 0% 0% / 0.22);
+    --scrollbar-thumb-hover: hsl(0 0% 0% / 0.38);
+
     --chart-1: 12 76% 61%;
 
     --chart-2: 173 58% 39%;
@@ -132,6 +139,9 @@
 
     --radius: 0.5rem;
 
+    --scrollbar-thumb: hsl(0 0% 100% / 0.22);
+    --scrollbar-thumb-hover: hsl(0 0% 100% / 0.4);
+
     --chart-1: 220 70% 50%;
 
     --chart-2: 160 60% 45%;
@@ -153,6 +163,65 @@
     @apply bg-background text-foreground;
     font-feature-settings: 'rlig' 1, 'calt' 1;
   }
+}
+
+/* ---------------------------------------------------------------------------
+ * Scrollbars
+ *
+ * Every pane in the app scrolls with the operating system's own bar, and the
+ * handful that use Radix `ScrollArea` draw a slim one of their own — so the
+ * note tree and the toolbar beside it were wearing two different scrollbars.
+ * These rules give the native ones the same shape as the Radix thumb
+ * (`scroll-area.tsx`, kept in step with the token above).
+ *
+ * `:where(body *)` on purpose, twice over:
+ *
+ *  - It excludes `html` and `body`, so the BROWSER'S OWN page scrollbar stays
+ *    native. That bar is chrome, not content; people aim at it by muscle
+ *    memory, and it is also what `use-lock-body` measures.
+ *  - It contributes no specificity, so Radix's viewport — which hides the
+ *    native bar to draw its own — still wins without an `!important`.
+ *
+ * Note the trade-off this accepts: on a platform with OVERLAY scrollbars (a
+ * trackpad Mac), styling `::-webkit-scrollbar` at all turns them into classic
+ * bars that take layout width whenever a pane overflows. That is the cost of
+ * the affordance, and for the wide tables it is the point — a reader has to be
+ * able to see that there are columns off-screen.
+ * ------------------------------------------------------------------------ */
+
+:where(body *) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+:where(body *)::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+/* Transparent, both of them: a filled track draws a permanent grey channel
+   down the side of every pane, which is more furniture than the content. The
+   corner is where a horizontal and a vertical bar meet — unstyled it is an
+   opaque grey square, and a wide, tall table has one. */
+:where(body *)::-webkit-scrollbar-track,
+:where(body *)::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* The 2px transparent border is what insets the thumb inside the 10px track:
+   `background-clip: padding-box` keeps the fill off the border box, leaving a
+   6px thumb with breathing room rather than one welded to the pane's edge. */
+:where(body *)::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: 9999px;
+}
+
+:where(body *)::-webkit-scrollbar-thumb:hover,
+:where(body *)::-webkit-scrollbar-thumb:active {
+  background-color: var(--scrollbar-thumb-hover);
+  background-clip: padding-box;
 }
 
 html {
@@ -247,5 +316,47 @@ html {
   pre {
     white-space: pre-wrap;
     word-break: break-word;
+  }
+
+  /* Tables, for the same reason: the scroll container that makes a wide table
+     readable on screen would simply clip its right-hand columns off the sheet.
+     On paper the table goes back to fitting the page and wrapping — every
+     column visible, none of them reachable any other way.
+
+     `position: static` on the pinned first column is part of that: a sticky
+     element inside a print box pins to the wrong thing, and there is nothing
+     to scroll past it anyway. */
+  .tableWrapper {
+    overflow: visible !important;
+    /* The on-screen cap turns a long table into its own scroll pane. On paper
+       that would print 70vh of table and drop the rest. */
+    max-height: none !important;
+  }
+
+  .tableWrapper table {
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: auto !important;
+  }
+
+  .tableWrapper :is(th, td) {
+    min-width: 0 !important;
+  }
+
+  .tableWrapper th {
+    white-space: normal !important;
+  }
+
+  /* Both pinned bands. Sticky inside a print box pins to the wrong thing, and
+     there is nothing to scroll past it anyway. */
+  .tableWrapper tr > :first-child,
+  .tableWrapper tr:first-child > * {
+    position: static !important;
+  }
+
+  /* Numeric columns keep their alignment — that is typography, not layout —
+     but must be allowed to wrap rather than push the page box wide. */
+  .tableWrapper [data-numeric] {
+    white-space: normal !important;
   }
 }

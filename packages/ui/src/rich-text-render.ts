@@ -7,6 +7,7 @@ import type { JSONContent } from '@tiptap/core';
 import { generateHTML } from '@tiptap/html';
 
 import { escapeHtml, sanitizeHtml } from './lib/sanitize';
+import { markNumericTableColumns } from './rich-text-editor/tiptap/extensions/numeric-columns';
 import { applyCitationNumbering } from './rich-text-editor/tiptap/extensions/references/numbering';
 import { renderExtensions } from './rich-text-editor/tiptap/render-extensions';
 
@@ -22,10 +23,11 @@ export function renderRichTextHtml(content?: string | unknown): string {
 
   try {
     const json = typeof content === 'string' ? JSON.parse(content) : content;
-    // Citation numbers are derived from the document, not stored, so they are
-    // baked in here right before the markup is produced.
+    // Citation numbers and numeric table columns are both derived from the
+    // document rather than stored, so both are baked in here, right before the
+    // markup is produced.
     htmlContent = generateHTML(
-      applyCitationNumbering(json as JSONContent),
+      markNumericTableColumns(applyCitationNumbering(json as JSONContent)),
       renderExtensions
     );
   } catch {
