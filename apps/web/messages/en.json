@@ -696,7 +696,7 @@
         "sriUnavailable": "Needs four nights in a row. {n, number} logged in the last 14 days.",
         "sdUnavailable": "Needs two nights in the last 14 days.",
         "socialJetlagUnavailable": "Needs three free days and three work days. So far: {free, number} free, {work, number} work.",
-        "chronotypeUnavailable": "Needs at least one free day and one work day. So far: {free, number} free, {work, number} work."
+        "chronotypeUnavailable": "Needs three free days and three work days. So far: {free, number} free, {work, number} work."
       },
       "factors": {
         "caffeine_late": "Late caffeine",

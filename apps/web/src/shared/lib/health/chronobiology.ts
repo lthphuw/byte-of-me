@@ -13,7 +13,14 @@
 const DAY_MIN = 1440;
 const DAY_MS = 86_400_000;
 
-/** Minimum days of each kind before social jetlag and MSFsc will answer. */
+/**
+ * Minimum days of each kind before social jetlag and MSFsc will answer.
+ *
+ * Both are built on MSF — the MEAN midsleep across free days — and a mean of
+ * one observation is not a mean. One unusual Saturday would otherwise set a
+ * figure the screen presents as a stable trait ("your chronotype"), which is
+ * the most confident-looking lie this module could tell.
+ */
 const MIN_DAYS_PER_KIND = 3;
 
 export interface SleepInterval {
@@ -173,6 +180,9 @@ export function socialJetlagMin(nights: MidpointNight[]): number | null {
  *   MSFsc   = MSF − (SD_f − SD_week) / 2      when SD_f > SD_w
  *           = MSF                             otherwise
  *
+ * Gated at three days of each kind, the same floor as social jetlag and for the
+ * same reason: both read MSF, and a mean of one free day is not a mean.
+ *
  * The correction exists because a free-day lie-in is partly catch-up rather
  * than chronotype: someone short of sleep all week sleeps later on Saturday for
  * reasons that say nothing about their body clock. When free days are not
@@ -188,7 +198,9 @@ export function msfsc(nights: MidpointNight[]): number | null {
   const { msf, sdFree, sdWork, freeCount, workCount } = midpointStats(nights);
 
   if (msf === null || sdFree === null || sdWork === null) return null;
-  if (freeCount === 0 || workCount === 0) return null;
+  if (freeCount < MIN_DAYS_PER_KIND || workCount < MIN_DAYS_PER_KIND) {
+    return null;
+  }
 
   if (sdFree <= sdWork) return msf;
 

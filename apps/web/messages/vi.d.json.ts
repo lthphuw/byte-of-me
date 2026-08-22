@@ -699,7 +699,7 @@ declare const messages: {
         "sriUnavailable": "Cần bốn đêm liên tiếp. Đã ghi {n, number} đêm trong 14 ngày gần nhất.",
         "sdUnavailable": "Cần hai đêm trong 14 ngày gần nhất.",
         "socialJetlagUnavailable": "Cần ba ngày nghỉ và ba ngày làm. Hiện có: {free, number} ngày nghỉ, {work, number} ngày làm.",
-        "chronotypeUnavailable": "Cần ít nhất một ngày nghỉ và một ngày làm. Hiện có: {free, number} ngày nghỉ, {work, number} ngày làm."
+        "chronotypeUnavailable": "Cần ba ngày nghỉ và ba ngày làm. Hiện có: {free, number} ngày nghỉ, {work, number} ngày làm."
       },
       "factors": {
         "caffeine_late": "Cà phê muộn",

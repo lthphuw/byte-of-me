@@ -136,30 +136,30 @@ describe('socialJetlagMin', () => {
 
 describe('msfsc', () => {
   it('corrects the free-day midpoint for sleep caught up at the weekend', () => {
-    // 5 work nights of 400 min, 2 free nights of 540 min, MSF 330.
-    // SD_week = (400*5 + 540*2) / 7 = 440
-    // MSFsc   = 330 - (540 - 440)/2 = 280
+    // 4 work nights of 400 min, 3 free nights of 540 min, MSF 330.
+    // SD_week = (400*4 + 540*3) / 7 = 460
+    // MSFsc   = 330 - (540 - 460)/2 = 290
     const nights = [
-      ...Array.from({ length: 5 }, () => mid(210, false, 400)),
-      ...Array.from({ length: 2 }, () => mid(330, true, 540)),
+      ...Array.from({ length: 4 }, () => mid(210, false, 400)),
+      ...Array.from({ length: 3 }, () => mid(330, true, 540)),
     ];
-    expect(msfsc(nights)).toBeCloseTo(280, 6);
+    expect(msfsc(nights)).toBeCloseTo(290, 6);
   });
 
   it('weights by the actual sample, not a hardcoded 7 days', () => {
     // The same ratio over 14 days must give the same answer. Dividing by a
     // literal 7 here would double SD_week and drive the result negative.
     const nights = [
-      ...Array.from({ length: 10 }, () => mid(210, false, 400)),
-      ...Array.from({ length: 4 }, () => mid(330, true, 540)),
+      ...Array.from({ length: 8 }, () => mid(210, false, 400)),
+      ...Array.from({ length: 6 }, () => mid(330, true, 540)),
     ];
-    expect(msfsc(nights)).toBeCloseTo(280, 6);
+    expect(msfsc(nights)).toBeCloseTo(290, 6);
   });
 
   it('leaves the midpoint alone when free days are not longer', () => {
     const nights = [
-      ...Array.from({ length: 5 }, () => mid(210, false, 500)),
-      ...Array.from({ length: 2 }, () => mid(330, true, 450)),
+      ...Array.from({ length: 4 }, () => mid(210, false, 500)),
+      ...Array.from({ length: 3 }, () => mid(330, true, 450)),
     ];
     expect(msfsc(nights)).toBeCloseTo(330, 6);
   });
@@ -168,6 +168,16 @@ describe('msfsc', () => {
     expect(
       msfsc([mid(210, false), mid(210, false), mid(210, false)])
     ).toBeNull();
+  });
+
+  it('refuses a chronotype built on fewer than three free days', () => {
+    // MSF is a MEAN across free days. Two of them is not a mean, and the
+    // screen labels this figure a trait.
+    const nights = [
+      ...Array.from({ length: 5 }, () => mid(210, false, 400)),
+      ...Array.from({ length: 2 }, () => mid(330, true, 540)),
+    ];
+    expect(msfsc(nights)).toBeNull();
   });
 });
 
