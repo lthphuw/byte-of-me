@@ -38,6 +38,36 @@ function elementFor(editor: Editor, pos: number): HTMLElement | null {
   return dom instanceof HTMLElement ? dom : null;
 }
 
+/**
+ * The first block at or after `from` that has an element to measure, and its
+ * bottom edge — searching forward first, then back towards `low`.
+ *
+ * Not every top-level position answers with an `HTMLElement`: `nodeDOM` returns
+ * whatever the node view put there, and a decoration wrapper or a text node is
+ * not measurable. The linear scan this replaced simply skipped those; a binary
+ * search cannot, because it must decide at the position it probes. So it
+ * steps to the nearest block that CAN be measured and decides from that one,
+ * which is sound for the same reason the search is: the blocks it stepped over
+ * lie on the same side of the fold as the one it landed on.
+ */
+function measurableNear(
+  editor: Editor,
+  blocks: { pos: number }[],
+  from: number,
+  low: number,
+  high: number
+): { index: number; bottom: number } | null {
+  for (let i = from; i <= high; i += 1) {
+    const rect = elementFor(editor, blocks[i].pos)?.getBoundingClientRect();
+    if (rect) return { index: i, bottom: rect.bottom };
+  }
+  for (let i = from - 1; i >= low; i -= 1) {
+    const rect = elementFor(editor, blocks[i].pos)?.getBoundingClientRect();
+    if (rect) return { index: i, bottom: rect.bottom };
+  }
+  return null;
+}
+
 /** The top-level block the author is looking at, or typing in. */
 export function readEditorBlock(
   editor: Editor,
@@ -59,13 +89,48 @@ export function readEditorBlock(
     }
   }
 
-  for (let i = 0; i < blocks.length; i += 1) {
-    const rect = elementFor(editor, blocks[i].pos)?.getBoundingClientRect();
-    // A block still crossing the top edge is the one being read, not the next.
-    if (rect && rect.bottom > frame.top + 1) return i;
+  /*
+   * The topmost block still on screen, found by bisection.
+   *
+   * "A block still crossing the top edge is the one being read, not the next"
+   * — so the answer is the FIRST block whose bottom is below the viewport's
+   * top edge, and `bottom` only ever increases down the document, which is
+   * what makes a binary search legal here. (Only ever: these are the doc's
+   * top-level children, laid out in flow. Nothing in this schema floats or is
+   * positioned out of it.)
+   *
+   * It used to be a linear scan, and every step of it read
+   * `getBoundingClientRect()` — a forced layout each, in one uninterrupted
+   * burst. Toggling mode near the end of a 3,797-node note therefore measured
+   * every block above the caret before it found one on screen; bisection asks
+   * for ~12 rects instead of ~2,000. This runs once per toggle, so what it
+   * costs is a visible hitch on the switch rather than a per-frame drag.
+   */
+  let low = 0;
+  let high = blocks.length - 1;
+  let topmost = blocks.length - 1;
+
+  while (low <= high) {
+    const probe = measurableNear(
+      editor,
+      blocks,
+      Math.floor((low + high) / 2),
+      low,
+      high
+    );
+    // Nothing left in this range can be measured, so there is nothing further
+    // to learn — keep the best answer found so far.
+    if (!probe) break;
+
+    if (probe.bottom > frame.top + 1) {
+      topmost = probe.index;
+      high = probe.index - 1;
+    } else {
+      low = probe.index + 1;
+    }
   }
 
-  return blocks.length - 1;
+  return topmost;
 }
 
 /** Puts the caret in `block` and brings it to the top of the viewport. */
@@ -112,10 +177,20 @@ export function applyEditorBlock(
  * and the alternative — mirroring the whole text into a hidden div to measure
  * it — is a lot of machinery for a monospace pane where height and character
  * count track each other closely.
+ *
+ * The offset becomes a line number through `map.lineOffset`, which is a sorted
+ * array and so answers by bisection. This used to count `\n` from the start of
+ * the text on every call, and the call is a SCROLL handler: the 350KB note put
+ * up to ~300,000 iterations between the browser and each frame it wanted to
+ * paint. The map is the same one `applyTextareaLine` already trusts for the
+ * opposite direction, and it is built from the very markdown the pane was
+ * seeded with — it can only drift by what the author has typed since, which
+ * moves the estimate by less than the proportional guess above already does.
  */
 export function readTextareaLine(
   textarea: HTMLTextAreaElement,
-  viewport: HTMLElement | null
+  viewport: HTMLElement | null,
+  map: MarkdownAnchorMap | null
 ): number {
   const text = textarea.value;
   const length = Math.max(1, text.length);
@@ -137,11 +212,11 @@ export function readTextareaLine(
     if (caretAt < top || caretAt > bottom) offset = Math.round(top * length);
   }
 
-  let line = 0;
-  for (let i = 0; i < offset && i < text.length; i += 1) {
-    if (text[i] === '\n') line += 1;
-  }
-  return line;
+  // No map means the pane was never opened through the mode effect, which is
+  // the only thing that builds one. Nothing to translate the offset with, and
+  // guessing would move the author somewhere they did not ask to be.
+  if (!map) return 0;
+  return lineAtOffset(map, offset);
 }
 
 /** Puts the caret on `line` and scrolls the pane to it. */

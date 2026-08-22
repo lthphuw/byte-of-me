@@ -32,15 +32,27 @@ declare module '@tiptap/core' {
   }
 }
 
+/**
+ * The document's bibliography node, if it has one.
+ *
+ * `doc.forEach` over the top-level children, not `doc.descendants`: the node is
+ * always a direct child of the doc — every command below inserts it at
+ * `doc.content.size` — so a deep walk can only ever confirm what the shallow one
+ * already knows. It was one, and it cost: `descendants` treats a falsy return as
+ * "no opinion" and recurses anyway, and the previous callback returned `!found`,
+ * i.e. `true` for every non-match. So a note with thirty tables walked all 3,738
+ * cells (and their paragraphs, and their text nodes) looking for a top-level
+ * node, on every `upsertReference` / `removeReference` / `setReferencesTitle`,
+ * and on every one of the twelve lookups a BibTeX import used to make.
+ */
 export function findReferenceList(
   doc: ProseMirrorNode
 ): { pos: number; node: ProseMirrorNode } | null {
   let found: { pos: number; node: ProseMirrorNode } | null = null;
 
-  doc.descendants((node, pos) => {
-    if (found) return false;
-    if (node.type.name === REFERENCE_LIST_NAME) found = { pos, node };
-    return !found;
+  doc.forEach((node, offset) => {
+    if (found) return;
+    if (node.type.name === REFERENCE_LIST_NAME) found = { pos: offset, node };
   });
 
   return found;

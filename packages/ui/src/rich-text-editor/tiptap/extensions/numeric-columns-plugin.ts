@@ -8,6 +8,7 @@ import {
   type CellSpans,
   findNumericColumns,
   placeCells,
+  type PlacedCell,
 } from './numeric-columns';
 
 /**
@@ -39,14 +40,33 @@ const contentOf = (cell: ProseMirrorNode): CellContent => ({
   text: cell.textContent,
 });
 
+/** What the rule works out about one table, both halves of it. */
+interface TableColumns {
+  /** The columns that hold only figures. */
+  columns: Set<number>;
+  /**
+   * Every cell with the column it occupies. Placed for the whole table at
+   * once, so a `rowspan` in an early row still shifts the columns of the rows
+   * beneath it.
+   */
+  placed: PlacedCell<ProseMirrorNode>[][];
+}
+
 /**
- * Which columns of this table are numeric, cached against the table node.
+ * What the rule makes of this table, cached against the table node.
  *
  * ProseMirror nodes are persistent: a transaction that edits one table leaves
  * every other table in the document as the very same object, so keying on node
  * identity means an edit re-reads one table's text rather than all thirty.
+ *
+ * The PLACEMENT is cached alongside the columns because the two are one piece
+ * of work: detection cannot run without placing the cells first, and the caller
+ * needs the placement to know which cell it is decorating. Kept apart, a cache
+ * MISS placed every cell twice — `placeCells` over a 3,738-cell document is the
+ * ~2.4ms measured in `numeric-columns.ts`, so the miss path was paying it
+ * twice for one answer.
  */
-const columnCache = new WeakMap<ProseMirrorNode, Set<number>>();
+const columnCache = new WeakMap<ProseMirrorNode, TableColumns>();
 
 /** A node's children as an array — ProseMirror only offers `forEach`. */
 function childrenOf(node: ProseMirrorNode): ProseMirrorNode[] {
@@ -55,25 +75,25 @@ function childrenOf(node: ProseMirrorNode): ProseMirrorNode[] {
   return children;
 }
 
-function numericColumnsOf(table: ProseMirrorNode): Set<number> {
+function numericColumnsOf(table: ProseMirrorNode): TableColumns {
   const cached = columnCache.get(table);
   if (cached) return cached;
 
-  const rows = childrenOf(table).map(childrenOf);
-  const columns = findNumericColumns(placeCells(rows, spansOf), contentOf);
-  columnCache.set(table, columns);
-  return columns;
+  const placed = placeCells(childrenOf(table).map(childrenOf), spansOf);
+  const entry: TableColumns = {
+    columns: findNumericColumns(placed, contentOf),
+    placed,
+  };
+  columnCache.set(table, entry);
+  return entry;
 }
 
 /** The decorations for one table, at its position in the document. */
 function decorationsFor(table: ProseMirrorNode, tablePos: number): Decoration[] {
-  const columns = numericColumnsOf(table);
+  const { columns, placed } = numericColumnsOf(table);
   if (!columns.size) return [];
 
   const rows = childrenOf(table);
-  // Placed for the whole table at once, so a `rowspan` in an early row still
-  // shifts the columns of the rows beneath it.
-  const placed = placeCells(rows.map(childrenOf), spansOf);
   const decorations: Decoration[] = [];
 
   let rowPos = tablePos + 1;

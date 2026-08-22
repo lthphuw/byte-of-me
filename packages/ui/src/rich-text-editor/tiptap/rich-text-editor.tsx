@@ -189,6 +189,16 @@ const DebouncedTableOfContents = TableOfContents.extend({
 const OUTLINE_REBUILD_MS = 300;
 
 /**
+ * How far above the writing column the "already scrolled past" region reaches,
+ * for the heading observer below.
+ *
+ * Any value taller than a document can be works — it only has to be impossible
+ * to scroll clean past — and `rootMargin` offers no keyword for "unbounded".
+ * A million CSS pixels is four hundred times the tallest note here.
+ */
+const ABOVE_VIEWPORT_PX = 1_000_000;
+
+/**
  * Why an `onChange` reported what it did.
  *
  * `initial` is true for a document the EDITOR produced while opening the one
@@ -512,6 +522,39 @@ export function RichTextEditor({
     onOutlineChangeRef.current = onOutlineChange;
   }, [onOutlineChange]);
 
+  /*
+   * The two halves of what a consumer is told about the outline, held apart
+   * because they change for different reasons: the LIST changes when the
+   * document does (debounced — see `DebouncedTableOfContents`), the ACTIVE
+   * entry when the reader scrolls. `reportOutline` is what joins them back
+   * into the single payload `onOutlineChange` has always carried.
+   *
+   * The observer effect further down is what sets the active id, and its
+   * comment is where the reasoning for all of this lives.
+   */
+  const outlineContentRef = useRef<TableOfContentDataItem[]>([]);
+  const activeHeadingIdRef = useRef<string | null>(null);
+  const [activeHeadingId, setActiveHeadingId] = useState<string | null>(null);
+  // Set by that effect, called from `onUpdate` below: headings the observer is
+  // watching are DOM elements, so a document that gained or lost one has to
+  // point it at the new set.
+  const observeHeadingsRef = useRef<(() => void) | null>(null);
+
+  const reportOutline = useCallback(() => {
+    const active = activeHeadingIdRef.current;
+    onOutlineChangeRef.current?.(
+      outlineContentRef.current.map((item) => ({
+        id: item.id,
+        level: item.level ?? 1,
+        text: item.textContent,
+        // Computed here rather than read from `item.isActive`: the extension
+        // writes that flag from a `scroll` listener on `window`, and nothing
+        // in this editor scrolls the window.
+        isActive: item.id === active,
+      }))
+    );
+  }, []);
+
   // The other half of `DebouncedTableOfContents` — see the note on it for what
   // the extension does per transaction and why none of it belongs in the frame
   // the keystroke lands in. Armed from `onUpdate` below, which Tiptap fires for
@@ -715,14 +758,11 @@ export function RichTextEditor({
                 // state update that renders nothing and re-renders the whole
                 // editor for it.
                 if (!chromeless) setItems(content);
-                onOutlineChangeRef.current?.(
-                  content.map((item) => ({
-                    id: item.id,
-                    level: item.level ?? 1,
-                    text: item.textContent,
-                    isActive: Boolean(item.isActive),
-                  }))
-                );
+                outlineContentRef.current = content;
+                reportOutline();
+                // The heading elements may not be the same ones as a moment
+                // ago — one was added, removed, or had its id stamped on it.
+                observeHeadingsRef.current?.();
               },
             }),
           ]),
@@ -733,6 +773,7 @@ export function RichTextEditor({
       handleLinkTrigger,
       onLinkTrigger,
       placeholder,
+      reportOutline,
       uploadImage,
       withMath,
     ]
@@ -894,12 +935,48 @@ export function RichTextEditor({
    * line 0, which is why the editor kept landing at the top of the document.
    */
   const markdownLineRef = useRef(0);
+  /*
+   * Coalesced to one read per FRAME, because this is a `scroll` handler and the
+   * browser dispatches those far more often than it paints — a trackpad flick
+   * over a long note fires dozens between two frames, and every one of them was
+   * doing the whole measurement for a position that was about to be replaced by
+   * the next.
+   *
+   * `requestAnimationFrame`, specifically, and not `passive: true`: passive
+   * listeners only ever mattered for `wheel` and `touchstart`, where the
+   * browser must otherwise wait to learn whether the handler will call
+   * `preventDefault`. A `scroll` event is not cancellable at all, so the flag
+   * would have bought exactly nothing here — coalescing is what actually stops
+   * the work.
+   *
+   * A frame late is not late: the only reader of `markdownLineRef` is the mode
+   * toggle, and if a pending frame is dropped by the unmount below, the value
+   * is at worst one frame's scrolling stale.
+   */
+  const markdownFrameRef = useRef<number | null>(null);
   const noteMarkdownPosition = useCallback(() => {
-    const textarea = rawTextareaRef.current;
-    if (textarea) {
-      markdownLineRef.current = readTextareaLine(textarea, scrollRef.current);
-    }
+    if (markdownFrameRef.current !== null) return;
+    markdownFrameRef.current = requestAnimationFrame(() => {
+      markdownFrameRef.current = null;
+      const textarea = rawTextareaRef.current;
+      if (textarea) {
+        markdownLineRef.current = readTextareaLine(
+          textarea,
+          scrollRef.current,
+          anchorMapRef.current
+        );
+      }
+    });
   }, []);
+
+  useEffect(
+    () => () => {
+      if (markdownFrameRef.current !== null) {
+        cancelAnimationFrame(markdownFrameRef.current);
+      }
+    },
+    []
+  );
   // Where the caret has to land after a formatted paste. The textarea is
   // CONTROLLED, so React assigns `value` on the render that follows
   // `applyRaw` — and assigning `value` collapses the selection to the end of
@@ -942,6 +1019,116 @@ export function RichTextEditor({
     applyTextareaLine(textarea, scrollRef.current, map, line);
     markdownLineRef.current = line;
   }, [rawActive]);
+
+  /*
+   * Which heading the reader is under — worked out here, because the ToC
+   * extension cannot.
+   *
+   * `@tiptap/extension-table-of-contents` derives `isActive` inside a `scroll`
+   * listener it attaches to its `scrollParent`, and that option defaults to
+   * `() => window`. Nothing in this editor scrolls the window: the document
+   * scrolls the `overflow-y-auto` column below (`scrollRef`), inside a page
+   * that is itself full height. So the listener never fired once, the
+   * extension's `scrollPosition` stayed 0, and every item came back
+   * `isActive: false` — verified on the live site by scrolling a note to
+   * "4.3 Family 3 — DETR and set prediction" and watching the Contents panel
+   * highlight nothing and follow nothing. On a 66-heading note that panel is
+   * the only thing that says where you are.
+   *
+   * Pointing `scrollParent` at the column would fix the wiring and hand back
+   * the cost `DebouncedTableOfContents` above exists to remove: that listener
+   * runs `addTocActiveStatesAndGetItems`, which is a full `doc.descendants`
+   * walk plus a `domAtPos(...).offsetTop` read PER HEADING, unthrottled — the
+   * same forced layout as before, moved from once per keystroke to once per
+   * scroll event.
+   *
+   * An IntersectionObserver answers the same question for nothing per frame:
+   * the browser computes intersections itself and calls back only when one
+   * changes, which for someone reading is once per heading crossed rather than
+   * once per pixel travelled.
+   *
+   * What is observed is the region ABOVE the top edge of the scroll column —
+   * `rootMargin` collapses the root onto that edge and then extends it upwards
+   * — so "intersecting" means precisely "this heading's top has passed the top
+   * of the viewport", and the active heading is the LAST one that is. Making
+   * the two identical is what makes the state safe to accumulate across
+   * callbacks: a heading can only change side by crossing that edge, and
+   * crossing it always changes `isIntersecting`, so no transition can be
+   * missed. A thin band at the top would look equivalent and is not — one fast
+   * flick, or one click on an outline entry, jumps a heading clean over the
+   * band with no callback either side, and the panel goes on highlighting the
+   * section the reader left.
+   */
+  useEffect(() => {
+    const root = scrollRef.current;
+    // Nothing to be active in: `compact` never registers the extension, and
+    // both the raw pane and the preview `hidden` the writing surface, where
+    // every heading measures 0×0 and would answer about a layout nobody sees.
+    if (compact || rawActive || preview !== null || !editor || !root) return;
+
+    const surface = editor.view.dom;
+    // Document order — `querySelectorAll` guarantees it — so "the last one
+    // passed" is a scan back from the end.
+    let headings: HTMLElement[] = [];
+    const passed = new Set<Element>();
+
+    const publishActive = () => {
+      let active: string | null = null;
+      for (let index = headings.length - 1; index >= 0; index -= 1) {
+        if (passed.has(headings[index])) {
+          active = headings[index].dataset.tocId ?? null;
+          break;
+        }
+      }
+
+      // Stays null above the first heading — at the top of a document that
+      // opens with a paragraph, no section is the one being read, and the
+      // panel is right to highlight nothing.
+      if (active === activeHeadingIdRef.current) return;
+      activeHeadingIdRef.current = active;
+      // Guarded like `setItems` in `onUpdate`, and for the same reason: the
+      // aside this state feeds is not rendered when the consumer brings its
+      // own panel, so setting it there is a render nobody reads.
+      if (!chromeless) setActiveHeadingId(active);
+      reportOutline();
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) passed.add(entry.target);
+          else passed.delete(entry.target);
+        }
+        publishActive();
+      },
+      {
+        root,
+        rootMargin: `${ABOVE_VIEWPORT_PX}px 0px -100% 0px`,
+        threshold: 0,
+      }
+    );
+
+    const observe = () => {
+      observer.disconnect();
+      // Re-seeded rather than kept: `observe` delivers an initial callback for
+      // every element, so the set refills from scratch — and an element that
+      // has left the document must not be left in it holding a vote.
+      passed.clear();
+      headings = [...surface.querySelectorAll<HTMLElement>('[data-toc-id]')];
+      for (const heading of headings) observer.observe(heading);
+    };
+
+    // Usually finds nothing on this first pass: the ids are stamped by a
+    // transaction the extension dispatches from its own `onCreate`, a
+    // macrotask after this effect runs. `onUpdate` re-runs it once they exist.
+    observeHeadingsRef.current = observe;
+    observe();
+
+    return () => {
+      observeHeadingsRef.current = null;
+      observer.disconnect();
+    };
+  }, [chromeless, compact, editor, preview, rawActive, reportOutline]);
 
   /**
    * A paste into the raw-markdown pane, formatted before it lands.
@@ -1253,7 +1440,9 @@ export function RichTextEditor({
                     }}
                     className={cn(
                       'text-xs text-left px-4 py-1 hover:text-primary transition-all border-l-2 -ml-[1px] border-transparent hover:border-primary',
-                      item.isActive && 'text-primary border-primary',
+                      // Not `item.isActive` — see the observer effect above
+                      // for why the extension's own flag is always false here.
+                      item.id === activeHeadingId && 'text-primary border-primary',
                       item.level === 1 && 'font-bold text-sm',
                       item.level === 2 && 'ml-2 font-semibold',
                       item.level === 3 && 'ml-4  font-normal text-muted-foreground'
