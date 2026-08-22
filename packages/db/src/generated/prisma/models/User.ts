@@ -224,6 +224,7 @@ export type UserWhereInput = {
   noteLabels?: Prisma.NoteLabelListRelationFilter
   noteDocuments?: Prisma.NoteDocumentListRelationFilter
   workspaceSettings?: Prisma.XOR<Prisma.WorkspaceSettingsNullableScalarRelationFilter, Prisma.WorkspaceSettingsWhereInput> | null
+  sleepLogs?: Prisma.SleepLogListRelationFilter
   noteSharesReceived?: Prisma.NoteShareListRelationFilter
   noteSharesSent?: Prisma.NoteShareListRelationFilter
 }
@@ -255,6 +256,7 @@ export type UserOrderByWithRelationInput = {
   noteLabels?: Prisma.NoteLabelOrderByRelationAggregateInput
   noteDocuments?: Prisma.NoteDocumentOrderByRelationAggregateInput
   workspaceSettings?: Prisma.WorkspaceSettingsOrderByWithRelationInput
+  sleepLogs?: Prisma.SleepLogOrderByRelationAggregateInput
   noteSharesReceived?: Prisma.NoteShareOrderByRelationAggregateInput
   noteSharesSent?: Prisma.NoteShareOrderByRelationAggregateInput
 }
@@ -289,6 +291,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   noteLabels?: Prisma.NoteLabelListRelationFilter
   noteDocuments?: Prisma.NoteDocumentListRelationFilter
   workspaceSettings?: Prisma.XOR<Prisma.WorkspaceSettingsNullableScalarRelationFilter, Prisma.WorkspaceSettingsWhereInput> | null
+  sleepLogs?: Prisma.SleepLogListRelationFilter
   noteSharesReceived?: Prisma.NoteShareListRelationFilter
   noteSharesSent?: Prisma.NoteShareListRelationFilter
 }, "id" | "email">
@@ -348,6 +351,7 @@ export type UserCreateInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -379,6 +383,7 @@ export type UserUncheckedCreateInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -410,6 +415,7 @@ export type UserUpdateInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -441,6 +447,7 @@ export type UserUncheckedUpdateInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -811,6 +818,20 @@ export type UserUpdateOneRequiredWithoutWorkspaceSettingsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWorkspaceSettingsInput, Prisma.UserUpdateWithoutWorkspaceSettingsInput>, Prisma.UserUncheckedUpdateWithoutWorkspaceSettingsInput>
 }
 
+export type UserCreateNestedOneWithoutSleepLogsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSleepLogsInput, Prisma.UserUncheckedCreateWithoutSleepLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSleepLogsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSleepLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSleepLogsInput, Prisma.UserUncheckedCreateWithoutSleepLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSleepLogsInput
+  upsert?: Prisma.UserUpsertWithoutSleepLogsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSleepLogsInput, Prisma.UserUpdateWithoutSleepLogsInput>, Prisma.UserUncheckedUpdateWithoutSleepLogsInput>
+}
+
 export type UserCreateWithoutAccountsInput = {
   id?: string
   createdAt?: Date | string
@@ -837,6 +858,7 @@ export type UserCreateWithoutAccountsInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -867,6 +889,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -913,6 +936,7 @@ export type UserUpdateWithoutAccountsInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -943,6 +967,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -973,6 +998,7 @@ export type UserCreateWithoutSessionsInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -1003,6 +1029,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -1049,6 +1076,7 @@ export type UserUpdateWithoutSessionsInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -1079,6 +1107,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -1109,6 +1138,7 @@ export type UserCreateWithoutSocialLinksInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -1139,6 +1169,7 @@ export type UserUncheckedCreateWithoutSocialLinksInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -1185,6 +1216,7 @@ export type UserUpdateWithoutSocialLinksInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -1215,6 +1247,7 @@ export type UserUncheckedUpdateWithoutSocialLinksInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -1245,6 +1278,7 @@ export type UserCreateWithoutUserProfileInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -1275,6 +1309,7 @@ export type UserUncheckedCreateWithoutUserProfileInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -1321,6 +1356,7 @@ export type UserUpdateWithoutUserProfileInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -1351,6 +1387,7 @@ export type UserUncheckedUpdateWithoutUserProfileInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -1381,6 +1418,7 @@ export type UserCreateWithoutEducationsInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -1411,6 +1449,7 @@ export type UserUncheckedCreateWithoutEducationsInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -1457,6 +1496,7 @@ export type UserUpdateWithoutEducationsInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -1487,6 +1527,7 @@ export type UserUncheckedUpdateWithoutEducationsInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -1517,6 +1558,7 @@ export type UserCreateWithoutTechStacksInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -1547,6 +1589,7 @@ export type UserUncheckedCreateWithoutTechStacksInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -1593,6 +1636,7 @@ export type UserUpdateWithoutTechStacksInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -1623,6 +1667,7 @@ export type UserUncheckedUpdateWithoutTechStacksInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -1653,6 +1698,7 @@ export type UserCreateWithoutWorkExperiencesInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -1683,6 +1729,7 @@ export type UserUncheckedCreateWithoutWorkExperiencesInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -1729,6 +1776,7 @@ export type UserUpdateWithoutWorkExperiencesInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -1759,6 +1807,7 @@ export type UserUncheckedUpdateWithoutWorkExperiencesInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -1789,6 +1838,7 @@ export type UserCreateWithoutProjectsInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -1819,6 +1869,7 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -1865,6 +1916,7 @@ export type UserUpdateWithoutProjectsInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -1895,6 +1947,7 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -1925,6 +1978,7 @@ export type UserCreateWithoutBlogsInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -1955,6 +2009,7 @@ export type UserUncheckedCreateWithoutBlogsInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -2001,6 +2056,7 @@ export type UserUpdateWithoutBlogsInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -2031,6 +2087,7 @@ export type UserUncheckedUpdateWithoutBlogsInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -2061,6 +2118,7 @@ export type UserCreateWithoutBlogStatisticLogsInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -2091,6 +2149,7 @@ export type UserUncheckedCreateWithoutBlogStatisticLogsInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -2137,6 +2196,7 @@ export type UserUpdateWithoutBlogStatisticLogsInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -2167,6 +2227,7 @@ export type UserUncheckedUpdateWithoutBlogStatisticLogsInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -2197,6 +2258,7 @@ export type UserCreateWithoutMediaInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -2227,6 +2289,7 @@ export type UserUncheckedCreateWithoutMediaInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -2273,6 +2336,7 @@ export type UserUpdateWithoutMediaInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -2303,6 +2367,7 @@ export type UserUncheckedUpdateWithoutMediaInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -2333,6 +2398,7 @@ export type UserCreateWithoutInteractionsInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -2363,6 +2429,7 @@ export type UserUncheckedCreateWithoutInteractionsInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -2409,6 +2476,7 @@ export type UserUpdateWithoutInteractionsInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -2439,6 +2507,7 @@ export type UserUncheckedUpdateWithoutInteractionsInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -2469,6 +2538,7 @@ export type UserCreateWithoutCommentsInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -2499,6 +2569,7 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -2545,6 +2616,7 @@ export type UserUpdateWithoutCommentsInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -2575,6 +2647,7 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -2605,6 +2678,7 @@ export type UserCreateWithoutContactMessagesInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -2635,6 +2709,7 @@ export type UserUncheckedCreateWithoutContactMessagesInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -2681,6 +2756,7 @@ export type UserUpdateWithoutContactMessagesInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -2711,6 +2787,7 @@ export type UserUncheckedUpdateWithoutContactMessagesInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -2741,6 +2818,7 @@ export type UserCreateWithoutNotesInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -2771,6 +2849,7 @@ export type UserUncheckedCreateWithoutNotesInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -2817,6 +2896,7 @@ export type UserUpdateWithoutNotesInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -2847,6 +2927,7 @@ export type UserUncheckedUpdateWithoutNotesInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -2877,6 +2958,7 @@ export type UserCreateWithoutNoteDocumentsInput = {
   notes?: Prisma.NoteCreateNestedManyWithoutOwnerInput
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -2907,6 +2989,7 @@ export type UserUncheckedCreateWithoutNoteDocumentsInput = {
   notes?: Prisma.NoteUncheckedCreateNestedManyWithoutOwnerInput
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -2953,6 +3036,7 @@ export type UserUpdateWithoutNoteDocumentsInput = {
   notes?: Prisma.NoteUpdateManyWithoutOwnerNestedInput
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -2983,6 +3067,7 @@ export type UserUncheckedUpdateWithoutNoteDocumentsInput = {
   notes?: Prisma.NoteUncheckedUpdateManyWithoutOwnerNestedInput
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -3013,6 +3098,7 @@ export type UserCreateWithoutNoteLabelsInput = {
   notes?: Prisma.NoteCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -3043,6 +3129,7 @@ export type UserUncheckedCreateWithoutNoteLabelsInput = {
   notes?: Prisma.NoteUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -3089,6 +3176,7 @@ export type UserUpdateWithoutNoteLabelsInput = {
   notes?: Prisma.NoteUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -3119,6 +3207,7 @@ export type UserUncheckedUpdateWithoutNoteLabelsInput = {
   notes?: Prisma.NoteUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -3150,6 +3239,7 @@ export type UserCreateWithoutNoteSharesReceivedInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
 
@@ -3180,6 +3270,7 @@ export type UserUncheckedCreateWithoutNoteSharesReceivedInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
 
@@ -3215,6 +3306,7 @@ export type UserCreateWithoutNoteSharesSentInput = {
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
 }
 
@@ -3245,6 +3337,7 @@ export type UserUncheckedCreateWithoutNoteSharesSentInput = {
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
 }
 
@@ -3291,6 +3384,7 @@ export type UserUpdateWithoutNoteSharesReceivedInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
 
@@ -3321,6 +3415,7 @@ export type UserUncheckedUpdateWithoutNoteSharesReceivedInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
 
@@ -3362,6 +3457,7 @@ export type UserUpdateWithoutNoteSharesSentInput = {
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
 }
 
@@ -3392,6 +3488,7 @@ export type UserUncheckedUpdateWithoutNoteSharesSentInput = {
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
   workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
@@ -3421,6 +3518,7 @@ export type UserCreateWithoutWorkspaceSettingsInput = {
   notes?: Prisma.NoteCreateNestedManyWithoutOwnerInput
   noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -3451,6 +3549,7 @@ export type UserUncheckedCreateWithoutWorkspaceSettingsInput = {
   notes?: Prisma.NoteUncheckedCreateNestedManyWithoutOwnerInput
   noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
   noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -3497,6 +3596,7 @@ export type UserUpdateWithoutWorkspaceSettingsInput = {
   notes?: Prisma.NoteUpdateManyWithoutOwnerNestedInput
   noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -3527,6 +3627,147 @@ export type UserUncheckedUpdateWithoutWorkspaceSettingsInput = {
   notes?: Prisma.NoteUncheckedUpdateManyWithoutOwnerNestedInput
   noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
   noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
+  noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
+  noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
+}
+
+export type UserCreateWithoutSleepLogsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  email: string
+  name?: string | null
+  image?: string | null
+  emailVerified?: Date | string | null
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  userProfile?: Prisma.UserProfileCreateNestedOneWithoutUserInput
+  socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
+  educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
+  techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
+  media?: Prisma.MediaCreateNestedManyWithoutUserInput
+  interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
+  blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
+  notes?: Prisma.NoteCreateNestedManyWithoutOwnerInput
+  noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
+  noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
+  workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
+  noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
+}
+
+export type UserUncheckedCreateWithoutSleepLogsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  email: string
+  name?: string | null
+  image?: string | null
+  emailVerified?: Date | string | null
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  userProfile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput
+  socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
+  educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
+  techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
+  media?: Prisma.MediaUncheckedCreateNestedManyWithoutUserInput
+  interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
+  blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
+  notes?: Prisma.NoteUncheckedCreateNestedManyWithoutOwnerInput
+  noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
+  noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
+  workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
+  noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
+}
+
+export type UserCreateOrConnectWithoutSleepLogsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSleepLogsInput, Prisma.UserUncheckedCreateWithoutSleepLogsInput>
+}
+
+export type UserUpsertWithoutSleepLogsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSleepLogsInput, Prisma.UserUncheckedUpdateWithoutSleepLogsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSleepLogsInput, Prisma.UserUncheckedCreateWithoutSleepLogsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSleepLogsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSleepLogsInput, Prisma.UserUncheckedUpdateWithoutSleepLogsInput>
+}
+
+export type UserUpdateWithoutSleepLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  userProfile?: Prisma.UserProfileUpdateOneWithoutUserNestedInput
+  socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
+  educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
+  techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
+  media?: Prisma.MediaUpdateManyWithoutUserNestedInput
+  interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
+  blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
+  notes?: Prisma.NoteUpdateManyWithoutOwnerNestedInput
+  noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
+  noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
+  workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
+  noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSleepLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  userProfile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput
+  socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
+  educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
+  techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
+  media?: Prisma.MediaUncheckedUpdateManyWithoutUserNestedInput
+  interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
+  blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
+  notes?: Prisma.NoteUncheckedUpdateManyWithoutOwnerNestedInput
+  noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
+  noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -3553,6 +3794,7 @@ export type UserCountOutputType = {
   notes: number
   noteLabels: number
   noteDocuments: number
+  sleepLogs: number
   noteSharesReceived: number
   noteSharesSent: number
 }
@@ -3574,6 +3816,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   notes?: boolean | UserCountOutputTypeCountNotesArgs
   noteLabels?: boolean | UserCountOutputTypeCountNoteLabelsArgs
   noteDocuments?: boolean | UserCountOutputTypeCountNoteDocumentsArgs
+  sleepLogs?: boolean | UserCountOutputTypeCountSleepLogsArgs
   noteSharesReceived?: boolean | UserCountOutputTypeCountNoteSharesReceivedArgs
   noteSharesSent?: boolean | UserCountOutputTypeCountNoteSharesSentArgs
 }
@@ -3703,6 +3946,13 @@ export type UserCountOutputTypeCountNoteDocumentsArgs<ExtArgs extends runtime.Ty
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountSleepLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SleepLogWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountNoteSharesReceivedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.NoteShareWhereInput
 }
@@ -3742,6 +3992,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   noteLabels?: boolean | Prisma.User$noteLabelsArgs<ExtArgs>
   noteDocuments?: boolean | Prisma.User$noteDocumentsArgs<ExtArgs>
   workspaceSettings?: boolean | Prisma.User$workspaceSettingsArgs<ExtArgs>
+  sleepLogs?: boolean | Prisma.User$sleepLogsArgs<ExtArgs>
   noteSharesReceived?: boolean | Prisma.User$noteSharesReceivedArgs<ExtArgs>
   noteSharesSent?: boolean | Prisma.User$noteSharesSentArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -3800,6 +4051,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   noteLabels?: boolean | Prisma.User$noteLabelsArgs<ExtArgs>
   noteDocuments?: boolean | Prisma.User$noteDocumentsArgs<ExtArgs>
   workspaceSettings?: boolean | Prisma.User$workspaceSettingsArgs<ExtArgs>
+  sleepLogs?: boolean | Prisma.User$sleepLogsArgs<ExtArgs>
   noteSharesReceived?: boolean | Prisma.User$noteSharesReceivedArgs<ExtArgs>
   noteSharesSent?: boolean | Prisma.User$noteSharesSentArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -3828,6 +4080,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     noteLabels: Prisma.$NoteLabelPayload<ExtArgs>[]
     noteDocuments: Prisma.$NoteDocumentPayload<ExtArgs>[]
     workspaceSettings: Prisma.$WorkspaceSettingsPayload<ExtArgs> | null
+    sleepLogs: Prisma.$SleepLogPayload<ExtArgs>[]
     noteSharesReceived: Prisma.$NoteSharePayload<ExtArgs>[]
     noteSharesSent: Prisma.$NoteSharePayload<ExtArgs>[]
   }
@@ -4252,6 +4505,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   noteLabels<T extends Prisma.User$noteLabelsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$noteLabelsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NoteLabelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   noteDocuments<T extends Prisma.User$noteDocumentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$noteDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NoteDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   workspaceSettings<T extends Prisma.User$workspaceSettingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$workspaceSettingsArgs<ExtArgs>>): Prisma.Prisma__WorkspaceSettingsClient<runtime.Types.Result.GetResult<Prisma.$WorkspaceSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  sleepLogs<T extends Prisma.User$sleepLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sleepLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SleepLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   noteSharesReceived<T extends Prisma.User$noteSharesReceivedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$noteSharesReceivedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NoteSharePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   noteSharesSent<T extends Prisma.User$noteSharesSentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$noteSharesSentArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NoteSharePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -5103,6 +5357,30 @@ export type User$workspaceSettingsArgs<ExtArgs extends runtime.Types.Extensions.
    */
   include?: Prisma.WorkspaceSettingsInclude<ExtArgs> | null
   where?: Prisma.WorkspaceSettingsWhereInput
+}
+
+/**
+ * User.sleepLogs
+ */
+export type User$sleepLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SleepLog
+   */
+  select?: Prisma.SleepLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SleepLog
+   */
+  omit?: Prisma.SleepLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SleepLogInclude<ExtArgs> | null
+  where?: Prisma.SleepLogWhereInput
+  orderBy?: Prisma.SleepLogOrderByWithRelationInput | Prisma.SleepLogOrderByWithRelationInput[]
+  cursor?: Prisma.SleepLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SleepLogScalarFieldEnum | Prisma.SleepLogScalarFieldEnum[]
 }
 
 /**

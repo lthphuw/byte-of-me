@@ -94,7 +94,8 @@ export const ModelName = {
   NoteLabel: 'NoteLabel',
   NoteOnLabel: 'NoteOnLabel',
   NoteShare: 'NoteShare',
-  WorkspaceSettings: 'WorkspaceSettings'
+  WorkspaceSettings: 'WorkspaceSettings',
+  SleepLog: 'SleepLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -674,6 +675,25 @@ export const WorkspaceSettingsScalarFieldEnum = {
 } as const
 
 export type WorkspaceSettingsScalarFieldEnum = (typeof WorkspaceSettingsScalarFieldEnum)[keyof typeof WorkspaceSettingsScalarFieldEnum]
+
+
+export const SleepLogScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  localDate: 'localDate',
+  bedAt: 'bedAt',
+  wakeAt: 'wakeAt',
+  latencyMin: 'latencyMin',
+  awakeningsMin: 'awakeningsMin',
+  quality: 'quality',
+  note: 'note',
+  isFreeDay: 'isFreeDay',
+  factors: 'factors',
+  ownerId: 'ownerId'
+} as const
+
+export type SleepLogScalarFieldEnum = (typeof SleepLogScalarFieldEnum)[keyof typeof SleepLogScalarFieldEnum]
 
 
 export const SortOrder = {

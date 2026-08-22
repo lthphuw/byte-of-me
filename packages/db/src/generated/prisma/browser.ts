@@ -264,3 +264,8 @@ export type NoteShare = Prisma.NoteShareModel
  * default rather than breaking the workspace.
  */
 export type WorkspaceSettings = Prisma.WorkspaceSettingsModel
+/**
+ * Model SleepLog
+ * 
+ */
+export type SleepLog = Prisma.SleepLogModel

@@ -440,7 +440,8 @@ export const ModelName = {
   NoteLabel: 'NoteLabel',
   NoteOnLabel: 'NoteOnLabel',
   NoteShare: 'NoteShare',
-  WorkspaceSettings: 'WorkspaceSettings'
+  WorkspaceSettings: 'WorkspaceSettings',
+  SleepLog: 'SleepLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -456,7 +457,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "note" | "noteLink" | "noteDocument" | "noteLabel" | "noteOnLabel" | "noteShare" | "workspaceSettings"
+    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "note" | "noteLink" | "noteDocument" | "noteLabel" | "noteOnLabel" | "noteShare" | "workspaceSettings" | "sleepLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3716,6 +3717,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SleepLog: {
+      payload: Prisma.$SleepLogPayload<ExtArgs>
+      fields: Prisma.SleepLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SleepLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SleepLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SleepLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SleepLogPayload>
+        }
+        findFirst: {
+          args: Prisma.SleepLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SleepLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SleepLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SleepLogPayload>
+        }
+        findMany: {
+          args: Prisma.SleepLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SleepLogPayload>[]
+        }
+        create: {
+          args: Prisma.SleepLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SleepLogPayload>
+        }
+        createMany: {
+          args: Prisma.SleepLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SleepLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SleepLogPayload>[]
+        }
+        delete: {
+          args: Prisma.SleepLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SleepLogPayload>
+        }
+        update: {
+          args: Prisma.SleepLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SleepLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.SleepLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SleepLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SleepLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SleepLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.SleepLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SleepLogPayload>
+        }
+        aggregate: {
+          args: Prisma.SleepLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSleepLog>
+        }
+        groupBy: {
+          args: Prisma.SleepLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SleepLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SleepLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SleepLogCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -4318,6 +4393,25 @@ export const WorkspaceSettingsScalarFieldEnum = {
 export type WorkspaceSettingsScalarFieldEnum = (typeof WorkspaceSettingsScalarFieldEnum)[keyof typeof WorkspaceSettingsScalarFieldEnum]
 
 
+export const SleepLogScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  localDate: 'localDate',
+  bedAt: 'bedAt',
+  wakeAt: 'wakeAt',
+  latencyMin: 'latencyMin',
+  awakeningsMin: 'awakeningsMin',
+  quality: 'quality',
+  note: 'note',
+  isFreeDay: 'isFreeDay',
+  factors: 'factors',
+  ownerId: 'ownerId'
+} as const
+
+export type SleepLogScalarFieldEnum = (typeof SleepLogScalarFieldEnum)[keyof typeof SleepLogScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -4643,6 +4737,7 @@ export type GlobalOmitConfig = {
   noteOnLabel?: Prisma.NoteOnLabelOmit
   noteShare?: Prisma.NoteShareOmit
   workspaceSettings?: Prisma.WorkspaceSettingsOmit
+  sleepLog?: Prisma.SleepLogOmit
 }
 
 /* Types for Logging */
