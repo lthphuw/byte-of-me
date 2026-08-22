@@ -187,7 +187,19 @@ export function NoteEditor({
   // was added to close the C1 regression below and inserted ahead of the
   // pre-existing error check without anyone re-deriving which branch a
   // failure actually falls into.
-  if (isError) {
+  //
+  // `&& !note` is what narrows this to a load that produced NOTHING. In
+  // TanStack v5 a BACKGROUND REFETCH failure flips `status` to `'error'`
+  // while `data` is still present — a window-focus refetch on a flaky
+  // connection is enough — and this branch used to tear the whole editor
+  // down for it. That is not merely a wrong message: unmounting destroys the
+  // Tiptap instance, so the next successful refetch mounts a fresh one from
+  // the seed, which loses the caret, resets the scroll position to the top
+  // and drops the undo history. Same visible symptom as the reseed race
+  // `inFlightRef` closes in the hook, reached through a different door. With
+  // data in hand the honest answer is to keep editing what is on screen and
+  // say the refresh failed, which the status line below now does.
+  if (isError && !note) {
     return (
       <div className="p-6 text-sm text-destructive">{t('errors.load')}</div>
     );
@@ -279,24 +291,43 @@ export function NoteEditor({
             So the visible text and the announced text are separated: the eye
             gets all three states, the screen reader only the transitions worth
             interrupting for — settled, or failed. */}
+        {/* A failed background REFETCH is reported here rather than by
+            replacing the editor with `errors.load` — see the `isError && !note`
+            gate above for why unmounting a live document over a flaky refresh
+            is the wrong trade. It goes through this SAME already-mounted
+            region for the reason stated just above: a live region that is
+            inserted at the moment it has something to say is the one message
+            NVDA and JAWS never speak. Ranked below `isSaveError` because that
+            state has an action attached (the retry button beside it) while
+            this one only says the copy on screen may be behind. */}
         <div className="flex min-w-0 flex-1 items-center gap-2 px-1">
           <p
             role="status"
             aria-live="polite"
             className={cn(
               'min-w-0 truncate text-xs',
-              isSaveError ? 'text-destructive' : 'text-muted-foreground'
+              isSaveError || isError
+                ? 'text-destructive'
+                : 'text-muted-foreground'
             )}
           >
             <span aria-hidden="true">
               {isSaveError
                 ? t('status.error')
-                : isSaving
-                  ? t('status.saving')
-                  : t('status.saved')}
+                : isError
+                  ? t('errors.load')
+                  : isSaving
+                    ? t('status.saving')
+                    : t('status.saved')}
             </span>
             <span className="sr-only">
-              {isSaveError ? t('status.error') : isSaving ? '' : t('status.saved')}
+              {isSaveError
+                ? t('status.error')
+                : isError
+                  ? t('errors.load')
+                  : isSaving
+                    ? ''
+                    : t('status.saved')}
             </span>
           </p>
 

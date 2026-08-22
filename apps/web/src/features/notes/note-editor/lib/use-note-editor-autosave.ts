@@ -272,6 +272,44 @@ export function useNoteEditorAutosave(
   const seededNoteId = useRef<string | null>(null);
   const lastSentRef = useRef<BufferProvenance | null>(null);
 
+  /**
+   * How many writes this browser has sent for this note that have not
+   * settled yet. Non-zero means the catch-up below is looking at a cache
+   * entry it cannot yet interpret, so it must not act on it.
+   *
+   * The reason is that `onMutate` records the PRE-save `note.updatedAt` —
+   * it has to, there is no post-save timestamp to record until the response
+   * comes back — so two overlapping saves both claim the SAME base:
+   *
+   *   type "C1"  → debounce fires, save 1 leaves,  lastSent = { C1, T0 }
+   *   type "C2"  → debounce fires, save 2 leaves,  lastSent = { C2, T0 }
+   *                (`note.updatedAt` is still T0: save 1 has not landed)
+   *   save 1 lands → setQueryData(detail, { content: C1, updatedAt: T1 })
+   *
+   * Every clause of `willReseedThisCommit` is then satisfied — T1 > T0, and
+   * the buffer (C2) still equals `lastSentRef.content` (C2, from save 2) —
+   * so the catch-up reseeds the buffer to C1, the body of the OLDER save.
+   * Because the editor is keyed on `seedGeneration`, that reseed is a full
+   * remount: the document flashes, the scroll position resets to the top,
+   * the caret is dropped, and the keystrokes between C1 and C2 are rolled
+   * back on screen. Save 2's own response undoes the text a moment later,
+   * but the remount and everything typed during it are already gone.
+   *
+   * A counter rather than a boolean because saves genuinely overlap (that is
+   * the whole bug), and a REF rather than state because the decrement has to
+   * be visible to the render that `onSuccess`'s `setQueryData` schedules —
+   * `onSettled` runs in a microtask while the query cache notifies on a
+   * `setTimeout`, so a ref written in `onSettled` is already back to 0 by
+   * the time that render reads it, whereas a `setState` would queue a
+   * SECOND render behind the one that reseeds.
+   *
+   * This deliberately does not weaken I2 (a save that lands after the author
+   * switched away and came back still catches the buffer up): by the time
+   * that response arrives the save has settled, so the counter is 0 and the
+   * catch-up runs exactly as before.
+   */
+  const inFlightRef = useRef(0);
+
   // Updated unconditionally every render (not just on renders an effect
   // happens to run on), so the departure effect further down — whose closure
   // would otherwise be frozen at whatever render last changed `noteId` — can
@@ -387,6 +425,11 @@ export function useNoteEditorAutosave(
       note.updatedAt.getTime() > lastSentRef.current.updatedAt &&
       title === lastSentRef.current.title &&
       content === lastSentRef.current.content &&
+      // Nothing this browser sent is still outstanding. While one is, the
+      // row in the cache may be the echo of an EARLIER save than the one
+      // `lastSentRef` describes, and reseeding from it rolls the buffer
+      // backwards — see `inFlightRef` for the exact interleaving.
+      inFlightRef.current === 0 &&
       // Hold the buffer where it is until the author has chosen. Everything
       // else about this commit stays true; what changes is that the newer
       // server row is no longer automatically the right answer.
@@ -633,6 +676,10 @@ export function useNoteEditorAutosave(
     // next autosave and the departure effect's flush-on-switch/unmount
     // guard — both compare against this same ref.
     onMutate: (variables) => {
+      // Paired with the `onSettled` decrement below. Raised BEFORE the
+      // `updatedAt` line under it, which is the one that cannot tell two
+      // overlapping saves apart — see `inFlightRef`.
+      inFlightRef.current += 1;
       const previous = lastSentRef.current;
       lastSentRef.current = {
         title: variables.title ?? '',
@@ -669,6 +716,17 @@ export function useNoteEditorAutosave(
         lastSentRef.current = context.previous;
       }
       toast.error(t('errors.save'), { description: error.message });
+    },
+    // Success or failure, this write is no longer outstanding. `onSettled`
+    // rather than a decrement in each of `onSuccess`/`onError`: a failed
+    // save must re-arm the catch-up too, otherwise one network error would
+    // freeze the buffer against newer server rows for the rest of the
+    // session. TanStack runs this after `onSuccess`, both awaited on the
+    // mutation's own promise chain, so the counter is back to 0 before the
+    // query cache's `setTimeout`-scheduled notification renders the row
+    // `onSuccess` just wrote.
+    onSettled: () => {
+      inFlightRef.current -= 1;
     },
   });
 
@@ -828,28 +886,62 @@ export function useNoteEditorAutosave(
         content: pending.content !== sent.content,
       };
 
-      lastSentRef.current = {
+      // Held in a local so the failure branch below can tell whether this
+      // optimistic write is still the one in place before rolling it back.
+      const optimistic: BufferProvenance = {
         title: pending.title,
         content: pending.content,
         updatedAt: sent.updatedAt,
       };
+      lastSentRef.current = optimistic;
       // Local first, and on this path that ordering is the whole point: this
       // runs on `visibilitychange`/`pagehide`, where the request below may
       // never leave.
       storeLocally(departingId, pending);
+      // Counted for the same reason `save.onMutate` counts its own sends:
+      // this path writes the PRE-save `updatedAt` into `lastSentRef` too
+      // (`sent.updatedAt`, just above), so while it is outstanding the
+      // catch-up cannot tell its echo apart from a newer row. It matters on
+      // the `visibilitychange` half of `useDepartureFlush` specifically —
+      // the tab comes back with the SAME note still open and this hook still
+      // mounted, which is exactly the shape the reseed acts on. See
+      // `inFlightRef`.
+      inFlightRef.current += 1;
       void updateNote({
         id: departingId,
         title: pending.title,
         content: pending.content,
-      }).then((res) => {
-        if (res.success) {
-          applySaveResult(departingId, res.data, changed);
-        } else {
-          toast.error(tRef.current('errors.save'), {
-            description: res.errorMsg,
-          });
-        }
-      });
+      })
+        .then((res) => {
+          if (res.success) {
+            applySaveResult(departingId, res.data, changed);
+          } else {
+            // The same rollback the mutation's `onError` does, and for the
+            // same reason: leaving `lastSentRef` claiming this text was
+            // communicated silently disarms BOTH the next autosave and the
+            // next departure flush's own divergence check, so a failed
+            // flush would lose the edit for good instead of retrying it.
+            // Toasting alone was not enough — that branch is the one path
+            // through this file that reported the failure without undoing
+            // its optimistic bookkeeping.
+            //
+            // Identity-checked, unlike `onError`, because a flush is by
+            // definition followed by a departure: by the time this resolves
+            // the author may have switched notes and the seed effect may
+            // have written a DIFFERENT note's provenance here. Restoring
+            // then would relabel the new note's buffer with the old note's
+            // text. Only the value this flush itself wrote may be undone.
+            if (lastSentRef.current === optimistic) {
+              lastSentRef.current = sent;
+            }
+            toast.error(tRef.current('errors.save'), {
+              description: res.errorMsg,
+            });
+          }
+        })
+        .finally(() => {
+          inFlightRef.current -= 1;
+        });
     },
     // `applySaveResult` and `storeLocally` are both `useCallback`-stable on
     // `queryClient`, which does not change identity in this app, so this
