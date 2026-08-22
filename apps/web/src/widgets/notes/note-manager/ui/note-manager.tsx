@@ -21,10 +21,7 @@ import { NoteSidebarTabs } from './note-sidebar-tabs';
 import { NoteTreePanel } from './note-tree-panel';
 
 import { NOTE_HREF_PREFIX, noteHref, type NoteTreeNode } from '@/entities/note';
-import {
-  noteDocumentHref,
-  useNoteDocuments,
-} from '@/entities/note-document';
+import { noteDocumentHref, useNoteDocuments } from '@/entities/note-document';
 import {
   NoteActionsMenu,
   NoteRowContextMenu,
@@ -215,12 +212,20 @@ export function NoteManager({
    * Its own storage key rather than a fourth field on `useExplorerPrefs`: the
    * two have different lifetimes and different failure modes, and a corrupt
    * width should not take the author's view mode down with it.
+   *
+   * `cssVar` + `panelRef` are what keep a drag off React's render path. This
+   * component renders `NoteEditor`, so every pointer-move that re-rendered it
+   * re-rendered the open note: one style+layout pass over the 3,797-node
+   * research note that motivated this measures ~280ms, and the splitter
+   * trailed the cursor by most of a second. The hook now writes the variable
+   * onto the aside below and commits to state once, on `pointerup`.
    */
   const sidebar = useResizablePanel({
     storageKey: 'byte-of-me:notes-sidebar',
     min: 200,
     max: 480,
     defaultWidth: 256,
+    cssVar: '--notes-sidebar-w',
   });
 
   /**
@@ -230,6 +235,10 @@ export function NoteManager({
    *
    * 320 is the floor for both halves: below that a PDF page is unreadable and
    * a line of prose is a column of syllables.
+   *
+   * Same `cssVar` treatment as the explorer, and it matters MORE here: this
+   * separator sits directly against the editor, so dragging it is the gesture
+   * most likely to be made while a long note is open.
    */
   const viewerPane = useResizablePanel({
     storageKey: 'byte-of-me:notes-viewer',
@@ -237,6 +246,7 @@ export function NoteManager({
     max: 900,
     defaultWidth: 480,
     edge: 'end',
+    cssVar: '--notes-viewer-w',
   });
 
   /**
@@ -416,6 +426,11 @@ export function NoteManager({
         // The width is a CSS variable so the Tailwind class can stay in the
         // class list and stay breakpoint-scoped: below `md` this pane is the
         // whole screen and the dragged width means nothing.
+        //
+        // The ref is the other half: mid-drag the hook sets the same property
+        // on this element itself, so the gesture never renders. React and the
+        // imperative write agree because both read the hook's mirror.
+        ref={sidebar.panelRef}
         style={{ '--notes-sidebar-w': `${sidebar.width}px` } as CSSProperties}
         className={cn(
           'flex min-h-0 w-full shrink-0 flex-col border-r bg-background md:flex md:w-[var(--notes-sidebar-w)]',
@@ -523,10 +538,10 @@ export function NoteManager({
                 />
               }
               onOpenCheatSheet={() => setCheatSheetOpen(true)}
-            onEditorApiChange={(api) => {
-              editorApiRef.current = api;
-              editorStore.set(api?.editor ?? null);
-            }}
+              onEditorApiChange={(api) => {
+                editorApiRef.current = api;
+                editorStore.set(api?.editor ?? null);
+              }}
               onOutlineChange={outlineStore.set}
               // Renaming from the editor's title field, rather than from a tree
               // row. Wired HERE because `note-actions` and `note-editor` are
@@ -581,6 +596,8 @@ export function NoteManager({
               className="relative z-10 hidden w-1 shrink-0 cursor-col-resize bg-transparent transition-colors after:absolute after:inset-y-0 after:-left-2 after:-right-2 after:content-[''] hover:bg-primary/40 focus-visible:bg-primary/60 focus-visible:outline-none lg:block [@media(pointer:coarse)]:after:-left-5 [@media(pointer:coarse)]:after:-right-5"
             />
             <aside
+              // Ref + variable, as on the explorer aside above.
+              ref={viewerPane.panelRef}
               style={
                 {
                   '--notes-viewer-w': `${viewerPane.width}px`,

@@ -3,6 +3,7 @@
 import type {
   KeyboardEvent as ReactKeyboardEvent,
   PointerEvent as ReactPointerEvent,
+  RefObject,
 } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -28,6 +29,20 @@ export interface UseResizablePanelParams {
    * fighting the pointer.
    */
   edge?: 'start' | 'end';
+  /**
+   * The CSS custom property the pane's width is delivered through — e.g.
+   * `--notes-sidebar-w`, read back by a `w-[var(--notes-sidebar-w)]` class.
+   *
+   * Naming it here is what lets a drag skip React entirely: set this, attach
+   * `panelRef` to the element the property lives on, and `pointermove` writes
+   * the width onto that element instead of re-rendering the caller. See
+   * `writeLive`.
+   *
+   * Optional, because the hook is usable without it — but a caller that omits
+   * it gets a pane that only redraws when the gesture ENDS, since nothing
+   * re-renders in between.
+   */
+  cssVar?: string;
 }
 
 /**
@@ -56,10 +71,20 @@ export interface ResizablePanel {
    * The panel's width in pixels, always inside `[min, max]`. It keeps its
    * value while collapsed — collapsing is a separate flag, so expanding
    * returns to the width the user last chose rather than to `defaultWidth`.
+   *
+   * Always the CURRENT width, including mid-drag, where React state is
+   * deliberately one gesture behind — it is a getter over the mirror rather
+   * than a snapshot. See the return statement for why that matters.
    */
   width: number;
   isCollapsed: boolean;
   setCollapsed: (collapsed: boolean) => void;
+  /**
+   * Attach to the element `cssVar` is set on — the pane itself, not the
+   * separator. Without it a drag has nowhere to paint and only lands on
+   * `pointerup`.
+   */
+  panelRef: RefObject<HTMLElement | null>;
   separatorProps: ResizeSeparatorProps;
 }
 
@@ -89,6 +114,13 @@ interface DragState {
  * nothing — and they are the thing that leaks when the component unmounts
  * mid-drag. Here there is nothing to leak: the handlers are React props and
  * disappear with the element.
+ *
+ * The drag also does not go through React state: `pointermove` fires at the
+ * pointer's rate, and the notes workspace renders the note editor from the
+ * same component that owns the width — one style+layout pass over a
+ * 3,797-node research note measures ~280ms, so a `setState` per frame was a
+ * splitter that visibly lagged the cursor while the editor re-laid itself out
+ * underneath. `writeLive` paints the pane directly and `endDrag` commits once.
  */
 export function useResizablePanel({
   storageKey,
@@ -96,6 +128,7 @@ export function useResizablePanel({
   max,
   defaultWidth,
   edge = 'start',
+  cssVar,
 }: UseResizablePanelParams): ResizablePanel {
   // +1 for a left panel, -1 for a right one. Applied to the pointer delta and
   // to the arrow keys alike, so "left arrow narrows what is on the left and
@@ -112,12 +145,21 @@ export function useResizablePanel({
   }));
   const [isDragging, setIsDragging] = useState(false);
   const drag = useRef<DragState | null>(null);
+  const panelRef = useRef<HTMLElement | null>(null);
 
   // Mirrors `state` so a handler can read the current width without being
   // re-created on every pixel of a drag, and so two updates inside one event
-  // still compose.
+  // still compose. It is also the ONLY record of the width while a drag is in
+  // flight — `writeLive` advances it without a render, so between pointerdown
+  // and pointerup `state` holds where the gesture started and this holds where
+  // the pointer is.
   const stateRef = useRef(state);
-  stateRef.current = state;
+  // Guarded, because a render CAN happen mid-drag — anything above this hook
+  // re-rendering for its own reasons — and copying the committed state back
+  // over the mirror there would throw the gesture so far away: the pane would
+  // snap to where the drag started for that frame, and `endDrag` would then
+  // commit that same stale width.
+  if (!drag.current) stateRef.current = state;
 
   const persist = useCallback(
     (next: PanelState) => {
@@ -132,9 +174,14 @@ export function useResizablePanel({
   );
 
   /**
-   * The single write path, so the clamp cannot be bypassed. `save` is false
-   * only while a drag is in flight — writing localStorage on every
-   * `pointermove` would be a synchronous disk write per frame.
+   * The committing write path, so the clamp cannot be bypassed: the stored
+   * width arriving, the arrow keys, the double-click reset, collapsing, and
+   * the single write that ends a drag. Everything here renders.
+   *
+   * `save` is false only for the width read back OUT of storage, which has
+   * nothing to write back. A drag still persists nothing until `pointerup` —
+   * a `localStorage` write per `pointermove` is a synchronous disk write per
+   * frame — but it no longer comes through here at all; see `writeLive`.
    */
   const write = useCallback(
     (next: Partial<PanelState>, save: boolean) => {
@@ -147,6 +194,35 @@ export function useResizablePanel({
       if (save) persist(merged);
     },
     [clampWidth, persist]
+  );
+
+  /**
+   * The mid-drag write path: mirror, DOM, done — deliberately no `setState`.
+   *
+   * The width is ALREADY delivered to the layout as a custom property, so
+   * during a gesture it is set on the pane directly and React is left out of
+   * the loop entirely. That is what removes the per-frame re-render of the
+   * caller's subtree; `endDrag` commits the final value once.
+   *
+   * `aria-valuenow` is written the same way rather than left to that commit: a
+   * slider that only reports its value after the gesture has ended is one a
+   * screen reader cannot follow while it moves. The next render agrees with
+   * both, because it reads the same mirror.
+   */
+  const writeLive = useCallback(
+    (width: number, separator: HTMLElement) => {
+      const merged: PanelState = {
+        width: clampWidth(width),
+        collapsed: stateRef.current.collapsed,
+      };
+      stateRef.current = merged;
+
+      if (cssVar) {
+        panelRef.current?.style.setProperty(cssVar, `${merged.width}px`);
+      }
+      separator.setAttribute('aria-valuenow', String(merged.width));
+    },
+    [clampWidth, cssVar]
   );
 
   // Read in an effect, not at init: the first render must match the server
@@ -170,7 +246,9 @@ export function useResizablePanel({
               ? stored.width
               : undefined,
           collapsed:
-            typeof stored.collapsed === 'boolean' ? stored.collapsed : undefined,
+            typeof stored.collapsed === 'boolean'
+              ? stored.collapsed
+              : undefined,
         },
         false
       );
@@ -222,15 +300,12 @@ export function useResizablePanel({
       const current = drag.current;
       if (!current || current.pointerId !== event.pointerId) return;
 
-      write(
-        {
-          width:
-            current.startWidth + direction * (event.clientX - current.startX),
-        },
-        false
+      writeLive(
+        current.startWidth + direction * (event.clientX - current.startX),
+        event.currentTarget
       );
     },
-    [write, direction]
+    [writeLive, direction]
   );
 
   const endDrag = useCallback(
@@ -250,7 +325,8 @@ export function useResizablePanel({
         target.releasePointerCapture(event.pointerId);
       }
 
-      // One write for the whole gesture.
+      // The gesture's only render and its only disk write, from the width
+      // `writeLive` has been keeping in the mirror.
       write({}, true);
     },
     [write]
@@ -295,13 +371,23 @@ export function useResizablePanel({
   );
 
   return {
-    width: state.width,
+    // A getter over the mirror rather than `state.width`, because a drag
+    // leaves the state one gesture behind on purpose. A caller that re-renders
+    // mid-drag for an unrelated reason — a query resolving, a sibling's state
+    // moving — would otherwise paint the width the gesture STARTED at back
+    // over the one already on the element, snapping the pane for that frame
+    // and then jumping again on release. The mirror is the freshest answer at
+    // every point in the gesture, and it is what the element already shows.
+    get width() {
+      return stateRef.current.width;
+    },
     isCollapsed: state.collapsed,
     setCollapsed,
+    panelRef,
     separatorProps: {
       role: 'separator',
       'aria-orientation': 'vertical',
-      'aria-valuenow': state.width,
+      'aria-valuenow': stateRef.current.width,
       'aria-valuemin': min,
       'aria-valuemax': max,
       tabIndex: 0,

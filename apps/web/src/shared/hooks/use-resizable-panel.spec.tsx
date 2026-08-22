@@ -1,18 +1,29 @@
+import type { CSSProperties } from 'react';
 import { act, cleanup, fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
-import type { ResizablePanel, UseResizablePanelParams } from './use-resizable-panel';
+import type {
+  ResizablePanel,
+  UseResizablePanelParams,
+} from './use-resizable-panel';
 import { useResizablePanel } from './use-resizable-panel';
 
 const STORAGE_KEY = 'byte-of-me:test-panel';
 const MIN = 160;
 const MAX = 480;
 const DEFAULT_WIDTH = 240;
+/** The property the pane's width is delivered through, as `cssVar` names it. */
+const CSS_VAR = '--test-panel-w';
 
 /**
  * Renders the separator for real rather than calling the handlers directly:
  * spreading `separatorProps` onto a `<div>` is itself part of the contract,
  * and pointer capture only means anything on a mounted element.
+ *
+ * The pane is here for the same reason. A width the caller never puts on an
+ * element is a width nobody can see: `panelRef` plus the inline variable are
+ * the two halves of how it is delivered, and the tests below read the pane's
+ * computed property rather than trusting the hook's own report of itself.
  */
 function setup(overrides: Partial<UseResizablePanelParams> = {}) {
   const params: UseResizablePanelParams = {
@@ -24,11 +35,27 @@ function setup(overrides: Partial<UseResizablePanelParams> = {}) {
   };
 
   const latest: { panel: ResizablePanel | null } = { panel: null };
+  // Counts renders of the component that OWNS the hook. In the real workspace
+  // that component also renders the note editor, so this number is the whole
+  // point of the drag not going through state.
+  let renders = 0;
 
   function Harness() {
+    renders += 1;
     const panel = useResizablePanel(params);
     latest.panel = panel;
-    return <div data-testid="separator" {...panel.separatorProps} />;
+    return (
+      <>
+        {/* An `aside`, as both real panes are: `panelRef` is typed for the
+            generic `HTMLElement` a layout pane is, not for a `div`. */}
+        <aside
+          data-testid="pane"
+          ref={panel.panelRef}
+          style={{ [CSS_VAR]: `${panel.width}px` } as CSSProperties}
+        />
+        <div data-testid="separator" {...panel.separatorProps} />
+      </>
+    );
   }
 
   const view = render(<Harness />);
@@ -36,6 +63,10 @@ function setup(overrides: Partial<UseResizablePanelParams> = {}) {
   return {
     ...view,
     separator: view.getByTestId('separator'),
+    pane: view.getByTestId('pane'),
+    renders: () => renders,
+    /** A render forced from ABOVE the hook, as any parent's state would. */
+    renderFromAbove: () => view.rerender(<Harness />),
     panel: () => {
       if (!latest.panel) throw new Error('harness never rendered');
       return latest.panel;
@@ -84,7 +115,9 @@ describe('useResizablePanel', () => {
     drag(separator, 300, 360);
 
     expect(panel().width).toBe(DEFAULT_WIDTH + 60);
-    expect(separator.getAttribute('aria-valuenow')).toBe(String(DEFAULT_WIDTH + 60));
+    expect(separator.getAttribute('aria-valuenow')).toBe(
+      String(DEFAULT_WIDTH + 60)
+    );
   });
 
   describe("edge: 'end'", () => {
@@ -123,6 +156,123 @@ describe('useResizablePanel', () => {
 
       press(separator, 'Home');
       expect(panel().width).toBe(MIN);
+    });
+  });
+
+  /**
+   * The performance contract, and the reason it is worth a unit test at all:
+   * none of it is visible in a browser, and all of it dies silently the moment
+   * someone adds an innocent `useState` to the drag path. The caller here
+   * renders the note editor, where one style+layout pass over a 3,797-node
+   * research note measures ~280ms — a render per `pointermove` is a splitter
+   * that trails the cursor by most of a second.
+   */
+  describe('a drag reaches the DOM without a render', () => {
+    it('paints the pane and the slider value on every move, and renders on none', () => {
+      const { separator, pane, panel, renders } = setup({ cssVar: CSS_VAR });
+
+      fireEvent.pointerDown(separator, {
+        pointerId: 1,
+        button: 0,
+        clientX: 300,
+      });
+      const atPointerDown = renders();
+
+      fireEvent.pointerMove(separator, { pointerId: 1, clientX: 320 });
+      fireEvent.pointerMove(separator, { pointerId: 1, clientX: 340 });
+      fireEvent.pointerMove(separator, { pointerId: 1, clientX: 360 });
+
+      expect(renders()).toBe(atPointerDown);
+
+      // Live all the same: the width on the element, the value a screen reader
+      // reads off the slider, and what the hook reports if anything asks.
+      expect(pane.style.getPropertyValue(CSS_VAR)).toBe(
+        `${DEFAULT_WIDTH + 60}px`
+      );
+      expect(separator.getAttribute('aria-valuenow')).toBe(
+        String(DEFAULT_WIDTH + 60)
+      );
+      expect(panel().width).toBe(DEFAULT_WIDTH + 60);
+    });
+
+    it('commits once and persists once, on pointerup', () => {
+      const { separator, pane, renders } = setup({ cssVar: CSS_VAR });
+
+      fireEvent.pointerDown(separator, {
+        pointerId: 1,
+        button: 0,
+        clientX: 300,
+      });
+      fireEvent.pointerMove(separator, { pointerId: 1, clientX: 340 });
+      fireEvent.pointerMove(separator, { pointerId: 1, clientX: 380 });
+
+      // Storage is untouched, which is the whole assertion: a `localStorage`
+      // write per move is a synchronous disk write per frame, and any of them
+      // would have put a value here already.
+      expect(window.localStorage.getItem(STORAGE_KEY)).toBeNull();
+      const beforeRelease = renders();
+
+      fireEvent.pointerUp(separator, { pointerId: 1, clientX: 380 });
+
+      // One render for the whole gesture — the collapse of `setIsDragging`
+      // and the width commit into a single batch.
+      expect(renders()).toBe(beforeRelease + 1);
+      expect(
+        JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null')
+      ).toEqual({ width: DEFAULT_WIDTH + 80, collapsed: false });
+      // And the commit leaves the element saying what it already said.
+      expect(pane.style.getPropertyValue(CSS_VAR)).toBe(
+        `${DEFAULT_WIDTH + 80}px`
+      );
+    });
+
+    it("still narrows a right-anchored pane pushed right (edge: 'end')", () => {
+      const { separator, pane } = setup({ edge: 'end', cssVar: CSS_VAR });
+
+      fireEvent.pointerDown(separator, {
+        pointerId: 1,
+        button: 0,
+        clientX: 400,
+      });
+      fireEvent.pointerMove(separator, { pointerId: 1, clientX: 460 });
+
+      // The direction has to survive the move OFF the render path: painting
+      // the raw delta would widen the viewer pane as it is pushed into.
+      expect(pane.style.getPropertyValue(CSS_VAR)).toBe(
+        `${DEFAULT_WIDTH - 60}px`
+      );
+    });
+
+    it('keeps the gesture when a render arrives from above mid-drag', () => {
+      const { separator, pane, panel, renderFromAbove } = setup({
+        cssVar: CSS_VAR,
+      });
+
+      fireEvent.pointerDown(separator, {
+        pointerId: 1,
+        button: 0,
+        clientX: 300,
+      });
+      fireEvent.pointerMove(separator, { pointerId: 1, clientX: 350 });
+
+      // A parent re-rendering for its own reasons — a query resolving, a
+      // sibling's state moving. React state is deliberately one gesture behind
+      // here, so this render must NOT copy it back over the live width: the
+      // pane would snap to where the drag started and, worse, `pointerup`
+      // would then persist that stale width and lose the gesture entirely.
+      act(renderFromAbove);
+
+      expect(pane.style.getPropertyValue(CSS_VAR)).toBe(
+        `${DEFAULT_WIDTH + 50}px`
+      );
+      expect(panel().width).toBe(DEFAULT_WIDTH + 50);
+
+      fireEvent.pointerUp(separator, { pointerId: 1, clientX: 350 });
+
+      expect(panel().width).toBe(DEFAULT_WIDTH + 50);
+      expect(
+        JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? '{}')
+      ).toEqual({ width: DEFAULT_WIDTH + 50, collapsed: false });
     });
   });
 
