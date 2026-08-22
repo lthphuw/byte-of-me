@@ -31,6 +31,7 @@ import Typography from '@tiptap/extension-typography';
 import Underline from '@tiptap/extension-underline';
 import { Markdown } from '@tiptap/markdown';
 import type { EditorState, Transaction } from '@tiptap/pm/state';
+import type { EditorProps } from '@tiptap/pm/view';
 import {
   type Content,
   type Editor,
@@ -150,7 +151,42 @@ export function createExtensions(options?: {
   ];
 }
 
+/**
+ * The outline, rebuilt after the author pauses instead of inside the keystroke.
+ *
+ * `@tiptap/extension-table-of-contents` rebuilds the whole outline from
+ * `onTransaction`, synchronously, for every transaction that changes the
+ * document. That is two full `doc.descendants` walks (`setTocData`, then
+ * `addTocActiveStatesAndGetItems` over the result), and — per heading, in both
+ * of them — a `view.domAtPos(pos).offsetTop` read. Reading `offsetTop` in the
+ * same task ProseMirror has just mutated the DOM in forces the browser to flush
+ * style and layout for the ENTIRE document before it can answer.
+ *
+ * On the note that motivated this (350KB, 3,797 nodes, 75+ headings, 30 tables,
+ * 3,738 cells) one such flush measures ~280ms, and the extension asks for
+ * roughly 150 of them per character typed. It then dispatches a second, empty
+ * transaction to publish the result, which re-runs every plugin in the editor.
+ *
+ * So `onTransaction` is emptied and the same rebuild is driven from a debounce
+ * below, through the extension's own `updateTableOfContents` command — the one
+ * it already exposes for exactly this. Nothing is lost by the delay: the
+ * outline is read by a sidebar list, which does not have to agree with the
+ * document in the same frame as the keystroke, only shortly after it. Heading
+ * ids are unaffected — those are assigned by the extension's `onCreate` and by
+ * its ProseMirror plugin, neither of which is touched here.
+ */
+const DebouncedTableOfContents = TableOfContents.extend({
+  onTransaction() {
+    return undefined;
+  },
+});
 
+/**
+ * Long enough that a normal typing burst produces one rebuild rather than one
+ * per word, short enough that the outline feels attached to the document when
+ * the author stops to look at it.
+ */
+const OUTLINE_REBUILD_MS = 300;
 
 /**
  * Why an `onChange` reported what it did.
@@ -476,6 +512,31 @@ export function RichTextEditor({
     onOutlineChangeRef.current = onOutlineChange;
   }, [onOutlineChange]);
 
+  // The other half of `DebouncedTableOfContents` — see the note on it for what
+  // the extension does per transaction and why none of it belongs in the frame
+  // the keystroke lands in. Armed from `onUpdate` below, which Tiptap fires for
+  // exactly the doc-changing transactions the extension used to listen for.
+  const outlineRebuildRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scheduleOutlineRebuild = useCallback(() => {
+    if (outlineRebuildRef.current) clearTimeout(outlineRebuildRef.current);
+    outlineRebuildRef.current = setTimeout(() => {
+      outlineRebuildRef.current = null;
+      // Optional because the editor can be torn down between the schedule and
+      // the fire. The command itself is only registered when the extension is,
+      // which is why the caller below checks `compact` before scheduling.
+      editorRef.current?.commands.updateTableOfContents();
+    }, OUTLINE_REBUILD_MS);
+  }, []);
+
+  // A pending rebuild reaches into `editor.view` when it fires, so a timer left
+  // running past unmount would do that to a destroyed view.
+  useEffect(
+    () => () => {
+      if (outlineRebuildRef.current) clearTimeout(outlineRebuildRef.current);
+    },
+    []
+  );
+
   /**
    * One link, at the live selection.
    *
@@ -532,12 +593,27 @@ export function RichTextEditor({
     return attributes;
   }, [id, role, ariaLabelledBy, ariaDescribedBy, ariaInvalid]);
 
-  const editor = useEditor({
-    immediatelyRender: false,
-    // Tiptap 3 stops re-rendering on transactions by default, which leaves
-    // every toolbar reading stale `isActive`/`can()`/`getAttributes` state.
-    shouldRerenderOnTransaction: true,
-    editorProps: {
+  /*
+   * Memoised because `useEditor` compares its options by IDENTITY on every
+   * render.
+   *
+   * It runs `onRender(deps)` with no dependency array, so with `deps.length
+   * === 0` it takes the "editor already exists" branch and calls
+   * `compareOptions(nextOptions, editor.options)`. Every key but the callbacks
+   * is compared with `!==`, so an inline object literal here never matches, and
+   * the mismatch costs `editor.setOptions(...)` — which is `view.setProps()`
+   * followed by `view.updateState(state)`: a decoration recompute and a
+   * `docView.update` walk over the whole document, plus a selection sync that
+   * can force layout. Twice per render, on a surface that re-renders on every
+   * keystroke AND (via `shouldRerenderOnTransaction`) on every arrow key.
+   *
+   * The deps are the real ones rather than `[]`, but note that the list below
+   * is frozen at mount regardless: `useEditor` only ever recreates the editor
+   * when its own `deps` change, and those are empty. The effects further down
+   * are what keep the live view in step with a prop that changes afterwards.
+   */
+  const editorProps = useMemo<EditorProps>(
+    () => ({
       /*
        * The only DOM attributes this editor sets on the editable element.
        * Tiptap merges this with its own `role="textbox"` rather than replacing
@@ -605,8 +681,18 @@ export function RichTextEditor({
         insertUploadedImages(view, files, uploadImage);
         return true;
       },
-    },
-    extensions: [
+    }),
+    [spellCheck, surfaceAttributes, uploadImage]
+  );
+
+  /*
+   * Memoised for the identity reason above, and for a second one: this factory
+   * allocates ~25 configured extension clones every time it runs, and it used
+   * to run on every render — a full set of garbage per keystroke, for a list
+   * `useEditor` freezes at mount and never looks at again.
+   */
+  const extensions = useMemo(
+    () => [
       ...createExtensions({ uploadImage, placeholder, withMath }),
       // Registered only when a consumer wants it, so `[[` stays two literal
       // brackets everywhere else — a code snippet in a blog post is not a
@@ -619,10 +705,16 @@ export function RichTextEditor({
       ...(compact
         ? []
         : [
-            TableOfContents.configure({
+            DebouncedTableOfContents.configure({
               getIndex: getHierarchicalIndexes,
               onUpdate(content) {
-                setItems(content);
+                // Only when something can read it. `items` feeds the outline
+                // aside, which `chromeless` does not render — and the notes
+                // workspace, the one surface where documents get long enough
+                // for this to matter, is chromeless. Calling it there is a
+                // state update that renders nothing and re-renders the whole
+                // editor for it.
+                if (!chromeless) setItems(content);
                 onOutlineChangeRef.current?.(
                   content.map((item) => ({
                     id: item.id,
@@ -634,9 +726,34 @@ export function RichTextEditor({
               },
             }),
           ]),
-    ] as Extension[],
+    ],
+    [
+      chromeless,
+      compact,
+      handleLinkTrigger,
+      onLinkTrigger,
+      placeholder,
+      uploadImage,
+      withMath,
+    ]
+  ) as Extension[];
+
+  const editor = useEditor({
+    immediatelyRender: false,
+    // Tiptap 3 stops re-rendering on transactions by default, which leaves
+    // every toolbar reading stale `isActive`/`can()`/`getAttributes` state.
+    shouldRerenderOnTransaction: true,
+    editorProps,
+    extensions,
     content: value,
     onUpdate: ({ editor }) => {
+      // Tiptap fires `update` for exactly the doc-changing transactions the
+      // table-of-contents extension used to rebuild itself from, so this is
+      // where the debounced rebuild is armed. Guarded on `compact` because
+      // that is the case where the extension — and with it the command the
+      // timer calls — is not registered at all.
+      if (!compact) scheduleOutlineRebuild();
+
       // `isInitialized` is Tiptap's own flag, not a heuristic: the editor
       // sets it true immediately after emitting `create`, and the extension
       // `onCreate` handlers that rewrite the document (see
@@ -657,11 +774,13 @@ export function RichTextEditor({
     editorRef.current = editor ?? null;
   }, [editor]);
 
-  // Re-applied to the LIVE view, because `editorProps` above is frozen at the
-  // value the editor mounted with: `useEditor` keeps its options on a ref and
-  // only ever calls `setOptions` when its `deps` change (they never do here) —
-  // so a consumer flipping this setting would see nothing happen until
-  // something else remounted the editor.
+  // Re-applied to the LIVE view, because `editorProps` above is effectively
+  // frozen at the value the editor mounted with: `useEditor` keeps its options
+  // on a ref, never recreates the editor (its `deps` are empty), and only
+  // reaches for `setOptions` when it notices an option whose identity changed —
+  // which, now that `editorProps` is memoised, is exactly what does NOT happen
+  // on an ordinary render. So a consumer flipping this setting would see
+  // nothing happen until something else remounted the editor.
   //
   // Written straight onto the editable element rather than through
   // `editor.setOptions({ editorProps })`, which shallow-merges: passing an

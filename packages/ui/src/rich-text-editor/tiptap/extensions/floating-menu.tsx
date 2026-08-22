@@ -2,6 +2,7 @@
 
 import React, {
   type ComponentProps,
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -188,7 +189,24 @@ type ShouldShowProps = Parameters<
   NonNullable<ComponentProps<typeof FloatingMenu>['shouldShow']>
 >[0];
 
-export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
+/**
+ * Memoised because the editor above it re-renders on EVERY transaction, not
+ * just every edit: `shouldRerenderOnTransaction` is on (the toolbars need it
+ * for live `isActive`/`can()` state), and a transaction is also what an arrow
+ * key, a click and a drag-select produce. Each of those re-rendered this whole
+ * cmdk tree — ~20 `CommandItem`s across four groups — whether or not the menu
+ * was open, because a slash palette renders its list regardless.
+ *
+ * Safe to skip: the only prop is the editor instance, which is stable for the
+ * lifetime of the mount, and nothing below reads editor STATE during render.
+ * What the palette shows comes from this component's own state, and that is set
+ * from `shouldShow`, which the menu plugin calls on every state change anyway.
+ */
+export const TipTapFloatingMenu = memo(function TipTapFloatingMenu({
+  editor,
+}: {
+  editor: Editor;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 300);
@@ -446,4 +464,4 @@ export function TipTapFloatingMenu({ editor }: { editor: Editor }) {
       </Command>
     </FloatingMenu>
   );
-}
+});
