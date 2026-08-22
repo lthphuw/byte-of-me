@@ -13,9 +13,15 @@ const ALLOWED_TAGS = new Set([
 // `id` and the `data-*`/`aria-*` entries below carry no script and are what
 // make in-page anchors work: heading ids for the table of contents, and the
 // citation/reference pairs that let a reader jump to a source and back.
+//
+// `scope` is the one that is easy to leave out and impossible to notice:
+// `render-extensions.ts` marks every `th` as a column or row header, and a
+// sanitizer that drops it turns the whole accessibility fix into a silent
+// no-op. It names a header's direction, carries no script, and its only
+// consumer is assistive tech.
 const ALLOWED_ATTRS = new Set([
   'href', 'src', 'alt', 'title', 'class', 'target', 'rel', 'colspan',
-  'rowspan', 'start', 'type', 'width', 'height', 'id', 'aria-label',
+  'rowspan', 'scope', 'start', 'type', 'width', 'height', 'id', 'aria-label',
   'data-citation', 'data-citation-link', 'data-reference-list',
   'data-reference-backlink',
   // Which table columns hold figures, worked out at render time by

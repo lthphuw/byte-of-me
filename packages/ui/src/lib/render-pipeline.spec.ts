@@ -65,6 +65,104 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
     expect(html).toMatch(/<div class="tableWrapper"><table/);
   });
 
+  it('scopes header cells so a screen reader knows what a number belongs to', () => {
+    // Without `scope`, assistive tech has to guess which header describes a
+    // cell — and on a benchmark table that guess IS the meaning of the figure
+    // being read out. The measured survey note had 184 `<th>` and no `scope`
+    // at all.
+    //
+    // Asserted through `sanitizeHtml`, not just `generateHTML`: the attribute
+    // allow-list is the likeliest place for this to regress, and a sanitizer
+    // that drops `scope` makes the renderer's work invisible with no error.
+    const table = {
+      type: 'doc',
+      content: [
+        {
+          type: 'table',
+          content: [
+            {
+              type: 'tableRow',
+              content: [cell('tableHeader', 'Model'), cell('tableHeader', 'AP50')],
+            },
+            // A malformed row in the middle: a table one row short of valid
+            // must still render the rest, scopes included.
+            { type: 'tableRow', content: [] },
+            {
+              type: 'tableRow',
+              content: [cell('tableHeader', 'YOLOv8'), cell('tableCell', '52.9')],
+            },
+          ],
+        },
+      ],
+    };
+
+    const scoped = sanitizeHtml(generateHTML(table, renderExtensions));
+    const scopes = [...scoped.matchAll(/<th[^>]*?\sscope="([a-z]+)"/g)].map(
+      (match) => match[1]
+    );
+
+    // First row: column headers. Later rows: the leading cell is the row
+    // label. The corner cell belongs to the first row and is `col` there —
+    // one scope per cell, never both.
+    expect(scopes).toEqual(['col', 'col', 'row']);
+    expect(scoped).toContain('52.9');
+  });
+
+  it('leaves a `td` row label unscoped rather than emitting invalid markup', () => {
+    // Whether a row label is a `th` is the author's choice. HTML5 has no
+    // `scope` on a `td` and no screen reader treats one as a header, so a
+    // `td` label gets nothing.
+    const tdLabels = sanitizeHtml(
+      generateHTML(
+        {
+          type: 'doc',
+          content: [
+            {
+              type: 'table',
+              content: [
+                {
+                  type: 'tableRow',
+                  content: [cell('tableHeader', 'Model'), cell('tableHeader', 'AP50')],
+                },
+                {
+                  type: 'tableRow',
+                  content: [cell('tableCell', 'DETR'), cell('tableCell', '50.1')],
+                },
+              ],
+            },
+          ],
+        },
+        renderExtensions
+      )
+    );
+
+    expect(tdLabels).not.toContain('scope="row"');
+    expect(tdLabels.match(/scope="col"/g)).toHaveLength(2);
+  });
+
+  it('renders the document around a table that has no rows at all', () => {
+    // Upstream's table renderer asks `createColGroup` for a `<colgroup>` and
+    // gets `undefined` when there is no first row, which makes ProseMirror's
+    // serializer throw. `renderRichTextHtml` catches a throw here and falls
+    // back to escaping — of an object — so the reader would lose the whole
+    // note over one empty table, not just the table.
+    const withEmptyTable = sanitizeHtml(
+      generateHTML(
+        {
+          type: 'doc',
+          content: [
+            { type: 'table' },
+            { type: 'paragraph', content: [{ type: 'text', text: 'Still here' }] },
+          ],
+        },
+        renderExtensions
+      )
+    );
+
+    expect(withEmptyTable).toContain('Still here');
+    expect(withEmptyTable).toContain('class="tableWrapper"');
+  });
+
   it('keeps the language class mermaid enhancement keys on', () => {
     expect(html).toContain('language-mermaid');
     expect(html).toContain('flowchart TB');

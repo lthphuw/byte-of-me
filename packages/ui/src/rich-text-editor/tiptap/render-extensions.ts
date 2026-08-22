@@ -19,11 +19,12 @@ import Highlight from '@tiptap/extension-highlight';
 import Link from '@tiptap/extension-link';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
-import { TableCell, TableHeader, TableKit } from '@tiptap/extension-table';
+import { Table, TableCell, TableHeader, TableKit } from '@tiptap/extension-table';
 import TextAlign from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import Typography from '@tiptap/extension-typography';
 import Underline from '@tiptap/extension-underline';
+import type { DOMOutputSpec, Node as ProseMirrorNode } from '@tiptap/pm/model';
 import StarterKit from '@tiptap/starter-kit';
 import { common, createLowlight } from 'lowlight';
 
@@ -65,9 +66,113 @@ const NumericTableCell = TableCell.extend({
   },
 });
 
+/**
+ * Which `scope` each header cell of the table currently being serialized
+ * carries. Keyed by node identity, populated by the table (below) and read
+ * back by the header cell.
+ *
+ * A side channel because scope is a fact about POSITION and a cell's
+ * `renderHTML` is handed only its own node — Tiptap's serializer walks
+ * parent-before-children, so the table is the last place that still knows
+ * which row a cell sits in. It is not a stored attribute for the same reason
+ * `numeric` is not: it is derived from the shape of the table, so a stored
+ * copy goes stale the moment a row is added. A WeakMap keyed on the node
+ * (as in `numbering.ts`) means the entries die with the render.
+ *
+ * Why it matters more than it looks: without `scope`, assistive tech has to
+ * guess which header describes a cell, and on a benchmark table that guess IS
+ * the meaning of the number being read out. The live survey note had 184
+ * `<th>` elements and not one `scope`.
+ */
+const headerScopes = new WeakMap<ProseMirrorNode, 'col' | 'row'>();
+
+/**
+ * The document structure these tables actually have — the same one
+ * `editor-surface.css` styles: the FIRST ROW is the header row, and the FIRST
+ * CELL of every row is the row label (the column the styles pin).
+ *
+ * So the first row's cells are column headers, and the first cell of every
+ * later row is a row header. The top-left corner belongs to the first row and
+ * is scoped `col` there, never both.
+ *
+ * Only a `tableHeader` is scoped. Whether a row label is a `th` at all is the
+ * author's choice, and HTML has no `scope` on a `td` — it was dropped in
+ * HTML5, and a screen reader does not treat a `td` as a header no matter what
+ * we put on it. A `td` row label therefore gets nothing rather than invalid
+ * markup.
+ *
+ * Nothing here assumes a well-formed table: a row with no cells and a table
+ * with no rows both fall through, because a malformed table must still render
+ * — `generateHTML` throwing costs the reader the whole document, not one
+ * table.
+ */
+function assignHeaderScopes(table: ProseMirrorNode): void {
+  table.forEach((row, _offset, rowIndex) => {
+    if (rowIndex === 0) {
+      row.forEach((cell) => {
+        if (cell.type.name === 'tableHeader') headerScopes.set(cell, 'col');
+      });
+      return;
+    }
+
+    const label = row.firstChild;
+    if (label?.type.name === 'tableHeader') headerScopes.set(label, 'row');
+  });
+}
+
+/**
+ * The table, with one job added: work out its header scopes before its cells
+ * are serialized. Tiptap renders a node's own markup before it fills the
+ * content hole, so this always runs before the `th`s below read the map.
+ */
+const ScopedTable = Table.extend({
+  renderHTML(props) {
+    assignHeaderScopes(props.node);
+
+    // A table with no rows never reaches upstream's renderer, and that is not
+    // defensive tidiness: it asks `createColGroup` for a `<colgroup>`, which
+    // returns `{}` when there is no first row, and the `undefined` left in
+    // the output spec makes ProseMirror's serializer throw
+    // (`structure.nodeType` of undefined — verified against
+    // @tiptap/extension-table 3.29.2). `renderRichTextHtml` catches that and
+    // falls back to escaping its input, and its input is an OBJECT — so one
+    // empty table costs the reader the ENTIRE document, the same failure the
+    // math nodes above were added for.
+    const rendered = props.node.childCount ? this.parent?.(props) : undefined;
+    if (rendered) return rendered;
+
+    const table: DOMOutputSpec = [
+      'table',
+      mergeAttributes(props.HTMLAttributes),
+      ['tbody', 0],
+    ];
+    return this.options.renderWrapper
+      ? ['div', { class: 'tableWrapper' }, table]
+      : table;
+  },
+});
+
 const NumericTableHeader = TableHeader.extend({
   addAttributes() {
     return { ...this.parent?.(), ...numericAttribute };
+  },
+
+  // Upstream's `th` plus the scope the table worked out. Written out rather
+  // than patching the parent's spec, because the parent returns the attribute
+  // object it renders and reaching into it to add a key is the kind of thing
+  // that breaks silently on an upstream refactor.
+  renderHTML({ node, HTMLAttributes }) {
+    const scope = headerScopes.get(node);
+
+    return [
+      'th',
+      mergeAttributes(
+        this.options.HTMLAttributes,
+        HTMLAttributes,
+        scope ? { scope } : {}
+      ),
+      0,
+    ];
   },
 });
 
@@ -211,11 +316,13 @@ export const renderExtensions = [
   // `display: block` this replaces — throws away the table layout algorithm,
   // which is the thing that keeps columns aligned to each other.
   TableKit.configure({
-    table: { resizable: false, renderWrapper: true },
-    // Both replaced below, with the one attribute the numeric-column pass sets.
+    // All three replaced below: the table to derive header scopes from the
+    // rows it can still see, the cells to carry the numeric-column attribute.
+    table: false,
     tableCell: false,
     tableHeader: false,
   }),
+  ScopedTable.configure({ resizable: false, renderWrapper: true }),
   NumericTableCell,
   NumericTableHeader,
   CitationBase,

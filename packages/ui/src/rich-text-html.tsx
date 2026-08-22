@@ -228,13 +228,31 @@ export function RichTextHtml({
         // one it is. On a table that already fits, it does nothing.
         '[&_tr>:first-child]:sticky [&_tr>:first-child]:left-0 [&_tr>:first-child]:z-[1]',
         '[&_tr>:first-child]:min-w-[14ch] [&_tr>:first-child]:bg-background',
+        // …but a `th` in that column keeps the header fill, which the rule
+        // above is specific enough to take away from it. Removing the pinned
+        // header row (53c1cc9) also removed the corner cell's fill here, so
+        // the header row's first cell and every `th` row label started
+        // painting as body cells — while `editor-surface.css` kept
+        // `tr > th:first-child` at `--muted`, leaving the writing surface and
+        // the published page disagreeing about the same table. Now that those
+        // cells carry `scope`, looking like a header is the visual half of
+        // what a screen reader is being told.
+        '[&_tr>th:first-child]:bg-neutral-50 dark:[&_tr>th:first-child]:bg-neutral-900',
         // The column scrolling underneath is HIDDEN, not absent, and a reader
         // has to be able to tell. Numeric columns are right-aligned, so what
         // the pinned column covers is the leading digits — `25.9M` reading as
         // `5.9M` is a plausible wrong number, which is worse than an obviously
-        // cut-off one. The shadow is what makes the overlap visible.
-        '[&_tr>:first-child]:shadow-[6px_0_6px_-6px_rgba(0,0,0,0.18)]',
-        'dark:[&_tr>:first-child]:shadow-[6px_0_6px_-6px_rgba(0,0,0,0.6)]',
+        // cut-off one. This edge is what makes the overlap visible.
+        //
+        // A hairline rather than the 6px blur this used to be, and a neutral
+        // rather than black. Both were real defects: a blur is a raster op
+        // paid per pinned cell and a benchmark note has hundreds of them, and
+        // the black version was invisible on a near-black page — so on the
+        // theme where the cue mattered most it was not being given at all.
+        // The light/dark pair stays because that is how every other colour on
+        // this surface is expressed.
+        '[&_tr>:first-child]:shadow-[1px_0_0_#a3a3a3]',
+        'dark:[&_tr>:first-child]:shadow-[1px_0_0_#525252]',
 
         // NO height cap, and NO pinned header row. `overflow-x-auto` above
         // already makes `overflow-y`'s used value `auto` (CSS Overflow 3 §3),
