@@ -8,11 +8,13 @@ import { useTranslations } from 'next-intl';
  * three stat cards, and the module grid — with the same wrappers and the same
  * gaps, so the real hub swapping in shifts nothing.
  *
- * The module grid is THREE blocks, not two. It used to draw two, while
- * `SpaceHub` renders the Recent card plus one card per module (notes, graph):
- * at `lg` the real layout is two columns over two rows and the placeholder was
- * two columns over one, so a cold `/space` on a desktop jumped a full card row
- * at hydration — the exact shift this file exists to prevent.
+ * The module grid is one block per card `SpaceHub` actually renders — the
+ * Recent card plus one per module (notes, graph, health) — currently FOUR. It
+ * once drew two against the real component's three: at `lg` the real layout was
+ * two columns over two rows and the placeholder was two columns over one, so a
+ * cold `/space` on a desktop jumped a full card row at hydration, the exact
+ * shift this file exists to prevent. Adding a module card there means adding a
+ * block here.
  *
  * A client component for the same reason `NoteEditorSkeleton` is one: the
  * container needs a translated accessible name, and `loading.tsx` cannot be
@@ -54,6 +56,7 @@ export function SpaceHubSkeleton() {
           {/* Recent notes: five rows and a header. */}
           <Skeleton aria-hidden className="h-64 w-full" />
           {/* One per module card — header plus description, no body. */}
+          <Skeleton aria-hidden className="h-32 w-full" />
           <Skeleton aria-hidden className="h-32 w-full" />
           <Skeleton aria-hidden className="h-32 w-full" />
         </div>

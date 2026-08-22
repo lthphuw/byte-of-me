@@ -50,7 +50,9 @@ describe('computeNight', () => {
   });
 
   it('never returns a negative sleep time', () => {
-    expect(night({ latencyMin: 600, awakeningsMin: 600 }).totalSleepMin).toBe(0);
+    expect(night({ latencyMin: 600, awakeningsMin: 600 }).totalSleepMin).toBe(
+      0
+    );
   });
 
   it('places midsleep as minutes past local midnight of the wake day', () => {

@@ -638,6 +638,70 @@ declare const messages: {
         "deleteError": "Không thể xóa media"
       }
     },
+    "health": {
+      "title": "Sức khỏe",
+      "loading": "Đang tải dữ liệu sức khỏe…",
+      "tabs": {
+        "overview": "Tổng quan",
+        "sleep": "Giấc ngủ"
+      },
+      "units": {
+        "hoursMinutes": "{hours, number} giờ {minutes, number} phút",
+        "minutes": "{minutes, number} phút"
+      },
+      "hub": {
+        "ariaLabel": "Thống kê giấc ngủ",
+        "lastNight": "Đêm qua",
+        "debt": "Nợ ngủ",
+        "streak": "Chuỗi ngày",
+        "noData": "Chưa ghi giấc ngủ nào",
+        "logSleep": "Ghi giấc ngủ",
+        "editSleep": "Cập nhật đêm qua",
+        "estimated": "Ước tính"
+      },
+      "sleep": {
+        "title": "Giấc ngủ",
+        "bedAt": "Giờ đi ngủ",
+        "wakeAt": "Giờ thức dậy",
+        "duration": "Thời lượng",
+        "quality": "Chất lượng",
+        "qualityValue": "Chất lượng {value, number} trên 5",
+        "qualityClear": "Không chấm chất lượng",
+        "factors": "Yếu tố ảnh hưởng",
+        "freeDay": "Hôm nay được nghỉ",
+        "latency": "Thời gian để ngủ được",
+        "awakenings": "Số phút thức giấc",
+        "note": "Ghi chú",
+        "save": "Lưu",
+        "saving": "Đang lưu…",
+        "saved": "Đã lưu giấc ngủ",
+        "statsAriaLabel": "Thống kê giấc ngủ",
+        "efficiency": "Hiệu suất",
+        "bedtimeSd": "Độ lệch giờ ngủ",
+        "waketimeSd": "Độ lệch giờ dậy",
+        "debt": "Nợ ngủ",
+        "streak": "Chuỗi ngày",
+        "durationChart": "Thời lượng ngủ, 14 ngày gần nhất",
+        "durationSummary": "Thời lượng ngủ mỗi đêm theo giờ trong 14 ngày gần nhất",
+        "heatmap": "Mức đều đặn",
+        "heatmapSummary": "Những ngày đã ghi, đậm nhạt theo thời lượng ngủ",
+        "efficiencyUnavailable": "Nhập thời gian để ngủ được hoặc số phút thức giấc để xem hiệu suất",
+        "debtCaveat": "Ước lượng luân phiên 14 ngày, không phải chỉ số y khoa",
+        "noHistory": "Chưa có gì — hãy lưu đêm đầu tiên ở trên."
+      },
+      "factors": {
+        "caffeine_late": "Cà phê muộn",
+        "alcohol": "Rượu bia",
+        "screen_late": "Màn hình khuya",
+        "late_meal": "Ăn khuya",
+        "workout_late": "Tập muộn",
+        "ill": "Ốm mệt"
+      },
+      "errors": {
+        "load": "Không tải được dữ liệu sức khỏe",
+        "save": "Không lưu được"
+      }
+    },
     "note": {
       "title": "Ghi chú",
       "description": "Ghi chú riêng tư của bạn. Không có gì ở đây được công khai.",
@@ -941,7 +1005,8 @@ declare const messages: {
       "items": {
         "hub": "Tổng quan",
         "notes": "Ghi chú",
-        "graph": "Sơ đồ"
+        "graph": "Sơ đồ",
+        "health": "Sức khỏe"
       },
       "actions": {
         "dashboard": "Bảng điều khiển",
@@ -965,7 +1030,9 @@ declare const messages: {
           "notesTitle": "Ghi chú",
           "notesDescription": "Ghi chú liên kết với backlink, công thức toán và markdown.",
           "graphTitle": "Sơ đồ tri thức",
-          "graphDescription": "Xem các ghi chú kết nối với nhau ra sao — và ghi chú nào chưa."
+          "graphDescription": "Xem các ghi chú kết nối với nhau ra sao — và ghi chú nào chưa.",
+          "healthTitle": "Sức khỏe",
+          "healthDescription": "Giấc ngủ, tập luyện và những con số kết nối chúng."
         },
         "errors": {
           "load": "Không tải được tổng quan không gian làm việc. Tải lại để thử lại."

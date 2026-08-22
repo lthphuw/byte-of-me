@@ -635,6 +635,70 @@
         "deleteError": "Could not delete media"
       }
     },
+    "health": {
+      "title": "Health",
+      "loading": "Loading health data…",
+      "tabs": {
+        "overview": "Overview",
+        "sleep": "Sleep"
+      },
+      "units": {
+        "hoursMinutes": "{hours, number}h {minutes, number}m",
+        "minutes": "{minutes, number}m"
+      },
+      "hub": {
+        "ariaLabel": "Sleep statistics",
+        "lastNight": "Last night",
+        "debt": "Sleep debt",
+        "streak": "Streak",
+        "noData": "No sleep logged yet",
+        "logSleep": "Log sleep",
+        "editSleep": "Update last night",
+        "estimated": "Estimated"
+      },
+      "sleep": {
+        "title": "Sleep",
+        "bedAt": "Bedtime",
+        "wakeAt": "Wake time",
+        "duration": "Duration",
+        "quality": "Quality",
+        "qualityValue": "Quality {value, number} of 5",
+        "qualityClear": "No quality rating",
+        "factors": "Factors",
+        "freeDay": "Free day today",
+        "latency": "Time to fall asleep",
+        "awakenings": "Minutes awake",
+        "note": "Note",
+        "save": "Save",
+        "saving": "Saving…",
+        "saved": "Sleep saved",
+        "statsAriaLabel": "Sleep statistics",
+        "efficiency": "Efficiency",
+        "bedtimeSd": "Bedtime variation",
+        "waketimeSd": "Wake variation",
+        "debt": "Sleep debt",
+        "streak": "Streak",
+        "durationChart": "Sleep duration, last 14 days",
+        "durationSummary": "Nightly sleep duration in hours for the last 14 days",
+        "heatmap": "Consistency",
+        "heatmapSummary": "Days logged, shaded by sleep duration",
+        "efficiencyUnavailable": "Add time to fall asleep or minutes awake to see efficiency",
+        "debtCaveat": "A rolling 14-day heuristic, not a clinical measure",
+        "noHistory": "Nothing logged yet — save your first night above."
+      },
+      "factors": {
+        "caffeine_late": "Late caffeine",
+        "alcohol": "Alcohol",
+        "screen_late": "Late screen",
+        "late_meal": "Late meal",
+        "workout_late": "Late workout",
+        "ill": "Unwell"
+      },
+      "errors": {
+        "load": "Could not load health data",
+        "save": "Could not save"
+      }
+    },
     "note": {
       "title": "Notes",
       "description": "Your private notes. Nothing here is ever published.",
@@ -938,7 +1002,8 @@
       "items": {
         "hub": "Overview",
         "notes": "Notes",
-        "graph": "Graph"
+        "graph": "Graph",
+        "health": "Health"
       },
       "actions": {
         "dashboard": "Dashboard",
@@ -962,7 +1027,9 @@
           "notesTitle": "Notes",
           "notesDescription": "Interconnected notes with backlinks, math, and markdown.",
           "graphTitle": "Knowledge graph",
-          "graphDescription": "See how your notes connect — and which ones don't yet."
+          "graphDescription": "See how your notes connect — and which ones don't yet.",
+          "healthTitle": "Health",
+          "healthDescription": "Sleep, training, and the numbers that connect them."
         },
         "errors": {
           "load": "Couldn't load your workspace overview. Reload to try again."

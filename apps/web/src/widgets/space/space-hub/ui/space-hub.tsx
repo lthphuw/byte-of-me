@@ -5,7 +5,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@byte-of-me/ui';
-import { Archive, ArrowRight, Link2, NotebookPen, Share2 } from 'lucide-react';
+import {
+  Archive,
+  ArrowRight,
+  HeartPulse,
+  Link2,
+  NotebookPen,
+  Share2,
+} from 'lucide-react';
 import { getFormatter, getTranslations } from 'next-intl/server';
 
 import { getSpaceStats } from '@/entities/note';
@@ -149,6 +156,26 @@ export async function SpaceHub({ navSlot }: { navSlot?: React.ReactNode }) {
                     </CardTitle>
                     <CardDescription>
                       {t('modules.graphDescription')}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+
+              <Link
+                href="/space/health"
+                className="group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Card className="h-full transition-colors group-hover:border-primary/40 group-hover:bg-muted/40">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between text-base">
+                      <span className="flex items-center gap-2">
+                        <HeartPulse className="size-4" />
+                        {t('modules.healthTitle')}
+                      </span>
+                      <ArrowRight className="size-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                    </CardTitle>
+                    <CardDescription>
+                      {t('modules.healthDescription')}
                     </CardDescription>
                   </CardHeader>
                 </Card>

@@ -47,23 +47,36 @@ export function ChartFrame({
         </div>
       </div>
 
-      <table className="sr-only">
-        <caption>{summary}</caption>
-        <thead>
-          <tr>
-            <th scope="col">{title}</th>
-            <th scope="col">{valueLabel}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.label}>
-              <th scope="row">{row.label}</th>
-              <td>{row.value ?? '—'}</td>
+      {/* The `sr-only` goes on a WRAPPER, not on the table.
+          `sr-only` hides by shrinking to 1×1 and clipping — and a `<table>`
+          cannot be shrunk that way: under automatic table layout `width` is a
+          MINIMUM, so the table stays as wide as its widest row and, being
+          absolutely positioned, escapes every `overflow-x-clip` between here
+          and the body. Measured on `/space/health/sleep` at a 386px viewport:
+          the document's scrollWidth was 446px against a 371px client width —
+          a page that scrolled sideways on a phone because of an element
+          nobody can see. A plain `div` clips its contents properly, and the
+          table inside it is untouched, so screen readers still get the
+          numbers. */}
+      <div className="sr-only">
+        <table>
+          <caption>{summary}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{title}</th>
+              <th scope="col">{valueLabel}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.label}>
+                <th scope="row">{row.label}</th>
+                <td>{row.value ?? '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </figure>
   );
 }
