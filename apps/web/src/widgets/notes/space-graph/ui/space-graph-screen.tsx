@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { noteHref } from '@/entities/note';
 import { NoteGraph } from '@/features/notes/note-graph';
 import { useRouter } from '@/shared/i18n/navigation';
-import { SpaceNavTrigger } from '@/widgets/notes/space-shell';
+import { SpaceNavTrigger } from '@/widgets/space/space-shell';
 
 /**
  * The full-screen graph screen.

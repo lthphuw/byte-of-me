@@ -7,7 +7,7 @@ import { WorkspaceSettingsProvider } from '@/entities/workspace-settings';
 import { getWorkspaceSettings } from '@/entities/workspace-settings/api/get-workspace-settings';
 import { pickMessages, SPACE_MESSAGE_NAMESPACES } from '@/shared/i18n/messages';
 import { buildIconSet } from '@/shared/lib/metadata';
-import { SpaceShell } from '@/widgets/notes/space-shell';
+import { SpaceShell } from '@/widgets/space/space-shell';
 
 export async function generateMetadata(): Promise<Metadata> {
   // `getOwnerDisplayName`, not `getUserProfile`. Next resolves metadata across

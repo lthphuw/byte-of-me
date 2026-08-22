@@ -1,5 +1,5 @@
-import { SpaceHub } from '@/widgets/notes/space-hub';
-import { SpaceNavTrigger } from '@/widgets/notes/space-shell';
+import { SpaceHub } from '@/widgets/space/space-hub';
+import { SpaceNavTrigger } from '@/widgets/space/space-shell';
 
 /**
  * The hub is an RSC that fetches its own stats; while it does, the route's

@@ -10,8 +10,8 @@ import {
   NavDrawerAction,
   NavDrawerLink,
 } from '@/shared/ui/nav-drawer';
-import { useSpaceNavItems } from '@/widgets/notes/space-shell/model/use-space-nav-items';
-import { useSettingsDialog } from '@/widgets/notes/space-shell/ui/space-settings-provider';
+import { useSpaceNavItems } from '@/widgets/space/space-shell/model/use-space-nav-items';
+import { useSettingsDialog } from '@/widgets/space/space-shell/ui/space-settings-provider';
 
 /**
  * The mobile half of the space navigation: a hamburger that opens the same

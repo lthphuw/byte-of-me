@@ -3,7 +3,7 @@
 // subtree pulls d3-force. Measured on the built app: importing the barrel
 // here put the d3 chunk on `/space/notes`, a route with no graph on it.
 import { NoteWorkspace } from '@/widgets/notes/note-manager';
-import { SpaceNavTrigger } from '@/widgets/notes/space-shell';
+import { SpaceNavTrigger } from '@/widgets/space/space-shell';
 
 /**
  * The notes workspace is mounted HERE, not in the pages below, because a

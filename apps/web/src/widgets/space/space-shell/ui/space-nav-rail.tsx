@@ -15,8 +15,8 @@ import { cn } from '@/shared/lib/utils';
 import { BrandMark } from '@/shared/ui/brand-mark';
 import { ColorSchemeModeToggle } from '@/shared/ui/color-scheme-toggle';
 import { I18nToggle } from '@/shared/ui/language-toggle';
-import { useSpaceNavItems } from '@/widgets/notes/space-shell/model/use-space-nav-items';
-import { useSettingsDialog } from '@/widgets/notes/space-shell/ui/space-settings-provider';
+import { useSpaceNavItems } from '@/widgets/space/space-shell/model/use-space-nav-items';
+import { useSettingsDialog } from '@/widgets/space/space-shell/ui/space-settings-provider';
 
 /**
  * Desktop-only icon rail, 56px wide.
