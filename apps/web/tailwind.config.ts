@@ -3,13 +3,9 @@ import { fontFamily } from 'tailwindcss/defaultTheme';
 import plugin from 'tailwindcss/plugin';
 import tailwindcssAnimate from 'tailwindcss-animate';
 
-
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    './src/**/*.{ts,tsx}',
-    '../../packages/ui/src/**/*.{ts,tsx}',
-  ],
+  content: ['./src/**/*.{ts,tsx}', '../../packages/ui/src/**/*.{ts,tsx}'],
   darkMode: ['class'],
   theme: {
     container: {

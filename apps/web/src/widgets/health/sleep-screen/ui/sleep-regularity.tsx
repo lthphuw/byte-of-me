@@ -1,3 +1,4 @@
+import { CalendarClock, Compass, Moon, Repeat, Sunrise } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import type { SleepSummary } from '@/entities/sleep-log';
@@ -42,6 +43,7 @@ export async function SleepRegularity({ summary }: { summary: SleepSummary }) {
             figures in the same glance as the flattering one. */}
         <StatTile
           className="col-span-2"
+          icon={Repeat}
           label={t('sleep.sri')}
           value={summary.sri === null ? '—' : Math.round(summary.sri)}
           hint={
@@ -56,6 +58,7 @@ export async function SleepRegularity({ summary }: { summary: SleepSummary }) {
         />
 
         <StatTile
+          icon={Moon}
           label={t('sleep.bedtimeSd')}
           value={
             summary.bedtimeSdMin === null
@@ -71,6 +74,7 @@ export async function SleepRegularity({ summary }: { summary: SleepSummary }) {
           }
         />
         <StatTile
+          icon={Sunrise}
           label={t('sleep.waketimeSd')}
           value={
             summary.waketimeSdMin === null
@@ -87,6 +91,7 @@ export async function SleepRegularity({ summary }: { summary: SleepSummary }) {
         />
 
         <StatTile
+          icon={CalendarClock}
           label={t('sleep.socialJetlag')}
           value={
             summary.socialJetlagMin === null
@@ -111,6 +116,7 @@ export async function SleepRegularity({ summary }: { summary: SleepSummary }) {
             The hint says "clock time" out loud because this is the one tile on
             the screen whose figure is not a duration. */}
         <StatTile
+          icon={Compass}
           label={t('sleep.chronotype')}
           value={
             summary.msfscMin === null ? '—' : minutesToClock(summary.msfscMin)

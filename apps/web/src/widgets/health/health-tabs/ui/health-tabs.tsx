@@ -42,10 +42,15 @@ export function HealthTabs() {
             href={tab.href}
             aria-current={isActive ? 'page' : undefined}
             className={cn(
-              'flex h-11 flex-1 items-center justify-center rounded-md text-sm transition-colors',
+              'flex h-11 flex-1 items-center justify-center rounded-md text-sm',
+              'transition-colors duration-200',
+              // Fill AND weight AND text tone AND `aria-current` — §14's rule
+              // that colour may not be the sole carrier of a state, and on an
+              // achromatic palette there is no hue to lean on anyway. Same
+              // three cues `SpaceNavRail` marks its current item with.
               isActive
                 ? 'bg-muted font-medium text-foreground'
-                : 'text-muted-foreground hover:bg-muted/60'
+                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
             )}
           >
             {tab.label}

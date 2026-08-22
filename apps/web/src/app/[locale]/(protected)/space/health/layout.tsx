@@ -12,6 +12,13 @@ import { SpaceNavTrigger } from '@/widgets/space/space-shell';
  * module's bottom bars depend on. Each page owns its own scrolling below the
  * tabs, which is how every other `/space` page works: the shell owns the
  * viewport height and nothing nests a second scroll container inside a page's.
+ *
+ * No surface background and no module palette: this frame inherits the ground
+ * `SpaceShell` paints (`bg-muted/40`) and the achromatic tokens with it. A
+ * scoped indigo/violet palette was tried here — declared against a
+ * `data-surface="health"` attribute on this element — and removed: the module
+ * stays on the app's system tone, so hierarchy on these screens rests on type
+ * scale, weight, spacing and surface elevation instead of hue.
  */
 export default async function HealthLayout({
   children,

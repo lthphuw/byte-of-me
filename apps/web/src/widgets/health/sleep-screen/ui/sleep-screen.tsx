@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 
-import { SleepRegularity } from './sleep-regularity';
+import { SleepStatsPanel } from './sleep-stats-panel';
 
 import {
   getSleepLogs,
@@ -19,7 +19,7 @@ import {
   type SleepEntryDefaults,
   SleepEntryForm,
 } from '@/features/health/sleep-entry';
-import { minutesToClock, splitMinutes } from '@/shared/lib/health/duration';
+import { clockToMinutes, minutesToClock } from '@/shared/lib/health/duration';
 import {
   addDays,
   localDateKey,
@@ -27,7 +27,6 @@ import {
 } from '@/shared/lib/health/local-date';
 import { getRequestTimeZone } from '@/shared/lib/health/request-time-zone';
 import { computeNight } from '@/shared/lib/health/sleep-stats';
-import { StatTile } from '@/shared/ui/stat-tile';
 
 /** Both the bar chart's window and the window `getSleepSummary` computes the
  *  rolling debt over — they are the same number by design, not by coincidence,
@@ -45,15 +44,34 @@ const MEDIAN_SAMPLE_DAYS = 14;
 
 const FALLBACK_BED_CLOCK = '23:00';
 
+/** With no target read from settings, the wake-time default still needs a
+ *  night length to add to bedtime. Eight hours, the same figure the hero's
+ *  arc falls back to. */
+const FALLBACK_TARGET_MIN = 480;
+
+/**
+ * Below this, "now" cannot plausibly be the end of the night the form is
+ * about. See `buildDefaults`.
+ */
+const MIN_PLAUSIBLE_NIGHT_MIN = 240;
+
+const DAY_MIN = 1440;
+
 /**
  * Log a night, then look at the fortnight it belongs to.
  *
  * A server component that renders a client form: the entry surface is the
  * interactive part and everything below it is derived numbers, so only the
- * form and the two charts cross into the browser. The stats and the history
- * arrive as `children` of the form because the form owns the page's scroll
- * area — the save bar has to sit outside it to stay under a thumb while the
- * charts scroll past.
+ * form and the two charts cross into the browser. The statistics and the
+ * history are passed INTO the form rather than rendered after it, because the
+ * form owns the page's scroll area — the save bar has to sit outside it to
+ * stay under a thumb while the charts scroll past.
+ *
+ * They arrive as two slots rather than one `children` because the desktop
+ * layout is not the phone layout with wider margins: at `lg` the statistics
+ * sit BESIDE the entry column (`aside`) and the charts run full width beneath
+ * both (`children`). Below `lg` the same three blocks stack in that order,
+ * which is also their reading order — enter, then read.
  *
  * Two reads, deliberately. The summary is the statistics over the debt window
  * and cannot be widened without changing what "sleep debt" means; the log
@@ -88,58 +106,43 @@ export async function SleepScreen() {
   const failed = !summaryRes.success || !logsRes.success;
 
   const series: DayValue[] = rows.map(toDayValue);
-  const defaults = buildDefaults(rows, todayKey, today, timeZone);
-
-  const efficiency = summary?.nights.at(-1)?.efficiencyPct ?? null;
+  const defaults = buildDefaults(
+    rows,
+    todayKey,
+    today,
+    timeZone,
+    summary?.targetMin ?? FALLBACK_TARGET_MIN
+  );
 
   return (
-    <SleepEntryForm defaults={defaults}>
-      <section
-        aria-label={t('sleep.statsAriaLabel')}
-        className="flex flex-col gap-6 border-t pt-6"
-      >
-        {failed ? (
-          <p className="text-sm text-destructive">{t('errors.load')}</p>
-        ) : null}
+    <SleepEntryForm
+      defaults={defaults}
+      targetMin={summary?.targetMin}
+      aside={
+        <>
+          {/* `destructive-text`, not `destructive`: §14 records that the fill
+              token measures 3.76:1 as text. */}
+          {failed ? (
+            <p className="text-sm text-destructive-text">{t('errors.load')}</p>
+          ) : null}
 
-        {summary ? (
-          <>
-            <div className="grid grid-cols-2 gap-3">
-              <StatTile
-                label={t('sleep.efficiency')}
-                value={efficiency === null ? '—' : `${Math.round(efficiency)}%`}
-                hint={
-                  efficiency === null
-                    ? t('sleep.efficiencyUnavailable')
-                    : undefined
-                }
-              />
-              <StatTile
-                label={t('sleep.debt')}
-                value={t('units.hoursMinutes', splitMinutes(summary.debtMin))}
-                hint={t('sleep.debtCaveat')}
-              />
-              <StatTile
-                label={t('sleep.streak')}
-                value={summary.streak}
-                className="col-span-2"
-              />
-            </div>
-
-            {/* The two deviation tiles moved INTO this block. They are what
-                keeps the regularity index honest, and a reader who has to
-                scroll between the flattering number and the crude one has
-                already taken the flattering one at face value. */}
-            <SleepRegularity summary={summary} />
-          </>
-        ) : null}
-
+          {summary ? (
+            <SleepStatsPanel summary={summary} todayKey={todayKey} />
+          ) : null}
+        </>
+      }
+    >
+      <section className="border-t pt-6">
         {series.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             {t('sleep.noHistory')}
           </p>
         ) : (
-          <>
+          // Side by side from `md` up. The heatmap draws at a fixed 14px cell
+          // and scrolls inside its own frame, so a wider box gives it room
+          // rather than stretching it; the duration chart is pure ratio and
+          // simply gets taller bars to read.
+          <div className="grid gap-6 md:grid-cols-2 md:gap-8">
             <SleepDurationChart
               nights={series}
               startKey={chartStartKey}
@@ -151,7 +154,7 @@ export async function SleepScreen() {
               startKey={localDateKey(heatmapStart)}
               days={HEATMAP_WEEKS * 7}
             />
-          </>
+          </div>
         )}
       </section>
     </SleepEntryForm>
@@ -183,17 +186,33 @@ function toDayValue(row: SleepLogRow): DayValue {
  * opening the screen a second time is an EDIT, and a form that came up blank
  * would quietly offer to overwrite a saved night with its own defaults.
  *
- * Otherwise: wake time is now, rounded to five minutes, and bedtime is the
- * median of the last fortnight. Both are resolved here rather than in the
- * browser so that the server's markup and the first client render agree — a
- * clock computed in `useState` would differ between the two and hydrate with a
- * mismatch.
+ * Otherwise bedtime is the median of the last fortnight, and wake time is
+ * "now, rounded to five minutes" ONLY WHEN NOW IS PLAUSIBLY THE END OF THAT
+ * NIGHT. It was unconditional, and that produced the worst first impression
+ * this screen could give: opening it at 23:10 against a 23:00 median bedtime
+ * showed a ten-minute night, and 23:10 is exactly when someone reaches for a
+ * sleep app. The midnight-crossing arithmetic was never wrong — 23:00 → 07:10
+ * has always given 8h 10m — the defaults were simply describing an evening as
+ * if it were a morning.
+ *
+ * So: measure the candidate night. Under four hours means the form was opened
+ * before the night it is about has happened, and the honest default is the
+ * night the author is AIMING for — bedtime plus their nightly target. Four
+ * hours rather than a "is it morning?" hour test, because the threshold that
+ * matters is the length of the night, not the position of the clock: a shift
+ * worker going to bed at 08:00 gets the same sensible default, and no hour of
+ * the day is hardcoded anywhere.
+ *
+ * Both clocks are resolved here rather than in the browser so that the
+ * server's markup and the first client render agree — a clock computed in
+ * `useState` would differ between the two and hydrate with a mismatch.
  */
 function buildDefaults(
   rows: SleepLogRow[],
   todayKey: string,
   today: Date,
-  timeZone: string
+  timeZone: string,
+  targetMin: number
 ): SleepEntryDefaults {
   const existing = rows.find((row) => row.localDate === todayKey);
 
@@ -219,11 +238,21 @@ function buildDefaults(
     .filter((row) => row.localDate >= sampleFrom)
     .map((row) => row.bedAt);
 
-  const nowMin = localClockMinutes(new Date(), timeZone);
+  const bedClock =
+    medianBedClock(recentBedtimes, timeZone) ?? FALLBACK_BED_CLOCK;
+  const bedMin = clockToMinutes(bedClock) ?? 0;
+
+  const nowMin = Math.round(localClockMinutes(new Date(), timeZone) / 5) * 5;
+  // The short way round, the same rule the form itself uses for the duration
+  // it displays — so this test and that figure can never disagree.
+  const candidateNightMin = (((nowMin - bedMin) % DAY_MIN) + DAY_MIN) % DAY_MIN;
+
+  const wakeMin =
+    candidateNightMin >= MIN_PLAUSIBLE_NIGHT_MIN ? nowMin : bedMin + targetMin;
 
   return {
-    bedClock: medianBedClock(recentBedtimes, timeZone) ?? FALLBACK_BED_CLOCK,
-    wakeClock: minutesToClock(Math.round(nowMin / 5) * 5),
+    bedClock,
+    wakeClock: minutesToClock(wakeMin),
     quality: null,
     latencyMin: null,
     awakeningsMin: null,
