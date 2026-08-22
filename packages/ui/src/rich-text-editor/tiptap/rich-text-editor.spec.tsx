@@ -21,7 +21,7 @@
  */
 import * as React from 'react';
 import { cleanup, render } from '@testing-library/react';
-import type { JSONContent } from '@tiptap/react';
+import type { Editor, JSONContent } from '@tiptap/react';
 import { afterEach, describe, expect, test } from 'bun:test';
 
 import {
@@ -322,5 +322,180 @@ describe('RichTextEditor onEditorApi', () => {
     });
 
     expect(seen[seen.length - 1]).toBeNull();
+  });
+});
+
+/**
+ * `scope` on the header cells of a table, in the EDITOR's DOM.
+ *
+ * The published render pipeline has carried it since `ScopedTable`, and
+ * `lib/render-pipeline.spec.ts` guards that half. This is the other half, and
+ * it was missing entirely: `ScopedTable`/`NumericTableHeader` are registered
+ * only in `renderExtensions`, so the editor — which is the surface the note's
+ * own author reads their document on — mounted a stock `TableKit` and produced
+ * 184 `<th>` with not one `scope` among them. Measured on the live note at
+ * `/space/notes/[id]`: `document.querySelectorAll('.ProseMirror th[scope]')`
+ * returned 0.
+ *
+ * The mutation cases below are the point of the file. A scope that is right on
+ * first render and wrong after a row is inserted is worse than no scope: it
+ * tells assistive tech, with authority, which header a number belongs to, and
+ * is lying. Each one edits through the editor's own commands and re-reads the
+ * DOM, so what is asserted is what a screen reader would meet.
+ */
+describe('RichTextEditor table header scopes', () => {
+  const cell = (
+    text: string,
+    type: 'tableCell' | 'tableHeader' = 'tableCell'
+  ): JSONContent => ({
+    type,
+    content: [{ type: 'paragraph', content: [{ type: 'text', text }] }],
+  });
+
+  const tableRow = (cells: JSONContent[]): JSONContent => ({
+    type: 'tableRow',
+    content: cells,
+  });
+
+  // The shape these notes actually have: a header row, and a `th` row label
+  // pinned at the start of every body row.
+  const BENCHMARK_TABLE: JSONContent = {
+    type: 'doc',
+    content: [
+      {
+        type: 'table',
+        content: [
+          tableRow([
+            cell('Model', 'tableHeader'),
+            cell('AP', 'tableHeader'),
+            cell('FPS', 'tableHeader'),
+          ]),
+          tableRow([cell('YOLOv8', 'tableHeader'), cell('35.2'), cell('12')]),
+          tableRow([cell('RF-DETR', 'tableHeader'), cell('48.0'), cell('25')]),
+        ],
+      },
+    ],
+  };
+
+  type EditableWithEditor = Element & { editor?: Editor };
+
+  async function openTable(value: JSONContent = BENCHMARK_TABLE) {
+    let container: HTMLElement | undefined;
+
+    await React.act(async () => {
+      container = render(
+        <RichTextEditor value={value} onChange={() => {}} />
+      ).container;
+    });
+    await React.act(async () => {
+      const deadline = Date.now() + 5000;
+      while (
+        !container?.querySelector('.ProseMirror th') &&
+        Date.now() < deadline
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+    });
+
+    const editor = (
+      container?.querySelector('.tiptap') as EditableWithEditor | null
+    )?.editor;
+    if (!container || !editor) throw new Error('editor did not mount');
+
+    return { container, editor };
+  }
+
+  /** Every `th` in the editor, as `text → scope`, in document order. */
+  function scopes(container: HTMLElement): [string, string | null][] {
+    return Array.from(container.querySelectorAll('.ProseMirror th')).map(
+      (th): [string, string | null] => [
+        th.textContent ?? '',
+        th.getAttribute('scope'),
+      ]
+    );
+  }
+
+  /** Puts the cursor in the cell holding `text` — what clicking it would do. */
+  function putCursorIn(editor: Editor, text: string): void {
+    let pos = -1;
+    editor.state.doc.descendants((node, at) => {
+      if (pos !== -1) return false;
+      const isCell =
+        node.type.name === 'tableCell' || node.type.name === 'tableHeader';
+      // `at + 2` is inside the cell's paragraph: the cell opens at `at`, its
+      // paragraph at `at + 1`.
+      if (isCell && node.textContent === text) pos = at + 2;
+      return pos === -1;
+    });
+    if (pos === -1) throw new Error(`no cell containing ${text}`);
+    editor.commands.setTextSelection(pos);
+  }
+
+  test('scopes the header row by column and the row labels by row', async () => {
+    const { container } = await openTable();
+
+    expect(scopes(container)).toEqual([
+      ['Model', 'col'],
+      ['AP', 'col'],
+      ['FPS', 'col'],
+      ['YOLOv8', 'row'],
+      ['RF-DETR', 'row'],
+    ]);
+  });
+
+  test('a row inserted between body rows gets its label scoped', async () => {
+    const { container, editor } = await openTable();
+
+    await React.act(async () => {
+      putCursorIn(editor, 'YOLOv8');
+      editor.commands.addRowAfter();
+    });
+
+    // prosemirror-tables copies the cell types of the row it was asked to
+    // follow, so the new row opens with a `th` of its own — which must be
+    // scoped `row`, not left bare and not inheriting `col`.
+    expect(scopes(container)).toEqual([
+      ['Model', 'col'],
+      ['AP', 'col'],
+      ['FPS', 'col'],
+      ['YOLOv8', 'row'],
+      ['', 'row'],
+      ['RF-DETR', 'row'],
+    ]);
+  });
+
+  test('deleting the header row promotes the row beneath it to column headers', async () => {
+    const { container, editor } = await openTable();
+
+    await React.act(async () => {
+      putCursorIn(editor, 'Model');
+      editor.commands.deleteRow();
+    });
+
+    // The case a decoration mapped forward without rebuilding gets wrong:
+    // `YOLOv8` did not move relative to the table, it changed MEANING — it is
+    // the header row now, so its scope has to flip from `row` to `col`.
+    expect(scopes(container)).toEqual([
+      ['YOLOv8', 'col'],
+      ['RF-DETR', 'row'],
+    ]);
+  });
+
+  test('a column added after the row label leaves the header row scoped by column', async () => {
+    const { container, editor } = await openTable();
+
+    await React.act(async () => {
+      putCursorIn(editor, 'Model');
+      editor.commands.addColumnAfter();
+    });
+
+    expect(scopes(container)).toEqual([
+      ['Model', 'col'],
+      ['', 'col'],
+      ['AP', 'col'],
+      ['FPS', 'col'],
+      ['YOLOv8', 'row'],
+      ['RF-DETR', 'row'],
+    ]);
   });
 });

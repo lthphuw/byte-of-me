@@ -1,7 +1,6 @@
 import { Extension } from '@tiptap/core';
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
-import { Plugin, PluginKey } from '@tiptap/pm/state';
-import { Decoration, DecorationSet } from '@tiptap/pm/view';
+import { Decoration } from '@tiptap/pm/view';
 
 import {
   type CellContent,
@@ -10,6 +9,10 @@ import {
   placeCells,
   type PlacedCell,
 } from './numeric-columns';
+import {
+  incrementalTableDecorations,
+  tableDecorationPlugin,
+} from './table-decorations';
 
 /**
  * The editor's half of the numeric-column rule — the same rule the render pass
@@ -20,15 +23,11 @@ import {
  * from the content, and storing it would mean a document whose cells disagree
  * with their own attribute the moment one is edited. Nothing here reaches the
  * saved document.
+ *
+ * The bookkeeping that keeps this off the keystroke path — which tables are
+ * still covered, what gets rebuilt, what merely gets mapped forward — lives in
+ * `table-decorations.ts`, shared with the header-scope pass.
  */
-
-interface NumericState {
-  decorations: DecorationSet;
-  /** The table nodes the set above is currently correct for. */
-  covered: WeakSet<ProseMirrorNode>;
-}
-
-const pluginKey = new PluginKey<NumericState>('numericTableColumns');
 
 const spansOf = (cell: ProseMirrorNode): CellSpans => ({
   colspan: Number(cell.attrs.colspan) || 1,
@@ -115,85 +114,13 @@ function decorationsFor(table: ProseMirrorNode, tablePos: number): Decoration[] 
   return decorations;
 }
 
-/** Every table in the document, with its position. Tables never nest. */
-function tablesIn(doc: ProseMirrorNode) {
-  const tables: { node: ProseMirrorNode; pos: number }[] = [];
-  doc.descendants((node, pos) => {
-    if (node.type.name !== 'table') return true;
-    tables.push({ node, pos });
-    // Do not walk the cells — only a table that needs rebuilding pays for that.
-    return false;
-  });
-  return tables;
-}
-
-function buildAll(doc: ProseMirrorNode): NumericState {
-  const covered = new WeakSet<ProseMirrorNode>();
-  const decorations: Decoration[] = [];
-
-  for (const { node, pos } of tablesIn(doc)) {
-    covered.add(node);
-    decorations.push(...decorationsFor(node, pos));
-  }
-
-  return { decorations: DecorationSet.create(doc, decorations), covered };
-}
-
-/**
- * Carries the decorations through a transaction, rebuilding only the tables
- * that actually changed.
- *
- * Rebuilding the whole set on every `docChanged` measured 9.6ms per keystroke
- * on a thirty-table survey note — over half a frame, and most of it spent in
- * `DecorationSet.create` re-sorting ten thousand decorations that had not
- * moved relative to anything. Mapping the existing set forward costs almost
- * nothing, and an edit touches one table.
- */
-function advance(
-  previous: NumericState,
-  doc: ProseMirrorNode,
-  mapping: Parameters<DecorationSet['map']>[0]
-): NumericState {
-  let decorations = previous.decorations.map(mapping, doc);
-  const covered = new WeakSet<ProseMirrorNode>();
-
-  for (const { node, pos } of tablesIn(doc)) {
-    covered.add(node);
-    // The same node object as last time: its decorations were carried to the
-    // right places by the mapping along with everything else.
-    if (previous.covered.has(node)) continue;
-
-    const stale = decorations.find(pos, pos + node.nodeSize);
-    if (stale.length) decorations = decorations.remove(stale);
-
-    const fresh = decorationsFor(node, pos);
-    if (fresh.length) decorations = decorations.add(doc, fresh);
-  }
-
-  return { decorations, covered };
-}
-
 /** Exported for the spec — `advance` and `buildAll` are the whole behaviour. */
-export const numericDecorations = { buildAll, advance };
+export const numericDecorations = incrementalTableDecorations(decorationsFor);
 
 export const NumericTableColumns = Extension.create({
   name: 'numericTableColumns',
 
   addProseMirrorPlugins() {
-    return [
-      new Plugin<NumericState>({
-        key: pluginKey,
-        state: {
-          init: (_, state) => buildAll(state.doc),
-          apply: (tr, previous, __, next) =>
-            // Position-only transactions (a selection move, a click) leave the
-            // decorations exactly where they were.
-            tr.docChanged ? advance(previous, next.doc, tr.mapping) : previous,
-        },
-        props: {
-          decorations: (state) => pluginKey.getState(state)?.decorations,
-        },
-      }),
-    ];
+    return [tableDecorationPlugin(this.name, numericDecorations)];
   },
 });

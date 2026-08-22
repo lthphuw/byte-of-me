@@ -52,6 +52,7 @@ import { cn } from '../../lib/utils';
 import { EditorPreview } from './editor-preview';
 import { TipTapFloatingMenu } from './extensions/floating-menu';
 import { FloatingToolbar } from './extensions/floating-toolbar';
+import { TableHeaderScopes } from './extensions/header-scopes-plugin';
 import {
   ImageExtension,
   type ImageUploadFn,
@@ -135,6 +136,11 @@ export function createExtensions(options?: {
     // render pass applies to published HTML — so a table looks the same while
     // it is being written as it does once it is read.
     NumericTableColumns,
+    // `scope` on the header cells, by the same rule the render pass applies.
+    // The published page has carried it since `ScopedTable`; the editor is
+    // where the note's own author reads the document, and it had none — a
+    // serializer-side side channel cannot reach a live view.
+    TableHeaderScopes,
     // Markdown in, markdown understood: pasting a README-style document turns
     // into real headings/lists/tables/code blocks instead of flat text.
     Markdown,

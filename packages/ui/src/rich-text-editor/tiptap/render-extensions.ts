@@ -28,6 +28,7 @@ import type { DOMOutputSpec, Node as ProseMirrorNode } from '@tiptap/pm/model';
 import StarterKit from '@tiptap/starter-kit';
 import { common, createLowlight } from 'lowlight';
 
+import { eachScopedHeader, type HeaderScope } from './extensions/header-scopes';
 import { ImageBase, ImageGroupBase } from './extensions/image-base';
 import { CitationBase } from './extensions/references/citation-base';
 import { ReferenceListBase } from './extensions/references/reference-list-base';
@@ -83,41 +84,18 @@ const NumericTableCell = TableCell.extend({
  * guess which header describes a cell, and on a benchmark table that guess IS
  * the meaning of the number being read out. The live survey note had 184
  * `<th>` elements and not one `scope`.
+ *
+ * The side channel works HERE and only here, because Tiptap's serializer walks
+ * parent-before-children in one pass. The editor cannot use it — prosemirror-
+ * view renders and re-renders a cell independently of its parent table — so
+ * that surface reads the same rule through decorations instead; see
+ * `extensions/header-scopes-plugin.ts`.
  */
-const headerScopes = new WeakMap<ProseMirrorNode, 'col' | 'row'>();
+const headerScopes = new WeakMap<ProseMirrorNode, HeaderScope>();
 
-/**
- * The document structure these tables actually have — the same one
- * `editor-surface.css` styles: the FIRST ROW is the header row, and the FIRST
- * CELL of every row is the row label (the column the styles pin).
- *
- * So the first row's cells are column headers, and the first cell of every
- * later row is a row header. The top-left corner belongs to the first row and
- * is scoped `col` there, never both.
- *
- * Only a `tableHeader` is scoped. Whether a row label is a `th` at all is the
- * author's choice, and HTML has no `scope` on a `td` — it was dropped in
- * HTML5, and a screen reader does not treat a `td` as a header no matter what
- * we put on it. A `td` row label therefore gets nothing rather than invalid
- * markup.
- *
- * Nothing here assumes a well-formed table: a row with no cells and a table
- * with no rows both fall through, because a malformed table must still render
- * — `generateHTML` throwing costs the reader the whole document, not one
- * table.
- */
+/** The rule, from the module both surfaces share. */
 function assignHeaderScopes(table: ProseMirrorNode): void {
-  table.forEach((row, _offset, rowIndex) => {
-    if (rowIndex === 0) {
-      row.forEach((cell) => {
-        if (cell.type.name === 'tableHeader') headerScopes.set(cell, 'col');
-      });
-      return;
-    }
-
-    const label = row.firstChild;
-    if (label?.type.name === 'tableHeader') headerScopes.set(label, 'row');
-  });
+  eachScopedHeader(table, (cell, scope) => headerScopes.set(cell, scope));
 }
 
 /**
