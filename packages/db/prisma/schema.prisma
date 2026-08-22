@@ -92,6 +92,9 @@ model User {
   noteDocuments     NoteDocument[]
   workspaceSettings WorkspaceSettings?
   sleepLogs         SleepLog[]
+  exercises         Exercise[]
+  routines          Routine[]
+  workoutSessions   WorkoutSession[]
 
   noteSharesReceived NoteShare[] @relation("NoteShareRecipient")
   noteSharesSent     NoteShare[] @relation("NoteShareInviter")
@@ -1061,4 +1064,164 @@ model SleepLog {
   /// the normal flow, not an edge case.
   @@unique([ownerId, localDate], map: "uniq_sleep_logs_owner_date")
   @@map("sleep_logs")
+}
+
+model Exercise {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name String
+
+  /// What makes "sets per muscle per week" computable at all. One primary,
+  /// any number of secondary.
+  primaryMuscle    String   @map("primary_muscle")
+  secondaryMuscles String[] @map("secondary_muscles")
+
+  /// barbell | dumbbell | machine | cable | bodyweight | kettlebell | band
+  equipment String
+
+  /// weight_reps | bodyweight_reps | weighted_bodyweight | time
+  /// Without this a plank and a pull-up break the set model: one has no reps,
+  /// the other no weight. Volume and e1RM read this to decide which formula
+  /// even applies.
+  metric String @default("weight_reps")
+
+  /// Hidden, never deleted -- see WorkoutExercise's Restrict below.
+  isArchived Boolean @default(false) @map("is_archived")
+
+  ownerId String @map("owner_id")
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  routineItems     RoutineExercise[]
+  workoutExercises WorkoutExercise[]
+
+  /// THE constraint per-exercise statistics depend on. Without it
+  /// "Bench Press" and "Bench press " become two progression curves.
+  @@unique([ownerId, name], map: "uniq_exercises_owner_name")
+  @@index([ownerId, primaryMuscle], map: "idx_exercises_owner_muscle")
+  @@map("exercises")
+}
+
+model Routine {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name       String
+  notes      String? @db.Text
+  position   Int     @default(0)
+  isArchived Boolean @default(false) @map("is_archived")
+
+  ownerId String @map("owner_id")
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  items    RoutineExercise[]
+  sessions WorkoutSession[]
+
+  @@index([ownerId, isArchived, position], map: "idx_routines_owner_position")
+  @@map("routines")
+}
+
+model RoutineExercise {
+  id       String @id @default(cuid())
+  position Int
+
+  /// The PLAN, not the result. The logging screen reads these to prefill and
+  /// to render "3x8 @ RPE 8" beside the input.
+  targetSets     Int?     @map("target_sets")
+  targetRepsLow  Int?     @map("target_reps_low")
+  targetRepsHigh Int?     @map("target_reps_high")
+  targetRpe      Decimal? @db.Decimal(3, 1) @map("target_rpe")
+  restSec        Int?     @map("rest_sec")
+
+  routineId  String   @map("routine_id")
+  routine    Routine  @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  exerciseId String   @map("exercise_id")
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([routineId, position], map: "idx_routine_exercises_routine_position")
+  @@map("routine_exercises")
+}
+
+model WorkoutSession {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  /// Same convention as SleepLog, and the column phase 3 joins on. The day the
+  /// session STARTED (a sleep uses the day it ENDED -- see local-date.ts).
+  localDate DateTime  @db.Date @map("local_date")
+  startedAt DateTime  @map("started_at")
+  /// null means in progress. No separate status column is needed.
+  endedAt   DateTime? @map("ended_at")
+
+  /// A SNAPSHOT of the routine name, not merely the FK. Deleting the "Push Day"
+  /// routine must not blank the heading of sixty past sessions.
+  title String
+
+  notes String? @db.Text
+  /// Foster session-RPE, 0..10. Times duration gives training load.
+  sessionRpe Decimal? @db.Decimal(3, 1) @map("session_rpe")
+
+  routineId String?  @map("routine_id")
+  routine   Routine? @relation(fields: [routineId], references: [id], onDelete: SetNull)
+
+  ownerId String @map("owner_id")
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  exercises WorkoutExercise[]
+
+  @@index([ownerId, localDate(sort: Desc)], map: "idx_workout_sessions_owner_date")
+  /// The question the app opens with: is a session still running? Normally
+  /// matches zero or one row.
+  @@index([ownerId, endedAt], map: "idx_workout_sessions_owner_open")
+  @@map("workout_sessions")
+}
+
+model WorkoutExercise {
+  id       String  @id @default(cuid())
+  position Int
+  notes    String? @db.Text
+
+  sessionId String         @map("session_id")
+  session   WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  /// Restrict, NOT Cascade: deleting a catalog entry by mistake must not delete
+  /// the history of training it. Hiding is `isArchived`.
+  exerciseId String   @map("exercise_id")
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+
+  sets WorkoutSet[]
+
+  @@index([sessionId, position], map: "idx_workout_exercises_session_position")
+  /// The index every per-exercise statistic goes through.
+  @@index([exerciseId], map: "idx_workout_exercises_exercise")
+  @@map("workout_exercises")
+}
+
+model WorkoutSet {
+  id       String @id @default(cuid())
+  position Int
+
+  reps Int?
+  /// Canonical kg. Showing lb is a display setting, never a second unit in this
+  /// column -- two units in one column is how a volume total starts lying.
+  weightKg    Decimal? @db.Decimal(6, 2) @map("weight_kg")
+  rpe         Decimal? @db.Decimal(3, 1)
+  durationSec Int?     @map("duration_sec")
+
+  /// EXCLUDES the set from volume, from PR detection, and from the per-muscle
+  /// set count. Without the flag every hypertrophy number inflates with warm-ups.
+  isWarmup Boolean @default(false) @map("is_warmup")
+
+  /// When the set was marked done, which is what makes real rest intervals
+  /// recoverable after the fact.
+  completedAt DateTime? @map("completed_at")
+
+  workoutExerciseId String          @map("workout_exercise_id")
+  workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
+
+  @@index([workoutExerciseId, position], map: "idx_workout_sets_exercise_position")
+  @@map("workout_sets")
 }

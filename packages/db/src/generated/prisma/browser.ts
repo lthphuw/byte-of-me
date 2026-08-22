@@ -269,3 +269,33 @@ export type WorkspaceSettings = Prisma.WorkspaceSettingsModel
  * 
  */
 export type SleepLog = Prisma.SleepLogModel
+/**
+ * Model Exercise
+ * 
+ */
+export type Exercise = Prisma.ExerciseModel
+/**
+ * Model Routine
+ * 
+ */
+export type Routine = Prisma.RoutineModel
+/**
+ * Model RoutineExercise
+ * 
+ */
+export type RoutineExercise = Prisma.RoutineExerciseModel
+/**
+ * Model WorkoutSession
+ * 
+ */
+export type WorkoutSession = Prisma.WorkoutSessionModel
+/**
+ * Model WorkoutExercise
+ * 
+ */
+export type WorkoutExercise = Prisma.WorkoutExerciseModel
+/**
+ * Model WorkoutSet
+ * 
+ */
+export type WorkoutSet = Prisma.WorkoutSetModel
