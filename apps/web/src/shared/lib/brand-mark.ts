@@ -103,7 +103,7 @@ const INK_LIGHT = '#0a0a0a'; // --background 0 0% 3.9%
 const INK_DARK = '#fafafa'; // --foreground 0 0% 98%
 
 /** Matches the manifest's background_color / theme_color. */
-const MASKABLE_BACKGROUND = '#0f0f1a';
+const STANDALONE_BACKGROUND = '#0f0f1a';
 
 /** The generated files, in the order `gen:icons` writes them. */
 export const FAVICON_FILES = [
@@ -215,10 +215,11 @@ const STANDALONE: Record<
 > = {
   'apple-touch.svg': {
     comment: `Home-screen icon. Opaque on purpose: iOS composites it over its own
-background and handles transparency badly. A light plate also keeps
-this distinct from the space layer's solid dark plate.`,
-    background: INK_DARK,
-    ink: INK_LIGHT,
+background and handles transparency badly. Same dark plate as the
+launcher icon and the manifest's background_color, so an install looks
+the same on both platforms.`,
+    background: STANDALONE_BACKGROUND,
+    ink: INK_DARK,
     // Composed, not nested: the trailing translate is the same optical
     // centring the public layer applies, carried through the scale.
     placement: {
@@ -230,7 +231,7 @@ this distinct from the space layer's solid dark plate.`,
     comment: `Android maskable icon. The launcher may crop this to any shape, so the
 mark is held inside the 80% safe circle and the background runs full
 bleed, matching background_color so the crop seam is invisible.`,
-    background: MASKABLE_BACKGROUND,
+    background: STANDALONE_BACKGROUND,
     ink: INK_DARK,
     placement: {
       transform: 'translate(5.4 5.4) scale(0.55) translate(-0.4 0.7)',
