@@ -91,6 +91,7 @@ model User {
   noteLabels        NoteLabel[]
   noteDocuments     NoteDocument[]
   workspaceSettings WorkspaceSettings?
+  sleepLogs         SleepLog[]
 
   noteSharesReceived NoteShare[] @relation("NoteShareRecipient")
   noteSharesSent     NoteShare[] @relation("NoteShareInviter")
@@ -1013,4 +1014,51 @@ model WorkspaceSettings {
   preferences Json @default("{}")
 
   @@map("workspace_settings")
+}
+
+model SleepLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  /// The spine, and the reason phase 3 is a join rather than a migration.
+  /// The date of WAKING, not of going to bed — a sleep from 23:40 on the 21st
+  /// to 07:10 on the 22nd is the 22nd's. `@db.Date`, never a timestamp:
+  /// grouping timestamps by day at query time drifts with timezone and puts
+  /// midnight-crossing rows on the wrong day. Set by `toLocalDate` in
+  /// `shared/lib/health/local-date.ts`, which is the only place the rule lives.
+  localDate DateTime @db.Date @map("local_date")
+
+  bedAt  DateTime @map("bed_at")
+  wakeAt DateTime @map("wake_at")
+
+  /// Minutes to fall asleep, and total minutes awake during the night. Both
+  /// optional: without either, sleep efficiency is WITHHELD rather than shown
+  /// as 100% (see `sleep-stats.ts`). Every other statistic still computes.
+  latencyMin    Int? @map("latency_min")
+  awakeningsMin Int? @map("awakenings_min")
+
+  /// 1..5. Optional — never blocks a save.
+  quality Int?
+  note    String? @db.Text
+
+  /// Needed by social jetlag and MSFsc (phase 1b), which are defined against
+  /// days you were free to sleep as long as you liked. A stored column rather
+  /// than derived from the weekday, because holidays and night shifts break
+  /// that rule; defaulted from the weekday on create, and editable.
+  isFreeDay Boolean @default(false) @map("is_free_day")
+
+  /// caffeine_late | alcohol | screen_late | late_meal | workout_late | ill
+  /// Validated by Zod at the action layer, not a database enum: this list will
+  /// change, and a migration per new factor is not worth it.
+  factors String[]
+
+  ownerId String @map("owner_id")
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  /// One record per day. Both the correct constraint and what makes the write
+  /// an `upsert` — logging roughly on waking and correcting it that evening is
+  /// the normal flow, not an edge case.
+  @@unique([ownerId, localDate], map: "uniq_sleep_logs_owner_date")
+  @@map("sleep_logs")
 }
