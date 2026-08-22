@@ -89,6 +89,17 @@ export const workspaceSettingsSchema = z.object({
   formatMarkdownOnPaste: z.boolean(),
 
   updateLinksOnRename: z.enum(RENAME_LINK_POLICIES),
+
+  /**
+   * Nightly sleep goal, in minutes. Every figure derived from it — the rolling
+   * debt, the target line on the bar chart — moves when this moves.
+   *
+   * Here rather than in a column because that is exactly what the JSON
+   * preferences column was chosen for: adding a setting costs a line instead
+   * of a migration against production. `parseWorkspaceSettings` already falls
+   * back per field, so a row written before this key existed reads as 480.
+   */
+  sleepTargetMin: z.number().int().min(240).max(720),
 });
 
 export type WorkspaceSettings = z.infer<typeof workspaceSettingsSchema>;
@@ -113,6 +124,8 @@ export const WORKSPACE_SETTINGS_DEFAULTS: WorkspaceSettings = {
   formatMarkdownOnPaste: true,
 
   updateLinksOnRename: 'ask',
+
+  sleepTargetMin: 480,
 };
 
 /**
