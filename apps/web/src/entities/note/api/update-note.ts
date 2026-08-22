@@ -9,16 +9,28 @@ import {
   type UpdateNoteInput,
   updateNoteSchema,
 } from '@/entities/note/model/note-schema';
-import type { NoteDetail } from '@/entities/note/model/types';
+import type { NoteUpdateResult } from '@/entities/note/model/types';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-/** See `create-note.ts` for why no note action calls `revalidateTag`. */
+/**
+ * See `create-note.ts` for why no note action calls `revalidateTag`.
+ *
+ * Answers with `NoteUpdateResult`, NOT the whole `NoteDetail` — see that
+ * type for why sending the document back is both the largest cost on this
+ * path and the mechanism by which a save could move the open note's text
+ * backwards. It is a breaking change to this action's contract rather than
+ * the additive one §11.6 prefers, because "the response no longer carries
+ * `content`" cannot be expressed as an added field; every caller was updated
+ * with it (the autosave, its offline sync queue, pin, rename, the tree's
+ * status drop, and the properties panel), and each now completes its own
+ * cache write from the buffer it sent.
+ */
 export async function updateNote(
   input: UpdateNoteInput
-): Promise<ApiResponse<NoteDetail>> {
+): Promise<ApiResponse<NoteUpdateResult>> {
   const session = await requireAdmin();
 
   const parsed = parseInput(updateNoteSchema, input);
@@ -124,31 +136,24 @@ export async function updateNote(
       }
     }
 
+    // Narrow on purpose: `content` is the one column no caller needs back
+    // (they all just sent it, or did not touch it), and the label join is
+    // work nothing on this path reads — a save cannot move a label. What is
+    // left is the server's clock plus the three fields `updateNoteSchema`
+    // normalises, which is the whole reason a read-back happens at all.
     const note = await prisma.note.findFirstOrThrow({
       where: { id, ownerId: session.id },
       select: {
         id: true,
         title: true,
-        content: true,
-        parentId: true,
-        position: true,
-        isPinned: true,
-        archivedAt: true,
-        createdAt: true,
-        updatedAt: true,
         status: true,
         properties: true,
-        isFolder: true,
-        labels: {
-          select: { label: { select: { id: true, name: true, color: true } } },
-        },
+        isPinned: true,
+        updatedAt: true,
       },
     });
 
-    return {
-      success: true,
-      data: { ...note, labels: note.labels.map((row) => row.label) },
-    };
+    return { success: true, data: note };
   } catch (error) {
     const errorMsg = getErrorMessage(error, 'Failed to save note');
     logger.error(`Update note error: ${errorMsg}`);

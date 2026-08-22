@@ -17,6 +17,7 @@ import {
   collectDescendantIds,
   moveNote,
   NO_LABEL_GROUP_KEY,
+  type NoteDetail,
   noteKeys,
   type NoteLabelSummary,
   type NoteTreeNode,
@@ -180,7 +181,17 @@ export function useNoteDnd(
       return res.data;
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(noteKeys.detail(data.id), data);
+      // The status this drop set, and the clock it set it at — merged, never
+      // the whole row. A drop can land on a note that is open in the editor
+      // with a save still in flight, and the row `updateNote` reads back
+      // carries the document as the DATABASE has it: writing that whole row
+      // in would advance `updatedAt` past what the autosave last recorded
+      // while restoring an older body underneath it, which is exactly what
+      // the catch-up in `use-note-editor-autosave.ts` then reseeds the
+      // visible editor from.
+      queryClient.setQueryData<NoteDetail>(noteKeys.detail(data.id), (old) =>
+        old ? { ...old, status: data.status, updatedAt: data.updatedAt } : old
+      );
       invalidateTrees();
     },
     onError: (error: Error) =>

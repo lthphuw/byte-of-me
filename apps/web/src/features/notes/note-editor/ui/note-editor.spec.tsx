@@ -63,6 +63,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import {
+  afterAll,
   afterEach,
   beforeEach,
   describe,
@@ -76,7 +77,12 @@ import { toast } from 'sonner';
 
 import { NoteEditor } from './note-editor';
 
-import { noteKeys } from '@/entities/note';
+import {
+  __resetNoteLocalStore,
+  type LocalNote,
+  type NoteDetail,
+  noteKeys,
+} from '@/entities/note';
 import { AUTOSAVE_DEBOUNCE_MS } from '@/features/notes/note-editor/lib/use-note-editor-autosave';
 // Imported from the stub module's own path, not `@/shared/ui/
 // lazy-rich-text-editor`: that specifier only resolves to the stub at
@@ -148,6 +154,16 @@ const messages = {
         format: 'Clean up markdown',
         formatted: 'Markdown tidied up.',
         alreadyClean: 'Markdown is already tidy.',
+      },
+      // The conflict banner. Only its presence is asserted on (via
+      // `role="alert"`), but the subset has to carry every key the branch
+      // ASKS for — see the note above about `MISSING_MESSAGE` floods.
+      conflict: {
+        title: 'This note changed somewhere else',
+        description:
+          'Another device saved it {serverAt}. This browser still holds edits from {localAt} that never reached the server.',
+        keepMine: 'Keep mine',
+        takeServer: 'Use theirs',
       },
     },
   },
@@ -258,6 +274,129 @@ Object.defineProperty(prisma, '$transaction', {
   configurable: true,
 });
 
+/**
+ * The browser's own copy of the notes, for the tests that need one.
+ *
+ * happy-dom ships no IndexedDB at all (probed, not assumed: `typeof
+ * indexedDB` is `undefined` under this preload), so without this every call
+ * into `note-local-store.ts` takes its fail-soft branch and answers `null`.
+ * That is harmless for the tests above — and it is also why the conflict
+ * banner had no coverage: `conflictBase`, the state that SUSPENDS autosave,
+ * can only ever be set from a stored record marked dirty. There is no other
+ * door into it.
+ *
+ * Not `mock.module` (banned, §10) and not a stub of `readLocalNote`: this
+ * replaces one global object with a fake, which is the same sanctioned
+ * technique the Prisma delegates above use, and it means the real
+ * `readLocalNote`/`writeLocalNote`/`markLocalNoteSynced` run against it —
+ * including `markLocalNoteSynced`'s read-modify-write inside ONE transaction,
+ * which is exactly the part a hand-stubbed reader would have thrown away.
+ *
+ * Deliberately narrow. It implements the three store methods this feature
+ * reaches (`get`, `put`, `delete`) and completes a transaction only once
+ * every request it issued has settled; `openCursor` (the sync queue's drain,
+ * which nothing in this file mounts) is absent, and would land in
+ * `listDirtyLocalNotes`'s own `try`/`catch` as the empty queue it fails soft
+ * to. It is restored in `afterAll` so no spec file that happens to run after
+ * this one inherits a global it never asked for.
+ *
+ * And it is OFF unless a test asks for it. Every test above this point was
+ * written against a browser with no IndexedDB at all, and handing them a
+ * working local copy changes what they exercise — one of them turns red,
+ * which is a real defect (see the report on the keyed catch-up path) but not
+ * this file's to discover by accident. Opt-in keeps the blast radius at the
+ * two tests that need a stored record.
+ */
+const localNotes = new Map<string, LocalNote>();
+let localStoreEnabled = false;
+
+interface FakeRequest<T> {
+  result: T;
+  onsuccess: (() => void) | null;
+  onerror: (() => void) | null;
+}
+
+function fakeTransaction() {
+  let pending = 0;
+  let completed = false;
+
+  const settle = () => {
+    if (completed || pending > 0) return;
+    completed = true;
+    transaction.oncomplete?.();
+  };
+
+  function issue<T>(work: () => T): FakeRequest<T> {
+    const request: FakeRequest<T> = {
+      result: undefined as T,
+      onsuccess: null,
+      onerror: null,
+    };
+    pending += 1;
+    queueMicrotask(() => {
+      request.result = work();
+      // The handler runs BEFORE the decrement on purpose:
+      // `markLocalNoteSynced` issues its `put` from inside this callback, and
+      // a transaction that completed between the two would drop the write —
+      // which is the very race that function's one-transaction shape exists
+      // to close.
+      request.onsuccess?.();
+      pending -= 1;
+      queueMicrotask(settle);
+    });
+    return request;
+  }
+
+  const store = {
+    get: (id: string) => issue(() => localNotes.get(id)),
+    put: (note: LocalNote) => issue(() => localNotes.set(note.id, note)),
+    delete: (id: string) => issue(() => localNotes.delete(id)),
+  };
+
+  const transaction = {
+    oncomplete: null as (() => void) | null,
+    onerror: null as (() => void) | null,
+    onabort: null as (() => void) | null,
+    objectStore: () => store,
+  };
+
+  return transaction;
+}
+
+const fakeIndexedDb = {
+  open: () => {
+    const request = {
+      result: {
+        // The store always exists, so `onupgradeneeded` never has to fire.
+        objectStoreNames: { contains: () => true },
+        createObjectStore: () => undefined,
+        transaction: () => fakeTransaction(),
+      },
+      onsuccess: null as (() => void) | null,
+      onerror: null as (() => void) | null,
+      onupgradeneeded: null as (() => void) | null,
+      onblocked: null as (() => void) | null,
+    };
+    // Refusing to open is a branch `note-local-store.ts` already handles —
+    // it resolves `null` and every reader fails soft — so a test that has
+    // not opted in gets exactly the browser the tests above assume.
+    queueMicrotask(() =>
+      localStoreEnabled ? request.onsuccess?.() : request.onerror?.()
+    );
+    return request;
+  },
+};
+
+// One `as unknown as` at the installation point rather than a fake widened to
+// the whole of `IDBFactory`: `IDBFactory`/`IDBDatabase`/`IDBObjectStore` are
+// some forty members between them, and implementing the thirty-odd this
+// feature never calls would be noise pretending to be rigour.
+Object.defineProperty(globalThis, 'indexedDB', {
+  value: fakeIndexedDb as unknown as IDBFactory,
+  writable: true,
+  configurable: true,
+});
+
 function makeQueryClient(): QueryClient {
   return new QueryClient({
     defaultOptions: {
@@ -284,7 +423,12 @@ function Harness({
 }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <NextIntlClientProvider locale="en" messages={messages}>
+      {/* `timeZone` is required, not decorative: the conflict banner formats
+          two timestamps through `useFormatter`, and next-intl refuses to fall
+          back to the environment's zone (`ENVIRONMENT_FALLBACK`) rather than
+          render a time that would differ between machines. UTC keeps this
+          suite's output the same everywhere. */}
+      <NextIntlClientProvider locale="en" messages={messages} timeZone="UTC">
         <NoteEditor key={keyed ? noteId : undefined} noteId={noteId} />
       </NextIntlClientProvider>
     </QueryClientProvider>
@@ -392,6 +536,24 @@ beforeEach(() => {
   updateMany.mockClear();
   errorToast.mockClear();
   __resetMountedValues();
+  // Every test starts with no local copy AND no store to hold one — the same
+  // browser the tests above were written against. Cleared per test both ways:
+  // a record a test's own autosave stored must not leak into the next one,
+  // where a leftover `dirty: true` would raise a banner nobody asked for.
+  localStoreEnabled = false;
+  localNotes.clear();
+  // The open connection is cached per MODULE, not per test — see
+  // `__resetNoteLocalStore`'s own comment in `note-local-store.ts`.
+  __resetNoteLocalStore();
+});
+
+// Puts the global back exactly as this file found it. Bun runs every spec
+// file in one process, so leaving a fake `indexedDB` installed would hand it
+// to whichever file runs next — the cross-file leak §10 rules out
+// `mock.module` for, reached through a different door.
+afterAll(() => {
+  Reflect.deleteProperty(globalThis, 'indexedDB');
+  __resetNoteLocalStore();
 });
 
 // `@testing-library/react` normally registers this in an `afterEach`
@@ -1212,6 +1374,122 @@ describe('NoteEditor autosave (keyed — matches production)', () => {
       updateMany.mock.calls.length - 1
     ] as [{ where: { id: string }; data: Record<string, unknown> }];
     expect(lastCall[0].data.title).toBe('Note A EDITEDX');
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
+});
+
+/**
+ * The conflict banner decides whether autosave is SUSPENDED, which makes a
+ * false positive the most expensive failure in this hook: the author keeps
+ * typing, the status line says nothing is wrong, and not one keystroke
+ * leaves the browser. Both tests below therefore assert on `updateMany` —
+ * whether a save reached the database — and treat the banner's presence as
+ * the corroborating detail rather than the contract.
+ *
+ * They are the first tests in this file to give the browser a local copy at
+ * all; see the fake IndexedDB near the top for why that is the only way in.
+ */
+describe('NoteEditor conflict banner', () => {
+  /**
+   * `NOTE_A` as the LOCAL store holds it — a `NoteDetail`, whose `labels` are
+   * summaries, not the join rows Prisma selects into `FakeNoteRow`.
+   */
+  function localDetail(row: FakeNoteRow): NoteDetail {
+    const { labels, ...rest } = row;
+    return { ...rest, labels: labels.map((join) => join.label) };
+  }
+
+  /**
+   * Gives this browser a stored copy carrying edits that never reached the
+   * server — and, with it, an IndexedDB to hold one. Both halves belong
+   * together: a record nothing can read is not a precondition, it is a
+   * no-op that would leave these tests passing for the wrong reason.
+   */
+  function storeDirtyCopy(row: FakeNoteRow, baseUpdatedAt: number): void {
+    localStoreEnabled = true;
+    localNotes.set(row.id, {
+      id: row.id,
+      detail: localDetail(row),
+      baseUpdatedAt,
+      dirty: true,
+      savedAt: baseUpdatedAt,
+    });
+  }
+
+  test('the author\'s OWN save does not become a conflict against a stale local base', async () => {
+    // The reported shape: a note whose stored copy was dirty when it was
+    // opened. Nothing is wrong yet — the server row is exactly what those
+    // unsent edits were based on — but `conflictBase` is now set, and the
+    // effect that sets it runs only on a `noteId` change, so before the fix
+    // nothing could ever take it back down for the rest of the session.
+    const base = NOTE_A.updatedAt.getTime();
+    storeDirtyCopy(NOTE_A, base);
+
+    const queryClient = makeQueryClient();
+    render(<Harness noteId={NOTE_A.id} queryClient={queryClient} keyed />);
+    await screen.findByDisplayValue('Note A');
+
+    // The author's own first save. `updateMany` stamps a fresh `updatedAt`,
+    // which is what pushes the server row PAST `conflictBase.base` — the
+    // author conflicting with nobody but themselves.
+    fireEvent.change(screen.getByRole('textbox', { name: 'Note title' }), {
+      target: { value: 'Note A edited once' },
+    });
+    await wait(SETTLE_MS);
+    await waitFor(() => expect(updateMany).toHaveBeenCalledTimes(1));
+
+    // THE assertion. A second edit is what a suspended autosave swallows:
+    // the banner going up stops the effect at its `hasConflict` guard, so
+    // this save never leaves and the note silently stops being saved from
+    // here on. `waitFor` rather than a bare `expect` so the failure names the
+    // condition that never held rather than a count read one tick early.
+    fireEvent.change(screen.getByRole('textbox', { name: 'Note title' }), {
+      target: { value: 'Note A edited twice' },
+    });
+    await wait(SETTLE_MS);
+    await waitFor(() => expect(updateMany).toHaveBeenCalledTimes(2));
+    const lastCall = updateMany.mock.calls[
+      updateMany.mock.calls.length - 1
+    ] as [{ where: { id: string }; data: Record<string, unknown> }];
+    expect(lastCall[0].data.title).toBe('Note A edited twice');
+
+    // And the author was never asked a question that had no second answer.
+    expect(screen.queryByRole('alert')).toBeNull();
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
+
+  test('a genuinely newer server row still raises the banner and suspends autosave', async () => {
+    // The half that must survive the fix above: this browser holds unsent
+    // edits, and ANOTHER device has written the note since they were made.
+    // Nothing here is this browser's own echo, so nothing acknowledges the
+    // base and the question stands.
+    const base = NOTE_A.updatedAt.getTime();
+    storeDirtyCopy(NOTE_A, base);
+    notesById.set(NOTE_A.id, {
+      ...NOTE_A,
+      updatedAt: new Date(base + 60_000),
+    });
+
+    const queryClient = makeQueryClient();
+    render(<Harness noteId={NOTE_A.id} queryClient={queryClient} keyed />);
+    await screen.findByDisplayValue('Note A');
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toBeTruthy();
+    });
+
+    // Typing under an unanswered banner must not resolve it by itself, in
+    // favour of this browser, one debounce later — the loss the banner
+    // exists to prevent, and the reason the suspension is not merely
+    // cosmetic. This is also what proves the two tests are not both vacuous:
+    // the same fake store that stays quiet above genuinely reaches
+    // `conflictBase` here.
+    fireEvent.change(screen.getByRole('textbox', { name: 'Note title' }), {
+      target: { value: 'Typed while the banner is up' },
+    });
+    await wait(SETTLE_MS);
+    await wait(SETTLE_MS);
+
+    expect(updateMany).not.toHaveBeenCalled();
+    expect(screen.getByRole('alert')).toBeTruthy();
   }, DEBOUNCE_TEST_TIMEOUT_MS);
 });
 

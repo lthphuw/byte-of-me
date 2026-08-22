@@ -10,6 +10,7 @@ import {
   getAdminNoteById,
   listDirtyLocalNotes,
   markLocalNoteSynced,
+  type NoteDetail,
   noteKeys,
   updateNote,
 } from '@/entities/note';
@@ -97,12 +98,28 @@ export function useNoteSyncQueue(openNoteId: string | null) {
       // `online` event tries again.
       if (!res.success) break;
 
+      // The body is the one that was just sent, not one read back: since
+      // `updateNote` stopped echoing `content` (see `NoteUpdateResult`) the
+      // client is the side that holds it — and here it is the authority
+      // anyway, because this record is the whole reason the note was queued.
       await markLocalNoteSynced(local.id, {
         title: res.data.title,
-        content: res.data.content,
+        content: local.detail.content,
         updatedAt: res.data.updatedAt.getTime(),
       });
-      queryClient.setQueryData(noteKeys.detail(local.id), res.data);
+      // `local.detail` fills in the fields no write returns, so a note that
+      // was not in the cache still gets a complete entry the way it did
+      // before — but the document is the stored copy that was just accepted,
+      // never a row that could be older than it.
+      queryClient.setQueryData<NoteDetail>(
+        noteKeys.detail(local.id),
+        (old) => ({
+          ...(old ?? local.detail),
+          title: res.data.title,
+          content: local.detail.content,
+          updatedAt: res.data.updatedAt,
+        })
+      );
       sent += 1;
     }
 

@@ -135,6 +135,32 @@ export type NoteDetail = Pick<
 > & { labels: NoteLabelSummary[] };
 
 /**
+ * What a write to a note answers with: the row, minus the document.
+ *
+ * The absence of `content` IS the contract. Every caller of `updateNote`
+ * already holds the body it just sent, so echoing it back pays for the
+ * document twice on the wire plus a main-thread deserialization of a string
+ * the client never lost — on a 350KB note that is ~350KB up and ~350KB back
+ * on every pause in typing.
+ *
+ * The correctness half matters more than the bytes. A read-back is the body
+ * as the DATABASE has it, which can be older than the buffer still being
+ * typed: a rename sends only `title`, so its response carried the pre-edit
+ * document, and writing that whole row into `noteKeys.detail` is how a
+ * sibling mutation moved the open note's text backwards under the autosave's
+ * catch-up. A row that cannot carry `content` cannot do that to anyone.
+ *
+ * The fields that remain are exactly the ones the client cannot derive:
+ * `updatedAt` (the server's clock) and the values `updateNoteSchema`
+ * normalises on the way in — it trims `title` and `status`, and trims every
+ * key of `properties`.
+ */
+export type NoteUpdateResult = Pick<
+  NoteDetail,
+  'id' | 'title' | 'status' | 'properties' | 'isPinned' | 'updatedAt'
+>;
+
+/**
  * `properties` arrives as Prisma `JsonValue`; narrow it once, here, so no
  * component re-implements the guard. Non-conforming values (from a future
  * migration or manual SQL) degrade to being dropped, never to a crash.

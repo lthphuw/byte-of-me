@@ -13,6 +13,7 @@ import {
   markLocalNoteSynced,
   type NoteDetail,
   noteKeys,
+  type NoteUpdateResult,
   readLocalNote,
   type SeededDocument,
   updateNote,
@@ -42,8 +43,17 @@ type SaveValues = Omit<UpdateNoteInput, 'id'>;
 /** What every `save.mutate(...)` call passes — the target id travels WITH
  *  the call, not through the `noteId` closure, specifically so
  *  `onSuccess`/`onError` (which run whenever the request settles, possibly
- *  after `noteId` has since changed) know which note they are for. */
-type SaveVariables = { id: string } & SaveValues;
+ *  after `noteId` has since changed) know which note they are for.
+ *
+ *  `title`/`content` are REQUIRED here even though `updateNoteSchema` accepts
+ *  either alone: every send from this hook is the whole buffer, and
+ *  `applySaveResult` now depends on that being true. The response no longer
+ *  carries `content` (see `NoteUpdateResult`), so the cache entry a save
+ *  produces is completed from what the call itself sent — which only works
+ *  while "what it sent" is guaranteed to exist. */
+type SaveVariables = { id: string } & Required<
+  Pick<SaveValues, 'title' | 'content'>
+>;
 
 /** What this hook currently believes is the authoritative state for the open
  *  note: the last `title`/`content` it either seeded from or successfully
@@ -191,6 +201,12 @@ export function useNoteEditorAutosave(
    * State, not a ref, because both writes have to reach the screen: the read
    * below resolves asynchronously and must be able to raise the banner, and
    * resolving the conflict must be able to take it down.
+   *
+   * Three things clear it, and the third is easy to miss: a `noteId` change
+   * (the effect below), the author answering the banner (`resolveConflict`),
+   * and any of this browser's own writes being acknowledged
+   * (`applySaveResult`) — at which point the base has been reconciled by
+   * definition, whether or not a banner was ever shown.
    */
   const [conflictBase, setConflictBase] = useState<{
     /** `updatedAt` of the server row those unsent edits were made on top of. */
@@ -604,7 +620,18 @@ export function useNoteEditorAutosave(
   const applySaveResult = useCallback(
     (
       id: string,
-      data: NoteDetail,
+      data: NoteUpdateResult,
+      /**
+       * The body this particular save put on the wire.
+       *
+       * The response does not echo it back — deliberately, see
+       * `NoteUpdateResult` — so this is where the document in the cache entry
+       * comes from. It is also the STRICTLY more correct of the two: the
+       * server's copy is a row read after the write, which a second, later
+       * save can already have moved past, while this is exactly the text this
+       * response is an acknowledgement of.
+       */
+      sentContent: string,
       changed: { title: boolean; content: boolean }
     ) => {
       // Writing the server's response into the detail key directly — rather
@@ -617,15 +644,54 @@ export function useNoteEditorAutosave(
       // save" check compared against the server's copy, looked exactly like a
       // fresh unsaved edit and saved again, forever. See `lastSentRef` above
       // for the other half of the fix.
-      queryClient.setQueryData(noteKeys.detail(id), data);
+      //
+      // A merge rather than a whole-row write, for the same reason every
+      // sibling mutation now merges: the response describes the three fields
+      // this save is entitled to move and nothing else. `old` being absent
+      // means the note is not in the cache at all — a save landing after the
+      // entry was removed (a delete's `removeQueries`), where re-creating it
+      // would resurrect a document nobody can open.
+      queryClient.setQueryData<NoteDetail>(noteKeys.detail(id), (old) =>
+        old
+          ? {
+              ...old,
+              title: data.title,
+              content: sentContent,
+              updatedAt: data.updatedAt,
+            }
+          : old
+      );
+
+      // Our own write for the note on screen has been acknowledged, so there
+      // is no unreconciled base left to raise a conflict against.
+      //
+      // Nothing cleared this before, and the effect that SETS it runs only on
+      // a `noteId` change — so a note whose stored copy happened to be dirty
+      // when it was opened carried `conflictBase` for the rest of the
+      // session. The author's own first save then pushed `updatedAt` past
+      // that base, `hasConflict` flipped true mid-typing, and the banner
+      // appeared (with autosave suspended behind it) for a conflict that had
+      // just been resolved by the very save that triggered it.
+      //
+      // `seededNoteId.current`, not `noteId`: this callback must stay
+      // `useCallback`-stable on `queryClient` alone, because `flushPending`
+      // depends on it and `useDepartureFlush` FLUSHES whenever the function
+      // it is handed changes identity. The ref answers the same question —
+      // which note the buffer on screen belongs to — without a dependency.
+      if (id === seededNoteId.current) {
+        setConflictBase(null);
+      }
 
       // The browser's copy is now based on the row the server just wrote, and
       // is clean unless the author typed again while this was in flight —
       // `markLocalNoteSynced` decides that inside one transaction, against
       // what is actually stored, rather than trusting this callback's view.
+      // It compares against what was ACKNOWLEDGED, which for the body is what
+      // was sent; `updateNoteSchema` has no transform on `content`, so this
+      // is the same string the old server echo carried.
       void markLocalNoteSynced(id, {
         title: data.title,
-        content: data.content,
+        content: sentContent,
         updatedAt: data.updatedAt.getTime(),
       });
 
@@ -682,8 +748,8 @@ export function useNoteEditorAutosave(
       inFlightRef.current += 1;
       const previous = lastSentRef.current;
       lastSentRef.current = {
-        title: variables.title ?? '',
-        content: variables.content ?? '',
+        title: variables.title,
+        content: variables.content,
         updatedAt: note?.updatedAt.getTime() ?? previous?.updatedAt ?? 0,
       };
       return { previous };
@@ -707,7 +773,7 @@ export function useNoteEditorAutosave(
     // `isSeededForCurrentNote`); treating that as "both changed" keeps the
     // conservative behaviour anyway.
     onSuccess: (data, variables, context) =>
-      applySaveResult(variables.id, data, {
+      applySaveResult(variables.id, data, variables.content, {
         title: context?.previous?.title !== variables.title,
         content: context?.previous?.content !== variables.content,
       }),
@@ -914,7 +980,7 @@ export function useNoteEditorAutosave(
       })
         .then((res) => {
           if (res.success) {
-            applySaveResult(departingId, res.data, changed);
+            applySaveResult(departingId, res.data, pending.content, changed);
           } else {
             // The same rollback the mutation's `onError` does, and for the
             // same reason: leaving `lastSentRef` claiming this text was

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import {
   getAdminNoteById,
   getNoteLabels,
+  type NoteDetail,
   noteKeys,
   type NoteProperties,
   setNoteLabels,
@@ -18,12 +19,21 @@ import {
  *
  * The read shares `noteKeys.detail(noteId)` with `useNoteEditorAutosave`, so
  * TanStack serves both from one fetch. The write goes through `updateNote`
- * with ONLY `status`/`properties` — never title/content — and applies the
- * result the same way the autosave does: written straight into the detail
- * key. That interplay is safe by the autosave's own reseed guard: the row
- * comes back with the same title/content the buffer already holds, so a
- * diverged (mid-typing) buffer is never overwritten, and an undiverged one
- * reseeds to identical values — no visible change, no editor remount.
+ * with ONLY `status`/`properties` — never title/content — and MERGES those
+ * same two fields into the detail key, the way `saveLabels` below has always
+ * merged `labels`.
+ *
+ * It used to write the whole response row instead, on the argument that the
+ * row "comes back with the same title/content the buffer already holds". That
+ * held only while nothing was in flight. The row is read at the server's
+ * clock, so its body is the DATABASE's copy — older than a buffer being typed
+ * into, and older than a save that has left but not landed — while its
+ * `updatedAt` is newer than anything the editor has recorded. That pair is
+ * exactly what the autosave's catch-up treats as "the server moved on, take
+ * its version", so setting a status could roll the open document back to its
+ * last-persisted text. `updateNote` no longer returns `content` at all; this
+ * merge is the other half, keeping `title` out of a write that never touched
+ * it.
  */
 export function useNoteProperties(noteId: string) {
   const t = useTranslations('dashboard.note');
@@ -48,7 +58,20 @@ export function useNoteProperties(noteId: string) {
       return res.data;
     },
     onSuccess: (data, variables) => {
-      queryClient.setQueryData(noteKeys.detail(noteId), data);
+      // Server-normalised (`updateNoteSchema` trims `status` and every
+      // `properties` key), so this takes the response's values rather than
+      // the ones that were sent — but only for the two fields this mutation
+      // owns.
+      queryClient.setQueryData<NoteDetail>(noteKeys.detail(noteId), (old) =>
+        old
+          ? {
+              ...old,
+              status: data.status,
+              properties: data.properties,
+              updatedAt: data.updatedAt,
+            }
+          : old
+      );
       // The explorer's grouped view buckets by status, so a status change
       // moves this row between buckets and changes both bucket counts —
       // that, and nothing else. A PROPERTIES edit changes nothing any list

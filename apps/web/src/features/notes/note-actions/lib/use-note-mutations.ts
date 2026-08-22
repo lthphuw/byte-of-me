@@ -10,6 +10,7 @@ import {
   DELETE_NOTE_MUTATION_KEY,
   deleteLocalNote,
   deleteNote,
+  type NoteDetail,
   noteKeys,
   rememberDeletedNotes,
   restoreNote,
@@ -191,11 +192,26 @@ export function useNoteMutations({ onRemoved }: UseNoteMutationsOptions = {}) {
       return res.data;
     },
     onSuccess: (data) => {
-      // Straight into the detail key, the way every other `updateNote`
-      // caller applies its result (see `applySaveResult` in the autosave and
-      // `useNoteProperties`) — the row differs from the buffer only in
-      // `isPinned`/`updatedAt`, so the autosave's reseed guard stays inert.
-      queryClient.setQueryData(noteKeys.detail(data.id), data);
+      // ONLY the two fields a pin owns, merged onto whatever the detail key
+      // already holds — never the whole response row, the way this used to.
+      //
+      // The old comment here claimed the row "differs from the buffer only in
+      // `isPinned`/`updatedAt`, so the autosave's reseed guard stays inert",
+      // and that was true only while no save was outstanding. A pin read the
+      // row back at the server's clock, so its `title`/`content` were the
+      // DATABASE's copy — older than a buffer being typed into, and older
+      // still than a save already in flight. Writing that row bumped
+      // `updatedAt` past what the editor last recorded while restoring the
+      // stale text alongside it, which is precisely the shape
+      // `willReseedThisCommit` acts on: the open note visibly rolled back to
+      // its last-persisted body because someone pinned it. `updateNote` no
+      // longer returns `content` at all, and this merge means `title` cannot
+      // move either.
+      queryClient.setQueryData<NoteDetail>(noteKeys.detail(data.id), (old) =>
+        old
+          ? { ...old, isPinned: data.isPinned, updatedAt: data.updatedAt }
+          : old
+      );
       // Every list-shaped key, not just the tree: the explorer now reads
       // per-level `children` keys, which `tree` does not prefix-match.
       for (const queryKey of noteKeys.lists()) {
@@ -424,7 +440,16 @@ export function useRenameNote() {
       return { note: res.data, previousTitle: input.previousTitle };
     },
     onSuccess: ({ note: data, previousTitle }) => {
-      queryClient.setQueryData(noteKeys.detail(data.id), data);
+      // The title (server-trimmed) and the new `updatedAt`, and nothing else.
+      // This mutation sends ONLY `title`, so its read-back was the most
+      // dangerous of the sibling writes: the body it carried was by
+      // definition untouched by this operation and therefore whatever the
+      // database last stored — renaming a note from the tree while its
+      // editor was open could hand the autosave's catch-up a newer
+      // `updatedAt` attached to an older document.
+      queryClient.setQueryData<NoteDetail>(noteKeys.detail(data.id), (old) =>
+        old ? { ...old, title: data.title, updatedAt: data.updatedAt } : old
+      );
       void invalidateLists();
 
       // Fired and NOT awaited. The rename is done and the tree has already
