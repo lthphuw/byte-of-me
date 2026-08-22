@@ -13,6 +13,13 @@ import {
   toLocalDate,
 } from '@/shared/lib/health/local-date';
 import {
+  msfsc,
+  type MidpointNight,
+  type SleepInterval,
+  sleepRegularityIndex,
+  socialJetlagMin,
+} from '@/shared/lib/health/chronobiology';
+import {
   computeNight,
   currentStreak,
   minutesStdDev,
@@ -66,6 +73,7 @@ export async function getSleepSummary(
           wakeAt: true,
           latencyMin: true,
           awakeningsMin: true,
+          isFreeDay: true,
         },
       }),
       getWorkspaceSettings(),
@@ -92,6 +100,27 @@ export async function getSleepSummary(
       minutesPastLocalMidnight(r.wakeAt, r.localDate)
     );
 
+    // SRI wants the SIGNED offset from the wake day's midnight, not the wrapped
+    // clock value above: onset is normally the previous evening and must stay
+    // negative, because the index lays every night on one continuous minute
+    // timeline. Wrapping it here would move the evening to the far end of the
+    // same day and score a regular sleeper as inverted.
+    const intervals: SleepInterval[] = rows.map((r) => ({
+      localDate: r.localDate,
+      onsetOffsetMin:
+        Math.round((r.bedAt.getTime() - r.localDate.getTime()) / MINUTE_MS) +
+        (r.latencyMin ?? 0),
+      wakeOffsetMin: Math.round(
+        (r.wakeAt.getTime() - r.localDate.getTime()) / MINUTE_MS
+      ),
+    }));
+
+    const midpoints: MidpointNight[] = rows.map((r, i) => ({
+      midsleepMin: nights[i].midsleepMin,
+      totalSleepMin: nights[i].totalSleepMin,
+      isFreeDay: r.isFreeDay,
+    }));
+
     return {
       success: true,
       data: {
@@ -104,6 +133,11 @@ export async function getSleepSummary(
         waketimeSdMin: minutesStdDev(waketimes),
         streak: currentStreak(nights, today),
         targetMin,
+        sri: sleepRegularityIndex(intervals),
+        socialJetlagMin: socialJetlagMin(midpoints),
+        msfscMin: msfsc(midpoints),
+        freeDayCount: midpoints.filter((m) => m.isFreeDay).length,
+        workDayCount: midpoints.filter((m) => !m.isFreeDay).length,
       },
     };
   } catch (error) {

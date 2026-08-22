@@ -28,4 +28,20 @@ export interface SleepSummary {
   streak: number;
   /** The owner's nightly goal, from workspace settings. */
   targetMin: number;
+
+  /**
+   * Sleep Regularity Index, -100..100. Null when no two consecutive calendar
+   * days are fully determined — which needs four nights, not two.
+   */
+  sri: number | null;
+  /** |MSF - MSW| in minutes. Null below three free AND three work days. */
+  socialJetlagMin: number | null;
+  /** Chronotype proxy: minutes past midnight. Null without both kinds of day. */
+  msfscMin: number | null;
+  /**
+   * So the screen can say "not enough free days yet" rather than "no data".
+   * A null metric has two very different causes and they need different copy.
+   */
+  freeDayCount: number;
+  workDayCount: number;
 }

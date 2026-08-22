@@ -104,6 +104,66 @@ describe('getSleepSummary', () => {
     expect(res.data.bedtimeSdMin).toBeNull();
   });
 
+  it('withholds every chronobiology figure on a two-night history', async () => {
+    // SRI needs two consecutive FULLY DETERMINED days, which takes four
+    // nights; social jetlag and MSFsc need both kinds of day. Two nights of
+    // work days can support none of them, and a number here would be invented.
+    const res = await getSleepSummary(input);
+
+    expect(res.success).toBe(true);
+    if (!res.success) throw new Error('expected success');
+    expect(res.data.sri).toBeNull();
+    expect(res.data.socialJetlagMin).toBeNull();
+    expect(res.data.msfscMin).toBeNull();
+    expect(res.data.workDayCount).toBe(2);
+    expect(res.data.freeDayCount).toBe(0);
+  });
+
+  it('scores an identical four-night run as perfectly regular', async () => {
+    // 23:00 -> 07:00 local (UTC+7) on four consecutive days.
+    findMany.mockResolvedValue(
+      ['2026-08-19', '2026-08-20', '2026-08-21', '2026-08-22'].map((d) => {
+        const wake = new Date(`${d}T00:00:00.000Z`);
+        return night(
+          d,
+          new Date(wake.getTime() - 60 * 60_000).toISOString(),
+          new Date(wake.getTime() + 420 * 60_000).toISOString()
+        );
+      })
+    );
+
+    const res = await getSleepSummary(input);
+
+    if (!res.success) throw new Error('expected success');
+    expect(res.data.sri).toBeCloseTo(100, 6);
+  });
+
+  it('counts free and work days so the screen can explain a null', async () => {
+    findMany.mockResolvedValue([
+      {
+        ...night(
+          '2026-08-21',
+          '2026-08-20T16:00:00.000Z',
+          '2026-08-20T23:00:00.000Z'
+        ),
+        isFreeDay: true,
+      },
+      night(
+        '2026-08-22',
+        '2026-08-21T16:40:00.000Z',
+        '2026-08-22T00:10:00.000Z'
+      ),
+    ]);
+
+    const res = await getSleepSummary(input);
+
+    if (!res.success) throw new Error('expected success');
+    expect(res.data.freeDayCount).toBe(1);
+    expect(res.data.workDayCount).toBe(1);
+    // One of each is still far below the three-day floor.
+    expect(res.data.socialJetlagMin).toBeNull();
+  });
+
   it('rejects a window outside the allowed bounds', async () => {
     const res = await getSleepSummary({ days: 3650, timeZone: 'UTC' });
 
