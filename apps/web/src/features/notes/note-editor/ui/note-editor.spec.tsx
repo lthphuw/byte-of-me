@@ -78,6 +78,7 @@ import { toast } from 'sonner';
 import { NoteEditor } from './note-editor';
 
 import {
+  __resetAcknowledgedNoteWrites,
   __resetNoteLocalStore,
   type LocalNote,
   type NoteDetail,
@@ -545,6 +546,11 @@ beforeEach(() => {
   // The open connection is cached per MODULE, not per test — see
   // `__resetNoteLocalStore`'s own comment in `note-local-store.ts`.
   __resetNoteLocalStore();
+  // Likewise the record of this tab's own acknowledged writes: `NOTE_A` is a
+  // fixture every test below reuses, so one test's save would otherwise
+  // explain away the next test's deliberately-newer server row — and the
+  // conflict test that depends on that row would pass for the wrong reason.
+  __resetAcknowledgedNoteWrites();
 });
 
 // Puts the global back exactly as this file found it. Bun runs every spec
@@ -1490,6 +1496,70 @@ describe('NoteEditor conflict banner', () => {
 
     expect(updateMany).not.toHaveBeenCalled();
     expect(screen.getByRole('alert')).toBeTruthy();
+  }, DEBOUNCE_TEST_TIMEOUT_MS);
+
+  test('a save acknowledged after its instance was replaced still answers the question it raised (keyed)', async () => {
+    // The cross-instance shape, and the one production actually ships:
+    // `note-manager.tsx` keys the editor on the open note, so switching away
+    // and back DESTROYS the instance that sent the save. When the response
+    // lands, the callbacks that run belong to that dead instance — its
+    // `setQueryData` still lands (the client is global) but its `setState`
+    // does nothing, and the instance now on screen has its own conflict
+    // state, set from a local record that is still marked dirty.
+    //
+    // So the author's own save advances the server row past the base while
+    // nothing on screen can know it was theirs. Before
+    // `acknowledged-note-writes.ts` this raised a banner and suspended
+    // autosave permanently; the first fix (clearing the state when our save
+    // landed) could not reach it, because the clear ran on the wrong
+    // instance.
+    const base = NOTE_A.updatedAt.getTime();
+    storeDirtyCopy(NOTE_A, base);
+
+    const queryClient = makeQueryClient();
+    const { rerender } = render(
+      <Harness noteId={NOTE_A.id} queryClient={queryClient} keyed />
+    );
+    await screen.findByDisplayValue('Note A');
+
+    const { release } = gateNextUpdateMany();
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Note title' }), {
+      target: { value: 'Note A edited' },
+    });
+    await wait(SETTLE_MS);
+    await waitFor(() => expect(updateMany).toHaveBeenCalledTimes(1));
+
+    // Away and back while the save is still gated open. Two unmounts, two
+    // fresh instances; the third one reads the dirty record for itself.
+    await act(async () => {
+      rerender(<Harness noteId={NOTE_B.id} queryClient={queryClient} keyed />);
+    });
+    await screen.findByDisplayValue('Note B');
+    await act(async () => {
+      rerender(<Harness noteId={NOTE_A.id} queryClient={queryClient} keyed />);
+    });
+    await screen.findByDisplayValue('Note A');
+
+    release();
+    await wait(300);
+
+    // The buffer still catches up — the I2 contract, which a banner would
+    // have blocked outright: the reseed is gated on there being no conflict.
+    await screen.findByDisplayValue('Note A edited');
+    expect(screen.queryByRole('alert')).toBeNull();
+
+    // And autosave is still armed on the instance that never sent anything.
+    fireEvent.change(screen.getByRole('textbox', { name: 'Note title' }), {
+      target: { value: 'Note A edited twice' },
+    });
+    await wait(SETTLE_MS);
+    await waitFor(() => expect(updateMany).toHaveBeenCalledTimes(2));
+    const lastCall = updateMany.mock.calls[
+      updateMany.mock.calls.length - 1
+    ] as [{ where: { id: string }; data: Record<string, unknown> }];
+    expect(lastCall[0].where.id).toBe(NOTE_A.id);
+    expect(lastCall[0].data.title).toBe('Note A edited twice');
   }, DEBOUNCE_TEST_TIMEOUT_MS);
 });
 

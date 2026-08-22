@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import {
+  acknowledgedNoteWriteAt,
   cacheServerNote,
   getAdminNoteById,
   hasNoteBeenDeleted,
@@ -15,6 +16,7 @@ import {
   noteKeys,
   type NoteUpdateResult,
   readLocalNote,
+  rememberAcknowledgedNoteWrite,
   type SeededDocument,
   updateNote,
   type UpdateNoteInput,
@@ -202,11 +204,12 @@ export function useNoteEditorAutosave(
    * below resolves asynchronously and must be able to raise the banner, and
    * resolving the conflict must be able to take it down.
    *
-   * Three things clear it, and the third is easy to miss: a `noteId` change
-   * (the effect below), the author answering the banner (`resolveConflict`),
-   * and any of this browser's own writes being acknowledged
-   * (`applySaveResult`) — at which point the base has been reconciled by
-   * definition, whether or not a banner was ever shown.
+   * Two things clear it: a `noteId` change (the effect below) and the author
+   * answering the banner (`resolveConflict`). A third thing RETIRES it
+   * without clearing it — this browser's own write being acknowledged, which
+   * moves the base forward through `conflictBaseAt` rather than through this
+   * state, because the instance that gets the acknowledgement may no longer
+   * be the one holding this. See `conflictBaseAt` below.
    */
   const [conflictBase, setConflictBase] = useState<{
     /** `updatedAt` of the server row those unsent edits were made on top of. */
@@ -418,11 +421,43 @@ export function useNoteEditorAutosave(
    * Here neither side is safely older, which is why it is a question rather
    * than a rule.
    */
+  /**
+   * The base those unsent edits sit on, moved forward by anything this
+   * BROWSER has since written and had accepted.
+   *
+   * Without the second half, the author's own save answers the question the
+   * banner asks — a save advances `note.updatedAt` past the base by
+   * definition, which from here is indistinguishable from another device
+   * having written the note. The banner then went up mid-typing for a
+   * conflict with nobody, and (because it suspends autosave) nothing typed
+   * afterwards ever left the browser.
+   *
+   * `acknowledgedNoteWriteAt` and not a `setConflictBase(null)` when our own
+   * save lands, which is what this was first fixed with: that only works while
+   * the instance that SENT the save is still the one on screen. Production
+   * keys the editor on the open note, so switching away and back destroys it,
+   * and the response then arrives at a dead component whose `setState` is a
+   * no-op — leaving the live instance holding a base nothing could take back.
+   * A module-level record is readable from whichever instance is alive, and,
+   * being a plain value rather than state, is immune to the ordering too: it
+   * does not matter whether the acknowledgement or the local-copy read gets
+   * there first. See `acknowledged-note-writes.ts`.
+   *
+   * Read during render on purpose, and safe to: `applySaveResult` writes the
+   * record BEFORE the `setQueryData` that re-renders this hook with the newer
+   * row, so any commit that can see the new `updatedAt` can already see the
+   * acknowledgement that explains it.
+   */
+  const conflictBaseAt =
+    conflictBase === null
+      ? null
+      : Math.max(conflictBase.base, acknowledgedNoteWriteAt(noteId));
+
   const hasConflict = Boolean(
     note &&
       seededNoteId.current === noteId &&
-      conflictBase !== null &&
-      note.updatedAt.getTime() > conflictBase.base
+      conflictBaseAt !== null &&
+      note.updatedAt.getTime() > conflictBaseAt
   );
 
   /** The banner's data, or `null` when there is nothing to ask about. */
@@ -634,6 +669,21 @@ export function useNoteEditorAutosave(
       sentContent: string,
       changed: { title: boolean; content: boolean }
     ) => {
+      // FIRST, before the write below that re-renders every instance reading
+      // this note: from that render on, `note.updatedAt` is newer than the
+      // base any unsent local edits were built on, and the only thing that
+      // distinguishes "the author's own save just landed" from "another
+      // device wrote this note" is this record. Establishing it after the
+      // render it explains would leave a window in which a conflict banner
+      // is correct to appear — the same ordering `rememberDeletedNotes`
+      // keeps for the same reason.
+      //
+      // `id`, the note this save was FOR, never the `noteId` this closure
+      // happens to hold: a save that resolves after the author has switched
+      // notes (or after this whole component was replaced) is precisely the
+      // case that needs recording.
+      rememberAcknowledgedNoteWrite(id, data.updatedAt.getTime());
+
       // Writing the server's response into the detail key directly — rather
       // than invalidating it — is load-bearing, and predates the narrowing
       // above. Invalidating `noteKeys.all` (as an earlier version did)
@@ -661,26 +711,6 @@ export function useNoteEditorAutosave(
             }
           : old
       );
-
-      // Our own write for the note on screen has been acknowledged, so there
-      // is no unreconciled base left to raise a conflict against.
-      //
-      // Nothing cleared this before, and the effect that SETS it runs only on
-      // a `noteId` change — so a note whose stored copy happened to be dirty
-      // when it was opened carried `conflictBase` for the rest of the
-      // session. The author's own first save then pushed `updatedAt` past
-      // that base, `hasConflict` flipped true mid-typing, and the banner
-      // appeared (with autosave suspended behind it) for a conflict that had
-      // just been resolved by the very save that triggered it.
-      //
-      // `seededNoteId.current`, not `noteId`: this callback must stay
-      // `useCallback`-stable on `queryClient` alone, because `flushPending`
-      // depends on it and `useDepartureFlush` FLUSHES whenever the function
-      // it is handed changes identity. The ref answers the same question —
-      // which note the buffer on screen belongs to — without a dependency.
-      if (id === seededNoteId.current) {
-        setConflictBase(null);
-      }
 
       // The browser's copy is now based on the row the server just wrote, and
       // is clean unless the author typed again while this was in flight —
