@@ -684,7 +684,19 @@
         "heatmapSummary": "Days logged, shaded by sleep duration",
         "efficiencyUnavailable": "Add time to fall asleep or minutes awake to see efficiency",
         "debtCaveat": "A rolling 14-day heuristic, not a clinical measure",
-        "noHistory": "Nothing logged yet — save your first night above."
+        "noHistory": "Nothing logged yet — save your first night above.",
+        "regularity": "Regularity",
+        "sri": "Regularity index (SRI)",
+        "sriCaveat": "Computed from typed times, so it reads higher than a wearable would: it cannot see naps, and it does not know when your minutes awake fell. The two variation figures below assume none of that.",
+        "socialJetlag": "Social jetlag",
+        "socialJetlagHint": "How far your midsleep moves between work days and free days",
+        "chronotype": "Chronotype (MSFsc)",
+        "chronotypeHint": "Free-day midsleep, corrected for catch-up sleep. A clock time, not a length.",
+        "noNightsLogged": "Nothing logged in the last 14 days.",
+        "sriUnavailable": "Needs four nights in a row. {n, number} logged in the last 14 days.",
+        "sdUnavailable": "Needs two nights in the last 14 days.",
+        "socialJetlagUnavailable": "Needs three free days and three work days. So far: {free, number} free, {work, number} work.",
+        "chronotypeUnavailable": "Needs at least one free day and one work day. So far: {free, number} free, {work, number} work."
       },
       "factors": {
         "caffeine_late": "Late caffeine",

@@ -1,5 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 
+import { SleepRegularity } from './sleep-regularity';
+
 import {
   getSleepLogs,
   getSleepSummary,
@@ -101,44 +103,35 @@ export async function SleepScreen() {
         ) : null}
 
         {summary ? (
-          <div className="grid grid-cols-2 gap-3">
-            <StatTile
-              label={t('sleep.efficiency')}
-              value={efficiency === null ? '—' : `${Math.round(efficiency)}%`}
-              hint={
-                efficiency === null
-                  ? t('sleep.efficiencyUnavailable')
-                  : undefined
-              }
-            />
-            <StatTile
-              label={t('sleep.debt')}
-              value={t('units.hoursMinutes', splitMinutes(summary.debtMin))}
-              hint={t('sleep.debtCaveat')}
-            />
-            <StatTile label={t('sleep.streak')} value={summary.streak} />
-            <StatTile
-              label={t('sleep.bedtimeSd')}
-              value={
-                summary.bedtimeSdMin === null
-                  ? '—'
-                  : `± ${t('units.minutes', {
-                      minutes: Math.round(summary.bedtimeSdMin),
-                    })}`
-              }
-            />
-            <StatTile
-              label={t('sleep.waketimeSd')}
-              value={
-                summary.waketimeSdMin === null
-                  ? '—'
-                  : `± ${t('units.minutes', {
-                      minutes: Math.round(summary.waketimeSdMin),
-                    })}`
-              }
-              className="col-span-2"
-            />
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <StatTile
+                label={t('sleep.efficiency')}
+                value={efficiency === null ? '—' : `${Math.round(efficiency)}%`}
+                hint={
+                  efficiency === null
+                    ? t('sleep.efficiencyUnavailable')
+                    : undefined
+                }
+              />
+              <StatTile
+                label={t('sleep.debt')}
+                value={t('units.hoursMinutes', splitMinutes(summary.debtMin))}
+                hint={t('sleep.debtCaveat')}
+              />
+              <StatTile
+                label={t('sleep.streak')}
+                value={summary.streak}
+                className="col-span-2"
+              />
+            </div>
+
+            {/* The two deviation tiles moved INTO this block. They are what
+                keeps the regularity index honest, and a reader who has to
+                scroll between the flattering number and the crude one has
+                already taken the flattering one at face value. */}
+            <SleepRegularity summary={summary} />
+          </>
         ) : null}
 
         {series.length === 0 ? (

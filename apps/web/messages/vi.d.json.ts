@@ -687,7 +687,19 @@ declare const messages: {
         "heatmapSummary": "Những ngày đã ghi, đậm nhạt theo thời lượng ngủ",
         "efficiencyUnavailable": "Nhập thời gian để ngủ được hoặc số phút thức giấc để xem hiệu suất",
         "debtCaveat": "Ước lượng luân phiên 14 ngày, không phải chỉ số y khoa",
-        "noHistory": "Chưa có gì — hãy lưu đêm đầu tiên ở trên."
+        "noHistory": "Chưa có gì — hãy lưu đêm đầu tiên ở trên.",
+        "regularity": "Độ đều đặn",
+        "sri": "Chỉ số đều đặn (SRI)",
+        "sriCaveat": "Tính từ giờ nhập tay nên cao hơn số của một thiết bị đeo: nó không thấy giấc ngủ ngắn ban ngày, và không biết số phút thức giấc rơi vào lúc nào. Hai chỉ số độ lệch bên dưới không giả định gì cả.",
+        "socialJetlag": "Lệch múi giờ xã hội",
+        "socialJetlagHint": "Điểm giữa giấc ngủ xê dịch bao nhiêu giữa ngày làm và ngày nghỉ",
+        "chronotype": "Kiểu ngủ (MSFsc)",
+        "chronotypeHint": "Điểm giữa giấc ngủ ngày nghỉ, đã trừ phần ngủ bù. Đây là giờ trong ngày, không phải độ dài.",
+        "noNightsLogged": "Chưa ghi đêm nào trong 14 ngày gần nhất.",
+        "sriUnavailable": "Cần bốn đêm liên tiếp. Đã ghi {n, number} đêm trong 14 ngày gần nhất.",
+        "sdUnavailable": "Cần hai đêm trong 14 ngày gần nhất.",
+        "socialJetlagUnavailable": "Cần ba ngày nghỉ và ba ngày làm. Hiện có: {free, number} ngày nghỉ, {work, number} ngày làm.",
+        "chronotypeUnavailable": "Cần ít nhất một ngày nghỉ và một ngày làm. Hiện có: {free, number} ngày nghỉ, {work, number} ngày làm."
       },
       "factors": {
         "caffeine_late": "Cà phê muộn",
