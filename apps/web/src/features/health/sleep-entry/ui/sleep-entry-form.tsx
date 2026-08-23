@@ -1,309 +1,107 @@
 'use client';
 
-import { Button, Input, Label } from '@byte-of-me/ui';
-import { CalendarDays, Check, LoaderCircle, Moon, Sunrise } from 'lucide-react';
+import { Input, Label } from '@byte-of-me/ui';
+import { Moon, Sunrise } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { SleepDetailsSection } from './sleep-details-section';
 import { SleepDurationHero } from './sleep-duration-hero';
 import { SleepQualityScale } from './sleep-quality-scale';
 
-import {
-  type SleepEntryDefaults,
-  useSleepEntry,
-} from '@/features/health/sleep-entry/model/use-sleep-entry';
-import { cn } from '@/shared/lib/utils';
+import type { useSleepEntry } from '@/features/health/sleep-entry/model/use-sleep-entry';
 
 /**
- * The morning form. One tap in the common case: both clocks arrive already
- * filled — bedtime from the median of the last fortnight, wake time from the
- * clock or from the target — so waking up, opening the app and pressing Save
- * is both the fastest path and an accurate one.
+ * The sleep half of the day sheet. One tap in the common case: both clocks
+ * arrive already filled — bedtime from the median of the last fortnight, wake
+ * time from the clock or from the target — so waking up, opening the app and
+ * pressing Save is both the fastest path and an accurate one.
  *
  * Native `<input type="time">` rather than a hand-rolled wheel. The platform
- * control is already localized, already accessible, already familiar, and on a
- * phone it summons the OS time picker; a custom wheel trades weeks of work and
- * an accessibility risk for aesthetics.
+ * control is already localized, already accessible, already familiar, and on
+ * a phone it summons the OS time picker; a custom wheel trades weeks of work
+ * and an accessibility risk for aesthetics.
  *
- * **What the reader meets, in order.** The month first, through `lead` — the
- * calendar is the screen's primary surface and the control that chooses which
- * night everything under it is about. Then the day being edited, named in
- * words. Then the duration at display size with its target — it is the answer
- * the screen exists to give, and it used to be the smallest text on the page.
- * Then the two clocks that produce it, then quality. Everything else is behind
- * `SleepDetailsSection`.
+ * **This no longer owns the form or the Save button.** It used to be the
+ * whole screen — the month calendar led it, a save bar was pinned under it —
+ * and both of those moved out: the calendar opens a modal now instead of
+ * loading a form below itself, and that modal's footer holds the only Save
+ * button on the sheet. Two of them, one sticky inside a sheet that already
+ * has its own sticky footer, is the second background the owner already
+ * objected to once. So this component takes the hook's return value rather
+ * than building it, and renders only the fields — the caller decides when to
+ * mount it (`key={localDate}` is what resets it, one level up) and when to
+ * save it.
  *
- * The form does not own the selection: `defaults.localDate` says which night
- * it is filled with, and the caller remounts this component when that changes.
- * A `key` rather than an effect syncing props into state, because every field
- * here is uncontrolled-by-day — half a form carried over from the 9th into the
- * 14th is worse than a form that starts clean.
- *
- * **Two layouts.** Below `lg` this is a phone column with the save bar pinned
- * outside the scroll area, which is why this component owns BOTH halves of the
- * screen rather than the screen owning the scroll area: the bar has to sit
- * outside the scrolling region to stay under a thumb while a fortnight of
- * charts scrolls past. At `lg` — the width at which `/space` shows its icon
- * rail — the entry column and the statistics sit side by side (`aside`), the
- * charts run full width beneath them (`children`), and the pinned bar is
- * replaced by an ordinary submit at the foot of the column it submits. A bar
- * stapled across the bottom of a 27" monitor is a phone pattern wearing a
- * desktop's clothes.
- *
- * Exactly one of the two submit buttons is ever rendered: `hidden` is
- * `display: none`, so the other is not focusable and not in the accessibility
- * tree. There is no width at which the form has two submits.
- *
- * **One rhythm, four cards.** The gaps between the blocks are 24px rather than
- * the old 16–24 mix, and every block in the column is now the SAME object: a
- * 24px-radius `bg-card` sheet with a hairline border and one soft shadow —
- * the hero, the two clocks, the quality scale and the details trigger. The
- * quality scale used to float bare on the page between two of them, which made
- * one question in a stack of five look like a caption that had come loose from
- * something. Nothing on this palette but corner, shadow and air separates a
- * surface from the ground it sits on (§14), so the column spends all three
- * consistently or the stack stops reading as a stack.
- *
- * It costs a scroll on a phone and buys a screen that can be used with one
- * hand half awake, which is the only way it ever is.
+ * **One rhythm, four cards.** The gaps between the blocks are 24px, and every
+ * block is the SAME object: a 24px-radius `bg-card` sheet with a hairline
+ * border and one soft shadow — the hero, the two clocks, the quality scale
+ * and the details trigger. Nothing on this palette but corner, shadow and air
+ * separates a surface from the ground it sits on (§14), so the column spends
+ * all three consistently or it stops reading as a stack.
  */
 export function SleepEntryForm({
-  defaults,
+  entry,
   targetMin,
-  lead,
-  heading,
-  headingBadge,
-  aside,
-  children,
 }: {
-  defaults: SleepEntryDefaults;
-  /** The owner's nightly goal, for the hero's arc. Absent when the summary
-   *  read failed — the hero then draws a scale but prints no target. */
-  targetMin?: number;
-  /** Full-width content ABOVE both columns — the month calendar. It leads the
-   *  screen because it is also what chooses the day everything below edits. */
-  lead?: React.ReactNode;
-  /** Which night is being edited, in words. The calendar says it in geometry
-   *  and this says it in a sentence, because a tapped dot is a weak receipt
-   *  for "you are now editing the 9th". */
-  heading?: string;
-  /** A flag on the day beside the heading — "Today", and nothing else so far.
-   *  Separate from `heading` because it is not part of the date's name. */
-  headingBadge?: string;
-  /** The statistics column. Beside the fields at `lg`, beneath them below it. */
-  aside?: React.ReactNode;
-  /** Full-width content under both columns — the charts. */
-  children?: React.ReactNode;
+  entry: ReturnType<typeof useSleepEntry>;
+  targetMin: number;
 }) {
   const t = useTranslations('dashboard.health');
-  const entry = useSleepEntry(defaults);
-
-  /**
-   * The primary action, full width at every breakpoint.
-   *
-   * It was `w-56` at `lg` for one reason: `--primary` is `0 0% 98%` in dark
-   * mode, and a 56px-tall near-white rectangle spanning a 2fr column stops
-   * reading as a control and starts reading as a second background — the page
-   * appears to change tone half-way down. Narrowing it fixed that and broke
-   * something worse, because a primary action that does not span the column it
-   * submits is not obviously the primary action.
-   *
-   * So the width comes back and the heaviness is solved three other ways, none
-   * of which weakens the fill:
-   *
-   * 1. **`rounded-full`.** This is the load-bearing one. Backgrounds are
-   *    rectangles. A field with semicircular ends is not a region of the page
-   *    that happened to change colour — it is an object sitting on the page,
-   *    and there is no reading of it that is not "button". A 16px radius on a
-   *    56px slab is still recognisably a rectangle; a 24px one is not.
-   * 2. **Height, per breakpoint.** 56px on the phone, where it is a thumb
-   *    target pinned in a bar; 48px at `lg`, where it only has to be hit with a
-   *    mouse. That is a fifth of the area gone at exactly the width where the
-   *    complaint was made, and 48 is still past the 44px floor (§14).
-   * 3. **Contents.** The old button was a word centred in an empty field, and
-   *    an empty field is what a background is. A glyph beside the word gives
-   *    the fill something to be around; while the mutation is in flight the
-   *    glyph is a spinner, which is also the feedback the button owed the
-   *    reader and did not have.
-   *
-   * The spinner deliberately keeps turning under reduced motion (§14):
-   * removing the only sign that a save is in progress is worse than the
-   * motion. `aria-busy` says the same thing without it.
-   */
-  const submitButton = (heightClass: string) => (
-    <Button
-      type="submit"
-      disabled={!entry.canSave}
-      aria-busy={entry.isSaving}
-      className={cn(
-        'w-full gap-2 rounded-full text-base font-semibold shadow-sm',
-        heightClass
-      )}
-    >
-      {entry.isSaving ? (
-        <LoaderCircle aria-hidden className="size-5 shrink-0 animate-spin" />
-      ) : (
-        <Check aria-hidden className="size-5 shrink-0" />
-      )}
-      {entry.isSaving ? t('sleep.saving') : t('sleep.save')}
-    </Button>
-  );
 
   return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault();
-        entry.save();
-      }}
-      className="flex min-h-0 flex-1 flex-col overflow-x-clip"
-    >
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        {/* `max-w-4xl`, the width `SpaceHub` already uses, rather than a third
-            container size — and `p-4 md:p-8`, its padding, for the same
-            reason. A single column stretched over 1400px is what makes a
-            phone layout read as broken on a monitor. */}
-        <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
-          {/* The month leads, and it spans both columns rather than sitting in
-              one of them. It is not a chart of the month any more — it is how
-              the reader chooses which night the whole column below is about,
-              so putting it beside the thing it drives would leave the primary
-              control in the margin. */}
-          {lead ? (
-            <div className="rounded-3xl border bg-card p-5 shadow">{lead}</div>
-          ) : null}
+    <div className="flex flex-col gap-6">
+      <SleepDurationHero durationMin={entry.durationMin} targetMin={targetMin} />
 
-          {/* 2fr / 3fr, not two halves: the entry column holds two time
-              fields and a five-step scale and stops being comfortable below
-              ~300px, while the statistics column is a 3-up tile row that
-              wants every pixel it can have. At `max-w-4xl` that splits 832px
-              into roughly 320 / 480. */}
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-8">
-            <div className="flex min-w-0 flex-col gap-6">
-              {/* The receipt for a tap on the calendar, and the title of the
-                  column under it — so it is `base/semibold`, one step under
-                  the month above and one step over the `sm` labels below.
-                  "Today" used to be an em dash and a word glued onto the end
-                  of the same sentence, where it read as part of the date; it
-                  is a chip now, which is what it is: a flag on the day, not
-                  more of the day's name. Outlined rather than filled because
-                  an inverted chip is what SELECTION looks like two hundred
-                  pixels above this line, and today is not selection. */}
-              {heading ? (
-                <h2 className="flex flex-wrap items-center gap-x-2 gap-y-1 text-base font-semibold tracking-tight">
-                  <CalendarDays
-                    aria-hidden
-                    className="size-4 shrink-0 text-muted-foreground"
-                  />
-                  {heading}
-                  {headingBadge ? (
-                    <span className="rounded-full border px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                      {headingBadge}
-                    </span>
-                  ) : null}
-                </h2>
-              ) : null}
+      {/* 64px targets, and the largest type among the inputs: these two are
+          the only fields that must be hit accurately on a phone held in one
+          hand, half awake. They share one soft card because they are one
+          question — where the night started and where it ended — and the
+          hero above them is the answer.
 
-              <SleepDurationHero
-                durationMin={entry.durationMin}
-                targetMin={targetMin}
-              />
+          The moon and the sunrise are the same two marks the bedtime and
+          wake-variation tiles wear in `SleepRegularity`. One vocabulary
+          across the module: whatever a glyph means on one screen it means on
+          the other, which is the only thing that makes a picture faster to
+          read than the word beside it. Both are `aria-hidden` — the label
+          still says which field this is. */}
+      <div className="grid grid-cols-2 gap-4 rounded-3xl border bg-card p-5 shadow">
+        <div className="space-y-2">
+          <Label htmlFor="sleep-bed-at" className="flex items-center gap-1.5">
+            <Moon aria-hidden className="size-4 shrink-0 text-muted-foreground" />
+            {t('sleep.bedAt')}
+          </Label>
+          <Input
+            id="sleep-bed-at"
+            type="time"
+            required
+            value={entry.bedClock}
+            onChange={(event) => entry.setBedClock(event.target.value)}
+            className="h-16 rounded-2xl bg-background text-xl tabular-nums transition-colors duration-200 hover:border-primary/40 sm:text-2xl"
+          />
+        </div>
 
-              {/* 64px targets, and the largest type among the inputs: these
-                  two are the only fields that must be hit accurately on a
-                  phone held in one hand, half awake. They share one soft card
-                  because they are one question — where the night started and
-                  where it ended — and the hero above them is the answer.
-
-                  The moon and the sunrise are the same two marks the bedtime
-                  and wake-variation tiles wear in `SleepRegularity`. One
-                  vocabulary across the module: whatever a glyph means on one
-                  screen it means on the other, which is the only thing that
-                  makes a picture faster to read than the word beside it. Both
-                  are `aria-hidden` — the label still says which field this
-                  is. */}
-              <div className="grid grid-cols-2 gap-4 rounded-3xl border bg-card p-5 shadow">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="sleep-bed-at"
-                    className="flex items-center gap-1.5"
-                  >
-                    <Moon
-                      aria-hidden
-                      className="size-4 shrink-0 text-muted-foreground"
-                    />
-                    {t('sleep.bedAt')}
-                  </Label>
-                  <Input
-                    id="sleep-bed-at"
-                    type="time"
-                    required
-                    value={entry.bedClock}
-                    onChange={(event) => entry.setBedClock(event.target.value)}
-                    className="h-16 rounded-2xl bg-background text-xl tabular-nums transition-colors duration-200 hover:border-primary/40 sm:text-2xl"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="sleep-wake-at"
-                    className="flex items-center gap-1.5"
-                  >
-                    <Sunrise
-                      aria-hidden
-                      className="size-4 shrink-0 text-muted-foreground"
-                    />
-                    {t('sleep.wakeAt')}
-                  </Label>
-                  <Input
-                    id="sleep-wake-at"
-                    type="time"
-                    required
-                    value={entry.wakeClock}
-                    onChange={(event) => entry.setWakeClock(event.target.value)}
-                    className="h-16 rounded-2xl bg-background text-xl tabular-nums transition-colors duration-200 hover:border-primary/40 sm:text-2xl"
-                  />
-                </div>
-              </div>
-
-              <SleepQualityScale
-                value={entry.quality}
-                onChange={entry.setQuality}
-              />
-
-              <SleepDetailsSection entry={entry} />
-
-              {/* Full width, 48px, and a pill — see `submitButton`. The
-                  column it spans is the column it submits, which is the whole
-                  argument for the width. */}
-              <div className="hidden pt-1 lg:block">{submitButton('h-12')}</div>
-            </div>
-
-            {/* The rule between entry and statistics exists only while they
-                are stacked. At `lg` the two columns already separate them and
-                a horizontal line across one of them would read as a mistake. */}
-            {aside ? (
-              <div className="flex min-w-0 flex-col gap-6 border-t pt-6 lg:border-t-0 lg:pt-0">
-                {aside}
-              </div>
-            ) : null}
-          </div>
-
-          {children}
+        <div className="space-y-2">
+          <Label htmlFor="sleep-wake-at" className="flex items-center gap-1.5">
+            <Sunrise
+              aria-hidden
+              className="size-4 shrink-0 text-muted-foreground"
+            />
+            {t('sleep.wakeAt')}
+          </Label>
+          <Input
+            id="sleep-wake-at"
+            type="time"
+            required
+            value={entry.wakeClock}
+            onChange={(event) => entry.setWakeClock(event.target.value)}
+            className="h-16 rounded-2xl bg-background text-xl tabular-nums transition-colors duration-200 hover:border-primary/40 sm:text-2xl"
+          />
         </div>
       </div>
 
-      {/* Outside the scroll area, so it is where a thumb already is on every
-          frame. `env(safe-area-inset-bottom)` keeps it clear of the iOS home
-          indicator; `max()` keeps a real gap on everything else. Gone at `lg`,
-          where the submit above is the one that exists. */}
-      {/* `bg-card`, not `bg-background`: `SpaceShell` paints the page ground
-          `bg-muted/40`, and `--background` is a different tone from it, so the
-          bar showed up as a band in a slightly wrong colour rather than as a
-          surface sitting on the page. It still has to be OPAQUE — content
-          scrolls underneath it. */}
-      <div className="shrink-0 border-t bg-card px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 lg:hidden">
-        <div className="mx-auto w-full max-w-4xl">{submitButton('h-14')}</div>
-      </div>
-    </form>
+      <SleepQualityScale value={entry.quality} onChange={entry.setQuality} />
+
+      <SleepDetailsSection entry={entry} />
+    </div>
   );
 }

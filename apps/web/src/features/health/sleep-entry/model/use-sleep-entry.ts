@@ -158,7 +158,27 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
     durationMin,
     canSave: Boolean(durationMin) && !mutation.isPending,
     isSaving: mutation.isPending,
+    // Whether anything in the form differs from what it was seeded with.
+    //
+    // Load-bearing, not a convenience. The clocks arrive PRE-FILLED — bedtime
+    // from the fortnight's median, wake time from the clock — which is what
+    // makes the morning save one tap. The same defaults mean that pressing
+    // Save on a day that was never logged would invent a night out of a
+    // guess. The modal writes the sleep half only when this is true or a row
+    // already exists.
+    isDirty:
+      bedClock !== defaults.bedClock ||
+      wakeClock !== defaults.wakeClock ||
+      quality !== defaults.quality ||
+      latency !== numberToField(defaults.latencyMin) ||
+      awakenings !== numberToField(defaults.awakeningsMin) ||
+      isFreeDay !== defaults.isFreeDay ||
+      note !== (defaults.note ?? '') ||
+      factors.length !== defaults.factors.length ||
+      factors.some((factor) => !defaults.factors.includes(factor)),
     save: () => mutation.mutate(),
+    /** For a caller that has to sequence this write against another one. */
+    saveAsync: () => mutation.mutateAsync(),
   };
 }
 
