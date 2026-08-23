@@ -6,6 +6,17 @@ import type { Content, JSONContent } from '@tiptap/core';
  * Rich text is persisted as a stringified Tiptap document, but columns that
  * predate the editor still hold plain text. Both directions have to keep
  * working, so parsing is best-effort and never throws.
+ *
+ * Used by blog, project, education, profile and both note editors.
+ * `apps/web/src/entities/day-entry/lib/reflection-content.ts` is a separate,
+ * stricter codec for the day journal's `reflection` column — do not merge
+ * the two. Differences that matter: `parseRichTextContent` below accepts any
+ * parsed JSON object, so a non-document value like `[1,2,3]` gets handed to
+ * Tiptap as if it were one; the day-journal version only accepts a value
+ * with `type: 'doc'` and otherwise treats it as legacy plain text.
+ * `richTextToPlainText` below also collapses whitespace for excerpt display,
+ * which would break the day journal's length cap (it needs the reader's
+ * actual character count, not a normalized one).
  */
 
 /** Parse a stored value into a Tiptap document, or `null` if it isn't one. */

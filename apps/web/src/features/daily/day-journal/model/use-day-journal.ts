@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { JSONContent } from '@tiptap/core';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -191,6 +191,40 @@ export function useDayJournal({
     }
   }, [localDate, todayKey, mood, reflection]);
 
+  // Compared as SERIALISED strings, not documents by identity: Tiptap
+  // re-creates nodes on every edit, so an identity comparison would mark
+  // the sheet dirty on every keystroke — and worse, could report dirty when
+  // nothing actually changed, prompting a "discard changes?" on close.
+  //
+  // BOTH sides go through the same codec, not just the live one. Comparing
+  // `serializeReflection(reflection)` against the raw `entry.reflection`
+  // string looked correct but wasn't: a legacy plain-text row round-trips
+  // through `parseReflection` into a doc and back out through
+  // `serializeReflection` as JSON, which can never byte-match the original
+  // plain string. That reported every legacy day dirty the instant it was
+  // opened, before anyone touched it. Serialising `entry.reflection`
+  // through the same `parseReflection` → `serializeReflection` pass it took
+  // to seed `reflection` in the first place makes a legacy row compare
+  // clean until it is actually edited, while a row already stored as JSON
+  // still compares exactly as before.
+  //
+  // Memoised: this reruns `parseReflection` plus two `JSON.stringify` passes
+  // over the document, and `reflection` changes on every keystroke. Without
+  // memoisation that work reran on every render for no reader — see the note
+  // below, this value currently has no consumer.
+  //
+  // NOTE: nothing reads `isDirty` today (`day-modal.tsx` reads
+  // `sleep.isDirty`, not this hook's). Kept because it is part of this
+  // hook's public shape and a discard-changes prompt is a plausible next use
+  // — but it is not load-bearing for anything that exists right now.
+  const isDirty = useMemo(
+    () =>
+      mood !== (entry?.mood ?? null) ||
+      serializeReflection(reflection) !==
+        serializeReflection(parseReflection(entry?.reflection ?? null)),
+    [mood, reflection, entry?.mood, entry?.reflection]
+  );
+
   return {
     mood,
     setMood,
@@ -201,26 +235,7 @@ export function useDayJournal({
     pickPhotos,
     setCaption,
     removePhoto,
-    // Compared as SERIALISED strings, not documents by identity: Tiptap
-    // re-creates nodes on every edit, so an identity comparison would mark
-    // the sheet dirty on every keystroke — and worse, could report dirty when
-    // nothing actually changed, prompting a "discard changes?" on close.
-    //
-    // BOTH sides go through the same codec, not just the live one. Comparing
-    // `serializeReflection(reflection)` against the raw `entry.reflection`
-    // string looked correct but wasn't: a legacy plain-text row round-trips
-    // through `parseReflection` into a doc and back out through
-    // `serializeReflection` as JSON, which can never byte-match the original
-    // plain string. That reported every legacy day dirty the instant it was
-    // opened, before anyone touched it. Serialising `entry.reflection`
-    // through the same `parseReflection` → `serializeReflection` pass it took
-    // to seed `reflection` in the first place makes a legacy row compare
-    // clean until it is actually edited, while a row already stored as JSON
-    // still compares exactly as before.
-    isDirty:
-      mood !== (entry?.mood ?? null) ||
-      serializeReflection(reflection) !==
-        serializeReflection(parseReflection(entry?.reflection ?? null)),
+    isDirty,
     isSaving,
     saveAsync,
   };

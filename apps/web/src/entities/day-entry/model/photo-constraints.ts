@@ -98,7 +98,7 @@ export function describePhotoViolation(v: PhotoValidationError): string {
     case 'batch':
       return `A day holds at most ${v.max} photos.`;
     case 'heic':
-      return "That photo is in Apple's HEIC format. Turn image compression on in settings and it will be converted automatically.";
+      return "That photo is in Apple's HEIC format, which this app can't store. Convert it to JPEG or PNG first — a phone usually does this automatically during upload.";
     case 'type':
       return `"${v.fileName}" is not an accepted image format.`;
     case 'size':

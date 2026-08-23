@@ -14,6 +14,16 @@
  * other way, and `reflectionPlainText` extracts the words alone, with the
  * envelope of node types and marks stripped out — used to measure the length
  * cap against what a person actually wrote.
+ *
+ * `packages/ui/src/lib/rich-text-content.ts` does the same String-column
+ * bridging for blog, project, education, profile and both note editors —
+ * deliberately NOT reused here, and this file should not be merged into it.
+ * That module's `parseRichTextContent` accepts any parsed JSON object as a
+ * document, which would hand `[1,2,3]` to Tiptap as if it were one; this
+ * file's `isTiptapDoc` check above is stricter on purpose. That module's
+ * `richTextToPlainText` also collapses whitespace for excerpt display, which
+ * would corrupt the character count `reflectionPlainText` measures the
+ * length cap against.
  */
 import type { JSONContent } from '@tiptap/core';
 
