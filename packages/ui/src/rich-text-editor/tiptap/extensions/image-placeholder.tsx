@@ -17,7 +17,7 @@ import { Button, Input, Tabs, TabsContent, TabsList, TabsTrigger, } from '../../
 import { isValidUrl, NODE_HANDLES_SELECTED_STYLE_CLASSNAME, } from '../../../lib/tiptap-utils';
 import { cn } from '../../../lib/utils';
 
-import { resolveImages } from './upload-images';
+import { imageUploadFn, resolveImages } from './upload-images';
 import { useImageUpload } from './use-image-upload';
 
 export interface ImagePlaceholderOptions {
@@ -77,8 +77,30 @@ export const ImagePlaceholder = Node.create<ImagePlaceholderOptions>({
 
 function ImagePlaceholderComponent(props: NodeViewProps) {
   const { editor, extension, selected } = props;
+
+  /**
+   * Whether THIS editor was configured with a real uploader (read off the
+   * live `image` extension, same as `TiptapImage`'s own auto-upload effect
+   * and `resolveImages` — see `upload-images.ts`).
+   *
+   * Without one, the device-upload path below cannot work: picking a file
+   * inserts the local `blob:` preview URL as the image's `src` (the
+   * documented fallback in `useImageUpload`), and this component's own
+   * `onUpload` handler immediately calls `handleRemove()`, which revokes that
+   * same URL before the node view for it has even mounted. `TiptapImage`'s
+   * auto-upload effect is the only thing that would otherwise turn that
+   * `blob:` src into something real, and with no `uploadFn` configured it
+   * just `console.error`s — leaving a node whose `src` is a revoked object
+   * URL: broken in every tab, forever, and nothing the author did wrong. So
+   * the tab offering that path is hidden rather than left to fail silently;
+   * the URL tab needs no uploader and stays.
+   */
+  const hasUploader = Boolean(imageUploadFn(editor));
+
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeTab, setActiveTab] = useState<'upload' | 'url'>('upload');
+  const [activeTab, setActiveTab] = useState<'upload' | 'url'>(
+    hasUploader ? 'upload' : 'url'
+  );
   const [url, setUrl] = useState('');
   const [altText, setAltText] = useState('');
   const [urlError, setUrlError] = useState(false);
@@ -185,6 +207,114 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
     }
   };
 
+  // Split out so the same markup can render either as one of two Tabs panes
+  // (an uploader is configured) or standalone (it is not) — see `hasUploader`
+  // above.
+  const uploadTabContent = (
+    <div
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+      className={cn(
+        'my-4 rounded-lg border-2 border-dashed p-8 text-center transition-colors',
+        isDragActive && 'border-primary bg-primary/10',
+        error && 'border-destructive bg-destructive/10'
+      )}
+    >
+      {previewUrl ? (
+        <div className="space-y-4">
+          <img
+            src={previewUrl}
+            alt="Preview"
+            className="mx-auto max-h-[200px] rounded-lg object-cover"
+          />
+          <div className="space-y-2">
+            <Input
+              value={altText}
+              onChange={(e) => setAltText(e.target.value)}
+              placeholder="Alt text (optional)"
+            />
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={handleRemove}
+                disabled={uploading}
+              >
+                Remove
+              </Button>
+              <Button disabled={uploading}>
+                {uploading && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Upload
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleFileChange}
+            className="hidden"
+            id="image-upload"
+          />
+          <label
+            htmlFor="image-upload"
+            className="flex cursor-pointer flex-col items-center gap-4"
+          >
+            {insertingMany ? (
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            ) : (
+              <Upload className="h-8 w-8 text-muted-foreground" />
+            )}
+            <div>
+              <p className="text-sm font-medium">
+                Click to upload or drag and drop
+              </p>
+              <p className="text-xs text-muted-foreground">
+                SVG, PNG, JPG or GIF — pick several for a row
+              </p>
+            </div>
+          </label>
+        </>
+      )}
+      {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
+    </div>
+  );
+
+  const urlTabContent = (
+    <div className="space-y-4 py-4">
+      <div className="space-y-2">
+        <Input
+          value={url}
+          onChange={(e) => {
+            setUrl(e.target.value);
+            if (urlError) setUrlError(false);
+          }}
+          placeholder="Enter image URL..."
+        />
+        {urlError && (
+          <p className="text-xs text-destructive">Please enter a valid URL</p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <Input
+          value={altText}
+          onChange={(e) => setAltText(e.target.value)}
+          placeholder="Alt text (optional)"
+        />
+      </div>
+      <Button onClick={handleInsertEmbed} className="w-full" disabled={!url}>
+        Add Image
+      </Button>
+    </div>
+  );
+
   return (
     <NodeViewWrapper className="w-full">
       <div className="relative">
@@ -223,135 +353,35 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
               </Button>
             </div>
 
-            <Tabs
-              value={activeTab}
-              onValueChange={(v: string) => setActiveTab(v as 'upload' | 'url')}
-              className="w-full"
-            >
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="upload">
-                  <Upload className="mr-2 h-4 w-4" />
-                  Upload
-                </TabsTrigger>
-                <TabsTrigger value="url">
-                  <Link className="mr-2 h-4 w-4" />
-                  URL
-                </TabsTrigger>
-              </TabsList>
+            {hasUploader ? (
+              <Tabs
+                value={activeTab}
+                onValueChange={(v: string) =>
+                  setActiveTab(v as 'upload' | 'url')
+                }
+                className="w-full"
+              >
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="upload">
+                    <Upload className="mr-2 h-4 w-4" />
+                    Upload
+                  </TabsTrigger>
+                  <TabsTrigger value="url">
+                    <Link className="mr-2 h-4 w-4" />
+                    URL
+                  </TabsTrigger>
+                </TabsList>
 
-              <TabsContent value="upload">
-                <div
-                  onDragEnter={handleDragEnter}
-                  onDragLeave={handleDragLeave}
-                  onDragOver={handleDragOver}
-                  onDrop={handleDrop}
-                  className={cn(
-                    'my-4 rounded-lg border-2 border-dashed p-8 text-center transition-colors',
-                    isDragActive && 'border-primary bg-primary/10',
-                    error && 'border-destructive bg-destructive/10'
-                  )}
-                >
-                  {previewUrl ? (
-                    <div className="space-y-4">
-                      <img
-                        src={previewUrl}
-                        alt="Preview"
-                        className="mx-auto max-h-[200px] rounded-lg object-cover"
-                      />
-                      <div className="space-y-2">
-                        <Input
-                          value={altText}
-                          onChange={(e) => setAltText(e.target.value)}
-                          placeholder="Alt text (optional)"
-                        />
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            onClick={handleRemove}
-                            disabled={uploading}
-                          >
-                            Remove
-                          </Button>
-                          <Button disabled={uploading}>
-                            {uploading && (
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            )}
-                            Upload
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={handleFileChange}
-                        className="hidden"
-                        id="image-upload"
-                      />
-                      <label
-                        htmlFor="image-upload"
-                        className="flex cursor-pointer flex-col items-center gap-4"
-                      >
-                        {insertingMany ? (
-                          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                        ) : (
-                          <Upload className="h-8 w-8 text-muted-foreground" />
-                        )}
-                        <div>
-                          <p className="text-sm font-medium">
-                            Click to upload or drag and drop
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            SVG, PNG, JPG or GIF — pick several for a row
-                          </p>
-                        </div>
-                      </label>
-                    </>
-                  )}
-                  {error && (
-                    <p className="mt-2 text-sm text-destructive">{error}</p>
-                  )}
-                </div>
-              </TabsContent>
-
-              <TabsContent value="url">
-                <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <Input
-                      value={url}
-                      onChange={(e) => {
-                        setUrl(e.target.value);
-                        if (urlError) setUrlError(false);
-                      }}
-                      placeholder="Enter image URL..."
-                    />
-                    {urlError && (
-                      <p className="text-xs text-destructive">
-                        Please enter a valid URL
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Input
-                      value={altText}
-                      onChange={(e) => setAltText(e.target.value)}
-                      placeholder="Alt text (optional)"
-                    />
-                  </div>
-                  <Button
-                    onClick={handleInsertEmbed}
-                    className="w-full"
-                    disabled={!url}
-                  >
-                    Add Image
-                  </Button>
-                </div>
-              </TabsContent>
-            </Tabs>
+                <TabsContent value="upload">{uploadTabContent}</TabsContent>
+                <TabsContent value="url">{urlTabContent}</TabsContent>
+              </Tabs>
+            ) : (
+              // No uploader configured: the Upload tab is not offered at
+              // all — see `hasUploader` above for why — so there is only one
+              // way in, and a lone tab is not a tab. The URL form renders
+              // directly.
+              urlTabContent
+            )}
           </div>
         )}
       </div>
