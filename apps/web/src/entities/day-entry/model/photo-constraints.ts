@@ -32,9 +32,19 @@ export const ACCEPTED_PHOTO_MIME_TYPES = [
 ] as const;
 
 export type PhotoValidationError =
+  | { kind: 'heic'; fileName: string }
   | { kind: 'type'; fileName: string }
   | { kind: 'size'; fileName: string; maxSizeMb: number }
   | { kind: 'batch'; max: number };
+
+/**
+ * A HEIC/HEIF file, by MIME type or — when the picker reported no type at
+ * all, which some Android pickers do — by filename extension.
+ */
+function isHeic(file: File): boolean {
+  if (file.type === 'image/heic' || file.type === 'image/heif') return true;
+  return file.type === '' && /\.hei[cf]$/i.test(file.name);
+}
 
 /** The first thing wrong with `files`, or `null`. Returns a description rather
  *  than a formatted string so a client caller can translate it — server
@@ -48,6 +58,14 @@ export function findPhotoViolation(
   }
 
   for (const file of files) {
+    // Checked BEFORE the general type check below, or that branch claims the
+    // file first and this honest message never renders. HEIC is deliberately
+    // NOT in `ACCEPTED_PHOTO_MIME_TYPES`: server-side `sharp` cannot decode it
+    // without libheif (dimensions would store as 0x0), and Chrome and Firefox
+    // cannot display it at all.
+    if (isHeic(file)) {
+      return { kind: 'heic', fileName: file.name };
+    }
     if (!ACCEPTED_PHOTO_MIME_TYPES.includes(file.type as never)) {
       return { kind: 'type', fileName: file.name };
     }
@@ -68,6 +86,8 @@ export function describePhotoViolation(v: PhotoValidationError): string {
   switch (v.kind) {
     case 'batch':
       return `A day holds at most ${v.max} photos.`;
+    case 'heic':
+      return "That photo is in Apple's HEIC format. Turn image compression on in settings and it will be converted automatically.";
     case 'type':
       return `"${v.fileName}" is not an accepted image format.`;
     case 'size':

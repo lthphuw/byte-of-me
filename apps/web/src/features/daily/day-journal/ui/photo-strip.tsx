@@ -8,10 +8,7 @@ import { useTranslations } from 'next-intl';
 import { PhotoThumb } from './photo-thumb';
 
 import type { DayPhotoRow } from '@/entities/day-entry';
-import {
-  ACCEPTED_PHOTO_MIME_TYPES,
-  MAX_PHOTOS_PER_DAY,
-} from '@/entities/day-entry';
+import { MAX_PHOTOS_PER_DAY } from '@/entities/day-entry';
 import { cn } from '@/shared/lib/utils';
 
 /** A photo picked but not yet stored. `previewUrl` is a `blob:` URL the
@@ -129,7 +126,18 @@ export function PhotoStrip({
               ref={inputRef}
               type="file"
               multiple
-              accept={ACCEPTED_PHOTO_MIME_TYPES.join(',')}
+              // `image/*`, not `ACCEPTED_PHOTO_MIME_TYPES.join(',')`. A
+              // generic type is what makes iOS and Android offer "Take
+              // Photo" beside "Photo Library" — a list of five explicit MIME
+              // types does not. This is only a picker filter: drag-and-drop
+              // and "All Files" bypass it, so `findPhotoViolation` stays the
+              // real check and keeps its explicit list.
+              //
+              // Deliberately NOT adding `capture` here. It looks like the
+              // obvious way to add a camera button and does the opposite of
+              // what is wanted: it FORCES the camera and removes the library
+              // option entirely.
+              accept="image/*"
               className="sr-only"
               onChange={(event) => {
                 const files = Array.from(event.target.files ?? []);

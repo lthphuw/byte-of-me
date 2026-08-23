@@ -1455,6 +1455,7 @@ declare const messages: {
         "photoRemove": "Xoá ảnh này",
         "photoRemoveNumbered": "Xoá ảnh thứ {n, number}",
         "photoFull": "Mỗi ngày tối đa {max, number} ảnh",
+        "photoHeic": "Ảnh này ở định dạng HEIC của Apple. Bật nén ảnh trong cài đặt thì nó sẽ được chuyển đổi tự động.",
         "caption": "Chú thích",
         "captionPlaceholder": "Viết gì đó về tấm này",
         "captionEdit": "Sửa chú thích",
