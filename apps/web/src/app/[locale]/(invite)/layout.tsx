@@ -42,7 +42,11 @@ export default async function InviteLayout({
     <NextIntlClientProvider
       messages={pickMessages(await getMessages(), INVITE_MESSAGE_NAMESPACES)}
     >
-      <div className="flex min-h-screen flex-col overflow-x-clip">
+      {/* px-safe pb-safe: `viewport-fit=cover` extends this page into the
+          landscape sensor-housing edge and under the home indicator — no
+          fixed header here to absorb the top inset, but nothing reaches the
+          top edge either, so only left/right/bottom are needed. */}
+      <div className="px-safe pb-safe flex min-h-screen flex-col overflow-x-clip">
         <main className="container flex flex-1 flex-col">{children}</main>
       </div>
     </NextIntlClientProvider>

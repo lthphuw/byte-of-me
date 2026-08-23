@@ -8,6 +8,42 @@
     overflow-wrap: anywhere;
     word-break: break-word;
   }
+
+  /**
+   * The four `env(safe-area-inset-*)` values, one utility per edge.
+   *
+   * `viewportFit: 'cover'` (`app/[locale]/layout.tsx`) extends every surface
+   * into the notch, the home indicator, and — in landscape — the sensor
+   * housing on whichever side it lands. Before these existed, each surface
+   * that needed one wrote its own inline `env()` (`space-shell.tsx`,
+   * `dashboard/layout.tsx`, `public-site-header.tsx`, the `/space/health`
+   * bottom bars…), which is fine for the handful of spots that also need to
+   * `calc()` the inset against something else, but is not a pattern to keep
+   * repeating for a plain edge pad. These are that one obvious way, for
+   * everything else.
+   *
+   * Bare `env()`, no `max()` floor — a structural gutter that stacks with
+   * whatever padding an element already has, not a touch target's minimum.
+   * A bottom bar that also needs a floor (`pb-[max(0.5rem,env(...))]`) still
+   * writes that inline; these utilities are for the common case of "pad this
+   * edge by the inset and nothing else."
+   */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .pl-safe {
+    padding-left: env(safe-area-inset-left);
+  }
+  .pr-safe {
+    padding-right: env(safe-area-inset-right);
+  }
+  .px-safe {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
 }
 
 /**

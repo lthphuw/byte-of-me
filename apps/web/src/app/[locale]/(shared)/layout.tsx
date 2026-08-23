@@ -52,7 +52,11 @@ export default async function SharedLayout({
     <NextIntlClientProvider
       messages={pickMessages(await getMessages(), SHARE_MESSAGE_NAMESPACES)}
     >
-      <div className="flex min-h-screen flex-col overflow-x-clip">
+      {/* px-safe pb-safe: `viewport-fit=cover` extends this page into the
+          landscape sensor-housing edge and under the home indicator. Top is
+          left to whatever header a child under `/shared/notes/*` renders —
+          this layout has none of its own. */}
+      <div className="px-safe pb-safe flex min-h-screen flex-col overflow-x-clip">
         {children}
       </div>
     </NextIntlClientProvider>

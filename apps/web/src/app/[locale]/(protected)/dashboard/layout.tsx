@@ -77,7 +77,12 @@ export default async function DashboardLayout({
           {/* min-w-0: as a flex item next to the sidebar this box must be allowed
               to shrink below its content's min-content, or wide children (editor
               toolbar, tables) push it — and the whole page — past the viewport. */}
-          <div className="flex min-w-0 flex-1 flex-col overflow-x-clip bg-muted/40">
+          {/* pb-safe: a bare bottom inset on this wrapper, not on `<main>`
+              itself, so it stacks with `main`'s own `py-6 lg:py-8` instead of
+              fighting it for the same property. Without it the last row of a
+              scrolled-to-the-bottom dashboard page sat flush under the iOS
+              home indicator. */}
+          <div className="pb-safe flex min-w-0 flex-1 flex-col overflow-x-clip bg-muted/40">
             {/* One padding layer, not two. `container` is `padding: 2rem` at every
                 breakpoint (tailwind.config.ts), and the inner `p-4 lg:p-10` used to
                 stack on top of it: 48px of horizontal padding per side on a 375px

@@ -43,8 +43,14 @@ export default async function PublicLayout({
           because the page scrolls on <html> that container never scrolls — so
           sticky never engages anywhere on the public site. `clip` still stops
           wide children (code blocks, tables) from overflowing sideways without
-          establishing a scroll container. */}
-      <div className="relative flex min-h-screen flex-col overflow-x-clip">
+          establishing a scroll container.
+
+          `px-safe pb-safe`: `viewport-fit=cover` extends this page into the
+          landscape sensor-housing edge and under the home indicator.
+          `PublicSiteHeader` handles its own top inset (it is `fixed`, laid
+          out against the viewport, not this box), so only left/right/bottom
+          belong here. */}
+      <div className="px-safe pb-safe relative flex min-h-screen flex-col overflow-x-clip">
         <PublicSiteHeader />
         <div className="container grid min-w-0 flex-1 gap-12">
           {/* min-w-0: as a grid item, <main> must be allowed to shrink below its
