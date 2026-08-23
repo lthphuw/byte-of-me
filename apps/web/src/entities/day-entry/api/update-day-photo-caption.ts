@@ -3,7 +3,7 @@
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
-import { toDayPhotoRow } from '@/entities/day-entry';
+import { toDayPhotoRow } from '@/entities/day-entry/lib/to-day-photo-row';
 import { dayPhotoCaptionSchema } from '@/entities/day-entry/model/day-entry-schema';
 import type { DayPhotoRow } from '@/entities/day-entry/model/types';
 import { requireAdmin } from '@/shared/lib/auth';

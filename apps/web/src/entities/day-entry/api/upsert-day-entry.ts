@@ -3,6 +3,7 @@
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
+import { toDayPhotoRow } from '@/entities/day-entry/lib/to-day-photo-row';
 import { dayEntryUpsertSchema } from '@/entities/day-entry/model/day-entry-schema';
 import type { DayEntryRow } from '@/entities/day-entry/model/types';
 import { requireAdmin } from '@/shared/lib/auth';
@@ -72,10 +73,7 @@ export async function upsertDayEntry(
         localDate: localDateKey(row.localDate),
         mood: row.mood,
         reflection: row.reflection,
-        photos: row.photos.map((photo) => ({
-          ...photo,
-          url: `/api/health/photos/${photo.id}`,
-        })),
+        photos: row.photos.map(toDayPhotoRow),
       },
     };
   } catch (error) {

@@ -37,8 +37,10 @@ const nextConfig = {
 
   experimental: {
     serverActions: {
-      // Sized from the media rules, not picked round: MAX_IMAGE_SIZE_MB (3) ×
-      // MAX_UPLOAD_BATCH (5) plus multipart overhead.
+      // A flat '20mb', not computed from the per-file ceiling times the
+      // batch size — MAX_IMAGE_SIZE_MB (3) and MAX_UPLOAD_BATCH (5) are
+      // sized to fit comfortably under it, not the other way around; see
+      // `docs(day-entry): correct why the photo limits are what they are`.
       //
       // It used to be '3mb', exactly one image's worth. A single file at the
       // limit already exceeded it once multipart framing was added, so Next
