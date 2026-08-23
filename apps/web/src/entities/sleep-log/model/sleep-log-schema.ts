@@ -1,5 +1,7 @@
 import * as z from 'zod';
 
+import { isValidTimeZone } from '@/shared/lib/health/local-date';
+
 /**
  * NOTE ON ZOD VERSION: this repo is on zod 3.25.76, where the `z.iso.*`
  * namespace does not exist — it arrived in zod 4. Use `z.string().date()` and
@@ -85,12 +87,3 @@ export const sleepSummarySchema = z.object({
 });
 
 export type SleepSummaryInput = z.infer<typeof sleepSummarySchema>;
-
-function isValidTimeZone(tz: string): boolean {
-  try {
-    new Intl.DateTimeFormat('en-CA', { timeZone: tz });
-    return true;
-  } catch {
-    return false;
-  }
-}

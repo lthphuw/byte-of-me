@@ -1,27 +1,12 @@
 import * as z from 'zod';
 
+import { isValidTimeZone } from '@/shared/lib/health/local-date';
+
 /**
  * NOTE ON ZOD VERSION: this repo is on zod 3.25.76, where the `z.iso.*`
  * namespace does not exist — it arrived in zod 4 and throws at runtime here.
  * `z.string().date()` and `z.string().datetime()` are the versions that work.
  */
-
-/**
- * Mirrors the private `isValidTimeZone` in the sleep and workout schemas.
- *
- * A third copy rather than a shared import because both of those are
- * module-private and both slices are frozen. It exists so a malformed zone
- * fails at the boundary with a validation message instead of throwing from
- * inside `toLocalDate`, where it would surface as a generic 500.
- */
-function isValidTimeZone(tz: string): boolean {
-  try {
-    new Intl.DateTimeFormat('en-CA', { timeZone: tz });
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 /**
  * The shortest window worth asking the question over.

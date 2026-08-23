@@ -1,5 +1,7 @@
 import * as z from 'zod';
 
+import { isValidTimeZone } from '@/shared/lib/health/local-date';
+
 /**
  * NOTE ON ZOD VERSION: this repo is on zod 3.25.76, where the `z.iso.*`
  * namespace does not exist — it arrived in zod 4 and throws at runtime here.
@@ -10,24 +12,6 @@ import * as z from 'zod';
  * either position is a compile-time promise the runtime does not keep — this
  * schema is the runtime guarantee (AGENTS §8).
  */
-
-/**
- * Mirrors the private `isValidTimeZone` in
- * `entities/sleep-log/model/sleep-log-schema.ts`.
- *
- * A copy rather than a shared import because that one is module-private and
- * the sleep slice is frozen. It exists at all so a malformed zone fails at the
- * boundary with a validation message instead of throwing from inside
- * `toLocalDate`, where it would surface as a generic 500.
- */
-function isValidTimeZone(tz: string): boolean {
-  try {
-    new Intl.DateTimeFormat('en-CA', { timeZone: tz });
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 const timeZone = z.string().min(1).refine(isValidTimeZone, 'Unknown time zone');
 

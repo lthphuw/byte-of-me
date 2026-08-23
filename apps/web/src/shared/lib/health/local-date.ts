@@ -41,3 +41,25 @@ export function addDays(d: Date, n: number): Date {
   out.setUTCDate(out.getUTCDate() + n);
   return out;
 }
+
+/**
+ * Is this string a time zone the Intl database recognises?
+ *
+ * Every health action takes a `timeZone` from the client, because `localDate`
+ * has to be resolved in the OWNER's zone and the server cannot know it. That
+ * makes it untrusted input like any other: it is validated here so a malformed
+ * value fails in the Zod schema with a proper message, rather than throwing
+ * from inside `toLocalDate` half-way through an action.
+ *
+ * Lives beside the convention it guards. It existed as three byte-identical
+ * private copies -- in the sleep-log, workout and health-insight schemas --
+ * each written because the neighbouring slice was frozen at the time.
+ */
+export function isValidTimeZone(timeZone: string): boolean {
+  try {
+    new Intl.DateTimeFormat('en-CA', { timeZone });
+    return true;
+  } catch {
+    return false;
+  }
+}
