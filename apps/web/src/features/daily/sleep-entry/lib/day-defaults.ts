@@ -1,7 +1,7 @@
 import { localClockMinutes, medianBedClock } from './median-bed-clock';
 
 import type { SleepLogRow } from '@/entities/sleep-log';
-import type { SleepEntryDefaults } from '@/features/health/sleep-entry/model/use-sleep-entry';
+import type { SleepEntryDefaults } from '@/features/daily/sleep-entry/model/use-sleep-entry';
 import { clockToMinutes, minutesToClock } from '@/shared/lib/health/duration';
 import { addDays, localDateKey } from '@/shared/lib/health/local-date';
 

@@ -4,7 +4,7 @@ import { Skeleton } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
 /**
- * `SleepScreen`, loading.
+ * `DailyScreen`, loading.
  *
  * The calendar card is drawn with the real calendar's ANATOMY, not a generic
  * block — a header of circle / centred label / circle matching the two 44px
@@ -38,7 +38,7 @@ import { useTranslations } from 'next-intl';
 const SKELETON_LEADING_BLANKS = 4;
 const SKELETON_DAY_CELLS = 31;
 
-export function SleepScreenSkeleton() {
+export function DailyScreenSkeleton() {
   const t = useTranslations('dashboard.health');
 
   return (

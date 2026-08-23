@@ -5,12 +5,12 @@ import { useLocale, useTranslations } from 'next-intl';
 
 import type { DayEntryRow } from '@/entities/day-entry';
 import type { SleepLogRow } from '@/entities/sleep-log';
-import { DayModal, MOOD_ICON } from '@/features/health/day-journal';
+import { DayModal, MOOD_ICON } from '@/features/daily/day-journal';
 import {
   type CalendarNight,
   SleepMonthCalendar,
-} from '@/features/health/sleep-charts';
-import { buildDayDefaults } from '@/features/health/sleep-entry';
+} from '@/features/daily/sleep-charts';
+import { buildDayDefaults } from '@/features/daily/sleep-entry';
 
 /** One logged night, as the calendar needs it. Computed on the server — the
  *  statistics module stays out of the browser bundle, which is the same

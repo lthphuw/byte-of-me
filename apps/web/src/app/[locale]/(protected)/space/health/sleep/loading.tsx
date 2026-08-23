@@ -1,5 +1,5 @@
-import { SleepScreenSkeleton } from '@/widgets/health/sleep-screen';
+import { DailyScreenSkeleton } from '@/widgets/daily/daily-screen';
 
 export default function SleepLoading() {
-  return <SleepScreenSkeleton />;
+  return <DailyScreenSkeleton />;
 }

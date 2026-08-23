@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 
 import { SleepFactorGrid } from './sleep-factor-grid';
 
-import type { useSleepEntry } from '@/features/health/sleep-entry/model/use-sleep-entry';
+import type { useSleepEntry } from '@/features/daily/sleep-entry/model/use-sleep-entry';
 
 /**
  * Everything the morning flow does not need, as fields.

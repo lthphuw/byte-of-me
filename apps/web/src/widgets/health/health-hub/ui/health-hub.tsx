@@ -10,8 +10,8 @@ import {
 import { getTranslations } from 'next-intl/server';
 
 import { getSleepSummary } from '@/entities/sleep-log';
-import { SleepDurationChart } from '@/features/health/sleep-charts';
-import { SleepDurationHero } from '@/features/health/sleep-entry';
+import { SleepDurationChart } from '@/features/daily/sleep-charts';
+import { SleepDurationHero } from '@/features/daily/sleep-entry';
 import { Link } from '@/shared/i18n/navigation';
 import { splitMinutes } from '@/shared/lib/health/duration';
 import {

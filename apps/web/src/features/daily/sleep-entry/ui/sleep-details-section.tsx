@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl';
 
 import { SleepDetailsFields } from './sleep-details-fields';
 
-import type { useSleepEntry } from '@/features/health/sleep-entry/model/use-sleep-entry';
+import type { useSleepEntry } from '@/features/daily/sleep-entry/model/use-sleep-entry';
 import { cn } from '@/shared/lib/utils';
 import { ResponsiveModal } from '@/shared/ui/responsive-modal';
 

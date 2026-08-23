@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import {
   type DayValue,
   toDaySeries,
-} from '@/features/health/sleep-charts/lib/day-series';
+} from '@/features/daily/sleep-charts/lib/day-series';
 import { formatDayWithWeekday } from '@/shared/lib/health/day-label';
 import { splitMinutes } from '@/shared/lib/health/duration';
 import { BarChart } from '@/shared/ui/chart';

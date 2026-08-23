@@ -19,7 +19,7 @@ const DOT_DAYS = 7;
 /**
  * The derived numbers, as the sleep screen's second column.
  *
- * Split out of `SleepScreen` because that file is now a read, a set of
+ * Split out of `DailyScreen` because that file is now a read, a set of
  * defaults and two layouts; this is the part that decides what each figure is
  * measured AGAINST, and those decisions are the whole point of the tiles. A
  * bare "82%" or "3" is a number without a claim: efficiency needs the whole it

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { SleepScreen } from '@/widgets/health/sleep-screen';
+import { DailyScreen } from '@/widgets/daily/daily-screen';
 
 export const metadata: Metadata = {
   title: 'Sleep',
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
  * `?month=YYYY-MM` is the calendar's window, and it lives in the URL so the
  * screen's read can be sized by it — the reason month arrows were left out
  * when the calendar was still a picture. Only a page receives `searchParams`,
- * so the param is unwrapped here and validated in `SleepScreen`, which is the
+ * so the param is unwrapped here and validated in `DailyScreen`, which is the
  * component that knows what a valid month is and what to show instead.
  */
 export default async function SleepPage({
@@ -30,5 +30,5 @@ export default async function SleepPage({
 }) {
   const { month } = await searchParams;
 
-  return <SleepScreen month={Array.isArray(month) ? month[0] : month} />;
+  return <DailyScreen month={Array.isArray(month) ? month[0] : month} />;
 }

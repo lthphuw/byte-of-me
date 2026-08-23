@@ -15,7 +15,7 @@ import {
   upsertDayEntry,
 } from '@/entities/day-entry';
 import { useWorkspaceSettings } from '@/entities/workspace-settings';
-import type { PendingPhoto } from '@/features/health/day-journal/ui/photo-strip';
+import type { PendingPhoto } from '@/features/daily/day-journal/ui/photo-strip';
 import { compressInBrowser } from '@/shared/lib/media/compress-in-browser';
 
 /**

@@ -9,12 +9,12 @@ import { MoodScale } from './mood-scale';
 import { PhotoStrip } from './photo-strip';
 
 import type { DayEntryRow } from '@/entities/day-entry';
-import { useDayJournal } from '@/features/health/day-journal/model/use-day-journal';
+import { useDayJournal } from '@/features/daily/day-journal/model/use-day-journal';
 import {
   type SleepEntryDefaults,
   SleepEntryForm,
   useSleepEntry,
-} from '@/features/health/sleep-entry';
+} from '@/features/daily/sleep-entry';
 // `@/shared/i18n/navigation`, never `next/navigation` — the raw hook drops the
 // locale prefix this app routes every path through.
 import { useRouter } from '@/shared/i18n/navigation';

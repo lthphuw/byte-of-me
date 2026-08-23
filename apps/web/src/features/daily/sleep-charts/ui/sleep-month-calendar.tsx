@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import {
   daysInMonth,
   mondayIndex,
-} from '@/features/health/sleep-charts/lib/day-series';
+} from '@/features/daily/sleep-charts/lib/day-series';
 import { Link } from '@/shared/i18n/navigation';
 import { splitMinutes } from '@/shared/lib/health/duration';
 import { addDays, localDateKey } from '@/shared/lib/health/local-date';

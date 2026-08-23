@@ -18,7 +18,7 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
  * Inclusive at both ends, bounded by the caller's window rather than by a
  * limit, because the caller is the sleep screen and its window is a month —
  * the same shape `getSleepLogs` reads, so the two merge cleanly in
- * `SleepScreen`.
+ * `DailyScreen`.
  */
 export async function getDayEntries(
   input: unknown

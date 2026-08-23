@@ -28,8 +28,8 @@ import {
   parseMonthKey,
   SleepDurationChart,
   startOfMonth,
-} from '@/features/health/sleep-charts';
-import { roundedNowMin } from '@/features/health/sleep-entry';
+} from '@/features/daily/sleep-charts';
+import { roundedNowMin } from '@/features/daily/sleep-entry';
 import {
   addDays,
   localDateKey,
@@ -85,7 +85,7 @@ const FALLBACK_TARGET_MIN = 480;
  * whole page with the root `error.tsx` — including the calendar, which needs
  * none of them to work.
  */
-export async function SleepScreen({ month }: { month?: string }) {
+export async function DailyScreen({ month }: { month?: string }) {
   const t = await getTranslations('dashboard.health');
   const locale = await getLocale();
   const timeZone = await getRequestTimeZone();

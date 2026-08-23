@@ -8,7 +8,7 @@ import { SleepDetailsSection } from './sleep-details-section';
 import { SleepDurationHero } from './sleep-duration-hero';
 import { SleepQualityScale } from './sleep-quality-scale';
 
-import type { useSleepEntry } from '@/features/health/sleep-entry/model/use-sleep-entry';
+import type { useSleepEntry } from '@/features/daily/sleep-entry/model/use-sleep-entry';
 
 /**
  * The sleep half of the day sheet. One tap in the common case: both clocks

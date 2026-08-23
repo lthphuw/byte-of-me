@@ -18,7 +18,7 @@ const HEADING_ID = 'sleep-regularity-heading';
  * The chronobiology block: how repeatable the nights are, and what clock the
  * body is actually keeping.
  *
- * Its own component rather than four more tiles inside `SleepScreen` because
+ * Its own component rather than four more tiles inside `DailyScreen` because
  * every figure here shares a property none of the tiles above it have — each
  * one REFUSES to answer until the data can support it, and each refusal has to
  * say which of the two reasons it is. That branching is the bulk of the file.
