@@ -8,11 +8,7 @@ import {
   type CalendarNight,
   SleepMonthCalendar,
 } from '@/features/health/sleep-charts';
-import {
-  buildDayDefaults,
-  SLEEP_QUALITY_ICON,
-  SleepEntryForm,
-} from '@/features/health/sleep-entry';
+import { buildDayDefaults, SleepEntryForm } from '@/features/health/sleep-entry';
 
 /** One logged night, as the calendar needs it. Computed on the server — the
  *  statistics module stays out of the browser bundle, which is the same reason
@@ -86,28 +82,13 @@ export function SleepDayEditor({
   const locale = useLocale();
   const [selectedKey, setSelectedKey] = useState(initialSelectedKey);
 
-  // Literal keys, one per level. next-intl's generated declarations only
-  // type-check literals, so `t(`sleep.qualityLevel${n}`)` would type-check
-  // against nothing and happily ship a key that does not exist — the same
-  // reason the quality scale and the factor grid spell theirs out.
-  const qualityLabels: Record<number, string> = {
-    1: t('sleep.qualityLevel1'),
-    2: t('sleep.qualityLevel2'),
-    3: t('sleep.qualityLevel3'),
-    4: t('sleep.qualityLevel4'),
-    5: t('sleep.qualityLevel5'),
-  };
-
   const calendarNights: CalendarNight[] = nights.map((night) => ({
     localDate: night.localDate,
     value: night.totalSleepMin,
-    quality:
-      night.quality === null
-        ? null
-        : {
-            icon: SLEEP_QUALITY_ICON[night.quality],
-            label: qualityLabels[night.quality],
-          },
+    // Mood is what the calendar draws now, and no mood value is on hand yet
+    // (a later task carries it down from the day entry). Null renders the
+    // glyph-less mark the calendar already supports for an unrated night.
+    quality: null,
   }));
 
   const defaults = buildDayDefaults({
