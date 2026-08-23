@@ -70,11 +70,34 @@ export interface CalendarNight {
  * of the screen. A night with no quality rating simply has no glyph, which is
  * honest — inventing one would put a claim on the grid nobody made.
  *
- * **Today and selected are different shapes, not different tones.** Today
- * wears a ring around its mark; the selected day wears a filled plate behind
- * the whole cell and a bolder date. Both can be true at once and still be told
- * apart, and neither is a hue — there is none on this palette to spend (§14).
- * `aria-pressed` carries selection for anyone not looking at either.
+ * **Six states, and none of them touches the mark.** The disc already carries
+ * two values — a shade for how long, a glyph for how it felt — so every
+ * interaction cue is spent on the two surfaces that carry no data: the CELL
+ * PLATE behind the whole button, and the NUMERAL above the disc. That is the
+ * rule that generates the set:
+ *
+ * | State | Plate | Numeral | Mark |
+ * | --- | --- | --- | --- |
+ * | rest | none | `muted-foreground` | shade or hollow ring |
+ * | hover | `bg-muted/70` | lifts to `foreground` | untouched |
+ * | focus-visible | none | — | 2px `ring` round the cell, offset 2 |
+ * | pressed | `bg-muted` | — | whole cell scales to 94% |
+ * | selected | `bg-muted` | INVERTED pill, semibold | untouched |
+ * | today | none | — | 2px `foreground` ring round the disc |
+ *
+ * Selection inverts because a tint does not exist here: every token is 0%
+ * saturation (§14), so `bg-muted` at 96.1% against a 100% card is a 4-point
+ * step and hover would be indistinguishable from selected if the plate were
+ * the only cue. The pill is the cue that survives — near-black on near-white
+ * or the reverse, at both themes — and it sits on the numeral rather than
+ * behind the disc precisely so it cannot be read as a duration.
+ *
+ * Hover is AFFORDANCE ONLY. Touch has no hover, so nothing above is knowable
+ * from it alone: selection is also `aria-pressed` and a bold inverted pill,
+ * today is also `aria-current="date"` and a ring, and both are in the button's
+ * accessible name. The press is a transform rather than a third tone, because
+ * a finger covers the cell it is pressing and only a size change escapes from
+ * under it; `motion-reduce` opts out of the scale and keeps the plate.
  *
  * **Target size.** Seven columns inside a 20px-padded card on a 375px phone
  * leaves ~36px per cell; 44px is arithmetically impossible there and no
@@ -157,7 +180,12 @@ export function SleepMonthCalendar({
           icon={ChevronLeft}
         />
 
-        <h2 className="min-w-0 flex-1 truncate text-center text-sm font-medium">
+        {/* `base/semibold`, not `sm/medium`. This card is the first thing on
+            the screen and the control everything under it is about, so its
+            title has to outrank the `sm` headings in the column below rather
+            than match them — on a palette with no hue, type scale and weight
+            are the whole hierarchy (§14). */}
+        <h2 className="min-w-0 flex-1 truncate text-center text-base font-semibold tracking-tight">
           {monthLabel}
         </h2>
 
@@ -221,25 +249,36 @@ export function SleepMonthCalendar({
               type="button"
               disabled={isFuture}
               aria-pressed={isFuture ? undefined : isSelected}
+              // Not `aria-selected`, which is only defined on a handful of
+              // roles and on none of the ones a plain button can carry.
+              aria-current={isToday ? 'date' : undefined}
               aria-label={parts.join(' — ')}
               onClick={() => onSelect(key)}
               className={cn(
-                'flex w-full flex-col items-center justify-center gap-1 rounded-xl px-0.5 py-1',
-                'transition-colors duration-200',
+                'group flex w-full flex-col items-center justify-center gap-1 rounded-2xl px-0.5 py-1.5',
+                'transition-[background-color,transform] duration-200 ease-out motion-reduce:transition-none',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card',
+                // The pressed state is the plate at full strength AND a 6%
+                // shrink. Under a fingertip the plate is invisible — the
+                // finger is on top of it — so the size change is the half of
+                // the press that a phone can actually perceive.
                 isFuture
                   ? 'cursor-default'
-                  : 'hover:bg-muted disabled:cursor-default',
+                  : 'hover:bg-muted/70 active:scale-[0.94] active:bg-muted motion-reduce:active:scale-100',
                 isSelected && 'bg-muted'
               )}
             >
               <span
                 aria-hidden
                 className={cn(
-                  'text-[10px] leading-none tabular-nums',
+                  'rounded-full px-1.5 py-0.5 text-[11px] leading-none tabular-nums',
+                  'transition-colors duration-200 motion-reduce:transition-none',
                   isSelected
-                    ? 'font-semibold text-foreground'
-                    : 'text-muted-foreground'
+                    ? 'bg-primary font-semibold text-primary-foreground'
+                    : cn(
+                        'text-muted-foreground',
+                        !isFuture && 'group-hover:text-foreground'
+                      )
                 )}
               >
                 {date.getUTCDate()}
@@ -266,7 +305,14 @@ export function SleepMonthCalendar({
                       'ring-2 ring-foreground ring-offset-1 ring-offset-card'
                   )}
                 >
-                  {Icon ? <Icon className="size-4 shrink-0" /> : null}
+                  {/* 20px inside a 36px disc, not 16px. The glyphs are FACES
+                      now, and a face is told from the next face by the curve
+                      of one stroke: at 16px in a single tone the mouth of a
+                      Frown and the mouth of a Meh are the same two pixels.
+                      This is the same reason the entry scale draws them at
+                      32px — the mark has to survive as a silhouette, because
+                      the tone it is drawn in is already spent on duration. */}
+                  {Icon ? <Icon className="size-5 shrink-0" /> : null}
                 </span>
               )}
             </button>
@@ -275,28 +321,46 @@ export function SleepMonthCalendar({
       </div>
 
       {/* A key, not a hover tooltip: touch has no hover, so a scale that only
-          exists on hover does not exist on the device this is built for. */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-muted-foreground">
-        <span className="flex items-center gap-1.5">
-          <span
-            aria-hidden
-            className="size-3 shrink-0 rounded-full border-2 border-muted-foreground/35"
-          />
-          {t('sleep.calendarMissed')}
-        </span>
-
-        <span className="flex items-center gap-1.5">
-          {t('sleep.calendarShorter')}
-          <span aria-hidden className="flex items-center gap-1">
-            {MONTH_CALENDAR_FILL.map((fill) => (
-              <span
-                key={fill}
-                className={cn('size-3 shrink-0 rounded-full', fill)}
-              />
-            ))}
+          exists on hover does not exist on the device this is built for.
+          Ruled off and given its own line rather than run on under the grid —
+          three clauses of 11px text abutting five rows of marks read as a
+          sixth row of marks, which is how the key came to be skipped. The
+          swatch clauses come first because they name what the grid draws, and
+          the sentence about the glyph last because it is a sentence. */}
+      <div className="mt-1 flex flex-col gap-2 border-t pt-3 text-[11px] leading-normal text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <span className="flex items-center gap-1.5">
+            {t('sleep.calendarShorter')}
+            <span aria-hidden className="flex items-center gap-1">
+              {MONTH_CALENDAR_FILL.map((fill) => (
+                <span
+                  key={fill}
+                  className={cn('size-3 shrink-0 rounded-full', fill)}
+                />
+              ))}
+            </span>
+            {t('sleep.calendarLonger')}
           </span>
-          {t('sleep.calendarLonger')}
-        </span>
+
+          <span className="flex items-center gap-1.5">
+            <span
+              aria-hidden
+              className="size-3 shrink-0 rounded-full border-2 border-muted-foreground/35"
+            />
+            {t('sleep.calendarMissed')}
+          </span>
+
+          {/* Today is in the key for the same reason the ramp is: it is a
+              ring on one mark out of thirty and nothing else on the screen
+              says what a ring means. */}
+          <span className="flex items-center gap-1.5">
+            <span
+              aria-hidden
+              className="size-3 shrink-0 rounded-full bg-primary/55 ring-2 ring-foreground ring-offset-1 ring-offset-card"
+            />
+            {t('sleep.today')}
+          </span>
+        </div>
 
         <span>{t('sleep.calendarQualityKey')}</span>
       </div>
@@ -320,8 +384,11 @@ function MonthStep({
   label: string;
   icon: LucideIcon;
 }) {
+  // The same press the day cells get, so the two controls in this card behave
+  // as one family: a plate on hover, a 5% shrink while held, both inside the
+  // 150–300ms band (§14).
   const className =
-    'flex size-11 shrink-0 items-center justify-center rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card';
+    'flex size-11 shrink-0 items-center justify-center rounded-full transition-[background-color,color,transform] duration-200 ease-out motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card';
 
   if (monthKey === null) {
     return (
@@ -341,7 +408,11 @@ function MonthStep({
       href={{ pathname: '/space/health/sleep', query: { month: monthKey } }}
       scroll={false}
       aria-label={label}
-      className={cn(className, 'text-muted-foreground hover:bg-muted')}
+      className={cn(
+        className,
+        'text-muted-foreground hover:bg-muted hover:text-foreground',
+        'active:scale-95 active:bg-muted motion-reduce:active:scale-100'
+      )}
     >
       <Icon aria-hidden className="size-5" />
     </Link>
