@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { type FocusEventHandler, useEffect, useRef } from 'react';
 
 import { cn } from './lib/utils';
 import { Textarea } from './textarea';
@@ -10,6 +10,10 @@ export interface AutoGrowingTextAreaProps {
   onChange: (val: string) => void;
   placeholder: string;
   className?: string;
+  /** Optional passthrough to the underlying `<textarea>`'s native blur event.
+   *  Added for a caller that keeps its own draft state and persists on blur
+   *  rather than per keystroke — `onChange` alone cannot express that. */
+  onBlur?: FocusEventHandler<HTMLTextAreaElement>;
 }
 
 export function AutoGrowingTextarea({
@@ -17,6 +21,7 @@ export function AutoGrowingTextarea({
   onChange,
   placeholder,
   className,
+  onBlur,
 }: AutoGrowingTextAreaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -33,6 +38,7 @@ export function AutoGrowingTextarea({
       ref={textareaRef}
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      onBlur={onBlur}
       placeholder={placeholder}
       className={cn(
         'w-full resize-none overflow-hidden bg-background p-3',

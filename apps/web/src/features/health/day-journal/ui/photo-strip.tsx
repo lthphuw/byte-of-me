@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AutoGrowingTextarea } from '@byte-of-me/ui';
 import { ImagePlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -146,24 +146,80 @@ export function PhotoStrip({
 
       {open ? (
         <div className="space-y-2 rounded-2xl bg-muted/50 p-3">
-          {/* AutoGrowingTextarea has no `id` prop, so a `htmlFor` pairing
-              would not resolve. Wrapping the control inside the label makes
-              the association structural instead of by id. */}
-          <label className="block space-y-2 text-xs font-medium text-muted-foreground">
-            {t('day.caption')}
-            <AutoGrowingTextarea
-              key={open.id}
-              value={open.caption ?? ''}
-              placeholder={t('day.captionPlaceholder')}
-              // Saved on blur rather than per keystroke: a caption is a
-              // sentence, and a write per character is a write per character.
-              onChange={(next) =>
-                onCaption(open.id, next.length > 0 ? next : null)
-              }
-            />
-          </label>
+          <PhotoCaptionEditor
+            key={open.id}
+            photoId={open.id}
+            initialCaption={open.caption}
+            label={t('day.caption')}
+            placeholder={t('day.captionPlaceholder')}
+            onCaption={onCaption}
+          />
         </div>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * One photo's caption, buffered locally and persisted on blur.
+ *
+ * `AutoGrowingTextarea.onChange` fires per character — it has to, to resize
+ * itself as the reader types — so calling `onCaption` straight from it, as
+ * this used to, fired one un-serialised write per keystroke. A 40-character
+ * caption was 40 concurrent requests with no ordering guarantee: if `"hell"`
+ * landed after `"hello"`, the database kept `"hell"`, and the optimistic
+ * rollback in `use-day-journal.ts` could then restore that stale value again
+ * on top of whatever arrived later. Keeping the draft in local state and
+ * writing once, on blur, is what actually delivers the "saved on blur" this
+ * component always claimed.
+ *
+ * `key={open.id}` on the caller remounts this whenever the selected photo
+ * changes, which is what resets the local draft — no effect needs to watch
+ * `photoId` for that. The unmount flush below is a second line of defence
+ * for the case blur never fires at all: the sheet swiped shut, or the
+ * component unmounting some other way mid-edit.
+ */
+function PhotoCaptionEditor({
+  photoId,
+  initialCaption,
+  label,
+  placeholder,
+  onCaption,
+}: {
+  photoId: string;
+  initialCaption: string | null;
+  label: string;
+  placeholder: string;
+  onCaption: (id: string, caption: string | null) => void;
+}) {
+  const [draft, setDraft] = useState(initialCaption ?? '');
+
+  // Read inside a ref so the flush below always sees the latest keystroke,
+  // not whatever `draft` happened to be when the callback was created.
+  const draftRef = useRef(draft);
+  draftRef.current = draft;
+  const committedRef = useRef(initialCaption ?? '');
+
+  const flush = useCallback(() => {
+    if (draftRef.current === committedRef.current) return;
+    committedRef.current = draftRef.current;
+    onCaption(photoId, draftRef.current.length > 0 ? draftRef.current : null);
+  }, [photoId, onCaption]);
+
+  useEffect(() => () => flush(), [flush]);
+
+  return (
+    // AutoGrowingTextarea has no `id` prop, so a `htmlFor` pairing would not
+    // resolve. Wrapping the control inside the label makes the association
+    // structural instead of by id.
+    <label className="block space-y-2 text-xs font-medium text-muted-foreground">
+      {label}
+      <AutoGrowingTextarea
+        value={draft}
+        placeholder={placeholder}
+        onChange={setDraft}
+        onBlur={flush}
+      />
+    </label>
   );
 }
