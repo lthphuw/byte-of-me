@@ -678,6 +678,7 @@ declare const messages: {
         "saving": "Saving…",
         "saved": "Sleep saved",
         "statsAriaLabel": "Sleep statistics",
+        "recentWindow": "Last {days, number} nights",
         "efficiency": "Efficiency",
         "bedtimeSd": "Bedtime variation",
         "waketimeSd": "Wake variation",

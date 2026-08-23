@@ -29,7 +29,11 @@ export function SleepScreenSkeleton() {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
           {/* The month, in the card it leads the screen in: the header row,
-              the seven column initials, and five weeks of marks. */}
+              five weeks of marks, and the ruled-off key under them. A day
+              cell is not square — it is a numeral over a 36px disc inside
+              12px of padding, ~68px tall — and a square placeholder made the
+              grid settle upward by a third of its height when the real one
+              arrived. */}
           <div className="flex flex-col gap-3 rounded-3xl border p-5">
             <Skeleton aria-hidden className="h-11 w-full rounded-full" />
 
@@ -38,18 +42,22 @@ export function SleepScreenSkeleton() {
                 <Skeleton
                   key={i}
                   aria-hidden
-                  className="aspect-square w-full rounded-xl"
+                  className="h-[4.25rem] w-full rounded-2xl"
                 />
               ))}
             </div>
 
-            <Skeleton aria-hidden className="h-4 w-56" />
+            <div className="mt-1 flex flex-col gap-2 border-t pt-3">
+              <Skeleton aria-hidden className="h-3 w-full max-w-xs" />
+              <Skeleton aria-hidden className="h-3 w-48" />
+            </div>
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-8">
             <div className="flex min-w-0 flex-col gap-6">
-              {/* The day being edited, named in words. */}
-              <Skeleton aria-hidden className="h-5 w-48" />
+              {/* The day being edited, named in words — `base/semibold`, so
+                  a 20px placeholder rather than the old 16px one. */}
+              <Skeleton aria-hidden className="h-6 w-56" />
 
               {/* The hero: a 176px ring inside a 32px-padded card, then the
                   delta and the target beneath it. */}
@@ -72,22 +80,24 @@ export function SleepScreenSkeleton() {
                 </div>
               </div>
 
-              {/* Quality: the header row, then the five 64px icon buttons. */}
-              <div className="space-y-3">
+              {/* Quality: in the card it now shares with the rest of the
+                  column, the header row, then the five 72px face buttons. */}
+              <div className="space-y-4 rounded-3xl border p-5">
                 <Skeleton aria-hidden className="h-4 w-24" />
-                <Skeleton aria-hidden className="h-16 w-full rounded-2xl" />
+                <Skeleton
+                  aria-hidden
+                  className="h-[4.5rem] w-full rounded-2xl"
+                />
               </div>
 
               {/* The closed details trigger, at the height it has before any
-                  detail is filled — two lines plus the efficiency hint, which
-                  is exactly what a first visit sees. */}
-              <Skeleton
-                aria-hidden
-                className="h-[5.75rem] w-full rounded-3xl"
-              />
+                  detail is filled — the title row is 36px tall now that the
+                  panel affordance is a bordered disc, plus the efficiency
+                  hint, which is exactly what a first visit sees. */}
+              <Skeleton aria-hidden className="h-24 w-full rounded-3xl" />
 
-              <div className="hidden lg:block">
-                <Skeleton aria-hidden className="h-14 w-full rounded-2xl" />
+              <div className="hidden pt-1 lg:block">
+                <Skeleton aria-hidden className="h-12 w-full rounded-full" />
               </div>
             </div>
           </div>
@@ -96,7 +106,7 @@ export function SleepScreenSkeleton() {
 
       <div className="shrink-0 border-t px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 lg:hidden">
         <div className="mx-auto w-full max-w-4xl">
-          <Skeleton aria-hidden className="h-14 w-full rounded-2xl" />
+          <Skeleton aria-hidden className="h-14 w-full rounded-full" />
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { Flame, Gauge, Hourglass } from 'lucide-react';
+import { Activity, Flame, Gauge, Hourglass } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { SleepRegularity } from './sleep-regularity';
@@ -8,6 +8,8 @@ import { splitMinutes } from '@/shared/lib/health/duration';
 import { addDays, localDateKey } from '@/shared/lib/health/local-date';
 import { StaggerItem, StaggerList } from '@/shared/ui/motion';
 import { StatDots, StatMeter, StatTile } from '@/shared/ui/stat-tile';
+
+const HEADING_ID = 'sleep-recent-heading';
 
 /** How many nights the streak tile's dots look back over. A week is the span
  *  a reader can count at a glance without the dots shrinking below a
@@ -32,11 +34,16 @@ const DOT_DAYS = 7;
 export async function SleepStatsPanel({
   summary,
   todayKey,
+  windowDays,
 }: {
   summary: SleepSummary;
   /** `YYYY-MM-DD` of the reader's today, so the dot run ends on the right day
    *  rather than on the last day that happened to be logged. */
   todayKey: string;
+  /** How many nights `getSleepSummary` was called with. Passed rather than
+   *  re-declared, because the heading PRINTS it and a second copy of the
+   *  number is a second chance for the heading to lie about the read. */
+  windowDays: number;
 }) {
   const t = await getTranslations('dashboard.health');
 
@@ -55,7 +62,24 @@ export async function SleepStatsPanel({
           a decorative entrance. `MotionConfig reducedMotion="user"` at the app
           root drops the transform half of this for anyone who has asked for
           reduced motion and keeps the fade. */}
-      <section aria-label={t('sleep.statsAriaLabel')}>
+      {/* A VISIBLE heading, not just an `aria-label`. This column stacks three
+          groups of tiles — the month, the fortnight, the chronobiology — and
+          the other two are titled, so the untitled one in the middle read as
+          the tail of the group above it and its three figures were taken as
+          more monthly numbers. They are not: these are the last fourteen
+          nights, which is a different window from the month on screen and
+          becomes a badly wrong reading the moment the reader pages back to
+          July. Same `xs` muted heading with a `size-3.5` glyph the other two
+          wear, so the three read as siblings. */}
+      <section aria-labelledby={HEADING_ID} className="flex flex-col gap-2">
+        <h2
+          id={HEADING_ID}
+          className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"
+        >
+          <Activity aria-hidden className="size-3.5 shrink-0" />
+          {t('sleep.recentWindow', { days: windowDays })}
+        </h2>
+
         <StaggerList
           stagger={0.06}
           className="grid grid-cols-2 gap-3 md:grid-cols-3"

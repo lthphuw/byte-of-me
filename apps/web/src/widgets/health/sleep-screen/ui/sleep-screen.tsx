@@ -171,8 +171,12 @@ export async function SleepScreen({ month }: { month?: string }) {
         <>
           {/* `destructive-text`, not `destructive`: §14 records that the fill
               token measures 3.76:1 as text. */}
+          {/* On a sheet, not bare on the ground. Every other block in this
+              column is a card; a loose line of red text at the top of it read
+              as a rendering artefact rather than as the screen telling the
+              reader something. */}
           {failed ? (
-            <p className="flex items-start gap-2 text-sm text-destructive-text">
+            <p className="flex items-start gap-2 rounded-2xl border bg-card p-4 text-sm text-destructive-text shadow">
               <TriangleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
               {t('errors.load')}
             </p>
@@ -191,21 +195,33 @@ export async function SleepScreen({ month }: { month?: string }) {
           />
 
           {summary ? (
-            <SleepStatsPanel summary={summary} todayKey={todayKey} />
+            <SleepStatsPanel
+              summary={summary}
+              todayKey={todayKey}
+              windowDays={WINDOW_DAYS}
+            />
           ) : null}
         </>
       }
     >
       <section>
         {series.length === 0 ? (
-          // Where the fortnight of bars would be. A crossed-out calendar says
-          // "no nights recorded" — the same mark the hub uses for the same
-          // fact — so the gap reads as a state and not as a block that failed
-          // to render.
-          <p className="flex items-start gap-2 text-sm text-muted-foreground">
-            <CalendarOff aria-hidden className="mt-0.5 size-4 shrink-0" />
-            {t('sleep.noHistory')}
-          </p>
+          // Where the fortnight of bars would be — and IN THE CARD the bars
+          // would have been in, rather than as a line of grey text where a
+          // card used to be. A crossed-out calendar says "no nights recorded"
+          // — the same mark the hub uses for the same fact — so the gap reads
+          // as a state and not as a block that failed to render. Centred and
+          // given the plot's own height, so the screen does not visibly
+          // shorten by 150px the moment the first night is logged.
+          <div className="flex min-h-[9rem] flex-col items-center justify-center gap-2 rounded-3xl border bg-card p-5 text-center shadow">
+            <CalendarOff
+              aria-hidden
+              className="size-6 shrink-0 text-muted-foreground"
+            />
+            <p className="text-sm text-muted-foreground">
+              {t('sleep.noHistory')}
+            </p>
+          </div>
         ) : (
           // The same soft card the hub gives its chart, so moving between the
           // two tabs does not change what a chart is: a figure on a raised

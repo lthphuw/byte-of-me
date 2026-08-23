@@ -678,6 +678,7 @@ declare const messages: {
         "saving": "Đang lưu…",
         "saved": "Đã lưu giấc ngủ",
         "statsAriaLabel": "Thống kê giấc ngủ",
+        "recentWindow": "{days, number} đêm gần nhất",
         "efficiency": "Hiệu suất",
         "bedtimeSd": "Độ lệch giờ ngủ",
         "waketimeSd": "Độ lệch giờ dậy",

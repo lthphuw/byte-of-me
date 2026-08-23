@@ -64,8 +64,12 @@ export async function SleepMonthSummary({
           id={HEADING_ID}
           label={t('sleep.monthSummary', { monthLabel })}
         />
-        <p className="flex items-start gap-2 text-sm text-muted-foreground">
-          <CalendarRange aria-hidden className="mt-0.5 size-4 shrink-0" />
+        {/* The tiles' own sheet, not a loose sentence where six cards were.
+            An empty state that abandons the surface reads as a failed render;
+            one that keeps it reads as a month with nothing in it, which is
+            what it is. */}
+        <p className="flex items-center justify-center gap-2 rounded-2xl border bg-card p-6 text-center text-sm text-muted-foreground shadow">
+          <CalendarRange aria-hidden className="size-4 shrink-0" />
           {t('sleep.monthEmpty')}
         </p>
       </section>
