@@ -189,10 +189,14 @@ export function ExerciseCatalog() {
         </div>
       </div>
 
-      {/* Outside the scroll area and clear of the iOS home indicator, exactly
-          like the sleep form's save bar. Gone at `lg`, where a bar stapled
-          across a monitor is a phone pattern in a browser window. */}
-      <div className="shrink-0 border-t bg-background px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 lg:hidden">
+      {/* Outside the scroll area, exactly like the sleep form's save bar.
+          Gone at `lg`, where a bar stapled across a monitor is a phone
+          pattern in a browser window. `pb-2` only, not another
+          `env(safe-area-inset-bottom)`: `SpaceShell`'s `#space-content`
+          already clears the iOS home indicator for the whole column — a
+          second `env()` here would double it and leave an empty band above
+          the true edge. */}
+      <div className="shrink-0 border-t bg-background px-4 pb-2 pt-2 lg:hidden">
         <div className="mx-auto w-full max-w-4xl">{createButton}</div>
       </div>
 

@@ -49,7 +49,19 @@ export default async function DashboardLayout({
   return (
     <NextIntlClientProvider messages={messages}>
       <WorkspaceSettingsProvider initial={settings}>
-        <div className="flex min-h-screen flex-col lg:flex-row">
+        {/* `paddingLeft`/`paddingRight`, not a Tailwind class: this is the
+            landscape left/right safe area (see `[locale]/layout.tsx`'s
+            `viewportFit: 'cover'`), applied once here so whichever child is
+            flush with the device edge — the rail at `lg`, the mobile topbar
+            below it — inherits it for free instead of each padding its own
+            edge. */}
+        <div
+          className="flex min-h-screen flex-col lg:flex-row"
+          style={{
+            paddingLeft: 'env(safe-area-inset-left)',
+            paddingRight: 'env(safe-area-inset-right)',
+          }}
+        >
           {/* WCAG 2.4.1. The sidebar below is fifteen controls, re-tabbed on every
               single navigation without this. */}
           <SkipToContentLink targetId="main-content" />

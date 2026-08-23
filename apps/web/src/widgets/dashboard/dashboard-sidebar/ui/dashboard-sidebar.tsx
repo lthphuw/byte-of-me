@@ -37,8 +37,17 @@ export function DashboardSidebar() {
     <>
       <DashboardNavRail />
 
-      {/* Mobile topbar */}
-      <div className="sticky top-0 z-40 flex items-center gap-2 border-b border-border/50 bg-background/80 px-2 py-1.5 backdrop-blur lg:hidden">
+      {/* Mobile topbar. `env(safe-area-inset-top)` on top of the usual `py-1.5`
+          for the same reason the dashboard layout pads left/right: this bar
+          is `sticky top-0`, so on a notched iPhone in standalone mode (the
+          manifest's `display: "standalone"`) it sticks flush under the
+          camera housing with no gap otherwise. */}
+      <div
+        className="sticky top-0 z-40 flex items-center gap-2 border-b border-border/50 bg-background/80 px-2 pb-1.5 backdrop-blur lg:hidden"
+        style={{
+          paddingTop: 'calc(0.375rem + env(safe-area-inset-top))',
+        }}
+      >
         <NavDrawer
           triggerLabel={t('openNav')}
           title="Byte of Me"

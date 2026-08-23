@@ -71,10 +71,22 @@ export function PublicSiteHeader() {
       {/* `--scrollbar-lock` is set by `useLockBody` while the mobile menu is
           open. A fixed element is laid out against the viewport, so it never
           sees the padding the body gets — without this the header alone slides
-          sideways by the scrollbar's width every time the menu opens. */}
+          sideways by the scrollbar's width every time the menu opens.
+
+          The three `env(safe-area-inset-*)` terms are the same fix for a
+          different cause: `fixed inset-x-0 top-0` is laid out against the
+          viewport too, so it sits under the iOS status bar / notch with no
+          gap, and in landscape the left or right edge can land under the
+          sensor housing. `paddingRight` adds to the scrollbar lock rather
+          than replacing it — both can be non-zero at once. */}
       <div
         className="pointer-events-none fixed inset-x-0 top-0 z-50"
-        style={{ paddingRight: 'var(--scrollbar-lock, 0px)' }}
+        style={{
+          paddingTop: 'env(safe-area-inset-top)',
+          paddingLeft: 'env(safe-area-inset-left)',
+          paddingRight:
+            'calc(var(--scrollbar-lock, 0px) + env(safe-area-inset-right))',
+        }}
       >
         <div className="container relative">
           <HeaderIsland side="left" docked={docked} geometry={geometry}>

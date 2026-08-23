@@ -131,6 +131,15 @@ export const viewport: Viewport = {
     { media: '(prefers-color-scheme: light)', color: 'white' },
     { media: '(prefers-color-scheme: dark)', color: 'black' },
   ],
+  // Without this, `env(safe-area-inset-*)` resolves to 0 on iOS Safari no
+  // matter what CSS asks for it — the fourteen `env(safe-area-inset-bottom)`
+  // rules already in this codebase (health bottom bars, nav-drawer,
+  // responsive-modal, blog-reader-nav) were silently falling back to their
+  // floor value on every iPhone. `viewport-fit=cover` also extends the layout
+  // BEHIND all four safe areas, not just the bottom one those rules cover —
+  // see `space-shell.tsx` and the public/dashboard headers for the top and
+  // landscape left/right insets that fix now requires.
+  viewportFit: 'cover',
 };
 
 export default async function LocaleLayout({

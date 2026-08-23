@@ -118,14 +118,24 @@ export const PublicHeaderMobileNav = ({
   return createPortal(
     <AnimatePresence mode="wait" initial={false}>
       {isOpen && (
-        // top-16 (64px): the island's bottom is 56px on mobile in BOTH states
-        // — `AT_REST_MOBILE` is 0 + 56 and `DOCKED_MOBILE` is 8 + 48, kept
-        // equal on purpose — plus an 8px gap. That invariant is what lets this
-        // be one number instead of a branch on `docked`; if either geometry
-        // changes, this changes with it.
+        // top: 4rem (64px) is the island's bottom, 56px on mobile in BOTH
+        // states — `AT_REST_MOBILE` is 0 + 56 and `DOCKED_MOBILE` is 8 + 48,
+        // kept equal on purpose — plus an 8px gap. That invariant is what
+        // lets this be one number instead of a branch on `docked`; if either
+        // geometry changes, this changes with it. `env(safe-area-inset-top)`
+        // is added on top of it, not baked into the 4rem: the header itself
+        // sits `env(safe-area-inset-top)` lower on a notched iPhone (see
+        // `public-site-header.tsx`), and without the same offset here this
+        // panel opened flush under the header on every other phone but
+        // overlapped it on a notched one.
         <m.div
-          className="pointer-events-none fixed inset-x-0 top-16 z-[9999] md:hidden"
-          style={{ paddingRight: 'var(--scrollbar-lock, 0px)' }}
+          className="pointer-events-none fixed inset-x-0 z-[9999] md:hidden"
+          style={{
+            top: 'calc(4rem + env(safe-area-inset-top))',
+            paddingLeft: 'env(safe-area-inset-left)',
+            paddingRight:
+              'calc(var(--scrollbar-lock, 0px) + env(safe-area-inset-right))',
+          }}
           variants={containerVariants}
           initial="hidden"
           animate="visible"

@@ -42,9 +42,14 @@ export function SpaceNavRail() {
 
   return (
     <TooltipProvider delayDuration={200}>
+      {/* `pt-3 pb-[max(...)]`, not `py-3`: the left inset is handled once, on
+          `SpaceShell`'s outer row, since this rail and `#space-content` share
+          that edge — but the BOTTOM edge is this element's own, a flex
+          sibling `SpaceShell` never pads on its behalf. The floor matches
+          `nav-drawer.tsx`'s own bottom group for the same reason. */}
       <aside
         aria-label={t('navAriaLabel')}
-        className="hidden w-14 shrink-0 flex-col items-center gap-1 border-r border-border/50 bg-card py-3 lg:flex"
+        className="hidden w-14 shrink-0 flex-col items-center gap-1 border-r border-border/50 bg-card pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 lg:flex"
       >
         <Link
           href="/dashboard"

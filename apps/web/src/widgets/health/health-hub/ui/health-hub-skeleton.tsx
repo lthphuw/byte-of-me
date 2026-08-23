@@ -58,7 +58,10 @@ export function HealthHubSkeleton() {
         </div>
       </div>
 
-      <div className="shrink-0 border-t px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 lg:hidden">
+      {/* `pb-2` only, not `env(safe-area-inset-bottom)`: `SpaceShell`'s
+          `#space-content` already carries the inset for the whole column;
+          see the real component this mirrors. */}
+      <div className="shrink-0 border-t px-4 pb-2 pt-2 lg:hidden">
         <div className="mx-auto w-full max-w-4xl">
           <Skeleton aria-hidden className="h-14 w-full rounded-2xl" />
         </div>
