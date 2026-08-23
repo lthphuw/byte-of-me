@@ -24,7 +24,7 @@
     },
     "blogs": {
       "title": "Blog",
-      "description": "Blogs chia sẻ nhỏ về lập trình.",
+      "description": "Chia sẻ ngắn về lập trình và phát triển phần mềm.",
       "keywords": "Blog, Bài viết, Chia sẻ, Hướng dẫn, Lập trình"
     }
   },
@@ -33,7 +33,7 @@
     "userToggle": {
       "signOut": "Đăng xuất",
       "admin": "Admin",
-      "viewer": "Viewer",
+      "viewer": "Người xem",
       "openAccount": "Mở menu tài khoản"
     },
     "i18nToggle": {
@@ -90,7 +90,7 @@
   "notFound": {
     "pageNotFound404": "404 — Không tìm thấy trang",
     "oopsPageNotFound": "Rất tiếc! Trang không tồn tại",
-    "sorryWeCouldntFindThatPage": "Xin lỗi, chúng tôi không thể tìm thấy trang bạn yêu cầu",
+    "sorryWeCouldntFindThatPage": "Xin lỗi, tôi không thể tìm thấy trang bạn yêu cầu",
     "pleaseCheckTheUrlOrGoBackHome": "Vui lòng kiểm tra lại đường dẫn hoặc quay về trang chủ",
     "goBack": "Quay lại",
     "home": "Trang chủ",
@@ -124,7 +124,7 @@
       "skillsTechStack": "Công nghệ & kỹ năng"
     },
     "techStack": {
-      "frameworksTitle": "Frameworks",
+      "frameworksTitle": "Framework",
       "librariesTitle": "Thư viện",
       "programmingLanguagesTitle": "Ngôn ngữ lập trình",
       "databaseTitle": "Cơ sở dữ liệu"
@@ -146,7 +146,7 @@
     "noProjectsMatchYourSearch": "Không tìm thấy dự án nào khớp với bộ lọc của bạn.",
     "pageTitle": "Dự án",
     "count": "{count, plural, =0 {Chưa có dự án} other {# dự án}}",
-    "present": "Nay",
+    "present": "Hiện tại",
     "liveDemo": "Xem thử",
     "ongoing": "Đang làm",
     "completed": "Đã xong",
@@ -168,8 +168,8 @@
   "blogDetails": {
     "failedToLoadBlog": "Không thể tải bài viết",
     "blogNotFoundTitle": "Không tìm thấy bài viết",
-    "blogNotFoundDescription": "Rất tiếc, bài viết bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
-    "backToBlogs": "Quay lại danh sách blog",
+    "blogNotFoundDescription": "Rất tiếc, bài viết bạn đang tìm kiếm không tồn tại hoặc đã được di chuyển.",
+    "backToBlogs": "Quay lại danh sách bài viết",
     "goHome": "Về trang chủ",
     "relatedProject": "Dự án liên quan",
     "viewProject": "Xem dự án",
@@ -210,7 +210,7 @@
     "aboutTheAuthor": "Về tác giả"
   },
   "contact": {
-    "letsWorkTogether": "Cùng nhau hợp tác",
+    "letsWorkTogether": "Cùng hợp tác",
     "feelFreeToReachOutThroughAnyChannel": "Bạn có thể liên hệ với tôi qua bất kỳ kênh nào",
     "sendMeADirectMessage": "Để lại tin nhắn",
     "channels": {
@@ -261,7 +261,7 @@
     "viewAllProjects": "Xem tất cả dự án",
     "thereAreNoProjectsYet": "Hiện chưa có dự án nào",
     "haveAnIdeaInMind": "Bạn đang có một ý tưởng?",
-    "alwaysInterestedInThoughtfulProjectsAndGoodCollaboration": "Tôi luôn hứng thú với những dự án được đầu tư nghiêm túc và sự hợp tác chất lượng.",
+    "alwaysInterestedInThoughtfulProjectsAndGoodCollaboration": "Tôi luôn hứng thú với những dự án được đầu tư nghiêm túc và những mối hợp tác tốt đẹp.",
     "letsWorkTogether": "Cùng hợp tác",
     "emailMe": "Liên hệ qua email",
     "contactDetails": "Thông tin liên hệ"
@@ -278,7 +278,7 @@
     },
     "projectFilters": {
       "filters": "Bộ lọc",
-      "reset": "Thiết lập lại",
+      "reset": "Đặt lại",
       "seeMore": "Xem thêm",
       "searchProject": "Tìm kiếm dự án...",
       "tags": "Thẻ",
@@ -286,7 +286,7 @@
     },
     "blogFilters": {
       "filters": "Bộ lọc",
-      "reset": "Thiết lập lại",
+      "reset": "Đặt lại",
       "seeMore": "Xem thêm",
       "searchBlog": "Tìm kiếm bài viết...",
       "tags": "Thẻ"
@@ -312,7 +312,7 @@
       "groups": {
         "overview": "Tổng quan",
         "portfolio": "Nội dung Portfolio",
-        "resume": "Dữ liệu Resume",
+        "resume": "Dữ liệu CV",
         "configuration": "Cấu hình"
       },
       "items": {
@@ -328,7 +328,7 @@
         "tags": "Thẻ"
       },
       "actions": {
-        "clearCache": "Xóa Cache",
+        "clearCache": "Xóa cache",
         "viewSite": "Xem trang web",
         "signOut": "Đăng xuất",
         "cacheSuccess": "Hệ thống đã cập nhật",
@@ -351,7 +351,7 @@
       "sectionError": "Không tải được phần này. Tải lại trang để thử lại."
     },
     "contactGallery": {
-      "title": "Yêu cầu gần đây",
+      "title": "Tin nhắn gần đây",
       "description": "Tin nhắn trực tiếp từ biểu mẫu liên hệ trong hồ sơ của bạn.",
       "messageCount": "{count} tin nhắn",
       "searchPlaceholder": "Tìm kiếm tin nhắn...",
@@ -591,16 +591,16 @@
       }
     },
     "media": {
-      "title": "Thư viện Media",
+      "title": "Thư viện",
       "description": "Nơi lưu trữ tập trung hình ảnh và banner cho portfolio của bạn.",
-      "addButton": "Thêm Media",
+      "addButton": "Thêm media",
       "empty": {
         "title": "Chưa có media nào",
         "description": "Thư viện của bạn đang trống. Hãy tải lên hình ảnh đầu tiên để bắt đầu."
       },
       "dialog": {
-        "uploadTitle": "Tải lên Media",
-        "deleteTitle": "Xóa Media",
+        "uploadTitle": "Tải lên media",
+        "deleteTitle": "Xóa media",
         "deleteDescription": "Thao tác này sẽ xóa vĩnh viễn tệp media này. Hành động này không thể hoàn tác."
       },
       "picker": {
@@ -608,7 +608,7 @@
         "uploadButton": "Tải lên",
         "uploadAssetsTitle": "Tải lên tệp",
         "clearAll": "Xóa tất cả",
-        "selectMedia": "Chọn Media",
+        "selectMedia": "Chọn media",
         "selectedCount": "Đã chọn {count}",
         "moreCount": "+ {count} nữa",
         "clickToManage": "Nhấp để quản lý",
@@ -638,7 +638,7 @@
       "compression": {
         "trigger": "Nén ảnh",
         "title": "Nén hình ảnh",
-        "description": "Áp dụng cho mọi lượt tải lên — thư viện media và hình ảnh dán vào văn bản định dạng.",
+        "description": "Áp dụng cho mọi lượt tải lên — thư viện media và hình ảnh dán vào trình soạn thảo.",
         "saving": "Đang lưu…",
         "saved": "Đã lưu",
         "saveError": "Lưu thất bại",
@@ -721,13 +721,13 @@
       "markdown": {
         "format": "Dọn dẹp markdown",
         "formatted": "Đã dọn dẹp markdown.",
-        "alreadyClean": "Markdown đã gọn sẵn rồi."
+        "alreadyClean": "Markdown đã gọn gàng rồi."
       },
       "relabel": {
-        "prompt": "{count, plural, other {# note còn đang hiện tên cũ}}.",
+        "prompt": "{count, plural, other {# ghi chú còn đang hiện tên cũ}}.",
         "confirm": "Cập nhật nhãn",
-        "done": "{count, plural, other {Đã cập nhật # note}}.",
-        "failed": "Không cập nhật được nhãn link"
+        "done": "{count, plural, other {Đã cập nhật # ghi chú}}.",
+        "failed": "Không cập nhật được nhãn liên kết"
       },
       "properties": {
         "title": "Thuộc tính",
@@ -976,7 +976,7 @@
         "signOut": "Đăng xuất"
       },
       "hub": {
-        "greeting": "Chào mừng trở lại, {name}",
+        "greeting": "Mừng bạn quay lại, {name}",
         "subtitle": "Không gian làm việc riêng tư của bạn",
         "stats": {
           "ariaLabel": "Thống kê không gian làm việc",
@@ -1010,7 +1010,7 @@
         "saving": "Đang lưu…",
         "saved": "Đã lưu",
         "saveError": "Không lưu được",
-        "closeWhileRunning": "Một tác vụ bảo trì vẫn đang chạy. Đóng bây giờ sẽ dừng tác vụ và bỏ toàn bộ tiến trình đã chạy.",
+        "closeWhileRunning": "Một tác vụ bảo trì vẫn đang chạy. Đóng bây giờ sẽ dừng tác vụ và bỏ toàn bộ tiến độ đã đạt được.",
         "closeAnyway": "Vẫn đóng",
         "groups": {
           "appearance": "Trình bày",
@@ -1038,7 +1038,7 @@
           },
           "readableLineLength": {
             "label": "Giới hạn bề rộng dòng",
-            "description": "Chặn bề ngang cột viết để một dòng đủ ngắn cho dễ đọc. Tắt đi để dùng hết bề rộng khung."
+            "description": "Giới hạn bề ngang cột viết để một dòng đủ ngắn cho dễ đọc. Tắt đi để dùng hết bề rộng khung."
           }
         },
         "editing": {
@@ -1066,47 +1066,47 @@
         },
         "links": {
           "updateOnRename": {
-            "label": "Cập nhật nhãn link khi đổi tên",
-            "description": "Khi bạn đổi tên một note, các link ở note khác còn đang hiện tên cũ sẽ được xử lý thế nào.",
+            "label": "Cập nhật nhãn liên kết khi đổi tên",
+            "description": "Khi bạn đổi tên một ghi chú, các liên kết ở ghi chú khác còn đang hiện tên cũ sẽ được xử lý thế nào.",
             "options": {
               "always": "Luôn cập nhật",
               "ask": "Hỏi tôi",
               "never": "Không bao giờ"
             },
-            "note": "Chỉ chữ hiển thị bị đổi, và chỉ ở những chỗ nó còn là bản sao chính xác của tiêu đề cũ — nhãn bạn tự viết được giữ nguyên. Link không bao giờ gãy: nó trỏ theo id của note, không theo tên."
+            "note": "Chỉ chữ hiển thị bị đổi, và chỉ ở những chỗ nó còn là bản sao chính xác của tiêu đề cũ — nhãn bạn tự viết được giữ nguyên. Liên kết không bao giờ gãy: nó trỏ theo id của ghi chú, không theo tên."
           }
         },
         "maintenance": {
           "intro": "Các việc quét toàn kho. Mỗi việc chạy theo lô ở nền, báo tiến độ thật, và dừng được bất cứ lúc nào — phần đã xử lý vẫn giữ nguyên.",
           "run": "Chạy",
           "cancel": "Dừng",
-          "progress": "{processed, number}/{total, number} note",
-          "cancelled": "Đã dừng sau {processed, number} note.",
-          "failed": "Việc chạy thất bại",
+          "progress": "{processed, number}/{total, number} ghi chú",
+          "cancelled": "Đã dừng sau {processed, number} ghi chú.",
+          "failed": "Tác vụ thất bại",
           "confirmRun": "Vâng, cứ chạy",
-          "confirmDismiss": "Giữ nguyên note của tôi",
+          "confirmDismiss": "Giữ nguyên ghi chú của tôi",
           "jobs": {
             "pastedFormatting": {
               "title": "Xoá định dạng dán từ nơi khác vào",
-              "description": "Ghi lại toàn bộ note, bỏ màu chữ, màu tô nền, độ rộng cột chép theo bảng gốc, và kiểu link mang theo từ trang khác. Mọi thứ có ý nghĩa đều được giữ: bảng, hàng tiêu đề, ô gộp, danh sách, link và nơi nó trỏ tới, khối mã, tiêu đề, chữ đậm, chữ nghiêng và chữ gạch ngang.",
-              "warning": "Không hoàn tác được. Màu bạn tự chọn được lưu y hệt màu đi kèm khi dán, nên việc này xoá cả hai, trong mọi note. Sau khi đã xảy ra thì không có gì phân biệt được nữa, và cũng không có cách nào phục hồi — hãy xuất ra trước những gì bạn còn cần.",
-              "result": "{count, plural, =0 {Đã xem {examined, number} note. Không note nào mang định dạng dán vào.} other {Đã xem {examined, number} note và ghi lại # note.}}"
+              "description": "Ghi lại toàn bộ ghi chú, bỏ màu chữ, màu tô nền, độ rộng cột chép theo bảng gốc, và kiểu liên kết mang theo từ trang khác. Mọi thứ có ý nghĩa đều được giữ: bảng, hàng tiêu đề, ô gộp, danh sách, liên kết và nơi nó trỏ tới, khối mã, tiêu đề, chữ đậm, chữ nghiêng và chữ gạch ngang.",
+              "warning": "Không hoàn tác được. Màu bạn tự chọn được lưu y hệt màu đi kèm khi dán, nên việc này xoá cả hai, trong mọi ghi chú. Sau khi đã xảy ra thì không có gì phân biệt được nữa, và cũng không có cách nào phục hồi — hãy xuất ra trước những gì bạn còn cần.",
+              "result": "{count, plural, =0 {Đã xem {examined, number} ghi chú. Không ghi chú nào mang định dạng dán vào.} other {Đã xem {examined, number} ghi chú và ghi lại # ghi chú.}}"
             },
             "staleLinks": {
-              "title": "Tìm link còn hiện tên cũ",
-              "description": "Liệt kê những link có nhãn không còn khớp tiêu đề của note nó trỏ tới. Chỉ báo cáo, không sửa gì — vì nhãn bạn tự viết và nhãn sót lại sau một lần đổi tên là không phân biệt được.",
-              "result": "{count, plural, =0 {Không có nhãn nào lệch.} other {# link đang hiện tên khác.}}",
+              "title": "Tìm liên kết còn hiện tên cũ",
+              "description": "Liệt kê những liên kết có nhãn không còn khớp tiêu đề của ghi chú nó trỏ tới. Chỉ báo cáo, không sửa gì — vì nhãn bạn tự viết và nhãn sót lại sau một lần đổi tên là không phân biệt được.",
+              "result": "{count, plural, =0 {Không có nhãn nào lệch.} other {# liên kết đang hiện tên khác.}}",
               "row": "đang hiện “{label}”, nay là “{title}”"
             },
             "linkGraph": {
-              "title": "Dựng lại đồ thị link",
-              "description": "Tính lại note nào liên kết tới note nào, dựa thẳng vào nội dung tài liệu. Đây là thứ trang Graph và panel Liên kết đọc từ đó.",
-              "result": "{count, plural, =0 {Mọi thứ vốn đã đúng.} other {Đã sửa # note.}}"
+              "title": "Dựng lại đồ thị liên kết",
+              "description": "Tính lại ghi chú nào liên kết tới ghi chú nào, dựa thẳng vào nội dung tài liệu. Đây là thứ trang Graph và panel Liên kết đọc từ đó.",
+              "result": "{count, plural, =0 {Mọi thứ vốn đã đúng.} other {Đã sửa # ghi chú.}}"
             },
             "searchIndex": {
               "title": "Dựng lại chỉ mục tìm kiếm",
-              "description": "Tính lại bản văn bản thuần của từng note mà tìm kiếm chạy trên đó. Chỉ ghi những note thật sự khác, nên không làm xáo thứ tự “cập nhật gần đây”.",
-              "result": "{count, plural, =0 {Mọi thứ vốn đã đúng.} other {Đã sửa # note.}}"
+              "description": "Tính lại bản văn bản thuần của từng ghi chú mà tìm kiếm chạy trên đó. Chỉ ghi những ghi chú thật sự khác, nên không làm xáo thứ tự “cập nhật gần đây”.",
+              "result": "{count, plural, =0 {Mọi thứ vốn đã đúng.} other {Đã sửa # ghi chú.}}"
             }
           }
         }
@@ -1134,14 +1134,14 @@
         "endDateLabel": "Ngày kết thúc",
         "githubLinkLabel": "Liên kết GitHub",
         "githubLinkPlaceholder": "https://github.com/...",
-        "liveLinkLabel": "Link demo",
+        "liveLinkLabel": "Liên kết demo",
         "liveLinkPlaceholder": "https://...",
         "publishedLabel": "Đã xuất bản",
         "techStackLabel": "Công nghệ sử dụng",
         "techStackPlaceholder": "Chọn công nghệ",
         "tagsLabel": "Thẻ",
         "tagsPlaceholder": "Chọn thẻ",
-        "translationsLabel": "Nội dung đa ngôn ngữ",
+        "translationsLabel": "Bản dịch nội dung",
         "titleLabel": "Tiêu đề",
         "descriptionLabel": "Mô tả",
         "descriptionPlaceholder": "Dự án này là gì và làm được điều gì…",
@@ -1239,7 +1239,7 @@
       "saveButton": "Lưu",
       "reset": {
         "confirmTitle": "Bỏ các thay đổi chưa lưu?",
-        "confirmDescription": "Mọi chỉnh sửa của bạn, ở tất cả các ngôn ngữ, sẽ được hoàn về hồ sơ đã lưu gần nhất.",
+        "confirmDescription": "Mọi chỉnh sửa của bạn, ở tất cả các ngôn ngữ, sẽ được khôi phục về hồ sơ đã lưu gần nhất.",
         "confirmAction": "Bỏ thay đổi"
       },
       "translations": {
@@ -1254,7 +1254,7 @@
       },
       "commonInfo": {
         "heading": "Thông tin chung",
-        "description": "Thiết lập hồ sơ tổng quát",
+        "description": "Cài đặt hồ sơ chung",
         "birthdateLabel": "Ngày sinh"
       },
       "identity": {
@@ -1353,7 +1353,7 @@
         "qualityClear": "Không chấm chất lượng",
         "factors": "Yếu tố ảnh hưởng",
         "freeDay": "Hôm nay được nghỉ",
-        "latency": "Thời gian để ngủ được",
+        "latency": "Thời gian vào giấc",
         "awakenings": "Số phút thức giấc",
         "note": "Ghi chú",
         "save": "Lưu",
@@ -1362,18 +1362,18 @@
         "statsAriaLabel": "Thống kê giấc ngủ",
         "recentWindow": "{days, number} đêm gần nhất",
         "efficiency": "Hiệu suất",
-        "bedtimeSd": "Độ lệch giờ ngủ",
-        "waketimeSd": "Độ lệch giờ dậy",
-        "debt": "Nợ ngủ",
+        "bedtimeSd": "Giờ ngủ xê dịch",
+        "waketimeSd": "Giờ dậy xê dịch",
+        "debt": "Thiếu ngủ tích luỹ",
         "streak": "Chuỗi ngày",
         "durationChart": "Thời lượng ngủ, 14 ngày gần nhất",
         "durationSummary": "Thời lượng ngủ mỗi đêm theo giờ trong 14 ngày gần nhất",
-        "efficiencyUnavailable": "Nhập thời gian để ngủ được hoặc số phút thức giấc để xem hiệu suất",
-        "debtCaveat": "Ước lượng luân phiên 14 ngày, không phải chỉ số y khoa",
+        "efficiencyUnavailable": "Nhập thời gian vào giấc hoặc số phút thức giấc để xem hiệu suất",
+        "debtCaveat": "Ước lượng trên 14 ngày gần nhất, không phải chỉ số y khoa",
         "noHistory": "Chưa có gì — hãy lưu đêm đầu tiên ở trên.",
         "regularity": "Độ đều đặn",
         "sri": "Chỉ số đều đặn (SRI)",
-        "sriCaveat": "Tính từ giờ nhập tay nên cao hơn số của một thiết bị đeo: nó không thấy giấc ngủ ngắn ban ngày, và không biết số phút thức giấc rơi vào lúc nào. Hai chỉ số độ lệch bên dưới không giả định gì cả.",
+        "sriCaveat": "Tính từ giờ nhập tay nên cao hơn số của thiết bị đeo: nó không thấy giấc ngủ ngắn ban ngày, và không biết số phút thức giấc rơi vào lúc nào. Hai con số xê dịch bên dưới cũng không tính đến những điều đó.",
         "socialJetlag": "Lệch múi giờ xã hội",
         "socialJetlagHint": "Điểm giữa giấc ngủ xê dịch bao nhiêu giữa ngày làm và ngày nghỉ",
         "chronotype": "Kiểu ngủ (MSFsc)",
@@ -1387,7 +1387,7 @@
         "overTarget": "Vượt mục tiêu {hours, number} giờ {minutes, number} phút",
         "underTarget": "Thiếu {hours, number} giờ {minutes, number} phút so với mục tiêu",
         "onTarget": "Đạt mục tiêu",
-        "durationPending": "Hãy nhập cả hai giờ",
+        "durationPending": "Nhập đủ hai mốc giờ",
         "qualityLevel1": "Rất tệ",
         "qualityLevel2": "Chập chờn",
         "qualityLevel3": "Tạm ổn",
@@ -1395,9 +1395,9 @@
         "qualityLevel5": "Rất ngon giấc",
         "qualityNone": "Chưa chấm",
         "details": "Chi tiết",
-        "detailsSummary": "Thời gian để ngủ được, số phút thức giấc, yếu tố ảnh hưởng, ghi chú",
-        "detailsEfficiencyHint": "Thời gian để ngủ được và số phút thức giấc là hai số liệu để tính ra hiệu suất.",
-        "detailsFilled": "Đã điền {n, number}",
+        "detailsSummary": "Thời gian vào giấc, số phút thức giấc, yếu tố ảnh hưởng, ghi chú",
+        "detailsEfficiencyHint": "Có thời gian vào giấc và số phút thức giấc thì mới tính được hiệu suất.",
+        "detailsFilled": "Đã điền {n, number} mục",
         "efficiencyContext": "Trên tổng thời gian nằm trên giường",
         "streakContext": "Đã ghi {n, number} trong {total, number} đêm gần nhất",
         "today": "Hôm nay",
@@ -1411,7 +1411,7 @@
         "selectDay": "Chọn một đêm",
         "prevMonth": "Tháng trước",
         "nextMonth": "Tháng sau",
-        "calendarQualityKey": "Khuôn mặt là cảm giác của ngày hôm đó",
+        "calendarQualityKey": "Khuôn mặt cho biết ngày hôm đó thế nào",
         "calendarEntryKey": "Chấm nhỏ là ngày bạn đã viết",
         "monthSummary": "{monthLabel} qua các con số",
         "monthEmpty": "Chưa ghi đêm nào trong tháng này.",
@@ -1489,8 +1489,8 @@
       },
       "metrics": {
         "weight_reps": "Mức tạ × số lần",
-        "bodyweight_reps": "Số lần tay không",
-        "weighted_bodyweight": "Tay không + tạ thêm",
+        "bodyweight_reps": "Số lần bodyweight",
+        "weighted_bodyweight": "Bodyweight + tạ thêm",
         "time": "Thời gian"
       },
       "muscles": {
@@ -1517,7 +1517,7 @@
         "dumbbell": "Tạ tay",
         "machine": "Máy tập",
         "cable": "Cáp kéo",
-        "bodyweight": "Tay không",
+        "bodyweight": "Không dụng cụ",
         "kettlebell": "Tạ ấm",
         "band": "Dây kháng lực"
       },
@@ -1541,7 +1541,7 @@
         "resume": "Tiếp tục",
         "startedAt": "Bắt đầu lúc {time}",
         "exerciseCount": "{n, number} bài tập",
-        "setCount": "{n, number} hiệp",
+        "setCount": "{n, number} set",
         "history": "Lịch sử",
         "historyAriaLabel": "Lịch sử buổi tập",
         "noHistory": "Chưa ghi buổi tập nào.",
@@ -1558,15 +1558,15 @@
       },
       "workout": {
         "live": {
-          "logSet": "Ghi hiệp",
+          "logSet": "Ghi set",
           "exerciseOf": "{index, number} trên {total, number}",
           "switchExercise": "Các bài tập",
           "switchExerciseHint": "Chuyển nhanh tới bất kỳ bài tập nào trong buổi này.",
           "screenAwake": "Màn hình luôn sáng",
           "setUnsynced": "chưa lưu lên máy chủ",
           "unsyncedCount": "{n, number} chưa đồng bộ",
-          "unsyncedTitle": "Vẫn còn hiệp chưa được lưu",
-          "unsyncedHint": "{n, number} hiệp đang nằm trên điện thoại và chưa lên máy chủ. Chúng sẽ tự gửi ngay khi có mạng trở lại, nhưng chỉ khi buổi tập này còn mở — rời đi lúc này sẽ hoãn việc đó tới lần mở sau.",
+          "unsyncedTitle": "Vẫn còn set chưa được lưu",
+          "unsyncedHint": "{n, number} set đang nằm trên điện thoại và chưa lên máy chủ. Chúng sẽ tự gửi ngay khi có mạng trở lại, nhưng chỉ khi buổi tập này còn mở — rời đi lúc này sẽ hoãn việc đó tới lần mở sau.",
           "leaveAnyway": "Vẫn rời đi",
           "restRemaining": "Nghỉ",
           "restOver": "Hết giờ nghỉ",
@@ -1585,12 +1585,12 @@
           "unitReps": "lần",
           "unitSeconds": "giây",
           "unitRpe": "0–10",
-          "workingSets": "Hiệp chính",
-          "totalSets": "Tổng cộng {n, number} hiệp",
+          "workingSets": "Set chính",
+          "totalSets": "Tổng cộng {n, number} set",
           "volume": "Khối lượng",
           "volumeKg": "{kg, number} kg",
           "addedVolumeKg": "+{kg, number} kg tạ thêm",
-          "topSets": "Hiệp nặng nhất mỗi bài",
+          "topSets": "Set nặng nhất mỗi bài",
           "topSetValue": "{weight, number} kg × {reps, number}",
           "e1rm": "e1RM {kg, number} kg"
         },
@@ -1605,23 +1605,23 @@
         "moveUp": "Chuyển lên",
         "moveDown": "Chuyển xuống",
         "reordered": "Đã lưu thứ tự",
-        "sets": "Các hiệp",
-        "noSets": "Chưa có hiệp nào.",
-        "addSet": "Thêm hiệp",
-        "editSet": "Sửa hiệp",
-        "setNumber": "Hiệp {n, number}",
-        "setSaved": "Đã lưu hiệp",
-        "setDeleted": "Đã xoá hiệp",
-        "deleteSet": "Xoá hiệp",
-        "warmup": "Hiệp khởi động",
+        "sets": "Các set",
+        "noSets": "Chưa có set nào.",
+        "addSet": "Thêm set",
+        "editSet": "Sửa set",
+        "setNumber": "Set {n, number}",
+        "setSaved": "Đã lưu set",
+        "setDeleted": "Đã xoá set",
+        "deleteSet": "Xoá set",
+        "warmup": "Set khởi động",
         "warmupShort": "Khởi động",
-        "warmupHint": "Hiệp khởi động không tính vào tổng khối lượng hay kỷ lục cá nhân.",
+        "warmupHint": "Set khởi động không tính vào tổng khối lượng hay kỷ lục cá nhân.",
         "reps": "Số lần",
         "weight": "Mức tạ (kg)",
         "addedWeight": "Tạ thêm (kg)",
         "durationSec": "Thời lượng (giây)",
         "rpe": "RPE",
-        "rpeHint": "Từ 0 đến 10, bước nửa điểm. Không bắt buộc.",
+        "rpeHint": "Từ 0 đến 10, mỗi nấc nửa điểm. Không bắt buộc.",
         "save": "Lưu",
         "saving": "Đang lưu…",
         "setWeightReps": "{weight, number} kg × {reps, number}",
@@ -1644,21 +1644,21 @@
         "rpeLevel2": "Nhẹ",
         "rpeLevel3": "Vừa",
         "rpeLevel4": "Hơi nặng",
-        "rpeLevel5": "Nặng",
-        "rpeLevel6": "Khá nặng",
+        "rpeLevel5": "Khá nặng",
+        "rpeLevel6": "Nặng",
         "rpeLevel7": "Rất nặng",
         "rpeLevel8": "Cực nặng",
         "rpeLevel9": "Gần tối đa",
         "rpeLevel10": "Tối đa",
         "deleteWorkout": "Xoá buổi tập",
         "deleteWorkoutTitle": "Xoá buổi tập này?",
-        "deleteWorkoutHint": "Các bài tập và mọi hiệp trong đó sẽ mất theo. Không thể hoàn tác.",
+        "deleteWorkoutHint": "Các bài tập và mọi set trong đó sẽ mất theo. Không thể hoàn tác.",
         "deleted": "Đã xoá buổi tập",
         "loading": "Đang tải buổi tập…",
         "moveUpNamed": "Chuyển {name} lên",
         "moveDownNamed": "Chuyển {name} xuống",
         "removeExerciseNamed": "Bỏ {name}",
-        "addSetNamed": "Thêm một hiệp cho {name}",
+        "addSetNamed": "Thêm một set cho {name}",
         "cancel": "Huỷ"
       },
       "exercises": {
@@ -1679,7 +1679,7 @@
         "secondaryMuscles": "Nhóm cơ phụ",
         "secondaryHint": "Không bắt buộc. Bộ lọc nhóm cơ không đọc phần này.",
         "equipment": "Dụng cụ",
-        "metric": "Một hiệp ghi lại gì",
+        "metric": "Mỗi set ghi lại gì",
         "save": "Lưu",
         "saving": "Đang lưu…",
         "created": "Đã thêm bài tập",
@@ -1711,17 +1711,17 @@
         "name": "Tên",
         "namePlaceholder": "Ngày đẩy",
         "notes": "Ghi chú",
-        "notesPlaceholder": "Buổi tập này chạy như thế nào",
+        "notesPlaceholder": "Buổi tập này định tập thế nào",
         "items": "Bài tập",
         "addItem": "Thêm bài tập",
         "noItems": "Chưa có bài tập nào.",
         "targets": "Mục tiêu",
-        "targetSets": "Số hiệp",
+        "targetSets": "Số set",
         "targetRepsLow": "Số lần từ",
         "targetRepsHigh": "Số lần đến",
         "targetRpe": "RPE",
         "restSec": "Nghỉ (giây)",
-        "summarySets": "{n, number} hiệp",
+        "summarySets": "{n, number} set",
         "summaryReps": "{low, number}–{high, number} lần",
         "summaryRepsExact": "{n, number} lần",
         "summaryRpe": "RPE {value, number}",
@@ -1729,7 +1729,7 @@
         "noTargets": "Chưa đặt mục tiêu",
         "moveUp": "Chuyển lên",
         "moveDown": "Chuyển xuống",
-        "remove": "Bỏ ra",
+        "remove": "Bỏ",
         "save": "Lưu",
         "saving": "Đang lưu…",
         "created": "Đã tạo giáo án",
@@ -1758,7 +1758,7 @@
         "back": "Quay lại phòng tập",
         "loading": "Đang tải thống kê phòng tập…",
         "windowSummary": "{days, number} ngày gần nhất · {sessions, number} buổi tập đã kết thúc",
-        "empty": "Không có buổi tập nào đã kết thúc trong {days, number} ngày gần nhất. Thống kê chỉ bắt đầu khi một buổi tập được kết thúc — buổi đang mở thì vẫn còn đang được ghi.",
+        "empty": "Không có buổi tập nào đã kết thúc trong {days, number} ngày gần nhất. Thống kê chỉ bắt đầu khi một buổi tập được kết thúc — buổi đang mở thì vẫn đang ghi dở.",
         "kgValue": "{value, number} kg",
         "loadValue": "{value, number} AU",
         "ratioValue": "{value, number}",
@@ -1768,36 +1768,36 @@
         "weekEnding": "Tuần đến {day}",
         "sessionsLabel": "{n, number} buổi",
         "volumeTitle": "Khối lượng tạ theo tuần",
-        "volumeSummary": "Tổng tạ nâng của các set chính thức dạng tạ × số lần, theo tuần",
-        "volumeNote": "Chỉ tính set chính thức và chỉ tính dạng tạ × số lần. Bài tập với trọng lượng cơ thể hay tính theo thời gian vẫn là tập thật nhưng không tạo ra tổng tạ, nên không nằm trong con số này.",
+        "volumeSummary": "Tổng tạ nâng của các set chính dạng tạ × số lần, theo tuần",
+        "volumeNote": "Chỉ tính set chính và chỉ tính dạng tạ × số lần. Bài tập với trọng lượng cơ thể hay tính theo thời gian vẫn là tập thật nhưng không tạo ra tổng tạ, nên không nằm trong con số này.",
         "loadTitle": "Tải tập luyện theo tuần",
         "loadSummary": "Tải theo RPE buổi tập của Foster — RPE nhân thời lượng — theo tuần",
         "loadNote": "RPE buổi tập × thời lượng, theo đơn vị quy ước. Tuần không có cột là tuần chưa xác định được tải, không phải tuần không tập.",
-        "loadUnknown": "{n, number} trong {total, number} buổi tập của {days, number} ngày gần nhất không ghi RPE buổi tập hoặc không có giờ kết thúc. Tải của chúng là chưa biết, không phải bằng không, nên bị để ra ngoài.",
+        "loadUnknown": "{n, number} trong {total, number} buổi tập của {days, number} ngày gần nhất không ghi RPE buổi tập hoặc không có giờ kết thúc. Tải của chúng là chưa biết, không phải bằng không, nên không được tính vào.",
         "loadNoneKnown": "Không buổi nào trong {n, number} buổi của {days, number} ngày gần nhất ghi đủ cả RPE buổi tập lẫn giờ kết thúc, nên không có tải nào để cộng.",
         "musclesTitle": "Set nặng theo nhóm cơ, {days, number} ngày gần nhất",
         "musclesSummary": "Số set nặng tính cho từng nhóm cơ trong {days, number} ngày gần nhất",
-        "musclesEmpty": "Không có set chính thức nào trong {days, number} ngày gần nhất.",
+        "musclesEmpty": "Không có set chính nào trong {days, number} ngày gần nhất.",
         "bandLegend": "Dải tô đậm là {low, number}–{high, number} set nặng mỗi tuần, khoảng thường được dẫn cho phát triển cơ bắp (Schoenfeld).",
-        "secondaryCreditNote": "Mỗi set chính thức tính 1 cho nhóm cơ chính và {credit, number} cho từng nhóm cơ phụ. Con số {credit, number} đó là quy ước của dự án này, không phải hằng số của tự nhiên — các hướng dẫn đã công bố đếm set theo cách khác, nên những tổng này chỉ đặt cạnh dải chứ không được đo bằng dải.",
-        "acwrTitle": "Tải cấp tính : mạn tính",
+        "secondaryCreditNote": "Mỗi set chính tính 1 cho nhóm cơ chính và {credit, number} cho từng nhóm cơ phụ. Con số {credit, number} đó là quy ước của dự án này, không phải hằng số của tự nhiên — các hướng dẫn đã công bố đếm set theo cách khác, nên những tổng này chỉ đặt cạnh dải chứ không được đo bằng dải.",
+        "acwrTitle": "Tải cấp tính:mạn tính (ACWR)",
         "acwrContext": "{acute, number} AU trong {acuteDays, number} ngày so với {chronic, number} AU trong {chronicDays, number} ngày",
         "acwrBandLegend": "Dải tô đậm là {low, number}–{high, number}, khoảng thường được dẫn; vạch mảnh đánh dấu {elevated, number}, trên mức đó tỉ số thường bị gọi là cao.",
-        "acwrCaveat": "Tỉ số này bị phê phán nhiều về mặt thống kê. Cửa sổ 7 ngày nằm bên trong cửa sổ 28 ngày, nên hai vế tự tương quan ngay từ cách dựng, và “vùng an toàn” từng được công bố không còn đứng vững khi phân tích lại có kiểm soát hiện tượng đó cùng với việc một tỉ số bị ràng buộc vào chính mẫu số của nó (Impellizzeri và cộng sự). Hãy đọc nó như một lời nhắc xem lại một tuần lệch hẳn so với tháng trước đó — đừng bao giờ coi là chẩn đoán.",
+        "acwrCaveat": "Tỉ số này bị phê phán nhiều về mặt thống kê. Khoảng 7 ngày nằm gọn trong khoảng 28 ngày, nên hai vế tự tương quan ngay từ cách dựng, và “vùng an toàn” từng được công bố không còn đứng vững khi phân tích lại có kiểm soát hiện tượng đó cùng với việc một tỉ số bị ràng buộc vào chính mẫu số của nó (Impellizzeri và cộng sự). Hãy đọc nó như một lời nhắc xem lại một tuần lệch hẳn so với tháng trước đó — đừng bao giờ coi là chẩn đoán.",
         "acwrNeedsSessions": "Cần {min, number} buổi tập có đủ RPE buổi tập và giờ kết thúc trong {days, number} ngày gần nhất. Hiện mới có {known, number}.",
         "acwrNeedsSessionsPartial": "Cần {min, number} buổi tập có đủ RPE buổi tập và giờ kết thúc trong {days, number} ngày gần nhất. Hiện mới có {known, number}, và {unknown, number} buổi nữa còn thiếu một trong hai.",
         "acwrNoLoad": "Mọi buổi tập trong {days, number} ngày gần nhất cộng lại thành tải bằng không, nên không có tỉ số nào để tính.",
         "progressionTitle": "Tiến bộ",
         "progressionEmpty": "Không có bài tập dạng tạ × số lần nào được tập trong khoảng này, nên chưa có ước tính 1RM để vẽ.",
-        "progressionMore": "Còn {n, number} bài tập khác có ước tính nhưng không được vẽ ở đây. Mở từng bài từ danh mục.",
+        "progressionMore": "Còn {n, number} bài tập khác có ước tính nhưng không được vẽ ở đây. Mở một bài từ danh mục.",
         "e1rmChartTitle": "1RM ước tính",
         "e1rmChartSummary": "1RM ước tính đáng tin cậy cao nhất mỗi ngày tập của {name}",
         "recordRow": "{day} (kỷ lục)",
         "recordsLegend": "Điểm có vòng tròn là điểm vượt mọi điểm trước đó trong khoảng này: {days}.",
         "noRecordsInWindow": "Không buổi nào trong khoảng này vượt được tất cả các buổi trước.",
         "unreliableSkipped": "{n, number} buổi chỉ tạo ra ước tính từ những set trên {reps, number} lần, ngưỡng mà công thức Epley hết đáng tin. Chúng không được vẽ và không thể lập kỷ lục.",
-        "unreliableOnly": "Đã tập {n, number} lần trong khoảng này, nhưng mọi set chính thức đều trên {reps, number} lần, ngưỡng mà ước tính Epley hết đáng tin. Không vẽ gì, và không set nào lập được kỷ lục.",
-        "noEstimates": "Không set chính thức nào trong khoảng này ghi đủ cả mức tạ lẫn số lần, nên không có ước tính để vẽ.",
+        "unreliableOnly": "Đã tập {n, number} lần trong khoảng này, nhưng mọi set chính đều trên {reps, number} lần, ngưỡng mà ước tính Epley hết đáng tin. Không vẽ gì, và không set nào lập được kỷ lục.",
+        "noEstimates": "Không set chính nào trong khoảng này ghi đủ cả mức tạ lẫn số lần, nên không có ước tính để vẽ.",
         "slopeValue": "{value, number} kg mỗi buổi, tính trên {n, number} buổi gần nhất",
         "slopeFlat": "Đi ngang trong {n, number} buổi gần nhất",
         "slopeUnavailable": "Cần {min, number} buổi có ước tính đáng tin cậy thì xu hướng mới có ý nghĩa. Hiện mới có {n, number}.",
@@ -1813,20 +1813,20 @@
         "kgValue": "{value, number} kg",
         "notApplicable": "1RM ước tính chỉ áp dụng cho bài tập dạng tạ × số lần. Bài này ghi theo {metric}, nên không có ước tính và không có kỷ lục nào để hiện.",
         "neverTrained": "Chưa tập trong {days, number} ngày gần nhất.",
-        "everySetUnreliable": "Đã tập {n, number} lần trong khoảng này, nhưng mọi set chính thức đều trên {reps, number} lần, ngưỡng mà ước tính Epley hết đáng tin. Không vẽ gì, và không set nào lập được kỷ lục.",
-        "noEstimates": "Không set chính thức nào trong khoảng này ghi đủ cả mức tạ lẫn số lần, nên không có ước tính để vẽ.",
+        "everySetUnreliable": "Đã tập {n, number} lần trong khoảng này, nhưng mọi set chính đều trên {reps, number} lần, ngưỡng mà ước tính Epley hết đáng tin. Không vẽ gì, và không set nào lập được kỷ lục.",
+        "noEstimates": "Không set chính nào trong khoảng này ghi đủ cả mức tạ lẫn số lần, nên không có ước tính để vẽ.",
         "unreliableSkipped": "{n, number} buổi chỉ tạo ra ước tính từ những set trên {reps, number} lần, ngưỡng mà công thức Epley hết đáng tin. Chúng không được vẽ và không thể lập kỷ lục.",
         "recordsTitle": "Tốt nhất trong {days, number} ngày gần nhất",
         "heaviest": "Set nặng nhất",
         "heaviestValue": "{weight, number} kg × {reps, number}",
-        "heaviestNone": "Không set chính thức nào trong {days, number} ngày gần nhất ghi đủ cả mức tạ lẫn số lần.",
+        "heaviestNone": "Không set chính nào trong {days, number} ngày gần nhất ghi đủ cả mức tạ lẫn số lần.",
         "bestE1rm": "1RM ước tính cao nhất",
-        "bestE1rmContext": "Từ {weight, number} kg × {reps, number} ngày {day}",
-        "bestE1rmNone": "Không set chính thức nào trong {days, number} ngày gần nhất tạo ra ước tính dưới ngưỡng số lần đáng tin.",
+        "bestE1rmContext": "Từ {weight, number} kg × {reps, number} vào ngày {day}",
+        "bestE1rmNone": "Không set chính nào trong {days, number} ngày gần nhất tạo ra ước tính dưới ngưỡng số lần đáng tin.",
         "recordsWindowNote": "Đây là mức tốt nhất trong {days, number} ngày gần nhất, không phải mọi thời gian. Mọi truy vấn trong phần này đều bị giới hạn để không quét toàn bộ lịch sử.",
         "sessionsTitle": "Các buổi gần đây",
         "sessionsCap": "{n, number} buổi gần nhất có bài tập này.",
-        "sessionVolume": "{value, number} kg khối lượng",
+        "sessionVolume": "Khối lượng {value, number} kg",
         "openSession": "Mở {title}",
         "setE1rm": "1RM ≈ {value, number} kg",
         "setE1rmUnreliable": "1RM ~{value, number} kg",
@@ -1904,7 +1904,7 @@
       "title": "Bạn được chia sẻ một ghi chú",
       "description": "{owner} đã chia sẻ \"{title}\" với bạn. Đăng nhập bằng chính địa chỉ email này để mở.",
       "button": "Mở ghi chú",
-      "ignore": "Nếu bạn không chờ email này, hãy bỏ qua nó."
+      "ignore": "Nếu bạn không ngờ nhận được email này, hãy bỏ qua nó."
     }
   }
 }
