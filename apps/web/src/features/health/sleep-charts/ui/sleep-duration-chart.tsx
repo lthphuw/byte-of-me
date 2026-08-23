@@ -6,6 +6,7 @@ import {
   type DayValue,
   toDaySeries,
 } from '@/features/health/sleep-charts/lib/day-series';
+import { formatDayWithWeekday } from '@/shared/lib/health/day-label';
 import { splitMinutes } from '@/shared/lib/health/duration';
 import { BarChart } from '@/shared/ui/chart';
 
@@ -42,7 +43,7 @@ export function SleepDurationChart({
   const locale = useLocale();
 
   const points = toDaySeries(nights, startKey, days, (key) =>
-    formatDayLabel(key, locale)
+    formatDayWithWeekday(key, locale)
   );
 
   return (
@@ -55,19 +56,4 @@ export function SleepDurationChart({
       className={className}
     />
   );
-}
-
-/**
- * `timeZone: 'UTC'` is not a detail to tidy away. A `localDate` key is stored
- * and passed around as UTC midnight (see `local-date.ts`), so formatting it in
- * the reader's zone would render the 22nd as the 21st for anyone west of
- * Greenwich — the one bug the whole convention exists to avoid.
- */
-export function formatDayLabel(key: string, locale: string): string {
-  return new Intl.DateTimeFormat(locale, {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    timeZone: 'UTC',
-  }).format(new Date(`${key}T00:00:00.000Z`));
 }

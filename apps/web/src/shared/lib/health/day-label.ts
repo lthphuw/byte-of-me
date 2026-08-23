@@ -13,11 +13,10 @@
  * cross the boundary; an axis label is a string and crosses fine. That also
  * keeps `Intl` off the client for the axis entirely.
  *
- * `sleep-charts` keeps a private four-line equivalent of `formatDay`. It is
- * not imported here because a feature reaching into another feature's
- * internals is the sideways import AGENTS §3 rules out, and neither slice's
- * directory was open for edit when this one was written. Fold the two into
- * `shared/` the next time both are.
+ * `gym-charts` and `sleep-charts` each kept a private copy of these. Folded
+ * here because a feature reaching into another feature's internals is the
+ * sideways import AGENTS §3 rules out, and both slices are now open for
+ * edit.
  */
 
 export function formatDay(key: string, locale: string): string {

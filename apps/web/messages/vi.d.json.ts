@@ -914,7 +914,6 @@ declare const messages: {
         },
         "back": "Về phòng tập",
         "notFound": "Buổi tập này không còn nữa.",
-        "inProgressBadge": "Đang tập",
         "finishedAt": "Kết thúc lúc {time}",
         "addExercise": "Thêm bài tập",
         "noExercises": "Chưa có bài tập nào — hãy thêm bài đầu tiên.",

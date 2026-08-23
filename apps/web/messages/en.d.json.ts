@@ -914,7 +914,6 @@ declare const messages: {
         },
         "back": "Back to gym",
         "notFound": "This workout no longer exists.",
-        "inProgressBadge": "In progress",
         "finishedAt": "Finished {time}",
         "addExercise": "Add exercise",
         "noExercises": "No exercises yet — add the first one.",
