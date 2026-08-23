@@ -30,7 +30,7 @@ export function HealthTabs() {
   ];
 
   return (
-    <nav className="flex shrink-0 gap-1 border-b px-3 py-1.5">
+    <nav className="flex shrink-0 gap-2 border-b px-3 py-2">
       {tabs.map((tab) => {
         const isActive = tab.exact
           ? pathname === tab.href
@@ -42,7 +42,10 @@ export function HealthTabs() {
             href={tab.href}
             aria-current={isActive ? 'page' : undefined}
             className={cn(
-              'flex h-11 flex-1 items-center justify-center rounded-md text-sm',
+              // A full pill rather than a 6px radius: the module is now a
+              // page of 16–24px corners, and a squared-off tab above it reads
+              // as belonging to a different screen.
+              'flex h-11 flex-1 items-center justify-center rounded-full text-sm',
               'transition-colors duration-200',
               // Fill AND weight AND text tone AND `aria-current` — §14's rule
               // that colour may not be the sole carrier of a state, and on an

@@ -683,8 +683,6 @@ declare const messages: {
         "streak": "Chuỗi ngày",
         "durationChart": "Thời lượng ngủ, 14 ngày gần nhất",
         "durationSummary": "Thời lượng ngủ mỗi đêm theo giờ trong 14 ngày gần nhất",
-        "heatmap": "Mức đều đặn",
-        "heatmapSummary": "Những ngày đã ghi, đậm nhạt theo thời lượng ngủ",
         "efficiencyUnavailable": "Nhập thời gian để ngủ được hoặc số phút thức giấc để xem hiệu suất",
         "debtCaveat": "Ước lượng luân phiên 14 ngày, không phải chỉ số y khoa",
         "noHistory": "Chưa có gì — hãy lưu đêm đầu tiên ở trên.",
@@ -716,7 +714,14 @@ declare const messages: {
         "detailsEfficiencyHint": "Thời gian để ngủ được và số phút thức giấc là hai số liệu để tính ra hiệu suất.",
         "detailsFilled": "Đã điền {n, number}",
         "efficiencyContext": "Trên tổng thời gian nằm trên giường",
-        "streakContext": "Đã ghi {n, number} trong {total, number} đêm gần nhất"
+        "streakContext": "Đã ghi {n, number} trong {total, number} đêm gần nhất",
+        "today": "Hôm nay",
+        "calendar": "Các đêm trong {month}",
+        "calendarSummary": "Từng đêm trong tháng này, theo thời lượng ngủ",
+        "calendarMissed": "Chưa ghi",
+        "calendarShorter": "Ngắn hơn",
+        "calendarLonger": "Dài hơn",
+        "detailsDone": "Xong"
       },
       "factors": {
         "caffeine_late": "Cà phê muộn",

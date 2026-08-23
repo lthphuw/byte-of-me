@@ -42,6 +42,13 @@ import {
  * Exactly one of the two submit buttons is ever rendered: `hidden` is
  * `display: none`, so the other is not focusable and not in the accessibility
  * tree. There is no width at which the form has two submits.
+ *
+ * **Airier than it was.** The gaps between the blocks are 24px rather than
+ * the old 16–24 mix, the cards carry a 24px radius, and the two clocks sit in
+ * their own soft card instead of floating on the page. That is the reference
+ * language this module now follows: few controls visible at once, each one
+ * large, with room around it. It costs a scroll on a phone and buys a screen
+ * that can be used with one hand half awake, which is the only way it ever is.
  */
 export function SleepEntryForm({
   defaults,
@@ -65,7 +72,7 @@ export function SleepEntryForm({
     <Button
       type="submit"
       disabled={!entry.canSave}
-      className="h-14 w-full text-base"
+      className="h-14 w-full rounded-2xl text-base"
     >
       {entry.isSaving ? t('sleep.saving') : t('sleep.save')}
     </Button>
@@ -99,8 +106,10 @@ export function SleepEntryForm({
 
               {/* 64px targets, and the largest type among the inputs: these
                   two are the only fields that must be hit accurately on a
-                  phone held in one hand, half awake. */}
-              <div className="grid grid-cols-2 gap-3">
+                  phone held in one hand, half awake. They share one soft card
+                  because they are one question — where the night started and
+                  where it ended — and the hero above them is the answer. */}
+              <div className="grid grid-cols-2 gap-4 rounded-3xl border bg-card p-5 shadow">
                 <div className="space-y-2">
                   <Label htmlFor="sleep-bed-at">{t('sleep.bedAt')}</Label>
                   <Input
@@ -109,7 +118,7 @@ export function SleepEntryForm({
                     required
                     value={entry.bedClock}
                     onChange={(event) => entry.setBedClock(event.target.value)}
-                    className="h-16 bg-background text-xl tabular-nums transition-colors duration-200 hover:border-primary/40 sm:text-2xl"
+                    className="h-16 rounded-2xl bg-background text-xl tabular-nums transition-colors duration-200 hover:border-primary/40 sm:text-2xl"
                   />
                 </div>
 
@@ -121,7 +130,7 @@ export function SleepEntryForm({
                     required
                     value={entry.wakeClock}
                     onChange={(event) => entry.setWakeClock(event.target.value)}
-                    className="h-16 bg-background text-xl tabular-nums transition-colors duration-200 hover:border-primary/40 sm:text-2xl"
+                    className="h-16 rounded-2xl bg-background text-xl tabular-nums transition-colors duration-200 hover:border-primary/40 sm:text-2xl"
                   />
                 </div>
               </div>

@@ -683,8 +683,6 @@ declare const messages: {
         "streak": "Streak",
         "durationChart": "Sleep duration, last 14 days",
         "durationSummary": "Nightly sleep duration in hours for the last 14 days",
-        "heatmap": "Consistency",
-        "heatmapSummary": "Days logged, shaded by sleep duration",
         "efficiencyUnavailable": "Add time to fall asleep or minutes awake to see efficiency",
         "debtCaveat": "A rolling 14-day heuristic, not a clinical measure",
         "noHistory": "Nothing logged yet — save your first night above.",
@@ -716,7 +714,14 @@ declare const messages: {
         "detailsEfficiencyHint": "Time to fall asleep and minutes awake are what make efficiency computable.",
         "detailsFilled": "{n, number} filled",
         "efficiencyContext": "Of the time you spent in bed",
-        "streakContext": "{n, number} of the last {total, number} nights logged"
+        "streakContext": "{n, number} of the last {total, number} nights logged",
+        "today": "Today",
+        "calendar": "Nights in {month}",
+        "calendarSummary": "Every night this month, by how long you slept",
+        "calendarMissed": "Not logged",
+        "calendarShorter": "Shorter",
+        "calendarLonger": "Longer",
+        "detailsDone": "Done"
       },
       "factors": {
         "caffeine_late": "Late caffeine",

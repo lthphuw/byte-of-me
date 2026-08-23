@@ -9,9 +9,9 @@ import {
 } from '@/entities/sleep-log';
 import {
   type DayValue,
-  SleepConsistencyHeatmap,
   SleepDurationChart,
-  startOfWeek,
+  SleepMonthCalendar,
+  startOfMonth,
 } from '@/features/health/sleep-charts';
 import {
   localClockMinutes,
@@ -33,20 +33,17 @@ import { computeNight } from '@/shared/lib/health/sleep-stats';
  *  which is why the caveat string can say "14-day" out loud. */
 const WINDOW_DAYS = 14;
 
-/** Columns in the consistency grid. Thirteen weeks is a quarter, and at 17px a
- *  column it is 221px wide — narrower than a phone, so the heatmap never needs
- *  to scroll to be read whole. */
-const HEATMAP_WEEKS = 13;
-
 /** Bedtimes older than the summary window say nothing about what the form
  *  should open at. */
 const MEDIAN_SAMPLE_DAYS = 14;
 
 const FALLBACK_BED_CLOCK = '23:00';
 
-/** With no target read from settings, the wake-time default still needs a
- *  night length to add to bedtime. Eight hours, the same figure the hero's
- *  arc falls back to. */
+/** With no target read from settings, two things still need a night length:
+ *  the wake-time default has to add one to bedtime, and the calendar has to
+ *  band its shades against one. Eight hours, the same figure the hero's arc
+ *  falls back to. Neither use PRINTS it, so it stays a drawing default and
+ *  never becomes a claim about the owner's goal. */
 const FALLBACK_TARGET_MIN = 480;
 
 /**
@@ -75,9 +72,16 @@ const DAY_MIN = 1440;
  *
  * Two reads, deliberately. The summary is the statistics over the debt window
  * and cannot be widened without changing what "sleep debt" means; the log
- * range is three months, which is what a consistency grid needs to be worth
- * drawing, and is also where the form's own defaults come from — today's row
- * if there is one, and the median bedtime if there is not.
+ * range serves the three things that need raw rows — the month calendar, the
+ * fortnight of bars, and the form's own defaults (today's row if there is one,
+ * the median bedtime if there is not).
+ *
+ * That range is the WIDER of the month and the fortnight, not the month. On
+ * the 3rd it would otherwise be three days long, and the median bedtime that
+ * seeds the form would be a median of three nights — the calendar's window
+ * silently narrowing the defaults of a form that has nothing to do with it.
+ * It used to be a fixed thirteen weeks for the heatmap; a month plus a
+ * fortnight is at most 45 days, so the query also got smaller.
  *
  * Neither failure throws. Both are awaited by an RSC, where a throw replaces
  * the whole page with the root `error.tsx` — including the form, which does
@@ -89,16 +93,17 @@ export async function SleepScreen() {
 
   const today = toLocalDate(new Date(), timeZone);
   const todayKey = localDateKey(today);
-  const chartStartKey = localDateKey(addDays(today, -(WINDOW_DAYS - 1)));
-  // Aligned to a week start, because `CalendarHeatmap` fills seven rows per
-  // column: a series beginning mid-week turns every column into a rolling
-  // seven days rather than a calendar one. The read starts on the same day, so
-  // no cell can claim a night was missed when it was merely outside the query.
-  const heatmapStart = addDays(startOfWeek(today), -(HEATMAP_WEEKS - 1) * 7);
+  const chartStart = addDays(today, -(WINDOW_DAYS - 1));
+  const chartStartKey = localDateKey(chartStart);
+  const monthStart = startOfMonth(today);
+  // Whichever reaches further back. Both consumers read from the same array,
+  // and a row missing from it is indistinguishable from a night that was
+  // never logged — so the query has to cover the union, never the intersection.
+  const readStart = monthStart < chartStart ? monthStart : chartStart;
 
   const [summaryRes, logsRes] = await Promise.all([
     getSleepSummary({ days: WINDOW_DAYS, timeZone }),
-    getSleepLogs({ from: localDateKey(heatmapStart), to: todayKey }),
+    getSleepLogs({ from: localDateKey(readStart), to: todayKey }),
   ]);
 
   const summary = summaryRes.success ? summaryRes.data : null;
@@ -132,28 +137,35 @@ export async function SleepScreen() {
         </>
       }
     >
-      <section className="border-t pt-6">
+      <section>
         {series.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             {t('sleep.noHistory')}
           </p>
         ) : (
-          // Side by side from `md` up. The heatmap draws at a fixed 14px cell
-          // and scrolls inside its own frame, so a wider box gives it room
-          // rather than stretching it; the duration chart is pure ratio and
-          // simply gets taller bars to read.
-          <div className="grid gap-6 md:grid-cols-2 md:gap-8">
-            <SleepDurationChart
-              nights={series}
-              startKey={chartStartKey}
-              days={WINDOW_DAYS}
-              targetMin={summary?.targetMin}
-            />
-            <SleepConsistencyHeatmap
-              nights={series}
-              startKey={localDateKey(heatmapStart)}
-              days={HEATMAP_WEEKS * 7}
-            />
+          // Side by side from `md` up, each in its own soft card rather than
+          // loose under a rule. The month calendar is a fluid grid — its dots
+          // grow with the box instead of scrolling inside it, which is the
+          // whole reason a month replaced a rolling quarter — and the duration
+          // chart is pure ratio and simply gets taller bars to read.
+          <div className="grid gap-4 md:grid-cols-2 md:gap-6">
+            <div className="rounded-3xl border bg-card p-5 shadow">
+              <SleepDurationChart
+                nights={series}
+                startKey={chartStartKey}
+                days={WINDOW_DAYS}
+                targetMin={summary?.targetMin}
+              />
+            </div>
+
+            <div className="rounded-3xl border bg-card p-5 shadow">
+              <SleepMonthCalendar
+                nights={series}
+                monthStartKey={localDateKey(monthStart)}
+                todayKey={todayKey}
+                targetMin={summary?.targetMin ?? FALLBACK_TARGET_MIN}
+              />
+            </div>
           </div>
         )}
       </section>

@@ -68,7 +68,11 @@ export function DurationRing({
         />
       </svg>
 
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5 text-center">
+      {/* `px-6` keeps the label and the figure inside the ARC, not merely
+          inside the box. The figure is a translated string — `8h 10m` in `en`
+          is `8 giờ 10 phút` in `vi` — and without a gutter the Vietnamese one
+          wraps at the square's edge and crosses the stroke on both sides. */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 px-6 text-center">
         {children}
       </div>
     </div>

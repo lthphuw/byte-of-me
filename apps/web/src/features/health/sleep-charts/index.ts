@@ -1,4 +1,4 @@
 export type { DayValue } from './lib/day-series';
-export { startOfWeek } from './lib/day-series';
-export { SleepConsistencyHeatmap } from './ui/sleep-consistency-heatmap';
+export { startOfMonth } from './lib/day-series';
 export { SleepDurationChart } from './ui/sleep-duration-chart';
+export { SleepMonthCalendar } from './ui/sleep-month-calendar';

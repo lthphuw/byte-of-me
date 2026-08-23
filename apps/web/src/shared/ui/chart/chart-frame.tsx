@@ -26,6 +26,7 @@ export function ChartFrame({
   rows,
   valueLabel,
   formatValue,
+  footer,
   className,
   children,
 }: {
@@ -39,11 +40,20 @@ export function ChartFrame({
    * the non-visual equivalent worse than the visual one it stands in for.
    */
   formatValue?: (value: number) => string;
+  /**
+   * A key, a scale, a caveat — anything that explains the marks above it.
+   *
+   * OUTSIDE the `aria-hidden` wrapper, deliberately: a legend is words, and
+   * words that say what a shade means are exactly the part a reader who cannot
+   * see the shades still needs. Inside `children` it would be hidden along
+   * with the drawing it explains.
+   */
+  footer?: React.ReactNode;
   className?: string;
   children: React.ReactNode;
 }) {
   return (
-    <figure className={cn('m-0 flex flex-col gap-2', className)}>
+    <figure className={cn('m-0 flex flex-col gap-3', className)}>
       <figcaption className="text-xs font-medium text-muted-foreground">
         {title}
       </figcaption>
@@ -53,6 +63,8 @@ export function ChartFrame({
           {children}
         </div>
       </div>
+
+      {footer}
 
       {/* The `sr-only` goes on a WRAPPER, not on the table.
           `sr-only` hides by shrinking to 1×1 and clipping — and a `<table>`

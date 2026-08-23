@@ -33,19 +33,34 @@ export function toDaySeries(
   });
 }
 
+/** The 1st of `date`'s month, as another UTC-midnight value. */
+export function startOfMonth(date: Date): Date {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
+}
+
 /**
- * The Monday on or before `date`, as another UTC-midnight value.
+ * How many days that month has.
+ *
+ * Day `0` of the NEXT month is the last day of this one, which is how the
+ * platform answers February without anybody writing a leap-year rule.
+ */
+export function daysInMonth(date: Date): number {
+  return new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0)
+  ).getUTCDate();
+}
+
+/**
+ * Which column a day falls in on a Monday-first grid, 0–6.
  *
  * Fixed to Monday rather than read from the locale: `Intl` exposes the first
- * day of a week only through `weekInfo`, which Safari still does not implement,
- * and both locales this site ships (`en` here, `vi`) start the week on Monday
- * in practice. A wrong guess would shift every column of the heatmap by a day
- * — worse than a stated convention.
+ * day of a week only through `weekInfo`, which Safari still does not
+ * implement, and both locales this site ships (`en` here, `vi`) start the week
+ * on Monday in practice. A wrong guess would shift every row of the calendar
+ * by a day — worse than a stated convention.
  */
-export function startOfWeek(date: Date): Date {
-  // getUTCDay: 0 is Sunday. Sunday belongs to the week that began six days
-  // earlier, not to the one starting the next morning.
-  const offset = (date.getUTCDay() + 6) % 7;
-
-  return addDays(date, -offset);
+export function mondayIndex(date: Date): number {
+  // getUTCDay: 0 is Sunday. Sunday is the LAST column of the week that began
+  // six days earlier, not the first of the one starting the next morning.
+  return (date.getUTCDay() + 6) % 7;
 }

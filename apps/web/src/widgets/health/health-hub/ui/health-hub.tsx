@@ -66,7 +66,7 @@ export async function HealthHub() {
   const actionLink = (
     <Link
       href="/space/health/sleep"
-      className={cn(buttonVariants(), 'h-14 w-full text-base')}
+      className={cn(buttonVariants(), 'h-14 w-full rounded-2xl text-base')}
     >
       {loggedToday ? t('hub.editSleep') : t('hub.logSleep')}
     </Link>
@@ -138,15 +138,21 @@ export async function HealthHub() {
                     {t('hub.noData')}
                   </p>
                 ) : (
-                  <SleepDurationChart
-                    nights={summary.nights.map((night) => ({
-                      localDate: night.localDate,
-                      value: night.totalSleepMin,
-                    }))}
-                    startKey={startKey}
-                    days={WINDOW_DAYS}
-                    targetMin={summary.targetMin}
-                  />
+                  // The chart gets the same soft card the sleep screen gives
+                  // it, so moving between the two tabs does not change what a
+                  // chart is: a figure on a raised sheet, never one floating
+                  // on the ground `SpaceShell` paints.
+                  <div className="rounded-3xl border bg-card p-5 shadow">
+                    <SleepDurationChart
+                      nights={summary.nights.map((night) => ({
+                        localDate: night.localDate,
+                        value: night.totalSleepMin,
+                      }))}
+                      startKey={startKey}
+                      days={WINDOW_DAYS}
+                      targetMin={summary.targetMin}
+                    />
+                  </div>
                 )}
               </div>
             </div>

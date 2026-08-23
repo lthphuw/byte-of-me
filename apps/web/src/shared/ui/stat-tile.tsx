@@ -30,6 +30,12 @@ import { cn } from '@/shared/lib/utils';
  *
  * `icon` is a Lucide component, never an emoji (§14), and is `aria-hidden` —
  * it repeats the label rather than adding to it.
+ *
+ * A 16px radius and 20px of padding, one step softer and rounder than the
+ * shadcn default this started from. It is the same move the entry column
+ * made: on a palette with no hue, the only things left to make a surface feel
+ * like a distinct object are its corner, its shadow and the air around its
+ * contents, so all three are spent here rather than saved.
  */
 export function StatTile({
   label,
@@ -51,11 +57,11 @@ export function StatTile({
   return (
     <Card
       className={cn(
-        'h-full transition-colors duration-200 hover:border-primary/40',
+        'h-full rounded-2xl transition-colors duration-200 hover:border-primary/40',
         className
       )}
     >
-      <CardContent className="flex h-full flex-col gap-1 p-4">
+      <CardContent className="flex h-full flex-col gap-1.5 p-5">
         <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
           {Icon ? <Icon aria-hidden className="size-3.5" /> : null}
           <span className="break-safe min-w-0">{label}</span>
