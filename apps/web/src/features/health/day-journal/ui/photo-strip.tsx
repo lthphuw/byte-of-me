@@ -1,17 +1,17 @@
 'use client';
 
+import { useRef, useState } from 'react';
 import { AutoGrowingTextarea } from '@byte-of-me/ui';
 import { ImagePlus } from 'lucide-react';
-import { useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { PhotoThumb } from './photo-thumb';
 
+import type { DayPhotoRow } from '@/entities/day-entry';
 import {
   ACCEPTED_PHOTO_MIME_TYPES,
   MAX_PHOTOS_PER_DAY,
 } from '@/entities/day-entry';
-import type { DayPhotoRow } from '@/entities/day-entry';
 import { cn } from '@/shared/lib/utils';
 
 /** A photo picked but not yet stored. `previewUrl` is a `blob:` URL the
