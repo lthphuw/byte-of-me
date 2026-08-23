@@ -110,10 +110,25 @@ export function HealthTabs() {
   // The bar SCROLLS INSIDE ITSELF rather than squeezing, and that is what the
   // fourth tab made necessary. At `text-sm` the four labels plus their icons
   // need about 360px in English and more in Vietnamese, which does not fit a
-  // 375px phone once the padding and the gaps are taken off — and `flex-1`
-  // alone would shrink them until the words truncated. `shrink-0` with a
-  // minimum keeps every label whole; `flex-1` still lets them share the width
-  // on a wide screen, so nothing changes above the breakpoint where they fit.
+  // 375px phone once the padding and the gaps are taken off.
+  //
+  // `flex-[1_0_auto]` on each tab, and the BASIS is the load-bearing third of
+  // it. `flex-1 shrink-0` was here first and did the opposite of what it
+  // claimed: `flex-1` is `flex: 1 1 0%`, so a tab's width came from the space
+  // available rather than from its own label, and `shrink-0` could not put
+  // that back — nothing was shrinking, the tabs were growing up from a zero
+  // basis. The explicit `min-w-[5.25rem]` then replaced the automatic
+  // min-content floor that would otherwise have kept each label whole, so at
+  // 371px every tab settled on exactly 84px while "Tổng quan" needed 93px: the
+  // labels spilled out of their pills, ran into the 8px gaps, and the first
+  // one started 5px from the screen edge — INSIDE the 12px gutter this bar
+  // pads itself with. `basis: auto` measures the label instead, so a tab is
+  // never narrower than its own text, `grow: 1` still shares the extra width
+  // on a screen where they all fit, and `min-w` goes back to being a floor for
+  // short labels ("Gym") rather than a cap on long ones. The strip now
+  // genuinely overflows when it must, which is the case the scrolling and the
+  // edge fade below were written for and never actually saw.
+  //
   // The overflow is on this element, never on the body (§14).
   //
   // Two things a scrolling strip needs that a squeezing one does not, and
@@ -165,7 +180,7 @@ export function HealthTabs() {
               // A full pill rather than a 6px radius: the module is now a
               // page of 16–24px corners, and a squared-off tab above it reads
               // as belonging to a different screen.
-              'flex h-11 min-w-[5.25rem] flex-1 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-2 text-sm',
+              'flex h-11 min-w-[5.25rem] flex-[1_0_auto] items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-2 text-sm',
               'transition-colors duration-200',
               // Fill AND weight AND text tone AND `aria-current` — §14's rule
               // that colour may not be the sole carrier of a state, and on an
