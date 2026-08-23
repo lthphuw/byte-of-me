@@ -9,6 +9,7 @@
  */
 import { prisma } from '@byte-of-me/db';
 import { beforeAll, beforeEach, describe, expect, it, mock } from 'bun:test';
+import sharp from 'sharp';
 
 import type * as UploadModule from './upload-day-photos';
 
@@ -19,8 +20,21 @@ mock.module('@/shared/api/s3-storage-api', () => ({
 
 let uploadDayPhotos: typeof UploadModule.uploadDayPhotos;
 
+// A real, tiny JPEG. `uploadDayPhotos` now runs every file through
+// `compressImage`, which decodes it with `sharp` — the placeholder
+// `new Uint8Array(n)` this spec used before compression existed was zero
+// bytes shaped like nothing, and `sharp` rejected it with "Input buffer
+// contains unsupported image format", failing the upload before any
+// assertion below ran.
+let validJpeg: Buffer;
+
 beforeAll(async () => {
   ({ uploadDayPhotos } = await import('./upload-day-photos'));
+  validJpeg = await sharp({
+    create: { width: 4, height: 4, channels: 3, background: { r: 200, g: 0, b: 0 } },
+  })
+    .jpeg()
+    .toBuffer();
 });
 
 const dayEntryUpsert = mock();
@@ -39,8 +53,8 @@ Object.defineProperty(prisma, 'dayPhoto', {
 
 const input = { localDate: '2026-08-22', todayKey: '2026-08-23' };
 
-function jpeg(name = 'a.jpg', bytes = 1000) {
-  return new File([new Uint8Array(bytes)], name, { type: 'image/jpeg' });
+function jpeg(name = 'a.jpg') {
+  return new File([validJpeg], name, { type: 'image/jpeg' });
 }
 
 beforeEach(() => {

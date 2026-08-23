@@ -3,8 +3,8 @@
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
-import { toDayPhotoRow } from '@/entities/day-entry';
 import { dayPhotoFileKey } from '@/entities/day-entry/lib/storage-key';
+import { toDayPhotoRow } from '@/entities/day-entry/lib/to-day-photo-row';
 import { dayPhotoUploadSchema } from '@/entities/day-entry/model/day-entry-schema';
 import {
   describePhotoViolation,
@@ -12,8 +12,10 @@ import {
   photoExtension,
 } from '@/entities/day-entry/model/photo-constraints';
 import type { DayPhotoRow } from '@/entities/day-entry/model/types';
+import { getWorkspaceSettings } from '@/entities/workspace-settings/api/get-workspace-settings';
 import { privateStorage } from '@/shared/api/s3-storage-api';
 import { requireAdmin } from '@/shared/lib/auth';
+import { compressImage } from '@/shared/lib/media/compress-image';
 import { getErrorMessage } from '@/shared/lib/utils';
 import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
@@ -72,6 +74,8 @@ export async function uploadDayPhotos(
       return { success: false, errorMsg: describePhotoViolation(violation) };
     }
 
+    const compression = (await getWorkspaceSettings()).imageCompression;
+
     const rows: DayPhotoRow[] = [];
 
     // Sequential, not `Promise.all`. `position` is assigned from the running
@@ -79,23 +83,33 @@ export async function uploadDayPhotos(
     // land on the same position.
     for (const [offset, file] of files.entries()) {
       const buffer = Buffer.from(await file.arrayBuffer());
+
+      // The guarantee behind the browser pass in `useDayJournal.pickPhotos`:
+      // that check is bypassable by calling this action directly, and canvas
+      // encoding differs between Safari and Chrome — so `compressImage` runs
+      // again here, and it is the POST-compression buffer, mime type and size
+      // that actually get stored and keyed. SVG and GIF pass through
+      // untouched and EXIF orientation is respected, exactly as the media
+      // path does — see `compress-image.ts`.
+      const compressed = await compressImage(buffer, file.type, compression);
+
       const fileKey = dayPhotoFileKey(
         session.id,
         localDate,
-        photoExtension(file.type)
+        photoExtension(compressed.mimeType)
       );
 
       await privateStorage.uploadFile({
         fileKey,
-        body: buffer,
-        contentType: file.type,
+        body: compressed.buffer,
+        contentType: compressed.mimeType,
       });
 
       const row = await prisma.dayPhoto.create({
         data: {
           fileKey,
-          mimeType: file.type,
-          size: file.size,
+          mimeType: compressed.mimeType,
+          size: compressed.buffer.byteLength,
           position: existingCount + offset,
           dayEntryId: entry.id,
           ownerId: session.id,

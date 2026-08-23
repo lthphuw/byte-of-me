@@ -14,7 +14,9 @@ import {
   uploadDayPhotos,
   upsertDayEntry,
 } from '@/entities/day-entry';
+import { useWorkspaceSettings } from '@/entities/workspace-settings';
 import type { PendingPhoto } from '@/features/health/day-journal/ui/photo-strip';
+import { compressInBrowser } from '@/shared/lib/media/compress-in-browser';
 
 /**
  * The day's mood, words and photos, as one draft.
@@ -46,6 +48,9 @@ export function useDayJournal({
   entry: DayEntryRow | null;
 }) {
   const t = useTranslations('dashboard.health');
+  // Seeded server-side by `space/layout.tsx` — the owner's real compression
+  // settings, the same source the media library reads.
+  const { settings } = useWorkspaceSettings();
 
   const [mood, setMood] = useState<number | null>(entry?.mood ?? null);
   const [reflection, setReflection] = useState(entry?.reflection ?? '');
@@ -67,13 +72,23 @@ export function useDayJournal({
 
   const pickPhotos = useCallback(
     async (files: File[]) => {
-      const violation = findPhotoViolation(files, photos.length);
+      // Compress BEFORE validating size, same as the media library's
+      // `ImageUpload` — an ordinary phone photo arrives well over
+      // `MAX_PHOTO_SIZE_MB` and would compress comfortably under it, so
+      // checking the as-picked bytes rejects a photo that never actually
+      // uploads at that size. `compressInBrowser` is a no-op for SVG/GIF/a
+      // disabled config, so this is safe to run unconditionally.
+      const compressed = await Promise.all(
+        files.map((file) => compressInBrowser(file, settings.imageCompression))
+      );
+
+      const violation = findPhotoViolation(compressed, photos.length);
       if (violation) {
         toast.error(describePhotoViolation(violation));
         return;
       }
 
-      const items: PendingPhoto[] = files.map((file, index) => {
+      const items: PendingPhoto[] = compressed.map((file, index) => {
         const previewUrl = URL.createObjectURL(file);
         previewUrls.current.push(previewUrl);
 
@@ -82,7 +97,7 @@ export function useDayJournal({
 
       setPending((current) => [...current, ...items]);
 
-      const res = await uploadDayPhotos({ localDate, todayKey }, files);
+      const res = await uploadDayPhotos({ localDate, todayKey }, compressed);
 
       setPending((current) =>
         current.filter((item) => !items.some((i) => i.tempId === item.tempId))
@@ -96,7 +111,7 @@ export function useDayJournal({
 
       setPhotos((current) => [...current, ...res.data]);
     },
-    [localDate, todayKey, photos.length, t]
+    [localDate, todayKey, photos.length, settings.imageCompression, t]
   );
 
   const setCaption = useCallback(
