@@ -1,5 +1,10 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { ClipboardList, Dumbbell, type LucideIcon } from 'lucide-react';
+import {
+  BarChart3,
+  ClipboardList,
+  Dumbbell,
+  type LucideIcon,
+} from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { exerciseKeys, getExercises, getRoutines } from '@/entities/exercise';
@@ -97,10 +102,11 @@ export async function GymScreen() {
           <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
             <WorkoutStartPanel timeZone={timeZone} />
 
-            {/* The two surfaces this one leads to. Links rather than tabs:
-                routines and the catalogue are things the gym screen USES, not
-                sibling views of the same data, and the module already has one
-                navigation system in the segmented control above. */}
+            {/* The three surfaces this one leads to. Links rather than tabs:
+                routines, the catalogue and the statistics are things the gym
+                screen USES, not sibling views of the same data, and the module
+                already has one navigation system in the segmented control
+                above. */}
             <nav className="grid grid-cols-2 gap-3">
               <SubLink
                 href="/space/health/gym/routines"
@@ -111,6 +117,15 @@ export async function GymScreen() {
                 href="/space/health/exercises"
                 label={t('catalogLink')}
                 icon={Dumbbell}
+              />
+              {/* Full width rather than a third column: three tiles across a
+                  375px phone leaves each label under 110px, and the Vietnamese
+                  strings are what overflow an action bar first (§14). */}
+              <SubLink
+                href="/space/health/gym/stats"
+                label={t('statsLink')}
+                icon={BarChart3}
+                className="col-span-2"
               />
             </nav>
 
@@ -126,10 +141,15 @@ function SubLink({
   href,
   label,
   icon: Icon,
+  className,
 }: {
-  href: '/space/health/gym/routines' | '/space/health/exercises';
+  href:
+    | '/space/health/gym/routines'
+    | '/space/health/gym/stats'
+    | '/space/health/exercises';
   label: string;
   icon: LucideIcon;
+  className?: string;
 }) {
   return (
     <Link
@@ -137,7 +157,8 @@ function SubLink({
       className={cn(
         'flex min-h-14 items-center justify-center gap-2 rounded-2xl border bg-card px-4 text-sm font-medium shadow-sm',
         'transition-colors duration-200 hover:border-primary/40 hover:bg-muted',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background'
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+        className
       )}
     >
       <Icon aria-hidden className="size-4 shrink-0" />
