@@ -1,10 +1,10 @@
 import {
   EQUIPMENT,
   type Equipment,
-  METRICS,
   type Metric,
-  MUSCLES,
+  METRICS,
   type Muscle,
+  MUSCLES,
 } from '@byte-of-me/db/gym-vocabulary';
 import * as z from 'zod';
 
