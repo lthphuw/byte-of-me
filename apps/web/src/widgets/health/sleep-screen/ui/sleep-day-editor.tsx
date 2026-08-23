@@ -129,10 +129,11 @@ export function SleepDayEditor({
     timeZone: 'UTC',
   }).format(new Date(`${selectedKey}T00:00:00.000Z`));
 
-  const heading =
-    selectedKey === todayKey
-      ? `${t('sleep.nightOf', { date: dateLabel })} — ${t('sleep.today')}`
-      : t('sleep.nightOf', { date: dateLabel });
+  // The date and the "today" flag are two facts, not one sentence. Glued
+  // together with an em dash the word read as part of the date's name; as a
+  // separate chip beside it, it reads as what it is.
+  const heading = t('sleep.nightOf', { date: dateLabel });
+  const headingBadge = selectedKey === todayKey ? t('sleep.today') : undefined;
 
   return (
     <SleepEntryForm
@@ -140,6 +141,7 @@ export function SleepDayEditor({
       defaults={defaults}
       targetMin={targetMin}
       heading={heading}
+      headingBadge={headingBadge}
       lead={
         <SleepMonthCalendar
           nights={calendarNights}

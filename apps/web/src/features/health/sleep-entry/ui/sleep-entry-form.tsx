@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, Input, Label } from '@byte-of-me/ui';
-import { CalendarDays, Moon, Sunrise } from 'lucide-react';
+import { CalendarDays, Check, LoaderCircle, Moon, Sunrise } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { SleepDetailsSection } from './sleep-details-section';
@@ -12,6 +12,7 @@ import {
   type SleepEntryDefaults,
   useSleepEntry,
 } from '@/features/health/sleep-entry/model/use-sleep-entry';
+import { cn } from '@/shared/lib/utils';
 
 /**
  * The morning form. One tap in the common case: both clocks arrive already
@@ -53,18 +54,25 @@ import {
  * `display: none`, so the other is not focusable and not in the accessibility
  * tree. There is no width at which the form has two submits.
  *
- * **Airier than it was.** The gaps between the blocks are 24px rather than
- * the old 16–24 mix, the cards carry a 24px radius, and the two clocks sit in
- * their own soft card instead of floating on the page. That is the reference
- * language this module now follows: few controls visible at once, each one
- * large, with room around it. It costs a scroll on a phone and buys a screen
- * that can be used with one hand half awake, which is the only way it ever is.
+ * **One rhythm, four cards.** The gaps between the blocks are 24px rather than
+ * the old 16–24 mix, and every block in the column is now the SAME object: a
+ * 24px-radius `bg-card` sheet with a hairline border and one soft shadow —
+ * the hero, the two clocks, the quality scale and the details trigger. The
+ * quality scale used to float bare on the page between two of them, which made
+ * one question in a stack of five look like a caption that had come loose from
+ * something. Nothing on this palette but corner, shadow and air separates a
+ * surface from the ground it sits on (§14), so the column spends all three
+ * consistently or the stack stops reading as a stack.
+ *
+ * It costs a scroll on a phone and buys a screen that can be used with one
+ * hand half awake, which is the only way it ever is.
  */
 export function SleepEntryForm({
   defaults,
   targetMin,
   lead,
   heading,
+  headingBadge,
   aside,
   children,
 }: {
@@ -79,6 +87,9 @@ export function SleepEntryForm({
    *  and this says it in a sentence, because a tapped dot is a weak receipt
    *  for "you are now editing the 9th". */
   heading?: string;
+  /** A flag on the day beside the heading — "Today", and nothing else so far.
+   *  Separate from `heading` because it is not part of the date's name. */
+  headingBadge?: string;
   /** The statistics column. Beside the fields at `lg`, beneath them below it. */
   aside?: React.ReactNode;
   /** Full-width content under both columns — the charts. */
@@ -87,12 +98,53 @@ export function SleepEntryForm({
   const t = useTranslations('dashboard.health');
   const entry = useSleepEntry(defaults);
 
-  const submitButton = (
+  /**
+   * The primary action, full width at every breakpoint.
+   *
+   * It was `w-56` at `lg` for one reason: `--primary` is `0 0% 98%` in dark
+   * mode, and a 56px-tall near-white rectangle spanning a 2fr column stops
+   * reading as a control and starts reading as a second background — the page
+   * appears to change tone half-way down. Narrowing it fixed that and broke
+   * something worse, because a primary action that does not span the column it
+   * submits is not obviously the primary action.
+   *
+   * So the width comes back and the heaviness is solved three other ways, none
+   * of which weakens the fill:
+   *
+   * 1. **`rounded-full`.** This is the load-bearing one. Backgrounds are
+   *    rectangles. A field with semicircular ends is not a region of the page
+   *    that happened to change colour — it is an object sitting on the page,
+   *    and there is no reading of it that is not "button". A 16px radius on a
+   *    56px slab is still recognisably a rectangle; a 24px one is not.
+   * 2. **Height, per breakpoint.** 56px on the phone, where it is a thumb
+   *    target pinned in a bar; 48px at `lg`, where it only has to be hit with a
+   *    mouse. That is a fifth of the area gone at exactly the width where the
+   *    complaint was made, and 48 is still past the 44px floor (§14).
+   * 3. **Contents.** The old button was a word centred in an empty field, and
+   *    an empty field is what a background is. A glyph beside the word gives
+   *    the fill something to be around; while the mutation is in flight the
+   *    glyph is a spinner, which is also the feedback the button owed the
+   *    reader and did not have.
+   *
+   * The spinner deliberately keeps turning under reduced motion (§14):
+   * removing the only sign that a save is in progress is worse than the
+   * motion. `aria-busy` says the same thing without it.
+   */
+  const submitButton = (heightClass: string) => (
     <Button
       type="submit"
       disabled={!entry.canSave}
-      className="h-14 w-full rounded-2xl text-base"
+      aria-busy={entry.isSaving}
+      className={cn(
+        'w-full gap-2 rounded-full text-base font-semibold shadow-sm',
+        heightClass
+      )}
     >
+      {entry.isSaving ? (
+        <LoaderCircle aria-hidden className="size-5 shrink-0 animate-spin" />
+      ) : (
+        <Check aria-hidden className="size-5 shrink-0" />
+      )}
       {entry.isSaving ? t('sleep.saving') : t('sleep.save')}
     </Button>
   );
@@ -127,13 +179,27 @@ export function SleepEntryForm({
               into roughly 320 / 480. */}
           <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-8">
             <div className="flex min-w-0 flex-col gap-6">
+              {/* The receipt for a tap on the calendar, and the title of the
+                  column under it — so it is `base/semibold`, one step under
+                  the month above and one step over the `sm` labels below.
+                  "Today" used to be an em dash and a word glued onto the end
+                  of the same sentence, where it read as part of the date; it
+                  is a chip now, which is what it is: a flag on the day, not
+                  more of the day's name. Outlined rather than filled because
+                  an inverted chip is what SELECTION looks like two hundred
+                  pixels above this line, and today is not selection. */}
               {heading ? (
-                <h2 className="flex items-center gap-2 text-sm font-medium">
+                <h2 className="flex flex-wrap items-center gap-x-2 gap-y-1 text-base font-semibold tracking-tight">
                   <CalendarDays
                     aria-hidden
                     className="size-4 shrink-0 text-muted-foreground"
                   />
                   {heading}
+                  {headingBadge ? (
+                    <span className="rounded-full border px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                      {headingBadge}
+                    </span>
+                  ) : null}
                 </h2>
               ) : null}
 
@@ -206,16 +272,10 @@ export function SleepEntryForm({
 
               <SleepDetailsSection entry={entry} />
 
-              {/* Not full-bleed at `lg`. `--primary` is near-white in dark
-                  mode, so a 56px button spanning a 2fr column stops reading as
-                  a control and starts reading as a second background — the
-                  page looks like it changed tone half-way down. On a phone the
-                  full width is the point (it is a thumb target in a fixed bar);
-                  here the button only has to be big enough to hit with a
-                  mouse. */}
-              <div className="hidden lg:block">
-                <div className="w-56">{submitButton}</div>
-              </div>
+              {/* Full width, 48px, and a pill — see `submitButton`. The
+                  column it spans is the column it submits, which is the whole
+                  argument for the width. */}
+              <div className="hidden pt-1 lg:block">{submitButton('h-12')}</div>
             </div>
 
             {/* The rule between entry and statistics exists only while they
@@ -242,7 +302,7 @@ export function SleepEntryForm({
           surface sitting on the page. It still has to be OPAQUE — content
           scrolls underneath it. */}
       <div className="shrink-0 border-t bg-card px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 lg:hidden">
-        <div className="mx-auto w-full max-w-4xl">{submitButton}</div>
+        <div className="mx-auto w-full max-w-4xl">{submitButton('h-14')}</div>
       </div>
     </form>
   );
