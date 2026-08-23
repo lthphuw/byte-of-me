@@ -10,18 +10,16 @@ import {
   findUploadViolation,
   type MediaScope,
 } from '@/entities/media/model/upload-constraints';
+import { getWorkspaceSettings } from '@/entities/workspace-settings/api/get-workspace-settings';
 import { supabaseStorage } from '@/shared/api';
 import { env } from '@/shared/config/env';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { generateFriendlyId } from '@/shared/lib/friendly-id';
+import { compressImage } from '@/shared/lib/media/compress-image';
 import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { Media } from '@/shared/types/models';
-
-
-
-
 
 /**
  * Stores images and records them in the media library.
@@ -31,6 +29,14 @@ import type { Media } from '@/shared/types/models';
  * so it is where the size and type rules have to be enforced. A check in a form
  * component is a courtesy that gives the author a fast answer; this one is the
  * guarantee.
+ *
+ * Compression is the other half of that guarantee. Both upload paths already
+ * compress in the browser before they get here, but that check is bypassable
+ * by calling this action directly, and canvas encoding differs between Safari
+ * and Chrome — so `compressImage` runs again here, and it is the POST
+ * -compression buffer, mime type and size that actually get stored. Storing
+ * the pre-compression `file.type`/`file.size` would leave the database
+ * describing bytes that were never written to the bucket.
  */
 export async function uploadMedia(
   files: File[],
@@ -44,18 +50,28 @@ export async function uploadMedia(
 
   // Before any network or database work: an oversized file that reaches
   // storage is worse than a rejected one, because the editor then holds a URL
-  // to an object the reader's browser has to download in full.
+  // to an object the reader's browser has to download in full. Checked
+  // against the AS-UPLOADED bytes, before compression — a direct call to this
+  // action with an oversized file is exactly the case this guards, and
+  // compressing it first would let an arbitrarily large upload in as long as
+  // it happened to compress under the ceiling.
   const violation = findUploadViolation(files);
   if (violation) {
     return { success: false, errorMsg: describeViolation(violation) };
   }
 
   try {
+    const compression = (await getWorkspaceSettings()).imageCompression;
+
     const uploadPromises = files.map(async (file) => {
       const buffer = Buffer.from(await file.arrayBuffer());
-      // From the MIME type, not the filename: the editor's auto-upload builds
-      // its File as `new File([blob], 'image')`, with no extension to read.
-      const fileExtension = extensionForMimeType(file.type);
+      const compressed = await compressImage(buffer, file.type, compression);
+
+      // From the POST-compression MIME type, not the filename or the original
+      // type: a webp buffer written under a `.jpg` key is a file no CDN
+      // serves sensibly, and the editor's auto-upload builds its File as
+      // `new File([blob], 'image')` anyway, with no extension to read.
+      const fileExtension = extensionForMimeType(compressed.mimeType);
       const now = new Date();
       // Scope first, then date. Grouping by what the image is FOR is the axis
       // someone actually browses by; the date only disambiguates within it.
@@ -65,8 +81,8 @@ export async function uploadMedia(
 
       await supabaseStorage.uploadFile({
         fileKey,
-        body: buffer,
-        contentType: file.type,
+        body: compressed.buffer,
+        contentType: compressed.mimeType,
       });
 
       const url = await supabaseStorage.getPublicUrl(fileKey);
@@ -77,8 +93,8 @@ export async function uploadMedia(
           bucket: env.SUPABASE_S3_STORAGE_BUCKET,
           fileKey: fileKey,
           fileName: file.name,
-          mimeType: file.type,
-          size: file.size,
+          mimeType: compressed.mimeType,
+          size: compressed.buffer.byteLength,
           provider: 'SUPABASE',
           userId: user.id,
         },
