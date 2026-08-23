@@ -38,7 +38,7 @@ export async function SpaceHub({ navSlot }: { navSlot?: React.ReactNode }) {
   ]);
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto">
+    <div className="pb-safe min-h-0 flex-1 overflow-y-auto">
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
         <header className="flex items-center gap-2">
           {navSlot}

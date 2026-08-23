@@ -58,12 +58,15 @@ export function NoteSidebarTabs({
         <TabsTrigger value="links">{t('links')}</TabsTrigger>
         <TabsTrigger value="cite">{t('cite')}</TabsTrigger>
       </TabsList>
-      <TabsContent value="toc" className="mt-0 min-h-0 flex-1 overflow-y-auto">
+      <TabsContent
+        value="toc"
+        className="pb-safe mt-0 min-h-0 flex-1 overflow-y-auto"
+      >
         <NoteOutline items={outline} />
       </TabsContent>
       <TabsContent
         value="files"
-        className="mt-0 min-h-0 flex-1 overflow-y-auto"
+        className="pb-safe mt-0 min-h-0 flex-1 overflow-y-auto"
       >
         <NoteAttachmentsPanel
           noteId={noteId}
@@ -74,13 +77,17 @@ export function NoteSidebarTabs({
       </TabsContent>
       <TabsContent
         value="links"
-        className="mt-0 min-h-0 flex-1 overflow-y-auto"
+        className="pb-safe mt-0 min-h-0 flex-1 overflow-y-auto"
       >
         <NoteLinksPanel noteId={noteId} onOpen={onOpen} />
       </TabsContent>
+      {/* `pb-6` and the safe-area inset combined explicitly, not as two
+          separate `pb-*` classes on one element — Tailwind gives no ordering
+          guarantee between two same-property utilities on the same node, so
+          `pb-6 pb-safe` would leave which one wins undefined. */}
       <TabsContent
         value="cite"
-        className="mt-0 min-h-0 flex-1 overflow-y-auto px-2 pb-6"
+        className="mt-0 min-h-0 flex-1 overflow-y-auto px-2 pb-[calc(1.5rem+env(safe-area-inset-bottom))]"
       >
         {editor && <LazyReferencePanel editor={editor} />}
       </TabsContent>

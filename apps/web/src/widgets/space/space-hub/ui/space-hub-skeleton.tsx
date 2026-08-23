@@ -30,7 +30,7 @@ export function SpaceHubSkeleton() {
     // screen reader on a page with no perceivable content and no indication
     // that anything was on its way.
     <div
-      className="min-h-0 flex-1 overflow-y-auto"
+      className="pb-safe min-h-0 flex-1 overflow-y-auto"
       aria-busy="true"
       aria-label={t('loading')}
     >

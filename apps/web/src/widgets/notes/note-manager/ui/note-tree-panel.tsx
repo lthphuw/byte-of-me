@@ -405,7 +405,10 @@ export function NoteTreePanel({
           themselves through a roving tabindex and their keydowns bubble here,
           so nothing has to register itself and the handler sees the whole
           tree. */}
-      <div className="min-h-0 flex-1 overflow-y-auto" onKeyDown={onKeyDown}>
+      <div
+        className="pb-safe min-h-0 flex-1 overflow-y-auto"
+        onKeyDown={onKeyDown}
+      >
         {/* The padding moved from the scroller onto the surface below, so the
             gutter is part of the right-clickable background rather than a
             dead 4px frame around it. */}

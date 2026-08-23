@@ -47,7 +47,7 @@ export function SleepScreenSkeleton() {
       aria-busy="true"
       aria-label={t('loading')}
     >
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="pb-safe min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
           <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-8">
             {/* The calendar card — see `SleepMonthCalendar` for the real

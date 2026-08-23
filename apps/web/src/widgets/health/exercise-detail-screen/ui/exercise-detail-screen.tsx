@@ -60,7 +60,7 @@ export async function ExerciseDetailScreen({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-x-clip">
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="pb-safe min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
           <Link
             href="/space/health/exercises"

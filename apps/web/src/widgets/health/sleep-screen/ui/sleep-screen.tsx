@@ -185,7 +185,7 @@ export async function SleepScreen({ month }: { month?: string }) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-x-clip">
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="pb-safe min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
           {/* 2fr / 3fr, not two halves: the calendar is a fixed 7-column grid
               that stops being comfortable below ~300px, while the statistics

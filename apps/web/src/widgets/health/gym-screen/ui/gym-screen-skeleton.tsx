@@ -25,7 +25,7 @@ export function GymScreenSkeleton() {
       aria-busy="true"
       aria-label={t('loading')}
     >
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="pb-safe min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
           <Skeleton aria-hidden className="h-64 w-full rounded-3xl" />
 
