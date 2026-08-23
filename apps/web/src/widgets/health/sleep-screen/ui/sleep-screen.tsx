@@ -5,7 +5,16 @@ import { type LoggedNight, SleepMonthBoard } from './sleep-month-board';
 import { SleepMonthSummary } from './sleep-month-summary';
 import { SleepStatsPanel } from './sleep-stats-panel';
 
-import { getDayEntries } from '@/entities/day-entry';
+// The DEEP path, never `@/entities/day-entry`. That barrel re-exports the
+// whole `./api` folder, so a screen that only READS days would also pull in
+// every WRITE — `uploadDayPhotos` and the image encoder behind it among them.
+// Same rule as `49b13d47`: reach past a slice's barrel when the barrel's other
+// exports are heavier than what you came for. (This is hygiene, not the fix
+// for the 500 that sent us here — the day journal on this page owns
+// `uploadDayPhotos` legitimately, so the encoder is in the route's graph
+// either way. What stopped the crash is `compress-image.ts` loading `sharp`
+// inside its function rather than at module scope; see the note there.)
+import { getDayEntries } from '@/entities/day-entry/api/get-day-entries';
 import {
   getSleepLogs,
   getSleepSummary,

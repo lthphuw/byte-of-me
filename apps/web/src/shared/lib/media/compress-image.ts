@@ -1,4 +1,4 @@
-import sharp from 'sharp';
+import type sharpModule from 'sharp';
 
 import 'server-only';
 
@@ -20,11 +20,42 @@ export interface CompressedImage {
 }
 
 // `sharp`'s own types are exported as `export = sharp` with a merged
-// `declare function` + `declare namespace`, which the default import here
-// does not re-expose as a `sharp.Sharp` type reference. `ReturnType<typeof
-// sharp>` is the standard workaround — same instance type, derived instead
-// of named.
-type SharpInstance = ReturnType<typeof sharp>;
+// `declare function` + `declare namespace`, which a default import does not
+// re-expose as a `sharp.Sharp` type reference. `ReturnType<typeof sharp>` is
+// the standard workaround — same instance type, derived instead of named.
+type SharpInstance = ReturnType<typeof sharpModule>;
+
+/**
+ * `sharp` is loaded on FIRST COMPRESSION, never at module load.
+ *
+ * It used to be a top-level `import sharp from 'sharp'`. `sharp` is a native
+ * addon, so Turbopack compiles it as an external — and a module that awaits an
+ * external is an ASYNC MODULE, whose await runs while every importer is still
+ * evaluating. That turned "this route contains a photo-upload action" into
+ * "this route dlopens libvips before it renders a single element", and on
+ * Vercel, where `@img/sharp-libvips-linux-x64` was missing, the dlopen threw:
+ *
+ *   Failed to load external module sharp-edea96869fc6cbfe:
+ *   ERR_DLOPEN_FAILED: libvips-cpp.so.8.18.3: cannot open shared object file
+ *
+ * That throw happens BEFORE React renders, which is why it produced Next's
+ * bare 500 rather than `error.tsx` — an error boundary can only catch what
+ * fails inside a render. `/space/health/sleep` was the casualty: its day
+ * journal legitimately owns `uploadDayPhotos`, so the encoder was in its
+ * graph even though a calendar never encodes anything.
+ *
+ * Behind a function, the cost lands on the one call that actually needs it.
+ * A broken sharp then fails the upload it belongs to — which the action
+ * already reports as a failed upload — instead of taking down every page that
+ * merely links to one. The promise is cached so repeated compressions in one
+ * request share a single load.
+ */
+let sharpPromise: Promise<typeof sharpModule> | null = null;
+
+function loadSharp(): Promise<typeof sharpModule> {
+  sharpPromise ??= import('sharp').then((mod) => mod.default);
+  return sharpPromise;
+}
 
 /** The sharp encoder and the mime type it produces, per re-encodable input format. */
 const ENCODERS = {
@@ -103,6 +134,7 @@ export async function compressImage(
     return { buffer: input, mimeType, ...(await readDimensions(input)) };
   }
 
+  const sharp = await loadSharp();
   const source = sharp(input, { failOn: 'none' }).rotate();
   const metadata = await source.metadata();
 
@@ -160,6 +192,7 @@ async function readDimensions(
   buffer: Buffer
 ): Promise<{ width: number; height: number }> {
   try {
+    const sharp = await loadSharp();
     const metadata = await sharp(buffer, { failOn: 'none' }).metadata();
     return { width: metadata.width ?? 0, height: metadata.height ?? 0 };
   } catch {
