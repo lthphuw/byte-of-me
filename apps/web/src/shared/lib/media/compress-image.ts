@@ -40,7 +40,7 @@ type SharpInstance = ReturnType<typeof sharpModule>;
  *
  * That throw happens BEFORE React renders, which is why it produced Next's
  * bare 500 rather than `error.tsx` — an error boundary can only catch what
- * fails inside a render. `/space/health/sleep` was the casualty: its day
+ * fails inside a render. `/space/daily` was the casualty: its day
  * journal legitimately owns `uploadDayPhotos`, so the encoder was in its
  * graph even though a calendar never encodes anything.
  *

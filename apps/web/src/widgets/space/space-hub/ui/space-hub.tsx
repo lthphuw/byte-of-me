@@ -154,7 +154,7 @@ export async function SpaceHub({ navSlot }: { navSlot?: React.ReactNode }) {
               </Link>
 
               <Link
-                href="/space/health"
+                href="/space/daily"
                 className="group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <Card className="h-full transition-colors group-hover:border-primary/40 group-hover:bg-muted/40">

@@ -34,7 +34,7 @@ export function BackToGymLink({
 
   return (
     <Link
-      href="/space/health/gym"
+      href="/space/gym"
       aria-label={compact ? t('back') : undefined}
       onClick={(event) => {
         if (guard && !guard()) event.preventDefault();

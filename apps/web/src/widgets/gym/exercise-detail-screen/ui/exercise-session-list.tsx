@@ -66,7 +66,7 @@ export async function ExerciseSessionList({
             </div>
 
             <Link
-              href={`/space/health/gym/${session.sessionId}`}
+              href={`/space/gym/${session.sessionId}`}
               aria-label={t('openSession', { title: session.title })}
               className="flex size-11 shrink-0 items-center justify-center rounded-xl border transition-colors duration-200 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >

@@ -76,7 +76,7 @@ export function useStartWorkout() {
       return res.data;
     },
     onSuccess: (session) => {
-      router.push(`/space/health/gym/${session.id}`);
+      router.push(`/space/gym/${session.id}`);
       queryClient.invalidateQueries({ queryKey: workoutKeys.open() });
       queryClient.invalidateQueries({ queryKey: workoutKeys.ranges() });
     },

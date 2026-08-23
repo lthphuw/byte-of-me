@@ -65,7 +65,7 @@ export function ExerciseCard({
             a link marked only by colour is not visibly a link, and a
             hover-only underline does not exist on touch at all (§14). */}
         <Link
-          href={`/space/health/exercises/${exercise.id}`}
+          href={`/space/gym/exercises/${exercise.id}`}
           className="break-safe block min-h-11 py-2 text-sm font-medium underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           {exercise.name}

@@ -414,7 +414,7 @@ function MonthStep({
 
   return (
     <Link
-      href={{ pathname: '/space/health/sleep', query: { month: monthKey } }}
+      href={{ pathname: '/space/daily', query: { month: monthKey } }}
       scroll={false}
       aria-label={label}
       className={cn(

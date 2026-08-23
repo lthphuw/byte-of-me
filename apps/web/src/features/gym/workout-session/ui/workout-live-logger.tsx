@@ -480,7 +480,7 @@ export function WorkoutLiveLogger({
           const intent = gate;
           setGate(null);
 
-          if (intent === 'leave') router.push('/space/health/gym');
+          if (intent === 'leave') router.push('/space/gym');
           else openFinish();
         }}
         title={tLive('unsyncedTitle')}

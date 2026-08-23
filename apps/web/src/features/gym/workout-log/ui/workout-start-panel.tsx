@@ -125,7 +125,7 @@ export function WorkoutStartPanel({ timeZone }: { timeZone: string }) {
         </div>
 
         <Link
-          href={`/space/health/gym/${openSession.id}`}
+          href={`/space/gym/${openSession.id}`}
           className={cn(buttonVariants(), 'h-14 w-full rounded-2xl text-base')}
         >
           <Play aria-hidden className="mr-2 size-5" />

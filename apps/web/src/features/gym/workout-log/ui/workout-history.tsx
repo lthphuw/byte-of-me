@@ -158,7 +158,7 @@ function HistoryRow({
 
   return (
     <Link
-      href={`/space/health/gym/${session.id}`}
+      href={`/space/gym/${session.id}`}
       className={cn(
         'flex min-h-16 items-center gap-3 rounded-2xl border bg-card p-4 shadow-sm',
         'transition-colors duration-200 hover:border-primary/40 hover:bg-muted',

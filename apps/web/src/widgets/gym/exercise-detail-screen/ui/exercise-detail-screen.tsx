@@ -63,7 +63,7 @@ export async function ExerciseDetailScreen({
       <div className="pb-safe min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
           <Link
-            href="/space/health/exercises"
+            href="/space/gym/exercises"
             className="inline-flex h-11 w-fit items-center gap-2 rounded-xl px-3 text-sm text-muted-foreground underline underline-offset-4 transition-colors duration-200 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <ArrowLeft aria-hidden className="size-4 shrink-0" />

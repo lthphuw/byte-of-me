@@ -109,12 +109,12 @@ export async function GymScreen() {
                 above. */}
             <nav className="grid grid-cols-2 gap-3">
               <SubLink
-                href="/space/health/gym/routines"
+                href="/space/gym/routines"
                 label={t('routinesLink')}
                 icon={ClipboardList}
               />
               <SubLink
-                href="/space/health/exercises"
+                href="/space/gym/exercises"
                 label={t('catalogLink')}
                 icon={Dumbbell}
               />
@@ -122,7 +122,7 @@ export async function GymScreen() {
                   375px phone leaves each label under 110px, and the Vietnamese
                   strings are what overflow an action bar first (§14). */}
               <SubLink
-                href="/space/health/gym/stats"
+                href="/space/gym/stats"
                 label={t('statsLink')}
                 icon={BarChart3}
                 className="col-span-2"
@@ -144,9 +144,9 @@ function SubLink({
   className,
 }: {
   href:
-    | '/space/health/gym/routines'
-    | '/space/health/gym/stats'
-    | '/space/health/exercises';
+    | '/space/gym/routines'
+    | '/space/gym/stats'
+    | '/space/gym/exercises';
   label: string;
   icon: LucideIcon;
   className?: string;

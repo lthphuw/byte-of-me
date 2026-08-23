@@ -25,8 +25,8 @@ import { useWorkoutSession } from '@/features/gym/workout-session/model/use-work
  *    navigation, no second fetch, no router queue to strand a pending server
  *    action behind (which this repo has been bitten by before, and which would
  *    hang the UI with no failed request to point at).
- *  - One URL is one thing to bookmark, share and come back to. `/space/health/
- *    gym/[sessionId]` means "this workout", and what it shows depends on
+ *  - One URL is one thing to bookmark, share and come back to.
+ *    `/space/gym/[sessionId]` means "this workout", and what it shows depends on
  *    whether the workout is over — which is exactly what the reader means when
  *    they open it.
  *

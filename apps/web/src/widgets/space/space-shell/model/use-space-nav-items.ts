@@ -31,6 +31,6 @@ export function useSpaceNavItems(): NavDrawerItem[] {
   return [
     { href: '/space', label: t('items.hub'), icon: LayoutGrid, exact: true },
     { href: '/space/notes', label: t('items.notes'), icon: NotebookPen },
-    { href: '/space/health', label: t('items.health'), icon: HeartPulse },
+    { href: '/space/daily', label: t('items.health'), icon: HeartPulse },
   ];
 }

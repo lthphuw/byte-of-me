@@ -185,7 +185,7 @@ export function useWorkoutSessionMutations(sessionId: string) {
       // navigation in this repo before — the UI hangs with no failed request
       // to point at. The session this page reads no longer exists, so staying
       // here is not an option either.
-      router.push('/space/health/gym');
+      router.push('/space/gym');
       queryClient.invalidateQueries({ queryKey: workoutKeys.open() });
       queryClient.invalidateQueries({ queryKey: workoutKeys.ranges() });
     },
