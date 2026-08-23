@@ -789,7 +789,8 @@ declare const messages: {
         "open": "Đang mở",
         "duration": "Thời lượng",
         "sessionRpe": "RPE buổi tập",
-        "sessionCount": "{n, number} buổi tập"
+        "sessionCount": "{n, number} buổi tập",
+        "loading": "Đang tải buổi tập…"
       },
       "workout": {
         "back": "Về phòng tập",
@@ -852,7 +853,13 @@ declare const messages: {
         "deleteWorkout": "Xoá buổi tập",
         "deleteWorkoutTitle": "Xoá buổi tập này?",
         "deleteWorkoutHint": "Các bài tập và mọi hiệp trong đó sẽ mất theo. Không thể hoàn tác.",
-        "deleted": "Đã xoá buổi tập"
+        "deleted": "Đã xoá buổi tập",
+        "loading": "Đang tải buổi tập…",
+        "moveUpNamed": "Chuyển {name} lên",
+        "moveDownNamed": "Chuyển {name} xuống",
+        "removeExerciseNamed": "Bỏ {name}",
+        "addSetNamed": "Thêm một hiệp cho {name}",
+        "cancel": "Huỷ"
       },
       "exercises": {
         "title": "Bài tập",
@@ -1248,6 +1255,11 @@ declare const messages: {
         "keyboardHint": "Dùng phím mũi tên để chuyển giữa các ghi chú, Enter để mở ghi chú đang chọn, Escape để rời khỏi sơ đồ.",
         "noteListLabel": "Mọi ghi chú trong sơ đồ:"
       },
+      "views": {
+        "label": "Cách xem ghi chú",
+        "list": "Danh sách",
+        "graph": "Sơ đồ"
+      },
       "export": {
         "label": "Xuất",
         "markdown": "Tải xuống .md",
@@ -1262,7 +1274,6 @@ declare const messages: {
       "items": {
         "hub": "Tổng quan",
         "notes": "Ghi chú",
-        "graph": "Sơ đồ",
         "health": "Sức khỏe"
       },
       "actions": {
@@ -1285,9 +1296,7 @@ declare const messages: {
         },
         "modules": {
           "notesTitle": "Ghi chú",
-          "notesDescription": "Ghi chú liên kết với backlink, công thức toán và markdown.",
-          "graphTitle": "Sơ đồ tri thức",
-          "graphDescription": "Xem các ghi chú kết nối với nhau ra sao — và ghi chú nào chưa.",
+          "notesDescription": "Ghi chú liên kết với backlink, công thức toán và markdown — kèm sơ đồ cho thấy chúng nối với nhau ra sao.",
           "healthTitle": "Sức khỏe",
           "healthDescription": "Giấc ngủ, tập luyện và những con số kết nối chúng."
         },

@@ -789,7 +789,8 @@ declare const messages: {
         "open": "Open",
         "duration": "Duration",
         "sessionRpe": "Session RPE",
-        "sessionCount": "{n, number} workouts"
+        "sessionCount": "{n, number} workouts",
+        "loading": "Loading workouts…"
       },
       "workout": {
         "back": "Back to gym",
@@ -852,7 +853,13 @@ declare const messages: {
         "deleteWorkout": "Delete workout",
         "deleteWorkoutTitle": "Delete this workout?",
         "deleteWorkoutHint": "Its exercises and every set in it go with it. This cannot be undone.",
-        "deleted": "Workout deleted"
+        "deleted": "Workout deleted",
+        "loading": "Loading workout…",
+        "moveUpNamed": "Move {name} up",
+        "moveDownNamed": "Move {name} down",
+        "removeExerciseNamed": "Remove {name}",
+        "addSetNamed": "Add a set to {name}",
+        "cancel": "Cancel"
       },
       "exercises": {
         "title": "Exercises",
@@ -1248,6 +1255,11 @@ declare const messages: {
         "keyboardHint": "Use the arrow keys to move between notes, Enter to open the focused note, and Escape to leave it.",
         "noteListLabel": "Every note in the graph:"
       },
+      "views": {
+        "label": "Note views",
+        "list": "List",
+        "graph": "Graph"
+      },
       "export": {
         "label": "Export",
         "markdown": "Download .md",
@@ -1262,7 +1274,6 @@ declare const messages: {
       "items": {
         "hub": "Overview",
         "notes": "Notes",
-        "graph": "Graph",
         "health": "Health"
       },
       "actions": {
@@ -1285,9 +1296,7 @@ declare const messages: {
         },
         "modules": {
           "notesTitle": "Notes",
-          "notesDescription": "Interconnected notes with backlinks, math, and markdown.",
-          "graphTitle": "Knowledge graph",
-          "graphDescription": "See how your notes connect — and which ones don't yet.",
+          "notesDescription": "Interconnected notes with backlinks, math, markdown — and a graph view of how they all connect.",
           "healthTitle": "Health",
           "healthDescription": "Sleep, training, and the numbers that connect them."
         },

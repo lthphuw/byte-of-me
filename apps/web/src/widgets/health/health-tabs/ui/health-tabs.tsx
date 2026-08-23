@@ -16,17 +16,36 @@ import { cn } from '@/shared/lib/utils';
  * 44px tall — the minimum comfortable touch target, and this is a phone-first
  * surface.
  *
- * There is no `gym` tab. It arrives with phase 2a, together with the surface
- * behind it: a tab that leads to a 404 is worse than one that appears when its
- * screen does.
+ * The `gym` tab arrived with phase 2a, together with the surface behind it —
+ * it was deliberately absent until then, because a tab that leads to a 404 is
+ * worse than one that appears when its screen does.
+ *
+ * Gym owns THREE paths, not one. `/space/health/gym` is the screen, but the
+ * routine editor lives under it and the exercise catalogue sits beside it at
+ * `/space/health/exercises` — both are gym surfaces, and a reader standing on
+ * either one has not left the module. `prefixes` exists for that: a tab is
+ * current when the path starts with any of the routes it owns, so the catalogue
+ * does not silently unmark every tab and leave the control saying nothing.
  */
 export function HealthTabs() {
   const t = useTranslations('dashboard.health.tabs');
   const pathname = usePathname();
 
-  const tabs = [
+  const tabs: {
+    href: '/space/health' | '/space/health/sleep' | '/space/health/gym';
+    label: string;
+    /** Overview would otherwise match every path in the module. */
+    exact?: boolean;
+    /** Every route this tab stands for, when that is more than its own href. */
+    prefixes?: string[];
+  }[] = [
     { href: '/space/health', label: t('overview'), exact: true },
     { href: '/space/health/sleep', label: t('sleep') },
+    {
+      href: '/space/health/gym',
+      label: t('gym'),
+      prefixes: ['/space/health/gym', '/space/health/exercises'],
+    },
   ];
 
   return (
@@ -34,7 +53,9 @@ export function HealthTabs() {
       {tabs.map((tab) => {
         const isActive = tab.exact
           ? pathname === tab.href
-          : pathname.startsWith(tab.href);
+          : (tab.prefixes ?? [tab.href]).some((prefix) =>
+              pathname.startsWith(prefix)
+            );
 
         return (
           <Link
