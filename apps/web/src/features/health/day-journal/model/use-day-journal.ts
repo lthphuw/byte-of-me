@@ -103,12 +103,33 @@ export function useDayJournal({
     async (id: string, caption: string | null) => {
       // Optimistic: the reader typed it, and a caption that flickers back to
       // its old value while a round trip completes reads as a lost edit.
+      //
+      // The previous caption is captured from the functional updater rather
+      // than read off `photos` directly, so this callback needs no `photos`
+      // dependency and can never roll back to a stale value from a render
+      // this closure was created in.
+      let previousCaption: string | null = null;
       setPhotos((current) =>
-        current.map((photo) => (photo.id === id ? { ...photo, caption } : photo))
+        current.map((photo) => {
+          if (photo.id !== id) return photo;
+          previousCaption = photo.caption;
+          return { ...photo, caption };
+        })
       );
 
       const res = await updateDayPhotoCaption({ id, caption });
-      if (!res.success) toast.error(res.errorMsg || t('day.errorSave'));
+      if (!res.success) {
+        // Roll back, same as `removePhoto` below. Without this a failed save
+        // leaves the strip showing text that was never persisted — the toast
+        // fades in a few seconds and the UI keeps lying about the caption
+        // until the next reload, when it silently reverts on its own.
+        setPhotos((current) =>
+          current.map((photo) =>
+            photo.id === id ? { ...photo, caption: previousCaption } : photo
+          )
+        );
+        toast.error(res.errorMsg || t('day.errorSave'));
+      }
     },
     [t]
   );
