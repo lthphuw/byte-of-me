@@ -101,7 +101,9 @@ export const ModelName = {
   RoutineExercise: 'RoutineExercise',
   WorkoutSession: 'WorkoutSession',
   WorkoutExercise: 'WorkoutExercise',
-  WorkoutSet: 'WorkoutSet'
+  WorkoutSet: 'WorkoutSet',
+  DayEntry: 'DayEntry',
+  DayPhoto: 'DayPhoto'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -788,6 +790,35 @@ export const WorkoutSetScalarFieldEnum = {
 } as const
 
 export type WorkoutSetScalarFieldEnum = (typeof WorkoutSetScalarFieldEnum)[keyof typeof WorkoutSetScalarFieldEnum]
+
+
+export const DayEntryScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  localDate: 'localDate',
+  mood: 'mood',
+  reflection: 'reflection',
+  ownerId: 'ownerId'
+} as const
+
+export type DayEntryScalarFieldEnum = (typeof DayEntryScalarFieldEnum)[keyof typeof DayEntryScalarFieldEnum]
+
+
+export const DayPhotoScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  fileKey: 'fileKey',
+  mimeType: 'mimeType',
+  size: 'size',
+  caption: 'caption',
+  position: 'position',
+  dayEntryId: 'dayEntryId',
+  ownerId: 'ownerId'
+} as const
+
+export type DayPhotoScalarFieldEnum = (typeof DayPhotoScalarFieldEnum)[keyof typeof DayPhotoScalarFieldEnum]
 
 
 export const SortOrder = {

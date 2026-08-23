@@ -299,3 +299,29 @@ export type WorkoutExercise = Prisma.WorkoutExerciseModel
  * 
  */
 export type WorkoutSet = Prisma.WorkoutSetModel
+/**
+ * Model DayEntry
+ * A day, as the owner writes it up.
+ * 
+ * Separate from `SleepLog` and not a set of columns on it, for two reasons
+ * that both matter. A reflection must be writable on a day with no sleep
+ * logged at all — a journal that requires a sleep row is not a journal. And
+ * `SleepLog.localDate` is the day a night ENDED, so an entry keyed to it
+ * would file "how Friday went" under Saturday for anyone who slept past
+ * midnight. The two tables meet at `localDate` with exactly one day of
+ * deliberate offset between their meanings.
+ */
+export type DayEntry = Prisma.DayEntryModel
+/**
+ * Model DayPhoto
+ * One photo attached to a day, with its own caption.
+ * 
+ * There is no `url` column, and that is the security decision of this
+ * feature rather than an omission. These objects live in
+ * `SUPABASE_S3_PRIVATE_BUCKET`, where a public URL resolves to nothing; the
+ * only address a photo has is `/api/health/photos/[id]`, which checks the
+ * session first. A `url` column would be a value some future component
+ * renders as a broken image — or, worse, a reason for someone to move these
+ * into the public bucket so the column works.
+ */
+export type DayPhoto = Prisma.DayPhotoModel

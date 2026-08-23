@@ -228,6 +228,8 @@ export type UserWhereInput = {
   exercises?: Prisma.ExerciseListRelationFilter
   routines?: Prisma.RoutineListRelationFilter
   workoutSessions?: Prisma.WorkoutSessionListRelationFilter
+  dayEntries?: Prisma.DayEntryListRelationFilter
+  dayPhotos?: Prisma.DayPhotoListRelationFilter
   noteSharesReceived?: Prisma.NoteShareListRelationFilter
   noteSharesSent?: Prisma.NoteShareListRelationFilter
 }
@@ -263,6 +265,8 @@ export type UserOrderByWithRelationInput = {
   exercises?: Prisma.ExerciseOrderByRelationAggregateInput
   routines?: Prisma.RoutineOrderByRelationAggregateInput
   workoutSessions?: Prisma.WorkoutSessionOrderByRelationAggregateInput
+  dayEntries?: Prisma.DayEntryOrderByRelationAggregateInput
+  dayPhotos?: Prisma.DayPhotoOrderByRelationAggregateInput
   noteSharesReceived?: Prisma.NoteShareOrderByRelationAggregateInput
   noteSharesSent?: Prisma.NoteShareOrderByRelationAggregateInput
 }
@@ -301,6 +305,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   exercises?: Prisma.ExerciseListRelationFilter
   routines?: Prisma.RoutineListRelationFilter
   workoutSessions?: Prisma.WorkoutSessionListRelationFilter
+  dayEntries?: Prisma.DayEntryListRelationFilter
+  dayPhotos?: Prisma.DayPhotoListRelationFilter
   noteSharesReceived?: Prisma.NoteShareListRelationFilter
   noteSharesSent?: Prisma.NoteShareListRelationFilter
 }, "id" | "email">
@@ -364,6 +370,8 @@ export type UserCreateInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -399,6 +407,8 @@ export type UserUncheckedCreateInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -434,6 +444,8 @@ export type UserUpdateInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -469,6 +481,8 @@ export type UserUncheckedUpdateInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -895,6 +909,34 @@ export type UserUpdateOneRequiredWithoutWorkoutSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWorkoutSessionsInput, Prisma.UserUpdateWithoutWorkoutSessionsInput>, Prisma.UserUncheckedUpdateWithoutWorkoutSessionsInput>
 }
 
+export type UserCreateNestedOneWithoutDayEntriesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDayEntriesInput, Prisma.UserUncheckedCreateWithoutDayEntriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDayEntriesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutDayEntriesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDayEntriesInput, Prisma.UserUncheckedCreateWithoutDayEntriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDayEntriesInput
+  upsert?: Prisma.UserUpsertWithoutDayEntriesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDayEntriesInput, Prisma.UserUpdateWithoutDayEntriesInput>, Prisma.UserUncheckedUpdateWithoutDayEntriesInput>
+}
+
+export type UserCreateNestedOneWithoutDayPhotosInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDayPhotosInput, Prisma.UserUncheckedCreateWithoutDayPhotosInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDayPhotosInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutDayPhotosNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDayPhotosInput, Prisma.UserUncheckedCreateWithoutDayPhotosInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDayPhotosInput
+  upsert?: Prisma.UserUpsertWithoutDayPhotosInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDayPhotosInput, Prisma.UserUpdateWithoutDayPhotosInput>, Prisma.UserUncheckedUpdateWithoutDayPhotosInput>
+}
+
 export type UserCreateWithoutAccountsInput = {
   id?: string
   createdAt?: Date | string
@@ -925,6 +967,8 @@ export type UserCreateWithoutAccountsInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -959,6 +1003,8 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -1009,6 +1055,8 @@ export type UserUpdateWithoutAccountsInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -1043,6 +1091,8 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -1077,6 +1127,8 @@ export type UserCreateWithoutSessionsInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -1111,6 +1163,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -1161,6 +1215,8 @@ export type UserUpdateWithoutSessionsInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -1195,6 +1251,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -1229,6 +1287,8 @@ export type UserCreateWithoutSocialLinksInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -1263,6 +1323,8 @@ export type UserUncheckedCreateWithoutSocialLinksInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -1313,6 +1375,8 @@ export type UserUpdateWithoutSocialLinksInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -1347,6 +1411,8 @@ export type UserUncheckedUpdateWithoutSocialLinksInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -1381,6 +1447,8 @@ export type UserCreateWithoutUserProfileInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -1415,6 +1483,8 @@ export type UserUncheckedCreateWithoutUserProfileInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -1465,6 +1535,8 @@ export type UserUpdateWithoutUserProfileInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -1499,6 +1571,8 @@ export type UserUncheckedUpdateWithoutUserProfileInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -1533,6 +1607,8 @@ export type UserCreateWithoutEducationsInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -1567,6 +1643,8 @@ export type UserUncheckedCreateWithoutEducationsInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -1617,6 +1695,8 @@ export type UserUpdateWithoutEducationsInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -1651,6 +1731,8 @@ export type UserUncheckedUpdateWithoutEducationsInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -1685,6 +1767,8 @@ export type UserCreateWithoutTechStacksInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -1719,6 +1803,8 @@ export type UserUncheckedCreateWithoutTechStacksInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -1769,6 +1855,8 @@ export type UserUpdateWithoutTechStacksInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -1803,6 +1891,8 @@ export type UserUncheckedUpdateWithoutTechStacksInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -1837,6 +1927,8 @@ export type UserCreateWithoutWorkExperiencesInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -1871,6 +1963,8 @@ export type UserUncheckedCreateWithoutWorkExperiencesInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -1921,6 +2015,8 @@ export type UserUpdateWithoutWorkExperiencesInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -1955,6 +2051,8 @@ export type UserUncheckedUpdateWithoutWorkExperiencesInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -1989,6 +2087,8 @@ export type UserCreateWithoutProjectsInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -2023,6 +2123,8 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -2073,6 +2175,8 @@ export type UserUpdateWithoutProjectsInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -2107,6 +2211,8 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -2141,6 +2247,8 @@ export type UserCreateWithoutBlogsInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -2175,6 +2283,8 @@ export type UserUncheckedCreateWithoutBlogsInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -2225,6 +2335,8 @@ export type UserUpdateWithoutBlogsInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -2259,6 +2371,8 @@ export type UserUncheckedUpdateWithoutBlogsInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -2293,6 +2407,8 @@ export type UserCreateWithoutBlogStatisticLogsInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -2327,6 +2443,8 @@ export type UserUncheckedCreateWithoutBlogStatisticLogsInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -2377,6 +2495,8 @@ export type UserUpdateWithoutBlogStatisticLogsInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -2411,6 +2531,8 @@ export type UserUncheckedUpdateWithoutBlogStatisticLogsInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -2445,6 +2567,8 @@ export type UserCreateWithoutMediaInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -2479,6 +2603,8 @@ export type UserUncheckedCreateWithoutMediaInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -2529,6 +2655,8 @@ export type UserUpdateWithoutMediaInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -2563,6 +2691,8 @@ export type UserUncheckedUpdateWithoutMediaInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -2597,6 +2727,8 @@ export type UserCreateWithoutInteractionsInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -2631,6 +2763,8 @@ export type UserUncheckedCreateWithoutInteractionsInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -2681,6 +2815,8 @@ export type UserUpdateWithoutInteractionsInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -2715,6 +2851,8 @@ export type UserUncheckedUpdateWithoutInteractionsInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -2749,6 +2887,8 @@ export type UserCreateWithoutCommentsInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -2783,6 +2923,8 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -2833,6 +2975,8 @@ export type UserUpdateWithoutCommentsInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -2867,6 +3011,8 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -2901,6 +3047,8 @@ export type UserCreateWithoutContactMessagesInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -2935,6 +3083,8 @@ export type UserUncheckedCreateWithoutContactMessagesInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -2985,6 +3135,8 @@ export type UserUpdateWithoutContactMessagesInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -3019,6 +3171,8 @@ export type UserUncheckedUpdateWithoutContactMessagesInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -3053,6 +3207,8 @@ export type UserCreateWithoutNotesInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -3087,6 +3243,8 @@ export type UserUncheckedCreateWithoutNotesInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -3137,6 +3295,8 @@ export type UserUpdateWithoutNotesInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -3171,6 +3331,8 @@ export type UserUncheckedUpdateWithoutNotesInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -3205,6 +3367,8 @@ export type UserCreateWithoutNoteDocumentsInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -3239,6 +3403,8 @@ export type UserUncheckedCreateWithoutNoteDocumentsInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -3289,6 +3455,8 @@ export type UserUpdateWithoutNoteDocumentsInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -3323,6 +3491,8 @@ export type UserUncheckedUpdateWithoutNoteDocumentsInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -3357,6 +3527,8 @@ export type UserCreateWithoutNoteLabelsInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -3391,6 +3563,8 @@ export type UserUncheckedCreateWithoutNoteLabelsInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -3441,6 +3615,8 @@ export type UserUpdateWithoutNoteLabelsInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -3475,6 +3651,8 @@ export type UserUncheckedUpdateWithoutNoteLabelsInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -3510,6 +3688,8 @@ export type UserCreateWithoutNoteSharesReceivedInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
 
@@ -3544,6 +3724,8 @@ export type UserUncheckedCreateWithoutNoteSharesReceivedInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
 
@@ -3583,6 +3765,8 @@ export type UserCreateWithoutNoteSharesSentInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
 }
 
@@ -3617,6 +3801,8 @@ export type UserUncheckedCreateWithoutNoteSharesSentInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
 }
 
@@ -3667,6 +3853,8 @@ export type UserUpdateWithoutNoteSharesReceivedInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
 
@@ -3701,6 +3889,8 @@ export type UserUncheckedUpdateWithoutNoteSharesReceivedInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
 
@@ -3746,6 +3936,8 @@ export type UserUpdateWithoutNoteSharesSentInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
 }
 
@@ -3780,6 +3972,8 @@ export type UserUncheckedUpdateWithoutNoteSharesSentInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
 }
 
@@ -3813,6 +4007,8 @@ export type UserCreateWithoutWorkspaceSettingsInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -3847,6 +4043,8 @@ export type UserUncheckedCreateWithoutWorkspaceSettingsInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -3897,6 +4095,8 @@ export type UserUpdateWithoutWorkspaceSettingsInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -3931,6 +4131,8 @@ export type UserUncheckedUpdateWithoutWorkspaceSettingsInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -3965,6 +4167,8 @@ export type UserCreateWithoutSleepLogsInput = {
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -3999,6 +4203,8 @@ export type UserUncheckedCreateWithoutSleepLogsInput = {
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -4049,6 +4255,8 @@ export type UserUpdateWithoutSleepLogsInput = {
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -4083,6 +4291,8 @@ export type UserUncheckedUpdateWithoutSleepLogsInput = {
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -4117,6 +4327,8 @@ export type UserCreateWithoutExercisesInput = {
   sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -4151,6 +4363,8 @@ export type UserUncheckedCreateWithoutExercisesInput = {
   sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -4201,6 +4415,8 @@ export type UserUpdateWithoutExercisesInput = {
   sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -4235,6 +4451,8 @@ export type UserUncheckedUpdateWithoutExercisesInput = {
   sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -4269,6 +4487,8 @@ export type UserCreateWithoutRoutinesInput = {
   sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -4303,6 +4523,8 @@ export type UserUncheckedCreateWithoutRoutinesInput = {
   sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -4353,6 +4575,8 @@ export type UserUpdateWithoutRoutinesInput = {
   sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -4387,6 +4611,8 @@ export type UserUncheckedUpdateWithoutRoutinesInput = {
   sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -4421,6 +4647,8 @@ export type UserCreateWithoutWorkoutSessionsInput = {
   sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
   exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
 }
@@ -4455,6 +4683,8 @@ export type UserUncheckedCreateWithoutWorkoutSessionsInput = {
   sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
   exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
   noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
   noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
 }
@@ -4505,6 +4735,8 @@ export type UserUpdateWithoutWorkoutSessionsInput = {
   sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
   exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
 }
@@ -4539,6 +4771,328 @@ export type UserUncheckedUpdateWithoutWorkoutSessionsInput = {
   sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
   exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
+  noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
+  noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
+}
+
+export type UserCreateWithoutDayEntriesInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  email: string
+  name?: string | null
+  image?: string | null
+  emailVerified?: Date | string | null
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  userProfile?: Prisma.UserProfileCreateNestedOneWithoutUserInput
+  socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
+  educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
+  techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
+  media?: Prisma.MediaCreateNestedManyWithoutUserInput
+  interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
+  blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
+  notes?: Prisma.NoteCreateNestedManyWithoutOwnerInput
+  noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
+  noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
+  workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
+  exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
+  routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
+  workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoCreateNestedManyWithoutOwnerInput
+  noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
+  noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
+}
+
+export type UserUncheckedCreateWithoutDayEntriesInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  email: string
+  name?: string | null
+  image?: string | null
+  emailVerified?: Date | string | null
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  userProfile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput
+  socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
+  educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
+  techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
+  media?: Prisma.MediaUncheckedCreateNestedManyWithoutUserInput
+  interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
+  blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
+  notes?: Prisma.NoteUncheckedCreateNestedManyWithoutOwnerInput
+  noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
+  noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
+  workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
+  exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
+  routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
+  workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayPhotos?: Prisma.DayPhotoUncheckedCreateNestedManyWithoutOwnerInput
+  noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
+  noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
+}
+
+export type UserCreateOrConnectWithoutDayEntriesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutDayEntriesInput, Prisma.UserUncheckedCreateWithoutDayEntriesInput>
+}
+
+export type UserUpsertWithoutDayEntriesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutDayEntriesInput, Prisma.UserUncheckedUpdateWithoutDayEntriesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutDayEntriesInput, Prisma.UserUncheckedCreateWithoutDayEntriesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutDayEntriesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutDayEntriesInput, Prisma.UserUncheckedUpdateWithoutDayEntriesInput>
+}
+
+export type UserUpdateWithoutDayEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  userProfile?: Prisma.UserProfileUpdateOneWithoutUserNestedInput
+  socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
+  educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
+  techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
+  media?: Prisma.MediaUpdateManyWithoutUserNestedInput
+  interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
+  blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
+  notes?: Prisma.NoteUpdateManyWithoutOwnerNestedInput
+  noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
+  noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
+  workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
+  exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
+  routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
+  workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUpdateManyWithoutOwnerNestedInput
+  noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
+  noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutDayEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  userProfile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput
+  socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
+  educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
+  techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
+  media?: Prisma.MediaUncheckedUpdateManyWithoutUserNestedInput
+  interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
+  blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
+  notes?: Prisma.NoteUncheckedUpdateManyWithoutOwnerNestedInput
+  noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
+  noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
+  exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
+  routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
+  workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayPhotos?: Prisma.DayPhotoUncheckedUpdateManyWithoutOwnerNestedInput
+  noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
+  noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
+}
+
+export type UserCreateWithoutDayPhotosInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  email: string
+  name?: string | null
+  image?: string | null
+  emailVerified?: Date | string | null
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  userProfile?: Prisma.UserProfileCreateNestedOneWithoutUserInput
+  socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
+  educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
+  techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
+  media?: Prisma.MediaCreateNestedManyWithoutUserInput
+  interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
+  blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
+  notes?: Prisma.NoteCreateNestedManyWithoutOwnerInput
+  noteLabels?: Prisma.NoteLabelCreateNestedManyWithoutOwnerInput
+  noteDocuments?: Prisma.NoteDocumentCreateNestedManyWithoutOwnerInput
+  workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogCreateNestedManyWithoutOwnerInput
+  exercises?: Prisma.ExerciseCreateNestedManyWithoutOwnerInput
+  routines?: Prisma.RoutineCreateNestedManyWithoutOwnerInput
+  workoutSessions?: Prisma.WorkoutSessionCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryCreateNestedManyWithoutOwnerInput
+  noteSharesReceived?: Prisma.NoteShareCreateNestedManyWithoutRecipientInput
+  noteSharesSent?: Prisma.NoteShareCreateNestedManyWithoutInvitedByInput
+}
+
+export type UserUncheckedCreateWithoutDayPhotosInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  email: string
+  name?: string | null
+  image?: string | null
+  emailVerified?: Date | string | null
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  userProfile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput
+  socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
+  educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
+  techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
+  media?: Prisma.MediaUncheckedCreateNestedManyWithoutUserInput
+  interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
+  blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
+  notes?: Prisma.NoteUncheckedCreateNestedManyWithoutOwnerInput
+  noteLabels?: Prisma.NoteLabelUncheckedCreateNestedManyWithoutOwnerInput
+  noteDocuments?: Prisma.NoteDocumentUncheckedCreateNestedManyWithoutOwnerInput
+  workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+  sleepLogs?: Prisma.SleepLogUncheckedCreateNestedManyWithoutOwnerInput
+  exercises?: Prisma.ExerciseUncheckedCreateNestedManyWithoutOwnerInput
+  routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutOwnerInput
+  workoutSessions?: Prisma.WorkoutSessionUncheckedCreateNestedManyWithoutOwnerInput
+  dayEntries?: Prisma.DayEntryUncheckedCreateNestedManyWithoutOwnerInput
+  noteSharesReceived?: Prisma.NoteShareUncheckedCreateNestedManyWithoutRecipientInput
+  noteSharesSent?: Prisma.NoteShareUncheckedCreateNestedManyWithoutInvitedByInput
+}
+
+export type UserCreateOrConnectWithoutDayPhotosInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutDayPhotosInput, Prisma.UserUncheckedCreateWithoutDayPhotosInput>
+}
+
+export type UserUpsertWithoutDayPhotosInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutDayPhotosInput, Prisma.UserUncheckedUpdateWithoutDayPhotosInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutDayPhotosInput, Prisma.UserUncheckedCreateWithoutDayPhotosInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutDayPhotosInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutDayPhotosInput, Prisma.UserUncheckedUpdateWithoutDayPhotosInput>
+}
+
+export type UserUpdateWithoutDayPhotosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  userProfile?: Prisma.UserProfileUpdateOneWithoutUserNestedInput
+  socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
+  educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
+  techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
+  media?: Prisma.MediaUpdateManyWithoutUserNestedInput
+  interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
+  blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
+  notes?: Prisma.NoteUpdateManyWithoutOwnerNestedInput
+  noteLabels?: Prisma.NoteLabelUpdateManyWithoutOwnerNestedInput
+  noteDocuments?: Prisma.NoteDocumentUpdateManyWithoutOwnerNestedInput
+  workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUpdateManyWithoutOwnerNestedInput
+  exercises?: Prisma.ExerciseUpdateManyWithoutOwnerNestedInput
+  routines?: Prisma.RoutineUpdateManyWithoutOwnerNestedInput
+  workoutSessions?: Prisma.WorkoutSessionUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUpdateManyWithoutOwnerNestedInput
+  noteSharesReceived?: Prisma.NoteShareUpdateManyWithoutRecipientNestedInput
+  noteSharesSent?: Prisma.NoteShareUpdateManyWithoutInvitedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutDayPhotosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  userProfile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput
+  socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
+  educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
+  techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
+  media?: Prisma.MediaUncheckedUpdateManyWithoutUserNestedInput
+  interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
+  blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
+  notes?: Prisma.NoteUncheckedUpdateManyWithoutOwnerNestedInput
+  noteLabels?: Prisma.NoteLabelUncheckedUpdateManyWithoutOwnerNestedInput
+  noteDocuments?: Prisma.NoteDocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+  sleepLogs?: Prisma.SleepLogUncheckedUpdateManyWithoutOwnerNestedInput
+  exercises?: Prisma.ExerciseUncheckedUpdateManyWithoutOwnerNestedInput
+  routines?: Prisma.RoutineUncheckedUpdateManyWithoutOwnerNestedInput
+  workoutSessions?: Prisma.WorkoutSessionUncheckedUpdateManyWithoutOwnerNestedInput
+  dayEntries?: Prisma.DayEntryUncheckedUpdateManyWithoutOwnerNestedInput
   noteSharesReceived?: Prisma.NoteShareUncheckedUpdateManyWithoutRecipientNestedInput
   noteSharesSent?: Prisma.NoteShareUncheckedUpdateManyWithoutInvitedByNestedInput
 }
@@ -4569,6 +5123,8 @@ export type UserCountOutputType = {
   exercises: number
   routines: number
   workoutSessions: number
+  dayEntries: number
+  dayPhotos: number
   noteSharesReceived: number
   noteSharesSent: number
 }
@@ -4594,6 +5150,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   exercises?: boolean | UserCountOutputTypeCountExercisesArgs
   routines?: boolean | UserCountOutputTypeCountRoutinesArgs
   workoutSessions?: boolean | UserCountOutputTypeCountWorkoutSessionsArgs
+  dayEntries?: boolean | UserCountOutputTypeCountDayEntriesArgs
+  dayPhotos?: boolean | UserCountOutputTypeCountDayPhotosArgs
   noteSharesReceived?: boolean | UserCountOutputTypeCountNoteSharesReceivedArgs
   noteSharesSent?: boolean | UserCountOutputTypeCountNoteSharesSentArgs
 }
@@ -4751,6 +5309,20 @@ export type UserCountOutputTypeCountWorkoutSessionsArgs<ExtArgs extends runtime.
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountDayEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DayEntryWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountDayPhotosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DayPhotoWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountNoteSharesReceivedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.NoteShareWhereInput
 }
@@ -4794,6 +5366,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   exercises?: boolean | Prisma.User$exercisesArgs<ExtArgs>
   routines?: boolean | Prisma.User$routinesArgs<ExtArgs>
   workoutSessions?: boolean | Prisma.User$workoutSessionsArgs<ExtArgs>
+  dayEntries?: boolean | Prisma.User$dayEntriesArgs<ExtArgs>
+  dayPhotos?: boolean | Prisma.User$dayPhotosArgs<ExtArgs>
   noteSharesReceived?: boolean | Prisma.User$noteSharesReceivedArgs<ExtArgs>
   noteSharesSent?: boolean | Prisma.User$noteSharesSentArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -4856,6 +5430,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   exercises?: boolean | Prisma.User$exercisesArgs<ExtArgs>
   routines?: boolean | Prisma.User$routinesArgs<ExtArgs>
   workoutSessions?: boolean | Prisma.User$workoutSessionsArgs<ExtArgs>
+  dayEntries?: boolean | Prisma.User$dayEntriesArgs<ExtArgs>
+  dayPhotos?: boolean | Prisma.User$dayPhotosArgs<ExtArgs>
   noteSharesReceived?: boolean | Prisma.User$noteSharesReceivedArgs<ExtArgs>
   noteSharesSent?: boolean | Prisma.User$noteSharesSentArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -4888,6 +5464,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     exercises: Prisma.$ExercisePayload<ExtArgs>[]
     routines: Prisma.$RoutinePayload<ExtArgs>[]
     workoutSessions: Prisma.$WorkoutSessionPayload<ExtArgs>[]
+    dayEntries: Prisma.$DayEntryPayload<ExtArgs>[]
+    dayPhotos: Prisma.$DayPhotoPayload<ExtArgs>[]
     noteSharesReceived: Prisma.$NoteSharePayload<ExtArgs>[]
     noteSharesSent: Prisma.$NoteSharePayload<ExtArgs>[]
   }
@@ -5316,6 +5894,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   exercises<T extends Prisma.User$exercisesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$exercisesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExercisePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   routines<T extends Prisma.User$routinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$routinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoutinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   workoutSessions<T extends Prisma.User$workoutSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$workoutSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkoutSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  dayEntries<T extends Prisma.User$dayEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$dayEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DayEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  dayPhotos<T extends Prisma.User$dayPhotosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$dayPhotosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DayPhotoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   noteSharesReceived<T extends Prisma.User$noteSharesReceivedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$noteSharesReceivedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NoteSharePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   noteSharesSent<T extends Prisma.User$noteSharesSentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$noteSharesSentArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NoteSharePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -6263,6 +6843,54 @@ export type User$workoutSessionsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.WorkoutSessionScalarFieldEnum | Prisma.WorkoutSessionScalarFieldEnum[]
+}
+
+/**
+ * User.dayEntries
+ */
+export type User$dayEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DayEntry
+   */
+  select?: Prisma.DayEntrySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DayEntry
+   */
+  omit?: Prisma.DayEntryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DayEntryInclude<ExtArgs> | null
+  where?: Prisma.DayEntryWhereInput
+  orderBy?: Prisma.DayEntryOrderByWithRelationInput | Prisma.DayEntryOrderByWithRelationInput[]
+  cursor?: Prisma.DayEntryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DayEntryScalarFieldEnum | Prisma.DayEntryScalarFieldEnum[]
+}
+
+/**
+ * User.dayPhotos
+ */
+export type User$dayPhotosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DayPhoto
+   */
+  select?: Prisma.DayPhotoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DayPhoto
+   */
+  omit?: Prisma.DayPhotoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DayPhotoInclude<ExtArgs> | null
+  where?: Prisma.DayPhotoWhereInput
+  orderBy?: Prisma.DayPhotoOrderByWithRelationInput | Prisma.DayPhotoOrderByWithRelationInput[]
+  cursor?: Prisma.DayPhotoWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DayPhotoScalarFieldEnum | Prisma.DayPhotoScalarFieldEnum[]
 }
 
 /**

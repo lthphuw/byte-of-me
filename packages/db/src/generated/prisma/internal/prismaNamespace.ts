@@ -447,7 +447,9 @@ export const ModelName = {
   RoutineExercise: 'RoutineExercise',
   WorkoutSession: 'WorkoutSession',
   WorkoutExercise: 'WorkoutExercise',
-  WorkoutSet: 'WorkoutSet'
+  WorkoutSet: 'WorkoutSet',
+  DayEntry: 'DayEntry',
+  DayPhoto: 'DayPhoto'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -463,7 +465,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "note" | "noteLink" | "noteDocument" | "noteLabel" | "noteOnLabel" | "noteShare" | "workspaceSettings" | "sleepLog" | "exercise" | "routine" | "routineExercise" | "workoutSession" | "workoutExercise" | "workoutSet"
+    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "note" | "noteLink" | "noteDocument" | "noteLabel" | "noteOnLabel" | "noteShare" | "workspaceSettings" | "sleepLog" | "exercise" | "routine" | "routineExercise" | "workoutSession" | "workoutExercise" | "workoutSet" | "dayEntry" | "dayPhoto"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -4241,6 +4243,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    DayEntry: {
+      payload: Prisma.$DayEntryPayload<ExtArgs>
+      fields: Prisma.DayEntryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DayEntryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayEntryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DayEntryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayEntryPayload>
+        }
+        findFirst: {
+          args: Prisma.DayEntryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayEntryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DayEntryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayEntryPayload>
+        }
+        findMany: {
+          args: Prisma.DayEntryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayEntryPayload>[]
+        }
+        create: {
+          args: Prisma.DayEntryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayEntryPayload>
+        }
+        createMany: {
+          args: Prisma.DayEntryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DayEntryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayEntryPayload>[]
+        }
+        delete: {
+          args: Prisma.DayEntryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayEntryPayload>
+        }
+        update: {
+          args: Prisma.DayEntryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayEntryPayload>
+        }
+        deleteMany: {
+          args: Prisma.DayEntryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DayEntryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DayEntryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayEntryPayload>[]
+        }
+        upsert: {
+          args: Prisma.DayEntryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayEntryPayload>
+        }
+        aggregate: {
+          args: Prisma.DayEntryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDayEntry>
+        }
+        groupBy: {
+          args: Prisma.DayEntryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DayEntryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DayEntryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DayEntryCountAggregateOutputType> | number
+        }
+      }
+    }
+    DayPhoto: {
+      payload: Prisma.$DayPhotoPayload<ExtArgs>
+      fields: Prisma.DayPhotoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DayPhotoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayPhotoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DayPhotoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayPhotoPayload>
+        }
+        findFirst: {
+          args: Prisma.DayPhotoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayPhotoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DayPhotoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayPhotoPayload>
+        }
+        findMany: {
+          args: Prisma.DayPhotoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayPhotoPayload>[]
+        }
+        create: {
+          args: Prisma.DayPhotoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayPhotoPayload>
+        }
+        createMany: {
+          args: Prisma.DayPhotoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DayPhotoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayPhotoPayload>[]
+        }
+        delete: {
+          args: Prisma.DayPhotoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayPhotoPayload>
+        }
+        update: {
+          args: Prisma.DayPhotoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayPhotoPayload>
+        }
+        deleteMany: {
+          args: Prisma.DayPhotoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DayPhotoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DayPhotoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayPhotoPayload>[]
+        }
+        upsert: {
+          args: Prisma.DayPhotoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DayPhotoPayload>
+        }
+        aggregate: {
+          args: Prisma.DayPhotoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDayPhoto>
+        }
+        groupBy: {
+          args: Prisma.DayPhotoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DayPhotoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DayPhotoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DayPhotoCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -4950,6 +5100,35 @@ export const WorkoutSetScalarFieldEnum = {
 export type WorkoutSetScalarFieldEnum = (typeof WorkoutSetScalarFieldEnum)[keyof typeof WorkoutSetScalarFieldEnum]
 
 
+export const DayEntryScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  localDate: 'localDate',
+  mood: 'mood',
+  reflection: 'reflection',
+  ownerId: 'ownerId'
+} as const
+
+export type DayEntryScalarFieldEnum = (typeof DayEntryScalarFieldEnum)[keyof typeof DayEntryScalarFieldEnum]
+
+
+export const DayPhotoScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  fileKey: 'fileKey',
+  mimeType: 'mimeType',
+  size: 'size',
+  caption: 'caption',
+  position: 'position',
+  dayEntryId: 'dayEntryId',
+  ownerId: 'ownerId'
+} as const
+
+export type DayPhotoScalarFieldEnum = (typeof DayPhotoScalarFieldEnum)[keyof typeof DayPhotoScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -5296,6 +5475,8 @@ export type GlobalOmitConfig = {
   workoutSession?: Prisma.WorkoutSessionOmit
   workoutExercise?: Prisma.WorkoutExerciseOmit
   workoutSet?: Prisma.WorkoutSetOmit
+  dayEntry?: Prisma.DayEntryOmit
+  dayPhoto?: Prisma.DayPhotoOmit
 }
 
 /* Types for Logging */

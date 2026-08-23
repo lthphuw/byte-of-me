@@ -95,6 +95,8 @@ model User {
   exercises         Exercise[]
   routines          Routine[]
   workoutSessions   WorkoutSession[]
+  dayEntries        DayEntry[]
+  dayPhotos         DayPhoto[]
 
   noteSharesReceived NoteShare[] @relation("NoteShareRecipient")
   noteSharesSent     NoteShare[] @relation("NoteShareInviter")
@@ -1224,4 +1226,80 @@ model WorkoutSet {
 
   @@index([workoutExerciseId, position], map: "idx_workout_sets_exercise_position")
   @@map("workout_sets")
+}
+
+// ===============================
+// DAY JOURNAL
+// ===============================
+
+/// A day, as the owner writes it up.
+///
+/// Separate from `SleepLog` and not a set of columns on it, for two reasons
+/// that both matter. A reflection must be writable on a day with no sleep
+/// logged at all — a journal that requires a sleep row is not a journal. And
+/// `SleepLog.localDate` is the day a night ENDED, so an entry keyed to it
+/// would file "how Friday went" under Saturday for anyone who slept past
+/// midnight. The two tables meet at `localDate` with exactly one day of
+/// deliberate offset between their meanings.
+model DayEntry {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  /// The CALENDAR day. `@db.Date`, never a timestamp: grouping timestamps by
+  /// day at query time drifts with timezone.
+  localDate DateTime @db.Date @map("local_date")
+
+  /// 1..5. The five faces the sleep quality scale used to draw — they move
+  /// here, and sleep quality becomes dots, so one picture means one thing.
+  mood Int?
+
+  reflection String? @db.Text
+
+  ownerId String @map("owner_id")
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  photos DayPhoto[]
+
+  /// One entry per day, which is what makes the write an upsert rather than a
+  /// select-then-insert with a race in the middle.
+  @@unique([ownerId, localDate], map: "uniq_day_entries_owner_date")
+  @@map("day_entries")
+}
+
+/// One photo attached to a day, with its own caption.
+///
+/// There is no `url` column, and that is the security decision of this
+/// feature rather than an omission. These objects live in
+/// `SUPABASE_S3_PRIVATE_BUCKET`, where a public URL resolves to nothing; the
+/// only address a photo has is `/api/health/photos/[id]`, which checks the
+/// session first. A `url` column would be a value some future component
+/// renders as a broken image — or, worse, a reason for someone to move these
+/// into the public bucket so the column works.
+model DayPhoto {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  fileKey  String @unique @map("file_key")
+  mimeType String @map("mime_type")
+  size     Int
+
+  caption String? @db.Text
+
+  /// Display order within the day. Not `createdAt`, so a photo can be reordered
+  /// later without rewriting a timestamp that means something else.
+  position Int @default(0)
+
+  dayEntryId String   @map("day_entry_id")
+  dayEntry   DayEntry @relation(fields: [dayEntryId], references: [id], onDelete: Cascade)
+
+  /// Denormalised from the entry so the serving route answers "is this yours"
+  /// with one indexed lookup instead of a join. Safe to duplicate: an entry
+  /// never changes owner. Same reasoning as `NoteDocument.ownerId`.
+  ownerId String @map("owner_id")
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([dayEntryId, position])
+  @@map("day_photos")
 }
