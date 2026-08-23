@@ -18,7 +18,7 @@ const HEADING_ID = 'sleep-month-summary-heading';
 /** One decimal on the mean mood. A month of 3s and 4s averaging "4" hides the
  *  whole difference the figure exists to show, and a second decimal is
  *  precision the 1–5 input never had. */
-const QUALITY_DECIMALS = 1;
+const MOOD_DECIMALS = 1;
 
 /**
  * The month on screen, as six figures.
@@ -114,7 +114,7 @@ export async function SleepMonthSummary({
     ): night is LoggedNight & { totalSleepMin: number; mood: number } =>
       night.mood !== null
   );
-  const meanQuality =
+  const meanMood =
     rated.length === 0
       ? null
       : rated.reduce((sum, night) => sum + night.mood, 0) / rated.length;
@@ -177,18 +177,18 @@ export async function SleepMonthSummary({
 
         <StatTile
           icon={Star}
-          label={t('sleep.monthQuality')}
+          label={t('sleep.monthMood')}
           value={
-            meanQuality === null
+            meanMood === null
               ? '—'
-              : t('sleep.monthQualityValue', {
-                  value: meanQuality.toFixed(QUALITY_DECIMALS),
+              : t('sleep.monthMoodValue', {
+                  value: meanMood.toFixed(MOOD_DECIMALS),
                 })
           }
           hint={
-            meanQuality === null
-              ? t('sleep.monthQualityUnavailable')
-              : t('sleep.monthQualityContext', { n: rated.length })
+            meanMood === null
+              ? t('sleep.monthMoodUnavailable')
+              : t('sleep.monthMoodContext', { n: rated.length })
           }
         />
       </div>

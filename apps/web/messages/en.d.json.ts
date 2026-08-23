@@ -764,10 +764,10 @@ declare const messages: {
         "monthOnTargetContext": "{n, number} of {total, number} logged",
         "monthLongest": "Longest night",
         "monthShortest": "Shortest night",
-        "monthQuality": "Average quality",
-        "monthQualityValue": "{value} / 5",
-        "monthQualityContext": "Across {n, number} rated nights",
-        "monthQualityUnavailable": "No night this month has been rated."
+        "monthMood": "Average mood",
+        "monthMoodValue": "{value} / 5",
+        "monthMoodContext": "Across {n, number} days you rated",
+        "monthMoodUnavailable": "No day this month has a mood."
       },
       "day": {
         "title": "How was {date}?",

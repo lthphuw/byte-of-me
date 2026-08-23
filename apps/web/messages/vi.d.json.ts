@@ -764,10 +764,10 @@ declare const messages: {
         "monthOnTargetContext": "{n, number} trên {total, number} đêm đã ghi",
         "monthLongest": "Đêm dài nhất",
         "monthShortest": "Đêm ngắn nhất",
-        "monthQuality": "Chất lượng trung bình",
-        "monthQualityValue": "{value} / 5",
-        "monthQualityContext": "Trên {n, number} đêm đã chấm",
-        "monthQualityUnavailable": "Chưa đêm nào trong tháng này được chấm."
+        "monthMood": "Tâm trạng trung bình",
+        "monthMoodValue": "{value} / 5",
+        "monthMoodContext": "Trên {n, number} ngày bạn đã chấm",
+        "monthMoodUnavailable": "Chưa ngày nào trong tháng được chấm tâm trạng."
       },
       "day": {
         "title": "Ngày {date} thế nào?",
