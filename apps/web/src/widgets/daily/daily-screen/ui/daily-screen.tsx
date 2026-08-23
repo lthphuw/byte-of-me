@@ -231,16 +231,17 @@ export async function DailyScreen({ month }: { month?: string }) {
               {/* No "Log sleep" button beside it, unlike the hub this came from: tapping
                   today's cell on the calendar opens the same sheet and writes the same
                   row, and a second control for one action only raises the question of
-                  whether the two do different things. */}
-              <div className="rounded-3xl border bg-card p-5 shadow">
-                <SleepDurationHero
-                  durationMin={lastNight?.totalSleepMin ?? null}
-                  targetMin={summary?.targetMin}
-                  label={t('hub.lastNight')}
-                  emptyLabel={t('hub.noData')}
-                  footnote={lastNight?.estimated ? t('hub.estimated') : undefined}
-                />
-              </div>
+                  whether the two do different things. `SleepDurationHero` already draws
+                  its own `rounded-3xl border bg-card p-8 shadow` card — do not wrap it in
+                  another one, or the ring sits inside two nested cards with a visible
+                  double border and double shadow. */}
+              <SleepDurationHero
+                durationMin={lastNight?.totalSleepMin ?? null}
+                targetMin={summary?.targetMin}
+                label={t('hub.lastNight')}
+                emptyLabel={t('hub.noData')}
+                footnote={lastNight?.estimated ? t('hub.estimated') : undefined}
+              />
 
               {/* `destructive-text`, not `destructive`: §14 records that the
                   fill token measures 3.76:1 as text. On a sheet, not bare on

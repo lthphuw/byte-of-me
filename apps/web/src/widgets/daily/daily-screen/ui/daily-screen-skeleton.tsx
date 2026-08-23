@@ -109,19 +109,17 @@ export function DailyScreenSkeleton() {
                 duration chart, in the order the screen renders them. */}
             <div className="flex min-w-0 flex-col gap-6">
               {/* The hero card — see `SleepDurationHero` for the real anatomy
-                  this mirrors: the outer `rounded-3xl border bg-card p-5
-                  shadow` wrapper `DailyScreen` puts around it, then the
-                  hero's own `p-8` card holding a centred 176px ring with a
-                  label above it, and below the ring a delta line and a
-                  target line. */}
-              <div className="rounded-3xl border bg-card p-5 shadow">
-                <div className="rounded-3xl border bg-card p-8 shadow">
-                  <div className="flex flex-col items-center gap-5">
-                    <Skeleton aria-hidden className="size-44 rounded-full" />
-                    <div className="flex flex-col items-center gap-1.5">
-                      <Skeleton aria-hidden className="h-4 w-32" />
-                      <Skeleton aria-hidden className="h-3 w-40" />
-                    </div>
+                  this mirrors: ONE `rounded-3xl border bg-card p-8 shadow`
+                  card (the hero draws its own; `DailyScreen` does not wrap it
+                  in a second one) holding a centred 176px ring with a label
+                  above it, and below the ring a delta line and a target
+                  line. */}
+              <div className="rounded-3xl border bg-card p-8 shadow">
+                <div className="flex flex-col items-center gap-5">
+                  <Skeleton aria-hidden className="size-44 rounded-full" />
+                  <div className="flex flex-col items-center gap-1.5">
+                    <Skeleton aria-hidden className="h-4 w-32" />
+                    <Skeleton aria-hidden className="h-3 w-40" />
                   </div>
                 </div>
               </div>
