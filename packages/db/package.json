@@ -4,7 +4,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./types": "./src/types.ts"
+    "./types": "./src/types.ts",
+    "./gym-vocabulary": "./src/gym-vocabulary.ts"
   },
   "scripts": {
     "test": "bun test",

@@ -27,76 +27,29 @@ import { prisma } from '../src';
  */
 
 /**
- * ONE controlled muscle vocabulary. The whole reason `primary_muscle` is a
- * column rather than free text is that "sets per muscle per week" has to GROUP
- * on it — `front_delts` and `front delts` and `anterior deltoid` would be three
- * bars on that chart instead of one. Every value written by this file, by the
- * app's exercise form, and by any future import must come from this array.
+ * The controlled vocabularies, re-exported from the one definition in
+ * `packages/db/src/gym-vocabulary.ts`.
  *
- * When the app needs it, lift these three consts into `packages/db/src/` (the
- * only directory `package.json#exports` covers) and re-export them from here —
- * importing this module directly would execute the seed.
- *
- * `back` and `lats` are deliberately separate: `lats` is the vertical-pull
- * mover, `back` is the mid-back/erector group that rows and hinges load. The
- * three deltoid heads are separate for the same reason — a program can be
- * long on front delts and short on rear delts, and one `shoulders` bucket
- * hides precisely that.
+ * They were duplicated here and in the app's Zod schema for exactly one commit
+ * before drifting on five codes. This file writes straight into production, so
+ * that drift meant rows the muscle filter could not see and the edit form could
+ * not save, with nothing on screen naming the cause. Re-exported rather than
+ * redefined so the seed and the validator cannot disagree again.
  */
-export const MUSCLES = [
-  'chest',
-  'back',
-  'lats',
-  'traps',
-  'front_delts',
-  'side_delts',
-  'rear_delts',
-  'biceps',
-  'triceps',
-  'forearms',
-  'quads',
-  'hamstrings',
-  'glutes',
-  'calves',
-  'core',
-  'adductors',
-  'abductors',
-] as const;
+import {
+  EQUIPMENT,
+  type Equipment,
+  METRICS,
+  type Metric,
+  MUSCLES,
+  type Muscle,
+} from '../src/gym-vocabulary';
 
-export type Muscle = (typeof MUSCLES)[number];
-
-/** How the load is applied. Mirrors the comment on `Exercise.equipment`. */
-export const EQUIPMENT = [
-  'barbell',
-  'dumbbell',
-  'machine',
-  'cable',
-  'bodyweight',
-  'kettlebell',
-  'band',
-] as const;
-
-export type Equipment = (typeof EQUIPMENT)[number];
-
-/**
- * What a set of this exercise even records. Getting one of these wrong does
- * not raise an error anywhere — volume and e1RM pick their formula from this
- * field, so a mislabelled row silently produces a wrong NUMBER, which is far
- * harder to notice than a crash.
- *
- *   weight_reps          external load x reps          — bench press, curl
- *   bodyweight_reps      reps only, load is you        — push-up, pull-up
- *   weighted_bodyweight  you PLUS added load x reps    — weighted pull-up, dip
- *   time                 a duration, no reps at all    — plank, carry, hang
- */
-export const METRICS = [
-  'weight_reps',
-  'bodyweight_reps',
-  'weighted_bodyweight',
-  'time',
-] as const;
-
-export type Metric = (typeof METRICS)[number];
+// Imported AND re-exported, not `export … from`: the validation below and the
+// catalogue literal both READ these, and a bare re-export never binds them
+// locally.
+export { EQUIPMENT, METRICS, MUSCLES };
+export type { Equipment, Metric, Muscle };
 
 type SeedExercise = {
   /** English only. There is no ExerciseTranslation table, and `(ownerId, name)` is unique. */

@@ -1,3 +1,11 @@
+import {
+  EQUIPMENT,
+  type Equipment,
+  METRICS,
+  type Metric,
+  MUSCLES,
+  type Muscle,
+} from '@byte-of-me/db/gym-vocabulary';
 import * as z from 'zod';
 
 /**
@@ -8,86 +16,28 @@ import * as z from 'zod';
  */
 
 /**
- * The muscle vocabulary, as codes rather than labels.
+ * The controlled vocabularies, re-exported from `@byte-of-me/db/gym-vocabulary`
+ * under this slice's own names.
  *
- * `Exercise.primaryMuscle` is what makes "sets per muscle per week" computable
- * at all, and a free-text column would give two spellings of the same muscle
- * two separate weekly totals — the same failure `uniq_exercises_owner_name`
- * exists to prevent for exercise names. A `String` column validated here
- * rather than a Postgres enum, for the reason `SleepLog.factors` documents:
- * this list will grow, and a migration per addition is not a trade worth
- * making. Labels are UI text and belong in the locale files.
+ * They used to be a hand-maintained copy of the seed's list, kept in step by a
+ * comment. That lasted exactly one commit before drifting on five codes, and
+ * the failure was silent: seeded rows read back fine, disappeared from the
+ * muscle filter, and rejected the first time the edit form opened. One const
+ * makes that a build error instead.
  *
- * THIS LIST IS A COPY OF `MUSCLES` IN `packages/db/prisma/seed-exercises.ts`
- * AND MUST STAY IDENTICAL TO IT. That file writes the starter catalogue
- * straight into production, so any code it uses and this schema rejects
- * produces rows the exercise form cannot save and the muscle filter cannot
- * find — silently, since the rows read back fine. It is not imported from
- * because importing that module would EXECUTE the seed; its own header names
- * the fix (lift the three consts into `packages/db/src/`, the only directory
- * `package.json#exports` covers, and re-export them from the seed) for
- * whoever needs a third copy.
- *
- * Two groupings in it are deliberate and were nearly "corrected" here into a
- * finer set: `back` stays one code for the mid-back and erectors that rows and
- * hinges load, separate from `lats` as the vertical-pull mover, and `core` is
- * one code rather than abs/obliques — the seed's argument is that a split you
- * cannot program differently only splits the chart.
+ * Imported from the `/gym-vocabulary` subpath, never the package root — the
+ * root runs `dotenv/config`, throws without `DATABASE_URL` and constructs a
+ * PrismaClient at module scope, none of which belongs in a client component
+ * that only needs a list of muscle names.
  */
-export const MUSCLE_GROUPS = [
-  'chest',
-  'back',
-  'lats',
-  'traps',
-  'front_delts',
-  'side_delts',
-  'rear_delts',
-  'biceps',
-  'triceps',
-  'forearms',
-  'quads',
-  'hamstrings',
-  'glutes',
-  'calves',
-  'core',
-  'adductors',
-  'abductors',
-] as const;
+export const MUSCLE_GROUPS = MUSCLES;
+export type MuscleGroup = Muscle;
 
-export type MuscleGroup = (typeof MUSCLE_GROUPS)[number];
+export const EQUIPMENT_TYPES = EQUIPMENT;
+export type EquipmentType = Equipment;
 
-/** Mirrors the `equipment` comment on `model Exercise`, and `EQUIPMENT` in
- *  `packages/db/prisma/seed-exercises.ts`. Same parity requirement as
- *  `MUSCLE_GROUPS` above. */
-export const EQUIPMENT_TYPES = [
-  'barbell',
-  'dumbbell',
-  'machine',
-  'cable',
-  'bodyweight',
-  'kettlebell',
-  'band',
-] as const;
-
-export type EquipmentType = (typeof EQUIPMENT_TYPES)[number];
-
-/**
- * Mirrors the `metric` comment on `model Exercise`, and `METRICS` in
- * `packages/db/prisma/seed-exercises.ts`. Same parity requirement as
- * `MUSCLE_GROUPS` above.
- *
- * Without this a plank and a pull-up break the set model: one has no reps, the
- * other no weight. Volume and e1RM read it to decide which formula even
- * applies, so it is validated rather than free text.
- */
-export const EXERCISE_METRICS = [
-  'weight_reps',
-  'bodyweight_reps',
-  'weighted_bodyweight',
-  'time',
-] as const;
-
-export type ExerciseMetric = (typeof EXERCISE_METRICS)[number];
+export const EXERCISE_METRICS = METRICS;
+export type ExerciseMetric = Metric;
 
 const muscleEnum = z.enum(MUSCLE_GROUPS);
 
