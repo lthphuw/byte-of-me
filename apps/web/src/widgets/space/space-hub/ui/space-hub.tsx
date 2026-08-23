@@ -11,7 +11,6 @@ import {
   HeartPulse,
   Link2,
   NotebookPen,
-  Share2,
 } from 'lucide-react';
 import { getFormatter, getTranslations } from 'next-intl/server';
 
@@ -112,9 +111,28 @@ export async function SpaceHub({ navSlot }: { navSlot?: React.ReactNode }) {
                 </CardContent>
               </Card>
 
-              {/* One card per module. Future space modules (schedule, gym log)
-                  are one more card here plus a nav item — see
-                  `use-space-nav-items.ts`. */}
+              {/* One card per module — the same list, and the same test, as
+                  `use-space-nav-items.ts`. Future space modules (schedule,
+                  gym log) are one more card here plus a nav item.
+
+                  The knowledge graph had a card of its own here, beside
+                  Notes, which is what made it look like a third module. It is
+                  a view of the notes, so the way in is the notes workspace's
+                  own List ⇄ Graph switch, and the Notes card below says so
+                  rather than linking there a second time. A secondary link
+                  INSIDE this card was the alternative and was rejected: the
+                  card is one big anchor, and an anchor inside an anchor is
+                  invalid markup with no defined keyboard behaviour — the
+                  stretched-link rewrite it would need buys a shortcut to a
+                  destination that is now two obvious clicks away.
+
+                  Whichever way that goes, the reason this was never an
+                  embedded canvas still holds: the hub is an RSC whose whole
+                  job is to be instant, and mounting a live force simulation
+                  on it would ship d3 plus a running physics loop to a page
+                  the author only passes through. The spec's "mini-graph card"
+                  (§6.6) is satisfied by the entry point; embedding the canvas
+                  is deliberately deferred. */}
               <Link
                 href="/space/notes"
                 className="group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -130,32 +148,6 @@ export async function SpaceHub({ navSlot }: { navSlot?: React.ReactNode }) {
                     </CardTitle>
                     <CardDescription>
                       {t('modules.notesDescription')}
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              </Link>
-
-              {/* A LINK, not an embedded canvas. The hub is an RSC whose whole
-                  job is to be instant, and mounting a live force simulation on
-                  it would ship d3 plus a running physics loop to a page the
-                  author only passes through. The spec's "mini-graph card"
-                  (§6.6) is satisfied by the entry point; embedding the canvas
-                  is deliberately deferred. */}
-              <Link
-                href="/space/graph"
-                className="group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <Card className="h-full transition-colors group-hover:border-primary/40 group-hover:bg-muted/40">
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between text-base">
-                      <span className="flex items-center gap-2">
-                        <Share2 className="size-4" />
-                        {t('modules.graphTitle')}
-                      </span>
-                      <ArrowRight className="size-4 opacity-0 transition-opacity group-hover:opacity-100" />
-                    </CardTitle>
-                    <CardDescription>
-                      {t('modules.graphDescription')}
                     </CardDescription>
                   </CardHeader>
                 </Card>

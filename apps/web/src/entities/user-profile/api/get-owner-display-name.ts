@@ -24,7 +24,7 @@ const FALLBACK_DISPLAY_NAME = 'Admin';
  * once in `SpaceHub`. Both used to call `getUserProfile()`, which joins
  * `user` → `userProfile` → `translations` and returns fourteen fields to have
  * one read; the whole join ran twice, and on `/space/notes/<id>` and
- * `/space/graph` it ran once per navigation for a title every child page then
+ * `/space/notes/graph` it ran once per navigation for a title every child page then
  * overrides. `cache()` collapses the pair within a request; the narrow
  * `select` here is what makes each occurrence cheap.
  *

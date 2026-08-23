@@ -37,6 +37,7 @@ const messages = {
     note: {
       untitled: 'Untitled',
       loading: 'Loading note…',
+      views: { label: 'Note views', list: 'List', graph: 'Graph' },
       emptySelection: 'Select a note, or create one.',
       backToList: 'All notes',
       tree: {
@@ -113,7 +114,11 @@ const messages = {
         viewMode: 'View',
         modes: { tree: 'Tree', flat: 'Flat list', grouped: 'Grouped' },
         sortLabel: 'Sort by',
-        sort: { updated: 'Last edited', created: 'Date created', title: 'Title' },
+        sort: {
+          updated: 'Last edited',
+          created: 'Date created',
+          title: 'Title',
+        },
         groupByLabel: 'Group by',
         groupBy: { status: 'Status', label: 'Label' },
         noLabel: 'No label',
@@ -136,7 +141,8 @@ const messages = {
       },
       delete: {
         title: 'Delete permanently?',
-        description: '“{title}” will be deleted for good. This cannot be undone.',
+        description:
+          '“{title}” will be deleted for good. This cannot be undone.',
         descriptionWithChildren:
           '“{title}” and {count, plural, one {its # nested note} other {its # nested notes}} will be deleted for good. This cannot be undone.',
         descriptionShared:
@@ -241,7 +247,18 @@ const FOLDER_F = {
 const findMany = mock((_args?: { where?: { parentId?: string | null } }) =>
   Promise.resolve([
     ...Array.from(notesById.values()).map(
-      ({ id, title, parentId, position, isPinned, archivedAt, updatedAt, createdAt, status, isFolder }) => ({
+      ({
+        id,
+        title,
+        parentId,
+        position,
+        isPinned,
+        archivedAt,
+        updatedAt,
+        createdAt,
+        status,
+        isFolder,
+      }) => ({
         id,
         title,
         parentId,
@@ -377,9 +394,7 @@ describe('NoteManager', () => {
     // `/space/notes/<id>`, reloads must reopen the note, and Back has to
     // work. What changed in P1 is only that the widget no longer *waits*
     // for the push to come back before showing the note (next test).
-    await waitFor(() =>
-      expect(__navigations).toEqual(['/space/notes/note-a'])
-    );
+    await waitFor(() => expect(__navigations).toEqual(['/space/notes/note-a']));
   });
 
   test('renders the editor for the note the route names', async () => {

@@ -34,7 +34,7 @@ export async function getSpaceStats(): Promise<ApiResponse<SpaceStats>> {
       await Promise.all([
         // `isFolder: false` — the card is labelled "Notes", and a folder is
         // not one. Without it the hub counted the tree's scaffolding as
-        // documents and disagreed with `/space/graph`, which plots the same
+        // documents and disagreed with `/space/notes/graph`, which plots the same
         // corpus and has always excluded folders.
         prisma.note.count({
           where: { ownerId: session.id, archivedAt: null, isFolder: false },

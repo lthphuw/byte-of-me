@@ -61,6 +61,7 @@ const messages = {
     note: {
       title: 'Notes',
       untitled: 'Untitled',
+      views: { label: 'Note views', list: 'List', graph: 'Graph' },
       untitledFolder: 'New folder',
       loading: 'Loading note…',
       emptySelection: 'Select a note, or create one.',

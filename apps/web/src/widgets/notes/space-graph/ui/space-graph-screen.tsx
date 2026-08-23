@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { noteHref } from '@/entities/note';
 import { NoteGraph } from '@/features/notes/note-graph';
+import { NoteViewSwitch } from '@/features/notes/note-view-switch';
 import { useRouter } from '@/shared/i18n/navigation';
 import { SpaceNavTrigger } from '@/widgets/space/space-shell';
 
@@ -47,6 +48,13 @@ export function SpaceGraphScreen() {
             {t('description')}
           </p>
         </div>
+
+        {/* The way back to the notes themselves, and the other half of the
+            switch the explorer's own header carries. This screen is no longer
+            a stop on the space rail, so without it the only exit from the
+            graph would be the browser's Back button. `shrink-0` because the
+            title beside it is what should truncate. */}
+        <NoteViewSwitch current="graph" className="ml-auto shrink-0" />
       </header>
 
       <div className="min-h-0 flex-1">

@@ -79,6 +79,9 @@ const messages = {
       },
       search: { trigger: 'Search notes' },
       actions: { create: 'New note', newFolder: 'New folder' },
+      // The List ⇄ Graph switch under the header, for the same reason as
+      // `move` below: the panel renders it on every pass.
+      views: { label: 'Note views', list: 'List', graph: 'Graph' },
       // `ExplorerDnd` reads this namespace unconditionally, for the
       // confirmation it shows when a drop would expose a note to a shared
       // folder. Without it every render here logs a MISSING_MESSAGE.

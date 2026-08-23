@@ -20,7 +20,7 @@ import { NoteEditorActions } from './note-editor-actions';
 import { NoteSidebarTabs } from './note-sidebar-tabs';
 import { NoteTreePanel } from './note-tree-panel';
 
-import { NOTE_HREF_PREFIX, noteHref, type NoteTreeNode } from '@/entities/note';
+import { noteHref, NOTES_HREF, type NoteTreeNode } from '@/entities/note';
 import { noteDocumentHref, useNoteDocuments } from '@/entities/note-document';
 import {
   NoteActionsMenu,
@@ -75,9 +75,11 @@ const MemoNoteTreePanel = memo(NoteTreePanel);
 
 /**
  * Where a note lives. The same string `noteHref` builds for a `[[` link, so
- * the route and the links stored in documents cannot drift apart.
+ * the route and the links stored in documents cannot drift apart — which is
+ * why it comes from the entity rather than being spelled out a second time
+ * here.
  */
-export const NOTES_BASE_PATH = NOTE_HREF_PREFIX.replace(/\/$/, '');
+export const NOTES_BASE_PATH = NOTES_HREF;
 
 /** What the editor hands back when the author picks a note to link to. */
 type InsertLink = (link: { text: string; href: string }) => void;
@@ -411,7 +413,7 @@ export function NoteManager({
 
   return (
     <div className="flex min-h-0 flex-1">
-      {/* `/space` and `/space/graph` both name themselves; this screen had no
+      {/* `/space` and `/space/notes/graph` both name themselves; this screen had no
           `h1` at all, so its heading outline started at the tree's own labels
           and a screen reader's "what page am I on" had no answer. Visually
           hidden because the workspace is chrome-less by design — the title bar

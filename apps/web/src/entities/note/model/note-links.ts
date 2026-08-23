@@ -12,12 +12,28 @@
  * insert time; the panel resolves current titles from the database.
  */
 
+/** The notes workspace itself. */
+export const NOTES_HREF = '/space/notes';
+
 /** The route an open note lives at. */
-export const NOTE_HREF_PREFIX = '/space/notes/';
+export const NOTE_HREF_PREFIX = `${NOTES_HREF}/`;
 
 export function noteHref(noteId: string): string {
   return `${NOTE_HREF_PREFIX}${noteId}`;
 }
+
+/**
+ * The knowledge graph — a route UNDER the notes, because it is a view of them
+ * rather than a module beside them.
+ *
+ * `graph` is therefore a reserved segment: `parseNoteHref` below reads
+ * `/space/notes/graph` as a note whose id is `graph`, since it cannot know
+ * which ids exist. Nothing acts on that. Every write path resolves the id
+ * against the owner's own notes before storing a link row (see the ownership
+ * check in `update-note.ts`), so a pasted graph URL simply links nowhere —
+ * and a generated note id is never this string.
+ */
+export const NOTE_GRAPH_HREF = `${NOTES_HREF}/graph`;
 
 /**
  * The id in a note href, or `null` for anything else — an external URL, a

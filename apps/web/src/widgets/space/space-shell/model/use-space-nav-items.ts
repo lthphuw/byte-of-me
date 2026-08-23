@@ -1,14 +1,23 @@
 'use client';
 
-import { HeartPulse, LayoutGrid, NotebookPen, Share2 } from 'lucide-react';
+import { HeartPulse, LayoutGrid, NotebookPen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { NavDrawerItem } from '@/shared/ui/nav-drawer';
 
 /**
- * The single list the rail and the mobile drawer both render. Adding a future
- * space page (schedule, gym log) is one entry here and one `items.*` key in
- * both message files — nothing else in the shell needs to change.
+ * The single list the rail and the mobile drawer both render — the hub, plus
+ * one entry per MODULE. Adding a future space module (schedule, gym log) is
+ * one entry here and one `items.*` key in both message files; nothing else in
+ * the shell needs to change.
+ *
+ * A module, and not a view of one. The knowledge graph was an entry here for
+ * a while, which put a second way of looking at the notes on the same footing
+ * as Notes and Health — two whole modules — and left the rail claiming three
+ * products where there were two. It moved to `/space/notes/graph`, reached
+ * from the switch in the notes workspace's own header. The test for a new
+ * entry is whether it owns its own data; if it renders somebody else's, it
+ * belongs inside them.
  *
  * The labels are resolved with literal `t('items.x')` calls rather than a
  * `labelKey` field looked up dynamically: next-intl's generated declarations
@@ -22,7 +31,6 @@ export function useSpaceNavItems(): NavDrawerItem[] {
   return [
     { href: '/space', label: t('items.hub'), icon: LayoutGrid, exact: true },
     { href: '/space/notes', label: t('items.notes'), icon: NotebookPen },
-    { href: '/space/graph', label: t('items.graph'), icon: Share2 },
     { href: '/space/health', label: t('items.health'), icon: HeartPulse },
   ];
 }

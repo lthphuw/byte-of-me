@@ -10,7 +10,7 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
  * Ceilings on one graph payload. Both reads were whole-corpus and unbounded,
- * so the cost of `/space/graph` grew with the vault forever — and a
+ * so the cost of `/space/notes/graph` grew with the vault forever — and a
  * force-directed layout stops being readable long before a payload that size
  * finishes rendering. Nodes are taken newest-first (the `orderBy` below), so
  * the cap drops the least recently touched notes.

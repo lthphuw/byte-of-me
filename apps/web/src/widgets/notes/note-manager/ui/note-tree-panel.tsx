@@ -36,6 +36,7 @@ import {
   useTreeKeyboard,
   useVisibleTreeRows,
 } from '@/features/notes/note-explorer';
+import { NoteViewSwitch } from '@/features/notes/note-view-switch';
 
 interface NoteTreePanelProps {
   activeId: string | null;
@@ -383,6 +384,22 @@ export function NoteTreePanel({
         onStartDraft={(isFolder) => explorer.startDraft(isFolder, selectedNode)}
         navSlot={navSlot}
       />
+
+      {/* List ⇄ Graph, on its own row rather than in the header above it.
+          The header is already five controls wide at a pane the author can
+          drag down to 200px, and the search trigger is the flexible one — a
+          switch beside it would have squeezed the only control carrying a
+          label down to its icon. A row of its own also says what it is: the
+          graph is a second view OF these notes, not another thing to do to
+          them, which is why it is no longer a destination in the space rail.
+
+          Rendered here, in the widget, rather than passed into
+          `ExplorerHeader` as a slot: this file may import a feature, so the
+          slot indirection the nav trigger needs (a feature cannot import its
+          sibling) buys nothing. */}
+      <div className="shrink-0 border-b p-1">
+        <NoteViewSwitch current="list" />
+      </div>
 
       {/* The key handler sits on the SCROLLER, not on each row: rows focus
           themselves through a roving tabindex and their keydowns bubble here,
