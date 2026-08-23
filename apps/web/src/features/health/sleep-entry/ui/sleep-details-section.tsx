@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@byte-of-me/ui';
-import { ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { PanelBottomOpen, SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { SleepDetailsFields } from './sleep-details-fields';
@@ -101,8 +101,32 @@ export function SleepDetailsSection({
  *
  * A plain button rather than a `forwardRef` trigger: `ResponsiveModal` is
  * controlled, so nothing needs to be merged onto this element by Radix and
- * there is no ref to drop. The chevron still turns, because the card is the
- * only thing on screen that says whether the panel is open.
+ * there is no ref to drop.
+ *
+ * **The trailing mark is a panel, not a chevron.** It was a `ChevronDown` that
+ * rotated on open, and that is a broken promise: a chevron pointing down at a
+ * card says the card is about to grow and reveal what is under it, and what
+ * actually happens is that a sheet or a dialog covers the page. The owner read
+ * the signal correctly and the signal was wrong. The behaviour is right — an
+ * inline `Collapsible` here grew the column by ~400px and pushed the save
+ * button down the page while the reader was reaching for it, which is the
+ * defect `4d0b2cd` and the move to `ResponsiveModal` fixed — so the SIGNAL is
+ * what changes. `PanelBottomOpen` draws a page with a panel rising over its
+ * lower edge, which is what a reader below `lg` literally gets; at `lg` the
+ * same panel is centred instead, and "a surface comes up over this page" is
+ * still the true statement. `aria-haspopup="dialog"` says the same thing to a
+ * reader who is not looking at it.
+ *
+ * The mark also sits inside its own hairline circle rather than floating as a
+ * bare glyph. Among four rounded cards of near-identical tone, a 16px stroke
+ * with nothing around it reads as punctuation; a bordered 36px disc reads as
+ * the thing you press — and it is the only place on this card where a control
+ * boundary is drawn, so it also answers "where do I tap" on the one card whose
+ * whole problem is being found.
+ *
+ * Nothing rotates any more. The open panel dims and covers this card, so an
+ * animation on it plays to nobody; `aria-expanded` still carries the state for
+ * assistive technology, which is where it was ever being read.
  */
 function DetailsTrigger({
   title,
@@ -131,8 +155,8 @@ function DetailsTrigger({
       aria-expanded={open}
       onClick={onOpen}
       className={cn(
-        'w-full rounded-3xl border bg-card px-5 py-4 text-left shadow',
-        'transition-colors duration-200 hover:bg-muted',
+        'group w-full rounded-3xl border bg-card px-5 py-4 text-left shadow',
+        'transition-colors duration-200 motion-reduce:transition-none hover:bg-muted active:bg-muted',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background'
       )}
     >
@@ -161,13 +185,16 @@ function DetailsTrigger({
           </span>
         </span>
 
-        <ChevronDown
+        <span
           aria-hidden
           className={cn(
-            'size-4 shrink-0 text-muted-foreground transition-transform duration-200 motion-reduce:transition-none',
-            open && 'rotate-180'
+            'flex size-9 shrink-0 items-center justify-center rounded-full border bg-background text-muted-foreground',
+            'transition-colors duration-200 motion-reduce:transition-none',
+            'group-hover:border-primary/40 group-hover:text-foreground'
           )}
-        />
+        >
+          <PanelBottomOpen className="size-4" />
+        </span>
       </span>
 
       {hint ? (
