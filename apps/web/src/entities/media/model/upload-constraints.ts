@@ -17,10 +17,11 @@ export const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
  * How many files one batch may carry.
  *
  * Bounded because the whole batch travels in a single server action request,
- * and `serverActions.bodySizeLimit` in `next.config.js` is sized from
- * `MAX_IMAGE_SIZE_MB * MAX_UPLOAD_BATCH` plus multipart overhead. Raising
- * either without raising that limit puts the rejection back in the framework,
- * where it surfaces as an opaque failure instead of the messages below.
+ * and `serverActions.bodySizeLimit` in `next.config.js` is a flat `'20mb'`
+ * that `MAX_IMAGE_SIZE_MB * MAX_UPLOAD_BATCH` plus multipart overhead has to
+ * fit comfortably under — not the other way around. Raising either without
+ * raising that limit puts the rejection back in the framework, where it
+ * surfaces as an opaque failure instead of the messages below.
  */
 export const MAX_UPLOAD_BATCH = 5;
 
