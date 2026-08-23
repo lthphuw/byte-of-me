@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  CloudDrizzle,
-  CloudLightning,
-  CloudMoon,
-  type LucideIcon,
-  Moon,
-  MoonStar,
-} from 'lucide-react';
+import { Angry, Frown, Laugh, type LucideIcon, Meh, Smile } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { cn } from '@/shared/lib/utils';
@@ -15,18 +8,32 @@ import { cn } from '@/shared/lib/utils';
 const LEVELS = [1, 2, 3, 4, 5] as const;
 
 /**
- * The ramp, as a night sky clearing.
+ * The ramp, as a face.
  *
- * Five identical squares said nothing about which end was bad, and the bar
- * chart that replaced them said "more" without saying more of WHAT. These say
- * it in one look: a storm, then drizzle, then a moon behind cloud, then a
- * clear moon, then a moon with stars out. The progression is monotone — each
- * step has strictly less weather in front of the moon than the one before —
- * so it reads left-to-right as poor→great before anything is selected, and it
- * reads that way in silhouette, which is the only channel left once hue is
- * gone.
+ * This was a night sky clearing — a storm, drizzle, a clouded moon, a moon, a
+ * moon with stars. It read as a WEATHER FORECAST, which is what the reader is
+ * shown everywhere else those five pictures appear, and the question is not
+ * what the night was like outside. A face has one advantage nothing else on a
+ * hueless palette has: the reader already knows, without being taught, which
+ * end of angry→laughing is the good end.
  *
- * Lucide, never an emoji (§14). An emoji is a font the OS chooses: it arrives
+ * Angry, Frown, Meh, Smile, Laugh — one lucide family, five steps, and the
+ * mouth alone is monotone across them: down-turned, down-turned with flat
+ * brows, flat, up-turned, up-turned and open. The brows on `Angry` are what
+ * separate it from `Frown`, which is the closest pair in the set.
+ *
+ * **They are drawn at 32px, not 16.** That closest pair is exactly the caution
+ * a face ramp has to answer: in a single tone at 16px a down-turned mouth and
+ * a flat one are the same two pixels, and the whole set collapses into "five
+ * circles". At 32px the stroke is ~2.7px and each mouth is a distinct arc, so
+ * the five hold up as silhouettes — which is the only channel left once hue is
+ * gone (§14). The calendar's marks draw the same faces at 20px inside a 36px
+ * disc for the same reason. Neither carries the meaning alone: the numeral
+ * 1–5 sits under every face and the word ("Fair", "Tạm ổn") is printed live
+ * beside the group.
+ *
+ * Lucide, never an emoji (§14) — and an emoji is the obvious wrong answer to
+ * "put a face here". An emoji is a font the OS chooses: it arrives
  * pre-coloured, at a size and weight nothing here controls, and it renders as
  * a different picture on every platform. These inherit `currentColor`, which
  * is what lets the chosen one invert with its button.
@@ -37,11 +44,11 @@ const LEVELS = [1, 2, 3, 4, 5] as const;
  * tables mapping 1–5 to icons would be one table and a future disagreement.
  */
 export const SLEEP_QUALITY_ICON: Record<number, LucideIcon> = {
-  1: CloudLightning,
-  2: CloudDrizzle,
-  3: CloudMoon,
-  4: Moon,
-  5: MoonStar,
+  1: Angry,
+  2: Frown,
+  3: Meh,
+  4: Smile,
+  5: Laugh,
 };
 
 /**
@@ -62,7 +69,7 @@ export const SLEEP_QUALITY_ICON: Record<number, LucideIcon> = {
  *
  * The numeral stays under the icon. The pictures are an ordering the reader
  * has to infer; the digits are the ordering stated, and they are what makes
- * "is a moon better than a cloudy moon?" a question nobody has to answer.
+ * "is a smile better than a flat mouth?" a question nobody has to answer.
  *
  * Toggle buttons rather than a radio group, and `role="group"` rather than
  * `radiogroup`, because quality is OPTIONAL and clearable: tapping the current
@@ -70,9 +77,17 @@ export const SLEEP_QUALITY_ICON: Record<number, LucideIcon> = {
  * Each button carries its own `aria-pressed` and its own label, so the pressed
  * state is announced without relying on the icons.
  *
- * 64px targets in a 5-up grid with an 8px gap — comfortably past the 44px
+ * 72px targets in a 5-up grid with an 8px gap — comfortably past the 44px
  * minimum, and the reason this is a grid rather than a row of chips that could
- * wrap mid-scale.
+ * wrap mid-scale. 72 rather than the old 64 because the faces grew to 32px and
+ * the numeral still has to sit under them without crowding.
+ *
+ * **In a card, like everything else in the column.** This used to float
+ * directly on the page between the times card and the details card, which made
+ * one question in a stack of five look like a caption that had come loose. The
+ * unselected buttons therefore need a fill that separates from the card they
+ * now sit on — `bg-muted/50` plus the hairline border — where before they
+ * could simply be `bg-card` against the page.
  */
 export function SleepQualityScale({
   value,
@@ -96,7 +111,7 @@ export function SleepQualityScale({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4 rounded-3xl border bg-card p-5 shadow">
       <div className="flex items-baseline justify-between gap-3">
         <span className="text-sm font-medium">{t('sleep.quality')}</span>
         {/* The word, live. It is the half of this control that survives with
@@ -141,15 +156,19 @@ export function SleepQualityScale({
               // answered" once a stray tap has answered it.
               onClick={() => onChange(isActive ? null : level)}
               className={cn(
-                'flex h-16 flex-col items-center justify-center gap-1.5 rounded-2xl border',
-                'transition-colors duration-200',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                'flex h-[4.5rem] flex-col items-center justify-center gap-1.5 rounded-2xl border',
+                'transition-[background-color,border-color,color,transform] duration-200 ease-out motion-reduce:transition-none',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card',
+                // The same press the calendar's day cells use — a plate change
+                // is invisible under the fingertip making it, so the shrink is
+                // the half of the press a phone can perceive.
+                'active:scale-[0.96] motion-reduce:active:scale-100',
                 isActive
                   ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-                  : 'border-border bg-card text-muted-foreground hover:border-primary/40 hover:bg-muted hover:text-foreground'
+                  : 'border-border bg-muted/50 text-muted-foreground hover:border-primary/40 hover:bg-muted hover:text-foreground'
               )}
             >
-              <Icon aria-hidden className="size-6 shrink-0" />
+              <Icon aria-hidden className="size-8 shrink-0" />
               <span
                 className={cn(
                   'text-[11px] leading-none tabular-nums',
