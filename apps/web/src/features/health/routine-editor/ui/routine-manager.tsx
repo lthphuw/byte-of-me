@@ -134,12 +134,12 @@ export function RoutineManager() {
         </div>
       </div>
 
-      {/* `pb-2` only: `SpaceShell`'s `#space-content` already carries
-          `env(safe-area-inset-bottom)` for the whole column, so a second
-          `env()` here would clear the iOS home indicator twice — once as
-          padding on this bar's parent, once again inside this bar's own
-          floor — and leave an empty band between the two. */}
-      <div className="shrink-0 border-t bg-background px-4 pb-2 pt-2 lg:hidden">
+      {/* The safe-area inset belongs HERE, not on `SpaceShell`'s
+          `#space-content`: that element has no background of its own, so
+          painting the inset there left the home-indicator band showing the
+          grey ground behind this bar instead of this bar's own
+          `bg-background`. */}
+      <div className="shrink-0 border-t bg-background px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 lg:hidden">
         <div className="mx-auto w-full max-w-4xl">{createButton}</div>
       </div>
 

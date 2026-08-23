@@ -45,10 +45,10 @@ export function RoutinesScreenSkeleton() {
         </div>
       </div>
 
-      {/* `pb-2` only, not `env(safe-area-inset-bottom)`: `SpaceShell`'s
-          `#space-content` already carries the inset for the whole column;
-          see the real component this mirrors. */}
-      <div className="shrink-0 border-t px-4 pb-2 pt-2 lg:hidden">
+      {/* Mirrors the real bar's own safe-area inset — see
+          `routine-manager.tsx` — rather than relying on `SpaceShell`'s
+          `#space-content`, which does not carry one. */}
+      <div className="shrink-0 border-t px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 lg:hidden">
         <div className="mx-auto w-full max-w-4xl">
           <Skeleton aria-hidden className="h-14 w-full rounded-2xl" />
         </div>

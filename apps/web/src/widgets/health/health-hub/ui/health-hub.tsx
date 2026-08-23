@@ -190,11 +190,13 @@ export async function HealthHub() {
 
       {/* Outside the scroll area, so it is where a thumb already is on every
           frame. Gone at `lg`, where a bar stapled across a monitor reads as a
-          phone app in a browser window. `pb-2` only: `SpaceShell`'s
-          `#space-content` already carries `env(safe-area-inset-bottom)` for
-          the whole column, so a second one here would clear the iOS home
-          indicator twice and leave an empty band above the true edge. */}
-      <div className="shrink-0 border-t bg-background px-4 pb-2 pt-2 lg:hidden">
+          phone app in a browser window. The safe-area inset belongs HERE, not
+          on `SpaceShell`'s `#space-content`: that element has no background of
+          its own — the outer row is `bg-muted/40` and this bar is
+          `bg-background` with a `border-t` — so painting the inset on the
+          column left the home-indicator band showing the grey ground under a
+          visible seam instead of this bar's own surface. */}
+      <div className="shrink-0 border-t bg-background px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 lg:hidden">
         <div className="mx-auto w-full max-w-4xl">{actionLink}</div>
       </div>
     </div>

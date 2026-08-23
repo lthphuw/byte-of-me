@@ -26,19 +26,21 @@ import { SkipToContentLink } from '@/shared/ui/skip-to-content-link';
  * Safe-area insets: the outer row carries the LEFT/RIGHT ones, once, so
  * whichever child is currently flush with the device edge — the rail on
  * desktop, `#space-content` itself below `lg` where the rail is hidden —
- * inherits it for free. `#space-content` carries TOP/BOTTOM itself, because
- * that is the one that actually reaches those edges; the rail handles its own
- * bottom in `space-nav-rail.tsx`, where its `py-3` already had a value worth
- * keeping.
+ * inherits it for free. `#space-content` carries TOP itself, because that is
+ * the one that actually reaches that edge; the rail handles its own bottom in
+ * `space-nav-rail.tsx`, where its `py-3` already had a value worth keeping.
  *
- * `#space-content`'s inset is a bare `env()` with no floor — unlike the
- * `max(0.5rem, env(...))` bottom bars elsewhere in `/space/health`, this is a
- * structural gutter, not a touch target, and it stacks with whatever padding
- * a page already renders. Those bottom bars (`health-hub.tsx`,
- * `exercise-catalog.tsx`, `routine-manager.tsx`, `workout-live-logger.tsx`)
- * dropped their own `env()` in favour of this one: with both, the inset was
- * being applied twice — once shrinking this column, once again inside their
- * own floor — leaving an empty band between the bar and the true edge.
+ * BOTTOM is deliberately NOT here. `#space-content` has no background of its
+ * own — this row is `bg-muted/40` and the four in-space bottom bars
+ * (`health-hub.tsx`, `exercise-catalog.tsx`, `routine-manager.tsx`,
+ * `workout-live-logger.tsx`) are `bg-background` with a `border-t` — so an
+ * inset painted here left the home-indicator band showing this row's grey
+ * ground under a visible seam instead of each bar's own surface. Each of
+ * those bars owns its bottom inset itself, `pb-[max(0.5rem, env(...))]`,
+ * because it is the element whose background actually fills that space. A
+ * page with no such bar (document-scrolling content, not a bar-anchored one)
+ * is responsible for its own bottom padding, same as top/left/right already
+ * were before this component existed.
  */
 export function SpaceShell({ children }: { children: React.ReactNode }) {
   return (
@@ -66,10 +68,7 @@ export function SpaceShell({ children }: { children: React.ReactNode }) {
           id="space-content"
           tabIndex={-1}
           className="flex min-h-0 min-w-0 flex-1 flex-col"
-          style={{
-            paddingTop: 'env(safe-area-inset-top)',
-            paddingBottom: 'env(safe-area-inset-bottom)',
-          }}
+          style={{ paddingTop: 'env(safe-area-inset-top)' }}
         >
           {children}
         </div>
