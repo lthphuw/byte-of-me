@@ -1455,7 +1455,6 @@ declare const messages: {
         "photoRemove": "Remove this photo",
         "photoRemoveNumbered": "Remove photo {n, number}",
         "photoFull": "A day holds at most {max, number} photos",
-        "photoHeic": "That photo is in Apple's HEIC format. Turn image compression on in settings and it will be converted automatically.",
         "caption": "Caption",
         "captionPlaceholder": "Say something about this one",
         "captionEdit": "Edit the caption",

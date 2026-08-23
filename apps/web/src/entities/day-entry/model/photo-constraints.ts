@@ -81,7 +81,18 @@ export function findPhotoViolation(
   return null;
 }
 
-/** The violation as a plain English sentence, for an `errorMsg`. */
+/**
+ * The violation as a plain English sentence, for an `errorMsg`.
+ *
+ * English-only by omission, not by design: this is called from both a
+ * client hook (`use-day-journal.ts`) and a server action
+ * (`upload-day-photos.ts`), which would need translators from two different
+ * `next-intl` entry points, and localizing one of these four cases without
+ * the other three would leave the surface half-translated — worse than
+ * uniformly English. That refactor belongs to the separate project already
+ * queued to rewrite every Vietnamese string in this app, reviewed as one
+ * surface, not smuggled into an unrelated task.
+ */
 export function describePhotoViolation(v: PhotoValidationError): string {
   switch (v.kind) {
     case 'batch':
