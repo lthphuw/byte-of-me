@@ -933,7 +933,15 @@
         "showArchived": "Hiện giáo án đã lưu trữ",
         "empty": "Chưa có giáo án nào.",
         "itemCount": "{n, number} bài tập",
-        "repsRangeError": "Số lần tối thiểu không được lớn hơn số lần tối đa."
+        "repsRangeError": "Số lần tối thiểu không được lớn hơn số lần tối đa.",
+        "loading": "Đang tải giáo án…",
+        "moreItems": "+{n, number} bài nữa",
+        "editNamed": "Sửa {name}",
+        "archiveNamed": "Lưu trữ {name}",
+        "restoreNamed": "Khôi phục {name}",
+        "moveUpNamed": "Chuyển {name} lên",
+        "moveDownNamed": "Chuyển {name} xuống",
+        "removeNamed": "Bỏ {name}"
       },
       "factors": {
         "caffeine_late": "Cà phê muộn",

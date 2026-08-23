@@ -936,7 +936,15 @@ declare const messages: {
         "showArchived": "Show archived",
         "empty": "No routines yet.",
         "itemCount": "{n, number} exercises",
-        "repsRangeError": "The lower rep target must not exceed the upper one."
+        "repsRangeError": "The lower rep target must not exceed the upper one.",
+        "loading": "Loading routines…",
+        "moreItems": "+{n, number} more",
+        "editNamed": "Edit {name}",
+        "archiveNamed": "Archive {name}",
+        "restoreNamed": "Restore {name}",
+        "moveUpNamed": "Move {name} up",
+        "moveDownNamed": "Move {name} down",
+        "removeNamed": "Remove {name}"
       },
       "factors": {
         "caffeine_late": "Late caffeine",
