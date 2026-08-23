@@ -1,6 +1,7 @@
 'use client';
 
 import { Checkbox, Input, Label, Textarea } from '@byte-of-me/ui';
+import { Eye, NotebookPen, Timer } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { SleepFactorGrid } from './sleep-factor-grid';
@@ -32,10 +33,22 @@ export function SleepDetailsFields({
     <div className="flex flex-col gap-6">
       {/* Both optional, and their absence is meaningful rather than zero:
           with neither recorded the screens WITHHOLD efficiency instead of
-          reporting 100%. */}
+          reporting 100%.
+
+          Two figures in minutes, side by side, whose labels differ only in
+          their words — so a stopwatch for the time it took to go under, and an
+          open eye for the minutes spent out of it again. The mark is what
+          tells them apart before either label is read; the label is still what
+          says which is which, so both glyphs are `aria-hidden`. */}
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
-          <Label htmlFor="sleep-latency">{t('sleep.latency')}</Label>
+          <Label htmlFor="sleep-latency" className="flex items-center gap-1.5">
+            <Timer
+              aria-hidden
+              className="size-4 shrink-0 text-muted-foreground"
+            />
+            {t('sleep.latency')}
+          </Label>
           <Input
             id="sleep-latency"
             type="number"
@@ -49,7 +62,16 @@ export function SleepDetailsFields({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="sleep-awakenings">{t('sleep.awakenings')}</Label>
+          <Label
+            htmlFor="sleep-awakenings"
+            className="flex items-center gap-1.5"
+          >
+            <Eye
+              aria-hidden
+              className="size-4 shrink-0 text-muted-foreground"
+            />
+            {t('sleep.awakenings')}
+          </Label>
           <Input
             id="sleep-awakenings"
             type="number"
@@ -81,7 +103,13 @@ export function SleepDetailsFields({
       </Label>
 
       <div className="space-y-2">
-        <Label htmlFor="sleep-note">{t('sleep.note')}</Label>
+        <Label htmlFor="sleep-note" className="flex items-center gap-1.5">
+          <NotebookPen
+            aria-hidden
+            className="size-4 shrink-0 text-muted-foreground"
+          />
+          {t('sleep.note')}
+        </Label>
         <Textarea
           id="sleep-note"
           rows={2}

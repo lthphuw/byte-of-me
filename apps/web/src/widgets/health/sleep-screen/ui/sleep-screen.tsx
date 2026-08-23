@@ -1,5 +1,8 @@
-import { getTranslations } from 'next-intl/server';
+import { CalendarOff, TriangleAlert } from 'lucide-react';
+import { getLocale, getTranslations } from 'next-intl/server';
 
+import { type LoggedNight, SleepDayEditor } from './sleep-day-editor';
+import { SleepMonthSummary } from './sleep-month-summary';
 import { SleepStatsPanel } from './sleep-stats-panel';
 
 import {
@@ -8,18 +11,15 @@ import {
   type SleepLogRow,
 } from '@/entities/sleep-log';
 import {
+  addMonths,
+  daysInMonth,
   type DayValue,
+  monthKey,
+  parseMonthKey,
   SleepDurationChart,
-  SleepMonthCalendar,
   startOfMonth,
 } from '@/features/health/sleep-charts';
-import {
-  localClockMinutes,
-  medianBedClock,
-  type SleepEntryDefaults,
-  SleepEntryForm,
-} from '@/features/health/sleep-entry';
-import { clockToMinutes, minutesToClock } from '@/shared/lib/health/duration';
+import { roundedNowMin } from '@/features/health/sleep-entry';
 import {
   addDays,
   localDateKey,
@@ -33,12 +33,6 @@ import { computeNight } from '@/shared/lib/health/sleep-stats';
  *  which is why the caveat string can say "14-day" out loud. */
 const WINDOW_DAYS = 14;
 
-/** Bedtimes older than the summary window say nothing about what the form
- *  should open at. */
-const MEDIAN_SAMPLE_DAYS = 14;
-
-const FALLBACK_BED_CLOCK = '23:00';
-
 /** With no target read from settings, two things still need a night length:
  *  the wake-time default has to add one to bedtime, and the calendar has to
  *  band its shades against one. Eight hours, the same figure the hero's arc
@@ -47,89 +41,154 @@ const FALLBACK_BED_CLOCK = '23:00';
 const FALLBACK_TARGET_MIN = 480;
 
 /**
- * Below this, "now" cannot plausibly be the end of the night the form is
- * about. See `buildDefaults`.
- */
-const MIN_PLAUSIBLE_NIGHT_MIN = 240;
-
-const DAY_MIN = 1440;
-
-/**
- * Log a night, then look at the fortnight it belongs to.
+ * Pick a night from the month, then log or correct it.
  *
- * A server component that renders a client form: the entry surface is the
- * interactive part and everything below it is derived numbers, so only the
- * form and the two charts cross into the browser. The statistics and the
- * history are passed INTO the form rather than rendered after it, because the
- * form owns the page's scroll area — the save bar has to sit outside it to
- * stay under a thumb while the charts scroll past.
+ * **The calendar leads.** It used to be the last thing on the screen, a
+ * picture of a month under a form that only ever edited today. It is now the
+ * first thing and it is a CONTROL: tapping a day loads that night into the
+ * form below, and saving writes that day. Nothing about the write path had to
+ * change for it — see `useSleepEntry`, which places the wake instant on the
+ * chosen day and lets the server derive the date from it exactly as before.
  *
- * They arrive as two slots rather than one `children` because the desktop
- * layout is not the phone layout with wider margins: at `lg` the statistics
- * sit BESIDE the entry column (`aside`) and the charts run full width beneath
- * both (`children`). Below `lg` the same three blocks stack in that order,
- * which is also their reading order — enter, then read.
+ * **The month is a search param, the day is React state.** That split is the
+ * answer to the objection that killed month arrows the first time: a window
+ * the server read cannot see forces a refetch per arrow or a pre-read of
+ * months nobody opens. `?month=YYYY-MM` is read HERE, so the query is sized by
+ * what is on screen, the back button pages through months, and a month is
+ * linkable. The day inside it stays client state because every row for the
+ * visible month is already on the client — a tap has nothing to fetch.
  *
- * Two reads, deliberately. The summary is the statistics over the debt window
- * and cannot be widened without changing what "sleep debt" means; the log
- * range serves the three things that need raw rows — the month calendar, the
- * fortnight of bars, and the form's own defaults (today's row if there is one,
- * the median bedtime if there is not).
- *
- * That range is the WIDER of the month and the fortnight, not the month. On
- * the 3rd it would otherwise be three days long, and the median bedtime that
- * seeds the form would be a median of three nights — the calendar's window
- * silently narrowing the defaults of a form that has nothing to do with it.
- * It used to be a fixed thirteen weeks for the heatmap; a month plus a
- * fortnight is at most 45 days, so the query also got smaller.
+ * **Two windows, two reads, merged.** The month on screen and the fortnight
+ * the bar chart and the median bedtime need are different windows, and they
+ * are only the same one while the current month is showing. Reading their
+ * union unconditionally would mean scanning back to January to draw January
+ * plus the last fortnight; reading them separately when they are disjoint
+ * keeps every query bounded by a month or by a fortnight. `readRanges` decides
+ * which, and the rows are merged by day because the same night can come back
+ * from both.
  *
  * Neither failure throws. Both are awaited by an RSC, where a throw replaces
  * the whole page with the root `error.tsx` — including the form, which does
  * not need either read to work.
  */
-export async function SleepScreen() {
+export async function SleepScreen({ month }: { month?: string }) {
   const t = await getTranslations('dashboard.health');
+  const locale = await getLocale();
   const timeZone = await getRequestTimeZone();
 
   const today = toLocalDate(new Date(), timeZone);
   const todayKey = localDateKey(today);
+  const currentMonthStart = startOfMonth(today);
+
+  // A search param is text a reader can type. An unparseable or future month
+  // falls back to the current one rather than drawing an empty grid for the
+  // year 9999 — there are no nights ahead of today to page into.
+  const requested = month === undefined ? null : parseMonthKey(month);
+  const monthStart =
+    requested === null || requested > currentMonthStart
+      ? currentMonthStart
+      : requested;
+
+  const monthStartKey = localDateKey(monthStart);
+  const monthLastKey = localDateKey(
+    addDays(monthStart, daysInMonth(monthStart) - 1)
+  );
+  // Never read past today: rows cannot exist there, and the calendar draws
+  // those days as pips rather than as missed nights.
+  const monthReadTo = monthLastKey > todayKey ? todayKey : monthLastKey;
+
   const chartStart = addDays(today, -(WINDOW_DAYS - 1));
   const chartStartKey = localDateKey(chartStart);
-  const monthStart = startOfMonth(today);
-  // Whichever reaches further back. Both consumers read from the same array,
-  // and a row missing from it is indistinguishable from a night that was
-  // never logged — so the query has to cover the union, never the intersection.
-  const readStart = monthStart < chartStart ? monthStart : chartStart;
 
-  const [summaryRes, logsRes] = await Promise.all([
+  const ranges = readRanges(
+    { from: monthStartKey, to: monthReadTo },
+    { from: chartStartKey, to: todayKey }
+  );
+
+  const [summaryRes, ...logResults] = await Promise.all([
     getSleepSummary({ days: WINDOW_DAYS, timeZone }),
-    getSleepLogs({ from: localDateKey(readStart), to: todayKey }),
+    ...ranges.map((range) => getSleepLogs(range)),
   ]);
 
   const summary = summaryRes.success ? summaryRes.data : null;
-  const rows = logsRes.success ? logsRes.data : [];
-  const failed = !summaryRes.success || !logsRes.success;
+  const failed = !summaryRes.success || logResults.some((res) => !res.success);
 
-  const series: DayValue[] = rows.map(toDayValue);
-  const defaults = buildDefaults(
-    rows,
-    todayKey,
-    today,
-    timeZone,
-    summary?.targetMin ?? FALLBACK_TARGET_MIN
+  // Merged by day: the two windows overlap whenever the current month is on
+  // screen, and a night present twice would be counted twice by the summary.
+  const rows = [
+    ...new Map(
+      logResults
+        .flatMap((res) => (res.success ? res.data : []))
+        .map((row) => [row.localDate, row])
+    ).values(),
+  ].sort((a, b) => a.localDate.localeCompare(b.localDate));
+
+  const targetMin = summary?.targetMin ?? FALLBACK_TARGET_MIN;
+  const nights = rows.map(toLoggedNight);
+  const monthNights = nights.filter(
+    (night) =>
+      night.localDate >= monthStartKey && night.localDate <= monthLastKey
   );
+  const series: DayValue[] = nights.map((night) => ({
+    localDate: night.localDate,
+    value: night.totalSleepMin,
+  }));
+
+  // Today when it is on screen, otherwise the last day of the month being
+  // viewed — which is never in the future, because the month never is. A
+  // calendar that opens with nothing selected would leave the form below it
+  // describing no night at all.
+  const initialSelectedKey =
+    todayKey >= monthStartKey && todayKey <= monthLastKey
+      ? todayKey
+      : monthLastKey;
+
+  const nextMonth = addMonths(monthStart, 1);
+  const monthLabel = new Intl.DateTimeFormat(locale, {
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(monthStart);
+  const shortDayFormat = new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    timeZone: 'UTC',
+  });
 
   return (
-    <SleepEntryForm
-      defaults={defaults}
-      targetMin={summary?.targetMin}
+    <SleepDayEditor
+      nights={nights}
+      rows={rows}
+      monthStartKey={monthStartKey}
+      todayKey={todayKey}
+      initialSelectedKey={initialSelectedKey}
+      timeZone={timeZone}
+      targetMin={targetMin}
+      nowMin={roundedNowMin(new Date(), timeZone)}
+      prevMonthKey={monthKey(addMonths(monthStart, -1))}
+      nextMonthKey={nextMonth > currentMonthStart ? null : monthKey(nextMonth)}
       aside={
         <>
           {/* `destructive-text`, not `destructive`: §14 records that the fill
               token measures 3.76:1 as text. */}
           {failed ? (
-            <p className="text-sm text-destructive-text">{t('errors.load')}</p>
+            <p className="flex items-start gap-2 text-sm text-destructive-text">
+              <TriangleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
+              {t('errors.load')}
+            </p>
           ) : null}
+
+          {/* First in the column, because it is what the grid directly above
+              it adds up to. At `lg` that puts it beside the entry fields and
+              immediately under the calendar it describes. */}
+          <SleepMonthSummary
+            nights={monthNights}
+            monthLabel={monthLabel}
+            targetMin={targetMin}
+            formatDay={(key) =>
+              shortDayFormat.format(new Date(`${key}T00:00:00.000Z`))
+            }
+          />
 
           {summary ? (
             <SleepStatsPanel summary={summary} todayKey={todayKey} />
@@ -139,55 +198,48 @@ export async function SleepScreen() {
     >
       <section>
         {series.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
+          // Where the fortnight of bars would be. A crossed-out calendar says
+          // "no nights recorded" — the same mark the hub uses for the same
+          // fact — so the gap reads as a state and not as a block that failed
+          // to render.
+          <p className="flex items-start gap-2 text-sm text-muted-foreground">
+            <CalendarOff aria-hidden className="mt-0.5 size-4 shrink-0" />
             {t('sleep.noHistory')}
           </p>
         ) : (
-          // Side by side from `md` up, each in its own soft card rather than
-          // loose under a rule. The month calendar is a fluid grid — its dots
-          // grow with the box instead of scrolling inside it, which is the
-          // whole reason a month replaced a rolling quarter — and the duration
-          // chart is pure ratio and simply gets taller bars to read.
+          // The same soft card the hub gives its chart, so moving between the
+          // two tabs does not change what a chart is: a figure on a raised
+          // sheet, never one floating on the ground `SpaceShell` paints.
           //
-          // `items-start` because grid items stretch to the tallest row member
-          // by default, and these two are very different heights. Stretched,
-          // the chart card grew to the calendar's height and rendered a small
-          // bar above a large emptiness that read as a layout bug. Sized to
-          // content they are merely different heights, which is what they are.
-          // Same reason the entry grid in `SleepEntryForm` uses
-          // `lg:items-start`.
-          <div className="grid gap-4 md:grid-cols-2 md:items-start md:gap-6">
-            <div className="rounded-3xl border bg-card p-5 shadow">
-              <SleepDurationChart
-                nights={series}
-                startKey={chartStartKey}
-                days={WINDOW_DAYS}
-                targetMin={summary?.targetMin}
-              />
-            </div>
-
-            <div className="rounded-3xl border bg-card p-5 shadow">
-              <SleepMonthCalendar
-                nights={series}
-                monthStartKey={localDateKey(monthStart)}
-                todayKey={todayKey}
-                targetMin={summary?.targetMin ?? FALLBACK_TARGET_MIN}
-              />
-            </div>
+          // One card and not a two-up grid any more — the month calendar that
+          // used to sit beside it is now the top of the screen. That also
+          // retires the `md:items-start` this grid needed: with a single child
+          // there is no tallest row member for the chart to be stretched to.
+          <div className="rounded-3xl border bg-card p-5 shadow">
+            <SleepDurationChart
+              nights={series}
+              startKey={chartStartKey}
+              days={WINDOW_DAYS}
+              targetMin={summary?.targetMin}
+            />
           </div>
         )}
       </section>
-    </SleepEntryForm>
+    </SleepDayEditor>
   );
 }
 
 /**
- * `computeNight` rather than `wakeAt - bedAt`, so the grid is shaded by time
- * ASLEEP — latency and recorded awakenings taken off — exactly like every
+ * `computeNight` rather than `wakeAt - bedAt`, so every figure on the screen is
+ * time ASLEEP — latency and recorded awakenings taken off — exactly like every
  * other duration in this module. Re-deriving it here would be a second
  * definition of the one number the whole screen is about.
+ *
+ * It runs on the SERVER for every consumer: the calendar's shades, the bar
+ * chart and the monthly summary all read the results rather than the rows, so
+ * the statistics module never reaches the browser.
  */
-function toDayValue(row: SleepLogRow): DayValue {
+function toLoggedNight(row: SleepLogRow): LoggedNight {
   const night = computeNight({
     localDate: new Date(`${row.localDate}T00:00:00.000Z`),
     bedAt: new Date(row.bedAt),
@@ -196,91 +248,33 @@ function toDayValue(row: SleepLogRow): DayValue {
     awakeningsMin: row.awakeningsMin,
   });
 
-  return { localDate: row.localDate, value: night.totalSleepMin };
+  return {
+    localDate: row.localDate,
+    totalSleepMin: night.totalSleepMin,
+    quality: row.quality,
+  };
 }
 
 /**
- * What the form opens showing.
+ * One read or two, depending on whether the windows touch.
  *
- * Today's row wins outright when there is one: the write is an upsert, so
- * opening the screen a second time is an EDIT, and a form that came up blank
- * would quietly offer to overwrite a saved night with its own defaults.
- *
- * Otherwise bedtime is the median of the last fortnight, and wake time is
- * "now, rounded to five minutes" ONLY WHEN NOW IS PLAUSIBLY THE END OF THAT
- * NIGHT. It was unconditional, and that produced the worst first impression
- * this screen could give: opening it at 23:10 against a 23:00 median bedtime
- * showed a ten-minute night, and 23:10 is exactly when someone reaches for a
- * sleep app. The midnight-crossing arithmetic was never wrong — 23:00 → 07:10
- * has always given 8h 10m — the defaults were simply describing an evening as
- * if it were a morning.
- *
- * So: measure the candidate night. Under four hours means the form was opened
- * before the night it is about has happened, and the honest default is the
- * night the author is AIMING for — bedtime plus their nightly target. Four
- * hours rather than a "is it morning?" hour test, because the threshold that
- * matters is the length of the night, not the position of the clock: a shift
- * worker going to bed at 08:00 gets the same sensible default, and no hour of
- * the day is hardcoded anywhere.
- *
- * Both clocks are resolved here rather than in the browser so that the
- * server's markup and the first client render agree — a clock computed in
- * `useState` would differ between the two and hydrate with a mismatch.
+ * Overlapping windows become their union — the common case, where the month on
+ * screen is the current one and the fortnight sits inside it. Disjoint windows
+ * stay separate, so paging back to January reads January and the last
+ * fortnight rather than everything between them.
  */
-function buildDefaults(
-  rows: SleepLogRow[],
-  todayKey: string,
-  today: Date,
-  timeZone: string,
-  targetMin: number
-): SleepEntryDefaults {
-  const existing = rows.find((row) => row.localDate === todayKey);
-
-  if (existing) {
-    return {
-      bedClock: minutesToClock(
-        localClockMinutes(new Date(existing.bedAt), timeZone)
-      ),
-      wakeClock: minutesToClock(
-        localClockMinutes(new Date(existing.wakeAt), timeZone)
-      ),
-      quality: existing.quality,
-      latencyMin: existing.latencyMin,
-      awakeningsMin: existing.awakeningsMin,
-      factors: existing.factors,
-      isFreeDay: existing.isFreeDay,
-      note: existing.note,
-    };
+function readRanges(
+  month: { from: string; to: string },
+  chart: { from: string; to: string }
+): Array<{ from: string; to: string }> {
+  if (month.from <= chart.to && chart.from <= month.to) {
+    return [
+      {
+        from: month.from < chart.from ? month.from : chart.from,
+        to: month.to > chart.to ? month.to : chart.to,
+      },
+    ];
   }
 
-  const sampleFrom = localDateKey(addDays(today, -(MEDIAN_SAMPLE_DAYS - 1)));
-  const recentBedtimes = rows
-    .filter((row) => row.localDate >= sampleFrom)
-    .map((row) => row.bedAt);
-
-  const bedClock =
-    medianBedClock(recentBedtimes, timeZone) ?? FALLBACK_BED_CLOCK;
-  const bedMin = clockToMinutes(bedClock) ?? 0;
-
-  const nowMin = Math.round(localClockMinutes(new Date(), timeZone) / 5) * 5;
-  // The short way round, the same rule the form itself uses for the duration
-  // it displays — so this test and that figure can never disagree.
-  const candidateNightMin = (((nowMin - bedMin) % DAY_MIN) + DAY_MIN) % DAY_MIN;
-
-  const wakeMin =
-    candidateNightMin >= MIN_PLAUSIBLE_NIGHT_MIN ? nowMin : bedMin + targetMin;
-
-  return {
-    bedClock,
-    wakeClock: minutesToClock(wakeMin),
-    quality: null,
-    latencyMin: null,
-    awakeningsMin: null,
-    factors: [],
-    // Saturday or Sunday. `today` is UTC midnight standing for the owner's
-    // calendar day, so its UTC weekday IS the local one. A guess, and shown as
-    // a checkbox precisely because holidays and shift work break it.
-    isFreeDay: today.getUTCDay() === 0 || today.getUTCDay() === 6,
-    note: null,
-  };
+  return [month, chart];
 }

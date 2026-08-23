@@ -1,4 +1,11 @@
-import { CalendarClock, Compass, Moon, Repeat, Sunrise } from 'lucide-react';
+import {
+  CalendarClock,
+  Compass,
+  Moon,
+  Repeat,
+  Sunrise,
+  Waves,
+} from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import type { SleepSummary } from '@/entities/sleep-log';
@@ -28,7 +35,18 @@ export async function SleepRegularity({ summary }: { summary: SleepSummary }) {
 
   return (
     <section aria-labelledby={HEADING_ID} className="flex flex-col gap-2">
-      <h2 id={HEADING_ID} className="text-xs font-medium text-muted-foreground">
+      {/* The heading is the only thing separating this block from the tile
+          grid above it, and at `text-xs` in `muted-foreground` it was a line
+          of text doing a rule's job. A wave, because that is what these five
+          figures are about — how repeatable the cycle is — and `size-3.5`
+          with `gap-1.5`, which is exactly how `StatTile` sets an icon beside
+          an `xs` label, so the heading and the tiles under it share one
+          measure. */}
+      <h2
+        id={HEADING_ID}
+        className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"
+      >
+        <Waves aria-hidden className="size-3.5 shrink-0" />
         {t('sleep.regularity')}
       </h2>
 

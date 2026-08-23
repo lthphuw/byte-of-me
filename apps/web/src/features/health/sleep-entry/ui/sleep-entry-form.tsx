@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, Input, Label } from '@byte-of-me/ui';
+import { CalendarDays, Moon, Sunrise } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { SleepDetailsSection } from './sleep-details-section';
@@ -23,10 +24,19 @@ import {
  * phone it summons the OS time picker; a custom wheel trades weeks of work and
  * an accessibility risk for aesthetics.
  *
- * **What the reader meets, in order.** The duration first, at display size,
- * with its target — it is the answer the screen exists to give, and it used to
- * be the smallest text on the page. Then the two clocks that produce it, then
- * quality. Everything else is behind `SleepDetailsSection`.
+ * **What the reader meets, in order.** The month first, through `lead` — the
+ * calendar is the screen's primary surface and the control that chooses which
+ * night everything under it is about. Then the day being edited, named in
+ * words. Then the duration at display size with its target — it is the answer
+ * the screen exists to give, and it used to be the smallest text on the page.
+ * Then the two clocks that produce it, then quality. Everything else is behind
+ * `SleepDetailsSection`.
+ *
+ * The form does not own the selection: `defaults.localDate` says which night
+ * it is filled with, and the caller remounts this component when that changes.
+ * A `key` rather than an effect syncing props into state, because every field
+ * here is uncontrolled-by-day — half a form carried over from the 9th into the
+ * 14th is worse than a form that starts clean.
  *
  * **Two layouts.** Below `lg` this is a phone column with the save bar pinned
  * outside the scroll area, which is why this component owns BOTH halves of the
@@ -53,6 +63,8 @@ import {
 export function SleepEntryForm({
   defaults,
   targetMin,
+  lead,
+  heading,
   aside,
   children,
 }: {
@@ -60,6 +72,13 @@ export function SleepEntryForm({
   /** The owner's nightly goal, for the hero's arc. Absent when the summary
    *  read failed — the hero then draws a scale but prints no target. */
   targetMin?: number;
+  /** Full-width content ABOVE both columns — the month calendar. It leads the
+   *  screen because it is also what chooses the day everything below edits. */
+  lead?: React.ReactNode;
+  /** Which night is being edited, in words. The calendar says it in geometry
+   *  and this says it in a sentence, because a tapped dot is a weak receipt
+   *  for "you are now editing the 9th". */
+  heading?: string;
   /** The statistics column. Beside the fields at `lg`, beneath them below it. */
   aside?: React.ReactNode;
   /** Full-width content under both columns — the charts. */
@@ -92,6 +111,15 @@ export function SleepEntryForm({
             reason. A single column stretched over 1400px is what makes a
             phone layout read as broken on a monitor. */}
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
+          {/* The month leads, and it spans both columns rather than sitting in
+              one of them. It is not a chart of the month any more — it is how
+              the reader chooses which night the whole column below is about,
+              so putting it beside the thing it drives would leave the primary
+              control in the margin. */}
+          {lead ? (
+            <div className="rounded-3xl border bg-card p-5 shadow">{lead}</div>
+          ) : null}
+
           {/* 2fr / 3fr, not two halves: the entry column holds two time
               fields and a five-step scale and stops being comfortable below
               ~300px, while the statistics column is a 3-up tile row that
@@ -99,6 +127,16 @@ export function SleepEntryForm({
               into roughly 320 / 480. */}
           <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-8">
             <div className="flex min-w-0 flex-col gap-6">
+              {heading ? (
+                <h2 className="flex items-center gap-2 text-sm font-medium">
+                  <CalendarDays
+                    aria-hidden
+                    className="size-4 shrink-0 text-muted-foreground"
+                  />
+                  {heading}
+                </h2>
+              ) : null}
+
               <SleepDurationHero
                 durationMin={entry.durationMin}
                 targetMin={targetMin}
@@ -108,10 +146,27 @@ export function SleepEntryForm({
                   two are the only fields that must be hit accurately on a
                   phone held in one hand, half awake. They share one soft card
                   because they are one question — where the night started and
-                  where it ended — and the hero above them is the answer. */}
+                  where it ended — and the hero above them is the answer.
+
+                  The moon and the sunrise are the same two marks the bedtime
+                  and wake-variation tiles wear in `SleepRegularity`. One
+                  vocabulary across the module: whatever a glyph means on one
+                  screen it means on the other, which is the only thing that
+                  makes a picture faster to read than the word beside it. Both
+                  are `aria-hidden` — the label still says which field this
+                  is. */}
               <div className="grid grid-cols-2 gap-4 rounded-3xl border bg-card p-5 shadow">
                 <div className="space-y-2">
-                  <Label htmlFor="sleep-bed-at">{t('sleep.bedAt')}</Label>
+                  <Label
+                    htmlFor="sleep-bed-at"
+                    className="flex items-center gap-1.5"
+                  >
+                    <Moon
+                      aria-hidden
+                      className="size-4 shrink-0 text-muted-foreground"
+                    />
+                    {t('sleep.bedAt')}
+                  </Label>
                   <Input
                     id="sleep-bed-at"
                     type="time"
@@ -123,7 +178,16 @@ export function SleepEntryForm({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="sleep-wake-at">{t('sleep.wakeAt')}</Label>
+                  <Label
+                    htmlFor="sleep-wake-at"
+                    className="flex items-center gap-1.5"
+                  >
+                    <Sunrise
+                      aria-hidden
+                      className="size-4 shrink-0 text-muted-foreground"
+                    />
+                    {t('sleep.wakeAt')}
+                  </Label>
                   <Input
                     id="sleep-wake-at"
                     type="time"

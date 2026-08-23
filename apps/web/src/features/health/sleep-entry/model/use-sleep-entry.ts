@@ -15,10 +15,14 @@ import { clockToMinutes } from '@/shared/lib/health/duration';
 
 const DAY_MIN = 1440;
 
-/** What the screen knows and the form starts from. Every field is resolved on
- *  the server — including the two clocks — so the first client render matches
- *  the SSR output exactly and nothing has to be filled in after mount. */
+/** What the screen knows and the form starts from. Every field is derived from
+ *  values the SERVER resolved — the row set, the time zone, and the clock as a
+ *  plain number — so the first client render matches the SSR output exactly
+ *  and nothing has to be filled in after mount. */
 export interface SleepEntryDefaults {
+  /** `YYYY-MM-DD` of the night this form is about. The calendar chooses it;
+   *  everything below describes that day. */
+  localDate: string;
   bedClock: string;
   wakeClock: string;
   quality: number | null;
@@ -43,9 +47,20 @@ export interface SleepEntryDefaults {
  * this morning without asking the author which they meant — and both then
  * carry the same `localDate`, because the server derives it from `wakeAt`.
  *
+ * **Which day gets written is decided by WHERE THE WAKE INSTANT LANDS.**
+ * `upsertSleepLog` derives `localDate` from `wakeAt` and refuses to take a day
+ * from the client, deliberately: the column both health domains join on must
+ * not be under the caller's control. So editing a past night is not a matter
+ * of naming a different day — the form places the wake clock on that day's
+ * local midnight instead of today's, and the server's own rule then resolves
+ * it to exactly that day. The guarantee is untouched, and no entity had to
+ * change to make the calendar editable.
+ *
  * `timeZone` is read from the device at submit, not from the server render.
  * The screen's zone comes from a geo header and is a good guess; the device's
  * is the fact, and it is the value the stored `local_date` is resolved with.
+ * It is also the zone `atLocalClock` builds the instant in, so the day the
+ * client aimed at and the day the server derives cannot disagree.
  */
 export function useSleepEntry(defaults: SleepEntryDefaults) {
   const t = useTranslations('dashboard.health');
@@ -81,7 +96,7 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
         throw new Error(t('errors.save'));
       }
 
-      const wakeAt = atLocalClock(new Date(), wakeMin);
+      const wakeAt = atLocalClock(localMidnight(defaults.localDate), wakeMin);
       const bedAt = new Date(wakeAt.getTime() - durationMin * 60_000);
 
       const res = await upsertSleepLog({
@@ -147,7 +162,22 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
   };
 }
 
-/** Today, at a clock time, in the DEVICE's zone — the same zone whose name is
+/**
+ * A `YYYY-MM-DD` key as midnight in the DEVICE's zone.
+ *
+ * Not `new Date(key)`, which parses a bare date as UTC and therefore lands on
+ * the previous day for every reader west of Greenwich — the one bug the whole
+ * `localDate` convention exists to avoid. The three-argument constructor is
+ * local by definition, which is what this needs: the instant it seeds has to
+ * be resolved in the same zone whose name is sent with it.
+ */
+function localMidnight(key: string): Date {
+  const [year, month, day] = key.split('-').map(Number);
+
+  return new Date(year, month - 1, day);
+}
+
+/** A day, at a clock time, in the DEVICE's zone — the same zone whose name is
  *  sent alongside, so the instant and the zone cannot disagree. */
 function atLocalClock(base: Date, minutes: number): Date {
   const out = new Date(base);

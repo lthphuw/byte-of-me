@@ -3,6 +3,7 @@
 import {
   Coffee,
   Dumbbell,
+  ListChecks,
   type LucideIcon,
   Smartphone,
   Thermometer,
@@ -79,7 +80,17 @@ export function SleepFactorGrid({
 
   return (
     <div className="space-y-3">
-      <span className="text-sm font-medium">{t('sleep.factors')}</span>
+      {/* A checklist, and it is doing work the tiles cannot: they are toggle
+          buttons, so nothing in their shape says "tick as many as apply" the
+          way a checkbox would. `aria-pressed` tells a screen reader that; this
+          tells everyone else. */}
+      <span className="flex items-center gap-1.5 text-sm font-medium">
+        <ListChecks
+          aria-hidden
+          className="size-4 shrink-0 text-muted-foreground"
+        />
+        {t('sleep.factors')}
+      </span>
 
       <div
         role="group"

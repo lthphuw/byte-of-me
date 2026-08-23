@@ -1,5 +1,12 @@
 import { buttonVariants } from '@byte-of-me/ui';
-import { Flame, Hourglass } from 'lucide-react';
+import {
+  CalendarOff,
+  Flame,
+  Hourglass,
+  PencilLine,
+  Plus,
+  TriangleAlert,
+} from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { getSleepSummary } from '@/entities/sleep-log';
@@ -59,15 +66,24 @@ export async function HealthHub() {
   const lastNight = summary?.nights.at(-1) ?? null;
   const loggedToday = lastNight?.localDate === todayKey;
 
-  // EXACTLY one bottom action, and its label is the only thing that changes
-  // with state. Two competing calls to action on a phone is how the wrong one
+  // EXACTLY one bottom action, and only its label and its mark change with
+  // state. Two competing calls to action on a phone is how the wrong one
   // gets pressed; the destination is the same screen either way, because
   // logging a night and correcting it are the same act.
+  //
+  // The mark is that state's second cue. On an achromatic palette (§14) a
+  // button cannot say "this is a correction, not a first entry" with tone, and
+  // the sentence that does say it is read second — a pencil says it first, and
+  // a plus says the opposite. `buttonVariants` already sizes every svg inside
+  // it to 16px and gaps them at 8, so nothing here sets either.
+  const ActionIcon = loggedToday ? PencilLine : Plus;
+
   const actionLink = (
     <Link
       href="/space/health/sleep"
       className={cn(buttonVariants(), 'h-14 w-full rounded-2xl text-base')}
     >
+      <ActionIcon aria-hidden />
       {loggedToday ? t('hub.editSleep') : t('hub.logSleep')}
     </Link>
   );
@@ -77,7 +93,15 @@ export async function HealthHub() {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
           {summary === null ? (
-            <p className="text-sm text-destructive-text">{t('errors.load')}</p>
+            // A bare grey sentence on an empty page reads as a page that
+            // failed to finish rendering. The mark says the line is a message
+            // and not a leftover, and it is the same pair this module uses on
+            // the sleep screen — a triangle for "the read failed", a crossed
+            // calendar for "there is simply nothing yet".
+            <p className="flex items-start gap-2 text-sm text-destructive-text">
+              <TriangleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
+              {t('errors.load')}
+            </p>
           ) : (
             <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-8">
               <div className="flex min-w-0 flex-col gap-6">
@@ -134,7 +158,11 @@ export async function HealthHub() {
                 </section>
 
                 {summary.nights.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <CalendarOff
+                      aria-hidden
+                      className="mt-0.5 size-4 shrink-0"
+                    />
                     {t('hub.noData')}
                   </p>
                 ) : (

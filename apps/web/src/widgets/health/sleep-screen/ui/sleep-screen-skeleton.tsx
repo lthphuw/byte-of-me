@@ -6,12 +6,12 @@ import { useTranslations } from 'next-intl';
 /**
  * `SleepScreen`, loading.
  *
- * It draws the ENTRY COLUMN, not the statistics: the entry column is the top
- * of the screen (and the left of it at `lg`) and the only part that is always
- * there, while the stats beside it depend on a read that may return nothing at
- * all. A placeholder for tiles that then never appear is a worse lie than a
- * short page — and at `lg` the grid still reserves the column, so the entry
- * side does not jump sideways when the statistics arrive.
+ * It draws the CALENDAR and the ENTRY COLUMN, not the statistics. Those two
+ * are always there — the calendar now leads the screen and the entry column
+ * follows it — while the stats beside them depend on a read that may return
+ * nothing at all. A placeholder for tiles that then never appear is a worse
+ * lie than a short page, and at `lg` the grid still reserves the column, so
+ * the entry side does not jump sideways when the statistics arrive.
  *
  * The bottom bar is in the skeleton for the same reason it is in the hub's: it
  * is where the thumb already is, and a bar that arrives late moves the target
@@ -28,8 +28,29 @@ export function SleepScreenSkeleton() {
     >
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
+          {/* The month, in the card it leads the screen in: the header row,
+              the seven column initials, and five weeks of marks. */}
+          <div className="flex flex-col gap-3 rounded-3xl border p-5">
+            <Skeleton aria-hidden className="h-11 w-full rounded-full" />
+
+            <div className="grid grid-cols-7 gap-2">
+              {Array.from({ length: 42 }, (_, i) => (
+                <Skeleton
+                  key={i}
+                  aria-hidden
+                  className="aspect-square w-full rounded-xl"
+                />
+              ))}
+            </div>
+
+            <Skeleton aria-hidden className="h-4 w-56" />
+          </div>
+
           <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-8">
             <div className="flex min-w-0 flex-col gap-6">
+              {/* The day being edited, named in words. */}
+              <Skeleton aria-hidden className="h-5 w-48" />
+
               {/* The hero: a 176px ring inside a 32px-padded card, then the
                   delta and the target beneath it. */}
               <div className="flex flex-col items-center gap-5 rounded-3xl border p-8">

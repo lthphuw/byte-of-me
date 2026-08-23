@@ -20,13 +20,21 @@ import { cn } from '@/shared/lib/utils';
  * `--primary` rather than a hardcoded grey, so one ramp is correct in both
  * themes — it is near-black in light and near-white in dark, and the card
  * behind it flips with it.
+ *
+ * Exported because the sleep screen's month grid is a control rather than a
+ * drawing and therefore cannot sit inside `ChartFrame` (a focusable button in
+ * an `aria-hidden` subtree is the `aria-hidden-focus` failure). It draws the
+ * same marks against the same ramp, and a second copy of these four alphas
+ * would be a second copy of the measurement that produced them.
  */
-const FILL = [
+export const MONTH_CALENDAR_FILL = [
   'bg-primary/30',
   'bg-primary/55',
   'bg-primary/75',
   'bg-primary',
 ] as const;
+
+const FILL = MONTH_CALENDAR_FILL;
 
 export const MONTH_CALENDAR_LEVELS = FILL.length;
 

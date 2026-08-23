@@ -1,33 +1,15 @@
 'use client';
 
-import { forwardRef, useEffect, useRef, useState } from 'react';
-import {
-  Button,
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetTitle,
-  SheetTrigger,
-  useMediaQuery,
-} from '@byte-of-me/ui';
-import { scrollIntoViewBehavior } from '@byte-of-me/ui/lib/prefers-reduced-motion';
-import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@byte-of-me/ui';
+import { ChevronDown, SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { SleepDetailsFields } from './sleep-details-fields';
 
 import type { useSleepEntry } from '@/features/health/sleep-entry/model/use-sleep-entry';
 import { cn } from '@/shared/lib/utils';
-
-/** The width at which `/space` shows its icon rail and this screen becomes two
- *  columns — the same `lg` the rest of the module switches at, written as a
- *  query because JavaScript has to decide which container mounts. */
-const DESKTOP_QUERY = '(min-width: 1024px)';
+import { ResponsiveModal } from '@/shared/ui/responsive-modal';
 
 /**
  * Everything the morning flow does not need, behind one tap.
@@ -37,20 +19,20 @@ const DESKTOP_QUERY = '(min-width: 1024px)';
  * time-to-fall-asleep, minutes awake, the factor tiles, the free-day flag and
  * the note are corrections and context.
  *
- * **Two containers, one set of fields.** On a phone the tap opens a BOTTOM
- * SHEET — the details are a detour off the main flow, and a sheet says that in
- * a way an inline expander does not: it comes up under the thumb, it dims what
- * it interrupted, Escape and a tap outside both back out of it, and the page
- * behind it does not grow by 400px and throw the save bar off screen. At `lg`
- * a modal over a half-empty two-column layout would be theatre, so the same
- * fields stay an inline panel that expands in place.
+ * **It opens OVER the page at every width now.** This used to be a bottom
+ * sheet on a phone and an inline `Collapsible` at `lg`, and the expander was
+ * the defect the owner reported: opening Details grew the column by ~400px and
+ * pushed the Save button — and the statistics beside it — down the page, so
+ * the control the reader was heading for moved while they were looking at it.
+ * `ResponsiveModal` is the pattern the gym surface already opens all five of
+ * its forms with, and its own documentation names this exact failure. Below
+ * `lg` it is still the bottom sheet this section always had; at `lg` it is a
+ * centred dialog instead of an expander. One component, so the two halves of
+ * the module cannot drift apart again.
  *
- * Which one mounts is decided by `useMediaQuery`, not by `lg:hidden`, because
- * these fields carry ids: two copies means a duplicate `#sleep-latency` and a
- * `<label for>` bound to whichever came first. The trigger is the same
- * component in both branches and both start closed, so the first client render
- * and the SSR output draw the same box — the hook starts `false`, corrects
- * after mount, and there is nothing visible to correct.
+ * That also deletes the scroll-into-view effect this file used to need. An
+ * expander could open below the fold and appear to do nothing; a modal is
+ * placed by the viewport and has nowhere to hide.
  *
  * **The section has to be FOUND**, or efficiency is never computable again:
  * latency and minutes awake are the two inputs that entitle the screens to
@@ -66,9 +48,7 @@ export function SleepDetailsSection({
   entry: ReturnType<typeof useSleepEntry>;
 }) {
   const t = useTranslations('dashboard.health');
-  const isDesktop = useMediaQuery(DESKTOP_QUERY);
   const [open, setOpen] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
 
   const filledCount =
     (entry.latency.trim() === '' ? 0 : 1) +
@@ -79,161 +59,120 @@ export function SleepDetailsSection({
   const efficiencyUnavailable =
     entry.latency.trim() === '' && entry.awakenings.trim() === '';
 
-  // Opened content lands below the fold often enough that the tap otherwise
-  // appears to do nothing. `block: 'nearest'` moves the page only when the
-  // panel is actually cut off, and the behaviour comes from the shared helper
-  // because a literal `'smooth'` animates whatever the user's reduced-motion
-  // setting says (§14). Only the inline panel needs this — a sheet is already
-  // pinned to the bottom of the viewport.
-  useEffect(() => {
-    if (!open || !isDesktop) return;
-
-    contentRef.current?.scrollIntoView({
-      behavior: scrollIntoViewBehavior(),
-      block: 'nearest',
-    });
-  }, [open, isDesktop]);
-
-  const trigger = (
-    <DetailsTrigger
-      title={t('sleep.details')}
-      summary={t('sleep.detailsSummary')}
-      badge={
-        filledCount > 0 ? t('sleep.detailsFilled', { n: filledCount }) : null
-      }
-      hint={efficiencyUnavailable ? t('sleep.detailsEfficiencyHint') : null}
-      open={open}
-    />
-  );
-
-  if (isDesktop) {
-    return (
-      <Collapsible open={open} onOpenChange={setOpen}>
-        <CollapsibleTrigger asChild>{trigger}</CollapsibleTrigger>
-
-        <CollapsibleContent ref={contentRef}>
-          <div className="mt-3 rounded-3xl border bg-card p-5 shadow">
-            <SleepDetailsFields entry={entry} />
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
-    );
-  }
-
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>{trigger}</SheetTrigger>
+    <>
+      <DetailsTrigger
+        title={t('sleep.details')}
+        summary={t('sleep.detailsSummary')}
+        badge={
+          filledCount > 0 ? t('sleep.detailsFilled', { n: filledCount }) : null
+        }
+        hint={efficiencyUnavailable ? t('sleep.detailsEfficiencyHint') : null}
+        open={open}
+        onOpen={() => setOpen(true)}
+      />
 
-      {/* `hideClose`, and a full-width Done instead: the built-in X sits
-          `right-2 top-2`, which on a bottom sheet is the far corner from the
-          thumb that opened it. Escape and a tap on the overlay still dismiss.
-          `88svh` rather than `88vh` — on iOS Safari `vh` is the tall viewport,
-          so a sheet sized in `vh` puts its own footer under the browser's
-          toolbar, which is where the only visible way out of it lives.
-
-          `motion-reduce:animate-none` because the slide-up is a CSS animation
-          from `tailwindcss-animate`, and `MotionConfig reducedMotion="user"`
-          covers framer-motion only (§14). Radix's `Presence` reads the
-          computed `animation-name` to decide when to unmount, so removing the
-          animation makes the sheet appear and vanish at once rather than
-          leaving it mounted. */}
-      <SheetContent
-        side="bottom"
-        hideClose
-        className="flex max-h-[88svh] flex-col gap-0 rounded-t-3xl p-0 motion-reduce:animate-none"
+      <ResponsiveModal
+        open={open}
+        onOpenChange={setOpen}
+        title={t('sleep.details')}
+        description={t('sleep.detailsSummary')}
+        footer={
+          // `type="button"`: these fields live inside the page's `<form>`, and
+          // a bare button in a form submits it — Done would have saved the
+          // night instead of closing the panel.
+          <Button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="h-14 w-full rounded-2xl text-base"
+          >
+            {t('sleep.detailsDone')}
+          </Button>
+        }
       >
-        <span
-          aria-hidden
-          className="mx-auto mt-3 h-1.5 w-10 shrink-0 rounded-full bg-muted-foreground/30"
-        />
-
-        <div className="shrink-0 space-y-1 px-5 pb-4 pt-4 text-left">
-          <SheetTitle>{t('sleep.details')}</SheetTitle>
-          <SheetDescription>{t('sleep.detailsSummary')}</SheetDescription>
-        </div>
-
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5">
-          <SleepDetailsFields entry={entry} />
-        </div>
-
-        {/* Outside the scroll area and clear of the home indicator, exactly
-            like the form's own save bar — a sheet whose only control scrolls
-            away is a sheet the reader has to hunt for a way out of. */}
-        <SheetFooter className="shrink-0 border-t px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
-          <SheetClose asChild>
-            <Button type="button" className="h-14 w-full rounded-2xl text-base">
-              {t('sleep.detailsDone')}
-            </Button>
-          </SheetClose>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        <SleepDetailsFields entry={entry} />
+      </ResponsiveModal>
+    </>
   );
 }
 
 /**
- * The one closed card both containers open from.
+ * The one closed card the panel opens from.
  *
- * A `forwardRef` button because Radix's `Collapsible.Trigger` and
- * `Sheet.Trigger` both take it `asChild` — they merge their own props and a
- * ref onto whatever element is handed to them, and a component that drops
- * either one silently stops opening.
- *
- * Identical markup on both sides is the point: `useMediaQuery` cannot answer
- * before mount, so the desktop reader sees the phone branch for one frame.
- * With the same trigger in both, that frame is indistinguishable from the
- * next one.
+ * A plain button rather than a `forwardRef` trigger: `ResponsiveModal` is
+ * controlled, so nothing needs to be merged onto this element by Radix and
+ * there is no ref to drop. The chevron still turns, because the card is the
+ * only thing on screen that says whether the panel is open.
  */
-const DetailsTrigger = forwardRef<
-  HTMLButtonElement,
-  {
-    title: string;
-    summary: string;
-    /** How many of the fields inside already have a value. */
-    badge: string | null;
-    /** Why opening this matters, while it still does. */
-    hint: string | null;
-    open: boolean;
-  } & React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ title, summary, badge, hint, open, className, ...props }, ref) => (
-  <button
-    ref={ref}
-    type="button"
-    className={cn(
-      'w-full rounded-3xl border bg-card px-5 py-4 text-left shadow',
-      'transition-colors duration-200 hover:bg-muted',
-      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-      className
-    )}
-    {...props}
-  >
-    <span className="flex items-center gap-3">
-      <span className="min-w-0 flex-1">
-        <span className="flex items-center gap-2 text-sm font-medium">
-          {title}
-          {badge ? (
-            <span className="rounded-full bg-primary px-2 py-0.5 text-[11px] font-medium tabular-nums text-primary-foreground">
-              {badge}
-            </span>
-          ) : null}
+function DetailsTrigger({
+  title,
+  summary,
+  badge,
+  hint,
+  open,
+  onOpen,
+}: {
+  title: string;
+  summary: string;
+  /** How many of the fields inside already have a value. */
+  badge: string | null;
+  /** Why opening this matters, while it still does. */
+  hint: string | null;
+  open: boolean;
+  onOpen: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      // `haspopup` as well as `expanded`: what opens is a dialog now, not a
+      // region below the button, and a reader told only "expanded" would go
+      // looking for content that is not there.
+      aria-haspopup="dialog"
+      aria-expanded={open}
+      onClick={onOpen}
+      className={cn(
+        'w-full rounded-3xl border bg-card px-5 py-4 text-left shadow',
+        'transition-colors duration-200 hover:bg-muted',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background'
+      )}
+    >
+      <span className="flex items-center gap-3">
+        <span className="min-w-0 flex-1">
+          <span className="flex items-center gap-2 text-sm font-medium">
+            {/* A landmark, not decoration: this card's whole problem is being
+                FOUND, and among four rounded cards of near-identical tone it is
+                the only one with a glyph in its title. Sliders because what is
+                behind it is a set of optional adjustments to a night already
+                described — the chevron beside it says open/closed, and this says
+                what opens. */}
+            <SlidersHorizontal
+              aria-hidden
+              className="size-4 shrink-0 text-muted-foreground"
+            />
+            {title}
+            {badge ? (
+              <span className="rounded-full bg-primary px-2 py-0.5 text-[11px] font-medium tabular-nums text-primary-foreground">
+                {badge}
+              </span>
+            ) : null}
+          </span>
+          <span className="mt-1 block truncate text-xs text-muted-foreground">
+            {summary}
+          </span>
         </span>
-        <span className="mt-1 block truncate text-xs text-muted-foreground">
-          {summary}
-        </span>
+
+        <ChevronDown
+          aria-hidden
+          className={cn(
+            'size-4 shrink-0 text-muted-foreground transition-transform duration-200 motion-reduce:transition-none',
+            open && 'rotate-180'
+          )}
+        />
       </span>
 
-      <ChevronDown
-        aria-hidden
-        className={cn(
-          'size-4 shrink-0 text-muted-foreground transition-transform duration-200 motion-reduce:transition-none',
-          open && 'rotate-180'
-        )}
-      />
-    </span>
-
-    {hint ? (
-      <span className="mt-2 block text-xs text-muted-foreground">{hint}</span>
-    ) : null}
-  </button>
-));
-DetailsTrigger.displayName = 'DetailsTrigger';
+      {hint ? (
+        <span className="mt-2 block text-xs text-muted-foreground">{hint}</span>
+      ) : null}
+    </button>
+  );
+}

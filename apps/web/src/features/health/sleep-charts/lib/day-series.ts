@@ -38,6 +38,34 @@ export function startOfMonth(date: Date): Date {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
 }
 
+/** `YYYY-MM` — the month half of a `localDateKey`, and what the sleep screen
+ *  carries in its search param. */
+export function monthKey(date: Date): string {
+  return localDateKey(date).slice(0, 7);
+}
+
+/**
+ * The 1st of a `YYYY-MM` month, or `null` if the string is not one.
+ *
+ * Null rather than a throw or a silent fallback: this parses a SEARCH PARAM,
+ * which is untrusted text a reader can type, and the caller is the only place
+ * that knows what to show instead — here, the current month.
+ */
+export function parseMonthKey(key: string): Date | null {
+  if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(key)) return null;
+
+  const parsed = new Date(`${key}-01T00:00:00.000Z`);
+
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+/** The 1st of the month `count` months either side of `date`. */
+export function addMonths(date: Date, count: number): Date {
+  return new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + count, 1)
+  );
+}
+
 /**
  * How many days that month has.
  *

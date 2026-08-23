@@ -30,8 +30,13 @@ const LEVELS = [1, 2, 3, 4, 5] as const;
  * pre-coloured, at a size and weight nothing here controls, and it renders as
  * a different picture on every platform. These inherit `currentColor`, which
  * is what lets the chosen one invert with its button.
+ *
+ * Exported because the month calendar draws the same glyph inside each night's
+ * mark. That is the point of a ramp: the picture the reader chose on the 9th
+ * is the picture they see on the 9th when they look at the month, and two
+ * tables mapping 1–5 to icons would be one table and a future disagreement.
  */
-const LEVEL_ICON: Record<number, LucideIcon> = {
+export const SLEEP_QUALITY_ICON: Record<number, LucideIcon> = {
   1: CloudLightning,
   2: CloudDrizzle,
   3: CloudMoon,
@@ -117,7 +122,7 @@ export function SleepQualityScale({
       >
         {LEVELS.map((level) => {
           const isActive = value === level;
-          const Icon = LEVEL_ICON[level];
+          const Icon = SLEEP_QUALITY_ICON[level];
 
           return (
             <button
