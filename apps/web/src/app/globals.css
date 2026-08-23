@@ -255,52 +255,6 @@ html {
   background-repeat: no-repeat !important;
 }
 
-/* -----------------------------------------------------------------------
- * App-boot splash (`(protected)/_boot-splash/`) — the once-per-session
- * "app is starting" overlay shown on first entry into `/space` or
- * `/dashboard`.
- *
- * `BootSplashOverlay`'s markup is always in the tree, in both the server and
- * client render. Visibility lives entirely in the `data-booting` attribute
- * on `<html>`: present, it is shown, at once, with no fade-in — the inline
- * script in `BootSplashScript` sets it before first paint, so there is never
- * a frame where the attribute changes while the page is visible. Absent
- * (the common case: every navigation after the first, and every reload once
- * the session flag is set), `.app-boot-splash` is hidden by the default
- * rule below, no attribute selector needed to hide it.
- *
- * `BootSplashReady` removes the attribute once the app is ready, and THAT
- * transition — matched rule to default rule — is what plays the fade: the
- * `transition` on the default (hidden) rule is what the browser uses when
- * interpolating away from the attribute-selected (visible) state.
- * ------------------------------------------------------------------------ */
-.app-boot-splash {
-  position: fixed;
-  inset: 0;
-  z-index: 2147483647; /* above everything, including sticky headers */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: hsl(var(--background));
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity 300ms ease,
-    visibility 0s linear 300ms;
-}
-
-html[data-booting] .app-boot-splash {
-  opacity: 1;
-  visibility: visible;
-  transition: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .app-boot-splash {
-    transition-duration: 0s;
-  }
-}
-
 /* References backlink (↩) — lucide "corner-up-left" as a CSS mask so the icon
    inherits text color in both themes. The anchor itself is rendered empty by
    the reference-list schema; aria-label carries the meaning. */
@@ -320,13 +274,9 @@ html[data-booting] .app-boot-splash {
    mechanism for PRD §3.2, so these rules ARE the PDF's layout. */
 @media print {
   /* The page renders no chrome of its own, but portals mount at the document
-     root and land on the page regardless of where the route put them. The
-     boot splash is the same case: `/print/notes/[id]` sits under
-     `(protected)`, so it mounts too, and it must never end up in an exported
-     PDF even in the split second before it self-dismisses. */
+     root and land on the page regardless of where the route put them. */
   [data-sonner-toaster],
-  nextjs-portal,
-  .app-boot-splash {
+  nextjs-portal {
     display: none !important;
   }
 

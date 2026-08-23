@@ -1,10 +1,6 @@
 import { headers } from 'next/headers';
 import { getLocale } from 'next-intl/server';
 
-import { BootSplashOverlay } from './_boot-splash/boot-splash-overlay';
-import { BootSplashReady } from './_boot-splash/boot-splash-ready';
-import { BootSplashScript } from './_boot-splash/boot-splash-script';
-
 import { redirect } from '@/shared/i18n/navigation';
 import {
   getAuthenticatedAdmin,
@@ -57,19 +53,5 @@ export default async function ProtectedLayout({
   // mount their own with a list narrowed to what that surface renders; see
   // `shared/i18n/messages.ts`. Every route under this group lives beneath one
   // of the three, so nothing is left without one.
-  //
-  // The splash pieces sit around `children`, not inside the redirect logic
-  // above: a rejected visitor never reaches this return, so they never see
-  // it. `BootSplashScript` and `BootSplashOverlay` are server components —
-  // their markup streams with the rest of this layout's HTML, which is what
-  // lets the inline script run before first paint. `BootSplashReady` is the
-  // only client piece; it owns nothing but the timing of the dismissal.
-  return (
-    <>
-      <BootSplashScript />
-      <BootSplashOverlay />
-      <BootSplashReady />
-      {children}
-    </>
-  );
+  return <>{children}</>;
 }
