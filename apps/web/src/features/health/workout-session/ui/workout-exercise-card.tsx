@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, Flame, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { WorkoutExerciseRow, WorkoutSetRow } from '@/entities/workout';
+import { useSetSummary } from '@/features/health/workout-session/model/use-set-summary';
 import { labelForCode, useGymLabels } from '@/shared/hooks/use-gym-labels';
 import { cn } from '@/shared/lib/utils';
 import { EQUIPMENT_ICON, iconForCode } from '@/shared/ui/gym-icons';
@@ -23,7 +24,9 @@ import { EQUIPMENT_ICON, iconForCode } from '@/shared/ui/gym-icons';
  * than glued together in code: "60 kg × 8" and "45s" are different sentences,
  * not the same sentence with pieces missing, and a translator has to see each
  * whole. A set with nothing filled in says so — an empty row would look like a
- * rendering fault.
+ * rendering fault. That switch lives in `useSetSummary` now, because the live
+ * logger prints the same sentence and two copies of it is how one of them
+ * forgets a metric.
  *
  * Reordering is two 44px buttons rather than a drag, for the reason the
  * routine editor documents: a pointer drag is not a gesture a keyboard or a
@@ -160,26 +163,7 @@ function SetRow({
   onEdit: () => void;
 }) {
   const t = useTranslations('dashboard.health.workout');
-
-  let summary: string;
-  if (metric === 'time') {
-    summary =
-      set.durationSec === null
-        ? t('setEmpty')
-        : t('setTime', { seconds: set.durationSec });
-  } else if (metric === 'bodyweight_reps') {
-    summary =
-      set.reps === null ? t('setEmpty') : t('setReps', { reps: set.reps });
-  } else if (set.weightKg !== null && set.reps !== null) {
-    summary =
-      metric === 'weighted_bodyweight'
-        ? t('setAddedReps', { weight: set.weightKg, reps: set.reps })
-        : t('setWeightReps', { weight: set.weightKg, reps: set.reps });
-  } else if (set.reps !== null) {
-    summary = t('setReps', { reps: set.reps });
-  } else {
-    summary = t('setEmpty');
-  }
+  const summary = useSetSummary()(set, metric);
 
   return (
     <button

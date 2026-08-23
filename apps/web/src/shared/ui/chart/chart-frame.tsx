@@ -53,7 +53,7 @@ export function ChartFrame({
   children: React.ReactNode;
 }) {
   return (
-    <figure className={cn('m-0 flex flex-col gap-3', className)}>
+    <figure className={cn('relative m-0 flex flex-col gap-3', className)}>
       <figcaption className="text-xs font-medium text-muted-foreground">
         {title}
       </figcaption>
@@ -77,6 +77,19 @@ export function ChartFrame({
           nobody can see. A plain `div` clips its contents properly, and the
           table inside it is untouched, so screen readers still get the
           numbers. */}
+      {/* `relative` on the figure above is load-bearing for THIS block.
+          `sr-only` positions absolutely, and with no positioned ancestor the
+          table resolved against the initial containing block: its static
+          position sits deep inside a scrolled region, so the DOCUMENT grew to
+          contain it and the whole page gained a second vertical scrollbar.
+          Measured on the sleep screen: documentElement.scrollHeight 975
+          against a 813px viewport, and hiding the sr-only blocks alone
+          returned it to exactly 813.
+
+          `clip` hides it from sight but changes nothing about layout
+          geometry, which is why this is invisible until you measure the
+          scroll height. Same family as the bug that put `sr-only` on a
+          wrapping div instead of the <table>. */}
       <div className="sr-only">
         <table>
           <caption>{summary}</caption>
