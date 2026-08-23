@@ -68,7 +68,7 @@ export function DayModal({
   hasSleepLog: boolean;
   targetMin: number;
 }) {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.daily');
   const router = useRouter();
 
   const journal = useDayJournal({ localDate, todayKey, entry });

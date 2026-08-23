@@ -52,7 +52,7 @@ export function SleepDurationHero({
   /** One more line under the delta — the hub's "Estimated" caveat. */
   footnote?: string;
 }) {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.daily');
 
   const scale = targetMin ?? FALLBACK_TARGET_MIN;
   const fraction = durationMin === null ? 0 : durationMin / scale;

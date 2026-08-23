@@ -45,7 +45,7 @@ export async function SleepStatsPanel({
    *  number is a second chance for the heading to lie about the read. */
   windowDays: number;
 }) {
-  const t = await getTranslations('dashboard.health');
+  const t = await getTranslations('dashboard.daily');
 
   const efficiency = summary.nights.at(-1)?.efficiencyPct ?? null;
   const logged = new Set(summary.nights.map((night) => night.localDate));

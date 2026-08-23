@@ -62,7 +62,7 @@ export function ExerciseFormModal({
   onSubmit: (values: ExerciseFormValues) => void;
   isSaving: boolean;
 }) {
-  const t = useTranslations('dashboard.health.exercises');
+  const t = useTranslations('dashboard.gym.exercises');
   const labels = useGymLabels();
   const [values, setValues] = useState<ExerciseFormValues>(initial ?? BLANK);
 

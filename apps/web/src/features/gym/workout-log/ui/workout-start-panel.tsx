@@ -48,8 +48,8 @@ const NO_ROUTINE = '';
  * means the common case is still one tap after the tile.
  */
 export function WorkoutStartPanel({ timeZone }: { timeZone: string }) {
-  const t = useTranslations('dashboard.health.gym');
-  const tError = useTranslations('dashboard.health.errors');
+  const t = useTranslations('dashboard.gym.gym');
+  const tError = useTranslations('dashboard.gym.errors');
   const locale = useLocale();
 
   const openQuery = useOpenWorkout();

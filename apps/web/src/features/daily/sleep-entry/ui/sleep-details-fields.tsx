@@ -27,7 +27,7 @@ export function SleepDetailsFields({
 }: {
   entry: ReturnType<typeof useSleepEntry>;
 }) {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.daily');
 
   return (
     <div className="flex flex-col gap-6">

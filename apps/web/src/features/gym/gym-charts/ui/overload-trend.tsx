@@ -33,7 +33,7 @@ export async function OverloadTrend({
 }: {
   progression: ExerciseProgression;
 }) {
-  const t = await getTranslations('dashboard.health.stats');
+  const t = await getTranslations('dashboard.gym.stats');
 
   const slope = progression.slopeKgPerSession;
 

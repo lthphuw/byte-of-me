@@ -63,7 +63,7 @@ export interface SleepEntryDefaults {
  * client aimed at and the day the server derives cannot disagree.
  */
 export function useSleepEntry(defaults: SleepEntryDefaults) {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.daily');
   const queryClient = useQueryClient();
   const router = useRouter();
 

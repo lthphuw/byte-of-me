@@ -60,7 +60,7 @@ import { cn } from '@/shared/lib/utils';
  * escapes to the root `error.tsx` and replaces the page and its navigation.
  */
 export async function GymScreen() {
-  const t = await getTranslations('dashboard.health.gym');
+  const t = await getTranslations('dashboard.gym.gym');
   const timeZone = await getRequestTimeZone();
 
   const todayKey = localDateKey(toLocalDate(new Date(), timeZone));

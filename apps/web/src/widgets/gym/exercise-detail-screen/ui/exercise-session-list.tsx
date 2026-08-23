@@ -37,8 +37,8 @@ export async function ExerciseSessionList({
   metric: string;
   reliableMaxReps: number;
 }) {
-  const t = await getTranslations('dashboard.health.exerciseDetail');
-  const tWorkout = await getTranslations('dashboard.health.workout');
+  const t = await getTranslations('dashboard.gym.exerciseDetail');
+  const tWorkout = await getTranslations('dashboard.gym.workout');
   const locale = await getLocale();
 
   const anyUnreliable = sessions.some((session) =>

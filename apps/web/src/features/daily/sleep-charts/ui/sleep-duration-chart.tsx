@@ -39,7 +39,7 @@ export function SleepDurationChart({
   targetMin?: number;
   className?: string;
 }) {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.daily');
   const locale = useLocale();
 
   const points = toDaySeries(nights, startKey, days, (key) =>

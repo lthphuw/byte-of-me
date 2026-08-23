@@ -49,7 +49,7 @@ export function PhotoStrip({
   onCaption: (id: string, caption: string | null) => void;
   onRemove: (id: string) => void;
 }) {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.daily');
   const inputRef = useRef<HTMLInputElement>(null);
   const [openId, setOpenId] = useState<string | null>(null);
 

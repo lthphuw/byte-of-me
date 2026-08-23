@@ -46,7 +46,7 @@ export async function ExerciseDetailScreen({
 }: {
   exerciseId: string;
 }) {
-  const t = await getTranslations('dashboard.health.exerciseDetail');
+  const t = await getTranslations('dashboard.gym.exerciseDetail');
   const locale = await getLocale();
   const timeZone = await getRequestTimeZone();
 

@@ -55,7 +55,7 @@ export function useOpenWorkout() {
  * with a Resume button pointing at the session that is already open.
  */
 export function useStartWorkout() {
-  const tError = useTranslations('dashboard.health.errors');
+  const tError = useTranslations('dashboard.gym.errors');
   const queryClient = useQueryClient();
   const router = useRouter();
 

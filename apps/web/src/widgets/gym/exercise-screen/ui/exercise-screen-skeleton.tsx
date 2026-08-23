@@ -18,7 +18,7 @@ import { useTranslations } from 'next-intl';
  * real one does.
  */
 export function ExerciseScreenSkeleton() {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.gym');
 
   return (
     <div

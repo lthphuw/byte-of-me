@@ -42,9 +42,9 @@ export function ExerciseSwitchSheet({
   onSelect: (index: number) => void;
   onAddExercise: () => void;
 }) {
-  const t = useTranslations('dashboard.health.workout');
-  const tGym = useTranslations('dashboard.health.gym');
-  const tLive = useTranslations('dashboard.health.workout.live');
+  const t = useTranslations('dashboard.gym.workout');
+  const tGym = useTranslations('dashboard.gym.gym');
+  const tLive = useTranslations('dashboard.gym.workout.live');
   const labels = useGymLabels();
 
   return (

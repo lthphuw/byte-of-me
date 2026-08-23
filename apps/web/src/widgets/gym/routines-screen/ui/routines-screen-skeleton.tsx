@@ -12,7 +12,7 @@ import { useTranslations } from 'next-intl';
  * match the component's rhythm causes the jump it exists to prevent (§14).
  */
 export function RoutinesScreenSkeleton() {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.gym');
 
   return (
     <div

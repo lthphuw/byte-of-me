@@ -47,7 +47,7 @@ export function SleepDetailsSection({
 }: {
   entry: ReturnType<typeof useSleepEntry>;
 }) {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.daily');
   const [open, setOpen] = useState(false);
 
   const filledCount =

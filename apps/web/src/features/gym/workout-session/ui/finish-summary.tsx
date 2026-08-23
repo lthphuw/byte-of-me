@@ -38,9 +38,9 @@ export function FinishSummary({
    *  here so the duration does not tick while the reader is choosing an RPE. */
   now: number;
 }) {
-  const t = useTranslations('dashboard.health.workout.live');
-  const tGym = useTranslations('dashboard.health.gym');
-  const tUnits = useTranslations('dashboard.health.units');
+  const t = useTranslations('dashboard.gym.workout.live');
+  const tGym = useTranslations('dashboard.gym.gym');
+  const tUnits = useTranslations('dashboard.gym.units');
 
   const summary = summariseSession(session);
   const durationMin = elapsedMinutes(session.startedAt, now);

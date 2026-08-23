@@ -48,8 +48,8 @@ export function WorkoutSessionView({
    *  live logger prints none and takes none. */
   timeZone: string;
 }) {
-  const t = useTranslations('dashboard.health.workout');
-  const tError = useTranslations('dashboard.health.errors');
+  const t = useTranslations('dashboard.gym.workout');
+  const tError = useTranslations('dashboard.gym.errors');
 
   const query = useWorkoutSession(sessionId);
 

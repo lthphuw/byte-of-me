@@ -17,7 +17,7 @@ import { useTranslations } from 'next-intl';
  * two are close enough in height that guessing wrong costs a few pixels.
  */
 export function GymScreenSkeleton() {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.gym');
 
   return (
     <div

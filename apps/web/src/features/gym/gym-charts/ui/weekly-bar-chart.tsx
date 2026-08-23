@@ -36,7 +36,7 @@ export function WeeklyBarChart({
   summary: string;
   className?: string;
 }) {
-  const t = useTranslations('dashboard.health.stats');
+  const t = useTranslations('dashboard.gym.stats');
 
   const formatValue = (value: number) =>
     unit === 'kg'

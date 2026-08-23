@@ -50,8 +50,8 @@ export function useWorkoutSession(id: string) {
  * reports a save it did not make.
  */
 export function useWorkoutSessionMutations(sessionId: string) {
-  const t = useTranslations('dashboard.health.workout');
-  const tError = useTranslations('dashboard.health.errors');
+  const t = useTranslations('dashboard.gym.workout');
+  const tError = useTranslations('dashboard.gym.errors');
   const queryClient = useQueryClient();
   const router = useRouter();
 

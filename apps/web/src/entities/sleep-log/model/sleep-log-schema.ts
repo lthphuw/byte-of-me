@@ -16,7 +16,7 @@ import { isValidTimeZone } from '@/shared/lib/health/local-date';
  * A `String[]` column validated here instead of a Postgres enum: the list will
  * change as the author notices new patterns, and a migration per new factor is
  * not a trade worth making. Codes rather than labels because the labels are UI
- * text and live in `dashboard.health.factors.*` in both locale files.
+ * text and live in `dashboard.daily.factors.*` in both locale files.
  */
 export const SLEEP_FACTORS = [
   'caffeine_late',

@@ -40,7 +40,7 @@ export function MuscleFilter({
   value: string;
   onChange: (muscle: string) => void;
 }) {
-  const t = useTranslations('dashboard.health.exercises');
+  const t = useTranslations('dashboard.gym.exercises');
   const labels = useGymLabels();
   const [open, setOpen] = useState(false);
 

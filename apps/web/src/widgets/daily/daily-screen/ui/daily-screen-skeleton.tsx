@@ -39,7 +39,7 @@ const SKELETON_LEADING_BLANKS = 4;
 const SKELETON_DAY_CELLS = 31;
 
 export function DailyScreenSkeleton() {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.daily');
 
   return (
     <div

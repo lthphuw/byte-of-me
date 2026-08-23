@@ -46,7 +46,7 @@ export function SleepEntryForm({
   entry: ReturnType<typeof useSleepEntry>;
   targetMin: number;
 }) {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.daily');
 
   return (
     <div className="flex flex-col gap-6">

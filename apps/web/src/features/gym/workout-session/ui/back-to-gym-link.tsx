@@ -30,7 +30,7 @@ export function BackToGymLink({
   compact?: boolean;
   guard?: () => boolean;
 }) {
-  const t = useTranslations('dashboard.health.workout');
+  const t = useTranslations('dashboard.gym.workout');
 
   return (
     <Link

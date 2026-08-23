@@ -72,7 +72,7 @@ export function NumpadSheet({
   allowDecimal: boolean;
   onSubmit: (value: string) => void;
 }) {
-  const t = useTranslations('dashboard.health.workout.live');
+  const t = useTranslations('dashboard.gym.workout.live');
   const [entry, setEntry] = useState(initial);
 
   // Re-seeded when the sheet OPENS, not on every render: continuous re-seeding

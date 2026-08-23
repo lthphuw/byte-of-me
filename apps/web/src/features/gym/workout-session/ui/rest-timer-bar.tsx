@@ -33,7 +33,7 @@ const EXTEND_SEC = 30;
  * continuously for two minutes.
  */
 export function RestTimerBar({ timer }: { timer: RestTimer }) {
-  const t = useTranslations('dashboard.health.workout.live');
+  const t = useTranslations('dashboard.gym.workout.live');
 
   if (!timer.isResting) return null;
 

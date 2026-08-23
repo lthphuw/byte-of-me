@@ -63,7 +63,7 @@ export function SleepFactorGrid({
   selected: string[];
   onToggle: (factor: SleepFactor) => void;
 }) {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.daily');
 
   // Literal keys, one per factor. next-intl's generated declarations only
   // type-check literals, so a `t(`factors.${code}`)` in the map below would

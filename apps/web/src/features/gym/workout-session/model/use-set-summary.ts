@@ -25,7 +25,7 @@ export function useSetSummary(): (
   set: WorkoutSetRow,
   metric: string
 ) => string {
-  const t = useTranslations('dashboard.health.workout');
+  const t = useTranslations('dashboard.gym.workout');
 
   return useCallback(
     (set: WorkoutSetRow, metric: string) => {

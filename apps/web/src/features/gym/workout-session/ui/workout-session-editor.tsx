@@ -68,9 +68,9 @@ export function WorkoutSessionEditor({
    *  identically either side of hydration. */
   timeZone: string;
 }) {
-  const t = useTranslations('dashboard.health.workout');
-  const tUnits = useTranslations('dashboard.health.units');
-  const tGym = useTranslations('dashboard.health.gym');
+  const t = useTranslations('dashboard.gym.workout');
+  const tUnits = useTranslations('dashboard.gym.units');
+  const tGym = useTranslations('dashboard.gym.gym');
   const locale = useLocale();
 
   const mutations = useWorkoutSessionMutations(session.id);

@@ -133,7 +133,7 @@ export function SleepMonthCalendar({
   nextMonthKey: string | null;
   className?: string;
 }) {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.daily');
   const locale = useLocale();
 
   const monthStart = new Date(`${monthStartKey}T00:00:00.000Z`);

@@ -69,7 +69,7 @@ export function SleepMonthBoard({
   prevMonthKey: string;
   nextMonthKey: string | null;
 }) {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.daily');
   const locale = useLocale();
   const [openKey, setOpenKey] = useState<string | null>(null);
 

@@ -46,8 +46,8 @@ const SEARCH_DEBOUNCE_MS = 300;
  * the other is neither focusable nor in the accessibility tree.
  */
 export function ExerciseCatalog() {
-  const t = useTranslations('dashboard.health.exercises');
-  const tError = useTranslations('dashboard.health.errors');
+  const t = useTranslations('dashboard.gym.exercises');
+  const tError = useTranslations('dashboard.gym.errors');
 
   const [search, setSearch] = useState('');
   const [muscle, setMuscle] = useState('');

@@ -51,7 +51,7 @@ export function RoutineItemRow({
   onMove: (delta: number) => void;
   onRemove: () => void;
 }) {
-  const t = useTranslations('dashboard.health.routines');
+  const t = useTranslations('dashboard.gym.routines');
   const labels = useGymLabels();
   const [open, setOpen] = useState(false);
 

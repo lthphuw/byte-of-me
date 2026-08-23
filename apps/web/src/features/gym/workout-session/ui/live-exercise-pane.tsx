@@ -64,8 +64,8 @@ export function LiveExercisePane({
   onOpenSwitcher: () => void;
   onEditSet: (set: WorkoutSetRow) => void;
 }) {
-  const t = useTranslations('dashboard.health.workout');
-  const tLive = useTranslations('dashboard.health.workout.live');
+  const t = useTranslations('dashboard.gym.workout');
+  const tLive = useTranslations('dashboard.gym.workout.live');
   const labels = useGymLabels();
 
   const EquipmentIcon = iconForCode(EQUIPMENT_ICON, exercise.equipment);
@@ -180,8 +180,8 @@ function LiveSetRow({
   metric: string;
   onEdit: () => void;
 }) {
-  const t = useTranslations('dashboard.health.workout');
-  const tLive = useTranslations('dashboard.health.workout.live');
+  const t = useTranslations('dashboard.gym.workout');
+  const tLive = useTranslations('dashboard.gym.workout.live');
   const summary = useSetSummary()(set, metric);
   const isUnsynced = isLocalSetId(set.id);
 

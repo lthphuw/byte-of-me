@@ -13,7 +13,7 @@ import { useTranslations } from 'next-intl';
  * bar that arrives late moves the target out from under it.
  */
 export function WorkoutSessionScreenSkeleton() {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.gym');
 
   return (
     <div

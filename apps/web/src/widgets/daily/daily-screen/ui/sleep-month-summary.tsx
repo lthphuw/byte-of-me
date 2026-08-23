@@ -60,7 +60,7 @@ export async function SleepMonthSummary({
   /** `YYYY-MM-DD` to a short human date, for the best and worst nights. */
   formatDay: (key: string) => string;
 }) {
-  const t = await getTranslations('dashboard.health');
+  const t = await getTranslations('dashboard.daily');
 
   // A day written up with no sleep row has nothing for a duration figure to
   // say — `null` there means "no night", not "a night of zero minutes" — so

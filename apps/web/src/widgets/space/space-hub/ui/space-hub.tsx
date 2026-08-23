@@ -8,7 +8,8 @@ import {
 import {
   Archive,
   ArrowRight,
-  HeartPulse,
+  CalendarHeart,
+  Dumbbell,
   Link2,
   NotebookPen,
 } from 'lucide-react';
@@ -112,8 +113,8 @@ export async function SpaceHub({ navSlot }: { navSlot?: React.ReactNode }) {
               </Card>
 
               {/* One card per module — the same list, and the same test, as
-                  `use-space-nav-items.ts`. Future space modules (schedule,
-                  gym log) are one more card here plus a nav item.
+                  `use-space-nav-items.ts`. A future space module (schedule)
+                  is one more card here plus a nav item.
 
                   The knowledge graph had a card of its own here, beside
                   Notes, which is what made it look like a third module. It is
@@ -161,13 +162,33 @@ export async function SpaceHub({ navSlot }: { navSlot?: React.ReactNode }) {
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between text-base">
                       <span className="flex items-center gap-2">
-                        <HeartPulse className="size-4" />
-                        {t('modules.healthTitle')}
+                        <CalendarHeart className="size-4" />
+                        {t('modules.dailyTitle')}
                       </span>
                       <ArrowRight className="size-4 opacity-0 transition-opacity group-hover:opacity-100" />
                     </CardTitle>
                     <CardDescription>
-                      {t('modules.healthDescription')}
+                      {t('modules.dailyDescription')}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+
+              <Link
+                href="/space/gym"
+                className="group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Card className="h-full transition-colors group-hover:border-primary/40 group-hover:bg-muted/40">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between text-base">
+                      <span className="flex items-center gap-2">
+                        <Dumbbell className="size-4" />
+                        {t('modules.gymTitle')}
+                      </span>
+                      <ArrowRight className="size-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                    </CardTitle>
+                    <CardDescription>
+                      {t('modules.gymDescription')}
                     </CardDescription>
                   </CardHeader>
                 </Card>

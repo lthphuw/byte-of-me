@@ -6,9 +6,10 @@
  * those are on the other side of a server/client boundary from the fourth.
  *
  * It returns the PARTS rather than a formatted string on purpose: "7h 30m" is
- * UI text and lives in `dashboard.health.units.*` in both catalogues — the
- * Vietnamese is "7 giờ 30 phút", not the English with the numbers swapped, so
- * a formatter built here would have to reach for `t` anyway.
+ * UI text and lives in `dashboard.daily.units.*` and `dashboard.gym.units.*`
+ * (the same strings, duplicated into both catalogues) — the Vietnamese is
+ * "7 giờ 30 phút", not the English with the numbers swapped, so a formatter
+ * built here would have to reach for `t` anyway.
  */
 export function splitMinutes(total: number): {
   hours: number;

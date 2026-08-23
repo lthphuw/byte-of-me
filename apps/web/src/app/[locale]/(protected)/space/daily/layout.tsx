@@ -18,7 +18,7 @@ export default async function DailyLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const t = await getTranslations('dashboard.health');
+  const t = await getTranslations('dashboard.daily');
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-x-clip">

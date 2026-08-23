@@ -36,7 +36,7 @@ const BAND_HIGH = 1.3;
  * "unavailable" is not.
  */
 export async function AcwrCard({ acwr }: { acwr: AcwrReading }) {
-  const t = await getTranslations('dashboard.health.stats');
+  const t = await getTranslations('dashboard.gym.stats');
 
   const ratio = acwr.ratio;
   const pct = (value: number) =>

@@ -66,7 +66,7 @@ export function NumberStepper({
   onChange: (value: string) => void;
   onOpenNumpad: () => void;
 }) {
-  const t = useTranslations('dashboard.health.workout.live');
+  const t = useTranslations('dashboard.gym.workout.live');
 
   // Read inside the repeat rather than closed over: a hold spans dozens of
   // updates, and a callback capturing the value it started with would step

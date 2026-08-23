@@ -61,8 +61,8 @@ export function LiveSetInputs({
   onChange: (draft: SetDraft) => void;
   onOpenNumpad: (field: SetField) => void;
 }) {
-  const t = useTranslations('dashboard.health.workout');
-  const tUnits = useTranslations('dashboard.health.workout.live');
+  const t = useTranslations('dashboard.gym.workout');
+  const tUnits = useTranslations('dashboard.gym.workout.live');
 
   const showWeight =
     metric === 'weight_reps' || metric === 'weighted_bodyweight';

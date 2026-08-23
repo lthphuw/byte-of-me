@@ -128,8 +128,8 @@ export function WorkoutLiveLogger({
 }: {
   session: WorkoutSessionDetail;
 }) {
-  const t = useTranslations('dashboard.health.workout');
-  const tLive = useTranslations('dashboard.health.workout.live');
+  const t = useTranslations('dashboard.gym.workout');
+  const tLive = useTranslations('dashboard.gym.workout.live');
   const router = useRouter();
 
   const log = useLiveSetLog(serverSession.id);

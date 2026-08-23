@@ -44,7 +44,7 @@ export function ExerciseCard({
   onToggleArchive: (exercise: ExerciseRow) => void;
   isArchiving: boolean;
 }) {
-  const t = useTranslations('dashboard.health.exercises');
+  const t = useTranslations('dashboard.gym.exercises');
   const labels = useGymLabels();
 
   const EquipmentIcon = iconForCode(EQUIPMENT_ICON, exercise.equipment);

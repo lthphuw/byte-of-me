@@ -13,7 +13,7 @@ import { useTranslations } from 'next-intl';
  * it exists to prevent (§14).
  */
 export function GymStatsScreenSkeleton() {
-  const t = useTranslations('dashboard.health.stats');
+  const t = useTranslations('dashboard.gym.stats');
 
   return (
     <div

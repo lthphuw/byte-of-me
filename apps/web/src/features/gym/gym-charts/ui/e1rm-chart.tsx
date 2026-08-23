@@ -58,7 +58,7 @@ export function E1rmChart({
   unreliableNote?: string;
   className?: string;
 }) {
-  const t = useTranslations('dashboard.health.stats');
+  const t = useTranslations('dashboard.gym.stats');
   const [selected, setSelected] = useState<number | null>(null);
 
   const formatKg = (value: number) =>

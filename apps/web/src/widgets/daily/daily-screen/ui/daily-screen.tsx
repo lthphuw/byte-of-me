@@ -89,7 +89,7 @@ const FALLBACK_TARGET_MIN = 480;
  * none of them to work.
  */
 export async function DailyScreen({ month }: { month?: string }) {
-  const t = await getTranslations('dashboard.health');
+  const t = await getTranslations('dashboard.daily');
   const locale = await getLocale();
   const timeZone = await getRequestTimeZone();
 

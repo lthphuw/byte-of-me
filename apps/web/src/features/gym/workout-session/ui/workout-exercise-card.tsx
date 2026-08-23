@@ -51,7 +51,7 @@ export function WorkoutExerciseCard({
   onRemove: () => void;
   isReordering: boolean;
 }) {
-  const t = useTranslations('dashboard.health.workout');
+  const t = useTranslations('dashboard.gym.workout');
   const labels = useGymLabels();
 
   const EquipmentIcon = iconForCode(EQUIPMENT_ICON, exercise.equipment);
@@ -162,7 +162,7 @@ function SetRow({
   metric: string;
   onEdit: () => void;
 }) {
-  const t = useTranslations('dashboard.health.workout');
+  const t = useTranslations('dashboard.gym.workout');
   const summary = useSetSummary()(set, metric);
 
   return (

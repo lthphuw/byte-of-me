@@ -18,7 +18,7 @@ import { useTranslations } from 'next-intl';
  * the Zod schemas and this hook all read that const, because the three lists
  * existed as hand-synchronised copies for one commit and had already drifted
  * on five codes by the end of it (`b9ca342`). The LABELS are UI text and live
- * in `dashboard.health.{muscles,equipment,metrics}` in both catalogues, since
+ * in `dashboard.gym.{muscles,equipment,metrics}` in both catalogues, since
  * a translator can read "Front delts" without the running app (AGENTS §4).
  *
  * It lives in `shared/hooks/` rather than in one of the gym features because
@@ -44,9 +44,9 @@ export function useGymLabels(): {
   equipments: typeof EQUIPMENT;
   metrics: typeof METRICS;
 } {
-  const tMuscle = useTranslations('dashboard.health.muscles');
-  const tEquipment = useTranslations('dashboard.health.equipment');
-  const tMetric = useTranslations('dashboard.health.metrics');
+  const tMuscle = useTranslations('dashboard.gym.muscles');
+  const tEquipment = useTranslations('dashboard.gym.equipment');
+  const tMetric = useTranslations('dashboard.gym.metrics');
 
   return {
     muscle: {

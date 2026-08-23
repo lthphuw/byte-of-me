@@ -59,7 +59,7 @@ export function MuscleSetsChart({
   summary: string;
   className?: string;
 }) {
-  const t = useTranslations('dashboard.health.stats');
+  const t = useTranslations('dashboard.gym.stats');
   const labels = useGymLabels();
 
   const formatSets = (value: number) =>

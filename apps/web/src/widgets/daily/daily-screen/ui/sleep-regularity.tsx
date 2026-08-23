@@ -27,7 +27,7 @@ const HEADING_ID = 'sleep-regularity-heading';
  * nothing here is interactive.
  */
 export async function SleepRegularity({ summary }: { summary: SleepSummary }) {
-  const t = await getTranslations('dashboard.health');
+  const t = await getTranslations('dashboard.daily');
 
   const nightCount = summary.freeDayCount + summary.workDayCount;
   const dayCounts = { free: summary.freeDayCount, work: summary.workDayCount };

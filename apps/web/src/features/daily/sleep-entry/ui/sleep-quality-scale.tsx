@@ -31,7 +31,7 @@ export function SleepQualityScale({
   value: number | null;
   onChange: (value: number | null) => void;
 }) {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.daily');
 
   const levelLabels: Record<number, string> = {
     1: t('sleep.qualityLevel1'),

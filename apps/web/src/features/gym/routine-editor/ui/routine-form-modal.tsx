@@ -52,7 +52,7 @@ export function RoutineFormModal({
   onSubmit: (draft: RoutineDraft) => void;
   isSaving: boolean;
 }) {
-  const t = useTranslations('dashboard.health.routines');
+  const t = useTranslations('dashboard.gym.routines');
   const [draft, setDraft] = useState<RoutineDraft>(
     initial ?? emptyRoutineDraft()
   );

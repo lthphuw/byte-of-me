@@ -61,7 +61,7 @@ export function MoodScale({
   value: number | null;
   onChange: (value: number | null) => void;
 }) {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.daily');
 
   // Literal keys, one per level. next-intl's generated declarations only
   // type-check literals, so an interpolated key would type-check against

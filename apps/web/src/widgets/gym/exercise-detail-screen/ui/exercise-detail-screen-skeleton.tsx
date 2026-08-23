@@ -12,7 +12,7 @@ import { useTranslations } from 'next-intl';
  * read lands (§14).
  */
 export function ExerciseDetailScreenSkeleton() {
-  const t = useTranslations('dashboard.health.exerciseDetail');
+  const t = useTranslations('dashboard.gym.exerciseDetail');
 
   return (
     <div

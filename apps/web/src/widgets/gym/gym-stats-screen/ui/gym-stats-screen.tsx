@@ -48,7 +48,7 @@ const WINDOW_DAYS = 91;
  * how much. That is the feature, not the polish.
  */
 export async function GymStatsScreen() {
-  const t = await getTranslations('dashboard.health.stats');
+  const t = await getTranslations('dashboard.gym.stats');
   const locale = await getLocale();
   const timeZone = await getRequestTimeZone();
 

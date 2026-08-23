@@ -55,7 +55,7 @@ export function SetEditorModal({
   onDelete?: () => void;
   isSaving: boolean;
 }) {
-  const t = useTranslations('dashboard.health.workout');
+  const t = useTranslations('dashboard.gym.workout');
   const [draft, setDraft] = useState<SetDraft>(initial);
 
   useEffect(() => {

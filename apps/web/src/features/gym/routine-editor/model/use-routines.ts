@@ -57,8 +57,8 @@ export function useRoutines(includeArchived: boolean) {
  * write and the screen reports a save that did not happen.
  */
 export function useRoutineMutations() {
-  const t = useTranslations('dashboard.health.routines');
-  const tError = useTranslations('dashboard.health.errors');
+  const t = useTranslations('dashboard.gym.routines');
+  const tError = useTranslations('dashboard.gym.errors');
   const queryClient = useQueryClient();
 
   const invalidate = () =>

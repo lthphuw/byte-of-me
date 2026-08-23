@@ -36,7 +36,7 @@ export function ExerciseIdentity({
     | 'isArchived'
   >;
 }) {
-  const t = useTranslations('dashboard.health.exercises');
+  const t = useTranslations('dashboard.gym.exercises');
   const labels = useGymLabels();
 
   const EquipmentIcon = iconForCode(EQUIPMENT_ICON, exercise.equipment);
@@ -98,7 +98,7 @@ export function ExerciseIdentity({
  * state that says so rather than showing an empty chart.
  */
 export function MetricNotApplicable({ metric }: { metric: string }) {
-  const t = useTranslations('dashboard.health.exerciseDetail');
+  const t = useTranslations('dashboard.gym.exerciseDetail');
   const labels = useGymLabels();
 
   return (

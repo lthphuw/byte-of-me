@@ -61,7 +61,7 @@ export function FinishWorkoutModal({
   }) => void;
   isSaving: boolean;
 }) {
-  const t = useTranslations('dashboard.health.workout');
+  const t = useTranslations('dashboard.gym.workout');
   const [rpe, setRpe] = useState<number | null>(null);
   const [notes, setNotes] = useState(initialNotes);
 

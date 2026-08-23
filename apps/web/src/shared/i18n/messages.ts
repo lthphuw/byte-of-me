@@ -82,13 +82,15 @@ export const DASHBOARD_MESSAGE_NAMESPACES = [
   'global',
 ] as const;
 
-/** The vault (`/space/**`). Its client tree reads `dashboard.health` (the
- *  health tabs, the sleep form and its charts), `dashboard.note` (editor,
- *  explorer, graph, share dialog) and `dashboard.space` (nav rail, hub
- *  skeleton, settings) and nothing else from the CMS's vocabulary. */
+/** The vault (`/space/**`). Its client tree reads `dashboard.daily` (the
+ *  day journal, the sleep form and its charts), `dashboard.gym` (the
+ *  catalogue, routines, workout sessions and stats), `dashboard.note`
+ *  (editor, explorer, graph, share dialog) and `dashboard.space` (nav rail,
+ *  hub skeleton, settings) and nothing else from the CMS's vocabulary. */
 export const SPACE_MESSAGE_NAMESPACES = [
   'components',
-  'dashboard.health',
+  'dashboard.daily',
+  'dashboard.gym',
   'dashboard.note',
   'dashboard.space',
   'error',

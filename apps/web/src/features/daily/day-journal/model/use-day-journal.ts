@@ -47,7 +47,7 @@ export function useDayJournal({
   todayKey: string;
   entry: DayEntryRow | null;
 }) {
-  const t = useTranslations('dashboard.health');
+  const t = useTranslations('dashboard.daily');
   // Seeded server-side by `space/layout.tsx` — the owner's real compression
   // settings, the same source the media library reads.
   const { settings } = useWorkspaceSettings();

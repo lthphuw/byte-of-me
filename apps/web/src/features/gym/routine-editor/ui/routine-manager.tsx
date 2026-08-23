@@ -38,8 +38,8 @@ import { cn } from '@/shared/lib/utils';
  * the DOM.
  */
 export function RoutineManager() {
-  const t = useTranslations('dashboard.health.routines');
-  const tError = useTranslations('dashboard.health.errors');
+  const t = useTranslations('dashboard.gym.routines');
+  const tError = useTranslations('dashboard.gym.errors');
 
   const [includeArchived, setIncludeArchived] = useState(false);
   const [editing, setEditing] = useState<RoutineDraft | null>(null);
@@ -170,7 +170,7 @@ function RoutineCard({
   onToggleArchive: () => void;
   isArchiving: boolean;
 }) {
-  const t = useTranslations('dashboard.health.routines');
+  const t = useTranslations('dashboard.gym.routines');
 
   const preview = routine.items.slice(0, PREVIEW_ITEMS);
   const rest = routine.items.length - preview.length;

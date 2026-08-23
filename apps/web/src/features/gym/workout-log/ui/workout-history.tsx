@@ -45,8 +45,8 @@ export function WorkoutHistory({
   todayKey: string;
   timeZone: string;
 }) {
-  const t = useTranslations('dashboard.health.gym');
-  const tError = useTranslations('dashboard.health.errors');
+  const t = useTranslations('dashboard.gym.gym');
+  const tError = useTranslations('dashboard.gym.errors');
   const [days, setDays] = useState<number>(DEFAULT_HISTORY_DAYS);
 
   const query = useWorkoutHistory(todayKey, days);
@@ -136,8 +136,8 @@ function HistoryRow({
   session: WorkoutSessionRow;
   timeZone: string;
 }) {
-  const t = useTranslations('dashboard.health.gym');
-  const tUnits = useTranslations('dashboard.health.units');
+  const t = useTranslations('dashboard.gym.gym');
+  const tUnits = useTranslations('dashboard.gym.units');
   const locale = useLocale();
 
   const isOpen = session.endedAt === null;

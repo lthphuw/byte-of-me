@@ -44,8 +44,8 @@ export interface ExerciseFormValues {
  * never happened.
  */
 export function useExerciseMutations() {
-  const t = useTranslations('dashboard.health.exercises');
-  const tError = useTranslations('dashboard.health.errors');
+  const t = useTranslations('dashboard.gym.exercises');
+  const tError = useTranslations('dashboard.gym.errors');
   const queryClient = useQueryClient();
 
   const invalidate = () => {
