@@ -126,6 +126,30 @@ export default {
             backgroundPosition: '0% 50%',
           },
         },
+        // The boot splash's icon: a restrained scale-and-fade entrance. Under
+        // `motion-reduce`, callers pair this with `motion-reduce:animate-none`
+        // rather than relying on the keyframe itself, per AGENTS §14 — a raw
+        // CSS animation isn't covered by `MotionConfig reducedMotion="user"`.
+        'splash-in': {
+          from: {
+            opacity: 0,
+            transform: 'scale(0.94)',
+          },
+          to: {
+            opacity: 1,
+            transform: 'scale(1)',
+          },
+        },
+        // The boot splash's optional progress hairline: an indeterminate bar
+        // sweeping across its track.
+        'splash-hairline': {
+          '0%': {
+            transform: 'translateX(-100%)',
+          },
+          '100%': {
+            transform: 'translateX(300%)',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -136,6 +160,8 @@ export default {
         'collapsible-up': 'collapsible-up 0.12s ease-in',
         gradient: 'gradient 8s linear infinite',
         'ping-3': 'ping 1s ease-in-out 3',
+        'splash-in': 'splash-in 0.5s ease-out both',
+        'splash-hairline': 'splash-hairline 1.4s ease-in-out infinite',
       },
       typography: {
         DEFAULT: {

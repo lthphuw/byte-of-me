@@ -1,5 +1,10 @@
 import * as z from 'zod';
 
+import {
+  IMAGE_COMPRESSION_DEFAULTS,
+  imageCompressionConfigSchema,
+} from '@/shared/lib/media/image-compression-config';
+
 /**
  * The notes workspace's settings: shape, defaults, and the one function that
  * turns whatever is in the database into a complete, valid object.
@@ -100,6 +105,24 @@ export const workspaceSettingsSchema = z.object({
    * back per field, so a row written before this key existed reads as 480.
    */
   sleepTargetMin: z.number().int().min(240).max(720),
+
+  /**
+   * How uploaded images are compressed, both in the browser before they
+   * cross the network and again on the server as the guarantee — see
+   * `shared/lib/media/compress-image.ts` and `compress-in-browser.ts`.
+   *
+   * A single nested object rather than four flat `imageCompression*` keys.
+   * The schema itself lives in `shared/lib/media/image-compression-config.ts`
+   * because both compressors need it and neither may import this entity —
+   * embedding that schema here (instead of redefining the same four fields)
+   * is what keeps the settings row, the browser pass and the server pass
+   * from drifting apart. The trade this makes against the "flat" note above:
+   * the jsonb merge in `updateWorkspaceSettings` is a shallow `||`, so a
+   * write always carries the WHOLE nested object, never a single inner
+   * field — which is also exactly what the settings popover already does,
+   * since it holds the full config in state.
+   */
+  imageCompression: imageCompressionConfigSchema,
 });
 
 export type WorkspaceSettings = z.infer<typeof workspaceSettingsSchema>;
@@ -126,6 +149,8 @@ export const WORKSPACE_SETTINGS_DEFAULTS: WorkspaceSettings = {
   updateLinksOnRename: 'ask',
 
   sleepTargetMin: 480,
+
+  imageCompression: { ...IMAGE_COMPRESSION_DEFAULTS },
 };
 
 /**

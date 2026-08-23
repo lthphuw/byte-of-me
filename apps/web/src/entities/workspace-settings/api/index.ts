@@ -5,4 +5,5 @@
 // `'use server'`, so that React's `cache()` can wrap it) which value-imports
 // `prisma`. Re-exporting it would drag prisma — and pg — into the browser
 // bundle. `space/layout.tsx` imports it by its own path.
+export * from './get-image-compression-settings';
 export * from './update-workspace-settings';
