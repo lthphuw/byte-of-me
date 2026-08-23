@@ -1337,13 +1337,13 @@ declare const messages: {
     },
     "daily": {
       "title": "Nhật ký",
-      "loading": "Đang tải dữ liệu sức khỏe…",
+      "loading": "Đang tải ngày của bạn…",
       "units": {
         "hoursMinutes": "{hours, number} giờ {minutes, number} phút",
         "minutes": "{minutes, number} phút"
       },
       "errors": {
-        "load": "Không tải được dữ liệu sức khỏe",
+        "load": "Không tải được ngày của bạn",
         "save": "Không lưu được"
       },
       "sleep": {
@@ -1486,13 +1486,13 @@ declare const messages: {
     },
     "gym": {
       "title": "Phòng tập",
-      "loading": "Đang tải dữ liệu sức khỏe…",
+      "loading": "Đang tải dữ liệu phòng tập…",
       "units": {
         "hoursMinutes": "{hours, number} giờ {minutes, number} phút",
         "minutes": "{minutes, number} phút"
       },
       "errors": {
-        "load": "Không tải được dữ liệu sức khỏe",
+        "load": "Không tải được dữ liệu phòng tập",
         "save": "Không lưu được"
       },
       "metrics": {

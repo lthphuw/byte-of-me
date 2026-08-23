@@ -46,8 +46,9 @@ export const AUTH_MESSAGE_NAMESPACES = [
  * `(protected)` has no provider of its own — the three surfaces beneath it
  * (`dashboard/`, `space/`, `print/`) each mount their own, because the
  * `dashboard` namespace is 30 KB of `en.json` and the two big surfaces share
- * almost none of it: `/space` reads only `dashboard.note` + `dashboard.space`,
- * `/dashboard` reads everything else. Mounted once at the group root, each was
+ * almost none of it: `/space` reads only `dashboard.daily`, `dashboard.gym`,
+ * `dashboard.note` and `dashboard.space`, `/dashboard` reads everything else.
+ * Mounted once at the group root, each was
  * shipping the other's copy on every navigation, and the group is
  * `force-dynamic` so that is per request, not per build.
  *

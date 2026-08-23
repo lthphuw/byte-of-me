@@ -1337,13 +1337,13 @@ declare const messages: {
     },
     "daily": {
       "title": "Daily",
-      "loading": "Loading health data…",
+      "loading": "Loading your day…",
       "units": {
         "hoursMinutes": "{hours, number}h {minutes, number}m",
         "minutes": "{minutes, number}m"
       },
       "errors": {
-        "load": "Could not load health data",
+        "load": "Could not load your day",
         "save": "Could not save"
       },
       "sleep": {
@@ -1486,13 +1486,13 @@ declare const messages: {
     },
     "gym": {
       "title": "Gym",
-      "loading": "Loading health data…",
+      "loading": "Loading gym data…",
       "units": {
         "hoursMinutes": "{hours, number}h {minutes, number}m",
         "minutes": "{minutes, number}m"
       },
       "errors": {
-        "load": "Could not load health data",
+        "load": "Could not load gym data",
         "save": "Could not save"
       },
       "metrics": {
