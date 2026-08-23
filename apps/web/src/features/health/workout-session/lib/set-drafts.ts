@@ -77,10 +77,26 @@ export function nextSetDraft(previous: WorkoutSetRow | undefined): SetDraft {
   };
 }
 
-/** The measures, as the add/update schemas take them. `position` is absent on
- *  purpose: the server appends, so two sets entered in quick succession cannot
- *  collide on a position nothing constrains. */
-export function draftToSetPayload(draft: SetDraft) {
+/**
+ * The measures, as the add/update schemas take them.
+ *
+ * Named rather than inferred because the live logger STORES one of these: a
+ * set whose write failed is held in IndexedDB until the signal comes back, and
+ * a structured-clone record needs a type the compiler can check a stored value
+ * against when it is read back.
+ */
+export interface SetPayload {
+  reps: number | null;
+  weightKg: number | null;
+  rpe: number | null;
+  durationSec: number | null;
+  isWarmup: boolean;
+  completedAt: string | null;
+}
+
+/** `position` is absent on purpose: the server appends, so two sets entered in
+ *  quick succession cannot collide on a position nothing constrains. */
+export function draftToSetPayload(draft: SetDraft): SetPayload {
   return {
     reps: integerFieldToValue(draft.reps),
     weightKg: roundWeight(numberFieldToValue(draft.weightKg)),
