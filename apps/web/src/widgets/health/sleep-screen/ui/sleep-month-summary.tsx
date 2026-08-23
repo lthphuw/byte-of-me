@@ -71,6 +71,39 @@ export async function SleepMonthSummary({
       night.totalSleepMin !== null
   );
 
+  // Rated days, not rated NIGHTS: mood comes from `DayEntry`, which exists
+  // precisely so a day can be journalled with no sleep row at all. Deriving
+  // this from `logged` would silently drop a mood recorded on a night that
+  // was never logged — under-counting "Across N days you rated" and, in a
+  // month with zero sleep rows, hiding the tile entirely behind the early
+  // return below.
+  const rated = nights.filter(
+    (night): night is LoggedNight & { mood: number } => night.mood !== null
+  );
+  const meanMood =
+    rated.length === 0
+      ? null
+      : rated.reduce((sum, night) => sum + night.mood, 0) / rated.length;
+
+  const moodTile = (
+    <StatTile
+      icon={Star}
+      label={t('sleep.monthMood')}
+      value={
+        meanMood === null
+          ? '—'
+          : t('sleep.monthMoodValue', {
+              value: meanMood.toFixed(MOOD_DECIMALS),
+            })
+      }
+      hint={
+        meanMood === null
+          ? t('sleep.monthMoodUnavailable')
+          : t('sleep.monthMoodContext', { n: rated.length })
+      }
+    />
+  );
+
   if (logged.length === 0) {
     return (
       <section aria-labelledby={HEADING_ID} className="flex flex-col gap-2">
@@ -78,14 +111,24 @@ export async function SleepMonthSummary({
           id={HEADING_ID}
           label={t('sleep.monthSummary', { monthLabel })}
         />
-        {/* The tiles' own sheet, not a loose sentence where six cards were.
-            An empty state that abandons the surface reads as a failed render;
-            one that keeps it reads as a month with nothing in it, which is
-            what it is. */}
-        <p className="flex items-center justify-center gap-2 rounded-2xl border bg-card p-6 text-center text-sm text-muted-foreground shadow">
-          <CalendarRange aria-hidden className="size-4 shrink-0" />
-          {t('sleep.monthEmpty')}
-        </p>
+        {rated.length === 0 ? (
+          // The tiles' own sheet, not a loose sentence where six cards were.
+          // An empty state that abandons the surface reads as a failed
+          // render; one that keeps it reads as a month with nothing in it,
+          // which is what it is.
+          <p className="flex items-center justify-center gap-2 rounded-2xl border bg-card p-6 text-center text-sm text-muted-foreground shadow">
+            <CalendarRange aria-hidden className="size-4 shrink-0" />
+            {t('sleep.monthEmpty')}
+          </p>
+        ) : (
+          // No night was logged this month, but the day was still journalled
+          // with a mood — that data exists and the tile must say so, even
+          // though every sleep-derived tile below genuinely has nothing to
+          // show.
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+            {moodTile}
+          </div>
+        )}
       </section>
     );
   }
@@ -104,20 +147,6 @@ export async function SleepMonthSummary({
   const onTarget = logged.filter(
     (night) => night.totalSleepMin >= targetMin
   ).length;
-
-  // Rated nights only. Averaging an unrated night as a zero would invent the
-  // worst possible rating for a night nobody judged, and averaging it as the
-  // mean would make the figure depend on itself.
-  const rated = logged.filter(
-    (
-      night
-    ): night is LoggedNight & { totalSleepMin: number; mood: number } =>
-      night.mood !== null
-  );
-  const meanMood =
-    rated.length === 0
-      ? null
-      : rated.reduce((sum, night) => sum + night.mood, 0) / rated.length;
 
   return (
     <section aria-labelledby={HEADING_ID} className="flex flex-col gap-2">
@@ -175,22 +204,7 @@ export async function SleepMonthSummary({
           }
         />
 
-        <StatTile
-          icon={Star}
-          label={t('sleep.monthMood')}
-          value={
-            meanMood === null
-              ? '—'
-              : t('sleep.monthMoodValue', {
-                  value: meanMood.toFixed(MOOD_DECIMALS),
-                })
-          }
-          hint={
-            meanMood === null
-              ? t('sleep.monthMoodUnavailable')
-              : t('sleep.monthMoodContext', { n: rated.length })
-          }
-        />
+        {moodTile}
       </div>
     </section>
   );
