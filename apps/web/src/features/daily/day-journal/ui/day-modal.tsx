@@ -141,14 +141,12 @@ export function DayModal({
         <div className="space-y-4">
           {/* Not a `<label>`: a `<label>` whose control is a contenteditable
               does not focus it the way it focuses an input, and wrapping rich
-              content in a label is invalid markup. `RichTextEditor` takes an
-              `id` but no `aria-labelledby`, so the field is labelled from the
-              outside instead. */}
-          <div
-            role="group"
-            aria-labelledby="day-reflection-label"
-            className="space-y-2"
-          >
+              content in a label is invalid markup. `RichTextEditor` DOES take
+              `aria-labelledby` (applied straight to the contenteditable it
+              renders), so the heading below labels the editor directly rather
+              than through a group wrapper — a plain `<div>` is enough here
+              since there is only the one control to hold the spacing. */}
+          <div className="space-y-2">
             <span id="day-reflection-label" className="block text-sm font-medium">
               {t('day.reflection')}
             </span>
@@ -163,6 +161,7 @@ export function DayModal({
                 weight in this bundle. */}
             <RichTextEditor
               id="day-reflection"
+              aria-labelledby="day-reflection-label"
               value={journal.reflection ?? undefined}
               onChange={(doc) => journal.setReflection(doc)}
               placeholder={t('day.reflectionPlaceholder')}

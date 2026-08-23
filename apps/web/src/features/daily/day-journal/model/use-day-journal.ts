@@ -205,9 +205,22 @@ export function useDayJournal({
     // re-creates nodes on every edit, so an identity comparison would mark
     // the sheet dirty on every keystroke — and worse, could report dirty when
     // nothing actually changed, prompting a "discard changes?" on close.
+    //
+    // BOTH sides go through the same codec, not just the live one. Comparing
+    // `serializeReflection(reflection)` against the raw `entry.reflection`
+    // string looked correct but wasn't: a legacy plain-text row round-trips
+    // through `parseReflection` into a doc and back out through
+    // `serializeReflection` as JSON, which can never byte-match the original
+    // plain string. That reported every legacy day dirty the instant it was
+    // opened, before anyone touched it. Serialising `entry.reflection`
+    // through the same `parseReflection` → `serializeReflection` pass it took
+    // to seed `reflection` in the first place makes a legacy row compare
+    // clean until it is actually edited, while a row already stored as JSON
+    // still compares exactly as before.
     isDirty:
       mood !== (entry?.mood ?? null) ||
-      serializeReflection(reflection) !== (entry?.reflection ?? null),
+      serializeReflection(reflection) !==
+        serializeReflection(parseReflection(entry?.reflection ?? null)),
     isSaving,
     saveAsync,
   };
