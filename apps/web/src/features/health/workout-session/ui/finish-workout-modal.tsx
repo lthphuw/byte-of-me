@@ -35,6 +35,7 @@ export function FinishWorkoutModal({
   open,
   onOpenChange,
   initialNotes,
+  summary,
   onSubmit,
   isSaving,
 }: {
@@ -43,6 +44,17 @@ export function FinishWorkoutModal({
   /** The session's stored note, which finishing may amend rather than replace
    *  by accident — `workoutFinishSchema` writes `notes` unconditionally. */
   initialNotes: string;
+  /**
+   * What the session came to, drawn ABOVE the rating.
+   *
+   * A slot rather than a second modal: the live logger wants the summary and
+   * the post-workout path does not, but both ask the identical question with
+   * the identical eleven tiles, and two copies of that scale is how one of
+   * them ends up disagreeing about what a 7 is called. It sits above the
+   * question because "how hard was that?" is easier to answer with the
+   * workout in front of you than from memory.
+   */
+  summary?: React.ReactNode;
   onSubmit: (input: {
     sessionRpe: number | null;
     notes: string | null;
@@ -100,6 +112,8 @@ export function FinishWorkoutModal({
       }
     >
       <div className="flex flex-col gap-6">
+        {summary}
+
         <div className="space-y-3">
           <FieldHeading
             label={t('rpe')}

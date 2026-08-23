@@ -2,28 +2,23 @@
 
 import { useState } from 'react';
 import { Button, ConfirmDeleteDialog } from '@byte-of-me/ui';
-import { ArrowLeft, CircleCheck, CircleDot, Plus, Trash2 } from 'lucide-react';
+import { CircleCheck, Plus, Trash2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
-import { FinishWorkoutModal } from './finish-workout-modal';
+import { BackToGymLink } from './back-to-gym-link';
 import { SetEditorModal } from './set-editor-modal';
 import { WorkoutExerciseCard } from './workout-exercise-card';
 
-import type { WorkoutSetRow } from '@/entities/workout';
+import type { WorkoutSessionDetail, WorkoutSetRow } from '@/entities/workout';
 import { ExercisePickerModal } from '@/features/health/exercise-catalog';
 import {
   nextSetDraft,
   type SetDraft,
   toSetDraft,
 } from '@/features/health/workout-session/lib/set-drafts';
-import {
-  useWorkoutSession,
-  useWorkoutSessionMutations,
-} from '@/features/health/workout-session/model/use-workout-session';
-import { Link } from '@/shared/i18n/navigation';
+import { useWorkoutSessionMutations } from '@/features/health/workout-session/model/use-workout-session';
 import { splitMinutes } from '@/shared/lib/health/duration';
 import { formatClock, formatDayKey } from '@/shared/lib/local-date-format';
-import { cn } from '@/shared/lib/utils';
 
 const MS_PER_MINUTE = 60_000;
 
@@ -41,34 +36,34 @@ interface SetEditorTarget {
 }
 
 /**
- * One session, open for entry: its exercises, their sets, and the write that
- * closes it.
+ * A FINISHED session, open for correction: its exercises, their sets, and the
+ * writes that fix them.
  *
  * **This is the post-workout path, not an in-gym logger.** There are no rest
  * timers, no wake locks and no offline queue here on purpose — those belong to
- * the live logger, which is a separate surface with different failure modes.
- * The consequence shows up in one visible decision: a set's `completedAt` is
- * carried through unchanged and never stamped with "now", because stamping the
- * present onto a set performed two hours ago is a worse record than leaving it
- * blank.
+ * `WorkoutLiveLogger`, which is what an OPEN session renders instead
+ * (`workout-session-view.tsx` decides between them, on the data rather than on
+ * the URL). The consequence shows up in one visible decision: a set's
+ * `completedAt` is carried through unchanged and never stamped with "now",
+ * because stamping the present onto a set performed two hours ago is a worse
+ * record than leaving it blank. The live path stamps it, because there "now"
+ * is when the set actually ended.
  *
- * A finished session stays fully editable. Correcting yesterday's numbers is
- * the normal case for a log written after the fact, and `endedAt` is the only
- * thing "finished" means — nothing about it makes the sets read-only. What
- * changes is the primary action: the pinned bar carries **Finish** while the
- * session is open and disappears once it is closed, so a finished session has
- * no button to press twice.
+ * A finished session stays fully EDITABLE. Correcting yesterday's numbers is
+ * the normal case for a log read after the fact, and `endedAt` is the only
+ * thing "finished" means — nothing about it makes the sets read-only. What it
+ * does mean is that there is no Finish button here at all: the session is
+ * already closed, so there is nothing left to press.
  *
- * A missing session renders in place rather than throwing. `getWorkoutSession`
- * returns `{ success: true, data: null }` for "no such session, for you" —
- * one answer for both, deliberately — and this screen shows a line and a way
- * back instead of handing the page to the root `error.tsx`.
+ * It takes the session as a PROP rather than reading it, because the loading,
+ * error and missing states belong to the read and both modes need the
+ * identical three — they live in the view above (AGENTS §11.3).
  */
 export function WorkoutSessionEditor({
-  sessionId,
+  session,
   timeZone,
 }: {
-  sessionId: string;
+  session: WorkoutSessionDetail;
   /** The request's zone, resolved on the server, so a clock time renders
    *  identically either side of hydration. */
   timeZone: string;
@@ -76,67 +71,14 @@ export function WorkoutSessionEditor({
   const t = useTranslations('dashboard.health.workout');
   const tUnits = useTranslations('dashboard.health.units');
   const tGym = useTranslations('dashboard.health.gym');
-  const tError = useTranslations('dashboard.health.errors');
   const locale = useLocale();
 
-  const query = useWorkoutSession(sessionId);
-  const mutations = useWorkoutSessionMutations(sessionId);
+  const mutations = useWorkoutSessionMutations(session.id);
 
   const [setTarget, setSetTarget] = useState<SetEditorTarget | null>(null);
   const [isPickerOpen, setPickerOpen] = useState(false);
-  const [isFinishOpen, setFinishOpen] = useState(false);
   const [isDeleteOpen, setDeleteOpen] = useState(false);
 
-  const result = query.data;
-  const session = result?.success ? result.data : null;
-  const loadError = query.isError
-    ? tError('load')
-    : result && !result.success
-    ? result.errorMsg
-    : null;
-
-  const backLink = (
-    <Link
-      href="/space/health/gym"
-      className="inline-flex min-h-11 items-center gap-2 text-sm text-muted-foreground underline underline-offset-4 transition-colors duration-200 hover:text-foreground"
-    >
-      <ArrowLeft aria-hidden className="size-4 shrink-0" />
-      {t('back')}
-    </Link>
-  );
-
-  if (query.isPending) {
-    return (
-      <Frame>
-        {backLink}
-        <p className="text-sm text-muted-foreground" aria-live="polite">
-          {t('loading')}
-        </p>
-      </Frame>
-    );
-  }
-
-  if (loadError) {
-    return (
-      <Frame>
-        {backLink}
-        {/* `destructive-text`, not `destructive`: §14 records that the fill
-            token measures 3.76:1 as text. */}
-        <p className="text-sm text-destructive-text">{loadError}</p>
-      </Frame>
-    );
-  }
-
-  if (!session) {
-    return (
-      <Frame>
-        {backLink}
-        <p className="text-sm text-muted-foreground">{t('notFound')}</p>
-      </Frame>
-    );
-  }
-
-  const isOpen = session.endedAt === null;
   const durationMin = session.endedAt
     ? Math.max(
         0,
@@ -148,39 +90,18 @@ export function WorkoutSessionEditor({
       )
     : null;
 
-  const finishButton = (
-    <Button
-      type="button"
-      onClick={() => setFinishOpen(true)}
-      disabled={mutations.isFinishing}
-      className="h-14 w-full rounded-2xl text-base"
-    >
-      <CircleCheck aria-hidden className="mr-2 size-5" />
-      {t('finish')}
-    </Button>
-  );
-
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-x-clip">
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
-          {backLink}
+          <BackToGymLink />
 
           <header className="flex flex-col gap-2 rounded-3xl border bg-card p-5 shadow">
             <p className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-              {isOpen ? (
-                <>
-                  <CircleDot aria-hidden className="size-3.5 shrink-0" />
-                  {t('inProgressBadge')}
-                </>
-              ) : (
-                <>
-                  <CircleCheck aria-hidden className="size-3.5 shrink-0" />
-                  {t('finishedAt', {
-                    time: formatClock(session.endedAt ?? '', locale, timeZone),
-                  })}
-                </>
-              )}
+              <CircleCheck aria-hidden className="size-3.5 shrink-0" />
+              {t('finishedAt', {
+                time: formatClock(session.endedAt ?? '', locale, timeZone),
+              })}
             </p>
 
             <h2 className="break-safe text-2xl font-semibold">
@@ -277,10 +198,6 @@ export function WorkoutSessionEditor({
             {t('addExercise')}
           </Button>
 
-          {isOpen ? (
-            <div className="hidden lg:block">{finishButton}</div>
-          ) : null}
-
           {/* Deleting a whole session takes its exercises and every set with
               it — `onDelete: Cascade` on both — so it sits at the bottom,
               outlined rather than filled, and behind a confirmation. A set is
@@ -298,16 +215,10 @@ export function WorkoutSessionEditor({
         </div>
       </div>
 
-      {/* Outside the scroll area, so it is under a thumb on every frame, and
-          clear of the iOS home indicator. Gone at `lg`, where the inline
-          button above is the one that exists — and gone entirely once the
-          session is closed, so there is no button left to press twice. */}
-      {isOpen ? (
-        <div className="shrink-0 border-t bg-background px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 lg:hidden">
-          <div className="mx-auto w-full max-w-4xl">{finishButton}</div>
-        </div>
-      ) : null}
-
+      {/* No pinned bar. The live logger has one because it carries the action
+          the whole screen exists for; here the session is already closed and
+          every remaining action is a correction, which belongs beside the
+          thing being corrected rather than stapled across the bottom. */}
       <ExercisePickerModal
         open={isPickerOpen}
         onOpenChange={setPickerOpen}
@@ -344,16 +255,6 @@ export function WorkoutSessionEditor({
         />
       ) : null}
 
-      <FinishWorkoutModal
-        open={isFinishOpen}
-        onOpenChange={setFinishOpen}
-        initialNotes={session.notes ?? ''}
-        isSaving={mutations.isFinishing}
-        onSubmit={(input) =>
-          mutations.finish(input, { onSuccess: () => setFinishOpen(false) })
-        }
-      />
-
       <ConfirmDeleteDialog
         isOpen={isDeleteOpen}
         onClose={() => setDeleteOpen(false)}
@@ -364,20 +265,6 @@ export function WorkoutSessionEditor({
         actionText={t('deleteWorkout')}
         cancelText={t('cancel')}
       />
-    </div>
-  );
-}
-
-/** The screen's frame, shared by its loading, error and empty states so none
- *  of them changes the page's width, padding or rhythm. */
-function Frame({ children }: { children: React.ReactNode }) {
-  return (
-    <div className={cn('flex min-h-0 flex-1 flex-col overflow-x-clip')}>
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
-          {children}
-        </div>
-      </div>
     </div>
   );
 }

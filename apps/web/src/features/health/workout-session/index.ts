@@ -1,1 +1,1 @@
-export { WorkoutSessionEditor } from './ui/workout-session-editor';
+export { WorkoutSessionView } from './ui/workout-session-view';

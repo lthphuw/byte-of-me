@@ -1,21 +1,27 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
-import { exerciseKeys, getExercises } from '@/entities/exercise';
+import { exerciseKeys, getExercises, getRoutines } from '@/entities/exercise';
 import { getWorkoutSession, workoutKeys } from '@/entities/workout';
 import { DEFAULT_EXERCISE_FILTERS } from '@/features/health/exercise-catalog';
-import { WorkoutSessionEditor } from '@/features/health/workout-session';
+import { WorkoutSessionView } from '@/features/health/workout-session';
 import { getRequestTimeZone } from '@/shared/lib/health/request-time-zone';
 import { getQueryClient } from '@/shared/lib/query/get-query-client';
 
 /**
- * One session, prefetched and then handed to the client editor.
+ * One session, prefetched and then handed to the client view.
  *
- * Two reads. The session itself is the page. The exercise catalogue is here
+ * Three reads. The session itself is the page. The exercise catalogue is here
  * because "add exercise" opens a picker over this screen, and a picker that
  * starts empty while it fetches is a modal with nothing in it — the worst
  * place to make someone wait, since there is nothing else on screen to read.
- * Both keys come from their factories with the same arguments the client hooks
- * use, so both hydrate rather than refetch (AGENTS §6).
+ * The routines are here for the rest timer: `restSec` is a property of a
+ * routine ITEM, not of the session — a session snapshots the routine's name
+ * and nothing else — so the interval to rest after a set has to be looked up,
+ * and looking it up over the network on the first set of a workout is a
+ * request made in the one building where it will not arrive.
+ *
+ * Every key comes from its factory with the same arguments the client hooks
+ * use, so all three hydrate rather than refetch (AGENTS §6).
  *
  * `timeZone` is resolved on the SERVER and passed down. Every clock time on
  * this screen is formatted with it explicitly, so the markup the server sends
@@ -52,11 +58,15 @@ export async function WorkoutSessionScreen({
           includeArchived: DEFAULT_EXERCISE_FILTERS.includeArchived,
         }),
     }),
+    queryClient.prefetchQuery({
+      queryKey: exerciseKeys.routineList(false),
+      queryFn: () => getRoutines({ includeArchived: false }),
+    }),
   ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <WorkoutSessionEditor sessionId={sessionId} timeZone={timeZone} />
+      <WorkoutSessionView sessionId={sessionId} timeZone={timeZone} />
     </HydrationBoundary>
   );
 }
