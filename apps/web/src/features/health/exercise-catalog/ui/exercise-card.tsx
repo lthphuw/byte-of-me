@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 
 import type { ExerciseRow } from '@/entities/exercise';
 import { labelForCode, useGymLabels } from '@/shared/hooks/use-gym-labels';
+import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import {
   EQUIPMENT_ICON,
@@ -57,7 +58,18 @@ export function ExerciseCard({
       )}
     >
       <div className="min-w-0 space-y-1">
-        <p className="break-safe text-sm font-medium">{exercise.name}</p>
+        {/* The name is the way into the exercise's own statistics. A link
+            rather than a fourth button in the row below: it is navigation, not
+            an action on the row, and it is underlined at rest because on this
+            palette `text-primary` is 9% lightness against a 3.9% foreground —
+            a link marked only by colour is not visibly a link, and a
+            hover-only underline does not exist on touch at all (§14). */}
+        <Link
+          href={`/space/health/exercises/${exercise.id}`}
+          className="break-safe block min-h-11 py-2 text-sm font-medium underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
+          {exercise.name}
+        </Link>
 
         <p className="break-safe flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
           <span>{labelForCode(labels.muscle, exercise.primaryMuscle)}</span>
