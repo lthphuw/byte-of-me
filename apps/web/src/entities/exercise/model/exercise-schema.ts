@@ -17,10 +17,26 @@ import * as z from 'zod';
  * rather than a Postgres enum, for the reason `SleepLog.factors` documents:
  * this list will grow, and a migration per addition is not a trade worth
  * making. Labels are UI text and belong in the locale files.
+ *
+ * THIS LIST IS A COPY OF `MUSCLES` IN `packages/db/prisma/seed-exercises.ts`
+ * AND MUST STAY IDENTICAL TO IT. That file writes the starter catalogue
+ * straight into production, so any code it uses and this schema rejects
+ * produces rows the exercise form cannot save and the muscle filter cannot
+ * find — silently, since the rows read back fine. It is not imported from
+ * because importing that module would EXECUTE the seed; its own header names
+ * the fix (lift the three consts into `packages/db/src/`, the only directory
+ * `package.json#exports` covers, and re-export them from the seed) for
+ * whoever needs a third copy.
+ *
+ * Two groupings in it are deliberate and were nearly "corrected" here into a
+ * finer set: `back` stays one code for the mid-back and erectors that rows and
+ * hinges load, separate from `lats` as the vertical-pull mover, and `core` is
+ * one code rather than abs/obliques — the seed's argument is that a split you
+ * cannot program differently only splits the chart.
  */
 export const MUSCLE_GROUPS = [
   'chest',
-  'upper_back',
+  'back',
   'lats',
   'traps',
   'front_delts',
@@ -29,21 +45,20 @@ export const MUSCLE_GROUPS = [
   'biceps',
   'triceps',
   'forearms',
-  'abs',
-  'obliques',
-  'lower_back',
-  'glutes',
   'quads',
   'hamstrings',
+  'glutes',
+  'calves',
+  'core',
   'adductors',
   'abductors',
-  'calves',
-  'neck',
 ] as const;
 
 export type MuscleGroup = (typeof MUSCLE_GROUPS)[number];
 
-/** Mirrors the `equipment` comment on `model Exercise` verbatim. */
+/** Mirrors the `equipment` comment on `model Exercise`, and `EQUIPMENT` in
+ *  `packages/db/prisma/seed-exercises.ts`. Same parity requirement as
+ *  `MUSCLE_GROUPS` above. */
 export const EQUIPMENT_TYPES = [
   'barbell',
   'dumbbell',
@@ -57,7 +72,9 @@ export const EQUIPMENT_TYPES = [
 export type EquipmentType = (typeof EQUIPMENT_TYPES)[number];
 
 /**
- * Mirrors the `metric` comment on `model Exercise` verbatim.
+ * Mirrors the `metric` comment on `model Exercise`, and `METRICS` in
+ * `packages/db/prisma/seed-exercises.ts`. Same parity requirement as
+ * `MUSCLE_GROUPS` above.
  *
  * Without this a plank and a pull-up break the set model: one has no reps, the
  * other no weight. Volume and e1RM read it to decide which formula even
