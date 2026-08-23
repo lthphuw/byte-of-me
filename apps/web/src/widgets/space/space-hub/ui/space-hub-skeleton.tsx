@@ -9,7 +9,7 @@ import { useTranslations } from 'next-intl';
  * gaps, so the real hub swapping in shifts nothing.
  *
  * The module grid is one block per card `SpaceHub` actually renders — the
- * Recent card plus one per module (notes, graph, health) — currently FOUR. It
+ * Recent card plus one per module (notes, daily, gym) — currently FOUR. It
  * once drew two against the real component's three: at `lg` the real layout was
  * two columns over two rows and the placeholder was two columns over one, so a
  * cold `/space` on a desktop jumped a full card row at hydration, the exact

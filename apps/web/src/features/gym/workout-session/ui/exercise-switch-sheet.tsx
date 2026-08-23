@@ -25,7 +25,8 @@ import { ResponsiveModal } from '@/shared/ui/responsive-modal';
  * says 120% is a bar that has stopped meaning anything.
  *
  * The current exercise INVERTS (§14) and carries `aria-current`, the same pair
- * of cues the health tabs use, because a tint at 0% saturation is not a state.
+ * of cues the notes view switch uses, because a tint at 0% saturation is not a
+ * state.
  */
 export function ExerciseSwitchSheet({
   open,

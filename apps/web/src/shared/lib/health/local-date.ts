@@ -52,8 +52,8 @@ export function addDays(d: Date, n: number): Date {
  * from inside `toLocalDate` half-way through an action.
  *
  * Lives beside the convention it guards. It existed as three byte-identical
- * private copies -- in the sleep-log, workout and health-insight schemas --
- * each written because the neighbouring slice was frozen at the time.
+ * private copies -- in the sleep-log, workout and entities/gym-stats schemas
+ * -- each written because the neighbouring slice was frozen at the time.
  */
 export function isValidTimeZone(timeZone: string): boolean {
   try {

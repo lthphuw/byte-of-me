@@ -1,9 +1,10 @@
 /**
  * Splitting a minute count for display.
  *
- * Here rather than inside a component because the hub, the sleep screen, the
- * entry form and the chart tooltips all render the same figure, and three of
- * those are on the other side of a server/client boundary from the fourth.
+ * Here rather than inside a component because daily's sleep screens, its
+ * entry form and its chart tooltips, and gym's workout screens, all render
+ * the same figure, and several of those sit on the other side of a
+ * server/client boundary from the rest.
  *
  * It returns the PARTS rather than a formatted string on purpose: "7h 30m" is
  * UI text and lives in `dashboard.daily.units.*` and `dashboard.gym.units.*`

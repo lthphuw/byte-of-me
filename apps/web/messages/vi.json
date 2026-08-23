@@ -1470,14 +1470,9 @@
         "workout_late": "Tập muộn",
         "ill": "Ốm mệt"
       },
-      "hub": {
-        "ariaLabel": "Thống kê giấc ngủ",
-        "lastNight": "Đêm qua",
-        "debt": "Nợ ngủ",
-        "streak": "Chuỗi ngày",
+      "lastNight": {
+        "label": "Đêm qua",
         "noData": "Chưa ghi giấc ngủ nào",
-        "logSleep": "Ghi giấc ngủ",
-        "editSleep": "Cập nhật đêm qua",
         "estimated": "Ước tính"
       }
     },

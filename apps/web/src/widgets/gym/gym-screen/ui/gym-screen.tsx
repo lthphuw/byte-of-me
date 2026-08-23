@@ -104,9 +104,11 @@ export async function GymScreen() {
 
             {/* The three surfaces this one leads to. Links rather than tabs:
                 routines, the catalogue and the statistics are things the gym
-                screen USES, not sibling views of the same data, and the module
-                already has one navigation system in the segmented control
-                above. */}
+                screen USES, not sibling views of the same data. Gym is its
+                own module reached from the `/space` rail, with no segmented
+                control above it — this screen is the one place that
+                navigates to its sub-screens, via cards, so there is nothing
+                for a second navigation layer to add. */}
             <nav className="grid grid-cols-2 gap-3">
               <SubLink
                 href="/space/gym/routines"

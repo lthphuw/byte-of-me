@@ -6,9 +6,9 @@ import { SpaceNavTrigger } from '@/widgets/space/space-shell';
  * The module frame: one header, then the screen.
  *
  * `overflow-x-clip`, never `overflow-hidden` — `hidden` would make this the
- * nearest scroll container and silently kill the `position: sticky` the day
- * sheet's bars depend on. The page below owns its own scrolling, which is how
- * every other `/space` module works.
+ * nearest scroll container for any `position: sticky` descendant a future
+ * screen adds here, and silently break it. The page below owns its own
+ * scrolling, which is how every other `/space` module works.
  *
  * No segmented control. Gym navigates itself from cards on its own screen —
  * sessions, routines, stats and the exercise catalogue are all one click away

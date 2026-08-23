@@ -71,9 +71,8 @@ const PROGRESSION_LIMIT = 4;
  * Everything the gym statistics screen draws, from one read of the session
  * tree.
  *
- * **Finished sessions only**, and for the same reason the correlation read
- * takes only finished ones: a session still being logged has a tonnage that is
- * still being written, and Foster's load needs a finish time to have a
+ * **Finished sessions only**: a session still being logged has a tonnage that
+ * is still being written, and Foster's load needs a finish time to have a
  * duration at all. Letting today's half-entered workout in would score an
  * ordinary day as a light one for as long as it stays open, and would do it to
  * the acute half of a ratio whose whole job is to compare this week against

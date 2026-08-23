@@ -16,12 +16,12 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
  * text shows only the first and asks the reader to do the rest.
  *
  * Deliberately NOT a client component and deliberately hook-free, so the same
- * ring serves the hub (a server component reading last night) and the entry
- * form (a client component redrawing on every keystroke). The only moving part
- * is a CSS transition on `stroke-dashoffset`, which needs no JavaScript to
- * follow a value change and is switched off by `motion-reduce` — framer's
- * `MotionConfig reducedMotion="user"` covers transform and layout animations
- * and would not have covered this one.
+ * ring serves the daily screen (a server component reading last night) and
+ * the entry form (a client component redrawing on every keystroke). The only
+ * moving part is a CSS transition on `stroke-dashoffset`, which needs no
+ * JavaScript to follow a value change and is switched off by `motion-reduce`
+ * — framer's `MotionConfig reducedMotion="user"` covers transform and layout
+ * animations and would not have covered this one.
  *
  * The arc carries no information the text does not: `children` holds the real
  * figure, and the SVG is `aria-hidden`. Colour alone never says "short night".

@@ -40,7 +40,7 @@ const WINDOW_DAYS = 91;
  * **The read is awaited here and its failure renders IN PLACE.** `getGymStats`
  * returns an `ApiResponse` envelope rather than raising, because a throw
  * inside an RSC escapes to the root `error.tsx` and replaces the whole page —
- * the module header, the tabs and the way back to the gym along with it.
+ * the module header and the way back to the gym along with it.
  *
  * Nothing on this screen shows a number without the thing it is measured
  * against, and nothing shows a blank where a measure refused to answer: every

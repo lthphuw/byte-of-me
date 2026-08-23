@@ -33,13 +33,13 @@ import {
  * reach a Prisma select shape. The same arrangement `workout-fields.ts` uses
  * in the workout slice.
  *
- * It is a THIRD select over the session tree, beside that slice's
- * `SESSION_DETAIL_SELECT` and the correlation's private one, and that is
- * deliberate. The logging screen's shape carries positions, notes, timestamps
- * and the catalogue's equipment field that a statistic never reads, and the
- * correlation's carries neither `sessionRpe` nor a finish time, which is
- * exactly what Foster's load and ACWR are built on. Widening either to serve
- * this would make a logging screen pay for statistics it never draws.
+ * It is a SECOND select over the session tree, beside that slice's
+ * `SESSION_DETAIL_SELECT`, and that is deliberate. The logging screen's shape
+ * carries positions, notes, timestamps and the catalogue's equipment field
+ * that a statistic never reads; this one carries `sessionRpe` and a finish
+ * time instead, which is exactly what Foster's load and ACWR are built on.
+ * Widening the logging select to serve this would make a logging screen pay
+ * for statistics it never draws.
  */
 
 export const STATS_SESSION_SELECT = {
@@ -147,7 +147,8 @@ function durationMin(startedAt: Date, endedAt: Date | null): number | null {
  * rather than defaulted: a wrong `metric` selects the wrong volume formula and
  * so produces a wrong NUMBER rather than a visible error. `flatMap` over
  * `filter` + `map` because it narrows without a type assertion — the same
- * shape `get-sleep-training-correlation.ts` uses.
+ * shape `get-sleep-training-correlation.ts` used, before that module was
+ * deleted along with insights.
  */
 function toNamedPerformedExercise(
   row: SelectedStatsSession['exercises'][number]

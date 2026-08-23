@@ -238,9 +238,11 @@ export async function DailyScreen({ month }: { month?: string }) {
               <SleepDurationHero
                 durationMin={lastNight?.totalSleepMin ?? null}
                 targetMin={summary?.targetMin}
-                label={t('hub.lastNight')}
-                emptyLabel={t('hub.noData')}
-                footnote={lastNight?.estimated ? t('hub.estimated') : undefined}
+                label={t('lastNight.label')}
+                emptyLabel={t('lastNight.noData')}
+                footnote={
+                  lastNight?.estimated ? t('lastNight.estimated') : undefined
+                }
               />
 
               {/* `destructive-text`, not `destructive`: §14 records that the
@@ -281,11 +283,10 @@ export async function DailyScreen({ month }: { month?: string }) {
                   // Where the fortnight of bars would be — and IN THE CARD the
                   // bars would have been in, rather than as a line of grey
                   // text where a card used to be. A crossed-out calendar says
-                  // "no nights recorded" — the same mark the hub uses for the
-                  // same fact — so the gap reads as a state and not as a block
-                  // that failed to render. Centred and given the plot's own
-                  // height, so the screen does not visibly shorten by 150px
-                  // the moment the first night is logged.
+                  // "no nights recorded", so the gap reads as a state and not
+                  // as a block that failed to render. Centred and given the
+                  // plot's own height, so the screen does not visibly shorten
+                  // by 150px the moment the first night is logged.
                   <div className="flex min-h-[9rem] flex-col items-center justify-center gap-2 rounded-3xl border bg-card p-5 text-center shadow">
                     <CalendarOff
                       aria-hidden

@@ -69,12 +69,13 @@ const isMuscle = (value: string): value is Muscle =>
 /**
  * A logged exercise as the statistics module consumes it, or `[]`.
  *
- * Filtered rather than cast, and DROPPED rather than defaulted, for the reason
- * `get-sleep-training-correlation.ts` gives at the identical boundary: the
- * vocabulary columns are plain `String` in Postgres, and a wrong `metric`
- * selects the wrong volume formula — producing a wrong NUMBER instead of a
- * visible error. `flatMap` over `filter` + `map` because it narrows without a
- * type assertion.
+ * Filtered rather than cast, and DROPPED rather than defaulted, for the same
+ * reason `get-sleep-training-correlation.ts` gave at the identical boundary,
+ * before that module was deleted along with insights: the vocabulary columns
+ * are plain `String` in Postgres, and a wrong `metric` selects the wrong
+ * volume formula — producing a wrong NUMBER instead of a visible error.
+ * `flatMap` over `filter` + `map` because it narrows without a type
+ * assertion.
  *
  * `secondaryMuscles` is empty because `WorkoutExerciseRow` does not carry them
  * — the session read selects three display fields off the catalogue entry, not

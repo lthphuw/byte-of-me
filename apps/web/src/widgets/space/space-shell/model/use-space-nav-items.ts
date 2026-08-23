@@ -7,7 +7,7 @@ import type { NavDrawerItem } from '@/shared/ui/nav-drawer';
 
 /**
  * The single list the rail and the mobile drawer both render — the hub, plus
- * one entry per MODULE. Adding a future space module (schedule, gym log) is
+ * one entry per MODULE. Adding a future space module (schedule, habits) is
  * one entry here and one `items.*` key in both message files; nothing else in
  * the shell needs to change.
  *

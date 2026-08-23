@@ -1473,14 +1473,9 @@ declare const messages: {
         "workout_late": "Late workout",
         "ill": "Unwell"
       },
-      "hub": {
-        "ariaLabel": "Sleep statistics",
-        "lastNight": "Last night",
-        "debt": "Sleep debt",
-        "streak": "Streak",
+      "lastNight": {
+        "label": "Last night",
         "noData": "No sleep logged yet",
-        "logSleep": "Log sleep",
-        "editSleep": "Update last night",
         "estimated": "Estimated"
       }
     },

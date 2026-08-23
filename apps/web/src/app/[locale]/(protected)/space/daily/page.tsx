@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { DailyScreen } from '@/widgets/daily/daily-screen';
 
 export const metadata: Metadata = {
-  title: 'Sleep',
+  title: 'Daily',
   description: 'Private health log. Never published.',
   robots: {
     index: false,
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
  * so the param is unwrapped here and validated in `DailyScreen`, which is the
  * component that knows what a valid month is and what to show instead.
  */
-export default async function SleepPage({
+export default async function DailyPage({
   searchParams,
 }: {
   searchParams: Promise<{ month?: string | string[] }>;

@@ -7,8 +7,8 @@ import { cn } from '@/shared/lib/utils';
  * One number with its name, the context that makes it mean something, and
  * optionally the caveat it carries.
  *
- * Here rather than in either widget that draws it: the health hub and the
- * sleep screen both need the same tile, and a widget importing another
+ * Here rather than in either widget that draws it: daily's sleep screens and
+ * gym's screens both need the same tile, and a widget importing another
  * widget's internals is the sideways import AGENTS §3 rules out —
  * `SkipToContentLink` is in `shared/ui` for exactly this reason.
  *

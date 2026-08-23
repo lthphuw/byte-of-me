@@ -11,7 +11,8 @@
  * rather than a bare "unavailable", and importing `ACWR_MIN_CHRONIC_SESSIONS`
  * to render that sentence would pull the whole statistics module into the
  * browser bundle for the sake of one integer — the same reasoning
- * `SleepTrainingCorrelation.minPairs` is carried for.
+ * `SleepTrainingCorrelation.minPairs` was carried for, before that type was
+ * deleted along with insights.
  */
 
 /** One trailing seven-day bucket of the training window. */

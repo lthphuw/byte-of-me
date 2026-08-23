@@ -41,15 +41,15 @@ export function SleepDurationHero({
   durationMin: number | null;
   /** The owner's nightly goal. Absent when the summary read failed. */
   targetMin?: number;
-  /** What the figure is. Defaults to "Duration" — the hub overrides it with
-   *  "Last night", because there the number is a record rather than a
+  /** What the figure is. Defaults to "Duration" — the daily screen overrides
+   *  it with "Last night", because there the number is a record rather than a
    *  live total. */
   label?: string;
   /** What to say instead of the delta when there is no duration at all. The
-   *  form is waiting for input; the hub simply has nothing logged, and those
-   *  are different sentences. */
+   *  form is waiting for input; the daily screen simply has nothing logged,
+   *  and those are different sentences. */
   emptyLabel?: string;
-  /** One more line under the delta — the hub's "Estimated" caveat. */
+  /** One more line under the delta — the daily screen's "Estimated" caveat. */
   footnote?: string;
 }) {
   const t = useTranslations('dashboard.daily');
