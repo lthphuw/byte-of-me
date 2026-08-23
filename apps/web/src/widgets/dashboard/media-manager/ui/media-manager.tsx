@@ -14,16 +14,26 @@ import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { useMediaLibrary } from '@/entities/media/query/use-media-library';
+import { useCompressionSettings } from '@/features/dashboard/media-library/lib/use-compression-settings';
+import { CompressionSettingsPopover } from '@/features/dashboard/media-library/ui/compression-settings-popover';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
+import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 import { MediaLibrary } from '@/widgets/dashboard/media-manager/ui/media-library';
 
-export function MediaManager() {
+export function MediaManager({
+  initialCompressionConfig,
+}: {
+  /** Seeded from the server — see `dashboard/media/page.tsx`. */
+  initialCompressionConfig: ImageCompressionConfig;
+}) {
   const t = useTranslations('dashboard.media');
   const tShared = useTranslations('dashboard.shared');
   const [page, setPage] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
   const [mediaToDelete, setMediaToDelete] = useState<string | null>(null);
+
+  const compression = useCompressionSettings(initialCompressionConfig);
 
   const { query, upload, remove } = useMediaLibrary(page, {
     uploadSuccess: t('toast.uploadSuccess'),
@@ -44,24 +54,33 @@ export function MediaManager() {
         title={t('title')}
         description={t('description')}
         action={
-          <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="gap-2">
-                <Plus className="h-4 w-4" /> {t('addButton')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-xl">
-              <DialogHeader>
-                <DialogTitle>{t('dialog.uploadTitle')}</DialogTitle>
-              </DialogHeader>
-              <ImageUpload
-                uploadFiles={async (files) => {
-                  await upload.mutateAsync(files);
-                  setIsOpen(false);
-                }}
-              />
-            </DialogContent>
-          </Dialog>
+          <div className="flex items-center gap-2">
+            <CompressionSettingsPopover
+              config={compression.config}
+              update={compression.update}
+              isSaving={compression.isSaving}
+              saveError={compression.saveError}
+            />
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="gap-2">
+                  <Plus className="h-4 w-4" /> {t('addButton')}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-xl">
+                <DialogHeader>
+                  <DialogTitle>{t('dialog.uploadTitle')}</DialogTitle>
+                </DialogHeader>
+                <ImageUpload
+                  compressionConfig={compression.config}
+                  uploadFiles={async (files) => {
+                    await upload.mutateAsync(files);
+                    setIsOpen(false);
+                  }}
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
         }
       />
 

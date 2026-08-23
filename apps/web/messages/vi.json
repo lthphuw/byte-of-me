@@ -619,6 +619,7 @@
       },
       "upload": {
         "dropzoneText": "Nhấp hoặc kéo thả hình ảnh vào đây",
+        "compressingText": "Đang nén…",
         "invalidTypeTitle": "Sai định dạng",
         "invalidTypeDescription": "{fileName} không phải là hình ảnh.",
         "fileTooLargeTitle": "Tệp quá lớn",
@@ -633,6 +634,30 @@
         "uploadError": "Tải lên thất bại",
         "deleteSuccess": "Đã xóa media",
         "deleteError": "Không thể xóa media"
+      },
+      "compression": {
+        "trigger": "Nén ảnh",
+        "title": "Nén hình ảnh",
+        "description": "Áp dụng cho mọi lượt tải lên — thư viện media và hình ảnh dán vào văn bản định dạng.",
+        "saving": "Đang lưu…",
+        "saved": "Đã lưu",
+        "saveError": "Lưu thất bại",
+        "enabled": {
+          "label": "Nén khi tải lên"
+        },
+        "maxWidth": {
+          "label": "Kích thước tối đa (px, cạnh dài nhất)"
+        },
+        "quality": {
+          "label": "Chất lượng (1-100)"
+        },
+        "format": {
+          "label": "Định dạng đầu ra",
+          "options": {
+            "webp": "WebP",
+            "original": "Giữ định dạng gốc"
+          }
+        }
       }
     },
     "health": {

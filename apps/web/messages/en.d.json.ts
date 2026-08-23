@@ -622,6 +622,7 @@ declare const messages: {
       },
       "upload": {
         "dropzoneText": "Click or drag images here",
+        "compressingText": "Compressing…",
         "invalidTypeTitle": "Invalid type",
         "invalidTypeDescription": "{fileName} is not an image.",
         "fileTooLargeTitle": "File too large",
@@ -636,6 +637,30 @@ declare const messages: {
         "uploadError": "Upload failed",
         "deleteSuccess": "Media deleted",
         "deleteError": "Could not delete media"
+      },
+      "compression": {
+        "trigger": "Compression",
+        "title": "Image compression",
+        "description": "Applies to every upload — the media library and images pasted into rich text.",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "saveError": "Save failed",
+        "enabled": {
+          "label": "Compress on upload"
+        },
+        "maxWidth": {
+          "label": "Max size (px, longest edge)"
+        },
+        "quality": {
+          "label": "Quality (1-100)"
+        },
+        "format": {
+          "label": "Output format",
+          "options": {
+            "webp": "WebP",
+            "original": "Keep original format"
+          }
+        }
       }
     },
     "health": {

@@ -11,42 +11,80 @@ import {
   MAX_IMAGE_SIZE_BYTES,
   MAX_IMAGE_SIZE_MB,
 } from '@/entities/media/model/upload-constraints';
+import { compressInBrowser } from '@/shared/lib/media/compress-in-browser';
+import {
+  IMAGE_COMPRESSION_DEFAULTS,
+  type ImageCompressionConfig,
+} from '@/shared/lib/media/image-compression-config';
 
 export interface ImageUploadProps {
   uploadFiles: (files: File[]) => Promise<void>;
+  /**
+   * From the media dashboard's compression settings popover — see
+   * `MediaManager`. Optional because `MediaSelect`/`MediaMultiSelect` also
+   * render this component from inside other dashboard forms (blog, project,
+   * education, profile), far from that popover's state; they fall back to
+   * the defaults, which is still correct because `uploadMedia`'s
+   * server-side pass is the actual guarantee and applies the AUTHOR'S real
+   * configured settings regardless of what compressed this file for the trip
+   * over the network.
+   */
+  compressionConfig?: ImageCompressionConfig;
 }
 
-export function ImageUpload({ uploadFiles }: ImageUploadProps) {
+export function ImageUpload({
+  uploadFiles,
+  compressionConfig = IMAGE_COMPRESSION_DEFAULTS,
+}: ImageUploadProps) {
   const t = useTranslations('dashboard.media');
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  const handleFiles = (incomingFiles: FileList | null) => {
+  const [isCompressing, setIsCompressing] = useState(false);
+
+  // Compresses BEFORE the size check, not after: a phone photo that arrives
+  // here over the 3 MB ceiling and would compress under it must be given the
+  // chance to shrink first, or this rejects it for a size it never actually
+  // uploads at. `compressInBrowser` itself is a no-op for SVG/GIF/a disabled
+  // config, so this loop is safe to run unconditionally.
+  const handleFiles = async (incomingFiles: FileList | null) => {
     if (!incomingFiles) return;
 
-    const validFiles = Array.from(incomingFiles).filter((file) => {
-      // The shared list, not `startsWith('image/')`: the server accepts a fixed
-      // set, and letting a format through here only moves the rejection later.
-      if (!ACCEPTED_IMAGE_MIME_TYPES.includes(file.type as never)) {
-        toast.error(t('upload.invalidTypeTitle'), {
-          description: t('upload.invalidTypeDescription', {
-            fileName: file.name,
-          }),
-        });
-        return false;
-      }
-      if (file.size > MAX_IMAGE_SIZE_BYTES) {
-        toast.error(t('upload.fileTooLargeTitle'), {
-          description: t('upload.fileTooLargeDescription', {
-            fileName: file.name,
-            maxSize: MAX_IMAGE_SIZE_MB,
-          }),
-        });
-        return false;
-      }
-      return true;
-    });
+    setIsCompressing(true);
+    try {
+      const validFiles: File[] = [];
 
-    setFiles((prev) => [...prev, ...validFiles]);
+      for (const file of Array.from(incomingFiles)) {
+        // The shared list, not `startsWith('image/')`: the server accepts a
+        // fixed set, and letting a format through here only moves the
+        // rejection later.
+        if (!ACCEPTED_IMAGE_MIME_TYPES.includes(file.type as never)) {
+          toast.error(t('upload.invalidTypeTitle'), {
+            description: t('upload.invalidTypeDescription', {
+              fileName: file.name,
+            }),
+          });
+          continue;
+        }
+
+        const compressed = await compressInBrowser(file, compressionConfig);
+
+        if (compressed.size > MAX_IMAGE_SIZE_BYTES) {
+          toast.error(t('upload.fileTooLargeTitle'), {
+            description: t('upload.fileTooLargeDescription', {
+              fileName: file.name,
+              maxSize: MAX_IMAGE_SIZE_MB,
+            }),
+          });
+          continue;
+        }
+
+        validFiles.push(compressed);
+      }
+
+      setFiles((prev) => [...prev, ...validFiles]);
+    } finally {
+      setIsCompressing(false);
+    }
   };
 
   const removeFile = (index: number) => {
@@ -72,23 +110,31 @@ export function ImageUpload({ uploadFiles }: ImageUploadProps) {
   return (
     <div className="space-y-4">
       <div
-        className="cursor-pointer rounded-xl border-2 border-dashed p-8 text-center hover:bg-primary/5"
+        className="cursor-pointer rounded-xl border-2 border-dashed p-8 text-center hover:bg-primary/5 aria-disabled:pointer-events-none aria-disabled:opacity-60"
+        aria-disabled={isCompressing}
         onDrop={(e) => {
           e.preventDefault();
-          handleFiles(e.dataTransfer.files);
+          void handleFiles(e.dataTransfer.files);
         }}
         onDragOver={(e) => e.preventDefault()}
         onClick={() => document.getElementById('file-upload')?.click()}
       >
-        <ImageIcon className="mx-auto h-10 w-10 text-muted-foreground" />
-        <p className="mt-2 text-sm">{t('upload.dropzoneText')}</p>
+        {isCompressing ? (
+          <Loader2 className="mx-auto h-10 w-10 animate-spin text-muted-foreground" />
+        ) : (
+          <ImageIcon className="mx-auto h-10 w-10 text-muted-foreground" />
+        )}
+        <p className="mt-2 text-sm">
+          {isCompressing ? t('upload.compressingText') : t('upload.dropzoneText')}
+        </p>
         <input
           id="file-upload"
           type="file"
           multiple
           className="hidden"
           accept="image/*"
-          onChange={(e) => handleFiles(e.target.files)}
+          disabled={isCompressing}
+          onChange={(e) => void handleFiles(e.target.files)}
         />
       </div>
 
@@ -114,7 +160,7 @@ export function ImageUpload({ uploadFiles }: ImageUploadProps) {
       <Button
         className="w-full"
         onClick={handleUpload}
-        disabled={files.length === 0 || isUploading}
+        disabled={files.length === 0 || isUploading || isCompressing}
       >
         {isUploading ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
