@@ -58,13 +58,24 @@ export function SleepEntryForm({
           question — where the night started and where it ended — and the
           hero above them is the answer.
 
+          They stack by default and pair up again only at `sm` (640px). A
+          native time control plus a Vietnamese label ("Giờ thức dậy") does
+          not fit a half-width column on a 390px phone: measured at a 316px
+          viewport, the input's own content is already 7px wider than the box
+          it sits in, in Chrome, and Safari on iOS draws the control wider
+          still, so the spill is what reads as the two fields overlapping.
+          Stacked, each field gets the card's full interior instead of a
+          139px column, which is more than the control needs anywhere, and
+          `sm:grid-cols-2` restores the pair the instant there is room for
+          it. Resist "tidying" this back to an unconditional `grid-cols-2`.
+
           The moon and the sunrise are the same two marks the bedtime and
           wake-variation tiles wear in `SleepRegularity`. One vocabulary
           across the module: whatever a glyph means on one screen it means on
           the other, which is the only thing that makes a picture faster to
           read than the word beside it. Both are `aria-hidden` — the label
           still says which field this is. */}
-      <div className="grid grid-cols-2 gap-4 rounded-3xl border bg-card p-5 shadow">
+      <div className="grid grid-cols-1 gap-3 rounded-3xl border bg-card p-5 shadow sm:grid-cols-2 sm:gap-4">
         <div className="space-y-2">
           <Label htmlFor="sleep-bed-at" className="flex items-center gap-1.5">
             <Moon aria-hidden className="size-4 shrink-0 text-muted-foreground" />
@@ -76,7 +87,7 @@ export function SleepEntryForm({
             required
             value={entry.bedClock}
             onChange={(event) => entry.setBedClock(event.target.value)}
-            className="h-16 rounded-2xl bg-background text-xl tabular-nums transition-colors duration-200 hover:border-primary/40 sm:text-2xl"
+            className="h-16 rounded-2xl bg-background text-2xl tabular-nums transition-colors duration-200 hover:border-primary/40"
           />
         </div>
 
@@ -94,7 +105,7 @@ export function SleepEntryForm({
             required
             value={entry.wakeClock}
             onChange={(event) => entry.setWakeClock(event.target.value)}
-            className="h-16 rounded-2xl bg-background text-xl tabular-nums transition-colors duration-200 hover:border-primary/40 sm:text-2xl"
+            className="h-16 rounded-2xl bg-background text-2xl tabular-nums transition-colors duration-200 hover:border-primary/40"
           />
         </div>
       </div>
