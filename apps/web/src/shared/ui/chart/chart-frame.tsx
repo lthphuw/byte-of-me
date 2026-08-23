@@ -71,10 +71,11 @@ export function ChartFrame({
           cannot be shrunk that way: under automatic table layout `width` is a
           MINIMUM, so the table stays as wide as its widest row and, being
           absolutely positioned, escapes every `overflow-x-clip` between here
-          and the body. Measured on `/space/daily` at a 386px viewport:
-          the document's scrollWidth was 446px against a 371px client width —
-          a page that scrolled sideways on a phone because of an element
-          nobody can see. A plain `div` clips its contents properly, and the
+          and the body. Measured on `/space/health/sleep` (now `/space/daily`)
+          at a 386px viewport: the document's scrollWidth was 446px against a
+          371px client width — a page that scrolled sideways on a phone
+          because of an element nobody can see. A plain `div` clips its
+          contents properly, and the
           table inside it is untouched, so screen readers still get the
           numbers. */}
       {/* `relative` on the figure above is load-bearing for THIS block.
