@@ -69,6 +69,14 @@ export function SleepEntryForm({
           `sm:grid-cols-2` restores the pair the instant there is room for
           it. Resist "tidying" this back to an unconditional `grid-cols-2`.
 
+          The shared `Input` base class ends in `md:text-sm`, so any caller
+          wanting a size bigger than that at `md` and up has to say so at
+          `md:` too — an unprefixed override loses that cascade fight no
+          matter where it sits in the class string. Both inputs here had
+          silently been rendering at 14px on desktop; `md:text-2xl` alongside
+          `text-2xl` is what actually restores "the largest type among the
+          inputs" from `sm` on up.
+
           The moon and the sunrise are the same two marks the bedtime and
           wake-variation tiles wear in `SleepRegularity`. One vocabulary
           across the module: whatever a glyph means on one screen it means on
@@ -87,7 +95,7 @@ export function SleepEntryForm({
             required
             value={entry.bedClock}
             onChange={(event) => entry.setBedClock(event.target.value)}
-            className="h-16 rounded-2xl bg-background text-2xl tabular-nums transition-colors duration-200 hover:border-primary/40"
+            className="h-16 rounded-2xl bg-background text-2xl tabular-nums transition-colors duration-200 hover:border-primary/40 md:text-2xl"
           />
         </div>
 
@@ -105,7 +113,7 @@ export function SleepEntryForm({
             required
             value={entry.wakeClock}
             onChange={(event) => entry.setWakeClock(event.target.value)}
-            className="h-16 rounded-2xl bg-background text-2xl tabular-nums transition-colors duration-200 hover:border-primary/40"
+            className="h-16 rounded-2xl bg-background text-2xl tabular-nums transition-colors duration-200 hover:border-primary/40 md:text-2xl"
           />
         </div>
       </div>
