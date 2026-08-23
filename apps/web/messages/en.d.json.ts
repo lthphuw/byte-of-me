@@ -1470,7 +1470,8 @@ declare const messages: {
       "items": {
         "hub": "Overview",
         "notes": "Notes",
-        "health": "Health"
+        "daily": "Daily",
+        "gym": "Gym"
       },
       "actions": {
         "dashboard": "Dashboard",

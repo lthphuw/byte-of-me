@@ -211,6 +211,40 @@ const nextConfig = {
       },
     ];
   },
+
+  // The health module split into daily and gym; these are a private app's
+  // PWA shortcuts pinned to the old URLs, not search-engine traffic, but a
+  // permanent redirect is still cheaper than a 404 on someone's home screen.
+  // Sources are locale-prefixed because next-intl puts the locale first.
+  async redirects() {
+    return [
+      {
+        source: '/:locale/space/health',
+        destination: '/:locale/space/daily',
+        permanent: true,
+      },
+      {
+        source: '/:locale/space/health/sleep',
+        destination: '/:locale/space/daily',
+        permanent: true,
+      },
+      {
+        source: '/:locale/space/health/insights',
+        destination: '/:locale/space/daily',
+        permanent: true,
+      },
+      {
+        source: '/:locale/space/health/exercises/:path*',
+        destination: '/:locale/space/gym/exercises/:path*',
+        permanent: true,
+      },
+      {
+        source: '/:locale/space/health/gym/:path*',
+        destination: '/:locale/space/gym/:path*',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 const withNextIntl = createNextIntlPlugin({

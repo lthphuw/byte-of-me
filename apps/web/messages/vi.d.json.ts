@@ -1470,7 +1470,8 @@ declare const messages: {
       "items": {
         "hub": "Tổng quan",
         "notes": "Ghi chú",
-        "health": "Sức khỏe"
+        "daily": "Nhật ký",
+        "gym": "Phòng tập"
       },
       "actions": {
         "dashboard": "Bảng điều khiển",

@@ -1,6 +1,6 @@
 'use client';
 
-import { HeartPulse, LayoutGrid, NotebookPen } from 'lucide-react';
+import { CalendarHeart, Dumbbell, LayoutGrid, NotebookPen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { NavDrawerItem } from '@/shared/ui/nav-drawer';
@@ -31,6 +31,7 @@ export function useSpaceNavItems(): NavDrawerItem[] {
   return [
     { href: '/space', label: t('items.hub'), icon: LayoutGrid, exact: true },
     { href: '/space/notes', label: t('items.notes'), icon: NotebookPen },
-    { href: '/space/daily', label: t('items.health'), icon: HeartPulse },
+    { href: '/space/daily', label: t('items.daily'), icon: CalendarHeart },
+    { href: '/space/gym', label: t('items.gym'), icon: Dumbbell },
   ];
 }
