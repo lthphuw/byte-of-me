@@ -33,17 +33,19 @@ const WEEKDAY_ANCHOR_MS = Date.UTC(2024, 0, 1);
 
 const DAY_MS = 86_400_000;
 
-/** One night as the grid needs it: how long it was, and how it felt. The
- *  caller resolves the glyph, so this slice never has to know what a quality
- *  rating looks like. */
+/** One night as the grid needs it: how long it was, how it felt, and whether
+ *  the day was written up. The caller resolves the glyph, so this slice never
+ *  has to know what a mood rating looks like. */
 export interface CalendarNight {
   /** `YYYY-MM-DD`, the same key `localDateKey` produces. */
   localDate: string;
-  /** Minutes asleep. `null` is a night that was never logged — never `0`,
-   *  which would claim a night of no sleep. */
+  /** Minutes asleep. `null` is a night never logged — never `0`, which would
+   *  claim a night of no sleep. */
   value: number | null;
-  /** The quality glyph and the word it stands for, when the night was rated. */
-  quality: { icon: LucideIcon; label: string } | null;
+  /** The mood glyph and the word it stands for, when the day was rated. */
+  mood: { icon: LucideIcon; label: string } | null;
+  /** Whether the day has a reflection or any photo. */
+  hasEntry: boolean;
 }
 
 /**
@@ -56,7 +58,7 @@ export interface CalendarNight {
  * focusable control inside an `aria-hidden` subtree is reachable by keyboard
  * and invisible to the reader using it, which is the `aria-hidden-focus`
  * failure. So the marks are real buttons and each one carries its own full
- * accessible name — the date, the duration, the quality, and whether it is
+ * accessible name — the date, the duration, the mood, and whether it is
  * today. Those names ARE the non-visual equivalent, and they say strictly more
  * than the table did because the table had one value column and this has
  * three.
@@ -65,39 +67,37 @@ export interface CalendarNight {
  * against the owner's nightly target through `MONTH_CALENDAR_FILL` — a ramp
  * whose four alphas were measured in CIE L* rather than picked as a tidy
  * 25/50/75/100, and importing it is what keeps that measurement in one place.
- * The glyph inside the mark is how the night FELT: the same five-step quality
- * ramp the entry form uses, so a picture means the same thing on both halves
- * of the screen. A night with no quality rating simply has no glyph, which is
- * honest — inventing one would put a claim on the grid nobody made.
+ * The glyph inside the mark is how the DAY FELT: the same five-step mood ramp
+ * `MoodScale` uses, from `DayEntry` rather than from `SleepLog.quality` — the
+ * face on the calendar is how the day felt, not how the night measured. A day
+ * with no mood rating simply has no glyph, which is honest — inventing one
+ * would put a claim on the grid nobody made.
  *
- * **Six states, and none of them touches the mark.** The disc already carries
- * two values — a shade for how long, a glyph for how it felt — so every
- * interaction cue is spent on the two surfaces that carry no data: the CELL
- * PLATE behind the whole button, and the NUMERAL above the disc. That is the
- * rule that generates the set:
+ * | State | Cue |
+ * | --- | --- |
+ * | rest | disc: shade for duration, or a hollow ring when unlogged |
+ * | hover | `ring-1 ring-foreground/25` on the disc — no background, anywhere |
+ * | focus-visible | 2px `ring` round the cell, offset 2 |
+ * | pressed | the disc alone scales to 92% |
+ * | today | 2px `foreground` ring round the disc |
+ * | written up | a 3px dot below the disc |
  *
- * | State | Plate | Numeral | Mark |
- * | --- | --- | --- | --- |
- * | rest | none | `muted-foreground` | shade or hollow ring |
- * | hover | `bg-muted/70` | lifts to `foreground` | untouched |
- * | focus-visible | none | — | 2px `ring` round the cell, offset 2 |
- * | pressed | `bg-muted` | — | whole cell scales to 94% |
- * | selected | `bg-muted` | INVERTED pill, semibold | untouched |
- * | today | none | — | 2px `foreground` ring round the disc |
- *
- * Selection inverts because a tint does not exist here: every token is 0%
- * saturation (§14), so `bg-muted` at 96.1% against a 100% card is a 4-point
- * step and hover would be indistinguishable from selected if the plate were
- * the only cue. The pill is the cue that survives — near-black on near-white
- * or the reverse, at both themes — and it sits on the numeral rather than
- * behind the disc precisely so it cannot be read as a duration.
+ * **There is no selected state, and that is the fix.** Hover and selected were
+ * twice the same pixel here, because on a 0%-saturation palette (§14) the
+ * plate for one lands within four points of the plate for the other and the
+ * numeral pill was doing all the work. The plate existed only because tapping
+ * a day loaded a form BELOW the calendar, and that relationship needs a
+ * persistent "this one" mark. A tap now opens a modal, so the day being edited
+ * is the day on screen and there is nothing left to mark. Every interaction
+ * cue is spent on the disc, which is the one surface a fingertip does not
+ * cover completely.
  *
  * Hover is AFFORDANCE ONLY. Touch has no hover, so nothing above is knowable
- * from it alone: selection is also `aria-pressed` and a bold inverted pill,
- * today is also `aria-current="date"` and a ring, and both are in the button's
- * accessible name. The press is a transform rather than a third tone, because
- * a finger covers the cell it is pressing and only a size change escapes from
- * under it; `motion-reduce` opts out of the scale and keeps the plate.
+ * from it alone: today is also `aria-current="date"` and a ring, and "written
+ * up" is also in the button's accessible name. The press is a transform
+ * rather than a tone, because a finger covers the cell it is pressing and
+ * only a size change escapes from under it; `motion-reduce` opts out of the
+ * scale.
  *
  * **Target size.** Seven columns inside a 20px-padded card on a 375px phone
  * leaves ~36px per cell; 44px is arithmetically impossible there and no
@@ -110,7 +110,6 @@ export function SleepMonthCalendar({
   monthStartKey,
   todayKey,
   targetMin,
-  selectedKey,
   onSelect,
   prevMonthKey,
   nextMonthKey,
@@ -125,8 +124,7 @@ export function SleepMonthCalendar({
   /** The scale the shades band against. Never printed here, so a fallback is a
    *  drawing decision and not a claim — the caller passes one. */
   targetMin: number;
-  /** `YYYY-MM-DD` of the day the form is editing. */
-  selectedKey: string;
+  /** Opens the sheet for this day. */
   onSelect: (key: string) => void;
   /** `YYYY-MM` of the month before this one. */
   prevMonthKey: string;
@@ -226,11 +224,10 @@ export function SleepMonthCalendar({
           const night = byDay.get(key) ?? null;
           const isToday = key === todayKey;
           const isFuture = key > todayKey;
-          const isSelected = key === selectedKey;
-          const Icon = night?.quality?.icon ?? null;
+          const Icon = night?.mood?.icon ?? null;
 
           // Everything the mark says, said in words. A reader who cannot see
-          // the shade or the glyph gets the duration and the quality from the
+          // the shade or the glyph gets the duration and the mood from the
           // button's own name rather than from a table somewhere else.
           const parts = [dayFormat.format(date)];
           if (!isFuture) {
@@ -240,7 +237,8 @@ export function SleepMonthCalendar({
                 : t('units.hoursMinutes', splitMinutes(night.value))
             );
           }
-          if (night?.quality) parts.push(night.quality.label);
+          if (night?.mood) parts.push(night.mood.label);
+          if (night?.hasEntry) parts.push(t('day.hasEntry'));
           if (isToday) parts.push(t('sleep.today'));
 
           return (
@@ -248,37 +246,22 @@ export function SleepMonthCalendar({
               key={key}
               type="button"
               disabled={isFuture}
-              aria-pressed={isFuture ? undefined : isSelected}
-              // Not `aria-selected`, which is only defined on a handful of
-              // roles and on none of the ones a plain button can carry.
               aria-current={isToday ? 'date' : undefined}
               aria-label={parts.join(' — ')}
+              aria-haspopup="dialog"
               onClick={() => onSelect(key)}
               className={cn(
                 'group flex w-full flex-col items-center justify-center gap-1 rounded-2xl px-0.5 py-1.5',
-                'transition-[background-color,transform] duration-200 ease-out motion-reduce:transition-none',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card',
-                // The pressed state is the plate at full strength AND a 6%
-                // shrink. Under a fingertip the plate is invisible — the
-                // finger is on top of it — so the size change is the half of
-                // the press that a phone can actually perceive.
-                isFuture
-                  ? 'cursor-default'
-                  : 'hover:bg-muted/70 active:scale-[0.94] active:bg-muted motion-reduce:active:scale-100',
-                isSelected && 'bg-muted'
+                isFuture && 'cursor-default'
               )}
             >
               <span
                 aria-hidden
                 className={cn(
-                  'rounded-full px-1.5 py-0.5 text-[11px] leading-none tabular-nums',
+                  'text-[11px] leading-none tabular-nums text-muted-foreground',
                   'transition-colors duration-200 motion-reduce:transition-none',
-                  isSelected
-                    ? 'bg-primary font-semibold text-primary-foreground'
-                    : cn(
-                        'text-muted-foreground',
-                        !isFuture && 'group-hover:text-foreground'
-                      )
+                  !isFuture && 'group-hover:text-foreground'
                 )}
               >
                 {date.getUTCDate()}
@@ -298,9 +281,14 @@ export function SleepMonthCalendar({
                   aria-hidden
                   className={cn(
                     'flex aspect-square w-full max-w-9 items-center justify-center rounded-full',
+                    'transition-[box-shadow,transform] duration-200 ease-out motion-reduce:transition-none',
                     night?.value == null
                       ? 'border-2 border-muted-foreground/35 text-muted-foreground'
                       : markClass(night.value, targetMin),
+                    // Hover is AFFORDANCE ONLY — touch has no hover, so
+                    // nothing here may be the only way to know something.
+                    'group-hover:ring-1 group-hover:ring-foreground/25',
+                    'group-active:scale-[0.92] motion-reduce:group-active:scale-100',
                     isToday &&
                       'ring-2 ring-foreground ring-offset-1 ring-offset-card'
                   )}
@@ -315,6 +303,19 @@ export function SleepMonthCalendar({
                   {Icon ? <Icon className="size-5 shrink-0" /> : null}
                 </span>
               )}
+
+              {/* A day that was written up. Rendered as a reserved-height row
+                  whether or not the dot is there, so a month where three days
+                  have entries does not have three rows one pixel taller than
+                  the others. */}
+              <span
+                aria-hidden
+                className="flex h-1.5 items-center justify-center"
+              >
+                {night?.hasEntry ? (
+                  <span className="size-1.5 rounded-full bg-foreground/60" />
+                ) : null}
+              </span>
             </button>
           );
         })}
@@ -359,6 +360,14 @@ export function SleepMonthCalendar({
               className="size-3 shrink-0 rounded-full bg-primary/55 ring-2 ring-foreground ring-offset-1 ring-offset-card"
             />
             {t('sleep.today')}
+          </span>
+
+          <span className="flex items-center gap-1.5">
+            <span
+              aria-hidden
+              className="size-1.5 rounded-full bg-foreground/60"
+            />
+            {t('sleep.calendarEntryKey')}
           </span>
         </div>
 
