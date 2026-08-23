@@ -85,6 +85,30 @@ describe('serializeReflection', () => {
     };
     expect(parseReflection(serializeReflection(doc))).toEqual(doc);
   });
+
+  // A pasted image has no `text` node anywhere in it. Before the emptiness
+  // rule was widened this collapsed to `null` and the image was silently
+  // dropped on save.
+  it('does NOT collapse a document holding only an image node', () => {
+    const doc = {
+      type: 'doc',
+      content: [{ type: 'image', attrs: { src: 'https://example.com/a.png' } }],
+    };
+    expect(serializeReflection(doc)).not.toBeNull();
+  });
+
+  // Two empty paragraphs are still nothing written — a table of empty cells
+  // is the case that must NOT collapse, but a document that is only
+  // paragraphs (with or without a second one) has no non-paragraph node and
+  // no text, so it stays null.
+  it('still returns null for a document of two empty paragraphs', () => {
+    expect(
+      serializeReflection({
+        type: 'doc',
+        content: [{ type: 'paragraph' }, { type: 'paragraph' }],
+      })
+    ).toBeNull();
+  });
 });
 
 describe('reflectionPlainText', () => {

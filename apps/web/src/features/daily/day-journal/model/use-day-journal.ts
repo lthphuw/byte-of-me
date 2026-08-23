@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { JSONContent } from '@tiptap/core';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
@@ -14,6 +15,12 @@ import {
   uploadDayPhotos,
   upsertDayEntry,
 } from '@/entities/day-entry';
+// Deep path, not the slice barrel: the barrel re-exports the write actions
+// above, and `uploadDayPhotos` reaches `sharp` through them.
+import {
+  parseReflection,
+  serializeReflection,
+} from '@/entities/day-entry/lib/reflection-content';
 import { useWorkspaceSettings } from '@/entities/workspace-settings';
 import type { PendingPhoto } from '@/features/daily/day-journal/ui/photo-strip';
 import { compressInBrowser } from '@/shared/lib/media/compress-in-browser';
@@ -53,7 +60,9 @@ export function useDayJournal({
   const { settings } = useWorkspaceSettings();
 
   const [mood, setMood] = useState<number | null>(entry?.mood ?? null);
-  const [reflection, setReflection] = useState(entry?.reflection ?? '');
+  const [reflection, setReflection] = useState<JSONContent | null>(() =>
+    parseReflection(entry?.reflection ?? null)
+  );
   const [photos, setPhotos] = useState<DayPhotoRow[]>(entry?.photos ?? []);
   const [pending, setPending] = useState<PendingPhoto[]>([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -168,11 +177,10 @@ export function useDayJournal({
   const saveAsync = useCallback(async () => {
     setIsSaving(true);
     try {
-      const trimmed = reflection.trim();
       const res = await upsertDayEntry({
         localDate,
         mood,
-        reflection: trimmed === '' ? null : trimmed,
+        reflection: serializeReflection(reflection),
         todayKey,
       });
 
@@ -193,9 +201,13 @@ export function useDayJournal({
     pickPhotos,
     setCaption,
     removePhoto,
+    // Compared as SERIALISED strings, not documents by identity: Tiptap
+    // re-creates nodes on every edit, so an identity comparison would mark
+    // the sheet dirty on every keystroke — and worse, could report dirty when
+    // nothing actually changed, prompting a "discard changes?" on close.
     isDirty:
       mood !== (entry?.mood ?? null) ||
-      reflection !== (entry?.reflection ?? ''),
+      serializeReflection(reflection) !== (entry?.reflection ?? null),
     isSaving,
     saveAsync,
   };

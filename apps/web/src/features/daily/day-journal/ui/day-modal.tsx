@@ -1,6 +1,10 @@
 'use client';
 
-import { AutoGrowingTextarea, Button } from '@byte-of-me/ui';
+import { Button } from '@byte-of-me/ui';
+// SUBPATH, not the package barrel: the barrel deliberately does not
+// re-export the rich-text editor, because doing so would drag Tiptap into
+// every consumer of `@byte-of-me/ui`.
+import { RichTextEditor } from '@byte-of-me/ui/rich-text-editor';
 import { LoaderCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -135,14 +139,37 @@ export function DayModal({
         <MoodScale value={journal.mood} onChange={journal.setMood} />
 
         <div className="space-y-4">
-          <label className="block space-y-2">
-            <span className="text-sm font-medium">{t('day.reflection')}</span>
-            <AutoGrowingTextarea
-              value={journal.reflection}
+          {/* Not a `<label>`: a `<label>` whose control is a contenteditable
+              does not focus it the way it focuses an input, and wrapping rich
+              content in a label is invalid markup. `RichTextEditor` takes an
+              `id` but no `aria-labelledby`, so the field is labelled from the
+              outside instead. */}
+          <div
+            role="group"
+            aria-labelledby="day-reflection-label"
+            className="space-y-2"
+          >
+            <span id="day-reflection-label" className="block text-sm font-medium">
+              {t('day.reflection')}
+            </span>
+            {/* `markdownMode` is withheld: that is the raw-source toggle
+                Notes puts in its header, a power-user affordance for a
+                document, not a paragraph about a Tuesday. `uploadImage` is
+                withheld: the sheet already owns a photo strip below that
+                uploads, captions and removes — a second way to attach a
+                picture, stored somewhere else, would make "the day's
+                photos" mean two different things. `withMath` is withheld:
+                nothing in a day journal needs a formula, and it is dead
+                weight in this bundle. */}
+            <RichTextEditor
+              id="day-reflection"
+              value={journal.reflection ?? undefined}
+              onChange={(doc) => journal.setReflection(doc)}
               placeholder={t('day.reflectionPlaceholder')}
-              onChange={journal.setReflection}
+              compact
+              minHeight={140}
             />
-          </label>
+          </div>
 
           <PhotoStrip
             photos={journal.photos}

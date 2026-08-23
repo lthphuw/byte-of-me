@@ -68,17 +68,32 @@ function nodeHasText(node: JSONContent): boolean {
 }
 
 /**
- * Serializes a Tiptap document for storage, or `null` when it has no text.
+ * Whether the document has any BLOCK content beyond an empty paragraph — an
+ * image, a table, a code block, anything the editor mounted here can produce
+ * that is not text. `nodeHasText` alone used to be the whole rule, which was
+ * correct only while nothing could put a node in the document without also
+ * putting text in it. `RichTextEditor` can: a pasted image, or a table of
+ * empty cells, has no `text` node anywhere in it, and without this check
+ * `serializeReflection` would collapse it to `null` and silently drop it on
+ * save.
+ */
+function hasNonParagraphNode(doc: JSONContent): boolean {
+  return (doc.content ?? []).some((node) => node.type !== 'paragraph');
+}
+
+/**
+ * Serializes a Tiptap document for storage, or `null` when it is truly empty.
  *
  * An empty editor still produces `{ type: 'doc', content: [{ type:
  * 'paragraph' }] }` — storing that string would make the reflection look
  * "written" (e.g. draw the calendar's dot) for a day nobody actually wrote
- * anything on, so an empty document collapses to `null` just like a cleared
- * field does.
+ * anything on, so a document with no text AND no node other than a paragraph
+ * collapses to `null`, just like a cleared field does. A document that has
+ * neither text nor a non-paragraph node has nothing else worth keeping.
  */
 export function serializeReflection(doc: JSONContent | null): string | null {
   if (doc === null) return null;
-  if (!nodeHasText(doc)) return null;
+  if (!nodeHasText(doc) && !hasNonParagraphNode(doc)) return null;
   return JSON.stringify(doc);
 }
 
