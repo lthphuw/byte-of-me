@@ -11,11 +11,9 @@ import {
   MAX_IMAGE_SIZE_BYTES,
   MAX_IMAGE_SIZE_MB,
 } from '@/entities/media/model/upload-constraints';
+import { useWorkspaceSettings } from '@/entities/workspace-settings';
 import { compressInBrowser } from '@/shared/lib/media/compress-in-browser';
-import {
-  IMAGE_COMPRESSION_DEFAULTS,
-  type ImageCompressionConfig,
-} from '@/shared/lib/media/image-compression-config';
+import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
 
 export interface ImageUploadProps {
   uploadFiles: (files: File[]) => Promise<void>;
@@ -23,20 +21,23 @@ export interface ImageUploadProps {
    * From the media dashboard's compression settings popover — see
    * `MediaManager`. Optional because `MediaSelect`/`MediaMultiSelect` also
    * render this component from inside other dashboard forms (blog, project,
-   * education, profile), far from that popover's state; they fall back to
-   * the defaults, which is still correct because `uploadMedia`'s
-   * server-side pass is the actual guarantee and applies the AUTHOR'S real
-   * configured settings regardless of what compressed this file for the trip
-   * over the network.
+   * education, profile), far from that popover's state; when omitted this
+   * falls back to `useWorkspaceSettings()`, seeded server-side by
+   * `dashboard/layout.tsx` — the owner's REAL configured settings, not a
+   * hardcoded default. Compression toggled off there now actually stays off
+   * for every upload path, not just the media library's own dialog.
    */
   compressionConfig?: ImageCompressionConfig;
 }
 
 export function ImageUpload({
   uploadFiles,
-  compressionConfig = IMAGE_COMPRESSION_DEFAULTS,
+  compressionConfig,
 }: ImageUploadProps) {
   const t = useTranslations('dashboard.media');
+  const { settings } = useWorkspaceSettings();
+  const effectiveCompressionConfig =
+    compressionConfig ?? settings.imageCompression;
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
@@ -66,7 +67,10 @@ export function ImageUpload({
           continue;
         }
 
-        const compressed = await compressInBrowser(file, compressionConfig);
+        const compressed = await compressInBrowser(
+          file,
+          effectiveCompressionConfig
+        );
 
         if (compressed.size > MAX_IMAGE_SIZE_BYTES) {
           toast.error(t('upload.fileTooLargeTitle'), {
