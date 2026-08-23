@@ -4,7 +4,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import type {
   ExerciseSessionReading,
   ExerciseSetReading,
-} from '@/entities/health-insight';
+} from '@/entities/gym-stats';
 import { formatDayWithWeekday } from '@/features/gym/gym-charts';
 import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';

@@ -1,13 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import {
-  Activity,
-  Dumbbell,
-  type LucideIcon,
-  Moon,
-  Sparkles,
-} from 'lucide-react';
+import { Activity, Dumbbell, type LucideIcon, Moon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Link, usePathname } from '@/shared/i18n/navigation';
@@ -28,13 +22,6 @@ import { cn } from '@/shared/lib/utils';
  * it was deliberately absent until then, because a tab that leads to a 404 is
  * worse than one that appears when its screen does. `insights` arrived with
  * phase 3 on the same rule.
- *
- * Insights is a TOP-LEVEL tab rather than a page under sleep or gym, because
- * the whole measure is the join between the two: filing it under either would
- * say the other is its subject matter. It also has to be a tab at all — the
- * segmented control marks the current surface, and a route that no tab owns
- * leaves the control saying nothing, which is exactly what `prefixes` exists
- * to prevent for the catalogue.
  *
  * Gym owns THREE paths, not one. `/space/health/gym` is the screen, but the
  * routine editor lives under it and the exercise catalogue sits beside it at
@@ -75,11 +62,7 @@ export function HealthTabs() {
   // icon at all. The label stays beside every one of them (§14) — these are
   // `aria-hidden` and the text is what names the destination.
   const tabs: {
-    href:
-      | '/space/health'
-      | '/space/health/sleep'
-      | '/space/health/gym'
-      | '/space/health/insights';
+    href: '/space/health' | '/space/health/sleep' | '/space/health/gym';
     label: string;
     icon: LucideIcon;
     /** Overview would otherwise match every path in the module. */
@@ -99,11 +82,6 @@ export function HealthTabs() {
       label: t('gym'),
       icon: Dumbbell,
       prefixes: ['/space/health/gym', '/space/health/exercises'],
-    },
-    {
-      href: '/space/health/insights',
-      label: t('insights'),
-      icon: Sparkles,
     },
   ];
 

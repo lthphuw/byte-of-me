@@ -9,7 +9,7 @@ import {
 import type {
   E1rmSeriesPoint,
   ExerciseProgression,
-} from '@/entities/health-insight/model/gym-stats-types';
+} from '@/entities/gym-stats/model/gym-stats-types';
 import { decimalToNumber } from '@/shared/lib/decimal';
 import { localDateKey } from '@/shared/lib/health/local-date';
 import {

@@ -1,7 +1,7 @@
 import { Minus, TrendingDown, TrendingUp } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
-import type { ExerciseProgression } from '@/entities/health-insight';
+import type { ExerciseProgression } from '@/entities/gym-stats';
 
 /** Below this the slope is drawn as flat rather than as a direction. A tenth
  *  of a kilo per session is a fortnight to move half a plate — inside the

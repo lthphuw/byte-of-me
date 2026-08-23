@@ -1,7 +1,7 @@
 import { Activity } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
-import type { AcwrReading } from '@/entities/health-insight';
+import type { AcwrReading } from '@/entities/gym-stats';
 
 /** The top of the scale the ratio is drawn against. Two covers the band, the
  *  1.5 "elevated" mark and a good deal of headroom past it; a ratio beyond it

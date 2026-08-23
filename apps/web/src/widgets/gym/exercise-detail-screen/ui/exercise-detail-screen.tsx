@@ -4,7 +4,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { ExerciseIdentity, MetricNotApplicable } from './exercise-identity';
 import { ExerciseSessionList } from './exercise-session-list';
 
-import { getExerciseProgress } from '@/entities/health-insight';
+import { getExerciseProgress } from '@/entities/gym-stats';
 import {
   E1rmChart,
   formatDay,

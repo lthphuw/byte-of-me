@@ -11,12 +11,12 @@ import {
   toStatsSession,
 } from './gym-stats-fields';
 
-import { exerciseProgressSchema } from '@/entities/health-insight/model/gym-stats-schema';
+import { exerciseProgressSchema } from '@/entities/gym-stats/model/gym-stats-schema';
 import type {
   ExerciseProgress,
   ExerciseSessionReading,
   ExerciseSetReading,
-} from '@/entities/health-insight/model/gym-stats-types';
+} from '@/entities/gym-stats/model/gym-stats-types';
 import { requireAdmin } from '@/shared/lib/auth';
 import {
   addDays,

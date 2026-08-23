@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 
 import { AcwrCard } from './acwr-card';
 
-import { getGymStats } from '@/entities/health-insight';
+import { getGymStats } from '@/entities/gym-stats';
 import {
   E1rmChart,
   formatDay,

@@ -10,13 +10,13 @@ import {
   toStatsSession,
 } from './gym-stats-fields';
 
-import { gymStatsSchema } from '@/entities/health-insight/model/gym-stats-schema';
+import { gymStatsSchema } from '@/entities/gym-stats/model/gym-stats-schema';
 import type {
   ExerciseProgression,
   GymStats,
   GymWeekBucket,
   MuscleHardSets,
-} from '@/entities/health-insight/model/gym-stats-types';
+} from '@/entities/gym-stats/model/gym-stats-types';
 import { requireAdmin } from '@/shared/lib/auth';
 import {
   addDays,

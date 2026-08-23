@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import type { ExerciseProgress } from '@/entities/health-insight';
+import type { ExerciseProgress } from '@/entities/gym-stats';
 import { labelForCode, useGymLabels } from '@/shared/hooks/use-gym-labels';
 import {
   EQUIPMENT_ICON,

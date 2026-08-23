@@ -669,8 +669,7 @@ declare const messages: {
       "tabs": {
         "overview": "Tổng quan",
         "sleep": "Giấc ngủ",
-        "gym": "Phòng tập",
-        "insights": "Phân tích"
+        "gym": "Phòng tập"
       },
       "units": {
         "hoursMinutes": "{hours, number} giờ {minutes, number} phút",
@@ -1161,42 +1160,6 @@ declare const messages: {
         "setE1rm": "1RM ≈ {value, number} kg",
         "setE1rmUnreliable": "1RM ~{value, number} kg",
         "unreliableSetNote": "Dấu ngã đánh dấu ước tính lấy từ set trên {reps, number} lần, ngưỡng mà công thức Epley hết đáng tin. Những ước tính đó vẫn được hiện vì set đã thực sự được tập, nhưng chúng không bao giờ lập kỷ lục và không tham gia vào xu hướng."
-      },
-      "correlation": {
-        "title": "Giấc ngủ và tập luyện",
-        "loading": "Đang tải phần tương quan…",
-        "windowSummary": "{days, number} ngày gần nhất",
-        "empty": "Chưa ghi gì trong {days, number} ngày gần nhất.",
-        "caveatTitle": "Đây là gì, và không phải là gì",
-        "caveat": "Đây là tương quan trong dữ liệu của một người — của bạn — và tương quan không phải nhân quả. Không có gì ở đây được kiểm soát hay ngẫu nhiên hoá. Một buổi tập nặng có thể làm ngắn đêm ngay sau nó, cũng dễ như một đêm ngắn làm nhẹ đi ngày hôm sau, và cả hai đều biến thiên theo ngày trong tuần — điều mà không phép đo nào ở đây hiệu chỉnh: cuối tuần vừa là đêm dài hơn vừa là buổi tập khác đi. Hãy đọc hệ số như một câu hỏi đáng đặt ra, đừng bao giờ coi là một tác động.",
-        "noPvalue": "Ở đây cố ý không có kiểm định ý nghĩa thống kê. Dữ liệu tự chọn, không mù, thu thập tuỳ tiện của một người không đủ để làm điều đó, và tác dụng thực tế duy nhất của nó sẽ là cho phép đọc nhiễu như một phát hiện. Thay vào đó, số ngày đứng sau mỗi hệ số luôn được in kèm.",
-        "accountingTitle": "Những ngày đứng sau các con số này",
-        "pairedDays": "{n, number} ngày có cả đêm được ghi lẫn buổi tập đã kết thúc",
-        "sleepOnlyDays": "{n, number} đêm được ghi nhưng ngày đó không tập",
-        "sessionOnlyDays": "{n, number} buổi tập rơi vào đêm chưa từng được ghi — không có biến dự báo, nên chúng không tham gia phép đo nào bên dưới",
-        "method": "Hệ số ρ của Spearman tính trên thứ hạng, nên một đêm ngủ bù 14 tiếng không kéo được hệ số, và không giả định quan hệ tuyến tính nào. Đêm trước buổi tập của một ngày chính là bản ghi giấc ngủ của ngày đó: giấc ngủ được gán vào ngày nó kết thúc còn buổi tập vào ngày nó bắt đầu, và chính điều đó khiến hai bảng nối được với nhau bằng một cột.",
-        "rhoValue": "ρ = {value, number}",
-        "sampleSize": "trên {n, number} ngày ghép cặp",
-        "trainedSample": "trên {n, number} đêm được ghi",
-        "kgValue": "{value, number} kg",
-        "rpeValue": "RPE {value, number}",
-        "axisLegend": "Trục ngang: giấc ngủ, {xLow} bên trái đến {xHigh} bên phải. Trục dọc: {yLow} ở dưới đến {yHigh} ở trên.",
-        "volumeTitle": "Giấc ngủ và khối lượng tập",
-        "volumeDescription": "Số phút ngủ so với tổng tạ của các set chính thức ngay sau đó, tính trên những ngày có tập. Ngày nghỉ bị loại ra chứ không tính là tổng tạ bằng không — không tập không phải là một buổi tập không tạo ra gì.",
-        "volumeChartTitle": "Khối lượng tạ",
-        "volumeChartSummary": "Mỗi ngày có cả đêm được ghi lẫn buổi tập đã kết thúc: số phút ngủ và tổng tạ ngay sau đó",
-        "volumeNotEnough": "{n, number} trên {min, number} ngày ghép cặp. Dưới ngưỡng đó không vẽ gì: với chưa tới khoảng hai mươi điểm, tương quan hạng bị quyết định bởi vài ngày ở hai đầu bảng xếp hạng, và một tuần ốm là đủ để kéo nó đi hết dải giá trị.",
-        "volumeNoVariance": "{n, number} ngày ghép cặp, nhưng mọi ngày đều có cùng độ dài giấc ngủ, hoặc cùng tổng tạ. Không có thứ hạng nào để tương quan.",
-        "rpeTitle": "Giấc ngủ và mức gắng sức của buổi tập",
-        "rpeDescription": "Số phút ngủ so với RPE trung bình của các set chính thức ngay sau đó. Lấy trung bình theo từng set chứ không lấy RPE cả buổi, vì nó được ghi ngay lúc tập chứ không phải một cảm nhận duy nhất sau đó, và nó đến từ chính những set đã tạo ra tổng tạ.",
-        "rpeChartTitle": "RPE trung bình của set chính thức",
-        "rpeChartSummary": "Mỗi ngày có đêm được ghi và ít nhất một set chính thức có ghi RPE",
-        "rpeNotEnough": "{n, number} trên {min, number} ngày ghép cặp có ghi RPE ở set chính thức. Phần khối lượng có thể trả lời trong khi phần này thì không: một buổi tập không ghi RPE nào vẫn có tổng tạ.",
-        "rpeNoVariance": "{n, number} ngày ghép cặp, nhưng mọi ngày đều có cùng độ dài giấc ngủ, hoặc cùng RPE trung bình. Không có thứ hạng nào để tương quan.",
-        "trainedTitle": "Giấc ngủ và việc có tập hay không",
-        "trainedDescription": "Số phút ngủ so với việc buổi tập có diễn ra hay không, tính trên mọi đêm được ghi — phép đo duy nhất mà ngày nghỉ là một quan sát chứ không phải một khoảng trống. Không có biểu đồ: kết quả chỉ có hai giá trị, và một biểu đồ tán xạ hai hàng nói ít hơn chính con số.",
-        "trainedNotEnough": "{n, number} trên {min, number} đêm được ghi.",
-        "trainedNoVariance": "{n, number} đêm được ghi, nhưng bạn tập vào tất cả các đêm đó, hoặc không tập đêm nào. Không có gì để xếp hạng."
       }
     },
     "note": {

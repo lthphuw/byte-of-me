@@ -669,8 +669,7 @@ declare const messages: {
       "tabs": {
         "overview": "Overview",
         "sleep": "Sleep",
-        "gym": "Gym",
-        "insights": "Insights"
+        "gym": "Gym"
       },
       "units": {
         "hoursMinutes": "{hours, number}h {minutes, number}m",
@@ -1161,42 +1160,6 @@ declare const messages: {
         "setE1rm": "1RM ≈ {value, number} kg",
         "setE1rmUnreliable": "1RM ~{value, number} kg",
         "unreliableSetNote": "A tilde marks an estimate from a set above {reps, number} reps, where Epley stops being reliable. Those estimates are shown because the set was really performed, but they never set a record and never enter the trend."
-      },
-      "correlation": {
-        "title": "Sleep and training",
-        "loading": "Loading the correlation…",
-        "windowSummary": "The last {days, number} days",
-        "empty": "Nothing logged yet in the last {days, number} days.",
-        "caveatTitle": "What this is, and what it is not",
-        "caveat": "This is a correlation within one person’s data — yours — and a correlation is not causation. Nothing here was controlled or randomised. A hard session can shorten the night that follows as easily as a short night can soften the day after it, and both move with the day of the week, which none of these measures adjusts for: a weekend is a longer night and a different session at the same time. Read a coefficient as a question worth asking, never as an effect.",
-        "noPvalue": "There is deliberately no significance test. Self-selected, unblinded, opportunistically collected data from one person cannot support one, and its only practical effect would be to license reading noise as a finding. The number of days behind each coefficient is printed instead.",
-        "accountingTitle": "The days behind these numbers",
-        "pairedDays": "{n, number} days with both a logged night and a finished workout",
-        "sleepOnlyDays": "{n, number} nights logged with no workout that day",
-        "sessionOnlyDays": "{n, number} workouts on a night that was never logged — there is no predictor for those, so they enter none of the measures below",
-        "method": "Spearman’s ρ on ranks, so one 14-hour catch-up night cannot drag a coefficient and no straight-line relationship is assumed. The night before a workout on a given day is that day’s sleep record: a sleep is keyed to the day it ended and a workout to the day it started, which is what makes the two a single-column join.",
-        "rhoValue": "ρ = {value, number}",
-        "sampleSize": "over {n, number} paired days",
-        "trainedSample": "over {n, number} logged nights",
-        "kgValue": "{value, number} kg",
-        "rpeValue": "RPE {value, number}",
-        "axisLegend": "Horizontal: sleep, {xLow} on the left to {xHigh} on the right. Vertical: {yLow} at the bottom to {yHigh} at the top.",
-        "volumeTitle": "Sleep against training volume",
-        "volumeDescription": "Minutes asleep against the tonnage of the working sets that followed, over the days that trained. A rest day is excluded rather than counted as zero tonnage — not training is not a session that produced nothing.",
-        "volumeChartTitle": "Volume load",
-        "volumeChartSummary": "Each day with both a logged night and a finished workout: minutes asleep, and the tonnage that followed",
-        "volumeNotEnough": "{n, number} of {min, number} paired days. Nothing is drawn below that: under about twenty points a rank correlation is decided by the handful of days at the ends of the ranking, and one week of illness moves it across the whole range.",
-        "volumeNoVariance": "{n, number} paired days, but every one of them has the same sleep length, or the same tonnage. There is no ranking to correlate.",
-        "rpeTitle": "Sleep against session effort",
-        "rpeDescription": "Minutes asleep against the mean RPE of the working sets that followed. The set-level mean rather than the session RPE, because it is recorded while training rather than as one impression afterwards, and it comes off the same sets the tonnage does.",
-        "rpeChartTitle": "Mean working-set RPE",
-        "rpeChartSummary": "Each day with a logged night and at least one working set that recorded an RPE",
-        "rpeNotEnough": "{n, number} of {min, number} paired days recorded an RPE on a working set. Volume can answer while this one cannot: a session logged without any RPE still has a tonnage.",
-        "rpeNoVariance": "{n, number} paired days, but every one of them has the same sleep length, or the same mean RPE. There is no ranking to correlate.",
-        "trainedTitle": "Sleep against whether you trained at all",
-        "trainedDescription": "Minutes asleep against whether a session happened, over every logged night — the one measure where a rest day is an observation rather than a gap. No chart: the outcome has two values, and a scatter of two rows says less than the number does.",
-        "trainedNotEnough": "{n, number} of {min, number} logged nights.",
-        "trainedNoVariance": "{n, number} logged nights, but you trained on every one of them, or on none of them. There is nothing to rank."
       }
     },
     "note": {
