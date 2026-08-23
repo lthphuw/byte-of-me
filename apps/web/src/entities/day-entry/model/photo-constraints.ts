@@ -2,11 +2,12 @@
  * What may be attached to a day, and how many.
  *
  * The numbers are copied from `entities/media/model/upload-constraints`
- * rather than raised, because `serverActions.bodySizeLimit` in
- * `next.config.js` is sized from that pair. A larger limit here would not
- * mean larger uploads — it would mean the rejection moves back into the
- * framework, where it surfaces as an opaque body-size error instead of a
- * sentence naming the file.
+ * rather than raised, because they have to fit under
+ * `serverActions.bodySizeLimit` in `next.config.js` — a flat `'20mb'`, which
+ * five 3 MB files plus multipart overhead sit comfortably inside. Raising
+ * either number without raising that limit would not mean larger uploads; it
+ * would move the rejection back into the framework, where it surfaces as an
+ * opaque body-size error instead of a sentence naming the file.
  */
 export const MAX_PHOTO_SIZE_MB = 3;
 export const MAX_PHOTO_SIZE_BYTES = MAX_PHOTO_SIZE_MB * 1024 * 1024;
