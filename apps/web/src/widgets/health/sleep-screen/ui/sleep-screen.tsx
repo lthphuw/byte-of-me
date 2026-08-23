@@ -1,10 +1,11 @@
 import { CalendarOff, TriangleAlert } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 
-import { type LoggedNight, SleepDayEditor } from './sleep-day-editor';
+import { type LoggedNight, SleepMonthBoard } from './sleep-month-board';
 import { SleepMonthSummary } from './sleep-month-summary';
 import { SleepStatsPanel } from './sleep-stats-panel';
 
+import { getDayEntries } from '@/entities/day-entry';
 import {
   getSleepLogs,
   getSleepSummary,
@@ -41,12 +42,12 @@ const WINDOW_DAYS = 14;
 const FALLBACK_TARGET_MIN = 480;
 
 /**
- * Pick a night from the month, then log or correct it.
+ * The month and its statistics; tapping a day opens the sheet that writes it.
  *
  * **The calendar leads.** It used to be the last thing on the screen, a
  * picture of a month under a form that only ever edited today. It is now the
- * first thing and it is a CONTROL: tapping a day loads that night into the
- * form below, and saving writes that day. Nothing about the write path had to
+ * first thing and it is a CONTROL: tapping a day opens the sheet for that
+ * night, and saving writes that day. Nothing about the write path had to
  * change for it — see `useSleepEntry`, which places the wake instant on the
  * chosen day and lets the server derive the date from it exactly as before.
  *
@@ -55,21 +56,25 @@ const FALLBACK_TARGET_MIN = 480;
  * the server read cannot see forces a refetch per arrow or a pre-read of
  * months nobody opens. `?month=YYYY-MM` is read HERE, so the query is sized by
  * what is on screen, the back button pages through months, and a month is
- * linkable. The day inside it stays client state because every row for the
- * visible month is already on the client — a tap has nothing to fetch.
+ * linkable. Which day's sheet is open stays client state because every row
+ * for the visible month is already on the client — a tap has nothing to
+ * fetch.
  *
- * **Two windows, two reads, merged.** The month on screen and the fortnight
+ * **Two windows, three reads, merged.** The month on screen and the fortnight
  * the bar chart and the median bedtime need are different windows, and they
  * are only the same one while the current month is showing. Reading their
  * union unconditionally would mean scanning back to January to draw January
  * plus the last fortnight; reading them separately when they are disjoint
- * keeps every query bounded by a month or by a fortnight. `readRanges` decides
- * which, and the rows are merged by day because the same night can come back
- * from both.
+ * keeps every sleep-log query bounded by a month or by a fortnight.
+ * `readRanges` decides which, and the rows are merged by day because the same
+ * night can come back from both. Day entries are read for the MONTH window
+ * only — the fortnight exists for the bar chart and the median bedtime,
+ * neither of which touches a journal entry, so reading it there would scan
+ * days nothing draws.
  *
- * Neither failure throws. Both are awaited by an RSC, where a throw replaces
- * the whole page with the root `error.tsx` — including the form, which does
- * not need either read to work.
+ * No read throws. All three are awaited by an RSC, where a throw replaces the
+ * whole page with the root `error.tsx` — including the calendar, which needs
+ * none of them to work.
  */
 export async function SleepScreen({ month }: { month?: string }) {
   const t = await getTranslations('dashboard.health');
@@ -105,16 +110,22 @@ export async function SleepScreen({ month }: { month?: string }) {
     { from: chartStartKey, to: todayKey }
   );
 
-  const [summaryRes, ...logResults] = await Promise.all([
+  const [summaryRes, dayEntriesRes, ...logResults] = await Promise.all([
     getSleepSummary({ days: WINDOW_DAYS, timeZone }),
+    getDayEntries({ from: monthStartKey, to: monthReadTo }),
     ...ranges.map((range) => getSleepLogs(range)),
   ]);
 
   const summary = summaryRes.success ? summaryRes.data : null;
-  const failed = !summaryRes.success || logResults.some((res) => !res.success);
+  const dayEntries = dayEntriesRes.success ? dayEntriesRes.data : [];
+  const failed =
+    !summaryRes.success ||
+    !dayEntriesRes.success ||
+    logResults.some((res) => !res.success);
 
-  // Merged by day: the two windows overlap whenever the current month is on
-  // screen, and a night present twice would be counted twice by the summary.
+  // Merged by day: the two sleep-log windows overlap whenever the current
+  // month is on screen, and a night present twice would be counted twice by
+  // the summary.
   const rows = [
     ...new Map(
       logResults
@@ -124,24 +135,41 @@ export async function SleepScreen({ month }: { month?: string }) {
   ].sort((a, b) => a.localDate.localeCompare(b.localDate));
 
   const targetMin = summary?.targetMin ?? FALLBACK_TARGET_MIN;
-  const nights = rows.map(toLoggedNight);
+
+  const entryByDay = new Map(dayEntries.map((entry) => [entry.localDate, entry]));
+  const nightByDay = new Map(rows.map((row) => [row.localDate, toLoggedNight(row)]));
+
+  // The union, not the sleep rows. A day can be written up without a night
+  // logged — that is the whole reason DayEntry is a separate table — and such
+  // a day still has to draw its dot.
+  const nights: LoggedNight[] = [
+    ...new Set([...nightByDay.keys(), ...entryByDay.keys()]),
+  ]
+    .sort()
+    .map((key) => {
+      const night = nightByDay.get(key);
+      const entry = entryByDay.get(key) ?? null;
+
+      return {
+        localDate: key,
+        totalSleepMin: night?.totalSleepMin ?? null,
+        mood: entry?.mood ?? null,
+        hasEntry: Boolean(
+          entry && (entry.reflection !== null || entry.photos.length > 0)
+        ),
+      };
+    });
+
   const monthNights = nights.filter(
     (night) =>
       night.localDate >= monthStartKey && night.localDate <= monthLastKey
   );
-  const series: DayValue[] = nights.map((night) => ({
-    localDate: night.localDate,
-    value: night.totalSleepMin,
-  }));
-
-  // Today when it is on screen, otherwise the last day of the month being
-  // viewed — which is never in the future, because the month never is. A
-  // calendar that opens with nothing selected would leave the form below it
-  // describing no night at all.
-  const initialSelectedKey =
-    todayKey >= monthStartKey && todayKey <= monthLastKey
-      ? todayKey
-      : monthLastKey;
+  const series: DayValue[] = nights
+    .filter((night) => night.totalSleepMin !== null)
+    .map((night) => ({
+      localDate: night.localDate,
+      value: night.totalSleepMin as number,
+    }));
 
   const nextMonth = addMonths(monthStart, 1);
   const monthLabel = new Intl.DateTimeFormat(locale, {
@@ -156,92 +184,103 @@ export async function SleepScreen({ month }: { month?: string }) {
   });
 
   return (
-    <SleepDayEditor
-      nights={nights}
-      rows={rows}
-      monthStartKey={monthStartKey}
-      todayKey={todayKey}
-      initialSelectedKey={initialSelectedKey}
-      timeZone={timeZone}
-      targetMin={targetMin}
-      nowMin={roundedNowMin(new Date(), timeZone)}
-      prevMonthKey={monthKey(addMonths(monthStart, -1))}
-      nextMonthKey={nextMonth > currentMonthStart ? null : monthKey(nextMonth)}
-      aside={
-        <>
-          {/* `destructive-text`, not `destructive`: §14 records that the fill
-              token measures 3.76:1 as text. */}
-          {/* On a sheet, not bare on the ground. Every other block in this
-              column is a card; a loose line of red text at the top of it read
-              as a rendering artefact rather than as the screen telling the
-              reader something. */}
-          {failed ? (
-            <p className="flex items-start gap-2 rounded-2xl border bg-card p-4 text-sm text-destructive-text shadow">
-              <TriangleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
-              {t('errors.load')}
-            </p>
-          ) : null}
+    <div className="flex min-h-0 flex-1 flex-col overflow-x-clip">
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
+          {/* 2fr / 3fr, not two halves: the calendar is a fixed 7-column grid
+              that stops being comfortable below ~300px, while the statistics
+              column is a 3-up tile row that wants every pixel it can have. At
+              `max-w-4xl` that splits 832px into roughly 320 / 480. Below `lg`
+              — the width at which `/space` shows its icon rail — the two
+              stack, calendar first, because it is both the primary surface
+              and the control everything under it depends on. */}
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-8">
+            <div className="min-w-0 rounded-3xl border bg-card p-5 shadow">
+              <SleepMonthBoard
+                nights={nights}
+                rows={rows}
+                dayEntries={dayEntries}
+                monthStartKey={monthStartKey}
+                todayKey={todayKey}
+                timeZone={timeZone}
+                targetMin={targetMin}
+                nowMin={roundedNowMin(new Date(), timeZone)}
+                prevMonthKey={monthKey(addMonths(monthStart, -1))}
+                nextMonthKey={
+                  nextMonth > currentMonthStart ? null : monthKey(nextMonth)
+                }
+              />
+            </div>
 
-          {/* First in the column, because it is what the grid directly above
-              it adds up to. At `lg` that puts it beside the entry fields and
-              immediately under the calendar it describes. */}
-          <SleepMonthSummary
-            nights={monthNights}
-            monthLabel={monthLabel}
-            targetMin={targetMin}
-            formatDay={(key) =>
-              shortDayFormat.format(new Date(`${key}T00:00:00.000Z`))
-            }
-          />
+            <div className="flex min-w-0 flex-col gap-6">
+              {/* `destructive-text`, not `destructive`: §14 records that the
+                  fill token measures 3.76:1 as text. On a sheet, not bare on
+                  the ground — every other block in this column is a card, and
+                  a loose line of red text at the top of it read as a
+                  rendering artefact rather than as the screen telling the
+                  reader something. */}
+              {failed ? (
+                <p className="flex items-start gap-2 rounded-2xl border bg-card p-4 text-sm text-destructive-text shadow">
+                  <TriangleAlert
+                    aria-hidden
+                    className="mt-0.5 size-4 shrink-0"
+                  />
+                  {t('errors.load')}
+                </p>
+              ) : null}
 
-          {summary ? (
-            <SleepStatsPanel
-              summary={summary}
-              todayKey={todayKey}
-              windowDays={WINDOW_DAYS}
-            />
-          ) : null}
-        </>
-      }
-    >
-      <section>
-        {series.length === 0 ? (
-          // Where the fortnight of bars would be — and IN THE CARD the bars
-          // would have been in, rather than as a line of grey text where a
-          // card used to be. A crossed-out calendar says "no nights recorded"
-          // — the same mark the hub uses for the same fact — so the gap reads
-          // as a state and not as a block that failed to render. Centred and
-          // given the plot's own height, so the screen does not visibly
-          // shorten by 150px the moment the first night is logged.
-          <div className="flex min-h-[9rem] flex-col items-center justify-center gap-2 rounded-3xl border bg-card p-5 text-center shadow">
-            <CalendarOff
-              aria-hidden
-              className="size-6 shrink-0 text-muted-foreground"
-            />
-            <p className="text-sm text-muted-foreground">
-              {t('sleep.noHistory')}
-            </p>
+              <SleepMonthSummary
+                nights={monthNights}
+                monthLabel={monthLabel}
+                targetMin={targetMin}
+                formatDay={(key) =>
+                  shortDayFormat.format(new Date(`${key}T00:00:00.000Z`))
+                }
+              />
+
+              {summary ? (
+                <SleepStatsPanel
+                  summary={summary}
+                  todayKey={todayKey}
+                  windowDays={WINDOW_DAYS}
+                />
+              ) : null}
+
+              <section>
+                {series.length === 0 ? (
+                  // Where the fortnight of bars would be — and IN THE CARD the
+                  // bars would have been in, rather than as a line of grey
+                  // text where a card used to be. A crossed-out calendar says
+                  // "no nights recorded" — the same mark the hub uses for the
+                  // same fact — so the gap reads as a state and not as a block
+                  // that failed to render. Centred and given the plot's own
+                  // height, so the screen does not visibly shorten by 150px
+                  // the moment the first night is logged.
+                  <div className="flex min-h-[9rem] flex-col items-center justify-center gap-2 rounded-3xl border bg-card p-5 text-center shadow">
+                    <CalendarOff
+                      aria-hidden
+                      className="size-6 shrink-0 text-muted-foreground"
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      {t('sleep.noHistory')}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="rounded-3xl border bg-card p-5 shadow">
+                    <SleepDurationChart
+                      nights={series}
+                      startKey={chartStartKey}
+                      days={WINDOW_DAYS}
+                      targetMin={summary?.targetMin}
+                    />
+                  </div>
+                )}
+              </section>
+            </div>
           </div>
-        ) : (
-          // The same soft card the hub gives its chart, so moving between the
-          // two tabs does not change what a chart is: a figure on a raised
-          // sheet, never one floating on the ground `SpaceShell` paints.
-          //
-          // One card and not a two-up grid any more — the month calendar that
-          // used to sit beside it is now the top of the screen. That also
-          // retires the `md:items-start` this grid needed: with a single child
-          // there is no tallest row member for the chart to be stretched to.
-          <div className="rounded-3xl border bg-card p-5 shadow">
-            <SleepDurationChart
-              nights={series}
-              startKey={chartStartKey}
-              days={WINDOW_DAYS}
-              targetMin={summary?.targetMin}
-            />
-          </div>
-        )}
-      </section>
-    </SleepDayEditor>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -255,7 +294,7 @@ export async function SleepScreen({ month }: { month?: string }) {
  * chart and the monthly summary all read the results rather than the rows, so
  * the statistics module never reaches the browser.
  */
-function toLoggedNight(row: SleepLogRow): LoggedNight {
+function toLoggedNight(row: SleepLogRow): { totalSleepMin: number } {
   const night = computeNight({
     localDate: new Date(`${row.localDate}T00:00:00.000Z`),
     bedAt: new Date(row.bedAt),
@@ -264,11 +303,7 @@ function toLoggedNight(row: SleepLogRow): LoggedNight {
     awakeningsMin: row.awakeningsMin,
   });
 
-  return {
-    localDate: row.localDate,
-    totalSleepMin: night.totalSleepMin,
-    quality: row.quality,
-  };
+  return { totalSleepMin: night.totalSleepMin };
 }
 
 /**

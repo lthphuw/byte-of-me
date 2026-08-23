@@ -6,16 +6,16 @@ import { useTranslations } from 'next-intl';
 /**
  * `SleepScreen`, loading.
  *
- * It draws the CALENDAR and the ENTRY COLUMN, not the statistics. Those two
- * are always there — the calendar now leads the screen and the entry column
- * follows it — while the stats beside them depend on a read that may return
- * nothing at all. A placeholder for tiles that then never appear is a worse
- * lie than a short page, and at `lg` the grid still reserves the column, so
- * the entry side does not jump sideways when the statistics arrive.
+ * It mirrors the screen's shape exactly: the calendar card first — the header
+ * row, five weeks of marks with their reserved dot row, and the ruled-off key
+ * under them — then, beside it at `lg` and beneath it below that, the error
+ * banner's absence, the month summary tiles and the 14-night chart card. A day
+ * cell is not square — it is a numeral over a 36px disc plus the dot row,
+ * inside 12px of padding, ~72px tall — and a square placeholder made the grid
+ * settle upward when the real one arrived.
  *
- * The bottom bar is in the skeleton for the same reason it is in the hub's: it
- * is where the thumb already is, and a bar that arrives late moves the target
- * out from under it. It disappears at `lg` here exactly as it does there.
+ * No sheet in the skeleton. It opens on a tap, never on load, so there is
+ * nothing here for it to reserve.
  */
 export function SleepScreenSkeleton() {
   const t = useTranslations('dashboard.health');
@@ -28,85 +28,49 @@ export function SleepScreenSkeleton() {
     >
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
-          {/* The month, in the card it leads the screen in: the header row,
-              five weeks of marks, and the ruled-off key under them. A day
-              cell is not square — it is a numeral over a 36px disc inside
-              12px of padding, ~68px tall — and a square placeholder made the
-              grid settle upward by a third of its height when the real one
-              arrived. */}
-          <div className="flex flex-col gap-3 rounded-3xl border p-5">
-            <Skeleton aria-hidden className="h-11 w-full rounded-full" />
-
-            <div className="grid grid-cols-7 gap-2">
-              {Array.from({ length: 42 }, (_, i) => (
-                <Skeleton
-                  key={i}
-                  aria-hidden
-                  className="h-[4.25rem] w-full rounded-2xl"
-                />
-              ))}
-            </div>
-
-            <div className="mt-1 flex flex-col gap-2 border-t pt-3">
-              <Skeleton aria-hidden className="h-3 w-full max-w-xs" />
-              <Skeleton aria-hidden className="h-3 w-48" />
-            </div>
-          </div>
-
           <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-8">
-            <div className="flex min-w-0 flex-col gap-6">
-              {/* The day being edited, named in words — `base/semibold`, so
-                  a 20px placeholder rather than the old 16px one. */}
-              <Skeleton aria-hidden className="h-6 w-56" />
+            {/* The calendar card. */}
+            <div className="flex flex-col gap-3 rounded-3xl border bg-card p-5 shadow">
+              <Skeleton aria-hidden className="h-11 w-full rounded-full" />
 
-              {/* The hero: a 176px ring inside a 32px-padded card, then the
-                  delta and the target beneath it. */}
-              <div className="flex flex-col items-center gap-5 rounded-3xl border p-8">
-                <Skeleton aria-hidden className="size-44 rounded-full" />
-                <Skeleton aria-hidden className="h-6 w-40" />
-                <Skeleton aria-hidden className="h-4 w-32" />
+              <div className="grid grid-cols-7 gap-2">
+                {Array.from({ length: 42 }, (_, i) => (
+                  <Skeleton
+                    key={i}
+                    aria-hidden
+                    className="h-[4.5rem] w-full rounded-2xl"
+                  />
+                ))}
               </div>
 
-              {/* The two 64px time targets, each under its label, in the card
-                  they now share. */}
-              <div className="grid grid-cols-2 gap-4 rounded-3xl border p-5">
-                <div className="space-y-2">
-                  <Skeleton aria-hidden className="h-4 w-20" />
-                  <Skeleton aria-hidden className="h-16 w-full rounded-2xl" />
-                </div>
-                <div className="space-y-2">
-                  <Skeleton aria-hidden className="h-4 w-20" />
-                  <Skeleton aria-hidden className="h-16 w-full rounded-2xl" />
-                </div>
-              </div>
-
-              {/* Quality: in the card it now shares with the rest of the
-                  column, the header row, then the five 72px face buttons. */}
-              <div className="space-y-4 rounded-3xl border p-5">
-                <Skeleton aria-hidden className="h-4 w-24" />
-                <Skeleton
-                  aria-hidden
-                  className="h-[4.5rem] w-full rounded-2xl"
-                />
-              </div>
-
-              {/* The closed details trigger, at the height it has before any
-                  detail is filled — the title row is 36px tall now that the
-                  panel affordance is a bordered disc, plus the efficiency
-                  hint, which is exactly what a first visit sees. */}
-              <Skeleton aria-hidden className="h-24 w-full rounded-3xl" />
-
-              <div className="hidden pt-1 lg:block">
-                <Skeleton aria-hidden className="h-12 w-full rounded-full" />
+              <div className="mt-1 flex flex-col gap-2 border-t pt-3">
+                <Skeleton aria-hidden className="h-3 w-full max-w-xs" />
+                <Skeleton aria-hidden className="h-3 w-48" />
               </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <div className="shrink-0 border-t px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 lg:hidden">
-        <div className="mx-auto w-full max-w-4xl">
-          <Skeleton aria-hidden className="h-14 w-full rounded-full" />
+            {/* The statistics column: the month summary's six tiles, the
+                14-day stats panel, and the duration chart, in the order the
+                screen renders them. */}
+            <div className="flex min-w-0 flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <Skeleton aria-hidden className="h-4 w-40" />
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                  {Array.from({ length: 6 }, (_, i) => (
+                    <Skeleton
+                      key={i}
+                      aria-hidden
+                      className="h-20 w-full rounded-2xl"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <Skeleton aria-hidden className="h-56 w-full rounded-3xl" />
+
+              <Skeleton aria-hidden className="h-52 w-full rounded-3xl" />
+            </div>
+          </div>
         </div>
       </div>
     </div>

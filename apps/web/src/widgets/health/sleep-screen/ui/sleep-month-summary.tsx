@@ -8,15 +8,15 @@ import {
 } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
-import type { LoggedNight } from './sleep-day-editor';
+import type { LoggedNight } from './sleep-month-board';
 
 import { splitMinutes } from '@/shared/lib/health/duration';
 import { StatTile } from '@/shared/ui/stat-tile';
 
 const HEADING_ID = 'sleep-month-summary-heading';
 
-/** One decimal on the mean quality. A month of 3s and 4s averaging "4" hides
- *  the whole difference the figure exists to show, and a second decimal is
+/** One decimal on the mean mood. A month of 3s and 4s averaging "4" hides the
+ *  whole difference the figure exists to show, and a second decimal is
  *  precision the 1–5 input never had. */
 const QUALITY_DECIMALS = 1;
 
@@ -34,8 +34,13 @@ const QUALITY_DECIMALS = 1;
  * shape of a SUMMARY: a mean, a maximum, a minimum, a count over a threshold.
  * None of those is in the statistics module, and none of them belongs there:
  * that file is about what a NIGHT is, and a monthly mean is about a window a
- * reader happens to be looking at. Mean quality is local for a second reason —
- * quality is a subjective 1–5 the statistics module deliberately never reads.
+ * reader happens to be looking at. Mean mood is local for a second reason —
+ * mood is a subjective 1–5 the statistics module deliberately never reads.
+ *
+ * `nights` may include a day with no sleep row at all — `DayEntry` is a
+ * separate table precisely so a day can be written up without a night logged
+ * — so every duration-based figure below is computed over the LOGGED subset,
+ * narrowed once at the top rather than re-checked in every reducer.
  *
  * A server component: these are numbers over data already on the server, and
  * nothing on the panel is interactive.
@@ -57,7 +62,16 @@ export async function SleepMonthSummary({
 }) {
   const t = await getTranslations('dashboard.health');
 
-  if (nights.length === 0) {
+  // A day written up with no sleep row has nothing for a duration figure to
+  // say — `null` there means "no night", not "a night of zero minutes" — so
+  // it drops out of every tile below except the ones this component does not
+  // draw at all.
+  const logged = nights.filter(
+    (night): night is LoggedNight & { totalSleepMin: number } =>
+      night.totalSleepMin !== null
+  );
+
+  if (logged.length === 0) {
     return (
       <section aria-labelledby={HEADING_ID} className="flex flex-col gap-2">
         <Heading
@@ -76,32 +90,34 @@ export async function SleepMonthSummary({
     );
   }
 
-  const durations = nights.map((night) => night.totalSleepMin);
+  const durations = logged.map((night) => night.totalSleepMin);
   const meanDurationMin =
     durations.reduce((sum, value) => sum + value, 0) / durations.length;
 
-  const longest = nights.reduce((best, night) =>
+  const longest = logged.reduce((best, night) =>
     night.totalSleepMin > best.totalSleepMin ? night : best
   );
-  const shortest = nights.reduce((worst, night) =>
+  const shortest = logged.reduce((worst, night) =>
     night.totalSleepMin < worst.totalSleepMin ? night : worst
   );
 
-  const onTarget = nights.filter(
+  const onTarget = logged.filter(
     (night) => night.totalSleepMin >= targetMin
   ).length;
 
   // Rated nights only. Averaging an unrated night as a zero would invent the
   // worst possible rating for a night nobody judged, and averaging it as the
   // mean would make the figure depend on itself.
-  const rated = nights.filter(
-    (night): night is LoggedNight & { quality: number } =>
-      night.quality !== null
+  const rated = logged.filter(
+    (
+      night
+    ): night is LoggedNight & { totalSleepMin: number; mood: number } =>
+      night.mood !== null
   );
   const meanQuality =
     rated.length === 0
       ? null
-      : rated.reduce((sum, night) => sum + night.quality, 0) / rated.length;
+      : rated.reduce((sum, night) => sum + night.mood, 0) / rated.length;
 
   return (
     <section aria-labelledby={HEADING_ID} className="flex flex-col gap-2">
@@ -114,7 +130,7 @@ export async function SleepMonthSummary({
         <StatTile
           icon={CalendarRange}
           label={t('sleep.monthNights')}
-          value={nights.length}
+          value={logged.length}
         />
 
         <StatTile
@@ -131,7 +147,7 @@ export async function SleepMonthSummary({
             <p className="text-xs tabular-nums text-muted-foreground">
               {t('sleep.monthOnTargetContext', {
                 n: onTarget,
-                total: nights.length,
+                total: logged.length,
               })}
             </p>
           }
