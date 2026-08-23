@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import {
   Activity,
   Dumbbell,
@@ -45,6 +46,27 @@ import { cn } from '@/shared/lib/utils';
 export function HealthTabs() {
   const t = useTranslations('dashboard.health.tabs');
   const pathname = usePathname();
+  const scrollerRef = useRef<HTMLElement>(null);
+
+  // Whether the strip actually overflows, re-measured on layout change
+  // (a resize, or an orientation flip) rather than once on mount — the same
+  // four tabs that scroll in portrait fit without scrolling once the phone
+  // turns landscape, and the edge fade below must not linger once nothing is
+  // clipped. `ResizeObserver`, not a scroll listener or a timer: it fires on
+  // the CONTAINER's box changing, which is the actual condition this cares
+  // about, and it needs no polling.
+  const [scrollable, setScrollable] = useState(false);
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+
+    const measure = () => setScrollable(el.scrollWidth > el.clientWidth + 1);
+    measure();
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // The glyphs are the module's own vocabulary, not new pictures: a moon
   // already means bed/sleep on the entry form and the bedtime-variation tile,
@@ -87,14 +109,45 @@ export function HealthTabs() {
 
   // The bar SCROLLS INSIDE ITSELF rather than squeezing, and that is what the
   // fourth tab made necessary. At `text-sm` the four labels plus their icons
-  // need about 370px in English and more in Vietnamese, which does not fit a
+  // need about 360px in English and more in Vietnamese, which does not fit a
   // 375px phone once the padding and the gaps are taken off — and `flex-1`
   // alone would shrink them until the words truncated. `shrink-0` with a
   // minimum keeps every label whole; `flex-1` still lets them share the width
   // on a wide screen, so nothing changes above the breakpoint where they fit.
   // The overflow is on this element, never on the body (§14).
+  //
+  // Two things a scrolling strip needs that a squeezing one does not, and
+  // both used to be missing:
+  //
+  // A horizontally-scrolling flex container's own trailing padding is not
+  // reliably part of the scrollable area on every engine — WebKit has long
+  // dropped it once content overflows, so a container padded with `px-3`
+  // shows its right gutter at rest but not once scrolled to the end: the
+  // last tab lands flush against the edge. `pl-3` here supplies the START
+  // gutter only (that side is never in question — scrollLeft 0 always shows
+  // it); the END gutter is a real trailing element instead, sized so it
+  // reproduces the same 12px `px-3` used to promise: `gap-2` (8px, the same
+  // gap between every tab) plus this element's own `w-1` (4px). Real content
+  // is unambiguously part of `scrollWidth` everywhere, so the true end
+  // gutter is now the same 12px on every engine rather than depending on
+  // which one keeps counting after the last tab.
+  //
+  // Nothing on screen said the strip scrolled at all, which is what "no
+  // padding" actually looked like — the last tab flush against the edge and
+  // a phone with no habit of dragging a segmented control sideways. The mask
+  // fades both ends whenever `scrollable` is true, in the same black/
+  // transparent gradient in both themes (masking removes paint rather than
+  // adding a colour, so it needs no dark-mode variant), and only masks —
+  // never captures — so it cannot intercept a tap on the tab underneath it.
   return (
-    <nav className="flex shrink-0 gap-2 overflow-x-auto border-b px-3 py-2">
+    <nav
+      ref={scrollerRef}
+      className={cn(
+        'flex shrink-0 gap-2 overflow-x-auto border-b py-2 pl-3',
+        scrollable &&
+          '[-webkit-mask-image:linear-gradient(to_right,transparent,black_1rem,black_calc(100%-1rem),transparent)] [mask-image:linear-gradient(to_right,transparent,black_1rem,black_calc(100%-1rem),transparent)]'
+      )}
+    >
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = tab.exact
@@ -128,6 +181,11 @@ export function HealthTabs() {
           </Link>
         );
       })}
+
+      {/* The end gutter — see the block comment above. `w-1` (4px) plus the
+          `gap-2` (8px) before it totals 12px, `px-3`'s own value, so this
+          reads as the same trailing space as every other side of the bar. */}
+      <div aria-hidden className="w-1 shrink-0" />
     </nav>
   );
 }
