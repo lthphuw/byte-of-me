@@ -793,6 +793,7 @@ declare const messages: {
         "photoAlt": "Ảnh ngày {date}",
         "photoUploading": "Đang tải lên…",
         "photoRemove": "Xoá ảnh này",
+        "photoRemoveNumbered": "Xoá ảnh thứ {n, number}",
         "photoFull": "Mỗi ngày tối đa {max, number} ảnh",
         "caption": "Chú thích",
         "captionPlaceholder": "Viết gì đó về tấm này",

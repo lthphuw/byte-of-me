@@ -72,13 +72,21 @@ export function PhotoStrip({
           never scroll sideways — a horizontally scrolling page is how a
           drawer starts fighting its own swipe-to-dismiss. */}
       <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-1">
-        {photos.map((photo) => (
+        {photos.map((photo, index) => (
           <PhotoThumb
             key={photo.id}
             src={photo.url}
             alt={t('day.photoAlt', { date: dateLabel })}
             caption={photo.caption}
-            removeLabel={t('day.photoRemove')}
+            // Five thumbnails otherwise all announce as "Remove this photo" —
+            // indistinguishable to a screen reader. The caption disambiguates
+            // when there is one; the photo's position in the strip does when
+            // there isn't.
+            removeLabel={
+              photo.caption
+                ? `${t('day.photoRemove')} — ${photo.caption}`
+                : t('day.photoRemoveNumbered', { n: index + 1 })
+            }
             isSelected={photo.id === openId}
             onSelect={() => setOpenId(photo.id === openId ? null : photo.id)}
             onRemove={() => {

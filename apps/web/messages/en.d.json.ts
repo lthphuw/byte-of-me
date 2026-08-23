@@ -793,6 +793,7 @@ declare const messages: {
         "photoAlt": "Photo from {date}",
         "photoUploading": "Uploading…",
         "photoRemove": "Remove this photo",
+        "photoRemoveNumbered": "Remove photo {n, number}",
         "photoFull": "A day holds at most {max, number} photos",
         "caption": "Caption",
         "captionPlaceholder": "Say something about this one",
