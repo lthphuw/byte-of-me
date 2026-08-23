@@ -34,8 +34,6 @@ import {
   volumeLoadKg,
   weeklyHardSetsByMuscle,
   windowLoad,
-  workingSets,
-  type WorkoutSessionInput,
 } from '@/shared/lib/health/workout-stats';
 import { getErrorMessage } from '@/shared/lib/utils';
 import { parseInput } from '@/shared/lib/validate-action-input';
@@ -143,9 +141,6 @@ export async function getGymStats(
         weeks: buildWeeks(sessions, to, days),
         hardSetsWindowDays: WEEK_DAYS,
         hardSets,
-        hardSetsWorkingSets: countWorkingSets(
-          sessionsInWindow(sessions, to, WEEK_DAYS)
-        ),
         secondaryCredit: SECONDARY_MUSCLE_SET_CREDIT,
         hypertrophyBandLow: HYPERTROPHY_SETS_LOW,
         hypertrophyBandHigh: HYPERTROPHY_SETS_HIGH,
@@ -214,18 +209,6 @@ function buildWeeks(
   }
 
   return buckets;
-}
-
-function countWorkingSets(sessions: WorkoutSessionInput[]): number {
-  let total = 0;
-
-  for (const session of sessions) {
-    for (const exercise of session.exercises) {
-      total += workingSets(exercise).length;
-    }
-  }
-
-  return total;
 }
 
 /**

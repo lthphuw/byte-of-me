@@ -68,7 +68,7 @@ export interface AcwrReading {
 }
 
 export interface E1rmSeriesPoint {
-  /** `YYYY-MM-DD` of the session. */
+  /** `YYYY-MM-DD` of the training day. */
   localDate: string;
   e1rmKg: number;
   /**
@@ -91,8 +91,14 @@ export interface ExerciseProgression {
   metric: string;
   /** Sessions in the window that included this exercise at all. */
   sessionCount: number;
-  /** Best RELIABLE e1RM per session, oldest first. Sessions that produced no
-   *  reliable estimate are absent rather than zero. */
+  /**
+   * Best RELIABLE e1RM per training DAY, oldest first.
+   *
+   * A day that produced no reliable estimate is absent rather than zero, and
+   * two sessions on one day are folded into their better estimate — the chart
+   * this feeds is keyed and labelled by day, so a repeated date would be one
+   * key with two values (`toE1rmSeriesPoints`).
+   */
   points: E1rmSeriesPoint[];
   /**
    * Sessions of this exercise whose working sets produced ONLY estimates above
@@ -133,9 +139,6 @@ export interface GymStats {
   /** Descending by exposure. A muscle with no exposure is ABSENT, so the
    *  screen can tell "not trained this week" from "trained". */
   hardSets: MuscleHardSets[];
-  /** Working sets performed in that window, whatever they hit — what
-   *  separates "no training" from "training that credited no muscle". */
-  hardSetsWorkingSets: number;
   /** `SECONDARY_MUSCLE_SET_CREDIT`. A convention this project chose, not a
    *  constant of nature, and the screen says so beside the numbers. */
   secondaryCredit: number;
