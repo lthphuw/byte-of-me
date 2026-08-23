@@ -4,37 +4,13 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
 import { dayEntryRangeSchema } from '@/entities/day-entry/model/day-entry-schema';
-import type {
-  DayEntryRow,
-  DayPhotoRow,
-} from '@/entities/day-entry/model/types';
+import type { DayEntryRow } from '@/entities/day-entry/model/types';
+import { toDayPhotoRow } from '@/entities/day-entry/lib/to-day-photo-row';
 import { requireAdmin } from '@/shared/lib/auth';
 import { localDateKey } from '@/shared/lib/health/local-date';
 import { getErrorMessage } from '@/shared/lib/utils';
 import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
-
-/** What a photo row looks like coming out of Prisma, before the route path is
- *  attached. */
-interface StoredPhoto {
-  id: string;
-  caption: string | null;
-  position: number;
-  mimeType: string;
-  size: number;
-}
-
-/**
- * Attach the address.
- *
- * The bucket is private, so a photo's URL is not a property of the object —
- * it is the route that will serve it after checking the session. Building it
- * on read rather than storing it is what stops a column of dead public URLs
- * accumulating, and what makes moving the route a one-line change.
- */
-export function toDayPhotoRow(photo: StoredPhoto): DayPhotoRow {
-  return { ...photo, url: `/api/health/photos/${photo.id}` };
-}
 
 /**
  * Read one window of days, photos included.
