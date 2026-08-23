@@ -1,4 +1,4 @@
-import { RoutinesScreenSkeleton } from '@/widgets/health/routines-screen';
+import { RoutinesScreenSkeleton } from '@/widgets/gym/routines-screen';
 
 export default function RoutinesLoading() {
   return <RoutinesScreenSkeleton />;

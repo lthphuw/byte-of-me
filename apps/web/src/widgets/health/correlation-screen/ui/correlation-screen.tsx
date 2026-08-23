@@ -10,7 +10,7 @@ import {
   type ScatterPoint,
   SleepTrainingScatter,
 } from '@/features/health/correlation-charts';
-import { formatDay } from '@/features/health/gym-charts';
+import { formatDay } from '@/features/gym/gym-charts';
 import { getRequestTimeZone } from '@/shared/lib/health/request-time-zone';
 
 /**

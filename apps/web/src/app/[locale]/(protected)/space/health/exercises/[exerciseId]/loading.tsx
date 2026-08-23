@@ -1,4 +1,4 @@
-import { ExerciseDetailScreenSkeleton } from '@/widgets/health/exercise-detail-screen';
+import { ExerciseDetailScreenSkeleton } from '@/widgets/gym/exercise-detail-screen';
 
 export default function ExerciseDetailLoading() {
   return <ExerciseDetailScreenSkeleton />;

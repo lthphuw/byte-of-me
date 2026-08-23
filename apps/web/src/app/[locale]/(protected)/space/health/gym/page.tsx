@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { GymScreen } from '@/widgets/health/gym-screen';
+import { GymScreen } from '@/widgets/gym/gym-screen';
 
 export const metadata: Metadata = {
   title: 'Gym',

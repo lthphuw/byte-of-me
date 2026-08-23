@@ -1,4 +1,4 @@
-import { WorkoutSessionScreenSkeleton } from '@/widgets/health/workout-session-screen';
+import { WorkoutSessionScreenSkeleton } from '@/widgets/gym/workout-session-screen';
 
 export default function WorkoutSessionLoading() {
   return <WorkoutSessionScreenSkeleton />;
