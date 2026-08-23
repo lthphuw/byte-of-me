@@ -148,7 +148,15 @@ export async function SleepScreen() {
           // grow with the box instead of scrolling inside it, which is the
           // whole reason a month replaced a rolling quarter — and the duration
           // chart is pure ratio and simply gets taller bars to read.
-          <div className="grid gap-4 md:grid-cols-2 md:gap-6">
+          //
+          // `items-start` because grid items stretch to the tallest row member
+          // by default, and these two are very different heights. Stretched,
+          // the chart card grew to the calendar's height and rendered a small
+          // bar above a large emptiness that read as a layout bug. Sized to
+          // content they are merely different heights, which is what they are.
+          // Same reason the entry grid in `SleepEntryForm` uses
+          // `lg:items-start`.
+          <div className="grid gap-4 md:grid-cols-2 md:items-start md:gap-6">
             <div className="rounded-3xl border bg-card p-5 shadow">
               <SleepDurationChart
                 nights={series}

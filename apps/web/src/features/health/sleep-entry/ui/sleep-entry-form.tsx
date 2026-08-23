@@ -142,7 +142,16 @@ export function SleepEntryForm({
 
               <SleepDetailsSection entry={entry} />
 
-              <div className="hidden lg:block">{submitButton}</div>
+              {/* Not full-bleed at `lg`. `--primary` is near-white in dark
+                  mode, so a 56px button spanning a 2fr column stops reading as
+                  a control and starts reading as a second background — the
+                  page looks like it changed tone half-way down. On a phone the
+                  full width is the point (it is a thumb target in a fixed bar);
+                  here the button only has to be big enough to hit with a
+                  mouse. */}
+              <div className="hidden lg:block">
+                <div className="w-56">{submitButton}</div>
+              </div>
             </div>
 
             {/* The rule between entry and statistics exists only while they
@@ -163,7 +172,12 @@ export function SleepEntryForm({
           frame. `env(safe-area-inset-bottom)` keeps it clear of the iOS home
           indicator; `max()` keeps a real gap on everything else. Gone at `lg`,
           where the submit above is the one that exists. */}
-      <div className="shrink-0 border-t bg-background px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 lg:hidden">
+      {/* `bg-card`, not `bg-background`: `SpaceShell` paints the page ground
+          `bg-muted/40`, and `--background` is a different tone from it, so the
+          bar showed up as a band in a slightly wrong colour rather than as a
+          surface sitting on the page. It still has to be OPAQUE — content
+          scrolls underneath it. */}
+      <div className="shrink-0 border-t bg-card px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 lg:hidden">
         <div className="mx-auto w-full max-w-4xl">{submitButton}</div>
       </div>
     </form>
