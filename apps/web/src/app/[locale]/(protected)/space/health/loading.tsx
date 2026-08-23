@@ -1,5 +1,5 @@
-import { HealthHubSkeleton } from '@/widgets/health/health-hub';
+import { DailyScreenSkeleton } from '@/widgets/daily/daily-screen';
 
 export default function HealthLoading() {
-  return <HealthHubSkeleton />;
+  return <DailyScreenSkeleton />;
 }

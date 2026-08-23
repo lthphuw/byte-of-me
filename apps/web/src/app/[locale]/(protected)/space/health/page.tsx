@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { HealthHub } from '@/widgets/health/health-hub';
+import { DailyScreen } from '@/widgets/daily/daily-screen';
 
 export const metadata: Metadata = {
   title: 'Health',
@@ -17,9 +17,9 @@ export const metadata: Metadata = {
 };
 
 /**
- * The overview. `HealthHub` is the async boundary — no extra `<Suspense>`,
+ * The overview. `DailyScreen` is the async boundary — no extra `<Suspense>`,
  * because the route's own `loading.tsx` already covers the wait.
  */
 export default function HealthPage() {
-  return <HealthHub />;
+  return <DailyScreen />;
 }

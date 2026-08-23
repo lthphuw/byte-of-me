@@ -31,9 +31,9 @@ import { SkipToContentLink } from '@/shared/ui/skip-to-content-link';
  * `space-nav-rail.tsx`, where its `py-3` already had a value worth keeping.
  *
  * BOTTOM is deliberately NOT here. `#space-content` has no background of its
- * own — this row is `bg-muted/40` and the four in-space bottom bars
- * (`health-hub.tsx`, `exercise-catalog.tsx`, `routine-manager.tsx`,
- * `workout-live-logger.tsx`) are `bg-background` with a `border-t` — so an
+ * own — this row is `bg-muted/40` and the in-space bottom bars
+ * (`exercise-catalog.tsx`, `routine-manager.tsx`, `workout-live-logger.tsx`)
+ * are `bg-background` with a `border-t` — so an
  * inset painted here left the home-indicator band showing this row's grey
  * ground under a visible seam instead of each bar's own surface. Each of
  * those bars owns its bottom inset itself, `pb-[max(0.5rem, env(...))]`,
