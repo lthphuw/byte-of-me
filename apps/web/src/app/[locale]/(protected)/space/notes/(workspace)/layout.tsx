@@ -17,6 +17,12 @@ import { SpaceNavTrigger } from '@/widgets/space/space-shell';
  * The pages below are consequently empty: they exist for their `metadata` /
  * `generateMetadata` and for the URL, which is still what a `[[` link, a
  * reload and the Back button all resolve against.
+ *
+ * The module's `NextIntlClientProvider` is one level UP, in `notes/layout.tsx`,
+ * and not here: `notes/graph` is a sibling of this route group rather than a
+ * member of it, and its screen reads `dashboard.note.graph` too. Mounting the
+ * catalogue inside the group would have left the graph resolving against the
+ * shell's list and painting its key paths.
  */
 export default function NotesLayout({
   children,

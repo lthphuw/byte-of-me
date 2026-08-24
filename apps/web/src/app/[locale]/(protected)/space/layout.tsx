@@ -5,7 +5,10 @@ import { getMessages } from 'next-intl/server';
 import { getOwnerDisplayName } from '@/entities/user-profile/api/get-owner-display-name';
 import { WorkspaceSettingsProvider } from '@/entities/workspace-settings';
 import { getWorkspaceSettings } from '@/entities/workspace-settings/api/get-workspace-settings';
-import { pickMessages, SPACE_MESSAGE_NAMESPACES } from '@/shared/i18n/messages';
+import {
+  pickMessages,
+  SPACE_SHELL_MESSAGE_NAMESPACES,
+} from '@/shared/i18n/messages';
 import { buildIconSet } from '@/shared/lib/metadata';
 import { SpaceShell } from '@/widgets/space/space-shell';
 
@@ -67,11 +70,22 @@ export default async function SpaceLayout({
   // client-reachable. Its own `api/index.ts` says the same thing at more length.
   const settings = await getWorkspaceSettings();
 
-  // The vault's own message catalogue. Mounted here rather than on
+  // The SHELL's message catalogue — the rail, the settings dialog, the hub —
+  // and nothing a module owns. Mounted here rather than on
   // `(protected)/layout.tsx` so the CMS's manager copy — the other half of the
   // `dashboard` namespace, none of which renders here — stays off this
   // surface's RSC payload, which `force-dynamic` re-sends on every navigation.
-  const messages = pickMessages(await getMessages(), SPACE_MESSAGE_NAMESPACES);
+  //
+  // The list stops at `dashboard.space` for the same reason it stops short of
+  // the CMS: `gym/layout.tsx`, `daily/layout.tsx` and `notes/layout.tsx` each
+  // mount their own provider below, so the hub no longer ships 14.8 KB of gym
+  // vocabulary to draw four cards. Everything ABOVE those providers —
+  // `SpaceShell` and the hub page — still reads this one, which is exactly
+  // what this list covers.
+  const messages = pickMessages(
+    await getMessages(),
+    SPACE_SHELL_MESSAGE_NAMESPACES
+  );
 
   return (
     <NextIntlClientProvider messages={messages}>
