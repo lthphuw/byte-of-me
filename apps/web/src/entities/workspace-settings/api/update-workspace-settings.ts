@@ -2,6 +2,7 @@
 
 import { Prisma, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
+import { revalidateTag } from 'next/cache';
 
 import {
   parseWorkspaceSettings,
@@ -10,6 +11,7 @@ import {
   workspaceSettingsPatchSchema,
 } from '@/entities/workspace-settings/model/settings-schema';
 import { requireAdmin } from '@/shared/lib/auth';
+import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getErrorMessage } from '@/shared/lib/utils';
 import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
@@ -92,6 +94,15 @@ export async function updateWorkspaceSettings(
       where: { ownerId: session.id },
       select: { preferences: true },
     });
+
+    // `getWorkspaceSettings` caches this row across requests, and it is what
+    // `space/layout.tsx` seeds the settings provider from on every navigation.
+    // Without this line the popover would appear to save — the action returns
+    // the new value and the client applies it — and then the very next
+    // navigation would repaint the workspace at the OLD density, which reads
+    // as "my setting didn't stick" rather than as a caching bug. After the
+    // write and outside any transaction, per §8.
+    revalidateTag(CACHE_TAGS.WORKSPACE_SETTINGS, 'max');
 
     // Returned re-parsed rather than echoing the patch back: the caller applies
     // this to its own state, and what it needs is what the database now holds
