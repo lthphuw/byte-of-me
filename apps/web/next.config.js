@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { createRequire } from 'node:module';
 import createNextIntlPlugin from 'next-intl/plugin';
 
 // Derived, never hardcoded: the storage host belongs to the deployment, and a
@@ -8,19 +9,57 @@ const storageHost = process.env.SUPABASE_S3_STORAGE_PUBLIC_ENDPOINT
   ? new URL(process.env.SUPABASE_S3_STORAGE_PUBLIC_ENDPOINT).hostname
   : undefined;
 
-// The include globs below are resolved with the Next project directory as cwd
-// (apps/web), NOT `outputFileTracingRoot` — hence `../../`. Both layouts are
-// listed because a glob that matches nothing is silent, and silence here is a
-// 500 in production: the first is bun's isolated store, which is where tracing
-// resolves to (same reasoning as `outputFileTracingExcludes` below), the second
-// a flat/hoisted `node_modules` in case an install ever produces one.
+// The one file `sharp` cannot start without, resolved rather than globbed.
 //
-// `sharp-libvips-*` rather than a pinned platform and version so the build
-// machine's own triple matches — linux-x64 on Vercel, darwin-arm64 locally.
-const SHARP_LIBVIPS = [
-  '../../node_modules/.bun/@img+sharp-libvips-*/node_modules/@img/*/lib/**',
-  '../../node_modules/@img/sharp-libvips-*/lib/**',
-];
+// `@img/sharp-libvips-<platform>` publishes a `./binary` export pointing at its
+// own `libvips-cpp.so.<version>`, so this asks the resolver for the exact file
+// the INSTALLED sharp will dlopen — no version in this file to fall out of date,
+// and no wildcard.
+//
+// It used to be a wildcard (`@img+sharp-libvips-*/.../lib/**`) on the theory
+// that a pinned glob would stop matching after a sharp upgrade and stop
+// silently. The theory was right and the remedy was wrong: the wildcard also
+// matched Next's own nested `sharp@0.34.5` copy (libvips 1.2.4, 16 MB), and the
+// two together pushed `/dashboard/user-profile` to 250.22 MB against Vercel's
+// 250 MB uncompressed function limit. Resolution fixes both halves — it selects
+// exactly one libvips, and a missing one throws HERE, at config load, which
+// fails the build loudly instead of shipping a function that 500s on upload.
+//
+// The path is returned relative to this directory because include globs are
+// resolved with the Next project directory as cwd, not `outputFileTracingRoot`.
+function sharpLibvipsBinary() {
+  const require = createRequire(import.meta.url);
+  // musl second: on Alpine `process.platform` still reports 'linux', so the
+  // glibc name is tried first and simply does not resolve there.
+  const candidates =
+    process.platform === 'linux'
+      ? [`linux-${process.arch}`, `linuxmusl-${process.arch}`]
+      : [`${process.platform}-${process.arch}`];
+
+  // Resolved FROM sharp's own entry point, so it finds the copy that sharp
+  // itself will load rather than whatever a hoisted node_modules happens to
+  // expose.
+  const from = require.resolve('sharp');
+
+  for (const platform of candidates) {
+    try {
+      const binary = require.resolve(`@img/sharp-libvips-${platform}/binary`, {
+        paths: [from],
+      });
+      return path.relative(import.meta.dirname, binary);
+    } catch {
+      // try the next candidate
+    }
+  }
+
+  throw new Error(
+    `next.config.js: no @img/sharp-libvips-* package for ${process.platform}-${process.arch}. ` +
+      `sharp cannot load without it, so the build is stopped here rather than ` +
+      `producing a function that fails on the first image upload.`
+  );
+}
+
+const SHARP_LIBVIPS = [sharpLibvipsBinary()];
 
 const nextConfig = {
   reactStrictMode: true,
