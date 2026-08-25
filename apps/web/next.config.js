@@ -8,6 +8,20 @@ const storageHost = process.env.SUPABASE_S3_STORAGE_PUBLIC_ENDPOINT
   ? new URL(process.env.SUPABASE_S3_STORAGE_PUBLIC_ENDPOINT).hostname
   : undefined;
 
+// The include globs below are resolved with the Next project directory as cwd
+// (apps/web), NOT `outputFileTracingRoot` — hence `../../`. Both layouts are
+// listed because a glob that matches nothing is silent, and silence here is a
+// 500 in production: the first is bun's isolated store, which is where tracing
+// resolves to (same reasoning as `outputFileTracingExcludes` below), the second
+// a flat/hoisted `node_modules` in case an install ever produces one.
+//
+// `sharp-libvips-*` rather than a pinned platform and version so the build
+// machine's own triple matches — linux-x64 on Vercel, darwin-arm64 locally.
+const SHARP_LIBVIPS = [
+  '../../node_modules/.bun/@img+sharp-libvips-*/node_modules/@img/*/lib/**',
+  '../../node_modules/@img/sharp-libvips-*/lib/**',
+];
+
 const nextConfig = {
   reactStrictMode: true,
 
@@ -98,6 +112,61 @@ const nextConfig = {
   // cannot follow symlinks into the root node_modules, which on Vercel shows up
   // as a workspace-root warning and mis-traced server bundles.
   outputFileTracingRoot: path.join(import.meta.dirname, '../../'),
+  // `sharp`'s native addon is not self-contained: `@img/sharp-<platform>`
+  // ships the `.node`, and the 17 MB `libvips-cpp.so` it links against lives in
+  // a SEPARATE package, `@img/sharp-libvips-<platform>`. Nothing `require`s that
+  // binary — the addon dlopens it by path at runtime — so file tracing, which
+  // follows static requires, packed the libvips package's `index.js`,
+  // `package.json` and `versions.json` and left the shared object behind.
+  //
+  // On Vercel that produced, on the first photo upload:
+  //
+  //   Failed to load external module sharp-edea96869fc6cbfe:
+  //   ERR_DLOPEN_FAILED: libvips-cpp.so.8.18.3: cannot open shared object file
+  //
+  // The lazy `import('sharp')` in `compress-image.ts` is what moved this off the
+  // render path and into the upload that needs it (see `fix(media): load sharp
+  // on first compression`); it never made the library reachable. This does.
+  //
+  // Both layouts are listed because a glob that matches nothing is silent, and
+  // silence here is a 500 in production. The first is bun's isolated store,
+  // which is where tracing resolves to (same reasoning as the excludes below);
+  // the second is a flat/hoisted `node_modules`, in case an install ever
+  // produces one. `sharp-libvips-*` rather than a pinned platform and version
+  // so the build machine's own triple matches — linux-x64 on Vercel,
+  // darwin-arm64 locally — and so Next's nested `sharp@0.34.5` (libvips 1.2.4,
+  // reached through `/api/og`) is covered alongside our own 0.35.3.
+  // `sharp`'s native addon is not self-contained. `@img/sharp-<platform>` ships
+  // the `.node`; the 17 MB `libvips-cpp.so` it links against lives in a
+  // SEPARATE package, `@img/sharp-libvips-<platform>`. Nothing `require`s that
+  // binary — the addon dlopens it by path at runtime — so file tracing, which
+  // follows static requires, packed the libvips package's `index.js`,
+  // `package.json` and `versions.json` into the function and left the shared
+  // object behind. On Vercel the first photo upload then failed with
+  //
+  //   Failed to load external module sharp-edea96869fc6cbfe:
+  //   ERR_DLOPEN_FAILED: libvips-cpp.so.8.18.3: cannot open shared object file
+  //
+  // The lazy `import('sharp')` in `compress-image.ts` (see `fix(media): load
+  // sharp on first compression`) moved that failure off the render path and
+  // into the upload that needs it; it never made the library reachable. This
+  // does. The `optionalDependencies` pin in package.json does not help either —
+  // the package was installed all along, just not traced.
+  outputFileTracingIncludes: {
+    // Keys are matched against the route with picomatch's `contains` option, so
+    // a bare SUBSTRING is the form that works: 'dashboard' covers every
+    // `/[locale]/dashboard/*`, 'daily' covers `/[locale]/space/daily`, and
+    // nothing else in the route table contains either word.
+    //
+    // Do not "improve" these into real paths. `'/[locale]/space/daily'`,
+    // `'**/space/daily'` and `'**/dashboard/**/*'` were all tried first and all
+    // matched NOTHING — any key containing a `/` silently fails here, and a key
+    // that matches nothing produces no warning, no build error, and a function
+    // that 500s on the first upload. Each form above was proved by building with
+    // a distinct throwaway file per key and reading the emitted `.nft.json`.
+    dashboard: SHARP_LIBVIPS,
+    daily: SHARP_LIBVIPS,
+  },
   outputFileTracingExcludes: {
     // Nothing server-rendered needs these at runtime; they are pure build-time
     // or editor-only weight in the serverless function. Bun's isolated linker
