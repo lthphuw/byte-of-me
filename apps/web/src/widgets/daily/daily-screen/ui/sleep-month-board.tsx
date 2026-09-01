@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { DayEntryCard } from './day-entry-card';
+
 import type { DayEntryRow } from '@/entities/day-entry';
 import type { SleepLogRow } from '@/entities/sleep-log';
 import { DayModal, MOOD_ICON } from '@/features/daily/day-journal';
@@ -29,9 +31,9 @@ export interface LoggedNight {
 }
 
 /**
- * The month, and the sheet for whichever day is open — the one stateful client
- * component here. React state, not the URL beside the month: a day opens
- * dozens of times a sitting, and the fast one should not be a navigation.
+ * Every way into the day sheet — the entry card for last night, the month for
+ * any other day — and the sheet itself. One stateful client component: a day
+ * opens dozens of times a sitting, and the fast one should not be a navigation.
  *
  * `key={openKey}` is the reset. Every field is seeded at mount, and carrying
  * half of the 9th into the 14th is worse than a cheap remount.
@@ -44,6 +46,8 @@ export function SleepMonthBoard({
   todayKey,
   timeZone,
   targetMin,
+  lastNightMin,
+  lastNightEstimated,
   nowMin,
   prevMonthKey,
   nextMonthKey,
@@ -55,6 +59,9 @@ export function SleepMonthBoard({
   todayKey: string;
   timeZone: string;
   targetMin: number;
+  /** Minutes asleep on the night dated `todayKey`, or `null` if unlogged. */
+  lastNightMin: number | null;
+  lastNightEstimated: boolean;
   nowMin: number;
   prevMonthKey: string;
   nextMonthKey: string | null;
@@ -93,15 +100,25 @@ export function SleepMonthBoard({
 
   return (
     <>
-      <SleepMonthCalendar
-        nights={calendarNights}
-        monthStartKey={monthStartKey}
-        todayKey={todayKey}
+      <DayEntryCard
+        totalSleepMin={lastNightMin}
+        estimated={lastNightEstimated}
         targetMin={targetMin}
-        onSelect={setOpenKey}
-        prevMonthKey={prevMonthKey}
-        nextMonthKey={nextMonthKey}
+        dateLabel={dayFormat.format(new Date(`${todayKey}T00:00:00.000Z`))}
+        onOpen={() => setOpenKey(todayKey)}
       />
+
+      <div className="min-w-0 rounded-3xl border bg-card p-5 shadow">
+        <SleepMonthCalendar
+          nights={calendarNights}
+          monthStartKey={monthStartKey}
+          todayKey={todayKey}
+          targetMin={targetMin}
+          onSelect={setOpenKey}
+          prevMonthKey={prevMonthKey}
+          nextMonthKey={nextMonthKey}
+        />
+      </div>
 
       {openKey === null ? null : (
         <DayModal

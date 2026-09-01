@@ -47,6 +47,7 @@ import {
 } from '@/shared/lib/health/local-date';
 import { getRequestTimeZone } from '@/shared/lib/health/request-time-zone';
 import { computeNight, minutesStdDev } from '@/shared/lib/health/sleep-stats';
+import { lastNightOf } from '@/widgets/daily/daily-screen/lib/last-night';
 
 /** The raster's window, and the one `getSleepSummary` deviates over. Debt
  *  needs a free-day baseline a fortnight cannot supply, so it is not here. */
@@ -65,7 +66,8 @@ const COVERAGE_WEEKS = 5;
 const FALLBACK_TARGET_MIN = 480;
 
 /**
- * Last night and the fortnight first; the month is reference material below.
+ * The entry card and the month first — the two ways into the sheet. Everything
+ * analytical follows them, in source order, because that is also the phone's.
  * `?month=` is read here so the query is SIZED by what is on screen. No read
  * throws — one throw in an RSC replaces the whole page with `error.tsx`.
  */
@@ -129,8 +131,7 @@ export async function DailyScreen({ month }: { month?: string }) {
   ].sort((a, b) => a.localDate.localeCompare(b.localDate));
 
   const targetMin = summary?.targetMin ?? FALLBACK_TARGET_MIN;
-  // `getSleepSummary` returns nights ascending, so `.at(-1)` is the latest.
-  const lastNight = summary?.nights.at(-1) ?? null;
+  const lastNight = lastNightOf(summary?.nights ?? [], todayKey);
 
   const entryByDay = new Map(dayEntries.map((entry) => [entry.localDate, entry]));
   const rowByDay = new Map(rows.map((row) => [row.localDate, row]));
@@ -233,10 +234,11 @@ export async function DailyScreen({ month }: { month?: string }) {
     <div className="flex min-h-0 flex-1 flex-col overflow-x-clip">
       <div className="pb-safe min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
-          {/* Fortnight FIRST in source order, so it stacks on top of the
-              month on a phone. 3fr/2fr splits `max-w-4xl` into ~480/320,
-              above the ~300px the seven-column grid needs. */}
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start lg:gap-8">
+          {/* The two ways into the sheet FIRST in source order, so on a phone
+              the daily job is above the fold and the analysis is below it.
+              2fr/3fr splits `max-w-4xl` into ~320/480 — the calendar keeps
+              the column it was drawn for, and the raster gains the wider. */}
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-8">
             <div className="flex min-w-0 flex-col gap-6">
               {/* `destructive-text`, not `destructive`: the fill token
                   measures 3.76:1 as text (§14). */}
@@ -250,30 +252,26 @@ export async function DailyScreen({ month }: { month?: string }) {
                 </p>
               ) : null}
 
-              {/* One card: the figure is last night, the rows under it are
-                  the fortnight it belongs to. One glance, not two. */}
-              <section className="flex flex-col gap-4 rounded-3xl border bg-card p-5 shadow">
-                <div className="space-y-0.5">
-                  <p className="text-xs font-medium text-muted-foreground">
-                    {t('lastNight.label')}
-                  </p>
-                  <p className="text-3xl font-semibold tabular-nums leading-tight">
-                    {lastNight === null
-                      ? '—'
-                      : t(
-                          'units.hoursMinutes',
-                          splitMinutes(lastNight.totalSleepMin)
-                        )}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {lastNight === null
-                      ? t('lastNight.noData')
-                      : lastNight.estimated
-                        ? t('lastNight.estimated')
-                        : t('sleep.nightlyTarget', splitMinutes(targetMin))}
-                  </p>
-                </div>
+              <SleepMonthBoard
+                nights={nights}
+                rows={rows}
+                dayEntries={dayEntries}
+                monthStartKey={monthStartKey}
+                todayKey={todayKey}
+                timeZone={timeZone}
+                targetMin={targetMin}
+                lastNightMin={lastNight?.totalSleepMin ?? null}
+                lastNightEstimated={lastNight?.estimated ?? false}
+                nowMin={roundedNowMin(new Date(), timeZone)}
+                prevMonthKey={monthKey(addMonths(monthStart, -1))}
+                nextMonthKey={
+                  nextMonth > currentMonthStart ? null : monthKey(nextMonth)
+                }
+              />
+            </div>
 
+            <div className="flex min-w-0 flex-col gap-6">
+              <section className="flex flex-col gap-4 rounded-3xl border bg-card p-5 shadow">
                 {spans.length === 0 ? (
                   // At the raster's own height, so the card does not shorten
                   // the moment a first night lands.
@@ -283,7 +281,7 @@ export async function DailyScreen({ month }: { month?: string }) {
                       className="size-6 shrink-0 text-muted-foreground"
                     />
                     <p className="text-sm text-muted-foreground">
-                      {t('sleep.noHistory')}
+                      {t('sleep.noNightsLogged')}
                     </p>
                   </div>
                 ) : (
@@ -313,25 +311,6 @@ export async function DailyScreen({ month }: { month?: string }) {
               />
 
               {insights ? <SleepInsightsPanel insights={insights} /> : null}
-            </div>
-
-            <div className="flex min-w-0 flex-col gap-6">
-              <div className="min-w-0 rounded-3xl border bg-card p-5 shadow">
-                <SleepMonthBoard
-                  nights={nights}
-                  rows={rows}
-                  dayEntries={dayEntries}
-                  monthStartKey={monthStartKey}
-                  todayKey={todayKey}
-                  timeZone={timeZone}
-                  targetMin={targetMin}
-                  nowMin={roundedNowMin(new Date(), timeZone)}
-                  prevMonthKey={monthKey(addMonths(monthStart, -1))}
-                  nextMonthKey={
-                    nextMonth > currentMonthStart ? null : monthKey(nextMonth)
-                  }
-                />
-              </div>
 
               <SleepMonthSummary
                 nights={monthNights}

@@ -1361,7 +1361,6 @@
         "waketimeSd": "Wake variation",
         "debt": "Sleep debt",
         "efficiencyUnavailable": "Add time to fall asleep or minutes awake to see efficiency",
-        "noHistory": "Nothing logged yet — save your first night above.",
         "regularity": "Regularity",
         "sri": "Schedule regularity (SRI)",
         "sriCaveat": "Computed from typed clocks, so it reads higher than a wearable would.",
@@ -1517,8 +1516,10 @@
       },
       "lastNight": {
         "label": "Last night",
-        "noData": "No sleep logged yet",
-        "estimated": "Estimated"
+        "notLogged": "Not logged",
+        "estimated": "Estimated",
+        "logAction": "Log last night, {date}",
+        "editAction": "Edit last night, {date} — {duration}"
       },
       "insights": {
         "heading": "What your nights show",

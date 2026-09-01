@@ -1364,7 +1364,6 @@ declare const messages: {
         "waketimeSd": "Giờ dậy xê dịch",
         "debt": "Thiếu ngủ tích luỹ",
         "efficiencyUnavailable": "Nhập thời gian vào giấc hoặc số phút thức giấc để xem hiệu suất",
-        "noHistory": "Chưa có gì — hãy lưu đêm đầu tiên ở trên.",
         "regularity": "Độ đều đặn",
         "sri": "Đều đặn lịch ngủ (SRI)",
         "sriCaveat": "Tính từ giờ nhập tay nên cao hơn số của thiết bị đeo.",
@@ -1520,8 +1519,10 @@ declare const messages: {
       },
       "lastNight": {
         "label": "Đêm qua",
-        "noData": "Chưa ghi giấc ngủ nào",
-        "estimated": "Ước tính"
+        "notLogged": "Chưa ghi",
+        "estimated": "Ước tính",
+        "logAction": "Ghi đêm qua, {date}",
+        "editAction": "Sửa đêm qua, {date} — {duration}"
       },
       "insights": {
         "heading": "Những đêm của bạn cho thấy gì",
