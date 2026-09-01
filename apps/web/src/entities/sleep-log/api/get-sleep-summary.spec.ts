@@ -86,13 +86,11 @@ describe('getSleepSummary', () => {
     ]);
   });
 
-  it('reports debt against the configured target, never negative', async () => {
+  it('carries the owner\'s configured target, not the default', async () => {
     const res = await getSleepSummary(input);
 
     if (!res.success) throw new Error('expected success');
-    // 7h00 and 7h30 against a 7h30 goal: 30 minutes short, then level.
     expect(res.data.targetMin).toBe(450);
-    expect(res.data.debtMin).toBe(30);
   });
 
   it('returns a usable object with no history at all', async () => {
@@ -103,7 +101,6 @@ describe('getSleepSummary', () => {
     expect(res.success).toBe(true);
     if (!res.success) throw new Error('expected success');
     expect(res.data.nights).toEqual([]);
-    expect(res.data.debtMin).toBe(0);
     expect(res.data.streak).toBe(0);
     expect(res.data.bedtimeSdMin).toBeNull();
   });
@@ -225,7 +222,7 @@ describe('getSleepSummary', () => {
     expect(only.efficiencyPct).toBeCloseTo((430 / 450) * 100, 5);
   });
 
-  it('never lets a recorded nap change duration or debt', async () => {
+  it('never lets a recorded nap change duration', async () => {
     const base = night(
       '2026-08-22',
       '2026-08-21T16:40:00.000Z',
@@ -244,7 +241,6 @@ describe('getSleepSummary', () => {
     expect(withNap.data.nights[0].totalSleepMin).toBe(
       withoutNap.data.nights[0].totalSleepMin
     );
-    expect(withNap.data.debtMin).toBe(withoutNap.data.debtMin);
   });
 
   it('rejects a window outside the allowed bounds', async () => {

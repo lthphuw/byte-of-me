@@ -23,7 +23,7 @@ import {
   computeNight,
   currentStreak,
   minutesStdDev,
-  sleepDebtMin,
+  unwrapNearMidnight,
 } from '@/shared/lib/health/sleep-stats';
 import { getErrorMessage } from '@/shared/lib/utils';
 import { parseInput } from '@/shared/lib/validate-action-input';
@@ -131,7 +131,6 @@ export async function getSleepSummary(
           ...n,
           localDate: localDateKey(n.localDate),
         })),
-        debtMin: sleepDebtMin(nights, targetMin, days),
         bedtimeSdMin: minutesStdDev(bedtimes),
         waketimeSdMin: minutesStdDev(waketimes),
         streak: currentStreak(nights, today),
@@ -148,18 +147,4 @@ export async function getSleepSummary(
     logger.error(`Get sleep summary error: ${errorMsg}`);
     return { success: false, errorMsg };
   }
-}
-
-/**
- * Put late-evening bedtimes on a continuous scale with after-midnight ones.
- *
- * A 23:40 bedtime is 1420 minutes past the previous midnight and a 00:20 one is
- * 20 — 1400 apart on the raw scale, 40 apart in reality. Mapping the evening
- * half to negative numbers makes the standard deviation mean what a reader
- * assumes it means. The cut at 12:00 is safe here because the value is measured
- * from the midnight opening the WAKE day, so a bedtime never legitimately falls
- * near noon.
- */
-function unwrapNearMidnight(minutes: number): number {
-  return minutes >= 720 ? minutes - 1440 : minutes;
 }

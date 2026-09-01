@@ -1,6 +1,7 @@
 import { CalendarOff, TriangleAlert } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 
+import { SleepInsightsPanel } from './sleep-insights-panel';
 import { type LoggedNight, SleepMonthBoard } from './sleep-month-board';
 import { SleepMonthSummary } from './sleep-month-summary';
 import { SleepStatsPanel } from './sleep-stats-panel';
@@ -16,6 +17,7 @@ import { SleepStatsPanel } from './sleep-stats-panel';
 // inside its function rather than at module scope; see the note there.)
 import { getDayEntries } from '@/entities/day-entry/api/get-day-entries';
 import {
+  getSleepInsights,
   getSleepLogs,
   getSleepSummary,
   type SleepLogRow,
@@ -41,10 +43,15 @@ import {
 import { getRequestTimeZone } from '@/shared/lib/health/request-time-zone';
 import { computeNight } from '@/shared/lib/health/sleep-stats';
 
-/** Both the bar chart's window and the window `getSleepSummary` computes the
- *  rolling debt over — they are the same number by design, not by coincidence,
- *  which is why the caveat string can say "14-day" out loud. */
+/** The bar chart's window and the fortnight `getSleepSummary` computes its
+ *  deviations and streak over. Debt no longer lives here — it is measured
+ *  against a free-day need a fortnight cannot supply. */
 const WINDOW_DAYS = 14;
+
+/** How far the insight panel looks back. WHOOP's window, and the ceiling
+ *  `sleepInsightsSchema` enforces — a contrast that reaches further keeps
+ *  voting with a habit the owner has since dropped. */
+const INSIGHT_DAYS = 90;
 
 /** With no target read from settings, two things still need a night length:
  *  the wake-time default has to add one to bedtime, and the calendar has to
@@ -122,16 +129,20 @@ export async function DailyScreen({ month }: { month?: string }) {
     { from: chartStartKey, to: todayKey }
   );
 
-  const [summaryRes, dayEntriesRes, ...logResults] = await Promise.all([
-    getSleepSummary({ days: WINDOW_DAYS, timeZone }),
-    getDayEntries({ from: monthStartKey, to: monthReadTo }),
-    ...ranges.map((range) => getSleepLogs(range)),
-  ]);
+  const [summaryRes, insightsRes, dayEntriesRes, ...logResults] =
+    await Promise.all([
+      getSleepSummary({ days: WINDOW_DAYS, timeZone }),
+      getSleepInsights({ days: INSIGHT_DAYS, timeZone }),
+      getDayEntries({ from: monthStartKey, to: monthReadTo }),
+      ...ranges.map((range) => getSleepLogs(range)),
+    ]);
 
   const summary = summaryRes.success ? summaryRes.data : null;
+  const insights = insightsRes.success ? insightsRes.data : null;
   const dayEntries = dayEntriesRes.success ? dayEntriesRes.data : [];
   const failed =
     !summaryRes.success ||
+    !insightsRes.success ||
     !dayEntriesRes.success ||
     logResults.some((res) => !res.success);
 
@@ -273,10 +284,13 @@ export async function DailyScreen({ month }: { month?: string }) {
               {summary ? (
                 <SleepStatsPanel
                   summary={summary}
+                  debt={insights?.debt ?? null}
                   todayKey={todayKey}
                   windowDays={WINDOW_DAYS}
                 />
               ) : null}
+
+              {insights ? <SleepInsightsPanel insights={insights} /> : null}
 
               <section>
                 {series.length === 0 ? (

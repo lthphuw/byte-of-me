@@ -1372,7 +1372,6 @@ declare const messages: {
         "durationChart": "Thời lượng ngủ, 14 ngày gần nhất",
         "durationSummary": "Thời lượng ngủ mỗi đêm theo giờ trong 14 ngày gần nhất",
         "efficiencyUnavailable": "Nhập thời gian vào giấc hoặc số phút thức giấc để xem hiệu suất",
-        "debtCaveat": "Ước lượng trên 14 ngày gần nhất, không phải chỉ số y khoa",
         "noHistory": "Chưa có gì — hãy lưu đêm đầu tiên ở trên.",
         "regularity": "Độ đều đặn",
         "sri": "Chỉ số đều đặn (SRI)",
@@ -1480,7 +1479,12 @@ declare const messages: {
         "napOver60": ">1 giờ",
         "napsHint": "Ghi riêng — giấc ngủ ngày không bao giờ cộng vào tổng của đêm.",
         "suggestionRise": "rời giường sau {minutes, number} phút",
-        "suggestionAwakenings": "thức giấc {n, number} lần"
+        "suggestionAwakenings": "thức giấc {n, number} lần",
+        "debtNeedFreeDay": "So với {hours, number} giờ {minutes, number} phút — phân vị 90 của những đêm ngày nghỉ",
+        "debtNeedTarget": "So với mục tiêu {hours, number} giờ {minutes, number} phút của bạn",
+        "debtCaveatWeighted": "Tính trên 14 đêm gần nhất, đêm gần nhất nặng ký nhất. Đây là ước lượng, không phải chỉ số y khoa.",
+        "debtNap": "{n, number} đêm trong số đó có ngủ ngày hơn 1 tiếng. Giấc ngủ ngày không được trừ vào đây — ô ngủ ngày ghi khoảng chứ không ghi số phút.",
+        "debtUnavailable": "Chưa ghi đêm nào trong 14 đêm gần nhất."
       },
       "day": {
         "title": "Ngày {date} thế nào?",
@@ -1534,6 +1538,66 @@ declare const messages: {
         "label": "Đêm qua",
         "noData": "Chưa ghi giấc ngủ nào",
         "estimated": "Ước tính"
+      },
+      "insights": {
+        "heading": "Những đêm của bạn cho thấy gì",
+        "window": "Từ {days, number} đêm gần nhất",
+        "week": {
+          "heading": "7 đêm gần nhất so với 7 đêm trước đó",
+          "duration": "Trung bình mỗi đêm",
+          "midsleep": "Điểm giữa giấc",
+          "efficiency": "Hiệu suất",
+          "mood": "Tâm trạng trung bình",
+          "nights": "Đã ghi {n, number} trong 7 đêm gần nhất",
+          "empty": "Chưa ghi đêm nào trong 7 ngày qua.",
+          "noValue": "Chưa đủ dữ liệu",
+          "noPrevious": "Chưa có tuần trước để so",
+          "deltaMinutesUp": "nhiều hơn tuần trước {minutes, number} phút",
+          "deltaMinutesDown": "ít hơn tuần trước {minutes, number} phút",
+          "deltaLater": "muộn hơn tuần trước {minutes, number} phút",
+          "deltaEarlier": "sớm hơn tuần trước {minutes, number} phút",
+          "deltaPointsUp": "cao hơn tuần trước {points}",
+          "deltaPointsDown": "thấp hơn tuần trước {points}",
+          "deltaLevel": "Ngang với tuần trước",
+          "best": "Đêm ngon nhất",
+          "worst": "Đêm khó nhất",
+          "byRestedness": "Xếp theo mức tỉnh táo bạn đã chấm.",
+          "byDuration": "Xếp theo độ dài — tuần này chưa đêm nào được chấm mức tỉnh táo.",
+          "obsDurationUp": "Dữ liệu của bạn cho thấy tuần này mỗi đêm bạn ngủ nhiều hơn tuần trước {minutes, number} phút.",
+          "obsDurationDown": "Dữ liệu của bạn cho thấy tuần này mỗi đêm bạn ngủ ít hơn tuần trước {minutes, number} phút. Giờ lên giường là mốc bạn tự đặt.",
+          "obsMidsleepLater": "Dữ liệu của bạn cho thấy điểm giữa giấc tuần này muộn hơn tuần trước {minutes, number} phút. Giờ lên giường là mốc bạn tự đặt.",
+          "obsMidsleepEarlier": "Dữ liệu của bạn cho thấy điểm giữa giấc tuần này sớm hơn tuần trước {minutes, number} phút.",
+          "obsEfficiencyUp": "Dữ liệu của bạn cho thấy hiệu suất tuần này cao hơn tuần trước {points} điểm phần trăm.",
+          "obsEfficiencyDown": "Dữ liệu của bạn cho thấy hiệu suất tuần này thấp hơn tuần trước {points} điểm phần trăm. Chỉ lên giường khi đã buồn ngủ là việc bạn tự quyết.",
+          "obsMoodUp": "Dữ liệu của bạn cho thấy tâm trạng tuần này cao hơn tuần trước {points} điểm.",
+          "obsMoodDown": "Dữ liệu của bạn cho thấy tâm trạng tuần này thấp hơn tuần trước {points} điểm.",
+          "obsNone": "Tuần này gần như không có gì thay đổi."
+        },
+        "buckets": {
+          "heading": "Tâm trạng theo thời lượng ngủ",
+          "lt6": "Dưới 6 giờ",
+          "mid": "6–7,5 giờ",
+          "gt7h30": "Trên 7,5 giờ",
+          "value": "{value} / 5",
+          "count": "{n, number} đêm",
+          "empty": "Chưa có đêm nào",
+          "caveat": "Chia ba nhóm chứ không vẽ một đường: ngủ càng nhiều không phải càng tốt — tâm trạng kém đi ở cả hai đầu."
+        },
+        "factors": {
+          "heading": "Đêm có và đêm không",
+          "statementLower": "Vào những đêm có {factor}, {outcome} của bạn thấp hơn {delta} điểm.",
+          "statementHigher": "Vào những đêm có {factor}, {outcome} của bạn cao hơn {delta} điểm.",
+          "with": "{n, number} đêm có → {value} / 5",
+          "without": "{n, number} đêm còn lại → {value} / 5",
+          "progress": "{factor}: còn {n, number} đêm nữa là so sánh được.",
+          "none": "Chưa yếu tố nào đủ {min, number} đêm ở cả hai bên — có đủ mới so sánh được.",
+          "caveat": "So sánh trung bình của chính bạn trên {days, number} đêm, không phải quan hệ nhân quả."
+        },
+        "outcome": {
+          "restedness": "mức tỉnh táo",
+          "quality": "chất lượng giấc ngủ",
+          "mood": "tâm trạng"
+        }
       }
     },
     "gym": {

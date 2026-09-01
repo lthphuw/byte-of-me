@@ -1,8 +1,9 @@
 /**
  * What this spec defends: efficiency is WITHHELD rather than reported as 100%
  * when nothing was measured, it is measured against time in BED rather than
- * the sleep window, debt never goes negative and never counts a nap, and a gap
- * in the day sequence ends a streak. These are the ways a sleep tracker lies.
+ * the sleep window, an evening clock value is unwrapped onto the same scale as
+ * an after-midnight one, and a gap in the day sequence ends a streak. These
+ * are the ways a sleep tracker lies.
  */
 import { describe, expect, it } from 'bun:test';
 
@@ -14,8 +15,8 @@ import {
   efficiencyBand,
   latencyBand,
   minutesStdDev,
-  sleepDebtMin,
   type SleepNight,
+  unwrapNearMidnight,
 } from './sleep-stats';
 
 const night = (over: Partial<Parameters<typeof computeNight>[0]> = {}) =>
@@ -192,35 +193,16 @@ const plainNight = (day: string, total: number): SleepNight => ({
   napBucket: null,
 });
 
-describe('sleepDebtMin', () => {
-  const at = plainNight;
-
-  it('sums the shortfall against the target', () => {
-    expect(
-      sleepDebtMin([at('2026-08-21', 400), at('2026-08-22', 440)], 480)
-    ).toBe(120);
+describe('unwrapNearMidnight', () => {
+  it('puts an evening clock value on the same scale as an after-midnight one', () => {
+    // 23:40 and 00:20 are forty minutes apart, not 1400.
+    expect(unwrapNearMidnight(1420)).toBe(-20);
+    expect(unwrapNearMidnight(20)).toBe(20);
   });
 
-  it('lets a surplus night repay debt', () => {
-    expect(
-      sleepDebtMin([at('2026-08-21', 400), at('2026-08-22', 520)], 480)
-    ).toBe(40);
-  });
-
-  it('never reports a negative debt — sleep cannot be banked in advance', () => {
-    expect(
-      sleepDebtMin([at('2026-08-21', 600), at('2026-08-22', 600)], 480)
-    ).toBe(0);
-  });
-
-  it('ignores nights outside the window', () => {
-    const old = at('2026-01-01', 0);
-    expect(sleepDebtMin([old, at('2026-08-22', 480)], 480, 14)).toBe(0);
-  });
-
-  it('does not let a nap repay the night', () => {
-    const napped: SleepNight = { ...at('2026-08-22', 400), napBucket: 'gt60' };
-    expect(sleepDebtMin([napped], 480)).toBe(80);
+  it('leaves a morning value alone', () => {
+    expect(unwrapNearMidnight(430)).toBe(430);
+    expect(unwrapNearMidnight(719)).toBe(719);
   });
 });
 

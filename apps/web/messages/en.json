@@ -1369,7 +1369,6 @@
         "durationChart": "Sleep duration, last 14 days",
         "durationSummary": "Nightly sleep duration in hours for the last 14 days",
         "efficiencyUnavailable": "Add time to fall asleep or minutes awake to see efficiency",
-        "debtCaveat": "A rolling 14-day heuristic, not a clinical measure",
         "noHistory": "Nothing logged yet — save your first night above.",
         "regularity": "Regularity",
         "sri": "Regularity index (SRI)",
@@ -1477,7 +1476,12 @@
         "napOver60": ">1h",
         "napsHint": "Kept on its own — a nap is never added to the night’s total.",
         "suggestionRise": "up {minutes, number}m after waking",
-        "suggestionAwakenings": "woke {n, number}×"
+        "suggestionAwakenings": "woke {n, number}×",
+        "debtNeedFreeDay": "Against {hours, number}h {minutes, number}m — the 90th percentile of your free-day nights",
+        "debtNeedTarget": "Against your target of {hours, number}h {minutes, number}m",
+        "debtCaveatWeighted": "Weighted to the last 14 nights, last night counting most. A heuristic, not a clinical measure.",
+        "debtNap": "{n, number} of those nights had a nap over an hour. A nap is not deducted here — the nap field records a range, not minutes.",
+        "debtUnavailable": "Nothing logged in the last 14 nights."
       },
       "day": {
         "title": "How was {date}?",
@@ -1531,6 +1535,66 @@
         "label": "Last night",
         "noData": "No sleep logged yet",
         "estimated": "Estimated"
+      },
+      "insights": {
+        "heading": "What your nights show",
+        "window": "From the last {days, number} nights",
+        "week": {
+          "heading": "Last 7 nights vs the 7 before",
+          "duration": "Average night",
+          "midsleep": "Midsleep",
+          "efficiency": "Efficiency",
+          "mood": "Average mood",
+          "nights": "{n, number} of the last 7 nights logged",
+          "empty": "No night logged in the last 7 days.",
+          "noValue": "Not enough logged",
+          "noPrevious": "No week before to compare",
+          "deltaMinutesUp": "{minutes, number}m more than the week before",
+          "deltaMinutesDown": "{minutes, number}m less than the week before",
+          "deltaLater": "{minutes, number}m later than the week before",
+          "deltaEarlier": "{minutes, number}m earlier than the week before",
+          "deltaPointsUp": "{points} higher than the week before",
+          "deltaPointsDown": "{points} lower than the week before",
+          "deltaLevel": "Level with the week before",
+          "best": "Best night",
+          "worst": "Hardest night",
+          "byRestedness": "Ranked by how rested you felt.",
+          "byDuration": "Ranked by length — no night this week was rated.",
+          "obsDurationUp": "Your data shows you slept {minutes, number}m more a night than the week before.",
+          "obsDurationDown": "Your data shows you slept {minutes, number}m less a night than the week before. Bedtime is the part you set.",
+          "obsMidsleepLater": "Your data shows the middle of your sleep sat {minutes, number}m later than the week before. Bedtime is the part you set.",
+          "obsMidsleepEarlier": "Your data shows the middle of your sleep sat {minutes, number}m earlier than the week before.",
+          "obsEfficiencyUp": "Your data shows your efficiency ran {points} points higher than the week before.",
+          "obsEfficiencyDown": "Your data shows your efficiency ran {points} points lower than the week before. Going to bed only once you are sleepy is the part you set.",
+          "obsMoodUp": "Your data shows your mood ran {points} higher than the week before.",
+          "obsMoodDown": "Your data shows your mood ran {points} lower than the week before.",
+          "obsNone": "Nothing moved much this week."
+        },
+        "buckets": {
+          "heading": "Mood by how long you slept",
+          "lt6": "Under 6h",
+          "mid": "6–7h30",
+          "gt7h30": "Over 7h30",
+          "value": "{value} / 5",
+          "count": "{n, number} nights",
+          "empty": "No night yet",
+          "caveat": "Three buckets rather than a line: mood does not simply keep rising with hours — it falls off at both ends."
+        },
+        "factors": {
+          "heading": "Nights with, nights without",
+          "statementLower": "On nights with {factor}, your {outcome} ran {delta} lower.",
+          "statementHigher": "On nights with {factor}, your {outcome} ran {delta} higher.",
+          "with": "{n, number} nights with it → {value} / 5",
+          "without": "{n, number} other nights → {value} / 5",
+          "progress": "{factor}: {n, number} more nights and this can be compared.",
+          "none": "No factor has {min, number} nights on both sides yet — that is what a comparison needs.",
+          "caveat": "A contrast of your own averages over {days, number} nights, not a cause."
+        },
+        "outcome": {
+          "restedness": "how rested you felt",
+          "quality": "sleep quality",
+          "mood": "mood"
+        }
       }
     },
     "gym": {

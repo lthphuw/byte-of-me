@@ -280,8 +280,8 @@ export function hardSetsByMuscle(
 }
 
 /** Sessions whose `localDate` falls in the trailing window of `days` ending on
- *  `endDate`, inclusive at both ends — the same convention as
- *  `sleepDebtMin`. */
+ *  `endDate`, inclusive at both ends — the same convention as `sleepDebt` in
+ *  `sleep-insights.ts`. */
 export function sessionsInWindow(
   sessions: WorkoutSessionInput[],
   endDate: Date,

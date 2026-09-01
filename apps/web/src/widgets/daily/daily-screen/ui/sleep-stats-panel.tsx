@@ -6,6 +6,7 @@ import { SleepRegularity } from './sleep-regularity';
 import type { SleepSummary } from '@/entities/sleep-log';
 import { splitMinutes } from '@/shared/lib/health/duration';
 import { addDays, localDateKey } from '@/shared/lib/health/local-date';
+import type { SleepDebt } from '@/shared/lib/health/sleep-insights';
 import { StaggerItem, StaggerList } from '@/shared/ui/motion';
 import { StatDots, StatMeter, StatTile } from '@/shared/ui/stat-tile';
 
@@ -23,7 +24,7 @@ const DOT_DAYS = 7;
  * defaults and two layouts; this is the part that decides what each figure is
  * measured AGAINST, and those decisions are the whole point of the tiles. A
  * bare "82%" or "3" is a number without a claim: efficiency needs the whole it
- * is a fraction of, debt needs the nightly target it accumulated against, and
+ * is a fraction of, debt needs the nightly need it accumulated against, and
  * a streak of 3 says nothing about whether the fortnight behind it was solid
  * or empty — hence the run of dots.
  *
@@ -33,10 +34,15 @@ const DOT_DAYS = 7;
  */
 export async function SleepStatsPanel({
   summary,
+  debt,
   todayKey,
   windowDays,
 }: {
   summary: SleepSummary;
+  /** Computed over the 90-night insight window, not this panel's fortnight:
+   *  the need it is measured against is a P90 of FREE-DAY sleep, which a
+   *  fortnight cannot supply. Null when that read failed. */
+  debt: SleepDebt | null;
   /** `YYYY-MM-DD` of the reader's today, so the dot run ends on the right day
    *  rather than on the last day that happened to be logged. */
   todayKey: string;
@@ -106,16 +112,33 @@ export async function SleepStatsPanel({
           </StaggerItem>
 
           <StaggerItem className="min-w-0">
+            {/* The need, not the target, and the nap line beside it: a long
+                nap is NOT deducted here, and the screen says so rather than
+                leaving the reader to assume either way. */}
             <StatTile
               icon={Hourglass}
               label={t('sleep.debt')}
-              value={t('units.hoursMinutes', splitMinutes(summary.debtMin))}
-              context={
-                <p className="text-xs tabular-nums text-muted-foreground">
-                  {t('sleep.nightlyTarget', splitMinutes(summary.targetMin))}
-                </p>
+              value={
+                debt === null
+                  ? '—'
+                  : t('units.hoursMinutes', splitMinutes(debt.debtMin))
               }
-              hint={t('sleep.debtCaveat')}
+              context={
+                debt === null ? undefined : (
+                  <p className="text-xs tabular-nums text-muted-foreground">
+                    {debt.needSource === 'freeDayP90'
+                      ? t('sleep.debtNeedFreeDay', splitMinutes(debt.needMin))
+                      : t('sleep.debtNeedTarget', splitMinutes(debt.needMin))}
+                  </p>
+                )
+              }
+              hint={
+                debt === null
+                  ? t('sleep.debtUnavailable')
+                  : debt.longNapNights > 0
+                    ? t('sleep.debtNap', { n: debt.longNapNights })
+                    : t('sleep.debtCaveatWeighted')
+              }
             />
           </StaggerItem>
 

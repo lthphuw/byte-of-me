@@ -13,9 +13,9 @@
  * derived from it would be invented, and adding one to a night's total would
  * inflate both the duration the reader sees and the efficiency computed from
  * it — silently, and in the flattering direction. Debt therefore measures the
- * NIGHT against the nightly target, which is what the target means. Whether a
- * long nap should repay debt is a question for the insight phase, with the
- * bucket in hand and the choice stated on screen.
+ * NIGHT against the nightly need, which is what the need means. A long nap
+ * does NOT repay debt; `sleepDebt` in `sleep-insights.ts` counts the nights it
+ * fell on so the screen can say so instead of adjusting silently.
  */
 import { addDays, localDateKey } from './local-date';
 
@@ -178,31 +178,17 @@ export function awakeningsCountBand(count: number | null): SleepBand | null {
 }
 
 /**
- * Rolling shortfall against the nightly target.
+ * Put late-evening clock values on a continuous scale with after-midnight
+ * ones: 23:40 is 1420 minutes past midnight and 00:20 is 20 — 1400 apart on
+ * the raw scale, 40 apart in reality.
  *
- * A surplus night repays debt, but the total floors at zero: you cannot bank
- * sleep in advance, and a fortnight of long weekends must not read as credit
- * against the week ahead. This is a HEURISTIC and the UI labels it as one —
- * it is not a clinical measure.
+ * The cut at 12:00 is safe for every value measured from the midnight opening
+ * the WAKE day: neither a bedtime nor a sleep midpoint legitimately falls near
+ * noon. Without it the deviation of a regular sleeper who occasionally crosses
+ * midnight reads as enormous.
  */
-export function sleepDebtMin(
-  nights: SleepNight[],
-  targetMin: number,
-  windowDays = 14
-): number {
-  if (nights.length === 0) return 0;
-
-  const latest = nights.reduce(
-    (max, n) => (n.localDate > max ? n.localDate : max),
-    nights[0].localDate
-  );
-  const from = addDays(latest, -(windowDays - 1));
-
-  const total = nights
-    .filter((n) => n.localDate >= from && n.localDate <= latest)
-    .reduce((sum, n) => sum + (targetMin - n.totalSleepMin), 0);
-
-  return Math.max(0, total);
+export function unwrapNearMidnight(minutes: number): number {
+  return minutes >= 720 ? minutes - 1440 : minutes;
 }
 
 /**

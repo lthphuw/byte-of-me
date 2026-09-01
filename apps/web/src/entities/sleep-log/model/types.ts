@@ -1,3 +1,9 @@
+import type {
+  ContrastReport,
+  DurationBucket,
+  SleepDebt,
+  WeeklyReview,
+} from '@/shared/lib/health/sleep-insights';
 import type { SleepNight } from '@/shared/lib/health/sleep-stats';
 
 /** One stored row, as the client receives it. Dates are ISO strings — a server
@@ -29,8 +35,6 @@ export interface SleepLogRow {
  *  statistics module never has to reach the browser. */
 export interface SleepSummary {
   nights: Array<Omit<SleepNight, 'localDate'> & { localDate: string }>;
-  /** Rolling 14-day shortfall against `targetMin`, floored at zero. */
-  debtMin: number;
   /** Population SD of bedtime / waketime, in minutes. Null below two nights. */
   bedtimeSdMin: number | null;
   waketimeSdMin: number | null;
@@ -53,4 +57,21 @@ export interface SleepSummary {
    */
   freeDayCount: number;
   workDayCount: number;
+}
+
+/**
+ * The insight panel's figures, over a 90-day window.
+ *
+ * Debt lives here rather than on `SleepSummary` because the need it is
+ * measured against is a P90 of FREE-DAY sleep, which a fortnight cannot
+ * supply. One debt figure on the screen, from one window.
+ */
+export interface SleepInsights {
+  /** Nights read, after the mood join. Lets the panel say "over N nights". */
+  nightCount: number;
+  windowDays: number;
+  contrasts: ContrastReport;
+  moodByDuration: DurationBucket[];
+  week: WeeklyReview;
+  debt: SleepDebt;
 }

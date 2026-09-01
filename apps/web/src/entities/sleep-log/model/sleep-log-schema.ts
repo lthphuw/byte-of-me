@@ -127,3 +127,13 @@ export const sleepSummarySchema = z.object({
 });
 
 export type SleepSummaryInput = z.infer<typeof sleepSummarySchema>;
+
+/** The insight window. Bounded at 90 days at the top because a contrast that
+ *  reaches further back keeps voting with a habit the owner has since
+ *  dropped, and at 14 at the bottom because the debt window is 14 nights. */
+export const sleepInsightsSchema = z.object({
+  days: z.number().int().min(14).max(90),
+  timeZone: z.string().min(1).refine(isValidTimeZone, 'Unknown time zone'),
+});
+
+export type SleepInsightsInput = z.infer<typeof sleepInsightsSchema>;

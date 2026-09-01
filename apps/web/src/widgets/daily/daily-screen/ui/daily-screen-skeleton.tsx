@@ -25,7 +25,8 @@ import { useTranslations } from 'next-intl';
  * ~4.5rem height so nothing settles when the real grid arrives.
  *
  * Below the calendar, beside it at `lg` and beneath it below that: the error
- * banner's absence, the month summary tiles and the 14-night chart card.
+ * banner's absence, the month summary tiles, the insight cards and the
+ * 14-night chart card.
  *
  * No sheet in the skeleton. It opens on a tap, never on load, so there is
  * nothing here for it to reserve.
@@ -138,6 +139,16 @@ export function DailyScreenSkeleton() {
               </div>
 
               <Skeleton aria-hidden className="h-56 w-full rounded-3xl" />
+
+              {/* The insight panel: a heading over the weekly review, the
+                  mood buckets and the factor contrasts, at the `rounded-2xl`
+                  its three cards actually wear. */}
+              <div className="flex flex-col gap-3">
+                <Skeleton aria-hidden className="h-4 w-44" />
+                <Skeleton aria-hidden className="h-64 w-full rounded-2xl" />
+                <Skeleton aria-hidden className="h-48 w-full rounded-2xl" />
+                <Skeleton aria-hidden className="h-40 w-full rounded-2xl" />
+              </div>
 
               <Skeleton aria-hidden className="h-52 w-full rounded-3xl" />
             </div>
