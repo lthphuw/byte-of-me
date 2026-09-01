@@ -48,14 +48,18 @@ const MOOD_DECIMALS = 1;
 export async function SleepMonthSummary({
   nights,
   monthLabel,
+  monthSpokenLabel,
   targetMin,
   formatDay,
 }: {
   /** Only the nights inside the displayed month. */
   nights: LoggedNight[];
-  /** The month's name, already localized by the caller — it also names the
-   *  calendar above, and formatting it twice invites the two to disagree. */
+  /** `09/2026`, already built by the caller — it also names the calendar, and
+   *  formatting it twice invites the two to disagree. */
   monthLabel: string;
+  /** The same month spelled out, for the heading's accessible name: "09/2026"
+   *  is a header, not something worth hearing read out digit by digit. */
+  monthSpokenLabel: string;
   targetMin: number;
   /** `YYYY-MM-DD` to a short human date, for the best and worst nights. */
   formatDay: (key: string) => string;
@@ -110,6 +114,9 @@ export async function SleepMonthSummary({
         <Heading
           id={HEADING_ID}
           label={t('sleep.monthSummary', { monthLabel })}
+          spokenLabel={t('sleep.monthSummary', {
+            monthLabel: monthSpokenLabel,
+          })}
         />
         {rated.length === 0 ? (
           // The tiles' own sheet, not a loose sentence where six cards were.
@@ -153,6 +160,7 @@ export async function SleepMonthSummary({
       <Heading
         id={HEADING_ID}
         label={t('sleep.monthSummary', { monthLabel })}
+        spokenLabel={t('sleep.monthSummary', { monthLabel: monthSpokenLabel })}
       />
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
@@ -212,10 +220,19 @@ export async function SleepMonthSummary({
 
 /** The same `xs` heading `SleepRegularity` wears, so the two blocks in this
  *  column read as siblings rather than as two different kinds of thing. */
-function Heading({ id, label }: { id: string; label: string }) {
+function Heading({
+  id,
+  label,
+  spokenLabel,
+}: {
+  id: string;
+  label: string;
+  spokenLabel: string;
+}) {
   return (
     <h2
       id={id}
+      aria-label={spokenLabel}
       className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"
     >
       <CalendarRange aria-hidden className="size-3.5 shrink-0" />

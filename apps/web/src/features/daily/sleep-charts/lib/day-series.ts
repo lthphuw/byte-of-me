@@ -1,37 +1,4 @@
-import { addDays, localDateKey } from '@/shared/lib/health/local-date';
-import type { ChartPoint } from '@/shared/ui/chart';
-
-export interface DayValue {
-  /** `YYYY-MM-DD`, the same key `localDateKey` produces. */
-  localDate: string;
-  value: number | null;
-}
-
-/**
- * A dense run of days, from a sparse set of logged ones.
- *
- * Every chart in this module draws a CALENDAR window rather than a list of
- * records: a missed night has to leave a gap, and a series built by mapping
- * over the rows would silently close it up and draw four nights as if they
- * were consecutive. `null` — not `0` — for a day with no row, because
- * `ChartFrame` renders that as "—" for a screen reader and the bar chart skips
- * the bar entirely; zero would claim a night of no sleep.
- */
-export function toDaySeries(
-  entries: DayValue[],
-  startKey: string,
-  count: number,
-  formatLabel: (key: string) => string
-): ChartPoint[] {
-  const byDay = new Map(entries.map((entry) => [entry.localDate, entry.value]));
-  const start = new Date(`${startKey}T00:00:00.000Z`);
-
-  return Array.from({ length: count }, (_, i) => {
-    const key = localDateKey(addDays(start, i));
-
-    return { label: formatLabel(key), value: byDay.get(key) ?? null };
-  });
-}
+import { localDateKey } from '@/shared/lib/health/local-date';
 
 /** The 1st of `date`'s month, as another UTC-midnight value. */
 export function startOfMonth(date: Date): Date {
@@ -42,6 +9,12 @@ export function startOfMonth(date: Date): Date {
  *  carries in its search param. */
 export function monthKey(date: Date): string {
   return localDateKey(date).slice(0, 7);
+}
+
+/** `09/2026`, from any key that opens `YYYY-MM`. Built by hand rather than
+ *  through `Intl`, so the header reads identically in both locales. */
+export function monthDisplay(key: string): string {
+  return `${key.slice(5, 7)}/${key.slice(0, 4)}`;
 }
 
 /**

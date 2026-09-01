@@ -1,41 +1,26 @@
-import { Activity, Flame, Gauge, Hourglass } from 'lucide-react';
+import { Activity, Gauge, Hourglass } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { SleepRegularity } from './sleep-regularity';
 
 import type { SleepSummary } from '@/entities/sleep-log';
 import { splitMinutes } from '@/shared/lib/health/duration';
-import { addDays, localDateKey } from '@/shared/lib/health/local-date';
 import type { SleepDebt } from '@/shared/lib/health/sleep-insights';
 import { StaggerItem, StaggerList } from '@/shared/ui/motion';
-import { StatDots, StatMeter, StatTile } from '@/shared/ui/stat-tile';
+import { StatMeter, StatTile } from '@/shared/ui/stat-tile';
 
 const HEADING_ID = 'sleep-recent-heading';
 
-/** How many nights the streak tile's dots look back over. A week is the span
- *  a reader can count at a glance without the dots shrinking below a
- *  distinguishable size on a 149px-wide tile. */
-const DOT_DAYS = 7;
-
 /**
- * The derived numbers, as the sleep screen's second column.
+ * The derived numbers of the last fortnight, and what each is measured
+ * against: efficiency needs the whole it is a fraction of, debt needs the
+ * nightly need it accumulated against.
  *
- * Split out of `DailyScreen` because that file is now a read, a set of
- * defaults and two layouts; this is the part that decides what each figure is
- * measured AGAINST, and those decisions are the whole point of the tiles. A
- * bare "82%" or "3" is a number without a claim: efficiency needs the whole it
- * is a fraction of, debt needs the nightly need it accumulated against, and
- * a streak of 3 says nothing about whether the fortnight behind it was solid
- * or empty — hence the run of dots.
- *
- * A server component: every figure here is computed in `getSleepSummary`, and
- * nothing on this panel is interactive. The stagger wrapper around it is the
- * only client code, and it receives this markup as children.
+ * A server component; the stagger wrapper is the only client code here.
  */
 export async function SleepStatsPanel({
   summary,
   debt,
-  todayKey,
   windowDays,
 }: {
   summary: SleepSummary;
@@ -43,9 +28,6 @@ export async function SleepStatsPanel({
    *  the need it is measured against is a P90 of FREE-DAY sleep, which a
    *  fortnight cannot supply. Null when that read failed. */
   debt: SleepDebt | null;
-  /** `YYYY-MM-DD` of the reader's today, so the dot run ends on the right day
-   *  rather than on the last day that happened to be logged. */
-  todayKey: string;
   /** How many nights `getSleepSummary` was called with. Passed rather than
    *  re-declared, because the heading PRINTS it and a second copy of the
    *  number is a second chance for the heading to lie about the read. */
@@ -54,13 +36,6 @@ export async function SleepStatsPanel({
   const t = await getTranslations('dashboard.daily');
 
   const efficiency = summary.nights.at(-1)?.efficiencyPct ?? null;
-  const logged = new Set(summary.nights.map((night) => night.localDate));
-  const today = new Date(`${todayKey}T00:00:00.000Z`);
-
-  const dots = Array.from({ length: DOT_DAYS }, (_, i) =>
-    logged.has(localDateKey(addDays(today, -(DOT_DAYS - 1 - i))))
-  );
-  const dotCount = dots.filter(Boolean).length;
 
   return (
     <>
@@ -86,10 +61,7 @@ export async function SleepStatsPanel({
           {t('sleep.recentWindow', { days: windowDays })}
         </h2>
 
-        <StaggerList
-          stagger={0.06}
-          className="grid grid-cols-2 gap-3 md:grid-cols-3"
-        >
+        <StaggerList stagger={0.06} className="grid grid-cols-2 gap-3">
           <StaggerItem className="min-w-0">
             <StatTile
               icon={Gauge}
@@ -138,23 +110,6 @@ export async function SleepStatsPanel({
                   : debt.longNapNights > 0
                     ? t('sleep.debtNap', { n: debt.longNapNights })
                     : t('sleep.debtCaveatWeighted')
-              }
-            />
-          </StaggerItem>
-
-          <StaggerItem className="col-span-2 min-w-0 md:col-span-1">
-            <StatTile
-              icon={Flame}
-              label={t('sleep.streak')}
-              value={summary.streak}
-              context={
-                <StatDots
-                  filled={dots}
-                  label={t('sleep.streakContext', {
-                    n: dotCount,
-                    total: DOT_DAYS,
-                  })}
-                />
               }
             />
           </StaggerItem>

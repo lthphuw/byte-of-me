@@ -69,6 +69,10 @@ export interface SleepSummary {
 export interface SleepInsights {
   /** Nights read, after the mood join. Lets the panel say "over N nights". */
   nightCount: number;
+  /** Every `localDate` a night was written for, inside the window. The
+   *  coverage grid needs five weeks of presence, which is more than the
+   *  fortnight the screen otherwise reads and less than a second query. */
+  loggedDates: string[];
   windowDays: number;
   contrasts: ContrastReport;
   moodByDuration: DurationBucket[];

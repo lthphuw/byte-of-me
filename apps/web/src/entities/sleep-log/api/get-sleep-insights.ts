@@ -110,6 +110,7 @@ export async function getSleepInsights(
       success: true,
       data: {
         nightCount: nights.length,
+        loggedDates: nights.map((night) => night.localDate),
         windowDays: days,
         contrasts: rankedContrasts(nights, SLEEP_FACTORS),
         moodByDuration: moodByDuration(nights),

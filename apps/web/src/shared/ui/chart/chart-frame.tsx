@@ -5,6 +5,10 @@ export interface ChartPoint {
   label: string;
   /** null renders as a gap, which is not the same as zero. */
   value: number | null;
+  /** The accessible table cell, when one number cannot carry the row — the
+   *  raster's marks are an interval, so its rows read "in bed 23:10, up
+   *  07:20". Overrides `formatValue`; `value` still orders and gaps the row. */
+  text?: string;
 }
 
 /**
@@ -105,9 +109,10 @@ export function ChartFrame({
               <tr key={row.label}>
                 <th scope="row">{row.label}</th>
                 <td>
-                  {row.value === null
-                    ? '—'
-                    : formatValue?.(row.value) ?? String(row.value)}
+                  {row.text ??
+                    (row.value === null
+                      ? '—'
+                      : formatValue?.(row.value) ?? String(row.value))}
                 </td>
               </tr>
             ))}

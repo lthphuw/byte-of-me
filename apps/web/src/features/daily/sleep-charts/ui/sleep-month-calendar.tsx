@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import {
   daysInMonth,
   mondayIndex,
+  monthDisplay,
 } from '@/features/daily/sleep-charts/lib/day-series';
 import { Link } from '@/shared/i18n/navigation';
 import { splitMinutes } from '@/shared/lib/health/duration';
@@ -79,8 +80,12 @@ export interface CalendarNight {
  * | hover | `ring-1 ring-foreground/25` on the disc — no background, anywhere |
  * | focus-visible | 2px `ring` round the cell, offset 2 |
  * | pressed | the disc alone scales to 92% |
- * | today | 2px `foreground` ring round the disc |
+ * | today | 2px `foreground` ring round the disc, plus `aria-current="date"` |
  * | written up | a 3px dot below the disc |
+ *
+ * There is no key under the grid. A mark a reader cannot read without a
+ * legend is the wrong mark; every cell says the whole of what it draws in its
+ * own accessible name instead.
  *
  * **There is no selected state, and that is the fix.** Hover and selected were
  * twice the same pixel here, because on a 0%-saturation palette (§14) the
@@ -155,7 +160,11 @@ export function SleepMonthCalendar({
     weekdayFormat.format(new Date(WEEKDAY_ANCHOR_MS + i * DAY_MS))
   );
 
-  const monthLabel = new Intl.DateTimeFormat(locale, {
+  // `09/2026`, identical in both locales. `Intl` with `month: 'long'` renders
+  // the Vietnamese as a lowercase "tháng 9 năm 2026", which is what a header
+  // must not be; the spoken name keeps that form on the `aria-label`.
+  const monthLabel = monthDisplay(monthStartKey);
+  const monthSpoken = new Intl.DateTimeFormat(locale, {
     month: 'long',
     year: 'numeric',
     timeZone: 'UTC',
@@ -183,7 +192,10 @@ export function SleepMonthCalendar({
             title has to outrank the `sm` headings in the column below rather
             than match them — on a palette with no hue, type scale and weight
             are the whole hierarchy (§14). */}
-        <h2 className="min-w-0 flex-1 truncate text-center text-base font-semibold tracking-tight">
+        <h2
+          aria-label={monthSpoken}
+          className="min-w-0 flex-1 truncate text-center text-base font-semibold tracking-tight"
+        >
           {monthLabel}
         </h2>
 
@@ -239,7 +251,6 @@ export function SleepMonthCalendar({
           }
           if (night?.mood) parts.push(night.mood.label);
           if (night?.hasEntry) parts.push(t('day.hasEntry'));
-          if (isToday) parts.push(t('sleep.today'));
 
           return (
             <button
@@ -321,58 +332,6 @@ export function SleepMonthCalendar({
         })}
       </div>
 
-      {/* A key, not a hover tooltip: touch has no hover, so a scale that only
-          exists on hover does not exist on the device this is built for.
-          Ruled off and given its own line rather than run on under the grid —
-          three clauses of 11px text abutting five rows of marks read as a
-          sixth row of marks, which is how the key came to be skipped. The
-          swatch clauses come first because they name what the grid draws, and
-          the sentence about the glyph last because it is a sentence. */}
-      <div className="mt-1 flex flex-col gap-2 border-t pt-3 text-[11px] leading-normal text-muted-foreground">
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-          <span className="flex items-center gap-1.5">
-            {t('sleep.calendarShorter')}
-            <span aria-hidden className="flex items-center gap-1">
-              {MONTH_CALENDAR_FILL.map((fill) => (
-                <span
-                  key={fill}
-                  className={cn('size-3 shrink-0 rounded-full', fill)}
-                />
-              ))}
-            </span>
-            {t('sleep.calendarLonger')}
-          </span>
-
-          <span className="flex items-center gap-1.5">
-            <span
-              aria-hidden
-              className="size-3 shrink-0 rounded-full border-2 border-muted-foreground/35"
-            />
-            {t('sleep.calendarMissed')}
-          </span>
-
-          {/* Today is in the key for the same reason the ramp is: it is a
-              ring on one mark out of thirty and nothing else on the screen
-              says what a ring means. */}
-          <span className="flex items-center gap-1.5">
-            <span
-              aria-hidden
-              className="size-3 shrink-0 rounded-full bg-primary/55 ring-2 ring-foreground ring-offset-1 ring-offset-card"
-            />
-            {t('sleep.today')}
-          </span>
-
-          <span className="flex items-center gap-1.5">
-            <span
-              aria-hidden
-              className="size-1.5 rounded-full bg-foreground/60"
-            />
-            {t('sleep.calendarEntryKey')}
-          </span>
-        </div>
-
-        <span>{t('sleep.calendarQualityKey')}</span>
-      </div>
     </div>
   );
 }

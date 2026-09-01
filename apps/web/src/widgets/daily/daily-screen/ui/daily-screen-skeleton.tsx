@@ -4,32 +4,13 @@ import { Skeleton } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
 /**
- * `DailyScreen`, loading.
+ * `DailyScreen`, loading — the same order the real screen renders in: the
+ * raster card, the fortnight tiles, coverage and the insight cards first, the
+ * month calendar and its six tiles in the second column.
  *
- * The calendar card is drawn with the real calendar's ANATOMY, not a generic
- * block — a header of circle / centred label / circle matching the two 44px
- * `MonthStep` buttons either side of the month name, a weekday-initial row,
- * then a grid of day cells that are each a numeral over a 36px disc over the
- * reserved dot row, exactly like `SleepMonthCalendar`'s real button. It used
- * to claim it "mirrors the screen's shape exactly" while actually drawing one
- * full-width pill for the header, no weekday row at all, 42 solid cells (six
- * full weeks — no real month has a leading blank in every row), and a solid
- * rounded-rectangle in place of each cell's numeral/disc/dot stack. None of
- * that reads as a calendar; this does.
- *
- * It still does not compute a real calendar — a skeleton should not pretend
- * to know which month is loading. 4 leading blanks plus 31 day cells (a full
- * month's worth, filling five complete rows with nothing left over) is the
- * neutral shape: enough blanks to show the grid does not always start on a
- * Monday, without asserting a specific one. Each cell keeps the real one's
- * ~4.5rem height so nothing settles when the real grid arrives.
- *
- * Below the calendar, beside it at `lg` and beneath it below that: the error
- * banner's absence, the month summary tiles, the insight cards and the
- * 14-night chart card.
- *
- * No sheet in the skeleton. It opens on a tap, never on load, so there is
- * nothing here for it to reserve.
+ * The calendar is drawn with the real calendar's ANATOMY rather than as a
+ * generic block, so nothing settles when the real grid arrives. No sheet: it
+ * opens on a tap, never on load.
  */
 /** A neutral shape, not a real month: enough leading blanks to show a month
  *  does not always start on the grid's first column, plus a full month's
@@ -50,7 +31,65 @@ export function DailyScreenSkeleton() {
     >
       <div className="pb-safe min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-8">
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start lg:gap-8">
+            <div className="flex min-w-0 flex-col gap-6">
+              {/* The raster card: last night's figure over fourteen 16px
+                  rows and the clock axis under them. */}
+              <div className="flex flex-col gap-4 rounded-3xl border bg-card p-5 shadow">
+                <div className="flex flex-col gap-1.5">
+                  <Skeleton aria-hidden className="h-3 w-20" />
+                  <Skeleton aria-hidden className="h-8 w-32" />
+                  <Skeleton aria-hidden className="h-3 w-40" />
+                </div>
+                <Skeleton aria-hidden className="h-3 w-36" />
+                <Skeleton aria-hidden className="h-[14rem] w-full rounded-lg" />
+              </div>
+
+              {/* The fortnight's two tiles, then the six regularity ones. */}
+              <div className="flex flex-col gap-2">
+                <Skeleton aria-hidden className="h-4 w-32" />
+                <div className="grid grid-cols-2 gap-3">
+                  {Array.from({ length: 2 }, (_, i) => (
+                    <Skeleton
+                      key={i}
+                      aria-hidden
+                      className="h-24 w-full rounded-2xl"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Skeleton aria-hidden className="h-4 w-28" />
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                  {Array.from({ length: 6 }, (_, i) => (
+                    <Skeleton
+                      key={i}
+                      aria-hidden
+                      className="h-24 w-full rounded-2xl"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Coverage: one tile holding a 7×5 grid of day marks. */}
+              <div className="flex flex-col gap-2">
+                <Skeleton aria-hidden className="h-4 w-32" />
+                <Skeleton aria-hidden className="h-56 w-full rounded-2xl" />
+              </div>
+
+              {/* The insight panel: a heading over the weekly review, the
+                  mood buckets and the factor contrasts, at the `rounded-2xl`
+                  its three cards actually wear. */}
+              <div className="flex flex-col gap-3">
+                <Skeleton aria-hidden className="h-4 w-44" />
+                <Skeleton aria-hidden className="h-64 w-full rounded-2xl" />
+                <Skeleton aria-hidden className="h-48 w-full rounded-2xl" />
+                <Skeleton aria-hidden className="h-40 w-full rounded-2xl" />
+              </div>
+            </div>
+
+            <div className="flex min-w-0 flex-col gap-6">
             {/* The calendar card — see `SleepMonthCalendar` for the real
                 anatomy this mirrors. */}
             <div className="flex flex-col gap-3 rounded-3xl border bg-card p-5 shadow">
@@ -99,31 +138,7 @@ export function DailyScreenSkeleton() {
                 ))}
               </div>
 
-              <div className="mt-1 flex flex-col gap-2 border-t pt-3">
-                <Skeleton aria-hidden className="h-3 w-full max-w-xs" />
-                <Skeleton aria-hidden className="h-3 w-48" />
-              </div>
             </div>
-
-            {/* The statistics column: the "last night" duration hero, the
-                month summary's six tiles, the 14-day stats panel, and the
-                duration chart, in the order the screen renders them. */}
-            <div className="flex min-w-0 flex-col gap-6">
-              {/* The hero card — see `SleepDurationHero` for the real anatomy
-                  this mirrors: ONE `rounded-3xl border bg-card p-8 shadow`
-                  card (the hero draws its own; `DailyScreen` does not wrap it
-                  in a second one) holding a centred 176px ring with a label
-                  above it, and below the ring a delta line and a target
-                  line. */}
-              <div className="rounded-3xl border bg-card p-8 shadow">
-                <div className="flex flex-col items-center gap-5">
-                  <Skeleton aria-hidden className="size-44 rounded-full" />
-                  <div className="flex flex-col items-center gap-1.5">
-                    <Skeleton aria-hidden className="h-4 w-32" />
-                    <Skeleton aria-hidden className="h-3 w-40" />
-                  </div>
-                </div>
-              </div>
 
               <div className="flex flex-col gap-2">
                 <Skeleton aria-hidden className="h-4 w-40" />
@@ -137,20 +152,6 @@ export function DailyScreenSkeleton() {
                   ))}
                 </div>
               </div>
-
-              <Skeleton aria-hidden className="h-56 w-full rounded-3xl" />
-
-              {/* The insight panel: a heading over the weekly review, the
-                  mood buckets and the factor contrasts, at the `rounded-2xl`
-                  its three cards actually wear. */}
-              <div className="flex flex-col gap-3">
-                <Skeleton aria-hidden className="h-4 w-44" />
-                <Skeleton aria-hidden className="h-64 w-full rounded-2xl" />
-                <Skeleton aria-hidden className="h-48 w-full rounded-2xl" />
-                <Skeleton aria-hidden className="h-40 w-full rounded-2xl" />
-              </div>
-
-              <Skeleton aria-hidden className="h-52 w-full rounded-3xl" />
             </div>
           </div>
         </div>

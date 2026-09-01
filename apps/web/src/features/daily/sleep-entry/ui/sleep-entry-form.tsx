@@ -163,7 +163,6 @@ export function SleepEntryForm({
           was the single biggest thing standing between the sheet's top edge
           and the fields the sheet is for. */}
       <SleepDurationHero
-        compact
         durationMin={entry.durationMin}
         targetMin={targetMin}
       />

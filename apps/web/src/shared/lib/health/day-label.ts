@@ -27,6 +27,19 @@ export function formatDay(key: string, locale: string): string {
   }).format(new Date(`${key}T00:00:00.000Z`));
 }
 
+/** `W 26` / `T4 26` — the narrowest a raster row's gutter can be labelled.
+ *  Two formatters, because `weekday: 'narrow'` beside `day: 'numeric'` renders
+ *  "T4, ngày 26" in Vietnamese, three times the width the gutter has. */
+export function formatWeekdayInitialDay(key: string, locale: string): string {
+  const date = new Date(`${key}T00:00:00.000Z`);
+  const weekday = new Intl.DateTimeFormat(locale, {
+    weekday: 'narrow',
+    timeZone: 'UTC',
+  }).format(date);
+
+  return `${weekday} ${date.getUTCDate()}`;
+}
+
 export function formatDayWithWeekday(key: string, locale: string): string {
   return new Intl.DateTimeFormat(locale, {
     weekday: 'short',

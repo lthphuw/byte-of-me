@@ -2,6 +2,7 @@ import {
   CalendarClock,
   Compass,
   Moon,
+  Orbit,
   Repeat,
   Sunrise,
   Waves,
@@ -10,6 +11,10 @@ import { getTranslations } from 'next-intl/server';
 
 import type { SleepSummary } from '@/entities/sleep-log';
 import { minutesToClock, splitMinutes } from '@/shared/lib/health/duration';
+import {
+  minutesStdDev,
+  unwrapNearMidnight,
+} from '@/shared/lib/health/sleep-stats';
 import { StatTile } from '@/shared/ui/stat-tile';
 
 const HEADING_ID = 'sleep-regularity-heading';
@@ -28,6 +33,13 @@ const HEADING_ID = 'sleep-regularity-heading';
  */
 export async function SleepRegularity({ summary }: { summary: SleepSummary }) {
   const t = await getTranslations('dashboard.daily');
+
+  // The headline: how far the MIDDLE of the night moves. It reads the
+  // midpoints the summary already computed, through the same population SD the
+  // two deviation tiles use, so there is no second definition of either.
+  const midpointSdMin = minutesStdDev(
+    summary.nights.map((night) => unwrapNearMidnight(night.midsleepMin))
+  );
 
   const nightCount = summary.freeDayCount + summary.workDayCount;
   const dayCounts = { free: summary.freeDayCount, work: summary.workDayCount };
@@ -50,28 +62,28 @@ export async function SleepRegularity({ summary }: { summary: SleepSummary }) {
         {t('sleep.regularity')}
       </h2>
 
-      <div className="grid grid-cols-2 gap-3">
-        {/* The caveat is the tile's HINT, which renders under the value — spec
-            §5.5: there is no hover on a phone, so a number whose correction
-            lives in a tooltip ships without the correction. SRI from manual
-            bed/wake entry reads high (no naps, and the awake minutes are a
-            total with no position in the night), and the two deviation tiles
-            below it are the cruder measure that assumes none of that. They sit
-            in this grid, not in the one above, so the reader meets the honest
-            figures in the same glance as the flattering one. */}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
         <StatTile
-          className="col-span-2"
-          icon={Repeat}
-          label={t('sleep.sri')}
-          value={summary.sri === null ? '—' : Math.round(summary.sri)}
+          icon={Orbit}
+          label={t('sleep.midpointSd')}
+          value={
+            midpointSdMin === null
+              ? '—'
+              : `± ${t('units.minutes', {
+                  minutes: Math.round(midpointSdMin),
+                })}`
+          }
+          context={
+            midpointSdMin === null ? undefined : (
+              <p className="text-xs text-muted-foreground">
+                {t('sleep.midpointSdContext')}
+              </p>
+            )
+          }
           hint={
-            summary.sri === null
-              ? missingReason(
-                  nightCount,
-                  noNights,
-                  t('sleep.sriUnavailable', { n: nightCount })
-                )
-              : t('sleep.sriCaveat')
+            midpointSdMin === null
+              ? missingReason(nightCount, noNights, t('sleep.sdUnavailable'))
+              : undefined
           }
         />
 
@@ -105,6 +117,24 @@ export async function SleepRegularity({ summary }: { summary: SleepSummary }) {
             summary.waketimeSdMin === null
               ? missingReason(nightCount, noNights, t('sleep.sdUnavailable'))
               : undefined
+          }
+        />
+
+        {/* "Schedule regularity", not "sleep regularity": a diary interval is
+            time in bed, and calling the index SRI overclaims what typed clocks
+            can see. The caveat is the tile's HINT — a phone has no hover. */}
+        <StatTile
+          icon={Repeat}
+          label={t('sleep.sri')}
+          value={summary.sri === null ? '—' : Math.round(summary.sri)}
+          hint={
+            summary.sri === null
+              ? missingReason(
+                  nightCount,
+                  noNights,
+                  t('sleep.sriUnavailable', { n: nightCount })
+                )
+              : t('sleep.sriCaveat')
           }
         />
 

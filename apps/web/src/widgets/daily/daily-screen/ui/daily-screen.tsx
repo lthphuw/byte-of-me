@@ -1,6 +1,7 @@
 import { CalendarOff, TriangleAlert } from 'lucide-react';
 import { getLocale, getTranslations } from 'next-intl/server';
 
+import { type CoverageCell, SleepCoverage } from './sleep-coverage';
 import { SleepInsightsPanel } from './sleep-insights-panel';
 import { type LoggedNight, SleepMonthBoard } from './sleep-month-board';
 import { SleepMonthSummary } from './sleep-month-summary';
@@ -25,27 +26,37 @@ import {
 import {
   addMonths,
   daysInMonth,
-  type DayValue,
+  mondayIndex,
+  monthDisplay,
   monthKey,
   parseMonthKey,
-  SleepDurationChart,
+  type RasterBand,
+  type RasterNight,
+  rasterOffset,
+  SleepRaster,
   startOfMonth,
 } from '@/features/daily/sleep-charts';
 import {
+  localClockMinutes,
+  medianOf,
   roundedNowMin,
-  SleepDurationHero,
 } from '@/features/daily/sleep-entry';
+import {
+  formatDayWithWeekday,
+  formatWeekdayInitialDay,
+} from '@/shared/lib/health/day-label';
+import { minutesToClock, splitMinutes } from '@/shared/lib/health/duration';
 import {
   addDays,
   localDateKey,
   toLocalDate,
 } from '@/shared/lib/health/local-date';
 import { getRequestTimeZone } from '@/shared/lib/health/request-time-zone';
-import { computeNight } from '@/shared/lib/health/sleep-stats';
+import { computeNight, minutesStdDev } from '@/shared/lib/health/sleep-stats';
 
-/** The bar chart's window and the fortnight `getSleepSummary` computes its
- *  deviations and streak over. Debt no longer lives here — it is measured
- *  against a free-day need a fortnight cannot supply. */
+/** The raster's window and the fortnight `getSleepSummary` computes its
+ *  deviations over. Debt is measured against a free-day need a fortnight
+ *  cannot supply, so it does not live here. */
 const WINDOW_DAYS = 14;
 
 /** How far the insight panel looks back. WHOOP's window, and the ceiling
@@ -53,43 +64,29 @@ const WINDOW_DAYS = 14;
  *  voting with a habit the owner has since dropped. */
 const INSIGHT_DAYS = 90;
 
-/** With no target read from settings, two things still need a night length:
- *  the wake-time default has to add one to bedtime, and the calendar has to
- *  band its shades against one. Eight hours, the same figure the hero's arc
- *  falls back to. Neither use PRINTS it, so it stays a drawing default and
- *  never becomes a claim about the owner's goal. */
+/** The coverage grid: seven columns, five weeks, ending in the week that holds
+ *  today. Its denominator counts only the days that have happened. */
+const COVERAGE_WEEKS = 5;
+
+/** With no target read from settings, the calendar still has to band its
+ *  shades against a night length. Eight hours. Never PRINTED, so it stays a
+ *  drawing default and never becomes a claim about the owner's goal. */
 const FALLBACK_TARGET_MIN = 480;
 
 /**
- * The month and its statistics; tapping a day opens the sheet that writes it.
+ * Last night and the fortnight first; the month is reference material under
+ * it. Tapping a day on the calendar opens the sheet that writes it.
  *
- * **The calendar leads.** It used to be the last thing on the screen, a
- * picture of a month under a form that only ever edited today. It is now the
- * first thing and it is a CONTROL: tapping a day opens the sheet for that
- * night, and saving writes that day. Nothing about the write path had to
- * change for it — see `useSleepEntry`, which places the wake instant on the
- * chosen day and lets the server derive the date from it exactly as before.
- *
- * **The month is a search param, the day is React state.** That split is the
- * answer to the objection that killed month arrows the first time: a window
- * the server read cannot see forces a refetch per arrow or a pre-read of
- * months nobody opens. `?month=YYYY-MM` is read HERE, so the query is sized by
- * what is on screen, the back button pages through months, and a month is
- * linkable. Which day's sheet is open stays client state because every row
- * for the visible month is already on the client — a tap has nothing to
- * fetch.
+ * **The month is a search param, the day is React state.** `?month=YYYY-MM` is
+ * read HERE, so the query is sized by what is on screen and a month is
+ * linkable. Which day's sheet is open stays client state, because every row
+ * for the visible month is already on the client.
  *
  * **Two windows, three reads, merged.** The month on screen and the fortnight
- * the bar chart and the median bedtime need are different windows, and they
- * are only the same one while the current month is showing. Reading their
- * union unconditionally would mean scanning back to January to draw January
- * plus the last fortnight; reading them separately when they are disjoint
- * keeps every sleep-log query bounded by a month or by a fortnight.
- * `readRanges` decides which, and the rows are merged by day because the same
- * night can come back from both. Day entries are read for the MONTH window
- * only — the fortnight exists for the bar chart and the median bedtime,
- * neither of which touches a journal entry, so reading it there would scan
- * days nothing draws.
+ * the raster needs are only the same window while the current month is
+ * showing. `readRanges` decides whether that is one read or two, and the rows
+ * are merged by day because the same night can come back from both. Day
+ * entries are read for the MONTH window only.
  *
  * No read throws. All three are awaited by an RSC, where a throw replaces the
  * whole page with the root `error.tsx` — including the calendar, which needs
@@ -121,12 +118,12 @@ export async function DailyScreen({ month }: { month?: string }) {
   // those days as pips rather than as missed nights.
   const monthReadTo = monthLastKey > todayKey ? todayKey : monthLastKey;
 
-  const chartStart = addDays(today, -(WINDOW_DAYS - 1));
-  const chartStartKey = localDateKey(chartStart);
+  const rasterStart = addDays(today, -(WINDOW_DAYS - 1));
+  const rasterStartKey = localDateKey(rasterStart);
 
   const ranges = readRanges(
     { from: monthStartKey, to: monthReadTo },
-    { from: chartStartKey, to: todayKey }
+    { from: rasterStartKey, to: todayKey }
   );
 
   const [summaryRes, insightsRes, dayEntriesRes, ...logResults] =
@@ -163,6 +160,7 @@ export async function DailyScreen({ month }: { month?: string }) {
   const lastNight = summary?.nights.at(-1) ?? null;
 
   const entryByDay = new Map(dayEntries.map((entry) => [entry.localDate, entry]));
+  const rowByDay = new Map(rows.map((row) => [row.localDate, row]));
   const nightByDay = new Map(rows.map((row) => [row.localDate, toLoggedNight(row)]));
 
   // The union, not the sleep rows. A day can be written up without a night
@@ -190,15 +188,66 @@ export async function DailyScreen({ month }: { month?: string }) {
     (night) =>
       night.localDate >= monthStartKey && night.localDate <= monthLastKey
   );
-  const series: DayValue[] = nights
-    .filter((night) => night.totalSleepMin !== null)
-    .map((night) => ({
-      localDate: night.localDate,
-      value: night.totalSleepMin as number,
-    }));
+
+  // A CALENDAR window, never a list of records: a missed night keeps its row
+  // and draws nothing in it, which is the one thing a chart of durations could
+  // not say.
+  const rasterNights: RasterNight[] = Array.from(
+    { length: WINDOW_DAYS },
+    (_, i) => {
+      const key = localDateKey(addDays(rasterStart, i));
+      const row = rowByDay.get(key) ?? null;
+      const geometry = row === null ? null : toRasterGeometry(row, timeZone);
+
+      return {
+        localDate: key,
+        shortLabel: formatWeekdayInitialDay(key, locale),
+        label: formatDayWithWeekday(key, locale),
+        span:
+          geometry === null
+            ? null
+            : {
+                ...geometry.offsets,
+                text: t('sleep.rasterRow', {
+                  bed: geometry.bedClock,
+                  rise: geometry.riseClock,
+                  ...splitMinutes(geometry.totalSleepMin),
+                }),
+              },
+      };
+    }
+  );
+
+  const spans = rasterNights.flatMap((night) =>
+    night.span === null ? [] : [night.span]
+  );
+  const bedBand = toBand(spans.map((span) => span.bedOffset));
+  const wakeBand = toBand(spans.map((span) => span.wakeOffset));
+
+  // Monday-first and anchored to the WEEK, not to today, so a column always
+  // means the same weekday and the grid never reflows as the week advances.
+  const coverageEnd = addDays(today, 6 - mondayIndex(today));
+  const coverageStart = addDays(coverageEnd, -(COVERAGE_WEEKS * 7 - 1));
+  const loggedDates = new Set(insights?.loggedDates ?? []);
+  const coverageCells: CoverageCell[] = Array.from(
+    { length: COVERAGE_WEEKS * 7 },
+    (_, i) => {
+      const key = localDateKey(addDays(coverageStart, i));
+      if (key > todayKey) return { key, state: 'future' };
+
+      return { key, state: loggedDates.has(key) ? 'logged' : 'missed' };
+    }
+  );
+  const coverageDayCount = coverageCells.filter(
+    (cell) => cell.state !== 'future'
+  ).length;
+  const coverageLogged = coverageCells.filter(
+    (cell) => cell.state === 'logged'
+  ).length;
 
   const nextMonth = addMonths(monthStart, 1);
-  const monthLabel = new Intl.DateTimeFormat(locale, {
+  const monthLabel = monthDisplay(monthStartKey);
+  const monthSpoken = new Intl.DateTimeFormat(locale, {
     month: 'long',
     year: 'numeric',
     timeZone: 'UTC',
@@ -213,55 +262,17 @@ export async function DailyScreen({ month }: { month?: string }) {
     <div className="flex min-h-0 flex-1 flex-col overflow-x-clip">
       <div className="pb-safe min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
-          {/* 2fr / 3fr, not two halves: the calendar is a fixed 7-column grid
-              that stops being comfortable below ~300px, while the statistics
-              column is a 3-up tile row that wants every pixel it can have. At
-              `max-w-4xl` that splits 832px into roughly 320 / 480. Below `lg`
-              — the width at which `/space` shows its icon rail — the two
-              stack, calendar first, because it is both the primary surface
-              and the control everything under it depends on. */}
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-8">
-            <div className="min-w-0 rounded-3xl border bg-card p-5 shadow">
-              <SleepMonthBoard
-                nights={nights}
-                rows={rows}
-                dayEntries={dayEntries}
-                monthStartKey={monthStartKey}
-                todayKey={todayKey}
-                timeZone={timeZone}
-                targetMin={targetMin}
-                nowMin={roundedNowMin(new Date(), timeZone)}
-                prevMonthKey={monthKey(addMonths(monthStart, -1))}
-                nextMonthKey={
-                  nextMonth > currentMonthStart ? null : monthKey(nextMonth)
-                }
-              />
-            </div>
-
+          {/* 3fr / 2fr, and the fortnight FIRST in source order. The screen's
+              first thought is last night and the fortnight; the month is
+              reference material, so on a phone it stacks underneath and at
+              `lg` it takes the narrower rail. At `max-w-4xl` that splits
+              832px into roughly 480 / 320, which is still above the ~300px
+              the seven-column grid needs to stay comfortable. */}
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start lg:gap-8">
             <div className="flex min-w-0 flex-col gap-6">
-              {/* No "Log sleep" button beside it, unlike the hub this came from: tapping
-                  today's cell on the calendar opens the same sheet and writes the same
-                  row, and a second control for one action only raises the question of
-                  whether the two do different things. `SleepDurationHero` already draws
-                  its own `rounded-3xl border bg-card p-8 shadow` card — do not wrap it in
-                  another one, or the ring sits inside two nested cards with a visible
-                  double border and double shadow. */}
-              <SleepDurationHero
-                durationMin={lastNight?.totalSleepMin ?? null}
-                targetMin={summary?.targetMin}
-                label={t('lastNight.label')}
-                emptyLabel={t('lastNight.noData')}
-                footnote={
-                  lastNight?.estimated ? t('lastNight.estimated') : undefined
-                }
-              />
-
               {/* `destructive-text`, not `destructive`: §14 records that the
                   fill token measures 3.76:1 as text. On a sheet, not bare on
-                  the ground — every other block in this column is a card, and
-                  a loose line of red text at the top of it read as a
-                  rendering artefact rather than as the screen telling the
-                  reader something. */}
+                  the ground — every other block in this column is a card. */}
               {failed ? (
                 <p className="flex items-start gap-2 rounded-2xl border bg-card p-4 text-sm text-destructive-text shadow">
                   <TriangleAlert
@@ -272,36 +283,36 @@ export async function DailyScreen({ month }: { month?: string }) {
                 </p>
               ) : null}
 
-              <SleepMonthSummary
-                nights={monthNights}
-                monthLabel={monthLabel}
-                targetMin={targetMin}
-                formatDay={(key) =>
-                  shortDayFormat.format(new Date(`${key}T00:00:00.000Z`))
-                }
-              />
+              {/* One card, not a ring above a bar chart. The figure is last
+                  night's length and the rows under it are the fortnight it
+                  belongs to, so the answer and its context are one glance
+                  rather than two cards saying the same thing twice. */}
+              <section className="flex flex-col gap-4 rounded-3xl border bg-card p-5 shadow">
+                <div className="space-y-0.5">
+                  <p className="text-xs font-medium text-muted-foreground">
+                    {t('lastNight.label')}
+                  </p>
+                  <p className="text-3xl font-semibold tabular-nums leading-tight">
+                    {lastNight === null
+                      ? '—'
+                      : t(
+                          'units.hoursMinutes',
+                          splitMinutes(lastNight.totalSleepMin)
+                        )}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {lastNight === null
+                      ? t('lastNight.noData')
+                      : lastNight.estimated
+                        ? t('lastNight.estimated')
+                        : t('sleep.nightlyTarget', splitMinutes(targetMin))}
+                  </p>
+                </div>
 
-              {summary ? (
-                <SleepStatsPanel
-                  summary={summary}
-                  debt={insights?.debt ?? null}
-                  todayKey={todayKey}
-                  windowDays={WINDOW_DAYS}
-                />
-              ) : null}
-
-              {insights ? <SleepInsightsPanel insights={insights} /> : null}
-
-              <section>
-                {series.length === 0 ? (
-                  // Where the fortnight of bars would be — and IN THE CARD the
-                  // bars would have been in, rather than as a line of grey
-                  // text where a card used to be. A crossed-out calendar says
-                  // "no nights recorded", so the gap reads as a state and not
-                  // as a block that failed to render. Centred and given the
-                  // plot's own height, so the screen does not visibly shorten
-                  // by 150px the moment the first night is logged.
-                  <div className="flex min-h-[9rem] flex-col items-center justify-center gap-2 rounded-3xl border bg-card p-5 text-center shadow">
+                {spans.length === 0 ? (
+                  // A crossed-out calendar at the raster's own height, so the
+                  // card does not visibly shorten the moment a night lands.
+                  <div className="flex min-h-[9rem] flex-col items-center justify-center gap-2 text-center">
                     <CalendarOff
                       aria-hidden
                       className="size-6 shrink-0 text-muted-foreground"
@@ -311,16 +322,61 @@ export async function DailyScreen({ month }: { month?: string }) {
                     </p>
                   </div>
                 ) : (
-                  <div className="rounded-3xl border bg-card p-5 shadow">
-                    <SleepDurationChart
-                      nights={series}
-                      startKey={chartStartKey}
-                      days={WINDOW_DAYS}
-                      targetMin={summary?.targetMin}
-                    />
-                  </div>
+                  <SleepRaster
+                    nights={rasterNights}
+                    bedBand={bedBand}
+                    wakeBand={wakeBand}
+                    title={t('sleep.raster', { days: WINDOW_DAYS })}
+                    summary={t('sleep.rasterSummary', { days: WINDOW_DAYS })}
+                    valueLabel={t('sleep.rasterNight')}
+                  />
                 )}
               </section>
+
+              {summary ? (
+                <SleepStatsPanel
+                  summary={summary}
+                  debt={insights?.debt ?? null}
+                  windowDays={WINDOW_DAYS}
+                />
+              ) : null}
+
+              <SleepCoverage
+                cells={coverageCells}
+                loggedCount={coverageLogged}
+                dayCount={coverageDayCount}
+              />
+
+              {insights ? <SleepInsightsPanel insights={insights} /> : null}
+            </div>
+
+            <div className="flex min-w-0 flex-col gap-6">
+              <div className="min-w-0 rounded-3xl border bg-card p-5 shadow">
+                <SleepMonthBoard
+                  nights={nights}
+                  rows={rows}
+                  dayEntries={dayEntries}
+                  monthStartKey={monthStartKey}
+                  todayKey={todayKey}
+                  timeZone={timeZone}
+                  targetMin={targetMin}
+                  nowMin={roundedNowMin(new Date(), timeZone)}
+                  prevMonthKey={monthKey(addMonths(monthStart, -1))}
+                  nextMonthKey={
+                    nextMonth > currentMonthStart ? null : monthKey(nextMonth)
+                  }
+                />
+              </div>
+
+              <SleepMonthSummary
+                nights={monthNights}
+                monthLabel={monthLabel}
+                monthSpokenLabel={monthSpoken}
+                targetMin={targetMin}
+                formatDay={(key) =>
+                  shortDayFormat.format(new Date(`${key}T00:00:00.000Z`))
+                }
+              />
             </div>
           </div>
         </div>
@@ -331,13 +387,9 @@ export async function DailyScreen({ month }: { month?: string }) {
 
 /**
  * `computeNight` rather than `wakeAt - bedAt`, so every figure on the screen is
- * time ASLEEP — latency and recorded awakenings taken off — exactly like every
- * other duration in this module. Re-deriving it here would be a second
- * definition of the one number the whole screen is about.
- *
- * It runs on the SERVER for every consumer: the calendar's shades, the bar
- * chart and the monthly summary all read the results rather than the rows, so
- * the statistics module never reaches the browser.
+ * time ASLEEP — latency and recorded awakenings taken off. It runs on the
+ * SERVER for every consumer, so the statistics module never reaches the
+ * browser.
  */
 function toLoggedNight(row: SleepLogRow): { totalSleepMin: number } {
   const night = computeNight({
@@ -352,6 +404,56 @@ function toLoggedNight(row: SleepLogRow): { totalSleepMin: number } {
 }
 
 /**
+ * One night placed on the raster's 18:00 → 12:00 axis, in the reader's zone.
+ *
+ * Onset is clamped to the wake boundary and rise to the wake one, because a
+ * latency long enough to pass the alarm, or a `riseAt` written before the
+ * chronological repair existed, would otherwise draw a negative segment.
+ */
+function toRasterGeometry(row: SleepLogRow, timeZone: string) {
+  const bedMin = localClockMinutes(new Date(row.bedAt), timeZone);
+  const wakeMin = localClockMinutes(new Date(row.wakeAt), timeZone);
+  const riseMin =
+    row.riseAt === null
+      ? wakeMin
+      : localClockMinutes(new Date(row.riseAt), timeZone);
+
+  const bedOffset = rasterOffset(bedMin);
+  const wakeOffset = rasterOffset(wakeMin);
+  const night = computeNight({
+    localDate: new Date(`${row.localDate}T00:00:00.000Z`),
+    bedAt: new Date(row.bedAt),
+    wakeAt: new Date(row.wakeAt),
+    riseAt: row.riseAt === null ? null : new Date(row.riseAt),
+    latencyMin: row.latencyMin,
+    awakeningsMin: row.awakeningsMin,
+  });
+
+  return {
+    bedClock: minutesToClock(bedMin),
+    riseClock: minutesToClock(riseMin),
+    totalSleepMin: night.totalSleepMin,
+    offsets: {
+      bedOffset,
+      onsetOffset: Math.min(wakeOffset, bedOffset + (row.latencyMin ?? 0)),
+      wakeOffset,
+      riseOffset: Math.max(wakeOffset, rasterOffset(riseMin)),
+    },
+  };
+}
+
+/** Median ± population SD of one boundary, on the axis's own scale. Null below
+ *  two nights, where a deviation is not defined. */
+function toBand(offsets: number[]): RasterBand | null {
+  const centreOffset = medianOf(offsets);
+  const sdMin = minutesStdDev(offsets);
+
+  return centreOffset === null || sdMin === null
+    ? null
+    : { centreOffset, sdMin };
+}
+
+/**
  * One read or two, depending on whether the windows touch.
  *
  * Overlapping windows become their union — the common case, where the month on
@@ -361,16 +463,16 @@ function toLoggedNight(row: SleepLogRow): { totalSleepMin: number } {
  */
 function readRanges(
   month: { from: string; to: string },
-  chart: { from: string; to: string }
+  raster: { from: string; to: string }
 ): Array<{ from: string; to: string }> {
-  if (month.from <= chart.to && chart.from <= month.to) {
+  if (month.from <= raster.to && raster.from <= month.to) {
     return [
       {
-        from: month.from < chart.from ? month.from : chart.from,
-        to: month.to > chart.to ? month.to : chart.to,
+        from: month.from < raster.from ? month.from : raster.from,
+        to: month.to > raster.to ? month.to : raster.to,
       },
     ];
   }
 
-  return [month, chart];
+  return [month, raster];
 }
