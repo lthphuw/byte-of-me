@@ -40,9 +40,13 @@ const night = (day: string, bed: string, wake: string) => ({
   localDate: new Date(`${day}T00:00:00.000Z`),
   bedAt: new Date(bed),
   wakeAt: new Date(wake),
-  latencyMin: null,
-  awakeningsMin: null,
+  riseAt: null as Date | null,
+  latencyMin: null as number | null,
+  awakeningsMin: null as number | null,
+  awakeningsCount: null as number | null,
   quality: 4,
+  restedness: null as number | null,
+  napBucket: null as string | null,
   note: null,
   isFreeDay: false,
   factors: [],
@@ -162,6 +166,85 @@ describe('getSleepSummary', () => {
     expect(res.data.workDayCount).toBe(1);
     // One of each is still far below the three-day floor.
     expect(res.data.socialJetlagMin).toBeNull();
+  });
+
+  it('selects the columns the derived figures need', async () => {
+    // A column missing from the select does not throw — it silently arrives
+    // undefined and efficiency quietly reverts to the pre-riseAt formula.
+    await getSleepSummary(input);
+
+    const { select } = findMany.mock.calls[0][0];
+    expect(select.riseAt).toBe(true);
+    expect(select.awakeningsCount).toBe(true);
+    expect(select.napBucket).toBe(true);
+  });
+
+  it('measures efficiency against time in BED, ending at riseAt', async () => {
+    // 23:40 -> 07:10 with 20m latency, then up at 07:40.
+    findMany.mockResolvedValue([
+      {
+        ...night(
+          '2026-08-22',
+          '2026-08-21T16:40:00.000Z',
+          '2026-08-22T00:10:00.000Z'
+        ),
+        riseAt: new Date('2026-08-22T00:40:00.000Z'),
+        latencyMin: 20,
+      },
+    ]);
+
+    const res = await getSleepSummary(input);
+
+    if (!res.success) throw new Error('expected success');
+    const [only] = res.data.nights;
+    expect(only.timeInBedMin).toBe(480);
+    expect(only.sleepWindowMin).toBe(450);
+    expect(only.totalSleepMin).toBe(430);
+    expect(only.efficiencyPct).toBeCloseTo((430 / 480) * 100, 5);
+    expect(only.riseEstimated).toBe(false);
+  });
+
+  it('falls back to the wake time on a row written before riseAt existed', async () => {
+    findMany.mockResolvedValue([
+      {
+        ...night(
+          '2026-08-22',
+          '2026-08-21T16:40:00.000Z',
+          '2026-08-22T00:10:00.000Z'
+        ),
+        latencyMin: 20,
+      },
+    ]);
+
+    const res = await getSleepSummary(input);
+
+    if (!res.success) throw new Error('expected success');
+    const [only] = res.data.nights;
+    expect(only.timeInBedMin).toBe(450);
+    expect(only.riseEstimated).toBe(true);
+    expect(only.efficiencyPct).toBeCloseTo((430 / 450) * 100, 5);
+  });
+
+  it('never lets a recorded nap change duration or debt', async () => {
+    const base = night(
+      '2026-08-22',
+      '2026-08-21T16:40:00.000Z',
+      '2026-08-22T00:10:00.000Z'
+    );
+    findMany.mockResolvedValue([{ ...base, napBucket: 'gt60' }]);
+    const withNap = await getSleepSummary(input);
+
+    findMany.mockResolvedValue([base]);
+    const withoutNap = await getSleepSummary(input);
+
+    if (!withNap.success || !withoutNap.success) {
+      throw new Error('expected success');
+    }
+    expect(withNap.data.nights[0].napBucket).toBe('gt60');
+    expect(withNap.data.nights[0].totalSleepMin).toBe(
+      withoutNap.data.nights[0].totalSleepMin
+    );
+    expect(withNap.data.debtMin).toBe(withoutNap.data.debtMin);
   });
 
   it('rejects a window outside the allowed bounds', async () => {

@@ -39,6 +39,18 @@ export const AWAKE_BUCKETS: readonly SleepBucket[] = [
 ];
 
 /**
+ * `0 / 1 / 2 / 3+`. A COUNT, not minutes — four brief wakings and one long one
+ * can share a minute total and are not the same night. The open bucket stores
+ * 3: it is the floor of the range and the only figure the answer guarantees.
+ */
+export const AWAKENINGS_COUNT_BUCKETS: readonly SleepBucket[] = [
+  { id: 'zero', to: 1, value: 0 },
+  { id: 'one', to: 2, value: 1 },
+  { id: 'two', to: 3, value: 2 },
+  { id: 'threePlus', to: Infinity, value: 3 },
+];
+
+/**
  * Which bucket a stored minute count falls in, or null when nothing is stored.
  *
  * A row written before the chips existed still lights the right one, and it
@@ -52,4 +64,15 @@ export function bucketIdOf(
   if (value === null) return null;
 
   return buckets.find((bucket) => value < bucket.to)?.id ?? null;
+}
+
+/** What a chip stores, or null to clear. The inverse of `bucketIdOf`, and the
+ *  only other direction anything needs. */
+export function bucketValueOf(
+  id: string | null,
+  buckets: readonly SleepBucket[]
+): number | null {
+  if (id === null) return null;
+
+  return buckets.find((bucket) => bucket.id === id)?.value ?? null;
 }

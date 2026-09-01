@@ -4,7 +4,11 @@ import { useCallback, useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
-import { type SleepFactor, upsertSleepLog } from '@/entities/sleep-log';
+import {
+  type NapBucket,
+  type SleepFactor,
+  upsertSleepLog,
+} from '@/entities/sleep-log';
 import {
   LONG_NIGHT_MIN,
   repairNight,
@@ -23,9 +27,22 @@ const DAY_MIN = 1440;
 export interface SleepSuggestion {
   bedClock: string;
   wakeClock: string;
+  /** Minutes from waking to getting up. Never null — the fallback is 0, which
+   *  is both the commonest answer and the one that changes no figure. */
+  riseOffsetMin: number;
   latencyMin: number | null;
   awakeningsMin: number | null;
+  awakeningsCount: number | null;
+  napBucket: NapBucket | null;
 }
+
+/** The presets beside the custom clock. Not a `SleepBucket` table: these are
+ *  offsets applied to the wake time, not ranges a stored value falls into. */
+export const RISE_OFFSET_PRESETS = [0, 15, 30] as const;
+
+/** Beyond this, a custom out-of-bed clock reads as being BEFORE waking rather
+ *  than a very long lie-in — the gap is measured the short way round. */
+const MAX_RISE_GAP_MIN = 720;
 
 /** What the screen knows and the form starts from. Every field is derived from
  *  values the SERVER resolved — the row set, the time zone, and the clock as a
@@ -37,9 +54,16 @@ export interface SleepEntryDefaults {
    *  instead, because a pre-filled clock is an answer nobody gave. */
   bedClock: string;
   wakeClock: string;
+  /** Minutes after waking, or null when the stored value is not one of the
+   *  presets and the custom clock below holds it instead. */
+  riseOffsetMin: number | null;
+  riseClockCustom: string;
   quality: number | null;
+  restedness: number | null;
   latencyMin: number | null;
   awakeningsMin: number | null;
+  awakeningsCount: number | null;
+  napBucket: NapBucket | null;
   factors: string[];
   isFreeDay: boolean;
   note: string | null;
@@ -50,9 +74,15 @@ export interface SleepEntryDefaults {
 interface NightValues {
   bedClock: string;
   wakeClock: string;
+  /** Minutes after waking. Null only when the clocks themselves are unusable,
+   *  which blocks the write anyway. */
+  riseGapMin: number | null;
   quality: number | null;
+  restedness: number | null;
   latencyMin: number | null;
   awakeningsMin: number | null;
+  awakeningsCount: number | null;
+  napBucket: NapBucket | null;
   factors: string[];
   isFreeDay: boolean;
   note: string | null;
@@ -92,10 +122,25 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
 
   const [bedClock, setBedClock] = useState(defaults.bedClock);
   const [wakeClock, setWakeClock] = useState(defaults.wakeClock);
+  const [riseOffsetMin, setRiseOffsetMin] = useState<number | null>(
+    defaults.riseOffsetMin
+  );
+  const [riseClockCustom, setRiseClockCustom] = useState(
+    defaults.riseClockCustom
+  );
   const [quality, setQuality] = useState<number | null>(defaults.quality);
+  const [restedness, setRestedness] = useState<number | null>(
+    defaults.restedness
+  );
   const [latency, setLatency] = useState<number | null>(defaults.latencyMin);
   const [awakenings, setAwakenings] = useState<number | null>(
     defaults.awakeningsMin
+  );
+  const [awakeningsCount, setAwakeningsCount] = useState<number | null>(
+    defaults.awakeningsCount
+  );
+  const [napBucket, setNapBucket] = useState<NapBucket | null>(
+    defaults.napBucket
   );
   const [factors, setFactors] = useState<string[]>(defaults.factors);
   const [isFreeDay, setIsFreeDay] = useState(defaults.isFreeDay);
@@ -125,12 +170,46 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
       ? null
       : (((wakeMin - bedMin) % DAY_MIN) + DAY_MIN) % DAY_MIN;
 
+  // A preset tracks the wake clock rather than freezing a value: editing the
+  // wake time after choosing "+15m" must move getting up with it, or the pair
+  // silently stops meaning what the reader chose.
+  const customRiseMin = clockToMinutes(riseClockCustom);
+  const riseMin =
+    riseOffsetMin !== null
+      ? wakeMin === null
+        ? null
+        : (wakeMin + riseOffsetMin) % DAY_MIN
+      : customRiseMin;
+
+  // The short way round, like every other span here. A custom clock BEFORE
+  // waking therefore shows up as an implausibly large gap rather than a
+  // negative one, which is what `MAX_RISE_GAP_MIN` catches.
+  const riseGapMin =
+    riseMin === null || wakeMin === null
+      ? null
+      : (((riseMin - wakeMin) % DAY_MIN) + DAY_MIN) % DAY_MIN;
+
+  const riseClock =
+    riseMin === null ? riseClockCustom : minutesToClock(riseMin);
+
+  // TIB, the span efficiency is measured against — it ends when you get up,
+  // not when you wake. `sleep-stats.ts` computes the same thing server-side.
+  const timeInBedMin =
+    durationMin === null || riseGapMin === null
+      ? null
+      : durationMin + riseGapMin;
+
   const isDirty =
     bedClock !== defaults.bedClock ||
     wakeClock !== defaults.wakeClock ||
+    riseOffsetMin !== defaults.riseOffsetMin ||
+    riseClockCustom !== defaults.riseClockCustom ||
     quality !== defaults.quality ||
+    restedness !== defaults.restedness ||
     latency !== defaults.latencyMin ||
     awakenings !== defaults.awakeningsMin ||
+    awakeningsCount !== defaults.awakeningsCount ||
+    napBucket !== defaults.napBucket ||
     isFreeDay !== defaults.isFreeDay ||
     note !== (defaults.note ?? '') ||
     factors.length !== defaults.factors.length ||
@@ -140,7 +219,9 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
   // Silent while an unlogged day is still untouched: the sheet OPENS on that
   // state, and an error before the first keystroke is noise, not a warning.
   // The long-night case is a FLAG, not a block — fourteen hours in bed is
-  // unusual, and it is also what an ill night looks like.
+  // unusual, and it is also what an ill night looks like. It is measured on
+  // `rise - bed` now that getting up is recorded: that is what "in bed" means,
+  // and a two-hour lie-in used to be invisible to it.
   const untouchedBlank = !isDirty && bedClock === '' && wakeClock === '';
   let nightIssue: NightIssue | null = null;
   if (untouchedBlank) {
@@ -149,9 +230,11 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
     nightIssue = { message: t('sleep.durationPending'), blocking: true };
   } else if (durationMin === 0) {
     nightIssue = { message: t('sleep.clocksEqual'), blocking: true };
-  } else if (durationMin >= LONG_NIGHT_MIN) {
+  } else if (riseGapMin !== null && riseGapMin > MAX_RISE_GAP_MIN) {
+    nightIssue = { message: t('sleep.riseBeforeWake'), blocking: true };
+  } else if (timeInBedMin !== null && timeInBedMin >= LONG_NIGHT_MIN) {
     nightIssue = {
-      message: t('sleep.longNight', splitMinutes(durationMin)),
+      message: t('sleep.longNight', splitMinutes(timeInBedMin)),
       blocking: false,
     };
   }
@@ -203,17 +286,25 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
 
     setBedClock(defaults.suggestion.bedClock);
     setWakeClock(defaults.suggestion.wakeClock);
+    setRiseOffsetMin(defaults.suggestion.riseOffsetMin);
+    setRiseClockCustom('');
     setLatency(defaults.suggestion.latencyMin);
     setAwakenings(defaults.suggestion.awakeningsMin);
+    setAwakeningsCount(defaults.suggestion.awakeningsCount);
+    setNapBucket(defaults.suggestion.napBucket);
     setRepairedFrom(null);
   }, [defaults.suggestion]);
 
   const current: NightValues = {
     bedClock,
     wakeClock,
+    riseGapMin,
     quality,
+    restedness,
     latencyMin: latency,
     awakeningsMin: awakenings,
+    awakeningsCount,
+    napBucket,
     factors,
     isFreeDay,
     note: note.trim() === '' ? null : note.trim(),
@@ -233,9 +324,13 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
         {
           bedClock: defaults.bedClock,
           wakeClock: defaults.wakeClock,
+          riseGapMin: defaultRiseGapMin(defaults),
           quality: defaults.quality,
+          restedness: defaults.restedness,
           latencyMin: defaults.latencyMin,
           awakeningsMin: defaults.awakeningsMin,
+          awakeningsCount: defaults.awakeningsCount,
+          napBucket: defaults.napBucket,
           factors: defaults.factors,
           isFreeDay: defaults.isFreeDay,
           note: defaults.note,
@@ -256,12 +351,23 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
     undoRepair,
     suggestion,
     acceptSuggestion,
+    riseOffsetMin,
+    setRiseOffsetMin,
+    riseClock,
+    riseClockCustom,
+    setRiseClockCustom,
     quality,
     setQuality,
+    restedness,
+    setRestedness,
     latency,
     setLatency,
     awakenings,
     setAwakenings,
+    awakeningsCount,
+    setAwakeningsCount,
+    napBucket,
+    setNapBucket,
     factors,
     toggleFactor: (factor: SleepFactor) =>
       setFactors((current) =>
@@ -274,12 +380,17 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
     note,
     setNote,
     durationMin,
+    timeInBedMin,
     nightIssue,
     // Not derived from `nightIssue`, which stays quiet on an untouched blank
     // day: a night still cannot be WRITTEN without two usable clocks, and the
     // caller only consults this when it has decided to write one.
     canSave:
-      durationMin !== null && durationMin !== 0 && !mutation.isPending,
+      durationMin !== null &&
+      durationMin !== 0 &&
+      riseGapMin !== null &&
+      riseGapMin <= MAX_RISE_GAP_MIN &&
+      !mutation.isPending,
     isSaving: mutation.isPending,
     // Load-bearing twice over: the modal writes the sleep half only when this
     // is true or a row already exists, and the dismiss guard reads it to
@@ -289,6 +400,23 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
     saveAsync: () => mutation.mutateAsync(),
     restoreAsync,
   };
+}
+
+/**
+ * The rise gap the sheet OPENED with, for the undo write.
+ *
+ * Recomputed rather than stored, because the presets are offsets from the wake
+ * clock and the undo restores that clock too — a frozen gap would be measured
+ * against the wrong wake time.
+ */
+function defaultRiseGapMin(defaults: SleepEntryDefaults): number | null {
+  if (defaults.riseOffsetMin !== null) return defaults.riseOffsetMin;
+
+  const wakeMin = clockToMinutes(defaults.wakeClock);
+  const riseMin = clockToMinutes(defaults.riseClockCustom);
+  if (wakeMin === null || riseMin === null) return null;
+
+  return (((riseMin - wakeMin) % DAY_MIN) + DAY_MIN) % DAY_MIN;
 }
 
 /** One night, from two clock times to two instants and a write. Shared by the
@@ -306,19 +434,32 @@ async function writeNight(
       ? null
       : (((wakeMin - bedMin) % DAY_MIN) + DAY_MIN) % DAY_MIN;
 
-  if (wakeMin === null || durationMin === null || durationMin === 0) {
+  if (
+    wakeMin === null ||
+    durationMin === null ||
+    durationMin === 0 ||
+    values.riseGapMin === null
+  ) {
     throw new Error(invalidMessage);
   }
 
   const wakeAt = atLocalClock(localMidnight(localDate), wakeMin);
   const bedAt = new Date(wakeAt.getTime() - durationMin * 60_000);
+  // Built from the wake INSTANT plus a gap, never from a second clock time:
+  // a rise clock resolved independently would land on the wrong day whenever
+  // getting up crossed midnight.
+  const riseAt = new Date(wakeAt.getTime() + values.riseGapMin * 60_000);
 
   const res = await upsertSleepLog({
     bedAt: bedAt.toISOString(),
     wakeAt: wakeAt.toISOString(),
+    riseAt: riseAt.toISOString(),
     latencyMin: values.latencyMin,
     awakeningsMin: values.awakeningsMin,
+    awakeningsCount: values.awakeningsCount,
     quality: values.quality,
+    restedness: values.restedness,
+    napBucket: values.napBucket,
     note: values.note,
     isFreeDay: values.isFreeDay,
     factors: values.factors,

@@ -8,12 +8,21 @@ export interface SleepLogRow {
   localDate: string;
   bedAt: string;
   wakeAt: string;
+  /** Null on every row written before the column existed. */
+  riseAt: string | null;
   latencyMin: number | null;
   awakeningsMin: number | null;
+  awakeningsCount: number | null;
   quality: number | null;
+  restedness: number | null;
+  /** One of `NAP_BUCKETS`, or null when unanswered. */
+  napBucket: string | null;
   note: string | null;
   isFreeDay: boolean;
   factors: string[];
+  /** When the entry was first written — stamped by the server, never moved by
+   *  a later correction. Null on rows that predate the column. */
+  loggedAt: string | null;
 }
 
 /** Everything the sleep screen and the hub read. Computed server-side so the

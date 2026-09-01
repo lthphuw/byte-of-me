@@ -1,13 +1,18 @@
 /**
  * What this spec defends: efficiency is WITHHELD rather than reported as 100%
- * when nothing was measured, debt never goes negative, and a gap in the day
- * sequence ends a streak. These are the three ways a sleep tracker lies.
+ * when nothing was measured, it is measured against time in BED rather than
+ * the sleep window, debt never goes negative and never counts a nap, and a gap
+ * in the day sequence ends a streak. These are the ways a sleep tracker lies.
  */
 import { describe, expect, it } from 'bun:test';
 
 import {
+  awakeMinutesBand,
+  awakeningsCountBand,
   computeNight,
   currentStreak,
+  efficiencyBand,
+  latencyBand,
   minutesStdDev,
   sleepDebtMin,
   type SleepNight,
@@ -59,17 +64,136 @@ describe('computeNight', () => {
     // onset 23:40 on the 21st, 450 min of sleep -> midpoint 03:25 on the 22nd.
     expect(night().midsleepMin).toBe(3 * 60 + 25);
   });
+
+  it('falls back to wake - bed for time in bed when riseAt is null', () => {
+    const n = night();
+    expect(n.timeInBedMin).toBe(450);
+    expect(n.sleepWindowMin).toBe(450);
+    expect(n.riseEstimated).toBe(true);
+  });
+
+  it('ends time in bed at riseAt, so the lie-in counts against efficiency', () => {
+    // 30 minutes lying awake after waking: TIB 480, TST unchanged at 420.
+    const n = night({
+      riseAt: new Date('2026-08-22T07:40:00.000Z'),
+      latencyMin: 20,
+      awakeningsMin: 10,
+    });
+
+    expect(n.timeInBedMin).toBe(480);
+    expect(n.sleepWindowMin).toBe(450);
+    expect(n.totalSleepMin).toBe(420);
+    expect(n.efficiencyPct).toBeCloseTo((420 / 480) * 100, 5);
+    expect(n.riseEstimated).toBe(false);
+  });
+
+  it('scores the same night higher when it ends at waking', () => {
+    const withLieIn = night({
+      riseAt: new Date('2026-08-22T07:40:00.000Z'),
+      latencyMin: 20,
+      awakeningsMin: 10,
+    });
+    const straightUp = night({
+      riseAt: new Date('2026-08-22T07:10:00.000Z'),
+      latencyMin: 20,
+      awakeningsMin: 10,
+    });
+
+    expect(straightUp.efficiencyPct).toBeGreaterThan(
+      withLieIn.efficiencyPct as number
+    );
+    expect(straightUp.timeInBedMin).toBe(450);
+  });
+
+  it('never lets time in bed fall below the sleep window', () => {
+    // A rise instant before waking cannot shorten the night into a >100%
+    // efficiency; the schema rejects it, and the maths refuses it too.
+    const n = night({
+      riseAt: new Date('2026-08-22T06:00:00.000Z'),
+      latencyMin: 20,
+    });
+
+    expect(n.timeInBedMin).toBe(450);
+    expect(n.efficiencyPct as number).toBeLessThanOrEqual(100);
+  });
+
+  it('carries the nap bucket without letting it touch a single figure', () => {
+    const withNap = night({ napBucket: 'gt60', latencyMin: 20 });
+    const withoutNap = night({ latencyMin: 20 });
+
+    expect(withNap.napBucket).toBe('gt60');
+    expect(withNap.totalSleepMin).toBe(withoutNap.totalSleepMin);
+    expect(withNap.timeInBedMin).toBe(withoutNap.timeInBedMin);
+    expect(withNap.efficiencyPct).toBe(withoutNap.efficiencyPct);
+  });
+
+  it('carries the awakenings count beside the minutes', () => {
+    expect(night({ awakeningsCount: 3 }).awakeningsCount).toBe(3);
+    expect(night().awakeningsCount).toBeNull();
+  });
+});
+
+/**
+ * The NSF consensus bands (Ohayon et al., Sleep Health 3(1), 2017). The
+ * boundaries themselves are the contract — a UI reading "good" at 84%
+ * efficiency would be reporting a poor night as a fine one.
+ */
+describe('NSF threshold bands', () => {
+  it('bands efficiency: >85% good, <75% poor', () => {
+    expect(efficiencyBand(90)).toBe('good');
+    expect(efficiencyBand(85)).toBe('good');
+    expect(efficiencyBand(80)).toBe('fair');
+    expect(efficiencyBand(75)).toBe('fair');
+    expect(efficiencyBand(74)).toBe('poor');
+  });
+
+  it('bands latency: <30m good, >46m poor', () => {
+    expect(latencyBand(10)).toBe('good');
+    expect(latencyBand(30)).toBe('good');
+    expect(latencyBand(40)).toBe('fair');
+    expect(latencyBand(46)).toBe('fair');
+    expect(latencyBand(47)).toBe('poor');
+  });
+
+  it('bands minutes awake: <20m good, >40m poor', () => {
+    expect(awakeMinutesBand(0)).toBe('good');
+    expect(awakeMinutesBand(20)).toBe('good');
+    expect(awakeMinutesBand(30)).toBe('fair');
+    expect(awakeMinutesBand(41)).toBe('poor');
+  });
+
+  it('bands awakenings: 0-1 good, >4 poor', () => {
+    expect(awakeningsCountBand(0)).toBe('good');
+    expect(awakeningsCountBand(1)).toBe('good');
+    expect(awakeningsCountBand(3)).toBe('fair');
+    expect(awakeningsCountBand(4)).toBe('fair');
+    expect(awakeningsCountBand(5)).toBe('poor');
+  });
+
+  it('withholds a band rather than guessing one from a missing figure', () => {
+    expect(efficiencyBand(null)).toBeNull();
+    expect(latencyBand(null)).toBeNull();
+    expect(awakeMinutesBand(null)).toBeNull();
+    expect(awakeningsCountBand(null)).toBeNull();
+  });
+});
+
+/** A night with only the fields the aggregate under test reads. */
+const plainNight = (day: string, total: number): SleepNight => ({
+  localDate: new Date(`${day}T00:00:00.000Z`),
+  timeInBedMin: total,
+  sleepWindowMin: total,
+  totalSleepMin: total,
+  efficiencyPct: null,
+  estimated: true,
+  riseEstimated: true,
+  midsleepMin: 0,
+  awakeningsCount: null,
+  napBucket: null,
 });
 
 describe('sleepDebtMin', () => {
-  const at = (day: string, total: number): SleepNight => ({
-    localDate: new Date(`${day}T00:00:00.000Z`),
-    timeInBedMin: total,
-    totalSleepMin: total,
-    efficiencyPct: null,
-    estimated: true,
-    midsleepMin: 0,
-  });
+  const at = plainNight;
 
   it('sums the shortfall against the target', () => {
     expect(
@@ -93,6 +217,11 @@ describe('sleepDebtMin', () => {
     const old = at('2026-01-01', 0);
     expect(sleepDebtMin([old, at('2026-08-22', 480)], 480, 14)).toBe(0);
   });
+
+  it('does not let a nap repay the night', () => {
+    const napped: SleepNight = { ...at('2026-08-22', 400), napBucket: 'gt60' };
+    expect(sleepDebtMin([napped], 480)).toBe(80);
+  });
 });
 
 describe('minutesStdDev', () => {
@@ -107,14 +236,7 @@ describe('minutesStdDev', () => {
 });
 
 describe('currentStreak', () => {
-  const on = (day: string): SleepNight => ({
-    localDate: new Date(`${day}T00:00:00.000Z`),
-    timeInBedMin: 480,
-    totalSleepMin: 480,
-    efficiencyPct: null,
-    estimated: true,
-    midsleepMin: 0,
-  });
+  const on = (day: string) => plainNight(day, 480);
   const today = new Date('2026-08-22T00:00:00.000Z');
 
   it('counts back from today', () => {

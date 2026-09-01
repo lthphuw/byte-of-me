@@ -4,9 +4,11 @@ import { Button, Input, Label } from '@byte-of-me/ui';
 import { Moon, Sunrise, TriangleAlert } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { RiseTimeRow } from './rise-time-row';
 import { SleepDetailsSection } from './sleep-details-section';
 import { SleepDurationHero } from './sleep-duration-hero';
 import { SleepQualityScale } from './sleep-quality-scale';
+import { SleepRestednessScale } from './sleep-restedness-scale';
 import { SleepSuggestionCard } from './sleep-suggestion-card';
 
 import type { useSleepEntry } from '@/features/daily/sleep-entry/model/use-sleep-entry';
@@ -92,6 +94,19 @@ export function SleepEntryForm({
           />
         </div>
 
+        {/* Inside the clocks card and below them, because it is a third
+            reading of the same night — and it has to be answered while the
+            wake time is still the thing on screen. */}
+        <div className="sm:col-span-2">
+          <RiseTimeRow
+            offsetMin={entry.riseOffsetMin}
+            onOffsetChange={entry.setRiseOffsetMin}
+            customClock={entry.riseClockCustom}
+            onCustomClockChange={entry.setRiseClockCustom}
+            riseClock={entry.riseClock}
+          />
+        </div>
+
         {/* A repair is announced with the typed value still on offer. Silently
             rewriting an entry is how a genuinely unusual night becomes
             impossible to record — undo here also stops the next blur from
@@ -153,7 +168,16 @@ export function SleepEntryForm({
         targetMin={targetMin}
       />
 
+      {/* The night, then the morning it produced. Quality rates the sleep and
+          restedness rates the person, which is the outcome every insight in
+          the next phase is contrasted against — so it sits above the optional
+          details and directly under the question it answers. */}
       <SleepQualityScale value={entry.quality} onChange={entry.setQuality} />
+
+      <SleepRestednessScale
+        value={entry.restedness}
+        onChange={entry.setRestedness}
+      />
 
       <SleepDetailsSection entry={entry} />
     </div>

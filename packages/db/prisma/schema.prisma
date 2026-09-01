@@ -1037,15 +1037,40 @@ model SleepLog {
   bedAt  DateTime @map("bed_at")
   wakeAt DateTime @map("wake_at")
 
+  /// Out of bed. Time in bed ends here, not at `wakeAt`, so efficiency stops
+  /// counting the lie-in as sleep. Optional: rows written before it existed
+  /// fall back to `wakeAt` in `sleep-stats.ts`.
+  riseAt DateTime? @map("rise_at")
+
   /// Minutes to fall asleep, and total minutes awake during the night. Both
   /// optional: without either, sleep efficiency is WITHHELD rather than shown
   /// as 100% (see `sleep-stats.ts`). Every other statistic still computes.
   latencyMin    Int? @map("latency_min")
   awakeningsMin Int? @map("awakenings_min")
 
+  /// How many times you woke, beside the minutes already stored. The two
+  /// answer different questions: four brief wakings and one long one can share
+  /// a minute total and are not the same night.
+  awakeningsCount Int? @map("awakenings_count")
+
   /// 1..5. Optional — never blocks a save.
   quality Int?
-  note    String? @db.Text
+
+  /// 1..5, on waking. The OUTCOME variable — quality rates the night, this
+  /// rates the morning it produced, and it is what the insight phase contrasts.
+  restedness Int?
+
+  /// none | lt30 | 30to60 | gt60, validated in `sleep-log-schema.ts`. An id,
+  /// not a midpoint: an unrecorded nap corrupts duration and debt, and `gt60`
+  /// has no upper bound to take a midpoint of.
+  napBucket String? @map("nap_bucket")
+
+  note String? @db.Text
+
+  /// When the entry was WRITTEN, distinct from `updatedAt`, which every later
+  /// correction moves. A night reconstructed three days late is recall, not
+  /// same-morning data, and the insight phase has to be able to tell.
+  loggedAt DateTime? @map("logged_at")
 
   /// Needed by social jetlag and MSFsc (phase 1b), which are defined against
   /// days you were free to sleep as long as you liked. A stored column rather

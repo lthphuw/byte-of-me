@@ -39,6 +39,8 @@ export function SleepDetailsSection({
   const filledCount =
     (entry.latency === null ? 0 : 1) +
     (entry.awakenings === null ? 0 : 1) +
+    (entry.awakeningsCount === null ? 0 : 1) +
+    (entry.napBucket === null ? 0 : 1) +
     (entry.factors.length === 0 ? 0 : 1) +
     (entry.note.trim() === '' ? 0 : 1);
 

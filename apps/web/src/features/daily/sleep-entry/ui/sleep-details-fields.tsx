@@ -1,14 +1,18 @@
 'use client';
 
 import { Checkbox, Label, Textarea } from '@byte-of-me/ui';
-import { Eye, NotebookPen, Timer } from 'lucide-react';
+import { Coffee, Eye, NotebookPen, RotateCcw, Timer } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { BucketChipRow } from './bucket-chip-row';
 import { SleepFactorGrid } from './sleep-factor-grid';
 
+import { NAP_BUCKETS } from '@/entities/sleep-log';
 import {
   AWAKE_BUCKETS,
+  AWAKENINGS_COUNT_BUCKETS,
+  bucketIdOf,
+  bucketValueOf,
   LATENCY_BUCKETS,
 } from '@/features/daily/sleep-entry/lib/sleep-buckets';
 import type { useSleepEntry } from '@/features/daily/sleep-entry/model/use-sleep-entry';
@@ -43,6 +47,18 @@ export function SleepDetailsFields({
     from15: t('sleep.awake15to30'),
     from30: t('sleep.awakeOver30'),
   };
+  const awakeningsCountLabels: Record<string, string> = {
+    zero: t('sleep.awakeningsCount0'),
+    one: t('sleep.awakeningsCount1'),
+    two: t('sleep.awakeningsCount2'),
+    threePlus: t('sleep.awakeningsCount3Plus'),
+  };
+  const napLabels: Record<string, string> = {
+    none: t('sleep.napNone'),
+    lt30: t('sleep.napLt30'),
+    '30to60': t('sleep.nap30to60'),
+    gt60: t('sleep.napOver60'),
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -55,27 +71,63 @@ export function SleepDetailsFields({
           id="sleep-latency-label"
           label={t('sleep.latency')}
           icon={Timer}
-          buckets={LATENCY_BUCKETS}
+          options={LATENCY_BUCKETS}
           optionLabels={latencyLabels}
           clearLabel={t('sleep.bucketClear')}
-          value={entry.latency}
-          onChange={entry.setLatency}
+          activeId={bucketIdOf(entry.latency, LATENCY_BUCKETS)}
+          onSelect={(id) => entry.setLatency(bucketValueOf(id, LATENCY_BUCKETS))}
         />
 
         <BucketChipRow
           id="sleep-awakenings-label"
           label={t('sleep.awakenings')}
           icon={Eye}
-          buckets={AWAKE_BUCKETS}
+          options={AWAKE_BUCKETS}
           optionLabels={awakeLabels}
           clearLabel={t('sleep.bucketClear')}
-          value={entry.awakenings}
-          onChange={entry.setAwakenings}
+          activeId={bucketIdOf(entry.awakenings, AWAKE_BUCKETS)}
+          onSelect={(id) => entry.setAwakenings(bucketValueOf(id, AWAKE_BUCKETS))}
+        />
+
+        {/* Beside the minutes, not instead of them: four brief wakings and one
+            long one can share a minute total and are not the same night. */}
+        <BucketChipRow
+          id="sleep-awakenings-count-label"
+          label={t('sleep.awakeningsCount')}
+          icon={RotateCcw}
+          options={AWAKENINGS_COUNT_BUCKETS}
+          optionLabels={awakeningsCountLabels}
+          clearLabel={t('sleep.bucketClear')}
+          activeId={bucketIdOf(entry.awakeningsCount, AWAKENINGS_COUNT_BUCKETS)}
+          onSelect={(id) =>
+            entry.setAwakeningsCount(
+              bucketValueOf(id, AWAKENINGS_COUNT_BUCKETS)
+            )
+          }
         />
 
         <p className="text-xs text-muted-foreground">
           {t('sleep.estimateHint')}
         </p>
+      </div>
+
+      {/* Stored as the id itself, never a midpoint — and it enters no figure.
+          An unrecorded nap corrupts duration and debt; a nap ADDED to the
+          night's total inflates both, which is the worse of the two. */}
+      <div className="space-y-2">
+        <BucketChipRow
+          id="sleep-naps-label"
+          label={t('sleep.naps')}
+          icon={Coffee}
+          options={NAP_BUCKETS.map((id) => ({ id }))}
+          optionLabels={napLabels}
+          clearLabel={t('sleep.bucketClear')}
+          activeId={entry.napBucket}
+          onSelect={(id) =>
+            entry.setNapBucket(NAP_BUCKETS.find((nap) => nap === id) ?? null)
+          }
+        />
+        <p className="text-xs text-muted-foreground">{t('sleep.napsHint')}</p>
       </div>
 
       <SleepFactorGrid selected={entry.factors} onToggle={entry.toggleFactor} />

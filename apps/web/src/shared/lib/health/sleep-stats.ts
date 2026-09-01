@@ -6,6 +6,16 @@
  * Nothing here is stored. A year of sleep is ~365 rows, and that never
  * justifies keeping derived columns in sync; the regularity measures need a
  * RUN of consecutive days rather than a single row anyway.
+ *
+ * **Naps are recorded and never counted.** `napBucket` is carried onto every
+ * night and enters no figure here — not duration, not efficiency, not debt.
+ * It is an ordered id, not minutes: `gt60` is open at the top, so any number
+ * derived from it would be invented, and adding one to a night's total would
+ * inflate both the duration the reader sees and the efficiency computed from
+ * it — silently, and in the flattering direction. Debt therefore measures the
+ * NIGHT against the nightly target, which is what the target means. Whether a
+ * long nap should repay debt is a question for the insight phase, with the
+ * bucket in hand and the choice stated on screen.
  */
 import { addDays, localDateKey } from './local-date';
 
@@ -16,33 +26,68 @@ export interface SleepInput {
   localDate: Date;
   bedAt: Date;
   wakeAt: Date;
+  /** Out of bed. Null on rows written before the column existed. */
+  riseAt?: Date | null;
   latencyMin: number | null;
   awakeningsMin: number | null;
+  awakeningsCount?: number | null;
+  napBucket?: string | null;
 }
 
 export interface SleepNight {
   localDate: Date;
+  /** `rise − bed`, falling back to `wake − bed` when `riseAt` is null. */
   timeInBedMin: number;
+  /** `wake − bed`. The opportunity to sleep, which is what latency and the
+   *  awake minutes are subtracted from — the lie-in never was. */
+  sleepWindowMin: number;
   totalSleepMin: number;
   /** null when neither latency nor awakenings was recorded. */
   efficiencyPct: number | null;
-  /** True when totalSleepMin fell back to timeInBedMin. */
+  /** True when totalSleepMin fell back to the whole sleep window. */
   estimated: boolean;
+  /** True when time in bed had to fall back to `wake − bed`. */
+  riseEstimated: boolean;
   /** Minutes past local midnight of the sleep midpoint. */
   midsleepMin: number;
+  awakeningsCount: number | null;
+  /** Carried, never counted — see the module note on naps. */
+  napBucket: string | null;
 }
 
+/**
+ * One night's derived figures.
+ *
+ * Two different spans, and conflating them is what made efficiency wrong:
+ *   TIB = rise − bed          (time in bed, ends when you get up)
+ *   TST = (wake − bed) − latency − awake
+ *   SE  = TST / TIB
+ *
+ * The lie-in between waking and rising counts against efficiency but was never
+ * an opportunity to sleep, which is why TST is measured from the sleep window
+ * and not from TIB. With no `riseAt` the two spans coincide and the figure is
+ * exactly what it was before the column existed.
+ */
 export function computeNight(input: SleepInput): SleepNight {
-  const timeInBedMin = Math.max(
+  const sleepWindowMin = Math.max(
     0,
     Math.round((input.wakeAt.getTime() - input.bedAt.getTime()) / MINUTE_MS)
   );
+
+  const riseAt = input.riseAt ?? null;
+  const timeInBedMin =
+    riseAt === null
+      ? sleepWindowMin
+      : Math.max(
+          sleepWindowMin,
+          Math.round((riseAt.getTime() - input.bedAt.getTime()) / MINUTE_MS)
+        );
 
   const measured = input.latencyMin !== null || input.awakeningsMin !== null;
 
   const totalSleepMin = Math.max(
     0,
-    timeInBedMin - (input.latencyMin ?? 0) - (input.awakeningsMin ?? 0)
+    sleepWindowMin - (input.latencyMin ?? 0) - (input.awakeningsMin ?? 0)
   );
 
   // WITHHELD, not 100%. With no latency and no awakenings recorded, "time
@@ -65,11 +110,71 @@ export function computeNight(input: SleepInput): SleepNight {
   return {
     localDate: input.localDate,
     timeInBedMin,
+    sleepWindowMin,
     totalSleepMin,
     efficiencyPct,
     estimated: !measured,
+    riseEstimated: riseAt === null,
     midsleepMin,
+    awakeningsCount: input.awakeningsCount ?? null,
+    napBucket: input.napBucket ?? null,
   };
+}
+
+/**
+ * How a figure reads against the National Sleep Foundation's consensus
+ * (Ohayon et al., Sleep Health 3(1), 2017). Three bands, no composite score:
+ * a single number hides which input moved, and orthosomnia is a documented
+ * harm of tracker scores.
+ */
+export type SleepBand = 'good' | 'fair' | 'poor';
+
+/** Every threshold on one screen, so the UI never hardcodes one. */
+export const SLEEP_THRESHOLDS = {
+  efficiencyPct: { good: 85, poor: 75 },
+  latencyMin: { good: 30, poor: 46 },
+  awakeMin: { good: 20, poor: 40 },
+  awakeningsCount: { good: 1, poor: 4 },
+} as const;
+
+/** Higher is better: at or above `good` is good, below `poor` is poor. */
+function bandAscending(
+  value: number | null,
+  bounds: { good: number; poor: number }
+): SleepBand | null {
+  if (value === null) return null;
+  if (value >= bounds.good) return 'good';
+  if (value < bounds.poor) return 'poor';
+
+  return 'fair';
+}
+
+/** Lower is better: at or below `good` is good, above `poor` is poor. */
+function bandDescending(
+  value: number | null,
+  bounds: { good: number; poor: number }
+): SleepBand | null {
+  if (value === null) return null;
+  if (value <= bounds.good) return 'good';
+  if (value > bounds.poor) return 'poor';
+
+  return 'fair';
+}
+
+export function efficiencyBand(pct: number | null): SleepBand | null {
+  return bandAscending(pct, SLEEP_THRESHOLDS.efficiencyPct);
+}
+
+export function latencyBand(minutes: number | null): SleepBand | null {
+  return bandDescending(minutes, SLEEP_THRESHOLDS.latencyMin);
+}
+
+export function awakeMinutesBand(minutes: number | null): SleepBand | null {
+  return bandDescending(minutes, SLEEP_THRESHOLDS.awakeMin);
+}
+
+export function awakeningsCountBand(count: number | null): SleepBand | null {
+  return bandDescending(count, SLEEP_THRESHOLDS.awakeningsCount);
 }
 
 /**

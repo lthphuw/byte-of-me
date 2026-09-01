@@ -26,17 +26,44 @@ const row = {
   localDate: new Date('2026-08-22T00:00:00.000Z'),
   bedAt: new Date('2026-08-21T16:40:00.000Z'),
   wakeAt: new Date('2026-08-22T00:10:00.000Z'),
+  riseAt: new Date('2026-08-22T00:40:00.000Z'),
   latencyMin: null,
   awakeningsMin: null,
+  awakeningsCount: null,
   quality: 4,
+  restedness: 5,
+  napBucket: 'none',
   note: null,
   isFreeDay: false,
   factors: [],
+  loggedAt: new Date('2026-08-22T00:45:00.000Z'),
 };
 
 describe('getSleepLogs', () => {
   beforeEach(() => {
     findMany.mockReset().mockResolvedValue([row]);
+  });
+
+  it('serializes every stored instant, including the nullable ones', async () => {
+    const res = await getSleepLogs({ from: '2026-08-08', to: '2026-08-22' });
+
+    expect(res.success).toBe(true);
+    if (!res.success) throw new Error('expected success');
+    const [only] = res.data;
+    expect(only.riseAt).toBe('2026-08-22T00:40:00.000Z');
+    expect(only.loggedAt).toBe('2026-08-22T00:45:00.000Z');
+    expect(only.restedness).toBe(5);
+    expect(only.napBucket).toBe('none');
+  });
+
+  it('leaves a row that predates the new columns as null, not undefined', async () => {
+    findMany.mockResolvedValue([{ ...row, riseAt: null, loggedAt: null }]);
+
+    const res = await getSleepLogs({ from: '2026-08-08', to: '2026-08-22' });
+
+    if (!res.success) throw new Error('expected success');
+    expect(res.data[0].riseAt).toBeNull();
+    expect(res.data[0].loggedAt).toBeNull();
   });
 
   it('scopes the read to the authenticated owner and bounds both ends', async () => {

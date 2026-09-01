@@ -30,6 +30,22 @@ export const SLEEP_FACTORS = [
 export type SleepFactor = (typeof SLEEP_FACTORS)[number];
 
 /**
+ * How much was napped during the day, as an ordered id rather than minutes.
+ *
+ * An id and never a midpoint: `gt60` is open at the top and has none, and a
+ * nap total that looks like minutes invites being added to the night, which
+ * `sleep-stats.ts` deliberately never does. Ordered least to most, so the
+ * median in `buildSuggestion` is the middle ANSWER rather than a mean of codes.
+ */
+export const NAP_BUCKETS = ['none', 'lt30', '30to60', 'gt60'] as const;
+
+export type NapBucket = (typeof NAP_BUCKETS)[number];
+
+/** More awakenings than this in one night is a typo, not a diary entry. The
+ *  chip row only offers 0–3+, so this bounds a hand-built payload. */
+const MAX_AWAKENINGS_COUNT = 20;
+
+/**
  * The write.
  *
  * Dates cross the server-action boundary as ISO strings: a server action's
@@ -40,14 +56,24 @@ export type SleepFactor = (typeof SLEEP_FACTORS)[number];
  * OWNER's zone, and the server has no reliable way to know it. It is validated
  * against the Intl database rather than trusted, so a malformed value fails
  * here instead of throwing inside `toLocalDate`.
+ *
+ * `loggedAt` is ABSENT on purpose. When an entry was written is evidence about
+ * the entry, and a client that could name it could make a three-days-late
+ * reconstruction look like same-morning data. The server stamps it.
  */
 export const sleepLogUpsertSchema = z
   .object({
     bedAt: z.string().datetime(),
     wakeAt: z.string().datetime(),
+    /** Out of bed. Nullable because rows written before the column existed
+     *  have none, and `sleep-stats.ts` falls back to `wakeAt` for those. */
+    riseAt: z.string().datetime().nullable(),
     latencyMin: z.number().int().min(0).max(720).nullable(),
     awakeningsMin: z.number().int().min(0).max(720).nullable(),
+    awakeningsCount: z.number().int().min(0).max(MAX_AWAKENINGS_COUNT).nullable(),
     quality: z.number().int().min(1).max(5).nullable(),
+    restedness: z.number().int().min(1).max(5).nullable(),
+    napBucket: z.enum(NAP_BUCKETS).nullable(),
     note: z.string().max(2000).nullable(),
     isFreeDay: z.boolean(),
     factors: z.array(z.enum(SLEEP_FACTORS)).max(SLEEP_FACTORS.length),
@@ -62,6 +88,20 @@ export const sleepLogUpsertSchema = z
       new Date(v.wakeAt).getTime() - new Date(v.bedAt).getTime() <=
       24 * 60 * 60 * 1000,
     { message: 'A single sleep cannot exceed 24 hours', path: ['wakeAt'] }
+  )
+  // The other half of `bed ≤ wake ≤ rise`. Equality is allowed: getting up the
+  // moment you wake is the common answer, and it is what the form sends by
+  // default. Only rise BEFORE wake is impossible.
+  .refine(
+    (v) => v.riseAt === null || new Date(v.riseAt) >= new Date(v.wakeAt),
+    { message: 'riseAt must not be before wakeAt', path: ['riseAt'] }
+  )
+  .refine(
+    (v) =>
+      v.riseAt === null ||
+      new Date(v.riseAt).getTime() - new Date(v.bedAt).getTime() <=
+        24 * 60 * 60 * 1000,
+    { message: 'Time in bed cannot exceed 24 hours', path: ['riseAt'] }
   );
 
 export type SleepLogUpsertInput = z.infer<typeof sleepLogUpsertSchema>;

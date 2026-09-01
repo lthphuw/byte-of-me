@@ -1,9 +1,14 @@
 import { localClockMinutes, medianBedClock, medianOf } from './median-bed-clock';
 
-import type { SleepLogRow } from '@/entities/sleep-log';
-import type {
-  SleepEntryDefaults,
-  SleepSuggestion,
+import {
+  NAP_BUCKETS,
+  type NapBucket,
+  type SleepLogRow,
+} from '@/entities/sleep-log';
+import {
+  RISE_OFFSET_PRESETS,
+  type SleepEntryDefaults,
+  type SleepSuggestion,
 } from '@/features/daily/sleep-entry/model/use-sleep-entry';
 import { clockToMinutes, minutesToClock } from '@/shared/lib/health/duration';
 import { addDays, localDateKey } from '@/shared/lib/health/local-date';
@@ -86,9 +91,13 @@ export function buildDayDefaults({
       wakeClock: minutesToClock(
         localClockMinutes(new Date(existing.wakeAt), timeZone)
       ),
+      ...riseDefaults(existing, timeZone),
       quality: existing.quality,
+      restedness: existing.restedness,
       latencyMin: existing.latencyMin,
       awakeningsMin: existing.awakeningsMin,
+      awakeningsCount: existing.awakeningsCount,
+      napBucket: asNapBucket(existing.napBucket),
       factors: existing.factors,
       isFreeDay: existing.isFreeDay,
       note: existing.note,
@@ -100,9 +109,17 @@ export function buildDayDefaults({
     localDate: dayKey,
     bedClock: '',
     wakeClock: '',
+    // Getting up when you woke, shown selected rather than left unanswered.
+    // Unlike a pre-filled clock this is a visible chip the reader can move,
+    // and it is what keeps efficiency computable on a one-tap morning.
+    riseOffsetMin: 0,
+    riseClockCustom: '',
     quality: null,
+    restedness: null,
     latencyMin: null,
     awakeningsMin: null,
+    awakeningsCount: null,
+    napBucket: null,
     factors: [],
     // Saturday or Sunday of the day being edited. The key is UTC midnight
     // standing for a calendar day, so its UTC weekday IS the local one. A
@@ -125,8 +142,12 @@ export function buildDayDefaults({
  *
  * Every figure is a median, never a mean: one night out until 04:00 drags an
  * average by half an hour and would then be offered back as the new normal.
- * Latency and minutes awake are carried only when they were actually recorded
- * — a bucket the author never answered is not part of "as usual".
+ * The optional answers are carried only when they were actually recorded — a
+ * bucket the author never answered is not part of "as usual".
+ *
+ * RESTEDNESS IS DELIBERATELY ABSENT. It is the outcome the insight phase
+ * contrasts everything else against, and offering last fortnight's median back
+ * as today's answer would pre-fill the one field that has to be observed.
  */
 function buildSuggestion({
   rows,
@@ -162,18 +183,81 @@ function buildSuggestion({
       ? nowMin
       : bedMin + targetMin;
 
+  const recorded = <T,>(values: (T | null)[]): T[] =>
+    values.filter((value): value is T => value !== null);
+
   return {
     bedClock,
     wakeClock: minutesToClock(wakeMin),
-    latencyMin: medianOf(
-      recent
-        .map((row) => row.latencyMin)
-        .filter((value): value is number => value !== null)
+    riseOffsetMin:
+      medianOf(recorded(recent.map((row) => riseGapOf(row)))) ?? 0,
+    latencyMin: medianOf(recorded(recent.map((row) => row.latencyMin))),
+    awakeningsMin: medianOf(recorded(recent.map((row) => row.awakeningsMin))),
+    awakeningsCount: medianOf(
+      recorded(recent.map((row) => row.awakeningsCount))
     ),
-    awakeningsMin: medianOf(
-      recent
-        .map((row) => row.awakeningsMin)
-        .filter((value): value is number => value !== null)
+    napBucket: medianNapBucket(recent),
+  };
+}
+
+/** Minutes from waking to getting up, or null when the row predates the
+ *  column. The short way round, like every other span in this module. */
+function riseGapOf(row: SleepLogRow): number | null {
+  if (row.riseAt === null) return null;
+
+  const gapMin = Math.round(
+    (new Date(row.riseAt).getTime() - new Date(row.wakeAt).getTime()) / 60_000
+  );
+
+  return ((gapMin % DAY_MIN) + DAY_MIN) % DAY_MIN;
+}
+
+/**
+ * The middle nap ANSWER, by position in the ordered id list.
+ *
+ * A median over indices rather than a mean over minutes: the ids are ordered
+ * but not evenly spaced, and `gt60` has no upper bound to average against.
+ */
+function medianNapBucket(rows: SleepLogRow[]): NapBucket | null {
+  const indices = rows
+    .map((row) => NAP_BUCKETS.indexOf(asNapBucket(row.napBucket) as NapBucket))
+    .filter((index) => index >= 0);
+
+  const median = medianOf(indices);
+
+  return median === null ? null : NAP_BUCKETS[median];
+}
+
+/** A stored string is only a nap bucket if it is still one of the ids — an id
+ *  retired by a later version reads as unanswered rather than crashing. */
+function asNapBucket(value: string | null): NapBucket | null {
+  return NAP_BUCKETS.includes(value as NapBucket) ? (value as NapBucket) : null;
+}
+
+/**
+ * Which rise control an existing row opens on.
+ *
+ * A stored gap that is exactly one of the presets lights that chip; anything
+ * else opens the custom clock holding the real value, so re-saving a row never
+ * rounds the author's own answer to the nearest chip.
+ */
+function riseDefaults(
+  row: SleepLogRow,
+  timeZone: string
+): Pick<SleepEntryDefaults, 'riseOffsetMin' | 'riseClockCustom'> {
+  const gapMin = riseGapOf(row);
+  if (row.riseAt === null || gapMin === null) {
+    return { riseOffsetMin: 0, riseClockCustom: '' };
+  }
+
+  if ((RISE_OFFSET_PRESETS as readonly number[]).includes(gapMin)) {
+    return { riseOffsetMin: gapMin, riseClockCustom: '' };
+  }
+
+  return {
+    riseOffsetMin: null,
+    riseClockCustom: minutesToClock(
+      localClockMinutes(new Date(row.riseAt), timeZone)
     ),
   };
 }

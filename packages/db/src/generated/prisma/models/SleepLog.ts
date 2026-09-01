@@ -29,13 +29,17 @@ export type AggregateSleepLog = {
 export type SleepLogAvgAggregateOutputType = {
   latencyMin: number | null
   awakeningsMin: number | null
+  awakeningsCount: number | null
   quality: number | null
+  restedness: number | null
 }
 
 export type SleepLogSumAggregateOutputType = {
   latencyMin: number | null
   awakeningsMin: number | null
+  awakeningsCount: number | null
   quality: number | null
+  restedness: number | null
 }
 
 export type SleepLogMinAggregateOutputType = {
@@ -45,10 +49,15 @@ export type SleepLogMinAggregateOutputType = {
   localDate: Date | null
   bedAt: Date | null
   wakeAt: Date | null
+  riseAt: Date | null
   latencyMin: number | null
   awakeningsMin: number | null
+  awakeningsCount: number | null
   quality: number | null
+  restedness: number | null
+  napBucket: string | null
   note: string | null
+  loggedAt: Date | null
   isFreeDay: boolean | null
   ownerId: string | null
 }
@@ -60,10 +69,15 @@ export type SleepLogMaxAggregateOutputType = {
   localDate: Date | null
   bedAt: Date | null
   wakeAt: Date | null
+  riseAt: Date | null
   latencyMin: number | null
   awakeningsMin: number | null
+  awakeningsCount: number | null
   quality: number | null
+  restedness: number | null
+  napBucket: string | null
   note: string | null
+  loggedAt: Date | null
   isFreeDay: boolean | null
   ownerId: string | null
 }
@@ -75,10 +89,15 @@ export type SleepLogCountAggregateOutputType = {
   localDate: number
   bedAt: number
   wakeAt: number
+  riseAt: number
   latencyMin: number
   awakeningsMin: number
+  awakeningsCount: number
   quality: number
+  restedness: number
+  napBucket: number
   note: number
+  loggedAt: number
   isFreeDay: number
   factors: number
   ownerId: number
@@ -89,13 +108,17 @@ export type SleepLogCountAggregateOutputType = {
 export type SleepLogAvgAggregateInputType = {
   latencyMin?: true
   awakeningsMin?: true
+  awakeningsCount?: true
   quality?: true
+  restedness?: true
 }
 
 export type SleepLogSumAggregateInputType = {
   latencyMin?: true
   awakeningsMin?: true
+  awakeningsCount?: true
   quality?: true
+  restedness?: true
 }
 
 export type SleepLogMinAggregateInputType = {
@@ -105,10 +128,15 @@ export type SleepLogMinAggregateInputType = {
   localDate?: true
   bedAt?: true
   wakeAt?: true
+  riseAt?: true
   latencyMin?: true
   awakeningsMin?: true
+  awakeningsCount?: true
   quality?: true
+  restedness?: true
+  napBucket?: true
   note?: true
+  loggedAt?: true
   isFreeDay?: true
   ownerId?: true
 }
@@ -120,10 +148,15 @@ export type SleepLogMaxAggregateInputType = {
   localDate?: true
   bedAt?: true
   wakeAt?: true
+  riseAt?: true
   latencyMin?: true
   awakeningsMin?: true
+  awakeningsCount?: true
   quality?: true
+  restedness?: true
+  napBucket?: true
   note?: true
+  loggedAt?: true
   isFreeDay?: true
   ownerId?: true
 }
@@ -135,10 +168,15 @@ export type SleepLogCountAggregateInputType = {
   localDate?: true
   bedAt?: true
   wakeAt?: true
+  riseAt?: true
   latencyMin?: true
   awakeningsMin?: true
+  awakeningsCount?: true
   quality?: true
+  restedness?: true
+  napBucket?: true
   note?: true
+  loggedAt?: true
   isFreeDay?: true
   factors?: true
   ownerId?: true
@@ -238,10 +276,15 @@ export type SleepLogGroupByOutputType = {
   localDate: Date
   bedAt: Date
   wakeAt: Date
+  riseAt: Date | null
   latencyMin: number | null
   awakeningsMin: number | null
+  awakeningsCount: number | null
   quality: number | null
+  restedness: number | null
+  napBucket: string | null
   note: string | null
+  loggedAt: Date | null
   isFreeDay: boolean
   factors: string[]
   ownerId: string
@@ -277,10 +320,15 @@ export type SleepLogWhereInput = {
   localDate?: Prisma.DateTimeFilter<"SleepLog"> | Date | string
   bedAt?: Prisma.DateTimeFilter<"SleepLog"> | Date | string
   wakeAt?: Prisma.DateTimeFilter<"SleepLog"> | Date | string
+  riseAt?: Prisma.DateTimeNullableFilter<"SleepLog"> | Date | string | null
   latencyMin?: Prisma.IntNullableFilter<"SleepLog"> | number | null
   awakeningsMin?: Prisma.IntNullableFilter<"SleepLog"> | number | null
+  awakeningsCount?: Prisma.IntNullableFilter<"SleepLog"> | number | null
   quality?: Prisma.IntNullableFilter<"SleepLog"> | number | null
+  restedness?: Prisma.IntNullableFilter<"SleepLog"> | number | null
+  napBucket?: Prisma.StringNullableFilter<"SleepLog"> | string | null
   note?: Prisma.StringNullableFilter<"SleepLog"> | string | null
+  loggedAt?: Prisma.DateTimeNullableFilter<"SleepLog"> | Date | string | null
   isFreeDay?: Prisma.BoolFilter<"SleepLog"> | boolean
   factors?: Prisma.StringNullableListFilter<"SleepLog">
   ownerId?: Prisma.StringFilter<"SleepLog"> | string
@@ -294,10 +342,15 @@ export type SleepLogOrderByWithRelationInput = {
   localDate?: Prisma.SortOrder
   bedAt?: Prisma.SortOrder
   wakeAt?: Prisma.SortOrder
+  riseAt?: Prisma.SortOrderInput | Prisma.SortOrder
   latencyMin?: Prisma.SortOrderInput | Prisma.SortOrder
   awakeningsMin?: Prisma.SortOrderInput | Prisma.SortOrder
+  awakeningsCount?: Prisma.SortOrderInput | Prisma.SortOrder
   quality?: Prisma.SortOrderInput | Prisma.SortOrder
+  restedness?: Prisma.SortOrderInput | Prisma.SortOrder
+  napBucket?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
+  loggedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isFreeDay?: Prisma.SortOrder
   factors?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
@@ -315,10 +368,15 @@ export type SleepLogWhereUniqueInput = Prisma.AtLeast<{
   localDate?: Prisma.DateTimeFilter<"SleepLog"> | Date | string
   bedAt?: Prisma.DateTimeFilter<"SleepLog"> | Date | string
   wakeAt?: Prisma.DateTimeFilter<"SleepLog"> | Date | string
+  riseAt?: Prisma.DateTimeNullableFilter<"SleepLog"> | Date | string | null
   latencyMin?: Prisma.IntNullableFilter<"SleepLog"> | number | null
   awakeningsMin?: Prisma.IntNullableFilter<"SleepLog"> | number | null
+  awakeningsCount?: Prisma.IntNullableFilter<"SleepLog"> | number | null
   quality?: Prisma.IntNullableFilter<"SleepLog"> | number | null
+  restedness?: Prisma.IntNullableFilter<"SleepLog"> | number | null
+  napBucket?: Prisma.StringNullableFilter<"SleepLog"> | string | null
   note?: Prisma.StringNullableFilter<"SleepLog"> | string | null
+  loggedAt?: Prisma.DateTimeNullableFilter<"SleepLog"> | Date | string | null
   isFreeDay?: Prisma.BoolFilter<"SleepLog"> | boolean
   factors?: Prisma.StringNullableListFilter<"SleepLog">
   ownerId?: Prisma.StringFilter<"SleepLog"> | string
@@ -332,10 +390,15 @@ export type SleepLogOrderByWithAggregationInput = {
   localDate?: Prisma.SortOrder
   bedAt?: Prisma.SortOrder
   wakeAt?: Prisma.SortOrder
+  riseAt?: Prisma.SortOrderInput | Prisma.SortOrder
   latencyMin?: Prisma.SortOrderInput | Prisma.SortOrder
   awakeningsMin?: Prisma.SortOrderInput | Prisma.SortOrder
+  awakeningsCount?: Prisma.SortOrderInput | Prisma.SortOrder
   quality?: Prisma.SortOrderInput | Prisma.SortOrder
+  restedness?: Prisma.SortOrderInput | Prisma.SortOrder
+  napBucket?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
+  loggedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isFreeDay?: Prisma.SortOrder
   factors?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
@@ -356,10 +419,15 @@ export type SleepLogScalarWhereWithAggregatesInput = {
   localDate?: Prisma.DateTimeWithAggregatesFilter<"SleepLog"> | Date | string
   bedAt?: Prisma.DateTimeWithAggregatesFilter<"SleepLog"> | Date | string
   wakeAt?: Prisma.DateTimeWithAggregatesFilter<"SleepLog"> | Date | string
+  riseAt?: Prisma.DateTimeNullableWithAggregatesFilter<"SleepLog"> | Date | string | null
   latencyMin?: Prisma.IntNullableWithAggregatesFilter<"SleepLog"> | number | null
   awakeningsMin?: Prisma.IntNullableWithAggregatesFilter<"SleepLog"> | number | null
+  awakeningsCount?: Prisma.IntNullableWithAggregatesFilter<"SleepLog"> | number | null
   quality?: Prisma.IntNullableWithAggregatesFilter<"SleepLog"> | number | null
+  restedness?: Prisma.IntNullableWithAggregatesFilter<"SleepLog"> | number | null
+  napBucket?: Prisma.StringNullableWithAggregatesFilter<"SleepLog"> | string | null
   note?: Prisma.StringNullableWithAggregatesFilter<"SleepLog"> | string | null
+  loggedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"SleepLog"> | Date | string | null
   isFreeDay?: Prisma.BoolWithAggregatesFilter<"SleepLog"> | boolean
   factors?: Prisma.StringNullableListFilter<"SleepLog">
   ownerId?: Prisma.StringWithAggregatesFilter<"SleepLog"> | string
@@ -372,10 +440,15 @@ export type SleepLogCreateInput = {
   localDate: Date | string
   bedAt: Date | string
   wakeAt: Date | string
+  riseAt?: Date | string | null
   latencyMin?: number | null
   awakeningsMin?: number | null
+  awakeningsCount?: number | null
   quality?: number | null
+  restedness?: number | null
+  napBucket?: string | null
   note?: string | null
+  loggedAt?: Date | string | null
   isFreeDay?: boolean
   factors?: Prisma.SleepLogCreatefactorsInput | string[]
   owner: Prisma.UserCreateNestedOneWithoutSleepLogsInput
@@ -388,10 +461,15 @@ export type SleepLogUncheckedCreateInput = {
   localDate: Date | string
   bedAt: Date | string
   wakeAt: Date | string
+  riseAt?: Date | string | null
   latencyMin?: number | null
   awakeningsMin?: number | null
+  awakeningsCount?: number | null
   quality?: number | null
+  restedness?: number | null
+  napBucket?: string | null
   note?: string | null
+  loggedAt?: Date | string | null
   isFreeDay?: boolean
   factors?: Prisma.SleepLogCreatefactorsInput | string[]
   ownerId: string
@@ -404,10 +482,15 @@ export type SleepLogUpdateInput = {
   localDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   wakeAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  riseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latencyMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awakeningsMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awakeningsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   quality?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  restedness?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  napBucket?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFreeDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
   factors?: Prisma.SleepLogUpdatefactorsInput | string[]
   owner?: Prisma.UserUpdateOneRequiredWithoutSleepLogsNestedInput
@@ -420,10 +503,15 @@ export type SleepLogUncheckedUpdateInput = {
   localDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   wakeAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  riseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latencyMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awakeningsMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awakeningsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   quality?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  restedness?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  napBucket?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFreeDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
   factors?: Prisma.SleepLogUpdatefactorsInput | string[]
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -436,10 +524,15 @@ export type SleepLogCreateManyInput = {
   localDate: Date | string
   bedAt: Date | string
   wakeAt: Date | string
+  riseAt?: Date | string | null
   latencyMin?: number | null
   awakeningsMin?: number | null
+  awakeningsCount?: number | null
   quality?: number | null
+  restedness?: number | null
+  napBucket?: string | null
   note?: string | null
+  loggedAt?: Date | string | null
   isFreeDay?: boolean
   factors?: Prisma.SleepLogCreatefactorsInput | string[]
   ownerId: string
@@ -452,10 +545,15 @@ export type SleepLogUpdateManyMutationInput = {
   localDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   wakeAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  riseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latencyMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awakeningsMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awakeningsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   quality?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  restedness?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  napBucket?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFreeDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
   factors?: Prisma.SleepLogUpdatefactorsInput | string[]
 }
@@ -467,10 +565,15 @@ export type SleepLogUncheckedUpdateManyInput = {
   localDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   wakeAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  riseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latencyMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awakeningsMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awakeningsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   quality?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  restedness?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  napBucket?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFreeDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
   factors?: Prisma.SleepLogUpdatefactorsInput | string[]
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -506,10 +609,15 @@ export type SleepLogCountOrderByAggregateInput = {
   localDate?: Prisma.SortOrder
   bedAt?: Prisma.SortOrder
   wakeAt?: Prisma.SortOrder
+  riseAt?: Prisma.SortOrder
   latencyMin?: Prisma.SortOrder
   awakeningsMin?: Prisma.SortOrder
+  awakeningsCount?: Prisma.SortOrder
   quality?: Prisma.SortOrder
+  restedness?: Prisma.SortOrder
+  napBucket?: Prisma.SortOrder
   note?: Prisma.SortOrder
+  loggedAt?: Prisma.SortOrder
   isFreeDay?: Prisma.SortOrder
   factors?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
@@ -518,7 +626,9 @@ export type SleepLogCountOrderByAggregateInput = {
 export type SleepLogAvgOrderByAggregateInput = {
   latencyMin?: Prisma.SortOrder
   awakeningsMin?: Prisma.SortOrder
+  awakeningsCount?: Prisma.SortOrder
   quality?: Prisma.SortOrder
+  restedness?: Prisma.SortOrder
 }
 
 export type SleepLogMaxOrderByAggregateInput = {
@@ -528,10 +638,15 @@ export type SleepLogMaxOrderByAggregateInput = {
   localDate?: Prisma.SortOrder
   bedAt?: Prisma.SortOrder
   wakeAt?: Prisma.SortOrder
+  riseAt?: Prisma.SortOrder
   latencyMin?: Prisma.SortOrder
   awakeningsMin?: Prisma.SortOrder
+  awakeningsCount?: Prisma.SortOrder
   quality?: Prisma.SortOrder
+  restedness?: Prisma.SortOrder
+  napBucket?: Prisma.SortOrder
   note?: Prisma.SortOrder
+  loggedAt?: Prisma.SortOrder
   isFreeDay?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
 }
@@ -543,10 +658,15 @@ export type SleepLogMinOrderByAggregateInput = {
   localDate?: Prisma.SortOrder
   bedAt?: Prisma.SortOrder
   wakeAt?: Prisma.SortOrder
+  riseAt?: Prisma.SortOrder
   latencyMin?: Prisma.SortOrder
   awakeningsMin?: Prisma.SortOrder
+  awakeningsCount?: Prisma.SortOrder
   quality?: Prisma.SortOrder
+  restedness?: Prisma.SortOrder
+  napBucket?: Prisma.SortOrder
   note?: Prisma.SortOrder
+  loggedAt?: Prisma.SortOrder
   isFreeDay?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
 }
@@ -554,7 +674,9 @@ export type SleepLogMinOrderByAggregateInput = {
 export type SleepLogSumOrderByAggregateInput = {
   latencyMin?: Prisma.SortOrder
   awakeningsMin?: Prisma.SortOrder
+  awakeningsCount?: Prisma.SortOrder
   quality?: Prisma.SortOrder
+  restedness?: Prisma.SortOrder
 }
 
 export type SleepLogCreateNestedManyWithoutOwnerInput = {
@@ -615,10 +737,15 @@ export type SleepLogCreateWithoutOwnerInput = {
   localDate: Date | string
   bedAt: Date | string
   wakeAt: Date | string
+  riseAt?: Date | string | null
   latencyMin?: number | null
   awakeningsMin?: number | null
+  awakeningsCount?: number | null
   quality?: number | null
+  restedness?: number | null
+  napBucket?: string | null
   note?: string | null
+  loggedAt?: Date | string | null
   isFreeDay?: boolean
   factors?: Prisma.SleepLogCreatefactorsInput | string[]
 }
@@ -630,10 +757,15 @@ export type SleepLogUncheckedCreateWithoutOwnerInput = {
   localDate: Date | string
   bedAt: Date | string
   wakeAt: Date | string
+  riseAt?: Date | string | null
   latencyMin?: number | null
   awakeningsMin?: number | null
+  awakeningsCount?: number | null
   quality?: number | null
+  restedness?: number | null
+  napBucket?: string | null
   note?: string | null
+  loggedAt?: Date | string | null
   isFreeDay?: boolean
   factors?: Prisma.SleepLogCreatefactorsInput | string[]
 }
@@ -674,10 +806,15 @@ export type SleepLogScalarWhereInput = {
   localDate?: Prisma.DateTimeFilter<"SleepLog"> | Date | string
   bedAt?: Prisma.DateTimeFilter<"SleepLog"> | Date | string
   wakeAt?: Prisma.DateTimeFilter<"SleepLog"> | Date | string
+  riseAt?: Prisma.DateTimeNullableFilter<"SleepLog"> | Date | string | null
   latencyMin?: Prisma.IntNullableFilter<"SleepLog"> | number | null
   awakeningsMin?: Prisma.IntNullableFilter<"SleepLog"> | number | null
+  awakeningsCount?: Prisma.IntNullableFilter<"SleepLog"> | number | null
   quality?: Prisma.IntNullableFilter<"SleepLog"> | number | null
+  restedness?: Prisma.IntNullableFilter<"SleepLog"> | number | null
+  napBucket?: Prisma.StringNullableFilter<"SleepLog"> | string | null
   note?: Prisma.StringNullableFilter<"SleepLog"> | string | null
+  loggedAt?: Prisma.DateTimeNullableFilter<"SleepLog"> | Date | string | null
   isFreeDay?: Prisma.BoolFilter<"SleepLog"> | boolean
   factors?: Prisma.StringNullableListFilter<"SleepLog">
   ownerId?: Prisma.StringFilter<"SleepLog"> | string
@@ -690,10 +827,15 @@ export type SleepLogCreateManyOwnerInput = {
   localDate: Date | string
   bedAt: Date | string
   wakeAt: Date | string
+  riseAt?: Date | string | null
   latencyMin?: number | null
   awakeningsMin?: number | null
+  awakeningsCount?: number | null
   quality?: number | null
+  restedness?: number | null
+  napBucket?: string | null
   note?: string | null
+  loggedAt?: Date | string | null
   isFreeDay?: boolean
   factors?: Prisma.SleepLogCreatefactorsInput | string[]
 }
@@ -705,10 +847,15 @@ export type SleepLogUpdateWithoutOwnerInput = {
   localDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   wakeAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  riseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latencyMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awakeningsMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awakeningsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   quality?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  restedness?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  napBucket?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFreeDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
   factors?: Prisma.SleepLogUpdatefactorsInput | string[]
 }
@@ -720,10 +867,15 @@ export type SleepLogUncheckedUpdateWithoutOwnerInput = {
   localDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   wakeAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  riseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latencyMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awakeningsMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awakeningsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   quality?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  restedness?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  napBucket?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFreeDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
   factors?: Prisma.SleepLogUpdatefactorsInput | string[]
 }
@@ -735,10 +887,15 @@ export type SleepLogUncheckedUpdateManyWithoutOwnerInput = {
   localDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   wakeAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  riseAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latencyMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awakeningsMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awakeningsCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   quality?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  restedness?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  napBucket?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loggedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isFreeDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
   factors?: Prisma.SleepLogUpdatefactorsInput | string[]
 }
@@ -752,10 +909,15 @@ export type SleepLogSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   localDate?: boolean
   bedAt?: boolean
   wakeAt?: boolean
+  riseAt?: boolean
   latencyMin?: boolean
   awakeningsMin?: boolean
+  awakeningsCount?: boolean
   quality?: boolean
+  restedness?: boolean
+  napBucket?: boolean
   note?: boolean
+  loggedAt?: boolean
   isFreeDay?: boolean
   factors?: boolean
   ownerId?: boolean
@@ -769,10 +931,15 @@ export type SleepLogSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   localDate?: boolean
   bedAt?: boolean
   wakeAt?: boolean
+  riseAt?: boolean
   latencyMin?: boolean
   awakeningsMin?: boolean
+  awakeningsCount?: boolean
   quality?: boolean
+  restedness?: boolean
+  napBucket?: boolean
   note?: boolean
+  loggedAt?: boolean
   isFreeDay?: boolean
   factors?: boolean
   ownerId?: boolean
@@ -786,10 +953,15 @@ export type SleepLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   localDate?: boolean
   bedAt?: boolean
   wakeAt?: boolean
+  riseAt?: boolean
   latencyMin?: boolean
   awakeningsMin?: boolean
+  awakeningsCount?: boolean
   quality?: boolean
+  restedness?: boolean
+  napBucket?: boolean
   note?: boolean
+  loggedAt?: boolean
   isFreeDay?: boolean
   factors?: boolean
   ownerId?: boolean
@@ -803,16 +975,21 @@ export type SleepLogSelectScalar = {
   localDate?: boolean
   bedAt?: boolean
   wakeAt?: boolean
+  riseAt?: boolean
   latencyMin?: boolean
   awakeningsMin?: boolean
+  awakeningsCount?: boolean
   quality?: boolean
+  restedness?: boolean
+  napBucket?: boolean
   note?: boolean
+  loggedAt?: boolean
   isFreeDay?: boolean
   factors?: boolean
   ownerId?: boolean
 }
 
-export type SleepLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "localDate" | "bedAt" | "wakeAt" | "latencyMin" | "awakeningsMin" | "quality" | "note" | "isFreeDay" | "factors" | "ownerId", ExtArgs["result"]["sleepLog"]>
+export type SleepLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "localDate" | "bedAt" | "wakeAt" | "riseAt" | "latencyMin" | "awakeningsMin" | "awakeningsCount" | "quality" | "restedness" | "napBucket" | "note" | "loggedAt" | "isFreeDay" | "factors" | "ownerId", ExtArgs["result"]["sleepLog"]>
 export type SleepLogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -844,6 +1021,12 @@ export type $SleepLogPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     bedAt: Date
     wakeAt: Date
     /**
+     * Out of bed. Time in bed ends here, not at `wakeAt`, so efficiency stops
+     * counting the lie-in as sleep. Optional: rows written before it existed
+     * fall back to `wakeAt` in `sleep-stats.ts`.
+     */
+    riseAt: Date | null
+    /**
      * Minutes to fall asleep, and total minutes awake during the night. Both
      * optional: without either, sleep efficiency is WITHHELD rather than shown
      * as 100% (see `sleep-stats.ts`). Every other statistic still computes.
@@ -851,10 +1034,33 @@ export type $SleepLogPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     latencyMin: number | null
     awakeningsMin: number | null
     /**
+     * How many times you woke, beside the minutes already stored. The two
+     * answer different questions: four brief wakings and one long one can share
+     * a minute total and are not the same night.
+     */
+    awakeningsCount: number | null
+    /**
      * 1..5. Optional — never blocks a save.
      */
     quality: number | null
+    /**
+     * 1..5, on waking. The OUTCOME variable — quality rates the night, this
+     * rates the morning it produced, and it is what the insight phase contrasts.
+     */
+    restedness: number | null
+    /**
+     * none | lt30 | 30to60 | gt60, validated in `sleep-log-schema.ts`. An id,
+     * not a midpoint: an unrecorded nap corrupts duration and debt, and `gt60`
+     * has no upper bound to take a midpoint of.
+     */
+    napBucket: string | null
     note: string | null
+    /**
+     * When the entry was WRITTEN, distinct from `updatedAt`, which every later
+     * correction moves. A night reconstructed three days late is recall, not
+     * same-morning data, and the insight phase has to be able to tell.
+     */
+    loggedAt: Date | null
     /**
      * Needed by social jetlag and MSFsc (phase 1b), which are defined against
      * days you were free to sleep as long as you liked. A stored column rather
@@ -1299,10 +1505,15 @@ export interface SleepLogFieldRefs {
   readonly localDate: Prisma.FieldRef<"SleepLog", 'DateTime'>
   readonly bedAt: Prisma.FieldRef<"SleepLog", 'DateTime'>
   readonly wakeAt: Prisma.FieldRef<"SleepLog", 'DateTime'>
+  readonly riseAt: Prisma.FieldRef<"SleepLog", 'DateTime'>
   readonly latencyMin: Prisma.FieldRef<"SleepLog", 'Int'>
   readonly awakeningsMin: Prisma.FieldRef<"SleepLog", 'Int'>
+  readonly awakeningsCount: Prisma.FieldRef<"SleepLog", 'Int'>
   readonly quality: Prisma.FieldRef<"SleepLog", 'Int'>
+  readonly restedness: Prisma.FieldRef<"SleepLog", 'Int'>
+  readonly napBucket: Prisma.FieldRef<"SleepLog", 'String'>
   readonly note: Prisma.FieldRef<"SleepLog", 'String'>
+  readonly loggedAt: Prisma.FieldRef<"SleepLog", 'DateTime'>
   readonly isFreeDay: Prisma.FieldRef<"SleepLog", 'Boolean'>
   readonly factors: Prisma.FieldRef<"SleepLog", 'String[]'>
   readonly ownerId: Prisma.FieldRef<"SleepLog", 'String'>

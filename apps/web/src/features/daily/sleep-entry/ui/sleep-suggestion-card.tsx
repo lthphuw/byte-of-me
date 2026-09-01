@@ -24,13 +24,22 @@ export function SleepSuggestionCard({
 }) {
   const t = useTranslations('dashboard.daily');
 
+  // Every figure the tap would take, printed before it is taken. Restedness is
+  // absent by design — it is the outcome, and suggesting it back would fill in
+  // the one answer that has to be observed.
   const extras = [
+    suggestion.riseOffsetMin === 0
+      ? null
+      : t('sleep.suggestionRise', { minutes: suggestion.riseOffsetMin }),
     suggestion.latencyMin === null
       ? null
       : t('sleep.suggestionLatency', { minutes: suggestion.latencyMin }),
     suggestion.awakeningsMin === null
       ? null
       : t('sleep.suggestionAwake', { minutes: suggestion.awakeningsMin }),
+    suggestion.awakeningsCount === null
+      ? null
+      : t('sleep.suggestionAwakenings', { n: suggestion.awakeningsCount }),
   ].filter((line): line is string => line !== null);
 
   return (

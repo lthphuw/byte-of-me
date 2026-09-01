@@ -2,8 +2,6 @@
 
 import type { LucideIcon } from 'lucide-react';
 
-import type { SleepBucket } from '@/features/daily/sleep-entry/lib/sleep-buckets';
-import { bucketIdOf } from '@/features/daily/sleep-entry/lib/sleep-buckets';
 import { cn } from '@/shared/lib/utils';
 
 /**
@@ -14,33 +12,33 @@ import { cn } from '@/shared/lib/utils';
  * a state at all. Retap clears, the same gesture the quality scale documents:
  * both figures are optional, and their absence is a different claim from zero.
  *
- * A tap stores the bucket's midpoint. Displaying one never rewrites anything,
- * so a row typed before the chips existed keeps its exact minute unless the
- * reader actually answers again.
+ * It takes an ID and hands one back; what that id MEANS is the caller's — a
+ * midpoint for the minute rows, the stored value itself for naps. Displaying
+ * one never rewrites anything, so a row typed before the chips existed keeps
+ * its exact minute unless the reader actually answers again.
  */
 export function BucketChipRow({
   id,
   label,
   icon: Icon,
-  buckets,
+  options,
   optionLabels,
   clearLabel,
-  value,
-  onChange,
+  activeId,
+  onSelect,
 }: {
   id: string;
   label: string;
   icon: LucideIcon;
-  buckets: readonly SleepBucket[];
-  /** By bucket id. Spelled out by the caller: next-intl's declarations only
+  /** Ids in display order. Four or five; nothing else has a row class. */
+  options: readonly { id: string }[];
+  /** By option id. Spelled out by the caller: next-intl's declarations only
    *  type-check literal keys. */
   optionLabels: Record<string, string>;
   clearLabel: string;
-  value: number | null;
-  onChange: (value: number | null) => void;
+  activeId: string | null;
+  onSelect: (id: string | null) => void;
 }) {
-  const activeId = bucketIdOf(value, buckets);
-
   return (
     <div className="space-y-2">
       <span
@@ -58,19 +56,19 @@ export function BucketChipRow({
         aria-labelledby={id}
         className={cn(
           'grid gap-2',
-          buckets.length === 5 ? 'grid-cols-5' : 'grid-cols-4'
+          options.length === 5 ? 'grid-cols-5' : 'grid-cols-4'
         )}
       >
-        {buckets.map((bucket) => {
-          const isActive = bucket.id === activeId;
+        {options.map((option) => {
+          const isActive = option.id === activeId;
 
           return (
             <button
-              key={bucket.id}
+              key={option.id}
               type="button"
               aria-pressed={isActive}
               aria-label={isActive ? clearLabel : undefined}
-              onClick={() => onChange(isActive ? null : bucket.value)}
+              onClick={() => onSelect(isActive ? null : option.id)}
               className={cn(
                 'flex min-h-11 items-center justify-center rounded-2xl border px-1 text-center',
                 'text-xs tabular-nums leading-tight',
@@ -81,7 +79,7 @@ export function BucketChipRow({
                   : 'border-border bg-background text-muted-foreground hover:border-primary/40 hover:bg-muted hover:text-foreground'
               )}
             >
-              {optionLabels[bucket.id]}
+              {optionLabels[option.id]}
             </button>
           );
         })}
