@@ -1391,6 +1391,7 @@ declare const messages: {
         "underTarget": "Thiếu {hours, number} giờ {minutes, number} phút so với mục tiêu",
         "onTarget": "Đạt mục tiêu",
         "durationPending": "Nhập đủ hai mốc giờ",
+        "clocksEqual": "Giờ đi ngủ và giờ thức dậy không được trùng nhau",
         "qualityLevel1": "Rất tệ",
         "qualityLevel2": "Chập chờn",
         "qualityLevel3": "Tạm ổn",

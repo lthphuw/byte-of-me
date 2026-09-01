@@ -82,7 +82,14 @@ export function SleepEntryForm({
           across the module: whatever a glyph means on one screen it means on
           the other, which is the only thing that makes a picture faster to
           read than the word beside it. Both are `aria-hidden` — the label
-          still says which field this is. */}
+          still says which field this is.
+
+          `appearance-none` is load-bearing on iOS and only there. WebKit gives
+          the native time control an intrinsic min-width that `width:100%`
+          cannot shrink below: measured on iPhone 13 / iOS 26.6.1, a 293px cell
+          rendered a 319px control, spilling 25px past the card. Chrome
+          measures zero spill at every width, which is why two earlier fixes
+          looked right and the phone still broke. */}
       <div className="grid grid-cols-1 gap-3 rounded-3xl border bg-card p-5 shadow sm:grid-cols-2 sm:gap-4">
         <div className="space-y-2">
           <Label htmlFor="sleep-bed-at" className="flex items-center gap-1.5">
@@ -95,7 +102,7 @@ export function SleepEntryForm({
             required
             value={entry.bedClock}
             onChange={(event) => entry.setBedClock(event.target.value)}
-            className="h-16 rounded-2xl bg-background text-2xl tabular-nums transition-colors duration-200 hover:border-primary/40 md:text-2xl"
+            className="h-16 appearance-none rounded-2xl bg-background text-2xl tabular-nums transition-colors duration-200 hover:border-primary/40 md:text-2xl"
           />
         </div>
 
@@ -113,9 +120,23 @@ export function SleepEntryForm({
             required
             value={entry.wakeClock}
             onChange={(event) => entry.setWakeClock(event.target.value)}
-            className="h-16 rounded-2xl bg-background text-2xl tabular-nums transition-colors duration-200 hover:border-primary/40 md:text-2xl"
+            className="h-16 appearance-none rounded-2xl bg-background text-2xl tabular-nums transition-colors duration-200 hover:border-primary/40 md:text-2xl"
           />
         </div>
+
+        {/* On the field rather than only on a disabled Save button: the button
+            lives in the sheet's footer, and a control that greys out with its
+            reason two screens away is a dead end. `destructive-text`, not
+            `destructive` — §14 records that the fill token measures 3.76:1 as
+            text. */}
+        {entry.nightError ? (
+          <p
+            role="alert"
+            className="text-sm text-destructive-text sm:col-span-2"
+          >
+            {entry.nightError}
+          </p>
+        ) : null}
       </div>
 
       <SleepQualityScale value={entry.quality} onChange={entry.setQuality} />

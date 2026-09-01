@@ -1,10 +1,7 @@
 'use client';
 
 import { Button } from '@byte-of-me/ui';
-// SUBPATH, not the package barrel: the barrel deliberately does not
-// re-export the rich-text editor, because doing so would drag Tiptap into
-// every consumer of `@byte-of-me/ui`.
-import { RichTextEditor } from '@byte-of-me/ui/rich-text-editor';
+import { useQueryClient } from '@tanstack/react-query';
 import { LoaderCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -13,6 +10,7 @@ import { MoodScale } from './mood-scale';
 import { PhotoStrip } from './photo-strip';
 
 import type { DayEntryRow } from '@/entities/day-entry';
+import { sleepLogKeys } from '@/entities/sleep-log';
 import { useDayJournal } from '@/features/daily/day-journal/model/use-day-journal';
 import {
   type SleepEntryDefaults,
@@ -22,6 +20,10 @@ import {
 // `@/shared/i18n/navigation`, never `next/navigation` — the raw hook drops the
 // locale prefix this app routes every path through.
 import { useRouter } from '@/shared/i18n/navigation';
+// The one lazy entry point every editor in this repo goes through. Imported
+// statically the editor is ~570 KB of tiptap/prosemirror loaded before first
+// paint, on the route most likely to be opened on a phone.
+import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { ResponsiveModal } from '@/shared/ui/responsive-modal';
 
 /**
@@ -74,31 +76,46 @@ export function DayModal({
 }) {
   const t = useTranslations('dashboard.daily');
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const journal = useDayJournal({ localDate, todayKey, entry });
   const sleep = useSleepEntry(sleepDefaults);
 
   const isSaving = journal.isSaving || sleep.isSaving;
 
+  // Validated BEFORE the first write, not between the two. An invalid clock
+  // pair used to commit the journal and then throw on the night, leaving a
+  // half-written day under a toast that said nothing had saved.
+  const writesSleep = hasSleepLog || sleep.isDirty;
+  const canSave = !isSaving && (!writesSleep || sleep.canSave);
+
   async function handleSave() {
+    if (!canSave) return;
+
     try {
       // Sequential rather than `Promise.all`: both writes are upserts on the
       // same day, and a shared failure should not leave one applied while the
       // other is still in flight. The journal goes first because it is the one
       // that always runs.
       await journal.saveAsync();
-      if (hasSleepLog || sleep.isDirty) {
+      if (writesSleep) {
         await sleep.saveAsync();
       }
 
+      // One toast and one refresh for the whole sheet — the two hooks below it
+      // announce nothing of their own.
       toast.success(t('day.saved'));
 
-      // Close BEFORE refreshing. The router queues work behind a pending
-      // navigation, and refreshing first has stranded a server action in this
-      // repo before — the sheet stays open with no failed request to show for
-      // it.
+      // Close, then refresh, then invalidate, in that order. The router queues
+      // work behind a pending navigation, so refreshing before the close — or
+      // invalidating before the refresh — has stranded a server action in this
+      // repo before, with no failed request to show for it. Every figure on the
+      // screen is server-rendered, which is why `refresh()` is the load-bearing
+      // half and the invalidations are for the client readers to come.
       onOpenChange(false);
       router.refresh();
+      queryClient.invalidateQueries({ queryKey: sleepLogKeys.summaryAll() });
+      queryClient.invalidateQueries({ queryKey: sleepLogKeys.today() });
     } catch (error) {
       toast.error(
         error instanceof Error && error.message
@@ -118,7 +135,7 @@ export function DayModal({
         <Button
           type="button"
           onClick={handleSave}
-          disabled={isSaving}
+          disabled={!canSave}
           className="h-14 w-full rounded-full text-base lg:h-12"
         >
           {isSaving ? (

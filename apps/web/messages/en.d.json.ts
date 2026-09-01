@@ -1391,6 +1391,7 @@ declare const messages: {
         "underTarget": "{hours, number}h {minutes, number}m short of target",
         "onTarget": "On target",
         "durationPending": "Enter both times",
+        "clocksEqual": "Bedtime and wake time cannot be the same",
         "qualityLevel1": "Poor",
         "qualityLevel2": "Restless",
         "qualityLevel3": "Fair",

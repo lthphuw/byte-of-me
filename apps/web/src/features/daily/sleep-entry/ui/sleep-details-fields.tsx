@@ -11,16 +11,13 @@ import type { useSleepEntry } from '@/features/daily/sleep-entry/model/use-sleep
 /**
  * Everything the morning flow does not need, as fields.
  *
- * Split out of `SleepDetailsSection` because the SAME fields are shown two
- * different ways: a bottom sheet on a phone and an inline panel at `lg`.
- * Rendering both containers and hiding one with `lg:hidden` would put two
- * `#sleep-latency` inputs in the document — one `<label for>` pointing at
- * whichever came first, and a duplicate id in the accessibility tree — so
- * exactly one container is mounted at a time and this is the thing it mounts.
+ * Separate from `SleepDetailsSection` so the disclosure and its contents stay
+ * one concern each. Every field ids itself, so exactly one copy may ever be
+ * mounted — two `#sleep-latency` inputs would point one `<label for>` at
+ * whichever came first.
  *
- * A REORGANISATION, not a removal — every field is still here, still in the
- * tab order once open, still bound to the same state in `useSleepEntry`, so
- * nothing typed is lost by dismissing the sheet or collapsing the panel.
+ * A REORGANISATION, not a removal — every field is still bound to the same
+ * state in `useSleepEntry`, so nothing typed is lost by collapsing the section.
  */
 export function SleepDetailsFields({
   entry,
@@ -39,8 +36,12 @@ export function SleepDetailsFields({
           their words — so a stopwatch for the time it took to go under, and an
           open eye for the minutes spent out of it again. The mark is what
           tells them apart before either label is read; the label is still what
-          says which is which, so both glyphs are `aria-hidden`. */}
-      <div className="grid grid-cols-2 gap-3">
+          says which is which, so both glyphs are `aria-hidden`.
+
+          Stacked below `sm`, the same rule the two clocks follow: inside this
+          card on a 316px viewport a half-width column is 110px, which the
+          Vietnamese labels ("Thời gian vào giấc") do not fit. */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="sleep-latency" className="flex items-center gap-1.5">
             <Timer

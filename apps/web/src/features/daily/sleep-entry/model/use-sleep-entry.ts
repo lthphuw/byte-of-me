@@ -1,16 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
 
-import {
-  type SleepFactor,
-  sleepLogKeys,
-  upsertSleepLog,
-} from '@/entities/sleep-log';
-import { useRouter } from '@/shared/i18n/navigation';
+import { type SleepFactor, upsertSleepLog } from '@/entities/sleep-log';
 import { clockToMinutes } from '@/shared/lib/health/duration';
 
 const DAY_MIN = 1440;
@@ -64,8 +58,6 @@ export interface SleepEntryDefaults {
  */
 export function useSleepEntry(defaults: SleepEntryDefaults) {
   const t = useTranslations('dashboard.daily');
-  const queryClient = useQueryClient();
-  const router = useRouter();
 
   const [bedClock, setBedClock] = useState(defaults.bedClock);
   const [wakeClock, setWakeClock] = useState(defaults.wakeClock);
@@ -89,6 +81,17 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
     bedMin === null || wakeMin === null
       ? null
       : (((wakeMin - bedMin) % DAY_MIN) + DAY_MIN) % DAY_MIN;
+
+  // Why this night cannot be written, in the reader's words, or null when it
+  // can. The caller shows it on the clocks and blocks the save on it: the day
+  // sheet writes two rows, and an invalid pair used to commit the journal and
+  // only then throw, leaving half a day saved under a failure toast.
+  let nightError: string | null = null;
+  if (bedMin === null || wakeMin === null) {
+    nightError = t('sleep.durationPending');
+  } else if (durationMin === 0) {
+    nightError = t('sleep.clocksEqual');
+  }
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -114,23 +117,10 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
       if (!res.success) throw new Error(res.errorMsg);
       return res.data;
     },
-    onSuccess: () => {
-      toast.success(t('sleep.saved'));
-
-      // `refresh()` BEFORE the invalidations, and it is the load-bearing half:
-      // every figure on this page — the tiles, both charts — is rendered by a
-      // server component, so a TanStack invalidation alone would redraw
-      // nothing. The order matters because the router queues work behind a
-      // pending server action; invalidating first has stranded a navigation in
-      // this repo before. The query invalidations are for the client readers
-      // this module will grow.
-      router.refresh();
-      queryClient.invalidateQueries({ queryKey: sleepLogKeys.summaryAll() });
-      queryClient.invalidateQueries({ queryKey: sleepLogKeys.today() });
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || t('errors.save'));
-    },
+    // No toast, no refresh, no invalidation here. This is one of two writes the
+    // day sheet makes, and the sheet owns the feedback for both — announcing
+    // each one separately fired two toasts and refreshed a 4-query screen
+    // twice.
   });
 
   return {
@@ -156,7 +146,8 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
     note,
     setNote,
     durationMin,
-    canSave: Boolean(durationMin) && !mutation.isPending,
+    nightError,
+    canSave: nightError === null && !mutation.isPending,
     isSaving: mutation.isPending,
     // Whether anything in the form differs from what it was seeded with.
     //
