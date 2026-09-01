@@ -35,7 +35,9 @@ export function DurationRing({
    *  not wrap around and start a second lap. */
   fraction: number;
   className?: string;
-  children: React.ReactNode;
+  /** Optional: the compact hero prints the figure BESIDE the arc, where a
+   *  ring small enough to sit in a row has no room for a translated string. */
+  children?: React.ReactNode;
 }) {
   const clamped = Math.max(0, Math.min(1, fraction));
   const offset = CIRCUMFERENCE * (1 - clamped);

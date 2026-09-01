@@ -1,30 +1,30 @@
 'use client';
 
-import { LoaderCircle, X } from 'lucide-react';
+import { LoaderCircle } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
 
 /**
  * One photo in the strip.
  *
- * A plain `<img>`, not `next/image`. These bytes come from
- * `/api/health/photos/[id]`, an authenticated route — the optimizer would
- * fetch them server-side with no session and cache the result in a shared
- * store, which is both broken and the wrong place for a private photograph.
+ * A plain `<img>`, not `next/image`: these bytes come from
+ * `/api/health/photos/[id]`, an authenticated route the optimizer would fetch
+ * with no session and cache in a shared store.
  *
- * The spinner is not decoration. Photos upload the moment they are picked,
- * not when Save is pressed — a `File` cannot survive a drawer close, and five
- * of them will not fit in one server action request. That asymmetry is
- * invisible unless the pending state is drawn, and an invisible asymmetry is
- * how someone loses a photo they thought they had cancelled.
+ * The spinner is not decoration. Photos upload the moment they are picked, and
+ * an invisible asymmetry is how someone loses a photo they thought they had
+ * cancelled.
+ *
+ * **Removing lives in the caption panel, not on the tile.** The control here
+ * was a 24px disc inset over the thumbnail's own 80px button — under the 44px
+ * minimum and close enough to fuse with the tile it sat on, so a thumb aiming
+ * to open a caption deleted the photo instead.
  */
 export function PhotoThumb({
   src,
   alt,
   caption,
   pending,
-  removeLabel,
-  onRemove,
   onSelect,
   isSelected,
 }: {
@@ -32,8 +32,6 @@ export function PhotoThumb({
   alt: string;
   caption: string | null;
   pending?: boolean;
-  removeLabel: string;
-  onRemove?: () => void;
   onSelect?: () => void;
   isSelected?: boolean;
 }) {
@@ -71,22 +69,6 @@ export function PhotoThumb({
             className="size-5 animate-spin text-foreground motion-reduce:animate-none"
           />
         </span>
-      ) : onRemove ? (
-        // Its own button, outside the thumbnail's button — a button inside a
-        // button is invalid HTML and the inner one does not receive clicks.
-        <button
-          type="button"
-          onClick={onRemove}
-          aria-label={removeLabel}
-          className={cn(
-            'absolute -right-1.5 -top-1.5 flex size-6 items-center justify-center rounded-full',
-            'border bg-card text-muted-foreground shadow-sm',
-            'transition-colors duration-200 hover:text-foreground motion-reduce:transition-none',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card'
-          )}
-        >
-          <X aria-hidden className="size-3.5" />
-        </button>
       ) : null}
     </div>
   );

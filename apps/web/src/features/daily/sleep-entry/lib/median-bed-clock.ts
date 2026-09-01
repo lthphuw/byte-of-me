@@ -25,15 +25,26 @@ export function medianBedClock(
 
   const centred = bedAtIso
     .map((iso) => localClockMinutes(new Date(iso), timeZone))
-    .map((minutes) => (minutes >= HALF_DAY_MIN ? minutes - DAY_MIN : minutes))
-    .sort((a, b) => a - b);
+    .map((minutes) => (minutes >= HALF_DAY_MIN ? minutes - DAY_MIN : minutes));
 
-  // The lower of the two middle values on an even count, not their mean: a
-  // clock time is what is wanted back, and averaging 22:00 with 23:00 to get
-  // 22:30 invents a bedtime that never happened.
-  const median = centred[Math.floor((centred.length - 1) / 2)];
+  const median = medianOf(centred);
 
-  return minutesToClock(median);
+  return median === null ? null : minutesToClock(median);
+}
+
+/**
+ * The lower of the two middle values on an even count, never their mean.
+ *
+ * Averaging 22:00 with 23:00 to get 22:30 invents a bedtime that never
+ * happened, and the same argument holds for every other suggested figure: what
+ * comes back has to be a value the author actually recorded.
+ */
+export function medianOf(values: number[]): number | null {
+  if (values.length === 0) return null;
+
+  const sorted = [...values].sort((a, b) => a - b);
+
+  return sorted[Math.floor((sorted.length - 1) / 2)];
 }
 
 /** Minutes past midnight of `instant` as read in `timeZone`. Via

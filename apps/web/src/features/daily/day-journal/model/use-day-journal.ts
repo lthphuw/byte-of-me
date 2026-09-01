@@ -191,32 +191,33 @@ export function useDayJournal({
     }
   }, [localDate, todayKey, mood, reflection]);
 
+  // Not a mutation and deliberately state-free: the undo toast outlives the
+  // sheet that raised it, so this has to be a plain closure over the row the
+  // sheet was seeded with.
+  const restoreAsync = useCallback(async () => {
+    const res = await upsertDayEntry({
+      localDate,
+      mood: entry?.mood ?? null,
+      reflection: entry?.reflection ?? null,
+      todayKey,
+    });
+
+    if (!res.success) throw new Error(res.errorMsg);
+
+    return res.data;
+  }, [localDate, todayKey, entry?.mood, entry?.reflection]);
+
   // Compared as SERIALISED strings, not documents by identity: Tiptap
-  // re-creates nodes on every edit, so an identity comparison would mark
-  // the sheet dirty on every keystroke — and worse, could report dirty when
-  // nothing actually changed, prompting a "discard changes?" on close.
+  // re-creates nodes on every edit, so an identity comparison would report the
+  // sheet dirty on every keystroke and strand the dismiss guard that reads it.
   //
-  // BOTH sides go through the same codec, not just the live one. Comparing
-  // `serializeReflection(reflection)` against the raw `entry.reflection`
-  // string looked correct but wasn't: a legacy plain-text row round-trips
-  // through `parseReflection` into a doc and back out through
-  // `serializeReflection` as JSON, which can never byte-match the original
-  // plain string. That reported every legacy day dirty the instant it was
-  // opened, before anyone touched it. Serialising `entry.reflection`
-  // through the same `parseReflection` → `serializeReflection` pass it took
-  // to seed `reflection` in the first place makes a legacy row compare
-  // clean until it is actually edited, while a row already stored as JSON
-  // still compares exactly as before.
+  // BOTH sides go through the same codec. Comparing against the raw
+  // `entry.reflection` looked correct but wasn't: a legacy plain-text row
+  // round-trips into a doc and back out as JSON, which can never byte-match
+  // the original string, so every legacy day reported dirty on open.
   //
-  // Memoised: this reruns `parseReflection` plus two `JSON.stringify` passes
-  // over the document, and `reflection` changes on every keystroke. Without
-  // memoisation that work reran on every render for no reader — see the note
-  // below, this value currently has no consumer.
-  //
-  // NOTE: nothing reads `isDirty` today (`day-modal.tsx` reads
-  // `sleep.isDirty`, not this hook's). Kept because it is part of this
-  // hook's public shape and a discard-changes prompt is a plausible next use
-  // — but it is not load-bearing for anything that exists right now.
+  // Memoised because `reflection` changes on every keystroke and this reruns
+  // `parseReflection` plus two `JSON.stringify` passes.
   const isDirty = useMemo(
     () =>
       mood !== (entry?.mood ?? null) ||
@@ -238,5 +239,6 @@ export function useDayJournal({
     isDirty,
     isSaving,
     saveAsync,
+    restoreAsync,
   };
 }

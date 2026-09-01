@@ -12,24 +12,17 @@ import { DurationRing } from '@/shared/ui/duration-ring';
 const FALLBACK_TARGET_MIN = 480;
 
 /**
- * The night's length, as the focal point of the screen.
+ * The night's length, as an arc with the figure spelled out beside it.
  *
- * This replaces a caption. "Duration: 8h 10m" in muted 14px text was the
- * smallest thing on a screen whose entire purpose is that number, and it gave
- * the reader nothing to compare it against — a fortnight of 6h nights and a
- * fortnight of 8h nights rendered identically.
+ * The arc is decoration over the text, never instead of it — `aria-live` is on
+ * the figure and on the delta, and both say in words what the ring says in
+ * geometry.
  *
- * So: the figure at display size in `tabular-nums` (so the digits do not
- * shuffle as the minutes change), inside an arc that fills toward the target,
- * with the shortfall or the surplus spelled out underneath. The arc is
- * decoration over the text, never instead of it — `aria-live` is on the figure
- * and the delta, and both say in words what the ring says in geometry.
- *
- * The card is deliberately the roomiest thing on the screen: a 24px radius,
- * 32px of padding and one 176px ring with nothing beside it. That is the
- * "one question, one big answer" shape the rest of this module now follows,
- * and it is the only element here allowed to take a whole screen's width for
- * a single figure.
+ * Two sizes. The daily screen takes the roomy one, where last night's length
+ * is the point of the column it sits in. The day sheet takes `compact`: there
+ * the figure is a consequence of the two clocks above it, and at full size it
+ * was 348px of card between the top of the sheet and the fields the sheet
+ * exists to fill.
  */
 export function SleepDurationHero({
   durationMin,
@@ -37,6 +30,7 @@ export function SleepDurationHero({
   label,
   emptyLabel,
   footnote,
+  compact,
 }: {
   durationMin: number | null;
   /** The owner's nightly goal. Absent when the summary read failed. */
@@ -45,12 +39,12 @@ export function SleepDurationHero({
    *  it with "Last night", because there the number is a record rather than a
    *  live total. */
   label?: string;
-  /** What to say instead of the delta when there is no duration at all. The
-   *  form is waiting for input; the daily screen simply has nothing logged,
-   *  and those are different sentences. */
+  /** What to say instead of the delta when there is no duration at all. */
   emptyLabel?: string;
   /** One more line under the delta — the daily screen's "Estimated" caveat. */
   footnote?: string;
+  /** A row rather than a column, at a third of the height. */
+  compact?: boolean;
 }) {
   const t = useTranslations('dashboard.daily');
 
@@ -62,12 +56,12 @@ export function SleepDurationHero({
       : durationMin - targetMin;
 
   // Three states rather than a signed number: a bare "-50" asks the reader to
-  // remember what it is signed against, and the sign is exactly what gets
-  // misread at 6am. Null delta is a different sentence from "on target" — it
-  // means there is no target to compare against at all.
+  // remember what it is signed against, and the sign is what gets misread at
+  // 6am. Compact says nothing while the clocks are empty — the field above it
+  // is already printing the reason.
   let deltaLabel = '';
   if (durationMin === null) {
-    deltaLabel = emptyLabel ?? t('sleep.durationPending');
+    deltaLabel = compact ? '' : (emptyLabel ?? t('sleep.durationPending'));
   } else if (deltaMin !== null) {
     if (Math.abs(deltaMin) < 5) {
       deltaLabel = t('sleep.onTarget');
@@ -78,6 +72,39 @@ export function SleepDurationHero({
     }
   }
 
+  const figure =
+    durationMin === null
+      ? '—'
+      : t('units.hoursMinutes', splitMinutes(durationMin));
+
+  if (compact) {
+    return (
+      <div className="flex items-center gap-4 rounded-3xl border bg-card p-4 shadow">
+        <DurationRing fraction={fraction} className="size-16" />
+
+        <div className="min-w-0 space-y-0.5">
+          <p className="text-xs font-medium text-muted-foreground">
+            {label ?? t('sleep.duration')}
+          </p>
+          <p
+            aria-live="polite"
+            className="text-2xl font-semibold tabular-nums leading-tight"
+          >
+            {figure}
+          </p>
+          {deltaLabel === '' ? null : (
+            <p
+              aria-live="polite"
+              className="text-xs tabular-nums text-muted-foreground"
+            >
+              {deltaLabel}
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-3xl border bg-card p-8 shadow">
       <div className="flex flex-col items-center gap-5">
@@ -85,27 +112,20 @@ export function SleepDurationHero({
           <span className="text-xs font-medium text-muted-foreground">
             {label ?? t('sleep.duration')}
           </span>
-          {/* `text-3xl` and not larger, even though the card around it grew.
-              The figure is a TRANSLATED string: `8h 10m` in `en` is
-              `8 giờ 10 phút` in `vi`, three times the width, and it has to
-              wrap inside the ring's ~150px inner diameter rather than spill
-              over the arc. The ring gained the room instead — 176px, up from
-              160 — which buys the longer string a line it did not have. */}
+          {/* `text-3xl` and not larger, even though the card around it grew:
+              `8h 10m` in `en` is `8 giờ 10 phút` in `vi`, three times the
+              width, and it has to wrap inside the ring's ~150px inner
+              diameter rather than spill over the arc. */}
           <span
             aria-live="polite"
             className="text-3xl font-semibold tabular-nums leading-tight"
           >
-            {durationMin === null
-              ? '—'
-              : t('units.hoursMinutes', splitMinutes(durationMin))}
+            {figure}
           </span>
         </DurationRing>
 
-        {/* The delta first, the target under it. The delta is the answer —
-            "50m short of target" — and the target is the reference it was
-            measured against; printing the reference first made the reader
-            scan past a number they did not ask for to reach the one they
-            did. */}
+        {/* The delta first, the target under it: the delta is the answer, the
+            target is only the reference it was measured against. */}
         <div className="flex flex-col items-center gap-1.5 text-center">
           <p
             aria-live="polite"

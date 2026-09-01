@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AutoGrowingTextarea } from '@byte-of-me/ui';
-import { ImagePlus } from 'lucide-react';
+import { ImagePlus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { PhotoThumb } from './photo-thumb';
@@ -57,7 +57,7 @@ export function PhotoStrip({
   return (
     <div className="space-y-3">
       <div className="flex items-baseline justify-between gap-3">
-        <span className="text-sm font-medium">{t('day.photos')}</span>
+        <h3 className="text-sm font-medium">{t('day.photos')}</h3>
         <span className="text-sm text-muted-foreground">
           {isFull
             ? t('day.photoFull', { max: MAX_PHOTOS_PER_DAY })
@@ -69,27 +69,14 @@ export function PhotoStrip({
           never scroll sideways — a horizontally scrolling page is how a
           drawer starts fighting its own swipe-to-dismiss. */}
       <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-1">
-        {photos.map((photo, index) => (
+        {photos.map((photo) => (
           <PhotoThumb
             key={photo.id}
             src={photo.url}
             alt={t('day.photoAlt', { date: dateLabel })}
             caption={photo.caption}
-            // Five thumbnails otherwise all announce as "Remove this photo" —
-            // indistinguishable to a screen reader. The caption disambiguates
-            // when there is one; the photo's position in the strip does when
-            // there isn't.
-            removeLabel={
-              photo.caption
-                ? `${t('day.photoRemove')} — ${photo.caption}`
-                : t('day.photoRemoveNumbered', { n: index + 1 })
-            }
             isSelected={photo.id === openId}
             onSelect={() => setOpenId(photo.id === openId ? null : photo.id)}
-            onRemove={() => {
-              if (photo.id === openId) setOpenId(null);
-              onRemove(photo.id);
-            }}
           />
         ))}
 
@@ -100,7 +87,6 @@ export function PhotoStrip({
             alt={t('day.photoUploading')}
             caption={null}
             pending
-            removeLabel={t('day.photoRemove')}
           />
         ))}
 
@@ -152,8 +138,13 @@ export function PhotoStrip({
         )}
       </div>
 
+      {/* The selected photo's own panel — caption and removal together. The
+          remove control used to be a 24px disc pinned over the thumbnail's
+          corner, which is both under the 44px minimum and fused with the tile
+          it overlapped. Here it is a full-height labelled button that cannot
+          be hit by a thumb aiming at the picture. */}
       {open ? (
-        <div className="space-y-2 rounded-2xl bg-muted/50 p-3">
+        <div className="space-y-3 rounded-2xl bg-muted/50 p-3">
           <PhotoCaptionEditor
             key={open.id}
             photoId={open.id}
@@ -162,6 +153,23 @@ export function PhotoStrip({
             placeholder={t('day.captionPlaceholder')}
             onCaption={onCaption}
           />
+
+          <button
+            type="button"
+            onClick={() => {
+              setOpenId(null);
+              onRemove(open.id);
+            }}
+            className={cn(
+              'flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border bg-background px-3',
+              'text-sm text-destructive-text',
+              'transition-colors duration-200 motion-reduce:transition-none hover:bg-muted',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card'
+            )}
+          >
+            <Trash2 aria-hidden className="size-4 shrink-0" />
+            {t('day.photoRemove')}
+          </button>
         </div>
       ) : null}
     </div>

@@ -1,11 +1,16 @@
 'use client';
 
-import { Checkbox, Input, Label, Textarea } from '@byte-of-me/ui';
+import { Checkbox, Label, Textarea } from '@byte-of-me/ui';
 import { Eye, NotebookPen, Timer } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { BucketChipRow } from './bucket-chip-row';
 import { SleepFactorGrid } from './sleep-factor-grid';
 
+import {
+  AWAKE_BUCKETS,
+  LATENCY_BUCKETS,
+} from '@/features/daily/sleep-entry/lib/sleep-buckets';
 import type { useSleepEntry } from '@/features/daily/sleep-entry/model/use-sleep-entry';
 
 /**
@@ -13,11 +18,8 @@ import type { useSleepEntry } from '@/features/daily/sleep-entry/model/use-sleep
  *
  * Separate from `SleepDetailsSection` so the disclosure and its contents stay
  * one concern each. Every field ids itself, so exactly one copy may ever be
- * mounted — two `#sleep-latency` inputs would point one `<label for>` at
+ * mounted — two `#sleep-note` textareas would point one `<label for>` at
  * whichever came first.
- *
- * A REORGANISATION, not a removal — every field is still bound to the same
- * state in `useSleepEntry`, so nothing typed is lost by collapsing the section.
  */
 export function SleepDetailsFields({
   entry,
@@ -26,71 +28,61 @@ export function SleepDetailsFields({
 }) {
   const t = useTranslations('dashboard.daily');
 
+  // Literal keys, one per bucket: next-intl's generated declarations only
+  // type-check literals, so an interpolated key would check against nothing.
+  const latencyLabels: Record<string, string> = {
+    lt5: t('sleep.latencyLt5'),
+    from5: t('sleep.latency5to15'),
+    from15: t('sleep.latency15to30'),
+    from30: t('sleep.latency30to60'),
+    from60: t('sleep.latencyOver60'),
+  };
+  const awakeLabels: Record<string, string> = {
+    zero: t('sleep.awakeNone'),
+    lt15: t('sleep.awakeLt15'),
+    from15: t('sleep.awake15to30'),
+    from30: t('sleep.awakeOver30'),
+  };
+
   return (
     <div className="flex flex-col gap-6">
-      {/* Both optional, and their absence is meaningful rather than zero:
-          with neither recorded the screens WITHHOLD efficiency instead of
-          reporting 100%.
+      {/* Buckets, not minute spinners. The Consensus Sleep Diary instructs the
+          diarist not to watch the clock, so a range is the more faithful
+          record — and a numeric keyboard would cover the sticky footer the
+          Save button sits in, the defect `NumpadSheet` exists for. */}
+      <div className="space-y-4">
+        <BucketChipRow
+          id="sleep-latency-label"
+          label={t('sleep.latency')}
+          icon={Timer}
+          buckets={LATENCY_BUCKETS}
+          optionLabels={latencyLabels}
+          clearLabel={t('sleep.bucketClear')}
+          value={entry.latency}
+          onChange={entry.setLatency}
+        />
 
-          Two figures in minutes, side by side, whose labels differ only in
-          their words — so a stopwatch for the time it took to go under, and an
-          open eye for the minutes spent out of it again. The mark is what
-          tells them apart before either label is read; the label is still what
-          says which is which, so both glyphs are `aria-hidden`.
+        <BucketChipRow
+          id="sleep-awakenings-label"
+          label={t('sleep.awakenings')}
+          icon={Eye}
+          buckets={AWAKE_BUCKETS}
+          optionLabels={awakeLabels}
+          clearLabel={t('sleep.bucketClear')}
+          value={entry.awakenings}
+          onChange={entry.setAwakenings}
+        />
 
-          Stacked below `sm`, the same rule the two clocks follow: inside this
-          card on a 316px viewport a half-width column is 110px, which the
-          Vietnamese labels ("Thời gian vào giấc") do not fit. */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="sleep-latency" className="flex items-center gap-1.5">
-            <Timer
-              aria-hidden
-              className="size-4 shrink-0 text-muted-foreground"
-            />
-            {t('sleep.latency')}
-          </Label>
-          <Input
-            id="sleep-latency"
-            type="number"
-            inputMode="numeric"
-            min={0}
-            max={720}
-            value={entry.latency}
-            onChange={(event) => entry.setLatency(event.target.value)}
-            className="h-12 rounded-2xl bg-background tabular-nums"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label
-            htmlFor="sleep-awakenings"
-            className="flex items-center gap-1.5"
-          >
-            <Eye
-              aria-hidden
-              className="size-4 shrink-0 text-muted-foreground"
-            />
-            {t('sleep.awakenings')}
-          </Label>
-          <Input
-            id="sleep-awakenings"
-            type="number"
-            inputMode="numeric"
-            min={0}
-            max={720}
-            value={entry.awakenings}
-            onChange={(event) => entry.setAwakenings(event.target.value)}
-            className="h-12 rounded-2xl bg-background tabular-nums"
-          />
-        </div>
+        <p className="text-xs text-muted-foreground">
+          {t('sleep.estimateHint')}
+        </p>
       </div>
 
       <SleepFactorGrid selected={entry.factors} onToggle={entry.toggleFactor} />
 
-      {/* Shown rather than inferred from the weekday: it is an input to
-          social jetlag, and a holiday or a night shift makes the weekday a
-          wrong guess. Pre-ticked at the weekend, still editable. */}
+      {/* Shown rather than inferred from the weekday: it is an input to social
+          jetlag, and a holiday or a night shift makes the weekday a wrong
+          guess. Pre-ticked at the weekend, still editable. */}
       <Label
         htmlFor="sleep-free-day"
         className="flex min-h-11 items-center gap-3 text-sm font-normal"

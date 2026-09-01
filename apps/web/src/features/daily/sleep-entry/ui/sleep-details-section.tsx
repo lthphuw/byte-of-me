@@ -37,13 +37,13 @@ export function SleepDetailsSection({
   const [open, setOpen] = useState(false);
 
   const filledCount =
-    (entry.latency.trim() === '' ? 0 : 1) +
-    (entry.awakenings.trim() === '' ? 0 : 1) +
+    (entry.latency === null ? 0 : 1) +
+    (entry.awakenings === null ? 0 : 1) +
     (entry.factors.length === 0 ? 0 : 1) +
     (entry.note.trim() === '' ? 0 : 1);
 
   const efficiencyUnavailable =
-    entry.latency.trim() === '' && entry.awakenings.trim() === '';
+    entry.latency === null && entry.awakenings === null;
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>

@@ -77,7 +77,9 @@ export function MoodScale({
   return (
     <div className="space-y-3">
       <div className="flex items-baseline justify-between gap-3">
-        <span className="text-sm font-medium">{t('day.mood')}</span>
+        {/* A heading, not a span: this is one of the sheet's four sections and
+            the only navigable landmark it has. Same weight as before. */}
+        <h3 className="text-sm font-medium">{t('day.mood')}</h3>
         {/* The word, live. It is the half of this control that survives with
             no colour and no shape. */}
         <span

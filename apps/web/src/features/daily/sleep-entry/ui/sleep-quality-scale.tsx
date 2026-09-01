@@ -44,7 +44,10 @@ export function SleepQualityScale({
   return (
     <div className="space-y-3">
       <div className="flex items-baseline justify-between gap-3">
-        <span className="text-sm font-medium">{t('sleep.quality')}</span>
+        {/* A real heading, at the depth this control actually sits: the sheet
+            titles itself `h2` and the sleep section `h3`, so the sheet is
+            navigable by heading rather than by scrolling past four spans. */}
+        <h4 className="text-sm font-medium">{t('sleep.quality')}</h4>
         <span
           aria-live="polite"
           className={cn(

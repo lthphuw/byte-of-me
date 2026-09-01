@@ -1,15 +1,16 @@
-import { localClockMinutes, medianBedClock } from './median-bed-clock';
+import { localClockMinutes, medianBedClock, medianOf } from './median-bed-clock';
 
 import type { SleepLogRow } from '@/entities/sleep-log';
-import type { SleepEntryDefaults } from '@/features/daily/sleep-entry/model/use-sleep-entry';
+import type {
+  SleepEntryDefaults,
+  SleepSuggestion,
+} from '@/features/daily/sleep-entry/model/use-sleep-entry';
 import { clockToMinutes, minutesToClock } from '@/shared/lib/health/duration';
 import { addDays, localDateKey } from '@/shared/lib/health/local-date';
 
-/** Bedtimes older than the summary window say nothing about what the form
- *  should open at. */
+/** Bedtimes older than the summary window say nothing about what "as usual"
+ *  means today. */
 const MEDIAN_SAMPLE_DAYS = 14;
-
-const FALLBACK_BED_CLOCK = '23:00';
 
 /**
  * Below this, "now" cannot plausibly be the end of the night the form is
@@ -22,12 +23,9 @@ const DAY_MIN = 1440;
 /**
  * Minutes past local midnight, rounded to the five the time input steps in.
  *
- * Split out so the SERVER resolves it once and hands it to the form. The
- * defaults are now computed in the browser — the reader taps a day in the
- * calendar and the form has to follow without a round trip — and a clock read
- * from `new Date()` there would differ from the one the server rendered and
- * hydrate with a mismatch. Passing the number keeps both sides deterministic,
- * which is the same guarantee the old server-only `buildDefaults` gave.
+ * Split out so the SERVER resolves it once and hands it to the form: a clock
+ * read from `new Date()` in the browser would differ from the one the server
+ * rendered and hydrate with a mismatch.
  */
 export function roundedNowMin(now: Date, timeZone: string): number {
   return Math.round(localClockMinutes(now, timeZone) / 5) * 5;
@@ -40,33 +38,24 @@ export function roundedNowMin(now: Date, timeZone: string): number {
  * opening a day a second time is an EDIT, and a form that came up blank would
  * quietly offer to overwrite a saved night with its own defaults.
  *
- * Otherwise bedtime is the median of the last fortnight, and wake time is
- * "now, rounded to five minutes" ONLY WHEN NOW IS PLAUSIBLY THE END OF THAT
- * NIGHT. It was unconditional, and that produced the worst first impression
- * this screen could give: opening it at 23:10 against a 23:00 median bedtime
- * showed a ten-minute night, and 23:10 is exactly when someone reaches for a
- * sleep app. The midnight-crossing arithmetic was never wrong — 23:00 → 07:10
- * has always given 8h 10m — the defaults were simply describing an evening as
- * if it were a morning.
+ * Otherwise the clocks open EMPTY and the fortnight's habit is offered beside
+ * them as a suggestion. They used to arrive pre-filled, which read as an
+ * answer the author had given and was defended by a dirty check nobody could
+ * see; one tap on an accept-or-edit card is the same keystroke count and says
+ * out loud where the numbers came from.
  *
- * So: measure the candidate night. Under four hours means the form was opened
- * before the night it is about has happened, and the honest default is the
- * night the author is AIMING for — bedtime plus their nightly target. Four
- * hours rather than a "is it morning?" hour test, because the threshold that
- * matters is the length of the night, not the position of the clock: a shift
- * worker going to bed at 08:00 gets the same sensible default, and no hour of
- * the day is hardcoded anywhere.
+ * The suggested wake time is "now, rounded to five minutes" ONLY WHEN NOW IS
+ * PLAUSIBLY THE END OF THAT NIGHT. Unconditionally it produced the worst first
+ * impression this screen could give: opened at 23:10 against a 23:00 median
+ * bedtime it suggested a ten-minute night. Under four hours — a length, not an
+ * hour of the day, so a shift worker gets the same sensible answer — means the
+ * night has not happened yet, and the honest guess is bedtime plus the nightly
+ * target. A PAST day takes that branch unconditionally: no clock reading
+ * describes a night that ended days ago.
  *
- * **A PAST day takes that same branch unconditionally.** There is no clock
- * reading that describes a night which ended days ago, so "now" is not merely
- * implausible for it — it is meaningless, and offering it would be the 23:10
- * bug wearing a date. Bedtime plus the nightly target is the one honest guess
- * left, and it is the guess this function already had.
- *
- * The median bedtime is deliberately the SAME fortnight for every day rather
- * than the fortnight before the day being edited. It is a statement about the
- * author's habit, not about that particular night, and a per-day window would
- * also run off the end of what the screen read.
+ * The window is the SAME fortnight for every day rather than the fortnight
+ * before the day being edited. It is a statement about the author's habit, not
+ * about that particular night.
  */
 export function buildDayDefaults({
   rows,
@@ -86,6 +75,7 @@ export function buildDayDefaults({
   nowMin: number;
 }): SleepEntryDefaults {
   const existing = rows.find((row) => row.localDate === dayKey);
+  const day = new Date(`${dayKey}T00:00:00.000Z`);
 
   if (existing) {
     return {
@@ -102,43 +92,88 @@ export function buildDayDefaults({
       factors: existing.factors,
       isFreeDay: existing.isFreeDay,
       note: existing.note,
+      suggestion: null,
     };
   }
 
+  return {
+    localDate: dayKey,
+    bedClock: '',
+    wakeClock: '',
+    quality: null,
+    latencyMin: null,
+    awakeningsMin: null,
+    factors: [],
+    // Saturday or Sunday of the day being edited. The key is UTC midnight
+    // standing for a calendar day, so its UTC weekday IS the local one. A
+    // guess, and a checkbox precisely because holidays and shift work break it.
+    isFreeDay: day.getUTCDay() === 0 || day.getUTCDay() === 6,
+    note: null,
+    suggestion: buildSuggestion({
+      rows,
+      dayKey,
+      todayKey,
+      timeZone,
+      targetMin,
+      nowMin,
+    }),
+  };
+}
+
+/**
+ * The last fortnight's habit, or null when there is none to describe.
+ *
+ * Every figure is a median, never a mean: one night out until 04:00 drags an
+ * average by half an hour and would then be offered back as the new normal.
+ * Latency and minutes awake are carried only when they were actually recorded
+ * — a bucket the author never answered is not part of "as usual".
+ */
+function buildSuggestion({
+  rows,
+  dayKey,
+  todayKey,
+  timeZone,
+  targetMin,
+  nowMin,
+}: {
+  rows: SleepLogRow[];
+  dayKey: string;
+  todayKey: string;
+  timeZone: string;
+  targetMin: number;
+  nowMin: number;
+}): SleepSuggestion | null {
   const today = new Date(`${todayKey}T00:00:00.000Z`);
   const sampleFrom = localDateKey(addDays(today, -(MEDIAN_SAMPLE_DAYS - 1)));
-  const recentBedtimes = rows
-    .filter((row) => row.localDate >= sampleFrom)
-    .map((row) => row.bedAt);
+  const recent = rows.filter((row) => row.localDate >= sampleFrom);
 
-  const bedClock =
-    medianBedClock(recentBedtimes, timeZone) ?? FALLBACK_BED_CLOCK;
+  const bedClock = medianBedClock(
+    recent.map((row) => row.bedAt),
+    timeZone
+  );
+  if (bedClock === null) return null;
+
   const bedMin = clockToMinutes(bedClock) ?? 0;
-
-  // The short way round, the same rule the form itself uses for the duration
-  // it displays — so this test and that figure can never disagree.
+  // The short way round, the same rule the form uses for the duration it
+  // shows — so this test and that figure can never disagree.
   const candidateNightMin = (((nowMin - bedMin) % DAY_MIN) + DAY_MIN) % DAY_MIN;
-
   const wakeMin =
     dayKey === todayKey && candidateNightMin >= MIN_PLAUSIBLE_NIGHT_MIN
       ? nowMin
       : bedMin + targetMin;
 
-  const day = new Date(`${dayKey}T00:00:00.000Z`);
-
   return {
-    localDate: dayKey,
     bedClock,
     wakeClock: minutesToClock(wakeMin),
-    quality: null,
-    latencyMin: null,
-    awakeningsMin: null,
-    factors: [],
-    // Saturday or Sunday, of the day being edited rather than of today. The
-    // key is UTC midnight standing for a calendar day, so its UTC weekday IS
-    // the local one. A guess, and shown as a checkbox precisely because
-    // holidays and shift work break it.
-    isFreeDay: day.getUTCDay() === 0 || day.getUTCDay() === 6,
-    note: null,
+    latencyMin: medianOf(
+      recent
+        .map((row) => row.latencyMin)
+        .filter((value): value is number => value !== null)
+    ),
+    awakeningsMin: medianOf(
+      recent
+        .map((row) => row.awakeningsMin)
+        .filter((value): value is number => value !== null)
+    ),
   };
 }

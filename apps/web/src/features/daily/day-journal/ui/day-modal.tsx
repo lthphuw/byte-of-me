@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Button } from '@byte-of-me/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { LoaderCircle } from 'lucide-react';
@@ -21,37 +22,33 @@ import {
 // locale prefix this app routes every path through.
 import { useRouter } from '@/shared/i18n/navigation';
 // The one lazy entry point every editor in this repo goes through. Imported
-// statically the editor is ~570 KB of tiptap/prosemirror loaded before first
-// paint, on the route most likely to be opened on a phone.
+// statically the editor is ~570 KB of tiptap/prosemirror before first paint,
+// on the route most likely to be opened one-handed at 6am.
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { ResponsiveModal } from '@/shared/ui/responsive-modal';
 
 /**
- * One day, editable.
+ * One day, editable — sleep first, then mood, the reflection and the photos.
+ *
+ * **The night leads.** The two clocks used to sit ~700px down this sheet,
+ * below a mood ramp, a 140px editor, a photo strip and a 176px duration ring;
+ * on a 390px phone the scroll body is about 570px, so the one control the
+ * surface exists for was off screen at open.
  *
  * **`ResponsiveModal` rather than a Dialog and a Drawer wired up here.** It
- * already mounts a bottom sheet below `lg` and a centred dialog above, and it
- * already answers three things this sheet needs and a fresh implementation
- * would miss: the sheet is sized in `svh`, because on iOS Safari `vh` is the
- * TALL viewport and a `vh`-sized sheet hides its own footer under the browser
- * toolbar; the footer is padded with `env(safe-area-inset-bottom)`; and the
- * dismiss affordance is a grab handle under the thumb rather than an X in the
- * far corner. Its `footer` renders outside the scroll area in both branches,
- * which is the sticky Save this sheet wants.
+ * mounts a bottom sheet below `lg` and a centred dialog above, sizes the sheet
+ * in `svh` (on iOS Safari `vh` is the TALL viewport and hides the sheet's own
+ * footer under the browser toolbar), pads the footer with
+ * `env(safe-area-inset-bottom)`, and renders that footer outside the scroll
+ * area — which is the sticky Save this sheet wants.
  *
- * **This modal is why the calendar has no selected state.** The old screen
- * loaded a day into a form BELOW the calendar, and that relationship needed a
- * persistent "this one" mark on the grid — which collided with hover twice,
- * because on a 0%-saturation palette (§14) the plate for one lands within four
- * points of the plate for the other and the numeral pill was doing all the
- * work. A sheet has no such relationship: the day being edited is the day on
- * screen. Deleting the state is the fix; restyling it was not.
+ * **This modal is why the calendar has no selected state.** A sheet has no
+ * "which one" relationship to mark: the day being edited is the day on screen.
  *
  * **One Save, two writes, one rule.** The sleep half writes only when the day
- * already has a row or the form was actually touched. The clocks arrive
- * pre-filled from the fortnight's median — that is what makes the morning save
- * one tap — so saving an untouched day would invent a night out of a guess.
- * Mood and reflection have no defaults to mistake for input and always write.
+ * already has a row or the form was actually touched — the clocks now open
+ * empty and offer the fortnight's median as a card, so an untouched sheet has
+ * no night to invent. Mood and reflection always write.
  */
 export function DayModal({
   open,
@@ -80,42 +77,35 @@ export function DayModal({
 
   const journal = useDayJournal({ localDate, todayKey, entry });
   const sleep = useSleepEntry(sleepDefaults);
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
 
   const isSaving = journal.isSaving || sleep.isSaving;
 
-  // Validated BEFORE the first write, not between the two. An invalid clock
-  // pair used to commit the journal and then throw on the night, leaving a
-  // half-written day under a toast that said nothing had saved.
+  // Validated BEFORE the first write, not between the two: an invalid clock
+  // pair used to commit the journal and then throw on the night, leaving half
+  // a day saved under a failure toast.
   const writesSleep = hasSleepLog || sleep.isDirty;
   const canSave = !isSaving && (!writesSleep || sleep.canSave);
+  const isDirty = journal.isDirty || sleep.isDirty;
 
-  async function handleSave() {
-    if (!canSave) return;
+  // Undo writes the previous values back, so it is only honest where previous
+  // values exist. A night this save CREATED would need a delete to un-create,
+  // and there is no delete action — that toast stays plain.
+  const canUndo = !writesSleep || hasSleepLog;
 
+  function announce() {
+    router.refresh();
+    queryClient.invalidateQueries({ queryKey: sleepLogKeys.summaryAll() });
+    queryClient.invalidateQueries({ queryKey: sleepLogKeys.today() });
+  }
+
+  async function handleUndo() {
     try {
-      // Sequential rather than `Promise.all`: both writes are upserts on the
-      // same day, and a shared failure should not leave one applied while the
-      // other is still in flight. The journal goes first because it is the one
-      // that always runs.
-      await journal.saveAsync();
-      if (writesSleep) {
-        await sleep.saveAsync();
-      }
+      await journal.restoreAsync();
+      if (writesSleep) await sleep.restoreAsync();
 
-      // One toast and one refresh for the whole sheet — the two hooks below it
-      // announce nothing of their own.
-      toast.success(t('day.saved'));
-
-      // Close, then refresh, then invalidate, in that order. The router queues
-      // work behind a pending navigation, so refreshing before the close — or
-      // invalidating before the refresh — has stranded a server action in this
-      // repo before, with no failed request to show for it. Every figure on the
-      // screen is server-rendered, which is why `refresh()` is the load-bearing
-      // half and the invalidations are for the client readers to come.
-      onOpenChange(false);
-      router.refresh();
-      queryClient.invalidateQueries({ queryKey: sleepLogKeys.summaryAll() });
-      queryClient.invalidateQueries({ queryKey: sleepLogKeys.today() });
+      announce();
+      toast.success(t('day.undone'));
     } catch (error) {
       toast.error(
         error instanceof Error && error.message
@@ -125,57 +115,133 @@ export function DayModal({
     }
   }
 
+  async function handleSave() {
+    if (!canSave) return;
+
+    try {
+      // Sequential rather than `Promise.all`: both writes are upserts on the
+      // same day, and a shared failure should not leave one applied while the
+      // other is still in flight.
+      await journal.saveAsync();
+      if (writesSleep) {
+        await sleep.saveAsync();
+      }
+
+      // One toast and one refresh for the whole sheet. Close, then refresh,
+      // then invalidate, in that order: the router queues work behind a
+      // pending navigation, and refreshing before the close has stranded a
+      // server action in this repo before, with no failed request to show.
+      toast.success(
+        t('day.saved'),
+        canUndo
+          ? { action: { label: t('day.undo'), onClick: () => void handleUndo() } }
+          : undefined
+      );
+      onOpenChange(false);
+      announce();
+    } catch (error) {
+      toast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : t('day.errorSave')
+      );
+    }
+  }
+
+  // Save on close, not a confirm dialog. Mood and the reflection only persist
+  // on Save while photos and captions persist immediately, so a plain dismiss
+  // used to keep half the sheet and lose the other half. The one case that
+  // cannot be saved — a night that is dirty AND invalid — falls back to an
+  // inline choice in the footer; never a second overlay over this one.
+  function requestClose() {
+    if (isSaving) return;
+    if (!isDirty) {
+      onOpenChange(false);
+      return;
+    }
+    if (canSave) {
+      void handleSave();
+      return;
+    }
+    setConfirmDiscard(true);
+  }
+
+  const showDiscard = confirmDiscard && !canSave;
+
   return (
     <ResponsiveModal
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={(next) => (next ? onOpenChange(true) : requestClose())}
       title={t('day.title', { date: dateLabel })}
       description={t('day.open', { date: dateLabel })}
       footer={
-        <Button
-          type="button"
-          onClick={handleSave}
-          disabled={!canSave}
-          className="h-14 w-full rounded-full text-base lg:h-12"
-        >
-          {isSaving ? (
-            <>
-              <LoaderCircle
-                aria-hidden
-                className="mr-2 size-4 animate-spin motion-reduce:animate-none"
-              />
-              {t('day.saving')}
-            </>
-          ) : (
-            t('day.save')
-          )}
-        </Button>
+        showDiscard ? (
+          <div className="space-y-3">
+            <p role="alert" className="text-sm text-destructive-text">
+              {t('day.discardPrompt')}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                onClick={() => setConfirmDiscard(false)}
+                className="h-12 flex-1 rounded-full"
+              >
+                {t('day.keepEditing')}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                className="h-12 flex-1 rounded-full"
+              >
+                {t('day.discard')}
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <Button
+            type="button"
+            onClick={handleSave}
+            disabled={!canSave}
+            className="h-14 w-full rounded-full text-base lg:h-12"
+          >
+            {isSaving ? (
+              <>
+                <LoaderCircle
+                  aria-hidden
+                  className="mr-2 size-4 animate-spin motion-reduce:animate-none"
+                />
+                {t('day.saving')}
+              </>
+            ) : (
+              t('day.save')
+            )}
+          </Button>
+        )
       }
     >
       <div className="space-y-6">
-        <MoodScale value={journal.mood} onChange={journal.setMood} />
+        <section className="space-y-4">
+          <h3 className="text-sm font-medium">{t('day.sleepSection')}</h3>
+          <SleepEntryForm entry={sleep} targetMin={targetMin} />
+        </section>
 
-        <div className="space-y-4">
+        {/* The day half, ruled off from the night above it. */}
+        <div className="space-y-6 border-t pt-6">
+          <MoodScale value={journal.mood} onChange={journal.setMood} />
+
           {/* Not a `<label>`: a `<label>` whose control is a contenteditable
-              does not focus it the way it focuses an input, and wrapping rich
-              content in a label is invalid markup. `RichTextEditor` DOES take
-              `aria-labelledby` (applied straight to the contenteditable it
-              renders), so the heading below labels the editor directly rather
-              than through a group wrapper — a plain `<div>` is enough here
-              since there is only the one control to hold the spacing. */}
+              does not focus it the way it focuses an input. `RichTextEditor`
+              does take `aria-labelledby`, applied straight to the
+              contenteditable, so the heading labels the editor directly. */}
           <div className="space-y-2">
-            <span id="day-reflection-label" className="block text-sm font-medium">
+            <h3 id="day-reflection-label" className="text-sm font-medium">
               {t('day.reflection')}
-            </span>
-            {/* `markdownMode` is withheld: that is the raw-source toggle
-                Notes puts in its header, a power-user affordance for a
-                document, not a paragraph about a Tuesday. `uploadImage` is
-                withheld: the sheet already owns a photo strip below that
-                uploads, captions and removes — a second way to attach a
-                picture, stored somewhere else, would make "the day's
-                photos" mean two different things. `withMath` is withheld:
-                nothing in a day journal needs a formula, and it is dead
-                weight in this bundle. */}
+            </h3>
+            {/* `markdownMode`, `uploadImage` and `withMath` are all withheld:
+                a raw-source toggle is for a document not a paragraph about a
+                Tuesday, the strip below already owns attaching pictures, and
+                nothing in a day journal needs a formula. */}
             <RichTextEditor
               id="day-reflection"
               aria-labelledby="day-reflection-label"
@@ -195,15 +261,6 @@ export function DayModal({
             onCaption={journal.setCaption}
             onRemove={journal.removePhoto}
           />
-        </div>
-
-        {/* The sleep half, ruled off. It is open by default rather than
-            collapsed: this is still the sleep screen, and hiding the thing the
-            surface is named after behind a disclosure would be a demotion the
-            statistics below do not agree with. */}
-        <div className="space-y-4 border-t pt-5">
-          <span className="text-sm font-medium">{t('day.sleepSection')}</span>
-          <SleepEntryForm entry={sleep} targetMin={targetMin} />
         </div>
       </div>
     </ResponsiveModal>
