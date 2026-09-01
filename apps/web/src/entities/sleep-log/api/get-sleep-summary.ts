@@ -85,10 +85,9 @@ export async function getSleepSummary(
     const nights = rows.map(computeNight);
     const targetMin = settings.sleepTargetMin;
 
-    // Minutes past the local midnight that OPENS each night's localDate, so a
-    // 23:40 bedtime and a 00:20 bedtime are 20 minutes apart rather than 1400.
-    // Without the wrap the deviation of a perfectly regular sleeper who
-    // occasionally crosses midnight reads as enormous.
+    // Minutes past the midnight that opens each night's localDate. Wrapped
+    // into [0,1440); `unwrapNearMidnight` then cuts it at 12:00 so the two
+    // sides of the origin sit on one continuous scale.
     const minutesPastLocalMidnight = (instant: Date, localDate: Date) => {
       const raw = Math.round(
         (instant.getTime() - localDate.getTime()) / MINUTE_MS
@@ -96,11 +95,15 @@ export async function getSleepSummary(
       return ((raw % 1440) + 1440) % 1440;
     };
 
+    // Both clocks unwrap. `localDate` is UTC midnight, so in +07 the scale's
+    // origin is 07:00 local and a 06:50/07:10 wake pair lands on 1430 and 10 —
+    // the owner's tile read +/-622 min while the raster band beside it, which
+    // goes through `rasterOffset`, was right.
     const bedtimes = rows.map((r) =>
       unwrapNearMidnight(minutesPastLocalMidnight(r.bedAt, r.localDate))
     );
     const waketimes = rows.map((r) =>
-      minutesPastLocalMidnight(r.wakeAt, r.localDate)
+      unwrapNearMidnight(minutesPastLocalMidnight(r.wakeAt, r.localDate))
     );
 
     // SRI wants the SIGNED offset from the wake day's midnight, not the wrapped

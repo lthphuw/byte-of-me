@@ -9,6 +9,8 @@ import { beforeAll, beforeEach, describe, expect, it, mock } from 'bun:test';
 
 import type * as GetSummaryModule from './get-sleep-summary';
 
+import { localDateKey } from '@/shared/lib/health/local-date';
+
 let getSleepSummary: typeof GetSummaryModule.getSleepSummary;
 
 beforeAll(async () => {
@@ -241,6 +243,35 @@ describe('getSleepSummary', () => {
     expect(withNap.data.nights[0].totalSleepMin).toBe(
       withoutNap.data.nights[0].totalSleepMin
     );
+  });
+
+  it('reads a twenty-minute wake spread across the wrap as twenty minutes', async () => {
+    // The scale's origin is the localDate's UTC midnight, which is 07:00 in
+    // +07 — so 06:50 lands on 1430 and 07:10 on 10. Unwrapped they are 20
+    // minutes apart; wrapped they are 1420, and the owner's live tile read
+    // +/-622 min against a raster band drawn from the same nights.
+    const wakes = [
+      '2026-08-18T23:50:00.000Z',
+      '2026-08-20T00:10:00.000Z',
+      '2026-08-20T23:50:00.000Z',
+      '2026-08-22T00:10:00.000Z',
+    ];
+    findMany.mockResolvedValue(
+      wakes.map((wake) => {
+        const wakeAt = new Date(wake);
+        const localDate = new Date(wakeAt.getTime() + 7 * 60 * 60_000);
+        return night(
+          localDateKey(localDate),
+          new Date(wakeAt.getTime() - 8 * 60 * 60_000).toISOString(),
+          wake
+        );
+      })
+    );
+
+    const res = await getSleepSummary(input);
+
+    if (!res.success) throw new Error('expected success');
+    expect(res.data.waketimeSdMin).toBeCloseTo(10, 6);
   });
 
   it('rejects a window outside the allowed bounds', async () => {

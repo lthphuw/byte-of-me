@@ -183,9 +183,9 @@ export function awakeningsCountBand(count: number | null): SleepBand | null {
  * the raw scale, 40 apart in reality.
  *
  * The cut at 12:00 is safe for every value measured from the midnight opening
- * the WAKE day: neither a bedtime nor a sleep midpoint legitimately falls near
- * noon. Without it the deviation of a regular sleeper who occasionally crosses
- * midnight reads as enormous.
+ * the WAKE day: no bedtime, wake time or sleep midpoint legitimately falls
+ * near noon. Without it the deviation of a regular sleeper who crosses the
+ * origin reads as enormous.
  */
 export function unwrapNearMidnight(minutes: number): number {
   return minutes >= 720 ? minutes - 1440 : minutes;
