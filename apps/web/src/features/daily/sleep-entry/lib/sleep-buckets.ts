@@ -1,11 +1,7 @@
 /**
- * The coarse answers the two optional minute fields accept, and the single
- * number each one stores.
- *
- * The Consensus Sleep Diary instructs the diarist not to watch the clock and
- * to give a best estimate, so a bucket is a MORE faithful record than a minute
- * spinner, not a lossy one — and it costs no native keyboard, which on a phone
- * covers the sticky footer the Save button lives in.
+ * The coarse answers the optional minute fields accept, and the number each
+ * stores. The Consensus Sleep Diary says not to watch the clock, so a bucket
+ * is MORE faithful than a spinner — and summons no keyboard over the footer.
  */
 
 /** One answer: every value below `to` belongs to it, and picking it stores
@@ -50,13 +46,9 @@ export const AWAKENINGS_COUNT_BUCKETS: readonly SleepBucket[] = [
   { id: 'threePlus', to: Infinity, value: 3 },
 ];
 
-/**
- * Which bucket a stored minute count falls in, or null when nothing is stored.
- *
- * A row written before the chips existed still lights the right one, and it
- * keeps its exact value unless the reader taps — the chip writes a midpoint,
- * displaying one never does.
- */
+/** Which bucket a stored count falls in, or null. A row written before the
+ *  chips existed lights the right one and keeps its exact value unless the
+ *  reader taps: the chip writes a midpoint, displaying one never does. */
 export function bucketIdOf(
   value: number | null,
   buckets: readonly SleepBucket[]

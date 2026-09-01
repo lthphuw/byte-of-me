@@ -32,18 +32,12 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 const MINUTE_MS = 60_000;
 
 /**
- * Everything the hub and the sleep screen render, computed once on the server.
+ * Everything the hub and the sleep screen render, once, on the server. The
+ * statistics are CALLED from `shared/lib/health/sleep-stats.ts`, never copied,
+ * which also keeps that module off the client bundle.
  *
- * The statistics live in `shared/lib/health/sleep-stats.ts` and are CALLED from
- * here rather than reimplemented: they are pure functions with their own unit
- * tests, and a second copy inside an action is how the tested version and the
- * shipped version drift apart. Computing here rather than in the browser also
- * keeps the module off the client bundle.
- *
- * An empty history must produce a usable object, not an exception — this is
- * awaited by a server component, where a throw escapes the RSC and replaces the
- * whole page with the root `error.tsx` instead of the in-place error the screen
- * already renders. `getSpaceStats` documents the same trap at length.
+ * An empty history must produce a usable object, not an exception: a throw
+ * escapes the RSC and replaces the whole page with the root `error.tsx`.
  */
 export async function getSleepSummary(
   input: unknown
@@ -95,10 +89,9 @@ export async function getSleepSummary(
       return ((raw % 1440) + 1440) % 1440;
     };
 
-    // Both clocks unwrap. `localDate` is UTC midnight, so in +07 the scale's
-    // origin is 07:00 local and a 06:50/07:10 wake pair lands on 1430 and 10 —
-    // the owner's tile read +/-622 min while the raster band beside it, which
-    // goes through `rasterOffset`, was right.
+    // Both clocks unwrap: `localDate` is UTC midnight, so in +07 the origin
+    // is 07:00 local and a 06:50/07:10 wake pair lands on 1430 and 10 — the
+    // tile read +/-622 min while the raster band beside it was right.
     const bedtimes = rows.map((r) =>
       unwrapNearMidnight(minutesPastLocalMidnight(r.bedAt, r.localDate))
     );
@@ -106,11 +99,9 @@ export async function getSleepSummary(
       unwrapNearMidnight(minutesPastLocalMidnight(r.wakeAt, r.localDate))
     );
 
-    // SRI wants the SIGNED offset from the wake day's midnight, not the wrapped
-    // clock value above: onset is normally the previous evening and must stay
-    // negative, because the index lays every night on one continuous minute
-    // timeline. Wrapping it here would move the evening to the far end of the
-    // same day and score a regular sleeper as inverted.
+    // SRI wants the SIGNED offset from the wake day's midnight, not the
+    // wrapped value above: onset is normally the previous evening and must
+    // stay negative, or a regular sleeper scores as inverted.
     const intervals: SleepInterval[] = rows.map((r) => ({
       localDate: r.localDate,
       onsetOffsetMin:

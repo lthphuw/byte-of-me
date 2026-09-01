@@ -15,14 +15,9 @@ import { useTranslations } from 'next-intl';
 import { SLEEP_FACTORS, type SleepFactor } from '@/entities/sleep-log';
 import { cn } from '@/shared/lib/utils';
 
-/**
- * One picture per factor.
- *
- * Literal objects, never a cup for "late meal": the icon is the thing the eye
- * lands on first in a grid, and a tile whose picture disagrees with its label
- * costs a second read every morning. Lucide, never an emoji (§14) — these have
- * to inherit `currentColor` so they invert with the tile.
- */
+/** One picture per factor, and a literal one — a tile whose picture disagrees
+ *  with its label costs a second read every morning. Lucide, never an emoji
+ *  (§14): these inherit `currentColor` so they invert with the tile. */
 const FACTOR_ICON: Record<SleepFactor, LucideIcon> = {
   caffeine_late: Coffee,
   alcohol: Wine,
@@ -33,28 +28,16 @@ const FACTOR_ICON: Record<SleepFactor, LucideIcon> = {
 };
 
 /**
- * What was in the way last night, as a grid of rounded icon tiles.
+ * What was in the way last night, as a fixed 3-up grid of icon tiles. Wrapping
+ * text chips broke 4/2 in `en` and 3/3 in `vi`, and a control whose shape
+ * depends on its string has no shape to remember.
  *
- * This was a wrapping row of text chips. Six chips of unequal width wrapped
- * differently in each locale — Vietnamese runs longer, so `en` broke 4/2 and
- * `vi` broke 3/3 — and a control whose shape depends on the string in it has
- * no shape to remember. A fixed 3-up grid of equal tiles is the same picture
- * in both locales, and it is the multi-select form the reference uses for
- * exactly this kind of "which of these applied?" question.
+ * The label stays UNDER the icon, never replaced by it: a glass could be wine
+ * or water, and nothing here carries a meaning alone. Selection INVERTS rather
+ * than tints (§14), with `aria-pressed` for anyone not looking at the fill.
  *
- * The icon is not decoration: it is what makes a tile identifiable before the
- * label is read, which is the whole reason the grid is faster than the chips
- * it replaced. The label stays UNDER it rather than being replaced by it —
- * a picture of a glass could be wine or water, and the module's rule is that
- * nothing carries a meaning on its own.
- *
- * Selection INVERTS rather than tints, the same decision the quality scale
- * documents: on a 0%-saturation palette (§14) a tinted fill lands within a few
- * percent of the unselected surface and is not a state at all. `aria-pressed`
- * carries it for anyone not looking at the fill.
- *
- * 88px tall in a 3-up grid with an 8px gap: past the 44px minimum in both
- * directions, and tall enough for a two-line Vietnamese label.
+ * 88px tall with an 8px gap — past the 44px minimum both ways, and tall
+ * enough for a two-line Vietnamese label.
  */
 export function SleepFactorGrid({
   selected,
@@ -65,10 +48,9 @@ export function SleepFactorGrid({
 }) {
   const t = useTranslations('dashboard.daily');
 
-  // Literal keys, one per factor. next-intl's generated declarations only
-  // type-check literals, so a `t(`factors.${code}`)` in the map below would
-  // type-check against nothing and happily ship a key that does not exist —
-  // the same reason `use-space-nav-items.ts` spells its labels out.
+  // Literal keys: next-intl's generated declarations only type-check
+  // literals, so an interpolated key checks against nothing and ships a key
+  // that may not exist. `use-space-nav-items.ts` spells its labels out too.
   const factorLabels: Record<SleepFactor, string> = {
     caffeine_late: t('factors.caffeine_late'),
     alcohol: t('factors.alcohol'),
@@ -80,10 +62,9 @@ export function SleepFactorGrid({
 
   return (
     <div className="space-y-3">
-      {/* A checklist, and it is doing work the tiles cannot: they are toggle
-          buttons, so nothing in their shape says "tick as many as apply" the
-          way a checkbox would. `aria-pressed` tells a screen reader that; this
-          tells everyone else. */}
+      {/* Toggle buttons say nothing about being multi-select the way a
+          checkbox would. `aria-pressed` covers the reader; this covers the
+          rest. */}
       <span className="flex items-center gap-1.5 text-sm font-medium">
         <ListChecks
           aria-hidden

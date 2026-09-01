@@ -11,17 +11,9 @@ import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
- * Remove one photo, object and row.
- *
- * The ownership check is on the row's denormalised `ownerId` rather than on a
- * join through the entry — the same reason the serving route can answer in one
- * indexed lookup. `requireAdmin` narrows to the single site owner already, so
- * this check is defence in depth rather than the only guard; it is here
- * because a server action is an addressable endpoint.
- *
- * Object first, row second. The reverse order would, on a storage failure,
- * leave a row whose bytes are gone — a permanent broken image. This order
- * leaves at worst an unreferenced object, which nothing renders.
+ * Remove one photo, OBJECT first then row: the reverse leaves a row whose
+ * bytes are gone, a permanent broken image. Ownership is checked on the row's
+ * denormalised `ownerId` — defence in depth behind `requireAdmin` (§5).
  */
 export async function deleteDayPhoto(
   input: unknown

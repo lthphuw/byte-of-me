@@ -17,13 +17,9 @@ export function monthDisplay(key: string): string {
   return `${key.slice(5, 7)}/${key.slice(0, 4)}`;
 }
 
-/**
- * The 1st of a `YYYY-MM` month, or `null` if the string is not one.
- *
- * Null rather than a throw or a silent fallback: this parses a SEARCH PARAM,
- * which is untrusted text a reader can type, and the caller is the only place
- * that knows what to show instead — here, the current month.
- */
+/** The 1st of a `YYYY-MM` month, or `null`. Null rather than a throw or a
+ *  fallback: this parses a SEARCH PARAM, and only the caller knows what to
+ *  show instead. */
 export function parseMonthKey(key: string): Date | null {
   if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(key)) return null;
 
@@ -39,27 +35,17 @@ export function addMonths(date: Date, count: number): Date {
   );
 }
 
-/**
- * How many days that month has.
- *
- * Day `0` of the NEXT month is the last day of this one, which is how the
- * platform answers February without anybody writing a leap-year rule.
- */
+/** How many days that month has. Day `0` of the NEXT month is the last of
+ *  this one — February, with no leap-year rule written here. */
 export function daysInMonth(date: Date): number {
   return new Date(
     Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0)
   ).getUTCDate();
 }
 
-/**
- * Which column a day falls in on a Monday-first grid, 0–6.
- *
- * Fixed to Monday rather than read from the locale: `Intl` exposes the first
- * day of a week only through `weekInfo`, which Safari still does not
- * implement, and both locales this site ships (`en` here, `vi`) start the week
- * on Monday in practice. A wrong guess would shift every row of the calendar
- * by a day — worse than a stated convention.
- */
+/** Which column a day falls in on a Monday-first grid, 0–6. Fixed to Monday,
+ *  not read from the locale: `Intl` exposes it only through `weekInfo`, which
+ *  Safari lacks, and both shipped locales start on Monday anyway. */
 export function mondayIndex(date: Date): number {
   // getUTCDay: 0 is Sunday. Sunday is the LAST column of the week that began
   // six days earlier, not the first of the one starting the next morning.

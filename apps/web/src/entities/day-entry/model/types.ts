@@ -5,13 +5,8 @@ export interface DayPhotoRow {
   position: number;
   mimeType: string;
   size: number;
-  /**
-   * The route path this photo is served from — `/api/health/photos/<id>`.
-   *
-   * Built on read, never stored. The bucket is private, so there is no URL to
-   * persist; a column holding one would be a value a future component renders
-   * as a broken image.
-   */
+  /** `/api/health/photos/<id>`, built on read and never stored — the bucket
+   *  is private, so a persisted URL would render as a broken image. */
   url: string;
 }
 

@@ -59,13 +59,9 @@ export interface SleepSummary {
   workDayCount: number;
 }
 
-/**
- * The insight panel's figures, over a 90-day window.
- *
- * Debt lives here rather than on `SleepSummary` because the need it is
- * measured against is a P90 of FREE-DAY sleep, which a fortnight cannot
- * supply. One debt figure on the screen, from one window.
- */
+/** The insight panel's figures, over a 90-day window. Debt lives here rather
+ *  than on `SleepSummary`: the need it is measured against is a P90 of
+ *  FREE-DAY sleep, which a fortnight cannot supply. */
 export interface SleepInsights {
   /** Nights read, after the mood join. Lets the panel say "over N nights". */
   nightCount: number;

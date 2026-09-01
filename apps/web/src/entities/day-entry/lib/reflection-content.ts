@@ -1,29 +1,11 @@
 /**
- * The `reflection` column is `@db.Text`, unchanged by this feature — it is
- * about to hold stringified Tiptap JSON instead of a line of plain text, the
- * same shape `Note.content` already uses. There is no migration and no
- * backfill: every row written before this change is plain text, and it stays
- * plain text in the database until the next time that day is saved.
+ * The one place that knows both shapes `reflection` can hold: stringified
+ * Tiptap JSON, and the plain text every row written before it still holds —
+ * there was no migration and no backfill.
  *
- * This module is the one place that knows both shapes. `parseReflection`
- * reads a stored value back into a document, accepting the JSON form only
- * when it unambiguously says `type: 'doc'` — anything else, including valid
- * JSON that just isn't a document (`[1,2,3]`, a bare number), is legacy text
- * someone typed into the old textarea, and is wrapped one paragraph per line
- * instead of being misread as a document. `serializeReflection` goes the
- * other way, and `reflectionPlainText` extracts the words alone, with the
- * envelope of node types and marks stripped out — used to measure the length
- * cap against what a person actually wrote.
- *
- * `packages/ui/src/lib/rich-text-content.ts` does the same String-column
- * bridging for blog, project, education, profile and both note editors —
- * deliberately NOT reused here, and this file should not be merged into it.
- * That module's `parseRichTextContent` accepts any parsed JSON object as a
- * document, which would hand `[1,2,3]` to Tiptap as if it were one; this
- * file's `isTiptapDoc` check above is stricter on purpose. That module's
- * `richTextToPlainText` also collapses whitespace for excerpt display, which
- * would corrupt the character count `reflectionPlainText` measures the
- * length cap against.
+ * NOT `packages/ui/src/lib/rich-text-content.ts`, and do not merge into it:
+ * its parser takes any JSON object as a document (`[1,2,3]` included), and
+ * its plain-text pass collapses whitespace the length cap has to count.
  */
 import type { JSONContent } from '@tiptap/core';
 
@@ -49,15 +31,9 @@ function isTiptapDoc(value: unknown): value is JSONContent {
   );
 }
 
-/**
- * Reads a stored `reflection` value back into a Tiptap document.
- *
- * `null` and whitespace-only strings mean "nothing written". Anything that
- * parses as JSON AND is a non-array object with `type: 'doc'` is read as a
- * stored document; everything else — malformed JSON, an array, a bare
- * primitive, or genuine prose — is legacy plain text, split on `\n` into one
- * paragraph per line.
- */
+/** A stored value back into a document. Only an unambiguous `type: 'doc'`
+ *  reads as JSON; everything else, prose or `[1,2,3]`, is legacy plain text
+ *  split on `\n` into one paragraph per line. */
 export function parseReflection(stored: string | null): JSONContent | null {
   if (stored === null || stored.trim() === '') return null;
 
@@ -77,30 +53,16 @@ function nodeHasText(node: JSONContent): boolean {
   return node.content?.some(nodeHasText) ?? false;
 }
 
-/**
- * Whether the document has any BLOCK content beyond an empty paragraph — an
- * image, a table, a code block, anything the editor mounted here can produce
- * that is not text. `nodeHasText` alone used to be the whole rule, which was
- * correct only while nothing could put a node in the document without also
- * putting text in it. `RichTextEditor` can: a pasted image, or a table of
- * empty cells, has no `text` node anywhere in it, and without this check
- * `serializeReflection` would collapse it to `null` and silently drop it on
- * save.
- */
+/** Any BLOCK content beyond an empty paragraph. `nodeHasText` alone dropped
+ *  a pasted image or a table of empty cells on save — neither holds a `text`
+ *  node anywhere. */
 function hasNonParagraphNode(doc: JSONContent): boolean {
   return (doc.content ?? []).some((node) => node.type !== 'paragraph');
 }
 
-/**
- * Serializes a Tiptap document for storage, or `null` when it is truly empty.
- *
- * An empty editor still produces `{ type: 'doc', content: [{ type:
- * 'paragraph' }] }` — storing that string would make the reflection look
- * "written" (e.g. draw the calendar's dot) for a day nobody actually wrote
- * anything on, so a document with no text AND no node other than a paragraph
- * collapses to `null`, just like a cleared field does. A document that has
- * neither text nor a non-paragraph node has nothing else worth keeping.
- */
+/** For storage, or `null` when truly empty. An untouched editor still emits
+ *  one empty paragraph, and storing that would draw the calendar's
+ *  written-up dot on a day nobody wrote. */
 export function serializeReflection(doc: JSONContent | null): string | null {
   if (doc === null) return null;
   if (!nodeHasText(doc) && !hasNonParagraphNode(doc)) return null;
@@ -112,12 +74,8 @@ function collectText(node: JSONContent): string {
   return (node.content ?? []).map(collectText).join('');
 }
 
-/**
- * The prose alone, with the JSON envelope — node types, marks, brackets —
- * stripped out. Top-level blocks are joined with `\n`, mirroring how
- * `parseReflection` turns legacy lines into paragraphs. This is what the
- * length cap measures, not the serialized document.
- */
+/** The prose alone, envelope stripped, blocks joined with `\n` as
+ *  `parseReflection` splits them. What the length cap measures. */
 export function reflectionPlainText(doc: JSONContent | null): string {
   if (doc === null) return '';
   return (doc.content ?? []).map(collectText).join('\n');

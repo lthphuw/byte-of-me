@@ -17,16 +17,9 @@ import { cn } from '@/shared/lib/utils';
 /**
  * Everything the morning flow does not need, behind one tap.
  *
- * Inline, never a second modal: the day sheet is already one, and two Radix
- * overlays at `bg-black/80` composite to ~96% black with the inner sheet
- * covering the outer. Save lives in that sheet's own sticky footer, so
- * expanding here no longer pushes it down the page — the defect that sent this
- * section into a sheet in the first place.
- *
- * The section still has to be FOUND, or efficiency stops being computable:
- * latency and minutes awake are its only two inputs, and a section nobody opens
- * is the same as deleting them. Hence a trigger that names what is inside,
- * counts what is already filled, and says why it matters while it still does.
+ * Inline, never a second modal: two Radix overlays at `bg-black/80` composite
+ * to ~96% black and the inner sheet covers the outer. It still has to be
+ * FOUND, so the trigger names its fields and counts what is answered.
  */
 export function SleepDetailsSection({
   entry,
@@ -44,14 +37,9 @@ export function SleepDetailsSection({
     (entry.factors.length === 0 ? 0 : 1) +
     (entry.note.trim() === '' ? 0 : 1);
 
-  const efficiencyUnavailable =
-    entry.latency === null && entry.awakenings === null;
-
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
-      {/* `asChild`, so Radix owns `aria-expanded` and `aria-controls` on this
-          button. `type="button"`: these fields sit inside the day sheet, and a
-          bare button in a form submits it. */}
+      {/* `asChild`, so Radix owns `aria-expanded` and `aria-controls`. */}
       <CollapsibleTrigger asChild>
         <button
           type="button"
@@ -64,9 +52,8 @@ export function SleepDetailsSection({
           <span className="flex items-center gap-3">
             <span className="min-w-0 flex-1">
               <span className="flex items-center gap-2 text-sm font-medium">
-                {/* A landmark, not decoration: this card's whole problem is
-                    being FOUND, and among four rounded cards of near-identical
-                    tone it is the only one with a glyph in its title. */}
+                {/* A landmark, not decoration: among four cards of the same
+                    tone this is the only title with a glyph. */}
                 <SlidersHorizontal
                   aria-hidden
                   className="size-4 shrink-0 text-muted-foreground"
@@ -83,10 +70,8 @@ export function SleepDetailsSection({
               </span>
             </span>
 
-            {/* A chevron again, and it rotates: the card genuinely grows and
-                reveals what is under it now, which is the one thing a chevron
-                pointing down promises. It sits in its own hairline disc because
-                that is the only control boundary drawn on this card. */}
+            {/* It rotates because the card genuinely grows now — the one
+                thing a chevron pointing down promises. */}
             <span
               aria-hidden
               className={cn(
@@ -103,18 +88,11 @@ export function SleepDetailsSection({
               />
             </span>
           </span>
-
-          {efficiencyUnavailable ? (
-            <span className="mt-2 block text-xs text-muted-foreground">
-              {t('sleep.detailsEfficiencyHint')}
-            </span>
-          ) : null}
         </button>
       </CollapsibleTrigger>
 
-      {/* Its own card, tied to the trigger by a 12px gap rather than the 24px
-          the sibling blocks use — one object opening, not a fifth block in the
-          stack. */}
+      {/* 12px to the trigger, not the siblings' 24px: one object opening,
+          not a fifth block in the stack. */}
       <CollapsibleContent className="mt-3 rounded-3xl border bg-card p-5 shadow">
         <SleepDetailsFields entry={entry} />
       </CollapsibleContent>

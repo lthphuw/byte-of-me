@@ -7,20 +7,14 @@ import { useTranslations } from 'next-intl';
 import { RISE_OFFSET_PRESETS } from '@/features/daily/sleep-entry/model/use-sleep-entry';
 import { cn } from '@/shared/lib/utils';
 
-/** `null` is the custom chip. Ids rather than numbers so the row can carry it
- *  alongside the three offsets in one list. */
+/** `null` is the custom chip. An id, so the row carries it alongside the
+ *  three numeric offsets in one list. */
 const CUSTOM = 'custom';
 
 /**
- * When you actually got out of bed.
- *
- * Three offsets from the wake time and an escape hatch, not a fourth clock:
- * the answer is nearly always "straight away" or "another twenty minutes", and
- * a third native time input in a two-column card is both a bigger target to
- * miss and a second OS picker to dismiss at 6am.
- *
- * `Same` is selected by default and is a real answer, not a blank — it is what
- * makes time in bed, and therefore efficiency, computable on a one-tap morning.
+ * When you actually got out of bed — three offsets from the wake time and an
+ * escape hatch, not a fourth clock and a second OS picker at 6am. `Same` is
+ * the default and a REAL answer, which is what keeps efficiency computable.
  */
 export function RiseTimeRow({
   offsetMin,
@@ -33,8 +27,8 @@ export function RiseTimeRow({
   onOffsetChange: (offsetMin: number | null) => void;
   customClock: string;
   onCustomClockChange: (clock: string) => void;
-  /** The resolved out-of-bed clock, shown beside the label so the offsets are
-   *  never the only reading of the answer. */
+  /** The resolved clock, shown beside the label so an offset is never the
+   *  only reading of the answer. */
   riseClock: string;
 }) {
   const t = useTranslations('dashboard.daily');
@@ -106,9 +100,8 @@ export function RiseTimeRow({
           <Label htmlFor="sleep-rise-at" className="text-xs text-muted-foreground">
             {t('sleep.riseCustomLabel')}
           </Label>
-          {/* `appearance-none` for the same reason the two clocks above carry
-              it: WebKit gives the native time control an intrinsic min-width
-              that `width:100%` cannot shrink below. */}
+          {/* `appearance-none` for the reason the two clocks above carry it:
+              WebKit's intrinsic min-width, which `width:100%` cannot shrink. */}
           <Input
             id="sleep-rise-at"
             type="time"
@@ -118,8 +111,6 @@ export function RiseTimeRow({
           />
         </div>
       ) : null}
-
-      <p className="text-xs text-muted-foreground">{t('sleep.riseHint')}</p>
     </div>
   );
 }

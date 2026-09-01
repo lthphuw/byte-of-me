@@ -18,33 +18,23 @@ import { buildDayDefaults } from '@/features/daily/sleep-entry';
 export interface LoggedNight {
   /** `YYYY-MM-DD`. */
   localDate: string;
-  /** Minutes asleep, through `computeNight` — latency and awakenings taken
-   *  off, exactly like every other duration in this module. `null` is a day
-   *  with no sleep row at all: it can still be written up, which is the whole
-   *  reason `DayEntry` is a separate table. */
+  /** Minutes asleep, through `computeNight`. `null` is a day with no sleep
+   *  row — it can still be written up, which is why `DayEntry` exists. */
   totalSleepMin: number | null;
-  /** 1–5, or null when the DAY was never rated. From `DayEntry`, not from
-   *  `SleepLog.quality` — the face on the calendar is how the day felt. */
+  /** 1–5 from `DayEntry`, not `SleepLog.quality`: the face on the calendar
+   *  is how the DAY felt. */
   mood: number | null;
   /** Whether the day has a reflection or any photo. */
   hasEntry: boolean;
 }
 
 /**
- * The month, and the sheet for whichever day is open.
+ * The month, and the sheet for whichever day is open — the one stateful client
+ * component here. React state, not the URL beside the month: a day opens
+ * dozens of times a sitting, and the fast one should not be a navigation.
  *
- * The one client component on this screen that owns state, and it owns exactly
- * one thing: which day the sheet is showing, or `null` for none. Everything it
- * needs is already here — every row for the visible month came down to draw
- * the calendar, so a tap opens the sheet with no round trip. That is the whole
- * argument for keeping this in React rather than in the URL beside the month:
- * a day is opened dozens of times in a sitting and a month a handful of times,
- * and the fast one should not be a navigation.
- *
- * `key={openKey}` on the modal is the reset. Every field inside is seeded at
- * mount, so remounting is how a different day gets a different sheet — and
- * carrying half of the 9th into the 14th, which an effect syncing props into
- * state would do at least once, is a worse failure than a cheap remount.
+ * `key={openKey}` is the reset. Every field is seeded at mount, and carrying
+ * half of the 9th into the 14th is worse than a cheap remount.
  */
 export function SleepMonthBoard({
   nights,

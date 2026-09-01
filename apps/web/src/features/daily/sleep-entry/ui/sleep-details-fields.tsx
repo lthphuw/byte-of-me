@@ -17,14 +17,9 @@ import {
 } from '@/features/daily/sleep-entry/lib/sleep-buckets';
 import type { useSleepEntry } from '@/features/daily/sleep-entry/model/use-sleep-entry';
 
-/**
- * Everything the morning flow does not need, as fields.
- *
- * Separate from `SleepDetailsSection` so the disclosure and its contents stay
- * one concern each. Every field ids itself, so exactly one copy may ever be
- * mounted — two `#sleep-note` textareas would point one `<label for>` at
- * whichever came first.
- */
+/** The details themselves, split from the disclosure that holds them. Every
+ *  field ids itself, so exactly one copy may ever be mounted — two
+ *  `#sleep-note` textareas share one `<label for>`. */
 export function SleepDetailsFields({
   entry,
 }: {
@@ -32,8 +27,8 @@ export function SleepDetailsFields({
 }) {
   const t = useTranslations('dashboard.daily');
 
-  // Literal keys, one per bucket: next-intl's generated declarations only
-  // type-check literals, so an interpolated key would check against nothing.
+  // Literal keys: next-intl's generated declarations only type-check
+  // literals, so an interpolated key would check against nothing.
   const latencyLabels: Record<string, string> = {
     lt5: t('sleep.latencyLt5'),
     from5: t('sleep.latency5to15'),
@@ -62,10 +57,8 @@ export function SleepDetailsFields({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Buckets, not minute spinners. The Consensus Sleep Diary instructs the
-          diarist not to watch the clock, so a range is the more faithful
-          record — and a numeric keyboard would cover the sticky footer the
-          Save button sits in, the defect `NumpadSheet` exists for. */}
+      {/* Buckets, not minute spinners: the Consensus Sleep Diary says not to
+          watch the clock, and a numeric keyboard covers the sticky footer. */}
       <div className="space-y-4">
         <BucketChipRow
           id="sleep-latency-label"
@@ -89,8 +82,8 @@ export function SleepDetailsFields({
           onSelect={(id) => entry.setAwakenings(bucketValueOf(id, AWAKE_BUCKETS))}
         />
 
-        {/* Beside the minutes, not instead of them: four brief wakings and one
-            long one can share a minute total and are not the same night. */}
+        {/* Beside the minutes, not instead: four brief wakings and one long
+            one share a total and are not the same night. */}
         <BucketChipRow
           id="sleep-awakenings-count-label"
           label={t('sleep.awakeningsCount')}
@@ -105,16 +98,12 @@ export function SleepDetailsFields({
             )
           }
         />
-
-        <p className="text-xs text-muted-foreground">
-          {t('sleep.estimateHint')}
-        </p>
       </div>
 
-      {/* Stored as the id itself, never a midpoint — and it enters no figure.
-          An unrecorded nap corrupts duration and debt; a nap ADDED to the
-          night's total inflates both, which is the worse of the two. */}
-      <div className="space-y-2">
+      {/* Stored as the id, never a midpoint, and it enters no figure: an
+          unrecorded nap corrupts duration and debt, but one ADDED to the
+          night's total inflates them, which is worse. */}
+      <div>
         <BucketChipRow
           id="sleep-naps-label"
           label={t('sleep.naps')}
@@ -127,14 +116,12 @@ export function SleepDetailsFields({
             entry.setNapBucket(NAP_BUCKETS.find((nap) => nap === id) ?? null)
           }
         />
-        <p className="text-xs text-muted-foreground">{t('sleep.napsHint')}</p>
       </div>
 
       <SleepFactorGrid selected={entry.factors} onToggle={entry.toggleFactor} />
 
-      {/* Shown rather than inferred from the weekday: it is an input to social
-          jetlag, and a holiday or a night shift makes the weekday a wrong
-          guess. Pre-ticked at the weekend, still editable. */}
+      {/* Asked, not inferred from the weekday: it feeds social jetlag, and a
+          holiday or a night shift makes the weekday a wrong guess. */}
       <Label
         htmlFor="sleep-free-day"
         className="flex min-h-11 items-center gap-3 text-sm font-normal"

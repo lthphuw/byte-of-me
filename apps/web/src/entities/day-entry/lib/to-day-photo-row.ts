@@ -10,14 +10,9 @@ export interface StoredPhoto {
   size: number;
 }
 
-/**
- * Attach the address.
- *
- * The bucket is private, so a photo's URL is not a property of the object —
- * it is the route that will serve it after checking the session. Building it
- * on read rather than storing it is what stops a column of dead public URLs
- * accumulating, and what makes moving the route a one-line change.
- */
+/** Attach the address. The bucket is private, so the URL is not a property
+ *  of the object but the route that serves it after a session check —
+ *  built on read, so no column of dead public URLs accumulates. */
 export function toDayPhotoRow(photo: StoredPhoto): DayPhotoRow {
   return { ...photo, url: `/api/health/photos/${photo.id}` };
 }

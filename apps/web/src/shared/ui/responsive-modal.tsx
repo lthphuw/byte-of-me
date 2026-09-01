@@ -14,25 +14,18 @@ import {
 
 import { cn } from '@/shared/lib/utils';
 
-/**
- * The width at which `/space` shows its icon rail and this module becomes two
- * columns — the same `lg` `SleepDetailsSection` switches at, written as a
- * query because JavaScript has to decide which container mounts.
- */
+/** `lg` — the width at which `/space` shows its icon rail. Written as a query
+ *  rather than a class because JavaScript decides which container mounts. */
 const DESKTOP_QUERY = '(min-width: 1024px)';
 
 /**
  * One form, two containers: a bottom sheet on a phone, a centred dialog at
  * `lg`.
  *
- * The gym surface opens a form over the page five times — new exercise, edit
- * exercise, pick an exercise, edit a routine, add or edit a set — and every
- * one of them wants the phone behaviour the sleep details section documents:
- * a sheet comes up under the thumb that opened it, dims what it interrupted,
- * backs out on Escape or an outside tap, and does not grow the page by 400px
- * and throw the save bar off screen. At `lg` a sheet stapled across the bottom
- * of a monitor is a phone pattern wearing a desktop's clothes, so the same
- * content becomes an ordinary dialog.
+ * A sheet comes up under the thumb that opened it, dims what it interrupted,
+ * and backs out on Escape or an outside tap. At `lg` a sheet stapled across
+ * the bottom of a monitor is a phone pattern in a desktop's clothes, so the
+ * same content becomes an ordinary dialog.
  *
  * `useMediaQuery` decides which one mounts rather than `lg:hidden`, because
  * these bodies carry field ids: two copies means a duplicate `#exercise-name`

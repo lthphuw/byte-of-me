@@ -5,20 +5,13 @@ import { LoaderCircle } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 
 /**
- * One photo in the strip.
+ * One photo in the strip. A plain `<img>`, never `next/image`: these bytes
+ * come from an authenticated route the optimizer would fetch with no session
+ * and cache in a shared store.
  *
- * A plain `<img>`, not `next/image`: these bytes come from
- * `/api/health/photos/[id]`, an authenticated route the optimizer would fetch
- * with no session and cache in a shared store.
- *
- * The spinner is not decoration. Photos upload the moment they are picked, and
- * an invisible asymmetry is how someone loses a photo they thought they had
- * cancelled.
- *
- * **Removing lives in the caption panel, not on the tile.** The control here
- * was a 24px disc inset over the thumbnail's own 80px button — under the 44px
- * minimum and close enough to fuse with the tile it sat on, so a thumb aiming
- * to open a caption deleted the photo instead.
+ * The spinner is not decoration — photos upload on pick, and an invisible
+ * asymmetry is how a photo someone thought they cancelled survives. Removing
+ * lives in the caption panel, off the 80px tile a thumb is aiming at.
  */
 export function PhotoThumb({
   src,

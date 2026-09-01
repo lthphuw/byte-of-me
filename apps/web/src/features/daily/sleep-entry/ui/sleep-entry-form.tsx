@@ -14,20 +14,9 @@ import { SleepSuggestionCard } from './sleep-suggestion-card';
 import type { useSleepEntry } from '@/features/daily/sleep-entry/model/use-sleep-entry';
 
 /**
- * The sleep half of the day sheet, and the first thing in it.
- *
- * The two clocks lead. They used to sit roughly 700px down a sheet whose own
- * name is sleep — below a mood ramp, a rich-text editor, a photo strip and a
- * 176px duration ring — which on a 390px phone put the one control this
- * surface exists for off screen at open.
- *
- * Native `<input type="time">` rather than a hand-rolled wheel: the platform
- * control is already localized, already accessible, and on a phone it summons
- * the OS time picker.
- *
- * This does not own the form or the Save button — the day sheet's sticky
- * footer holds the only Save on screen, so this takes the hook's return value
- * and renders fields. `key={localDate}` one level up is what resets it.
+ * The sleep half of the day sheet, clocks first — they used to sit ~700px
+ * down, off screen at open on a 390px phone. Native `<input type="time">`:
+ * localized, accessible, and it summons the OS picker. No form, no Save here.
  */
 export function SleepEntryForm({
   entry,
@@ -40,15 +29,12 @@ export function SleepEntryForm({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* 64px targets and the largest type among the inputs: these two are the
-          only fields that must be hit accurately on a phone held in one hand,
-          half awake. They stack below `sm` because a native time control plus
-          a Vietnamese label does not fit a 139px column — measured at 316px,
-          the control's own content is already 7px wider than its box.
+      {/* 64px targets, stacked below `sm`: a Vietnamese label plus a native
+          time control does not fit a 139px column.
 
-          `appearance-none` is load-bearing on iOS and only there: WebKit gives
-          the control an intrinsic min-width `width:100%` cannot shrink below,
-          and a 293px cell rendered a 319px control on iOS 26.6.1. */}
+          `appearance-none` is load-bearing on iOS and only there — WebKit
+          gives the control an intrinsic min-width `width:100%` cannot shrink,
+          and a 293px cell rendered 319px on iPhone 13 / iOS 26.6.1. */}
       <div className="grid grid-cols-1 gap-3 rounded-3xl border bg-card p-5 shadow sm:grid-cols-2 sm:gap-4">
         {entry.suggestion ? (
           <div className="sm:col-span-2">
@@ -94,9 +80,8 @@ export function SleepEntryForm({
           />
         </div>
 
-        {/* Inside the clocks card and below them, because it is a third
-            reading of the same night — and it has to be answered while the
-            wake time is still the thing on screen. */}
+        {/* In the clocks card: a third reading of the same night, answered
+            while the wake time is still on screen. */}
         <div className="sm:col-span-2">
           <RiseTimeRow
             offsetMin={entry.riseOffsetMin}
@@ -107,10 +92,8 @@ export function SleepEntryForm({
           />
         </div>
 
-        {/* A repair is announced with the typed value still on offer. Silently
-            rewriting an entry is how a genuinely unusual night becomes
-            impossible to record — undo here also stops the next blur from
-            correcting the same value again. */}
+        {/* Announced, with the typed value still on offer: rewriting silently
+            makes a genuinely unusual night impossible to record. */}
         {entry.repairedFrom ? (
           <div
             role="status"
@@ -138,9 +121,8 @@ export function SleepEntryForm({
           </div>
         ) : null}
 
-        {/* On the field rather than only on a disabled Save button two screens
-            away. `destructive-text`, not `destructive` — §14 records that the
-            fill token measures 3.76:1 as text. */}
+        {/* On the field, not only on a disabled Save two screens away.
+            `destructive-text`: the fill token is 3.76:1 as text (§14). */}
         {entry.nightIssue ? (
           <p
             role={entry.nightIssue.blocking ? 'alert' : 'status'}
@@ -158,19 +140,15 @@ export function SleepEntryForm({
         ) : null}
       </div>
 
-      {/* Below the clocks and compact. It is the answer to what was just
-          typed, so it follows the question — and at 176px in a `p-8` card it
-          was the single biggest thing standing between the sheet's top edge
-          and the fields the sheet is for. */}
+      {/* Below the clocks, and compact: it is the ANSWER to what was just
+          typed, and at 176px it was what pushed the fields off screen. */}
       <SleepDurationHero
         durationMin={entry.durationMin}
         targetMin={targetMin}
       />
 
-      {/* The night, then the morning it produced. Quality rates the sleep and
-          restedness rates the person, which is the outcome every insight in
-          the next phase is contrasted against — so it sits above the optional
-          details and directly under the question it answers. */}
+      {/* The night, then the morning it produced: quality rates the sleep,
+          restedness rates the person — the outcome insights contrast on. */}
       <SleepQualityScale value={entry.quality} onChange={entry.setQuality} />
 
       <SleepRestednessScale

@@ -17,21 +17,14 @@ import { addDays, localDateKey } from '@/shared/lib/health/local-date';
  *  means today. */
 const MEDIAN_SAMPLE_DAYS = 14;
 
-/**
- * Below this, "now" cannot plausibly be the end of the night the form is
- * about. See `buildDayDefaults`.
- */
+/** Below this, "now" cannot plausibly be the end of the night the form is
+ *  about. See `buildSuggestion`. */
 const MIN_PLAUSIBLE_NIGHT_MIN = 240;
 
 const DAY_MIN = 1440;
 
-/**
- * Minutes past local midnight, rounded to the five the time input steps in.
- *
- * Split out so the SERVER resolves it once and hands it to the form: a clock
- * read from `new Date()` in the browser would differ from the one the server
- * rendered and hydrate with a mismatch.
- */
+/** Minutes past local midnight, rounded to the input's five-minute step. On
+ *  the SERVER, once: `new Date()` in the browser hydrates with a mismatch. */
 export function roundedNowMin(now: Date, timeZone: string): number {
   return Math.round(localClockMinutes(now, timeZone) / 5) * 5;
 }
@@ -39,28 +32,9 @@ export function roundedNowMin(now: Date, timeZone: string): number {
 /**
  * What the form opens showing, for ANY day the calendar can select.
  *
- * The stored row wins outright when there is one: the write is an upsert, so
- * opening a day a second time is an EDIT, and a form that came up blank would
- * quietly offer to overwrite a saved night with its own defaults.
- *
- * Otherwise the clocks open EMPTY and the fortnight's habit is offered beside
- * them as a suggestion. They used to arrive pre-filled, which read as an
- * answer the author had given and was defended by a dirty check nobody could
- * see; one tap on an accept-or-edit card is the same keystroke count and says
- * out loud where the numbers came from.
- *
- * The suggested wake time is "now, rounded to five minutes" ONLY WHEN NOW IS
- * PLAUSIBLY THE END OF THAT NIGHT. Unconditionally it produced the worst first
- * impression this screen could give: opened at 23:10 against a 23:00 median
- * bedtime it suggested a ten-minute night. Under four hours — a length, not an
- * hour of the day, so a shift worker gets the same sensible answer — means the
- * night has not happened yet, and the honest guess is bedtime plus the nightly
- * target. A PAST day takes that branch unconditionally: no clock reading
- * describes a night that ended days ago.
- *
- * The window is the SAME fortnight for every day rather than the fortnight
- * before the day being edited. It is a statement about the author's habit, not
- * about that particular night.
+ * A stored row wins outright — the write is an upsert, so a second open is an
+ * EDIT and a blank form would offer to overwrite a saved night. Otherwise the
+ * clocks open EMPTY, with the fortnight's habit beside them as a suggestion.
  */
 export function buildDayDefaults({
   rows,
@@ -109,9 +83,8 @@ export function buildDayDefaults({
     localDate: dayKey,
     bedClock: '',
     wakeClock: '',
-    // Getting up when you woke, shown selected rather than left unanswered.
-    // Unlike a pre-filled clock this is a visible chip the reader can move,
-    // and it is what keeps efficiency computable on a one-tap morning.
+    // Selected, not unanswered: unlike a pre-filled clock this is a visible
+    // chip, and it keeps efficiency computable on a one-tap morning.
     riseOffsetMin: 0,
     riseClockCustom: '',
     quality: null,
@@ -121,9 +94,8 @@ export function buildDayDefaults({
     awakeningsCount: null,
     napBucket: null,
     factors: [],
-    // Saturday or Sunday of the day being edited. The key is UTC midnight
-    // standing for a calendar day, so its UTC weekday IS the local one. A
-    // guess, and a checkbox precisely because holidays and shift work break it.
+    // The key is UTC midnight standing for a calendar day, so its UTC weekday
+    // IS the local one. A guess — hence a checkbox, for holidays and shifts.
     isFreeDay: day.getUTCDay() === 0 || day.getUTCDay() === 6,
     note: null,
     suggestion: buildSuggestion({
@@ -138,16 +110,13 @@ export function buildDayDefaults({
 }
 
 /**
- * The last fortnight's habit, or null when there is none to describe.
+ * The last fortnight's habit, or null. Medians, never means — one night out
+ * until 04:00 drags an average and is then offered back as the new normal.
+ * RESTEDNESS IS ABSENT: it is the outcome, and must be observed, not offered.
  *
- * Every figure is a median, never a mean: one night out until 04:00 drags an
- * average by half an hour and would then be offered back as the new normal.
- * The optional answers are carried only when they were actually recorded — a
- * bucket the author never answered is not part of "as usual".
- *
- * RESTEDNESS IS DELIBERATELY ABSENT. It is the outcome the insight phase
- * contrasts everything else against, and offering last fortnight's median back
- * as today's answer would pre-fill the one field that has to be observed.
+ * The wake time is "now" only when now is plausibly the END of that night;
+ * opened at 23:10 against a 23:00 median it once suggested a ten-minute
+ * night. Otherwise, and always for a past day, it is bedtime plus the target.
  */
 function buildSuggestion({
   rows,
@@ -175,8 +144,7 @@ function buildSuggestion({
   if (bedClock === null) return null;
 
   const bedMin = clockToMinutes(bedClock) ?? 0;
-  // The short way round, the same rule the form uses for the duration it
-  // shows — so this test and that figure can never disagree.
+  // The short way round, the rule the form's own duration uses.
   const candidateNightMin = (((nowMin - bedMin) % DAY_MIN) + DAY_MIN) % DAY_MIN;
   const wakeMin =
     dayKey === todayKey && candidateNightMin >= MIN_PLAUSIBLE_NIGHT_MIN
@@ -200,8 +168,8 @@ function buildSuggestion({
   };
 }
 
-/** Minutes from waking to getting up, or null when the row predates the
- *  column. The short way round, like every other span in this module. */
+/** Waking to getting up, or null when the row predates the column. The short
+ *  way round, like every other span here. */
 function riseGapOf(row: SleepLogRow): number | null {
   if (row.riseAt === null) return null;
 
@@ -212,12 +180,9 @@ function riseGapOf(row: SleepLogRow): number | null {
   return ((gapMin % DAY_MIN) + DAY_MIN) % DAY_MIN;
 }
 
-/**
- * The middle nap ANSWER, by position in the ordered id list.
- *
- * A median over indices rather than a mean over minutes: the ids are ordered
- * but not evenly spaced, and `gt60` has no upper bound to average against.
- */
+/** The middle nap ANSWER, by position in the ordered id list. A median over
+ *  indices, not a mean over minutes: the ids are ordered but not evenly
+ *  spaced, and `gt60` has no upper bound to average. */
 function medianNapBucket(rows: SleepLogRow[]): NapBucket | null {
   const indices = rows
     .map((row) => NAP_BUCKETS.indexOf(asNapBucket(row.napBucket) as NapBucket))
@@ -228,19 +193,14 @@ function medianNapBucket(rows: SleepLogRow[]): NapBucket | null {
   return median === null ? null : NAP_BUCKETS[median];
 }
 
-/** A stored string is only a nap bucket if it is still one of the ids — an id
- *  retired by a later version reads as unanswered rather than crashing. */
+/** A retired id reads as unanswered rather than crashing. */
 function asNapBucket(value: string | null): NapBucket | null {
   return NAP_BUCKETS.includes(value as NapBucket) ? (value as NapBucket) : null;
 }
 
-/**
- * Which rise control an existing row opens on.
- *
- * A stored gap that is exactly one of the presets lights that chip; anything
- * else opens the custom clock holding the real value, so re-saving a row never
- * rounds the author's own answer to the nearest chip.
- */
+/** Which rise control an existing row opens on. An off-preset gap opens the
+ *  custom clock holding the real value, so re-saving never rounds the
+ *  author's own answer to the nearest chip. */
 function riseDefaults(
   row: SleepLogRow,
   timeZone: string

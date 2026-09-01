@@ -12,16 +12,9 @@ import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
- * Write one photo's caption.
- *
- * Its own action rather than part of the day's save, because captions save on
- * blur: a caption typed under one photo should not wait behind a Save button
- * that is about the reflection, and a sheet dismissed by a swipe should not
- * lose it.
- *
- * `updateMany` scoped by owner rather than `update` by id, so an id belonging
- * to someone else matches zero rows instead of throwing — and the caller
- * learns nothing about whether that id exists.
+ * One photo's caption. Its own action because captions save on BLUR, not
+ * behind a Save button about the reflection. `updateMany` scoped by owner,
+ * not `update` by id: a foreign id matches zero rows and leaks nothing.
  */
 export async function updateDayPhotoCaption(
   input: unknown

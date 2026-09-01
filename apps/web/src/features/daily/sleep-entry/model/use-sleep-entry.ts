@@ -21,14 +21,14 @@ import {
 
 const DAY_MIN = 1440;
 
-/** The block the "same as usual" card offers in one tap. Null when the last
- *  fortnight holds no night to derive it from — a suggestion built from no
- *  history is a guess wearing the word "usual". */
+/** What the "same as usual" card offers in one tap. Null when the fortnight
+ *  holds no night — a suggestion from no history is a guess wearing the
+ *  word "usual". */
 export interface SleepSuggestion {
   bedClock: string;
   wakeClock: string;
-  /** Minutes from waking to getting up. Never null — the fallback is 0, which
-   *  is both the commonest answer and the one that changes no figure. */
+  /** Waking to getting up. Never null: 0 is both the commonest answer and
+   *  the one that changes no figure. */
   riseOffsetMin: number;
   latencyMin: number | null;
   awakeningsMin: number | null;
@@ -36,26 +36,25 @@ export interface SleepSuggestion {
   napBucket: NapBucket | null;
 }
 
-/** The presets beside the custom clock. Not a `SleepBucket` table: these are
- *  offsets applied to the wake time, not ranges a stored value falls into. */
+/** Offsets applied to the wake time — not a `SleepBucket` table, which holds
+ *  ranges a stored value falls into. */
 export const RISE_OFFSET_PRESETS = [0, 15, 30] as const;
 
-/** Beyond this, a custom out-of-bed clock reads as being BEFORE waking rather
- *  than a very long lie-in — the gap is measured the short way round. */
+/** Past this, a custom out-of-bed clock reads as BEFORE waking rather than a
+ *  very long lie-in — the gap is measured the short way round. */
 const MAX_RISE_GAP_MIN = 720;
 
-/** What the screen knows and the form starts from. Every field is derived from
- *  values the SERVER resolved — the row set, the time zone, and the clock as a
- *  plain number — so the first client render matches the SSR output exactly. */
+/** What the form starts from. Every field is derived from values the SERVER
+ *  resolved, so the first client render matches the SSR output exactly. */
 export interface SleepEntryDefaults {
   /** `YYYY-MM-DD` of the night this form is about. */
   localDate: string;
-  /** Empty unless a row exists. The fortnight's habit arrives as `suggestion`
-   *  instead, because a pre-filled clock is an answer nobody gave. */
+  /** Empty unless a row exists — the habit arrives as `suggestion` instead,
+   *  because a pre-filled clock is an answer nobody gave. */
   bedClock: string;
   wakeClock: string;
-  /** Minutes after waking, or null when the stored value is not one of the
-   *  presets and the custom clock below holds it instead. */
+  /** Null when the stored value is off-preset and `riseClockCustom` holds
+   *  it instead. */
   riseOffsetMin: number | null;
   riseClockCustom: string;
   quality: number | null;
@@ -74,8 +73,7 @@ export interface SleepEntryDefaults {
 interface NightValues {
   bedClock: string;
   wakeClock: string;
-  /** Minutes after waking. Null only when the clocks themselves are unusable,
-   *  which blocks the write anyway. */
+  /** Null only when the clocks are unusable, which blocks the write. */
   riseGapMin: number | null;
   quality: number | null;
   restedness: number | null;
@@ -88,34 +86,21 @@ interface NightValues {
   note: string | null;
 }
 
-/** Why this night cannot be written, or merely why it looks wrong. Blocking
- *  issues disable Save; a flag is shown and saved through. */
+/** Why the night cannot be written, or merely why it looks wrong. Blocking
+ *  disables Save; a flag is shown and saved through. */
 export interface NightIssue {
   message: string;
   blocking: boolean;
 }
 
 /**
- * The morning form's state and its one write.
- *
- * A night is stored as two INSTANTS, but a person entering one knows two clock
- * times and which morning it is, so the conversion runs at submit rather than
- * on every keystroke: a form left open across midnight saves against the day
- * it was submitted.
- *
- * Bedtime resolves to the LAST occurrence of that clock before waking, which
- * is what lands 23:40 on yesterday evening and 00:20 on this morning without
- * asking which was meant.
+ * The morning form's state and its one write. Clocks become INSTANTS at
+ * submit, not per keystroke, and bedtime resolves to the LAST occurrence
+ * before waking — so 23:40 lands yesterday and 00:20 lands this morning.
  *
  * **Which day gets written is decided by WHERE THE WAKE INSTANT LANDS.**
- * `upsertSleepLog` derives `localDate` from `wakeAt` and refuses to take a day
- * from the client — the column both health domains join on must not be under
- * the caller's control. Editing a past night therefore means placing the wake
- * clock on that day's local midnight, not naming a different day.
- *
- * `timeZone` is read from the device at submit, not from the server render:
- * the screen's zone comes from a geo header and is a good guess, the device's
- * is the fact, and it is the zone the stored `local_date` is resolved with.
+ * `upsertSleepLog` derives `localDate` from `wakeAt` and takes no day from
+ * the client; `timeZone` comes from the DEVICE at submit, not the render.
  */
 export function useSleepEntry(defaults: SleepEntryDefaults) {
   const t = useTranslations('dashboard.daily');
@@ -146,9 +131,8 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
   const [isFreeDay, setIsFreeDay] = useState(defaults.isFreeDay);
   const [note, setNote] = useState(defaults.note ?? '');
 
-  // What a repair rewrote, so the notice can offer the typed value back — and
-  // so putting it back does not get repaired a second time on the next blur,
-  // which would make an unusual-but-real night impossible to enter.
+  // What a repair rewrote, so the notice can offer the typed value back —
+  // and so putting it back is not repaired again on the next blur.
   const [repairedFrom, setRepairedFrom] = useState<{
     field: 'bed' | 'wake';
     from: string;
@@ -163,16 +147,14 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
   const wakeMin = clockToMinutes(wakeClock);
 
   // Modulo, so a night crossing midnight measures the short way round. Null
-  // when either clock is empty, zero when they are equal — both block the save
-  // rather than sending a night the server would reject anyway.
+  // on an empty clock, zero on an equal pair; both block the save.
   const durationMin =
     bedMin === null || wakeMin === null
       ? null
       : (((wakeMin - bedMin) % DAY_MIN) + DAY_MIN) % DAY_MIN;
 
-  // A preset tracks the wake clock rather than freezing a value: editing the
-  // wake time after choosing "+15m" must move getting up with it, or the pair
-  // silently stops meaning what the reader chose.
+  // A preset TRACKS the wake clock rather than freezing a value: editing the
+  // wake time after "+15m" must move getting up with it.
   const customRiseMin = clockToMinutes(riseClockCustom);
   const riseMin =
     riseOffsetMin !== null
@@ -181,9 +163,8 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
         : (wakeMin + riseOffsetMin) % DAY_MIN
       : customRiseMin;
 
-  // The short way round, like every other span here. A custom clock BEFORE
-  // waking therefore shows up as an implausibly large gap rather than a
-  // negative one, which is what `MAX_RISE_GAP_MIN` catches.
+  // The short way round, so a custom clock BEFORE waking shows up as an
+  // implausibly large gap — what `MAX_RISE_GAP_MIN` catches.
   const riseGapMin =
     riseMin === null || wakeMin === null
       ? null
@@ -192,8 +173,8 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
   const riseClock =
     riseMin === null ? riseClockCustom : minutesToClock(riseMin);
 
-  // TIB, the span efficiency is measured against — it ends when you get up,
-  // not when you wake. `sleep-stats.ts` computes the same thing server-side.
+  // TIB, what efficiency is measured against: it ends when you get UP, not
+  // when you wake. `sleep-stats.ts` computes the same thing server-side.
   const timeInBedMin =
     durationMin === null || riseGapMin === null
       ? null
@@ -215,13 +196,9 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
     factors.length !== defaults.factors.length ||
     factors.some((factor) => !defaults.factors.includes(factor));
 
-  // Shown on the clocks, not only as a greyed-out button two screens away.
-  // Silent while an unlogged day is still untouched: the sheet OPENS on that
-  // state, and an error before the first keystroke is noise, not a warning.
-  // The long-night case is a FLAG, not a block — fourteen hours in bed is
-  // unusual, and it is also what an ill night looks like. It is measured on
-  // `rise - bed` now that getting up is recorded: that is what "in bed" means,
-  // and a two-hour lie-in used to be invisible to it.
+  // Silent on an untouched blank day — the sheet OPENS on that state, and an
+  // error before the first keystroke is noise. The long night is a FLAG, not
+  // a block: fourteen hours in bed is also what an ill night looks like.
   const untouchedBlank = !isDirty && bedClock === '' && wakeClock === '';
   let nightIssue: NightIssue | null = null;
   if (untouchedBlank) {
@@ -250,8 +227,7 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
   }, []);
 
   // On blur, never on change: a native time input reports each keystroke, so
-  // correcting mid-entry would rewrite 19:00 to 07:00 before the reader had
-  // typed the minutes they were heading for.
+  // correcting mid-entry rewrites 19:00 to 07:00 before the minutes arrive.
   const repairClocks = useCallback(() => {
     if (bedMin === null || wakeMin === null) return;
 
@@ -276,8 +252,8 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
     setRepairedFrom(null);
   }, [repairedFrom]);
 
-  // Only while both clocks are untouched. Accepting fills them, which is what
-  // retires the card — so it reads as an offer right up until it is taken.
+  // Only while both clocks are empty; accepting fills them, which retires
+  // the card.
   const suggestion =
     bedClock === '' && wakeClock === '' ? defaults.suggestion : null;
 
@@ -312,12 +288,12 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
 
   const mutation = useMutation({
     mutationFn: () => writeNight(current, defaults.localDate, t('errors.save')),
-    // No toast, no refresh, no invalidation here. This is one of two writes the
-    // day sheet makes and the sheet owns the feedback for both.
+    // No toast, no refresh, no invalidation: this is one of two writes the
+    // day sheet makes, and the sheet owns the feedback for both.
   });
 
-  // Not a mutation and deliberately state-free: the sheet is already unmounted
-  // by the time the undo toast is tapped, so this has to be a plain closure.
+  // Deliberately state-free: the sheet is unmounted by the time the undo
+  // toast is tapped, so this must be a plain closure.
   const restoreAsync = useCallback(
     () =>
       writeNight(
@@ -383,8 +359,7 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
     timeInBedMin,
     nightIssue,
     // Not derived from `nightIssue`, which stays quiet on an untouched blank
-    // day: a night still cannot be WRITTEN without two usable clocks, and the
-    // caller only consults this when it has decided to write one.
+    // day — a night still cannot be WRITTEN without two usable clocks.
     canSave:
       durationMin !== null &&
       durationMin !== 0 &&
@@ -392,9 +367,8 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
       riseGapMin <= MAX_RISE_GAP_MIN &&
       !mutation.isPending,
     isSaving: mutation.isPending,
-    // Load-bearing twice over: the modal writes the sleep half only when this
-    // is true or a row already exists, and the dismiss guard reads it to
-    // decide whether closing the sheet would lose anything.
+    // Read twice: the modal writes the sleep half only when this is true or
+    // a row exists, and the dismiss guard asks it what closing would lose.
     isDirty,
     /** For a caller that has to sequence this write against another one. */
     saveAsync: () => mutation.mutateAsync(),
@@ -402,13 +376,9 @@ export function useSleepEntry(defaults: SleepEntryDefaults) {
   };
 }
 
-/**
- * The rise gap the sheet OPENED with, for the undo write.
- *
- * Recomputed rather than stored, because the presets are offsets from the wake
- * clock and the undo restores that clock too — a frozen gap would be measured
- * against the wrong wake time.
- */
+/** The rise gap the sheet OPENED with, for the undo write. Recomputed, not
+ *  stored: undo restores the wake clock too, and a frozen gap would be
+ *  measured against the wrong one. */
 function defaultRiseGapMin(defaults: SleepEntryDefaults): number | null {
   if (defaults.riseOffsetMin !== null) return defaults.riseOffsetMin;
 
@@ -419,9 +389,8 @@ function defaultRiseGapMin(defaults: SleepEntryDefaults): number | null {
   return (((riseMin - wakeMin) % DAY_MIN) + DAY_MIN) % DAY_MIN;
 }
 
-/** One night, from two clock times to two instants and a write. Shared by the
- *  save and by the undo, so the two can never disagree about which instant a
- *  clock time meant. */
+/** Two clock times to two instants and a write. Shared by save and undo, so
+ *  they cannot disagree about what a clock time meant. */
 async function writeNight(
   values: NightValues,
   localDate: string,
@@ -445,9 +414,8 @@ async function writeNight(
 
   const wakeAt = atLocalClock(localMidnight(localDate), wakeMin);
   const bedAt = new Date(wakeAt.getTime() - durationMin * 60_000);
-  // Built from the wake INSTANT plus a gap, never from a second clock time:
-  // a rise clock resolved independently would land on the wrong day whenever
-  // getting up crossed midnight.
+  // The wake INSTANT plus a gap, never a second clock resolved on its own —
+  // that lands on the wrong day whenever getting up crosses midnight.
   const riseAt = new Date(wakeAt.getTime() + values.riseGapMin * 60_000);
 
   const res = await upsertSleepLog({
@@ -471,21 +439,17 @@ async function writeNight(
   return res.data;
 }
 
-/**
- * A `YYYY-MM-DD` key as midnight in the DEVICE's zone.
- *
- * Not `new Date(key)`, which parses a bare date as UTC and lands on the
- * previous day for every reader west of Greenwich — the one bug the whole
- * `localDate` convention exists to avoid.
- */
+/** A `YYYY-MM-DD` key as midnight in the DEVICE's zone. Not `new Date(key)`,
+ *  which parses a bare date as UTC and lands a day early west of Greenwich —
+ *  the bug the whole `localDate` convention exists to avoid. */
 function localMidnight(key: string): Date {
   const [year, month, day] = key.split('-').map(Number);
 
   return new Date(year, month - 1, day);
 }
 
-/** A day, at a clock time, in the DEVICE's zone — the same zone whose name is
- *  sent alongside, so the instant and the zone cannot disagree. */
+/** A day at a clock time in the DEVICE's zone — the same zone sent alongside,
+ *  so the instant and its name cannot disagree. */
 function atLocalClock(base: Date, minutes: number): Date {
   const out = new Date(base);
   out.setHours(0, 0, 0, 0);

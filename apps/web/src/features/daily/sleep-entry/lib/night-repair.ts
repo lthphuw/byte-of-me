@@ -18,15 +18,13 @@ export interface ClockRepair {
 }
 
 /**
- * The two twelve-hour slips a typed clock pair actually makes.
+ * The two twelve-hour slips a typed pair actually makes: 07:00 entered as
+ * 19:00, or 23:00 as 11:00. `bed ≤ wake` needs no repair — the duration is
+ * taken the short way round and cannot invert.
  *
- * `bed ≤ wake` needs no repair — the duration is taken the short way round, so
- * the pair can never be inverted. What it can be is off by half a day: 07:00
- * entered as 19:00, or 23:00 entered as 11:00. Both show up as more than
- * twelve hours in bed with the offending clock in a window the other reading
- * would never land in, which is what makes the correction safe to apply.
- *
- * Returns null when the pair is plausible, so the caller can leave it alone.
+ * Both show as over twelve hours in bed with the offending clock in a window
+ * the other reading never lands in, which is what makes the fix safe. Null
+ * when the pair is plausible, so the caller leaves it alone.
  */
 export function repairNight(
   bedMin: number,

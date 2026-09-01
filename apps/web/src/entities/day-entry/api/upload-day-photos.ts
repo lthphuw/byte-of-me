@@ -21,21 +21,13 @@ import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
- * Store photos for one day.
+ * Store photos for one day. `privateStorage`, NEVER `supabaseStorage` — the
+ * public bucket answers an anonymous GET with 200 (`s3-storage-api.ts`), and
+ * these are personal photographs served only behind a session check.
  *
- * `privateStorage`, never `supabaseStorage`. The public bucket answers an
- * anonymous GET with 200 — measured, and recorded in `s3-storage-api.ts`.
- * These are personal photographs on a private surface, so their only address
- * is `/api/health/photos/[id]`, behind a session check.
- *
- * The entry is upserted first, so the first photo dropped on an untouched day
- * works without the owner having typed anything. `update: {}` is not a
- * mistake: the upsert exists to guarantee the row, not to change it.
- *
- * The object is written BEFORE the row, deliberately. A crash between the two
- * then leaves an orphaned object — invisible, harmless, costing a few
- * kilobytes — rather than a row pointing at nothing, which would render a
- * broken image on every visit for the rest of the entry's life.
+ * The entry is upserted first (`update: {}` guarantees the row, it does not
+ * change it) and the object written before the row: a crash between them
+ * leaves a harmless orphaned object, not a row rendering a broken image.
  */
 export async function uploadDayPhotos(
   input: unknown,
@@ -84,13 +76,9 @@ export async function uploadDayPhotos(
     for (const [offset, file] of files.entries()) {
       const buffer = Buffer.from(await file.arrayBuffer());
 
-      // The guarantee behind the browser pass in `useDayJournal.pickPhotos`:
-      // that check is bypassable by calling this action directly, and canvas
-      // encoding differs between Safari and Chrome — so `compressImage` runs
-      // again here, and it is the POST-compression buffer, mime type and size
-      // that actually get stored and keyed. SVG and GIF pass through
-      // untouched and EXIF orientation is respected, exactly as the media
-      // path does — see `compress-image.ts`.
+      // The browser pass is bypassable by calling this action directly, so
+      // it runs again here and the POST-compression buffer is what is stored
+      // and keyed. SVG/GIF and EXIF behave as `compress-image.ts` documents.
       const compressed = await compressImage(buffer, file.type, compression);
 
       const fileKey = dayPhotoFileKey(

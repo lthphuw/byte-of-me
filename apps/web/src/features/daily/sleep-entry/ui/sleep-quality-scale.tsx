@@ -7,22 +7,13 @@ import { cn } from '@/shared/lib/utils';
 const LEVELS = [1, 2, 3, 4, 5] as const;
 
 /**
- * How the night felt, 1–5 — five dots, not five faces.
+ * How the night felt, 1–5 — five dots, not the faces, which ask about the DAY
+ * in `MoodScale`. Two face ramps in one sheet compete for one meaning; a
+ * filled dot is a level on a scale and nothing else.
  *
- * The faces moved to `MoodScale`, which asks about the DAY. Two five-step
- * face ramps in one sheet are two pictures competing for one meaning, and the
- * reader has to be told which is which every time. A filled dot has no
- * competing reading: it is a level on a scale and nothing else.
- *
- * The ramp is still legible without hue, which is the constraint this palette
- * imposes (§14). Each dot is FILLED up to the chosen level and hollow past
- * it, so the control reads as a bar rather than as five separate answers, and
- * the count itself carries the value. The word beside the group is unchanged
- * and is still the half that survives with no shape at all.
- *
- * Retap-to-clear survives the change: quality is optional and never blocks a
- * save, so there has to be a way back to "not answered" once a stray tap has
- * answered it.
+ * Filled up to the level and hollow past it, so it reads as a bar and the
+ * count carries the value without hue (§14). Retap clears: quality is
+ * optional, so a stray tap needs a way back to "not answered".
  */
 export function SleepQualityScale({
   value,

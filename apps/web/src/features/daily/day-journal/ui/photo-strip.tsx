@@ -21,15 +21,9 @@ export interface PendingPhoto {
 /**
  * The day's photos, and the caption for whichever one is open.
  *
- * The caption editor is INLINE, expanding beneath the strip, rather than a
- * second modal. A modal over a drawer is a focus-trap problem and reads as a
- * dead end on a phone — two dismiss gestures deep to get back to a sheet that
- * was itself opened by a tap.
- *
- * Selecting a thumbnail is what opens its caption, so the strip needs a
- * selected state where nothing else in this feature does. It is a border, not
- * a plate: the tile is already an image, and a background behind an image is
- * invisible.
+ * The caption editor is INLINE: a modal over a drawer is a focus trap and two
+ * dismiss gestures deep. Selection is a border, not a plate — the tile is
+ * already an image, and a background behind an image is invisible.
  */
 export function PhotoStrip({
   photos,
@@ -65,9 +59,8 @@ export function PhotoStrip({
         </span>
       </div>
 
-      {/* Horizontal scroll INSIDE its own container. The sheet's body must
-          never scroll sideways — a horizontally scrolling page is how a
-          drawer starts fighting its own swipe-to-dismiss. */}
+      {/* Horizontal scroll INSIDE its own container: the sheet's body must
+          never scroll sideways. */}
       <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-1">
         {photos.map((photo) => (
           <PhotoThumb
@@ -112,24 +105,15 @@ export function PhotoStrip({
               ref={inputRef}
               type="file"
               multiple
-              // `image/*`, not `ACCEPTED_PHOTO_MIME_TYPES.join(',')`. A
-              // generic type is what makes iOS and Android offer "Take
-              // Photo" beside "Photo Library" — a list of five explicit MIME
-              // types does not. This is only a picker filter: drag-and-drop
-              // and "All Files" bypass it, so `findPhotoViolation` stays the
-              // real check and keeps its explicit list.
-              //
-              // Deliberately NOT adding `capture` here. It looks like the
-              // obvious way to add a camera button and does the opposite of
-              // what is wanted: it FORCES the camera and removes the library
-              // option entirely.
+              // `image/*`, not the MIME list: only a generic type makes iOS
+              // and Android offer "Take Photo", and never `capture`, which
+              // FORCES the camera. `findPhotoViolation` is the real check.
               accept="image/*"
               className="sr-only"
               onChange={(event) => {
                 const files = Array.from(event.target.files ?? []);
-                // Reset first: picking the same file twice in a row fires no
-                // change event otherwise, and the second pick silently does
-                // nothing.
+                // Reset first, or picking the same file twice fires no second
+                // change event.
                 event.target.value = '';
                 if (files.length > 0) onPick(files);
               }}
@@ -138,11 +122,8 @@ export function PhotoStrip({
         )}
       </div>
 
-      {/* The selected photo's own panel — caption and removal together. The
-          remove control used to be a 24px disc pinned over the thumbnail's
-          corner, which is both under the 44px minimum and fused with the tile
-          it overlapped. Here it is a full-height labelled button that cannot
-          be hit by a thumb aiming at the picture. */}
+      {/* Caption and removal together. Remove is a labelled full-width
+          button, not a 24px disc over the tile a thumb is aiming at. */}
       {open ? (
         <div className="space-y-3 rounded-2xl bg-muted/50 p-3">
           <PhotoCaptionEditor
@@ -177,23 +158,12 @@ export function PhotoStrip({
 }
 
 /**
- * One photo's caption, buffered locally and persisted on blur.
+ * One photo's caption, buffered locally and written once on blur.
+ * `AutoGrowingTextarea.onChange` fires per character, so writing from it sent
+ * 40 unordered requests per 40-character caption and kept whichever won.
  *
- * `AutoGrowingTextarea.onChange` fires per character — it has to, to resize
- * itself as the reader types — so calling `onCaption` straight from it, as
- * this used to, fired one un-serialised write per keystroke. A 40-character
- * caption was 40 concurrent requests with no ordering guarantee: if `"hell"`
- * landed after `"hello"`, the database kept `"hell"`, and the optimistic
- * rollback in `use-day-journal.ts` could then restore that stale value again
- * on top of whatever arrived later. Keeping the draft in local state and
- * writing once, on blur, is what actually delivers the "saved on blur" this
- * component always claimed.
- *
- * `key={open.id}` on the caller remounts this whenever the selected photo
- * changes, which is what resets the local draft — no effect needs to watch
- * `photoId` for that. The unmount flush below is a second line of defence
- * for the case blur never fires at all: the sheet swiped shut, or the
- * component unmounting some other way mid-edit.
+ * `key={open.id}` upstream resets the draft; the unmount flush covers a blur
+ * that never fires.
  */
 function PhotoCaptionEditor({
   photoId,
@@ -210,8 +180,8 @@ function PhotoCaptionEditor({
 }) {
   const [draft, setDraft] = useState(initialCaption ?? '');
 
-  // Read inside a ref so the flush below always sees the latest keystroke,
-  // not whatever `draft` happened to be when the callback was created.
+  // A ref, so the flush sees the latest keystroke rather than whatever
+  // `draft` was when the callback was created.
   const draftRef = useRef(draft);
   draftRef.current = draft;
   const committedRef = useRef(initialCaption ?? '');
@@ -225,9 +195,8 @@ function PhotoCaptionEditor({
   useEffect(() => () => flush(), [flush]);
 
   return (
-    // AutoGrowingTextarea has no `id` prop, so a `htmlFor` pairing would not
-    // resolve. Wrapping the control inside the label makes the association
-    // structural instead of by id.
+    // `AutoGrowingTextarea` has no `id` prop, so the association has to be
+    // structural rather than by `htmlFor`.
     <label className="block space-y-2 text-xs font-medium text-muted-foreground">
       {label}
       <AutoGrowingTextarea

@@ -12,14 +12,9 @@ import { getErrorMessage } from '@/shared/lib/utils';
 import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-/**
- * Read one window of days, photos included.
- *
- * Inclusive at both ends, bounded by the caller's window rather than by a
- * limit, because the caller is the sleep screen and its window is a month —
- * the same shape `getSleepLogs` reads, so the two merge cleanly in
- * `DailyScreen`.
- */
+/** One window of days, photos included. Inclusive at both ends and bounded
+ *  by the window rather than a limit — the shape `getSleepLogs` reads, so the
+ *  two merge cleanly in `DailyScreen`. */
 export async function getDayEntries(
   input: unknown
 ): Promise<ApiResponse<DayEntryRow[]>> {

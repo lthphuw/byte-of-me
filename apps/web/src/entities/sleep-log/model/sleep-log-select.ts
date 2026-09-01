@@ -2,13 +2,9 @@ import type { SleepLogRow } from './types';
 
 import { localDateKey } from '@/shared/lib/health/local-date';
 
-/**
- * The columns every read of a night selects, in one place.
- *
- * It lived inline in two actions, which is how `riseAt` would have reached one
- * screen and not the other. A plain object literal, so this stays importable
- * from a `'use server'` file — those may only export async functions.
- */
+/** The columns every read of a night selects. Inline in two actions is how
+ *  `riseAt` reaches one screen and not the other. A plain literal, so a
+ *  `'use server'` file can import it — those export only async functions. */
 export const SLEEP_LOG_SELECT = {
   id: true,
   localDate: true,
@@ -47,14 +43,9 @@ export interface StoredSleepLog {
   loggedAt: Date | null;
 }
 
-/**
- * A stored night as the client receives it.
- *
- * Every `Date` becomes an ISO string, because a server action's return value
- * is serialized and a `Date` would arrive as a string while the type claimed
- * otherwise. `localDate` is the exception: it is a calendar day, and
- * `localDateKey` is the one place that rule lives.
- */
+/** A stored night as the client receives it: every `Date` becomes an ISO
+ *  string, since the return value is serialized either way. `localDate` is
+ *  the exception — a calendar day, through `localDateKey`. */
 export function toSleepLogRow(row: StoredSleepLog): SleepLogRow {
   return {
     ...row,

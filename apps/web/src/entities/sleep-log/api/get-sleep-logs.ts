@@ -15,15 +15,9 @@ import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
- * One window of nights, oldest first.
- *
- * Bounded at BOTH ends and validated, so a caller cannot turn this into an
- * unbounded scan of the table. Ascending because every chart draws left to
- * right in time and reversing in the component would put the ordering in two
- * places.
- *
- * `uniq_sleep_logs_owner_date` serves this read directly — it leads with
- * `owner_id` and ranges on `local_date`, which is exactly this predicate.
+ * One window of nights, oldest first. Bounded at BOTH ends and validated, so
+ * no caller can turn it into an unbounded scan. `uniq_sleep_logs_owner_date`
+ * serves it directly: it leads with `owner_id` and ranges on `local_date`.
  */
 export async function getSleepLogs(
   input: unknown

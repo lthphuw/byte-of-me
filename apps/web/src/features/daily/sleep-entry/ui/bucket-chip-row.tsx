@@ -5,17 +5,13 @@ import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 
 /**
- * One estimate, as a row of chips.
+ * One estimate, as a row of chips. Selection INVERTS rather than tints (§14),
+ * and retap clears: these figures are optional, and absent is a different
+ * claim from zero.
  *
- * Selection INVERTS rather than tints — on a 0%-saturation palette (§14) a
- * tinted fill lands within a few percent of the unselected surface and is not
- * a state at all. Retap clears, the same gesture the quality scale documents:
- * both figures are optional, and their absence is a different claim from zero.
- *
- * It takes an ID and hands one back; what that id MEANS is the caller's — a
- * midpoint for the minute rows, the stored value itself for naps. Displaying
- * one never rewrites anything, so a row typed before the chips existed keeps
- * its exact minute unless the reader actually answers again.
+ * It takes an ID and hands one back; what the id MEANS is the caller's — a
+ * midpoint for the minute rows, the stored value for naps. Displaying one
+ * rewrites nothing, so a pre-chip row keeps its exact minute.
  */
 export function BucketChipRow({
   id,

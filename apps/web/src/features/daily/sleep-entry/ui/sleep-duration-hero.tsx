@@ -10,13 +10,9 @@ import { DurationRing } from '@/shared/ui/duration-ring';
  *  drawing default rather than a claim about the owner's goal. */
 const FALLBACK_TARGET_MIN = 480;
 
-/**
- * The night's length, as an arc with the figure spelled out beside it.
- *
- * The arc is decoration over the text, never instead of it — `aria-live` is on
- * the figure and on the delta, and both say in words what the ring says in
- * geometry.
- */
+/** The night's length, as an arc with the figure spelled out beside it. The
+ *  arc is decoration OVER the text, never instead of it: `aria-live` sits on
+ *  the figure and the delta, which say in words what the ring says in arc. */
 export function SleepDurationHero({
   durationMin,
   targetMin,

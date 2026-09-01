@@ -14,101 +14,34 @@ import { addDays, localDateKey } from '@/shared/lib/health/local-date';
 import { cn } from '@/shared/lib/utils';
 import { MONTH_CALENDAR_FILL } from '@/shared/ui/chart';
 
-/**
- * Where the four shades change, as fractions of the nightly target.
- *
- * Against the TARGET rather than against the window's own maximum, which is
- * what the heatmap this replaced did. A relative scale re-shades the whole
- * month every time one long night is logged, so the same 6h night is pale in
- * one week and mid-grey in another — the mark moved without the night moving.
- * Against a fixed goal, a shade means the same thing in January as in August.
- *
- * At the 8h default these are: under 6h, 6h–7h12m, 7h12m–8h, and 8h or more.
- */
+/** Shade edges as fractions of the nightly target — against the TARGET, never
+ *  against the window's own maximum, or one long night re-shades the month.
+ *  At the 8h default: under 6h, 6h–7h12m, 7h12m–8h, 8h or more. */
 const BAND_EDGES = [0.75, 0.9, 1] as const;
 
-/** A Monday, for naming the seven columns. Any Monday does; this one is
- *  1 January 2024, and it is formatted in UTC like every other date key in
- *  this module. */
+/** A Monday, for naming the seven columns. Formatted in UTC, like every other
+ *  date key here. */
 const WEEKDAY_ANCHOR_MS = Date.UTC(2024, 0, 1);
 
 const DAY_MS = 86_400_000;
 
-/** One night as the grid needs it: how long it was, how it felt, and whether
- *  the day was written up. The caller resolves the glyph, so this slice never
- *  has to know what a mood rating looks like. */
+/** One night as the grid needs it. The caller resolves the glyph, so this
+ *  slice never has to know what a mood rating looks like. */
 export interface CalendarNight {
   /** `YYYY-MM-DD`, the same key `localDateKey` produces. */
   localDate: string;
   /** Minutes asleep. `null` is a night never logged — never `0`, which would
    *  claim a night of no sleep. */
   value: number | null;
-  /** The mood glyph and the word it stands for, when the day was rated. */
   mood: { icon: LucideIcon; label: string } | null;
-  /** Whether the day has a reflection or any photo. */
+  /** A reflection or any photo. */
   hasEntry: boolean;
 }
 
 /**
- * The month, as the screen's primary surface: one tappable mark per night.
- *
- * **It is a control now, not a drawing.** It used to be a `MonthCalendar`
- * inside `ChartFrame`, whose children are wrapped in `aria-hidden` because the
- * accessible equivalent of a picture is the `sr-only` table beside it. That is
- * exactly right for a bar chart and exactly wrong for a grid of buttons: a
- * focusable control inside an `aria-hidden` subtree is reachable by keyboard
- * and invisible to the reader using it, which is the `aria-hidden-focus`
- * failure. So the marks are real buttons and each one carries its own full
- * accessible name — the date, the duration, the mood, and whether it is
- * today. Those names ARE the non-visual equivalent, and they say strictly more
- * than the table did because the table had one value column and this has
- * three.
- *
- * **Two axes, no redundancy.** The shade is how LONG the night was, banded
- * against the owner's nightly target through `MONTH_CALENDAR_FILL` — a ramp
- * whose four alphas were measured in CIE L* rather than picked as a tidy
- * 25/50/75/100, and importing it is what keeps that measurement in one place.
- * The glyph inside the mark is how the DAY FELT: the same five-step mood ramp
- * `MoodScale` uses, from `DayEntry` rather than from `SleepLog.quality` — the
- * face on the calendar is how the day felt, not how the night measured. A day
- * with no mood rating simply has no glyph, which is honest — inventing one
- * would put a claim on the grid nobody made.
- *
- * | State | Cue |
- * | --- | --- |
- * | rest | disc: shade for duration, or a hollow ring when unlogged |
- * | hover | `ring-1 ring-foreground/25` on the disc — no background, anywhere |
- * | focus-visible | 2px `ring` round the cell, offset 2 |
- * | pressed | the disc alone scales to 92% |
- * | today | 2px `foreground` ring round the disc, plus `aria-current="date"` |
- * | written up | a 3px dot below the disc |
- *
- * There is no key under the grid. A mark a reader cannot read without a
- * legend is the wrong mark; every cell says the whole of what it draws in its
- * own accessible name instead.
- *
- * **There is no selected state, and that is the fix.** Hover and selected were
- * twice the same pixel here, because on a 0%-saturation palette (§14) the
- * plate for one lands within four points of the plate for the other and the
- * numeral pill was doing all the work. The plate existed only because tapping
- * a day loaded a form BELOW the calendar, and that relationship needs a
- * persistent "this one" mark. A tap now opens a modal, so the day being edited
- * is the day on screen and there is nothing left to mark. Every interaction
- * cue is spent on the disc, which is the one surface a fingertip does not
- * cover completely.
- *
- * Hover is AFFORDANCE ONLY. Touch has no hover, so nothing above is knowable
- * from it alone: today is also `aria-current="date"` and a ring, and "written
- * up" is also in the button's accessible name. The press is a transform
- * rather than a tone, because a finger covers the cell it is pressing and
- * only a size change escapes from under it; `motion-reduce` opts out of the
- * scale.
- *
- * **Target size.** Seven columns inside a 20px-padded card on a 375px phone
- * leaves ~36px per cell; 44px is arithmetically impossible there and no
- * calendar on any platform manages it. The button fills its whole cell and the
- * 8px grid gap is undisturbed, which is the WCAG 2.5.8 spacing allowance: a
- * 36px target with 8px of clear space on every side behaves as a 44px one.
+ * The month as a grid of BUTTONS, not a picture: each mark carries its whole
+ * meaning — date, duration, mood, written-up — in its own accessible name, so
+ * there is no legend and no `sr-only` table. Shade is duration, glyph is mood.
  */
 export function SleepMonthCalendar({
   nights,
@@ -123,18 +56,17 @@ export function SleepMonthCalendar({
   nights: CalendarNight[];
   /** `YYYY-MM-DD` of the 1st of the month being drawn. */
   monthStartKey: string;
-  /** `YYYY-MM-DD` of the reader's today, so "future" and the ring are decided
-   *  against the reader's calendar rather than the last logged row. */
+  /** The reader's today, so "future" is decided against their calendar rather
+   *  than against the last logged row. */
   todayKey: string;
-  /** The scale the shades band against. Never printed here, so a fallback is a
-   *  drawing decision and not a claim — the caller passes one. */
+  /** The scale the shades band against. Never printed here, and never
+   *  defaulted — a fallback would be a claim the caller did not make. */
   targetMin: number;
   /** Opens the sheet for this day. */
   onSelect: (key: string) => void;
   /** `YYYY-MM` of the month before this one. */
   prevMonthKey: string;
-  /** `YYYY-MM` of the month after, or `null` when this is the current month —
-   *  there are no nights in the future to page into. */
+  /** `null` at the current month — there is no future to page into. */
   nextMonthKey: string | null;
   className?: string;
 }) {
@@ -172,14 +104,8 @@ export function SleepMonthCalendar({
 
   return (
     <div className={cn('flex flex-col gap-3', className)}>
-      {/* The month is in the URL, not in React state. That was the whole
-          objection to arrows the first time round — a window the server read
-          cannot see forces either a refetch per arrow or a pre-read of months
-          nobody opens. A search param is read by the page, so the read is
-          SIZED by the month on screen, the back button pages through months,
-          and a month is linkable. Selecting a day inside the month stays
-          client state, because every row for the visible month is already
-          here. */}
+      {/* The month lives in the URL, so the SERVER read is sized by it. The
+          selected day stays client state — those rows are already here. */}
       <div className="flex items-center justify-between gap-2">
         <MonthStep
           monthKey={prevMonthKey}
@@ -187,11 +113,8 @@ export function SleepMonthCalendar({
           icon={ChevronLeft}
         />
 
-        {/* `base/semibold`, not `sm/medium`. This card is the first thing on
-            the screen and the control everything under it is about, so its
-            title has to outrank the `sm` headings in the column below rather
-            than match them — on a palette with no hue, type scale and weight
-            are the whole hierarchy (§14). */}
+        {/* `base/semibold` outranks the `sm` headings below it: with no hue,
+            scale and weight are the whole hierarchy (§14). */}
         <h2
           aria-label={monthSpoken}
           className="min-w-0 flex-1 truncate text-center text-base font-semibold tracking-tight"
@@ -218,9 +141,8 @@ export function SleepMonthCalendar({
         ))}
       </div>
 
-      {/* `role="group"` rather than `radiogroup`: these are buttons that load
-          a day into the form, and a day stays loaded — there is no "none"
-          state a radio group would need a gesture for. */}
+      {/* `group`, not `radiogroup`: these open a sheet, they do not hold a
+          selection with a "none" state to gesture back to. */}
       <div
         role="group"
         aria-label={t('sleep.selectDay')}
@@ -238,9 +160,7 @@ export function SleepMonthCalendar({
           const isFuture = key > todayKey;
           const Icon = night?.mood?.icon ?? null;
 
-          // Everything the mark says, said in words. A reader who cannot see
-          // the shade or the glyph gets the duration and the mood from the
-          // button's own name rather than from a table somewhere else.
+          // Everything the mark draws, said in words. This is the legend.
           const parts = [dayFormat.format(date)];
           if (!isFuture) {
             parts.push(
@@ -279,8 +199,8 @@ export function SleepMonthCalendar({
               </span>
 
               {isFuture ? (
-                // A pip, not a hollow ring: a day that has not happened has
-                // nothing to have missed, and the ring means "missed".
+                // A pip, not the hollow ring — the ring means "missed", and a
+                // day that has not happened cannot have missed anything.
                 <span
                   aria-hidden
                   className="flex aspect-square w-full max-w-9 items-center justify-center"
@@ -296,29 +216,22 @@ export function SleepMonthCalendar({
                     night?.value == null
                       ? 'border-2 border-muted-foreground/35 text-muted-foreground'
                       : markClass(night.value, targetMin),
-                    // Hover is AFFORDANCE ONLY — touch has no hover, so
-                    // nothing here may be the only way to know something.
+                    // Affordance only: touch has no hover, so nothing may be
+                    // knowable from it alone.
                     'group-hover:ring-1 group-hover:ring-foreground/25',
                     'group-active:scale-[0.92] motion-reduce:group-active:scale-100',
                     isToday &&
                       'ring-2 ring-foreground ring-offset-1 ring-offset-card'
                   )}
                 >
-                  {/* 20px inside a 36px disc, not 16px. The glyphs are FACES
-                      now, and a face is told from the next face by the curve
-                      of one stroke: at 16px in a single tone the mouth of a
-                      Frown and the mouth of a Meh are the same two pixels.
-                      This is the same reason the entry scale draws them at
-                      32px — the mark has to survive as a silhouette, because
-                      the tone it is drawn in is already spent on duration. */}
+                  {/* 20px, not 16px: at 16px a Frown's mouth and a Meh's are
+                      the same two pixels, and tone is spent on duration. */}
                   {Icon ? <Icon className="size-5 shrink-0" /> : null}
                 </span>
               )}
 
-              {/* A day that was written up. Rendered as a reserved-height row
-                  whether or not the dot is there, so a month where three days
-                  have entries does not have three rows one pixel taller than
-                  the others. */}
+              {/* Written up. Reserved height whether or not the dot is
+                  there, so a row with entries is not a pixel taller. */}
               <span
                 aria-hidden
                 className="flex h-1.5 items-center justify-center"
@@ -331,18 +244,12 @@ export function SleepMonthCalendar({
           );
         })}
       </div>
-
     </div>
   );
 }
 
-/**
- * One month step, as a link.
- *
- * `null` renders a DISABLED button rather than nothing, so the header keeps
- * its shape at the current month and the month label does not slide sideways
- * on the one screen a reader lands on most.
- */
+/** One month step. `null` renders a DISABLED button rather than nothing, so
+ *  the month label does not slide sideways on the screen most landed on. */
 function MonthStep({
   monthKey,
   label,
@@ -352,9 +259,7 @@ function MonthStep({
   label: string;
   icon: LucideIcon;
 }) {
-  // The same press the day cells get, so the two controls in this card behave
-  // as one family: a plate on hover, a 5% shrink while held, both inside the
-  // 150–300ms band (§14).
+  // The same press the day cells get, inside the 150–300ms band (§14).
   const className =
     'flex size-11 shrink-0 items-center justify-center rounded-full transition-[background-color,color,transform] duration-200 ease-out motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card';
 
@@ -387,15 +292,9 @@ function MonthStep({
   );
 }
 
-/** Which fill step a night falls in, as a class. Clamped at both ends, so a
- *  14-hour night is the darkest mark rather than an index off the end of the
- *  ramp.
- *
- *  The glyph inside inherits `currentColor`, so each band also names the tone
- *  that reads on it: the two pale steps keep `--foreground`, and the two dark
- *  ones flip to `--primary-foreground` exactly as the quality scale's selected
- *  button does. Both pairings hold in both themes, because `--primary` and its
- *  foreground swap together. */
+/** The fill step a night falls in, clamped at both ends. Each band also names
+ *  the tone the glyph inherits, so the two dark steps flip to
+ *  `--primary-foreground`; both pairings hold in both themes. */
 function markClass(value: number, targetMin: number): string {
   const fraction = value / targetMin;
   const band = Math.min(

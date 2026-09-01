@@ -1,28 +1,17 @@
 /**
- * What may be attached to a day, and how many.
- *
- * The numbers are copied from `entities/media/model/upload-constraints`
- * rather than raised, because they have to fit under
- * `serverActions.bodySizeLimit` in `next.config.js` — a flat `'20mb'`, which
- * five 3 MB files plus multipart overhead sit comfortably inside. Raising
- * either number without raising that limit would not mean larger uploads; it
- * would move the rejection back into the framework, where it surfaces as an
- * opaque body-size error instead of a sentence naming the file.
+ * What may be attached to a day, and how many. Both numbers have to fit under
+ * `serverActions.bodySizeLimit` (a flat `'20mb'`): raise either without
+ * raising that and the rejection becomes an opaque framework body-size error.
  */
 export const MAX_PHOTO_SIZE_MB = 3;
 export const MAX_PHOTO_SIZE_BYTES = MAX_PHOTO_SIZE_MB * 1024 * 1024;
 
-/** Per batch AND per day. One day is a handful of pictures; a day that needs
- *  twenty is an album, and an album is not this feature. */
+/** Per batch AND per day. A day needing twenty is an album, not a journal. */
 export const MAX_PHOTOS_PER_DAY = 5;
 
-/**
- * `image/svg+xml` is absent, though the media library accepts it.
- *
- * An SVG is a document that can carry script, and these bytes are served from
- * `/api/health/photos/[id]` — a same-origin address. Accepting one would hand
- * any object in the bucket the ability to run on this domain.
- */
+/** `image/svg+xml` is absent though the media library accepts it: an SVG is a
+ *  document that can carry script, and these bytes are served same-origin
+ *  from `/api/health/photos/[id]`. */
 export const ACCEPTED_PHOTO_MIME_TYPES = [
   'image/jpeg',
   'image/png',
@@ -37,10 +26,8 @@ export type PhotoValidationError =
   | { kind: 'size'; fileName: string; maxSizeMb: number }
   | { kind: 'batch'; max: number };
 
-/**
- * A HEIC/HEIF file, by MIME type or — when the picker reported no type at
- * all, which some Android pickers do — by filename extension.
- */
+/** HEIC/HEIF by MIME type, or by extension when the picker reported no type
+ *  at all, which some Android pickers do. */
 function isHeic(file: File): boolean {
   if (file.type === 'image/heic' || file.type === 'image/heif') return true;
   return file.type === '' && /\.hei[cf]$/i.test(file.name);
@@ -58,11 +45,9 @@ export function findPhotoViolation(
   }
 
   for (const file of files) {
-    // Checked BEFORE the general type check below, or that branch claims the
-    // file first and this honest message never renders. HEIC is deliberately
-    // NOT in `ACCEPTED_PHOTO_MIME_TYPES`: server-side `sharp` cannot decode it
-    // without libheif (dimensions would store as 0x0), and Chrome and Firefox
-    // cannot display it at all.
+    // BEFORE the general type check, or that branch claims the file first
+    // and this honest message never renders. HEIC stays out of the accepted
+    // list: `sharp` needs libheif, and two browsers cannot display it.
     if (isHeic(file)) {
       return { kind: 'heic', fileName: file.name };
     }
@@ -82,16 +67,9 @@ export function findPhotoViolation(
 }
 
 /**
- * The violation as a plain English sentence, for an `errorMsg`.
- *
- * English-only by omission, not by design: this is called from both a
- * client hook (`use-day-journal.ts`) and a server action
- * (`upload-day-photos.ts`), which would need translators from two different
- * `next-intl` entry points, and localizing one of these four cases without
- * the other three would leave the surface half-translated — worse than
- * uniformly English. That refactor belongs to the separate project already
- * queued to rewrite every Vietnamese string in this app, reviewed as one
- * surface, not smuggled into an unrelated task.
+ * The violation as a plain English sentence. English-only by omission: it is
+ * called from both a client hook and a server action, which need translators
+ * from two different next-intl entry points. Queued with the i18n rewrite.
  */
 export function describePhotoViolation(v: PhotoValidationError): string {
   switch (v.kind) {
@@ -106,13 +84,9 @@ export function describePhotoViolation(v: PhotoValidationError): string {
   }
 }
 
-/**
- * The file extension, from the MIME type rather than the filename.
- *
- * A photo picked on iOS can arrive as `new File([blob], 'image')` with no
- * extension at all, and a key ending `.image` is one no CDN will serve with a
- * sensible content type.
- */
+/** From the MIME type, not the filename: a photo picked on iOS can arrive as
+ *  `new File([blob], 'image')`, and a key ending `.image` is one no CDN
+ *  serves with a sensible content type. */
 export function photoExtension(mimeType: string): string {
   return mimeType === 'image/jpeg' ? 'jpg' : (mimeType.split('/')[1] ?? 'bin');
 }

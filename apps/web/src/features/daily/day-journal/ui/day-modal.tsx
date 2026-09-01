@@ -18,37 +18,19 @@ import {
   SleepEntryForm,
   useSleepEntry,
 } from '@/features/daily/sleep-entry';
-// `@/shared/i18n/navigation`, never `next/navigation` — the raw hook drops the
-// locale prefix this app routes every path through.
+// Never `next/navigation`: the raw hook drops the locale prefix.
 import { useRouter } from '@/shared/i18n/navigation';
-// The one lazy entry point every editor in this repo goes through. Imported
-// statically the editor is ~570 KB of tiptap/prosemirror before first paint,
-// on the route most likely to be opened one-handed at 6am.
+// The one lazy entry point every editor here goes through — statically it is
+// ~570 KB of tiptap/prosemirror before first paint.
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { ResponsiveModal } from '@/shared/ui/responsive-modal';
 
 /**
  * One day, editable — sleep first, then mood, the reflection and the photos.
  *
- * **The night leads.** The two clocks used to sit ~700px down this sheet,
- * below a mood ramp, a 140px editor, a photo strip and a 176px duration ring;
- * on a 390px phone the scroll body is about 570px, so the one control the
- * surface exists for was off screen at open.
- *
- * **`ResponsiveModal` rather than a Dialog and a Drawer wired up here.** It
- * mounts a bottom sheet below `lg` and a centred dialog above, sizes the sheet
- * in `svh` (on iOS Safari `vh` is the TALL viewport and hides the sheet's own
- * footer under the browser toolbar), pads the footer with
- * `env(safe-area-inset-bottom)`, and renders that footer outside the scroll
- * area — which is the sticky Save this sheet wants.
- *
- * **This modal is why the calendar has no selected state.** A sheet has no
- * "which one" relationship to mark: the day being edited is the day on screen.
- *
- * **One Save, two writes, one rule.** The sleep half writes only when the day
- * already has a row or the form was actually touched — the clocks now open
- * empty and offer the fortnight's median as a card, so an untouched sheet has
- * no night to invent. Mood and reflection always write.
+ * One Save, TWO writes: the sleep half only when the day already has a row or
+ * the form was touched, since the clocks open empty and an untouched sheet
+ * has no night to invent. Mood and reflection always write.
  */
 export function DayModal({
   open,
@@ -81,16 +63,14 @@ export function DayModal({
 
   const isSaving = journal.isSaving || sleep.isSaving;
 
-  // Validated BEFORE the first write, not between the two: an invalid clock
-  // pair used to commit the journal and then throw on the night, leaving half
-  // a day saved under a failure toast.
+  // Validated BEFORE the first write, not between the two: an invalid pair
+  // used to commit the journal and then throw, half-saving the day.
   const writesSleep = hasSleepLog || sleep.isDirty;
   const canSave = !isSaving && (!writesSleep || sleep.canSave);
   const isDirty = journal.isDirty || sleep.isDirty;
 
-  // Undo writes the previous values back, so it is only honest where previous
-  // values exist. A night this save CREATED would need a delete to un-create,
-  // and there is no delete action — that toast stays plain.
+  // Undo writes previous values back, so it is honest only where they exist:
+  // un-creating a night needs a delete action that does not exist.
   const canUndo = !writesSleep || hasSleepLog;
 
   function announce() {
@@ -119,18 +99,16 @@ export function DayModal({
     if (!canSave) return;
 
     try {
-      // Sequential rather than `Promise.all`: both writes are upserts on the
-      // same day, and a shared failure should not leave one applied while the
-      // other is still in flight.
+      // Sequential, not `Promise.all`: two upserts on one day, and a failure
+      // must not leave one applied with the other in flight.
       await journal.saveAsync();
       if (writesSleep) {
         await sleep.saveAsync();
       }
 
-      // One toast and one refresh for the whole sheet. Close, then refresh,
-      // then invalidate, in that order: the router queues work behind a
-      // pending navigation, and refreshing before the close has stranded a
-      // server action in this repo before, with no failed request to show.
+      // Close, THEN `router.refresh()`, THEN invalidate — in that order. The
+      // router queues work behind a pending navigation, and refreshing first
+      // has stranded a server action here with no failed request to show.
       toast.success(
         t('day.saved'),
         canUndo
@@ -148,11 +126,9 @@ export function DayModal({
     }
   }
 
-  // Save on close, not a confirm dialog. Mood and the reflection only persist
-  // on Save while photos and captions persist immediately, so a plain dismiss
-  // used to keep half the sheet and lose the other half. The one case that
-  // cannot be saved — a night that is dirty AND invalid — falls back to an
-  // inline choice in the footer; never a second overlay over this one.
+  // Save on close, not a confirm dialog: photos persist on pick and the text
+  // on Save, so a plain dismiss kept half the sheet. Dirty AND invalid falls
+  // back to an inline choice in the footer, never a second overlay.
   function requestClose() {
     if (isSaving) return;
     if (!isDirty) {
@@ -230,18 +206,14 @@ export function DayModal({
         <div className="space-y-6 border-t pt-6">
           <MoodScale value={journal.mood} onChange={journal.setMood} />
 
-          {/* Not a `<label>`: a `<label>` whose control is a contenteditable
-              does not focus it the way it focuses an input. `RichTextEditor`
-              does take `aria-labelledby`, applied straight to the
-              contenteditable, so the heading labels the editor directly. */}
+          {/* Not a `<label>`: one pointed at a contenteditable does not focus
+              it. `aria-labelledby` lands on the contenteditable itself. */}
           <div className="space-y-2">
             <h3 id="day-reflection-label" className="text-sm font-medium">
               {t('day.reflection')}
             </h3>
-            {/* `markdownMode`, `uploadImage` and `withMath` are all withheld:
-                a raw-source toggle is for a document not a paragraph about a
-                Tuesday, the strip below already owns attaching pictures, and
-                nothing in a day journal needs a formula. */}
+            {/* `markdownMode`, `uploadImage` and `withMath` withheld: this is
+                a paragraph about a Tuesday, and the strip owns pictures. */}
             <RichTextEditor
               id="day-reflection"
               aria-labelledby="day-reflection-label"

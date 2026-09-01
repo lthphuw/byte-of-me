@@ -15,13 +15,9 @@ export interface CoverageCell {
   state: CoverageState;
 }
 
-/**
- * How much of the last five weeks is actually on record, as a 7×5 grid.
- *
- * It replaces the streak, which was removed deliberately: streak pressure makes
- * people log to keep a number alive, and that corrupts the dataset this app
- * exists to collect. Coverage answers the same question without a penalty.
- */
+/** How much of the last five weeks is on record, as a 7×5 grid. It replaces
+ *  the streak deliberately: streak pressure makes people log to keep a number
+ *  alive, which corrupts the dataset this app exists to collect. */
 export async function SleepCoverage({
   cells,
   loggedCount,

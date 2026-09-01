@@ -8,32 +8,13 @@ import { cn } from '@/shared/lib/utils';
 const LEVELS = [1, 2, 3, 4, 5] as const;
 
 /**
- * The ramp, as a face.
+ * The DAY's mood, not sleep quality — that is five dots in the sleep section,
+ * because two face ramps in one sheet are two pictures with one meaning. The
+ * mouth is monotone across the five; `Angry` is told from `Frown` by its brows.
  *
- * Angry, Frown, Meh, Smile, Laugh — one lucide family, five steps, and the
- * mouth alone is monotone across them: down-turned, down-turned with flat
- * brows, flat, up-turned, up-turned and open. The brows on `Angry` are what
- * separate it from `Frown`, the closest pair in the set. A face has one
- * advantage nothing else on a hueless palette has: the reader already knows,
- * without being taught, which end of angry→laughing is the good end.
- *
- * **These used to be sleep quality.** They are the day's MOOD now, and sleep
- * quality has become five dots inside the sleep section — because two
- * five-step face scales in one sheet are two pictures with one meaning
- * between them, and the reader has to be told which is which. Renaming rather
- * than aliasing is deliberate: the calendar draws these, and a constant still
- * called `SLEEP_QUALITY_ICON` would make it look like it still draws sleep.
- *
- * Drawn at 32px, not 16. In a single tone at 16px a down-turned mouth and a
- * flat one are the same two pixels and the set collapses into five circles.
- * The calendar draws the same faces at 20px inside a 36px disc for the same
- * reason. Neither carries the meaning alone: the numeral sits under every
- * face and the word is printed live beside the group.
- *
- * Lucide, never an emoji (§14). An emoji is a font the OS chooses — it
- * arrives pre-coloured, at a size nothing here controls, and renders as a
- * different picture on every platform. These inherit `currentColor`, which is
- * what lets the chosen one invert with its button.
+ * Drawn at 32px: in one tone at 16px a down-turned mouth and a flat one are
+ * the same two pixels. Lucide, never an emoji (§14) — these have to invert
+ * with their button, and an emoji arrives pre-coloured.
  */
 export const MOOD_ICON: Record<number, LucideIcon> = {
   1: Angry,
@@ -44,15 +25,9 @@ export const MOOD_ICON: Record<number, LucideIcon> = {
 };
 
 /**
- * How the day felt, 1–5 — the first question in the sheet and the largest.
- *
- * Selection INVERTS rather than tints. Every token on this palette is 0%
- * saturation (§14), so a tinted fill lands within a few percent of the
- * unselected surface and is not a state at all.
- *
- * Toggle buttons rather than a radio group, and `role="group"` rather than
- * `radiogroup`, because mood is OPTIONAL and clearable: tapping the current
- * value returns to "not answered", which a radio group has no gesture for.
+ * How the day felt, 1–5. Selection INVERTS rather than tints: at 0%
+ * saturation (§14) a tinted fill is not a state. Toggle buttons in a `group`,
+ * not a `radiogroup` — mood is clearable, which a radio group cannot gesture.
  */
 export function MoodScale({
   value,

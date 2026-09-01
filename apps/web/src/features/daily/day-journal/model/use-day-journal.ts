@@ -28,22 +28,9 @@ import { compressInBrowser } from '@/shared/lib/media/compress-in-browser';
 /**
  * The day's mood, words and photos, as one draft.
  *
- * **Text saves on Save; photos save on pick.** A `File` cannot be held in
- * state across a drawer close, and five 3 MB files in one server action
- * request exceed `serverActions.bodySizeLimit`. So a picked photo uploads
- * immediately, which means choosing photos and then dismissing the sheet
- * without saving still leaves them attached. That is a real asymmetry and the
- * UI draws it — a spinner while it uploads, a delete control once it is
- * stored — rather than hiding it.
- *
- * Captions are the same: written on blur, straight through, because a caption
- * typed under one photo should not queue behind a Save button that is about
- * the reflection.
- *
- * Optimistic on the photo list, because the round trip is a file upload and
- * the reader is looking at the picture they just chose. The pending entries
- * carry `blob:` preview URLs, which this hook revokes — the browser holds the
- * whole file in memory until something does.
+ * **Text saves on Save; photos and captions save on pick.** A `File` survives
+ * no drawer close, and five 3 MB files exceed `serverActions.bodySizeLimit`.
+ * The photo list is optimistic; the UI draws the asymmetry rather than hide it.
  */
 export function useDayJournal({
   localDate,
@@ -55,8 +42,7 @@ export function useDayJournal({
   entry: DayEntryRow | null;
 }) {
   const t = useTranslations('dashboard.daily');
-  // Seeded server-side by `space/layout.tsx` — the owner's real compression
-  // settings, the same source the media library reads.
+  // Seeded server-side by `space/layout.tsx`, same source as the media library.
   const { settings } = useWorkspaceSettings();
 
   const [mood, setMood] = useState<number | null>(entry?.mood ?? null);
@@ -67,9 +53,9 @@ export function useDayJournal({
   const [pending, setPending] = useState<PendingPhoto[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Every `blob:` URL this hook has minted, so unmount can revoke them all.
-  // Without this the browser holds each picked file in memory for the life of
-  // the document — five photos is fifteen megabytes that never comes back.
+  // Every `blob:` URL minted here, so unmount can revoke them all: otherwise
+  // the browser holds five picked photos — fifteen megabytes — for the life
+  // of the document.
   const previewUrls = useRef<string[]>([]);
   useEffect(
     () => () => {
@@ -81,12 +67,9 @@ export function useDayJournal({
 
   const pickPhotos = useCallback(
     async (files: File[]) => {
-      // Compress BEFORE validating size, same as the media library's
-      // `ImageUpload` — an ordinary phone photo arrives well over
-      // `MAX_PHOTO_SIZE_MB` and would compress comfortably under it, so
-      // checking the as-picked bytes rejects a photo that never actually
-      // uploads at that size. `compressInBrowser` is a no-op for SVG/GIF/a
-      // disabled config, so this is safe to run unconditionally.
+      // Compress BEFORE validating size, like `ImageUpload`: a phone photo
+      // arrives over `MAX_PHOTO_SIZE_MB` and compresses well under it. A
+      // no-op for SVG/GIF/a disabled config, so it runs unconditionally.
       const compressed = await Promise.all(
         files.map((file) => compressInBrowser(file, settings.imageCompression))
       );
@@ -125,13 +108,9 @@ export function useDayJournal({
 
   const setCaption = useCallback(
     async (id: string, caption: string | null) => {
-      // Optimistic: the reader typed it, and a caption that flickers back to
-      // its old value while a round trip completes reads as a lost edit.
-      //
-      // The previous caption is captured from the functional updater rather
-      // than read off `photos` directly, so this callback needs no `photos`
-      // dependency and can never roll back to a stale value from a render
-      // this closure was created in.
+      // Optimistic: a caption that flickers back mid-round-trip reads as a
+      // lost edit. The old value comes from the functional updater, so this
+      // needs no `photos` dependency and cannot roll back to a stale one.
       let previousCaption: string | null = null;
       setPhotos((current) =>
         current.map((photo) => {
@@ -143,10 +122,8 @@ export function useDayJournal({
 
       const res = await updateDayPhotoCaption({ id, caption });
       if (!res.success) {
-        // Roll back, same as `removePhoto` below. Without this a failed save
-        // leaves the strip showing text that was never persisted — the toast
-        // fades in a few seconds and the UI keeps lying about the caption
-        // until the next reload, when it silently reverts on its own.
+        // Roll back: otherwise the strip keeps showing text that was never
+        // persisted, long after the toast has faded.
         setPhotos((current) =>
           current.map((photo) =>
             photo.id === id ? { ...photo, caption: previousCaption } : photo
@@ -165,8 +142,7 @@ export function useDayJournal({
 
       const res = await deleteDayPhoto({ id });
       if (!res.success) {
-        // Put it back. A photo that vanishes from the strip and stays gone
-        // until a reload is worse than one that never left.
+        // Put it back — gone-until-reload is worse than never left.
         setPhotos(previous);
         toast.error(res.errorMsg || t('day.errorDelete'));
       }
@@ -191,9 +167,8 @@ export function useDayJournal({
     }
   }, [localDate, todayKey, mood, reflection]);
 
-  // Not a mutation and deliberately state-free: the undo toast outlives the
-  // sheet that raised it, so this has to be a plain closure over the row the
-  // sheet was seeded with.
+  // Deliberately state-free: the undo toast outlives the sheet that raised
+  // it, so this must be a plain closure over the row it was seeded with.
   const restoreAsync = useCallback(async () => {
     const res = await upsertDayEntry({
       localDate,
@@ -207,17 +182,9 @@ export function useDayJournal({
     return res.data;
   }, [localDate, todayKey, entry?.mood, entry?.reflection]);
 
-  // Compared as SERIALISED strings, not documents by identity: Tiptap
-  // re-creates nodes on every edit, so an identity comparison would report the
-  // sheet dirty on every keystroke and strand the dismiss guard that reads it.
-  //
-  // BOTH sides go through the same codec. Comparing against the raw
-  // `entry.reflection` looked correct but wasn't: a legacy plain-text row
-  // round-trips into a doc and back out as JSON, which can never byte-match
-  // the original string, so every legacy day reported dirty on open.
-  //
-  // Memoised because `reflection` changes on every keystroke and this reruns
-  // `parseReflection` plus two `JSON.stringify` passes.
+  // SERIALISED strings, both sides through the same codec: Tiptap re-creates
+  // nodes on every edit, and a legacy plain-text row can never byte-match its
+  // own JSON round trip — either comparison reports every day dirty on open.
   const isDirty = useMemo(
     () =>
       mood !== (entry?.mood ?? null) ||

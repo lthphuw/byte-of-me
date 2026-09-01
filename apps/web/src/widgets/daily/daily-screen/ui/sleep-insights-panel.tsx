@@ -15,13 +15,9 @@ import { MIN_NIGHTS_PER_SIDE } from '@/shared/lib/health/sleep-insights';
 
 const HEADING_ID = 'sleep-insights-heading';
 
-/**
- * What the history supports, and nothing more.
- *
- * No coefficient, no p-value, no trend line, no composite score — a contrast
- * of the owner's own means with both n printed beside it, and a bucketed mood
- * curve, because the relationship is not monotonic in either direction.
- */
+/** What the history supports and nothing more: no coefficient, no p-value, no
+ *  trend line, no composite score — a contrast of the owner's own means with
+ *  both n printed, and a bucketed mood curve, which is not monotonic. */
 export async function SleepInsightsPanel({
   insights,
 }: {

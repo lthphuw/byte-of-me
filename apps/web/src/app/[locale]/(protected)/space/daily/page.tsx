@@ -16,13 +16,9 @@ export const metadata: Metadata = {
   },
 };
 
-/**
- * `?month=YYYY-MM` is the calendar's window, and it lives in the URL so the
- * screen's read can be sized by it — the reason month arrows were left out
- * when the calendar was still a picture. Only a page receives `searchParams`,
- * so the param is unwrapped here and validated in `DailyScreen`, which is the
- * component that knows what a valid month is and what to show instead.
- */
+/** `?month=YYYY-MM` is the calendar's window, in the URL so the screen's read
+ *  is SIZED by it. Only a page receives `searchParams`; `DailyScreen`
+ *  validates, being the component that knows what a valid month is. */
 export default async function DailyPage({
   searchParams,
 }: {

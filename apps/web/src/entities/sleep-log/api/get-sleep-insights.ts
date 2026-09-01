@@ -29,18 +29,13 @@ import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
- * The insight panel's figures, computed once on the server.
+ * The insight panel's figures, computed once on the server. The maths is
+ * CALLED from `shared/lib/health/sleep-insights.ts`, never reimplemented —
+ * a second copy is how the tested version and the shipped one drift.
  *
- * The maths lives in `shared/lib/health/sleep-insights.ts` and is CALLED from
- * here rather than reimplemented — same rule as `getSleepSummary`, and the
- * same reason: those functions are the tested ones.
- *
- * It reads `day_entries` directly rather than importing `@/entities/day-entry`,
- * which would be the sideways slice import AGENTS §3 rules out. Two columns
- * over a bounded window; the mood is an outcome variable here, not a journal.
- *
- * Never throws. Awaited by an RSC, where a throw replaces the whole page with
- * the root `error.tsx` — including the calendar, which needs none of this.
+ * It reads `day_entries` directly rather than importing the slice, which
+ * would be the sideways import §3 rules out. Never throws: a throw in an RSC
+ * replaces the whole page with the root `error.tsx`.
  */
 export async function getSleepInsights(
   input: unknown

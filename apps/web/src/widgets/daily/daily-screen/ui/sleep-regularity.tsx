@@ -21,22 +21,14 @@ const HEADING_ID = 'sleep-regularity-heading';
 
 /**
  * The chronobiology block: how repeatable the nights are, and what clock the
- * body is actually keeping.
- *
- * Its own component rather than four more tiles inside `DailyScreen` because
- * every figure here shares a property none of the tiles above it have — each
- * one REFUSES to answer until the data can support it, and each refusal has to
- * say which of the two reasons it is. That branching is the bulk of the file.
- *
- * A server component: these are numbers computed in `getSleepSummary`, and
- * nothing here is interactive.
+ * body keeps. Its own component because every figure REFUSES to answer until
+ * the data supports it, naming which of two reasons — that is the bulk of it.
  */
 export async function SleepRegularity({ summary }: { summary: SleepSummary }) {
   const t = await getTranslations('dashboard.daily');
 
-  // The headline: how far the MIDDLE of the night moves. It reads the
-  // midpoints the summary already computed, through the same population SD the
-  // two deviation tiles use, so there is no second definition of either.
+  // How far the MIDDLE of the night moves, from the midpoints the summary
+  // already computed and through the same SD the deviation tiles use.
   const midpointSdMin = minutesStdDev(
     summary.nights.map((night) => unwrapNearMidnight(night.midsleepMin))
   );
@@ -47,12 +39,8 @@ export async function SleepRegularity({ summary }: { summary: SleepSummary }) {
 
   return (
     <section aria-labelledby={HEADING_ID} className="flex flex-col gap-2">
-      {/* The heading is the only thing separating this block from the tile
-          grid above it, and at `text-xs` in `muted-foreground` it was a line
-          of text doing a rule's job. A wave, because that is what these five
-          figures are about — how repeatable the cycle is — and `size-3.5`
-          with `gap-1.5`, which is exactly how `StatTile` sets an icon beside
-          an `xs` label, so the heading and the tiles under it share one
+      {/* `size-3.5` with `gap-1.5`, exactly how `StatTile` sets an icon
+          beside an `xs` label, so this heading and its tiles share a
           measure. */}
       <h2
         id={HEADING_ID}
@@ -157,12 +145,9 @@ export async function SleepRegularity({ summary }: { summary: SleepSummary }) {
           }
         />
 
-        {/* `msfscMin` is minutes PAST MIDNIGHT, not a length of time, so it
-            renders through `minutesToClock` and never through `splitMinutes`.
-            The correction can push it either side of midnight and the helper
-            wraps, so a 00:10 chronotype cannot come out as `-50m` or `24:10`.
-            The hint says "clock time" out loud because this is the one tile on
-            the screen whose figure is not a duration. */}
+        {/* `msfscMin` is minutes PAST MIDNIGHT, not a length, so it renders
+            through `minutesToClock` — which wraps, so a 00:10 chronotype
+            cannot come out as `-50m`. The one non-duration on the screen. */}
         <StatTile
           icon={Compass}
           label={t('sleep.chronotype')}
@@ -185,14 +170,9 @@ export async function SleepRegularity({ summary }: { summary: SleepSummary }) {
 }
 
 /**
- * Which of the two causes a missing figure has.
- *
- * `freeDayCount` and `workDayCount` ride along on the summary for exactly this
- * decision. A null metric means either that nothing has been logged at all, or
- * that what was logged is the wrong shape — too few nights in a row, too few
- * days of one kind. Only the second is worth reading a threshold for, and only
- * the first is fixed by logging tonight, so collapsing them into one
- * "unavailable" string tells the reader nothing and reads as a bug.
+ * Which of the two causes a missing figure has: nothing logged at all, or the
+ * wrong SHAPE of data. Only the first is fixed by logging tonight, so one
+ * flat "unavailable" string tells the reader nothing and reads as a bug.
  */
 function missingReason(
   nightCount: number,

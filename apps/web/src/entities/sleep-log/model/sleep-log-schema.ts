@@ -2,21 +2,14 @@ import * as z from 'zod';
 
 import { isValidTimeZone } from '@/shared/lib/health/local-date';
 
-/**
- * NOTE ON ZOD VERSION: this repo is on zod 3.25.76, where the `z.iso.*`
- * namespace does not exist — it arrived in zod 4. Use `z.string().date()` and
- * `z.string().datetime()`. Verified against the installed copy: `.date()`
- * accepts `2026-08-22` and rejects a full ISO timestamp; `.datetime()` accepts
- * `2026-08-22T00:10:00.000Z`.
- */
+/** ZOD 3.25.76: no `z.iso.*` namespace (that is zod 4). Use
+ *  `z.string().date()` for `2026-08-22` and `z.string().datetime()` for a
+ *  full timestamp — verified against the installed copy. */
 
 /**
- * Contributing factors, as codes rather than free text.
- *
- * A `String[]` column validated here instead of a Postgres enum: the list will
- * change as the author notices new patterns, and a migration per new factor is
- * not a trade worth making. Codes rather than labels because the labels are UI
- * text and live in `dashboard.daily.factors.*` in both locale files.
+ * Contributing factors as codes, in a `String[]` validated here rather than a
+ * Postgres enum — the list grows as the author notices patterns, and a
+ * migration per factor is not worth it. Labels live in the locale files.
  */
 export const SLEEP_FACTORS = [
   'caffeine_late',
@@ -30,36 +23,25 @@ export const SLEEP_FACTORS = [
 export type SleepFactor = (typeof SLEEP_FACTORS)[number];
 
 /**
- * How much was napped during the day, as an ordered id rather than minutes.
- *
- * An id and never a midpoint: `gt60` is open at the top and has none, and a
- * nap total that looks like minutes invites being added to the night, which
- * `sleep-stats.ts` deliberately never does. Ordered least to most, so the
- * median in `buildSuggestion` is the middle ANSWER rather than a mean of codes.
+ * Daytime naps as an ordered id, never a midpoint: `gt60` is open at the top
+ * and has none, and a minutes-shaped total invites being added to the night.
+ * Ordered least to most, so `buildSuggestion`'s median is the middle ANSWER.
  */
 export const NAP_BUCKETS = ['none', 'lt30', '30to60', 'gt60'] as const;
 
 export type NapBucket = (typeof NAP_BUCKETS)[number];
 
-/** More awakenings than this in one night is a typo, not a diary entry. The
- *  chip row only offers 0–3+, so this bounds a hand-built payload. */
+/** More than this in one night is a typo. The chip row offers 0–3+, so this
+ *  only bounds a hand-built payload. */
 const MAX_AWAKENINGS_COUNT = 20;
 
 /**
- * The write.
+ * The write. Dates cross as ISO strings — typed params are a compile-time
+ * promise only, and this schema is the runtime guarantee (§8).
  *
- * Dates cross the server-action boundary as ISO strings: a server action's
- * arguments are serialized, and typed params are a compile-time promise only —
- * this schema is the runtime guarantee (AGENTS §8).
- *
- * `timeZone` is sent by the client because `localDate` must be resolved in the
- * OWNER's zone, and the server has no reliable way to know it. It is validated
- * against the Intl database rather than trusted, so a malformed value fails
- * here instead of throwing inside `toLocalDate`.
- *
- * `loggedAt` is ABSENT on purpose. When an entry was written is evidence about
- * the entry, and a client that could name it could make a three-days-late
- * reconstruction look like same-morning data. The server stamps it.
+ * `timeZone` is client-sent because `localDate` resolves in the OWNER's zone,
+ * and validated against the Intl database rather than trusted. `loggedAt` is
+ * ABSENT on purpose: it is evidence ABOUT the entry, so the server stamps it.
  */
 export const sleepLogUpsertSchema = z
   .object({

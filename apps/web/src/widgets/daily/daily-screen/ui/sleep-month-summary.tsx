@@ -21,29 +21,16 @@ const HEADING_ID = 'sleep-month-summary-heading';
 const MOOD_DECIMALS = 1;
 
 /**
- * The month on screen, as six figures.
+ * The month on screen, as six figures — "how did the month go", which thirty
+ * dots cannot answer without the reader doing arithmetic by eye. It moves
+ * with the grid above it: paging to July re-reads July.
  *
- * The calendar answers "which nights" and this answers "how did the month go"
- * — a question thirty dots genuinely cannot answer, because a reader comparing
- * shades across five rows is doing arithmetic by eye. It sits directly under
- * the grid it describes and moves with it: paging to July re-reads July.
+ * Nothing here re-derives a NIGHT; every duration arrives from `computeNight`.
+ * What it does compute is the shape of a SUMMARY — a mean, a max, a min, a
+ * count — which is about a window, not about what a night is.
  *
- * **Nothing here re-derives a night.** Every duration comes from `computeNight`
- * in `shared/lib/health/sleep-stats`, which the screen already ran to draw the
- * marks — this component receives the results. What it does compute is the
- * shape of a SUMMARY: a mean, a maximum, a minimum, a count over a threshold.
- * None of those is in the statistics module, and none of them belongs there:
- * that file is about what a NIGHT is, and a monthly mean is about a window a
- * reader happens to be looking at. Mean mood is local for a second reason —
- * mood is a subjective 1–5 the statistics module deliberately never reads.
- *
- * `nights` may include a day with no sleep row at all — `DayEntry` is a
- * separate table precisely so a day can be written up without a night logged
- * — so every duration-based figure below is computed over the LOGGED subset,
- * narrowed once at the top rather than re-checked in every reducer.
- *
- * A server component: these are numbers over data already on the server, and
- * nothing on the panel is interactive.
+ * `nights` may hold a day with no sleep row, so every duration figure is taken
+ * over the LOGGED subset, narrowed once at the top. A server component.
  */
 export async function SleepMonthSummary({
   nights,
@@ -66,21 +53,16 @@ export async function SleepMonthSummary({
 }) {
   const t = await getTranslations('dashboard.daily');
 
-  // A day written up with no sleep row has nothing for a duration figure to
-  // say — `null` there means "no night", not "a night of zero minutes" — so
-  // it drops out of every tile below except the ones this component does not
-  // draw at all.
+  // `null` means "no night", never "a night of zero minutes", so a day
+  // written up without one drops out of every duration tile below.
   const logged = nights.filter(
     (night): night is LoggedNight & { totalSleepMin: number } =>
       night.totalSleepMin !== null
   );
 
-  // Rated days, not rated NIGHTS: mood comes from `DayEntry`, which exists
-  // precisely so a day can be journalled with no sleep row at all. Deriving
-  // this from `logged` would silently drop a mood recorded on a night that
-  // was never logged — under-counting "Across N days you rated" and, in a
-  // month with zero sleep rows, hiding the tile entirely behind the early
-  // return below.
+  // Rated DAYS, not rated nights: from `nights`, never from `logged`, or a
+  // mood recorded on an unlogged night is dropped — under-counting the tile's
+  // own n, and hiding it entirely in a month with no sleep rows.
   const rated = nights.filter(
     (night): night is LoggedNight & { mood: number } => night.mood !== null
   );
@@ -119,19 +101,15 @@ export async function SleepMonthSummary({
           })}
         />
         {rated.length === 0 ? (
-          // The tiles' own sheet, not a loose sentence where six cards were.
-          // An empty state that abandons the surface reads as a failed
-          // render; one that keeps it reads as a month with nothing in it,
-          // which is what it is.
+          // The tiles' own sheet, not a loose sentence where six cards were:
+          // an empty state that abandons the surface reads as a failed render.
           <p className="flex items-center justify-center gap-2 rounded-2xl border bg-card p-6 text-center text-sm text-muted-foreground shadow">
             <CalendarRange aria-hidden className="size-4 shrink-0" />
             {t('sleep.monthEmpty')}
           </p>
         ) : (
-          // No night was logged this month, but the day was still journalled
-          // with a mood — that data exists and the tile must say so, even
-          // though every sleep-derived tile below genuinely has nothing to
-          // show.
+          // No night logged, but a mood was still recorded — that data exists
+          // and the tile says so, even with every sleep tile empty.
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
             {moodTile}
           </div>

@@ -38,13 +38,9 @@ export interface RasterBand {
   sdMin: number;
 }
 
-/**
- * A fortnight of nights, each bar spanning the clock time it was laid down to
- * the clock time it got up, against median ± SD bands.
- *
- * A server component: nothing here is interactive, so the drawing costs the
- * browser no JavaScript. Exact figures live in the `ChartFrame` table.
- */
+/** A fortnight of nights, each bar spanning bed to rise against median ± SD
+ *  bands. A server component — nothing is interactive, so the drawing costs
+ *  no JavaScript. Exact figures live in the `ChartFrame` table. */
 export function SleepRaster({
   nights,
   bedBand,

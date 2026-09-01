@@ -7,16 +7,9 @@ import { cn } from '@/shared/lib/utils';
 const LEVELS = [1, 2, 3, 4, 5] as const;
 
 /**
- * How rested you feel now, 1–5 — the same control as `SleepQualityScale`.
- *
- * Deliberately identical in shape, because the two questions are a pair: the
- * night, then the morning it produced. Giving the outcome variable a different
- * gesture would make it read as a different KIND of answer, and it is the one
- * figure every insight in the next phase is contrasted against.
- *
- * A separate component rather than a prop on the quality scale: that file
- * argues at length for dots over faces and for its own copy, and two controls
- * sharing one body would have to carry both arguments.
+ * How rested you feel now, 1–5. Deliberately the same shape as
+ * `SleepQualityScale`: the two are a pair — the night, then the morning it
+ * produced — and a different gesture would read as a different KIND of answer.
  */
 export function SleepRestednessScale({
   value,

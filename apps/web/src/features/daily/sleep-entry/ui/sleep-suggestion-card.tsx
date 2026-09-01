@@ -7,13 +7,9 @@ import { useTranslations } from 'next-intl';
 import type { SleepSuggestion } from '@/features/daily/sleep-entry/model/use-sleep-entry';
 
 /**
- * The fortnight's habit, offered rather than assumed.
- *
- * One tap fills both clocks and whichever of the two estimates the last
- * fortnight actually recorded, and the card retires itself the moment it is
- * taken — so it reads as a suggestion right up until it becomes an answer.
- * The figures are printed because a number the reader cannot see before
- * accepting it is a pre-filled field with extra steps.
+ * The fortnight's habit, offered rather than assumed. One tap fills the clocks
+ * and whatever estimates were actually recorded, and the card retires itself.
+ * The figures are printed: an unseen number is a pre-filled field with steps.
  */
 export function SleepSuggestionCard({
   suggestion,
