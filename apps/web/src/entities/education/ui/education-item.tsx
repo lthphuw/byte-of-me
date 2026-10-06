@@ -1,7 +1,8 @@
 import { RichText } from '@byte-of-me/ui/rich-text';
-import { Award, ChevronDown, GraduationCap } from 'lucide-react';
+import { Award, GraduationCap } from 'lucide-react';
 import Image from 'next/image';
 
+import { AchievementFold } from './achievement-fold';
 import { AchievementItem } from './achievement-item';
 
 import type { PublicEducation } from '@/entities/education/model/types';
@@ -21,7 +22,7 @@ export function EducationItem({
     showLess: string;
   };
   /**
-   * How many achievements show before the rest fold into a native `<details>`.
+   * How many achievements show before the rest fold behind a toggle.
    * The page stays short while every achievement is still one click away and
    * still in the HTML.
    */
@@ -102,31 +103,21 @@ export function EducationItem({
         </div>
       )}
 
-      {/* Past `visibleAchievements` the rest fold into a native <details>:
-          stateless, keyboard-correct and still in the markup for find-in-page. */}
+      {/* Past `visibleAchievements` the rest fold behind `AchievementFold`, which
+          opens them downward with the toggle kept at the end of the list. */}
       {edu.achievements.length > 0 && (
         <>
           <ul className="divide-y border-t">{shown.map(renderAchievement)}</ul>
 
           {folded.length > 0 && (
-            <details className="group border-t">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm text-primary transition-colors hover:bg-accent/50 focus-visible:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring md:px-5 [&::-webkit-details-marker]:hidden">
-                <span className="group-open:hidden">
-                  {labels.moreAchievements(folded.length)}
-                </span>
-                <span className="hidden group-open:inline">
-                  {labels.showLess}
-                </span>
-                <ChevronDown
-                  aria-hidden
-                  className="h-4 w-4 shrink-0 transition-transform group-open:rotate-180 motion-reduce:transition-none"
-                />
-              </summary>
-
+            <AchievementFold
+              showMoreLabel={labels.moreAchievements(folded.length)}
+              showLessLabel={labels.showLess}
+            >
               <ul className="divide-y border-t">
                 {folded.map(renderAchievement)}
               </ul>
-            </details>
+            </AchievementFold>
           )}
         </>
       )}

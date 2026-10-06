@@ -1,11 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  ScrollArea,
-  ScrollBar,
+  CarouselNext,
+  CarouselPrevious,
 } from '@byte-of-me/ui';
 import Image from 'next/image';
 
@@ -14,102 +15,75 @@ import type { Media } from '@/shared/types/models';
 
 interface AchievementImagesProps {
   images: Media[];
-  urls: string[];
   title: string;
-  currentSlide: number;
-  onSlideChange: (index: number) => void;
-  onOpenGallery?: (urls: string[], index: number) => void;
 }
 
-export function AchievementImages({
-  images,
-  urls,
-  title,
-  currentSlide,
-  onSlideChange,
-  onOpenGallery,
-}: AchievementImagesProps) {
+/**
+ * An achievement's photos as one carousel at every width.
+ *
+ * It used to be a scroll strip of 160px thumbnails on desktop, which fit side
+ * by side and so had nothing to swipe, and a carousel on phones. Slides are now
+ * wide enough that a second image is only partly in view: it can be dragged or
+ * swiped into place, and the arrows and dots do the same for a mouse.
+ */
+export function AchievementImages({ images, title }: AchievementImagesProps) {
+  const [current, setCurrent] = useState(0);
+
   if (!images?.length) return null;
 
+  const several = images.length > 1;
+
   return (
-    <>
-      {/* Desktop */}
-      <ScrollArea className="hidden max-w-full pb-2 md:block">
-        <div className="flex w-max space-x-4">
-          {images.map((img, i) => (
-            <button
-              key={img.id}
-              onClick={() => onOpenGallery?.(urls, i)}
-              aria-label={`${title} (${i + 1}/${images.length})`}
-              className="relative aspect-[4/3] w-40 shrink-0 overflow-hidden rounded-md"
-            >
+    <Carousel
+      setApi={(api) => {
+        if (!api) return;
+        setCurrent(api.selectedScrollSnap());
+        api.on('select', () => setCurrent(api.selectedScrollSnap()));
+      }}
+    >
+      <CarouselContent className="-ml-3 md:cursor-grab md:active:cursor-grabbing">
+        {images.map((img, i) => (
+          <CarouselItem
+            key={img.id}
+            className={cn(
+              'pl-3',
+              several
+                ? 'basis-[85%] md:basis-[58%]'
+                : 'basis-full md:basis-[58%]'
+            )}
+          >
+            <div className="relative aspect-[4/3] w-full select-none overflow-hidden rounded-xl">
               <Image
                 src={img.url}
-                alt={title}
+                alt={several ? `${title} (${i + 1}/${images.length})` : title}
                 fill
-                sizes="160px"
+                draggable={false}
+                sizes="(max-width: 768px) 85vw, 400px"
                 className="object-cover"
               />
-            </button>
-          ))}
-        </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
-
-      {/* Mobile */}
-      <div className="relative block md:hidden">
-        <Carousel
-          className=""
-          setApi={(api) => {
-            if (!api) return;
-            api.on('select', () => {
-              onSlideChange(api.selectedScrollSnap());
-            });
-          }}
-        >
-          <CarouselContent className="-ml-3">
-            {images.map((img, i) => (
-              <CarouselItem
-                key={img.id}
-                className={cn(
-                  'pl-3',
-                  images.length === 1 ? 'basis-full' : 'basis-[90%]'
-                )}
-              >
-                <button
-                  onClick={() => onOpenGallery?.(urls, i)}
-                  aria-label={`${title} (${i + 1}/${images.length})`}
-                  className="relative aspect-[4/3] w-full overflow-hidden rounded-xl"
-                >
-                  <Image
-                    src={img.url}
-                    alt={title}
-                    fill
-                    sizes="(max-width: 768px) 90vw, 0px"
-                    className="object-cover"
-                  />
-                </button>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-
-          {/* Dots */}
-          {images.length > 1 && (
-            <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1.5">
-              {images.map((_, i) => (
-                <div
-                  key={i}
-                  className={`rounded-full ${
-                    i === currentSlide
-                      ? 'h-2 w-2 bg-white'
-                      : 'h-1.5 w-1.5 bg-white/50'
-                  }`}
-                />
-              ))}
             </div>
-          )}
-        </Carousel>
-      </div>
-    </>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+
+      {several && (
+        <>
+          <CarouselPrevious className="left-2 hidden bg-background/80 md:inline-flex" />
+          <CarouselNext className="right-2 hidden bg-background/80 md:inline-flex" />
+
+          <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1.5">
+            {images.map((_, i) => (
+              <div
+                key={i}
+                className={cn(
+                  'rounded-full',
+                  i === current ? 'h-2 w-2 bg-white' : 'h-1.5 w-1.5 bg-white/50'
+                )}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </Carousel>
   );
 }

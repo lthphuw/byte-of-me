@@ -1,8 +1,7 @@
 'use client';
 
-import { type ReactNode, useState } from 'react';
+import type { ReactNode } from 'react';
 
-import { AchievementGallery } from './achievement-gallery';
 import { AchievementImages } from './achievement-images';
 
 import type { PublicEducationAchievement } from '@/entities/education/model/types';
@@ -21,10 +20,6 @@ export function AchievementItem({
   achievement: a,
   content,
 }: AchievementItemProps) {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const urls = a.images.map((i) => i.url);
-
   return (
     <div className="space-y-2">
       <h4 className="text-sm font-medium leading-snug md:text-base">
@@ -33,23 +28,7 @@ export function AchievementItem({
 
       {content && <ExpandableRichText>{content}</ExpandableRichText>}
 
-      <AchievementImages
-        images={a.images}
-        urls={urls}
-        title={a.title}
-        currentSlide={currentSlide}
-        onSlideChange={setCurrentSlide}
-        onOpenGallery={(_, index) => setOpenIndex(index)}
-      />
-
-      {a.images.length > 0 && (
-        <AchievementGallery
-          images={a.images}
-          title={a.title}
-          openIndex={openIndex}
-          onClose={() => setOpenIndex(null)}
-        />
-      )}
+      <AchievementImages images={a.images} title={a.title} />
     </div>
   );
 }
