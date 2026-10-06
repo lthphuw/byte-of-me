@@ -20,6 +20,13 @@ export const DEFAULT_PROJECT_FILTERS: ProjectFilterState = {
   search: '',
 };
 
+/**
+ * Page size of the tag and tech-stack chip rows. One constant for the hook and
+ * the server prefetch in `projects/page.tsx`: the limit is part of the query
+ * key, so two literals drifting apart would silently skip the prefetch.
+ */
+export const PROJECT_FILTER_FACET_LIMIT = 8;
+
 /** Reads the project filter facets out of the URL query. */
 export function parseProjectFilters(
   params: URLSearchParams

@@ -8,7 +8,10 @@ import { TagClickableBadge } from '@/entities/tag';
 import { useTagInfiniteQuery } from '@/entities/tag/query';
 import { TechStackClickableBadge } from '@/entities/tech-stack';
 import { useTechStackInfiniteQuery } from '@/entities/tech-stack/query';
-import type { ProjectFilterState } from '@/features/public/project-filters/lib';
+import {
+  PROJECT_FILTER_FACET_LIMIT,
+  type ProjectFilterState,
+} from '@/features/public/project-filters/lib';
 import { useUrlSyncedSearch } from '@/shared/hooks/use-url-synced-search';
 import type { FilterNavigationOptions } from '@/shared/lib/filter-params';
 import { FilterSearchInput } from '@/shared/ui';
@@ -42,14 +45,14 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
     fetchNextPage: fetchNextTags,
     hasNextPage: hasNextTags,
     isFetchingNextPage: isFetchingTags,
-  } = useTagInfiniteQuery(8);
+  } = useTagInfiniteQuery(PROJECT_FILTER_FACET_LIMIT);
 
   const {
     data: techData,
     fetchNextPage: fetchNextTech,
     hasNextPage: hasNextTech,
     isFetchingNextPage: isFetchingTech,
-  } = useTechStackInfiniteQuery(8);
+  } = useTechStackInfiniteQuery(PROJECT_FILTER_FACET_LIMIT);
 
   const allTags = tagData?.pages.flatMap((page) => page.data) || [];
   const allTechStacks = techData?.pages.flatMap((page) => page.data) || [];

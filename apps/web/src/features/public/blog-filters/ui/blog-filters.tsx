@@ -6,7 +6,10 @@ import { useTranslations } from 'next-intl';
 
 import { useTagInfiniteQuery } from '@/entities/tag/query';
 import { TagClickableBadge } from '@/entities/tag/ui/tag-clickable-badge';
-import type { BlogFilterState } from '@/features/public/blog-filters/lib';
+import {
+  BLOG_FILTER_TAG_LIMIT,
+  type BlogFilterState,
+} from '@/features/public/blog-filters/lib';
 import { useUrlSyncedSearch } from '@/shared/hooks/use-url-synced-search';
 import type { FilterNavigationOptions } from '@/shared/lib/filter-params';
 import { FilterSearchInput } from '@/shared/ui';
@@ -42,7 +45,7 @@ export function BlogFilters({ value, onChange }: BlogFiltersProps) {
     fetchNextPage: fetchNextTags,
     hasNextPage: hasNextTags,
     isFetchingNextPage: isFetchingTags,
-  } = useTagInfiniteQuery(10);
+  } = useTagInfiniteQuery(BLOG_FILTER_TAG_LIMIT);
 
   const allTags = tagData?.pages.flatMap((page) => page.data) || [];
 

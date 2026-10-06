@@ -3,12 +3,19 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { getOpenSourceContributions } from '@/entities/open-source/api/get-open-source-contributions';
 import { getPaginatedPublicProjects, projectKeys } from '@/entities/project';
+import { getPaginatedPublicTags, tagKeys } from '@/entities/tag';
+import {
+  getPaginatedPublicTechStacks,
+  techStackKeys,
+} from '@/entities/tech-stack';
 import {
   DEFAULT_PROJECT_FILTERS,
+  PROJECT_FILTER_FACET_LIMIT,
   ProjectsOpenSource,
 } from '@/features/public';
 import { routing } from '@/shared/i18n/routing';
 import { getQueryClient } from '@/shared/lib/query/get-query-client';
+import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
 import type { LocaleType } from '@/shared/types';
 import { ProjectsContent } from '@/widgets/public';
 
@@ -35,22 +42,51 @@ export default async function ProjectsPage({ params }: ProjectsPageProps) {
   // resolves to `project-filters/lib/project-filter-params`, which carries no
   // `'use client'` directive — imported out of the hook file it arrived here
   // as a client-reference proxy and the hash drifted.
+  //
+  // The tag and tech-stack chip rows are prefetched in the same pass, with the
+  // keys and limit `ProjectFilters` uses; otherwise they are two more client
+  // actions after hydration and the rows pop in. Nothing here depends on
+  // anything else, so it all runs at once.
   const queryClient = getQueryClient();
-  await queryClient.prefetchQuery({
-    queryKey: projectKeys.publicList(1, DEFAULT_PROJECT_FILTERS),
-    queryFn: () =>
-      getPaginatedPublicProjects({
-        ...DEFAULT_PROJECT_FILTERS,
-        page: 1,
-        limit: 8,
-      }),
-  });
+  const [openSourceResp, tOss] = await Promise.all([
+    getOpenSourceContributions(),
+    getTranslations('components.openSource'),
+    queryClient.prefetchQuery({
+      queryKey: projectKeys.publicList(1, DEFAULT_PROJECT_FILTERS),
+      queryFn: () =>
+        getPaginatedPublicProjects({
+          ...DEFAULT_PROJECT_FILTERS,
+          page: 1,
+          limit: 8,
+        }),
+    }),
+    queryClient.prefetchInfiniteQuery({
+      queryKey: tagKeys.infinite(PROJECT_FILTER_FACET_LIMIT),
+      queryFn: async ({ pageParam }) =>
+        unwrapApiResponse(
+          await getPaginatedPublicTags({
+            page: pageParam,
+            limit: PROJECT_FILTER_FACET_LIMIT,
+          })
+        ),
+      initialPageParam: 1,
+    }),
+    queryClient.prefetchInfiniteQuery({
+      queryKey: techStackKeys.infinite(PROJECT_FILTER_FACET_LIMIT),
+      queryFn: async ({ pageParam }) =>
+        unwrapApiResponse(
+          await getPaginatedPublicTechStacks({
+            page: pageParam,
+            limit: PROJECT_FILTER_FACET_LIMIT,
+          })
+        ),
+      initialPageParam: 1,
+    }),
+  ]);
 
   // Rendered here, on the server, and handed to the client page as a node. An
   // empty result (no token, GitHub down) passes `null`, which drops the tab.
-  const openSourceResp = await getOpenSourceContributions();
   const repos = openSourceResp.success ? openSourceResp.data.repos : [];
-  const tOss = await getTranslations('components.openSource');
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

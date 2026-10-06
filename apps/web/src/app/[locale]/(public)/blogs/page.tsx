@@ -3,9 +3,11 @@ import { setRequestLocale } from 'next-intl/server';
 
 import { getPaginatedPublicBlogs } from '@/entities/blog';
 import { blogKeys } from '@/entities/blog/model/query-keys';
-import { DEFAULT_BLOG_FILTERS } from '@/features/public';
+import { getPaginatedPublicTags, tagKeys } from '@/entities/tag';
+import { BLOG_FILTER_TAG_LIMIT, DEFAULT_BLOG_FILTERS } from '@/features/public';
 import { routing } from '@/shared/i18n/routing';
 import { getQueryClient } from '@/shared/lib/query/get-query-client';
+import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
 import type { LocaleType } from '@/shared/types';
 import { BlogsContent } from '@/widgets/public';
 
@@ -37,16 +39,33 @@ export default async function BlogsPage({ params }: BlogsPageProps) {
   // hand-kept literals. It resolves to `blog-filters/lib/blog-filter-params`,
   // which carries no `'use client'` directive — imported out of the hook file
   // it arrived here as a client-reference proxy and the hash drifted.
+  //
+  // The filter bar's tag chips are prefetched in the same pass, with the same
+  // key and limit as `useTagInfiniteQuery` in `BlogFilters`; otherwise they
+  // are a second client action after hydration and pop in under the header.
   const queryClient = getQueryClient();
-  await queryClient.prefetchQuery({
-    queryKey: blogKeys.publicList(1, DEFAULT_BLOG_FILTERS),
-    queryFn: () =>
-      getPaginatedPublicBlogs({
-        ...DEFAULT_BLOG_FILTERS,
-        page: 1,
-        limit: 6,
-      }),
-  });
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: blogKeys.publicList(1, DEFAULT_BLOG_FILTERS),
+      queryFn: () =>
+        getPaginatedPublicBlogs({
+          ...DEFAULT_BLOG_FILTERS,
+          page: 1,
+          limit: 6,
+        }),
+    }),
+    queryClient.prefetchInfiniteQuery({
+      queryKey: tagKeys.infinite(BLOG_FILTER_TAG_LIMIT),
+      queryFn: async ({ pageParam }) =>
+        unwrapApiResponse(
+          await getPaginatedPublicTags({
+            page: pageParam,
+            limit: BLOG_FILTER_TAG_LIMIT,
+          })
+        ),
+      initialPageParam: 1,
+    }),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

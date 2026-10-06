@@ -21,7 +21,10 @@ import {
   projectKeys,
   ProjectTimelineItemSkeleton,
 } from '@/entities/project';
-import { ProjectFilters, useProjectFilters } from '@/features/public';
+import {
+  ProjectFilters,
+  useProjectFilters,
+} from '@/features/public/project-filters';
 import { usePathname, useRouter } from '@/shared/i18n/navigation';
 import { ListPageHeader } from '@/shared/ui';
 import { ProjectsShell } from '@/widgets/public/projects-content/ui/projects-shell';
@@ -67,6 +70,10 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
     queryKey: projectKeys.publicList(page, filters),
     queryFn: () => getPaginatedPublicProjects({ ...filters, page, limit: 8 }),
     placeholderData: (previousData) => previousData,
+    // Same as the blogs list: the hydrated entry carries the build's
+    // `dataUpdatedAt`, so only `Infinity` stops it refetching on mount.
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
   });
 
   const projects = data?.data?.data || [];
@@ -77,9 +84,8 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
     hasMore: false,
   };
 
-  // Same reasoning as the blogs list: the server-prefetched entry hydrates with
-  // the build timestamp, so it is stale on arrival and refetches on mount.
-  // Gating on `isFetching` hid the already-rendered list behind skeletons.
+  // Same reasoning as the blogs list: gating on `isFetching` hid the
+  // already-rendered list behind skeletons whenever a refetch ran.
   const showSkeletons = isLoading;
 
   const toggleTag = (slug: string) => {

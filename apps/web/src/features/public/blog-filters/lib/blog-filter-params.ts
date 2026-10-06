@@ -21,6 +21,12 @@ export const DEFAULT_BLOG_FILTERS: BlogFilterState = {
   search: '',
 };
 
+/**
+ * Page size of the tag chip row, shared by the hook and the server prefetch in
+ * `blogs/page.tsx`: the limit is part of the query key.
+ */
+export const BLOG_FILTER_TAG_LIMIT = 10;
+
 /** Reads the blog filter facets out of the URL query. */
 export function parseBlogFilters(params: URLSearchParams): BlogFilterState {
   return {

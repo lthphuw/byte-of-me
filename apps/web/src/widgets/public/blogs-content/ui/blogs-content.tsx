@@ -17,9 +17,12 @@ import {
   blogKeys,
   getPaginatedPublicBlogs,
 } from '@/entities/blog';
-import { BlogFilters, useBlogFilters } from '@/features/public';
+import { BlogFilters, useBlogFilters } from '@/features/public/blog-filters';
 import { ListPageHeader, RevealItem } from '@/shared/ui';
 import { BlogsShell } from '@/widgets/public/blogs-content/ui/blogs-shell';
+
+// Two columns from md up, so the first row is the two cards above the fold.
+const FIRST_ROW_COUNT = 2;
 
 export function BlogsContent() {
   const t = useTranslations('blog');
@@ -42,10 +45,11 @@ export function BlogsContent() {
       getPaginatedPublicBlogs({ ...filters, page, limit: 6, includeDrafts }),
     placeholderData: (previousData) => previousData,
     // The server-prefetched default page comes from a tag-purged cache entry,
-    // so don't immediately refetch it on mount — that avoids
-    // flashing skeletons over hydrated data. Filter/page changes use a new key
-    // and still fetch live.
-    staleTime: 5 * 60 * 1000,
+    // so never refetch it on mount. Only `Infinity` does that: the hydrated
+    // entry carries the build's `dataUpdatedAt`, older than any finite value.
+    // Filter/page changes use a new key and still fetch live.
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
   });
 
   const blogs = data?.data?.data || [];
@@ -59,11 +63,8 @@ export function BlogsContent() {
     filters?.search?.length > 0 || filters?.tagSlugs?.length > 0;
 
   // Only when there is genuinely nothing to show. `isFetching` cannot be part
-  // of this: the hydrated entry carries `dataUpdatedAt` from the *build*, so by
-  // the time anyone visits it is always older than `staleTime` and refetches on
-  // mount. Including it blanked a fully rendered list behind skeletons on every
-  // first load, until a filter click produced placeholder data that hid them
-  // again. A background refetch now updates the list in place.
+  // of this: it blanked a fully rendered list behind skeletons whenever a
+  // background refetch ran. A refetch updates the list in place instead.
   const showSkeletons = isLoading;
 
   const toggleTag = (slug: string) => {
@@ -135,7 +136,11 @@ export function BlogsContent() {
           }`}
         >
           {blogs.map((blog, index) => (
-            <RevealItem key={blog.id} index={index}>
+            <RevealItem
+              key={blog.id}
+              index={index}
+              immediate={index < FIRST_ROW_COUNT}
+            >
               <BlogCard blog={blog} onTagClick={toggleTag} />
             </RevealItem>
           ))}
