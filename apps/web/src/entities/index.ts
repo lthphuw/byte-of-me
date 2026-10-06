@@ -4,7 +4,6 @@ export * from './company';
 export * from './contact-message';
 export * from './education';
 export * from './media';
-export * from './note';
 export * from './project';
 export * from './social-link';
 export * from './tag';
