@@ -170,6 +170,22 @@ describe('TranslationTabs selection', () => {
     expect(screen.queryByLabelText('Title 0')).toBeNull();
   });
 
+  test('relabels a tab as its language is typed', async () => {
+    await mount();
+    expect(screen.getByRole('tab', { name: 'EN' })).toBeDefined();
+
+    await React.act(async () => {
+      fireEvent.change(screen.getByLabelText('Language'), {
+        target: { value: 'fr' },
+      });
+    });
+
+    // The label follows the field, and the other tab is left as it was.
+    expect(screen.getByRole('tab', { name: 'FR' })).toBeDefined();
+    expect(screen.queryByRole('tab', { name: 'EN' })).toBeNull();
+    expect(screen.getByRole('tab', { name: 'VI' })).toBeDefined();
+  });
+
   test('a caller-supplied value drives it, and a click cannot override it', async () => {
     const seen: string[] = [];
     await mount({ value: '1', onValueChange: (next) => seen.push(next) });

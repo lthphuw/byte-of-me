@@ -84,13 +84,16 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
-function getLanguageLabel(translations: unknown, index: number): string {
-  if (!Array.isArray(translations)) return '??';
+/** The `language` of each entry, in order — all a tab label ever reads. */
+function languagesOf(translations: unknown): unknown[] {
+  if (!Array.isArray(translations)) return [];
 
-  const entry: unknown = translations[index];
-  if (!isRecord(entry)) return '??';
+  return translations.map((entry: unknown) =>
+    isRecord(entry) ? entry.language : undefined
+  );
+}
 
-  const language = entry.language;
+function getLanguageLabel(language: unknown): string {
   return typeof language === 'string' && language
     ? language.toUpperCase()
     : '??';
@@ -127,12 +130,10 @@ export function TranslationTabs({
     },
     [onValueChange]
   );
-  // Scoped to this array on purpose. An unscoped `useWatch({ control })` makes
-  // react-hook-form deep-clone the whole form on every keystroke anywhere, for
-  // every mounted instance — which is quadratic once a form nests several of
-  // these around rich text editors. `as unknown` because the non-generic
-  // implementation signature can only type this as FieldValues.
-  const translations = useWatch({ control, name }) as unknown;
+  // Scoped (an unscoped `useWatch` deep-clones the whole form per keystroke)
+  // and computed down to the languages: RHF gates a `compute` result with
+  // deepEqual, so typing in a field re-renders the tab bodies only for a new label.
+  const languages = useWatch({ control, name, compute: languagesOf });
 
   // Tabs are keyed by index, not by the field-array id: a caller can only
   // learn *which* translation failed validation from the error's array index,
@@ -171,7 +172,7 @@ export function TranslationTabs({
         <TabsList>
           {fields.map((f, i) => (
             <TabsTrigger key={f.id} value={String(i)}>
-              {getLanguageLabel(translations, i)}
+              {getLanguageLabel(languages[i])}
             </TabsTrigger>
           ))}
         </TabsList>
