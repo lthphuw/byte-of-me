@@ -10,6 +10,7 @@ import {
   ACCEPTED_IMAGE_MIME_TYPES,
   MAX_IMAGE_SIZE_BYTES,
   MAX_IMAGE_SIZE_MB,
+  MAX_UPLOAD_BATCH,
 } from '@/entities/media/model/upload-constraints';
 import { useWorkspaceSettings } from '@/entities/workspace-settings';
 import { compressInBrowser } from '@/shared/lib/media/compress-in-browser';
@@ -53,36 +54,48 @@ export function ImageUpload({
     setIsCompressing(true);
     try {
       const validFiles: File[] = [];
+      const incoming = Array.from(incomingFiles);
 
-      for (const file of Array.from(incomingFiles)) {
-        // The shared list, not `startsWith('image/')`: the server accepts a
-        // fixed set, and letting a format through here only moves the
-        // rejection later.
-        if (!ACCEPTED_IMAGE_MIME_TYPES.includes(file.type as never)) {
-          toast.error(t('upload.invalidTypeTitle'), {
-            description: t('upload.invalidTypeDescription', {
-              fileName: file.name,
-            }),
-          });
-          continue;
-        }
+      // Chunks of MAX_UPLOAD_BATCH: each compression decodes a full bitmap,
+      // so an unbounded fan-out over a big folder drop would spike memory.
+      for (let i = 0; i < incoming.length; i += MAX_UPLOAD_BATCH) {
+        const chunk = incoming.slice(i, i + MAX_UPLOAD_BATCH);
 
-        const compressed = await compressInBrowser(
-          file,
-          effectiveCompressionConfig
+        const compressedChunk = await Promise.all(
+          chunk.map((file) =>
+            // The shared list, not `startsWith('image/')`: the server accepts
+            // a fixed set, and letting a format through here only moves the
+            // rejection later.
+            ACCEPTED_IMAGE_MIME_TYPES.includes(file.type as never)
+              ? compressInBrowser(file, effectiveCompressionConfig)
+              : null
+          )
         );
 
-        if (compressed.size > MAX_IMAGE_SIZE_BYTES) {
-          toast.error(t('upload.fileTooLargeTitle'), {
-            description: t('upload.fileTooLargeDescription', {
-              fileName: file.name,
-              maxSize: MAX_IMAGE_SIZE_MB,
-            }),
-          });
-          continue;
-        }
+        chunk.forEach((file, index) => {
+          const compressed = compressedChunk[index];
 
-        validFiles.push(compressed);
+          if (!compressed) {
+            toast.error(t('upload.invalidTypeTitle'), {
+              description: t('upload.invalidTypeDescription', {
+                fileName: file.name,
+              }),
+            });
+            return;
+          }
+
+          if (compressed.size > MAX_IMAGE_SIZE_BYTES) {
+            toast.error(t('upload.fileTooLargeTitle'), {
+              description: t('upload.fileTooLargeDescription', {
+                fileName: file.name,
+                maxSize: MAX_IMAGE_SIZE_MB,
+              }),
+            });
+            return;
+          }
+
+          validFiles.push(compressed);
+        });
       }
 
       setFiles((prev) => [...prev, ...validFiles]);
@@ -129,7 +142,9 @@ export function ImageUpload({
           <ImageIcon className="mx-auto h-10 w-10 text-muted-foreground" />
         )}
         <p className="mt-2 text-sm">
-          {isCompressing ? t('upload.compressingText') : t('upload.dropzoneText')}
+          {isCompressing
+            ? t('upload.compressingText')
+            : t('upload.dropzoneText')}
         </p>
         <input
           id="file-upload"
