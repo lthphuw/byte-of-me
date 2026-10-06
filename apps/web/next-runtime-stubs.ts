@@ -5,15 +5,8 @@
  * import graph reaches a server action built on these needs a stand-in, not
  * the real thing — none of the following is testing Next.js itself.
  *
- * - `server-only`: Next resolves this bare specifier through its own
- *   bundler alias (`next/dist/compiled/server-only`). It is not an
- *   installed package anywhere in this repo's `node_modules` (confirmed: no
- *   top-level `server-only` in `bun.lock` or any workspace), so outside
- *   Next's bundler it is simply unresolvable — module resolution fails
- *   before a single test runs. The marker package's only production job is
- *   to throw if bundled into a Client Component; that has no meaning in a
- *   Bun test process, which never builds a client bundle, so an empty
- *   module satisfies it.
+ * - `server-only` lives in `server-only-stub.ts`, a separate preload that
+ *   runs before this file (this file imports `env`, which imports it).
  *
  * - `next-intl/server`'s `getLocale`/`getTranslations`: both read from
  *   request-scoped storage that only exists during an actual Next.js
@@ -99,13 +92,6 @@
 import { plugin } from 'bun';
 
 import { env } from '@/shared/config/env';
-
-plugin({
-  name: 'stub-server-only',
-  setup(build) {
-    build.module('server-only', () => ({ exports: {}, loader: 'object' }));
-  },
-});
 
 plugin({
   name: 'stub-next-intl-server',

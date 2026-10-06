@@ -27,6 +27,7 @@
 # component/exports in `lazy-rich-text-editor.test-stub.ts` to cover both
 # call sites' needs — do not add a second, competing global stub.
 preload = [
+  "./server-only-stub.ts",
   "./next-runtime-stubs.ts",
   "./test-setup.ts",
   "./happydom.ts",
