@@ -19,25 +19,28 @@ const REVALIDATE_SECONDS = 3600;
  * invalidate it: the cache entry refreshes by time. A failed refresh throws
  * out of the cached function, which leaves the previous entry in place and
  * makes the page hide the section only when there has never been a good read.
+ * A missing token is not cached at all, see below.
  */
 export async function getOpenSourceContributions(): Promise<
   ApiResponse<{ repos: OpenSourceRepo[] }>
 > {
+  const token = env.GITHUB_TOKEN;
+
+  // Checked before the cache, not inside it: an empty answer caused by a
+  // missing token would otherwise be stored for the whole revalidate window,
+  // and adding the token would change nothing until it expired.
+  if (!token) {
+    logger.warn(
+      '[Public] getOpenSourceContributions: GITHUB_TOKEN is not set; the open-source section is hidden'
+    );
+    return { success: true, data: { repos: [] } };
+  }
+
   return handlePublicAction('getOpenSourceContributions', async () => {
     return await withPublicActionHandler(
       'getOpenSourceContributions',
       async () => {
-        if (!env.GITHUB_TOKEN) {
-          logger.warn(
-            '[Public] getOpenSourceContributions: GITHUB_TOKEN is not set; the open-source section is hidden'
-          );
-          return { repos: [] };
-        }
-
-        const nodes = await fetchMergedPullRequests(
-          env.GITHUB_LOGIN,
-          env.GITHUB_TOKEN
-        );
+        const nodes = await fetchMergedPullRequests(env.GITHUB_LOGIN, token);
 
         return { repos: groupByRepo(nodes) };
       },
