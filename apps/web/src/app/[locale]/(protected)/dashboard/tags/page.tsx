@@ -1,5 +1,8 @@
+import { HydrationBoundary } from '@tanstack/react-query';
 import type { Metadata } from 'next';
 
+import { getPaginatedAdminTags, tagKeys } from '@/entities/tag';
+import { prefetchAdminPage } from '@/shared/lib/query/prefetch-admin-page';
 import { TagManager } from '@/widgets/dashboard/tag-manager';
 
 
@@ -21,9 +24,16 @@ export const metadata: Metadata = {
 };
 
 export default async function TagsPage() {
+  const state = await prefetchAdminPage(
+    tagKeys.adminPage,
+    getPaginatedAdminTags
+  );
+
   return (
-    <div className="space-y-6">
-      <TagManager />
-    </div>
+    <HydrationBoundary state={state}>
+      <div className="space-y-6">
+        <TagManager />
+      </div>
+    </HydrationBoundary>
   );
 }

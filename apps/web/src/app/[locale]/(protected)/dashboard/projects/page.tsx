@@ -1,5 +1,8 @@
+import { HydrationBoundary } from '@tanstack/react-query';
 import type { Metadata } from 'next';
 
+import { getPaginatedAdminProjects, projectKeys } from '@/entities/project';
+import { prefetchAdminPage } from '@/shared/lib/query/prefetch-admin-page';
 import { ProjectManager } from '@/widgets/dashboard/project-manager';
 
 
@@ -21,9 +24,16 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
+  const state = await prefetchAdminPage(
+    projectKeys.adminPage,
+    getPaginatedAdminProjects
+  );
+
   return (
-    <div className="space-y-6">
-      <ProjectManager />
-    </div>
+    <HydrationBoundary state={state}>
+      <div className="space-y-6">
+        <ProjectManager />
+      </div>
+    </HydrationBoundary>
   );
 }

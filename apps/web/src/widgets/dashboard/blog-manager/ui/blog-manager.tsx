@@ -17,6 +17,7 @@ import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import { blogKeys } from '@/entities/blog/model/query-keys';
 import { BlogEditorCard } from '@/entities/blog/ui/blog-editor-card';
 import { BlogEditorDialog } from '@/features/dashboard/blog-editor';
+import { useBlogReferenceOptions } from '@/features/dashboard/blog-editor/lib/use-blog-reference-options';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
@@ -57,8 +58,8 @@ export function BlogManager() {
     // Saving a post leaves `blogKeys.detail(id)` — the document the editor
     // below loads — holding pre-save content that no list invalidation reaches.
     detailKey: (blog) => blogKeys.detail(blog.id),
-    pageSize: 12,
     fetchPage: (page, limit) => getPaginatedAdminBlogs(page, limit),
+    pageKey: blogKeys.adminPage,
     create: createBlog,
     update: updateBlog,
     remove: deleteBlog,
@@ -71,7 +72,14 @@ export function BlogManager() {
     queryKey: blogKeys.detail(editing?.id ?? ''),
     queryFn: () => getAdminBlogById(editing?.id ?? ''),
     enabled: Boolean(editing),
+    // The form seeds once per post, so a focus refetch of the full post in
+    // every locale would only be thrown away.
+    refetchOnWindowFocus: false,
   });
+
+  // Starts the pickers' fetches with the dialog instead of after the post
+  // above resolves (the form mounts only then); the form reads the same keys.
+  useBlogReferenceOptions(isDialogOpen);
 
   const editingBlogResult = editing ? editingBlogQuery.data : undefined;
   const fullEditingBlog =
