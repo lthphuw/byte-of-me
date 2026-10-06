@@ -2,6 +2,7 @@
 
 import { type Prisma, prisma } from '@byte-of-me/db';
 
+import { relatedPublicBlogsParamsSchema } from '@/entities/blog/model/blog-schema';
 import type { PublicBlog } from '@/entities/blog/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { CACHE_TAGS } from '@/shared/lib/constants';
@@ -9,6 +10,7 @@ import {
   getTranslatedContent,
   getTranslationLanguages,
 } from '@/shared/lib/i18n-utils';
+import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
@@ -17,10 +19,20 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
  * blog detail page.
  */
 export async function getRelatedPublicBlogs(
-  blogId: string,
-  tagSlugs: string[],
-  limit: number = 3
+  rawBlogId: string,
+  rawTagSlugs: string[],
+  rawLimit: number = 3
 ): Promise<ApiResponse<PublicBlog[]>> {
+  const parsed = parseInput(
+    relatedPublicBlogsParamsSchema,
+    { blogId: rawBlogId, tagSlugs: rawTagSlugs, limit: rawLimit },
+    'getRelatedPublicBlogs'
+  );
+  if (!parsed.ok) {
+    return { success: false, errorMsg: parsed.errorMsg };
+  }
+  const { blogId, tagSlugs, limit } = parsed.data;
+
   return handlePublicAction('getRelatedPublicBlogs', async () => {
     return await withPublicActionHandler(
       'getRelatedPublicBlogs',
@@ -89,7 +101,12 @@ export async function getRelatedPublicBlogs(
       },
       {
         cache: true,
-        cacheKey: ['related-public-blogs', blogId, String(limit), ...tagSlugs],
+        cacheKey: [
+          'related-public-blogs',
+          blogId,
+          String(limit),
+          JSON.stringify(tagSlugs),
+        ],
         cacheTags: [CACHE_TAGS.BLOG],
       }
     );

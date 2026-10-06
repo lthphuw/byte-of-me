@@ -4,6 +4,7 @@ import { type Prisma, prisma } from '@byte-of-me/db';
 import { richTextToPlainText } from '@byte-of-me/ui/lib/rich-text-content';
 import { renderRichTextHtml } from '@byte-of-me/ui/rich-text-render';
 
+import { publicProjectsParamsSchema } from '@/entities/project/model/public-project-schema';
 import type { PublicProject } from '@/entities/project/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { CACHE_TAGS } from '@/shared/lib/constants';
@@ -12,6 +13,7 @@ import {
   getTranslationLanguages,
 } from '@/shared/lib/i18n-utils';
 import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
+import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type {
   PaginatedData,
@@ -27,8 +29,17 @@ export type GetPublicProjectsParams = PaginatedParams & {
 export async function getPaginatedPublicProjects(
   params: GetPublicProjectsParams
 ): Promise<ApiResponse<PaginatedData<PublicProject>>> {
+  const parsed = parseInput(
+    publicProjectsParamsSchema,
+    params,
+    'getPaginatedPublicProjects'
+  );
+  if (!parsed.ok) {
+    return { success: false, errorMsg: parsed.errorMsg };
+  }
+
   return handlePublicAction('getPaginatedPublicProjects', async () => {
-    const { tagSlugs = [], techStackSlugs = [], search } = params;
+    const { tagSlugs = [], techStackSlugs = [], search } = parsed.data;
     const { page, limit } = clampPagination(params, { defaultLimit: 9 });
 
     return await withPublicActionHandler(
@@ -170,8 +181,9 @@ export async function getPaginatedPublicProjects(
           String(page),
           String(limit),
           search ?? '',
-          tagSlugs.join(','),
-          techStackSlugs.join(','),
+          // JSON, not `join(',')`: a comma in a slug would share a key.
+          JSON.stringify(tagSlugs),
+          JSON.stringify(techStackSlugs),
         ],
         cacheTags: [CACHE_TAGS.PROJECT],
       }

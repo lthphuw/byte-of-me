@@ -4,6 +4,8 @@ import { prisma } from '@byte-of-me/db';
 
 import { handlePublicAction } from '@/shared/api';
 import { INTERACTION } from '@/shared/lib/constants';
+import { cuidSchema } from '@/shared/lib/public-input-schema';
+import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export type PublicBlogStats = {
@@ -14,8 +16,14 @@ export type PublicBlogStats = {
 };
 
 export async function getPublicBlogStats(
-  blogId: string
+  rawBlogId: string
 ): Promise<ApiResponse<PublicBlogStats>> {
+  const parsed = parseInput(cuidSchema, rawBlogId, 'getPublicBlogStats');
+  if (!parsed.ok) {
+    return { success: false, errorMsg: parsed.errorMsg };
+  }
+  const blogId = parsed.data;
+
   return handlePublicAction('getPublicBlogStats', async () => {
     const [totalViews, medianResult, totalLikes] = await Promise.all([
       prisma.blogStatisticLog.count({

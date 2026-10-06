@@ -160,4 +160,26 @@ describe('getPaginatedPublicBlogs', () => {
     );
     expect(count).toHaveBeenCalledWith({ where: { isPublished: true } });
   });
+
+  it.each([
+    [
+      'too many tag slugs',
+      { tagSlugs: Array.from({ length: 11 }, (_, i) => `t-${i}`) },
+    ],
+    ['an oversized slug', { tagSlugs: ['a'.repeat(65)] }],
+    ['an oversized search', { search: 'x'.repeat(101) }],
+    ['a search that is not text', { search: { contains: '' } }],
+    ['slugs that are not strings', { tagSlugs: [{ not: '' }] }],
+    ['a draft flag that is not a boolean', { includeDrafts: 'yes' }],
+  ])('refuses %s without querying', async (_label, params) => {
+    const res = await getPaginatedPublicBlogs(
+      params as unknown as Parameters<typeof getPaginatedPublicBlogs>[0]
+    );
+
+    expect(res.success).toBe(false);
+    if (res.success) throw new Error('unreachable');
+    expect(res.errorMsg).toBeTruthy();
+    expect(findMany).not.toHaveBeenCalled();
+    expect(count).not.toHaveBeenCalled();
+  });
 });

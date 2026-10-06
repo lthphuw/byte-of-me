@@ -3,8 +3,10 @@
 import { prisma } from '@byte-of-me/db';
 
 import type { PublicComment } from '@/entities/comment/model';
+import { publicCommentsParamsSchema } from '@/entities/comment/model/comment-schema';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
+import { parseInput } from '@/shared/lib/validate-action-input';
 import type {
   ApiResponse,
   PaginatedData,
@@ -18,11 +20,20 @@ export type GetPaginatedPublicCommentsForBlog = PaginatedParams & {
 export async function getPaginatedPublicCommentsForBlog(
   params: GetPaginatedPublicCommentsForBlog
 ): Promise<ApiResponse<PaginatedData<PublicComment>>> {
+  const parsed = parseInput(
+    publicCommentsParamsSchema,
+    params,
+    'getPaginatedPublicCommentsForBlog'
+  );
+  if (!parsed.ok) {
+    return { success: false, errorMsg: parsed.errorMsg };
+  }
+  const { blogId } = parsed.data;
+
   return handlePublicAction('getPaginatedPublicCommentsForBlog', async () => {
     return await withPublicActionHandler(
       'getPaginatedPublicCommentsForBlog',
       async () => {
-        const { blogId } = params;
         const { page, limit } = clampPagination(params, { defaultLimit: 8 });
         const skip = (page - 1) * limit;
 

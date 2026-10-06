@@ -2,6 +2,7 @@
 
 import { type Prisma, prisma } from '@byte-of-me/db';
 
+import { publicBlogsParamsSchema } from '@/entities/blog/model/blog-schema';
 import type { PublicBlog } from '@/entities/blog/model/types';
 import type { PublicProject } from '@/entities/project/model/types';
 // Direct submodule import, not the `@/shared/api` barrel: that barrel also
@@ -22,6 +23,7 @@ import {
   getTranslationLanguages,
 } from '@/shared/lib/i18n-utils';
 import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
+import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type {
   PaginatedData,
@@ -42,8 +44,17 @@ export type GetPublicBlogsParams = PaginatedParams & {
 export async function getPaginatedPublicBlogs(
   params: GetPublicBlogsParams
 ): Promise<ApiResponse<PaginatedData<PublicBlog>>> {
+  const parsed = parseInput(
+    publicBlogsParamsSchema,
+    params,
+    'getPaginatedPublicBlogs'
+  );
+  if (!parsed.ok) {
+    return { success: false, errorMsg: parsed.errorMsg };
+  }
+
   return handlePublicAction('getPaginatedPublicBlogs', async () => {
-    const { tagSlugs = [], search, includeDrafts } = params;
+    const { tagSlugs = [], search, includeDrafts } = parsed.data;
     const { page, limit } = clampPagination(params, { defaultLimit: 9 });
 
     return await withPublicActionHandler(
@@ -169,7 +180,8 @@ export async function getPaginatedPublicBlogs(
           String(page),
           String(limit),
           search ?? '',
-          tagSlugs.join(','),
+          // JSON, not `join(',')`: a comma in a slug would share a key.
+          JSON.stringify(tagSlugs),
         ],
         cacheTags: [CACHE_TAGS.BLOG],
       }
