@@ -62,6 +62,7 @@ yarn-error.log*
 *.pem
 .vscode/
 .turbo/
+.playwright-mcp/
 .contentlayer/
 
 # =====================
