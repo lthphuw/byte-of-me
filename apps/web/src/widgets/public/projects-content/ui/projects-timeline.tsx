@@ -13,6 +13,10 @@ interface ProjectsTimelineProps {
   onTechClick?: (slug: string) => void;
 }
 
+// How many items of the newest year sit above the fold; they render visible
+// in the server HTML instead of waiting on JS to fade in.
+const FIRST_SCREEN_COUNT = 2;
+
 /** Start year, or null when the project has no start date. */
 type YearGroup = [year: number | null, projects: PublicProject[]];
 
@@ -51,7 +55,7 @@ export function ProjectsTimeline({
 
   return (
     <div className="flex flex-col gap-6 md:gap-8">
-      {groups.map(([year, items]) => (
+      {groups.map(([year, items], groupIndex) => (
         <section key={year ?? 'undated'}>
           <div className="mb-4 flex items-center gap-4 md:mb-6">
             {/* Spelled out rather than `meta-label` + `text-sm`: both set a
@@ -71,6 +75,7 @@ export function ProjectsTimeline({
                 key={project.id}
                 as="li"
                 index={index}
+                immediate={groupIndex === 0 && index < FIRST_SCREEN_COUNT}
                 className="relative pb-6 pl-8 last:pb-0 md:pb-8"
               >
                 <ProjectTimelineItem

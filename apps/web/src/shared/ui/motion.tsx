@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { type ReactNode, useSyncExternalStore } from 'react';
 import {
   fadeUp,
   motionDuration,
@@ -24,6 +24,21 @@ const MOTION_TAGS = {
 
 type MotionTag = keyof typeof MOTION_TAGS;
 
+const subscribeNever = () => () => {};
+
+/**
+ * True only for an `immediate` element on the server or while hydrating; false
+ * for anything mounted client-side later. Both snapshots agree when `immediate`
+ * is off, so those elements never pay the post-hydration re-render.
+ */
+function useSkipEntrance(immediate: boolean) {
+  return useSyncExternalStore(
+    subscribeNever,
+    () => false,
+    () => immediate
+  );
+}
+
 interface RevealSectionProps {
   children: ReactNode;
   /** Extra delay before the reveal starts, in seconds. */
@@ -33,6 +48,12 @@ interface RevealSectionProps {
   /** Animate only the first time it scrolls into view. */
   once?: boolean;
   as?: MotionTag;
+  /**
+   * Above the fold: the server HTML renders visible instead of `opacity: 0`,
+   * which Chrome ignores as an LCP candidate until JS reveals it. A later
+   * client-side mount (soft navigation) still animates.
+   */
+  immediate?: boolean;
 }
 
 /**
@@ -46,15 +67,17 @@ export function RevealSection({
   className,
   once = true,
   as = 'div',
+  immediate = false,
 }: RevealSectionProps) {
   const Comp = MOTION_TAGS[as];
+  const skipEntrance = useSkipEntrance(immediate);
   return (
     <Comp
       id={id}
       className={className}
       custom={delay}
       variants={fadeUp}
-      initial="hidden"
+      initial={skipEntrance ? false : 'hidden'}
       whileInView="visible"
       viewport={{ ...motionViewport, once }}
     >
@@ -126,6 +149,8 @@ interface RevealItemProps {
   index?: number;
   className?: string;
   as?: MotionTag;
+  /** Above the fold: skip the entrance in the server HTML. See `RevealSection`. */
+  immediate?: boolean;
 }
 
 /**
@@ -139,13 +164,15 @@ export function RevealItem({
   index = 0,
   className,
   as = 'div',
+  immediate = false,
 }: RevealItemProps) {
   const delay = Math.min(index, MAX_STAGGER_STEPS) * motionStagger.base;
   const Comp = MOTION_TAGS[as];
+  const skipEntrance = useSkipEntrance(immediate);
   return (
     <Comp
       className={className}
-      initial={{ opacity: 0, y: 16 }}
+      initial={skipEntrance ? false : { opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
         duration: motionDuration.base,
