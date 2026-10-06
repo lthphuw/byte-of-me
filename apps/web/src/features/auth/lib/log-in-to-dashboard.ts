@@ -23,9 +23,7 @@ export async function logInToDashboard(
   callbackUrl: string | null | undefined
 ): Promise<ApiResponse<string>> {
   try {
-    logger.info(
-      `Attempting to sign in user with email: ${email}, callbackUrl: ${callbackUrl}`
-    );
+    // Neither is logged: both come from an anonymous caller (PII, log injection).
     if (!isSiteOwnerEmail(email)) {
       throw new Error('Invalid email, try again later');
     }
@@ -57,7 +55,7 @@ export async function logInToDashboard(
       error,
       'An unexpected error occurred during sign in.'
     );
-    logger.error(`Login ${email} got error: ${errorMsg}`);
+    logger.error(`Dashboard email sign-in failed: ${errorMsg}`);
     return {
       success: false,
       errorMsg,

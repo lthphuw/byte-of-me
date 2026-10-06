@@ -12,7 +12,6 @@ export { isSiteOwnerEmail };
 
 export async function getAuthenticatedUser() {
   const session = await auth();
-  logger.debug(`Session for user: ${JSON.stringify(session, null, 2)}`);
 
   if (!session?.user?.role || !['USER', 'ADMIN'].includes(session.user.role)) {
     return null;
