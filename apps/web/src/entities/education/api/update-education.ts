@@ -76,27 +76,30 @@ export async function updateEducation(
           },
         });
 
-        for (const a of incoming) {
-          if (!a.id) {
-            // CREATE
-            await tx.educationAchievement.create({
-              data: {
-                educationId: id,
-                sortOrder: a.sortOrder,
+        // Each achievement touches its own rows, so the writes are issued
+        // together like `updateCompany` does, not one `await` per achievement.
+        await Promise.all(
+          incoming.map((a) => {
+            if (!a.id) {
+              return tx.educationAchievement.create({
+                data: {
+                  educationId: id,
+                  sortOrder: a.sortOrder,
 
-                translations: {
-                  create: a.translations,
-                },
+                  translations: {
+                    create: a.translations,
+                  },
 
-                images: {
-                  create: a.imageIds.map((id) => ({
-                    media: { connect: { id } },
-                  })),
+                  images: {
+                    create: a.imageIds.map((id) => ({
+                      media: { connect: { id } },
+                    })),
+                  },
                 },
-              },
-            });
-          } else {
-            await tx.educationAchievement.update({
+              });
+            }
+
+            return tx.educationAchievement.update({
               where: { id: a.id },
               data: {
                 sortOrder: a.sortOrder,
@@ -114,8 +117,8 @@ export async function updateEducation(
                 },
               },
             });
-          }
-        }
+          })
+        );
 
         return { success: true, data: education };
       }
