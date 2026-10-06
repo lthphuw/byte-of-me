@@ -661,7 +661,6 @@ declare const messages: {
       "emptyDescription": "Create your first project to showcase your work.",
       "editLabel": "Edit {name}",
       "deleteLabel": "Delete {name}",
-      "unknownTagLabel": "Untitled tag",
       "deleteTitle": "Delete Project?",
       "deleteDescription": "This action cannot be undone. This will permanently delete the project and remove its data from our servers.",
       "dialog": {

@@ -661,7 +661,6 @@ declare const messages: {
       "emptyDescription": "Tạo dự án đầu tiên để giới thiệu công việc của bạn.",
       "editLabel": "Sửa {name}",
       "deleteLabel": "Xóa {name}",
-      "unknownTagLabel": "Thẻ chưa đặt tên",
       "deleteTitle": "Xóa dự án?",
       "deleteDescription": "Hành động này không thể hoàn tác. Dự án và toàn bộ dữ liệu liên quan sẽ bị xóa vĩnh viễn khỏi máy chủ.",
       "dialog": {
