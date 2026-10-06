@@ -2,6 +2,7 @@
 
 import { type ReactNode, useState } from 'react';
 
+import { AchievementGallery } from './achievement-gallery';
 import { AchievementImages } from './achievement-images';
 
 import type { PublicEducationAchievement } from '@/entities/education/model/types';
@@ -21,6 +22,7 @@ export function AchievementItem({
   content,
 }: AchievementItemProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
   const urls = a.images.map((i) => i.url);
 
   return (
@@ -37,7 +39,17 @@ export function AchievementItem({
         title={a.title}
         currentSlide={currentSlide}
         onSlideChange={setCurrentSlide}
+        onOpenGallery={(_, index) => setOpenIndex(index)}
       />
+
+      {a.images.length > 0 && (
+        <AchievementGallery
+          images={a.images}
+          title={a.title}
+          openIndex={openIndex}
+          onClose={() => setOpenIndex(null)}
+        />
+      )}
     </div>
   );
 }

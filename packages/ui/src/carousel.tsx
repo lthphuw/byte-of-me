@@ -162,7 +162,14 @@ const CarouselContent = React.forwardRef<
         ref={ref}
         className={cn(
           'flex',
-          orientation === 'horizontal' ? '-ml-4' : '-mt-4 flex-col',
+          // Embla only gets the swipe if the browser is told to leave the
+          // carousel's own axis alone; with the default `touch-action: auto` a
+          // horizontal drag on a touch screen is claimed by the page instead.
+          // An arbitrary property, not `touch-pan-y touch-pinch-zoom`: those two
+          // are one tailwind-merge group, so `cn` kept only the last.
+          orientation === 'horizontal'
+            ? '-ml-4 [touch-action:pan-y_pinch-zoom]'
+            : '-mt-4 flex-col [touch-action:pan-x_pinch-zoom]',
           className
         )}
         {...props}

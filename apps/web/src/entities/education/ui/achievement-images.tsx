@@ -1,6 +1,12 @@
 'use client';
 
-import { Carousel, CarouselContent, CarouselItem , ScrollArea, ScrollBar } from '@byte-of-me/ui';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  ScrollArea,
+  ScrollBar,
+} from '@byte-of-me/ui';
 import Image from 'next/image';
 
 import { cn } from '@/shared/lib/utils';
@@ -34,9 +40,16 @@ export function AchievementImages({
             <button
               key={img.id}
               onClick={() => onOpenGallery?.(urls, i)}
+              aria-label={`${title} (${i + 1}/${images.length})`}
               className="relative aspect-[4/3] w-40 shrink-0 overflow-hidden rounded-md"
             >
-              <Image src={img.url} alt={title} fill className="object-cover" />
+              <Image
+                src={img.url}
+                alt={title}
+                fill
+                sizes="160px"
+                className="object-cover"
+              />
             </button>
           ))}
         </div>
@@ -65,12 +78,14 @@ export function AchievementImages({
               >
                 <button
                   onClick={() => onOpenGallery?.(urls, i)}
+                  aria-label={`${title} (${i + 1}/${images.length})`}
                   className="relative aspect-[4/3] w-full overflow-hidden rounded-xl"
                 >
                   <Image
                     src={img.url}
                     alt={title}
                     fill
+                    sizes="(max-width: 768px) 90vw, 0px"
                     className="object-cover"
                   />
                 </button>
