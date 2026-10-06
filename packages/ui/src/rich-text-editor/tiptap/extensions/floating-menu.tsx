@@ -190,17 +190,9 @@ type ShouldShowProps = Parameters<
 >[0];
 
 /**
- * Memoised because the editor above it re-renders on EVERY transaction, not
- * just every edit: `shouldRerenderOnTransaction` is on (the toolbars need it
- * for live `isActive`/`can()` state), and a transaction is also what an arrow
- * key, a click and a drag-select produce. Each of those re-rendered this whole
- * cmdk tree — ~20 `CommandItem`s across four groups — whether or not the menu
- * was open, because a slash palette renders its list regardless.
- *
- * Safe to skip: the only prop is the editor instance, which is stable for the
- * lifetime of the mount, and nothing below reads editor STATE during render.
- * What the palette shows comes from this component's own state, and that is set
- * from `shouldShow`, which the menu plugin calls on every state change anyway.
+ * Memoised: the host re-renders for outline, preview and raw-mode state, and each
+ * one would rebuild ~20 cmdk items whether or not the menu is open. Safe to skip —
+ * the only prop is the editor, and what shows is own state, set from `shouldShow`.
  */
 export const TipTapFloatingMenu = memo(function TipTapFloatingMenu({
   editor,
@@ -378,14 +370,9 @@ export const TipTapFloatingMenu = memo(function TipTapFloatingMenu({
   return (
     <FloatingMenu
       editor={editor}
-      // Both of these MUST keep a stable identity. `@tiptap/react/menus` syncs
-      // its plugin options from an effect keyed on `[shouldShow, pluginKey, …]`
-      // by dispatching a ProseMirror transaction. An inline `shouldShow` — or
-      // the default `pluginKey`, which the library rebuilds with
-      // `new PluginKey()` on every render — changes that key every render, so
-      // the effect dispatches, the transaction re-renders us through
-      // `shouldRerenderOnTransaction`, and the cycle never settles ("Maximum
-      // update depth exceeded" the moment the editor receives focus).
+      // Both MUST keep a stable identity: `@tiptap/react/menus` dispatches a
+      // transaction whenever either changes (the default `pluginKey` is rebuilt
+      // every render) — which looped when each transaction re-rendered the host.
       pluginKey={pluginKey}
       shouldShow={shouldShow}
       // tippyOptions={{

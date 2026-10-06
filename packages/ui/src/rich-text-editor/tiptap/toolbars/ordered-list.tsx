@@ -11,7 +11,7 @@ import { useToolbar } from './toolbar-provider';
 
 const OrderedListToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, onClick, children, ...props }, ref) => {
-    const { editor } = useToolbar();
+    const { editor, state } = useToolbar();
     return (
       <Tooltip>
         <TooltipTrigger asChild>
@@ -20,14 +20,14 @@ const OrderedListToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             size="icon"
             className={cn(
               'h-8 w-8 p-0 sm:h-9 sm:w-9',
-              editor?.isActive('orderedList') && 'bg-accent',
+              state.toggles.orderedList.active && 'bg-accent',
               className
             )}
             onClick={(e) => {
               editor?.chain().focus().toggleOrderedList().run();
               onClick?.(e);
             }}
-            disabled={!editor?.can().chain().focus().toggleOrderedList().run()}
+            disabled={!state.toggles.orderedList.can}
             ref={ref}
             {...props}
           >

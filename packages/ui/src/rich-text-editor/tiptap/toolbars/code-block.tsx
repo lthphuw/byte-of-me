@@ -11,7 +11,7 @@ import { useToolbar } from './toolbar-provider';
 
 const CodeBlockToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, onClick, children, ...props }, ref) => {
-    const { editor } = useToolbar();
+    const { editor, state } = useToolbar();
     return (
       <Tooltip>
         <TooltipTrigger asChild>
@@ -20,14 +20,14 @@ const CodeBlockToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             size="icon"
             className={cn(
               'h-8 w-8 p-0 sm:h-9 sm:w-9',
-              editor?.isActive('codeBlock') && 'bg-accent',
+              state.toggles.codeBlock.active && 'bg-accent',
               className
             )}
             onClick={(e) => {
               editor?.chain().focus().toggleCodeBlock().run();
               onClick?.(e);
             }}
-            disabled={!editor?.can().chain().focus().toggleCodeBlock().run()}
+            disabled={!state.toggles.codeBlock.can}
             ref={ref}
             {...props}
           >

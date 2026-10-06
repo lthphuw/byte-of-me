@@ -11,7 +11,7 @@ import { useToolbar } from './toolbar-provider';
 
 const RedoToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, onClick, children, ...props }, ref) => {
-    const { editor } = useToolbar();
+    const { editor, state } = useToolbar();
 
     return (
       <Tooltip>
@@ -24,7 +24,7 @@ const RedoToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
               editor?.chain().focus().redo().run();
               onClick?.(e);
             }}
-            disabled={!editor?.can().chain().focus().redo().run()}
+            disabled={!state.canRedo}
             ref={ref}
             {...props}
           >

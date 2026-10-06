@@ -27,8 +27,8 @@ import { useToolbar } from './toolbar-provider';
  */
 const TableToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, ...props }, ref) => {
-    const { editor } = useToolbar();
-    const inTable = editor?.isActive('table') ?? false;
+    const { editor, state } = useToolbar();
+    const inTable = state.table.active;
 
     if (!inTable) {
       return (
@@ -45,14 +45,7 @@ const TableToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
                   .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
                   .run()
               }
-              disabled={
-                !editor
-                  ?.can()
-                  .chain()
-                  .focus()
-                  .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
-                  .run()
-              }
+              disabled={!state.table.canInsert}
               ref={ref}
               {...props}
             >

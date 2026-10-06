@@ -23,12 +23,11 @@ import { useToolbar } from './toolbar-provider';
 
 const LinkToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, ...props }, ref) => {
-    const { editor } = useToolbar();
+    const { editor, state } = useToolbar();
     const [open, setOpen] = React.useState(false);
     const [link, setLink] = React.useState('');
 
-    const activeHref = editor?.getAttributes('link').href;
-    const currentHref = typeof activeHref === 'string' ? activeHref : '';
+    const currentHref = state.link.href;
 
     const apply = () => {
       const url = getUrlFromString(link);
@@ -77,9 +76,7 @@ const LinkToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <Tooltip>
           <TooltipTrigger asChild>
             <PopoverTrigger
-              disabled={
-                !editor?.can().chain().setLink({ href: 'https://a.com' }).run()
-              }
+              disabled={!state.link.canSet}
               asChild
             >
               <Button
@@ -87,7 +84,7 @@ const LinkToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 size="sm"
                 className={cn(
                   'h-8 w-max px-3 font-normal',
-                  editor?.isActive('link') && 'bg-accent',
+                  state.link.active && 'bg-accent',
                   className
                 )}
                 ref={ref}

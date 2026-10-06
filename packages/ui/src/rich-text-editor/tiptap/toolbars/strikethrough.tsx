@@ -11,7 +11,7 @@ import { useToolbar } from './toolbar-provider';
 
 const StrikeThroughToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, onClick, children, ...props }, ref) => {
-    const { editor } = useToolbar();
+    const { editor, state } = useToolbar();
     return (
       <Tooltip>
         <TooltipTrigger asChild>
@@ -20,14 +20,14 @@ const StrikeThroughToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             size="icon"
             className={cn(
               'h-8 w-8 p-0 sm:h-9 sm:w-9',
-              editor?.isActive('strike') && 'bg-accent',
+              state.toggles.strike.active && 'bg-accent',
               className
             )}
             onClick={(e) => {
               editor?.chain().focus().toggleStrike().run();
               onClick?.(e);
             }}
-            disabled={!editor?.can().chain().focus().toggleStrike().run()}
+            disabled={!state.toggles.strike.can}
             ref={ref}
             {...props}
           >

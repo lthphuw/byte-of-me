@@ -82,11 +82,11 @@ const ColorHighlightButton = ({
 );
 
 export const ColorHighlightToolbar = () => {
-  const { editor } = useToolbar();
+  const { editor, state } = useToolbar();
   const isMobile = useMediaQuery('(max-width: 640px)');
 
-  const currentColor = editor?.getAttributes('textStyle').color;
-  const currentHighlight = editor?.getAttributes('highlight').color;
+  const currentColor = state.color;
+  const currentHighlight = state.highlight;
 
   const handleSetColor = (color: string) => {
     editor
@@ -104,9 +104,7 @@ export const ColorHighlightToolbar = () => {
       .run();
   };
 
-  const isDisabled =
-    !editor?.can().chain().setHighlight().run() ||
-    !editor?.can().chain().setColor('').run();
+  const isDisabled = !state.canStyleText;
 
   if (isMobile) {
     return (

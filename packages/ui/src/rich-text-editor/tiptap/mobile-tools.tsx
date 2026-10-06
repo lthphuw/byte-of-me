@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import type { Editor } from '@tiptap/react';
+import { type Editor, useEditorState } from '@tiptap/react';
 import {
   Bold,
   Code,
@@ -112,6 +112,14 @@ export function MobileEditorTools({
   const [open, setOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
 
+  // The host does not re-render per transaction, so the pressed states have to
+  // be subscribed to; indexed like `TOOLS`.
+  const pressed = useEditorState({
+    editor,
+    selector: ({ editor: current }) =>
+      TOOLS.map((tool) => tool.isActive?.(current)),
+  });
+
   // One picked image is inserted on its own, several become a row — the same
   // rule the image placeholder follows on a desktop, so the gesture means the
   // same thing on both.
@@ -143,7 +151,7 @@ export function MobileEditorTools({
             </button>
           )}
 
-          {TOOLS.map((tool) => {
+          {TOOLS.map((tool, index) => {
             const Icon = tool.icon;
             return (
               <button
@@ -151,10 +159,10 @@ export function MobileEditorTools({
                 type="button"
                 role="menuitem"
                 aria-label={tool.label}
-                aria-pressed={tool.isActive?.(editor) ?? undefined}
+                aria-pressed={pressed[index]}
                 className={cn(
                   'flex aspect-square items-center justify-center rounded-md hover:bg-muted',
-                  tool.isActive?.(editor)
+                  pressed[index]
                     ? 'bg-muted text-foreground'
                     : 'text-muted-foreground hover:text-foreground'
                 )}

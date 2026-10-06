@@ -20,9 +20,9 @@
  * and a second double would only move the problem.
  */
 import * as React from 'react';
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, fireEvent, render } from '@testing-library/react';
 import type { Editor, JSONContent } from '@tiptap/react';
-import { afterEach, describe, expect, test } from 'bun:test';
+import { afterEach, describe, expect, spyOn, test } from 'bun:test';
 
 import {
   RichTextEditor,
@@ -162,10 +162,264 @@ describe('RichTextEditor onChange', () => {
 
     await React.act(async () => {
       editor?.commands.insertContent(' typed');
+      // Delivered once the author pauses (see `RichTextEditor onChange
+      // timing`), so wait for the report rather than expect it in the same tick.
+      const deadline = Date.now() + 2000;
+      while (emits.length === 0 && Date.now() < deadline) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
     });
 
     expect(emits.length).toBeGreaterThan(0);
     expect(emits.every((emit) => emit.initial === false)).toBe(true);
+  });
+});
+
+/**
+ * Author edits are reported after a pause, not per keystroke — `onChange`
+ * lands in react-hook-form, which deep-clones the whole form on every call
+ * while anything watches it. The cost of that is why this exists; the
+ * condition it has to meet is that the delay never loses an edit. So most of
+ * what is asserted here is "the final document still arrives, by every route
+ * a form can be left through".
+ */
+describe('RichTextEditor onChange timing', () => {
+  type EditableWithEditor = Element & { editor?: Editor };
+
+  // Inside a `<form>`, because every real consumer is: that is what a submit
+  // has to be able to reach.
+  async function mount() {
+    const events: string[] = [];
+    const docs: JSONContent[] = [];
+
+    let rendered: ReturnType<typeof render> | undefined;
+    await React.act(async () => {
+      rendered = render(
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            events.push('submit');
+          }}
+        >
+          <RichTextEditor
+            value={PLAIN_DOC}
+            onChange={(json, meta) => {
+              if (meta.initial) return;
+              events.push('change');
+              docs.push(json);
+            }}
+          />
+        </form>
+      );
+    });
+    await React.act(async () => {
+      const deadline = Date.now() + 5000;
+      while (!rendered?.container.querySelector('.tiptap') && Date.now() < deadline) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+      // Past the `create` macrotask, so every edit below is the author's.
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    const editor = (
+      rendered?.container.querySelector('.tiptap') as EditableWithEditor | null
+    )?.editor;
+    if (!rendered || !editor) throw new Error('editor did not mount');
+
+    return { ...rendered, editor, events, docs };
+  }
+
+  const pause = (ms: number) =>
+    React.act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, ms));
+    });
+
+  test('a burst of edits is reported once, carrying the final document', async () => {
+    const { editor, docs } = await mount();
+
+    await React.act(async () => {
+      editor.commands.insertContent(' one');
+      editor.commands.insertContent(' two');
+      editor.commands.insertContent(' three');
+    });
+    await pause(500);
+
+    expect(docs).toHaveLength(1);
+    expect(docs[0]).toEqual(editor.getJSON());
+    expect(JSON.stringify(docs[0])).toContain('three');
+  });
+
+  test('losing focus reports the pending edit at once', async () => {
+    const { editor, docs } = await mount();
+
+    await React.act(async () => {
+      editor.commands.insertContent(' typed');
+    });
+    expect(docs).toHaveLength(0);
+
+    await React.act(async () => {
+      editor.view.dom.dispatchEvent(new FocusEvent('blur'));
+    });
+
+    expect(docs).toHaveLength(1);
+    expect(docs[0]).toEqual(editor.getJSON());
+
+    // Flushed, not merely sent early: the timer must not report it again.
+    await pause(400);
+    expect(docs).toHaveLength(1);
+  });
+
+  test('unmounting reports the pending edit instead of dropping it', async () => {
+    const { editor, docs, unmount } = await mount();
+
+    await React.act(async () => {
+      editor.commands.insertContent(' typed');
+    });
+    const final = editor.getJSON();
+    expect(docs).toHaveLength(0);
+
+    await React.act(async () => {
+      unmount();
+    });
+
+    expect(docs).toEqual([final]);
+  });
+
+  test('a form submit sees the pending edit before its own handler runs', async () => {
+    const { editor, events, container } = await mount();
+
+    await React.act(async () => {
+      editor.commands.insertContent(' typed');
+    });
+    expect(events).toEqual([]);
+
+    await React.act(async () => {
+      fireEvent.submit(container.querySelector('form') as HTMLFormElement);
+    });
+
+    expect(events).toEqual(['change', 'submit']);
+  });
+});
+
+/**
+ * `value` seeds the document once. A form hands the editor a fresh object on
+ * every keystroke (react-hook-form clones, `toEditorContent` re-parses), and
+ * Tiptap compares its options by identity — so a `content` that follows the
+ * prop turns every parent render into `setOptions` -> `view.updateState`, a walk
+ * of the whole document that changes nothing, since `content` is only read when
+ * the document is built.
+ */
+describe('RichTextEditor value prop', () => {
+  type EditableWithEditor = Element & { editor?: Editor };
+
+  test('a new value after mount neither re-syncs the live view nor replaces the document', async () => {
+    let rendered: ReturnType<typeof render> | undefined;
+    await React.act(async () => {
+      rendered = render(
+        <RichTextEditor value={structuredClone(PLAIN_DOC)} onChange={() => {}} />
+      );
+    });
+    await React.act(async () => {
+      const deadline = Date.now() + 5000;
+      while (
+        !rendered?.container.querySelector('.tiptap') &&
+        Date.now() < deadline
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    const editor = (
+      rendered?.container.querySelector('.tiptap') as EditableWithEditor | null
+    )?.editor;
+    if (!rendered || !editor) throw new Error('editor did not mount');
+
+    const setOptions = spyOn(editor, 'setOptions');
+    const before = editor.getJSON();
+
+    await React.act(async () => {
+      rendered?.rerender(
+        <RichTextEditor value={structuredClone(HEADING_DOC)} onChange={() => {}} />
+      );
+    });
+
+    expect(setOptions).not.toHaveBeenCalled();
+    // And the document is the one it opened with, not the new prop.
+    expect(editor.getJSON()).toEqual(before);
+  });
+});
+
+/**
+ * The toolbar's pressed and disabled states, now that the host does not
+ * re-render on every transaction. They have to arrive through the toolbar's own
+ * subscription; a control that still read `editor.isActive()` during render
+ * would stay as it was drawn and look correct until the first selection move.
+ */
+describe('RichTextEditor toolbar state', () => {
+  type EditableWithEditor = Element & { editor?: Editor };
+
+  const BOLD_THEN_PLAIN: JSONContent = {
+    type: 'doc',
+    content: [
+      {
+        type: 'paragraph',
+        content: [
+          { type: 'text', text: 'Bold', marks: [{ type: 'bold' }] },
+          { type: 'text', text: ' plain' },
+        ],
+      },
+    ],
+  };
+
+  test('follows the selection and the history without a host re-render', async () => {
+    let container: HTMLElement | undefined;
+    await React.act(async () => {
+      container = render(
+        <RichTextEditor compact value={BOLD_THEN_PLAIN} onChange={() => {}} />
+      ).container;
+    });
+    await React.act(async () => {
+      const deadline = Date.now() + 5000;
+      while (!container?.querySelector('.tiptap') && Date.now() < deadline) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+    });
+
+    const editor = (
+      container?.querySelector('.tiptap') as EditableWithEditor | null
+    )?.editor;
+    if (!container || !editor) throw new Error('editor did not mount');
+
+    const button = (icon: string) =>
+      container?.querySelector(`svg.lucide-${icon}`)?.closest('button');
+    // `classList`, not a substring: every button also carries `hover:bg-accent`.
+    const pressed = (icon: string) =>
+      button(icon)?.classList.contains('bg-accent') ?? false;
+
+    // The caret opens inside the bold word, nothing has been edited yet, and
+    // the first snapshot — taken before the host has ever dispatched — must
+    // already know a toggle can apply.
+    expect(pressed('bold')).toBe(true);
+    expect(button('bold')?.disabled).toBe(false);
+    expect(button('undo-2')?.disabled).toBe(true);
+
+    // A selection move changes no document — the case a per-edit subscription
+    // would miss, and the one an arrow key produces.
+    await React.act(async () => {
+      editor.commands.setTextSelection(8);
+    });
+    expect(pressed('bold')).toBe(false);
+
+    await React.act(async () => {
+      editor.commands.setTextSelection(2);
+    });
+    expect(pressed('bold')).toBe(true);
+
+    await React.act(async () => {
+      editor.commands.insertContent('x');
+    });
+    expect(button('undo-2')?.disabled).toBe(false);
   });
 });
 

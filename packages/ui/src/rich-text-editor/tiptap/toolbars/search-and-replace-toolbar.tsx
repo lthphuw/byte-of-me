@@ -3,6 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 import { useEffect, useState } from 'react';
+import { useEditorState } from '@tiptap/react';
 import { ArrowLeftIcon, ArrowRightIcon, Repeat, X } from 'lucide-react';
 
 import { cn } from '../../../lib/utils';
@@ -26,10 +27,18 @@ export function SearchAndReplaceToolbar() {
   const [replaceText, setReplaceText] = useState('');
   const [checked, setChecked] = useState(false);
 
-  const results = editor?.storage.searchAndReplace
-    .results as SearchAndReplaceStorage['results'];
-  const selectedResult = editor?.storage.searchAndReplace
-    .selectedResult as SearchAndReplaceStorage['selectedResult'];
+  // The counter lives in the extension's storage, which a transaction mutates
+  // without touching React — so it needs its own subscription, not a render read.
+  const { resultCount, selectedResult } = useEditorState({
+    editor,
+    selector: ({ editor: current }) => {
+      const storage: SearchAndReplaceStorage = current.storage.searchAndReplace;
+      return {
+        resultCount: storage.results.length,
+        selectedResult: storage.selectedResult,
+      };
+    },
+  });
 
   const replace = () => editor?.chain().replace().run();
   const replaceAll = () => editor?.chain().replaceAll().run();
@@ -100,8 +109,8 @@ export function SearchAndReplaceToolbar() {
               placeholder="Search..."
             />
             <span>
-              {results?.length === 0 ? selectedResult : selectedResult + 1}/
-              {results?.length}
+              {resultCount === 0 ? selectedResult : selectedResult + 1}/
+              {resultCount}
             </span>
             <Button
               onClick={selectPrevious}
@@ -173,8 +182,8 @@ export function SearchAndReplaceToolbar() {
                   }}
                   placeholder="Search..."
                 />
-                {results?.length === 0 ? selectedResult : selectedResult + 1}/
-                {results?.length}
+                {resultCount === 0 ? selectedResult : selectedResult + 1}/
+                {resultCount}
               </div>
               <div className="mb-2">
                 <Label className="mb-1 text-xs text-muted-foreground">

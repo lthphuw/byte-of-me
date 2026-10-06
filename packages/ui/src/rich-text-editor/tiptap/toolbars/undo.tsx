@@ -11,7 +11,7 @@ import { useToolbar } from './toolbar-provider';
 
 const UndoToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, onClick, children, ...props }, ref) => {
-    const { editor } = useToolbar();
+    const { editor, state } = useToolbar();
 
     return (
       <Tooltip>
@@ -24,7 +24,7 @@ const UndoToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
               editor?.chain().focus().undo().run();
               onClick?.(e);
             }}
-            disabled={!editor?.can().chain().focus().undo().run()}
+            disabled={!state.canUndo}
             ref={ref}
             {...props}
           >

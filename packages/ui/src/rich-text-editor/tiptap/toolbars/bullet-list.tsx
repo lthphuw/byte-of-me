@@ -11,7 +11,7 @@ import { useToolbar } from './toolbar-provider';
 
 const BulletListToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, onClick, children, ...props }, ref) => {
-    const { editor } = useToolbar();
+    const { editor, state } = useToolbar();
 
     return (
       <Tooltip>
@@ -21,14 +21,14 @@ const BulletListToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             size="icon"
             className={cn(
               'h-8 w-8 p-0 sm:h-9 sm:w-9',
-              editor?.isActive('bulletList') && 'bg-accent',
+              state.toggles.bulletList.active && 'bg-accent',
               className
             )}
             onClick={(e) => {
               editor?.chain().focus().toggleBulletList().run();
               onClick?.(e);
             }}
-            disabled={!editor?.can().chain().focus().toggleBulletList().run()}
+            disabled={!state.toggles.bulletList.can}
             ref={ref}
             {...props}
           >

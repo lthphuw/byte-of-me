@@ -194,6 +194,25 @@ const DebouncedTableOfContents = TableOfContents.extend({
  */
 const OUTLINE_REBUILD_MS = 300;
 
+/** Whether two outlines draw the same aside — it reads only these three fields. */
+function sameOutline(a: TableOfContentDataItem[], b: TableOfContentDataItem[]) {
+  return (
+    a.length === b.length &&
+    a.every(
+      (item, index) =>
+        item.id === b[index].id &&
+        item.level === b[index].level &&
+        item.textContent === b[index].textContent
+    )
+  );
+}
+
+/**
+ * Trailing delay before an author edit reaches `onChange`. Blur, unmount and a
+ * form submit flush it early, so no edit waits past the next chance to read it.
+ */
+const CHANGE_DEBOUNCE_MS = 200;
+
 /**
  * How far above the writing column the "already scrolled past" region reaches,
  * for the heading observer below.
@@ -586,6 +605,30 @@ export function RichTextEditor({
     []
   );
 
+  // `onChange` lands in react-hook-form, which deep-clones the whole form per
+  // call while anything watches it. Edits are coalesced here, and the document
+  // is read when the timer fires — never a stale one captured per keystroke.
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
+  const changeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flushChange = useCallback(() => {
+    if (changeTimerRef.current === null) return;
+    clearTimeout(changeTimerRef.current);
+    changeTimerRef.current = null;
+
+    const current = editorRef.current;
+    if (!current || current.isDestroyed) return;
+    onChangeRef.current?.(current.getJSON(), { initial: false });
+  }, []);
+
+  const scheduleChange = useCallback(() => {
+    if (changeTimerRef.current) clearTimeout(changeTimerRef.current);
+    changeTimerRef.current = setTimeout(flushChange, CHANGE_DEBOUNCE_MS);
+  }, [flushChange]);
+
   /**
    * One link, at the live selection.
    *
@@ -642,25 +685,9 @@ export function RichTextEditor({
     return attributes;
   }, [id, role, ariaLabelledBy, ariaDescribedBy, ariaInvalid]);
 
-  /*
-   * Memoised because `useEditor` compares its options by IDENTITY on every
-   * render.
-   *
-   * It runs `onRender(deps)` with no dependency array, so with `deps.length
-   * === 0` it takes the "editor already exists" branch and calls
-   * `compareOptions(nextOptions, editor.options)`. Every key but the callbacks
-   * is compared with `!==`, so an inline object literal here never matches, and
-   * the mismatch costs `editor.setOptions(...)` — which is `view.setProps()`
-   * followed by `view.updateState(state)`: a decoration recompute and a
-   * `docView.update` walk over the whole document, plus a selection sync that
-   * can force layout. Twice per render, on a surface that re-renders on every
-   * keystroke AND (via `shouldRerenderOnTransaction`) on every arrow key.
-   *
-   * The deps are the real ones rather than `[]`, but note that the list below
-   * is frozen at mount regardless: `useEditor` only ever recreates the editor
-   * when its own `deps` change, and those are empty. The effects further down
-   * are what keep the live view in step with a prop that changes afterwards.
-   */
+  // `useEditor` compares options by IDENTITY each render, and a miss costs a
+  // `setOptions` -> `view.updateState` walk of the whole document. Frozen at
+  // mount: the effects below carry later prop changes to the live view.
   const editorProps = useMemo<EditorProps>(
     () => ({
       /*
@@ -763,7 +790,13 @@ export function RichTextEditor({
                 // for this to matter, is chromeless. Calling it there is a
                 // state update that renders nothing and re-renders the whole
                 // editor for it.
-                if (!chromeless) setItems(content);
+                if (!chromeless) {
+                  // Same list, same state: a pause in typing that changed no
+                  // heading must not re-render the whole host.
+                  setItems((prev) =>
+                    sameOutline(prev, content) ? prev : content
+                  );
+                }
                 outlineContentRef.current = content;
                 reportOutline();
                 // The heading elements may not be the same ones as a moment
@@ -785,14 +818,20 @@ export function RichTextEditor({
     ]
   ) as Extension[];
 
+  // Tiptap reads `content` once, when it builds the document; a later prop would
+  // only change the options object's identity (see `editorProps`). A form that
+  // swaps the value for another record remounts this component instead.
+  const [initialContent] = useState(value);
+
   const editor = useEditor({
     immediatelyRender: false,
-    // Tiptap 3 stops re-rendering on transactions by default, which leaves
-    // every toolbar reading stale `isActive`/`can()`/`getAttributes` state.
-    shouldRerenderOnTransaction: true,
+    // Controls subscribe through `useEditorState` (`ToolbarProvider`,
+    // `MobileEditorTools`), so a selection move no longer re-renders this host.
+    shouldRerenderOnTransaction: false,
     editorProps,
     extensions,
-    content: value,
+    content: initialContent,
+    onBlur: flushChange,
     onUpdate: ({ editor }) => {
       // Tiptap fires `update` for exactly the doc-changing transactions the
       // table-of-contents extension used to rebuild itself from, so this is
@@ -809,7 +848,11 @@ export function RichTextEditor({
       // everything the author does afterwards. A keystroke cannot land
       // earlier: `create` is emitted from a `setTimeout(0)` scheduled the
       // moment the view mounts, before the editor is on screen to type into.
-      onChange?.(editor.getJSON(), { initial: !editor.isInitialized });
+      if (!editor.isInitialized) {
+        onChange?.(editor.getJSON(), { initial: true });
+        return;
+      }
+      scheduleChange();
     },
   });
 
@@ -1258,9 +1301,30 @@ export function RichTextEditor({
     }
   }, [markdownMode, flushRaw, editor]);
 
-  // Unmount: a pending raw edit still lands in the document, so the consumer's
-  // onChange has seen it even if the author closes mid-debounce.
-  useEffect(() => flushRaw, [flushRaw]);
+  // Unmount: a pending raw edit still lands in the document, and then the
+  // pending change reaches `onChange`, even if the author closes mid-debounce.
+  useEffect(
+    () => () => {
+      flushRaw();
+      flushChange();
+    },
+    [flushRaw, flushChange]
+  );
+
+  // Blur precedes a click on Save, but not `requestSubmit()` or a button Safari
+  // never focuses. Capture phase, so it lands before RHF reads the values.
+  useEffect(() => {
+    if (!editor) return;
+    const flushBeforeSubmit = ({ target }: Event) => {
+      if (editor.isDestroyed) return;
+      if (target instanceof Node && target.contains(editor.view.dom)) {
+        flushChange();
+      }
+    };
+    document.addEventListener('submit', flushBeforeSubmit, true);
+    return () =>
+      document.removeEventListener('submit', flushBeforeSubmit, true);
+  }, [editor, flushChange]);
 
   // Hand the consumer the serializers, and revoke them on the way out. The
   // callback goes through a ref for the same reason `onLinkTrigger` does: it
@@ -1375,15 +1439,10 @@ export function RichTextEditor({
           {/* Both are page-scale surfaces: a full-width bubble bar and a
               20-item slash palette overwhelm an editor embedded in a form
               card, where the toolbar above already covers everything. */}
-          {/* Both are page-scale surfaces, and both are DESKTOP-only.
-              Mounting Tiptap's `BubbleMenu` at phone width sends React into
-              "Maximum update depth exceeded": its positioning effect dispatches
-              a ProseMirror transaction, the transaction re-renders the editor
-              (`shouldRerenderOnTransaction`), and the effect runs again. It
-              only settles when there is room to place the bar. Reachable from
-              any dialog-hosted editor on a phone; the notes workspace is simply
-              the first surface where the full editor is reachable at that
-              width, which is how it surfaced. */}
+          {/* Desktop-only. A `BubbleMenu` given an inline `shouldShow` dispatches
+              every render, which looped ("Maximum update depth") while each
+              transaction re-rendered this host. That is gone: keeping the phone
+              bar and slash palette off phones is now a product choice, not a fix. */}
           {!compact && !isNarrow && !rawActive && (
             <>
               <FloatingToolbar editor={editor} />
@@ -1476,14 +1535,10 @@ export function RichTextEditor({
         )}
       </div>
 
-      {/* Anchored to the editor FRAME, deliberately outside the scrolling
-          column above. Nested inside it, an `absolute inset-0` overlay resizes
-          with the document's scroll height, and that layout change retriggers
-          the bubble menu's positioning effect, which dispatches a ProseMirror
-          transaction, which re-renders — a loop React stops with "Maximum
-          update depth exceeded" the moment a note is opened on a phone.
-          Only chromeless: everywhere else the real toolbar is already on
-          screen at every width. */}
+      {/* Anchored to the editor FRAME, outside the scrolling column: nested in it
+          an `absolute inset-0` overlay scrolls away with the document, and once
+          fed a transaction -> re-render loop on phones. Only chromeless: every
+          other editor already has its real toolbar on screen at every width. */}
       {chromeless && !rawActive && (
         <MobileEditorTools editor={editor} uploadImage={uploadImage} />
       )}
