@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import type { JSONContent } from '@tiptap/core';
 
 import { MermaidBlocks } from '../../mermaid-blocks';
@@ -13,8 +14,16 @@ import { RichText } from '../../rich-text';
 /**
  * Read-only render of the current document, exactly as the public site will
  * show it — mermaid diagrams included.
+ *
+ * Memoised on the snapshot's identity: `RichText` re-runs `generateHTML` and the
+ * sanitizer on every render, and the host re-renders for reasons that have
+ * nothing to do with the document (outline, raw mode, tab state).
  */
-export function EditorPreview({ content }: { content: JSONContent }) {
+export const EditorPreview = memo(function EditorPreview({
+  content,
+}: {
+  content: JSONContent;
+}) {
   return (
     <div className="min-w-0 flex-1 overflow-y-auto p-4 sm:p-6">
       <MermaidBlocks>
@@ -22,4 +31,4 @@ export function EditorPreview({ content }: { content: JSONContent }) {
       </MermaidBlocks>
     </div>
   );
-}
+});
