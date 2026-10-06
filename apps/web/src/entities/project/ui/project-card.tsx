@@ -11,8 +11,6 @@ import { formatDate } from '@/shared/lib/utils';
 export interface ProjectCardProps {
   project: PublicProject;
   compact?: boolean;
-  onTagClick?: (slug: string) => void;
-  onTechClick?: (slug: string) => void;
 }
 
 /**
@@ -23,8 +21,6 @@ export interface ProjectCardProps {
 export function ProjectCard({
   compact,
   project,
-  onTagClick,
-  onTechClick,
 }: ProjectCardProps) {
   const locale = useLocale();
   const t = useTranslations('project');
@@ -56,21 +52,13 @@ export function ProjectCard({
           <div className="mt-auto space-y-2 pt-2">
             <div className="flex flex-wrap gap-2">
               {project.techStacks.map((tech) => (
-                <TechStackClickableBadge
-                  key={tech.id}
-                  tech={tech}
-                  onClick={onTechClick}
-                />
+                <TechStackClickableBadge key={tech.id} tech={tech} />
               ))}
             </div>
 
             <div className="flex flex-wrap gap-2">
               {project.tags.map((tag) => (
-                <TagClickableBadge
-                  key={tag.id}
-                  tag={tag}
-                  onClick={onTagClick}
-                />
+                <TagClickableBadge key={tag.id} tag={tag} />
               ))}
             </div>
           </div>
