@@ -279,7 +279,12 @@ export const renderExtensions = [
   Link,
   Color,
   Highlight.configure({ multicolor: true }),
-  ImageBase,
+  // Read path only: the editor registers `ImageBase` unconfigured, so these
+  // never reach what it stores, copies or edits. Body images sit below the
+  // fold and must not compete with the cover for bandwidth.
+  ImageBase.configure({
+    HTMLAttributes: { loading: 'lazy', decoding: 'async' },
+  }),
   ImageGroupBase,
   RenderImagePlaceholder,
   Typography,

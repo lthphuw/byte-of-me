@@ -215,6 +215,35 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
     expect(plain).not.toContain('<figcaption');
   });
 
+  it('lets the browser defer and decode published body images off the main thread', () => {
+    // Body images sit below the cover, which owns the LCP slot. Without the
+    // hints they all fetch eagerly alongside it; with `sanitizeHtml` unaware of
+    // them the attributes would be stripped on the way out.
+    const published = (content: object[]) =>
+      sanitizeHtml(
+        generateHTML({ type: 'doc', content }, renderExtensions)
+      );
+    const image = { type: 'image', attrs: { src: 'https://example.test/a.png', alt: 'A' } };
+
+    const bare = published([image]);
+    const captioned = published([
+      { type: 'image', attrs: { ...image.attrs, caption: 'Fig 1' } },
+    ]);
+    const row = published([
+      { type: 'imageGroup', attrs: { caption: '' }, content: [image, image] },
+    ]);
+
+    for (const html of [bare, captioned, row]) {
+      const images = html.match(/<img [^>]*>/g) ?? [];
+      expect(images.length).toBeGreaterThan(0);
+      for (const tag of images) {
+        expect(tag).toContain('loading="lazy"');
+        expect(tag).toContain('decoding="async"');
+        expect(tag).toContain('src="https://example.test/a.png"');
+      }
+    }
+  });
+
   it('renders a row of images as one figure, with the caption outside the row', () => {
     // The whole reason `render-extensions.ts` shares the editor's node
     // definitions: a node the editor can persist but the render schema does

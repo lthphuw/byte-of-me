@@ -32,7 +32,16 @@ const ALLOWED_ATTRS = new Set([
   // script — it is read back by `MathRenderer`, which hands it to KaTeX with
   // `throwOnError: false`. KaTeX itself is the parser, not this.
   'data-latex', 'data-type',
+  // Image loading hints, kept only with a value from `ENUMERATED_ATTRS`.
+  'loading', 'decoding',
 ]);
+
+// Attributes whose value must come from a closed set; any other value drops
+// the attribute rather than passing arbitrary text through.
+const ENUMERATED_ATTRS: Record<string, ReadonlySet<string>> = {
+  loading: new Set(['lazy', 'eager']),
+  decoding: new Set(['async', 'sync', 'auto']),
+};
 
 const VOID_TAGS = new Set(['br', 'hr', 'img']);
 
@@ -136,6 +145,8 @@ export function sanitizeHtml(html: string): string {
       if (!ALLOWED_ATTRS.has(attrName)) continue;
 
       let value = attr[2].replace(/^["']|["']$/g, '');
+      const allowedValues = ENUMERATED_ATTRS[attrName];
+      if (allowedValues && !allowedValues.has(value.toLowerCase())) continue;
       if (
         (attrName === 'href' || attrName === 'src') &&
         isUnsafeUrl(value)

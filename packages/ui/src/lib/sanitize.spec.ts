@@ -140,6 +140,35 @@ describe('sanitizeHtml', () => {
     });
   });
 
+  describe('image loading hints', () => {
+    it('keeps loading and decoding when the value is a real keyword', () => {
+      expect(
+        sanitizeHtml('<img src="a.png" loading="lazy" decoding="async">')
+      ).toBe('<img src="a.png" loading="lazy" decoding="async" />');
+      expect(
+        sanitizeHtml('<img src="a.png" loading="eager" decoding="sync">')
+      ).toBe('<img src="a.png" loading="eager" decoding="sync" />');
+      expect(sanitizeHtml('<img src="a.png" decoding="auto">')).toBe(
+        '<img src="a.png" decoding="auto" />'
+      );
+    });
+
+    it('drops either attribute when its value is outside the keyword set', () => {
+      expect(
+        sanitizeHtml(
+          '<img src="a.png" loading="javascript:alert(1)" decoding="later">'
+        )
+      ).toBe('<img src="a.png" />');
+      expect(sanitizeHtml('<img src="a.png" loading="">')).toBe(
+        '<img src="a.png" />'
+      );
+      // `async` is a decoding keyword, not a loading one.
+      expect(sanitizeHtml('<img src="a.png" loading="async">')).toBe(
+        '<img src="a.png" />'
+      );
+    });
+  });
+
   it('escapes quotes inside a kept attribute value', () => {
     expect(sanitizeHtml('<p title=\'a"b\'>x</p>')).toBe(
       '<p title="a&quot;b">x</p>'
