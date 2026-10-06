@@ -19,8 +19,8 @@ import { RevealSection } from '@/shared/ui';
 
 /**
  * The whole public introduction on one page: who, what was contributed
- * upstream, what was built, what with, where from, then the way to reach out. It
- * absorbed `/about`, so each block stays short and links onward for detail.
+ * upstream, what was built, where from, what with, then the way to reach out.
+ * It absorbed `/about`, so each block stays short and links onward for detail.
  */
 export async function HomepageContent() {
   return (
@@ -56,14 +56,14 @@ export async function HomepageContent() {
         </RevealSection>
 
         <RevealSection className="empty:hidden">
-          <Suspense fallback={<HomepageTechStackLoading />}>
-            <HomepageTechStack />
+          <Suspense fallback={<HomepageEducationLoading />}>
+            <HomepageEducation />
           </Suspense>
         </RevealSection>
 
         <RevealSection className="empty:hidden">
-          <Suspense fallback={<HomepageEducationLoading />}>
-            <HomepageEducation />
+          <Suspense fallback={<HomepageTechStackLoading />}>
+            <HomepageTechStack />
           </Suspense>
         </RevealSection>
 
