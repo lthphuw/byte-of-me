@@ -66,6 +66,14 @@ export default {
           '950': 'hsl(var(--brand-950))',
         },
       },
+      // `motionEase.sleek` (packages/ui/src/motion/tokens.ts) for the CSS-only
+      // motion; named tokens keep `animate-in` + `ease-*` unambiguous.
+      transitionTimingFunction: {
+        sleek: 'cubic-bezier(0.21, 0.47, 0.32, 0.98)',
+      },
+      transitionDuration: {
+        '250': '250ms',
+      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',

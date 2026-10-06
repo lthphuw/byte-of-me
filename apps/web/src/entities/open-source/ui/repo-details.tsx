@@ -14,7 +14,9 @@ export interface RepoDetailsLabels extends RepoSummaryLabels {
 /**
  * One repo on `/projects`: the summary line opens a list of the merged PRs.
  * Native `<details>` keeps it stateless, keyboard-correct and open to
- * find-in-page, with no client code.
+ * find-in-page, with no client code. The open motion is CSS too: the PR list
+ * fades and lifts in everywhere, and `details-smooth` also tweens the height
+ * (open and close) in browsers that support `::details-content`.
  */
 export function RepoDetails({
   repo,
@@ -24,7 +26,7 @@ export function RepoDetails({
   labels: RepoDetailsLabels;
 }) {
   return (
-    <details className="group">
+    <details className="details-smooth group">
       <summary className="flex cursor-pointer list-none items-start gap-3 px-4 py-4 transition-colors hover:bg-accent/50 focus-visible:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring md:px-5 [&::-webkit-details-marker]:hidden">
         <ChevronRight
           aria-hidden
@@ -35,7 +37,7 @@ export function RepoDetails({
         </div>
       </summary>
 
-      <div className="space-y-3 border-t bg-muted/40 px-4 py-4 md:px-5 md:py-5">
+      <div className="space-y-3 border-t bg-muted/40 px-4 py-4 motion-safe:group-open:duration-250 motion-safe:group-open:ease-sleek motion-safe:group-open:animate-in motion-safe:group-open:fade-in-0 motion-safe:group-open:slide-in-from-top-1.5 md:px-5 md:py-5">
         <ol className="space-y-3">
           {repo.pullRequests.map((pr) => (
             <li

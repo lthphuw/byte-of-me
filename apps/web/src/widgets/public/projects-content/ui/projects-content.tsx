@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 import {
   Pagination,
   Tabs,
@@ -27,11 +27,21 @@ import {
 } from '@/features/public/project-filters';
 import { HYDRATED_LIST_BEHAVIOR } from '@/shared/hooks/use-infinite-list-query';
 import { usePathname, useRouter } from '@/shared/i18n/navigation';
+import { cn } from '@/shared/lib/utils';
 import { ListPageHeader } from '@/shared/ui';
 import { ProjectsShell } from '@/widgets/public/projects-content/ui/projects-shell';
 import { ProjectsTimeline } from '@/widgets/public/projects-content/ui/projects-timeline';
 
 const OPEN_SOURCE_VIEW = 'open-source';
+
+const TAB_PILL =
+  'pointer-events-none absolute inset-y-1 left-1 -z-10 w-[calc(50%-0.25rem)] rounded-md bg-background shadow motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-sleek';
+
+// Applied to the panel that has just become active. Only after the first switch:
+// on load the active panel is already in the server HTML, and fading it in
+// would flash the content the page was meant to paint immediately.
+const PANEL_ENTER =
+  'motion-safe:data-[state=active]:animate-in motion-safe:data-[state=active]:fade-in-0 motion-safe:data-[state=active]:slide-in-from-bottom-2 motion-safe:data-[state=active]:duration-300 motion-safe:data-[state=active]:ease-sleek';
 
 interface ProjectsContentProps {
   /**
@@ -53,6 +63,7 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
     openSource && searchParams.get('view') === OPEN_SOURCE_VIEW
       ? OPEN_SOURCE_VIEW
       : 'projects';
+  const isOpenSourceView = view === OPEN_SOURCE_VIEW;
   // Always an explicit `?view=`, even for the default tab. Navigating back to
   // the bare pathname from `?view=open-source` is silently dropped by the Next
   // router (verified on a production build: `router.replace('/en/projects')`
@@ -60,6 +71,16 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
   // the Projects tab would never switch.
   const setView = (next: string) =>
     router.replace(`${pathname}?view=${next}`, { scroll: false });
+  // Flips in the same render as the view, not on the click: the URL (and so
+  // `view`) lags the click. Each panel also takes the entrance only while it is
+  // the current view — Radix flips `data-state` a commit after `view` does, so
+  // an unconditional class made the panel being left replay it before hiding.
+  const [lastView, setLastView] = useState(view);
+  const [hasSwitched, setHasSwitched] = useState(false);
+  if (view !== lastView) {
+    setLastView(view);
+    setHasSwitched(true);
+  }
   const tPagination = useTranslations('components.pagination');
   const { filters, page, updateFilters, setPage } = useProjectFilters();
   const hasActiveFilters =
@@ -103,10 +124,31 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
     updateFilters({ ...filters, techStackSlugs: nextTech });
   };
 
+  // Two equal columns so the active pill can slide by exactly one column with a
+  // CSS transform: no measuring, no `layout` animation (the lazy feature set
+  // does not ship it), and the server HTML already has the pill in place.
+  // The triggers drop their own active background so only the pill paints it.
   const tabs = openSource && (
-    <TabsList className="self-start">
-      <TabsTrigger value="projects">{t('tabProjects')}</TabsTrigger>
-      <TabsTrigger value={OPEN_SOURCE_VIEW}>{t('tabOpenSource')}</TabsTrigger>
+    <TabsList className="relative isolate inline-grid grid-cols-2 self-start">
+      <span
+        aria-hidden
+        className={cn(
+          TAB_PILL,
+          isOpenSourceView ? 'translate-x-full' : 'translate-x-0'
+        )}
+      />
+      <TabsTrigger
+        value="projects"
+        className="data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+      >
+        {t('tabProjects')}
+      </TabsTrigger>
+      <TabsTrigger
+        value={OPEN_SOURCE_VIEW}
+        className="data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+      >
+        {t('tabOpenSource')}
+      </TabsTrigger>
     </TabsList>
   );
 
@@ -119,22 +161,21 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
       >
         {/* No `description`, same as Blogs: the strapline restated the page title
             in more words. The count is the subtitle. */}
-        {view === OPEN_SOURCE_VIEW && openSource ? (
-          <ListPageHeader
-            title={t('tabOpenSource')}
-            count={openSource.summary}
-          >
-            {tabs}
-          </ListPageHeader>
-        ) : (
-          <ListPageHeader
-            title={t('pageTitle')}
-            count={t('count', { count: pagination.totalCount })}
-          >
-            {tabs}
+        {/* One header for both views, so the TabsList is the same element across
+            a switch and its pill can transition instead of remounting. */}
+        <ListPageHeader
+          title={isOpenSourceView ? t('tabOpenSource') : t('pageTitle')}
+          count={
+            isOpenSourceView && openSource
+              ? openSource.summary
+              : t('count', { count: pagination.totalCount })
+          }
+        >
+          {tabs}
+          {!isOpenSourceView && (
             <ProjectFilters value={filters} onChange={updateFilters} />
-          </ListPageHeader>
-        )}
+          )}
+        </ListPageHeader>
 
         {/* `forceMount`: both panels stay in the HTML, so the Open source list
             is there for find-in-page and crawlers, and flipping tabs does not
@@ -144,7 +185,10 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
         <TabsContent
           value="projects"
           forceMount
-          className="mt-0 space-y-6 data-[state=inactive]:hidden md:space-y-8"
+          className={cn(
+            'mt-0 space-y-6 data-[state=inactive]:hidden md:space-y-8',
+            hasSwitched && !isOpenSourceView && PANEL_ENTER
+          )}
         >
           {showSkeletons ? (
             <ol className="border-l border-border/60">
@@ -159,7 +203,9 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
           ) : (
             <div
               className={`transition-opacity duration-200 ${
-                isPlaceholderData ? 'pointer-events-none opacity-50' : 'opacity-100'
+                isPlaceholderData
+                  ? 'pointer-events-none opacity-50'
+                  : 'opacity-100'
               }`}
             >
               <ProjectsTimeline
@@ -187,7 +233,10 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
           <TabsContent
             value={OPEN_SOURCE_VIEW}
             forceMount
-            className="mt-0 data-[state=inactive]:hidden"
+            className={cn(
+              'mt-0 data-[state=inactive]:hidden',
+              hasSwitched && isOpenSourceView && PANEL_ENTER
+            )}
           >
             {openSource.list}
           </TabsContent>

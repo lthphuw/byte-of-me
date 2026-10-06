@@ -1,6 +1,7 @@
 'use client';
 
 import { type ReactNode, useEffect, useId, useRef, useState } from 'react';
+import { menuTransition, motionEase } from '@byte-of-me/ui';
 import { m, type Transition } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -24,13 +25,19 @@ interface ExpandableRichTextProps {
 }
 
 /**
- * Enter eases out; exit eases in and runs shorter, so collapsing gets out of
- * the way rather than lingering. Same curve and timings as the
- * `collapsible-down` / `collapsible-up` animations in `tailwind.config.ts` —
- * this is the same gesture, so it should not read as a different one.
+ * Both directions use the site's `sleek` curve; collapsing runs shorter so it
+ * gets out of the way rather than lingering. The chevron turns on the same
+ * spring the header menus use (`menuTransition`), which settles without the
+ * hard stop a tween has.
  */
-const EXPAND_TRANSITION: Transition = { duration: 0.18, ease: 'easeOut' };
-const COLLAPSE_TRANSITION: Transition = { duration: 0.12, ease: 'easeIn' };
+const EXPAND_TRANSITION: Transition = {
+  duration: 0.28,
+  ease: motionEase.sleek,
+};
+const COLLAPSE_TRANSITION: Transition = {
+  duration: 0.2,
+  ease: motionEase.sleek,
+};
 
 /** The first clamp is a measurement result, not a user action — never animate it. */
 const INSTANT_TRANSITION: Transition = { duration: 0 };
@@ -200,7 +207,12 @@ export function ExpandableRichText({
           maxHeight: !hasToggled && isCollapsed ? clampHeight : undefined,
         }}
         initial={false}
-        animate={{ height: isCollapsed ? clampHeight : 'auto' }}
+        animate={{
+          height: isCollapsed ? clampHeight : 'auto',
+          // The text under the fold arrives with the box rather than being
+          // uncovered at full strength by it.
+          opacity: expanded && hasToggled ? [0.6, 1] : 1,
+        }}
         transition={
           !hasToggled
             ? INSTANT_TRANSITION
@@ -244,7 +256,7 @@ export function ExpandableRichText({
               aria-hidden
               className="inline-flex pt-px"
               animate={{ rotate: expanded ? 180 : 0 }}
-              transition={expanded ? EXPAND_TRANSITION : COLLAPSE_TRANSITION}
+              transition={menuTransition}
             >
               <ChevronDown className="size-3.5" />
             </m.span>

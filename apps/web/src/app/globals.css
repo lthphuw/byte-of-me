@@ -3,6 +3,34 @@
 @tailwind utilities;
 
 @layer utilities {
+  /**
+   * Animates a native `<details>` open and closed where the browser can: the
+   * `::details-content` box tweens `block-size` between 0 and `auto`
+   * (`interpolate-size`), and `content-visibility` flips at the end of the
+   * close. Browsers without either feature keep the instant toggle.
+   */
+  @supports (interpolate-size: allow-keywords) {
+    @media (prefers-reduced-motion: no-preference) {
+      .details-smooth {
+        interpolate-size: allow-keywords;
+      }
+
+      .details-smooth::details-content {
+        block-size: 0;
+        overflow-y: clip;
+        transition:
+          block-size 250ms cubic-bezier(0.21, 0.47, 0.32, 0.98),
+          content-visibility 250ms allow-discrete;
+      }
+
+      .details-smooth[open]::details-content {
+        block-size: auto;
+      }
+    }
+  }
+}
+
+@layer utilities {
   .break-safe {
     hyphens: auto;
     overflow-wrap: anywhere;
