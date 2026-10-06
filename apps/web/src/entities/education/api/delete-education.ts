@@ -10,10 +10,6 @@ import { getErrorMessage } from '@/shared/lib/utils';
 import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-
-
-
-
 export async function deleteEducation(
   id: string
 ): Promise<ApiResponse<Education>> {
@@ -33,14 +29,11 @@ export async function deleteEducation(
       return { success: false, errorMsg: 'Education not found' };
     }
 
+    const education = await prisma.education.delete({ where: { id } });
+
     revalidateTag(CACHE_TAGS.EDUCATION, 'max');
 
-    return {
-      success: true,
-      data: await prisma.education.delete({
-        where: { id },
-      }),
-    };
+    return { success: true, data: education };
   } catch (error) {
     const errorMsg = getErrorMessage(error, 'Failed to delete education');
     logger.error(`Delete education error: ${errorMsg}`);
