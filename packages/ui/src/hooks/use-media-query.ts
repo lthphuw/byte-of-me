@@ -1,6 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
+
+// `window.matchMedia` does not exist during SSR, so the server (and the
+// hydration render, which must match the server HTML) reports `false`.
+const getServerSnapshot = () => false;
 
 /**
  * Whether a CSS media query currently matches.
@@ -12,25 +16,24 @@ import { useEffect, useState } from 'react';
  * stuck on its first value forever. `change` covers the width queries too, and
  * fires once per actual transition instead of on every resize frame.
  *
- * `matches` is deliberately NOT in the effect's dependencies. It was, and that
- * made every match tear the subscription down and build a new one — the
- * listener has to outlive the value it sets.
- *
- * Starts `false` on the server and on the first client render, then corrects in
- * the effect: `window.matchMedia` does not exist during SSR, and reading it at
- * init would make the first client render disagree with the server HTML.
+ * Built on `useSyncExternalStore`, so a component that mounts on the client
+ * (not hydrating) reads the real value in its first render instead of
+ * rendering `false` and correcting in an effect. A hydrating one still starts
+ * `false` and re-renders once with the real value.
  */
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(false);
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      const media = window.matchMedia(query);
+      media.addEventListener('change', onChange);
+      return () => media.removeEventListener('change', onChange);
+    },
+    [query]
+  );
+  const getSnapshot = useCallback(
+    () => window.matchMedia(query).matches,
+    [query]
+  );
 
-  useEffect(() => {
-    const media = window.matchMedia(query);
-    setMatches(media.matches);
-
-    const onChange = (event: MediaQueryListEvent) => setMatches(event.matches);
-    media.addEventListener('change', onChange);
-    return () => media.removeEventListener('change', onChange);
-  }, [query]);
-
-  return matches;
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
