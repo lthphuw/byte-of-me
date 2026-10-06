@@ -4,10 +4,10 @@ import { useEffect, useRef } from 'react';
 import type { DefaultValues, FieldValues, UseFormReturn } from 'react-hook-form';
 
 /**
- * Single reset strategy for the dashboard edit dialogs: whenever the dialog
- * opens (or the record being edited changes while it is open), reset the form
- * to the mapped record — or, when there is no record, back to the form's own
- * `defaultValues` so no stale value from the previous edit survives.
+ * Reset strategy for the small edit dialogs that keep their form mounted
+ * across opens (tags, tech stacks): on open, or when the record changes, reset
+ * to the mapped record, or to `defaultValues` when there is none. Dialogs with
+ * editors seed `useForm` at mount instead — a reset regenerates field-array ids.
  */
 export function useResetOnOpen<TValues extends FieldValues, TData>(
   form: UseFormReturn<TValues>,
