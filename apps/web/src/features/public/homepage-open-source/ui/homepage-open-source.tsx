@@ -21,8 +21,8 @@ export async function HomepageOpenSource() {
   const totalPrs = repos.reduce((sum, repo) => sum + repo.prCount, 0);
 
   return (
-    <section id="open-source" className="space-y-8 md:space-y-12">
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between md:gap-10">
+    <section id="open-source" className="space-y-6 md:space-y-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between md:gap-8">
         <div className="space-y-2">
           <h2 className="text-xl font-semibold md:text-3xl">
             {t('openSourceTitle')}

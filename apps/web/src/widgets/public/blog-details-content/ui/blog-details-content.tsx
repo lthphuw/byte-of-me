@@ -51,7 +51,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
                   `BlogReaderNav` — a button in the corner, rendered at the end
                   of this file so it is not inside the article's stacking
                   context. Nothing sits over the text any more. */}
-              <div className="mb-8 md:mb-12" />
+              <div className="mb-6 md:mb-8" />
               <BlogContent blog={blog} />
 
               <div className="mt-4 md:mt-6" />
@@ -101,7 +101,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
               </Suspense>
 
               {/* Prev / Next */}
-              <div className="mt-8 md:mt-12" />
+              <div className="mt-6 md:mt-8" />
               <Suspense
                 fallback={<Skeleton className="h-20 w-full rounded-xl" />}
               >

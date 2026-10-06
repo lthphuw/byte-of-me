@@ -44,7 +44,7 @@ export default function BlogDetailsLoading() {
           </div>
 
           {/* Header → article: the same step the real page uses. */}
-          <div className="mb-8 md:mb-12" />
+          <div className="mb-6 md:mb-8" />
 
           {/* CONTENT SKELETON (Rich Text Mockup) */}
           <div className="space-y-4">

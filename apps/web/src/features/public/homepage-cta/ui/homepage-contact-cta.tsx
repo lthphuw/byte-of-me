@@ -10,7 +10,7 @@ export async function HomepageContactCta() {
   return (
     <section
       id="contact-cta"
-      className="space-y-4 rounded-2xl border bg-card/50 p-6 text-center md:space-y-6 md:p-10 lg:p-14"
+      className="space-y-4 rounded-2xl border bg-card/50 p-6 text-center md:space-y-6 md:p-8 lg:p-10"
     >
       <h2 className="text-xl font-semibold md:text-3xl">
         {t('haveAnIdeaInMind')}

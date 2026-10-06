@@ -20,7 +20,7 @@ export async function HomepageProfile() {
   const hasQuote = !!profile.quote;
 
   return (
-    <section id="profile" className="space-y-8 md:space-y-12">
+    <section id="profile" className="space-y-6 md:space-y-8">
       {/* HERO SECTION */}
       <section
         id="hero"
@@ -35,7 +35,7 @@ export async function HomepageProfile() {
       {/* ABOUT / MY STORY */}
       <section
         id="about"
-        className={`grid items-start gap-6 md:gap-10 ${
+        className={`grid items-start gap-4 md:gap-8 ${
           hasQuote ? 'md:grid-cols-2' : 'mx-auto max-w-3xl grid-cols-1'
         }`}
       >

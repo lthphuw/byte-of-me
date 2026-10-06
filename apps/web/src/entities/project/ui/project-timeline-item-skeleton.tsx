@@ -2,7 +2,7 @@ import { Skeleton } from '@byte-of-me/ui';
 
 export function ProjectTimelineItemSkeleton() {
   return (
-    <li className="relative pb-8 pl-8 last:pb-0 md:pb-12">
+    <li className="relative pb-6 pl-8 last:pb-0 md:pb-8">
       <span
         aria-hidden
         className="absolute left-0 top-2 size-2.5 -translate-x-1/2 rounded-full border border-border bg-background ring-4 ring-background"

@@ -50,7 +50,7 @@ export function ProjectsTimeline({
   const groups = useMemo(() => groupByStartYear(projects), [projects]);
 
   return (
-    <div className="flex flex-col gap-8 md:gap-12">
+    <div className="flex flex-col gap-6 md:gap-8">
       {groups.map(([year, items]) => (
         <section key={year ?? 'undated'}>
           <div className="mb-4 flex items-center gap-4 md:mb-6">
@@ -71,7 +71,7 @@ export function ProjectsTimeline({
                 key={project.id}
                 as="li"
                 index={index}
-                className="relative pb-8 pl-8 last:pb-0 md:pb-12"
+                className="relative pb-6 pl-8 last:pb-0 md:pb-8"
               >
                 <ProjectTimelineItem
                   project={project}

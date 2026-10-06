@@ -110,7 +110,7 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
       <Tabs
         value={view}
         onValueChange={setView}
-        className="flex flex-col gap-8 md:gap-12"
+        className="flex flex-col gap-6 md:gap-8"
       >
         {/* No `description`, same as Blogs: the strapline restated the page title
             in more words. The count is the subtitle. */}
@@ -139,7 +139,7 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
         <TabsContent
           value="projects"
           forceMount
-          className="mt-0 space-y-8 data-[state=inactive]:hidden md:space-y-12"
+          className="mt-0 space-y-6 data-[state=inactive]:hidden md:space-y-8"
         >
           {showSkeletons ? (
             <ol className="border-l border-border/60">

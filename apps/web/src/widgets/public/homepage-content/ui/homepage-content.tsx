@@ -32,7 +32,7 @@ export async function HomepageContent() {
           the shell's narrower one and never apply. */}
       <div
         id="home"
-        className="space-y-16 md:space-y-24"
+        className="space-y-12 md:space-y-16"
       >
         <RevealSection delay={0.1}>
           <Suspense fallback={<HomepageProfileLoading />}>
