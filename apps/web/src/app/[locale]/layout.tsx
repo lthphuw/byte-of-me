@@ -175,7 +175,10 @@ export default async function LocaleLayout({
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <GlobalProvider>
-            <SessionProvider>
+            {/* No focus refetch: for a signed-in visitor each was an uncacheable
+                /api/auth/session invocation. signIn/signOut and other tabs
+                (BroadcastChannel) still refresh the session on their own. */}
+            <SessionProvider refetchOnWindowFocus={false}>
               {children}
             </SessionProvider>
           </GlobalProvider>
