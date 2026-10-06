@@ -5,11 +5,6 @@ declare const messages: {
   "metadata": {
     "title": "Phu Luong",
     "description": "Showcasing passion, experience, and projects — one byte at a time.",
-    "about": {
-      "title": "About Me",
-      "description": "A journey through my background, education, and technical stack.",
-      "keywords": "About me, Introduction, Background, Education, Tech stack"
-    },
     "experience": {
       "title": "Experience",
       "description": "A professional timeline of my roles and hands-on contributions.",
@@ -59,7 +54,6 @@ declare const messages: {
       "skipToContent": "Skip to main content",
       "nav": {
         "home": "Home",
-        "about": "About",
         "experience": "Experience",
         "projects": "Projects",
         "blogs": "Blogs",
@@ -76,7 +70,6 @@ declare const messages: {
       "builtBy": "Built by",
       "openSource": "Open source on",
       "links": "Quick Links",
-      "about": "About",
       "projects": "Projects",
       "experience": "Experience",
       "cv": "CV",
@@ -97,13 +90,13 @@ declare const messages: {
     "pleaseCheckTheUrlOrGoBackHome": "Please check the URL or go back home",
     "goBack": "Go back",
     "home": "Home",
-    "aboutMe": "About me",
-    "learnMoreAboutMyBackgroundAndJourney": "Learn more about my background and journey",
     "seeMyWork": "See my work",
     "checkOutTheProjectsIveBuilt": "Check out the projects I've built",
     "contact": "Contact",
     "reachOutForCollaborationOrQuestions": "Reach out for collaboration or questions",
-    "explore": "Explore"
+    "explore": "Explore",
+    "readMyWriting": "Read my writing",
+    "notesOnWhatIBuildAndLearn": "Notes on what I build and learn"
   },
   "error": {
     "somethingWentWrong": "Something went wrong!",
@@ -119,23 +112,6 @@ declare const messages: {
     "invalidInput": "Your question may contain inappropriate content. Please check and try again.",
     "missingThreadId": "Missing conversation ID. Please refresh the page and try again.",
     "failedToDelete": "Something went wrong while deleting the conversation. Please try again later or refresh the page."
-  },
-  "about": {
-    "section": {
-      "aboutMe": "About me",
-      "education": "Education",
-      "skillsTechStack": "Skills / Tech Stack"
-    },
-    "techStack": {
-      "frameworksTitle": "Frameworks",
-      "librariesTitle": "Libraries",
-      "programmingLanguagesTitle": "Programming Languages",
-      "databaseTitle": "Database"
-    },
-    "education": {
-      "present": "Present",
-      "ongoing": "Ongoing"
-    }
   },
   "project": {
     "details": "Details",
@@ -153,7 +129,9 @@ declare const messages: {
     "liveDemo": "Live demo",
     "ongoing": "Ongoing",
     "completed": "Completed",
-    "undated": "Undated"
+    "undated": "Undated",
+    "tabProjects": "Projects",
+    "tabOpenSource": "Open source"
   },
   "blog": {
     "details": "Details",
@@ -257,7 +235,6 @@ declare const messages: {
   },
   "homepage": {
     "myStory": "My story",
-    "moreAboutMyJourney": "More about my journey",
     "selectedProjects": "Selected projects",
     "aFewThingsIveBuiltRecently": "A few things I’ve built recently",
     "viewProject": "View project",
@@ -267,7 +244,15 @@ declare const messages: {
     "alwaysInterestedInThoughtfulProjectsAndGoodCollaboration": "Always interested in thoughtful projects and good collaboration.",
     "letsWorkTogether": "Let’s work together",
     "emailMe": "Email me",
-    "contactDetails": "Contact details"
+    "contactDetails": "Contact details",
+    "openSourceTitle": "Open source",
+    "viewAllContributions": "All contributions",
+    "skillsTitle": "Stack",
+    "educationTitle": "Education",
+    "present": "Present",
+    "ongoing": "Ongoing",
+    "moreAchievements": "{count, plural, one {# more achievement} other {# more achievements}}",
+    "showLess": "Show less"
   },
   "experience": {
     "title": "Work Experience",
@@ -306,6 +291,11 @@ declare const messages: {
       "pageLabel": "Page {page, number} of {totalPages, number}",
       "previous": "Previous",
       "next": "Next"
+    },
+    "openSource": {
+      "prCount": "{count, plural, one {# PR} other {# PRs}}",
+      "summary": "{prs, plural, one {# merged pull request} other {# merged pull requests}} across {repos, plural, one {# project} other {# projects}}",
+      "openRepo": "Open on GitHub"
     }
   },
   "dashboard": {

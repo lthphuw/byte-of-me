@@ -1,7 +1,15 @@
 'use client';
 
-import { Pagination } from '@byte-of-me/ui';
+import type { ReactNode } from 'react';
+import {
+  Pagination,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@byte-of-me/ui';
 import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 // Narrow import on purpose: `@/entities` re-exports every entity, so a
@@ -14,12 +22,40 @@ import {
   ProjectTimelineItemSkeleton,
 } from '@/entities/project';
 import { ProjectFilters, useProjectFilters } from '@/features/public';
+import { usePathname, useRouter } from '@/shared/i18n/navigation';
 import { ListPageHeader } from '@/shared/ui';
 import { ProjectsShell } from '@/widgets/public/projects-content/ui/projects-shell';
 import { ProjectsTimeline } from '@/widgets/public/projects-content/ui/projects-timeline';
 
-export function ProjectsContent() {
+const OPEN_SOURCE_VIEW = 'open-source';
+
+interface ProjectsContentProps {
+  /**
+   * The server-rendered Open source list and its one-line summary. Absent when
+   * there is nothing to show, which also removes the tab switch. Handed in as a
+   * node so none of that markup becomes client JavaScript.
+   */
+  openSource?: { list: ReactNode; summary: string } | null;
+}
+
+export function ProjectsContent({ openSource }: ProjectsContentProps) {
   const t = useTranslations('project');
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  // The URL is the source of truth, like the filters: a shared link opens on
+  // the right tab and back/forward move between them.
+  const view =
+    openSource && searchParams.get('view') === OPEN_SOURCE_VIEW
+      ? OPEN_SOURCE_VIEW
+      : 'projects';
+  // Always an explicit `?view=`, even for the default tab. Navigating back to
+  // the bare pathname from `?view=open-source` is silently dropped by the Next
+  // router (verified on a production build: `router.replace('/en/projects')`
+  // leaves the URL and the tab untouched, while any URL with a query works), so
+  // the Projects tab would never switch.
+  const setView = (next: string) =>
+    router.replace(`${pathname}?view=${next}`, { scroll: false });
   const tPagination = useTranslations('components.pagination');
   const { filters, page, updateFilters, setPage } = useProjectFilters();
   const hasActiveFilters =
@@ -62,52 +98,96 @@ export function ProjectsContent() {
     updateFilters({ ...filters, techStackSlugs: nextTech });
   };
 
+  const tabs = openSource && (
+    <TabsList className="self-start">
+      <TabsTrigger value="projects">{t('tabProjects')}</TabsTrigger>
+      <TabsTrigger value={OPEN_SOURCE_VIEW}>{t('tabOpenSource')}</TabsTrigger>
+    </TabsList>
+  );
+
   return (
     <ProjectsShell>
-      {/* No `description`, same as Blogs: the strapline restated the page title
-          in more words. The count is the subtitle. */}
-      <ListPageHeader
-        title={t('pageTitle')}
-        count={t('count', { count: pagination.totalCount })}
+      <Tabs
+        value={view}
+        onValueChange={setView}
+        className="flex flex-col gap-8 md:gap-12"
       >
-        <ProjectFilters value={filters} onChange={updateFilters} />
-      </ListPageHeader>
+        {/* No `description`, same as Blogs: the strapline restated the page title
+            in more words. The count is the subtitle. */}
+        {view === OPEN_SOURCE_VIEW && openSource ? (
+          <ListPageHeader
+            title={t('tabOpenSource')}
+            count={openSource.summary}
+          >
+            {tabs}
+          </ListPageHeader>
+        ) : (
+          <ListPageHeader
+            title={t('pageTitle')}
+            count={t('count', { count: pagination.totalCount })}
+          >
+            {tabs}
+            <ProjectFilters value={filters} onChange={updateFilters} />
+          </ListPageHeader>
+        )}
 
-      {showSkeletons ? (
-        <ol className="border-l border-border/60">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <ProjectTimelineItemSkeleton key={i} />
-          ))}
-        </ol>
-      ) : projects.length === 0 ? (
-        <div className="flex items-center justify-center py-16">
-          <ProjectEmpty isSearch={hasActiveFilters} />
-        </div>
-      ) : (
-        <div
-          className={`transition-opacity duration-200 ${
-            isPlaceholderData ? 'pointer-events-none opacity-50' : 'opacity-100'
-          }`}
+        {/* `forceMount`: both panels stay in the HTML, so the Open source list
+            is there for find-in-page and crawlers, and flipping tabs does not
+            refetch or re-render the projects timeline. Radix does NOT hide a
+            force-mounted panel (its Presence is always "present"), so the
+            inactive one is hidden here by its `data-state`. */}
+        <TabsContent
+          value="projects"
+          forceMount
+          className="mt-0 space-y-8 data-[state=inactive]:hidden md:space-y-12"
         >
-          <ProjectsTimeline
-            projects={projects}
-            onTagClick={toggleTag}
-            onTechClick={toggleTech}
-          />
-        </div>
-      )}
+          {showSkeletons ? (
+            <ol className="border-l border-border/60">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <ProjectTimelineItemSkeleton key={i} />
+              ))}
+            </ol>
+          ) : projects.length === 0 ? (
+            <div className="flex items-center justify-center py-16">
+              <ProjectEmpty isSearch={hasActiveFilters} />
+            </div>
+          ) : (
+            <div
+              className={`transition-opacity duration-200 ${
+                isPlaceholderData ? 'pointer-events-none opacity-50' : 'opacity-100'
+              }`}
+            >
+              <ProjectsTimeline
+                projects={projects}
+                onTagClick={toggleTag}
+                onTechClick={toggleTech}
+              />
+            </div>
+          )}
 
-      <Pagination
-        setPage={setPage}
-        pagination={pagination}
-        isPlaceholderData={isPlaceholderData}
-        pageLabel={tPagination('pageLabel', {
-          page: pagination?.currentPage ?? 1,
-          totalPages: pagination?.totalPages ?? 1,
-        })}
-        previousLabel={tPagination('previous')}
-        nextLabel={tPagination('next')}
-      />
+          <Pagination
+            setPage={setPage}
+            pagination={pagination}
+            isPlaceholderData={isPlaceholderData}
+            pageLabel={tPagination('pageLabel', {
+              page: pagination?.currentPage ?? 1,
+              totalPages: pagination?.totalPages ?? 1,
+            })}
+            previousLabel={tPagination('previous')}
+            nextLabel={tPagination('next')}
+          />
+        </TabsContent>
+
+        {openSource && (
+          <TabsContent
+            value={OPEN_SOURCE_VIEW}
+            forceMount
+            className="mt-0 data-[state=inactive]:hidden"
+          >
+            {openSource.list}
+          </TabsContent>
+        )}
+      </Tabs>
     </ProjectsShell>
   );
 }

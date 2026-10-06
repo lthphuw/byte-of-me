@@ -5,11 +5,6 @@ declare const messages: {
   "metadata": {
     "title": "Phú Lương",
     "description": "Nơi lưu giữ đam mê và kinh nghiệm cá nhân — từng byte một.",
-    "about": {
-      "title": "Về tôi",
-      "description": "Giới thiệu ngắn gọn về bản thân, học vấn và các công nghệ tôi sử dụng.",
-      "keywords": "Về tôi, Giới thiệu bản thân, Học vấn, Công nghệ sử dụng, Hồ sơ cá nhân"
-    },
     "experience": {
       "title": "Kinh nghiệm",
       "description": "Các cột mốc và công việc tôi đã từng đảm nhận.",
@@ -59,7 +54,6 @@ declare const messages: {
       "skipToContent": "Chuyển đến nội dung chính",
       "nav": {
         "home": "Trang chủ",
-        "about": "Giới thiệu",
         "experience": "Kinh nghiệm",
         "projects": "Dự án",
         "blogs": "Bài viết",
@@ -76,7 +70,6 @@ declare const messages: {
       "builtBy": "Xây dựng bởi",
       "openSource": "Mã nguồn mở tại",
       "links": "Liên kết nhanh",
-      "about": "Giới thiệu",
       "projects": "Dự án",
       "experience": "Kinh nghiệm",
       "blogs": "Bài viết",
@@ -97,13 +90,13 @@ declare const messages: {
     "pleaseCheckTheUrlOrGoBackHome": "Vui lòng kiểm tra lại đường dẫn hoặc quay về trang chủ",
     "goBack": "Quay lại",
     "home": "Trang chủ",
-    "aboutMe": "Giới thiệu",
-    "learnMoreAboutMyBackgroundAndJourney": "Tìm hiểu thêm về hành trình và kinh nghiệm của tôi",
     "seeMyWork": "Xem dự án",
     "checkOutTheProjectsIveBuilt": "Khám phá các dự án tôi đã thực hiện",
     "contact": "Liên hệ",
     "reachOutForCollaborationOrQuestions": "Liên hệ với tôi nếu bạn có câu hỏi hoặc mong muốn hợp tác",
-    "explore": "Khám phá"
+    "explore": "Khám phá",
+    "readMyWriting": "Đọc bài viết của tôi",
+    "notesOnWhatIBuildAndLearn": "Ghi chép về những gì tôi xây dựng và học được"
   },
   "error": {
     "somethingWentWrong": "Đã xảy ra lỗi!",
@@ -119,23 +112,6 @@ declare const messages: {
     "invalidInput": "Nội dung câu hỏi có thể không phù hợp. Vui lòng kiểm tra và thử lại.",
     "missingThreadId": "Không tìm thấy mã cuộc trò chuyện. Vui lòng tải lại trang.",
     "failedToDelete": "Không thể xoá cuộc trò chuyện. Vui lòng thử lại sau hoặc tải lại trang."
-  },
-  "about": {
-    "section": {
-      "aboutMe": "Giới thiệu",
-      "education": "Học vấn",
-      "skillsTechStack": "Công nghệ & kỹ năng"
-    },
-    "techStack": {
-      "frameworksTitle": "Framework",
-      "librariesTitle": "Thư viện",
-      "programmingLanguagesTitle": "Ngôn ngữ lập trình",
-      "databaseTitle": "Cơ sở dữ liệu"
-    },
-    "education": {
-      "present": "Hiện tại",
-      "ongoing": "Đang học"
-    }
   },
   "project": {
     "details": "Chi tiết",
@@ -153,7 +129,9 @@ declare const messages: {
     "liveDemo": "Xem thử",
     "ongoing": "Đang làm",
     "completed": "Đã xong",
-    "undated": "Chưa rõ thời gian"
+    "undated": "Chưa rõ thời gian",
+    "tabProjects": "Dự án",
+    "tabOpenSource": "Open source"
   },
   "blog": {
     "details": "Chi tiết",
@@ -257,7 +235,6 @@ declare const messages: {
   },
   "homepage": {
     "myStory": "Hành trình của tôi",
-    "moreAboutMyJourney": "Tìm hiểu thêm về hành trình của tôi",
     "selectedProjects": "Dự án tiêu biểu",
     "aFewThingsIveBuiltRecently": "Một vài sản phẩm tôi đã thực hiện gần đây",
     "viewProject": "Xem dự án",
@@ -267,7 +244,15 @@ declare const messages: {
     "alwaysInterestedInThoughtfulProjectsAndGoodCollaboration": "Tôi luôn hứng thú với những dự án được đầu tư nghiêm túc và những mối hợp tác tốt đẹp.",
     "letsWorkTogether": "Cùng hợp tác",
     "emailMe": "Liên hệ qua email",
-    "contactDetails": "Thông tin liên hệ"
+    "contactDetails": "Thông tin liên hệ",
+    "openSourceTitle": "Open source",
+    "viewAllContributions": "Tất cả đóng góp",
+    "skillsTitle": "Công nghệ",
+    "educationTitle": "Học vấn",
+    "present": "Hiện tại",
+    "ongoing": "Đang học",
+    "moreAchievements": "Xem thêm {count} thành tựu",
+    "showLess": "Thu gọn"
   },
   "experience": {
     "title": "Kinh nghiệm làm việc",
@@ -306,6 +291,11 @@ declare const messages: {
       "pageLabel": "Trang {page, number} / {totalPages, number}",
       "previous": "Trước",
       "next": "Sau"
+    },
+    "openSource": {
+      "prCount": "{count} PR",
+      "summary": "{prs} pull request đã merge trên {repos} dự án",
+      "openRepo": "Mở trên GitHub"
     }
   },
   "dashboard": {

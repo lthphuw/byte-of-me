@@ -16,6 +16,5 @@ export const sitemapConfig: Record<
   // promise a URL that answers 200 with a `meta refresh`, which Search Console
   // reports as "Page with redirect" and never indexes. Restore this line at the
   // same time as the page body.
-  '/about': { priority: 0.7, changeFrequency: 'monthly' },
   '/contact': { priority: 0.7, changeFrequency: 'monthly' },
 };

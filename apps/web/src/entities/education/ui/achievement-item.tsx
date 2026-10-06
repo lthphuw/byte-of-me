@@ -25,7 +25,7 @@ export function AchievementItem({
 
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-semibold leading-snug md:text-base">
+      <h4 className="text-sm font-medium leading-snug md:text-base">
         {a.title}
       </h4>
 

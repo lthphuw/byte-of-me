@@ -4,13 +4,24 @@ import { HomepageShell } from './homepage-shell';
 
 import {
   HomepageContactCta,
+  HomepageEducation,
+  HomepageEducationLoading,
+  HomepageOpenSource,
+  HomepageOpenSourceLoading,
   HomepageProfile,
   HomepageProfileLoading,
   HomepageRecentProjects,
   HomepageRecentProjectsLoading,
+  HomepageTechStack,
+  HomepageTechStackLoading,
 } from '@/features/public';
 import { RevealSection } from '@/shared/ui';
 
+/**
+ * The whole public introduction on one page: who, what was contributed
+ * upstream, what was built, what with, where from, then the way to reach out. It
+ * absorbed `/about`, so each block stays short and links onward for detail.
+ */
 export async function HomepageContent() {
   return (
     <HomepageShell>
@@ -29,9 +40,30 @@ export async function HomepageContent() {
           </Suspense>
         </RevealSection>
 
+        {/* `empty:hidden` on the three optional blocks: each renders nothing
+            when its data is missing (no token, GitHub down, nothing authored),
+            and an empty wrapper would still add a `space-y` gap. */}
+        <RevealSection className="empty:hidden">
+          <Suspense fallback={<HomepageOpenSourceLoading />}>
+            <HomepageOpenSource />
+          </Suspense>
+        </RevealSection>
+
         <RevealSection>
           <Suspense fallback={<HomepageRecentProjectsLoading />}>
             <HomepageRecentProjects />
+          </Suspense>
+        </RevealSection>
+
+        <RevealSection className="empty:hidden">
+          <Suspense fallback={<HomepageTechStackLoading />}>
+            <HomepageTechStack />
+          </Suspense>
+        </RevealSection>
+
+        <RevealSection className="empty:hidden">
+          <Suspense fallback={<HomepageEducationLoading />}>
+            <HomepageEducation />
           </Suspense>
         </RevealSection>
 

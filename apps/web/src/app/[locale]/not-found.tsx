@@ -43,18 +43,18 @@ export default async function NotFound() {
           <div className="mx-auto mt-8 grid w-full max-w-6xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {[
               {
-                href: '/about',
-                title: t('aboutMe'),
-                desc: t('learnMoreAboutMyBackgroundAndJourney'),
-                link: t('explore'),
-                icon: <Icons.page />,
-              },
-              {
                 href: '/projects',
                 title: t('seeMyWork'),
                 desc: t('checkOutTheProjectsIveBuilt'),
                 link: t('explore'),
                 icon: <Icons.project />,
+              },
+              {
+                href: '/blogs',
+                title: t('readMyWriting'),
+                desc: t('notesOnWhatIBuildAndLearn') + '.',
+                link: t('explore'),
+                icon: <Icons.page />,
               },
               {
                 href: '/contact',

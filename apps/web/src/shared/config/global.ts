@@ -2,7 +2,6 @@ import type { GlobalConfig } from '@/shared/types';
 
 export enum Routes {
   Homepage = '/',
-  About = '/about',
   Experience = '/experience',
   Projects = '/projects',
   Blogs = '/blogs',
@@ -16,10 +15,6 @@ export const globalConfig: GlobalConfig = {
         title: 'home',
         href: Routes.Homepage,
         onlyMobile: true,
-      },
-      {
-        title: 'about',
-        href: Routes.About,
       },
       {
         title: 'projects',
@@ -37,10 +32,6 @@ export const globalConfig: GlobalConfig = {
   },
   footer: {
     nav: [
-      {
-        title: 'about',
-        href: Routes.About,
-      },
       {
         title: 'projects',
         href: Routes.Projects,

@@ -83,7 +83,7 @@ export function buildIconSet(layer: BrandLayer): Metadata['icons'] {
 }
 
 interface PublicPageMetadataInput {
-  /** Route segment below the locale, e.g. `about`. */
+  /** Route segment below the locale, e.g. `projects`. */
   segment: string;
   locale: string;
   title: string;

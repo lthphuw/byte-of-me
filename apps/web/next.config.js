@@ -76,16 +76,25 @@ const nextConfig = {
     // Uploaded images are content-addressed by Supabase, so a URL's bytes never
     // change; the 60s default makes the optimizer re-encode far more than needed.
     minimumCacheTTL: 31536000,
-    remotePatterns: storageHost
-      ? [
-          {
-            protocol: 'https',
-            hostname: storageHost,
-            port: '',
-            pathname: '/storage/v1/object/public/**',
-          },
-        ]
-      : [],
+    remotePatterns: [
+      // Repo owner avatars on the open-source list.
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+        port: '',
+        pathname: '/u/**',
+      },
+      ...(storageHost
+        ? [
+            {
+              protocol: 'https',
+              hostname: storageHost,
+              port: '',
+              pathname: '/storage/v1/object/public/**',
+            },
+          ]
+        : []),
+    ],
   },
 
   experimental: {
@@ -216,6 +225,22 @@ const nextConfig = {
       'node_modules/.bun/esbuild@*/**',
       'node_modules/.bun/prisma@*/**',
     ],
+  },
+  async redirects() {
+    return [
+      {
+        // About was folded into the homepage. Permanent, so links and search
+        // results move over instead of 404ing.
+        source: '/:locale(en|vi)/about',
+        destination: '/:locale',
+        permanent: true,
+      },
+      {
+        source: '/about',
+        destination: '/',
+        permanent: true,
+      },
+    ];
   },
   async headers() {
     return [

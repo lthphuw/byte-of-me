@@ -1,5 +1,3 @@
-import { Button } from '@byte-of-me/ui';
-import { Route } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { HomepageProfileEmpty } from './homepage-profile-empty';
@@ -9,8 +7,6 @@ import {
   Greeting,
   ProfileQuote,
 } from '@/entities/user-profile';
-import { Routes } from '@/shared/config/global';
-import { Link } from '@/shared/i18n/navigation';
 
 export async function HomepageProfile() {
   const t = await getTranslations('homepage');
@@ -52,20 +48,6 @@ export async function HomepageProfile() {
             <div className="text-sm leading-relaxed text-muted-foreground md:text-base">
               {profile.bio}
             </div>
-          </div>
-
-          <div className="space-y-4">
-            {/* `asChild`, not <Link><Button>: the nested form renders
-                <a><button>, which is invalid and costs two tab stops. */}
-            <Button
-              variant="link"
-              className="group h-auto p-0 text-sm md:text-base"
-              asChild
-            >
-              <Link href={Routes.About}>
-                {t('moreAboutMyJourney')} <Route className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
           </div>
         </div>
 

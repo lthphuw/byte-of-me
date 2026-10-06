@@ -1,8 +1,12 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { setRequestLocale } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { getOpenSourceContributions } from '@/entities/open-source/api/get-open-source-contributions';
 import { getPaginatedPublicProjects, projectKeys } from '@/entities/project';
-import { DEFAULT_PROJECT_FILTERS } from '@/features/public';
+import {
+  DEFAULT_PROJECT_FILTERS,
+  ProjectsOpenSource,
+} from '@/features/public';
 import { routing } from '@/shared/i18n/routing';
 import { getQueryClient } from '@/shared/lib/query/get-query-client';
 import type { LocaleType } from '@/shared/types';
@@ -42,9 +46,27 @@ export default async function ProjectsPage({ params }: ProjectsPageProps) {
       }),
   });
 
+  // Rendered here, on the server, and handed to the client page as a node. An
+  // empty result (no token, GitHub down) passes `null`, which drops the tab.
+  const openSourceResp = await getOpenSourceContributions();
+  const repos = openSourceResp.success ? openSourceResp.data.repos : [];
+  const tOss = await getTranslations('components.openSource');
+
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProjectsContent />
+      <ProjectsContent
+        openSource={
+          repos.length > 0
+            ? {
+                list: <ProjectsOpenSource repos={repos} />,
+                summary: tOss('summary', {
+                  prs: repos.reduce((sum, repo) => sum + repo.prCount, 0),
+                  repos: repos.length,
+                }),
+              }
+            : null
+        }
+      />
     </HydrationBoundary>
   );
 }

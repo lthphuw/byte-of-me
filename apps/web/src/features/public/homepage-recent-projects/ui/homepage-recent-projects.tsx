@@ -31,7 +31,7 @@ export async function HomepageRecentProjects() {
             which is invalid and costs two tab stops. */}
         <Button
           variant="link"
-          className="h-auto p-0 text-sm md:text-base"
+          className="h-auto self-start p-0 text-sm md:text-base"
           asChild
         >
           <Link href={Routes.Projects}>{t('viewAllProjects')}</Link>
