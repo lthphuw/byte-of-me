@@ -6,6 +6,7 @@ import {
   ConfirmDeleteDialog,
   DeleteButton,
   EditButton,
+  Pagination,
 } from '@byte-of-me/ui';
 import { GraduationCap, Plus } from 'lucide-react';
 import Image from 'next/image';
@@ -13,15 +14,18 @@ import { useLocale, useTranslations } from 'next-intl';
 
 import { EducationDialog } from './education-dialog';
 
-import type { AdminEducation } from '@/entities/education';
+import type { AdminEducationListItem } from '@/entities/education';
 import { createEducation } from '@/entities/education/api/create-education';
 import { deleteEducation } from '@/entities/education/api/delete-education';
-import { getAllAdminEducations } from '@/entities/education/api/get-all-admin-educations';
+import { getAdminEducationById } from '@/entities/education/api/get-admin-education-by-id';
+import { getPaginatedAdminEducations } from '@/entities/education/api/get-paginated-admin-educations';
 import { updateEducation } from '@/entities/education/api/update-education';
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
 import { educationKeys } from '@/entities/education/model/query-keys';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
+import { useEditingRecord } from '@/shared/hooks/use-editing-record';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
+import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { formatDate } from '@/shared/lib/utils';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
@@ -31,10 +35,13 @@ export function EducationManager() {
   const locale = useLocale();
   const {
     items: educations,
+    pagination,
     isLoading,
     isError,
     refetch,
     isFetching,
+    isPlaceholderData,
+    setPage,
     editing,
     isDialogOpen,
     onDialogOpenChange,
@@ -48,8 +55,8 @@ export function EducationManager() {
     confirmDelete,
     isDeleting,
     isDeletingItem,
-  } = useCrudManager<AdminEducation, EducationFormValues>({
-    queryKey: educationKeys.list(),
+  } = useCrudManager<AdminEducationListItem, EducationFormValues>({
+    queryKey: educationKeys.adminList(),
     entityLabel: 'Education',
     messages: {
       created: t('toast.created'),
@@ -58,10 +65,23 @@ export function EducationManager() {
       saveError: t('toast.saveError'),
       deleteError: t('toast.deleteError'),
     },
-    fetchAll: getAllAdminEducations,
+    // Saving leaves `educationKeys.detail(id)` — the entry the editor below
+    // loads — holding pre-save content that no list invalidation reaches.
+    detailKey: (education) => educationKeys.detail(education.id),
+    pageSize: ADMIN_PAGE_SIZE,
+    pageKey: educationKeys.adminPage,
+    fetchPage: (page, limit) => getPaginatedAdminEducations(page, limit),
     create: createEducation,
     update: updateEducation,
     remove: deleteEducation,
+  });
+
+  // The list row carries no achievements, so the dialog loads the full entry
+  // by id; "New" (`editing` is null) fetches nothing and opens an empty form.
+  const fullEducation = useEditingRecord({
+    id: editing?.id ?? null,
+    queryKey: educationKeys.detail,
+    fetchRecord: getAdminEducationById,
   });
 
   return (
@@ -137,7 +157,7 @@ export function EducationManager() {
                           className="px-2 py-0 text-[10px]"
                         >
                           {t('achievementCount', {
-                            count: edu.achievements.length,
+                            count: edu._count.achievements,
                           })}
                         </Badge>
 
@@ -171,11 +191,28 @@ export function EducationManager() {
         </ManagerListState>
       </div>
 
+      {educations.length > 0 && (
+        <Pagination
+          pagination={pagination}
+          setPage={setPage}
+          isPlaceholderData={isPlaceholderData}
+          pageLabel={tShared('pagination.pageLabel', {
+            page: pagination?.currentPage ?? 1,
+            totalPages: pagination?.totalPages ?? 1,
+          })}
+          previousLabel={tShared('pagination.previous')}
+          nextLabel={tShared('pagination.next')}
+        />
+      )}
+
       <EducationDialog
-        key={editing?.id || 'new'}
+        key={editing?.id ?? 'new'}
         open={isDialogOpen}
         onOpenChange={onDialogOpenChange}
-        initialData={editing}
+        initialData={fullEducation.record}
+        isLoadingInitialData={fullEducation.isNotReady}
+        hasLoadError={fullEducation.hasError}
+        onRetryLoad={fullEducation.retry}
         onSubmit={(values) => save(values)}
         loading={isSaving}
       />
