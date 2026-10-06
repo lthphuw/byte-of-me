@@ -12,8 +12,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, slug } = await params;
 
-  const { data: blog, success } = await getPublicBlogBySlug(slug);
-  const { data: author } = await getPublicUserProfile();
+  const [{ data: blog, success }, { data: author }] = await Promise.all([
+    getPublicBlogBySlug(slug),
+    getPublicUserProfile(),
+  ]);
 
   const url = `${host}/${locale}/blogs/${slug}`;
 
