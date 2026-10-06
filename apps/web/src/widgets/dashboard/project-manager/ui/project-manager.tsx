@@ -14,9 +14,9 @@ import {
 } from '@/entities/project';
 import type { AdminProject, ProjectFromValues } from '@/entities/project/model';
 import { projectKeys } from '@/entities/project/model/query-keys';
-import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { ProjectEditorCard } from '@/entities/project/ui/project-editor-card';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
+import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
 export function ProjectManager() {
