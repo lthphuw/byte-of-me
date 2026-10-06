@@ -3,43 +3,37 @@
 import { useMemo } from 'react';
 import type { Option } from '@byte-of-me/ui';
 import { useQuery } from '@tanstack/react-query';
+import { useLocale } from 'next-intl';
 
-import { getPaginatedAdminProjects } from '@/entities/project/api/get-paginated-admin-projects';
-import type { AdminProject } from '@/entities/project/model';
+import {
+  getAdminProjectOptions,
+  type ProjectOption,
+} from '@/entities/project/api/get-admin-project-options';
 import { projectKeys } from '@/entities/project/model/query-keys';
-import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
-import { tagKeys } from '@/entities/tag/model/query-keys';
+import { useTagOptions } from '@/entities/tag/query/use-tag-options';
+import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
 
-/** Tag + related-project pickers for the blog form. */
-export function useBlogReferenceOptions(): {
+/**
+ * Tag + related-project pickers for the blog form. `enabled` lets the manager
+ * start both fetches when the dialog opens, in parallel with the post fetch
+ * the form is gated on; the form's own call then reads the same cache entries.
+ */
+export function useBlogReferenceOptions(enabled = true): {
   tagOptions: Option[];
-  projects: AdminProject[];
+  projects: ProjectOption[];
   isTagLoading: boolean;
   isProjectLoading: boolean;
 } {
-  const { data: tagsData, isLoading: isTagLoading } = useQuery({
-    queryKey: tagKeys.options(1),
-    queryFn: () => getPaginatedAdminTags(1, 100),
-  });
+  const locale = useLocale();
+  const { tagOptions, isLoading: isTagLoading } = useTagOptions(enabled);
 
   const { data: projectData, isLoading: isProjectLoading } = useQuery({
-    queryKey: projectKeys.options(),
-    queryFn: () => getPaginatedAdminProjects(1, 100),
+    queryKey: projectKeys.options(locale),
+    queryFn: async () => unwrapApiResponse(await getAdminProjectOptions()),
+    enabled,
   });
 
-  const tagOptions = useMemo(
-    () =>
-      tagsData?.data?.data.map((tag) => ({
-        label: tag.translations?.[0]?.name || 'Unknown',
-        value: tag.id,
-      })) || [],
-    [tagsData]
-  );
-
-  const projects = useMemo(
-    () => projectData?.data?.data || [],
-    [projectData]
-  );
+  const projects = useMemo(() => projectData ?? [], [projectData]);
 
   return { tagOptions, projects, isTagLoading, isProjectLoading };
 }

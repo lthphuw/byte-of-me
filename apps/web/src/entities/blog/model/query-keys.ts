@@ -8,6 +8,8 @@ export const blogKeys = {
     filters: { tagSlugs: string[]; search: string }
   ) => [...blogKeys.publicList(page, filters), 'with-drafts'] as const,
   adminList: () => [...blogKeys.all, 'admin-list'] as const,
+  /** One page of the admin list: the key the server prefetch and the manager share. */
+  adminPage: (page: number) => [...blogKeys.adminList(), page] as const,
   /** Full blog (content included) fetched on demand when the editor opens. */
   detail: (blogId: string) => [...blogKeys.all, 'detail', blogId] as const,
   stats: (blogId: string) => [...blogKeys.all, 'stats', blogId] as const,

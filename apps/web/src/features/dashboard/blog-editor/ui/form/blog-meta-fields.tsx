@@ -20,13 +20,13 @@ import {
 import { useTranslations } from 'next-intl';
 
 import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
-import type { AdminProject } from '@/entities/project/model';
+import type { ProjectOption } from '@/entities/project/api/get-admin-project-options';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import { TextField } from '@/shared/ui';
 
 interface BlogMetaFieldsProps {
   control: Control<BlogFormValues>;
-  projects: AdminProject[];
+  projects: ProjectOption[];
   tagOptions: Option[];
   isProjectLoading: boolean;
   isTagLoading: boolean;
@@ -77,7 +77,7 @@ export function BlogMetaFields({
 
                     {projects?.map((project) => (
                       <SelectItem key={project.id} value={project.id}>
-                        {project.translations?.[0]?.title || project.slug}
+                        {project.title}
                       </SelectItem>
                     ))}
                   </SelectContent>
