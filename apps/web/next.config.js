@@ -160,46 +160,9 @@ const nextConfig = {
   // cannot follow symlinks into the root node_modules, which on Vercel shows up
   // as a workspace-root warning and mis-traced server bundles.
   outputFileTracingRoot: path.join(import.meta.dirname, '../../'),
-  // `sharp`'s native addon is not self-contained: `@img/sharp-<platform>`
-  // ships the `.node`, and the 17 MB `libvips-cpp.so` it links against lives in
-  // a SEPARATE package, `@img/sharp-libvips-<platform>`. Nothing `require`s that
-  // binary — the addon dlopens it by path at runtime — so file tracing, which
-  // follows static requires, packed the libvips package's `index.js`,
-  // `package.json` and `versions.json` and left the shared object behind.
-  //
-  // On Vercel that produced, on the first photo upload:
-  //
-  //   Failed to load external module sharp-edea96869fc6cbfe:
-  //   ERR_DLOPEN_FAILED: libvips-cpp.so.8.18.3: cannot open shared object file
-  //
-  // The lazy `import('sharp')` in `compress-image.ts` is what moved this off the
-  // render path and into the upload that needs it (see `fix(media): load sharp
-  // on first compression`); it never made the library reachable. This does.
-  //
-  // Both layouts are listed because a glob that matches nothing is silent, and
-  // silence here is a 500 in production. The first is bun's isolated store,
-  // which is where tracing resolves to (same reasoning as the excludes below);
-  // the second is a flat/hoisted `node_modules`, in case an install ever
-  // produces one. `sharp-libvips-*` rather than a pinned platform and version
-  // so the build machine's own triple matches — linux-x64 on Vercel,
-  // darwin-arm64 locally — and so Next's nested `sharp@0.34.5` (libvips 1.2.4,
-  // reached through `/api/og`) is covered alongside our own 0.35.3.
-  // `sharp`'s native addon is not self-contained. `@img/sharp-<platform>` ships
-  // the `.node`; the 17 MB `libvips-cpp.so` it links against lives in a
-  // SEPARATE package, `@img/sharp-libvips-<platform>`. Nothing `require`s that
-  // binary — the addon dlopens it by path at runtime — so file tracing, which
-  // follows static requires, packed the libvips package's `index.js`,
-  // `package.json` and `versions.json` into the function and left the shared
-  // object behind. On Vercel the first photo upload then failed with
-  //
-  //   Failed to load external module sharp-edea96869fc6cbfe:
-  //   ERR_DLOPEN_FAILED: libvips-cpp.so.8.18.3: cannot open shared object file
-  //
-  // The lazy `import('sharp')` in `compress-image.ts` (see `fix(media): load
-  // sharp on first compression`) moved that failure off the render path and
-  // into the upload that needs it; it never made the library reachable. This
-  // does. The `optionalDependencies` pin in package.json does not help either —
-  // the package was installed all along, just not traced.
+  // sharp dlopens its 17 MB libvips-cpp.so by path, so file tracing (static
+  // requires only) drops it and the first upload dies with ERR_DLOPEN_FAILED.
+  // The `dashboard` key below ships it; sharpLibvipsBinary() resolves the path.
   outputFileTracingIncludes: {
     // Keys are matched against the route with picomatch's `contains` option, so
     // a bare SUBSTRING is the form that works: 'dashboard' covers every
@@ -243,6 +206,11 @@ const nextConfig = {
     ];
   },
   async headers() {
+    const noFraming = [
+      { key: 'X-Frame-Options', value: 'DENY' },
+      { key: 'Content-Security-Policy', value: "frame-ancestors 'none'" },
+    ];
+
     return [
       {
         // Public pages only. Two exclusions matter here:
@@ -269,6 +237,17 @@ const nextConfig = {
         // Already excluded from the public rule by name; stated positively so
         // the private set is one list rather than a pattern to reason about.
         source: '/:locale/dashboard/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'private, no-cache, no-store, max-age=0, must-revalidate',
+          },
+        ],
+      },
+      {
+        // Not excluded from the public rule, so it must follow it: the layout
+        // redirects a signed-in admin, and a CDN must never replay that redirect.
+        source: '/:locale/auth/:path*',
         headers: [{ key: 'Cache-Control', value: 'private, no-store' }],
       },
       {
@@ -297,14 +276,26 @@ const nextConfig = {
         ],
       },
       {
-        source: '/:locale/dashboard/:path*',
+        // Never carries Cache-Control: a headers() entry REPLACES a same-key one.
+        // HSTS omits includeSubDomains/preload: neither can be undone once seen.
+        source: '/:path*',
         headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
           {
-            key: 'Cache-Control',
-            value: 'private, no-cache, no-store, max-age=0, must-revalidate',
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
           },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
+          },
+          { key: 'Strict-Transport-Security', value: 'max-age=31536000' },
         ],
       },
+      // Never framed. The CSP is frame-ancestors ONLY: inline boot-splash/JSON-LD/
+      // theme scripts and static caching rule out nonces. Public pages stay framable.
+      { source: '/:locale/dashboard/:path*', headers: noFraming },
+      { source: '/:locale/auth/:path*', headers: noFraming },
     ];
   },
 };
