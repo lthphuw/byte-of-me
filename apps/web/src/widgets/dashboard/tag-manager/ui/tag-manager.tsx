@@ -17,6 +17,7 @@ import {
 } from '@/entities/tag';
 import { TagCard } from '@/features/dashboard/tag-management';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
+import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
 export function TagManager() {
@@ -54,7 +55,8 @@ export function TagManager() {
       saveError: t('toast.saveError'),
       deleteError: t('toast.deleteError'),
     },
-    pageSize: 12,
+    pageSize: ADMIN_PAGE_SIZE,
+    pageKey: tagKeys.adminPage,
     fetchPage: (page, limit) => getPaginatedAdminTags(page, limit),
     create: createTag,
     update: updateTag,

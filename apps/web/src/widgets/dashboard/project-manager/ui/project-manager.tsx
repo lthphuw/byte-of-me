@@ -14,6 +14,7 @@ import {
 } from '@/entities/project';
 import type { AdminProject, ProjectFromValues } from '@/entities/project/model';
 import { projectKeys } from '@/entities/project/model/query-keys';
+import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { ProjectEditorCard } from '@/entities/project/ui/project-editor-card';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
@@ -53,7 +54,8 @@ export function ProjectManager() {
       saveError: t('toast.saveError'),
       deleteError: t('toast.deleteError'),
     },
-    pageSize: 12,
+    pageSize: ADMIN_PAGE_SIZE,
+    pageKey: projectKeys.adminPage,
     fetchPage: (page, limit) => getPaginatedAdminProjects(page, limit),
     create: createProject,
     update: updateProject,

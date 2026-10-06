@@ -19,9 +19,10 @@ import { getPaginatedAdminComments } from '@/entities/comment/api/get-paginated-
 import { setCommentVisibility } from '@/entities/comment/api/set-comment-visibility';
 import { commentKeys } from '@/entities/comment/model/query-keys';
 import type { AdminComment } from '@/entities/comment/model/types';
+import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
+import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
-const PAGE_SIZE = 12;
 
 export function CommentManager() {
   const t = useTranslations('dashboard.comment');
@@ -62,11 +63,10 @@ export function CommentManager() {
     // The action resolves with an ApiResponse rather than throwing, so unwrap
     // here (as `useCrudManager` does): reading `success` in the component
     // instead would leave `isError` false and render EMPTY on a server failure.
-    queryFn: async () => {
-      const res = await getPaginatedAdminComments(page, PAGE_SIZE);
-      if (!res.success) throw new Error(res.errorMsg);
-      return res.data;
-    },
+    queryFn: async () =>
+      unwrapApiResponse(
+        await getPaginatedAdminComments(page, ADMIN_PAGE_SIZE)
+      ),
     placeholderData: (prev) => prev,
   });
 
