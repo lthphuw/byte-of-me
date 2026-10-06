@@ -36,16 +36,11 @@ export function BrandMark({
       transform={mark.transform}
       d={MARK_PATH}
       fill="none"
-      stroke={enclosure?.kind === 'plate' ? '#000' : 'currentColor'}
+      stroke="currentColor"
       strokeWidth={mark.strokeWidth}
       strokeLinecap="round"
     />
   );
-
-  // Stable rather than `useId`: this stays a server component, and two marks of
-  // the same layer on one page define byte-identical masks, so the duplicate
-  // resolves to the same shape either way.
-  const maskId = `brand-mark-${layer}-cut`;
 
   return (
     <svg
@@ -57,46 +52,19 @@ export function BrandMark({
       aria-hidden="true"
       {...props}
     >
-      {enclosure?.kind === 'plate' ? (
-        <>
-          <mask
-            id={maskId}
-            maskUnits="userSpaceOnUse"
-            x={0}
-            y={0}
-            width={MARK_VIEWBOX}
-            height={MARK_VIEWBOX}
-          >
-            <rect width={MARK_VIEWBOX} height={MARK_VIEWBOX} fill="#fff" />
-            {path}
-          </mask>
-          <rect
-            x={enclosure.shape.x}
-            y={enclosure.shape.y}
-            width={enclosure.shape.size}
-            height={enclosure.shape.size}
-            rx={enclosure.shape.rx}
-            fill="currentColor"
-            mask={`url(#${maskId})`}
-          />
-        </>
-      ) : (
-        <>
-          {enclosure?.kind === 'outline' && (
-            <rect
-              x={enclosure.shape.x}
-              y={enclosure.shape.y}
-              width={enclosure.shape.size}
-              height={enclosure.shape.size}
-              rx={enclosure.shape.rx}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={enclosure.shape.strokeWidth}
-            />
-          )}
-          {path}
-        </>
+      {enclosure && (
+        <rect
+          x={enclosure.x}
+          y={enclosure.y}
+          width={enclosure.size}
+          height={enclosure.size}
+          rx={enclosure.rx}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={enclosure.strokeWidth}
+        />
       )}
+      {path}
     </svg>
   );
 }

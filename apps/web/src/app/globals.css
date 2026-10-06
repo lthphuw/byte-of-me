@@ -15,9 +15,8 @@
    * `viewportFit: 'cover'` (`app/[locale]/layout.tsx`) extends every surface
    * into the notch, the home indicator, and — in landscape — the sensor
    * housing on whichever side it lands. Before these existed, each surface
-   * that needed one wrote its own inline `env()` (`space-shell.tsx`,
-   * `dashboard/layout.tsx`, `public-site-header.tsx`, the `/space/health`
-   * bottom bars…), which is fine for the handful of spots that also need to
+   * that needed one wrote its own inline `env()` (`dashboard/layout.tsx`,
+   * `public-site-header.tsx`, the bottom bars…), which is fine for the handful of spots that also need to
    * `calc()` the inset against something else, but is not a pattern to keep
    * repeating for a plain edge pad. These are that one obvious way, for
    * everything else.
@@ -51,9 +50,8 @@
  *
  * Built for the print view. Paper has no dark mode: an author writing at
  * night has `.dark` on <html>, which sets `--foreground` to near-white, and
- * every heading and bold run inside the exported note then renders white on
- * white — invisible on screen and blank in the PDF. Observed exactly that on
- * `/print/notes/[id]` before this existed.
+ * every heading and bold run inside the exported article then renders white on
+ * white — invisible on screen and blank in the PDF.
  *
  * The values are the `:root` block's, repeated because `.dark` is set on an
  * ANCESTOR: custom properties cascade, so the only way to win for a subtree
@@ -293,7 +291,7 @@ html {
 
 /* -----------------------------------------------------------------------
  * App-boot splash (`(protected)/_boot-splash/`) — the once-per-session
- * "app is starting" overlay shown on first entry into `/space` or
+ * "app is starting" overlay shown on first entry into
  * `/dashboard`.
  *
  * `BootSplashOverlay`'s markup is always in the tree, in both the server and
@@ -352,14 +350,12 @@ html[data-booting] .app-boot-splash {
   mask-size: contain;
 }
 
-/* The print view (`/print/notes/[id]`). Chrome's "Save as PDF" is the export
+/* The print view (`/print/blogs/[slug]`). Chrome's "Save as PDF" is the export
    mechanism for PRD §3.2, so these rules ARE the PDF's layout. */
 @media print {
   /* The page renders no chrome of its own, but portals mount at the document
      root and land on the page regardless of where the route put them. The
-     boot splash is the same case: `/print/notes/[id]` sits under
-     `(protected)`, so it mounts too, and it must never end up in an exported
-     PDF even in the split second before it self-dismisses. */
+     boot splash must also never end up in an exported PDF. */
   [data-sonner-toaster],
   nextjs-portal,
   .app-boot-splash {

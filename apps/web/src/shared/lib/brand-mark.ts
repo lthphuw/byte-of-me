@@ -20,15 +20,15 @@
  */
 
 /**
- * The three access layers the site is split into.
+ * The two access layers the site is split into.
  *
- * They differ only by enclosure — bare, framed, sealed — never by colour. A
+ * They differ only by enclosure — bare or framed — never by colour. A
  * favicon is 16px of monochrome on an unknown background; a hue is the first
  * thing that stops being legible there, and a silhouette is the last.
  */
-export type BrandLayer = 'public' | 'cms' | 'space';
+export type BrandLayer = 'public' | 'cms';
 
-export const BRAND_LAYERS: readonly BrandLayer[] = ['public', 'cms', 'space'];
+export const BRAND_LAYERS: readonly BrandLayer[] = ['public', 'cms'];
 
 /** Every placement below is expressed inside this box. */
 export const MARK_VIEWBOX = 24;
@@ -46,20 +46,19 @@ export interface MarkPlacement {
   strokeWidth: number;
 }
 
-/** A rounded rectangle covering most of the box — the frame or the plate. */
+/** A rounded rectangle covering most of the box — the frame. */
 export interface MarkEnclosure {
   x: number;
   y: number;
   size: number;
   rx: number;
-  /** Set for a drawn outline; omitted when the shape is filled instead. */
-  strokeWidth?: number;
+  strokeWidth: number;
 }
 
 export interface LayerGeometry {
   mark: MarkPlacement;
-  /** `outline` draws the frame, `plate` fills it and knocks the mark out. */
-  enclosure?: { kind: 'outline' | 'plate'; shape: MarkEnclosure };
+  /** The frame drawn around the mark; absent for the bare layer. */
+  enclosure?: MarkEnclosure;
 }
 
 export const MARK_LAYERS: Record<BrandLayer, LayerGeometry> = {
@@ -79,22 +78,7 @@ export const MARK_LAYERS: Record<BrandLayer, LayerGeometry> = {
    */
   cms: {
     mark: { transform: 'translate(4.78 5.4) scale(0.58)', strokeWidth: 3.1 },
-    enclosure: {
-      kind: 'outline',
-      shape: { x: 1.1, y: 1.1, size: 21.8, rx: 5.2, strokeWidth: 2 },
-    },
-  },
-
-  /**
-   * Fully sealed: the mark is knocked out of a solid plate, so the silhouette
-   * alone separates a vault tab from the other two at 16px.
-   */
-  space: {
-    mark: { transform: 'translate(3.19 3.98) scale(0.71)', strokeWidth: 2.9 },
-    enclosure: {
-      kind: 'plate',
-      shape: { x: 1, y: 1, size: 22, rx: 5.5 },
-    },
+    enclosure: { x: 1.1, y: 1.1, size: 21.8, rx: 5.2, strokeWidth: 2 },
   },
 };
 
@@ -109,7 +93,6 @@ const STANDALONE_BACKGROUND = '#0f0f1a';
 export const FAVICON_FILES = [
   'mark-public.svg',
   'mark-cms.svg',
-  'mark-space.svg',
   'apple-touch.svg',
   'maskable.svg',
 ] as const;
@@ -153,10 +136,7 @@ function svg(label: string, comment: string, body: string): string {
  */
 function renderLayerSvg(layer: BrandLayer): string {
   const { mark, enclosure } = MARK_LAYERS[layer];
-  const label =
-    layer === 'public'
-      ? 'Byte of me'
-      : `Byte of me — ${layer === 'cms' ? 'dashboard' : 'private space'}`;
+  const label = layer === 'public' ? 'Byte of me' : 'Byte of me — dashboard';
 
   const theme = (property: 'stroke' | 'fill', name: string) =>
     `<style>
@@ -173,31 +153,15 @@ function renderLayerSvg(layer: BrandLayer): string {
     );
   }
 
-  const { shape } = enclosure;
+  const shape = enclosure;
 
-  if (enclosure.kind === 'outline') {
-    return svg(
-      label,
-      `CMS layer: the mark gains a frame. Enclosure encodes access level.`,
-      `${theme('stroke', 'ink')}
+  return svg(
+    label,
+    `CMS layer: the mark gains a frame. Enclosure encodes access level.`,
+    `${theme('stroke', 'ink')}
   <rect class="ink" x="${shape.x}" y="${shape.y}" width="${shape.size}" height="${shape.size}" rx="${shape.rx}"
         fill="none" stroke="${INK_LIGHT}" stroke-width="${shape.strokeWidth}"/>
   ${markPath(mark, { stroke: INK_LIGHT, className: 'ink' })}`
-    );
-  }
-
-  // The mask is luminance-based and therefore theme-independent: only the plate
-  // fill flips, which inverts plate and mark together.
-  return svg(
-    label,
-    'Space layer: fully sealed. The mark is knocked out of a solid plate.',
-    `${theme('fill', 'plate')}
-  <mask id="space-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="${MARK_VIEWBOX}" height="${MARK_VIEWBOX}">
-    <rect width="${MARK_VIEWBOX}" height="${MARK_VIEWBOX}" fill="#fff"/>
-    ${markPath(mark, { stroke: '#000' }).replace(/\n {8}/g, '\n          ')}
-  </mask>
-  <rect class="plate" x="${shape.x}" y="${shape.y}" width="${shape.size}" height="${shape.size}" rx="${shape.rx}"
-        fill="${INK_LIGHT}" mask="url(#space-cut)"/>`
   );
 }
 
@@ -257,8 +221,6 @@ export function renderFaviconSvg(file: FaviconFile): string {
       return renderLayerSvg('public');
     case 'mark-cms.svg':
       return renderLayerSvg('cms');
-    case 'mark-space.svg':
-      return renderLayerSvg('space');
     default:
       return renderStandaloneSvg(file);
   }

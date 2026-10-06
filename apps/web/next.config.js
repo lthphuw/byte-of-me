@@ -194,17 +194,14 @@ const nextConfig = {
   outputFileTracingIncludes: {
     // Keys are matched against the route with picomatch's `contains` option, so
     // a bare SUBSTRING is the form that works: 'dashboard' covers every
-    // `/[locale]/dashboard/*`, 'daily' covers `/[locale]/space/daily`, and
-    // nothing else in the route table contains either word.
+    // `/[locale]/dashboard/*`.
     //
-    // Do not "improve" these into real paths. `'/[locale]/space/daily'`,
-    // `'**/space/daily'` and `'**/dashboard/**/*'` were all tried first and all
-    // matched NOTHING — any key containing a `/` silently fails here, and a key
+    // Do not "improve" this into a real path. `'**/dashboard/**/*'` was tried
+    // first and matched NOTHING — any key containing a `/` silently fails here, and a key
     // that matches nothing produces no warning, no build error, and a function
     // that 500s on the first upload. Each form above was proved by building with
     // a distinct throwaway file per key and reading the emitted `.nft.json`.
     dashboard: SHARP_LIBVIPS,
-    daily: SHARP_LIBVIPS,
   },
   outputFileTracingExcludes: {
     // Nothing server-rendered needs these at runtime; they are pure build-time
@@ -242,40 +239,6 @@ const nextConfig = {
             value: 'public, s-maxage=3600, stale-while-revalidate=86400',
           },
         ],
-      },
-      {
-        // Every signed-in surface, back to `private, no-store`.
-        //
-        // The rule above excludes `dashboard` by name, which read as "the
-        // private half is covered". It is not: `/[locale]/space/**` (the notes
-        // workspace) and `/[locale]/print/notes/[id]` are `(protected)` routes
-        // that contain no such segment, so they matched the public rule and
-        // answered `public, s-maxage=3600, stale-while-revalidate=86400`.
-        //
-        // That is worse than an over-eager cache. Next serves dynamic routes
-        // `private, no-store` by default; a `headers()` entry REPLACES that
-        // default rather than adding to it (the note about `_next` above is the
-        // same mechanism). So an admin opening a private note authorised every
-        // shared cache in front of the app to keep that HTML for an hour and
-        // hand it to whoever asked for the URL next — `requireAdmin` never runs
-        // on a cache hit.
-        //
-        // Declared after the public rule because the last matching header wins.
-        // `:path*` matches zero segments, so `/en/space` is covered as well as
-        // `/en/space/notes/xxx`.
-        //
-        // Listed per surface rather than as one alternation over the first
-        // segment: `/[locale]/print` holds BOTH the private notes export and
-        // the public article export, and a pattern matching the segment would
-        // have taken the article's CDN caching away with it.
-        source: '/:locale/space/:path*',
-        headers: [{ key: 'Cache-Control', value: 'private, no-store' }],
-      },
-      {
-        // The notes export specifically — `/[locale]/print/blogs/*` next to it
-        // is published content and stays publicly cacheable.
-        source: '/:locale/print/notes/:path*',
-        headers: [{ key: 'Cache-Control', value: 'private, no-store' }],
       },
       {
         // Already excluded from the public rule by name; stated positively so
@@ -316,40 +279,6 @@ const nextConfig = {
             value: 'private, no-cache, no-store, max-age=0, must-revalidate',
           },
         ],
-      },
-    ];
-  },
-
-  // The health module split into daily and gym; these are a private app's
-  // PWA shortcuts pinned to the old URLs, not search-engine traffic, but a
-  // permanent redirect is still cheaper than a 404 on someone's home screen.
-  // Sources are locale-prefixed because next-intl puts the locale first.
-  async redirects() {
-    return [
-      {
-        source: '/:locale/space/health',
-        destination: '/:locale/space/daily',
-        permanent: true,
-      },
-      {
-        source: '/:locale/space/health/sleep',
-        destination: '/:locale/space/daily',
-        permanent: true,
-      },
-      {
-        source: '/:locale/space/health/insights',
-        destination: '/:locale/space/daily',
-        permanent: true,
-      },
-      {
-        source: '/:locale/space/health/exercises/:path*',
-        destination: '/:locale/space/gym/exercises/:path*',
-        permanent: true,
-      },
-      {
-        source: '/:locale/space/health/gym/:path*',
-        destination: '/:locale/space/gym/:path*',
-        permanent: true,
       },
     ];
   },
