@@ -190,13 +190,11 @@ export default {
     tailwindTypography,
     plugin(({ addUtilities }) => {
       addUtilities({
+        // A solid surface, not frosted glass: `backdrop-filter` re-samples what is
+        // behind it every frame, which is the costliest effect a scrolling page can
+        // carry. The header islands and every popover share this one fill.
         '.container-bg': {
-          '@apply backdrop-blur-md backdrop-invert-0 backdrop-saturate-200 bg-white/70 dark:bg-neutral-900/70 appearance-none':
-            {},
-        },
-        '.gradient-bg': {
-          '@apply backdrop-blur-md backdrop-invert-0 backdrop-saturate-200 shadow-lg shadow-indigo-500/50':
-            {},
+          '@apply bg-card appearance-none': {},
         },
         '.article-text': {
           '@apply leading-relaxed text-justify tracking-normal break-safe': {},

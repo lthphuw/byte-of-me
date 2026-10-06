@@ -8,7 +8,7 @@ export function StatsGridLoading() {
         {Array.from({ length: 4 }).map((_, i) => (
           <Card
             key={i}
-            className="border-none bg-card/60 shadow-sm backdrop-blur-md"
+            className="border-none bg-card/60 shadow-sm"
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <Skeleton className="h-3 w-20" />

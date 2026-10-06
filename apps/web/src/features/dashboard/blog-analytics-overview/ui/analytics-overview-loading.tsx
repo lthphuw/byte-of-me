@@ -10,7 +10,7 @@ export function AnalyticsOverviewLoading() {
     <div className="space-y-6">
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Views chart skeleton */}
-        <Card className="border-none bg-card/60 shadow-sm backdrop-blur-md">
+        <Card className="border-none bg-card/60 shadow-sm">
           <CardHeader className="pb-2">
             <Skeleton className="h-3 w-36" />
           </CardHeader>
@@ -33,7 +33,7 @@ export function AnalyticsOverviewLoading() {
         </Card>
 
         {/* Top posts skeleton */}
-        <Card className="border-none bg-card/60 shadow-sm backdrop-blur-md">
+        <Card className="border-none bg-card/60 shadow-sm">
           <CardHeader className="pb-2">
             <Skeleton className="h-3 w-24" />
           </CardHeader>
@@ -58,7 +58,7 @@ export function AnalyticsOverviewLoading() {
         {Array.from({ length: 3 }).map((_, i) => (
           <Card
             key={i}
-            className="border-none bg-card/60 shadow-sm backdrop-blur-md"
+            className="border-none bg-card/60 shadow-sm"
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <Skeleton className="h-3 w-20" />

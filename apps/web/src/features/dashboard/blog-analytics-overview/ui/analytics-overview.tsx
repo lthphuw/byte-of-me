@@ -67,7 +67,7 @@ export async function AnalyticsOverview() {
   return (
     <div className="space-y-6">
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="border-none bg-card/60 shadow-sm backdrop-blur-md">
+        <Card className="border-none bg-card/60 shadow-sm">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               {t('overview.viewsChartTitle')}
@@ -120,7 +120,7 @@ export async function AnalyticsOverview() {
           </CardContent>
         </Card>
 
-        <Card className="border-none bg-card/60 shadow-sm backdrop-blur-md">
+        <Card className="border-none bg-card/60 shadow-sm">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               {t('overview.topPostsTitle')}
@@ -180,7 +180,7 @@ export async function AnalyticsOverview() {
         {tiles.map((tile) => (
           <Card
             key={tile.label}
-            className="border-none bg-card/60 shadow-sm backdrop-blur-md"
+            className="border-none bg-card/60 shadow-sm"
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">

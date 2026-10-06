@@ -94,16 +94,13 @@ const DOCK_TRANSITION: Transition = {
  * wrapper in PublicSiteHeader, not the viewport.
  */
 const ISLAND_BASE =
-  'pointer-events-auto flex h-16 min-w-0 items-center gap-1 rounded-none border px-8 md:gap-2 backdrop-invert-0 transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out';
+  'pointer-events-auto flex h-16 min-w-0 items-center gap-1 rounded-none border px-8 md:gap-2 transition-[background-color,border-color,box-shadow] duration-300 ease-out';
 
 /**
- * `backdrop-blur-[0px]`, not `backdrop-blur-none`: the latter compiles to an
- * empty blur, leaving the two states with different backdrop-filter function
- * lists, which the browser cannot interpolate — the blur would snap in while
- * the background and border faded.
+ * No `backdrop-filter` in either state: a blurred island re-samples the page
+ * behind it on every scroll frame, and the fill below is solid instead.
  */
-const ISLAND_AT_REST =
-  'border-transparent bg-transparent shadow-none backdrop-blur-[0px] backdrop-saturate-100';
+const ISLAND_AT_REST = 'border-transparent bg-transparent shadow-none';
 
 /**
  * Light mode carries a soft two-layer shadow. Dark mode drops it to a hairline
@@ -116,7 +113,7 @@ const ISLAND_AT_REST =
  * `resolvedTheme` branch, so no hydration-sensitive shadow.
  */
 const ISLAND_DOCKED =
-  'container-bg border-black/[0.06] shadow-[0_2px_6px_-2px_rgb(0_0_0/0.08),0_8px_24px_-12px_rgb(0_0_0/0.18)] dark:border-white/10 dark:shadow-[0_8px_24px_-12px_rgb(0_0_0/0.7)]';
+  'container-bg border-border shadow-[0_2px_6px_-2px_rgb(0_0_0/0.08),0_8px_24px_-12px_rgb(0_0_0/0.18)] dark:shadow-[0_8px_24px_-12px_rgb(0_0_0/0.7)]';
 
 /**
  * Resolves the geometry both islands animate to. Called once by the header so

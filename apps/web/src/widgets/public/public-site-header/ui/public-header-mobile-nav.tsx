@@ -14,12 +14,9 @@ import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import type { MainNavItem } from '@/shared/types';
 
-// Deliberately no `opacity` here. The panel below carries `backdrop-blur-xl`,
-// and an ancestor with opacity < 1 becomes a backdrop root: the blur then
-// samples only what is painted *inside* that root — nothing — so the frosted
-// glass stayed flat until the spring settled and opacity hit exactly 1. That
-// read as the menu blurring half a second after the tap. Transform alone does
-// not create a backdrop root, so scale + y keep the entrance without the bug.
+// No `opacity` here: the panel used to be frosted glass, and an ancestor with
+// opacity < 1 broke its backdrop blur until the spring settled. The panel is
+// solid now; the entrance stays scale + y so it looks the same as before.
 const containerVariants: Variants = {
   hidden: { scale: 0.95, y: -10 },
   visible: {
@@ -144,7 +141,7 @@ export const PublicHeaderMobileNav = ({
           <div className="container">
             <div
               ref={menuRef}
-              className="pointer-events-auto overflow-hidden rounded-2xl border border-border p-2 shadow-xl backdrop-blur-xl container-bg"
+              className="pointer-events-auto overflow-hidden rounded-2xl border border-border p-2 shadow-xl container-bg"
             >
               <div className="grid gap-2">
                 {/* No gap between rows. §14's 8px separation guards small

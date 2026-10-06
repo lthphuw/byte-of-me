@@ -78,7 +78,7 @@ export async function StatsGrid() {
         {primaryStats.map((s) => (
           <Card
             key={s.label}
-            className="border-none bg-card/60 shadow-sm backdrop-blur-md"
+            className="border-none bg-card/60 shadow-sm"
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
