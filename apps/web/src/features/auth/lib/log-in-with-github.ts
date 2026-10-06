@@ -1,8 +1,9 @@
 'use server';
 
 import { logger } from '@byte-of-me/logger';
+import { getLocale } from 'next-intl/server';
 
-import { signIn as nextAuthSignIn } from '@/shared/lib/auth';
+import { sanitizeCallbackUrl, signIn as nextAuthSignIn } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 
 
@@ -11,8 +12,11 @@ import { getErrorMessage } from '@/shared/lib/utils';
 
 export async function logInWithGithub(callbackUrl: string) {
   try {
+    // The action is callable directly: never trust the value as a redirect or log.
+    const destination = sanitizeCallbackUrl(callbackUrl, await getLocale());
+
     logger.info(
-      `Attempting to sign in with GitHub, callbackUrl: ${callbackUrl}`
+      `Attempting to sign in with GitHub, callbackUrl: ${destination}`
     );
 
     // `redirectTo` + a positional `authorizationParams`: Auth.js v5's shape.
@@ -21,7 +25,7 @@ export async function logInWithGithub(callbackUrl: string) {
     // here, so this read as working. See `log-in-to-dashboard.ts` for detail.
     await nextAuthSignIn(
       'github',
-      { redirect: true, redirectTo: callbackUrl },
+      { redirect: true, redirectTo: destination },
       { prompt: 'login' }
     );
   } catch (error) {

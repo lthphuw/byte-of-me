@@ -13,25 +13,18 @@ import 'server-only';
 
 import { env } from '@/shared/config/env';
 import { siteConfig } from '@/shared/config/site';
-import {
-  ADMIN_OAUTH_PROVIDER_IDS,
-  isAdminOAuthProviderId,
-} from '@/shared/lib/auth/admin-oauth-providers';
+import { ADMIN_OAUTH_PROVIDER_IDS } from '@/shared/lib/auth/admin-oauth-providers';
+import { fetchGitHubProfile } from '@/shared/lib/auth/github-userinfo';
+import { isMagicLinkRequestAllowed } from '@/shared/lib/auth/magic-link-rate-limit';
+import { evaluateSignIn } from '@/shared/lib/auth/sign-in-policy';
 import { isSiteOwnerEmail } from '@/shared/lib/auth/site-owner';
 import { signInTemplate } from '@/shared/lib/templates/sign-in-template';
 import { getErrorMessage } from '@/shared/lib/utils';
 
 /**
- * Linking by verified email is what makes the admin OAuth buttons usable at
- * all. The owner's `User` row is created by the email magic link, so without
- * this an OAuth sign-in for the same address fails with
- * `OAuthAccountNotLinked` rather than signing them in.
- *
- * "Dangerous" is Auth.js warning that it trusts the provider's word on the
- * address. Both GitHub and Google only release verified addresses, and the
- * account this can link into is gated a second time by `isSiteOwnerEmail()`
- * in the `signIn` callback, so the linking decision is not the only thing
- * standing between a stranger and the dashboard.
+ * On so an OAuth sign-in reaches the owner row the magic link created (else
+ * `OAuthAccountNotLinked`). It trusts the provider's address, hence the
+ * verified-email rule in `evaluateSignIn`.
  */
 const allowDangerousEmailAccountLinking = true;
 
@@ -65,6 +58,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     GitHub({
       clientId: env.AUTH_GITHUB_ID,
       clientSecret: env.AUTH_GITHUB_SECRET,
+      userinfo: { request: fetchGitHubProfile },
       allowDangerousEmailAccountLinking,
     }),
 
@@ -80,6 +74,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       id: ADMIN_OAUTH_PROVIDER_IDS.GITHUB,
       clientId: env.AUTH_GITHUB_ID,
       clientSecret: env.AUTH_GITHUB_SECRET,
+      userinfo: { request: fetchGitHubProfile },
       allowDangerousEmailAccountLinking,
     }),
 
@@ -93,31 +88,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
   callbacks: {
     /**
-     * Rejects anyone but the site owner from the admin OAuth buttons.
-     *
-     * This is a UX gate, not the trust boundary — `getAuthenticatedAdmin()`
-     * and `requireAdmin()` remain the boundary (AGENTS §5), and a stranger
-     * who signs in here would only ever receive a `USER` session anyway. What
-     * it buys is a clear refusal instead of a silent sign-in that then bounces
-     * off every protected route with no explanation.
-     *
-     * Only the `-admin` ids are gated. The bare `github` / `google` providers
-     * are what the public comment modal uses and must keep admitting everyone.
+     * The rules are in `evaluateSignIn`. Only the `-admin` ids are owner-gated:
+     * the bare `github` / `google` ids serve the public comment modal.
      */
-    async signIn({ user, account }) {
-      if (!account || !isAdminOAuthProviderId(account.provider)) {
-        return true;
+    async signIn({ user, account, profile, email }) {
+      const decision = evaluateSignIn({ user, account, profile });
+
+      if (!decision.allowed) {
+        logger.warn(`Sign-in refused: ${decision.reason}`);
+        return false;
       }
 
-      if (isSiteOwnerEmail(user.email)) {
-        return true;
+      // Auth.js calls this just before mailing a magic link.
+      if (email?.verificationRequest && !(await isMagicLinkRequestAllowed())) {
+        logger.warn('Sign-in refused: too many magic-link requests');
+        return false;
       }
 
-      logger.warn(
-        `Admin OAuth sign-in refused: ${account.provider} identity is not the site owner`
-      );
-
-      return false;
+      return true;
     },
 
     async jwt({ token, user, account }) {
@@ -163,6 +151,11 @@ async function sendVerificationRequest({
   url,
   provider,
 }: EmailProviderSendVerificationRequestParams) {
+  // Backstop behind `evaluateSignIn`: the one place mail is sent.
+  if (!isSiteOwnerEmail(identifier)) {
+    throw new Error('Could not send verification email.');
+  }
+
   const transporter = nodemailer.createTransport(provider.server);
   const fromName = siteConfig.name;
 
