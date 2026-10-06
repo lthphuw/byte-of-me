@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# Runs the repo-pinned turbo, not a global one that may be older.
 # Fast gate on every commit: type-check + lint (turbo caches, so this is quick).
 # The full build runs on pre-push instead — see .husky/pre-push.
-turbo run check-types lint || exit 1
+./node_modules/.bin/turbo run check-types lint || exit 1
