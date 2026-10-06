@@ -10,16 +10,14 @@ import {
   BLOG_FILTER_TAG_LIMIT,
   type BlogFilterState,
 } from '@/features/public/blog-filters/lib';
+import { HYDRATED_LIST_BEHAVIOR } from '@/shared/hooks/use-infinite-list-query';
 import { useUrlSyncedSearch } from '@/shared/hooks/use-url-synced-search';
 import type { FilterNavigationOptions } from '@/shared/lib/filter-params';
 import { FilterSearchInput } from '@/shared/ui';
 
 interface BlogFiltersProps {
   value: BlogFilterState;
-  onChange: (
-    value: BlogFilterState,
-    options?: FilterNavigationOptions
-  ) => void;
+  onChange: (value: BlogFilterState, options?: FilterNavigationOptions) => void;
 }
 
 /**
@@ -40,12 +38,14 @@ export function BlogFilters({ value, onChange }: BlogFiltersProps) {
       onChange({ ...value, search: nextSearch }, { history }),
   });
 
+  // Prefetched in blogs/page.tsx; the hydrated entry is build-old, so without
+  // `HYDRATED_LIST_BEHAVIOR` the chips refetch once on mount.
   const {
     data: tagData,
     fetchNextPage: fetchNextTags,
     hasNextPage: hasNextTags,
     isFetchingNextPage: isFetchingTags,
-  } = useTagInfiniteQuery(BLOG_FILTER_TAG_LIMIT);
+  } = useTagInfiniteQuery(BLOG_FILTER_TAG_LIMIT, HYDRATED_LIST_BEHAVIOR);
 
   const allTags = tagData?.pages.flatMap((page) => page.data) || [];
 

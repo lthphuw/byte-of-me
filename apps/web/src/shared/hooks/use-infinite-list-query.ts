@@ -5,12 +5,28 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
-export type InfiniteListQueryOptions<T> = {
+/** Fetch behaviour a caller may override. Omit a key rather than pass undefined. */
+export type InfiniteListQueryBehavior = {
+  enabled?: boolean;
+  staleTime?: number;
+  refetchOnWindowFocus?: boolean;
+};
+
+/**
+ * For a list the server prefetched into HTML. The hydrated entry carries the
+ * build's `dataUpdatedAt`, so only `Infinity` stops it refetching on mount;
+ * a missing entry still loads, and `fetchNextPage` ignores staleness.
+ */
+export const HYDRATED_LIST_BEHAVIOR = {
+  staleTime: Infinity,
+  refetchOnWindowFocus: false,
+} as const satisfies InfiniteListQueryBehavior;
+
+export type InfiniteListQueryOptions<T> = InfiniteListQueryBehavior & {
   /** Query key from the entity's key factory — never an inline array. */
   queryKey: readonly unknown[];
   /** Server action returning one page of the list. */
   fetchPage: (page: number) => Promise<ApiResponse<PaginatedData<T>>>;
-  enabled?: boolean;
 };
 
 /**
@@ -21,7 +37,7 @@ export type InfiniteListQueryOptions<T> = {
 export function useInfiniteListQuery<T>({
   queryKey,
   fetchPage,
-  enabled,
+  ...behavior
 }: InfiniteListQueryOptions<T>) {
   return useInfiniteQuery({
     queryKey,
@@ -36,6 +52,8 @@ export function useInfiniteListQuery<T>({
         : undefined;
     },
     initialPageParam: 1,
-    enabled,
+    // Spread, not named: an explicit `staleTime: undefined` would overwrite
+    // the QueryClient's 60s default (options are merged over it last).
+    ...behavior,
   });
 }

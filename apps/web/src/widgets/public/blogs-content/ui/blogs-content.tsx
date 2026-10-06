@@ -18,6 +18,7 @@ import {
   getPaginatedPublicBlogs,
 } from '@/entities/blog';
 import { BlogFilters, useBlogFilters } from '@/features/public/blog-filters';
+import { HYDRATED_LIST_BEHAVIOR } from '@/shared/hooks/use-infinite-list-query';
 import { ListPageHeader, RevealItem } from '@/shared/ui';
 import { BlogsShell } from '@/widgets/public/blogs-content/ui/blogs-shell';
 
@@ -45,11 +46,9 @@ export function BlogsContent() {
       getPaginatedPublicBlogs({ ...filters, page, limit: 6, includeDrafts }),
     placeholderData: (previousData) => previousData,
     // The server-prefetched default page comes from a tag-purged cache entry,
-    // so never refetch it on mount. Only `Infinity` does that: the hydrated
-    // entry carries the build's `dataUpdatedAt`, older than any finite value.
-    // Filter/page changes use a new key and still fetch live.
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
+    // so never refetch it on mount. Filter/page changes use a new key and
+    // still fetch live.
+    ...HYDRATED_LIST_BEHAVIOR,
   });
 
   const blogs = data?.data?.data || [];

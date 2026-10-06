@@ -12,6 +12,7 @@ import {
   PROJECT_FILTER_FACET_LIMIT,
   type ProjectFilterState,
 } from '@/features/public/project-filters/lib';
+import { HYDRATED_LIST_BEHAVIOR } from '@/shared/hooks/use-infinite-list-query';
 import { useUrlSyncedSearch } from '@/shared/hooks/use-url-synced-search';
 import type { FilterNavigationOptions } from '@/shared/lib/filter-params';
 import { FilterSearchInput } from '@/shared/ui';
@@ -40,19 +41,24 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
       onChange({ ...value, search: nextSearch }, { history }),
   });
 
+  // Both rows are prefetched in projects/page.tsx; the hydrated entries are
+  // build-old, so without `HYDRATED_LIST_BEHAVIOR` each refetches on mount.
   const {
     data: tagData,
     fetchNextPage: fetchNextTags,
     hasNextPage: hasNextTags,
     isFetchingNextPage: isFetchingTags,
-  } = useTagInfiniteQuery(PROJECT_FILTER_FACET_LIMIT);
+  } = useTagInfiniteQuery(PROJECT_FILTER_FACET_LIMIT, HYDRATED_LIST_BEHAVIOR);
 
   const {
     data: techData,
     fetchNextPage: fetchNextTech,
     hasNextPage: hasNextTech,
     isFetchingNextPage: isFetchingTech,
-  } = useTechStackInfiniteQuery(PROJECT_FILTER_FACET_LIMIT);
+  } = useTechStackInfiniteQuery(
+    PROJECT_FILTER_FACET_LIMIT,
+    HYDRATED_LIST_BEHAVIOR
+  );
 
   const allTags = tagData?.pages.flatMap((page) => page.data) || [];
   const allTechStacks = techData?.pages.flatMap((page) => page.data) || [];
@@ -106,10 +112,11 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
 
       {allTags.length > 0 && (
         <div className="space-y-2 sm:flex sm:items-start sm:gap-x-2 sm:space-y-0">
-          <span className="block pt-1 meta-label sm:w-20 sm:shrink-0">{t('tags')}</span>
+          <span className="block pt-1 meta-label sm:w-20 sm:shrink-0">
+            {t('tags')}
+          </span>
 
           <div className="flex flex-wrap items-center gap-2">
-
             {allTags.map((tag) => (
               <TagClickableBadge
                 key={tag.id}
@@ -137,10 +144,11 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
 
       {allTechStacks.length > 0 && (
         <div className="space-y-2 sm:flex sm:items-start sm:gap-x-2 sm:space-y-0">
-          <span className="block pt-1 meta-label sm:w-20 sm:shrink-0">{t('techStack')}</span>
+          <span className="block pt-1 meta-label sm:w-20 sm:shrink-0">
+            {t('techStack')}
+          </span>
 
           <div className="flex flex-wrap items-center gap-2">
-
             {allTechStacks.map((tech) => (
               <TechStackClickableBadge
                 key={tech.id}

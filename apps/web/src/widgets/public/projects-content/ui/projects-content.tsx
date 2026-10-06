@@ -25,6 +25,7 @@ import {
   ProjectFilters,
   useProjectFilters,
 } from '@/features/public/project-filters';
+import { HYDRATED_LIST_BEHAVIOR } from '@/shared/hooks/use-infinite-list-query';
 import { usePathname, useRouter } from '@/shared/i18n/navigation';
 import { ListPageHeader } from '@/shared/ui';
 import { ProjectsShell } from '@/widgets/public/projects-content/ui/projects-shell';
@@ -70,10 +71,8 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
     queryKey: projectKeys.publicList(page, filters),
     queryFn: () => getPaginatedPublicProjects({ ...filters, page, limit: 8 }),
     placeholderData: (previousData) => previousData,
-    // Same as the blogs list: the hydrated entry carries the build's
-    // `dataUpdatedAt`, so only `Infinity` stops it refetching on mount.
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
+    // Same as the blogs list: never refetch the hydrated page on mount.
+    ...HYDRATED_LIST_BEHAVIOR,
   });
 
   const projects = data?.data?.data || [];
