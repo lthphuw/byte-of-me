@@ -98,13 +98,19 @@ const Carousel = React.forwardRef<
       [scrollPrev, scrollNext]
     );
 
+    // `setApi` lives in a ref so a caller's inline function cannot re-announce
+    // the same api on every render. Callers subscribe to it inside the callback,
+    // and each repeat stacked another listener that was never removed.
+    const setApiRef = React.useRef(setApi);
     React.useEffect(() => {
-      if (!api || !setApi) {
-        return;
-      }
+      setApiRef.current = setApi;
+    });
 
-      setApi(api);
-    }, [api, setApi]);
+    React.useEffect(() => {
+      if (api) {
+        setApiRef.current?.(api);
+      }
+    }, [api]);
 
     React.useEffect(() => {
       if (!api) {
@@ -116,7 +122,8 @@ const Carousel = React.forwardRef<
       api.on('select', onSelect);
 
       return () => {
-        api?.off('select', onSelect);
+        api.off('reInit', onSelect);
+        api.off('select', onSelect);
       };
     }, [api, onSelect]);
 

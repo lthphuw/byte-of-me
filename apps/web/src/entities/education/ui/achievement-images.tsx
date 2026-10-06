@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Carousel,
+  type CarouselApi,
   CarouselContent,
   CarouselItem,
   CarouselNext,
@@ -28,19 +29,27 @@ interface AchievementImagesProps {
  */
 export function AchievementImages({ images, title }: AchievementImagesProps) {
   const [current, setCurrent] = useState(0);
+  const [api, setApi] = useState<CarouselApi>();
+
+  // Subscribed here so the cleanup can remove it. Inside an inline `setApi`
+  // every render added another `select` listener and none were ever removed.
+  useEffect(() => {
+    if (!api) return;
+
+    const sync = () => setCurrent(api.selectedScrollSnap());
+    sync();
+    api.on('select', sync);
+    return () => {
+      api.off('select', sync);
+    };
+  }, [api]);
 
   if (!images?.length) return null;
 
   const several = images.length > 1;
 
   return (
-    <Carousel
-      setApi={(api) => {
-        if (!api) return;
-        setCurrent(api.selectedScrollSnap());
-        api.on('select', () => setCurrent(api.selectedScrollSnap()));
-      }}
-    >
+    <Carousel setApi={setApi}>
       <CarouselContent className="-ml-3 md:cursor-grab md:active:cursor-grabbing">
         {images.map((img, i) => (
           <CarouselItem
