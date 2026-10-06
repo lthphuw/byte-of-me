@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { QueryClient } from '@tanstack/react-query';
+import { environmentManager, QueryClient } from '@tanstack/react-query';
 
 /**
  * Single construction point so server prefetching and the client provider
@@ -9,7 +9,15 @@ import { QueryClient } from '@tanstack/react-query';
  */
 export function makeQueryClient() {
   return new QueryClient({
-    defaultOptions: { queries: { staleTime: 60_000 } },
+    defaultOptions: {
+      queries: {
+        staleTime: 60_000,
+        // Unwrapped `{ success: false }` is deterministic: the default 3
+        // retries showed ~7s of skeleton. The server keeps 0 so a failed
+        // prefetch never delays the page.
+        retry: environmentManager.isServer() ? 0 : 1,
+      },
+    },
   });
 }
 

@@ -41,6 +41,9 @@ export function useProfileController(initUser: AdminUserProfile) {
       return res.data;
     },
     initialData: initUser,
+    // The form seeds once (below), so a focus refetch after the 60s staleTime
+    // would only be thrown away.
+    refetchOnWindowFocus: false,
   });
 
   // A failed refetch is otherwise silent: TanStack keeps the last good profile
@@ -122,8 +125,8 @@ export function useProfileController(initUser: AdminUserProfile) {
     [form, parseAboutMe]
   );
 
-  // Seed once per profile, not on every `user` identity: with the global 60s
-  // staleTime and refetchOnWindowFocus, returning to the tab refetches, and an
+  // Seed once per profile, not on every `user` identity: a refetch (the
+  // invalidation after a save, a reconnect) hands back a fresh object, and an
   // unconditional reset would throw away everything typed since. Keyed on the
   // id (as `blog-form.tsx` does) rather than gated on `isDirty`, because a
   // reset while pristine is just as unwanted mid-edit.
