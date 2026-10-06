@@ -15,10 +15,8 @@ import { scrollIntoViewBehavior } from '@byte-of-me/ui/lib/prefers-reduced-motio
 import { List } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
-import {
-  useArticleHeadings,
-  useArticleReferences,
-} from '@/widgets/public/blog-details-content/lib/use-article-navigation';
+import { useSharedArticleHeadings } from '@/widgets/public/blog-details-content/lib/article-headings-context';
+import { useArticleReferences } from '@/widgets/public/blog-details-content/lib/use-article-navigation';
 
 const FLASH_CLASS = 'is-flash';
 const FLASH_MS = 1600;
@@ -46,7 +44,7 @@ export function BlogReaderNav({
   referencesLabel: string;
 }) {
   const [open, setOpen] = useState(false);
-  const { headings, activeId } = useArticleHeadings(targetId);
+  const { headings, activeId } = useSharedArticleHeadings();
   const references = useArticleReferences(targetId);
 
   // Nothing worth a button: a short post with no bibliography.

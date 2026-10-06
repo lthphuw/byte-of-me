@@ -36,7 +36,8 @@ function slugify(text: string): string {
  * The article body is `dangerouslySetInnerHTML` with no heading ids, so this
  * assigns slug ids on mount — every consumer that links to a heading depends
  * on that having happened, which is why it lives in one place rather than in
- * each of them.
+ * each of them. Call it once, from `ArticleHeadingsProvider`: every call adds
+ * its own IntersectionObserver on the same nodes.
  */
 export function useArticleHeadings(targetId: string): {
   headings: ArticleHeading[];

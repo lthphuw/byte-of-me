@@ -3,7 +3,7 @@
 import { scrollIntoViewBehavior } from '@byte-of-me/ui/lib/prefers-reduced-motion';
 
 import { cn } from '@/shared/lib/utils';
-import { useArticleHeadings } from '@/widgets/public/blog-details-content/lib/use-article-navigation';
+import { useSharedArticleHeadings } from '@/widgets/public/blog-details-content/lib/article-headings-context';
 
 /**
  * The sticky rail beside the article, from `xl`.
@@ -13,14 +13,8 @@ import { useArticleHeadings } from '@/widgets/public/blog-details-content/lib/us
  * second `collapsible` variant for that width — a sticky bar over the running
  * text — and shedding it is most of why this file is now short.
  */
-export function BlogTableOfContents({
-  targetId,
-  label,
-}: {
-  targetId: string;
-  label: string;
-}) {
-  const { headings, activeId } = useArticleHeadings(targetId);
+export function BlogTableOfContents({ label }: { label: string }) {
+  const { headings, activeId } = useSharedArticleHeadings();
 
   if (headings.length < 2) return null;
 

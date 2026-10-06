@@ -14,6 +14,7 @@ import {
   BlogRelatedProjectCard,
   RelatedProjectCardSkeleton,
 } from '@/features/public';
+import { ArticleHeadingsProvider } from '@/widgets/public/blog-details-content/lib/article-headings-context';
 import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-action-bar';
 import { BlogBreadcrumb } from '@/widgets/public/blog-details-content/ui/blog-breadcrumb';
 import { BlogCitationLinks } from '@/widgets/public/blog-details-content/ui/blog-citation-links';
@@ -30,7 +31,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
   const tagSlugs = blog.tags.map((tag) => tag.slug);
 
   return (
-    <>
+    <ArticleHeadingsProvider targetId={ARTICLE_ID}>
       <BlogReadingProgress />
 
       <BlogDetailsShell>
@@ -121,10 +122,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
             {/* Desktop table of contents */}
             <aside className="hidden xl:col-start-3 xl:block">
               <div className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pl-6">
-                <BlogTableOfContents
-                  targetId={ARTICLE_ID}
-                  label={t('tableOfContents')}
-                />
+                <BlogTableOfContents label={t('tableOfContents')} />
               </div>
             </aside>
           </div>
@@ -139,6 +137,6 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
 
       <BlogCitationLinks targetId={ARTICLE_ID} />
       <BlogAnalytics blogId={blog.id} />
-    </>
+    </ArticleHeadingsProvider>
   );
 }
