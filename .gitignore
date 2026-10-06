@@ -64,6 +64,7 @@ yarn-error.log*
 .turbo/
 .playwright-mcp/
 .contentlayer/
+.temp/
 
 # =====================
 # Monorepo Packages
