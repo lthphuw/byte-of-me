@@ -44,7 +44,7 @@ const BoldToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
         </TooltipTrigger>
         <TooltipContent>
           <span>Bold</span>
-          <span className="text-gray-11 ml-1 text-xs">(cmd + b)</span>
+          <span className="text-muted-foreground ml-1 text-xs">(cmd + b)</span>
         </TooltipContent>
       </Tooltip>
     );

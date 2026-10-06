@@ -49,7 +49,7 @@ export default function Error({
             Error
           </h1>
 
-          <h1 className="mt-2 text-xl font-bold text-gray-800 dark:text-white">
+          <h1 className="mt-2 text-xl font-bold text-foreground">
             {t('somethingWentWrong')}
           </h1>
 
@@ -68,16 +68,16 @@ export default function Error({
           </div>
         </div>
 
-        <div className="mx-auto mt-8 flex w-full max-w-2xl flex-col items-center gap-4 rounded-lg bg-gray-100 p-6 shadow-xl dark:bg-gray-900">
-          <h3 className="text-lg font-medium text-gray-700 dark:text-gray-200">
+        <div className="mx-auto mt-8 flex w-full max-w-2xl flex-col items-center gap-4 rounded-lg bg-muted p-6 shadow-xl">
+          <h3 className="text-lg font-medium text-foreground">
             {t('errorDetails')}
           </h3>
-          <div className="w-full rounded-md bg-gray-200 p-4 text-left dark:bg-gray-800">
-            <p className="text-sm text-gray-600 dark:text-gray-300">
+          <div className="w-full rounded-md bg-background p-4 text-left">
+            <p className="text-sm text-muted-foreground">
               <strong>Message:</strong> {error.message}
             </p>
             {error.digest && (
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+              <p className="mt-2 text-sm text-muted-foreground">
                 <strong>Digest:</strong> {error.digest}
               </p>
             )}

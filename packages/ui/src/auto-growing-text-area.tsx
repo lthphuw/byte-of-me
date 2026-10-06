@@ -45,7 +45,7 @@ export function AutoGrowingTextarea({
         'text-base md:text-sm',
         'min-h-[48px] md:min-h-[44px]',
         'max-h-[200px] rounded-xl',
-        'focus-visible:ring-1 focus-visible:ring-neutral-400',
+        'focus-visible:ring-1 focus-visible:ring-ring',
         'transition-[height] duration-200 ease-out',
         className
       )}

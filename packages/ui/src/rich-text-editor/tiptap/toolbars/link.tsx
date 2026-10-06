@@ -123,7 +123,7 @@ const LinkToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             </PopoverClose>
             <div>
               <Label>Link</Label>
-              <p className="text-gray-11 text-sm">
+              <p className="text-muted-foreground text-sm">
                 Attach a link to the selected text
               </p>
               <div className="mt-3 flex flex-col items-end justify-end gap-3">
@@ -147,7 +147,7 @@ const LinkToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
                     <Button
                       type="button"
                       size="sm"
-                      className="text-gray-11 h-8"
+                      className="h-8"
                       variant="ghost"
                       onClick={remove}
                     >

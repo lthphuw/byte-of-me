@@ -165,7 +165,7 @@ export function SearchAndReplaceToolbar() {
 
             <div className="my-2 w-full">
               <div className="mb-3">
-                <Label className="mb-1 text-xs text-gray-11">Search</Label>
+                <Label className="mb-1 text-xs text-muted-foreground">Search</Label>
                 <Input
                   value={searchText}
                   onChange={(e) => {
@@ -177,7 +177,7 @@ export function SearchAndReplaceToolbar() {
                 {results?.length}
               </div>
               <div className="mb-2">
-                <Label className="mb-1 text-xs text-gray-11">
+                <Label className="mb-1 text-xs text-muted-foreground">
                   Replace with
                 </Label>
                 <Input

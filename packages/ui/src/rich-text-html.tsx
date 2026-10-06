@@ -61,9 +61,19 @@ export function RichTextHtml({
         'mx-auto w-full max-w-[720px]',
         'break-words [word-break:break-word] [overflow-wrap:anywhere]',
         'text-[17px] leading-8 tracking-[0.01em]',
-        'text-neutral-800 dark:text-neutral-200',
-        'selection:bg-neutral-200 dark:selection:bg-neutral-700',
-        'prose prose-neutral dark:prose-invert max-w-none',
+        'text-foreground',
+        'selection:bg-primary/20',
+        // The typography plugin's own palette, pointed at the theme tokens: it
+        // follows light/dark through the variables, so no `dark:` twin is needed.
+        'prose max-w-none',
+        '[--tw-prose-body:hsl(var(--foreground))] [--tw-prose-headings:hsl(var(--foreground))]',
+        '[--tw-prose-lead:hsl(var(--muted-foreground))] [--tw-prose-links:hsl(var(--primary))]',
+        '[--tw-prose-bold:hsl(var(--foreground))] [--tw-prose-counters:hsl(var(--muted-foreground))]',
+        '[--tw-prose-bullets:hsl(var(--muted-foreground))] [--tw-prose-hr:hsl(var(--border))]',
+        '[--tw-prose-quotes:hsl(var(--foreground))] [--tw-prose-quote-borders:hsl(var(--border))]',
+        '[--tw-prose-captions:hsl(var(--muted-foreground))] [--tw-prose-code:hsl(var(--foreground))]',
+        '[--tw-prose-pre-code:hsl(var(--foreground))] [--tw-prose-pre-bg:hsl(var(--muted))]',
+        '[--tw-prose-th-borders:hsl(var(--border))] [--tw-prose-td-borders:hsl(var(--border))]',
 
         // Layout rhythm
         '[&_p]:my-5 [&_p]:leading-8',
@@ -93,23 +103,19 @@ export function RichTextHtml({
         '[&_li_p]:my-2',
 
         // Blockquote
-        '[&_blockquote]:my-6 [&_blockquote]:border-l-4 [&_blockquote]:border-neutral-300',
-        'dark:[&_blockquote]:border-neutral-700',
-        '[&_blockquote]:pl-5 [&_blockquote]:italic [&_blockquote]:text-neutral-600',
-        'dark:[&_blockquote]:text-neutral-300',
+        '[&_blockquote]:my-6 [&_blockquote]:border-l-4 [&_blockquote]:border-border',
+        '[&_blockquote]:pl-5 [&_blockquote]:italic [&_blockquote]:text-muted-foreground',
 
         // Links
-        '[&_a]:font-medium [&_a]:text-neutral-950 [&_a]:underline [&_a]:decoration-neutral-300 [&_a]:underline-offset-4',
-        'dark:[&_a]:text-neutral-50 dark:[&_a]:decoration-neutral-600',
-        '[&_a:hover]:decoration-neutral-500',
+        '[&_a]:font-medium [&_a]:text-primary [&_a]:underline [&_a]:decoration-primary/40 [&_a]:underline-offset-4',
+        '[&_a:hover]:decoration-primary',
 
         // Strong / emphasis
         '[&_strong]:font-semibold',
         '[&_em]:italic',
 
         // Horizontal rule
-        '[&_hr]:my-8 [&_hr]:border-neutral-200',
-        'dark:[&_hr]:border-neutral-800',
+        '[&_hr]:my-8 [&_hr]:border-border',
 
         // Images / media
         '[&_img]:my-6 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-2xl [&_img]:shadow-sm',
@@ -131,19 +137,16 @@ export function RichTextHtml({
         // Captions. Real `<figcaption>`s, quiet and centred under what they
         // describe.
         '[&_figcaption]:mt-2 [&_figcaption]:text-center [&_figcaption]:text-sm',
-        '[&_figcaption]:text-neutral-500 dark:[&_figcaption]:text-neutral-400',
+        '[&_figcaption]:text-muted-foreground',
 
         // Inline code
         '[&_code:not(pre_code)]:rounded-md',
-        '[&_code:not(pre_code)]:bg-neutral-100',
+        '[&_code:not(pre_code)]:bg-muted',
         '[&_code:not(pre_code)]:px-1.5',
         '[&_code:not(pre_code)]:py-0.5',
         '[&_code:not(pre_code)]:font-mono',
         '[&_code:not(pre_code)]:text-[0.92em]',
-        '[&_code:not(pre_code)]:text-neutral-800',
-
-        'dark:[&_code:not(pre_code)]:bg-neutral-800',
-        'dark:[&_code:not(pre_code)]:text-neutral-100',
+        '[&_code:not(pre_code)]:text-foreground',
 
         // Code blocks — must scroll horizontally instead of overflowing the
         // column (long lines don't wrap), otherwise they widen the page on
@@ -166,8 +169,7 @@ export function RichTextHtml({
         '[&_.tableWrapper]:my-6 [&_.tableWrapper]:max-w-full [&_.tableWrapper]:overflow-x-auto',
         // Scrolling a table to its end must not then drag the page sideways.
         '[&_.tableWrapper]:overscroll-x-contain',
-        '[&_.tableWrapper]:rounded-xl [&_.tableWrapper]:border [&_.tableWrapper]:border-neutral-200',
-        'dark:[&_.tableWrapper]:border-neutral-800',
+        '[&_.tableWrapper]:rounded-xl [&_.tableWrapper]:border [&_.tableWrapper]:border-border',
 
         // `table-auto` + `min-w-full`, never `table-fixed`: fixed layout splits
         // the reading column evenly however many columns there are, so an
@@ -200,7 +202,7 @@ export function RichTextHtml({
         '[&_th]:px-3 [&_th]:py-1.5 [&_th]:text-left [&_th]:font-semibold',
         // Headings are labels, not prose: wrapping "Latency (ms)" over three
         // lines to save 40px makes the table harder to read, not narrower.
-        '[&_th]:whitespace-nowrap [&_th]:bg-neutral-50 dark:[&_th]:bg-neutral-900',
+        '[&_th]:whitespace-nowrap [&_th]:bg-muted',
         '[&_td]:px-3 [&_td]:py-1.5 [&_td]:align-top',
 
         // Columns of figures, worked out from the content by
@@ -213,15 +215,14 @@ export function RichTextHtml({
 
         // Hairlines. At full strength, eleven columns of grid read as the
         // subject of the table and the figures as the background.
-        '[&_tr>*]:border-b [&_tr>*]:border-neutral-200/70 dark:[&_tr>*]:border-neutral-800/70',
-        '[&_tr>*+*]:border-l [&_tr>*+*]:border-neutral-200/70',
-        'dark:[&_tr>*+*]:border-neutral-800/70',
+        '[&_tr>*]:border-b [&_tr>*]:border-border/70',
+        '[&_tr>*+*]:border-l [&_tr>*+*]:border-border/70',
         // The wrapper draws the outer frame, so the last row must not double it.
         '[&_tr:last-child>*]:border-b-0',
 
         // Row hover. On a table too wide to see at once, this is what keeps
         // the eye on one row while it travels.
-        '[&_tbody_tr:hover>td]:bg-neutral-50 dark:[&_tbody_tr:hover>td]:bg-neutral-900/60',
+        '[&_tbody_tr:hover>td]:bg-muted/60',
 
         // The row label, pinned while the numbers scroll past it — on a wide
         // table this is the difference between reading a row and guessing which
@@ -237,7 +238,7 @@ export function RichTextHtml({
         // the published page disagreeing about the same table. Now that those
         // cells carry `scope`, looking like a header is the visual half of
         // what a screen reader is being told.
-        '[&_tr>th:first-child]:bg-neutral-50 dark:[&_tr>th:first-child]:bg-neutral-900',
+        '[&_tr>th:first-child]:bg-muted',
         // The column scrolling underneath is HIDDEN, not absent, and a reader
         // has to be able to tell. Numeric columns are right-aligned, so what
         // the pinned column covers is the leading digits — `25.9M` reading as
@@ -249,10 +250,9 @@ export function RichTextHtml({
         // paid per pinned cell and a benchmark note has hundreds of them, and
         // the black version was invisible on a near-black page — so on the
         // theme where the cue mattered most it was not being given at all.
-        // The light/dark pair stays because that is how every other colour on
-        // this surface is expressed.
-        '[&_tr>:first-child]:shadow-[1px_0_0_#a3a3a3]',
-        'dark:[&_tr>:first-child]:shadow-[1px_0_0_#525252]',
+        // `--input` is the control-edge grey, at least 3:1 on the page in
+        // both themes, so one token does what the light/dark pair used to.
+        '[&_tr>:first-child]:shadow-[1px_0_0_hsl(var(--input))]',
 
         // NO height cap, and NO pinned header row. `overflow-x-auto` above
         // already makes `overflow-y`'s used value `auto` (CSS Overflow 3 §3),
@@ -277,7 +277,7 @@ export function RichTextHtml({
         // obvious they are clickable without shouting mid-sentence.
         '[&_sup.citation]:scroll-mt-40 xl:[&_sup.citation]:scroll-mt-28',
         '[&_sup.citation]:align-super [&_sup.citation]:text-[0.7em] [&_sup.citation]:tabular-nums',
-        '[&_sup.citation>a]:rounded [&_sup.citation>a]:bg-neutral-100 [&_sup.citation>a]:px-1 [&_sup.citation>a]:py-px',
+        '[&_sup.citation>a]:rounded [&_sup.citation>a]:bg-muted [&_sup.citation>a]:px-1 [&_sup.citation>a]:py-px',
         '[&_sup.citation>a]:transition-colors [&_sup.citation>a]:duration-500',
         // Jump-back landing highlight — the inverse of .references-item's
         // flash: the backlink script tags the marker with .is-flash and the
@@ -285,19 +285,15 @@ export function RichTextHtml({
         // The backlink script flashes either the exact marker <a> the reader
         // came from (origins map) or, on deep links, the whole <sup> — cover
         // both.
-        '[&_sup.citation.is-flash>a]:bg-neutral-900 [&_sup.citation.is-flash>a]:text-neutral-50',
-        'dark:[&_sup.citation.is-flash>a]:bg-neutral-100 dark:[&_sup.citation.is-flash>a]:text-neutral-900',
-        '[&_sup.citation>a.is-flash]:bg-neutral-900 [&_sup.citation>a.is-flash]:text-neutral-50',
-        'dark:[&_sup.citation>a.is-flash]:bg-neutral-100 dark:[&_sup.citation>a.is-flash]:text-neutral-900',
-        '[&_sup.citation>a]:font-medium [&_sup.citation>a]:text-neutral-700 [&_sup.citation>a]:no-underline',
-        'dark:[&_sup.citation>a]:bg-neutral-800 dark:[&_sup.citation>a]:text-neutral-300',
-        '[&_sup.citation>a:hover]:bg-neutral-900 [&_sup.citation>a:hover]:text-neutral-50',
-        'dark:[&_sup.citation>a:hover]:bg-neutral-100 dark:[&_sup.citation>a:hover]:text-neutral-900',
-        '[&_sup.citation--orphan]:text-neutral-400',
+        '[&_sup.citation.is-flash>a]:bg-foreground [&_sup.citation.is-flash>a]:text-background',
+        '[&_sup.citation>a.is-flash]:bg-foreground [&_sup.citation>a.is-flash]:text-background',
+        '[&_sup.citation>a]:font-medium [&_sup.citation>a]:text-muted-foreground [&_sup.citation>a]:no-underline',
+        '[&_sup.citation>a:hover]:bg-foreground [&_sup.citation>a:hover]:text-background',
+        '[&_sup.citation--orphan]:text-muted-foreground',
 
         // Bibliography rendered from the `referenceList` node
         '[&_section.references]:mt-14 [&_section.references]:border-t [&_section.references]:pt-8',
-        '[&_section.references]:border-neutral-200 dark:[&_section.references]:border-neutral-800',
+        '[&_section.references]:border-border',
         '[&_.references-title]:mb-4 [&_.references-title]:mt-0 [&_.references-title]:text-lg',
         '[&_.references-title]:font-semibold [&_.references-title]:tracking-normal',
         '[&_.references-list]:my-0 [&_.references-list]:list-decimal [&_.references-list]:space-y-2 [&_.references-list]:pl-6',
@@ -305,11 +301,11 @@ export function RichTextHtml({
         '[&_.references-item]:rounded [&_.references-item]:px-1.5 [&_.references-item]:py-0.5',
         '[&_.references-item]:text-[15px] [&_.references-item]:leading-7 [&_.references-item]:transition-colors [&_.references-item]:duration-500',
         // Jump target highlight. `:target` keeps it working without JS.
-        '[&_.references-item:target]:bg-neutral-100 dark:[&_.references-item:target]:bg-neutral-800',
-        '[&_.references-item.is-flash]:bg-neutral-100 dark:[&_.references-item.is-flash]:bg-neutral-800',
+        '[&_.references-item:target]:bg-muted',
+        '[&_.references-item.is-flash]:bg-muted',
         '[&_.references-url]:ml-1 [&_.references-url]:break-all [&_.references-url]:text-[0.92em]',
-        '[&_.references-backlink]:ml-2 [&_.references-backlink]:text-neutral-400 [&_.references-backlink]:no-underline',
-        '[&_.references-backlink:hover]:text-neutral-900 dark:[&_.references-backlink:hover]:text-neutral-100',
+        '[&_.references-backlink]:ml-2 [&_.references-backlink]:text-muted-foreground [&_.references-backlink]:no-underline',
+        '[&_.references-backlink:hover]:text-foreground',
 
         // Editor-specific polish
         '[&_br]:leading-[0]',

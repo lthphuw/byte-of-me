@@ -16,10 +16,10 @@ export default async function NotFound() {
             <h1 className="scroll-m-20 text-balance text-center text-4xl font-extrabold tracking-tight">
               404
             </h1>
-            <h1 className="mt-2 text-xl font-bold text-gray-800 dark:text-white">
+            <h1 className="mt-2 text-xl font-bold text-foreground">
               {t('oopsPageNotFound')}
             </h1>
-            <p className="text-gray-900 dark:text-gray-400">
+            <p className="text-muted-foreground">
               {`${t('sorryWeCouldntFindThatPage')}. ${t(
                 'pleaseCheckTheUrlOrGoBackHome'
               )}.`}
@@ -66,13 +66,13 @@ export default async function NotFound() {
             ].map(({ icon, href, title, desc, link }) => (
               <div
                 key={href}
-                className="dura flex flex-col gap-2 rounded-lg bg-gray-100 p-6 shadow-xl transition-all duration-300 hover:shadow-2xl dark:bg-gray-900"
+                className="dura flex flex-col gap-2 rounded-lg bg-muted p-6 shadow-xl transition-all duration-300 hover:shadow-2xl"
               >
                 {icon}
-                <h3 className="text-md mt-4 font-medium text-gray-700 dark:text-gray-200">
+                <h3 className="text-md mt-4 font-medium text-foreground">
                   {title}
                 </h3>
-                <p className="text-gray-500 dark:text-gray-400">{desc}</p>
+                <p className="text-muted-foreground">{desc}</p>
                 <Link
                   href={href}
                   className="mt-auto inline-flex items-center gap-2 text-sm font-semibold transition-all hover:underline"
