@@ -4,11 +4,15 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
+import { mediaScopeSchema } from '@/entities/media/model/media-schema';
 import {
+  type AcceptedImageMimeType,
   describeViolation,
+  detectImageMimeType,
   extensionForMimeType,
   findUploadViolation,
   type MediaScope,
+  sanitizeStoredFileName,
 } from '@/entities/media/model/upload-constraints';
 import { getWorkspaceSettings } from '@/entities/workspace-settings/api/get-workspace-settings';
 import { supabaseStorage } from '@/shared/api';
@@ -18,6 +22,7 @@ import { CACHE_TAGS } from '@/shared/lib/constants';
 import { generateFriendlyId } from '@/shared/lib/friendly-id';
 import { compressImage } from '@/shared/lib/media/compress-image';
 import { getErrorMessage } from '@/shared/lib/utils';
+import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { Media } from '@/shared/types/models';
 
@@ -60,12 +65,40 @@ export async function uploadMedia(
     return { success: false, errorMsg: describeViolation(violation) };
   }
 
+  // Typed, but the action is callable with any string and this is a key segment.
+  const parsedScope = parseInput(mediaScopeSchema, scope, 'uploadMedia');
+  if (!parsedScope.ok) {
+    return { success: false, errorMsg: parsedScope.errorMsg };
+  }
+
   try {
+    // The type comes from the bytes, not the caller's `file.type`; an
+    // unrecognised file is refused before any storage or database work.
+    const incoming: {
+      file: File;
+      buffer: Buffer;
+      mimeType: AcceptedImageMimeType;
+    }[] = [];
+    for (const file of files) {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const mimeType = detectImageMimeType(buffer);
+
+      if (!mimeType) {
+        return {
+          success: false,
+          errorMsg: describeViolation({
+            kind: 'type',
+            fileName: sanitizeStoredFileName(file.name),
+          }),
+        };
+      }
+      incoming.push({ file, buffer, mimeType });
+    }
+
     const compression = (await getWorkspaceSettings()).imageCompression;
 
-    const uploadPromises = files.map(async (file) => {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const compressed = await compressImage(buffer, file.type, compression);
+    const uploadPromises = incoming.map(async ({ file, buffer, mimeType }) => {
+      const compressed = await compressImage(buffer, mimeType, compression);
 
       // From the POST-compression MIME type, not the filename or the original
       // type: a webp buffer written under a `.jpg` key is a file no CDN
@@ -75,7 +108,7 @@ export async function uploadMedia(
       const now = new Date();
       // Scope first, then date. Grouping by what the image is FOR is the axis
       // someone actually browses by; the date only disambiguates within it.
-      const fileKey = `users/${user.id}/media/${scope}/${now.getFullYear()}/${String(
+      const fileKey = `users/${user.id}/media/${parsedScope.data}/${now.getFullYear()}/${String(
         now.getMonth() + 1
       ).padStart(2, '0')}/${generateFriendlyId()}.${fileExtension}`;
 
@@ -92,7 +125,7 @@ export async function uploadMedia(
           url,
           bucket: env.SUPABASE_S3_STORAGE_BUCKET,
           fileKey: fileKey,
-          fileName: file.name,
+          fileName: sanitizeStoredFileName(file.name),
           mimeType: compressed.mimeType,
           size: compressed.buffer.byteLength,
           provider: 'SUPABASE',

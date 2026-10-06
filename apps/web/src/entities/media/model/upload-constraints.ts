@@ -34,6 +34,8 @@ export const ACCEPTED_IMAGE_MIME_TYPES = [
   'image/svg+xml',
 ] as const;
 
+export type AcceptedImageMimeType = (typeof ACCEPTED_IMAGE_MIME_TYPES)[number];
+
 /**
  * Where a file belongs in the bucket.
  *
@@ -122,4 +124,106 @@ export function extensionForMimeType(mimeType: string): string {
       // `image/png` → `png`, `image/webp` → `webp`, and so on.
       return mimeType.split('/')[1] ?? 'bin';
   }
+}
+
+const ascii = (bytes: Uint8Array, start: number, end: number): string =>
+  String.fromCharCode(...bytes.subarray(start, end));
+
+/**
+ * True when the text opens with `<svg`, after any prolog, comments or doctype.
+ * Walked with `indexOf`: one regex over many comments backtracks exponentially.
+ */
+function startsWithSvgElement(text: string): boolean {
+  let rest = text.trimStart();
+
+  for (;;) {
+    const [open, close] = rest.startsWith('<?')
+      ? ['<?', '?>']
+      : rest.startsWith('<!--')
+        ? ['<!--', '-->']
+        : /^<!doctype/i.test(rest)
+          ? ['<!', '>']
+          : [];
+    if (!open || !close) break;
+
+    const end = rest.indexOf(close, open.length);
+    if (end === -1) return false;
+    rest = rest.slice(end + close.length).trimStart();
+  }
+
+  return /^<svg[\s>]/i.test(rest);
+}
+
+/**
+ * The format from the bytes' signature, never from `File.type`, which is the
+ * caller's claim (an HTML file sent as `image/png` is still HTML). `null`
+ * means not an accepted format.
+ */
+export function detectImageMimeType(
+  bytes: Uint8Array
+): AcceptedImageMimeType | null {
+  const startsWith = (...signature: number[]) =>
+    signature.every((byte, index) => bytes[index] === byte);
+
+  if (startsWith(0xff, 0xd8, 0xff)) return 'image/jpeg';
+  if (startsWith(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a)) {
+    return 'image/png';
+  }
+
+  const head = ascii(bytes, 0, 6);
+  if (head === 'GIF87a' || head === 'GIF89a') return 'image/gif';
+
+  if (ascii(bytes, 0, 4) === 'RIFF' && ascii(bytes, 8, 12) === 'WEBP') {
+    return 'image/webp';
+  }
+
+  // `ftyp` box: major brand, minor version, compatible brands. Some encoders
+  // write `mif1` as the major brand and list `avif` only as compatible.
+  if (ascii(bytes, 4, 8) === 'ftyp') {
+    const boxEnd = Math.min(
+      bytes.length,
+      ((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]) >>> 0,
+      64
+    );
+    for (let at = 8; at + 4 <= boxEnd; at += at === 8 ? 8 : 4) {
+      const brand = ascii(bytes, at, at + 4);
+      if (brand === 'avif' || brand === 'avis') return 'image/avif';
+    }
+  }
+
+  if (startsWithSvgElement(new TextDecoder().decode(bytes.subarray(0, 2048)))) {
+    return 'image/svg+xml';
+  }
+
+  return null;
+}
+
+const MAX_STORED_FILE_NAME_LENGTH = 120;
+
+/**
+ * The library's display name for a client filename: no path separators or
+ * control characters, capped in length, extension kept when it is cut.
+ */
+export function sanitizeStoredFileName(name: string): string {
+  const cleaned = [...name]
+    .map((character) => {
+      const code = character.codePointAt(0) ?? 0;
+      const isControl = code < 0x20 || (code >= 0x7f && code <= 0x9f);
+
+      return isControl || character === '/' || character === '\\' ? '_' : character;
+    })
+    .join('')
+    .trim();
+
+  if (cleaned.length <= MAX_STORED_FILE_NAME_LENGTH) {
+    return cleaned || 'image';
+  }
+
+  const dot = cleaned.lastIndexOf('.');
+  const extension =
+    dot > 0 && cleaned.length - dot <= 10 ? cleaned.slice(dot) : '';
+
+  return (
+    cleaned.slice(0, MAX_STORED_FILE_NAME_LENGTH - extension.length) + extension
+  );
 }
