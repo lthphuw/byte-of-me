@@ -129,7 +129,7 @@ export const viewport: Viewport = {
   // here needs a locked scale — do not add it back.
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#f9f9ff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0f0f15' },
+    { media: '(prefers-color-scheme: dark)', color: '#131319' },
   ],
   // Without this, `env(safe-area-inset-*)` resolves to 0 on iOS Safari no
   // matter what CSS asks for it — the fourteen `env(safe-area-inset-bottom)`

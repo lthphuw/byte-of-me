@@ -29,10 +29,10 @@ const headingFont = readFile(
 ).catch(() => null);
 
 // Straight from the dark theme in globals.css, so the card and the site agree.
-const BACKGROUND = '#0f0f15'; // --background      240 16.7% 7.1%
+const BACKGROUND = '#131319'; // --background      240 14% 8.5%
 const FOREGROUND = '#eeeef2'; // --foreground      240 13.3% 94.1%
-const MUTED = '#a3a4ac'; // --muted-foreground     233.3 5.1% 65.7%
-const BORDER = '#2f2f37'; // --border             240 7.8% 20%
+const MUTED = '#bebfc5'; // --muted-foreground     233 6% 76%
+const BORDER = '#3c3c48'; // --border             240 9% 26%
 
 const MAX_TITLE = 80;
 const MAX_SUBTITLE = 90;

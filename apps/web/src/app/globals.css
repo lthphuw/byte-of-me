@@ -69,7 +69,7 @@
   --muted-foreground: 240 4.4% 35.7%;
   --popover: 0 0% 100%;
   --popover-foreground: 240 12.5% 9.4%;
-  --border: 240 9.7% 87.8%;
+  --border: 240 10% 84%;
   --input: 240 3% 53.5%;
   --card: 0 0% 100%;
   --card-foreground: 240 12.5% 9.4%;
@@ -96,10 +96,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 12.5% 9.4%;
 
-    /* Two edge roles on purpose. `--border` is a decorative hairline (1.3:1);
+    /* Two edge roles on purpose. `--border` is a decorative hairline (1.4:1);
        `--input` is a control's own edge and must clear 3:1 (WCAG 1.4.11) —
        3.50 on the page, 3.67 on a card. They were one value at 1.26:1. */
-    --border: 240 9.7% 87.8%;
+    --border: 240 10% 84%;
     --input: 240 3% 53.5%;
 
     --card: 0 0% 100%;
@@ -119,7 +119,7 @@
 
     /* Error TEXT, not the destructive button fill. `--destructive` is tuned as
        a fill behind white and measures under 4:1 as text on `--background`;
-       this clears 6.10:1 light / 6.95:1 dark. Keep the two apart — retuning
+       this clears 6.10:1 light / 8.60:1 dark. Keep the two apart — retuning
        `--destructive` would repaint every destructive button. */
     --destructive-text: 0 74% 42%;
 
@@ -150,33 +150,33 @@
   }
 
   .dark {
-    --background: 240 16.7% 7.1%;
+    --background: 240 14% 8.5%;
     --foreground: 240 13.3% 94.1%;
 
-    --muted: 240 9.6% 14.3%;
-    --muted-foreground: 233.3 5.1% 65.7%;
+    --muted: 240 11% 17.5%;
+    --muted-foreground: 233 6% 76%;
 
-    --accent: 230.3 31.3% 19.4%;
+    --accent: 230 30% 22%;
     --accent-foreground: 228 74.5% 90.8%;
 
-    --popover: 240 13.7% 10%;
+    --popover: 240 13% 13%;
     --popover-foreground: 240 13.3% 94.1%;
 
-    --border: 240 7.8% 20%;
-    --input: 240 3.9% 44.9%;
+    --border: 240 9% 26%;
+    --input: 240 5% 52%;
 
-    --card: 240 13.7% 10%;
+    --card: 240 13% 13%;
     --card-foreground: 240 13.3% 94.1%;
 
-    --primary: 232.7 100% 74.3%;
+    --primary: 233 92% 84%;
     --primary-foreground: 240 31% 5.7%;
 
-    --secondary: 240 9.6% 14.3%;
+    --secondary: 240 11% 17.5%;
     --secondary-foreground: 240 13.3% 94.1%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --destructive-text: 0 90% 71%;
+    --destructive-text: 0 90% 78%;
 
     --ring: 231.3 100% 77.1%;
 
@@ -187,6 +187,9 @@
   }
 }
 
+/* A reader who asked the OS for more contrast gets the control-edge grey on
+   every border and near-foreground secondary text. Order matters: `.dark` has
+   the same specificity as `:root`, so it must come second. */
 @layer base {
   * {
     @apply border-border;
@@ -195,6 +198,18 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
+  @media (prefers-contrast: more) {
+    :root {
+      --border: 240 3% 53.5%;
+      --muted-foreground: 240 8% 20%;
+    }
+
+    .dark {
+      --border: 240 5% 52%;
+      --muted-foreground: 240 13.3% 90%;
+    }
   }
 }
 
