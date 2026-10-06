@@ -237,7 +237,7 @@ export function CompanyDialog({
                   {/* An empty option list otherwise reads as "no tech stacks
                       exist", and saving from it drops every association. */}
                   {isTechError && (
-                    <div className="flex items-center gap-2 text-[0.8rem] font-medium text-destructive">
+                    <div className="flex items-center gap-2 text-[0.8rem] font-medium text-destructive-text">
                       <span>{t('dialog.techStackError')}</span>
                       <Button
                         type="button"

@@ -155,7 +155,7 @@ function ImageGroupView({
       as="figure"
       className={cn(
         'group/row relative my-4 rounded-md border-2 border-transparent',
-        selected && 'border-blue-300'
+        selected && 'border-ring'
       )}
     >
       {/* The images. `image-group-items` is the same class the published page

@@ -176,7 +176,7 @@ function TiptapImage(props: NodeViewProps) {
       ref={nodeRef}
       className={cn(
         'relative flex flex-col rounded-md border-2 border-transparent',
-        selected && 'border-blue-300',
+        selected && 'border-ring',
         node.attrs.align === 'left' && 'self-start',
         node.attrs.align === 'center' && 'mx-auto',
         node.attrs.align === 'right' && 'self-end'
@@ -274,7 +274,7 @@ function TiptapImage(props: NodeViewProps) {
                     />
 
                     {error && (
-                      <p className="text-xs text-destructive">{error}</p>
+                      <p className="text-xs text-destructive-text">{error}</p>
                     )}
                   </DropdownMenuSubContent>
                 </DropdownMenuSub>

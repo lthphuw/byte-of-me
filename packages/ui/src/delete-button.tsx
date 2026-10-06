@@ -25,7 +25,7 @@ export function DeleteButton({
       type={'button'}
       size="icon"
       variant="ghost"
-      className="h-8 w-8 hover:text-destructive"
+      className="h-8 w-8 hover:text-destructive-text"
       disabled={isSubmitting}
       onClick={onClick}
       aria-label={label}

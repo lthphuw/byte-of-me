@@ -32,7 +32,7 @@ export function CitationView({ editor, node }: ReactNodeViewProps) {
         className={cn(
           'mx-px cursor-default rounded px-1 py-px align-super text-[0.7em] font-medium tabular-nums transition-colors',
           order === null
-            ? 'bg-destructive/10 text-destructive'
+            ? 'bg-destructive/10 text-destructive-text'
             : 'bg-primary/10 text-primary'
         )}
         title={order === null ? 'Reference was deleted' : undefined}

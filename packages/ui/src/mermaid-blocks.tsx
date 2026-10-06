@@ -33,10 +33,18 @@ export function MermaidBlocks({ children }: { children: ReactNode }) {
       if (cancelled) return;
 
       const isDark = document.documentElement.classList.contains('dark');
+      // Mermaid's dark theme hard-codes its text to #ccc, 4.4:1 on the dark page.
+      // khroma wants the comma form, so the triplet is rejoined.
+      const foreground = getComputedStyle(document.documentElement)
+        .getPropertyValue('--foreground')
+        .trim()
+        .split(/\s+/)
+        .join(', ');
       mermaid.initialize({
         startOnLoad: false,
         securityLevel: 'strict',
         theme: isDark ? 'dark' : 'neutral',
+        themeVariables: isDark ? { textColor: `hsl(${foreground})` } : undefined,
         fontFamily: 'inherit',
         // On a parse error mermaid injects its own "Syntax error in text"
         // graphic into the DOM even when render() throws. Suppress that —

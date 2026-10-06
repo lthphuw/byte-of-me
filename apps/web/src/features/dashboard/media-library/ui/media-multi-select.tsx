@@ -115,7 +115,7 @@ export function MediaMultiSelect({
               <Button
                 size="sm"
                 variant="ghost"
-                className="h-7 px-2 text-xs hover:text-destructive"
+                className="h-7 px-2 text-xs hover:text-destructive-text"
                 onClick={() => onChange([])}
               >
                 {t('picker.clearAll')}

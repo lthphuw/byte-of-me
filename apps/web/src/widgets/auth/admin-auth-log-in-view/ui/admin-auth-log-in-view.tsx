@@ -74,7 +74,7 @@ export function AdminAuthLogInView() {
         {errorMessage && (
           <p
             role="alert"
-            className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-center text-sm text-destructive"
+            className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-center text-sm text-destructive-text"
           >
             {errorMessage}
           </p>

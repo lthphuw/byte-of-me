@@ -22,7 +22,10 @@ export function Greeting({
         'text-left font-bold tracking-tight text-balance',
         'text-3xl sm:text-4xl md:text-5xl lg:text-6xl',
         'leading-tight sm:leading-tight md:leading-snug lg:leading-snug',
-        'bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent',
+        // The one brand moment on the page. A fade to `primary/60` washed the tail out
+        // on dark, so the stops come from the brand scale (>=3:1 large-text each).
+        'bg-gradient-to-r from-brand-700 to-brand-500 bg-clip-text text-transparent',
+        'dark:from-brand-300 dark:to-brand-500',
         className
       )}
       style={style}

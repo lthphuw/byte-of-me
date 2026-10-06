@@ -85,7 +85,7 @@ export function CommentItem({
               variant="ghost"
               onClick={() => hideMutation.mutate()}
               disabled={hideMutation.isPending}
-              className="h-7 w-7 text-muted-foreground opacity-100 hover:text-red-500 md:opacity-0 md:hover:opacity-100"
+              className="h-7 w-7 text-muted-foreground opacity-100 hover:text-destructive-text md:opacity-0 md:hover:opacity-100"
             >
               <EyeOff className="h-4 w-4" />
             </Button>

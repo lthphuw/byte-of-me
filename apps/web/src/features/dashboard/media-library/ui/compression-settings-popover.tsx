@@ -143,7 +143,7 @@ function SaveStatus({
   if (saveError) {
     return (
       <span
-        className="flex shrink-0 items-center gap-1 text-xs text-destructive"
+        className="flex shrink-0 items-center gap-1 text-xs text-destructive-text"
         aria-live="polite"
       >
         <TriangleAlert className="size-3.5" />

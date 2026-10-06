@@ -283,7 +283,7 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
           </label>
         </>
       )}
-      {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
+      {error && <p className="mt-2 text-sm text-destructive-text">{error}</p>}
     </div>
   );
 
@@ -299,7 +299,7 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
           placeholder="Enter image URL..."
         />
         {urlError && (
-          <p className="text-xs text-destructive">Please enter a valid URL</p>
+          <p className="text-xs text-destructive-text">Please enter a valid URL</p>
         )}
       </div>
       <div className="space-y-2">

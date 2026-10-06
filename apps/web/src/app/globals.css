@@ -79,7 +79,7 @@
   --secondary-foreground: 240 12.5% 9.4%;
   --accent: 226.7 75% 95.3%;
   --accent-foreground: 239.4 51.7% 41.4%;
-  --destructive: 0 84.2% 60.2%;
+  --destructive: 0 84.2% 48%;
   --destructive-foreground: 0 0% 98%;
   --destructive-text: 0 74% 42%;
   --ring: 237.6 73.9% 61%;
@@ -114,13 +114,13 @@
     --accent: 226.7 75% 95.3%;
     --accent-foreground: 239.4 51.7% 41.4%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84.2% 48%;
     --destructive-foreground: 0 0% 98%;
 
     /* Error TEXT, not the destructive button fill. `--destructive` is tuned as
-       a fill behind white and measures under 4:1 as text on `--background`;
-       this clears 6.10:1 light / 8.60:1 dark. Keep the two apart — retuning
-       `--destructive` would repaint every destructive button. */
+       a fill behind a white label (4.65:1) and is only ~4.6:1 as text on the page;
+       this one clears 6.10:1 light / 8.60:1 dark. Keep the two apart —
+       retuning `--destructive` would repaint every destructive button. */
     --destructive-text: 0 74% 42%;
 
     --ring: 237.6 73.9% 61%;

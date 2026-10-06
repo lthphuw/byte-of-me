@@ -62,7 +62,7 @@ export function MediaCard({
               no hover, so an `opacity-0` overlay stayed invisible yet
               hit-testable and a tap could fire an unseen Delete.
               `focus-within` covers the keyboard path. */}
-          <div className="absolute inset-0 z-20 flex flex-col justify-between bg-black/40 p-2 transition-opacity duration-200 sm:opacity-0 sm:focus-within:opacity-100 sm:group-hover:opacity-100">
+          <div className="absolute inset-0 z-20 flex flex-col justify-between bg-black/60 p-2 transition-opacity duration-200 sm:opacity-0 sm:focus-within:opacity-100 sm:group-hover:opacity-100">
             {/* Top Toolbar */}
             <div className="flex justify-end gap-1.5">
               <CopyButton

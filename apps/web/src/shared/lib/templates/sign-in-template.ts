@@ -9,8 +9,8 @@ type Props = {
 export async function signInTemplate({ url, host }: Props) {
   const t = await getTranslations('email');
 
-  const brandColor = '#0f172a';
-  const accentColor = '#3b82f6';
+  const brandColor = '#15151b'; // --foreground
+  const accentColor = '#484dd2'; // --primary, 6.4:1 under the white label
 
   return `
   <body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">

@@ -185,7 +185,7 @@ export function EducationAchievementItemField({
             size="icon"
             variant="ghost"
             aria-label={t('achievements.removeAriaLabel')}
-            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
+            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive-text"
             onClick={handleRemove}
           >
             <Trash className="h-4 w-4" />

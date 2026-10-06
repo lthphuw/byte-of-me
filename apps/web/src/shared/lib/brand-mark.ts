@@ -82,9 +82,9 @@ export const MARK_LAYERS: Record<BrandLayer, LayerGeometry> = {
   },
 };
 
-/** Straight from globals.css, so the mark and the site agree on ink. */
-const INK_LIGHT = '#0a0a0a'; // --background 0 0% 3.9%
-const INK_DARK = '#fafafa'; // --foreground 0 0% 98%
+/** Neutral ink. A static SVG cannot read the theme, so these stay plain values. */
+const INK_LIGHT = '#0a0a0a';
+const INK_DARK = '#fafafa';
 
 /** Matches the manifest's background_color / theme_color. */
 const STANDALONE_BACKGROUND = '#0f0f1a';

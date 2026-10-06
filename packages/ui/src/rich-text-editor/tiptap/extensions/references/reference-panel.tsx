@@ -126,7 +126,7 @@ export function ReferencePanel({ editor }: { editor: Editor }) {
                 type="button"
                 size="icon"
                 variant="ghost"
-                className="h-7 w-7 text-destructive"
+                className="h-7 w-7 text-destructive-text"
                 title="Delete reference"
                 onClick={() => setPendingDelete(item)}
               >

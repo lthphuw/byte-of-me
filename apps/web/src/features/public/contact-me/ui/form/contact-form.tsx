@@ -124,10 +124,10 @@ export function ContactForm() {
           >
             <Icons.warning
               aria-hidden
-              className="mt-0.5 size-4 shrink-0 text-destructive"
+              className="mt-0.5 size-4 shrink-0 text-destructive-text"
             />
             <div className="space-y-2 text-sm">
-              <p className="font-medium text-destructive">{t('errorTitle')}</p>
+              <p className="font-medium text-destructive-text">{t('errorTitle')}</p>
               <p className="text-muted-foreground">{result.message}</p>
             </div>
           </div>
@@ -150,7 +150,7 @@ export function ContactForm() {
                 {t('name')}{' '}
                 {/* `required` on the input is what a screen reader announces;
                     the asterisk is the sighted-only duplicate of it. */}
-                <span aria-hidden="true" className="text-destructive">
+                <span aria-hidden="true" className="text-destructive-text">
                   *
                 </span>
               </FormLabel>
@@ -176,7 +176,7 @@ export function ContactForm() {
             <FormItem>
               <FormLabel>
                 {t('email')}{' '}
-                <span aria-hidden="true" className="text-destructive">
+                <span aria-hidden="true" className="text-destructive-text">
                   *
                 </span>
               </FormLabel>
@@ -231,7 +231,7 @@ export function ContactForm() {
               <div className="flex items-center justify-between gap-2">
                 <FormLabel>
                   {t('message')}{' '}
-                  <span aria-hidden="true" className="text-destructive">
+                  <span aria-hidden="true" className="text-destructive-text">
                     *
                   </span>
                 </FormLabel>

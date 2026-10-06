@@ -108,7 +108,7 @@ const TableToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             Toggle header row
           </DropdownMenuItem>
           <DropdownMenuItem
-            className="text-destructive focus:text-destructive"
+            className="text-destructive-text focus:text-destructive-text"
             onClick={() => editor?.chain().focus().deleteTable().run()}
           >
             Delete table

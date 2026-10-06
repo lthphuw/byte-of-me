@@ -26,7 +26,7 @@ export function PublicSiteFooterNav() {
           key={idx}
           href={item.disabled ? '#' : item.href}
           className={cn(
-            'font-medium hover:text-blue-400 items-center rounded-lg px-1 text-sm transition-colors',
+            'font-medium hover:text-primary items-center rounded-lg px-1 text-sm transition-colors',
             item.href.startsWith(`/${segment}`) ||
               (!segment && item.href === Routes.Homepage)
               ? 'text-foreground font-semibold'
