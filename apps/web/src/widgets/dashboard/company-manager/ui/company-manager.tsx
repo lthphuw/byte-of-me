@@ -6,6 +6,7 @@ import {
   ConfirmDeleteDialog,
   DeleteButton,
   EditButton,
+  Pagination,
 } from '@byte-of-me/ui';
 import { Briefcase, Plus } from 'lucide-react';
 import Image from 'next/image';
@@ -15,12 +16,15 @@ import { CompanyDialog } from './company-dialog';
 
 import { createCompany } from '@/entities/company/api/create-company';
 import { deleteCompany } from '@/entities/company/api/delete-company';
-import { getAllAdminCompanies } from '@/entities/company/api/get-all-admin-companies';
+import { getAdminCompanyById } from '@/entities/company/api/get-admin-company-by-id';
+import { getPaginatedAdminCompanies } from '@/entities/company/api/get-paginated-admin-companies';
 import { updateCompany } from '@/entities/company/api/update-company';
 import type { CompanyFormValues } from '@/entities/company/model/company-schema';
 import { companyKeys } from '@/entities/company/model/query-keys';
-import type { AdminCompany } from '@/entities/company/model/types';
+import type { AdminCompanyListItem } from '@/entities/company/model/types';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
+import { useEditingRecord } from '@/shared/hooks/use-editing-record';
+import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { formatDate } from '@/shared/lib/utils';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
@@ -29,10 +33,13 @@ export function CompanyManager() {
   const tShared = useTranslations('dashboard.shared');
   const {
     items: companies,
+    pagination,
     isLoading,
     isError,
     refetch,
     isFetching,
+    isPlaceholderData,
+    setPage,
     editing,
     isDialogOpen,
     onDialogOpenChange,
@@ -46,8 +53,8 @@ export function CompanyManager() {
     confirmDelete,
     isDeleting,
     isDeletingItem,
-  } = useCrudManager<AdminCompany, CompanyFormValues>({
-    queryKey: companyKeys.list(),
+  } = useCrudManager<AdminCompanyListItem, CompanyFormValues>({
+    queryKey: companyKeys.adminList(),
     entityLabel: 'Work experience',
     messages: {
       created: t('toast.created'),
@@ -56,10 +63,23 @@ export function CompanyManager() {
       saveError: t('toast.saveError'),
       deleteError: t('toast.deleteError'),
     },
-    fetchAll: getAllAdminCompanies,
+    // Saving leaves `companyKeys.detail(id)` — the record the editor below
+    // loads — holding pre-save content that no list invalidation reaches.
+    detailKey: (company) => companyKeys.detail(company.id),
+    pageSize: ADMIN_PAGE_SIZE,
+    pageKey: companyKeys.adminPage,
+    fetchPage: (page, limit) => getPaginatedAdminCompanies(page, limit),
     create: createCompany,
     update: updateCompany,
     remove: deleteCompany,
+  });
+
+  // The list row carries no roles or tasks, so the dialog loads the full
+  // record by id; "New" (`editing` is null) fetches nothing and opens empty.
+  const fullCompany = useEditingRecord({
+    id: editing?.id ?? null,
+    queryKey: companyKeys.detail,
+    fetchRecord: getAdminCompanyById,
   });
 
   return (
@@ -128,14 +148,14 @@ export function CompanyManager() {
                           variant="secondary"
                           className="px-2 py-0 text-[10px]"
                         >
-                          {t('rolesBadge', { count: company.roles.length })}
+                          {t('rolesBadge', { count: company._count.roles })}
                         </Badge>
                         <Badge
                           variant="secondary"
                           className="px-2 py-0 text-[10px]"
                         >
                           {t('techStackBadge', {
-                            count: company.techStacks.length,
+                            count: company._count.techStacks,
                           })}
                         </Badge>
                       </div>
@@ -160,11 +180,28 @@ export function CompanyManager() {
         </ManagerListState>
       </div>
 
+      {companies.length > 0 && (
+        <Pagination
+          pagination={pagination}
+          setPage={setPage}
+          isPlaceholderData={isPlaceholderData}
+          pageLabel={tShared('pagination.pageLabel', {
+            page: pagination?.currentPage ?? 1,
+            totalPages: pagination?.totalPages ?? 1,
+          })}
+          previousLabel={tShared('pagination.previous')}
+          nextLabel={tShared('pagination.next')}
+        />
+      )}
+
       <CompanyDialog
-        key={editing?.id || 'new'}
+        key={editing?.id ?? 'new'}
         open={isDialogOpen}
         onOpenChange={onDialogOpenChange}
-        initialData={editing}
+        initialData={fullCompany.record}
+        isLoadingInitialData={fullCompany.isNotReady}
+        hasLoadError={fullCompany.hasError}
+        onRetryLoad={fullCompany.retry}
         onSubmit={(values) => save(values)}
         loading={isSaving}
       />

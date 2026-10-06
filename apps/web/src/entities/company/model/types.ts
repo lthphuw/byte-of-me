@@ -2,9 +2,13 @@ import type { Prisma } from '@byte-of-me/db/types';
 
 import type { Media } from '@/shared/types/models';
 
+/**
+ * The editor's full record. Roles, tasks and every translation live here only:
+ * the list row below never carries them, so the dialog loads this by id
+ * instead of reusing the row as `initialData`.
+ */
 export type AdminCompany = Prisma.CompanyGetPayload<{
   include: {
-    logo: true;
     translations: {
       select: {
         id: true;
@@ -12,7 +16,7 @@ export type AdminCompany = Prisma.CompanyGetPayload<{
         description: true;
       };
     };
-    techStacks: true;
+    techStacks: { select: { techStackId: true } };
     roles: {
       include: {
         translations: {
@@ -36,6 +40,17 @@ export type AdminCompany = Prisma.CompanyGetPayload<{
         };
       };
     };
+  };
+}>;
+
+/**
+ * One row of the paginated admin list: what the card renders (logo, name,
+ * location, dates, role and tech-stack counts) and nothing nested below it.
+ */
+export type AdminCompanyListItem = Prisma.CompanyGetPayload<{
+  include: {
+    logo: { select: { url: true } };
+    _count: { select: { roles: true; techStacks: true } };
   };
 }>;
 
