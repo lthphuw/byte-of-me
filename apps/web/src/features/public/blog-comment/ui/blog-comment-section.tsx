@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { Button, Loading,useIntersection } from '@byte-of-me/ui';
+import { useEffect, useState } from 'react';
+import { useIntersection } from '@byte-of-me/ui';
 import {
   type InfiniteData,
   useMutation,
@@ -16,14 +16,12 @@ import { toast } from 'sonner';
 import {
   CommentForm,
   commentKey,
-  CommentList,
-  CommentListEmpty,
   CommentListSkeleton,
   postComment,
   type PublicComment,
 } from '@/entities/comment';
-import { useCommentInfiniteQuery } from '@/entities/comment/query';
 import { AuthModal } from '@/features/auth';
+import { BlogCommentThread } from '@/features/public/blog-comment/ui/blog-comment-thread';
 import type { PaginatedData } from '@/shared/types/api';
 
 type CommentsCache = InfiniteData<PaginatedData<PublicComment>>;
@@ -37,8 +35,18 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
   const queryClient = useQueryClient();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const limit = 4;
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useCommentInfiniteQuery(blogId, limit);
+
+  // The thread sits at the foot of the post, so its query waits until the
+  // reader is within 400px of it — early enough to be loaded on arrival — and
+  // then stays on, since scrolling back up must not drop the list.
+  const { ref: nearRef, entry: nearEntry } = useIntersection({
+    rootMargin: '400px 0px',
+    threshold: 0,
+  });
+  const [threadWanted, setThreadWanted] = useState(false);
+  useEffect(() => {
+    if (nearEntry?.isIntersecting) setThreadWanted(true);
+  }, [nearEntry?.isIntersecting]);
 
   const key = commentKey(blogId, limit);
   const mutation = useMutation({
@@ -149,29 +157,6 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
     },
   });
 
-  const { ref, entry } = useIntersection({
-    root: null,
-    threshold: 0.1,
-  });
-
-  useEffect(() => {
-    if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  }, [entry?.isIntersecting, hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-  const allComments = useMemo(() => {
-    const map = new Map<string, PublicComment>();
-
-    data?.pages.forEach((page) => {
-      page.data.forEach((comment) => {
-        map.set(comment.id, comment);
-      });
-    });
-
-    return Array.from(map.values());
-  }, [data]);
-
   return (
     <div id="comments" className="space-y-6 md:space-y-8">
       <AuthModal
@@ -188,39 +173,18 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
         onRequireAuth={() => setIsAuthModalOpen(true)}
       />
 
-      <div className="space-y-2">
-        {isLoading ? (
-          <CommentListSkeleton />
-        ) : allComments.length === 0 ? (
-          <CommentListEmpty />
+      <div ref={nearRef} className="space-y-2">
+        {threadWanted ? (
+          <BlogCommentThread
+            blogId={blogId}
+            limit={limit}
+            onComment={(content, parentId) =>
+              mutation.mutate({ content, parentId })
+            }
+            onRequireAuth={() => setIsAuthModalOpen(true)}
+          />
         ) : (
-          <>
-            <CommentList
-              blogId={blogId}
-              comments={allComments}
-              onComment={(content, parentId) => mutation.mutate({content, parentId})}
-              onRequireAuth={() => setIsAuthModalOpen(true)}
-            />
-
-            {isFetchingNextPage && (
-              <div className="flex items-center justify-center gap-2 py-4">
-                <Loading />
-                <p className="text-sm text-muted-foreground">
-                  {t('loadMoreComments')}
-                </p>
-              </div>
-            )}
-
-            {hasNextPage && <div ref={ref} className="h-4" />}
-
-            {hasNextPage && !isFetchingNextPage && (
-              <div className="flex justify-center pt-4">
-                <Button variant="ghost" onClick={() => fetchNextPage()}>
-                  {t('loadMore')}
-                </Button>
-              </div>
-            )}
-          </>
+          <CommentListSkeleton />
         )}
       </div>
     </div>
