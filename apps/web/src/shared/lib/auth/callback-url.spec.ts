@@ -83,40 +83,7 @@ describe('sanitizeCallbackUrl', () => {
     });
   });
 
-  describe('overrides for the share-recipient flow', () => {
-    it('honours an overridden default destination', () => {
-      // A recipient cannot fall back to /dashboard: (protected) bounces
-      // anyone who is not the site owner straight back out.
-      expect(
-        sanitizeCallbackUrl(undefined, 'en', { defaultDestination: '/shared' })
-      ).toBe('/en/shared');
-    });
-
-    it('treats the overridden sign-in path as the loop guard', () => {
-      expect(
-        sanitizeCallbackUrl('/invite', 'en', {
-          defaultDestination: '/shared',
-          signInPath: '/invite',
-        })
-      ).toBe('/en/shared');
-    });
-
-    it('still guards the owner sign-in path by default', () => {
-      expect(sanitizeCallbackUrl('/auth/login', 'en')).toBe('/en/dashboard');
-    });
-
-    it('accepts a shared-surface path unchanged', () => {
-      expect(sanitizeCallbackUrl('/shared/notes/abc', 'vi')).toBe(
-        '/vi/shared/notes/abc'
-      );
-    });
-
-    it('falls back to the overridden destination for a hostile candidate', () => {
-      expect(
-        sanitizeCallbackUrl('//evil.example', 'en', {
-          defaultDestination: '/shared',
-        })
-      ).toBe('/en/shared');
-    });
+  it('guards the owner sign-in path', () => {
+    expect(sanitizeCallbackUrl('/auth/login', 'en')).toBe('/en/dashboard');
   });
 });

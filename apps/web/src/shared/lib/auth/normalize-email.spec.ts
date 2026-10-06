@@ -1,6 +1,6 @@
 /**
  * `normalizeEmail` is the single rule every email comparison in this app goes
- * through — the owner gate, note-share grants, and the invite form. The
+ * through — the owner gate and the sign-in form. The
  * contract is that two spellings of one address compare equal, and that an
  * absent address is never equal to anything.
  */

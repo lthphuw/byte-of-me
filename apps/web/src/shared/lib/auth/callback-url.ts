@@ -13,22 +13,6 @@ const DEFAULT_DESTINATION = '/dashboard';
 const SIGN_IN_PATH = '/auth/login';
 
 /**
- * Both defaults above name the OWNER's flow, and neither fits a share
- * recipient: `/dashboard` bounces anyone who is not the site owner, and the
- * loop guard has to name `/invite` instead.
- *
- * Overrides rather than a second function, so there is still exactly one
- * place deciding what an absent or hostile `?from=` means — the property this
- * module's doc comment above exists to protect.
- */
-interface SanitizeCallbackUrlOptions {
-  /** Where to land when nothing better is known. */
-  defaultDestination?: string;
-  /** This flow's own sign-in page; landing back on it is an immediate loop. */
-  signInPath?: string;
-}
-
-/**
  * Turn an untrusted `?from=` value into a safe, locale-prefixed internal path.
  *
  * Every sign-in entry point funnels through this one function — the email magic
@@ -48,23 +32,19 @@ interface SanitizeCallbackUrlOptions {
  *
  * **A lost locale.** The redirect that produced `from` may have dropped the
  * locale prefix, and next-intl would then resolve the bare path to
- * `defaultLocale` — a `vi` reader signing in to read their notes would land on
- * the `en` copy. The prefix is therefore stripped and re-applied from the
+ * `defaultLocale` — a `vi` owner signing in would land on the `en` copy of the
+ * page they asked for. The prefix is therefore stripped and re-applied from the
  * locale in force at sign-in time, so a path that already carries one is not
- * double-prefixed into `/vi/vi/notes`.
+ * double-prefixed into `/vi/vi/dashboard`.
  */
 export function sanitizeCallbackUrl(
   candidate: string | null | undefined,
-  locale: string,
-  options: SanitizeCallbackUrlOptions = {}
+  locale: string
 ): string {
-  const destination = options.defaultDestination ?? DEFAULT_DESTINATION;
-  const signInPath = options.signInPath ?? SIGN_IN_PATH;
+  const path = stripLocalePrefix(toInternalPath(candidate, DEFAULT_DESTINATION));
 
-  const path = stripLocalePrefix(toInternalPath(candidate, destination));
-
-  if (path === signInPath || path.startsWith(`${signInPath}/`)) {
-    return `/${locale}${destination}`;
+  if (path === SIGN_IN_PATH || path.startsWith(`${SIGN_IN_PATH}/`)) {
+    return `/${locale}${DEFAULT_DESTINATION}`;
   }
 
   return `/${locale}${path}`;

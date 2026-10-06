@@ -23,9 +23,8 @@ interface StubbedAuthBarrel {
  *
  * That cast lives here, once, rather than in every spec that needs a
  * non-owner caller. The stub's default identity is the site owner, which is
- * what every note spec wants; the note-share specs are the first that need
- * somebody else, because the entire feature is about callers who are not the
- * owner.
+ * what most specs want; the ones that exercise the 401 paths need somebody
+ * else.
  *
  * Named `.test-helper.ts` and colocated with the module it bridges, following
  * `lazy-rich-text-editor.test-stub.ts`. Nothing in `src/` imports it outside a
@@ -43,8 +42,8 @@ export const setTestUser = (authBarrel as unknown as StubbedAuthBarrel)
  * restore it leaves `requireAdmin()` throwing for every spec that runs after
  * it. The symptom is an "Unauthorized" raised from an unrelated action, in a
  * file that passes perfectly well on its own — which is exactly how it was
- * found: six note-share specs green in isolation, sixty-four unrelated ones
- * red in the full run.
+ * found: a few specs green in isolation, dozens of unrelated ones red in the
+ * full run.
  */
 export const resetTestUser = (authBarrel as unknown as StubbedAuthBarrel)
   .__resetTestUser;

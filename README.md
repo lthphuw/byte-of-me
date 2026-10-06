@@ -1,8 +1,8 @@
 # Byte of Me
 
-**A multilingual portfolio, headless CMS, and private knowledge base — logged one byte at a time.**
+**A multilingual portfolio and headless CMS — logged one byte at a time.**
 
-A production personal website with a public portfolio, a multilingual content dashboard, and a private notes workspace. Built as a TypeScript monorepo on Next.js 16 and the App Router.
+A production personal website with a public portfolio, and a multilingual content dashboard. Built as a TypeScript monorepo on Next.js 16 and the App Router.
 
 Live at [phu-lth.space](https://phu-lth.space/).
 
@@ -10,7 +10,7 @@ Live at [phu-lth.space](https://phu-lth.space/).
 
 ## Overview
 
-**Byte of Me** is a personal portfolio that doubles as its own content platform. Visitors get a fast, animated, fully bilingual (English / Tiếng Việt) site; the owner gets a private dashboard to write blog posts, manage projects and work history, and translate everything — without touching code or redeploying — plus a private, Obsidian-style workspace for interlinked notes.
+**Byte of Me** is a personal portfolio that doubles as its own content platform. Visitors get a fast, animated, fully bilingual (English / Tiếng Việt) site; the owner gets a private dashboard to write blog posts, manage projects and work history, and translate everything — without touching code or redeploying.
 
 The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced Design](https://feature-sliced.design/) on the frontend and shared workspace packages for the database, storage, logging, UI kit, and tooling config.
 
@@ -29,20 +29,6 @@ The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced 
 - **A vertical experience timeline** rendered from live CMS data (companies → roles → tasks).
 - **Contact form** that persists the message and delivers it over SMTP (Nodemailer).
 - **SEO & sharing built in** — dynamic OG images (`/api/og`, Satori), `sitemap.ts`, `robots.ts`, PWA `manifest.ts`, per-route metadata.
-
-### Private notes workspace
-
-A second private surface at `/space`, separate from the CMS: nothing here is ever published.
-
-- **Obsidian-style editor** — WYSIWYG markdown (typing `# ` becomes a heading), a raw-source toggle, and **live KaTeX** for inline `$…$` and block `$$…$$` math.
-- **Bi-directional links** — type `[[` to link a note; each note shows both its outgoing links and its backlinks.
-- **Knowledge graph** at `/space/graph` — a `d3-force` simulation on a `devicePixelRatio`-aware canvas. Nodes are sized by link count, unlinked notes are drawn dimmer rather than hidden, hovering highlights a neighbourhood, and clicking opens the note. Wheel and pinch zoom hold the point under the cursor; the simulation pauses while the tab is hidden.
-- **Three explorer views** — a folder tree, a flat list, or grouped by status or label — with drag-and-drop reordering, re-parenting, and moves between groups (mouse and touch).
-- **Full-text search** over titles and bodies, backed by a Postgres generated `tsvector` column and a GIN index, with highlighted snippets.
-- **Everything paginates.** The tree loads one level per folder as it expands, the flat and grouped views scroll infinitely, and the trash reads only what is archived — so the sidebar's cost does not grow with the number of notes owned.
-- **Properties** — free-form status, labels, and key→value frontmatter, groupable in the explorer.
-- **Export** — `.md` with hand-emitted YAML frontmatter, or a chromeless print view that Chrome's "Save as PDF" turns into a text-true document with real KaTeX glyphs.
-- Command palette (`Cmd/Ctrl+K`) and a markdown cheat-sheet (`Cmd/Ctrl+/`).
 
 ### Private CMS dashboard
 - Manage **blogs, projects, companies & roles, education, tags, tech stacks, media, comments, social links, user profile, and translations** from one place.
@@ -104,7 +90,6 @@ A second private surface at `/space`, separate from the CMS: nothing here is eve
 | **i18n** | next-intl v4 (UI) + database translations (content) |
 | **Storage** | `@byte-of-me/storage` — S3-compatible client (AWS SDK v3) pointed at Supabase Storage |
 | **Editor** | TipTap 3 + lowlight/highlight.js, KaTeX for maths, `@tiptap/markdown` |
-| **Visualization** | `d3-force` on a hand-drawn canvas (knowledge graph) |
 | **Email** | Nodemailer (SMTP) — sign-in links and contact-form delivery |
 | **Forms & validation** | React Hook Form + Zod; env parsed with `@t3-oss/env-nextjs` |
 | **Analytics** | Vercel Analytics & Speed Insights, Google Analytics (`@next/third-parties`), plus first-party page-view/interaction logging |
@@ -122,9 +107,9 @@ The frontend follows **Feature-Sliced Design** — each layer may only depend on
 | Layer | Responsibility | Examples |
 | --- | --- | --- |
 | `app/` | App Router routes, layouts, providers, route handlers | `(public)`, `(protected)/dashboard`, `(auth)`, `api/og` |
-| `widgets/` | Composite page sections | `public-site-header`, `blog-manager`, `note-manager`, `space-graph` |
-| `features/` | User-facing capabilities | `blog-comment`, `note-editor`, `note-explorer`, `note-graph`, `media-library` |
-| `entities/` | Domain models with their server API + UI | `blog`, `note`, `project`, `company`, `tag` |
+| `widgets/` | Composite page sections | `public-site-header`, `blog-manager`, `dashboard-sidebar` |
+| `features/` | User-facing capabilities | `blog-comment`, `blog-editor`, `media-library` |
+| `entities/` | Domain models with their server API + UI | `blog`, `project`, `company`, `tag` |
 | `shared/` | Config, i18n, libs, primitives, hooks | `config/env`, `i18n/routing`, `lib/auth`, `api/s3-storage-api` |
 
 ```
@@ -136,8 +121,9 @@ byte-of-me/
 │           ├── app/
 │           │   ├── [locale]/
 │           │   │   ├── (public)/         # about · blogs/[slug] · contact · experience · projects
-│           │   │   ├── (protected)/      # dashboard/* · space/* · print/* (admin only)
+│           │   │   ├── (protected)/      # dashboard/* (admin only)
 │           │   │   ├── (auth)/           # auth/login
+│           │   │   ├── (print)/          # print/blogs/[slug]
 │           │   │   └── [...rest]/        # 404 catch-all
 │           │   ├── api/
 │           │   │   ├── auth/[...nextauth]/
@@ -148,8 +134,8 @@ byte-of-me/
 │           ├── widgets/          # auth · dashboard · public
 │           ├── features/         # auth · dashboard · public
 │           ├── entities/         # blog, comment, company, contact-message, education,
-│           │                     # media, note, project, social-link, tag,
-│           │                     # tech-stack, user-profile
+│           │                     # media, project, social-link, tag,
+│           │                     # tech-stack, user-profile, workspace-settings
 │           └── shared/           # api · config · hooks · i18n · lib · types · ui
 ├── packages/
 │   ├── ui/                       # Shared component & design system (@byte-of-me/ui)
@@ -270,9 +256,7 @@ Git hooks (Husky):
 
 ## Database
 
-The schema lives in `packages/db/prisma/schema.prisma` and covers auth (Auth.js tables), profile & social links, education & achievements, companies → roles → tasks, projects & co-authors, blogs, tags, media, comments, interactions, page views, contact messages, a generic `Translation` table, and the private notes graph (`Note`, `NoteLink`, `NoteLabel`, `NoteOnLabel`).
-
-`Note` carries a generated `tsvector` column with a GIN index behind it, which is what full-text search reads; Prisma never writes that column.
+The schema lives in `packages/db/prisma/schema.prisma` and covers auth (Auth.js tables), profile & social links, education & achievements, companies → roles → tasks, projects & co-authors, blogs, tags, media, comments, interactions, page views, contact messages, a generic `Translation` table, and workspace settings.
 
 Content models pair with a `*Translation` sibling (`BlogTranslation`, `ProjectTranslation`, `CompanyTranslation`, …) keyed by `language`, which is how dynamic content is localized.
 
@@ -282,17 +266,11 @@ The generated client is committed to `packages/db/src/generated/prisma` and re-e
 
 ## Testing
 
-`bun test` suites live next to the code they cover — **470 tests across 53 files**:
+`bun test` suites live next to the code they cover — **410 tests across 43 files**:
 
 - `apps/web/src/entities/*/api/` — server-action contracts: owner scoping, narrow
   selects, cursor pagination, and the recursive delete-cascade count
-- `apps/web/src/entities/note/model/` — tree walks, and a key-coverage spec that fails
-  if a mutation stops invalidating a list the explorer renders
-- `apps/web/src/features/**/lib/` — URL filter parsing, the explorer's pure geometry,
-  the knowledge graph's viewport maths, and the `.md` frontmatter emitter
-- `apps/web/src/widgets/notes/note-manager/` — the explorer's query contracts: a
-  collapsed folder costs no query, a section header shows the aggregate count rather
-  than the rows it loaded, and no view outside the trash ever reads the whole corpus
+- `apps/web/src/features/**/lib/` — URL filter parsing and other pure helpers
 - `apps/web/src/shared/lib/` — `i18n-utils`, `pagination`, `rate-limit`, `reorder`,
   `validate-action-input`, `filter-params`, plus `i18n-parity` (fails if `en.json` and
   `vi.json` disagree on any key)

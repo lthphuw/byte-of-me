@@ -32,7 +32,7 @@ export async function requireUser() {
  *
  * This is deliberately an *identity* check, not just a role check. `role` is a
  * column any future `User` row could carry, and a second ADMIN would otherwise
- * inherit the dashboard, the private notes, and every admin server action.
+ * inherit the dashboard and every admin server action.
  * Identity is delegated to `isSiteOwnerEmail()` above so this guard and the
  * sign-in form's gate can never disagree.
  *

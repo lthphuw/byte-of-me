@@ -52,7 +52,7 @@
  * graphs, so intercepting it here would leak into them — `build.module`
  * registrations are process-global, not scoped to the file that calls
  * `plugin()`, confirmed by reproducing the leak against
- * `get-note-tree.spec.ts` while writing this test).
+ * another spec file while writing this test).
  *
  * `env` is a singleton for the whole `bun test` process, and `bun test`
  * auto-loads `apps/web/.env` before any preload runs — so whatever
@@ -72,7 +72,7 @@
  * that permanently changed `OWNER_EMAIL` (via a hardcoded reset, or by
  * simply never restoring it) made the two disagree, and every
  * `requireAdmin()`-guarded spec that ran afterward in the same process
- * threw `Unauthorized`. Reproduced against `get-note-tree.spec.ts` while
+ * threw `Unauthorized`. Reproduced against another spec file while
  * fixing this; see the review-fix report for the exact repro.
  */
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'bun:test';
