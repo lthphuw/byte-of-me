@@ -5,11 +5,7 @@
     "packages/config/typescript/*.json"
   ],
   "tasks": {
-    "check-types": {
-      "dependsOn": [
-        "^build"
-      ]
-    },
+    "check-types": {},
     "build": {
       "dependsOn": [
         "^build"
@@ -21,7 +17,8 @@
       "outputs": [
         "dist/**",
         ".next/**",
-        "!.next/cache/**"
+        "!.next/cache/**",
+        "!.next/dev/**"
       ],
       "env": [
         "NODE_ENV",
@@ -48,7 +45,12 @@
         "AUTH_GOOGLE_SECRET",
         "NEXT_PUBLIC_ENV",
         "NEXT_PUBLIC_GA_ID",
-        "NEXT_PUBLIC_AUTHOR_EMAIL"
+        "NEXT_PUBLIC_AUTHOR_EMAIL",
+        "OWNER_EMAIL",
+        "GITHUB_TOKEN",
+        "GITHUB_LOGIN",
+        "PORT",
+        "VERCEL_PROJECT_PRODUCTION_URL"
       ]
     },
     "db:migrate:dev": {
@@ -75,11 +77,7 @@
       "cache": false
     },
     "lint": {},
-    "test": {
-      "dependsOn": [
-        "^build"
-      ]
-    },
+    "test": {},
     "lint:fix": {
       "cache": false
     }
