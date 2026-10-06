@@ -17,6 +17,8 @@ import { cleanup, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, mock } from 'bun:test';
 
 import { blogKeys } from '@/entities/blog/model/query-keys';
+import { companyKeys } from '@/entities/company/model/query-keys';
+import { educationKeys } from '@/entities/education/model/query-keys';
 import { projectKeys } from '@/entities/project/model/query-keys';
 import { tagKeys } from '@/entities/tag/model/query-keys';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
@@ -41,6 +43,18 @@ const entities: {
     keys: blogKeys,
     picker: null,
     outside: blogKeys.detail('b1'),
+  },
+  {
+    name: 'education',
+    keys: educationKeys,
+    picker: null,
+    outside: educationKeys.detail('e1'),
+  },
+  {
+    name: 'company',
+    keys: companyKeys,
+    picker: null,
+    outside: companyKeys.detail('c1'),
   },
   {
     name: 'project',
@@ -84,8 +98,8 @@ describe.each(entities)('$name admin keys', ({ keys, picker, outside }) => {
     expect(queryClient.getQueryState(outside)?.isInvalidated).toBe(false);
   });
 
-  // Both wirings are live: blogs pass `pageKey`, projects and tags rely on the
-  // hook appending the page to `adminList()`.
+  // Managers pass `pageKey`; the hook's default (`adminList()` plus the page)
+  // must produce the same key, or a manager that omits it would miss the prefetch.
   describe.each([
     ['the default page key', false],
     ['an explicit pageKey', true],
