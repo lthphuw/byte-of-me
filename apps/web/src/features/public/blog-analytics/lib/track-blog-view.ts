@@ -4,9 +4,9 @@ import { prisma } from '@byte-of-me/db';
 import { cookies, headers } from 'next/headers';
 import { userAgent } from 'next/server';
 
+import { getClientIp } from '@/shared/lib/client-ip';
+import { CUID_PATTERN } from '@/shared/lib/public-input-schema';
 import { checkRateLimit } from '@/shared/lib/rate-limit';
-
-const CUID_PATTERN = /^c[a-z0-9]{20,32}$/;
 
 export async function trackBlogView(blogId: string) {
   // Anonymous endpoint — reject malformed ids before they reach the DB.
@@ -27,10 +27,8 @@ export async function trackBlogView(blogId: string) {
 
     // Fire-and-forget analytics: a throttled client is simply not recorded,
     // no error surfaces to the reader.
-    const ip =
-      headerList.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
     const { allowed } = await checkRateLimit({
-      key: `view:${ip}`,
+      key: `view:${getClientIp(headerList)}`,
       limit: 60,
       windowSec: 60,
     });

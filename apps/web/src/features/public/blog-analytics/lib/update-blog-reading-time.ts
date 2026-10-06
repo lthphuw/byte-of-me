@@ -4,6 +4,7 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { cookies } from 'next/headers';
 
+import { checkRateLimit } from '@/shared/lib/rate-limit';
 import { getErrorMessage } from '@/shared/lib/utils';
 
 // A single heartbeat can never legitimately report more than a few minutes.
@@ -20,6 +21,17 @@ export async function updateBlogReadingTime(logId: string, seconds: number) {
 
   const increment = Math.floor(seconds);
   if (!ownsLog || !Number.isFinite(increment) || increment < 1) {
+    return { success: false };
+  }
+
+  // The client beats every 15s, so a burst is a script. Keyed on the log id:
+  // an IP bucket would throttle a whole office behind one NAT address.
+  const { allowed } = await checkRateLimit({
+    key: `reading-time:${logId}`,
+    limit: 10,
+    windowSec: 60,
+  });
+  if (!allowed) {
     return { success: false };
   }
 
