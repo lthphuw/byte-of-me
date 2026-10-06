@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import { type DefaultValues, useForm } from 'react-hook-form';
 import {
   Button,
   Form,
@@ -32,6 +32,48 @@ import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text
 const uploadImage = createScopedImageUploader('blog');
 
 
+const emptyTranslation = () => ({
+  language: 'en',
+  title: '',
+  description: '',
+  content: '<p></p>',
+});
+
+function toFormValues(initialData?: AdminBlog): DefaultValues<BlogFormValues> {
+  if (!initialData) {
+    return {
+      slug: '',
+      publishedDate: new Date(),
+      isPublished: false,
+      tagIds: [],
+      projectId: '',
+      translations: [emptyTranslation()],
+    };
+  }
+
+  return {
+    slug: initialData.slug,
+    publishedDate: initialData.publishedDate
+      ? new Date(initialData.publishedDate)
+      : null,
+    isPublished: initialData.isPublished,
+    coverImageId: initialData.coverImageId,
+    tagIds: initialData.tags?.map((t) => t.tagId) ?? [],
+    projectId: initialData.projectId ?? undefined,
+    translations:
+      initialData.translations?.length > 0
+        ? initialData.translations.map((it) => ({
+            ...it,
+            content: it.content
+              ? typeof it.content === 'string'
+                ? JSON.parse(it.content)
+                : it.content
+              : '<p></p>',
+          }))
+        : [emptyTranslation()],
+  };
+}
+
 export interface BlogFormProps {
   initialData?: AdminBlog;
   onSubmit: (data: BlogFormValues) => void;
@@ -45,67 +87,14 @@ export function BlogForm({ initialData, onSubmit, loading, formId }: BlogFormPro
   const { tagOptions, projects, isTagLoading, isProjectLoading } =
     useBlogReferenceOptions();
 
+  // Seeded once, at mount: the host mounts this form on a loaded post and keys
+  // the dialog per id. A later `form.reset` remounts every editor (new field-array
+  // ids), and re-seeding on a refetch's fresh `initialData` wipes what was typed.
+  const [defaultValues] = useState(() => toFormValues(initialData));
   const form = useForm<BlogFormValues>({
     resolver: zodResolver(blogFormSchema),
-    defaultValues: {
-      slug: '',
-      publishedDate: new Date(),
-      isPublished: false,
-      tagIds: [],
-      projectId: '',
-      translations: [
-        {
-          language: 'en',
-          title: '',
-          description: '',
-          content: '<p></p>',
-        },
-      ],
-    },
+    defaultValues,
   });
-
-  // Seed the form once per post, not once per `initialData` identity. The
-  // editor renders on `blogKeys.detail(id)`, which TanStack Query refetches on
-  // window focus and on reconnect; every one of those resolves to a fresh
-  // object, and resetting on identity would silently throw away everything the
-  // author has typed since. Only a different post id means "a different record
-  // is being edited", and that also remounts this component (the dialog is
-  // keyed on the id), so the ref starts null exactly when a reset is wanted.
-  const seededBlogId = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (!initialData || seededBlogId.current === initialData.id) return;
-    seededBlogId.current = initialData.id;
-
-    form.reset({
-      slug: initialData.slug,
-      publishedDate: initialData.publishedDate
-        ? new Date(initialData.publishedDate)
-        : null,
-      isPublished: initialData.isPublished,
-      coverImageId: initialData.coverImageId,
-      tagIds: initialData.tags?.map((t) => t.tagId) ?? [],
-      projectId: initialData.projectId ?? undefined,
-      translations:
-        initialData.translations?.length > 0
-          ? initialData.translations.map((it) => ({
-              ...it,
-              content: it.content
-                ? typeof it.content === 'string'
-                  ? JSON.parse(it.content)
-                  : it.content
-                : '<p></p>',
-            }))
-          : [
-              {
-                language: 'en',
-                title: '',
-                description: '',
-                content: '<p></p>',
-              },
-            ],
-    });
-  }, [initialData, form]);
 
   const autosave = useFormAutosave(
     form,
