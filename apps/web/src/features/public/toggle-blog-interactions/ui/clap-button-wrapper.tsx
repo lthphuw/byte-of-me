@@ -1,6 +1,6 @@
 import { ClapButton } from './clap-button';
 
-import { getBlogInteractionsForUser } from '@/features/public/toggle-blog-interactions/lib';
+import { getBlogInteractionsOnce } from '@/features/public/toggle-blog-interactions/lib/get-blog-interactions-once';
 import { INTERACTION } from '@/shared/lib/constants';
 
 export async function ClapButtonWrapper({
@@ -10,7 +10,7 @@ export async function ClapButtonWrapper({
   blogId: string;
   blogSlug: string;
 }) {
-  const data = await getBlogInteractionsForUser(blogId, INTERACTION.CLAP);
+  const data = await getBlogInteractionsOnce(blogId, INTERACTION.CLAP);
 
   return <ClapButton blogId={blogId} blogSlug={blogSlug} initialData={data} />;
 }
