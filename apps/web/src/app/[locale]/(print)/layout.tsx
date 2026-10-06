@@ -18,18 +18,17 @@ import { ForceLightTheme } from '@/shared/ui/force-light-theme';
  * mechanism (server-rendered `RichText`, `MathRenderer`, Chrome's "Save as
  * PDF" driven by the `@media print` rules in `globals.css`).
  *
- * Forced light, both halves of it — and the blog view needs both at least as
- * much as the note view does, because `RichTextHtml` styles the article body
- * with Tailwind `dark:` VARIANTS (`dark:prose-invert`,
- * `dark:text-neutral-200`, `dark:[&_a]:text-neutral-50`):
+ * Forced light, both halves of it. `RichTextHtml` reads the theme variables,
+ * so `force-light-surface` alone repaints the article body; the editor's
+ * highlight colours still key on `.dark` SELECTORS in `editor-surface.css`:
  *
  * - `force-light-surface` redeclares the CSS custom properties so the subtree
  *   is light even in the frame before the effect below runs, but a subtree
  *   cannot override a `.dark &` SELECTOR;
  * - `ForceLightTheme` drops the class those selectors key on.
  *
- * With only the first, a reader in dark mode exports white headings and bold
- * runs onto white paper. Paper has no dark mode.
+ * With only the first, a reader in dark mode exports dark-tinted highlights
+ * onto white paper. Paper has no dark mode.
  */
 export default async function PublicPrintLayout({
   children,

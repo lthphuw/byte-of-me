@@ -56,69 +56,74 @@
  * The values are the `:root` block's, repeated because `.dark` is set on an
  * ANCESTOR: custom properties cascade, so the only way to win for a subtree
  * is to redeclare them on it. Only the tokens that reach rendered prose are
- * listed; keep this in step with `:root` below if the palette changes.
+ * listed; keep this in step with `:root` below (except `--background`, which
+ * stays pure white) if the palette changes.
  */
 .force-light-surface {
   color-scheme: light;
 
+  /* Paper is white; the page's faint indigo wash would print as a tint. */
   --background: 0 0% 100%;
-  --foreground: 0 0% 3.9%;
-  --muted: 0 0% 96.1%;
-  --muted-foreground: 0 0% 45.1%;
+  --foreground: 240 12.5% 9.4%;
+  --muted: 240 33.3% 95.3%;
+  --muted-foreground: 240 4.4% 35.7%;
   --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 3.9%;
-  --border: 0 0% 89.8%;
-  --input: 0 0% 89.8%;
+  --popover-foreground: 240 12.5% 9.4%;
+  --border: 240 9.7% 87.8%;
+  --input: 240 3% 53.5%;
   --card: 0 0% 100%;
-  --card-foreground: 0 0% 3.9%;
-  --primary: 0 0% 9%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 0 0% 96.1%;
-  --secondary-foreground: 0 0% 9%;
-  --accent: 0 0% 96.1%;
-  --accent-foreground: 0 0% 9%;
+  --card-foreground: 240 12.5% 9.4%;
+  --primary: 237.8 60.5% 55.3%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 33.3% 95.3%;
+  --secondary-foreground: 240 12.5% 9.4%;
+  --accent: 226.7 75% 95.3%;
+  --accent-foreground: 239.4 51.7% 41.4%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 0 0% 98%;
   --destructive-text: 0 74% 42%;
-  --ring: 0 0% 3.9%;
+  --ring: 237.6 73.9% 61%;
 }
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --background: 240 100% 98.8%;
+    --foreground: 240 12.5% 9.4%;
 
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
+    --muted: 240 33.3% 95.3%;
+    --muted-foreground: 240 4.4% 35.7%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
+    --popover-foreground: 240 12.5% 9.4%;
 
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
+    /* Two edge roles on purpose. `--border` is a decorative hairline (1.3:1);
+       `--input` is a control's own edge and must clear 3:1 (WCAG 1.4.11) —
+       3.50 on the page, 3.67 on a card. They were one value at 1.26:1. */
+    --border: 240 9.7% 87.8%;
+    --input: 240 3% 53.5%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 240 12.5% 9.4%;
 
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 237.8 60.5% 55.3%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
+    --secondary: 240 33.3% 95.3%;
+    --secondary-foreground: 240 12.5% 9.4%;
 
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    --accent: 226.7 75% 95.3%;
+    --accent-foreground: 239.4 51.7% 41.4%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
     /* Error TEXT, not the destructive button fill. `--destructive` is tuned as
-       a fill behind white and measures only 3.76:1 as text on `--background`;
-       this clears 6.42:1 light / 7.20:1 dark. Keep the two apart — retuning
+       a fill behind white and measures under 4:1 as text on `--background`;
+       this clears 6.10:1 light / 6.95:1 dark. Keep the two apart — retuning
        `--destructive` would repaint every destructive button. */
     --destructive-text: 0 74% 42%;
 
-    --ring: 0 0% 3.9%;
+    --ring: 237.6 73.9% 61%;
 
     --radius: 0.5rem;
 
@@ -126,65 +131,59 @@
        whatever the pane behind it happens to be — a card, the page, a muted
        toolbar — and only a translucent grey reads the same on all of them.
        `--border` was the obvious candidate and is far too faint to find. */
-    --scrollbar-thumb: hsl(0 0% 0% / 0.22);
-    --scrollbar-thumb-hover: hsl(0 0% 0% / 0.38);
+    --scrollbar-thumb: hsl(240 20% 8% / 0.22);
+    --scrollbar-thumb-hover: hsl(240 20% 8% / 0.38);
 
-    --chart-1: 12 76% 61%;
-
-    --chart-2: 173 58% 39%;
-
-    --chart-3: 197 37% 24%;
-
-    --chart-4: 43 74% 66%;
-
-    --chart-5: 27 87% 67%;
+    /* The brand hue — indigo. `--primary` and `--ring` are picked from this
+       scale, but components that want the hue by name use `brand-*`. */
+    --brand-50: 226.2 100% 97.5%;
+    --brand-100: 228.5 100% 94.9%;
+    --brand-200: 227.5 100% 90.6%;
+    --brand-300: 229.2 100% 84.7%;
+    --brand-400: 231.3 100% 77.1%;
+    --brand-500: 234.5 88.8% 68.6%;
+    --brand-600: 237.6 73.9% 61%;
+    --brand-700: 239.1 54.5% 51.8%;
+    --brand-800: 239.4 51.7% 41.4%;
+    --brand-900: 237.8 51.3% 30.6%;
+    --brand-950: 237.9 56.9% 20%;
   }
 
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: 240 16.7% 7.1%;
+    --foreground: 240 13.3% 94.1%;
 
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
+    --muted: 240 9.6% 14.3%;
+    --muted-foreground: 233.3 5.1% 65.7%;
 
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 230.3 31.3% 19.4%;
+    --accent-foreground: 228 74.5% 90.8%;
 
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 240 13.7% 10%;
+    --popover-foreground: 240 13.3% 94.1%;
 
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
+    --border: 240 7.8% 20%;
+    --input: 240 3.9% 44.9%;
 
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
+    --card: 240 13.7% 10%;
+    --card-foreground: 240 13.3% 94.1%;
 
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
+    --primary: 232.7 100% 74.3%;
+    --primary-foreground: 240 31% 5.7%;
 
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 240 9.6% 14.3%;
+    --secondary-foreground: 240 13.3% 94.1%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --destructive-text: 0 90% 71%;
 
-    --ring: 0 0% 83.1%;
+    --ring: 231.3 100% 77.1%;
 
     --radius: 0.5rem;
 
-    --scrollbar-thumb: hsl(0 0% 100% / 0.22);
-    --scrollbar-thumb-hover: hsl(0 0% 100% / 0.4);
-
-    --chart-1: 220 70% 50%;
-
-    --chart-2: 160 60% 45%;
-
-    --chart-3: 30 80% 55%;
-
-    --chart-4: 280 65% 60%;
-
-    --chart-5: 340 75% 55%;
+    --scrollbar-thumb: hsl(240 20% 92% / 0.22);
+    --scrollbar-thumb-hover: hsl(240 20% 92% / 0.4);
   }
 }
 

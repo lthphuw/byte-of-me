@@ -128,8 +128,8 @@ export const viewport: Viewport = {
   // pinch-zoom on mobile Safari and fails WCAG 1.4.4 (Resize text). Nothing
   // here needs a locked scale — do not add it back.
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
+    { media: '(prefers-color-scheme: light)', color: '#f9f9ff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0f0f15' },
   ],
   // Without this, `env(safe-area-inset-*)` resolves to 0 on iOS Safari no
   // matter what CSS asks for it — the fourteen `env(safe-area-inset-bottom)`
@@ -168,7 +168,7 @@ export default async function LocaleLayout({
     <html lang={locale} suppressHydrationWarning>
       <body
         className={cn(
-          'relative min-h-screen bg-transparent font-sans antialiased',
+          'relative min-h-screen font-sans antialiased',
           fontSans.variable,
           fontHeading.variable
         )}
