@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useIntersection } from '@byte-of-me/ui';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
+import { Button, Loading, useIntersection } from '@byte-of-me/ui';
 import {
   type InfiniteData,
   useMutation,
@@ -16,12 +16,14 @@ import { toast } from 'sonner';
 import {
   CommentForm,
   commentKey,
+  CommentList,
+  CommentListEmpty,
   CommentListSkeleton,
   postComment,
   type PublicComment,
 } from '@/entities/comment';
+import { useCommentInfiniteQuery } from '@/entities/comment/query';
 import { AuthModal } from '@/features/auth';
-import { BlogCommentThread } from '@/features/public/blog-comment/ui/blog-comment-thread';
 import type { PaginatedData } from '@/shared/types/api';
 
 type CommentsCache = InfiniteData<PaginatedData<PublicComment>>;
@@ -47,6 +49,52 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
   useEffect(() => {
     if (nearEntry?.isIntersecting) setThreadWanted(true);
   }, [nearEntry?.isIntersecting]);
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isPending,
+    isError,
+    refetch,
+  } = useCommentInfiniteQuery(blogId, limit, { enabled: threadWanted });
+
+  const { ref: moreRef, entry: moreEntry } = useIntersection({
+    root: null,
+    threshold: 0.1,
+  });
+
+  // `isError` stops the sentinel re-requesting a page that just failed: the
+  // fetch settling flips `isFetchingNextPage`, which would retry in a loop.
+  useEffect(() => {
+    if (
+      moreEntry?.isIntersecting &&
+      hasNextPage &&
+      !isFetchingNextPage &&
+      !isError
+    ) {
+      fetchNextPage();
+    }
+  }, [
+    moreEntry?.isIntersecting,
+    hasNextPage,
+    isFetchingNextPage,
+    isError,
+    fetchNextPage,
+  ]);
+
+  const allComments = useMemo(() => {
+    const map = new Map<string, PublicComment>();
+
+    data?.pages.forEach((page) => {
+      page.data.forEach((comment) => {
+        map.set(comment.id, comment);
+      });
+    });
+
+    return Array.from(map.values());
+  }, [data]);
 
   const key = commentKey(blogId, limit);
   const mutation = useMutation({
@@ -157,6 +205,68 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
     },
   });
 
+  const onComment = (content: string, parentId?: string) =>
+    mutation.mutate({ content, parentId });
+  const onRequireAuth = () => setIsAuthModalOpen(true);
+
+  let thread: ReactNode;
+  if (isPending) {
+    thread = <CommentListSkeleton />;
+  } else if (allComments.length === 0) {
+    thread = isError ? (
+      <div
+        role="alert"
+        className="flex flex-col items-center justify-center gap-2 py-12 text-center text-muted-foreground"
+      >
+        <p className="text-sm">{t('loadCommentsFailed')}</p>
+        <Button variant="ghost" onClick={() => refetch()}>
+          {t('retryLoadComments')}
+        </Button>
+      </div>
+    ) : (
+      <CommentListEmpty />
+    );
+  } else {
+    thread = (
+      <>
+        <CommentList
+          blogId={blogId}
+          comments={allComments}
+          onComment={onComment}
+          onRequireAuth={onRequireAuth}
+        />
+
+        {isFetchingNextPage && (
+          <div className="flex items-center justify-center gap-2 py-4">
+            <Loading />
+            <p className="text-sm text-muted-foreground">
+              {t('loadMoreComments')}
+            </p>
+          </div>
+        )}
+
+        {isError && (
+          <p
+            role="alert"
+            className="pt-4 text-center text-sm text-muted-foreground"
+          >
+            {t('loadCommentsFailed')}
+          </p>
+        )}
+
+        {hasNextPage && <div ref={moreRef} className="h-4" />}
+
+        {hasNextPage && !isFetchingNextPage && (
+          <div className="flex justify-center pt-4">
+            <Button variant="ghost" onClick={() => fetchNextPage()}>
+              {t('loadMore')}
+            </Button>
+          </div>
+        )}
+      </>
+    );
+  }
+
   return (
     <div id="comments" className="space-y-6 md:space-y-8">
       <AuthModal
@@ -169,23 +279,12 @@ export function BlogCommentSection({ blogId }: BlogCommentSectionProps) {
       <CommentForm
         blogId={blogId}
         isPending={mutation.isPending}
-        onComment={(content) => mutation.mutate({content})}
-        onRequireAuth={() => setIsAuthModalOpen(true)}
+        onComment={onComment}
+        onRequireAuth={onRequireAuth}
       />
 
       <div ref={nearRef} className="space-y-2">
-        {threadWanted ? (
-          <BlogCommentThread
-            blogId={blogId}
-            limit={limit}
-            onComment={(content, parentId) =>
-              mutation.mutate({ content, parentId })
-            }
-            onRequireAuth={() => setIsAuthModalOpen(true)}
-          />
-        ) : (
-          <CommentListSkeleton />
-        )}
+        {thread}
       </div>
     </div>
   );

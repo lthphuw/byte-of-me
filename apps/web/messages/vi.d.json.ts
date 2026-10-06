@@ -170,6 +170,8 @@ declare const messages: {
     "postComment": "Đăng bình luận",
     "noCommentsYet": "Chưa có bình luận nào",
     "beTheFirstComment": "Hãy là người đầu tiên chia sẻ suy nghĩ của bạn!",
+    "loadCommentsFailed": "Không thể tải bình luận",
+    "retryLoadComments": "Thử lại",
     "writingComment": "Viết bình luận...",
     "mustSignInToComment": "Bạn cần phải đăng nhập để bình luận",
     "posting": "Đang đăng...",
