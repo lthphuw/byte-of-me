@@ -88,22 +88,7 @@ export const ModelName = {
   Comment: 'Comment',
   RateLimitHit: 'RateLimitHit',
   ContactMessage: 'ContactMessage',
-  Note: 'Note',
-  NoteLink: 'NoteLink',
-  NoteDocument: 'NoteDocument',
-  NoteLabel: 'NoteLabel',
-  NoteOnLabel: 'NoteOnLabel',
-  NoteShare: 'NoteShare',
-  WorkspaceSettings: 'WorkspaceSettings',
-  SleepLog: 'SleepLog',
-  Exercise: 'Exercise',
-  Routine: 'Routine',
-  RoutineExercise: 'RoutineExercise',
-  WorkoutSession: 'WorkoutSession',
-  WorkoutExercise: 'WorkoutExercise',
-  WorkoutSet: 'WorkoutSet',
-  DayEntry: 'DayEntry',
-  DayPhoto: 'DayPhoto'
+  WorkspaceSettings: 'WorkspaceSettings'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -595,85 +580,6 @@ export const ContactMessageScalarFieldEnum = {
 export type ContactMessageScalarFieldEnum = (typeof ContactMessageScalarFieldEnum)[keyof typeof ContactMessageScalarFieldEnum]
 
 
-export const NoteScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  title: 'title',
-  content: 'content',
-  plainText: 'plainText',
-  status: 'status',
-  properties: 'properties',
-  isFolder: 'isFolder',
-  isPinned: 'isPinned',
-  archivedAt: 'archivedAt',
-  parentId: 'parentId',
-  position: 'position',
-  ownerId: 'ownerId'
-} as const
-
-export type NoteScalarFieldEnum = (typeof NoteScalarFieldEnum)[keyof typeof NoteScalarFieldEnum]
-
-
-export const NoteLinkScalarFieldEnum = {
-  createdAt: 'createdAt',
-  sourceId: 'sourceId',
-  targetId: 'targetId'
-} as const
-
-export type NoteLinkScalarFieldEnum = (typeof NoteLinkScalarFieldEnum)[keyof typeof NoteLinkScalarFieldEnum]
-
-
-export const NoteDocumentScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  title: 'title',
-  fileKey: 'fileKey',
-  mimeType: 'mimeType',
-  size: 'size',
-  kind: 'kind',
-  noteId: 'noteId',
-  ownerId: 'ownerId'
-} as const
-
-export type NoteDocumentScalarFieldEnum = (typeof NoteDocumentScalarFieldEnum)[keyof typeof NoteDocumentScalarFieldEnum]
-
-
-export const NoteLabelScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  color: 'color',
-  ownerId: 'ownerId'
-} as const
-
-export type NoteLabelScalarFieldEnum = (typeof NoteLabelScalarFieldEnum)[keyof typeof NoteLabelScalarFieldEnum]
-
-
-export const NoteOnLabelScalarFieldEnum = {
-  createdAt: 'createdAt',
-  noteId: 'noteId',
-  labelId: 'labelId'
-} as const
-
-export type NoteOnLabelScalarFieldEnum = (typeof NoteOnLabelScalarFieldEnum)[keyof typeof NoteOnLabelScalarFieldEnum]
-
-
-export const NoteShareScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  noteId: 'noteId',
-  email: 'email',
-  recipientId: 'recipientId',
-  role: 'role',
-  invitedById: 'invitedById'
-} as const
-
-export type NoteShareScalarFieldEnum = (typeof NoteShareScalarFieldEnum)[keyof typeof NoteShareScalarFieldEnum]
-
-
 export const WorkspaceSettingsScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
@@ -685,161 +591,12 @@ export const WorkspaceSettingsScalarFieldEnum = {
 export type WorkspaceSettingsScalarFieldEnum = (typeof WorkspaceSettingsScalarFieldEnum)[keyof typeof WorkspaceSettingsScalarFieldEnum]
 
 
-export const SleepLogScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  localDate: 'localDate',
-  bedAt: 'bedAt',
-  wakeAt: 'wakeAt',
-  riseAt: 'riseAt',
-  latencyMin: 'latencyMin',
-  awakeningsMin: 'awakeningsMin',
-  awakeningsCount: 'awakeningsCount',
-  quality: 'quality',
-  restedness: 'restedness',
-  napBucket: 'napBucket',
-  note: 'note',
-  loggedAt: 'loggedAt',
-  isFreeDay: 'isFreeDay',
-  factors: 'factors',
-  ownerId: 'ownerId'
-} as const
-
-export type SleepLogScalarFieldEnum = (typeof SleepLogScalarFieldEnum)[keyof typeof SleepLogScalarFieldEnum]
-
-
-export const ExerciseScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  primaryMuscle: 'primaryMuscle',
-  secondaryMuscles: 'secondaryMuscles',
-  equipment: 'equipment',
-  metric: 'metric',
-  isArchived: 'isArchived',
-  ownerId: 'ownerId'
-} as const
-
-export type ExerciseScalarFieldEnum = (typeof ExerciseScalarFieldEnum)[keyof typeof ExerciseScalarFieldEnum]
-
-
-export const RoutineScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  notes: 'notes',
-  position: 'position',
-  isArchived: 'isArchived',
-  ownerId: 'ownerId'
-} as const
-
-export type RoutineScalarFieldEnum = (typeof RoutineScalarFieldEnum)[keyof typeof RoutineScalarFieldEnum]
-
-
-export const RoutineExerciseScalarFieldEnum = {
-  id: 'id',
-  position: 'position',
-  targetSets: 'targetSets',
-  targetRepsLow: 'targetRepsLow',
-  targetRepsHigh: 'targetRepsHigh',
-  targetRpe: 'targetRpe',
-  restSec: 'restSec',
-  routineId: 'routineId',
-  exerciseId: 'exerciseId'
-} as const
-
-export type RoutineExerciseScalarFieldEnum = (typeof RoutineExerciseScalarFieldEnum)[keyof typeof RoutineExerciseScalarFieldEnum]
-
-
-export const WorkoutSessionScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  localDate: 'localDate',
-  startedAt: 'startedAt',
-  endedAt: 'endedAt',
-  title: 'title',
-  notes: 'notes',
-  sessionRpe: 'sessionRpe',
-  routineId: 'routineId',
-  ownerId: 'ownerId'
-} as const
-
-export type WorkoutSessionScalarFieldEnum = (typeof WorkoutSessionScalarFieldEnum)[keyof typeof WorkoutSessionScalarFieldEnum]
-
-
-export const WorkoutExerciseScalarFieldEnum = {
-  id: 'id',
-  position: 'position',
-  notes: 'notes',
-  sessionId: 'sessionId',
-  exerciseId: 'exerciseId'
-} as const
-
-export type WorkoutExerciseScalarFieldEnum = (typeof WorkoutExerciseScalarFieldEnum)[keyof typeof WorkoutExerciseScalarFieldEnum]
-
-
-export const WorkoutSetScalarFieldEnum = {
-  id: 'id',
-  position: 'position',
-  reps: 'reps',
-  weightKg: 'weightKg',
-  rpe: 'rpe',
-  durationSec: 'durationSec',
-  isWarmup: 'isWarmup',
-  completedAt: 'completedAt',
-  workoutExerciseId: 'workoutExerciseId'
-} as const
-
-export type WorkoutSetScalarFieldEnum = (typeof WorkoutSetScalarFieldEnum)[keyof typeof WorkoutSetScalarFieldEnum]
-
-
-export const DayEntryScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  localDate: 'localDate',
-  mood: 'mood',
-  reflection: 'reflection',
-  ownerId: 'ownerId'
-} as const
-
-export type DayEntryScalarFieldEnum = (typeof DayEntryScalarFieldEnum)[keyof typeof DayEntryScalarFieldEnum]
-
-
-export const DayPhotoScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  fileKey: 'fileKey',
-  mimeType: 'mimeType',
-  size: 'size',
-  caption: 'caption',
-  position: 'position',
-  dayEntryId: 'dayEntryId',
-  ownerId: 'ownerId'
-} as const
-
-export type DayPhotoScalarFieldEnum = (typeof DayPhotoScalarFieldEnum)[keyof typeof DayPhotoScalarFieldEnum]
-
-
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
-
-
-export const NullableJsonNullValueInput = {
-  DbNull: DbNull,
-  JsonNull: JsonNull
-} as const
-
-export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const JsonNullValueInput = {

@@ -227,125 +227,21 @@ export type RateLimitHit = Prisma.RateLimitHitModel
  */
 export type ContactMessage = Prisma.ContactMessageModel
 /**
- * Model Note
- * 
- */
-export type Note = Prisma.NoteModel
-/**
- * Model NoteLink
- * 
- */
-export type NoteLink = Prisma.NoteLinkModel
-/**
- * Model NoteDocument
- * A file attached to one note — PDFs today, nothing else accepted.
- * 
- * Deliberately WITHOUT a `url` column. These objects live in the PRIVATE
- * bucket and are reachable only through `/api/notes/documents/[id]`, which
- * checks the session before it streams a byte. A column named `url` is an
- * invitation for some future component to render one, and the whole point of
- * the private lane is that no such address exists.
- */
-export type NoteDocument = Prisma.NoteDocumentModel
-/**
- * Model NoteLabel
- * 
- */
-export type NoteLabel = Prisma.NoteLabelModel
-/**
- * Model NoteOnLabel
- * 
- */
-export type NoteOnLabel = Prisma.NoteOnLabelModel
-/**
- * Model NoteShare
- * A grant of access to one note, or — when that note is a folder — to its
- * whole subtree.
- * 
- * Inheritance is resolved by climbing the tree at read time
- * (`resolveNoteAccess`), NEVER materialised into a row per descendant. That
- * is what makes moving a note into or out of a shared folder correct with
- * nothing to synchronise, and what leaves a delete no orphaned grant to
- * clean up — the cascade below takes them.
- */
-export type NoteShare = Prisma.NoteShareModel
-/**
  * Model WorkspaceSettings
- * Everything the notes workspace remembers ABOUT an author rather than about
- * their notes: editor density, autosave delay, what a rename should do to
- * inbound link labels.
+ * What the dashboard remembers about its author — today, the image-compression
+ * config the media library applies on upload. Rows written by older builds may
+ * still carry editor and sleep keys; those are ignored on read.
  * 
  * One JSON column rather than a column per setting, and that is a deliberate
- * trade. The set will keep growing, and a column apiece means a migration
- * apiece against a production database; a blob means one migration ever. What
- * it gives up is querying BY a setting, which nothing does or will — these are
- * read as a whole, once per page load, for exactly one owner.
+ * trade: a column apiece means a migration apiece against a production
+ * database; a blob means one migration ever. What it gives up is querying BY a
+ * setting, which nothing does — these are read as a whole, once per page load,
+ * for exactly one owner.
  * 
  * The shape is not enforced here, so it is enforced at the boundary instead:
  * `entities/workspace-settings/model/settings-schema.ts` parses this with zod
  * and merges the result over defaults. A row written by an older version of
  * the app, or a field this version has never heard of, therefore reads as the
- * default rather than breaking the workspace.
+ * default rather than breaking the dashboard.
  */
 export type WorkspaceSettings = Prisma.WorkspaceSettingsModel
-/**
- * Model SleepLog
- * 
- */
-export type SleepLog = Prisma.SleepLogModel
-/**
- * Model Exercise
- * 
- */
-export type Exercise = Prisma.ExerciseModel
-/**
- * Model Routine
- * 
- */
-export type Routine = Prisma.RoutineModel
-/**
- * Model RoutineExercise
- * 
- */
-export type RoutineExercise = Prisma.RoutineExerciseModel
-/**
- * Model WorkoutSession
- * 
- */
-export type WorkoutSession = Prisma.WorkoutSessionModel
-/**
- * Model WorkoutExercise
- * 
- */
-export type WorkoutExercise = Prisma.WorkoutExerciseModel
-/**
- * Model WorkoutSet
- * 
- */
-export type WorkoutSet = Prisma.WorkoutSetModel
-/**
- * Model DayEntry
- * A day, as the owner writes it up.
- * 
- * Separate from `SleepLog` and not a set of columns on it, for two reasons
- * that both matter. A reflection must be writable on a day with no sleep
- * logged at all — a journal that requires a sleep row is not a journal. And
- * `SleepLog.localDate` is the day a night ENDED, so an entry keyed to it
- * would file "how Friday went" under Saturday for anyone who slept past
- * midnight. The two tables meet at `localDate` with exactly one day of
- * deliberate offset between their meanings.
- */
-export type DayEntry = Prisma.DayEntryModel
-/**
- * Model DayPhoto
- * One photo attached to a day, with its own caption.
- * 
- * There is no `url` column, and that is the security decision of this
- * feature rather than an omission. These objects live in
- * `SUPABASE_S3_PRIVATE_BUCKET`, where a public URL resolves to nothing; the
- * only address a photo has is `/api/health/photos/[id]`, which checks the
- * session first. A `url` column would be a value some future component
- * renders as a broken image — or, worse, a reason for someone to move these
- * into the public bucket so the column works.
- */
-export type DayPhoto = Prisma.DayPhotoModel

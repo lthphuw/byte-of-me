@@ -14,21 +14,21 @@ import type * as Prisma from "../internal/prismaNamespace.ts"
 
 /**
  * Model WorkspaceSettings
- * Everything the notes workspace remembers ABOUT an author rather than about
- * their notes: editor density, autosave delay, what a rename should do to
- * inbound link labels.
+ * What the dashboard remembers about its author — today, the image-compression
+ * config the media library applies on upload. Rows written by older builds may
+ * still carry editor and sleep keys; those are ignored on read.
  * 
  * One JSON column rather than a column per setting, and that is a deliberate
- * trade. The set will keep growing, and a column apiece means a migration
- * apiece against a production database; a blob means one migration ever. What
- * it gives up is querying BY a setting, which nothing does or will — these are
- * read as a whole, once per page load, for exactly one owner.
+ * trade: a column apiece means a migration apiece against a production
+ * database; a blob means one migration ever. What it gives up is querying BY a
+ * setting, which nothing does — these are read as a whole, once per page load,
+ * for exactly one owner.
  * 
  * The shape is not enforced here, so it is enforced at the boundary instead:
  * `entities/workspace-settings/model/settings-schema.ts` parses this with zod
  * and merges the result over defaults. A row written by an older version of
  * the app, or a field this version has never heard of, therefore reads as the
- * default rather than breaking the workspace.
+ * default rather than breaking the dashboard.
  */
 export type WorkspaceSettingsModel = runtime.Types.Result.DefaultSelection<Prisma.$WorkspaceSettingsPayload>
 
