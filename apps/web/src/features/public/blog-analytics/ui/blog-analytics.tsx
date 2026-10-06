@@ -28,17 +28,25 @@ export function BlogAnalytics({ blogId }: { blogId: string }) {
     if (!logId) return;
 
     const syncTime = async () => {
-      const now = Date.now();
-      const sessionSeconds = Math.floor((now - startTime.current) / 1000);
+      // Only a visible stretch counts; time spent hidden is never reading time.
+      const sessionSeconds = document.hidden
+        ? 0
+        : Math.floor((Date.now() - startTime.current) / 1000);
       const totalToSync = accumulatedTime.current + sessionSeconds;
 
-      if (totalToSync > 0) {
+      if (totalToSync < 1) return;
+
+      // Taken before the await: hiding a tab fires `visibilitychange` and then
+      // `pagehide`, and both would otherwise send the same seconds.
+      accumulatedTime.current = 0;
+      startTime.current = Date.now();
+
+      try {
         // Sync total accumulated active time to the specific log row
         await updateBlogReadingTime(logId, totalToSync);
-
-        // Reset buffers after successful sync
-        accumulatedTime.current = 0;
-        startTime.current = Date.now();
+      } catch {
+        // Network failure: keep the seconds for the next sync.
+        accumulatedTime.current += totalToSync;
       }
     };
 
@@ -51,10 +59,14 @@ export function BlogAnalytics({ blogId }: { blogId: string }) {
 
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        // Pause: Save active time to buffer when tab is hidden
+        // Pause: bank the visible stretch that just ended, then send it. This
+        // is the last event a backgrounded mobile tab reliably delivers —
+        // `pagehide` may never fire for it.
         accumulatedTime.current += Math.floor(
           (Date.now() - startTime.current) / 1000
         );
+        startTime.current = Date.now();
+        syncTime();
       } else {
         // Resume: Set new start point when user returns to tab
         startTime.current = Date.now();
@@ -63,13 +75,14 @@ export function BlogAnalytics({ blogId }: { blogId: string }) {
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // Attempt to flush remaining time when user closes the tab/navigates away
-    window.addEventListener('beforeunload', syncTime);
+    // Flush when the page is left. `pagehide`, not `beforeunload`: a
+    // `beforeunload` listener keeps the page out of the back/forward cache.
+    window.addEventListener('pagehide', syncTime);
 
     return () => {
       clearInterval(heartbeat);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('beforeunload', syncTime);
+      window.removeEventListener('pagehide', syncTime);
     };
   }, [logId]);
 
