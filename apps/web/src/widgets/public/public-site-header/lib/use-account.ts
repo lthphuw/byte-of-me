@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 
-import { logOut } from '@/features/auth';
+import { logOut } from '@/features/auth/lib/log-out';
 import { shortenName } from '@/widgets/public/public-site-header/lib/shorten-name';
 
 export interface Account {

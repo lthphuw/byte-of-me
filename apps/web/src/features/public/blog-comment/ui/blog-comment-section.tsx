@@ -23,7 +23,7 @@ import {
   type PublicComment,
 } from '@/entities/comment';
 import { useCommentInfiniteQuery } from '@/entities/comment/query';
-import { AuthModal } from '@/features/auth';
+import { AuthModal } from '@/features/auth/ui/auth-modal';
 import type { PaginatedData } from '@/shared/types/api';
 
 type CommentsCache = InfiniteData<PaginatedData<PublicComment>>;

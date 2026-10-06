@@ -10,7 +10,7 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { blogKeys } from '@/entities/blog/model/query-keys';
-import { AuthModal } from '@/features/auth';
+import { AuthModal } from '@/features/auth/ui/auth-modal';
 import {
   getBlogInteractionsForUser,
   toggleBlogInteraction,
