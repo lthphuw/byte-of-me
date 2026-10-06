@@ -23,6 +23,12 @@ export type PublicActionOptions = {
   cache?: boolean;
   cacheKey?: string[];
   cacheTags?: string[];
+  /**
+   * Seconds before the entry is refreshed in the background. Omit for data the
+   * app itself writes (a tag revalidates it); set it for data that changes
+   * outside the app, such as a third-party API.
+   */
+  revalidate?: number;
 };
 
 export async function withPublicActionHandler<TData>(
@@ -50,7 +56,10 @@ export async function withPublicActionHandler<TData>(
         return handler(context);
       },
       cacheKey,
-      { tags: options.cacheTags || [actionName] }
+      {
+        tags: options.cacheTags || [actionName],
+        revalidate: options.revalidate,
+      }
     );
     return await cachedHandler();
   } else {

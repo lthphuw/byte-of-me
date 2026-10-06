@@ -38,6 +38,13 @@ export const env = createEnv({
     AUTH_GOOGLE_ID: z.string(),
     AUTH_GOOGLE_SECRET: z.string(),
 
+    // Open-source contributions read (public GraphQL search). Optional on
+    // purpose: without a token the section simply does not render, so a
+    // deployment that never heard of this key still boots. A fine-grained
+    // token with public read access and no scopes is enough.
+    GITHUB_TOKEN: z.string().optional(),
+    GITHUB_LOGIN: z.string().default('lthphuw'),
+
     SUPABASE_S3_STORAGE_REGION: z.string(),
     SUPABASE_S3_STORAGE_ENDPOINT: z.string(),
     SUPABASE_S3_STORAGE_PUBLIC_ENDPOINT: z.string(),
@@ -87,6 +94,9 @@ export const env = createEnv({
 
     AUTH_GOOGLE_ID: process.env.AUTH_GOOGLE_ID,
     AUTH_GOOGLE_SECRET: process.env.AUTH_GOOGLE_SECRET,
+
+    GITHUB_TOKEN: process.env.GITHUB_TOKEN,
+    GITHUB_LOGIN: process.env.GITHUB_LOGIN,
 
     SUPABASE_S3_STORAGE_REGION: process.env.SUPABASE_S3_STORAGE_REGION,
     SUPABASE_S3_STORAGE_ENDPOINT: process.env.SUPABASE_S3_STORAGE_ENDPOINT,

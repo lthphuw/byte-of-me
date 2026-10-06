@@ -10,6 +10,8 @@ export const CACHE_TAGS = {
   TECH: 'tech-stack',
   USER: 'user-profile',
   COMMENT: 'comment',
+  /** Merged pull requests read from GitHub; refreshed by time, not by a write. */
+  OPEN_SOURCE: 'open-source',
   /**
    * The author's own dashboard preferences — today, image compression.
    *
