@@ -35,7 +35,6 @@ export * from './motion'
 export * from './multi-select';
 export * from './pagination';
 export * from './popover';
-export * from './progress';
 // `./rich-text` is NOT re-exported either: it imports the extension schema
 // from `./rich-text-editor` to run `generateHTML`, so re-exporting it here
 // puts tiptap back into every client bundle through the same side-effect

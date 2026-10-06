@@ -266,7 +266,7 @@ The generated client is committed to `packages/db/src/generated/prisma` and re-e
 
 ## Testing
 
-`bun test` suites live next to the code they cover — **410 tests across 43 files**:
+`bun test` suites live next to the code they cover — **396 tests across 42 files**:
 
 - `apps/web/src/entities/*/api/` — server-action contracts: owner scoping, narrow
   selects, cursor pagination, and the recursive delete-cascade count

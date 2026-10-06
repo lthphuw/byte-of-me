@@ -295,9 +295,9 @@ Three layers, each invalidated differently:
 | Next.js data cache | Tagged queries | `revalidateTag(CACHE_TAGS.X)` inside the mutating server action |
 | TanStack Query | Client-side server state in the dashboard | Query invalidation after a mutation resolves |
 
-`CACHE_TAGS` (`src/shared/lib/constants.ts`) is the single list of tags — `blog`, `project`, `company`, `education`, `media`, `tag`, `tech-stack`, `social-link`, `user-profile`, `comment`, `contact-message`. A mutation that forgets its tag is the usual cause of "I saved it but the public page is stale."
+`CACHE_TAGS` (`src/shared/lib/constants.ts`) is the single list of tags — `blog`, `project`, `company`, `education`, `media`, `tag`, `tech-stack`, `social-link`, `user-profile`, `comment`, `contact-message`, `workspace-settings`. A mutation that forgets its tag is the usual cause of "I saved it but the public page is stale."
 
-`purgeEntireCache()` in `src/shared/lib/revalidate.ts` is the blunt escape hatch — `revalidatePath('/', 'layout')`.
+`purgeEntireCache()` in `src/widgets/dashboard/dashboard-sidebar/lib/purge-entire-cache.ts` (the dashboard's Clear Cache button) is the blunt escape hatch — `revalidatePath('/', 'layout')`.
 
 Blog view counts deliberately sit outside all of this: `trackBlogView` writes a `BlogStatisticLog` row guarded by a per-post cookie, and live stats are read uncached.
 
