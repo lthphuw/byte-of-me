@@ -1,7 +1,6 @@
 'use server';
 
 import { type Prisma, prisma } from '@byte-of-me/db';
-import { renderRichTextHtml } from '@byte-of-me/ui/rich-text-render';
 
 import type { AdminContactMessage } from '@/entities/contact-message';
 import { requireAdmin } from '@/shared/lib/auth';
@@ -10,24 +9,13 @@ import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
-/**
- * A stored message plus its rendered markup. The gallery is a client widget,
- * so it must not import the tiptap render schema (`generateHTML` + the full
- * extension set + lowlight ≈ 1 MB) to print a card — same split as
- * `PublicProject.descriptionHtml`. The raw `message` is kept for search and
- * for anything that needs the source document.
- */
-export type AdminContactMessageWithHtml = AdminContactMessage & {
-  messageHtml: string;
-};
-
 export async function getPaginatedContactMessages(
   rawPage: number = 1,
   rawLimit: number = 20,
   filter?: {
     search?: string;
   }
-): Promise<ApiResponse<PaginatedData<AdminContactMessageWithHtml>>> {
+): Promise<ApiResponse<PaginatedData<AdminContactMessage>>> {
   try {
     const session = await requireAdmin();
     const { page, limit } = clampPagination(
@@ -75,10 +63,8 @@ export async function getPaginatedContactMessages(
     return {
       success: true,
       data: {
-        data: items.map((item) => ({
-          ...item,
-          messageHtml: renderRichTextHtml(item.message),
-        })),
+        // Visitor text, sent as-is: the gallery prints it as a text node.
+        data: items,
         meta: buildPaginatedMeta({ page, limit, totalCount }),
       },
     };

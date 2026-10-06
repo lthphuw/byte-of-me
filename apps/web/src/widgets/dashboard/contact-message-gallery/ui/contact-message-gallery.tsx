@@ -17,12 +17,11 @@ import {
   Skeleton,
   useDebounce,
 } from '@byte-of-me/ui';
-import { RichTextHtml } from '@byte-of-me/ui/rich-text-html';
 import { useQuery } from '@tanstack/react-query';
 import { MessageSquare, Search, X } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import type { AdminContactMessageWithHtml } from '@/entities/contact-message';
+import type { AdminContactMessage } from '@/entities/contact-message';
 import { getPaginatedContactMessages } from '@/entities/contact-message/api/get-paginated-contacts';
 import { contactMessageKeys } from '@/entities/contact-message/model/query-keys';
 import { ManagerListState } from '@/shared/ui';
@@ -36,7 +35,7 @@ export function ContactMessageGallery() {
   const [debouncedSearch] = useDebounce(search, 400);
 
   const [selectedMessage, setSelectedMessage] =
-    useState<AdminContactMessageWithHtml | null>(null);
+    useState<AdminContactMessage | null>(null);
 
   const { data, isLoading, isError, refetch, isPlaceholderData } = useQuery({
     queryKey: contactMessageKeys.list(page, debouncedSearch),
@@ -139,11 +138,10 @@ export function ContactMessageGallery() {
 
               <CardContent>
                 <div className="relative">
-                  <RichTextHtml
-                    variant="compact"
-                    className="line-clamp-3 text-sm"
-                    html={msg.messageHtml}
-                  />
+                  {/* Visitor text: a text node, never markup. */}
+                  <p className="line-clamp-3 whitespace-pre-wrap break-words text-sm leading-7">
+                    {msg.message}
+                  </p>
                   {/* A real button rather than `onClick` on the card: the
                       pseudo-element stretches the hit area over the whole card
                       while keyboard and screen-reader users get one named,
@@ -218,7 +216,9 @@ export function ContactMessageGallery() {
                     {t('messageLabel')}
                   </h4>
                   <ScrollArea className="h-[40vh] w-full rounded-md border bg-muted/30 p-4">
-                    <RichTextHtml html={selectedMessage.messageHtml} />
+                    <p className="whitespace-pre-wrap break-words text-[15px] leading-7">
+                      {selectedMessage.message}
+                    </p>
                   </ScrollArea>
                 </div>
               </div>

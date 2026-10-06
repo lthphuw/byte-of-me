@@ -2,7 +2,7 @@
 
 import { type ContactMessage, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
-import { escapeHtml, sanitizeHtml } from '@byte-of-me/ui/lib/sanitize';
+import { escapeHtml } from '@byte-of-me/ui/lib/sanitize';
 import { revalidateTag } from 'next/cache';
 import { headers } from 'next/headers';
 import { after } from 'next/server';
@@ -14,6 +14,7 @@ import {
 import type { ContactMessageFailureCode } from '@/entities/contact-message/model/types';
 import { mailer } from '@/shared/api';
 import { env } from '@/shared/config/env';
+import { getClientIp } from '@/shared/lib/client-ip';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { checkRateLimit } from '@/shared/lib/rate-limit';
 import { getErrorMessage } from '@/shared/lib/utils';
@@ -33,10 +34,8 @@ export async function sendContactMessage(
 
   // Anonymous write path: throttle per client IP before touching the DB.
   const headerList = await headers();
-  const ip =
-    headerList.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
   const { allowed } = await checkRateLimit({
-    key: `contact:${ip}`,
+    key: `contact:${getClientIp(headerList)}`,
     limit: 3,
     windowSec: 600,
   });
@@ -70,15 +69,18 @@ export async function sendContactMessage(
 }
 
 async function sendNotificationEmail(data: ContactMessageFormValues) {
-  const sanitizedMessage = sanitizeHtml(data.message);
+  // Escaped, not sanitized: it is plain text, and the sanitizer's allowlist
+  // lets `<img src=https://tracker>` through to the owner's mail client.
+  const escapedMessage = escapeHtml(data.message);
 
   try {
     await mailer.sendMail({
-      from: `"${data.name}" <${env.EMAIL_SERVER_USER}>`,
+      // Object form: a quote in the name cannot append a second From address.
+      from: { name: data.name, address: env.EMAIL_SERVER_USER },
       replyTo: data.email,
       to: env.EMAIL,
       subject: `New Contact Message: ${data.subject || 'No Subject'}`,
-      text: `From: ${data.name} (${data.email})\n\nMessage:\n${sanitizedMessage.replace(/<[^>]*>/g, '')}`,
+      text: `From: ${data.name} (${data.email})\n\nMessage:\n${data.message}`,
       html: `
         <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee;">
           <h2>New message from <b>Byte of Me</b></h2>
@@ -86,11 +88,11 @@ async function sendNotificationEmail(data: ContactMessageFormValues) {
           <p><strong>Email:</strong> ${escapeHtml(data.email)}</p>
           <p><strong>Subject:</strong> ${escapeHtml(data.subject || 'N/A')}</p>
           <hr />
-          <p style="white-space: pre-wrap;">${sanitizedMessage}</p>
+          <p style="white-space: pre-wrap;">${escapedMessage}</p>
         </div>
       `,
     });
-    logger.info(`Email sent for subject: ${data.subject}`);
+    logger.info('Contact notification email sent');
   } catch (e) {
     logger.error(`Send email failed: ${getErrorMessage(e)}`);
   }
