@@ -37,21 +37,25 @@ export async function uploadImages(
   files: File[],
   upload: ImageUploadFn
 ): Promise<UploadedImage[]> {
-  const uploaded: UploadedImage[] = [];
+  // All at once, not one after another: a pasted batch is capped upstream
+  // (`MAX_UPLOAD_BATCH`) and the uploader bounds its own compression. Results
+  // follow file order, whichever upload finishes first.
+  const results = await Promise.all(
+    files.map(async (file): Promise<UploadedImage | null> => {
+      try {
+        return { src: await upload(file), alt: file.name };
+      } catch (err) {
+        toast.error(
+          err instanceof Error && err.message
+            ? err.message
+            : `Could not upload ${file.name}`
+        );
+        return null;
+      }
+    })
+  );
 
-  for (const file of files) {
-    try {
-      uploaded.push({ src: await upload(file), alt: file.name });
-    } catch (err) {
-      toast.error(
-        err instanceof Error && err.message
-          ? err.message
-          : `Could not upload ${file.name}`
-      );
-    }
-  }
-
-  return uploaded;
+  return results.filter((image): image is UploadedImage => image !== null);
 }
 
 /**
