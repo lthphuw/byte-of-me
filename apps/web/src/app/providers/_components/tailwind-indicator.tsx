@@ -1,7 +1,6 @@
-import { env } from '@/shared/config/env';
-
 export function TailwindIndicator() {
-  if (env.NEXT_PUBLIC_ENV === 'production') return null;
+  // Literal read, not `@/shared/config/env` (see global-provider.tsx).
+  if (process.env.NEXT_PUBLIC_ENV === 'production') return null;
 
   return (
     <div className="fixed bottom-1 left-1 z-50 flex h-6 w-6 items-center justify-center rounded-full bg-gray-800 p-3 font-mono text-xs text-white">
