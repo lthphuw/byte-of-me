@@ -1,5 +1,3 @@
-'use client';
-
 import { Button, Card, CardContent } from '@byte-of-me/ui';
 import { Code, ExternalLink } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
