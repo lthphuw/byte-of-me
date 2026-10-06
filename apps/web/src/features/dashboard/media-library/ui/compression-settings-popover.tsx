@@ -37,8 +37,7 @@ export interface CompressionSettingsPopoverProps {
  *
  * A popover rather than a dialog or a settings page: these are four small
  * controls an author tunes rarely and wants back to the library from
- * immediately, unlike the notes workspace's `WorkspaceSettingsDialog`, which
- * groups many more settings the author sits with while writing.
+ * immediately.
  *
  * Purely presentational — `MediaManager` owns `useCompressionSettings` and
  * passes the result down, because the SAME config also has to reach

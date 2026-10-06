@@ -17,18 +17,14 @@ import {
 } from '@/entities/workspace-settings/model/settings-schema';
 
 /**
- * The author's settings, live, for anything inside the workspace.
+ * The author's settings, live, for anything inside the dashboard.
  *
- * Lives in `entities` rather than alongside the settings dialog on purpose.
- * Two different features read it — the dialog that writes it, and the editor
- * that obeys it — and a feature importing a sibling feature is the sideways
- * import AGENTS §4 rules out. The dialog and the editor both import an entity
- * instead, which is the direction the layering allows.
+ * Lives in `entities` rather than alongside the media library on purpose: more
+ * than one feature may read it, and a feature importing a sibling feature is
+ * the sideways import AGENTS §4 rules out.
  *
- * Seeded from the server (`space/layout.tsx` → `getWorkspaceSettings`), never
- * fetched after mount. Three of these settings are layout — density, type
- * scale, line length — so a client fetch would paint the workspace once at the
- * defaults and then jump.
+ * Seeded from the server (`dashboard/layout.tsx` → `getWorkspaceSettings`),
+ * never fetched after mount, so the first frame already reflects what was saved.
  */
 interface WorkspaceSettingsContextValue {
   settings: WorkspaceSettings;

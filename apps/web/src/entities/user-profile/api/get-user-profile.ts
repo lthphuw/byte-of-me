@@ -61,7 +61,7 @@ export async function getUserProfile(): Promise<
       },
     });
     // The row is NOT stringified into the log. It carries the owner's
-    // birthdate and every translated bio field, and this ran on each `/space/*`
+    // birthdate and every translated bio field, and this ran on every protected
     // request before the callers narrowed to `getOwnerDisplayName` — a full
     // personal profile written to the log line by line, for a message whose
     // only job is to say the lookup resolved.

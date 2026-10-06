@@ -75,12 +75,10 @@ const readOwnerDisplayName = (email: string, locale: string) =>
  * The owner's display name, and nothing else.
  *
  * NOT a server action — no `'use server'` — and that is what lets it be
- * wrapped in React's `cache()`. `/space` reads this twice per request: once in
- * `space/layout.tsx`'s `generateMetadata` and once in `SpaceHub`. Both used to
- * call `getUserProfile()`, which joins `user` → `userProfile` → `translations`
- * and returns fourteen fields to have one read; the whole join ran twice, and
- * on `/space/notes/<id>` and `/space/notes/graph` it ran once per navigation
- * for a title every child page then overrides.
+ * wrapped in React's `cache()`. The dashboard can read this more than once per request
+ * (metadata and the page body). Both used to call `getUserProfile()`, which
+ * joins `user` → `userProfile` → `translations` and returns fourteen fields to
+ * have one read; the whole join ran once per caller.
  *
  * TWO caches, and they are not redundant. React's `cache()` is the outer layer
  * and dedupes WITHIN one request — that is what collapses the metadata call

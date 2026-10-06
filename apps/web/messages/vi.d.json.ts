@@ -901,13 +901,6 @@ declare const messages: {
       "button": "Đăng nhập",
       "expire": "Liên kết này sẽ hết hạn sau 24 giờ.",
       "ignore": "Nếu bạn không yêu cầu email này, hãy bỏ qua."
-    },
-    "sharedNote": {
-      "subject": "{name} đã chia sẻ một ghi chú với bạn",
-      "title": "Bạn được chia sẻ một ghi chú",
-      "description": "{owner} đã chia sẻ \"{title}\" với bạn. Đăng nhập bằng chính địa chỉ email này để mở.",
-      "button": "Mở ghi chú",
-      "ignore": "Nếu bạn không ngờ nhận được email này, hãy bỏ qua nó."
     }
   }
 };

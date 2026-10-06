@@ -14,7 +14,7 @@ import { DashboardSidebar } from '@/widgets/dashboard/dashboard-sidebar/ui/dashb
 
 /**
  * The CMS gets its own favicon so a dashboard tab is distinguishable from the
- * public site and from the vault at 16px. Only `icons` is set here; every other
+ * public site at 16px. Only `icons` is set here; every other
  * metadata field still comes from the locale layout.
  */
 export const metadata: Metadata = {
@@ -27,8 +27,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   // The CMS's own message catalogue. Mounted here rather than on
-  // `(protected)/layout.tsx` so the vault's `dashboard.note` / `dashboard.space`
-  // copy — half the namespace — stays off this surface's RSC payload.
+  // `(protected)/layout.tsx` so each protected surface ships only the copy it reads.
   const messages = pickMessages(
     await getMessages(),
     DASHBOARD_MESSAGE_NAMESPACES
@@ -86,9 +85,8 @@ export default async function DashboardLayout({
             {/* One padding layer, not two. `container` is `padding: 2rem` at every
                 breakpoint (tailwind.config.ts), and the inner `p-4 lg:p-10` used to
                 stack on top of it: 48px of horizontal padding per side on a 375px
-                phone, 72px at `lg`, before any page drew anything. `space-shell.tsx`
-                names this exact stack as why `/space` abandoned the pattern. The
-                gutter stays; the second helping is gone. */}
+                phone, 72px at `lg`, before any page drew anything. The gutter stays; the
+                second helping is gone. */}
             <main
               id="main-content"
               tabIndex={-1}

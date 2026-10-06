@@ -204,7 +204,7 @@
  *
  * Every pane in the app scrolls with the operating system's own bar, and the
  * handful that use Radix `ScrollArea` draw a slim one of their own — so the
- * note tree and the toolbar beside it were wearing two different scrollbars.
+ * a pane and the one beside it were wearing two different scrollbars.
  * These rules give the native ones the same shape as the Radix thumb
  * (`scroll-area.tsx`, kept in step with the token above).
  *

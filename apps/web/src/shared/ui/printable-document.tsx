@@ -6,8 +6,7 @@ import { MathRenderer } from '@byte-of-me/ui/math-renderer';
 import { RichText } from '@byte-of-me/ui/rich-text';
 
 /**
- * The page Chrome turns into a PDF — shared by `/print/blogs/[slug]` and
- * `/print/notes/[id]`, which differ only in where the document comes from.
+ * The page Chrome turns into a PDF — used by `/print/blogs/[slug]`.
  *
  * Rendered with `RichText` — the SERVER component — not the editor. It goes
  * through `render-extensions.ts`, so KaTeX markup, tables and images all come

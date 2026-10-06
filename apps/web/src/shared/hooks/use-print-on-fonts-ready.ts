@@ -12,10 +12,8 @@ import { useEffect } from 'react';
  * print surface renders `MathRenderer` *above* its trigger for that reason:
  * the request has to be in flight before anything waits on it.
  *
- * Shared by the two print surfaces (`/print/notes/[id]` and
- * `/print/blogs/[slug]`) because it is one behaviour, not two — the surfaces
- * differ in their data path, their guard and their labels, none of which
- * belong in here.
+ * Used by the print surface (`/print/blogs/[slug]`); the data path, guard and
+ * labels stay with the page, not in here.
  */
 export function usePrintOnFontsReady(enabled: boolean) {
   useEffect(() => {

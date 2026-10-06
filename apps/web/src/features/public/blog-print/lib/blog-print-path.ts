@@ -2,11 +2,9 @@
  * Where the PUBLIC print view lives.
  *
  * Its own route group (`app/[locale]/(print)`), not `(public)` and — this is
- * the part that matters — not `(protected)`. `/print/notes/[id]` sits under
- * `(protected)` behind `getAuthenticatedAdmin()` and reads through
- * `getAdminNoteById` + `requireAdmin`; blogs are anonymous content, so the
- * mechanism is reused and the route is not. Nothing here may ever be pointed
- * at an admin query.
+ * the part that matters — not `(protected)`. Blogs are anonymous content, so
+ * nothing here goes behind `getAuthenticatedAdmin()`, and nothing here may ever
+ * be pointed at an admin query.
  *
  * Outside `(public)` because that group's layout draws the site header, the
  * footer and the reading shell, and a page whose entire job is to become a

@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 /**
  * The first focusable element on a nav-heavy signed-in surface (WCAG 2.4.1,
  * Bypass Blocks). Without one, a keyboard user re-tabs the whole sidebar —
- * fifteen controls on `/dashboard`, eight on `/space` — on every navigation.
+ * fifteen controls on `/dashboard` — on every navigation.
  *
  * A plain fragment href, unlike `PublicHeaderSkipLink`, which resolves the
  * landmark in a click handler because the public `<main>` carries no `id`.
@@ -16,8 +16,8 @@ import { useTranslations } from 'next-intl';
  * navigation the link was supposed to skip.
  *
  * A client component only because of `useTranslations`: `getTranslations`
- * would pull `next-intl/server` into `space-shell.tsx`, which a client
- * component reaches through the space-shell widget barrel.
+ * would pull `next-intl/server` into any client component that reaches this
+ * link through a widget barrel.
  */
 export function SkipToContentLink({ targetId }: { targetId: string }) {
   const t = useTranslations('global.header');

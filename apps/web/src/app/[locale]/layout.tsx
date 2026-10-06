@@ -137,7 +137,7 @@ export const viewport: Viewport = {
   // responsive-modal, blog-reader-nav) were silently falling back to their
   // floor value on every iPhone. `viewport-fit=cover` also extends the layout
   // BEHIND all four safe areas, not just the bottom one those rules cover —
-  // see `space-shell.tsx` and the public/dashboard headers for the top and
+  // see the public/dashboard headers for the top and
   // landscape left/right insets that fix now requires.
   viewportFit: 'cover',
 };

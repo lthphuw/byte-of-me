@@ -32,7 +32,7 @@ const ICON_SWAP = { type: 'spring', stiffness: 400, damping: 30 } as const;
 /**
  * Light / dark / follow the system.
  *
- * In `shared/ui` because the dashboard and the notes workspace need it too, and
+ * In `shared/ui` because the dashboard and the public site both need it, and
  * a widget may not import from a sibling widget. Not stored in
  * `workspace_settings`: the theme must apply before first paint, which
  * next-themes' blocking script does and a database round trip cannot.

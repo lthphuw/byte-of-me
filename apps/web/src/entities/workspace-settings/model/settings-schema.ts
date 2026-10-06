@@ -44,7 +44,6 @@ export const workspaceSettingsSchema = z.object({
 
 export type WorkspaceSettings = z.infer<typeof workspaceSettingsSchema>;
 
-
 /** What every author starts with, and what any unreadable field falls back to. */
 export const WORKSPACE_SETTINGS_DEFAULTS: WorkspaceSettings = {
   imageCompression: { ...IMAGE_COMPRESSION_DEFAULTS },

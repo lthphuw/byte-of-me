@@ -23,9 +23,8 @@ const RAIL_BUTTON =
   'flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground';
 
 /**
- * Desktop-only icon rail, 56px wide — the same rail the notes workspace uses,
- * for the same reason: the destinations are a fixed, small, memorised set, and
- * a labelled column spends 200px of every screen restating them.
+ * Desktop-only icon rail, 56px wide, because the destinations are a fixed, small, memorised set and a
+ * labelled column spends 200px of every screen restating them.
  *
  * The trade this makes is real and worth naming: ten icons carry less meaning
  * than ten words, and Companies / Education / Tech Stacks are neighbours in

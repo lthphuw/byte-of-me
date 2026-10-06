@@ -16,7 +16,7 @@ import { formatDate, isMeaningfullyUpdated } from '@/shared/lib/utils';
 import { PrintableDocument } from '@/shared/ui/printable-document';
 
 const BASE_METADATA: Metadata = {
-  // Not indexable, for the same reason the notes print view is not: this is a
+  // Not indexable, because this is a
   // second URL for an article that already has a canonical one, and letting a
   // crawler have it splits the post between two results.
   robots: {

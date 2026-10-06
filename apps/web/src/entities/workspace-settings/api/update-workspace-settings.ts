@@ -96,10 +96,10 @@ export async function updateWorkspaceSettings(
     });
 
     // `getWorkspaceSettings` caches this row across requests, and it is what
-    // `space/layout.tsx` seeds the settings provider from on every navigation.
+    // `dashboard/layout.tsx` seeds the settings provider from on every navigation.
     // Without this line the popover would appear to save — the action returns
     // the new value and the client applies it — and then the very next
-    // navigation would repaint the workspace at the OLD density, which reads
+    // navigation would repaint the dashboard at the OLD value, which reads
     // as "my setting didn't stick" rather than as a caching bug. After the
     // write and outside any transaction, per §8.
     revalidateTag(CACHE_TAGS.WORKSPACE_SETTINGS, 'max');

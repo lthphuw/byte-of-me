@@ -8,7 +8,7 @@ export const env = createEnv({
 
     EMAIL: z.string().email().default('lthphuw@gmail.com'),
     // The site's sole authorisation identity — who `isSiteOwnerEmail()`
-    // (see `@/shared/lib/auth/session.ts`) admits to the dashboard, /notes,
+    // (see `@/shared/lib/auth/session.ts`) admits to the dashboard
     // and every admin server action. Deliberately a *separate* key from
     // `EMAIL` above: `EMAIL` also does double duty as the public contact
     // address, the contact-form and comment-notification destination, and
@@ -44,17 +44,6 @@ export const env = createEnv({
     SUPABASE_S3_STORAGE_ACCESS_KEY: z.string(),
     SUPABASE_S3_STORAGE_SECRET_KEY: z.string(),
     SUPABASE_S3_STORAGE_BUCKET: z.string().default('byte-of-me'),
-
-    /**
-     * The bucket for files that must NOT be readable by URL.
-     *
-     * `SUPABASE_S3_STORAGE_BUCKET` above is PUBLIC — its objects answer an
-     * unauthenticated GET with 200, which is correct for a blog cover and
-     * wrong for anything attached to a private note. Note attachments go
-     * here and are served only through `/api/notes/documents/[id]`, which
-     * checks the session first.
-     */
-    SUPABASE_S3_PRIVATE_BUCKET: z.string().default('byte-of-me-private'),
 
     // 'test' is included because `bun test` sets NODE_ENV to 'test' before any
     // preload runs (see apps/web/test-setup.ts) and this schema is validated
@@ -106,7 +95,6 @@ export const env = createEnv({
     SUPABASE_S3_STORAGE_ACCESS_KEY: process.env.SUPABASE_S3_STORAGE_ACCESS_KEY,
     SUPABASE_S3_STORAGE_SECRET_KEY: process.env.SUPABASE_S3_STORAGE_SECRET_KEY,
     SUPABASE_S3_STORAGE_BUCKET: process.env.SUPABASE_S3_STORAGE_BUCKET,
-    SUPABASE_S3_PRIVATE_BUCKET: process.env.SUPABASE_S3_PRIVATE_BUCKET,
 
     // Client
     NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,

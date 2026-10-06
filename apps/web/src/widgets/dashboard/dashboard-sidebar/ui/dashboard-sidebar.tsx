@@ -19,7 +19,7 @@ import { useDashboardNavGroups } from '@/widgets/dashboard/dashboard-sidebar/mod
  * The dashboard's navigation, in its two shapes: a 56px icon rail from `lg`
  * up, and a hamburger opening a labelled drawer below it.
  *
- * The drawer itself is `NavDrawer`, shared with the notes workspace. This file
+ * The drawer itself is `NavDrawer`, a shared primitive. This file
  * supplies only what is genuinely the dashboard's: its destinations, and the
  * three footer entries that exist nowhere else.
  *

@@ -13,11 +13,10 @@ import { ForceLightTheme } from '@/shared/ui/force-light-theme';
  * A sibling of `(public)` rather than a route inside it, because
  * `(public)/layout.tsx` draws the site header, the footer and the container
  * grid, and a page whose only job is to become a clean PDF must inherit none
- * of it. It is equally NOT a sibling of `(protected)/print/notes/[id]`: that
- * route is guarded by `(protected)/layout.tsx` and must stay there, so this
- * group reuses the *mechanism* (server-rendered `RichText`, `MathRenderer`,
- * Chrome's "Save as PDF" driven by the `@media print` rules in `globals.css`)
- * and none of the route.
+ * of it. It is equally NOT inside `(protected)`: the article is public content, so
+ * nothing here goes through `(protected)/layout.tsx`. The group uses the
+ * mechanism (server-rendered `RichText`, `MathRenderer`, Chrome's "Save as
+ * PDF" driven by the `@media print` rules in `globals.css`).
  *
  * Forced light, both halves of it — and the blog view needs both at least as
  * much as the note view does, because `RichTextHtml` styles the article body

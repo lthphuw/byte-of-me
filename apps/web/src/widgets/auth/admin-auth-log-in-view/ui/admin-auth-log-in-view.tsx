@@ -21,7 +21,7 @@ export function AdminAuthLogInView() {
 
   // Where the visitor was heading before the guard turned them away. Forwarded
   // to every provider so sign-in returns them there instead of always landing
-  // on the dashboard — `/notes` is the case that made this visible.
+  // on the dashboard.
   const from = searchParams?.get('from') ?? undefined;
 
   // Auth.js redirects back here with `?error=` when the `signIn` callback

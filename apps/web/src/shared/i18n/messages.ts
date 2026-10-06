@@ -90,8 +90,8 @@ function isMessageGroup(value: unknown): value is MessageGroup {
 
 /**
  * Narrow a resolved catalogue to the given namespaces, each either a top-level
- * name (`global`) or a dotted path (`dashboard.note`). A dotted path keeps the
- * enclosing objects, so `useTranslations('dashboard.note')` still resolves;
+ * name (`global`) or a dotted path (`dashboard.media`). A dotted path keeps the
+ * enclosing objects, so `useTranslations('dashboard.media')` still resolves;
  * siblings listed separately merge into one branch. Kept inline rather than
  * pulling in a `pick` dependency; missing namespaces are skipped so a locale
  * file that lags behind `en.json` still renders.

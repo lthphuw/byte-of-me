@@ -11,17 +11,16 @@ export const CACHE_TAGS = {
   USER: 'user-profile',
   COMMENT: 'comment',
   /**
-   * The author's own workspace preferences — density, type scale, line length,
-   * autosave speed, sleep target, image compression.
+   * The author's own dashboard preferences — today, image compression.
    *
    * Its own tag rather than folded into `USER`, even though there is exactly
    * one author and the two rows always move together in practice. They are
    * written by different actions on different surfaces at wildly different
    * rates: `saveProfile` is a form the author submits a handful of times a
    * year, while `updateWorkspaceSettings` fires from a popover toggle. Sharing
-   * a tag would mean every flick of the density switch dropped the cached
+   * a tag would mean every change to a compression setting dropped the cached
    * public about-me and footer reads that `USER` also covers, which is a
-   * public-site cost paid for a private-workspace change.
+   * public-site cost paid for a private-dashboard change.
    */
   WORKSPACE_SETTINGS: 'workspace-settings',
 } as const;
@@ -57,9 +56,9 @@ export enum INTERACTION {
  *
  * A React Server Component layout receives `params`, never the URL — so
  * `(protected)/layout.tsx`, the one place that knows a visitor is unauthenticated,
- * cannot on its own tell whether they were reaching for `/notes` or `/dashboard`.
- * That is why every rejected visitor used to land on the dashboard regardless of
- * where they were going. The proxy is the last layer that still holds the URL, so
+ * cannot on its own tell which dashboard page they were reaching for.
+ * That is why every rejected visitor used to land on the dashboard home regardless
+ * of where they were going. The proxy is the last layer that still holds the URL, so
  * it forwards it here.
  *
  * Setting this reads no session and keeps the proxy free of the NextAuth config,

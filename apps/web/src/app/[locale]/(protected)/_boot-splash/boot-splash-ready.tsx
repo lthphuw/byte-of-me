@@ -24,7 +24,7 @@ import {
  * trap someone on the splash.
  *
  * This mounts once per `(protected)` layout instance, which persists across
- * client-side navigation within `/space` and `/dashboard` — so it runs once
+ * client-side navigation within `/dashboard` — so it runs once
  * per hard load, not once per page.
  */
 export function BootSplashReady() {

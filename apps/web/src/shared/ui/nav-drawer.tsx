@@ -22,8 +22,8 @@ export interface NavDrawerItem {
   icon: ComponentType<{ className?: string }>;
   /**
    * Light this entry only on an exact pathname match. The default is a prefix
-   * match, which is what keeps `/space/notes` lit while a note is open at
-   * `/space/notes/<id>` — and exactly what a section root like `/space` or
+   * match, which is what keeps `/dashboard/blogs` lit while a post is open at
+   * `/dashboard/blogs/<id>` — and exactly what a section root like
    * `/dashboard` must opt out of, being a prefix of every route beneath it.
    */
   exact?: boolean;

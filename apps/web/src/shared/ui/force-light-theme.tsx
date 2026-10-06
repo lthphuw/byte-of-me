@@ -12,7 +12,7 @@ import { useEffect } from 'react';
  * on that one class. A nested wrapper cannot override a selector: redeclaring
  * the CSS custom properties on a subtree (which `force-light-surface` does)
  * fixes everything that reads a variable and nothing that reads the variant.
- * Measured on `/print/notes/[id]`: with only the variable override in place,
+ * Measured on the print view: with only the variable override in place,
  * `<main>` computed to `rgb(10,10,10)` on white as intended while every `h2`
  * and `strong` inside it still computed to `rgb(255,255,255)` — invisible on
  * screen, and blank in the PDF.

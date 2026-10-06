@@ -59,22 +59,19 @@ const readWorkspaceSettings = (ownerId: string) =>
   )();
 
 /**
- * The author's workspace settings, read on the server.
+ * The author's dashboard settings, read on the server.
  *
  * NOT a server action — no `'use server'` — for the same reason
  * `getOwnerDisplayName` is not one: that is what allows React's `cache()`.
  *
  * Reading on the SERVER rather than fetching after hydration is the whole
- * reason this table exists rather than another `localStorage` key. Density,
- * type scale and line length are LAYOUT: read them in an effect and the
- * workspace paints once at the default and then jumps, which is exactly the
- * flash `use-explorer-prefs.ts` documents itself as accepting. Seeded from the
- * server, the first frame is already correct.
+ * reason this table exists rather than another `localStorage` key: the first
+ * frame already reflects what the author saved.
  *
  * Two caches, doing two different jobs. React's `cache()` on the outside gives
- * within-request dedupe: `space/layout.tsx` seeds the provider, `dashboard/
- * media/page.tsx` reads the compression config, `getSleepSummary` reads the
- * sleep target, and any of those can co-occur in one render. Next's
+ * within-request dedupe: `dashboard/layout.tsx` seeds the provider and
+ * `dashboard/media/page.tsx` reads the compression config, and both can
+ * co-occur in one render. Next's
  * `unstable_cache` on the inside gives the across-request half, which is the
  * one that matters here — the `(protected)` group is `force-dynamic`, so every
  * navigation used to pay a Supabase round trip to re-read a JSON blob that

@@ -27,20 +27,12 @@ export interface BlogPrintTriggerProps {
 /**
  * The print affordance for `/print/blogs/[slug]`.
  *
- * A public counterpart to `NotePrintTrigger` rather than a reuse of it, for
- * two reasons that are not stylistic:
+ * Public, so it lives under `features/public` and reads `blogDetails` — never
+ * the `dashboard` namespace, which would ship the CMS's whole vocabulary in a
+ * visitor's RSC payload.
  *
- * 1. FSD. `features/dashboard/*` importing into a public route erases the
- *    audience grouping AGENTS.md §3 relies on — the one that makes "never
- *    expose dashboard functionality on a public route" visible in a directory
- *    listing instead of buried in a guard.
- * 2. Messages. `NotePrintTrigger` reads `dashboard.note.export.pdf`, so
- *    reusing it would mount the `dashboard` namespace on an anonymous page
- *    and ship the CMS's whole vocabulary in a visitor's RSC payload — exactly
- *    what `SHARE_MESSAGE_NAMESPACES` refuses to do for recipients.
- *
- * The behaviour they do share — waiting on `document.fonts.ready` before
- * printing — lives in `usePrintOnFontsReady` and is not duplicated.
+ * Waiting on `document.fonts.ready` before printing lives in
+ * `usePrintOnFontsReady`.
  */
 export function BlogPrintTrigger({ auto = false }: BlogPrintTriggerProps) {
   const t = useTranslations('blogDetails');

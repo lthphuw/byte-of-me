@@ -44,7 +44,7 @@ export async function logInToDashboard(
       // by the Referer — which on this form is the sign-in page itself, so the
       // magic link came back to `/auth/login`, where `(auth)/layout.tsx` bounced
       // the now-authenticated owner to `/dashboard`. That, not the hardcoded
-      // string this used to pass, is why `/notes` never worked.
+      // string this used to pass, is why a deep `?from=` never worked.
       redirectTo: sanitizeCallbackUrl(callbackUrl, locale),
     });
 
