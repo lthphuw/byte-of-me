@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { motionDuration, motionEase } from '@byte-of-me/ui/motion';
 import { AnimatePresence, m } from 'framer-motion';
 
 import { siteConfig } from '@/shared/config/site';
@@ -19,8 +20,20 @@ export const PublicHeaderLogo = React.memo(
             key={minimized ? 'short' : 'full'}
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
+            // The outgoing label leaves faster and accelerates away, so it
+            // never overlaps the incoming one for long.
+            exit={{
+              y: -10,
+              opacity: 0,
+              transition: {
+                duration: motionDuration.press,
+                ease: motionEase.in,
+              },
+            }}
+            transition={{
+              duration: motionDuration.fast,
+              ease: motionEase.out,
+            }}
             className="block font-bold"
           >
             {minimized ? siteConfig.shortName : siteConfig.name}

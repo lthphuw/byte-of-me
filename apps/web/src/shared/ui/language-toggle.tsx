@@ -7,8 +7,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  menuTransition,
-  menuVariants,
 } from '@byte-of-me/ui';
 import { AnimatePresence, m } from 'framer-motion';
 import { useLocale, useTranslations } from 'next-intl';
@@ -119,49 +117,41 @@ export function I18nToggle({
           'min-w-[180px] overflow-hidden border-muted/50 bg-popover shadow-lg container-bg',
           menuClassName
         )}
-        forceMount
       >
-        <AnimatePresence>
-          <m.div
-            variants={menuVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={menuTransition}
-          >
-            {supportedLanguages.map((lang) => {
-              const ItemFlag = Flags[lang];
-              const isActive = lang === locale;
+        {/* No framer layer here: the content's own Radix enter/exit is the one
+            animation. A spring inside it doubled the zoom (0.95 x 0.95) and ran
+            450ms; its exit never played, the portal unmounts first. */}
+        {supportedLanguages.map((lang) => {
+          const ItemFlag = Flags[lang];
+          const isActive = lang === locale;
 
-              return (
-                <DropdownMenuItem key={lang} asChild>
-                  <Link
-                    href={pathname}
-                    locale={lang}
-                    className={cn(
-                      'flex w-full items-center gap-3 px-2 py-2 rounded-md transition-colors cursor-pointer',
-                      isActive
-                        ? 'bg-accent text-accent-foreground font-medium'
-                        : 'hover:bg-muted/50'
-                    )}
-                  >
-                    <div className="size-5 shrink-0 overflow-hidden rounded-[2px] border border-muted/30">
-                      <ItemFlag className="size-full object-cover" />
-                    </div>
-                    <div className="flex flex-1 items-center justify-between">
-                      <span className="text-sm">
-                        {t(languageNames[lang] as Parameters<typeof t>[0])}
-                      </span>
-                      <span className="text-[10px] font-bold uppercase tracking-widest opacity-30">
-                        {lang}
-                      </span>
-                    </div>
-                  </Link>
-                </DropdownMenuItem>
-              );
-            })}
-          </m.div>
-        </AnimatePresence>
+          return (
+            <DropdownMenuItem key={lang} asChild>
+              <Link
+                href={pathname}
+                locale={lang}
+                className={cn(
+                  'flex w-full items-center gap-3 px-2 py-2 rounded-md transition-colors cursor-pointer',
+                  isActive
+                    ? 'bg-accent text-accent-foreground font-medium'
+                    : 'hover:bg-muted/50'
+                )}
+              >
+                <div className="size-5 shrink-0 overflow-hidden rounded-[2px] border border-muted/30">
+                  <ItemFlag className="size-full object-cover" />
+                </div>
+                <div className="flex flex-1 items-center justify-between">
+                  <span className="text-sm">
+                    {t(languageNames[lang] as Parameters<typeof t>[0])}
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest opacity-30">
+                    {lang}
+                  </span>
+                </div>
+              </Link>
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );

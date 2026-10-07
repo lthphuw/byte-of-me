@@ -25,8 +25,8 @@ interface ExpandableRichTextProps {
 }
 
 /**
- * Both directions use the site's `sleek` curve; collapsing runs shorter so it
- * gets out of the way rather than lingering. The chevron turns on the same
+ * Expanding eases on the site's `sleek` curve; collapsing runs shorter and eases
+ * in, so it gets out of the way rather than lingering. The chevron turns on the
  * spring the header menus use (`menuTransition`), which settles without the
  * hard stop a tween has.
  */
@@ -36,7 +36,7 @@ const EXPAND_TRANSITION: Transition = {
 };
 const COLLAPSE_TRANSITION: Transition = {
   duration: 0.2,
-  ease: motionEase.sleek,
+  ease: motionEase.in,
 };
 
 /** The first clamp is a measurement result, not a user action — never animate it. */

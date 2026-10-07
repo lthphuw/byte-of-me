@@ -7,10 +7,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  menuTransition,
-  menuVariants,
 } from '@byte-of-me/ui';
-import { AnimatePresence, m } from 'framer-motion';
 import { LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -47,44 +44,33 @@ export function UserActionToggle() {
         align="end"
         sideOffset={12}
         className="w-60 overflow-hidden shadow-lg container-bg"
-        forceMount
       >
-        <AnimatePresence mode="wait" initial={false}>
-          <m.div
-            variants={menuVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={menuTransition}
-          >
-            {/* Repeated in full: the trigger is two letters, and "which
-                account is this" is worth answering before offering to end the
-                session. */}
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex items-center gap-3">
-                <UserAvatar account={account} />
-                <div className="min-w-0 space-y-1">
-                  <p className="truncate text-sm font-medium leading-none">
-                    {account.name}
-                  </p>
-                  <p className="truncate text-xs leading-none text-muted-foreground">
-                    {account.email}
-                  </p>
-                </div>
-              </div>
-            </DropdownMenuLabel>
+        {/* Repeated in full: the trigger is two letters, and "which
+            account is this" is worth answering before offering to end the
+            session. */}
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex items-center gap-3">
+            <UserAvatar account={account} />
+            <div className="min-w-0 space-y-1">
+              <p className="truncate text-sm font-medium leading-none">
+                {account.name}
+              </p>
+              <p className="truncate text-xs leading-none text-muted-foreground">
+                {account.email}
+              </p>
+            </div>
+          </div>
+        </DropdownMenuLabel>
 
-            <DropdownMenuSeparator />
+        <DropdownMenuSeparator />
 
-            <DropdownMenuItem
-              onClick={() => void signOutEverywhere()}
-              className="cursor-pointer gap-2"
-            >
-              <LogOut className="size-4" />
-              {t('signOut')}
-            </DropdownMenuItem>
-          </m.div>
-        </AnimatePresence>
+        <DropdownMenuItem
+          onClick={() => void signOutEverywhere()}
+          className="cursor-pointer gap-2"
+        >
+          <LogOut className="size-4" />
+          {t('signOut')}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -66,7 +66,7 @@ export default async function NotFound() {
             ].map(({ icon, href, title, desc, link }) => (
               <div
                 key={href}
-                className="dura flex flex-col gap-2 rounded-lg bg-muted p-6 shadow-xl transition-all duration-300 hover:shadow-2xl"
+                className="dura flex flex-col gap-2 rounded-lg bg-muted p-6 shadow-xl transition-shadow duration-200 hover:shadow-2xl"
               >
                 {icon}
                 <h3 className="text-md mt-4 font-medium text-foreground">
@@ -75,7 +75,7 @@ export default async function NotFound() {
                 <p className="text-muted-foreground">{desc}</p>
                 <Link
                   href={href}
-                  className="mt-auto inline-flex items-center gap-2 text-sm font-semibold transition-all hover:underline"
+                  className="mt-auto inline-flex items-center gap-2 text-sm font-semibold hover:underline"
                 >
                   <span>{link}</span>
                   <Icons.arrowRight />

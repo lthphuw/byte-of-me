@@ -1,7 +1,5 @@
 'use client';
 
-import { m } from 'framer-motion';
-
 import { cn } from './lib/utils';
 
 export type LoadingProps = {
@@ -17,17 +15,14 @@ export function Loading({
 }: LoadingProps) {
   return (
     <div className={cn('flex items-center justify-center', className)}>
-      <m.svg
+      {/* CSS, not framer: `MotionConfig reducedMotion="user"` makes a framer
+          rotate instant, and a spinner that stops is not a loading indicator
+          (AGENTS §14 keeps `animate-spin` moving under reduced motion). */}
+      <svg
         width={size}
         height={size}
         viewBox="0 0 24 24"
-        className="block"
-        animate={{ rotate: 360 }}
-        transition={{
-          repeat: Infinity,
-          duration: 0.8,
-          ease: 'linear',
-        }}
+        className="block animate-spin [animation-duration:0.8s]"
       >
         <circle
           cx="12"
@@ -39,14 +34,14 @@ export function Loading({
           opacity="0.2"
         />
 
-        <m.path
+        <path
           d="M22 12a10 10 0 0 1-10 10"
           stroke="currentColor"
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           fill="none"
         />
-      </m.svg>
+      </svg>
     </div>
   );
 }

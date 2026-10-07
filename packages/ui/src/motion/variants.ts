@@ -62,7 +62,10 @@ export const fadeIn: Variants = {
  * list stays inside the stagger budget. Children use `staggerItem` (or any
  * variant with matching `hidden`/`visible` keys).
  */
-export const staggerContainer = (count: number, delayChildren = 0): Variants => ({
+export const staggerContainer = (
+  count: number,
+  delayChildren = 0
+): Variants => ({
   hidden: {},
   visible: {
     transition: {
@@ -86,10 +89,4 @@ export const iconSwitchVariants = {
   initial: { opacity: 0, scale: 0.8, rotate: 90 },
   animate: { opacity: 1, scale: 1, rotate: 0 },
   exit: { opacity: 0, scale: 0.8, rotate: -90 },
-};
-
-export const menuVariants: Variants = {
-  initial: { opacity: 0, scale: 0.95, y: 4 },
-  animate: { opacity: 1, scale: 1, y: 0 },
-  exit: { opacity: 0, scale: 0.95, y: -4 },
 };

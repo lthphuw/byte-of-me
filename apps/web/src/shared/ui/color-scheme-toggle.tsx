@@ -9,8 +9,6 @@ import {
   DropdownMenuTrigger,
   Icons,
   iconSwitchVariants,
-  menuTransition,
-  menuVariants,
 } from '@byte-of-me/ui';
 import { AnimatePresence, m } from 'framer-motion';
 import { useTranslations } from 'next-intl';
@@ -137,19 +135,9 @@ export function ColorSchemeModeToggle({
                 'cursor-pointer flex items-center gap-2',
                 isActive && 'bg-accent text-accent-foreground font-medium'
               )}
-              asChild
             >
-              <m.div
-                custom={index}
-                variants={menuVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                transition={menuTransition}
-              >
-                <Icon className="mr-2 size-4" />
-                <span>{item.label}</span>
-              </m.div>
+              <Icon className="mr-2 size-4" />
+              <span>{item.label}</span>
             </DropdownMenuItem>
           );
         })}

@@ -39,7 +39,7 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
             <span className="hidden md:inline-block">{t('builtBy')}</span>
             <a
               href={`mailto:${email}`}
-              className="font-medium underline underline-offset-4 hover:text-primary"
+              className="font-medium underline underline-offset-4 transition-colors hover:text-primary"
             >
               {displayName || email}
             </a>
@@ -56,7 +56,7 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="hover:text-primary"
+                className="transition-colors hover:text-primary"
               >
                 <Icons.github size={20} />
               </a>
@@ -68,7 +68,7 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="hover:text-primary"
+                className="transition-colors hover:text-primary"
               >
                 <Icons.linkedin size={20} />
               </a>
@@ -77,7 +77,7 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
             <a
               href={`mailto:${email}`}
               aria-label={t('email')}
-              className="hover:text-primary"
+              className="transition-colors hover:text-primary"
             >
               <Icons.email size={20} />
             </a>

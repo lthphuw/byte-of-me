@@ -9,7 +9,7 @@ import { Icons } from './icons';
 import { cn } from './lib/utils';
 // Straight at the token modules, not `./motion` — its barrel pulls in
 // MotionProvider and framer-motion's full feature set.
-import { springTransition } from './motion/transitions';
+import { menuTransition } from './motion/transitions';
 import { iconSwitchVariants } from './motion/variants';
 
 export interface CopyButtonProps {
@@ -43,7 +43,7 @@ export function CopyButton({
       variant="ghost"
       onClick={handleCopy}
       className={cn(
-        'relative h-8 w-8 rounded-md transition-all duration-300',
+        'relative h-8 w-8 rounded-md transition-[color,background-color,box-shadow] duration-200',
         // copied && 'border-green-500/50 bg-green-500/10 text-green-600'
         className
       )}
@@ -57,7 +57,7 @@ export function CopyButton({
           initial="initial"
           animate="animate"
           exit="exit"
-          transition={springTransition}
+          transition={menuTransition}
           className="flex items-center justify-center"
         >
           {copied ? (

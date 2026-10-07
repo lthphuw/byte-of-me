@@ -6,8 +6,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  motionStagger,
 } from '@byte-of-me/ui';
-import { AnimatePresence, m } from 'framer-motion';
+import { m, stagger } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 
 import { GithubAuthButton } from './github-auth-button';
@@ -25,71 +26,65 @@ export function AuthModal({ isOpen, onClose, children }: AuthModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <AnimatePresence>
-        {isOpen && (
-          <DialogContent className="w-[90vw] overflow-hidden rounded-2xl p-6 sm:max-w-[400px]">
-            <m.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="flex flex-col"
-            >
-              {/* Header */}
-              <DialogHeader className="space-y-2 text-center">
-                <DialogTitle className="text-xl font-semibold">
-                  {t('signInTitle')}
-                </DialogTitle>
-              </DialogHeader>
+      {isOpen && (
+        <DialogContent className="w-[90vw] overflow-hidden rounded-2xl p-6 sm:max-w-[400px]">
+          {/* No scale or fade of its own: DialogContent already zooms and fades
+              in, and a second one on top started the modal at 0.9. */}
+          <div className="flex flex-col">
+            {/* Header */}
+            <DialogHeader className="space-y-2 text-center">
+              <DialogTitle className="text-xl font-semibold">
+                {t('signInTitle')}
+              </DialogTitle>
+            </DialogHeader>
 
-              {/* Content */}
-              <m.div
-                className="flex flex-col gap-5 pt-6"
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  hidden: {},
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.05,
-                    },
+            {/* Content */}
+            <m.div
+              className="flex flex-col gap-5 pt-6"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: {},
+                visible: {
+                  transition: {
+                    delayChildren: stagger(motionStagger.step),
                   },
+                },
+              }}
+            >
+              <m.div
+                variants={{
+                  hidden: { opacity: 0, y: 6 },
+                  visible: { opacity: 1, y: 0 },
                 }}
               >
-                <m.div
-                  variants={{
-                    hidden: { opacity: 0, y: 6 },
-                    visible: { opacity: 1, y: 0 },
-                  }}
-                >
-                  <GithubAuthButton className="h-11 w-full text-sm font-medium" />
-                </m.div>
-
-                <m.div
-                  variants={{
-                    hidden: { opacity: 0, y: 6 },
-                    visible: { opacity: 1, y: 0 },
-                  }}
-                >
-                  <GoogleAuthButton className="h-11 w-full text-sm font-medium" />
-                </m.div>
-
-                {children && (
-                  <m.div
-                    variants={{
-                      hidden: { opacity: 0, y: 6 },
-                      visible: { opacity: 1, y: 0 },
-                    }}
-                    className="text-center text-sm text-muted-foreground"
-                  >
-                    {children}
-                  </m.div>
-                )}
+                <GithubAuthButton className="h-11 w-full text-sm font-medium" />
               </m.div>
+
+              <m.div
+                variants={{
+                  hidden: { opacity: 0, y: 6 },
+                  visible: { opacity: 1, y: 0 },
+                }}
+              >
+                <GoogleAuthButton className="h-11 w-full text-sm font-medium" />
+              </m.div>
+
+              {children && (
+                <m.div
+                  variants={{
+                    hidden: { opacity: 0, y: 6 },
+                    visible: { opacity: 1, y: 0 },
+                  }}
+                  className="text-center text-sm text-muted-foreground"
+                >
+                  {children}
+                </m.div>
+              )}
             </m.div>
-          </DialogContent>
-        )}
-      </AnimatePresence>
+          </div>
+        </DialogContent>
+      )}
     </Dialog>
   );
 }

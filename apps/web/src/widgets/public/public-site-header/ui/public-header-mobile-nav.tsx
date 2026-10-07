@@ -5,7 +5,8 @@ import { createPortal } from 'react-dom';
 // Subpath, not the package barrel: this widget renders in the header of every
 // public page, and the barrel reaches the rich text editor.
 import { useLockBody } from '@byte-of-me/ui/hooks/use-lock-body';
-import { AnimatePresence, m, type Variants } from 'framer-motion';
+import { staggerItem, staggerStep } from '@byte-of-me/ui/motion';
+import { AnimatePresence, m, stagger, type Variants } from 'framer-motion';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
@@ -17,7 +18,7 @@ import type { MainNavItem } from '@/shared/types';
 // No `opacity` here: the panel used to be frosted glass, and an ancestor with
 // opacity < 1 broke its backdrop blur until the spring settled. The panel is
 // solid now; the entrance stays scale + y so it looks the same as before.
-const containerVariants: Variants = {
+const createContainerVariants = (itemCount: number): Variants => ({
   hidden: { scale: 0.95, y: -10 },
   visible: {
     scale: 1,
@@ -26,7 +27,7 @@ const containerVariants: Variants = {
       type: 'spring',
       stiffness: 300,
       damping: 30,
-      staggerChildren: 0.05,
+      delayChildren: stagger(staggerStep(itemCount)),
     },
   },
   // A short ease-in tween, NOT the entrance spring. A spring keeps settling
@@ -37,35 +38,14 @@ const containerVariants: Variants = {
   // runs shorter.
   //
   // Transform only, deliberately, for the same reason the entrance carries no
-  // opacity (see below): fading the panel makes it a backdrop root and the
+  // opacity (see above): fading the panel makes it a backdrop root and the
   // frosted glass would flatten on the way out.
   exit: {
     scale: 0.95,
     y: -10,
     transition: { duration: 0.14, ease: 'easeIn' },
   },
-};
-
-/**
- * The entrance stagger, without an exit.
- *
- * The shared `itemVariants` carries `exit: { opacity: 0, y: 10 }`, and on the
- * way out the container's `staggerChildren` walked the links through it one by
- * one while the panel itself was still leaving — the links blanked first and
- * the empty panel lingered behind them. Omitting `exit` here leaves the panel
- * as the only thing that animates out, so the menu departs as one object.
- *
- * Local rather than a change to the shared variant, which other surfaces use
- * for entrances where its exit is fine.
- */
-const linkVariants: Variants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { type: 'spring', stiffness: 130, damping: 10 },
-  },
-};
+});
 
 interface PublicHeaderMobileNavProps {
   triggerRef: React.RefObject<HTMLButtonElement | null>;
@@ -86,6 +66,10 @@ export const PublicHeaderMobileNav = ({
   const t = useTranslations('global.header.nav');
   const menuRef = React.useRef<HTMLDivElement>(null);
   const segment = useSelectedLayoutSegment();
+  const containerVariants = React.useMemo(
+    () => createContainerVariants(items.length),
+    [items.length]
+  );
 
   React.useEffect(() => {
     if (!isOpen) return;
@@ -149,8 +133,11 @@ export const PublicHeaderMobileNav = ({
                     44px rows is the shape that rule is protecting, and the 8px
                     only made five links read as five unrelated cards. */}
                 <nav className="grid">
+                  {/* `staggerItem` has no `exit`: on the way out only the panel
+                      animates, so the menu leaves as one object instead of the
+                      links blanking first and the empty panel lingering. */}
                   {items.map((item, index) => (
-                    <m.div key={item.href + index} variants={linkVariants}>
+                    <m.div key={item.href + index} variants={staggerItem}>
                       <Link
                         href={item.disabled ? '#' : item.href}
                         onClick={() => onOpenChange(false)}
