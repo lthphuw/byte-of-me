@@ -3,12 +3,6 @@ import { getTranslations } from 'next-intl/server';
 
 import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
-import { cn } from '@/shared/lib/utils';
-
-// Button only transitions colours; the press scale needs `transform` listed too.
-// Under reduced motion the scale and its transition drop out, the colour one stays.
-const PRESS =
-  'motion-safe:transition-[color,background-color,border-color,transform] motion-safe:active:scale-[0.97] motion-safe:active:duration-120';
 
 export async function HomepageContactCta() {
   const t = await getTranslations('homepage');
@@ -27,11 +21,7 @@ export async function HomepageContactCta() {
       {/* `asChild`, not <Link><Button>: the nested form renders <a><button>,
           which is invalid and gives every CTA two tab stops. */}
       <div className="flex flex-col justify-center gap-2 pt-2 sm:flex-row">
-        <Button
-          size="lg"
-          className={cn('w-full px-8 sm:w-auto', PRESS)}
-          asChild
-        >
+        <Button size="lg" className="w-full px-8 sm:w-auto" asChild>
           <Link href={`${Routes.Contact}#contact-send-message`}>
             {t('emailMe')}
           </Link>
@@ -39,7 +29,7 @@ export async function HomepageContactCta() {
         <Button
           size="lg"
           variant="outline"
-          className={cn('w-full px-8 sm:w-auto', PRESS)}
+          className="w-full px-8 sm:w-auto"
           asChild
         >
           <Link href={`${Routes.Contact}#contact-info`}>

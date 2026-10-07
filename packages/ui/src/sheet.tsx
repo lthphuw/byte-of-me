@@ -32,8 +32,8 @@ SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
   // Under reduced motion the slide is gone, so the panel fades instead of just
-  // appearing, and on a shorter clock than the 500 ms slide.
-  'fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out motion-reduce:data-[state=open]:fade-in-0 motion-reduce:data-[state=closed]:fade-out-0 motion-reduce:data-[state=open]:duration-200 motion-reduce:data-[state=closed]:duration-150',
+  // appearing, and on a shorter clock than the 300 ms slide.
+  'fixed z-50 gap-4 bg-background p-6 shadow-lg transition data-[state=open]:ease-enter data-[state=closed]:ease-exit data-[state=closed]:duration-200 data-[state=open]:duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out motion-reduce:data-[state=open]:fade-in-0 motion-reduce:data-[state=closed]:fade-out-0 motion-reduce:data-[state=open]:duration-200 motion-reduce:data-[state=closed]:duration-150',
   {
     variants: {
       side: {
