@@ -38,8 +38,12 @@ export function AchievementFold({
         id={regionId}
         inert={!open}
         className={cn(
-          'grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none',
-          open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+          'grid transition-[grid-template-rows,opacity] motion-reduce:transition-none',
+          // A transition takes its timing from the state it ends in, so each
+          // branch carries its own: open eases out, close is shorter and eases in.
+          open
+            ? 'grid-rows-[1fr] opacity-100 duration-250 ease-enter'
+            : 'grid-rows-[0fr] opacity-0 duration-200 ease-exit'
         )}
       >
         <div className="min-h-0 overflow-hidden">{children}</div>
@@ -56,8 +60,10 @@ export function AchievementFold({
         <ChevronDown
           aria-hidden
           className={cn(
-            'h-4 w-4 shrink-0 transition-transform duration-300 motion-reduce:transition-none',
-            open && 'rotate-180'
+            'h-4 w-4 shrink-0 transition-transform motion-reduce:transition-none',
+            open
+              ? 'rotate-180 duration-250 ease-enter'
+              : 'duration-200 ease-exit'
           )}
         />
       </button>

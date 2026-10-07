@@ -35,7 +35,7 @@ export async function HomepageContent() {
         className="space-y-12 md:space-y-16"
       >
         {/* `immediate`: the profile holds the page's LCP element (the h1). */}
-        <RevealSection delay={0.1} immediate>
+        <RevealSection immediate>
           <Suspense fallback={<HomepageProfileLoading />}>
             <HomepageProfile />
           </Suspense>

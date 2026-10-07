@@ -33,7 +33,7 @@ export function ProjectCard({
     : t('present');
 
   return (
-    <Card className="group flex h-full flex-col rounded-2xl border-border/60 bg-card transition-all duration-300 hover:border-border hover:shadow-md">
+    <Card className="group flex h-full flex-col rounded-2xl border-border/60 bg-card transition-[border-color,box-shadow] duration-200 ease-enter hover:border-border hover:shadow-md">
       <CardContent className="flex flex-1 flex-col gap-4 p-5 md:gap-6">
         <div className="space-y-2">
           <h3 className="line-clamp-1 font-heading text-lg tracking-tight">

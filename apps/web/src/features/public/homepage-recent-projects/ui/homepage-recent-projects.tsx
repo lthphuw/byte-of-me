@@ -5,7 +5,6 @@ import { getTranslations } from 'next-intl/server';
 import { getPublicRecentProjects,ProjectEmpty } from '@/entities/project';
 import { ProjectCard } from '@/entities/project/ui/project-card';
 import { Routes } from '@/shared/config/global';
-import { StaggerItem, StaggerList } from '@/shared/ui';
 
 export async function HomepageRecentProjects() {
   const t = await getTranslations('homepage');
@@ -46,13 +45,11 @@ export async function HomepageRecentProjects() {
           </div>
         </div>
       ) : (
-        <StaggerList className="grid gap-4 md:grid-cols-2 md:gap-8">
+        <div className="grid gap-4 md:grid-cols-2 md:gap-8">
           {recentProjects.map((project) => (
-            <StaggerItem key={project.id}>
-              <ProjectCard project={project} />
-            </StaggerItem>
+            <ProjectCard key={project.id} project={project} />
           ))}
-        </StaggerList>
+        </div>
       )}
     </section>
   );
