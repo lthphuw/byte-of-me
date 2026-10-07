@@ -206,6 +206,11 @@ export default {
   plugins: [
     tailwindcssAnimate,
     tailwindTypography,
+    // `hoverOnlyWhenSupported` wraps `hover:` only. An arbitrary selector such as
+    // `[&_a:hover]:` is left alone, so it takes this variant in front of it.
+    plugin(({ addVariant }) => {
+      addVariant('can-hover', '@media (hover: hover) and (pointer: fine)');
+    }),
     plugin(({ addUtilities }) => {
       addUtilities({
         // A solid surface, not frosted glass: `backdrop-filter` re-samples what is

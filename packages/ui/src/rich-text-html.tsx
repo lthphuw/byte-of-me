@@ -108,7 +108,7 @@ export function RichTextHtml({
 
         // Links
         '[&_a]:font-medium [&_a]:text-primary [&_a]:underline [&_a]:decoration-primary/40 [&_a]:underline-offset-4',
-        '[&_a:hover]:decoration-primary',
+        'can-hover:[&_a:hover]:decoration-primary',
 
         // Strong / emphasis
         '[&_strong]:font-semibold',
@@ -222,7 +222,7 @@ export function RichTextHtml({
 
         // Row hover. On a table too wide to see at once, this is what keeps
         // the eye on one row while it travels.
-        '[&_tbody_tr:hover>td]:bg-muted/60',
+        'can-hover:[&_tbody_tr:hover>td]:bg-muted/60',
 
         // The row label, pinned while the numbers scroll past it — on a wide
         // table this is the difference between reading a row and guessing which
@@ -288,7 +288,7 @@ export function RichTextHtml({
         '[&_sup.citation.is-flash>a]:bg-foreground [&_sup.citation.is-flash>a]:text-background',
         '[&_sup.citation>a.is-flash]:bg-foreground [&_sup.citation>a.is-flash]:text-background',
         '[&_sup.citation>a]:font-medium [&_sup.citation>a]:text-muted-foreground [&_sup.citation>a]:no-underline',
-        '[&_sup.citation>a:hover]:bg-foreground [&_sup.citation>a:hover]:text-background',
+        'can-hover:[&_sup.citation>a:hover]:bg-foreground can-hover:[&_sup.citation>a:hover]:text-background',
         '[&_sup.citation--orphan]:text-muted-foreground',
 
         // Bibliography rendered from the `referenceList` node
@@ -305,7 +305,7 @@ export function RichTextHtml({
         '[&_.references-item.is-flash]:bg-muted',
         '[&_.references-url]:ml-1 [&_.references-url]:break-all [&_.references-url]:text-[0.92em]',
         '[&_.references-backlink]:ml-2 [&_.references-backlink]:text-muted-foreground [&_.references-backlink]:no-underline',
-        '[&_.references-backlink:hover]:text-foreground',
+        'can-hover:[&_.references-backlink:hover]:text-foreground',
 
         // Editor-specific polish
         '[&_br]:leading-[0]',
