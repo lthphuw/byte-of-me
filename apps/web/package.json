@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "author": {
-    "name": "Phu Luong"
+    "name": "Lương Thanh Hoàng Phú"
   },
   "scripts": {
     "check-types": "tsc --noEmit",
