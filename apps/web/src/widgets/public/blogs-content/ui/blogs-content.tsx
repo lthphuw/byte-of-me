@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Pagination, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@byte-of-me/ui';
 import { useQuery } from '@tanstack/react-query';
 import { NotebookPen, ShieldCheck } from 'lucide-react';
@@ -11,7 +11,6 @@ import { useTranslations } from 'next-intl';
 // client component importing it drags unrelated server-rendering modules
 // (education-item -> RichText -> tiptap) into the public bundle.
 import {
-  BlogCard,
   BlogCardSkeleton,
   BlogEmpty,
   blogKeys,
@@ -19,11 +18,9 @@ import {
 } from '@/entities/blog';
 import { BlogFilters, useBlogFilters } from '@/features/public/blog-filters';
 import { HYDRATED_LIST_BEHAVIOR } from '@/shared/hooks/use-infinite-list-query';
-import { ListPageHeader, RevealItem } from '@/shared/ui';
+import { ListPageHeader } from '@/shared/ui';
+import { BlogsGrid } from '@/widgets/public/blogs-content/ui/blogs-grid';
 import { BlogsShell } from '@/widgets/public/blogs-content/ui/blogs-shell';
-
-// Two columns from md up, so the first row is the two cards above the fold.
-const FIRST_ROW_COUNT = 2;
 
 export function BlogsContent() {
   const t = useTranslations('blog');
@@ -65,6 +62,14 @@ export function BlogsContent() {
   // of this: it blanked a fully rendered list behind skeletons whenever a
   // background refetch ran. A refetch updates the list in place instead.
   const showSkeletons = isLoading;
+
+  // The entrance belongs to the first result set of this mount. A ref, not
+  // state: flipping it must not cost a render, and the grid reads it at mount.
+  const hasResults = blogs.length > 0;
+  const entrancePlayed = useRef(false);
+  useEffect(() => {
+    if (hasResults) entrancePlayed.current = true;
+  }, [hasResults]);
 
   const toggleTag = (slug: string) => {
     const nextTags = filters.tagSlugs.includes(slug)
@@ -127,23 +132,12 @@ export function BlogsContent() {
           <BlogEmpty isSearch={hasActiveFilters} />
         </div>
       ) : (
-        <div
-          className={`grid grid-cols-1 gap-6 transition-opacity duration-300 md:grid-cols-2 md:gap-10 ${
-            isPlaceholderData
-              ? 'pointer-events-none opacity-50 grayscale-[50%]'
-              : 'opacity-100'
-          }`}
-        >
-          {blogs.map((blog, index) => (
-            <RevealItem
-              key={blog.id}
-              index={index}
-              immediate={index < FIRST_ROW_COUNT}
-            >
-              <BlogCard blog={blog} onTagClick={toggleTag} />
-            </RevealItem>
-          ))}
-        </div>
+        <BlogsGrid
+          blogs={blogs}
+          playEntrance={!entrancePlayed.current}
+          isStale={isPlaceholderData}
+          onTagClick={toggleTag}
+        />
       )}
 
       <Pagination

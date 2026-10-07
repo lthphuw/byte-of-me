@@ -37,7 +37,9 @@ export function BlogCard({ blog, onTagClick }: BlogCardProps) {
     .join(' · ');
 
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-300 hover:border-border hover:shadow-md">
+    // The lift is the only transform; border and shadow carry the state change
+    // under reduced motion.
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card transition-[transform,border-color,box-shadow] duration-200 ease-enter hover:border-border hover:shadow-md motion-safe:hover:-translate-y-0.5">
       <div className="relative aspect-[16/10] overflow-hidden bg-muted">
         {blog.coverImage ? (
           <Image
@@ -45,7 +47,7 @@ export function BlogCard({ blog, onTagClick }: BlogCardProps) {
             alt=""
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-            className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            className="size-full object-cover transition-transform duration-300 ease-enter motion-safe:group-hover:scale-[1.03]"
           />
         ) : (
           <div className="flex size-full items-center justify-center">

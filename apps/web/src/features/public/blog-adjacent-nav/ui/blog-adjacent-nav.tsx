@@ -25,7 +25,7 @@ export async function BlogAdjacentNav({
       {prev ? (
         <Link
           href={`/blogs/${prev.slug}`}
-          className="group flex flex-col gap-2 rounded-xl border p-4 transition hover:border-primary/50"
+          className="group flex flex-col gap-2 rounded-xl border p-4 transition-[transform,border-color,box-shadow] duration-200 ease-enter hover:border-primary/50 hover:shadow-md motion-safe:hover:-translate-y-0.5"
         >
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
             <ArrowLeft className="h-3 w-3" />
@@ -42,7 +42,7 @@ export async function BlogAdjacentNav({
       {next ? (
         <Link
           href={`/blogs/${next.slug}`}
-          className="group flex flex-col items-end gap-2 rounded-xl border p-4 text-right transition hover:border-primary/50"
+          className="group flex flex-col items-end gap-2 rounded-xl border p-4 text-right transition-[transform,border-color,box-shadow] duration-200 ease-enter hover:border-primary/50 hover:shadow-md motion-safe:hover:-translate-y-0.5"
         >
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
             {nextLabel}

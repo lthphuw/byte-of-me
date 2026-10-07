@@ -35,7 +35,7 @@ export async function BlogRelatedProjectCard({
       <p className="mb-2 text-sm font-semibold text-muted-foreground">
         {label}
       </p>
-      <Card className="p-4 transition hover:border-primary/50">
+      <Card className="p-4 transition-colors hover:border-primary/50">
         <Link href={project.githubLink ?? Routes.Projects} target="_blank">
           <div className="flex items-center justify-between gap-2 text-primary">
             <div className="flex items-center gap-2 text-primary">

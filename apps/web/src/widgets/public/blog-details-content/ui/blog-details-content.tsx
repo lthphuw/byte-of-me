@@ -14,6 +14,7 @@ import {
   BlogRelatedProjectCard,
   RelatedProjectCardSkeleton,
 } from '@/features/public';
+import { ContentFade, RevealSection } from '@/shared/ui';
 import { ArticleHeadingsProvider } from '@/widgets/public/blog-details-content/lib/article-headings-context';
 import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-action-bar';
 import { BlogBreadcrumb } from '@/widgets/public/blog-details-content/ui/blog-breadcrumb';
@@ -46,7 +47,11 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
             <div className="mx-auto w-full min-w-0 max-w-[720px] xl:col-start-2 xl:mx-0">
               <BlogBreadcrumb title={blog.title} />
 
-              <BlogContentHeader blog={blog} />
+              {/* The only entrance on this page; `immediate` keeps the header
+                  (and the LCP image in it) visible in the server HTML. */}
+              <RevealSection immediate>
+                <BlogContentHeader blog={blog} />
+              </RevealSection>
 
               {/* Below `xl` the headings and the bibliography live in
                   `BlogReaderNav` — a button in the corner, rendered at the end
@@ -66,10 +71,12 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
               {/* Author */}
               <Separator className="my-8 md:my-12" />
               <Suspense fallback={<Skeleton className="h-28 w-full rounded-xl" />}>
-                <BlogAuthorCard
-                  author={blog.author}
-                  label={t('aboutTheAuthor')}
-                />
+                <ContentFade>
+                  <BlogAuthorCard
+                    author={blog.author}
+                    label={t('aboutTheAuthor')}
+                  />
+                </ContentFade>
               </Suspense>
 
               {/* Related project */}
@@ -81,10 +88,12 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
                       <RelatedProjectCardSkeleton label={t('relatedProject')} />
                     }
                   >
-                    <BlogRelatedProjectCard
-                      projectId={blog.projectId}
-                      label={t('relatedProject')}
-                    />
+                    <ContentFade>
+                      <BlogRelatedProjectCard
+                        projectId={blog.projectId}
+                        label={t('relatedProject')}
+                      />
+                    </ContentFade>
                   </Suspense>
                 </>
               )}
@@ -94,11 +103,13 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
               <Suspense
                 fallback={<Skeleton className="h-64 w-full rounded-xl" />}
               >
-                <BlogRelatedPosts
-                  blogId={blog.id}
-                  tagSlugs={tagSlugs}
-                  label={t('relatedPosts')}
-                />
+                <ContentFade>
+                  <BlogRelatedPosts
+                    blogId={blog.id}
+                    tagSlugs={tagSlugs}
+                    label={t('relatedPosts')}
+                  />
+                </ContentFade>
               </Suspense>
 
               {/* Prev / Next */}
@@ -106,12 +117,14 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
               <Suspense
                 fallback={<Skeleton className="h-20 w-full rounded-xl" />}
               >
-                <BlogAdjacentNav
-                  blogId={blog.id}
-                  publishedDate={blog.publishedDate}
-                  prevLabel={t('previousPost')}
-                  nextLabel={t('nextPost')}
-                />
+                <ContentFade>
+                  <BlogAdjacentNav
+                    blogId={blog.id}
+                    publishedDate={blog.publishedDate}
+                    prevLabel={t('previousPost')}
+                    nextLabel={t('nextPost')}
+                  />
+                </ContentFade>
               </Suspense>
 
               {/* Comments */}

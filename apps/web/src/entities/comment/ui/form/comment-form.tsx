@@ -51,7 +51,7 @@ export function CommentForm({
     <div className="relative">
         <div
           className={cn(
-            'flex w-full flex-col gap-4 rounded-xl border bg-muted/20 p-4 shadow-sm transition md:gap-6',
+            'flex w-full flex-col gap-4 rounded-xl border bg-muted/20 p-4 shadow-sm transition-opacity md:gap-6',
             !isAuthenticated && 'pointer-events-none opacity-80'
           )}
         >

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button , Icons } from '@byte-of-me/ui';
+import { Button, Icons, motionDuration, motionEase } from '@byte-of-me/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, m } from 'framer-motion';
 import { useSession } from 'next-auth/react';
@@ -16,6 +16,15 @@ import {
 } from '@/features/public/toggle-blog-interactions/lib';
 import { INTERACTION } from '@/shared/lib/constants';
 import { cn } from '@/shared/lib/utils';
+
+// A tween on purpose: framer's default for x/y is a spring with ~0.45 bounce,
+// past the 0.2 ceiling for a toggle. The fade takes a gentler curve so the
+// dots do not vanish before they land.
+const BURST_TRANSITION = {
+  duration: motionDuration.base,
+  ease: motionEase.out,
+  opacity: { duration: motionDuration.base, ease: 'easeOut' },
+} as const;
 
 export function ClapButton({
   blogId,
@@ -99,25 +108,33 @@ export function ClapButton({
         )}
       >
         <div className="relative flex h-6 w-6 items-center justify-center">
-          <AnimatePresence>
+          <AnimatePresence initial={false}>
             {isClapped && (
               <>
                 <m.div
-                  initial={{ scale: 0, opacity: 0.6 }}
+                  initial={{ scale: 0.95, opacity: 0.6 }}
                   animate={{ scale: 2, opacity: 0 }}
-                  exit={{ opacity: 0 }}
+                  exit={{
+                    opacity: 0,
+                    transition: {
+                      duration: motionDuration.fast,
+                      ease: motionEase.in,
+                    },
+                  }}
+                  transition={BURST_TRANSITION}
                   className="absolute h-full w-full rounded-full bg-amber-500/30"
                 />
                 {[...Array(6)].map((_, i) => (
                   <m.span
                     key={i}
-                    initial={{ x: 0, y: 0, opacity: 1, scale: 0.8 }}
+                    initial={{ x: 0, y: 0, opacity: 1, scale: 0.95 }}
                     animate={{
                       x: (i - 2.5) * 8,
                       y: -Math.abs(i - 2.5) * 6,
                       opacity: 0,
                       scale: 1.2,
                     }}
+                    transition={BURST_TRANSITION}
                     className="absolute h-1.5 w-1.5 rounded-full bg-amber-500"
                   />
                 ))}
@@ -127,7 +144,8 @@ export function ClapButton({
 
           <m.div
             animate={{ scale: isClapped ? [1, 1.3, 1] : 1 }}
-            transition={{ duration: 0.3 }}
+            initial={false}
+            transition={{ duration: motionDuration.base }}
           >
             <Icons.clap
               className={cn(
