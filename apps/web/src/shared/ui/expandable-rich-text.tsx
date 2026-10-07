@@ -31,7 +31,7 @@ interface ExpandableRichTextProps {
  * hard stop a tween has.
  */
 const EXPAND_TRANSITION: Transition = {
-  duration: 0.28,
+  duration: 0.25,
   ease: motionEase.sleek,
 };
 const COLLAPSE_TRANSITION: Transition = {

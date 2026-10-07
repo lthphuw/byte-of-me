@@ -7,10 +7,6 @@ export default function ExperienceLoading() {
     <ExperienceShell>
       <div className="flex justify-center px-0 py-8 md:px-8 md:py-12">
         <div className="w-full max-w-3xl">
-          <div className="border-b pb-6">
-            <Skeleton className="h-9 w-56 md:h-11" />
-          </div>
-
           <div className="mt-10 space-y-8 md:space-y-12">
             {Array.from({ length: 3 }).map((_, i) => (
               <div

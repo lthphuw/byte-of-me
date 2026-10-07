@@ -41,7 +41,7 @@ const TAB_PILL =
 // on load the active panel is already in the server HTML, and fading it in
 // would flash the content the page was meant to paint immediately.
 const PANEL_ENTER =
-  'motion-safe:data-[state=active]:animate-in motion-safe:data-[state=active]:fade-in-0 motion-safe:data-[state=active]:slide-in-from-bottom-2 motion-safe:data-[state=active]:duration-300 motion-safe:data-[state=active]:ease-sleek';
+  'data-[state=active]:animate-in data-[state=active]:fade-in-0 motion-safe:data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-300 data-[state=active]:ease-sleek';
 
 interface ProjectsContentProps {
   /**
