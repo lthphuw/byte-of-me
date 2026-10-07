@@ -11,7 +11,7 @@ import { getTranslations } from 'next-intl/server';
 import { ExperienceCompanyItem } from './experience-company-item';
 
 import { getAllPublicCompanies } from '@/entities/company';
-import { StaggerItem, StaggerList } from '@/shared/ui';
+import { RevealSection } from '@/shared/ui';
 import { ExperienceShell } from '@/widgets/public/experience-content/ui/experience-shell';
 
 export async function ExperienceContent() {
@@ -48,17 +48,19 @@ export async function ExperienceContent() {
             </h1>
           </header> */}
 
-          <StaggerList as="ol" className="mt-10">
+          {/* Only the first company is on the first screen: it renders visible
+              in the server HTML, the rest fade in once as they scroll into view. */}
+          <ol className="mt-10">
             {companies.map((company, index) => (
-              <StaggerItem as="li" key={company.id}>
+              <RevealSection as="li" immediate={index === 0} key={company.id}>
                 <ExperienceCompanyItem
                   company={company}
                   isLast={index === companies.length - 1}
                   presentLabel={t('present')}
                 />
-              </StaggerItem>
+              </RevealSection>
             ))}
-          </StaggerList>
+          </ol>
         </div>
       </div>
     </ExperienceShell>

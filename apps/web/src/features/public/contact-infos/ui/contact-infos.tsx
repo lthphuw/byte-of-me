@@ -10,10 +10,6 @@ import {
 import { getTranslations } from 'next-intl/server';
 
 import { getAllPublicContacts } from '@/entities/social-link/api/get-all-public-contacts';
-import {
-  ContactItemMotion,
-  ContactListMotion,
-} from '@/features/public/contact-infos/ui/contact-motions';
 import { env } from '@/shared/config/env';
 import { Link } from '@/shared/i18n/navigation';
 
@@ -129,7 +125,7 @@ export async function ContactInfos() {
 
   return (
     <ChannelsSection title={t('title')}>
-      <ContactListMotion>
+      <div className="grid grid-cols-1 gap-4 md:gap-6">
         {contacts.map((item) => {
           const Icon = item.icon;
           // `mailto:` hands off to a mail client; `target="_blank"` there only
@@ -137,40 +133,39 @@ export async function ContactInfos() {
           const isExternal = !item.href.startsWith('mailto:');
 
           return (
-            <ContactItemMotion key={item.href}>
-              <Link
-                href={item.href}
-                target={isExternal ? '_blank' : undefined}
-                rel={isExternal ? 'noopener noreferrer' : undefined}
-                className="group flex items-center gap-4 rounded-lg border border-border px-4 py-3 transition hover:bg-muted/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <div className="flex size-10 items-center justify-center rounded-md border border-border text-muted-foreground transition group-hover:-translate-y-0.5 group-hover:text-foreground group-focus-visible:-translate-y-0.5 group-focus-visible:text-foreground">
-                  <Icon size={18} />
-                </div>
-                <div className="flex min-w-0 flex-col">
-                  <span className="text-sm font-medium">
-                    {item.label}
-                    {isExternal ? (
-                      <span className="sr-only"> {t('opensInNewTab')}</span>
-                    ) : null}
-                  </span>
-                  {item.description ? (
-                    <span className="truncate text-xs text-muted-foreground">
-                      {item.description}
-                    </span>
+            <Link
+              key={item.href}
+              href={item.href}
+              target={isExternal ? '_blank' : undefined}
+              rel={isExternal ? 'noopener noreferrer' : undefined}
+              className="group flex items-center gap-4 rounded-lg border border-border px-4 py-3 transition-[background-color,border-color,transform] duration-200 ease-enter hover:border-primary/50 hover:bg-muted/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-safe:hover:-translate-y-0.5"
+            >
+              <div className="flex size-10 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors duration-200 group-hover:text-foreground group-focus-visible:text-foreground">
+                <Icon size={18} />
+              </div>
+              <div className="flex min-w-0 flex-col">
+                <span className="text-sm font-medium">
+                  {item.label}
+                  {isExternal ? (
+                    <span className="sr-only"> {t('opensInNewTab')}</span>
                   ) : null}
-                </div>
-                {isExternal ? (
-                  <Icons.externalLink
-                    aria-hidden
-                    className="ml-auto size-4 shrink-0 text-muted-foreground opacity-60 transition group-hover:opacity-100 group-focus-visible:opacity-100"
-                  />
+                </span>
+                {item.description ? (
+                  <span className="truncate text-xs text-muted-foreground">
+                    {item.description}
+                  </span>
                 ) : null}
-              </Link>
-            </ContactItemMotion>
+              </div>
+              {isExternal ? (
+                <Icons.externalLink
+                  aria-hidden
+                  className="ml-auto size-4 shrink-0 text-muted-foreground opacity-60 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"
+                />
+              ) : null}
+            </Link>
           );
         })}
-      </ContactListMotion>
+      </div>
     </ChannelsSection>
   );
 }

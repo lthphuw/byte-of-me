@@ -49,7 +49,7 @@ export function ProjectEditorCard({
   );
 
   return (
-    <Card className="group relative flex flex-col justify-between border-border/50 bg-card transition-all hover:border-border hover:shadow-sm">
+    <Card className="group relative flex flex-col justify-between border-border/50 bg-card transition-[border-color,box-shadow] duration-200 hover:border-border hover:shadow-sm">
       <CardHeader className="space-y-3 p-5">
         <div className="flex items-start justify-between gap-4">
           <Badge

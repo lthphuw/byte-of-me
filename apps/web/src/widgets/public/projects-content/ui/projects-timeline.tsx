@@ -9,6 +9,11 @@ import { RevealItem } from '@/shared/ui';
 
 interface ProjectsTimelineProps {
   projects: PublicProject[];
+  /**
+   * Whether the first screen may play its entrance. The owner turns it off once
+   * the first result set has shown, so a filter or page change never replays it.
+   */
+  playEntrance: boolean;
   onTagClick?: (slug: string) => void;
   onTechClick?: (slug: string) => void;
 }
@@ -47,6 +52,7 @@ function groupByStartYear(projects: PublicProject[]): YearGroup[] {
 
 export function ProjectsTimeline({
   projects,
+  playEntrance,
   onTagClick,
   onTechClick,
 }: ProjectsTimelineProps) {
@@ -70,21 +76,27 @@ export function ProjectsTimeline({
           {/* The spine. Items sit on its right edge and place their own marker
               on it, so the line and the markers never drift apart. */}
           <ol className="border-l border-border/60">
-            {items.map((project, index) => (
-              <RevealItem
-                key={project.id}
-                as="li"
-                index={index}
-                immediate={groupIndex === 0 && index < FIRST_SCREEN_COUNT}
-                className="relative pb-6 pl-8 last:pb-0 md:pb-8"
-              >
-                <ProjectTimelineItem
-                  project={project}
-                  onTagClick={onTagClick}
-                  onTechClick={onTechClick}
-                />
-              </RevealItem>
-            ))}
+            {items.map((project, index) => {
+              const isFirstScreen =
+                groupIndex === 0 && index < FIRST_SCREEN_COUNT;
+
+              return (
+                <RevealItem
+                  key={project.id}
+                  as="li"
+                  index={index}
+                  immediate={isFirstScreen}
+                  entrance={isFirstScreen && playEntrance}
+                  className="relative pb-6 pl-8 last:pb-0 md:pb-8"
+                >
+                  <ProjectTimelineItem
+                    project={project}
+                    onTagClick={onTagClick}
+                    onTechClick={onTechClick}
+                  />
+                </RevealItem>
+              );
+            })}
           </ol>
         </section>
       ))}

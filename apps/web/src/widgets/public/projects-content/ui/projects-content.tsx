@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import {
   Pagination,
   Tabs,
@@ -108,6 +108,15 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
   // already-rendered list behind skeletons whenever a refetch ran.
   const showSkeletons = isLoading;
 
+  // The timeline entrance belongs to the first result set of this mount. Held
+  // here, not in the timeline: that unmounts on an empty result and would
+  // replay it when the list comes back.
+  const hasResults = projects.length > 0;
+  const [hasShownResults, setHasShownResults] = useState(false);
+  useEffect(() => {
+    if (hasResults) setHasShownResults(true);
+  }, [hasResults]);
+
   const toggleTag = (slug: string) => {
     const nextTags = filters.tagSlugs.includes(slug)
       ? filters.tagSlugs.filter((s) => s !== slug)
@@ -210,6 +219,7 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
             >
               <ProjectsTimeline
                 projects={projects}
+                playEntrance={!hasShownResults}
                 onTagClick={toggleTag}
                 onTechClick={toggleTech}
               />

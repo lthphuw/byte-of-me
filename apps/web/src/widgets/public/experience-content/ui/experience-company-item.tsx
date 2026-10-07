@@ -52,7 +52,7 @@ export function ExperienceCompanyItem({
   const isCurrent = !company.endDate;
 
   return (
-    // The wrapping <li> is provided by the StaggerItem in ExperienceContent.
+    // The wrapping <li> is provided by the RevealSection in ExperienceContent.
     <div className="relative grid grid-cols-[3rem_1fr] gap-x-4 md:grid-cols-[3.5rem_1fr] md:gap-x-6">
       {/* Marker column: the connector rail + the company logo as its node */}
       <div className="relative flex justify-center">

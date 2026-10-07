@@ -1,6 +1,11 @@
 'use client';
 
-import { Children, type ReactNode, useSyncExternalStore } from 'react';
+import {
+  Children,
+  type ReactNode,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import {
   entranceUp,
   fadeUp,
@@ -157,7 +162,7 @@ interface RevealItemProps {
    * `false` renders the item plainly, with no entrance. Pass it for anything
    * below the first screen — its entrance would finish before it is seen — and
    * once a grid has played its first result set, so a filter or page change
-   * does not replay it.
+   * does not replay it. Read once, at mount (see `RevealItem`).
    */
   entrance?: boolean;
 }
@@ -179,8 +184,11 @@ export function RevealItem({
   const delay = Math.min(index, MAX_STAGGER_STEPS) * motionStagger.step;
   const Comp = MOTION_TAGS[as];
   const skipEntrance = useSkipEntrance(immediate);
+  // Frozen at mount: dropping `animate` from a live item makes framer-motion
+  // run its removed-value fallback, which interrupts a running entrance.
+  const [play] = useState(entrance);
 
-  if (!entrance) {
+  if (!play) {
     return <Comp className={className}>{children}</Comp>;
   }
 
