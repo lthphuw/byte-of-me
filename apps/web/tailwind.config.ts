@@ -7,6 +7,11 @@ import tailwindcssAnimate from 'tailwindcss-animate';
 export default {
   content: ['./src/**/*.{ts,tsx}', '../../packages/ui/src/**/*.{ts,tsx}'],
   darkMode: ['class'],
+  // Wraps every `hover:` / `group-hover:` in `@media (hover: hover)`, so a tap on
+  // a touch screen does not leave the hover state stuck on.
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   theme: {
     container: {
       center: true,
@@ -66,12 +71,17 @@ export default {
           '950': 'hsl(var(--brand-950))',
         },
       },
-      // `motionEase.sleek` (packages/ui/src/motion/tokens.ts) for the CSS-only
-      // motion; named tokens keep `animate-in` + `ease-*` unambiguous.
+      // `motionEase` (packages/ui/src/motion/tokens.ts) for the CSS-only motion;
+      // named tokens keep `animate-in` + `ease-*` unambiguous, and `enter` /
+      // `exit` do not shadow Tailwind's own `ease-out` / `ease-in`.
       transitionTimingFunction: {
         sleek: 'cubic-bezier(0.21, 0.47, 0.32, 0.98)',
+        enter: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        exit: 'cubic-bezier(0.3, 0, 1, 1)',
       },
+      // `120` is `motionDuration.press`, `250` the expand/collapse tween.
       transitionDuration: {
+        '120': '120ms',
         '250': '250ms',
       },
       borderRadius: {

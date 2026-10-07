@@ -49,4 +49,16 @@ describe('RevealItem', () => {
       'opacity:0'
     );
   });
+
+  // Below the fold an entrance finishes before anyone scrolls there, so the
+  // item must be plainly visible — in the HTML and after a client mount.
+  it('is never hidden when its entrance is off', () => {
+    expect(
+      renderToString(<RevealItem entrance={false}>Card</RevealItem>)
+    ).not.toContain('opacity:0');
+
+    const { container } = render(<RevealItem entrance={false}>Card</RevealItem>);
+
+    expect((container.firstElementChild as HTMLElement).style.opacity).toBe('');
+  });
 });

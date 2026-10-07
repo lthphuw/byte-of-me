@@ -1,7 +1,8 @@
 'use client';
 
-import { type ReactNode, useSyncExternalStore } from 'react';
+import { Children, type ReactNode, useSyncExternalStore } from 'react';
 import {
+  entranceUp,
   fadeUp,
   motionDuration,
   motionEase,
@@ -57,8 +58,9 @@ interface RevealSectionProps {
 }
 
 /**
- * Scroll-reveal fade-up for a page section. Replaced the previously
- * duplicated per-widget `*SectionMotion` components.
+ * Scroll-reveal fade-up for a page section. `immediate` marks the first block of
+ * a page and gives it the slightly longer `entranceUp`. Never wrap a
+ * `StaggerList` in one: a block gets one motion tier.
  */
 export function RevealSection({
   children,
@@ -76,7 +78,7 @@ export function RevealSection({
       id={id}
       className={className}
       custom={delay}
-      variants={fadeUp}
+      variants={immediate ? entranceUp : fadeUp}
       initial={skipEntrance ? false : 'hidden'}
       whileInView="visible"
       viewport={{ ...motionViewport, once }}
@@ -90,28 +92,26 @@ interface StaggerListProps {
   children: ReactNode;
   className?: string;
   as?: MotionTag;
-  /** Delay between each child, in seconds. */
-  stagger?: number;
   /** Delay before the first child animates, in seconds. */
   delayChildren?: number;
 }
 
 /**
- * Scroll-reveal container that staggers its children. Direct children should be
- * `StaggerItem`s (or any motion element using the same variant keys).
+ * Scroll-reveal container that staggers its children; the step shrinks with the
+ * child count so the whole list lands inside the stagger budget. Direct children
+ * should be `StaggerItem`s (or any motion element using the same variant keys).
  */
 export function StaggerList({
   children,
   className,
   as = 'div',
-  stagger,
   delayChildren,
 }: StaggerListProps) {
   const Comp = MOTION_TAGS[as];
   return (
     <Comp
       className={className}
-      variants={staggerContainer(stagger, delayChildren)}
+      variants={staggerContainer(Children.count(children), delayChildren)}
       initial="hidden"
       whileInView="visible"
       viewport={motionViewport}
@@ -141,7 +141,9 @@ export function StaggerItem({
   );
 }
 
-const MAX_STAGGER_STEPS = 8;
+// The most steps a mount-time stagger counts: 6 x motionStagger.step is the
+// whole 0.3s budget.
+const MAX_STAGGER_STEPS = 6;
 
 interface RevealItemProps {
   children: ReactNode;
@@ -151,13 +153,20 @@ interface RevealItemProps {
   as?: MotionTag;
   /** Above the fold: skip the entrance in the server HTML. See `RevealSection`. */
   immediate?: boolean;
+  /**
+   * `false` renders the item plainly, with no entrance. Pass it for anything
+   * below the first screen — its entrance would finish before it is seen — and
+   * once a grid has played its first result set, so a filter or page change
+   * does not replay it.
+   */
+  entrance?: boolean;
 }
 
 /**
- * Mount-time fade-up for a single item, staggered by `index`. Unlike
- * `StaggerItem` this does not need a container and re-reveals whenever it
- * remounts — suited to client-fetched, paginated grids where each result set
- * should animate in. The stagger step is capped so late items never lag.
+ * Mount-time fade-up for a single item on the first screen, staggered by
+ * `index`. Unlike `StaggerItem` it needs no container. It plays on every
+ * remount unless the caller turns `entrance` off, and the stagger is capped so
+ * late items never lag.
  */
 export function RevealItem({
   children,
@@ -165,18 +174,24 @@ export function RevealItem({
   className,
   as = 'div',
   immediate = false,
+  entrance = true,
 }: RevealItemProps) {
-  const delay = Math.min(index, MAX_STAGGER_STEPS) * motionStagger.base;
+  const delay = Math.min(index, MAX_STAGGER_STEPS) * motionStagger.step;
   const Comp = MOTION_TAGS[as];
   const skipEntrance = useSkipEntrance(immediate);
+
+  if (!entrance) {
+    return <Comp className={className}>{children}</Comp>;
+  }
+
   return (
     <Comp
       className={className}
-      initial={skipEntrance ? false : { opacity: 0, y: 16 }}
+      initial={skipEntrance ? false : { opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
         duration: motionDuration.base,
-        ease: motionEase.sleek,
+        ease: motionEase.out,
         delay,
       }}
     >

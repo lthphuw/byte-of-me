@@ -1,4 +1,5 @@
 // App-specific UI components. Generic, reusable components live in @byte-of-me/ui.
+export * from './content-fade';
 export * from './dashboard-page-loading';
 export * from './expandable-rich-text';
 export * from './filter-search-input';
