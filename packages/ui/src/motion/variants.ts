@@ -1,4 +1,4 @@
-import { stagger, type Variants } from 'framer-motion';
+import type { Variants } from 'framer-motion';
 
 import { motionDuration, motionEase, motionStagger } from './tokens';
 
@@ -58,23 +58,10 @@ export const fadeIn: Variants = {
 };
 
 /**
- * Container that staggers its children; `count` sizes the step so the whole
- * list stays inside the stagger budget. Children use `staggerItem` (or any
- * variant with matching `hidden`/`visible` keys).
+ * One item of a staggered group. The parent carries
+ * `delayChildren: stagger(staggerStep(count))`; the item only needs matching
+ * `hidden` / `visible` keys.
  */
-export const staggerContainer = (
-  count: number,
-  delayChildren = 0
-): Variants => ({
-  hidden: {},
-  visible: {
-    transition: {
-      delayChildren: stagger(staggerStep(count), { startDelay: delayChildren }),
-    },
-  },
-});
-
-/** Item paired with `staggerContainer`. */
 export const staggerItem: Variants = {
   hidden: { opacity: 0, y: 10 },
   visible: {

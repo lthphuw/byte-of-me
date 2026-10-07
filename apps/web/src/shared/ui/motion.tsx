@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  Children,
-  type ReactNode,
-  useState,
-  useSyncExternalStore,
-} from 'react';
+import { type ReactNode, useState, useSyncExternalStore } from 'react';
 import {
   entranceUp,
   fadeUp,
@@ -13,8 +8,6 @@ import {
   motionEase,
   motionStagger,
   motionViewport,
-  staggerContainer,
-  staggerItem,
 } from '@byte-of-me/ui';
 import { m } from 'framer-motion';
 
@@ -64,8 +57,8 @@ interface RevealSectionProps {
 
 /**
  * Scroll-reveal fade-up for a page section. `immediate` marks the first block of
- * a page and gives it the slightly longer `entranceUp`. Never wrap a
- * `StaggerList` in one: a block gets one motion tier.
+ * a page and gives it the slightly longer `entranceUp`. A block gets one motion
+ * tier: do not nest another animated wrapper inside one.
  */
 export function RevealSection({
   children,
@@ -88,59 +81,6 @@ export function RevealSection({
       whileInView="visible"
       viewport={{ ...motionViewport, once }}
     >
-      {children}
-    </Comp>
-  );
-}
-
-interface StaggerListProps {
-  children: ReactNode;
-  className?: string;
-  as?: MotionTag;
-  /** Delay before the first child animates, in seconds. */
-  delayChildren?: number;
-}
-
-/**
- * Scroll-reveal container that staggers its children; the step shrinks with the
- * child count so the whole list lands inside the stagger budget. Direct children
- * should be `StaggerItem`s (or any motion element using the same variant keys).
- */
-export function StaggerList({
-  children,
-  className,
-  as = 'div',
-  delayChildren,
-}: StaggerListProps) {
-  const Comp = MOTION_TAGS[as];
-  return (
-    <Comp
-      className={className}
-      variants={staggerContainer(Children.count(children), delayChildren)}
-      initial="hidden"
-      whileInView="visible"
-      viewport={motionViewport}
-    >
-      {children}
-    </Comp>
-  );
-}
-
-interface StaggerItemProps {
-  children: ReactNode;
-  className?: string;
-  as?: MotionTag;
-}
-
-/** A single item within a `StaggerList`. */
-export function StaggerItem({
-  children,
-  className,
-  as = 'div',
-}: StaggerItemProps) {
-  const Comp = MOTION_TAGS[as];
-  return (
-    <Comp className={className} variants={staggerItem}>
       {children}
     </Comp>
   );
@@ -169,9 +109,8 @@ interface RevealItemProps {
 
 /**
  * Mount-time fade-up for a single item on the first screen, staggered by
- * `index`. Unlike `StaggerItem` it needs no container. It plays on every
- * remount unless the caller turns `entrance` off, and the stagger is capped so
- * late items never lag.
+ * `index`; it needs no container. It plays on every remount unless the caller
+ * turns `entrance` off, and the stagger is capped so late items never lag.
  */
 export function RevealItem({
   children,
