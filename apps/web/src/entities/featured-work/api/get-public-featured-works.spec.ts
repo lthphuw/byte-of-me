@@ -56,7 +56,7 @@ describe('toRows', () => {
     const rows = toRows([row('a')], 'vi');
 
     expect(rows).toEqual([
-      { id: 'a', title: 'Work a', description: 'About a', url: null },
+      { id: 'a', title: 'Work a', description: 'About a', url: null, host: null },
     ]);
   });
 
@@ -89,6 +89,27 @@ describe('toRows', () => {
     );
 
     expect(rows.map((r) => r.id)).toEqual(['ok']);
+  });
+});
+
+describe('toRows url handling', () => {
+  it.each([
+    ['a javascript: url', 'javascript:alert(1)'],
+    ['a data: url', 'data:text/html,x'],
+    ['text that is not a url', 'not a url'],
+  ])('keeps the work but drops %s and its host', (_label, url) => {
+    const rows = toRows([row('a', url)], 'en');
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.url).toBeNull();
+    expect(rows[0]?.host).toBeNull();
+  });
+
+  it('keeps an https url and strips a leading www from its host', () => {
+    const rows = toRows([row('a', 'https://www.example.com/x')], 'en');
+
+    expect(rows[0]?.url).toBe('https://www.example.com/x');
+    expect(rows[0]?.host).toBe('example.com');
   });
 });
 

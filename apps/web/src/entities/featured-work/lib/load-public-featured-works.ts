@@ -18,8 +18,27 @@ const MAX_WORKS = 6;
 
 type FeaturedWorkRow = Pick<
   PublicFeaturedWork,
-  'id' | 'title' | 'description' | 'url'
+  'id' | 'title' | 'description' | 'url' | 'host'
 >;
+
+/**
+ * The database is not trusted to hold a safe url: anything that is not http(s)
+ * (`javascript:`, `data:`, garbage) becomes a non-link row with no host.
+ */
+function safeLink(
+  raw: string | null
+): { url: string; host: string | null } | { url: null; host: null } {
+  if (!raw) return { url: null, host: null };
+  try {
+    const parsed = new URL(raw);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return { url: null, host: null };
+    }
+    return { url: raw, host: parsed.hostname.replace(/^www\./, '') || null };
+  } catch {
+    return { url: null, host: null };
+  }
+}
 
 /** A work with no usable translation is skipped: one bad row must not blank the section. */
 export function toRows(
@@ -42,7 +61,7 @@ export function toRows(
         id: work.id,
         title: translation.title,
         description: translation.description,
-        url: work.url,
+        ...safeLink(work.url),
       },
     ];
   });
@@ -81,14 +100,6 @@ async function getPublicFeaturedWorkRows(): Promise<
   });
 }
 
-function hostOf(url: string): string | null {
-  try {
-    return new URL(url).hostname.replace(/^www\./, '');
-  } catch {
-    return null;
-  }
-}
-
 /**
  * Rows from the database, then the GitHub facts for the ones that link a pull
  * request. The GitHub half never fails the section: it degrades to no `github`.
@@ -110,7 +121,6 @@ export async function loadPublicFeaturedWorks(
     data: {
       works: rows.map((row) => ({
         ...row,
-        host: row.url ? hostOf(row.url) : null,
         github: row.url ? (github[row.url] ?? null) : null,
       })),
     },
