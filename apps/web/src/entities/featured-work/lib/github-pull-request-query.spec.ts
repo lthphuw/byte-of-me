@@ -47,4 +47,12 @@ describe('mapPullRequestResponse', () => {
     });
     expect(mixed).toEqual([null, { repo: 'a/b', stars: 3, merged: true }]);
   });
+
+  it('returns an empty list for no refs', () => {
+    expect(mapPullRequestResponse([], {})).toEqual([]);
+  });
+
+  it('maps a missing alias to null without throwing', () => {
+    expect(mapPullRequestResponse([refs[0]], {})).toEqual([null]);
+  });
 });

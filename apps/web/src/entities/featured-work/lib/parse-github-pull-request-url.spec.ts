@@ -20,6 +20,25 @@ describe('parseGithubPullRequestUrl', () => {
     }
   });
 
+  it('accepts the largest GraphQL Int and normalises leading zeros', () => {
+    expect(parseGithubPullRequestUrl('https://github.com/a/b/pull/2147483647')).toEqual({
+      owner: 'a', repo: 'b', number: 2147483647,
+    });
+    expect(parseGithubPullRequestUrl('https://github.com/a/b/pull/007')).toEqual({
+      owner: 'a', repo: 'b', number: 7,
+    });
+  });
+
+  it('rejects PR numbers GraphQL Int cannot carry', () => {
+    for (const url of [
+      'https://github.com/a/b/pull/99999999999999999999',
+      'https://github.com/a/b/pull/2147483648',
+      'https://github.com/a/b/pull/0',
+    ]) {
+      expect(parseGithubPullRequestUrl(url)).toBeNull();
+    }
+  });
+
   it('rejects anything that is not a PR on github.com', () => {
     for (const url of [
       'https://github.com/a/b/issues/7',

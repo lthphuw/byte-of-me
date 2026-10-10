@@ -1,12 +1,15 @@
 import type { FeaturedWorkGithub, GithubPullRequestRef } from '@/entities/featured-work/model/types';
 
-type Node = {
+export type RepositoryNode = {
   nameWithOwner: string;
   stargazerCount: number;
   pullRequest: { merged: boolean } | null;
 } | null;
 
-/** Variables, not string interpolation: owner/repo come from a user-authored URL. */
+/**
+ * Variables, not string interpolation: owner/repo come from a user-authored URL.
+ * Callers must not send a request for an empty `refs`.
+ */
 export function buildPullRequestQuery(refs: GithubPullRequestRef[]) {
   const variables: Record<string, string | number> = {};
   const params: string[] = [];
@@ -22,7 +25,7 @@ export function buildPullRequestQuery(refs: GithubPullRequestRef[]) {
 
 export function mapPullRequestResponse(
   refs: GithubPullRequestRef[],
-  data: Record<string, Node>
+  data: Record<string, RepositoryNode>
 ): Array<FeaturedWorkGithub | null> {
   return refs.map((_, i) => {
     const node = data[`pr${i}`];
