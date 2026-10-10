@@ -54,6 +54,9 @@ export interface PublicFeaturedWorkMedia {
   mimeType: string;
   /** Language-neutral tag such as "FP16"; null falls back to the work title in the UI. */
   label: string | null;
+  /** Pixel size of the stored file; null when it was never read, so the box waits for the file. */
+  width: number | null;
+  height: number | null;
 }
 
 /** What the homepage renders: translated, with `host` and the GitHub facts resolved. */

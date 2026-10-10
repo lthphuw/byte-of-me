@@ -22,6 +22,7 @@ const fp16: FeaturedWorkDemoItem = {
   id: 'm1',
   url: 'https://cdn.example.com/fp16.mp4',
   isVideo: true,
+  knownRatio: null,
   caption: 'FP16',
   name: 'FP16',
   playLabel: 'Play FP16',
@@ -31,6 +32,7 @@ const int8: FeaturedWorkDemoItem = {
   id: 'm2',
   url: 'https://cdn.example.com/int8.gif',
   isVideo: false,
+  knownRatio: null,
   caption: 'INT8',
   name: 'INT8',
   playLabel: 'Play INT8',
@@ -401,6 +403,13 @@ describe('FeaturedWorkDemo frame', () => {
     });
 
     expect(ratioOf(container)).toBeNull();
+  });
+
+  it('takes the stored size before the file has drawn, so the box never waits for it', () => {
+    const sized = { ...fp16, knownRatio: 1920 / 670 };
+    const { container } = render(<FeaturedWorkDemo media={[sized]} />);
+
+    expect(ratioOf(container)).toBeCloseTo(1920 / 670, 3);
   });
 
   it('gives an image its own ratio once it has loaded', () => {

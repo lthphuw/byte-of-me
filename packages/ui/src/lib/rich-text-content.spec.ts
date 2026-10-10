@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import {
+  collectImageSources,
   fromEditorContent,
   isRichTextBlank,
   parseRichTextContent,
@@ -368,5 +369,33 @@ describe('isRichTextBlank', () => {
       expect(() => isRichTextBlank(shape)).not.toThrow();
     }
     expect(isRichTextBlank('{"type":"doc","content":"abc"}')).toBe(true);
+  });
+});
+
+describe('collectImageSources', () => {
+  it('lists each image source once, in reading order, including images inside groups', () => {
+    const doc = {
+      type: 'doc',
+      content: [
+        { type: 'image', attrs: { src: 'https://cdn.example/a.png' } },
+        {
+          type: 'imageGroup',
+          content: [
+            { type: 'image', attrs: { src: 'https://cdn.example/b.png' } },
+            { type: 'image', attrs: { src: 'https://cdn.example/a.png' } },
+          ],
+        },
+        { type: 'paragraph', content: [{ type: 'text', text: 'no image' }] },
+      ],
+    };
+
+    expect(collectImageSources(doc)).toEqual([
+      'https://cdn.example/a.png',
+      'https://cdn.example/b.png',
+    ]);
+  });
+
+  it('gives nothing for no document', () => {
+    expect(collectImageSources(null)).toEqual([]);
   });
 });

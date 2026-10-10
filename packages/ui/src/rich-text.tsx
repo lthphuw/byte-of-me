@@ -8,19 +8,27 @@
 // `renderRichTextHtml` and print it with `RichTextHtml`.
 import * as React from 'react';
 
-import { RichTextHtml, type RichTextHtmlProps } from './rich-text-html';
 // Direct path into a directive-free module — NOT `./rich-text-editor`, whose
 // entry is a 'use client' file. Importing the schema from there registers the
 // whole editor as a client reference and ships it (~380 KB) with every page
 // that renders rich text.
+import type { ImageSizes } from './lib/image-ratios';
+import { RichTextHtml, type RichTextHtmlProps } from './rich-text-html';
 import { renderRichTextHtml } from './rich-text-render';
 
 export type RichTextProps = Omit<RichTextHtmlProps, 'html'> & {
   content?: string | unknown;
+  /** The stored size of each image the content uses, by source URL. */
+  imageSizes?: ImageSizes;
 };
 
-export function RichText({ content, ...rest }: RichTextProps) {
+export function RichText({ content, imageSizes, ...rest }: RichTextProps) {
   if (!content) return null;
 
-  return <RichTextHtml html={renderRichTextHtml(content)} {...rest} />;
+  return (
+    <RichTextHtml
+      html={renderRichTextHtml(content, { imageSizes })}
+      {...rest}
+    />
+  );
 }

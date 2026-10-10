@@ -34,7 +34,13 @@ type FeaturedWorkRow = Pick<
 
 interface StoredDemoItem {
   label: string | null;
-  media: { id: string; url: string; mimeType: string };
+  media: {
+    id: string;
+    url: string;
+    mimeType: string;
+    width: number | null;
+    height: number | null;
+  };
 }
 
 /**
@@ -52,7 +58,14 @@ function toPublicMedia(items: StoredDemoItem[]): PublicFeaturedWorkMedia[] {
         );
       if (!isPlayable || safeLink(media.url).url === null) return [];
       return [
-        { id: media.id, url: media.url, mimeType: media.mimeType, label },
+        {
+          id: media.id,
+          url: media.url,
+          mimeType: media.mimeType,
+          label,
+          width: media.width,
+          height: media.height,
+        },
       ];
     })
     .slice(0, FEATURED_WORK_MEDIA_MAX);
@@ -122,7 +135,15 @@ async function getPublicFeaturedWorkRows(): Promise<
               orderBy: { sortOrder: 'asc' },
               select: {
                 label: true,
-                media: { select: { id: true, url: true, mimeType: true } },
+                media: {
+                  select: {
+                    id: true,
+                    url: true,
+                    mimeType: true,
+                    width: true,
+                    height: true,
+                  },
+                },
               },
             },
             translations: {
@@ -145,7 +166,8 @@ async function getPublicFeaturedWorkRows(): Promise<
         // Versioned: rows cached before `media` existed would otherwise serve
         // without it. No `revalidate` is set, so they never expire by time. v4: rows
         // cached before the first clip was attached, which a tag revalidation served stale.
-        cacheKey: ['featured-works-rows-v4'],
+        // v5: the demo items carry each file's pixel size, which v4 rows lack.
+        cacheKey: ['featured-works-rows-v5'],
         cacheTags: [CACHE_TAGS.FEATURED_WORK],
       }
     );

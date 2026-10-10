@@ -2,6 +2,7 @@
 
 import { prisma } from '@byte-of-me/db';
 
+import { readBodyImageSizes } from '@/entities/blog/lib/read-image-sizes';
 import type { PublicBlog } from '@/entities/blog/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { CACHE_TAGS } from '@/shared/lib/constants';
@@ -47,6 +48,7 @@ export async function getPublicBlogBySlug(
         });
 
         const translated = getTranslatedContent(blog.translations, locale);
+        const imageSizes = await readBodyImageSizes(translated?.content);
         return {
           id: blog.id,
           createdAt: blog.createdAt,
@@ -60,6 +62,7 @@ export async function getPublicBlogBySlug(
           title: translated?.title || '',
           description: translated?.description || '',
           content: translated?.content || '',
+          imageSizes,
 
           projectId: blog.projectId,
           coverImage: blog.coverImage,
@@ -87,7 +90,8 @@ export async function getPublicBlogBySlug(
       },
       {
         cache: true,
-        cacheKey: [CACHE_TAGS.BLOG, slug],
+        // `image-sizes`: entries cached before the body carried its image sizes lack them.
+        cacheKey: [CACHE_TAGS.BLOG, slug, 'image-sizes'],
         cacheTags: [CACHE_TAGS.BLOG, slug],
       }
     );

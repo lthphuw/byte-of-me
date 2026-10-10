@@ -181,12 +181,16 @@ describe('FeaturedWorkRow with a demo', () => {
       url: 'https://cdn.example.com/fp16.mp4',
       mimeType: 'video/mp4',
       label: 'FP16',
+      width: 1920,
+      height: 670,
     },
     {
       id: 'm2',
       url: 'https://cdn.example.com/int8.gif',
       mimeType: 'image/gif',
       label: null,
+      width: 1152,
+      height: 1152,
     },
   ];
 

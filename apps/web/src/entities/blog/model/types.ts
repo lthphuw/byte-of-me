@@ -106,6 +106,8 @@ export interface PublicBlog {
   title: string;
   description?: Maybe<string>;
   content: string;
+  /** Stored pixel size of each image the body uses, by source URL; empty when none is known. */
+  imageSizes?: Record<string, { width: number; height: number }>;
 
   readingTime?: Maybe<number>;
 

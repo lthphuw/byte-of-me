@@ -6,6 +6,7 @@
 import type { JSONContent } from '@tiptap/core';
 import { generateHTML } from '@tiptap/html';
 
+import { type ImageSizes, withImageRatios } from './lib/image-ratios';
 import { escapeHtml, sanitizeHtml } from './lib/sanitize';
 import { markNumericTableColumns } from './rich-text-editor/tiptap/extensions/numeric-columns';
 import { applyCitationNumbering } from './rich-text-editor/tiptap/extensions/references/numbering';
@@ -47,7 +48,10 @@ export function renderRichTextDocumentHtml(content: unknown): string | null {
  * text) into sanitized HTML ready for `RichTextHtml` /
  * `dangerouslySetInnerHTML`. Returns an empty string for empty input.
  */
-export function renderRichTextHtml(content?: string | unknown): string {
+export function renderRichTextHtml(
+  content?: string | unknown,
+  options?: { imageSizes?: ImageSizes }
+): string {
   if (!content) return '';
 
   // Not Tiptap JSON — treat as untrusted plain text and escape it. Never
@@ -56,5 +60,6 @@ export function renderRichTextHtml(content?: string | unknown): string {
     generateDocumentHtml(content) ??
     escapeHtml(typeof content === 'string' ? content : '');
 
-  return sanitizeHtml(html);
+  // The stored sizes go in after sanitizing: they are the only style the page gets.
+  return withImageRatios(sanitizeHtml(html), options?.imageSizes);
 }

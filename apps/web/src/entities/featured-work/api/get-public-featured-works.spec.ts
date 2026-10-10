@@ -365,7 +365,7 @@ describe('demo media', () => {
     label: string | null = null
   ) => ({
     label,
-    media: { id, url, mimeType },
+    media: { id, url, mimeType, width: 1920, height: 670 },
   });
   const withMedia = (media: ReturnType<typeof item>[]) => [
     { ...row('a'), media },
@@ -386,12 +386,16 @@ describe('demo media', () => {
         url: 'https://cdn.example/a.mp4',
         mimeType: 'video/mp4',
         label: 'FP16',
+        width: 1920,
+        height: 670,
       },
       {
         id: 'm2',
         url: 'https://cdn.example/b.webm',
         mimeType: 'video/webm',
         label: null,
+        width: 1920,
+        height: 670,
       },
     ]);
   });
@@ -440,6 +444,8 @@ describe('demo media', () => {
       id: true,
       url: true,
       mimeType: true,
+      width: true,
+      height: true,
     });
   });
 });

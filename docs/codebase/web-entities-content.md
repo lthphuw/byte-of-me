@@ -80,7 +80,8 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 - Dashboard lists are prefetched with `*Keys.adminPage` into `HydrationBoundary`: `apps/web/src/app/[locale]/(protected)/dashboard/{blogs,companies,educations,featured-works}/page.tsx`.
 - Save: `apps/web/src/shared/hooks/use-crud-manager.ts` invalidates the list key (`:122`) and removes the detail key (`:137-138`) in `onSuccess`.
 - Homepage featured works: `apps/web/src/features/public/homepage-featured-works/ui/homepage-featured-works.tsx:8` → `get-public-featured-works.ts` → `lib/load-public-featured-works.ts` (DB rows) → `lib/get-featured-work-github.ts` (GitHub facts, 1 h; failure returns `{}`).
-- Homepage media: each clip's file is requested only once it is within 200 px of the screen (`apps/web/src/entities/featured-work/ui/featured-work-demo.tsx`, `NEAR`), then kept. A clip and an image sit under a pulsing cover until their file draws, and the cover fades out in place (`MediaCover`, `shared/ui/media-cover.tsx`).
+- Blog body images: `getPublicBlogBySlug` reads each body image's stored size from its media row (`apps/web/src/entities/blog/lib/read-image-sizes.ts`), cached with the post under the `image-sizes` key.
+- Homepage media: each clip's box takes the stored size (`media.width`/`height`, from `load-public-featured-works.ts`) before the file is fetched, and the file's own metadata only corrects it. Each clip's file is requested only once it is within 200 px of the screen (`apps/web/src/entities/featured-work/ui/featured-work-demo.tsx`, `NEAR`), then kept. A clip and an image sit under a pulsing cover until their file draws, and the cover fades out in place (`MediaCover`, `shared/ui/media-cover.tsx`).
 - Experience and education: `apps/web/src/widgets/public/experience-content/ui/experience-content.tsx:19` (`getAllPublicCompanies`); `apps/web/src/features/public/homepage-education/ui/homepage-education.tsx:12` (`getAllPublicEducations`).
 
 ## Recipes

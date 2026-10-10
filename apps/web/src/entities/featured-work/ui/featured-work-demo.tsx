@@ -13,6 +13,8 @@ export interface FeaturedWorkDemoItem {
   id: string;
   url: string;
   isVideo: boolean;
+  /** Width over height of the stored file, known before it draws; null until it loads. */
+  knownRatio: number | null;
   /** The visible figcaption (the stored label); null draws none. */
   caption: string | null;
   /** The image's alt: the label, else the work title. */
@@ -89,10 +91,12 @@ function DemoVideo({
   src,
   playLabel,
   fullscreenLabel,
+  knownRatio,
 }: {
   src: string;
   playLabel: string;
   fullscreenLabel: string;
+  knownRatio: number | null;
 }) {
   const reducedMotion = useMediaQuery(REDUCED_MOTION);
   const { ref: frameRef, entry } = useIntersection<HTMLButtonElement>(VISIBLE);
@@ -108,7 +112,11 @@ function DemoVideo({
   const [userPaused, setUserPaused] = useState(false);
   const [failed, setFailed] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
-  const [ratio, setRatio] = useState<number>();
+  // The stored size gives the box its shape before the clip is fetched; the file's own
+  // metadata only corrects it if the stored size was wrong or missing.
+  const [ratio, setRatio] = useState<number | undefined>(
+    knownRatio ?? undefined
+  );
   // Set the moment full screen is asked for: the page leaves the viewport before the
   // `fullscreenchange` event arrives, and the visibility effect would pause the clip in between.
   const fullscreenAsked = useRef(false);
@@ -252,8 +260,18 @@ function DemoVideo({
   );
 }
 
-function DemoImage({ src, alt }: { src: string; alt: string }) {
-  const [ratio, setRatio] = useState<number>();
+function DemoImage({
+  src,
+  alt,
+  knownRatio,
+}: {
+  src: string;
+  alt: string;
+  knownRatio: number | null;
+}) {
+  const [ratio, setRatio] = useState<number | undefined>(
+    knownRatio ?? undefined
+  );
   const { ref: coverRef, drawn } = useMediaDrawn<HTMLSpanElement>();
   const imageRef = useRef<HTMLImageElement>(null);
 
@@ -295,9 +313,10 @@ function DemoFigure({ item }: { item: FeaturedWorkDemoItem }) {
       src={item.url}
       playLabel={item.playLabel}
       fullscreenLabel={item.fullscreenLabel}
+      knownRatio={item.knownRatio}
     />
   ) : (
-    <DemoImage src={item.url} alt={item.name} />
+    <DemoImage src={item.url} alt={item.name} knownRatio={item.knownRatio} />
   );
 
   return (

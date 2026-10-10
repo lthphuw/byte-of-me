@@ -3,6 +3,7 @@ import { generateHTML } from '@tiptap/html/server';
 import { describe, expect, it } from 'bun:test';
 
 import { renderExtensions } from '../rich-text-editor/tiptap/render-extensions';
+import { renderRichTextHtml } from '../rich-text-render';
 
 import { sanitizeHtml } from './sanitize';
 
@@ -377,5 +378,39 @@ describe('render pipeline: mermaid size', () => {
     );
 
     expect(unsized).not.toContain('data-mermaid-size');
+  });
+});
+
+describe('render pipeline: body image sizes', () => {
+  it('gives a body image the aspect ratio of its stored size', () => {
+    const html = renderRichTextHtml(
+      {
+        type: 'doc',
+        content: [
+          {
+            type: 'image',
+            attrs: { src: 'https://cdn.example/plot.png', alt: 'Plot' },
+          },
+        ],
+      },
+      {
+        imageSizes: {
+          'https://cdn.example/plot.png': { width: 1920, height: 670 },
+        },
+      }
+    );
+
+    expect(html).toContain('style="aspect-ratio: 1920 / 670"');
+  });
+
+  it('keeps the stored size out of a document that did not ask for sizes', () => {
+    const html = renderRichTextHtml({
+      type: 'doc',
+      content: [
+        { type: 'image', attrs: { src: 'https://cdn.example/plot.png' } },
+      ],
+    });
+
+    expect(html).not.toContain('aspect-ratio');
   });
 });

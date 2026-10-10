@@ -13,7 +13,7 @@ export function BlogContent({ blog }: { blog: PublicBlog }) {
       {/* RichText stays server-rendered; MermaidBlocks only swaps
           `language-mermaid` code blocks for drawn SVGs after hydration. */}
       <MermaidBlocks>
-        <RichText content={blog.content} />
+        <RichText content={blog.content} imageSizes={blog.imageSizes} />
       </MermaidBlocks>
     </div>
   );

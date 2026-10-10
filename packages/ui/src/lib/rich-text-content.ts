@@ -132,3 +132,16 @@ function hasSubstance(node: unknown): boolean {
   if (typeof type === 'string' && !CONTAINER_NODE_TYPES.has(type)) return true;
   return Array.isArray(content) && content.some(hasSubstance);
 }
+
+/** Every image source in a stored document, once each, in reading order. */
+export function collectImageSources(doc: JSONContent | null): string[] {
+  const sources = new Set<string>();
+  const visit = (node: JSONContent) => {
+    if (node.type === 'image' && typeof node.attrs?.src === 'string') {
+      sources.add(node.attrs.src);
+    }
+    for (const child of node.content ?? []) visit(child);
+  };
+  if (doc) visit(doc);
+  return [...sources];
+}
