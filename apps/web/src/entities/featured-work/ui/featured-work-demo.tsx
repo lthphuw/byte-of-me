@@ -25,6 +25,8 @@ export interface FeaturedWorkDemoItem {
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
 /** A clip plays while at least this much of it is on screen. */
 const VISIBLE = { threshold: 0.25 };
+/** A clip's file is requested this far before it reaches the screen, so it is ready on arrival. */
+const NEAR = { rootMargin: '200px 0px' };
 /** `#t=0.1` makes the browser decode a first frame to show while the clip is paused. */
 const FIRST_FRAME = '#t=0.1';
 
@@ -40,6 +42,25 @@ function Frame({ children, ratio }: { children?: ReactNode; ratio?: number }) {
     >
       {children}
     </span>
+  );
+}
+
+/**
+ * Covers a frame until its file has drawn, then fades out in place: the skeleton and
+ * the media share one box, so nothing moves. A span, because it sits inside the
+ * clip's button and a div may not.
+ */
+function Placeholder({ loaded }: { loaded: boolean }) {
+  // The pulse is an animation of opacity, and an animation overrides `opacity-0`: it
+  // has to stop before the cover can fade out, so it is dropped on load.
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        'absolute inset-0 bg-muted transition-opacity duration-200 ease-enter',
+        loaded ? 'opacity-0' : 'motion-safe:animate-pulse'
+      )}
+    />
   );
 }
 
@@ -85,6 +106,12 @@ function DemoVideo({
   const reducedMotion = useMediaQuery(REDUCED_MOTION);
   const { ref: frameRef, entry } = useIntersection<HTMLButtonElement>(VISIBLE);
   const inView = entry?.isIntersecting ?? false;
+  // Nothing is downloaded until the clip nears the screen, and then it is kept:
+  // scrolling past does not hand the bytes back.
+  const { ref: nearRef, entry: nearEntry } =
+    useIntersection<HTMLDivElement>(NEAR);
+  const [requested, setRequested] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const videoRef = useRef<FullscreenVideo>(null);
   const [playing, setPlaying] = useState(false);
   const [userPaused, setUserPaused] = useState(false);
@@ -108,11 +135,17 @@ function DemoVideo({
   }, []);
 
   useEffect(() => {
+    if (nearEntry?.isIntersecting) setRequested(true);
+  }, [nearEntry]);
+
+  // `requested` is in the list so a clip that became visible before its src was set
+  // plays once the src exists; an earlier play() has nothing to play and is refused.
+  useEffect(() => {
     const video = videoRef.current;
     if (!video || failed || fullscreen || fullscreenAsked.current) return;
     if (inView && !reducedMotion && !userPaused) playQuietly(video);
     else video.pause();
-  }, [inView, reducedMotion, userPaused, failed, fullscreen]);
+  }, [inView, reducedMotion, userPaused, failed, fullscreen, requested]);
 
   // Full screen is the one place the clip has sound and controls; leaving it restores the loop.
   useEffect(() => {
@@ -168,7 +201,7 @@ function DemoVideo({
   if (failed) return <Frame />;
 
   return (
-    <div className="relative">
+    <div ref={nearRef} className="relative">
       <button
         ref={frameRef}
         type="button"
@@ -180,11 +213,12 @@ function DemoVideo({
         <Frame ratio={ratio}>
           <video
             ref={videoRef}
-            src={`${src}${FIRST_FRAME}`}
+            src={requested ? `${src}${FIRST_FRAME}` : undefined}
             muted
             loop
             playsInline
-            preload="metadata"
+            preload={requested ? 'metadata' : 'none'}
+            onLoadedData={() => setLoaded(true)}
             onLoadedMetadata={(event) =>
               setRatio(
                 ratioOf(
@@ -201,6 +235,7 @@ function DemoVideo({
             }}
             className="size-full object-contain"
           />
+          <Placeholder loaded={loaded} />
           {/* Shown whenever the clip is not moving, so a refused play() still reads as tappable. */}
           {!playing && (
             <span className="absolute inset-0 flex items-center justify-center">
@@ -229,13 +264,16 @@ function DemoVideo({
 
 function DemoImage({ src, alt }: { src: string; alt: string }) {
   const [ratio, setRatio] = useState<number>();
+  const [loaded, setLoaded] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
 
   // A cached image can finish before hydration, and its `load` event is gone.
   useEffect(() => {
     const image = imageRef.current;
-    if (image?.complete)
+    if (image?.complete) {
       setRatio(ratioOf(image.naturalWidth, image.naturalHeight));
+      setLoaded(true);
+    }
   }, []);
 
   return (
@@ -248,16 +286,20 @@ function DemoImage({ src, alt }: { src: string; alt: string }) {
         alt={alt}
         loading="lazy"
         decoding="async"
-        onLoad={(event) =>
+        onLoad={(event) => {
           setRatio(
             ratioOf(
               event.currentTarget.naturalWidth,
               event.currentTarget.naturalHeight
             )
-          )
-        }
+          );
+          setLoaded(true);
+        }}
+        /* A broken file must not leave its placeholder pulsing forever. */
+        onError={() => setLoaded(true)}
         className="size-full object-contain"
       />
+      <Placeholder loaded={loaded} />
     </Frame>
   );
 }

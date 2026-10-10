@@ -79,10 +79,14 @@ function stubMedia() {
 /** Every observer the component created, so a test can report visibility itself. */
 let observers: FakeObserver[] = [];
 class FakeObserver {
+  /** What this observer watches, so a test can tell the clip's two observers apart. */
+  target: Element | null = null;
   constructor(private readonly callback: IntersectionObserverCallback) {
     observers.push(this);
   }
-  observe() {}
+  observe(target: Element) {
+    this.target = target;
+  }
   unobserve() {}
   disconnect() {}
   takeRecords() {
@@ -107,6 +111,20 @@ function stubObserver() {
   });
 }
 
+/** happy-dom reports an image as complete at once; a browser does not until it has drawn it. */
+function stubImageComplete() {
+  const proto = HTMLImageElement.prototype;
+  const original = Object.getOwnPropertyDescriptor(proto, 'complete');
+  Object.defineProperty(proto, 'complete', {
+    configurable: true,
+    get: () => false,
+  });
+  restores.push(() => {
+    if (original) Object.defineProperty(proto, 'complete', original);
+    else Reflect.deleteProperty(proto, 'complete');
+  });
+}
+
 function stubReducedMotion(reduced: boolean) {
   const original = window.matchMedia;
   window.matchMedia = ((query: string) => ({
@@ -120,14 +138,20 @@ function stubReducedMotion(reduced: boolean) {
   });
 }
 
+/** The play observer watches the button; the lazy-load observer watches its wrapper. */
+const latest = (tag: string) =>
+  observers.filter((o) => o.target?.tagName === tag).at(-1);
 const visible = (isIntersecting = true) =>
-  observers.at(-1)?.report(isIntersecting);
+  latest('BUTTON')?.report(isIntersecting);
+const nearClip = (isIntersecting = true) =>
+  latest('DIV')?.report(isIntersecting);
 
 beforeEach(() => {
   calls = [];
   observers = [];
   stubMedia();
   stubObserver();
+  stubImageComplete();
   stubReducedMotion(false);
 });
 
@@ -137,6 +161,14 @@ afterEach(() => {
 });
 
 const clip = () => screen.getByRole('button', { name: 'Play FP16' });
+/** The cover over a media frame, the one aria-hidden span inside a figure. */
+const placeholder = () => {
+  const cover = document.querySelector<HTMLElement>(
+    'figure span[aria-hidden="true"]'
+  );
+  if (!cover) throw new Error('no placeholder mounted');
+  return cover;
+};
 const videoEl = () => {
   const video = document.querySelector('video');
   if (!video) throw new Error('no video mounted');
@@ -197,17 +229,37 @@ describe('FeaturedWorkDemo figures', () => {
 });
 
 describe('FeaturedWorkDemo video', () => {
-  it('is muted, looping, inline, metadata-only and not set to autoplay', () => {
+  it('is muted, looping, inline and not set to autoplay', () => {
     render(<FeaturedWorkDemo media={[fp16]} />);
 
     const video = videoEl();
     expect(video.muted).toBe(true);
     expect(video.loop).toBe(true);
     expect(video.getAttribute('playsinline')).not.toBeNull();
-    expect(video.getAttribute('preload')).toBe('metadata');
     expect(video.hasAttribute('autoplay')).toBe(false);
     expect(video.hasAttribute('controls')).toBe(false);
+  });
+
+  it('requests no file until the clip nears the screen', () => {
+    render(<FeaturedWorkDemo media={[fp16]} />);
+
+    const video = videoEl();
+    expect(video.getAttribute('preload')).toBe('none');
+    expect(video.hasAttribute('src')).toBe(false);
+
+    nearClip(true);
+
+    expect(video.getAttribute('preload')).toBe('metadata');
     expect(video.getAttribute('src')?.startsWith(fp16.url)).toBe(true);
+  });
+
+  it('keeps the file it has requested when the clip scrolls back out of reach', () => {
+    render(<FeaturedWorkDemo media={[fp16]} />);
+    nearClip(true);
+
+    nearClip(false);
+
+    expect(videoEl().getAttribute('src')?.startsWith(fp16.url)).toBe(true);
   });
 
   it('is controlled by one button named after its label, reporting whether it plays', () => {
@@ -270,6 +322,43 @@ describe('FeaturedWorkDemo video', () => {
     expect(screen.queryByRole('button')).toBeNull();
     expect(container.querySelector('video')).toBeNull();
     expect(container.querySelector('figure .aspect-video')).not.toBeNull();
+  });
+});
+
+describe('FeaturedWorkDemo placeholder', () => {
+  it('covers a clip until its file has drawn, then fades the cover out', () => {
+    render(<FeaturedWorkDemo media={[fp16]} />);
+    expect(placeholder().classList.contains('opacity-0')).toBe(false);
+    expect(placeholder().classList.contains('motion-safe:animate-pulse')).toBe(
+      true
+    );
+
+    act(() => {
+      videoEl().dispatchEvent(new Event('loadeddata'));
+    });
+
+    expect(placeholder().classList.contains('opacity-0')).toBe(true);
+    // A running pulse overrides `opacity-0`, so it must be gone for the cover to clear.
+    expect(placeholder().classList.contains('motion-safe:animate-pulse')).toBe(
+      false
+    );
+  });
+
+  it('fades an image cover out once the image has loaded', () => {
+    render(<FeaturedWorkDemo media={[int8]} />);
+    expect(placeholder().classList.contains('opacity-0')).toBe(false);
+
+    fireEvent.load(screen.getByRole('img', { name: 'INT8' }));
+
+    expect(placeholder().classList.contains('opacity-0')).toBe(true);
+  });
+
+  it('lifts an image cover when the file is broken, so it never pulses forever', () => {
+    render(<FeaturedWorkDemo media={[int8]} />);
+
+    fireEvent.error(screen.getByRole('img', { name: 'INT8' }));
+
+    expect(placeholder().classList.contains('opacity-0')).toBe(true);
   });
 });
 
