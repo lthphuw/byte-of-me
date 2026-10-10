@@ -1,9 +1,7 @@
 /**
- * The homepage section's contract: only published works, in the owner's order and
- * capped at six; a work with no usable translation is skipped; GitHub facts are
- * optional garnish that can never fail or blank the section. Prisma's delegate is
- * replaced (Prisma 7 synthesizes methods per access, so `spyOn` would be bypassed)
- * and the GitHub fetcher is injected, so nothing here touches a database or GitHub.
+ * Homepage contract: published works only, in order, capped at six; a work with no
+ * usable translation is skipped; GitHub facts can never fail the section.
+ * Prisma's delegate is replaced and the GitHub fetcher injected: no database, no network.
  */
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
@@ -89,6 +87,26 @@ describe('toRows', () => {
     );
 
     expect(rows.map((r) => r.id)).toEqual(['ok']);
+  });
+
+  it('falls back to en when the visitor locale translation has a blank title', () => {
+    const rows = toRows(
+      [
+        {
+          id: 'a',
+          url: null,
+          translations: [
+            { language: 'en', title: 'Hello', description: 'About' },
+            { language: 'vi', title: '  ', description: 'Mô tả' },
+          ],
+        },
+      ],
+      'vi'
+    );
+
+    expect(rows.map((r) => [r.id, r.title, r.description])).toEqual([
+      ['a', 'Hello', 'About'],
+    ]);
   });
 });
 

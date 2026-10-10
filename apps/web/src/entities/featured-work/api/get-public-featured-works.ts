@@ -5,11 +5,8 @@ import type { PublicFeaturedWork } from '@/entities/featured-work/model/types';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
- * Published featured works for the homepage: at most six, in the owner's order.
- *
- * Deliberately a bare wrapper. A `'use server'` export is a public endpoint, and
- * the injectable core takes functions (and would fan GitHub lookups out over
- * caller-chosen urls), so it stays in `lib/` where nothing client-side can call it.
+ * Published featured works for the homepage, at most six, in the owner's order.
+ * A bare wrapper: the injectable core stays in `lib/`, out of any public endpoint.
  */
 export async function getPublicFeaturedWorks(): Promise<
   ApiResponse<{ works: PublicFeaturedWork[] }>

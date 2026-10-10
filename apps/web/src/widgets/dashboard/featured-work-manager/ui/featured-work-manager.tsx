@@ -19,13 +19,13 @@ import { createFeaturedWork } from '@/entities/featured-work/api/create-featured
 import { deleteFeaturedWork } from '@/entities/featured-work/api/delete-featured-work';
 import { getPaginatedAdminFeaturedWorks } from '@/entities/featured-work/api/get-paginated-admin-featured-works';
 import { updateFeaturedWork } from '@/entities/featured-work/api/update-featured-work';
+import { safeLink } from '@/entities/featured-work/lib/safe-link';
 import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
 import { featuredWorkKeys } from '@/entities/featured-work/model/query-keys';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
-import { linkHost } from '@/widgets/dashboard/featured-work-manager/lib/link-host';
 import { useReorderFeaturedWork } from '@/widgets/dashboard/featured-work-manager/lib/use-reorder-featured-work';
 
 export function FeaturedWorkManager() {
@@ -73,11 +73,9 @@ export function FeaturedWorkManager() {
   });
   const { move, isMoving } = useReorderFeaturedWork(t('toast.reorderError'));
 
-  // The arrows stay focusable (`aria-disabled`, not `disabled`) so a keyboard
-  // user can press one repeatedly. Reordering the list moves DOM nodes, which
-  // drops focus, so it is put back on the arrow that was used once the
-  // refetch has landed (`isMoving` stays true until then), unless the user
-  // has already moved focus elsewhere.
+  // Arrows use `aria-disabled` so they stay focusable. A reorder moves DOM
+  // nodes and drops focus; it is restored once the refetch lands, unless the
+  // user has moved on.
   const moveButtons = useRef(new Map<string, HTMLButtonElement>());
   const refocus = useRef<string | null>(null);
   useEffect(() => {
@@ -146,7 +144,7 @@ export function FeaturedWorkManager() {
               const title =
                 getTranslatedContent(work.translations, locale)?.title ||
                 t('untitled');
-              const host = linkHost(work.url);
+              const { host } = safeLink(work.url);
               const position = firstPosition + index;
 
               return (
@@ -210,7 +208,7 @@ export function FeaturedWorkManager() {
                     >
                       <ChevronDown className="h-4 w-4" />
                     </Button>
-                    <div className="flex items-center gap-1 transition-opacity sm:opacity-0 sm:focus-within:opacity-100 sm:group-hover:opacity-100">
+                    <div className="flex items-center gap-1 transition-opacity sm:focus-within:opacity-100 sm:group-hover:opacity-100 can-hover:sm:opacity-0">
                       <EditButton
                         label={t('editLabel', { name: title })}
                         onClick={() => openEditDialog(work)}

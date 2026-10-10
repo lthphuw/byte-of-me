@@ -1,8 +1,6 @@
 /**
- * The outcome of `reorderFeaturedWork`: it swaps an entry with its neighbour,
- * writes nothing at the ends of the list or for someone else's entry, and heals
- * duplicate `sortOrder`s instead of swapping two equal numbers into a no-op.
- * `$transaction` runs against a fake `tx`, so no database is touched.
+ * `reorderFeaturedWork` swaps an entry with its neighbour, writes nothing at the
+ * ends or for someone else's entry, and heals duplicate `sortOrder`s. A fake `tx`.
  */
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';

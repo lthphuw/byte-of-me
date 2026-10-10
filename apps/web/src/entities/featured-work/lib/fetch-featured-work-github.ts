@@ -17,10 +17,8 @@ interface GraphqlResponse {
 }
 
 /**
- * Repo name, stars and merged state for each pull request, aligned to `refs`
- * (null where GitHub could not resolve one). Throws on a transport failure or
- * when the response carries no `data`; partial `data` next to `errors` is used,
- * the mapper nulls the aliases that failed.
+ * Repo, stars and merged state per pull request, aligned to `refs` (null where
+ * unresolved). Throws on transport failure or no `data`; partial `data` is used.
  */
 export async function fetchFeaturedWorkGithub(
   refs: GithubPullRequestRef[],

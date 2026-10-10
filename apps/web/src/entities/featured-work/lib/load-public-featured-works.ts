@@ -5,6 +5,7 @@ import {
   type FeaturedWorkGithubDeps,
   getFeaturedWorkGithub,
 } from '@/entities/featured-work/lib/get-featured-work-github';
+import { safeLink } from '@/entities/featured-work/lib/safe-link';
 import type { PublicFeaturedWork } from '@/entities/featured-work/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { CACHE_TAGS } from '@/shared/lib/constants';
@@ -21,25 +22,6 @@ type FeaturedWorkRow = Pick<
   'id' | 'title' | 'description' | 'url' | 'host'
 >;
 
-/**
- * The database is not trusted to hold a safe url: anything that is not http(s)
- * (`javascript:`, `data:`, garbage) becomes a non-link row with no host.
- */
-function safeLink(
-  raw: string | null
-): { url: string; host: string | null } | { url: null; host: null } {
-  if (!raw) return { url: null, host: null };
-  try {
-    const parsed = new URL(raw);
-    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-      return { url: null, host: null };
-    }
-    return { url: raw, host: parsed.hostname.replace(/^www\./, '') || null };
-  } catch {
-    return { url: null, host: null };
-  }
-}
-
 /** A work with no usable translation is skipped: one bad row must not blank the section. */
 export function toRows(
   works: Array<{
@@ -54,8 +36,10 @@ export function toRows(
   locale: string
 ): FeaturedWorkRow[] {
   return works.flatMap((work) => {
-    const translation = getTranslatedContent(work.translations, locale);
-    if (!translation?.title) return [];
+    // A blank title is unusable, so it must not shadow a usable `en` fallback.
+    const usable = work.translations.filter((t) => t.title.trim() !== '');
+    const translation = getTranslatedContent(usable, locale);
+    if (!translation) return [];
     return [
       {
         id: work.id,
