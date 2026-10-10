@@ -48,7 +48,7 @@ flowchart TB
     end
 
     subgraph managed["Managed services"]
-        PG[("PostgreSQL 16<br/>Supabase")]
+        PG[("PostgreSQL 17<br/>Supabase")]
         S3[("Object storage<br/>Supabase S3")]
         SMTP["SMTP relay"]
         GH["GitHub OAuth"]
@@ -295,7 +295,7 @@ Three layers, each invalidated differently:
 | Next.js data cache | Tagged queries | `revalidateTag(CACHE_TAGS.X)` inside the mutating server action |
 | TanStack Query | Client-side server state in the dashboard | Query invalidation after a mutation resolves |
 
-`CACHE_TAGS` (`src/shared/lib/constants.ts`) is the single list of tags — `blog`, `project`, `company`, `education`, `media`, `tag`, `tech-stack`, `social-link`, `user-profile`, `comment`, `contact-message`, `workspace-settings`. A mutation that forgets its tag is the usual cause of "I saved it but the public page is stale."
+`CACHE_TAGS` (`src/shared/lib/constants.ts`) is the single list of tags — `blog`, `company`, `contact-message`, `education`, `featured-work`, `media`, `open-source`, `project`, `social-link`, `tag`, `tech-stack`, `user-profile`, `comment`, `workspace-settings`. A mutation that forgets its tag is the usual cause of "I saved it but the public page is stale."
 
 `purgeEntireCache()` in `src/widgets/dashboard/dashboard-sidebar/lib/purge-entire-cache.ts` (the dashboard's Clear Cache button) is the blunt escape hatch — `revalidatePath('/', 'layout')`.
 

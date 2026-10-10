@@ -28,7 +28,7 @@ The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced 
 - **Filterable, paginated** project and blog listings with shareable, URL-based filters.
 - **A vertical experience timeline** rendered from live CMS data (companies → roles → tasks).
 - **Contact form** that persists the message and delivers it over SMTP (Nodemailer).
-- **SEO & sharing built in** — dynamic OG images (`/api/og`, Satori), `sitemap.ts`, `robots.ts`, PWA `manifest.ts`, per-route metadata.
+- **SEO & sharing built in** — dynamic OG images (`/api/og`, Satori), `sitemap.ts`, `robots.ts`, PWA manifest (`public/site.webmanifest`), per-route metadata.
 
 ### Private CMS dashboard
 - Manage **blogs, projects, companies & roles, education, tags, tech stacks, media, comments, social links, user profile, and translations** from one place.
@@ -84,7 +84,7 @@ The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced 
 | **Framework** | Next.js 16 (App Router, RSC, Server Actions), React 19, Turbopack (dev **and** build) |
 | **Language** | TypeScript 5.8 (strict) |
 | **Styling** | Tailwind CSS 3, shadcn/ui + Radix primitives, Framer Motion, `next-themes` |
-| **Data** | PostgreSQL 16 via Prisma 7 with the `@prisma/adapter-pg` driver adapter |
+| **Data** | PostgreSQL 17 (17.6 in Docker) via Prisma 7 with the `@prisma/adapter-pg` driver adapter |
 | **Server state** | TanStack Query v5 |
 | **Auth** | Auth.js / NextAuth v5 — email magic link, GitHub & Google OAuth, JWT sessions, role-based |
 | **i18n** | next-intl v4 (UI) + database translations (content) |
@@ -143,11 +143,13 @@ byte-of-me/
 │   ├── storage/                  # S3-compatible storage client (@byte-of-me/storage)
 │   ├── logger/                   # Structured logging (@byte-of-me/logger)
 │   └── config/                   # Shared TypeScript presets (@byte-of-me/config)
-├── docs/
+├── docs/                         # index: docs/README.md
+│   ├── setup.md · environment.md # first-time setup, env reference
 │   ├── architecture.md           # System diagrams (Mermaid)
+│   ├── codebase/                 # per-area code guides
 │   └── *.png                     # Screenshots
 ├── scripts/check.sh              # Full verification suite
-└── docker-compose.yml            # Local PostgreSQL 16
+└── docker-compose.yml            # PostgreSQL 17.6 + Mailpit
 ```
 
 Workspace packages are consumed as **TypeScript source** through Next.js `transpilePackages` — no build step is required before `bun run dev`.
@@ -168,54 +170,27 @@ There is no `middleware.ts` — the locale lives in the `[locale]` segment, `/` 
 
 ## Getting started
 
-> Requires **Node.js ≥ 20.9** (Next 16's floor; note `.nvmrc` pins v24.4.1), **Bun 1.3**, and a PostgreSQL 16 database (Supabase works out of the box; `docker-compose.yml` gives you a local one).
+Full guide, locked versions and troubleshooting: **[docs/setup.md](docs/setup.md)**. Pinned: Node 24.4.1 (`.nvmrc`), Bun 1.3.10, PostgreSQL 17.6 and Mailpit (`docker-compose.yml`).
 
 ```bash
-# 1. Install dependencies
-bun install
-
-# 2. Configure environment
-cp apps/web/.env.example  apps/web/.env      # app runtime config
-cp packages/db/.env.example packages/db/.env  # DATABASE_URL / DIRECT_URL for the Prisma CLI
-
-# 3. (Optional) Start a local PostgreSQL 16
-docker compose up -d postgres
-#   → postgresql://admin:secret@localhost:5432/byte_of_me
-
-# 4. Apply migrations and generate the Prisma client
-bun run --filter '@byte-of-me/db' db:migrate:dev
-bun run generate
-
-# 5. (Optional) Seed demo content
+cp apps/web/.env.example apps/web/.env
+cp packages/db/.env.example packages/db/.env   # then paste `openssl rand -base64 32` after AUTH_SECRET=
+bun install --frozen-lockfile
+docker compose up -d                           # PostgreSQL on :5432, Mailpit on :1025 / :8025
+bun run --filter '@byte-of-me/db' db:migrate:apply
 bun run --filter '@byte-of-me/db' db:seed
-#   The seed prints AUTHOR_ID and always uses the same value. Every public
-#   read is scoped to it, so apps/web/.env must carry that exact id or the
-#   site renders empty with no error. The seed is idempotent: re-run freely.
-
-# 6. Run the dev server
-bun run dev         # http://localhost:3000  → redirects to /en
+bun run dev                                    # http://localhost:3000 → /en
 ```
 
-The dashboard lives at `/[locale]/dashboard` and requires an account whose `role` is `ADMIN`. The seed script creates one; otherwise sign in once and flip the role in the database.
+Sign in at `/en/auth/login` with the `EMAIL` address. The magic link arrives in Mailpit at http://localhost:8025. The dashboard (`/[locale]/dashboard`) admits only that address with role `ADMIN`, which the seed creates.
 
 ---
 
 ## Environment variables
 
-`apps/web/.env` is validated at startup by `@t3-oss/env-nextjs` (`src/shared/config/env.ts`) — a missing or malformed value fails the build rather than the request.
+Every key, its requirement and its local value: **[docs/environment.md](docs/environment.md)**. The app validates `apps/web/.env` at startup (`src/shared/config/env.ts`), so a missing required key stops it before it serves a request.
 
-| Group | Variables |
-| --- | --- |
-| **App** | `NODE_ENV`, `NEXT_PUBLIC_ENV` |
-| **Database** | `DATABASE_URL` (pooled, used by the app), `DIRECT_URL` (direct, used by migrations) |
-| **Auth** | `AUTH_URL`, `AUTH_SECRET`, `AUTH_GITHUB_ID/SECRET`, `AUTH_GOOGLE_ID/SECRET` |
-| **Email (SMTP)** | `EMAIL_SERVER_HOST`, `EMAIL_SERVER_PORT`, `EMAIL_SERVER_USER`, `EMAIL_SERVER_PASSWORD`, `EMAIL_FROM` |
-| **Storage** | `SUPABASE_S3_STORAGE_REGION`, `_ENDPOINT`, `_PUBLIC_ENDPOINT`, `_ACCESS_KEY`, `_SECRET_KEY`, `_BUCKET` |
-| **Author / public** | `EMAIL`, `AUTHOR_ID` (UUID used to scope public content), `NEXT_PUBLIC_AUTHOR_EMAIL`, `NEXT_PUBLIC_GA_ID` |
-
-`packages/db/.env` only needs `DATABASE_URL`, `DIRECT_URL`, and `NODE_ENV` — the Prisma CLI reads it through `packages/db/prisma.config.ts`.
-
-Generate `AUTH_SECRET` with `openssl rand -base64 32`. Storage URLs are never hardcoded — always go through the helpers in `shared/api/s3-storage-api.ts`.
+Storage URLs are never hardcoded. Always go through the helpers in `shared/api/s3-storage-api.ts`.
 
 ---
 
@@ -241,7 +216,8 @@ Package-scoped extras:
 | `bun run --filter 'web' preview` | Production build, then `next start` |
 | `bun run format` | Prettier over every workspace `src` |
 | `bun run --filter '@byte-of-me/db' db:migrate:dev` | Create + apply a migration |
-| `bun run --filter '@byte-of-me/db' db:migrate:deploy` | Apply pending migrations (CI/prod) |
+| `bun run --filter '@byte-of-me/db' db:migrate:apply` | Apply pending migrations on a new database (handles `CONCURRENTLY` indexes) |
+| `bun run --filter '@byte-of-me/db' db:migrate:deploy` | Apply pending migrations (production; fails on a new database) |
 | `cd packages/db && bunx prisma migrate reset --force` | Reset the database (destroys all data) |
 | `bun run --filter '@byte-of-me/db' db:seed` | Seed demo content (idempotent) |
 | `cd packages/db && bunx prisma studio --port 7777` | Browse the database |
@@ -266,7 +242,7 @@ The generated client is committed to `packages/db/src/generated/prisma` and re-e
 
 ## Testing
 
-`bun test` suites live next to the code they cover — **396 tests across 42 files**:
+`bun test` suites live next to the code they cover:
 
 - `apps/web/src/entities/*/api/` — server-action contracts: owner scoping, narrow
   selects, cursor pagination, and the recursive delete-cascade count
@@ -302,7 +278,7 @@ Built for Vercel:
 
 ## Conventions
 
-Start with [docs/architecture.md](docs/architecture.md) for how the system fits together, including a "where to change what" table.
+Start with [docs/README.md](docs/README.md) for the docs index. [docs/architecture.md](docs/architecture.md) has the diagrams and the "where to change what" table.
 
 The short version: respect the FSD boundaries, never mix the two translation systems, no `any` and no `@ts-ignore`, prefer Server Components, search before adding a utility, and don't add dependencies that aren't needed. Commits follow Conventional Commits, enforced by commitlint.
 

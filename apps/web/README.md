@@ -18,10 +18,10 @@ environment variables, and the monorepo overview.
 | `/api/auth/[...nextauth]` | — | Auth.js handlers |
 | `/api/og` | — | Dynamic Open Graph images |
 
-`robots.ts`, `sitemap.ts`, and `[locale]/manifest.ts` sit alongside the routes.
+`robots.ts`, `sitemap.ts` and `feed.xml/route.ts` sit alongside the routes. The PWA manifest is the static `public/site.webmanifest`.
 
-Dashboard sections: `blogs`, `comments`, `companies`, `educations`, `media`,
-`projects`, `tags`, `tech-stacks`, `translations`, `user-profile`.
+Dashboard sections: `blogs`, `comments`, `companies`, `educations`, `featured-works`, `media`,
+`projects`, `tags`, `tech-stacks`, `user-profile`.
 
 ## Source layout (Feature-Sliced Design)
 
@@ -30,7 +30,10 @@ src/
 ├── app/        # routes, layouts, providers, route handlers
 ├── widgets/    # composite page sections   (auth · dashboard · public)
 ├── features/   # user-facing capabilities  (auth · dashboard · public)
-├── entities/   # domain models + their server API and UI
+├── entities/   # 14 domain models + their server API, client queries and UI
+│               # (blog, comment, company, contact-message, education, featured-work,
+│               #  media, open-source, project, social-link, tag, tech-stack,
+│               #  user-profile, workspace-settings)
 └── shared/     # api · config · hooks · i18n · lib · types · ui
 ```
 
