@@ -79,6 +79,7 @@ model User {
   socialLinks       SocialLink[]
   blogs             Blog[]
   educations        Education[]
+  featuredWorks     FeaturedWork[]
   workExperiences   Company[]
   projects          Project[]
   techStacks        TechStack[]
@@ -178,6 +179,42 @@ model Education {
   @@index([userId], map: "idx_educations_user_id")
   @@index([logoId], map: "idx_educations_logo_id")
   @@map("educations")
+}
+
+model FeaturedWork {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  sortOrder   Int     @default(0) @map("sort_order")
+  isPublished Boolean @default(false) @map("is_published")
+  // A PR, commit or post that proves the feature. Optional on purpose: an
+  // unmerged or off-GitHub piece of work is still worth pinning.
+  url         String?
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  translations FeaturedWorkTranslation[]
+
+  @@index([userId, isPublished, sortOrder], map: "idx_featured_works_public_list")
+  @@map("featured_works")
+}
+
+model FeaturedWorkTranslation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  language    String
+  title       String
+  description String? @db.Text
+
+  featuredWorkId String       @map("featured_work_id")
+  featuredWork   FeaturedWork @relation(fields: [featuredWorkId], references: [id], onDelete: Cascade)
+
+  @@unique([featuredWorkId, language])
+  @@map("featured_work_translations")
 }
 
 model EducationTranslation {

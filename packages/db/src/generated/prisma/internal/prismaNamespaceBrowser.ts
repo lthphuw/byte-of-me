@@ -59,6 +59,8 @@ export const ModelName = {
   UserProfile: 'UserProfile',
   UserProfileTranslation: 'UserProfileTranslation',
   Education: 'Education',
+  FeaturedWork: 'FeaturedWork',
+  FeaturedWorkTranslation: 'FeaturedWorkTranslation',
   EducationTranslation: 'EducationTranslation',
   EducationAchievement: 'EducationAchievement',
   EducationAchievementTranslation: 'EducationAchievementTranslation',
@@ -215,6 +217,32 @@ export const EducationScalarFieldEnum = {
 } as const
 
 export type EducationScalarFieldEnum = (typeof EducationScalarFieldEnum)[keyof typeof EducationScalarFieldEnum]
+
+
+export const FeaturedWorkScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  sortOrder: 'sortOrder',
+  isPublished: 'isPublished',
+  url: 'url',
+  userId: 'userId'
+} as const
+
+export type FeaturedWorkScalarFieldEnum = (typeof FeaturedWorkScalarFieldEnum)[keyof typeof FeaturedWorkScalarFieldEnum]
+
+
+export const FeaturedWorkTranslationScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  language: 'language',
+  title: 'title',
+  description: 'description',
+  featuredWorkId: 'featuredWorkId'
+} as const
+
+export type FeaturedWorkTranslationScalarFieldEnum = (typeof FeaturedWorkTranslationScalarFieldEnum)[keyof typeof FeaturedWorkTranslationScalarFieldEnum]
 
 
 export const EducationTranslationScalarFieldEnum = {

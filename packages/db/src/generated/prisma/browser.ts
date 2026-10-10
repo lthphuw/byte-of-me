@@ -58,6 +58,16 @@ export type UserProfileTranslation = Prisma.UserProfileTranslationModel
  */
 export type Education = Prisma.EducationModel
 /**
+ * Model FeaturedWork
+ * 
+ */
+export type FeaturedWork = Prisma.FeaturedWorkModel
+/**
+ * Model FeaturedWorkTranslation
+ * 
+ */
+export type FeaturedWorkTranslation = Prisma.FeaturedWorkTranslationModel
+/**
  * Model EducationTranslation
  * 
  */

@@ -3,6 +3,7 @@ export const CACHE_TAGS = {
   COMPANY: 'company',
   CONTACT: 'contact-message',
   EDUCATION: 'education',
+  FEATURED_WORK: 'featured-work',
   MEDIA: 'media',
   PROJECT: 'project',
   SOCIAL: 'social-link',

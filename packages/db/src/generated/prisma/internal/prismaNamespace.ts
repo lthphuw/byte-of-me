@@ -405,6 +405,8 @@ export const ModelName = {
   UserProfile: 'UserProfile',
   UserProfileTranslation: 'UserProfileTranslation',
   Education: 'Education',
+  FeaturedWork: 'FeaturedWork',
+  FeaturedWorkTranslation: 'FeaturedWorkTranslation',
   EducationTranslation: 'EducationTranslation',
   EducationAchievement: 'EducationAchievement',
   EducationAchievementTranslation: 'EducationAchievementTranslation',
@@ -450,7 +452,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "workspaceSettings"
+    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "featuredWork" | "featuredWorkTranslation" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "workspaceSettings"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1043,6 +1045,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.EducationCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.EducationCountAggregateOutputType> | number
+        }
+      }
+    }
+    FeaturedWork: {
+      payload: Prisma.$FeaturedWorkPayload<ExtArgs>
+      fields: Prisma.FeaturedWorkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FeaturedWorkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FeaturedWorkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkPayload>
+        }
+        findFirst: {
+          args: Prisma.FeaturedWorkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FeaturedWorkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkPayload>
+        }
+        findMany: {
+          args: Prisma.FeaturedWorkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkPayload>[]
+        }
+        create: {
+          args: Prisma.FeaturedWorkCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkPayload>
+        }
+        createMany: {
+          args: Prisma.FeaturedWorkCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FeaturedWorkCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkPayload>[]
+        }
+        delete: {
+          args: Prisma.FeaturedWorkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkPayload>
+        }
+        update: {
+          args: Prisma.FeaturedWorkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkPayload>
+        }
+        deleteMany: {
+          args: Prisma.FeaturedWorkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FeaturedWorkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FeaturedWorkUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkPayload>[]
+        }
+        upsert: {
+          args: Prisma.FeaturedWorkUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkPayload>
+        }
+        aggregate: {
+          args: Prisma.FeaturedWorkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFeaturedWork>
+        }
+        groupBy: {
+          args: Prisma.FeaturedWorkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeaturedWorkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FeaturedWorkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeaturedWorkCountAggregateOutputType> | number
+        }
+      }
+    }
+    FeaturedWorkTranslation: {
+      payload: Prisma.$FeaturedWorkTranslationPayload<ExtArgs>
+      fields: Prisma.FeaturedWorkTranslationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FeaturedWorkTranslationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkTranslationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FeaturedWorkTranslationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkTranslationPayload>
+        }
+        findFirst: {
+          args: Prisma.FeaturedWorkTranslationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkTranslationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FeaturedWorkTranslationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkTranslationPayload>
+        }
+        findMany: {
+          args: Prisma.FeaturedWorkTranslationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkTranslationPayload>[]
+        }
+        create: {
+          args: Prisma.FeaturedWorkTranslationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkTranslationPayload>
+        }
+        createMany: {
+          args: Prisma.FeaturedWorkTranslationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FeaturedWorkTranslationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkTranslationPayload>[]
+        }
+        delete: {
+          args: Prisma.FeaturedWorkTranslationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkTranslationPayload>
+        }
+        update: {
+          args: Prisma.FeaturedWorkTranslationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkTranslationPayload>
+        }
+        deleteMany: {
+          args: Prisma.FeaturedWorkTranslationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FeaturedWorkTranslationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FeaturedWorkTranslationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkTranslationPayload>[]
+        }
+        upsert: {
+          args: Prisma.FeaturedWorkTranslationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkTranslationPayload>
+        }
+        aggregate: {
+          args: Prisma.FeaturedWorkTranslationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFeaturedWorkTranslation>
+        }
+        groupBy: {
+          args: Prisma.FeaturedWorkTranslationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeaturedWorkTranslationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FeaturedWorkTranslationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeaturedWorkTranslationCountAggregateOutputType> | number
         }
       }
     }
@@ -3415,6 +3565,32 @@ export const EducationScalarFieldEnum = {
 export type EducationScalarFieldEnum = (typeof EducationScalarFieldEnum)[keyof typeof EducationScalarFieldEnum]
 
 
+export const FeaturedWorkScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  sortOrder: 'sortOrder',
+  isPublished: 'isPublished',
+  url: 'url',
+  userId: 'userId'
+} as const
+
+export type FeaturedWorkScalarFieldEnum = (typeof FeaturedWorkScalarFieldEnum)[keyof typeof FeaturedWorkScalarFieldEnum]
+
+
+export const FeaturedWorkTranslationScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  language: 'language',
+  title: 'title',
+  description: 'description',
+  featuredWorkId: 'featuredWorkId'
+} as const
+
+export type FeaturedWorkTranslationScalarFieldEnum = (typeof FeaturedWorkTranslationScalarFieldEnum)[keyof typeof FeaturedWorkTranslationScalarFieldEnum]
+
+
 export const EducationTranslationScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
@@ -4070,6 +4246,8 @@ export type GlobalOmitConfig = {
   userProfile?: Prisma.UserProfileOmit
   userProfileTranslation?: Prisma.UserProfileTranslationOmit
   education?: Prisma.EducationOmit
+  featuredWork?: Prisma.FeaturedWorkOmit
+  featuredWorkTranslation?: Prisma.FeaturedWorkTranslationOmit
   educationTranslation?: Prisma.EducationTranslationOmit
   educationAchievement?: Prisma.EducationAchievementOmit
   educationAchievementTranslation?: Prisma.EducationAchievementTranslationOmit

@@ -212,6 +212,7 @@ export type UserWhereInput = {
   socialLinks?: Prisma.SocialLinkListRelationFilter
   blogs?: Prisma.BlogListRelationFilter
   educations?: Prisma.EducationListRelationFilter
+  featuredWorks?: Prisma.FeaturedWorkListRelationFilter
   workExperiences?: Prisma.CompanyListRelationFilter
   projects?: Prisma.ProjectListRelationFilter
   techStacks?: Prisma.TechStackListRelationFilter
@@ -238,6 +239,7 @@ export type UserOrderByWithRelationInput = {
   socialLinks?: Prisma.SocialLinkOrderByRelationAggregateInput
   blogs?: Prisma.BlogOrderByRelationAggregateInput
   educations?: Prisma.EducationOrderByRelationAggregateInput
+  featuredWorks?: Prisma.FeaturedWorkOrderByRelationAggregateInput
   workExperiences?: Prisma.CompanyOrderByRelationAggregateInput
   projects?: Prisma.ProjectOrderByRelationAggregateInput
   techStacks?: Prisma.TechStackOrderByRelationAggregateInput
@@ -267,6 +269,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   socialLinks?: Prisma.SocialLinkListRelationFilter
   blogs?: Prisma.BlogListRelationFilter
   educations?: Prisma.EducationListRelationFilter
+  featuredWorks?: Prisma.FeaturedWorkListRelationFilter
   workExperiences?: Prisma.CompanyListRelationFilter
   projects?: Prisma.ProjectListRelationFilter
   techStacks?: Prisma.TechStackListRelationFilter
@@ -321,6 +324,7 @@ export type UserCreateInput = {
   socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
@@ -347,6 +351,7 @@ export type UserUncheckedCreateInput = {
   socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
@@ -373,6 +378,7 @@ export type UserUpdateInput = {
   socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
@@ -399,6 +405,7 @@ export type UserUncheckedUpdateInput = {
   socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
@@ -560,6 +567,20 @@ export type UserUpdateOneRequiredWithoutEducationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutEducationsInput, Prisma.UserUpdateWithoutEducationsInput>, Prisma.UserUncheckedUpdateWithoutEducationsInput>
 }
 
+export type UserCreateNestedOneWithoutFeaturedWorksInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutFeaturedWorksInput, Prisma.UserUncheckedCreateWithoutFeaturedWorksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutFeaturedWorksInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutFeaturedWorksNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutFeaturedWorksInput, Prisma.UserUncheckedCreateWithoutFeaturedWorksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutFeaturedWorksInput
+  upsert?: Prisma.UserUpsertWithoutFeaturedWorksInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutFeaturedWorksInput, Prisma.UserUpdateWithoutFeaturedWorksInput>, Prisma.UserUncheckedUpdateWithoutFeaturedWorksInput>
+}
+
 export type UserCreateNestedOneWithoutTechStacksInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutTechStacksInput, Prisma.UserUncheckedCreateWithoutTechStacksInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutTechStacksInput
@@ -718,6 +739,7 @@ export type UserCreateWithoutAccountsInput = {
   socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
@@ -743,6 +765,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
@@ -784,6 +807,7 @@ export type UserUpdateWithoutAccountsInput = {
   socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
@@ -809,6 +833,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
@@ -834,6 +859,7 @@ export type UserCreateWithoutSessionsInput = {
   socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
@@ -859,6 +885,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
@@ -900,6 +927,7 @@ export type UserUpdateWithoutSessionsInput = {
   socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
@@ -925,6 +953,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
@@ -950,6 +979,7 @@ export type UserCreateWithoutSocialLinksInput = {
   userProfile?: Prisma.UserProfileCreateNestedOneWithoutUserInput
   blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
@@ -975,6 +1005,7 @@ export type UserUncheckedCreateWithoutSocialLinksInput = {
   userProfile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
@@ -1016,6 +1047,7 @@ export type UserUpdateWithoutSocialLinksInput = {
   userProfile?: Prisma.UserProfileUpdateOneWithoutUserNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
@@ -1041,6 +1073,7 @@ export type UserUncheckedUpdateWithoutSocialLinksInput = {
   userProfile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
@@ -1066,6 +1099,7 @@ export type UserCreateWithoutUserProfileInput = {
   socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
@@ -1091,6 +1125,7 @@ export type UserUncheckedCreateWithoutUserProfileInput = {
   socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
@@ -1132,6 +1167,7 @@ export type UserUpdateWithoutUserProfileInput = {
   socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
@@ -1157,6 +1193,7 @@ export type UserUncheckedUpdateWithoutUserProfileInput = {
   socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
@@ -1182,6 +1219,7 @@ export type UserCreateWithoutEducationsInput = {
   userProfile?: Prisma.UserProfileCreateNestedOneWithoutUserInput
   socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
@@ -1207,6 +1245,7 @@ export type UserUncheckedCreateWithoutEducationsInput = {
   userProfile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput
   socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
@@ -1248,6 +1287,7 @@ export type UserUpdateWithoutEducationsInput = {
   userProfile?: Prisma.UserProfileUpdateOneWithoutUserNestedInput
   socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
@@ -1273,6 +1313,127 @@ export type UserUncheckedUpdateWithoutEducationsInput = {
   userProfile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput
   socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput
+  workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
+  techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
+  media?: Prisma.MediaUncheckedUpdateManyWithoutUserNestedInput
+  interactions?: Prisma.InteractionUncheckedUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUncheckedUpdateManyWithoutUserNestedInput
+  blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedUpdateManyWithoutViewerNestedInput
+  workspaceSettings?: Prisma.WorkspaceSettingsUncheckedUpdateOneWithoutOwnerNestedInput
+}
+
+export type UserCreateWithoutFeaturedWorksInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  email: string
+  name?: string | null
+  image?: string | null
+  emailVerified?: Date | string | null
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  userProfile?: Prisma.UserProfileCreateNestedOneWithoutUserInput
+  socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
+  educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
+  projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
+  techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
+  media?: Prisma.MediaCreateNestedManyWithoutUserInput
+  interactions?: Prisma.InteractionCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageCreateNestedManyWithoutUserInput
+  blogStatisticLogs?: Prisma.BlogStatisticLogCreateNestedManyWithoutViewerInput
+  workspaceSettings?: Prisma.WorkspaceSettingsCreateNestedOneWithoutOwnerInput
+}
+
+export type UserUncheckedCreateWithoutFeaturedWorksInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  email: string
+  name?: string | null
+  image?: string | null
+  emailVerified?: Date | string | null
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  userProfile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput
+  socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
+  educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
+  techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
+  media?: Prisma.MediaUncheckedCreateNestedManyWithoutUserInput
+  interactions?: Prisma.InteractionUncheckedCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
+  contactMessages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutUserInput
+  blogStatisticLogs?: Prisma.BlogStatisticLogUncheckedCreateNestedManyWithoutViewerInput
+  workspaceSettings?: Prisma.WorkspaceSettingsUncheckedCreateNestedOneWithoutOwnerInput
+}
+
+export type UserCreateOrConnectWithoutFeaturedWorksInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutFeaturedWorksInput, Prisma.UserUncheckedCreateWithoutFeaturedWorksInput>
+}
+
+export type UserUpsertWithoutFeaturedWorksInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutFeaturedWorksInput, Prisma.UserUncheckedUpdateWithoutFeaturedWorksInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutFeaturedWorksInput, Prisma.UserUncheckedCreateWithoutFeaturedWorksInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutFeaturedWorksInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutFeaturedWorksInput, Prisma.UserUncheckedUpdateWithoutFeaturedWorksInput>
+}
+
+export type UserUpdateWithoutFeaturedWorksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  userProfile?: Prisma.UserProfileUpdateOneWithoutUserNestedInput
+  socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
+  educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
+  projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
+  techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
+  media?: Prisma.MediaUpdateManyWithoutUserNestedInput
+  interactions?: Prisma.InteractionUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
+  contactMessages?: Prisma.ContactMessageUpdateManyWithoutUserNestedInput
+  blogStatisticLogs?: Prisma.BlogStatisticLogUpdateManyWithoutViewerNestedInput
+  workspaceSettings?: Prisma.WorkspaceSettingsUpdateOneWithoutOwnerNestedInput
+}
+
+export type UserUncheckedUpdateWithoutFeaturedWorksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  userProfile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput
+  socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
+  educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
@@ -1299,6 +1460,7 @@ export type UserCreateWithoutTechStacksInput = {
   socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   media?: Prisma.MediaCreateNestedManyWithoutUserInput
@@ -1324,6 +1486,7 @@ export type UserUncheckedCreateWithoutTechStacksInput = {
   socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   media?: Prisma.MediaUncheckedCreateNestedManyWithoutUserInput
@@ -1365,6 +1528,7 @@ export type UserUpdateWithoutTechStacksInput = {
   socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   media?: Prisma.MediaUpdateManyWithoutUserNestedInput
@@ -1390,6 +1554,7 @@ export type UserUncheckedUpdateWithoutTechStacksInput = {
   socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   media?: Prisma.MediaUncheckedUpdateManyWithoutUserNestedInput
@@ -1415,6 +1580,7 @@ export type UserCreateWithoutWorkExperiencesInput = {
   socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
   media?: Prisma.MediaCreateNestedManyWithoutUserInput
@@ -1440,6 +1606,7 @@ export type UserUncheckedCreateWithoutWorkExperiencesInput = {
   socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
   media?: Prisma.MediaUncheckedCreateNestedManyWithoutUserInput
@@ -1481,6 +1648,7 @@ export type UserUpdateWithoutWorkExperiencesInput = {
   socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
   media?: Prisma.MediaUpdateManyWithoutUserNestedInput
@@ -1506,6 +1674,7 @@ export type UserUncheckedUpdateWithoutWorkExperiencesInput = {
   socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
   media?: Prisma.MediaUncheckedUpdateManyWithoutUserNestedInput
@@ -1531,6 +1700,7 @@ export type UserCreateWithoutProjectsInput = {
   socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
   media?: Prisma.MediaCreateNestedManyWithoutUserInput
@@ -1556,6 +1726,7 @@ export type UserUncheckedCreateWithoutProjectsInput = {
   socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
   media?: Prisma.MediaUncheckedCreateNestedManyWithoutUserInput
@@ -1597,6 +1768,7 @@ export type UserUpdateWithoutProjectsInput = {
   socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
   media?: Prisma.MediaUpdateManyWithoutUserNestedInput
@@ -1622,6 +1794,7 @@ export type UserUncheckedUpdateWithoutProjectsInput = {
   socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
   media?: Prisma.MediaUncheckedUpdateManyWithoutUserNestedInput
@@ -1646,6 +1819,7 @@ export type UserCreateWithoutBlogsInput = {
   userProfile?: Prisma.UserProfileCreateNestedOneWithoutUserInput
   socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
@@ -1671,6 +1845,7 @@ export type UserUncheckedCreateWithoutBlogsInput = {
   userProfile?: Prisma.UserProfileUncheckedCreateNestedOneWithoutUserInput
   socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
@@ -1712,6 +1887,7 @@ export type UserUpdateWithoutBlogsInput = {
   userProfile?: Prisma.UserProfileUpdateOneWithoutUserNestedInput
   socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
@@ -1737,6 +1913,7 @@ export type UserUncheckedUpdateWithoutBlogsInput = {
   userProfile?: Prisma.UserProfileUncheckedUpdateOneWithoutUserNestedInput
   socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
@@ -1763,6 +1940,7 @@ export type UserCreateWithoutBlogStatisticLogsInput = {
   socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
@@ -1788,6 +1966,7 @@ export type UserUncheckedCreateWithoutBlogStatisticLogsInput = {
   socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
@@ -1829,6 +2008,7 @@ export type UserUpdateWithoutBlogStatisticLogsInput = {
   socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
@@ -1854,6 +2034,7 @@ export type UserUncheckedUpdateWithoutBlogStatisticLogsInput = {
   socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
@@ -1879,6 +2060,7 @@ export type UserCreateWithoutMediaInput = {
   socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
@@ -1904,6 +2086,7 @@ export type UserUncheckedCreateWithoutMediaInput = {
   socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
@@ -1945,6 +2128,7 @@ export type UserUpdateWithoutMediaInput = {
   socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
@@ -1970,6 +2154,7 @@ export type UserUncheckedUpdateWithoutMediaInput = {
   socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
@@ -1995,6 +2180,7 @@ export type UserCreateWithoutInteractionsInput = {
   socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
@@ -2020,6 +2206,7 @@ export type UserUncheckedCreateWithoutInteractionsInput = {
   socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
@@ -2061,6 +2248,7 @@ export type UserUpdateWithoutInteractionsInput = {
   socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
@@ -2086,6 +2274,7 @@ export type UserUncheckedUpdateWithoutInteractionsInput = {
   socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
@@ -2111,6 +2300,7 @@ export type UserCreateWithoutCommentsInput = {
   socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
@@ -2136,6 +2326,7 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
@@ -2177,6 +2368,7 @@ export type UserUpdateWithoutCommentsInput = {
   socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
@@ -2202,6 +2394,7 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
@@ -2227,6 +2420,7 @@ export type UserCreateWithoutContactMessagesInput = {
   socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
@@ -2252,6 +2446,7 @@ export type UserUncheckedCreateWithoutContactMessagesInput = {
   socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
@@ -2293,6 +2488,7 @@ export type UserUpdateWithoutContactMessagesInput = {
   socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
@@ -2318,6 +2514,7 @@ export type UserUncheckedUpdateWithoutContactMessagesInput = {
   socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
@@ -2343,6 +2540,7 @@ export type UserCreateWithoutWorkspaceSettingsInput = {
   socialLinks?: Prisma.SocialLinkCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutUserInput
@@ -2368,6 +2566,7 @@ export type UserUncheckedCreateWithoutWorkspaceSettingsInput = {
   socialLinks?: Prisma.SocialLinkUncheckedCreateNestedManyWithoutUserInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   educations?: Prisma.EducationUncheckedCreateNestedManyWithoutUserInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedCreateNestedManyWithoutUserInput
   workExperiences?: Prisma.CompanyUncheckedCreateNestedManyWithoutUserInput
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutUserInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutUserInput
@@ -2409,6 +2608,7 @@ export type UserUpdateWithoutWorkspaceSettingsInput = {
   socialLinks?: Prisma.SocialLinkUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutUserNestedInput
@@ -2434,6 +2634,7 @@ export type UserUncheckedUpdateWithoutWorkspaceSettingsInput = {
   socialLinks?: Prisma.SocialLinkUncheckedUpdateManyWithoutUserNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   educations?: Prisma.EducationUncheckedUpdateManyWithoutUserNestedInput
+  featuredWorks?: Prisma.FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput
   workExperiences?: Prisma.CompanyUncheckedUpdateManyWithoutUserNestedInput
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutUserNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutUserNestedInput
@@ -2455,6 +2656,7 @@ export type UserCountOutputType = {
   socialLinks: number
   blogs: number
   educations: number
+  featuredWorks: number
   workExperiences: number
   projects: number
   techStacks: number
@@ -2471,6 +2673,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   socialLinks?: boolean | UserCountOutputTypeCountSocialLinksArgs
   blogs?: boolean | UserCountOutputTypeCountBlogsArgs
   educations?: boolean | UserCountOutputTypeCountEducationsArgs
+  featuredWorks?: boolean | UserCountOutputTypeCountFeaturedWorksArgs
   workExperiences?: boolean | UserCountOutputTypeCountWorkExperiencesArgs
   projects?: boolean | UserCountOutputTypeCountProjectsArgs
   techStacks?: boolean | UserCountOutputTypeCountTechStacksArgs
@@ -2524,6 +2727,13 @@ export type UserCountOutputTypeCountBlogsArgs<ExtArgs extends runtime.Types.Exte
  */
 export type UserCountOutputTypeCountEducationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.EducationWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountFeaturedWorksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FeaturedWorkWhereInput
 }
 
 /**
@@ -2598,6 +2808,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   socialLinks?: boolean | Prisma.User$socialLinksArgs<ExtArgs>
   blogs?: boolean | Prisma.User$blogsArgs<ExtArgs>
   educations?: boolean | Prisma.User$educationsArgs<ExtArgs>
+  featuredWorks?: boolean | Prisma.User$featuredWorksArgs<ExtArgs>
   workExperiences?: boolean | Prisma.User$workExperiencesArgs<ExtArgs>
   projects?: boolean | Prisma.User$projectsArgs<ExtArgs>
   techStacks?: boolean | Prisma.User$techStacksArgs<ExtArgs>
@@ -2651,6 +2862,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   socialLinks?: boolean | Prisma.User$socialLinksArgs<ExtArgs>
   blogs?: boolean | Prisma.User$blogsArgs<ExtArgs>
   educations?: boolean | Prisma.User$educationsArgs<ExtArgs>
+  featuredWorks?: boolean | Prisma.User$featuredWorksArgs<ExtArgs>
   workExperiences?: boolean | Prisma.User$workExperiencesArgs<ExtArgs>
   projects?: boolean | Prisma.User$projectsArgs<ExtArgs>
   techStacks?: boolean | Prisma.User$techStacksArgs<ExtArgs>
@@ -2674,6 +2886,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     socialLinks: Prisma.$SocialLinkPayload<ExtArgs>[]
     blogs: Prisma.$BlogPayload<ExtArgs>[]
     educations: Prisma.$EducationPayload<ExtArgs>[]
+    featuredWorks: Prisma.$FeaturedWorkPayload<ExtArgs>[]
     workExperiences: Prisma.$CompanyPayload<ExtArgs>[]
     projects: Prisma.$ProjectPayload<ExtArgs>[]
     techStacks: Prisma.$TechStackPayload<ExtArgs>[]
@@ -3093,6 +3306,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   socialLinks<T extends Prisma.User$socialLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$socialLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SocialLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   blogs<T extends Prisma.User$blogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$blogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   educations<T extends Prisma.User$educationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$educationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EducationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  featuredWorks<T extends Prisma.User$featuredWorksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$featuredWorksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeaturedWorkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   workExperiences<T extends Prisma.User$workExperiencesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$workExperiencesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   projects<T extends Prisma.User$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   techStacks<T extends Prisma.User$techStacksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$techStacksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TechStackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3668,6 +3882,30 @@ export type User$educationsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.EducationScalarFieldEnum | Prisma.EducationScalarFieldEnum[]
+}
+
+/**
+ * User.featuredWorks
+ */
+export type User$featuredWorksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FeaturedWork
+   */
+  select?: Prisma.FeaturedWorkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FeaturedWork
+   */
+  omit?: Prisma.FeaturedWorkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FeaturedWorkInclude<ExtArgs> | null
+  where?: Prisma.FeaturedWorkWhereInput
+  orderBy?: Prisma.FeaturedWorkOrderByWithRelationInput | Prisma.FeaturedWorkOrderByWithRelationInput[]
+  cursor?: Prisma.FeaturedWorkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FeaturedWorkScalarFieldEnum | Prisma.FeaturedWorkScalarFieldEnum[]
 }
 
 /**

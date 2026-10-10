@@ -542,10 +542,6 @@ export type ProjectUpdateOneRequiredWithoutTechStacksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutTechStacksInput, Prisma.ProjectUpdateWithoutTechStacksInput>, Prisma.ProjectUncheckedUpdateWithoutTechStacksInput>
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type ProjectCreateNestedOneWithoutTranslationsInput = {
   create?: Prisma.XOR<Prisma.ProjectCreateWithoutTranslationsInput, Prisma.ProjectUncheckedCreateWithoutTranslationsInput>
   connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutTranslationsInput
