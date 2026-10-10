@@ -26,12 +26,12 @@ describe('buildPullRequestQuery', () => {
 describe('mapPullRequestResponse', () => {
   it('maps each alias back to its ref by position', () => {
     const out = mapPullRequestResponse(refs, {
-      pr0: { nameWithOwner: 'roboflow/rf-detr', stargazerCount: 4200, pullRequest: { merged: true } },
-      pr1: { nameWithOwner: 'a/b', stargazerCount: 3, pullRequest: { merged: false } },
+      pr0: { nameWithOwner: 'roboflow/rf-detr', stargazerCount: 4200, pullRequest: { number: 512 } },
+      pr1: { nameWithOwner: 'a/b', stargazerCount: 3, pullRequest: { number: 7 } },
     });
     expect(out).toEqual([
-      { repo: 'roboflow/rf-detr', stars: 4200, merged: true },
-      { repo: 'a/b', stars: 3, merged: false },
+      { repo: 'roboflow/rf-detr', stars: 4200 },
+      { repo: 'a/b', stars: 3 },
     ]);
   });
 
@@ -43,9 +43,9 @@ describe('mapPullRequestResponse', () => {
     expect(out).toEqual([null, null]);
     const mixed = mapPullRequestResponse(refs, {
       pr0: null,
-      pr1: { nameWithOwner: 'a/b', stargazerCount: 3, pullRequest: { merged: true } },
+      pr1: { nameWithOwner: 'a/b', stargazerCount: 3, pullRequest: { number: 512 } },
     });
-    expect(mixed).toEqual([null, { repo: 'a/b', stars: 3, merged: true }]);
+    expect(mixed).toEqual([null, { repo: 'a/b', stars: 3 }]);
   });
 
   it('returns an empty list for no refs', () => {

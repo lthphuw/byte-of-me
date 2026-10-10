@@ -41,11 +41,6 @@ export function FeaturedWorkRow({
           <Star aria-hidden className="size-3.5" />
           {t('featuredStars', { count: github.stars })}
         </span>
-        {github.merged && (
-          <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
-            {t('featuredMerged')}
-          </span>
-        )}
       </>
     );
   } else if (host) {

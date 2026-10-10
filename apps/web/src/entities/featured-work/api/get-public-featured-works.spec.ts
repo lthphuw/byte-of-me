@@ -24,7 +24,7 @@ Object.defineProperty(prisma, 'featuredWork', {
 });
 
 const PR_URL = 'https://github.com/roboflow/rf-detr/pull/512';
-const GITHUB: FeaturedWorkGithub = { repo: 'roboflow/rf-detr', stars: 4200, merged: true };
+const GITHUB: FeaturedWorkGithub = { repo: 'roboflow/rf-detr', stars: 4200 };
 
 const DETAILS_EN = doc('How it was done.');
 const DETAILS_VI = doc('Cách làm.');

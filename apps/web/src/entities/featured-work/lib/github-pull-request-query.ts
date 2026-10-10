@@ -3,7 +3,7 @@ import type { FeaturedWorkGithub, GithubPullRequestRef } from '@/entities/featur
 export type RepositoryNode = {
   nameWithOwner: string;
   stargazerCount: number;
-  pullRequest: { merged: boolean } | null;
+  pullRequest: { number: number } | null;
 } | null;
 
 /**
@@ -18,7 +18,7 @@ export function buildPullRequestQuery(refs: GithubPullRequestRef[]) {
     variables[`n${i}`] = ref.repo;
     variables[`p${i}`] = ref.number;
     params.push(`$o${i}: String!`, `$n${i}: String!`, `$p${i}: Int!`);
-    return `pr${i}: repository(owner: $o${i}, name: $n${i}) { nameWithOwner stargazerCount pullRequest(number: $p${i}) { merged } }`;
+    return `pr${i}: repository(owner: $o${i}, name: $n${i}) { nameWithOwner stargazerCount pullRequest(number: $p${i}) { number } }`;
   });
   return { query: `query (${params.join(', ')}) { ${fields.join(' ')} }`, variables };
 }
@@ -30,6 +30,6 @@ export function mapPullRequestResponse(
   return refs.map((_, i) => {
     const node = data[`pr${i}`];
     if (!node?.pullRequest) return null;
-    return { repo: node.nameWithOwner, stars: node.stargazerCount, merged: node.pullRequest.merged };
+    return { repo: node.nameWithOwner, stars: node.stargazerCount };
   });
 }

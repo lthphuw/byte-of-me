@@ -17,7 +17,7 @@ interface GraphqlResponse {
 }
 
 /**
- * Repo, stars and merged state per pull request, aligned to `refs` (null where
+ * Repo and stars per pull request, aligned to `refs` (null where
  * unresolved). Throws on transport failure or no `data`; partial `data` is used.
  */
 export async function fetchFeaturedWorkGithub(

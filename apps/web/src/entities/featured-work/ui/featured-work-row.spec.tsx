@@ -1,6 +1,6 @@
 /**
  * What a visitor can observe on one featured-work line: the link behaviour, the
- * number, the Merged marker and the repo/host line. Renders the real component
+ * number and the repo/host line. Renders the real component
  * inside the real English catalogue.
  */
 import { cleanup, render, screen } from '@testing-library/react';
@@ -24,7 +24,7 @@ const base: PublicFeaturedWork = {
   detailsHtml: null,
   url: 'https://github.com/roboflow/rf-detr/pull/512',
   host: 'github.com',
-  github: { repo: 'roboflow/rf-detr', stars: 4200, merged: true },
+  github: { repo: 'roboflow/rf-detr', stars: 4200 },
   media: [],
 };
 
@@ -57,15 +57,6 @@ describe('FeaturedWorkRow', () => {
     expect(screen.getByText('Faster detector export')).toBeTruthy();
   });
 
-  it('shows Merged only for a merged pull request', () => {
-    renderRow();
-    expect(screen.getByText('Merged')).toBeTruthy();
-    cleanup();
-
-    renderRow({ github: { repo: 'roboflow/rf-detr', stars: 1, merged: false } });
-    expect(screen.queryByText('Merged')).toBeNull();
-  });
-
   it('shows the repository and its star count when GitHub details exist', () => {
     renderRow();
 
@@ -78,7 +69,6 @@ describe('FeaturedWorkRow', () => {
     renderRow({ url: 'https://example.com/post', host: 'example.com', github: null });
 
     expect(screen.getByText('example.com')).toBeTruthy();
-    expect(screen.queryByText('Merged')).toBeNull();
     expect(screen.queryByText(/stars?$/)).toBeNull();
   });
 
@@ -103,7 +93,7 @@ describe('FeaturedWorkRow', () => {
     render(
       <NextIntlClientProvider locale="vi" messages={{ homepage }}>
         <FeaturedWorkRow
-          work={{ ...base, github: { repo: 'a/b', stars: 9755, merged: false } }}
+          work={{ ...base, github: { repo: 'a/b', stars: 9755 } }}
           index={0}
         />
       </NextIntlClientProvider>

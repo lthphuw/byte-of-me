@@ -22,16 +22,16 @@ describe('fetchFeaturedWorkGithub', () => {
   it('posts one authenticated query and maps the aliases back to the refs', async () => {
     const fetchImpl = respond({
       data: {
-        pr0: { nameWithOwner: 'roboflow/rf-detr', stargazerCount: 4200, pullRequest: { merged: true } },
-        pr1: { nameWithOwner: 'a/b', stargazerCount: 3, pullRequest: { merged: false } },
+        pr0: { nameWithOwner: 'roboflow/rf-detr', stargazerCount: 4200, pullRequest: { number: 512 } },
+        pr1: { nameWithOwner: 'a/b', stargazerCount: 3, pullRequest: { number: 7 } },
       },
     });
 
     const out = await fetchFeaturedWorkGithub(refs, 'secret', fetchImpl);
 
     expect(out).toEqual([
-      { repo: 'roboflow/rf-detr', stars: 4200, merged: true },
-      { repo: 'a/b', stars: 3, merged: false },
+      { repo: 'roboflow/rf-detr', stars: 4200 },
+      { repo: 'a/b', stars: 3 },
     ]);
     const [url, init] = (fetchImpl as unknown as ReturnType<typeof mock>).mock.calls[0] as [
       string,
@@ -45,14 +45,14 @@ describe('fetchFeaturedWorkGithub', () => {
   it('keeps the resolved aliases when GitHub reports errors for the others', async () => {
     const fetchImpl = respond({
       data: {
-        pr0: { nameWithOwner: 'roboflow/rf-detr', stargazerCount: 10, pullRequest: { merged: true } },
+        pr0: { nameWithOwner: 'roboflow/rf-detr', stargazerCount: 10, pullRequest: { number: 512 } },
         pr1: null,
       },
       errors: [{ message: "Could not resolve to a Repository with the name 'a/b'." }],
     });
 
     expect(await fetchFeaturedWorkGithub(refs, 'token', fetchImpl)).toEqual([
-      { repo: 'roboflow/rf-detr', stars: 10, merged: true },
+      { repo: 'roboflow/rf-detr', stars: 10 },
       null,
     ]);
   });

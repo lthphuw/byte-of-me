@@ -244,7 +244,6 @@ declare const messages: {
     "openSourceTitle": "Open source",
     "viewAllContributions": "Tất cả đóng góp",
     "featuredWorksTitle": "Featured works",
-    "featuredMerged": "Đã merge",
     "featuredStars": "{count, number} sao",
     "featuredViewOnGithub": "Xem trên GitHub",
     "featuredVisitHost": "Truy cập {host}",

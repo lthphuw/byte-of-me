@@ -50,7 +50,7 @@ interface FeaturedWorkItemProps {
   number: string;
   title: string;
   description: string | null;
-  /** The repo / stars / Merged block, or the host. Null when there is nothing to show. */
+  /** The repo / stars block, or the host. Null when there is nothing to show. */
   meta: ReactNode;
   /** Plain rows only: the whole row becomes this external link. */
   href: string | null;
