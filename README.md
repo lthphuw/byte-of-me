@@ -24,7 +24,7 @@ The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced 
 - **Filterable, paginated** project and blog listings with shareable, URL-based filters.
 - **A vertical experience timeline** rendered from live CMS data (companies → roles → tasks).
 - **Contact form** that persists the message and delivers it over SMTP (Nodemailer).
-- **SEO & sharing built in** — dynamic OG images (`/api/og`, Satori), `sitemap.ts`, `robots.ts`, PWA manifest (`public/site.webmanifest`), per-route metadata.
+- **SEO & sharing built in** — dynamic OG images (`/api/og`, Satori), `sitemap.ts`, `robots.ts`, `/llms.txt` (an index for AI assistants), PWA manifest (`public/site.webmanifest`), per-route metadata.
 
 ### Private CMS dashboard
 - Manage **blogs, projects, companies & roles, education, tags, tech stacks, media, comments, social links, user profile, and translations** from one place.

@@ -18,7 +18,7 @@ environment variables, and the monorepo overview.
 | `/api/auth/[...nextauth]` | — | Auth.js handlers |
 | `/api/og` | — | Dynamic Open Graph images |
 
-`robots.ts`, `sitemap.ts` and `feed.xml/route.ts` sit alongside the routes. The PWA manifest is the static `public/site.webmanifest`.
+`robots.ts`, `sitemap.ts`, `feed.xml/route.ts` and `llms.txt/route.ts` sit alongside the routes. The PWA manifest is the static `public/site.webmanifest`.
 
 Dashboard sections: `blogs`, `comments`, `companies`, `educations`, `featured-works`, `media`,
 `projects`, `tags`, `tech-stacks`, `user-profile`.

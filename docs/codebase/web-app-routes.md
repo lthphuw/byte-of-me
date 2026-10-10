@@ -14,6 +14,7 @@ apps/web/src/
     providers/                      GlobalProvider: Query, Motion, Theme, Toaster, GA, SpeedInsights
     robots.ts, sitemap.ts           metadata routes -> /robots.txt, /sitemap.xml
     feed.xml/route.ts               route handler -> /feed.xml (RSS 2.0)
+    llms.txt/route.ts               route handler -> /llms.txt (plain-text index for AI assistants)
     api/auth/[...nextauth]/         route handler -> NextAuth GET, POST
     api/og/route.tsx                route handler -> /api/og (1200x630 PNG)
     [locale]/
@@ -39,7 +40,7 @@ apps/web/src/
 - **Login**: `apps/web/src/app/[locale]/(auth)/layout.tsx:16-20` sends a signed-in admin to `/dashboard`.
 - **Redirects**: `apps/web/next.config.js:192-207`: `/about` to `/`, `/:locale(en|vi)/about` to `/:locale`, both permanent.
 - **Route handlers**: `apps/web/src/app/api/og/route.tsx:47-170` takes `?title` (max 80) and `?subtitle` (max 90), reads Cal Sans with `readFile`, returns 500 text on failure. `apps/web/src/app/api/auth/[...nextauth]/route.ts:3` exports `GET`, `POST` from `handlers`. `apps/web/src/app/feed.xml/route.ts` is RSS for the default locale only, `revalidate = 3600` (`:8`).
-- **Metadata routes**: `apps/web/src/app/robots.ts` allows `/api/og`, disallows `/dashboard`, `/en/dashboard`, `/vi/dashboard` and `/api/` (`:7-19`). `apps/web/src/app/sitemap.ts` lists `sitemapConfig` keys plus every published post (`getPublishedBlogs`), in every locale. A post's `lastmod` is its `updatedAt`; static pages carry none. Each URL lists `x-default` beside `en` and `vi`.
+- **Metadata routes**: `apps/web/src/app/robots.ts` allows `/api/og`, disallows `/dashboard`, `/en/dashboard`, `/vi/dashboard` and `/api/` (`:7-19`). `apps/web/src/app/sitemap.ts` lists `sitemapConfig` keys plus every published post (`getPublishedBlogs`), in every locale. A post's `lastmod` is its `updatedAt`; static pages carry none. Each URL lists `x-default` beside `en` and `vi`. `apps/web/src/app/llms.txt/route.ts` serves `/llms.txt`: the homepage, the list pages and every published post with its summary, English only, `revalidate = 3600`.
 - **Edge caching**: `apps/web/next.config.js:208-300` `headers()`, in the match order below.
 
 **Cache-Control rules, match order** (`apps/web/next.config.js`)
