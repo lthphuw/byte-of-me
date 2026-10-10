@@ -61,7 +61,7 @@ export function FeaturedWorkRow({
       isVideo: isVideoMimeType(item.mimeType),
       caption: item.label,
       name,
-      toggleLabel: t('featuredDemoToggle', { label: name }),
+      playLabel: t('featuredDemoPlay', { label: name }),
     };
   });
   const expandable = Boolean(details) || media.length > 0;

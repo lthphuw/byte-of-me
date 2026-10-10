@@ -5,6 +5,10 @@ import { ArrowUpRight, ChevronDown } from 'lucide-react';
 
 import { FeaturedWorkDemo, type FeaturedWorkDemoItem } from './featured-work-demo';
 import {
+  BODY_CLIP_SPAN,
+  BODY_GRID,
+  BODY_SPAN,
+  DEMO_CELL,
   PLAIN_ROW_HEADER,
   ROW_BODY_STACK,
   ROW_DESCRIPTION_TEXT,
@@ -12,6 +16,7 @@ import {
   ROW_NUMBER_TEXT,
   ROW_TITLE_TEXT,
   ROW_TRACKS,
+  TITLE_CELL,
 } from './featured-work-row-classes';
 
 import { cn } from '@/shared/lib/utils';
@@ -42,12 +47,6 @@ const HIT_AREA =
  */
 const CHEVRON_IDLE = 'transition-none';
 const CHEVRON_ARMED = 'transition-transform motion-reduce:transition-none';
-/**
- * With a demo, the body spans the title and meta columns from md and passes the row's
- * two tracks down through subgrids: the details and the link keep the title column,
- * the demo takes both. The subgrid's -mx-1/px-1 clip box cancels out in track sizing.
- */
-const BODY_SPAN = 'md:col-span-2 md:grid-cols-subgrid';
 const ROW_LINK =
   '-mx-3 block rounded-lg px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 
@@ -176,14 +175,14 @@ export function FeaturedWorkItem({
         open={open}
         animated={hasToggled}
         className={cn('col-start-2 min-w-0', hasMedia && BODY_SPAN)}
-        innerClassName={hasMedia ? 'md:col-span-2 md:grid-cols-subgrid md:grid' : undefined}
+        innerClassName={hasMedia ? BODY_CLIP_SPAN : undefined}
       >
         {/* The bottom padding sits inside the clip box, so a closed row keeps only the header's padding. */}
         {hasMedia ? (
-          <div className="grid grid-cols-1 gap-y-4 pb-5 md:col-span-2 md:grid-cols-subgrid">
-            {details && <div className="min-w-0 md:col-start-1">{details}</div>}
-            <FeaturedWorkDemo media={media} open={open} className="md:col-span-2" />
-            {footer && <div className="min-w-0 md:col-start-1">{footer}</div>}
+          <div className={BODY_GRID}>
+            {details && <div className={TITLE_CELL}>{details}</div>}
+            <FeaturedWorkDemo media={media} open={open} className={DEMO_CELL} />
+            {footer && <div className={TITLE_CELL}>{footer}</div>}
           </div>
         ) : (
           <div className="pb-5">

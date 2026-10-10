@@ -15,7 +15,7 @@ const fp16: FeaturedWorkDemoItem = {
   isVideo: true,
   caption: 'FP16',
   name: 'FP16',
-  toggleLabel: 'Play/Pause FP16',
+  playLabel: 'Play FP16',
 };
 const int8: FeaturedWorkDemoItem = {
   id: 'm2',
@@ -23,7 +23,7 @@ const int8: FeaturedWorkDemoItem = {
   isVideo: false,
   caption: 'INT8',
   name: 'INT8',
-  toggleLabel: 'Play/Pause INT8',
+  playLabel: 'Play INT8',
 };
 
 // --- browser stubs -------------------------------------------------------------
@@ -122,7 +122,7 @@ afterEach(() => {
   while (restores.length) restores.pop()?.();
 });
 
-const clip = () => screen.getByRole('button', { name: 'Play/Pause FP16' });
+const clip = () => screen.getByRole('button', { name: 'Play FP16' });
 const videoEl = () => {
   const video = document.querySelector('video');
   if (!video) throw new Error('no video mounted');
@@ -151,6 +151,14 @@ describe('FeaturedWorkDemo mounting', () => {
     rerender(<FeaturedWorkDemo media={[fp16, int8]} open={false} />);
     expect(container.querySelector('video')).not.toBeNull();
     expect(container.querySelector('img')).not.toBeNull();
+  });
+
+  it('keeps the empty frames out of a print of a row that was never opened', () => {
+    const { container, rerender } = render(<FeaturedWorkDemo media={[fp16]} open={false} />);
+    expect(container.querySelector('figure')?.classList.contains('print:hidden')).toBe(true);
+
+    rerender(<FeaturedWorkDemo media={[fp16]} open />);
+    expect(container.querySelector('figure')?.classList.contains('print:hidden')).toBe(false);
   });
 
   it('mounts at once when it first renders inside an already open row', () => {
@@ -263,13 +271,37 @@ describe('FeaturedWorkDemo video', () => {
     expect(calls).not.toContain('play');
   });
 
-  it('survives a refused play() without throwing', () => {
+  it('survives a refused play() without throwing, and still shows the play mark', () => {
     HTMLMediaElement.prototype.play = () =>
       Promise.reject(new DOMException('blocked', 'NotAllowedError'));
     render(<FeaturedWorkDemo media={[fp16]} open />);
 
     expect(() => visible(true)).not.toThrow();
     expect(clip().getAttribute('aria-pressed')).toBe('false');
+    expect(clip().querySelector('svg')).not.toBeNull();
+  });
+
+  it('shows the play mark only while the clip is not moving', () => {
+    render(<FeaturedWorkDemo media={[fp16]} open />);
+    expect(clip().querySelector('svg')).not.toBeNull();
+
+    visible(true);
+    expect(clip().querySelector('svg')).toBeNull();
+
+    fireEvent.click(clip());
+    expect(clip().querySelector('svg')).not.toBeNull();
+  });
+
+  it('keeps the frame but drops the button when the clip fails to load', () => {
+    const { container } = render(<FeaturedWorkDemo media={[fp16]} open />);
+
+    act(() => {
+      videoEl().dispatchEvent(new Event('error'));
+    });
+
+    expect(screen.queryByRole('button')).toBeNull();
+    expect(container.querySelector('video')).toBeNull();
+    expect(container.querySelector('figure .aspect-video')).not.toBeNull();
   });
 });
 

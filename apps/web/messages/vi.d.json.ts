@@ -248,7 +248,7 @@ declare const messages: {
     "featuredViewOnGithub": "Xem trên GitHub",
     "featuredVisitHost": "Truy cập {host}",
     "featuredOpensInNewTab": "(mở trong tab mới)",
-    "featuredDemoToggle": "Phát/Tạm dừng {label}",
+    "featuredDemoPlay": "Phát {label}",
     "skillsTitle": "Công nghệ",
     "educationTitle": "Học vấn",
     "present": "Hiện tại",

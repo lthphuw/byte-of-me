@@ -182,7 +182,7 @@ describe('FeaturedWorkRow with a demo', () => {
     renderRow({ media });
     fireEvent.click(screen.getByRole('button', { name: 'Faster detector export' }));
 
-    expect(screen.getByRole('button', { name: 'Play/Pause FP16' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Play FP16' })).toBeTruthy();
     expect(screen.getByRole('img', { name: 'Faster detector export' })).toBeTruthy();
     expect(document.querySelectorAll('figcaption')).toHaveLength(1);
   });
@@ -196,6 +196,6 @@ describe('FeaturedWorkRow with a demo', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: 'Faster detector export' }));
 
-    expect(screen.getByRole('button', { name: 'Phát/Tạm dừng FP16' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Phát FP16' })).toBeTruthy();
   });
 });

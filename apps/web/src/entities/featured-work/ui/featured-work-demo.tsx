@@ -16,8 +16,8 @@ export interface FeaturedWorkDemoItem {
   caption: string | null;
   /** The image's alt: the label, else the work title. */
   name: string;
-  /** The video button's accessible name: "Play/Pause {name}". */
-  toggleLabel: string;
+  /** The video button's accessible name: "Play {name}"; `aria-pressed` says it plays. */
+  playLabel: string;
 }
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
@@ -46,11 +46,11 @@ function playQuietly(video: HTMLVideoElement) {
  */
 function DemoVideo({
   src,
-  toggleLabel,
+  playLabel,
   open,
 }: {
   src: string;
-  toggleLabel: string;
+  playLabel: string;
   open: boolean;
 }) {
   const reducedMotion = useMediaQuery(REDUCED_MOTION);
@@ -59,6 +59,7 @@ function DemoVideo({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
   const [userPaused, setUserPaused] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   // A pause the visitor chose lasts until the row closes.
   useEffect(() => {
@@ -67,10 +68,10 @@ function DemoVideo({
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || failed) return;
     if (open && inView && !reducedMotion && !userPaused) playQuietly(video);
     else video.pause();
-  }, [open, inView, reducedMotion, userPaused]);
+  }, [open, inView, reducedMotion, userPaused, failed]);
 
   const toggle = () => {
     const video = videoRef.current;
@@ -84,14 +85,17 @@ function DemoVideo({
     }
   };
 
+  // A clip that will not load keeps its frame and is no longer offered as playable.
+  if (failed) return <Frame />;
+
   return (
     <button
       ref={frameRef}
       type="button"
-      aria-label={toggleLabel}
+      aria-label={playLabel}
       aria-pressed={playing}
       onClick={toggle}
-      className="block w-full rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      className="block w-full rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
     >
       <Frame>
         <video
@@ -103,9 +107,14 @@ function DemoVideo({
           preload="metadata"
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
+          onError={() => {
+            setPlaying(false);
+            setFailed(true);
+          }}
           className="size-full object-contain"
         />
-        {!playing && (reducedMotion || userPaused) && (
+        {/* Shown whenever the clip is not moving, so a refused play() still reads as tappable. */}
+        {!playing && (
           <span className="absolute inset-0 flex items-center justify-center">
             <span className="flex size-12 items-center justify-center rounded-full bg-background/80 text-foreground">
               <Play aria-hidden className="size-5 fill-current" />
@@ -128,7 +137,7 @@ function DemoFigure({
 }) {
   let media: ReactNode = <Frame />;
   if (mounted && item.isVideo) {
-    media = <DemoVideo src={item.url} toggleLabel={item.toggleLabel} open={open} />;
+    media = <DemoVideo src={item.url} playLabel={item.playLabel} open={open} />;
   } else if (mounted) {
     media = (
       <Frame>
@@ -146,7 +155,8 @@ function DemoFigure({
   }
 
   return (
-    <figure className="min-w-0">
+    // A never-opened row prints its text but no empty frames.
+    <figure className={cn('min-w-0', !mounted && 'print:hidden')}>
       {media}
       {item.caption && (
         <figcaption className="mt-2 font-mono text-xs text-muted-foreground [overflow-wrap:anywhere]">

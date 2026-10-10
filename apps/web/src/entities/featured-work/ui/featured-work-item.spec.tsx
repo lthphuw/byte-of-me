@@ -209,7 +209,7 @@ const pair: ComponentProps<typeof FeaturedWorkItem>['media'] = [
     isVideo: true,
     caption: 'FP16',
     name: 'FP16',
-    toggleLabel: 'Play/Pause FP16',
+    playLabel: 'Play FP16',
   },
   {
     id: 'm2',
@@ -217,7 +217,7 @@ const pair: ComponentProps<typeof FeaturedWorkItem>['media'] = [
     isVideo: false,
     caption: 'INT8',
     name: 'INT8',
-    toggleLabel: 'Play/Pause INT8',
+    playLabel: 'Play INT8',
   },
 ];
 /** A work with a demo and no details: the shape of the first live work. */
@@ -257,7 +257,7 @@ describe('FeaturedWorkItem demo', () => {
   it('leaves the clip out of the tab order while the row is closed', () => {
     renderItem(mediaOnly);
     fireEvent.click(toggle());
-    const clip = screen.getByRole('button', { name: 'Play/Pause FP16' });
+    const clip = screen.getByRole('button', { name: 'Play FP16' });
     expect(clip.closest('[inert]')).toBeNull();
 
     fireEvent.click(toggle());
@@ -292,5 +292,48 @@ describe('FeaturedWorkItem demo', () => {
       const position = order[i]?.compareDocumentPosition(order[i + 1] as Node);
       expect((position ?? 0) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     }
+  });
+});
+
+/**
+ * happy-dom cannot lay anything out, so the grid is pinned as a class contract.
+ * Tailwind 3 emits `col-span-N` as `grid-column: span N / span N`, which resets an
+ * explicit `col-start-*` at the same breakpoint: the item then auto-places into column 1.
+ */
+describe('FeaturedWorkItem body grid classes', () => {
+  const ORDER = ['', 'sm', 'md', 'lg', 'xl'];
+  /** Breakpoint rank of a utility: `md:col-span-2` -> 2, `col-start-2` -> 0. */
+  const rankOf = (name: string) =>
+    ORDER.indexOf(name.includes(':') ? name.slice(0, name.lastIndexOf(':')) : '');
+  const isSpan = (name: string) => /(^|:)col-span-/.test(name);
+  const isStart = (name: string) => /(^|:)col-start-/.test(name);
+
+  it('never lets a col-span reset a col-start that applies at its breakpoint', () => {
+    window.location.hash = `#${ANCHOR}`;
+    const { container } = renderItem({
+      media: pair,
+      footer: <a href="https://example.com/work">Visit example.com</a>,
+    });
+
+    // A span at `md` also wipes a base `col-start-2`, so every start at or below it counts.
+    const offenders: string[] = [];
+    for (const element of container.querySelectorAll<HTMLElement>('[class]')) {
+      const classes = [...element.classList];
+      for (const span of classes.filter(isSpan)) {
+        for (const start of classes.filter(isStart)) {
+          if (rankOf(start) <= rankOf(span)) offenders.push(`${span} + ${start}`);
+        }
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  it('places the region from the title track to the last line, from md', () => {
+    const { container } = renderItem(mediaOnly);
+    const region = container.querySelector<HTMLElement>(`#${ANCHOR}-details`);
+
+    expect(region?.classList.contains('col-start-2')).toBe(true);
+    expect(region?.classList.contains('md:col-end-[-1]')).toBe(true);
+    expect(region?.classList.contains('md:grid-cols-subgrid')).toBe(true);
   });
 });
