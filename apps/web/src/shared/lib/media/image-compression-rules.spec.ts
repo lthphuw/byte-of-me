@@ -15,6 +15,11 @@ describe('shouldSkipCompression', () => {
     expect(shouldSkipCompression('image/gif')).toBe(true);
   });
 
+  test('skips video — a clip is never decoded or re-encoded as an image', () => {
+    expect(shouldSkipCompression('video/mp4')).toBe(true);
+    expect(shouldSkipCompression('video/webm')).toBe(true);
+  });
+
   test('does not skip the raster formats compression actually targets', () => {
     expect(shouldSkipCompression('image/jpeg')).toBe(false);
     expect(shouldSkipCompression('image/png')).toBe(false);

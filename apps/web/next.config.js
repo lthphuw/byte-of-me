@@ -99,9 +99,9 @@ const nextConfig = {
 
   experimental: {
     serverActions: {
-      // A flat '20mb', not computed from the per-file ceiling times the
-      // batch size — MAX_IMAGE_SIZE_MB (3) and MAX_UPLOAD_BATCH (5) are
-      // sized to fit comfortably under it, not the other way around; see
+      // A flat '20mb', not computed from the per-file ceilings — MAX_UPLOAD_TOTAL_MB
+      // (16: five 3 MB images, or one 10 MB clip and a few images) is sized to
+      // fit comfortably under it, not the other way around; see
       // `docs(day-entry): correct why the photo limits are what they are`.
       //
       // It used to be '3mb', exactly one image's worth. A single file at the

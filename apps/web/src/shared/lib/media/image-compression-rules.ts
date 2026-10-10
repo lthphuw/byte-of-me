@@ -16,7 +16,13 @@
  * `sharp` reads only the first frame of a GIF unless told `{ animated: true }`
  * — either way, a re-encode here would silently destroy an animation.
  */
-const SKIPPED_MIME_TYPES = new Set(['image/svg+xml', 'image/gif']);
+const SKIPPED_MIME_TYPES = new Set([
+  'image/svg+xml',
+  'image/gif',
+  // Not images at all: a canvas or `sharp` pass cannot read a clip, and must never try.
+  'video/mp4',
+  'video/webm',
+]);
 
 export function shouldSkipCompression(mimeType: string): boolean {
   return SKIPPED_MIME_TYPES.has(mimeType);
