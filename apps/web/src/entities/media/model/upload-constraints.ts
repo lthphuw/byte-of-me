@@ -95,6 +95,11 @@ export const MEDIA_SCOPES = [
 
 export type MediaScope = (typeof MEDIA_SCOPES)[number];
 
+/** Why the editors refuse a clip: they draw an `<img>`; a clip is a featured work's demo. */
+export function describeVideoNotAllowed(fileName: string): string {
+  return `"${fileName}" is a video. Only images can be added here; clips belong to a featured work's demo.`;
+}
+
 export type MediaValidationError =
   | { kind: 'type'; fileName: string }
   | { kind: 'size'; fileName: string; maxSizeMb: number }

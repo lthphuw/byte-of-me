@@ -46,11 +46,28 @@ const createMany = mock(async (_args: unknown) => {
   mediaWrites.push('createMany');
   return { count: 0 };
 });
-/** How many of the asked-for media ids the admin owns; set per test. */
-type CountArgs = { where: { userId: string; id: { in: string[] }; OR: unknown[] } };
-let ownedCount: (ids: string[]) => number = (ids) => ids.length;
-const count = mock(async (args: CountArgs) =>
-  ownedCount(args.where.id.in)
+type MediaRow = { id: string; userId: string; mimeType: string };
+type MimeFilter = { mimeType: { startsWith?: string; in?: string[] } };
+type CountArgs = {
+  where: { userId: string; id: { in: string[] }; OR: MimeFilter[] };
+};
+/** The media table the fake counts over; reset to the admin's own pair per test. */
+let library: MediaRow[] = [];
+const ownImage = (id: string): MediaRow => ({ id, userId: 'admin-1', mimeType: 'image/webp' });
+// Honours every clause of the real filter, so a row the query would not match is not counted.
+const count = mock(
+  async ({ where }: CountArgs) =>
+    library.filter(
+      (row) =>
+        where.id.in.includes(row.id) &&
+        row.userId === where.userId &&
+        where.OR.some(
+          ({ mimeType }) =>
+            (mimeType.startsWith !== undefined &&
+              row.mimeType.startsWith(mimeType.startsWith)) ||
+            (mimeType.in?.includes(row.mimeType) ?? false)
+        )
+    ).length
 );
 
 const originalTransaction = Object.getOwnPropertyDescriptor(
@@ -77,7 +94,7 @@ beforeEach(() => {
   createMany.mockClear();
   count.mockClear();
   mediaWrites.length = 0;
-  ownedCount = (ids) => ids.length;
+  library = [ownImage('m-fp16'), ownImage('m-int8')];
   logError.mockClear();
 });
 
@@ -180,7 +197,7 @@ describe('updateFeaturedWork demo media', () => {
   });
 
   it("refuses media the admin does not own, and writes nothing", async () => {
-    ownedCount = (ids) => ids.length - 1;
+    library = [ownImage('m-fp16'), { ...ownImage('m-int8'), userId: 'someone-else' }];
 
     const res = await updateFeaturedWork('fw-1', {
       ...input([{ language: 'en', title: 'A' }]),
@@ -193,6 +210,31 @@ describe('updateFeaturedWork demo media', () => {
     expect(where.id.in).toEqual(['m-fp16', 'm-int8']);
     expect(update).not.toHaveBeenCalled();
     expect(mediaWrites).toEqual([]);
+  });
+
+  it('refuses a PDF in the pair, and writes nothing', async () => {
+    library = [ownImage('m-fp16'), { ...ownImage('m-int8'), mimeType: 'application/pdf' }];
+
+    const res = await updateFeaturedWork('fw-1', {
+      ...input([{ language: 'en', title: 'A' }]),
+      media: pair,
+    });
+
+    expect(res).toEqual({ success: false, errorMsg: 'Media not found' });
+    expect(update).not.toHaveBeenCalled();
+    expect(mediaWrites).toEqual([]);
+  });
+
+  it('accepts the admin\'s own image and mp4', async () => {
+    library = [ownImage('m-fp16'), { ...ownImage('m-int8'), mimeType: 'video/mp4' }];
+
+    const res = await updateFeaturedWork('fw-1', {
+      ...input([{ language: 'en', title: 'A' }]),
+      media: pair,
+    });
+
+    expect(res.success).toBe(true);
+    expect(mediaWrites).toEqual(['deleteMany', 'createMany']);
   });
 
   it('refuses a third item or the same file twice before opening a transaction', async () => {

@@ -243,4 +243,51 @@ describe('uploadMedia', () => {
     expect(twoClips.success).toBe(false);
     expect(uploadFile).not.toHaveBeenCalled();
   });
+
+  describe('polyglot payloads', () => {
+    // A valid `ftyp` box, then markup: the sniff passes, so what is stored and
+    // served must still be the video type, never something a browser would render.
+    const POLYGLOT = new Uint8Array([
+      ...MP4,
+      ...new TextEncoder().encode('<html><script>alert(document.cookie)</script></html>'),
+    ]);
+
+    it('stores an mp4 header followed by HTML as video/mp4, never a text type', async () => {
+      const res = await uploadMedia(
+        [fileOf(POLYGLOT, 'poc.mp4', 'video/mp4')],
+        'featured-work'
+      );
+
+      expect(res.success).toBe(true);
+      const [{ contentType, fileKey }] = uploadFile.mock.calls[0] as [
+        { contentType: string; fileKey: string }
+      ];
+      expect(contentType).toBe('video/mp4');
+      expect(contentType).not.toMatch(/^text\/|html|javascript/);
+      expect(fileKey).toMatch(/\.mp4$/);
+      expect(mediaCreate.mock.calls[0]?.[0].data.mimeType).toBe('video/mp4');
+    });
+
+    it.each(['image/png', 'image/jpeg', 'image/svg+xml', 'text/html', ''])(
+      'does not accept that polyglot as an image declared %p',
+      async (type) => {
+        const res = await uploadMedia([fileOf(POLYGLOT, 'poc.png', type)], 'featured-work');
+
+        expect(res.success).toBe(false);
+        expect(uploadFile).not.toHaveBeenCalled();
+        expect(mediaCreate).not.toHaveBeenCalled();
+      }
+    );
+
+    it.each([
+      ['an HTML page', HTML],
+      ['HTML dressed as an ftyp box', new TextEncoder().encode('<!--ftypisom--><script>x</script>')],
+    ])('rejects %s declared video/mp4', async (_label, bytes) => {
+      const res = await uploadMedia([fileOf(bytes, 'poc.mp4', 'video/mp4')], 'featured-work');
+
+      expect(res.success).toBe(false);
+      expect(uploadFile).not.toHaveBeenCalled();
+      expect(mediaCreate).not.toHaveBeenCalled();
+    });
+  });
 });

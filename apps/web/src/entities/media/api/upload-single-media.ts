@@ -1,6 +1,7 @@
 import { uploadMedia } from './upload-media';
 
 import {
+  describeVideoNotAllowed,
   describeViolation,
   findUploadViolation,
   isVideoMimeType,
@@ -118,7 +119,9 @@ export function createSingleMediaRecordUploader(
 
 /**
  * Builds the editors' single-image uploader, which answers with the public URL.
- * Same dependencies as `createSingleMediaRecordUploader`, which it wraps.
+ * Same dependencies as `createSingleMediaRecordUploader`, which it wraps, minus
+ * video: the editors only draw an `<img>`, and `accept="image/*"` is a picker
+ * hint a drop or a pasted blob walks straight past.
  */
 export function createSingleMediaUploader(
   deps: SingleMediaUploaderDeps = defaultDeps
@@ -133,6 +136,9 @@ function wrapAsUrlUploader(
     file: File,
     scope: MediaScope = 'general'
   ): Promise<string> {
+    if (isVideoMimeType(file.type)) {
+      throw new Error(describeVideoNotAllowed(file.name));
+    }
     return (await uploadRecord(file, scope)).url;
   };
 }
