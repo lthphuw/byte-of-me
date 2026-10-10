@@ -14,10 +14,6 @@ Live at [phu-lth.space](https://phu-lth.space/).
 
 The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced Design](https://feature-sliced.design/) on the frontend and shared workspace packages for the database, storage, logging, UI kit, and tooling config.
 
-<div align="center">
-  <img src="docs/pub1.png" alt="Byte of Me — public portfolio" width="80%" />
-</div>
-
 ---
 
 ## Highlights
@@ -51,29 +47,6 @@ The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced 
 - **Bundle discipline** — subpath exports keep TipTap out of public-site JS; `optimizePackageImports` deep-imports the barrel packages (`lucide-react`, `react-icons`, `date-fns`, `framer-motion`, …).
 - **Edge caching by route group** — public pages get `s-maxage=3600, stale-while-revalidate=86400`; every dashboard route is `no-store`.
 - **Turborepo + Bun** workspace with shared, independently-typed packages and a full `type-check → lint → test → build` gate.
-
-<div align="center">
-  <table>
-    <tr>
-      <td><img src="docs/pub2.png" alt="Projects listing with tag and tech-stack filters" /></td>
-      <td><img src="docs/pub3.png" alt="Blog detail with table of contents" /></td>
-    </tr>
-  </table>
-</div>
-
----
-
-## The dashboard
-
-<div align="center">
-  <table>
-    <tr>
-      <td><img src="docs/dash1.png" alt="Dashboard overview with content stats and analytics" /></td>
-      <td><img src="docs/dash2.png" alt="Blog management" /></td>
-      <td><img src="docs/dash3.png" alt="TipTap rich-text editor with outline panel" /></td>
-    </tr>
-  </table>
-</div>
 
 ---
 
@@ -146,8 +119,7 @@ byte-of-me/
 ├── docs/                         # index: docs/README.md
 │   ├── setup.md · environment.md # first-time setup, env reference
 │   ├── architecture.md           # System diagrams (Mermaid)
-│   ├── codebase/                 # per-area code guides
-│   └── *.png                     # Screenshots
+│   └── codebase/                 # per-area code guides
 ├── scripts/check.sh              # Full verification suite
 └── docker-compose.yml            # PostgreSQL 17.6 + Mailpit
 ```
