@@ -10,6 +10,7 @@ import {
 import { getImageCompressionSettings } from '@/entities/workspace-settings/api/get-image-compression-settings';
 import { compressInBrowser } from '@/shared/lib/media/compress-in-browser';
 import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
+import type { Media } from '@/shared/types/models';
 
 /**
  * How long a fetched config is reused. A settings change reaches the client
@@ -28,10 +29,12 @@ const defaultDeps = {
 type SingleMediaUploaderDeps = typeof defaultDeps;
 
 /**
- * Builds the editors' single-image uploader. Dependencies are injectable so the
- * memo and the compression bound can be exercised without a server action.
+ * Builds the single-file uploader that answers with the stored `Media` row, for
+ * callers that attach the file by id (the featured-work demo pair). Dependencies
+ * are injectable so the memo and the compression bound can be exercised without
+ * a server action.
  */
-export function createSingleMediaUploader(
+export function createSingleMediaRecordUploader(
   deps: SingleMediaUploaderDeps = defaultDeps
 ) {
   let cachedConfig: {
@@ -80,15 +83,15 @@ export function createSingleMediaUploader(
   };
 
   /**
-   * Uploads one image (or mp4/webm clip) and returns its public URL.
+   * Uploads one image (or mp4/webm clip) and returns the stored row.
    * Compresses BEFORE validating: a 5 MB phone photo that compresses to 400 KB
    * must not be refused for its raw size. A clip is never compressed, so it skips
    * the settings read too. Throws: that is `ImageUploadFn`'s contract.
    */
-  return async function uploadSingleMedia(
+  return async function uploadSingleMediaRecord(
     file: File,
     scope: MediaScope = 'general'
-  ): Promise<string> {
+  ): Promise<Media> {
     const compressed = isVideoMimeType(file.type)
       ? file
       : await compressBounded(file, await getCompressionConfig());
@@ -102,18 +105,41 @@ export function createSingleMediaUploader(
 
     const res = await deps.upload([compressed], scope);
 
-    if (!res?.success || !res.data?.[0].url) {
+    if (!res?.success || !res.data?.[0]?.url) {
       // Carry the server's reason up. It used to be flattened to a bare "Upload
       // failed", which the editor then swallowed into the console — leaving the
       // author looking at a `blob:` URL that only resolves in their own tab.
       throw new Error(res?.errorMsg || 'Upload failed');
     }
 
-    return res.data[0].url;
+    return res.data[0];
   };
 }
 
-export const uploadSingleMedia = createSingleMediaUploader();
+/**
+ * Builds the editors' single-image uploader, which answers with the public URL.
+ * Same dependencies as `createSingleMediaRecordUploader`, which it wraps.
+ */
+export function createSingleMediaUploader(
+  deps: SingleMediaUploaderDeps = defaultDeps
+) {
+  return wrapAsUrlUploader(createSingleMediaRecordUploader(deps));
+}
+
+function wrapAsUrlUploader(
+  uploadRecord: ReturnType<typeof createSingleMediaRecordUploader>
+) {
+  return async function uploadSingleMedia(
+    file: File,
+    scope: MediaScope = 'general'
+  ): Promise<string> {
+    return (await uploadRecord(file, scope)).url;
+  };
+}
+
+/** One instance for the app: the settings memo and the compression bound are shared. */
+export const uploadSingleMediaRecord = createSingleMediaRecordUploader();
+export const uploadSingleMedia = wrapAsUrlUploader(uploadSingleMediaRecord);
 
 /** Binds `uploadSingleMedia` to a scope, for passing as `uploadImage`. */
 export function createScopedImageUploader(scope: MediaScope) {

@@ -5,7 +5,10 @@
  */
 import { describe, expect, it, mock } from 'bun:test';
 
-import { createSingleMediaUploader } from './upload-single-media';
+import {
+  createSingleMediaRecordUploader,
+  createSingleMediaUploader,
+} from './upload-single-media';
 
 import { MAX_UPLOAD_BATCH } from '@/entities/media/model/upload-constraints';
 import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
@@ -230,5 +233,31 @@ describe('uploadSingleMedia clips', () => {
       uploadSingleMedia(clip('a.mov', 10, 'video/quicktime'), 'featured-work')
     ).rejects.toThrow('"a.mov" is not an accepted image or video format.');
     expect(upload).not.toHaveBeenCalled();
+  });
+});
+
+describe('uploadSingleMediaRecord', () => {
+  it('answers with the stored row, so a caller can attach the file by id', async () => {
+    const row = { id: 'm1', url: 'https://cdn.example/a.png', mimeType: 'image/webp' } as Media;
+    const upload = mock(async () => ({ success: true as const, data: [row] }));
+    const uploadRecord = createSingleMediaRecordUploader({
+      fetchCompressionConfig: mock(async () => config),
+      compress: mock(async (file: File) => file),
+      upload,
+      now: () => 1_000,
+    });
+
+    expect(await uploadRecord(png('a.png'), 'featured-work')).toBe(row);
+  });
+
+  it('keeps the reason of a refusal', async () => {
+    const uploadRecord = createSingleMediaRecordUploader({
+      fetchCompressionConfig: mock(async () => config),
+      compress: mock(async (file: File) => file),
+      upload: mock(async () => ({ success: false as const, errorMsg: 'Storage is full' })),
+      now: () => 1_000,
+    });
+
+    await expect(uploadRecord(png('a.png'))).rejects.toThrow('Storage is full');
   });
 });
