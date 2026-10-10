@@ -5,6 +5,7 @@ import {
   InteractionButtonLoading,
   LikeButtonWrapper,
 } from '@/features/public';
+import { ContentFade } from '@/shared/ui';
 import { BlogCommentShareActions } from '@/widgets/public/blog-details-content/ui/blog-comment-share-actions';
 
 export function BlogActionBar({
@@ -32,11 +33,15 @@ export function BlogActionBar({
     <div className="flex flex-wrap items-center justify-between gap-2 py-2">
       <div className={'ml-[-4px] flex items-center gap-2'}>
         <Suspense fallback={<InteractionButtonLoading />}>
-          <LikeButtonWrapper blogId={blogId} blogSlug={blogSlug} />
+          <ContentFade>
+            <LikeButtonWrapper blogId={blogId} blogSlug={blogSlug} />
+          </ContentFade>
         </Suspense>
 
         <Suspense fallback={<InteractionButtonLoading />}>
-          <ClapButtonWrapper blogId={blogId} blogSlug={blogSlug} />
+          <ContentFade>
+            <ClapButtonWrapper blogId={blogId} blogSlug={blogSlug} />
+          </ContentFade>
         </Suspense>
       </div>
 

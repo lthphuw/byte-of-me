@@ -7,7 +7,7 @@ export function PublicSiteFooterLoading({
 }: PublicSiteFooterLoadingProps) {
   return (
     <footer className={cn('py-8 relative z-20', className)}>
-      <div className="container mx-auto flex max-w-[100%] animate-pulse flex-col items-center justify-between gap-6 px-4 md:flex-row md:gap-10 md:px-12">
+      <div className="container mx-auto flex max-w-[100%] animate-pulse flex-col items-center justify-between gap-6 px-8 md:flex-row md:gap-10 md:px-12">
         {/* Left */}
         <div className="flex flex-col items-center gap-2 md:items-start">
           {/* Logo */}

@@ -8,7 +8,7 @@ import {
   ContactInfosLoading,
   ContactMe,
 } from '@/features/public';
-import { ListPageHeader, RevealSection } from '@/shared/ui';
+import { ContentFade, ListPageHeader, RevealSection } from '@/shared/ui';
 
 export async function ContactContent() {
   const t = await getTranslations('contact');
@@ -32,7 +32,9 @@ export async function ContactContent() {
       <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 md:gap-10">
         <RevealSection id="contact-info" immediate>
           <Suspense fallback={<ContactInfosLoading />}>
-            <ContactInfos />
+            <ContentFade>
+              <ContactInfos />
+            </ContentFade>
           </Suspense>
         </RevealSection>
 

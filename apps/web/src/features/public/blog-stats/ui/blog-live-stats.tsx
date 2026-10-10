@@ -8,6 +8,7 @@ import { BlogLiveStatsSkeleton } from './blog-live-stats-loading';
 
 import { getPublicBlogStats } from '@/entities/blog/api/get-public-blog-stats';
 import { blogKeys } from '@/entities/blog/model/query-keys';
+import { ContentFade } from '@/shared/ui/content-fade';
 
 // The public segment is statically generated, so a server render of these
 // stats would be frozen at build time. Fetching client-side keeps them
@@ -32,16 +33,20 @@ export function BlogLiveStats({ blogId }: { blogId: string }) {
     return <BlogLiveStatsSkeleton />;
   }
 
+  // The skeleton above is swapped for these numbers when the query resolves; the fade
+  // is what keeps that swap from popping.
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground md:text-base">
-      <div className="flex items-center gap-1.5 whitespace-nowrap">
-        <Eye className="h-4 w-4 shrink-0" />
-        <span>{t('views', { count: stats.views })}</span>
+    <ContentFade>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground md:text-base">
+        <div className="flex items-center gap-1.5 whitespace-nowrap">
+          <Eye className="h-4 w-4 shrink-0" />
+          <span>{t('views', { count: stats.views })}</span>
+        </div>
+        <div className="flex items-center gap-1.5 whitespace-nowrap">
+          <Hourglass className="h-4 w-4 shrink-0" />
+          <span>{t('readingTime', { time: stats.avgTime.toString() })}</span>
+        </div>
       </div>
-      <div className="flex items-center gap-1.5 whitespace-nowrap">
-        <Hourglass className="h-4 w-4 shrink-0" />
-        <span>{t('readingTime', { time: stats.avgTime.toString() })}</span>
-      </div>
-    </div>
+    </ContentFade>
   );
 }
