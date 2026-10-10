@@ -39,22 +39,22 @@ apps/web/src/
 - **Admin view guard**: `apps/web/src/app/[locale]/(protected)/layout.tsx:23-40` calls `getAuthenticatedAdmin()`, else redirects to `/auth/login` with `from` = `x-pathname`. The nested dashboard layout has no guard of its own; server actions guard separately (AGENTS §5).
 - **Login**: `apps/web/src/app/[locale]/(auth)/layout.tsx:16-20` sends a signed-in admin to `/dashboard`.
 - **Redirects**: `apps/web/next.config.js:192-220`: `/about` to `/`, `/:locale(en|vi)/about` to `/:locale`, and `/experience` to `/` in both forms, all permanent.
-- **Route handlers**: `apps/web/src/app/api/og/route.tsx:47-170` takes `?title` (max 80) and `?subtitle` (max 90), reads Cal Sans with `readFile`, returns 500 text on failure. `apps/web/src/app/api/auth/[...nextauth]/route.ts:3` exports `GET`, `POST` from `handlers`. `apps/web/src/app/feed.xml/route.ts` is RSS for the default locale only, `revalidate = 3600` (`:8`).
+- **Route handlers**: `apps/web/src/app/api/og/route.tsx:47-178` takes `?title` (max 80) and `?subtitle` (max 90), reads Cal Sans with `readFile`, sets its own `Cache-Control` on success (`:167`), returns 500 text on failure. `apps/web/src/app/api/auth/[...nextauth]/route.ts:3` exports `GET`, `POST` from `handlers`. `apps/web/src/app/feed.xml/route.ts` is RSS for the default locale only, `revalidate = 3600` (`:8`).
 - **Metadata routes**: `apps/web/src/app/robots.ts` allows `/api/og`, disallows `/dashboard`, `/en/dashboard`, `/vi/dashboard` and `/api/` (`:7-19`). `apps/web/src/app/sitemap.ts` lists `sitemapConfig` keys plus every published post (`getPublishedBlogs`), in every locale. A post's `lastmod` is its `updatedAt`; static pages carry none. Each URL lists `x-default` beside `en` and `vi`. `apps/web/src/app/llms.txt/route.ts` serves `/llms.txt`: the homepage, the list pages and every published post with its summary, English only, `revalidate = 3600`.
-- **Edge caching**: `apps/web/next.config.js:208-300` `headers()`, in the match order below.
+- **Edge caching**: `apps/web/next.config.js:221-291` `headers()`, in the match order below. It reaches static and ISR output only; function responses set their own (see `/api/og` below).
 
 **Cache-Control rules, match order** (`apps/web/next.config.js`)
 
 | # | Source (line) | Cache-Control or headers | Matches |
 | --- | --- | --- | --- |
-| 1 | `/((?!api\|_next\|.*dashboard).*)/:path*` (`:228`) | `public, s-maxage=3600, stale-while-revalidate=86400` | public pages, `/en/print/*`, `/feed.xml`, `/robots.txt`, `/sitemap.xml`, `/site.webmanifest`; not `api`, `_next`, or any path containing `dashboard` |
-| 2 | `/:locale/dashboard/:path*` (`:239`) | `private, no-cache, no-store, max-age=0, must-revalidate` | `/<locale>/dashboard/*` |
-| 3 | `/:locale/auth/:path*` (`:250`) | `private, no-store` | `/<locale>/auth/*`; overrides rule 1 |
-| 4 | `/api/:path*` (`:256`) | `private, no-store` | all `/api/*` |
-| 5 | `/api/og` (`:270`) | `public, max-age=3600, s-maxage=86400, immutable` | `/api/og`; overrides rule 4 |
-| 6 | `/:path*` (`:281`) | no Cache-Control: nosniff, Referrer-Policy, Permissions-Policy, HSTS | everything |
-| 7 | `/:locale/dashboard/:path*` (`:297`) | no Cache-Control: `X-Frame-Options: DENY`, CSP `frame-ancestors 'none'` | dashboard |
-| 8 | `/:locale/auth/:path*` (`:298`) | as rule 7 | auth |
+| 1 | `/((?!api\|_next\|.*dashboard).*)/:path*` (`:241`) | `public, s-maxage=3600, stale-while-revalidate=86400` | public pages, `/en/print/*`, `/feed.xml`, `/robots.txt`, `/sitemap.xml`, `/site.webmanifest`; not `api`, `_next`, or any path containing `dashboard` |
+| 2 | `/:locale/dashboard/:path*` (`:252`) | `private, no-cache, no-store, max-age=0, must-revalidate` | `/<locale>/dashboard/*` |
+| 3 | `/:locale/auth/:path*` (`:263`) | `private, no-store` | `/<locale>/auth/*`; overrides rule 1 |
+| 4 | `/:path*` (`:272`) | no Cache-Control: nosniff, Referrer-Policy, Permissions-Policy, HSTS | everything |
+| 5 | `/:locale/dashboard/:path*` (`:288`) | no Cache-Control: `X-Frame-Options: DENY`, CSP `frame-ancestors 'none'` | dashboard |
+| 6 | `/:locale/auth/:path*` (`:289`) | as rule 5 | auth |
+
+There is no `/api` rule. `/api/og` sets its own `Cache-Control` (`apps/web/src/app/api/og/route.tsx:167`). Auth.js sets `private, no-cache, no-store` on `/api/auth/*` (`@auth/core` `lib/actions/session.js:11`). Locally rule 3 also matches `/api/auth/*`, because `:locale` takes any segment, so `next start` shows `private, no-store` there. Production shows Auth.js's own value.
 
 ## Recipes
 
@@ -79,7 +79,7 @@ apps/web/src/
 
 - Rule 1 excludes any path containing `dashboard`, not only a segment. `/en/blogs/dashboard-tips` gets no public rule and falls back to Next's own default (`s-maxage=31536000` when static; `apps/web/node_modules/next/dist/server/lib/cache-control.js:19`).
 - `next dev` replaces every HTML response's Cache-Control with `no-cache, must-revalidate` (`apps/web/node_modules/next/dist/server/base-server.js:1106-1108`). Check headers only on `bun run preview`.
-- `/api/og` caching belongs to rule 5, not the route. `ImageResponse` sets `cache-control: public, max-age=0, must-revalidate` (`apps/web/node_modules/next/dist/server/og/image-response.js:58`), but routing already set the header, so Next drops it (`apps/web/node_modules/next/dist/server/send-response.js:46-52`).
+- `/api/og` sets its own `Cache-Control` in `apps/web/src/app/api/og/route.tsx:167`. Production does not apply `headers()` to function responses: on `phu-lth.space`, `/api/og` answered `public, max-age=0, must-revalidate` (the `ImageResponse` default, `apps/web/node_modules/next/dist/server/og/image-response.js:58`) and `/api/auth/session` answered Auth.js's own `private, no-cache, no-store`, while `next start` showed the configured values. Locally a routing header overrides the route's (`apps/web/node_modules/next/dist/server/send-response.js:46-52`), which hid the difference. A header set in the route is what both environments serve.
 - `/en/experience` is a permanent 308 to `/` from `apps/web/next.config.js`, so `experience/page.tsx` and its `loading.tsx` run only once that rule is removed. It is absent from `apps/web/src/shared/config/sitemap.ts:14-18`. `experience/layout.tsx` keeps `noindex` for the case where the rule is removed before the page returns.
 - The proxy matcher skips dotted paths (`apps/web/src/proxy.ts:25`), so `/feed.xml`, `/robots.txt` and `/sitemap.xml` never get a locale prefix.
 - `apps/web/src/app/not-found.tsx:16`: the `;` after `<Error statusCode={404} />` renders as visible text on the root 404.

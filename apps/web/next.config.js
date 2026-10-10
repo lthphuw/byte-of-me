@@ -263,31 +263,9 @@ const nextConfig = {
         source: '/:locale/auth/:path*',
         headers: [{ key: 'Cache-Control', value: 'private, no-store' }],
       },
-      {
-        // Everything under /api is per-user or per-request — except `og`, which
-        // is handled by the next rule.
-        source: '/api/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'private, no-store',
-          },
-        ],
-      },
-      {
-        // Social preview cards: a pure function of the query string, rendered
-        // through satori on every miss. Scrapers (Slack, iMessage, Twitter)
-        // refetch these constantly, so `no-store` from the rule above meant
-        // re-rendering the same card forever. Declared after that rule because
-        // the last matching header wins.
-        source: '/api/og',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=3600, s-maxage=86400, immutable',
-          },
-        ],
-      },
+      // No /api rule on purpose: production ignores headers() on function responses,
+      // so /api/og sets its own Cache-Control, and Auth.js sets its own on /api/auth/*.
+      // Locally the /:locale/auth rule also matches /api/auth/* (:locale is any segment).
       {
         // Never carries Cache-Control: a headers() entry REPLACES a same-key one.
         // HSTS omits includeSubDomains/preload: neither can be undone once seen.

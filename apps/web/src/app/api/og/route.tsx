@@ -62,7 +62,7 @@ export async function GET(request: Request) {
     // A missing font degrades to the built-in sans rather than failing the card.
     const fontData = await headingFont;
 
-    return new ImageResponse(
+    const image = new ImageResponse(
       (
         <div
           style={{
@@ -161,6 +161,14 @@ export async function GET(request: Request) {
           : undefined,
       }
     );
+
+    // Production does not apply headers() to function responses, so this header
+    // is the one it serves. ImageResponse defaults to no-cache without it.
+    image.headers.set(
+      'Cache-Control',
+      'public, max-age=3600, s-maxage=86400, immutable'
+    );
+    return image;
   } catch (error) {
     return new Response(
       `Failed to generate the image: ${getErrorMessage(error)}`,
