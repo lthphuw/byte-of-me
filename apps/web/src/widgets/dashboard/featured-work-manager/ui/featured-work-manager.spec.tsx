@@ -129,6 +129,12 @@ function renderManager(
   return queryClient;
 }
 
+/**
+ * Compared by label, not as nodes: a failed `toBe` between two DOM nodes
+ * diffs their React fiber props, which are circular and hang the run.
+ */
+const focusedLabel = () => document.activeElement?.getAttribute('aria-label');
+
 const button = (name: string) =>
   screen.getByRole('button', { name }) as HTMLButtonElement;
 
@@ -218,7 +224,7 @@ describe('FeaturedWorkManager reorder', () => {
 
     expect(first.disabled).toBe(false);
     expect(last.disabled).toBe(false);
-    expect(document.activeElement).toBe(last);
+    expect(focusedLabel()).toBe('Move Release notes down');
     expect(txFindMany).not.toHaveBeenCalled();
     expect(txUpdate).not.toHaveBeenCalled();
   });
@@ -252,13 +258,13 @@ describe('FeaturedWorkManager reorder', () => {
 
     // Not `disabled`: a disabled button would drop focus to <body> at once.
     await waitFor(() => expect(up.getAttribute('aria-disabled')).toBe('true'));
-    expect(document.activeElement).toBe(up);
+    expect(focusedLabel()).toBe('Move Quantized model up');
     await waitFor(() => expect(findMany).toHaveBeenCalledTimes(1));
     // The refetch moved the entry to the top; its arrow still holds focus.
     await waitFor(() => {
       const moved = button('Move Quantized model up');
       expect(moved.getAttribute('aria-disabled')).toBe('true');
-      expect(document.activeElement).toBe(moved);
+      expect(focusedLabel()).toBe('Move Quantized model up');
     });
     // Idle again: the same arrow of the next row can be pressed.
     expect(isDisabled('Move Faster export up')).toBe(false);
@@ -288,7 +294,7 @@ describe('FeaturedWorkManager reorder', () => {
       )
     );
     await waitFor(() => expect(up.getAttribute('aria-disabled')).toBe('false'));
-    expect(document.activeElement).toBe(edit);
+    expect(focusedLabel()).toBe('Edit Release notes');
   });
 
   it('ignores a second press while a move is in flight', async () => {
@@ -305,7 +311,7 @@ describe('FeaturedWorkManager reorder', () => {
     fireEvent.click(down);
     await waitFor(() => expect(down.getAttribute('aria-disabled')).toBe('true'));
     fireEvent.click(down);
-    expect(document.activeElement).toBe(down);
+    expect(focusedLabel()).toBe('Move Faster export down');
 
     release(rows.map(({ id, sortOrder }) => ({ id, sortOrder })));
     await waitFor(() => expect(findMany).toHaveBeenCalledTimes(1));
