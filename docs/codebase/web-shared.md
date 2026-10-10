@@ -40,6 +40,8 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 | `apps/web/src/shared/lib/metadata.ts` | `buildPublicPageMetadata`, `buildAlternates` (canonical, hreflang with `x-default`, RSS link), `buildSiteJsonLd` (no email), `SITE_PERSON_ID` (the `@id` blog posts reference as author), `buildIconSet` | the layouts under `apps/web/src/app/[locale]/` and the blog post page |
 | `apps/web/src/shared/lib/brand-mark.ts` | mark geometry, `renderFaviconSvg`; source for favicons and the og card | 3 files: `apps/web/src/shared/ui/brand-mark.tsx`, `apps/web/src/shared/lib/metadata.ts`, `apps/web/src/app/api/og/route.tsx` |
 | `apps/web/src/shared/lib/friendly-id.ts` | `generateFriendlyId`: 12 chars, no 0/1/i/l/o | 1 file: `apps/web/src/entities/media/` |
+| `apps/web/src/shared/ui/media-cover.tsx` | `MediaCover` (pulse until drawn, then fades out), `MediaFrame` (box around one image or video), `useMediaDrawn` (checks the media at mount, then listens for load or error) | `apps/web/src/entities/blog/ui/blog-card.tsx`, `apps/web/src/entities/education/ui/education-item.tsx`, `achievement-images.tsx`, `apps/web/src/entities/featured-work/ui/featured-work-demo.tsx` |
+| `apps/web/src/shared/ui/content-fade.tsx` | `ContentFade`: CSS fade-in for a Suspense-resolved block, opacity only | `apps/web/src/widgets/public/` (blog details, contact, footer), `apps/web/src/features/public/homepage-*`, `blog-live-stats.tsx` |
 | `apps/web/src/shared/lib/templates/sign-in-template.ts` | sign-in email HTML (`email` namespace) | 1 file: `apps/web/src/shared/lib/auth/auth.ts` |
 
 ### Auth helpers (`apps/web/src/shared/lib/auth/`)

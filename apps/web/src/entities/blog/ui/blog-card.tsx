@@ -8,6 +8,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import type { PublicBlog } from '@/entities/blog/model/types';
 import { Link } from '@/shared/i18n/navigation';
 import { formatDate } from '@/shared/lib/utils';
+import { MediaFrame } from '@/shared/ui/media-cover';
 
 interface BlogCardProps {
   blog: PublicBlog;
@@ -42,13 +43,15 @@ export function BlogCard({ blog, onTagClick }: BlogCardProps) {
     <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card transition-[transform,border-color,box-shadow] duration-200 ease-enter hover:border-border hover:shadow-md motion-safe:hover:-translate-y-0.5">
       <div className="relative aspect-[16/10] overflow-hidden bg-muted">
         {blog.coverImage ? (
-          <Image
-            src={blog.coverImage.url}
-            alt=""
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-            className="size-full object-cover transition-transform duration-300 ease-enter motion-safe:group-hover:scale-[1.03]"
-          />
+          <MediaFrame className="size-full">
+            <Image
+              src={blog.coverImage.url}
+              alt=""
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+              className="size-full object-cover transition-transform duration-300 ease-enter motion-safe:group-hover:scale-[1.03]"
+            />
+          </MediaFrame>
         ) : (
           <div className="flex size-full items-center justify-center">
             <Layers className="size-10 text-muted-foreground/20" />

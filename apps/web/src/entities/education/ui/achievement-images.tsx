@@ -13,6 +13,7 @@ import Image from 'next/image';
 
 import { cn } from '@/shared/lib/utils';
 import type { Media } from '@/shared/types/models';
+import { MediaFrame } from '@/shared/ui/media-cover';
 
 interface AchievementImagesProps {
   images: Media[];
@@ -61,7 +62,7 @@ export function AchievementImages({ images, title }: AchievementImagesProps) {
                 : 'basis-full md:basis-[58%]'
             )}
           >
-            <div className="relative aspect-[4/3] w-full select-none overflow-hidden rounded-xl">
+            <MediaFrame className="aspect-[4/3] w-full select-none rounded-xl">
               <Image
                 src={img.url}
                 alt={several ? `${title} (${i + 1}/${images.length})` : title}
@@ -70,7 +71,7 @@ export function AchievementImages({ images, title }: AchievementImagesProps) {
                 sizes="(max-width: 768px) 85vw, 400px"
                 className="object-cover"
               />
-            </div>
+            </MediaFrame>
           </CarouselItem>
         ))}
       </CarouselContent>

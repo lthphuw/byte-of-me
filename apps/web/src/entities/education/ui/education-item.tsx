@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { AchievementFold } from './achievement-fold';
 import { AchievementItem } from './achievement-item';
 
+import { MediaFrame } from '@/shared/ui/media-cover';
+
 import type { PublicEducation } from '@/entities/education/model/types';
 
 export function EducationItem({
@@ -62,13 +64,15 @@ export function EducationItem({
       <header className="flex items-start gap-3 p-4 md:gap-4 md:p-5">
         <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-muted/40 md:h-12 md:w-12">
           {edu.logo ? (
-            <Image
-              src={edu.logo.url}
-              alt=""
-              fill
-              sizes="48px"
-              className="object-contain p-1.5"
-            />
+            <MediaFrame className="size-full">
+              <Image
+                src={edu.logo.url}
+                alt=""
+                fill
+                sizes="48px"
+                className="object-contain p-1.5"
+              />
+            </MediaFrame>
           ) : (
             <GraduationCap
               aria-hidden

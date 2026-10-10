@@ -1,11 +1,12 @@
 'use client';
 
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, type Ref, useEffect, useRef, useState } from 'react';
 import { useIntersection } from '@byte-of-me/ui/hooks/use-intersection';
 import { useMediaQuery } from '@byte-of-me/ui/hooks/use-media-query';
 import { Maximize, Play } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
+import { MediaCover, useMediaDrawn } from '@/shared/ui/media-cover';
 
 /** One demo item, translated and resolved by the server row. */
 export interface FeaturedWorkDemoItem {
@@ -34,33 +35,23 @@ const FIRST_FRAME = '#t=0.1';
  * The media's box. It reserves 16:9 so nothing shifts before the file arrives, then
  * takes the file's own ratio, so a wide clip is not framed by empty bars.
  */
-function Frame({ children, ratio }: { children?: ReactNode; ratio?: number }) {
+function Frame({
+  children,
+  ratio,
+  ref,
+}: {
+  children?: ReactNode;
+  ratio?: number;
+  ref?: Ref<HTMLSpanElement>;
+}) {
   return (
     <span
+      ref={ref}
       style={ratio ? { aspectRatio: ratio } : undefined}
       className="relative block aspect-video overflow-hidden rounded-md border border-border bg-muted"
     >
       {children}
     </span>
-  );
-}
-
-/**
- * Covers a frame until its file has drawn, then fades out in place: the skeleton and
- * the media share one box, so nothing moves. A span, because it sits inside the
- * clip's button and a div may not.
- */
-function Placeholder({ loaded }: { loaded: boolean }) {
-  // The pulse is an animation of opacity, and an animation overrides `opacity-0`: it
-  // has to stop before the cover can fade out, so it is dropped on load.
-  return (
-    <span
-      aria-hidden
-      className={cn(
-        'absolute inset-0 bg-muted transition-opacity duration-200 ease-enter',
-        loaded ? 'opacity-0' : 'motion-safe:animate-pulse'
-      )}
-    />
   );
 }
 
@@ -111,7 +102,7 @@ function DemoVideo({
   const { ref: nearRef, entry: nearEntry } =
     useIntersection<HTMLDivElement>(NEAR);
   const [requested, setRequested] = useState(false);
-  const [loaded, setLoaded] = useState(false);
+  const { ref: coverRef, drawn } = useMediaDrawn<HTMLSpanElement>();
   const videoRef = useRef<FullscreenVideo>(null);
   const [playing, setPlaying] = useState(false);
   const [userPaused, setUserPaused] = useState(false);
@@ -210,7 +201,7 @@ function DemoVideo({
         onClick={toggle}
         className="block w-full rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
       >
-        <Frame ratio={ratio}>
+        <Frame ref={coverRef} ratio={ratio}>
           <video
             ref={videoRef}
             src={requested ? `${src}${FIRST_FRAME}` : undefined}
@@ -218,7 +209,6 @@ function DemoVideo({
             loop
             playsInline
             preload={requested ? 'metadata' : 'none'}
-            onLoadedData={() => setLoaded(true)}
             onLoadedMetadata={(event) =>
               setRatio(
                 ratioOf(
@@ -235,7 +225,7 @@ function DemoVideo({
             }}
             className="size-full object-contain"
           />
-          <Placeholder loaded={loaded} />
+          <MediaCover drawn={drawn} />
           {/* Shown whenever the clip is not moving, so a refused play() still reads as tappable. */}
           {!playing && (
             <span className="absolute inset-0 flex items-center justify-center">
@@ -264,20 +254,18 @@ function DemoVideo({
 
 function DemoImage({ src, alt }: { src: string; alt: string }) {
   const [ratio, setRatio] = useState<number>();
-  const [loaded, setLoaded] = useState(false);
+  const { ref: coverRef, drawn } = useMediaDrawn<HTMLSpanElement>();
   const imageRef = useRef<HTMLImageElement>(null);
 
   // A cached image can finish before hydration, and its `load` event is gone.
   useEffect(() => {
     const image = imageRef.current;
-    if (image?.complete) {
+    if (image?.complete)
       setRatio(ratioOf(image.naturalWidth, image.naturalHeight));
-      setLoaded(true);
-    }
   }, []);
 
   return (
-    <Frame ratio={ratio}>
+    <Frame ref={coverRef} ratio={ratio}>
       {/* A plain <img> is the only way a stored SVG or GIF is drawn: never inline, never <object>. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -286,20 +274,17 @@ function DemoImage({ src, alt }: { src: string; alt: string }) {
         alt={alt}
         loading="lazy"
         decoding="async"
-        onLoad={(event) => {
+        onLoad={(event) =>
           setRatio(
             ratioOf(
               event.currentTarget.naturalWidth,
               event.currentTarget.naturalHeight
             )
-          );
-          setLoaded(true);
-        }}
-        /* A broken file must not leave its placeholder pulsing forever. */
-        onError={() => setLoaded(true)}
+          )
+        }
         className="size-full object-contain"
       />
-      <Placeholder loaded={loaded} />
+      <MediaCover drawn={drawn} />
     </Frame>
   );
 }

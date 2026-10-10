@@ -117,8 +117,11 @@ export function RichTextHtml({
         // Horizontal rule
         '[&_hr]:my-8 [&_hr]:border-border',
 
-        // Images / media
-        '[&_img]:my-6 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-2xl [&_img]:shadow-sm',
+        // Images / media. Before an image draws, `auto 16/9` reserves a box on the muted
+        // surface, so the text below does not jump; once loaded, `auto` takes the file's
+        // own ratio. The body's <img> carries no width or height, so this is the only
+        // reservation it can get.
+        '[&_img]:my-6 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-2xl [&_img]:shadow-sm [&_img]:aspect-[auto_16/9] [&_img]:bg-muted',
         '[&_figure]:my-6 [&_figure]:max-w-full',
 
         // A row of images (`imageGroup`). Column first, row from `sm` — at
