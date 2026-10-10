@@ -41,13 +41,14 @@ export async function deleteMedia(id: string): Promise<ApiResponse<Media>> {
     });
     revalidateTag(CACHE_TAGS.MEDIA, 'max');
 
-    // Media is embedded inside the cached payloads of these entities
-    // (covers, logos, achievement images), so deleting a file must also
-    // invalidate them or the public site keeps serving the dead URL.
+    // Media is embedded inside the cached payloads of these entities (covers,
+    // logos, achievement images, featured-work demos and details), so deleting a
+    // file must also invalidate them or the public site keeps serving the dead URL.
     const embeddingTags = [
       CACHE_TAGS.BLOG,
       CACHE_TAGS.COMPANY,
       CACHE_TAGS.EDUCATION,
+      CACHE_TAGS.FEATURED_WORK,
       CACHE_TAGS.PROJECT,
       CACHE_TAGS.TECH,
       CACHE_TAGS.USER,
