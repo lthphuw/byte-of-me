@@ -56,7 +56,7 @@ bun run --filter '@byte-of-me/db' db:seed
 
 Use `db:migrate:apply`, not `db:migrate:deploy`, on a new database. One migration creates indexes with `CREATE INDEX CONCURRENTLY`, which Prisma cannot run inside its transaction. `db:migrate:apply` runs those statements one at a time and records them. Re-running the seed is safe.
 
-The seed creates the admin (`EMAIL`), an author with id `cseedauthor0000000000001`, a profile, 17 tech stacks, one project, one blog with an empty body, one like and one comment. Source: [`packages/db/prisma/seed.ts`](../packages/db/prisma/seed.ts).
+The seed creates sample content: the admin (`EMAIL`), an author with id `cseedauthor0000000000001`, a profile in English and Vietnamese, 17 tech stacks, one sample project, one sample blog with a short body, one like and one comment. Source: [`packages/db/prisma/seed.ts`](../packages/db/prisma/seed.ts).
 
 ## 6. Run the app
 

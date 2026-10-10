@@ -1,9 +1,8 @@
 import { prisma } from '../src';
 
 /**
- * Fixed so `AUTHOR_ID` in apps/web/.env can be set once and stay valid across
- * re-seeds — every public read is scoped to that id, so a mismatch renders an
- * empty site with no error.
+ * Sample content for a fresh clone. Re-running is safe: every row has a fixed
+ * id or slug. Public reads are scoped to SEED_AUTHOR_ID (AUTHOR_ID in apps/web/.env).
  */
 const SEED_AUTHOR_ID = 'cseedauthor0000000000001';
 
@@ -17,6 +16,17 @@ function readSeedEmail(): string {
     throw new Error('EMAIL is not set. Add it to packages/db/.env (the seeded admin signs in with it).');
   }
   return email;
+}
+
+/** A TipTap document as the blog editor stores it: a JSON string. */
+function richText(heading: string, paragraph: string): string {
+  return JSON.stringify({
+    type: 'doc',
+    content: [
+      { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: heading }] },
+      { type: 'paragraph', content: [{ type: 'text', text: paragraph }] },
+    ],
+  });
 }
 
 async function main() {
@@ -34,8 +44,6 @@ async function main() {
   }
 
   // --- USER ---
-  const birthdate = new Date(2002, 10, 20);
-
   // Idempotent: re-running the seed must not trip the unique email.
   const user = await prisma.user.upsert({
     where: { id: SEED_AUTHOR_ID },
@@ -47,20 +55,29 @@ async function main() {
       emailVerified: new Date(),
       userProfile: {
         create: {
-          birthdate,
           translations: {
             create: [
               {
                 language: 'en',
-                displayName: 'Phu Luong',
-                firstName: 'Phu',
-                middleName: 'Thanh Hoang',
-                lastName: 'Luong',
+                displayName: 'Demo Author',
+                firstName: 'Demo',
+                lastName: 'Author',
                 greeting: 'Hi there!',
-                tagLine: "I'm Phu, a developer who loves building cool stuff.",
-                bio: 'Fullstack Developer focused on creating clean, scalable web applications.',
-                quote: 'You’ll never know how good you might have become unless you try.',
-                quoteAuthor: 'Mike Mentzer',
+                tagLine: 'A sample portfolio, so you can explore the site right away.',
+                bio: 'Everything on this site is sample content. Replace it in the dashboard.',
+                quote: 'Start simple, then improve.',
+                quoteAuthor: 'Sample',
+              },
+              {
+                language: 'vi',
+                displayName: 'Tác giả mẫu',
+                firstName: 'Mẫu',
+                lastName: 'Tác giả',
+                greeting: 'Xin chào!',
+                tagLine: 'Portfolio mẫu để bạn khám phá trang web ngay.',
+                bio: 'Toàn bộ nội dung trên trang này là dữ liệu mẫu. Hãy thay đổi trong dashboard.',
+                quote: 'Bắt đầu đơn giản, rồi cải thiện dần.',
+                quoteAuthor: 'Mẫu',
               },
             ]
           }
@@ -69,34 +86,34 @@ async function main() {
       socialLinks: {
         create: [
           { platform: 'email', url: email, sortOrder: 0 },
-          { platform: 'github', url: 'https://github.com/lthphuw', sortOrder: 1 },
-          { platform: 'portfolio', url: 'https://phu-lth.space', sortOrder: 2 },
-          { platform: 'linkedIn', url: 'https://www.linkedin.com/in/phu-lth', sortOrder: 3 },
+          { platform: 'github', url: 'https://github.com/example', sortOrder: 1 },
+          { platform: 'portfolio', url: 'https://example.com', sortOrder: 2 },
+          { platform: 'linkedIn', url: 'https://www.linkedin.com/in/example', sortOrder: 3 },
         ]
       },
       educations: {
         create: [
           {
             sortOrder: 0,
-            startDate: new Date(2017, 7),
-            endDate: new Date(2020, 6),
+            startDate: new Date(2018, 8),
+            endDate: new Date(2022, 5),
             translations: {
-              create: [{ language: 'en', title: 'Phan Chau Trinh High School, Da Nang' }]
-            }
-          },
-          {
-            sortOrder: 1,
-            startDate: new Date(2020, 9),
-            endDate: new Date(2024, 12),
-            translations: {
-              create: [{ language: 'en', title: 'VNU-HCM University of Science' }]
+              create: [
+                { language: 'en', title: 'Sample University' },
+                { language: 'vi', title: 'Đại học mẫu' },
+              ]
             },
             achievements: {
               create: [
-                { sortOrder: 0, translations: { create: [{ language: 'en', title: 'GPA: 8.67/10.0' }] } },
-                { sortOrder: 1, translations: { create: [{ language: 'en', title: 'Graduation Thesis: 10/10 (Perfect Score)' }] } },
-                { sortOrder: 2, translations: { create: [{ language: 'en', title: 'Outstanding Research Award' }] } },
-                { sortOrder: 3, translations: { create: [{ language: 'en', title: 'Ranked 6th in the 2020 University Entrance Exam' }] } }
+                {
+                  sortOrder: 0,
+                  translations: {
+                    create: [
+                      { language: 'en', title: 'Sample achievement' },
+                      { language: 'vi', title: 'Thành tích mẫu' },
+                    ]
+                  }
+                },
               ]
             }
           }
@@ -142,25 +159,25 @@ async function main() {
   });
 
   const project = await prisma.project.upsert({
-    where: { slug: 'byte-of-me' },
+    where: { slug: 'sample-project' },
     update: {},
     create: {
-      slug: 'byte-of-me',
-      githubLink: 'https://github.com/lthphuw/byte-of-me',
-      liveLink: 'https://phu-lth.space',
+      slug: 'sample-project',
+      githubLink: 'https://github.com/example/sample-project',
+      liveLink: 'https://example.com',
       isPublished: true,
       userId: user.id,
       translations: {
         create: [
           {
             language: 'en',
-            title: 'Byte of Me',
-            description: 'A modern Portfolio built with Next.js, powered by Supabase for PostgreSQL and S3-compatible storage, secured by Auth.js.'
+            title: 'Sample Project',
+            description: 'A sample project that shows how the portfolio presents work.'
           },
           {
             language: 'vi',
-            title: 'Byte of Me',
-            description: 'Portfolio hiện đại xây dựng trên Next.js, sử dụng Supabase (PostgreSQL & S3 Storage) và bảo mật bởi Auth.js.'
+            title: 'Dự án mẫu',
+            description: 'Dự án mẫu minh hoạ cách portfolio trình bày các công việc.'
           }
         ]
       },
@@ -171,10 +188,10 @@ async function main() {
   });
 
   const blog = await prisma.blog.upsert({
-    where: { slug: 'tech-stack-reveal-byte-of-me' },
+    where: { slug: 'welcome-to-the-sample-blog' },
     update: {},
     create: {
-      slug: 'tech-stack-reveal-byte-of-me',
+      slug: 'welcome-to-the-sample-blog',
       isPublished: true,
       userId: user.id,
       projectId: project.id,
@@ -182,9 +199,15 @@ async function main() {
         create: [
           {
             language: 'en',
-            title: 'Deep Dive into the Byte of Me Tech Stack',
-            description: 'Exploring how Prisma, Supabase, and Auth.js work together in a modular architecture.',
-            content: ``
+            title: 'Welcome to the sample blog',
+            description: 'A short post created by the seed.',
+            content: richText('Welcome', 'This post was created by the seed. Edit or delete it in the dashboard.'),
+          },
+          {
+            language: 'vi',
+            title: 'Chào mừng đến blog mẫu',
+            description: 'Bài viết ngắn do lệnh seed tạo ra.',
+            content: richText('Chào mừng', 'Bài viết này do lệnh seed tạo ra. Bạn có thể sửa hoặc xoá trong dashboard.'),
           },
         ]
       }
@@ -208,7 +231,7 @@ async function main() {
     }
   });
 
-  const seedComment = 'Impressive architecture on this one.';
+  const seedComment = 'Thanks for trying the sample!';
   const existingComment = await prisma.comment.findFirst({
     where: { content: seedComment, projectId: project.id }
   });

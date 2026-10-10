@@ -39,4 +39,4 @@ Runs `prisma migrate deploy`. When a migration fails only because it contains `C
 
 ## Seed
 
-Creates the admin (`EMAIL`), the author profile, 17 tech stacks, one project, one blog with an empty body, one like and one comment. Source: [`prisma/seed.ts`](prisma/seed.ts).
+Creates sample content: the admin (`EMAIL`), an author profile in English and Vietnamese, 17 tech stacks, one sample project, one sample blog with a short body, one like and one comment. Source: [`prisma/seed.ts`](prisma/seed.ts).
