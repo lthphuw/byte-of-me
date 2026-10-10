@@ -47,7 +47,7 @@ export function FeaturedWorkRow({
       </div>
 
       {(github || host) && (
-        <div className="col-start-2 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 md:col-start-3 md:max-w-[45%] md:flex-col md:items-end">
+        <div className="col-start-2 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 md:col-start-3 md:flex-col md:items-end md:text-right">
           {github ? (
             <>
               <span className={`${META} [overflow-wrap:anywhere]`}>

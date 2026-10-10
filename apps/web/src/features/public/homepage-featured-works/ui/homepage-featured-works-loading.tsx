@@ -19,7 +19,7 @@ export function HomepageFeaturedWorksLoading() {
               <Skeleton className="h-6 w-48 md:h-7" />
               <Skeleton className="h-4 w-full max-w-md" />
             </div>
-            <div className="col-start-2 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 md:col-start-3 md:max-w-[45%] md:flex-col md:items-end">
+            <div className="col-start-2 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 md:col-start-3 md:flex-col md:items-end md:text-right">
               <Skeleton className="h-4 w-28" />
               <Skeleton className="h-4 w-16" />
             </div>
