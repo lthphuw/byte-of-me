@@ -156,6 +156,14 @@ export function describeViolation(violation: MediaValidationError): string {
   }
 }
 
+/** Thrown by the client uploaders; `violation` lets a caller translate it. */
+export class MediaViolationError extends Error {
+  constructor(readonly violation: MediaValidationError) {
+    super(describeViolation(violation));
+    this.name = 'MediaViolationError';
+  }
+}
+
 /**
  * The file extension for a stored object, from the MIME type rather than the
  * filename.

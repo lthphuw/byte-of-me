@@ -11,7 +11,10 @@ import {
   createSingleMediaUploader,
 } from './upload-single-media';
 
-import { MAX_UPLOAD_BATCH } from '@/entities/media/model/upload-constraints';
+import {
+  MAX_UPLOAD_BATCH,
+  MediaViolationError,
+} from '@/entities/media/model/upload-constraints';
 import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
 import type { Media } from '@/shared/types/models';
 
@@ -320,6 +323,30 @@ describe('uploadSingleMediaRecord', () => {
     expect(await uploadRecord(file, 'featured-work')).toBe(row);
     expect(compress).not.toHaveBeenCalled();
     expect(upload).toHaveBeenCalledWith([file], 'featured-work');
+  });
+
+  it('refuses with the violation itself, so a caller can translate it', async () => {
+    const upload = mock(async () => ({ success: true as const, data: [] }));
+    const uploadRecord = createSingleMediaRecordUploader({
+      fetchCompressionConfig: mock(async () => config),
+      compress: mock(async (file: File) => file),
+      upload,
+      now: () => 1_000,
+    });
+    const big = new File([new Uint8Array(10 * 1024 * 1024 + 1)], 'big.webm', {
+      type: 'video/webm',
+    });
+
+    const error = await uploadRecord(big, 'featured-work').catch((e: unknown) => e);
+
+    expect(error).toBeInstanceOf(MediaViolationError);
+    expect((error as MediaViolationError).violation).toEqual({
+      kind: 'size',
+      fileName: 'big.webm',
+      maxSizeMb: 10,
+    });
+    expect((error as Error).message).toBe('"big.webm" is larger than 10 MB.');
+    expect(upload).not.toHaveBeenCalled();
   });
 
   it('keeps the reason of a refusal', async () => {

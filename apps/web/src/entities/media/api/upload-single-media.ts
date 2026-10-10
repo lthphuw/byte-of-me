@@ -2,11 +2,11 @@ import { uploadMedia } from './upload-media';
 
 import {
   describeVideoNotAllowed,
-  describeViolation,
   findUploadViolation,
   isVideoMimeType,
   MAX_UPLOAD_BATCH,
   type MediaScope,
+  MediaViolationError,
 } from '@/entities/media/model/upload-constraints';
 import { getImageCompressionSettings } from '@/entities/workspace-settings/api/get-image-compression-settings';
 import { compressInBrowser } from '@/shared/lib/media/compress-in-browser';
@@ -30,10 +30,8 @@ const defaultDeps = {
 type SingleMediaUploaderDeps = typeof defaultDeps;
 
 /**
- * Builds the single-file uploader that answers with the stored `Media` row, for
- * callers that attach the file by id (the featured-work demo pair). Dependencies
- * are injectable so the memo and the compression bound can be exercised without
- * a server action.
+ * The single-file uploader that answers with the stored `Media` row, for callers
+ * that attach by id. Dependencies are injectable; a refusal is a `MediaViolationError`.
  */
 export function createSingleMediaRecordUploader(
   deps: SingleMediaUploaderDeps = defaultDeps
@@ -101,7 +99,7 @@ export function createSingleMediaRecordUploader(
     // message naming it, not the framework's opaque body-size rejection.
     const violation = findUploadViolation([compressed]);
     if (violation) {
-      throw new Error(describeViolation(violation));
+      throw new MediaViolationError(violation);
     }
 
     const res = await deps.upload([compressed], scope);
