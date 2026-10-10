@@ -8,9 +8,10 @@ import { toast } from 'sonner';
 
 import {
   ACCEPTED_IMAGE_MIME_TYPES,
-  MAX_IMAGE_SIZE_BYTES,
-  MAX_IMAGE_SIZE_MB,
+  ACCEPTED_MEDIA_MIME_TYPES,
+  findUploadViolation,
   MAX_UPLOAD_BATCH,
+  maxUploadSizeFor,
 } from '@/entities/media/model/upload-constraints';
 import { useWorkspaceSettings } from '@/entities/workspace-settings';
 import { compressInBrowser } from '@/shared/lib/media/compress-in-browser';
@@ -29,11 +30,17 @@ export interface ImageUploadProps {
    * for every upload path, not just the media library's own dialog.
    */
   compressionConfig?: ImageCompressionConfig;
+  /**
+   * Also take mp4/webm clips. Off for the pickers (blog covers, logos), which
+   * can only draw an image; on for the media library itself.
+   */
+  acceptVideo?: boolean;
 }
 
 export function ImageUpload({
   uploadFiles,
   compressionConfig,
+  acceptVideo = false,
 }: ImageUploadProps) {
   const t = useTranslations('dashboard.media');
   const { settings } = useWorkspaceSettings();
@@ -42,6 +49,9 @@ export function ImageUpload({
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
+  const acceptedTypes = acceptVideo
+    ? ACCEPTED_MEDIA_MIME_TYPES
+    : ACCEPTED_IMAGE_MIME_TYPES;
 
   // Compresses BEFORE the size check, not after: a phone photo that arrives
   // here over the 3 MB ceiling and would compress under it must be given the
@@ -66,7 +76,7 @@ export function ImageUpload({
             // The shared list, not `startsWith('image/')`: the server accepts
             // a fixed set, and letting a format through here only moves the
             // rejection later.
-            ACCEPTED_IMAGE_MIME_TYPES.includes(file.type as never)
+            acceptedTypes.includes(file.type as never)
               ? compressInBrowser(file, effectiveCompressionConfig)
               : null
           )
@@ -77,18 +87,23 @@ export function ImageUpload({
 
           if (!compressed) {
             toast.error(t('upload.invalidTypeTitle'), {
-              description: t('upload.invalidTypeDescription', {
-                fileName: file.name,
-              }),
+              description: t(
+                acceptVideo
+                  ? 'upload.invalidMediaTypeDescription'
+                  : 'upload.invalidTypeDescription',
+                { fileName: file.name }
+              ),
             });
             return;
           }
 
-          if (compressed.size > MAX_IMAGE_SIZE_BYTES) {
+          // A clip has its own, higher ceiling than an image.
+          const max = maxUploadSizeFor(compressed.type);
+          if (compressed.size > max.bytes) {
             toast.error(t('upload.fileTooLargeTitle'), {
               description: t('upload.fileTooLargeDescription', {
                 fileName: file.name,
-                maxSize: MAX_IMAGE_SIZE_MB,
+                maxSize: max.mb,
               }),
             });
             return;
@@ -110,6 +125,25 @@ export function ImageUpload({
 
   const handleUpload = async () => {
     if (files.length === 0) return;
+
+    // What the server would refuse for the whole request, said here in the
+    // reader's language instead of as the server's English sentence.
+    const violation = findUploadViolation(files);
+    if (violation?.kind === 'batch') {
+      toast.error(t('upload.tooManyFilesTitle'), {
+        description: t('upload.tooManyFilesDescription', { max: violation.max }),
+      });
+      return;
+    }
+    if (violation?.kind === 'total') {
+      toast.error(t('upload.totalTooLargeTitle'), {
+        description: t('upload.totalTooLargeDescription', {
+          maxSize: violation.maxSizeMb,
+        }),
+      });
+      return;
+    }
+
     setIsUploading(true);
     try {
       await uploadFiles(files);
@@ -144,14 +178,14 @@ export function ImageUpload({
         <p className="mt-2 text-sm">
           {isCompressing
             ? t('upload.compressingText')
-            : t('upload.dropzoneText')}
+            : t(acceptVideo ? 'upload.dropzoneMediaText' : 'upload.dropzoneText')}
         </p>
         <input
           id="file-upload"
           type="file"
           multiple
           className="hidden"
-          accept="image/*"
+          accept={acceptVideo ? 'image/*,video/mp4,video/webm' : 'image/*'}
           disabled={isCompressing}
           onChange={(e) => void handleFiles(e.target.files)}
         />

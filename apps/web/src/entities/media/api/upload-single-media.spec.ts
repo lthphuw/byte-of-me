@@ -203,3 +203,32 @@ describe('uploadSingleMedia refusals', () => {
     expect(upload).toHaveBeenCalledWith([file], 'education');
   });
 });
+
+describe('uploadSingleMedia clips', () => {
+  const clip = (name: string, size: number, type = 'video/mp4') =>
+    new File([new Uint8Array(size)], name, { type });
+
+  it('uploads an mp4 as it is, without reading settings or compressing', async () => {
+    const { uploadSingleMedia, fetchCompressionConfig, compress, upload } = setup();
+    const file = clip('int8.mp4', 9 * 1024 * 1024);
+
+    const url = await uploadSingleMedia(file, 'featured-work');
+
+    expect(url).toBe('https://cdn.example/int8.mp4');
+    expect(fetchCompressionConfig).not.toHaveBeenCalled();
+    expect(compress).not.toHaveBeenCalled();
+    expect(upload).toHaveBeenCalledWith([file], 'featured-work');
+  });
+
+  it('refuses a clip over 10 MB and a type outside mp4/webm, without uploading', async () => {
+    const { uploadSingleMedia, upload } = setup();
+
+    await expect(
+      uploadSingleMedia(clip('big.webm', 10 * 1024 * 1024 + 1, 'video/webm'), 'featured-work')
+    ).rejects.toThrow('"big.webm" is larger than 10 MB.');
+    await expect(
+      uploadSingleMedia(clip('a.mov', 10, 'video/quicktime'), 'featured-work')
+    ).rejects.toThrow('"a.mov" is not an accepted image or video format.');
+    expect(upload).not.toHaveBeenCalled();
+  });
+});

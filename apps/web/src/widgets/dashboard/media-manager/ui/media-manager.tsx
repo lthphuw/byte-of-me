@@ -73,6 +73,7 @@ export function MediaManager({
                 </DialogHeader>
                 <ImageUpload
                   compressionConfig={compression.config}
+                  acceptVideo
                   uploadFiles={async (files) => {
                     await upload.mutateAsync(files);
                     setIsOpen(false);

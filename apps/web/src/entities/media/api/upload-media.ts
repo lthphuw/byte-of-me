@@ -6,12 +6,14 @@ import { revalidateTag } from 'next/cache';
 
 import { mediaScopeSchema } from '@/entities/media/model/media-schema';
 import {
-  type AcceptedImageMimeType,
+  type AcceptedMediaMimeType,
   describeViolation,
-  detectImageMimeType,
   extensionForMimeType,
   findUploadViolation,
+  isVideoMimeType,
+  maxUploadSizeFor,
   type MediaScope,
+  resolveUploadedMimeType,
   sanitizeStoredFileName,
 } from '@/entities/media/model/upload-constraints';
 import { getWorkspaceSettings } from '@/entities/workspace-settings/api/get-workspace-settings';
@@ -27,7 +29,7 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { Media } from '@/shared/types/models';
 
 /**
- * Stores images and records them in the media library.
+ * Stores images and short mp4/webm clips and records them in the media library.
  *
  * This is the only place every upload path meets — the media library form, and
  * the `uploadSingleMedia` the rich text editors hand to their image extension —
@@ -42,6 +44,9 @@ import type { Media } from '@/shared/types/models';
  * -compression buffer, mime type and size that actually get stored. Storing
  * the pre-compression `file.type`/`file.size` would leave the database
  * describing bytes that were never written to the bucket.
+ *
+ * A video is stored byte for byte: it never reaches `sharp`, and its type must
+ * agree with what its bytes are (see `resolveUploadedMimeType`).
  */
 export async function uploadMedia(
   files: File[],
@@ -73,15 +78,16 @@ export async function uploadMedia(
 
   try {
     // The type comes from the bytes, not the caller's `file.type`; an
-    // unrecognised file is refused before any storage or database work.
+    // unrecognised file, or a video that is not what it claims, is refused
+    // before any storage or database work.
     const incoming: {
       file: File;
       buffer: Buffer;
-      mimeType: AcceptedImageMimeType;
+      mimeType: AcceptedMediaMimeType;
     }[] = [];
     for (const file of files) {
       const buffer = Buffer.from(await file.arrayBuffer());
-      const mimeType = detectImageMimeType(buffer);
+      const mimeType = resolveUploadedMimeType(file.type, buffer);
 
       if (!mimeType) {
         return {
@@ -92,13 +98,27 @@ export async function uploadMedia(
           }),
         };
       }
+      // `File.size` was checked above; the bytes actually read are the ones that count.
+      const max = maxUploadSizeFor(mimeType);
+      if (buffer.byteLength > max.bytes) {
+        return {
+          success: false,
+          errorMsg: describeViolation({
+            kind: 'size',
+            fileName: sanitizeStoredFileName(file.name),
+            maxSizeMb: max.mb,
+          }),
+        };
+      }
       incoming.push({ file, buffer, mimeType });
     }
 
     const compression = (await getWorkspaceSettings()).imageCompression;
 
     const uploadPromises = incoming.map(async ({ file, buffer, mimeType }) => {
-      const compressed = await compressImage(buffer, mimeType, compression);
+      const compressed = isVideoMimeType(mimeType)
+        ? { buffer, mimeType }
+        : await compressImage(buffer, mimeType, compression);
 
       // From the POST-compression MIME type, not the filename or the original
       // type: a webp buffer written under a `.jpg` key is a file no CDN
@@ -140,6 +160,6 @@ export async function uploadMedia(
     return { success: true, data: results };
   } catch (error) {
     logger.error(`Upload error: ${getErrorMessage(error)}`);
-    return { success: false, errorMsg: 'Failed to upload one or more images.' };
+    return { success: false, errorMsg: 'Failed to upload one or more files.' };
   }
 }

@@ -18,6 +18,7 @@ import { Check, ChevronDown, ImageIcon, Loader2, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
+import { isImageMimeType } from '@/entities/media/model/upload-constraints';
 import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media/query';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import { cn } from '@/shared/lib/utils';
@@ -49,8 +50,12 @@ export function MediaSelect({
     uploadError: t('toast.uploadError'),
   });
 
+  // The library also holds demo clips; a picker draws an `<img>`, so it lists images only.
   const allMedia = useMemo(
-    () => data?.pages.flatMap((page) => page?.data ?? []) || [],
+    () =>
+      (data?.pages.flatMap((page) => page?.data ?? []) || []).filter((media) =>
+        isImageMimeType(media.mimeType)
+      ),
     [data]
   );
   const selectedMedia = allMedia.find((m) => m?.id === value);

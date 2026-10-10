@@ -64,6 +64,11 @@ export function isVideoMimeType(mimeType: string): mimeType is AcceptedVideoMime
   return (ACCEPTED_VIDEO_MIME_TYPES as readonly string[]).includes(mimeType);
 }
 
+/** Anything stored as `image/*`, for the pickers that can only draw an `<img>`. */
+export function isImageMimeType(mimeType: string): boolean {
+  return mimeType.startsWith('image/');
+}
+
 /** The per-file ceiling for a (declared or sniffed) type: video gets its own, higher one. */
 export function maxUploadSizeFor(mimeType: string): { bytes: number; mb: number } {
   return isVideoMimeType(mimeType)

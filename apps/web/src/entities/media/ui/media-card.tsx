@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Card, CardContent , CopyButton , DeleteButton } from '@byte-of-me/ui';
-import { FileIcon } from 'lucide-react';
+import { FileIcon, Play } from 'lucide-react';
 import Image from 'next/image';
 
 import { cn, formatImageSize } from '@/shared/lib/utils';
@@ -30,6 +30,7 @@ export function MediaCard({
   deleteLabel,
 }: MediaCardProps) {
   const isImage = media.mimeType.startsWith('image/');
+  const isVideo = media.mimeType.startsWith('video/');
 
   return (
     <Card
@@ -49,6 +50,23 @@ export function MediaCard({
               className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 15vw"
             />
+          ) : isVideo ? (
+            <>
+              {/* Metadata only, no controls: the first frame is the thumbnail
+                  (`#t=0.1` asks for it), and the card's actions stay the only buttons. */}
+              <video
+                src={`${media.url}#t=0.1`}
+                aria-label={media.fileName}
+                preload="metadata"
+                muted
+                playsInline
+                className="h-full w-full object-cover"
+              />
+              <Play
+                aria-hidden
+                className="absolute bottom-2 left-2 size-4 fill-white text-white drop-shadow-md"
+              />
+            </>
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-2">
               <FileIcon className="h-10 w-10 text-muted-foreground/40 transition-transform group-hover:scale-110" />

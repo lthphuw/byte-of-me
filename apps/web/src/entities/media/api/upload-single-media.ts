@@ -3,6 +3,7 @@ import { uploadMedia } from './upload-media';
 import {
   describeViolation,
   findUploadViolation,
+  isVideoMimeType,
   MAX_UPLOAD_BATCH,
   type MediaScope,
 } from '@/entities/media/model/upload-constraints';
@@ -79,16 +80,18 @@ export function createSingleMediaUploader(
   };
 
   /**
-   * Uploads one image and returns its public URL, for the rich text editors.
+   * Uploads one image (or mp4/webm clip) and returns its public URL.
    * Compresses BEFORE validating: a 5 MB phone photo that compresses to 400 KB
-   * must not be refused for its raw size. Throws: that is `ImageUploadFn`'s contract.
+   * must not be refused for its raw size. A clip is never compressed, so it skips
+   * the settings read too. Throws: that is `ImageUploadFn`'s contract.
    */
   return async function uploadSingleMedia(
     file: File,
     scope: MediaScope = 'general'
   ): Promise<string> {
-    const compressionConfig = await getCompressionConfig();
-    const compressed = await compressBounded(file, compressionConfig);
+    const compressed = isVideoMimeType(file.type)
+      ? file
+      : await compressBounded(file, await getCompressionConfig());
 
     // Refused here, a file never leaves the browser and the caller gets a
     // message naming it, not the framework's opaque body-size rejection.
