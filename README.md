@@ -142,7 +142,7 @@ There is no `middleware.ts` — the locale lives in the `[locale]` segment, `/` 
 
 ## Getting started
 
-Full guide, locked versions and troubleshooting: **[docs/setup.md](docs/setup.md)**. Pinned: Node 24.4.1 (`.nvmrc`), Bun 1.3.10, PostgreSQL 17.6 and Mailpit (`docker-compose.yml`).
+Full guide, locked versions and troubleshooting: **[docs/setup.md](docs/setup.md)**. Pinned: Node 24.4.1 (`.nvmrc`), Bun 1.4.3, PostgreSQL 17.6 and Mailpit (`docker-compose.yml`).
 
 ```bash
 cp apps/web/.env.example apps/web/.env

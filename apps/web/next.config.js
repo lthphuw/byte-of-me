@@ -181,8 +181,7 @@ const nextConfig = {
     // stores real package contents under node_modules/.bun/<pkg>@<version>/
     // node_modules/<pkg>, with flat node_modules/<pkg> symlinks per consumer
     // pointing at that store — file tracing resolves symlinks to their real
-    // path, so the excludes target the store path directly, the same way the
-    // old pnpm globs targeted node_modules/.pnpm rather than the flat symlinks.
+    // path, so the excludes target the store path directly, not the flat symlinks.
     '**/*': [
       'node_modules/.bun/typescript@*/**',
       'node_modules/.bun/esbuild@*/**',

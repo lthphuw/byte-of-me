@@ -7,7 +7,7 @@ From a fresh `git clone` to a running site with seeded content and a working das
 | Tool | Version | Locked by |
 | --- | --- | --- |
 | Node.js | 24.4.1 | `.nvmrc` |
-| Bun | 1.3.10 | `packageManager` in `package.json` |
+| Bun | 1.4.3 | `packageManager` in `package.json` |
 | npm packages | as in `bun.lock` | `bun install --frozen-lockfile` |
 | PostgreSQL | 17.6 | `docker-compose.yml` (tag and digest) |
 | Mailpit | v1.31.4 | `docker-compose.yml` (tag and digest) |
@@ -20,7 +20,7 @@ PostgreSQL 16 does not work. Migration `20260807140000_widen_note_search_vector`
 ```bash
 nvm install        # reads .nvmrc: Node 24.4.1
 nvm use
-npm install -g bun@1.3.10
+npm install -g bun@1.4.3
 ```
 
 ## 2. Create the env files
@@ -80,7 +80,7 @@ Only the `EMAIL` address can reach `/en/dashboard`.
 bun run check        # type-check, lint, test, build
 ```
 
-Expect `✓ All checks passed.` The last run on a clean clone: 935 tests passed, lint 0 errors and 4 warnings in `packages/ui`.
+Expect `✓ All checks passed.` The last full run, with `turbo --force` (no cache) on Bun 1.4.3 and Node 24.4.1 (2026-10-10): 940 tests passed (web 689 in 76 files, ui 231 in 20, storage 11, logger 6, db 3), lint 0 errors and 4 warnings in `packages/ui`.
 
 ## Troubleshooting
 

@@ -6,7 +6,7 @@
 
 ```text
 .
-├── package.json          root scripts; workspaces apps/* packages/*; workspaces.catalog; bun@1.3.10
+├── package.json          root scripts; workspaces apps/* packages/*; workspaces.catalog; bun@1.4.3
 ├── turbo.json            task graph, cache rules, build env allowlist (names only)
 ├── eslint.config.mjs     the only ESLint config (flat); every workspace uses it
 ├── tsconfig.json         extends packages/config nextjs.json; paths @/* @db/* @logger/*
@@ -16,7 +16,7 @@
 │   └── icons.lock.json   sha256 of the 4 favicon SVG sources (written by gen-icons)
 ├── .husky/               pre-commit, pre-push, commit-msg (husky 8)
 ├── .commitlintrc.json    extends @commitlint/config-conventional
-├── .prettierrc.json      prettier options (.prettierignore beside it)
+├── .prettierrc.json      prettier options (.prettierignore beside it; skips the generated Prisma client)
 ├── .editorconfig         UTF-8, LF, 2-space indent, final newline
 ├── .nvmrc                Node pin v24.4.1 (package.json engines: >=22.0.0)
 ├── .vercelignore         dev-only dirs and docs/superpowers are not deployed
@@ -128,7 +128,7 @@ Not exported from the index: `createS3Client` (`src/s3.factory.ts`, always `forc
 - Editing `eslint.config.mjs` or `packages/config/typescript/*.json` misses every task's cache (`globalDependencies`).
 - `check-types`, `lint` and `test` have no `dependsOn`, so they never run `generate`; `check.sh` type-checks before `build` runs `prisma generate`. Run `bun run generate` after a schema change.
 - `no-explicit-any`, `no-console` (`eslint.config.mjs:98-100`) and `simple-import-sort` are `warn`; no lint script passes `--max-warnings`, so `bun run lint` passes with them.
-- Root `format` and `format:check` call `prettier`, which is not in the root `node_modules/.bin`; only `apps/web` declares it (`prettier ^2.8.8`).
+- Root `format` and `format:check` run the `prettier` in the root `devDependencies` (`^2.8.8`), so keep it there. `.prettierignore` excludes `packages/db/src/generated`, which `prisma generate` rewrites.
 - `LOG_LEVEL` is never read: the level is `NODE_ENV === 'production' ? 'info' : 'debug'`, so the "Invalid LOG_LEVEL" branch (`packages/logger/src/index.ts:10-13`) cannot fire.
 - The logger level is module-global (`src/index.ts:7`): `setLogLevel` on any instance changes all of them. Each entry is multi-line pretty JSON.
 - `copyFileFrom` uses `encodeURI`, which leaves `#`, `?`, `&` and `+` unencoded although its docblock warns about `#`. No caller exists in the repo; the spec covers only a space (`storage.spec.ts:149`).
