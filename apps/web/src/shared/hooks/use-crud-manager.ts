@@ -35,7 +35,7 @@ export type CrudManagerOptions<TItem extends { id: string }, TSaveInput> = {
    * `blogKeys.detail(item.id)`, the full document the editor loads on demand.
    * That key is not a descendant of `queryKey`, so invalidating the list would
    * leave the pre-save document cached; supply this and the entry is dropped
-   * when the item is saved, forcing the next edit to re-fetch.
+   * when the item is saved or deleted, forcing the next edit to re-fetch.
    */
   detailKey?: (item: TItem) => readonly unknown[];
   pageSize?: number;
@@ -147,6 +147,11 @@ export function useCrudManager<TItem extends { id: string }, TSaveInput>({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
       toast.success(messages ? messages.deleted : `${entityLabel} deleted`);
+      // The same per-item cache as a save. The id cannot be reopened, but
+      // its document would otherwise sit in memory until garbage collection.
+      if (itemToDelete && detailKey) {
+        queryClient.removeQueries({ queryKey: detailKey(itemToDelete) });
+      }
       setItemToDelete(null);
     },
     onError: () =>
