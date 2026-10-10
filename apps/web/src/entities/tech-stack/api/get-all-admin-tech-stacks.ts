@@ -8,10 +8,6 @@ import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-
-
-
-
 export async function getAllAdminTechStack(): Promise<
   ApiResponse<AdminTechStack[]>
 > {

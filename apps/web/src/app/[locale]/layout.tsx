@@ -4,7 +4,7 @@ import { Inter as FontSans } from 'next/font/google';
 import localFont from 'next/font/local';
 import { notFound } from 'next/navigation';
 import { SessionProvider } from 'next-auth/react';
-import { hasLocale,NextIntlClientProvider } from 'next-intl';
+import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import {
   getMessages,
   getTranslations,
@@ -14,10 +14,7 @@ import {
 import { GlobalProvider } from '@/app/providers/global-provider';
 import { host } from '@/shared/config/host';
 import { siteConfig } from '@/shared/config/site';
-import {
-  pickMessages,
-  ROOT_MESSAGE_NAMESPACES,
-} from '@/shared/i18n/messages';
+import { pickMessages, ROOT_MESSAGE_NAMESPACES } from '@/shared/i18n/messages';
 import { routing } from '@/shared/i18n/routing';
 import {
   buildAlternates,
@@ -28,10 +25,6 @@ import { cn } from '@/shared/lib/utils';
 // Imported by path, not through '@/shared/ui': that barrel reaches the rich
 // text editor, and the locale layout wraps every public page.
 import { JsonLd } from '@/shared/ui/json-ld';
-
-
-
-
 
 const fontSans = FontSans({
   subsets: ['latin'],

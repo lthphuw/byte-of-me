@@ -1,13 +1,19 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Button ,
+import {
+  Button,
   type ButtonProps,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger, Popover, PopoverContent, PopoverTrigger , ScrollArea } from '@byte-of-me/ui';
+  DialogTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  ScrollArea,
+} from '@byte-of-me/ui';
 import { Check, ChevronDown, ImageIcon, Loader2, Plus, X } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';

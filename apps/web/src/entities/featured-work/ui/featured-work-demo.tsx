@@ -186,7 +186,12 @@ function DemoVideo({
             playsInline
             preload="metadata"
             onLoadedMetadata={(event) =>
-              setRatio(ratioOf(event.currentTarget.videoWidth, event.currentTarget.videoHeight))
+              setRatio(
+                ratioOf(
+                  event.currentTarget.videoWidth,
+                  event.currentTarget.videoHeight
+                )
+              )
             }
             onPlay={() => setPlaying(true)}
             onPause={() => setPlaying(false)}
@@ -229,7 +234,8 @@ function DemoImage({ src, alt }: { src: string; alt: string }) {
   // A cached image can finish before hydration, and its `load` event is gone.
   useEffect(() => {
     const image = imageRef.current;
-    if (image?.complete) setRatio(ratioOf(image.naturalWidth, image.naturalHeight));
+    if (image?.complete)
+      setRatio(ratioOf(image.naturalWidth, image.naturalHeight));
   }, []);
 
   return (
@@ -243,7 +249,12 @@ function DemoImage({ src, alt }: { src: string; alt: string }) {
         loading="lazy"
         decoding="async"
         onLoad={(event) =>
-          setRatio(ratioOf(event.currentTarget.naturalWidth, event.currentTarget.naturalHeight))
+          setRatio(
+            ratioOf(
+              event.currentTarget.naturalWidth,
+              event.currentTarget.naturalHeight
+            )
+          )
         }
         className="size-full object-contain"
       />

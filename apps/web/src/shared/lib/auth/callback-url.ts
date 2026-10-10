@@ -41,7 +41,9 @@ export function sanitizeCallbackUrl(
   candidate: string | null | undefined,
   locale: string
 ): string {
-  const path = stripLocalePrefix(toInternalPath(candidate, DEFAULT_DESTINATION));
+  const path = stripLocalePrefix(
+    toInternalPath(candidate, DEFAULT_DESTINATION)
+  );
 
   if (path === SIGN_IN_PATH || path.startsWith(`${SIGN_IN_PATH}/`)) {
     return `/${locale}${DEFAULT_DESTINATION}`;

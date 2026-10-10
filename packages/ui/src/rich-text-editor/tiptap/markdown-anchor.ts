@@ -92,9 +92,16 @@ function headingBasedMap(
   const startLine = new Array<number>(blocks.length).fill(0);
   let previous = { block: -1, line: 0 };
 
-  for (const anchor of [...anchors, { block: blocks.length, line: lines.length }]) {
+  for (const anchor of [
+    ...anchors,
+    { block: blocks.length, line: lines.length },
+  ]) {
     const span = anchor.block - previous.block;
-    for (let i = previous.block + 1; i <= anchor.block && i < blocks.length; i += 1) {
+    for (
+      let i = previous.block + 1;
+      i <= anchor.block && i < blocks.length;
+      i += 1
+    ) {
       const through = (i - previous.block) / span;
       startLine[i] = Math.round(
         previous.line + through * (anchor.line - previous.line)

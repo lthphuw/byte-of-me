@@ -19,7 +19,12 @@ import Highlight from '@tiptap/extension-highlight';
 import Link from '@tiptap/extension-link';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
-import { Table, TableCell, TableHeader, TableKit } from '@tiptap/extension-table';
+import {
+  Table,
+  TableCell,
+  TableHeader,
+  TableKit,
+} from '@tiptap/extension-table';
 import TextAlign from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import Typography from '@tiptap/extension-typography';
@@ -264,10 +269,10 @@ export const renderExtensions = [
   StarterKit.configure({
     heading: false,
     codeBlock: false,
-  // Registered explicitly below; leaving them on duplicates the extension
-  // names ('link', 'underline') and Tiptap warns on every editor mount.
-  link: false,
-  underline: false,
+    // Registered explicitly below; leaving them on duplicates the extension
+    // names ('link', 'underline') and Tiptap warns on every editor mount.
+    link: false,
+    underline: false,
   }),
   CodeBlockLowlight.configure({ lowlight }),
   CustomHeading,

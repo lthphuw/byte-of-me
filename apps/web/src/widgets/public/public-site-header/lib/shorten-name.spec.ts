@@ -1,4 +1,4 @@
-import { describe, expect,it } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 
 import { shortenName } from './shorten-name';
 
@@ -19,7 +19,9 @@ describe('string.utils - shortenName', () => {
     });
 
     it('should normalize redundant whitespaces', () => {
-      expect(shortenName('  Luong    Thanh   Hoang  Phu  ', { variant: 'initials' })).toBe('LP');
+      expect(
+        shortenName('  Luong    Thanh   Hoang  Phu  ', { variant: 'initials' })
+      ).toBe('LP');
     });
 
     it('should handle single word names gracefully', () => {
@@ -45,24 +47,51 @@ describe('string.utils - shortenName', () => {
   describe('Variant: Compact', () => {
     it('should format correctly using Asian style (last-first)', () => {
       // Expected: First name is the last word, initial comes from the first word
-      expect(shortenName('Luong Thanh Hoang Phu', { variant: 'compact', nameOrder: 'last-first' })).toBe('Phu L.');
-      expect(shortenName('Nguyễn Văn A', { variant: 'compact', nameOrder: 'last-first' })).toBe('A N.');
+      expect(
+        shortenName('Luong Thanh Hoang Phu', {
+          variant: 'compact',
+          nameOrder: 'last-first',
+        })
+      ).toBe('Phu L.');
+      expect(
+        shortenName('Nguyễn Văn A', {
+          variant: 'compact',
+          nameOrder: 'last-first',
+        })
+      ).toBe('A N.');
     });
 
     it('should format correctly using Western style (first-last)', () => {
       // Expected: First name is the first word, initial comes from the last word
-      expect(shortenName('John William Doe', { variant: 'compact', nameOrder: 'first-last' })).toBe('John D.');
-      expect(shortenName('Alice Cooper', { variant: 'compact', nameOrder: 'first-last' })).toBe('Alice C.');
+      expect(
+        shortenName('John William Doe', {
+          variant: 'compact',
+          nameOrder: 'first-last',
+        })
+      ).toBe('John D.');
+      expect(
+        shortenName('Alice Cooper', {
+          variant: 'compact',
+          nameOrder: 'first-last',
+        })
+      ).toBe('Alice C.');
     });
   });
 
   describe('Variant: Truncate', () => {
     it('should truncate and append ellipses if name exceeds maxLength', () => {
-      expect(shortenName('Luong Thanh Hoang Phu', { variant: 'truncate', maxLength: 10 })).toBe('Luong Than...');
+      expect(
+        shortenName('Luong Thanh Hoang Phu', {
+          variant: 'truncate',
+          maxLength: 10,
+        })
+      ).toBe('Luong Than...');
     });
 
     it('should return the original clean name if it is within maxLength', () => {
-      expect(shortenName('John Doe', { variant: 'truncate', maxLength: 15 })).toBe('John Doe');
+      expect(
+        shortenName('John Doe', { variant: 'truncate', maxLength: 15 })
+      ).toBe('John Doe');
     });
   });
 });

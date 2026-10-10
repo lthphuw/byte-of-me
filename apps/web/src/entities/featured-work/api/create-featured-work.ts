@@ -4,7 +4,10 @@ import { type FeaturedWork, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
-import { ownsAllMedia, toMediaRows } from '@/entities/featured-work/lib/featured-work-media';
+import {
+  ownsAllMedia,
+  toMediaRows,
+} from '@/entities/featured-work/lib/featured-work-media';
 import {
   type FeaturedWorkFormValues,
   featuredWorkSchema,
@@ -28,7 +31,13 @@ export async function createFeaturedWork(
     const values = parsed.data;
 
     const media = values.media ?? [];
-    if (!(await ownsAllMedia(prisma, user.id, media.map((m) => m.mediaId)))) {
+    if (
+      !(await ownsAllMedia(
+        prisma,
+        user.id,
+        media.map((m) => m.mediaId)
+      ))
+    ) {
       return { success: false, errorMsg: 'Media not found' };
     }
 

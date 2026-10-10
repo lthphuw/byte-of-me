@@ -47,9 +47,9 @@ describe('ArticleHeadingsProvider', () => {
     // Both consumers got the headings...
     expect(screen.getByRole('navigation', { name: 'Contents' })).toBeDefined();
     expect(screen.getByRole('button', { name: 'Open contents' })).toBeDefined();
-    expect(screen.getByRole('link', { name: 'Install' }).getAttribute('href')).toBe(
-      '#install'
-    );
+    expect(
+      screen.getByRole('link', { name: 'Install' }).getAttribute('href')
+    ).toBe('#install');
     // ...from a single observer, not one each.
     expect(observersCreated).toBe(1);
   });

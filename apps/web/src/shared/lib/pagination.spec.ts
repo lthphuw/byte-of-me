@@ -71,9 +71,9 @@ describe('buildPaginatedMeta', () => {
   });
 
   it('reports no more pages on the last page', () => {
-    expect(buildPaginatedMeta({ page: 3, limit: 10, totalCount: 25 }).hasMore).toBe(
-      false
-    );
+    expect(
+      buildPaginatedMeta({ page: 3, limit: 10, totalCount: 25 }).hasMore
+    ).toBe(false);
   });
 
   it('handles an exactly-full last page', () => {

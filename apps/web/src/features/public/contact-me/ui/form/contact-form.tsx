@@ -127,7 +127,9 @@ export function ContactForm() {
               className="mt-0.5 size-4 shrink-0 text-destructive-text"
             />
             <div className="space-y-2 text-sm">
-              <p className="font-medium text-destructive-text">{t('errorTitle')}</p>
+              <p className="font-medium text-destructive-text">
+                {t('errorTitle')}
+              </p>
               <p className="text-muted-foreground">{result.message}</p>
             </div>
           </div>

@@ -13,9 +13,7 @@ import dynamic from 'next/dynamic';
  */
 export const LazyRichTextEditor = dynamic(
   () =>
-    import('@byte-of-me/ui/rich-text-editor').then(
-      (mod) => mod.RichTextEditor
-    ),
+    import('@byte-of-me/ui/rich-text-editor').then((mod) => mod.RichTextEditor),
   {
     ssr: false,
     loading: () => (

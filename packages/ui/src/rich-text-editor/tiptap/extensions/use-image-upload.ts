@@ -10,7 +10,10 @@ interface UseImageUploadProps {
   uploadFn?: (file: File) => Promise<string>;
 }
 
-export function useImageUpload({ onUpload, uploadFn }: UseImageUploadProps = {}) {
+export function useImageUpload({
+  onUpload,
+  uploadFn,
+}: UseImageUploadProps = {}) {
   const previewRef = useRef<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);

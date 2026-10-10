@@ -1,6 +1,6 @@
 'use client';
 
-import { type MouseEvent,useCallback } from 'react';
+import { type MouseEvent, useCallback } from 'react';
 import { AnimatePresence, m } from 'framer-motion';
 
 import { Button } from './button';

@@ -7,7 +7,7 @@ export async function HomepageTechStack() {
   const t = await getTranslations('homepage');
   const resp = await getAllPublicTechStacks();
 
-  const techStacks = resp.success ? (resp.data?.techStacks ?? []) : [];
+  const techStacks = resp.success ? resp.data?.techStacks ?? [] : [];
   if (techStacks.length === 0) return null;
 
   return (

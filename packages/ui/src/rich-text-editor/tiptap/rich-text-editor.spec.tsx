@@ -24,10 +24,7 @@ import { cleanup, fireEvent, render } from '@testing-library/react';
 import type { Editor, JSONContent } from '@tiptap/react';
 import { afterEach, describe, expect, spyOn, test } from 'bun:test';
 
-import {
-  RichTextEditor,
-  type RichTextEditorApi,
-} from './rich-text-editor';
+import { RichTextEditor, type RichTextEditorApi } from './rich-text-editor';
 
 const PLAIN_DOC: JSONContent = {
   type: 'doc',
@@ -154,10 +151,12 @@ describe('RichTextEditor onChange', () => {
     type EditableWithEditor = Element & {
       editor?: { commands: { insertContent: (value: string) => boolean } };
     };
-    const editor = (container?.querySelector('.tiptap') as
-      | EditableWithEditor
-      | null
-      | undefined)?.editor;
+    const editor = (
+      container?.querySelector('.tiptap') as
+        | EditableWithEditor
+        | null
+        | undefined
+    )?.editor;
     expect(editor).toBeDefined();
 
     await React.act(async () => {
@@ -214,7 +213,10 @@ describe('RichTextEditor onChange timing', () => {
     });
     await React.act(async () => {
       const deadline = Date.now() + 5000;
-      while (!rendered?.container.querySelector('.tiptap') && Date.now() < deadline) {
+      while (
+        !rendered?.container.querySelector('.tiptap') &&
+        Date.now() < deadline
+      ) {
         await new Promise((resolve) => setTimeout(resolve, 10));
       }
       // Past the `create` macrotask, so every edit below is the author's.
@@ -316,7 +318,10 @@ describe('RichTextEditor value prop', () => {
     let rendered: ReturnType<typeof render> | undefined;
     await React.act(async () => {
       rendered = render(
-        <RichTextEditor value={structuredClone(PLAIN_DOC)} onChange={() => {}} />
+        <RichTextEditor
+          value={structuredClone(PLAIN_DOC)}
+          onChange={() => {}}
+        />
       );
     });
     await React.act(async () => {
@@ -340,7 +345,10 @@ describe('RichTextEditor value prop', () => {
 
     await React.act(async () => {
       rendered?.rerender(
-        <RichTextEditor value={structuredClone(HEADING_DOC)} onChange={() => {}} />
+        <RichTextEditor
+          value={structuredClone(HEADING_DOC)}
+          onChange={() => {}}
+        />
       );
     });
 

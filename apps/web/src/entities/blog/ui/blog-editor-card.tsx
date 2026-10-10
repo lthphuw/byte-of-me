@@ -1,6 +1,15 @@
 'use client';
 
-import { Badge , Card, CardContent, CardFooter, CardHeader , DeleteButton , EditButton , ImagePlaceholder } from '@byte-of-me/ui';
+import {
+  Badge,
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  DeleteButton,
+  EditButton,
+  ImagePlaceholder,
+} from '@byte-of-me/ui';
 import { Calendar, Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
 
@@ -14,7 +23,12 @@ interface BlogCardProps {
   isPending?: boolean;
 }
 
-export function BlogEditorCard({ blog, onEdit, onDelete, isPending }: BlogCardProps) {
+export function BlogEditorCard({
+  blog,
+  onEdit,
+  onDelete,
+  isPending,
+}: BlogCardProps) {
   const mainTranslation = blog.translations?.[0];
   const coverImageUrl = blog.coverImage?.url;
 
@@ -74,7 +88,7 @@ export function BlogEditorCard({ blog, onEdit, onDelete, isPending }: BlogCardPr
               variant="outline"
               className="px-2 py-0 text-[10px] font-normal"
             >
-              {(t.tag?.translations?.[0])?.name || t.tag?.id}
+              {t.tag?.translations?.[0]?.name || t.tag?.id}
             </Badge>
           ))}
         </div>
@@ -89,11 +103,7 @@ export function BlogEditorCard({ blog, onEdit, onDelete, isPending }: BlogCardPr
         )}
 
         <div className="flex gap-1">
-          <EditButton
-            isSubmitting={isPending}
-            onClick={() => onEdit(blog)}
-
-          />
+          <EditButton isSubmitting={isPending} onClick={() => onEdit(blog)} />
           <DeleteButton
             isSubmitting={isPending}
             onClick={() => onDelete(blog.id)}

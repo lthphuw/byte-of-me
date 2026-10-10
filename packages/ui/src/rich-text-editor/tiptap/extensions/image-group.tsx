@@ -164,7 +164,9 @@ function ImageGroupView({
       <NodeViewContent className="image-group-items" />
 
       <ImageCaption
-        caption={typeof node.attrs.caption === 'string' ? node.attrs.caption : ''}
+        caption={
+          typeof node.attrs.caption === 'string' ? node.attrs.caption : ''
+        }
         editable={editor.isEditable}
         placeholder="Caption for this row"
         onChange={(caption) => updateAttributes({ caption })}

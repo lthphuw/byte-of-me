@@ -54,9 +54,7 @@ export function EducationAchievementsField({
     <div className="space-y-4 border-t pt-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-medium">
-            {t('achievements.title')}
-          </h3>
+          <h3 className="text-sm font-medium">{t('achievements.title')}</h3>
           {fields.length > 1 && (
             <p className="text-xs text-muted-foreground">
               {t('achievements.reorderHint')}

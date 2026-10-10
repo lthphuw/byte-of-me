@@ -65,7 +65,10 @@ export async function getFeaturedWorkGithub(
       },
       {
         cache: true,
-        cacheKey: ['featured-works-github', ...entries.map((entry) => entry.url)],
+        cacheKey: [
+          'featured-works-github',
+          ...entries.map((entry) => entry.url),
+        ],
         cacheTags: [CACHE_TAGS.FEATURED_WORK],
         revalidate: REVALIDATE_SECONDS,
       }

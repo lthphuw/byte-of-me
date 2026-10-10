@@ -28,22 +28,29 @@ const media = (overrides: Partial<Media>): Media => ({
 afterEach(cleanup);
 
 describe('MediaCard', () => {
-  it.each(['video/mp4', 'video/webm'])('shows a %s entry as a muted metadata-only video, never an img', (mimeType) => {
-    const { container } = render(<MediaCard media={media({ mimeType })} />);
+  it.each(['video/mp4', 'video/webm'])(
+    'shows a %s entry as a muted metadata-only video, never an img',
+    (mimeType) => {
+      const { container } = render(<MediaCard media={media({ mimeType })} />);
 
-    const video = container.querySelector('video');
-    expect(video).not.toBeNull();
-    expect(video?.getAttribute('preload')).toBe('metadata');
-    expect(video?.muted).toBe(true);
-    expect(video?.hasAttribute('controls')).toBe(false);
-    expect(video?.getAttribute('src')).toBe('https://cdn.example/x.mp4#t=0.1');
-    expect(video?.getAttribute('aria-label')).toBe('int8.mp4');
-    expect(container.querySelector('img')).toBeNull();
-  });
+      const video = container.querySelector('video');
+      expect(video).not.toBeNull();
+      expect(video?.getAttribute('preload')).toBe('metadata');
+      expect(video?.muted).toBe(true);
+      expect(video?.hasAttribute('controls')).toBe(false);
+      expect(video?.getAttribute('src')).toBe(
+        'https://cdn.example/x.mp4#t=0.1'
+      );
+      expect(video?.getAttribute('aria-label')).toBe('int8.mp4');
+      expect(container.querySelector('img')).toBeNull();
+    }
+  );
 
   it('shows a placeholder, not a broken img, for a file that is neither', () => {
     const { container, getByText } = render(
-      <MediaCard media={media({ mimeType: 'application/pdf', fileName: 'a.pdf' })} />
+      <MediaCard
+        media={media({ mimeType: 'application/pdf', fileName: 'a.pdf' })}
+      />
     );
 
     expect(container.querySelector('img')).toBeNull();

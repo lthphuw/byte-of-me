@@ -4,12 +4,11 @@ import { Button, type ButtonProps } from './button';
 import { Icons } from './icons';
 import { cn } from './lib/utils';
 
-export type SubmitButtonProps =
-  ButtonProps & {
-    loading?: boolean;
-    className?: string;
-    style?: React.CSSProperties;
-  };
+export type SubmitButtonProps = ButtonProps & {
+  loading?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+};
 
 export function SubmitButton({
   loading,

@@ -1,4 +1,7 @@
-import type { FeaturedWorkGithub, GithubPullRequestRef } from '@/entities/featured-work/model/types';
+import type {
+  FeaturedWorkGithub,
+  GithubPullRequestRef,
+} from '@/entities/featured-work/model/types';
 
 export type RepositoryNode = {
   nameWithOwner: string;
@@ -20,7 +23,10 @@ export function buildPullRequestQuery(refs: GithubPullRequestRef[]) {
     params.push(`$o${i}: String!`, `$n${i}: String!`, `$p${i}: Int!`);
     return `pr${i}: repository(owner: $o${i}, name: $n${i}) { nameWithOwner stargazerCount pullRequest(number: $p${i}) { number } }`;
   });
-  return { query: `query (${params.join(', ')}) { ${fields.join(' ')} }`, variables };
+  return {
+    query: `query (${params.join(', ')}) { ${fields.join(' ')} }`,
+    variables,
+  };
 }
 
 export function mapPullRequestResponse(

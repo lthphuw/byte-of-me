@@ -40,7 +40,8 @@ export const CitationBase = Node.create({
 
   renderHTML({ HTMLAttributes, node }) {
     const refId = typeof node.attrs.refId === 'string' ? node.attrs.refId : '';
-    const order = typeof node.attrs.order === 'number' ? node.attrs.order : null;
+    const order =
+      typeof node.attrs.order === 'number' ? node.attrs.order : null;
 
     // A marker whose entry was deleted still renders, but inert — silently
     // dropping it would lose the author's intent without any signal.

@@ -4,7 +4,14 @@
  * Renders the real component; no mocks.
  */
 import type { ComponentProps } from 'react';
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'bun:test';
 
@@ -26,14 +33,20 @@ const work: Omit<ComponentProps<typeof FeaturedWorkItem>, 'anchorId'> = {
   details: (
     <>
       <p>How it was done: a streaming writer.</p>
-      <a href="https://github.com/roboflow/rf-detr/pull/512" target="_blank" rel="noopener noreferrer">
+      <a
+        href="https://github.com/roboflow/rf-detr/pull/512"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         View on GitHub
       </a>
     </>
   ),
 };
 
-function renderItem(props: Partial<ComponentProps<typeof FeaturedWorkItem>> = {}) {
+function renderItem(
+  props: Partial<ComponentProps<typeof FeaturedWorkItem>> = {}
+) {
   return render(<FeaturedWorkItem anchorId={ANCHOR} {...work} {...props} />);
 }
 
@@ -80,8 +93,12 @@ describe('FeaturedWorkItem disclosure', () => {
   it('leaves the title as plain text, not a button', () => {
     renderItem();
 
-    expect(screen.queryByRole('button', { name: 'Faster detector export' })).toBeNull();
-    expect(screen.getByRole('heading', { name: 'Faster detector export' })).toBeTruthy();
+    expect(
+      screen.queryByRole('button', { name: 'Faster detector export' })
+    ).toBeNull();
+    expect(
+      screen.getByRole('heading', { name: 'Faster detector export' })
+    ).toBeTruthy();
   });
 
   it('keeps the body inert while closed and releases it once open', () => {
@@ -155,7 +172,9 @@ describe('FeaturedWorkItem chevron', () => {
       window.location.hash = `#${ANCHOR}`;
     });
 
-    await waitFor(() => expect(toggle().getAttribute('aria-expanded')).toBe('true'));
+    await waitFor(() =>
+      expect(toggle().getAttribute('aria-expanded')).toBe('true')
+    );
     expect(chevron().classList.contains('transition-none')).toBe(true);
   });
 });
@@ -177,7 +196,9 @@ describe('FeaturedWorkItem deep links', () => {
       window.location.hash = `#${ANCHOR}`;
     });
 
-    await waitFor(() => expect(toggle().getAttribute('aria-expanded')).toBe('true'));
+    await waitFor(() =>
+      expect(toggle().getAttribute('aria-expanded')).toBe('true')
+    );
   });
 
   it('leaves a row shut when the hash changes to a different row', async () => {
@@ -197,7 +218,9 @@ describe('FeaturedWorkItem deep links', () => {
 
     // The other row opens from the hashchange event itself, which proves the event
     // was handled. This row's listener was registered first, so it has run too.
-    await waitFor(() => expect(toggleFor(other).getAttribute('aria-expanded')).toBe('true'));
+    await waitFor(() =>
+      expect(toggleFor(other).getAttribute('aria-expanded')).toBe('true')
+    );
     expect(toggleFor(ANCHOR).getAttribute('aria-expanded')).toBe('false');
   });
 });
@@ -209,7 +232,11 @@ describe('FeaturedWorkItem plain row', () => {
     const link = screen.getByRole('link');
     expect(link.getAttribute('target')).toBe('_blank');
     expect(link.textContent).toContain('(opens in a new tab)');
-    expect(screen.getByRole('link', { name: /Faster detector export.*\(opens in a new tab\)/ })).toBe(link);
+    expect(
+      screen.getByRole('link', {
+        name: /Faster detector export.*\(opens in a new tab\)/,
+      })
+    ).toBe(link);
   });
 });
 
@@ -317,7 +344,9 @@ describe('FeaturedWorkItem body grid classes', () => {
   const ORDER = ['', 'sm', 'md', 'lg', 'xl'];
   /** Breakpoint rank of a utility: `md:col-span-2` -> 2, `col-start-2` -> 0. */
   const rankOf = (name: string) =>
-    ORDER.indexOf(name.includes(':') ? name.slice(0, name.lastIndexOf(':')) : '');
+    ORDER.indexOf(
+      name.includes(':') ? name.slice(0, name.lastIndexOf(':')) : ''
+    );
   const isSpan = (name: string) => /(^|:)col-span-/.test(name);
   const isStart = (name: string) => /(^|:)col-start-/.test(name);
 
@@ -334,7 +363,8 @@ describe('FeaturedWorkItem body grid classes', () => {
       const classes = [...element.classList];
       for (const span of classes.filter(isSpan)) {
         for (const start of classes.filter(isStart)) {
-          if (rankOf(start) <= rankOf(span)) offenders.push(`${span} + ${start}`);
+          if (rankOf(start) <= rankOf(span))
+            offenders.push(`${span} + ${start}`);
         }
       }
     }
@@ -363,7 +393,9 @@ describe('FeaturedWorkItem body grid classes', () => {
     cleanup();
 
     const withDetails = renderItem({ media: pair }).container;
-    const details = withDetails.querySelector<HTMLElement>(`#${ANCHOR}-details`);
+    const details = withDetails.querySelector<HTMLElement>(
+      `#${ANCHOR}-details`
+    );
     expect(details?.classList.contains('md:col-start-2')).toBe(true);
     expect(details?.classList.contains('md:col-end-[-1]')).toBe(false);
   });

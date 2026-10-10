@@ -49,11 +49,7 @@ describe('buildMarkdownAnchorMap', () => {
     ];
     const markdown = markdownOf(blocks);
 
-    const map = buildMarkdownAnchorMap(
-      docOf(blocks),
-      markdown,
-      serializeBlock
-    );
+    const map = buildMarkdownAnchorMap(docOf(blocks), markdown, serializeBlock);
 
     expect(map.basis).toBe('blocks');
     expect(map.startLine).toEqual([0, 2, 4, 6]);

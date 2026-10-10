@@ -38,16 +38,20 @@ describe('RevealSection', () => {
   it('still reveals when mounted on the client after hydration', () => {
     const { container } = render(<RevealSection immediate>Hero</RevealSection>);
 
-    expect((container.firstElementChild as HTMLElement).style.opacity).toBe('0');
+    expect((container.firstElementChild as HTMLElement).style.opacity).toBe(
+      '0'
+    );
   });
 });
 
 describe('RevealItem', () => {
   it('is hidden in the server HTML by default, visible when immediate', () => {
-    expect(renderToString(<RevealItem>Card</RevealItem>)).toContain('opacity:0');
-    expect(renderToString(<RevealItem immediate>Card</RevealItem>)).not.toContain(
+    expect(renderToString(<RevealItem>Card</RevealItem>)).toContain(
       'opacity:0'
     );
+    expect(
+      renderToString(<RevealItem immediate>Card</RevealItem>)
+    ).not.toContain('opacity:0');
   });
 
   // Below the fold an entrance finishes before anyone scrolls there, so the
@@ -57,7 +61,9 @@ describe('RevealItem', () => {
       renderToString(<RevealItem entrance={false}>Card</RevealItem>)
     ).not.toContain('opacity:0');
 
-    const { container } = render(<RevealItem entrance={false}>Card</RevealItem>);
+    const { container } = render(
+      <RevealItem entrance={false}>Card</RevealItem>
+    );
 
     expect((container.firstElementChild as HTMLElement).style.opacity).toBe('');
   });

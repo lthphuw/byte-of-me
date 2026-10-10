@@ -88,7 +88,10 @@ function numericColumnsOf(table: ProseMirrorNode): TableColumns {
 }
 
 /** The decorations for one table, at its position in the document. */
-function decorationsFor(table: ProseMirrorNode, tablePos: number): Decoration[] {
+function decorationsFor(
+  table: ProseMirrorNode,
+  tablePos: number
+): Decoration[] {
   const { columns, placed } = numericColumnsOf(table);
   if (!columns.size) return [];
 

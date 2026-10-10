@@ -4,13 +4,9 @@ import React from 'react';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
-import { globalConfig,Routes } from '@/shared/config/global';
+import { globalConfig, Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
-
-
-
-
 
 export function PublicSiteFooterNav() {
   const t = useTranslations('global.footer');

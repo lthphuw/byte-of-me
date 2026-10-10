@@ -14,7 +14,6 @@ import { getErrorMessage } from '@/shared/lib/utils';
 import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-
 export async function saveProfile(
   input: UserProfileFormValues
 ): Promise<ApiResponse<null>> {

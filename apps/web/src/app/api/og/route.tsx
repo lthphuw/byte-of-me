@@ -3,11 +3,7 @@ import { readFile } from 'node:fs/promises';
 
 import { host } from '@/shared/config/host';
 import { siteConfig } from '@/shared/config/site';
-import {
-  MARK_LAYERS,
-  MARK_PATH,
-  MARK_VIEWBOX,
-} from '@/shared/lib/brand-mark';
+import { MARK_LAYERS, MARK_PATH, MARK_VIEWBOX } from '@/shared/lib/brand-mark';
 import { getErrorMessage } from '@/shared/lib/utils';
 
 /**
@@ -90,7 +86,10 @@ export async function GET(request: Request) {
               strokeWidth={MARK_LAYERS.public.mark.strokeWidth}
               strokeLinecap="round"
             >
-              <path transform={MARK_LAYERS.public.mark.transform} d={MARK_PATH} />
+              <path
+                transform={MARK_LAYERS.public.mark.transform}
+                d={MARK_PATH}
+              />
             </svg>
             <div
               style={{
@@ -120,7 +119,9 @@ export async function GET(request: Request) {
 
           {/* Footer: hairline, then the author */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-            <div style={{ display: 'flex', height: 1, backgroundColor: BORDER }} />
+            <div
+              style={{ display: 'flex', height: 1, backgroundColor: BORDER }}
+            />
             <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
               {/* A background, not an <img>: border-radius clips a background
                   directly, while satori will not clip an oversized child with

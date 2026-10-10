@@ -53,10 +53,7 @@ import { EditorPreview } from './editor-preview';
 import { TipTapFloatingMenu } from './extensions/floating-menu';
 import { FloatingToolbar } from './extensions/floating-toolbar';
 import { TableHeaderScopes } from './extensions/header-scopes-plugin';
-import {
-  ImageExtension,
-  type ImageUploadFn,
-} from './extensions/image';
+import { ImageExtension, type ImageUploadFn } from './extensions/image';
 import { ImageGroup } from './extensions/image-group';
 import { ImagePlaceholder } from './extensions/image-placeholder';
 import { LinkSuggestion } from './extensions/link-suggestion';
@@ -1481,57 +1478,61 @@ export function RichTextEditor({
             is the navigation an author of linked notes actually reaches for.
             Every other consumer keeps the outline exactly as it was. */}
         {!compact && !chromeless && preview === null && (
-        <aside className="hidden w-72 shrink-0 bg-muted/10 lg:block">
-          <Tabs defaultValue="outline" className="flex h-full flex-col">
-            <TabsList className="m-3 grid grid-cols-2">
-              <TabsTrigger value="outline">Outline</TabsTrigger>
-              <TabsTrigger value="references">References</TabsTrigger>
-            </TabsList>
+          <aside className="hidden w-72 shrink-0 bg-muted/10 lg:block">
+            <Tabs defaultValue="outline" className="flex h-full flex-col">
+              <TabsList className="m-3 grid grid-cols-2">
+                <TabsTrigger value="outline">Outline</TabsTrigger>
+                <TabsTrigger value="references">References</TabsTrigger>
+              </TabsList>
 
-            <TabsContent
-              value="outline"
-              className="mt-0 min-h-0 flex-1 overflow-y-auto px-5 pb-6"
-            >
-              <div className="flex flex-col gap-2 border-l border-muted-foreground/20">
-                {items.map((item) => (
-                  <button
-                    type={'button'}
-                    key={item.id}
-                    onClick={(e) => {
-                      e?.preventDefault();
+              <TabsContent
+                value="outline"
+                className="mt-0 min-h-0 flex-1 overflow-y-auto px-5 pb-6"
+              >
+                <div className="flex flex-col gap-2 border-l border-muted-foreground/20">
+                  {items.map((item) => (
+                    <button
+                      type={'button'}
+                      key={item.id}
+                      onClick={(e) => {
+                        e?.preventDefault();
 
-                      const el = document.getElementById(item.id);
-                      el?.scrollIntoView({ behavior: scrollIntoViewBehavior() });
-                    }}
-                    className={cn(
-                      'text-xs text-left px-4 py-1 hover:text-primary transition-all border-l-2 -ml-[1px] border-transparent hover:border-primary',
-                      // Not `item.isActive` — see the observer effect above
-                      // for why the extension's own flag is always false here.
-                      item.id === activeHeadingId && 'text-primary border-primary',
-                      item.level === 1 && 'font-bold text-sm',
-                      item.level === 2 && 'ml-2 font-semibold',
-                      item.level === 3 && 'ml-4  font-normal text-muted-foreground'
-                    )}
-                  >
-                    {item.textContent}
-                  </button>
-                ))}
-                {items.length === 0 && (
-                  <p className="px-4 py-1 text-xs text-muted-foreground">
-                    Headings you add will show up here.
-                  </p>
-                )}
-              </div>
-            </TabsContent>
+                        const el = document.getElementById(item.id);
+                        el?.scrollIntoView({
+                          behavior: scrollIntoViewBehavior(),
+                        });
+                      }}
+                      className={cn(
+                        'text-xs text-left px-4 py-1 hover:text-primary transition-all border-l-2 -ml-[1px] border-transparent hover:border-primary',
+                        // Not `item.isActive` — see the observer effect above
+                        // for why the extension's own flag is always false here.
+                        item.id === activeHeadingId &&
+                          'text-primary border-primary',
+                        item.level === 1 && 'font-bold text-sm',
+                        item.level === 2 && 'ml-2 font-semibold',
+                        item.level === 3 &&
+                          'ml-4  font-normal text-muted-foreground'
+                      )}
+                    >
+                      {item.textContent}
+                    </button>
+                  ))}
+                  {items.length === 0 && (
+                    <p className="px-4 py-1 text-xs text-muted-foreground">
+                      Headings you add will show up here.
+                    </p>
+                  )}
+                </div>
+              </TabsContent>
 
-            <TabsContent
-              value="references"
-              className="mt-0 min-h-0 flex-1 overflow-y-auto px-4 pb-6"
-            >
-              <ReferencePanel editor={editor} />
-            </TabsContent>
-          </Tabs>
-        </aside>
+              <TabsContent
+                value="references"
+                className="mt-0 min-h-0 flex-1 overflow-y-auto px-4 pb-6"
+              >
+                <ReferencePanel editor={editor} />
+              </TabsContent>
+            </Tabs>
+          </aside>
         )}
       </div>
 

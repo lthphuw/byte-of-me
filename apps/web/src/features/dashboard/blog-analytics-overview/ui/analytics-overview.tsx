@@ -34,11 +34,19 @@ export async function AnalyticsOverview() {
   // read left a titled section with nothing under it.
   if (!dataResp.success || !dataResp.data) {
     return (
-      <p className="text-sm text-destructive-text">{tDashboard('sectionError')}</p>
+      <p className="text-sm text-destructive-text">
+        {tDashboard('sectionError')}
+      </p>
     );
   }
-  const { viewsByDay, totalViewsLast30Days, topBlogs, likes, claps, blogViews } =
-    dataResp.data;
+  const {
+    viewsByDay,
+    totalViewsLast30Days,
+    topBlogs,
+    likes,
+    claps,
+    blogViews,
+  } = dataResp.data;
 
   const maxDailyViews = Math.max(...viewsByDay.map((d) => d.views), 1);
   const maxTopBlogViews = Math.max(...topBlogs.map((b) => b.views), 1);
@@ -178,10 +186,7 @@ export async function AnalyticsOverview() {
 
       <div className="grid gap-4 sm:grid-cols-3">
         {tiles.map((tile) => (
-          <Card
-            key={tile.label}
-            className="border-none bg-card/60 shadow-sm"
-          >
+          <Card key={tile.label} className="border-none bg-card/60 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 {tile.label}

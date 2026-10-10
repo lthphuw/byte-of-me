@@ -9,10 +9,6 @@ import { redirect } from '@/shared/i18n/navigation';
 import { getAuthenticatedAdmin } from '@/shared/lib/auth';
 import { PATHNAME_HEADER } from '@/shared/lib/constants';
 
-
-
-
-
 export const dynamic = 'force-dynamic';
 
 export default async function ProtectedLayout({

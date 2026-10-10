@@ -48,7 +48,19 @@ const HTML = new TextEncoder().encode('<html><script>alert(1)</script></html>');
 const MiB = 1024 * 1024;
 const ascii = (text: string) => [...text].map((c) => c.charCodeAt(0));
 const MP4 = new Uint8Array([
-  ...[0, 0, 0, 24, ...ascii('ftypisom'), 0, 0, 2, 0, ...ascii('isom'), ...ascii('mp42')],
+  ...[
+    0,
+    0,
+    0,
+    24,
+    ...ascii('ftypisom'),
+    0,
+    0,
+    2,
+    0,
+    ...ascii('isom'),
+    ...ascii('mp42'),
+  ],
   ...[0, 0, 0, 8, ...ascii('free')],
 ]);
 const WEBM = new Uint8Array([
@@ -58,7 +70,9 @@ const WEBM = new Uint8Array([
   ...[0x18, 0x53, 0x80, 0x67],
 ]);
 const GIF = new Uint8Array([...ascii('GIF89a'), 1, 0, 1, 0, 0, 0, 0]);
-const SVG = new TextEncoder().encode('<svg xmlns="http://www.w3.org/2000/svg"></svg>');
+const SVG = new TextEncoder().encode(
+  '<svg xmlns="http://www.w3.org/2000/svg"></svg>'
+);
 /** `head` followed by zeros up to `size` bytes. */
 const padded = (head: Uint8Array, size: number) => {
   const out = new Uint8Array(size);
@@ -136,14 +150,19 @@ describe('uploadMedia', () => {
   it('stores an mp4 byte for byte under the featured-work scope, even with compression on', async () => {
     compressionEnabled = true;
 
-    const res = await uploadMedia([fileOf(MP4, 'int8.mp4', 'video/mp4')], 'featured-work');
+    const res = await uploadMedia(
+      [fileOf(MP4, 'int8.mp4', 'video/mp4')],
+      'featured-work'
+    );
 
     expect(res.success).toBe(true);
     const [{ fileKey, contentType, body }] = uploadFile.mock.calls[0] as [
       { fileKey: string; contentType: string; body: Buffer }
     ];
     expect(contentType).toBe('video/mp4');
-    expect(fileKey).toMatch(/\/media\/featured-work\/\d{4}\/\d{2}\/[^/]+\.mp4$/);
+    expect(fileKey).toMatch(
+      /\/media\/featured-work\/\d{4}\/\d{2}\/[^/]+\.mp4$/
+    );
     expect(Buffer.compare(body, Buffer.from(MP4))).toBe(0);
     const data = mediaCreate.mock.calls[0]?.[0].data;
     expect(data.mimeType).toBe('video/mp4');
@@ -151,7 +170,10 @@ describe('uploadMedia', () => {
   });
 
   it('stores a webm as webm', async () => {
-    const res = await uploadMedia([fileOf(WEBM, 'fp16.webm', 'video/webm')], 'featured-work');
+    const res = await uploadMedia(
+      [fileOf(WEBM, 'fp16.webm', 'video/webm')],
+      'featured-work'
+    );
 
     expect(res.success).toBe(true);
     const [{ fileKey, contentType }] = uploadFile.mock.calls[0] as [
@@ -162,7 +184,10 @@ describe('uploadMedia', () => {
   });
 
   it('keeps accepting a GIF as an image, stored untouched', async () => {
-    const res = await uploadMedia([fileOf(GIF, 'demo.gif', 'image/gif')], 'featured-work');
+    const res = await uploadMedia(
+      [fileOf(GIF, 'demo.gif', 'image/gif')],
+      'featured-work'
+    );
 
     expect(res.success).toBe(true);
     const [{ contentType, fileKey }] = uploadFile.mock.calls[0] as [
@@ -178,13 +203,19 @@ describe('uploadMedia', () => {
     ['an SVG', SVG],
     ['a truncated mp4 header', MP4.subarray(0, 14)],
     ['an empty file', new Uint8Array()],
-  ])('refuses %s renamed .mp4 and declared video/mp4', async (_label, bytes) => {
-    const res = await uploadMedia([fileOf(bytes, 'clip.mp4', 'video/mp4')], 'featured-work');
+  ])(
+    'refuses %s renamed .mp4 and declared video/mp4',
+    async (_label, bytes) => {
+      const res = await uploadMedia(
+        [fileOf(bytes, 'clip.mp4', 'video/mp4')],
+        'featured-work'
+      );
 
-    expect(res.success).toBe(false);
-    expect(uploadFile).not.toHaveBeenCalled();
-    expect(mediaCreate).not.toHaveBeenCalled();
-  });
+      expect(res.success).toBe(false);
+      expect(uploadFile).not.toHaveBeenCalled();
+      expect(mediaCreate).not.toHaveBeenCalled();
+    }
+  );
 
   it('refuses a clip whose declared type disagrees with its bytes, either way', async () => {
     const cases: [Uint8Array, string][] = [
@@ -195,7 +226,10 @@ describe('uploadMedia', () => {
       [PNG, 'video/webm'],
     ];
     for (const [bytes, type] of cases) {
-      const res = await uploadMedia([fileOf(bytes, 'x', type)], 'featured-work');
+      const res = await uploadMedia(
+        [fileOf(bytes, 'x', type)],
+        'featured-work'
+      );
       expect(res.success).toBe(false);
     }
     expect(uploadFile).not.toHaveBeenCalled();
@@ -211,8 +245,14 @@ describe('uploadMedia', () => {
       'featured-work'
     );
 
-    expect(bigClip).toEqual({ success: false, errorMsg: '"big.mp4" is larger than 10 MB.' });
-    expect(bigImage).toEqual({ success: false, errorMsg: '"big.png" is larger than 3 MB.' });
+    expect(bigClip).toEqual({
+      success: false,
+      errorMsg: '"big.mp4" is larger than 10 MB.',
+    });
+    expect(bigImage).toEqual({
+      success: false,
+      errorMsg: '"big.png" is larger than 3 MB.',
+    });
     expect(uploadFile).not.toHaveBeenCalled();
   });
 
@@ -230,10 +270,13 @@ describe('uploadMedia', () => {
 
     it('names the file and the bucket limit when storage answers EntityTooLarge', async () => {
       uploadFile.mockRejectedValue(
-        Object.assign(new Error('The object exceeded the maximum allowed size'), {
-          name: 'EntityTooLarge',
-          $metadata: { httpStatusCode: 413 },
-        })
+        Object.assign(
+          new Error('The object exceeded the maximum allowed size'),
+          {
+            name: 'EntityTooLarge',
+            $metadata: { httpStatusCode: 413 },
+          }
+        )
       );
 
       const res = await uploadMedia([clip()], 'featured-work');
@@ -261,7 +304,9 @@ describe('uploadMedia', () => {
   });
 
   it('keeps the batch rule and the request total', async () => {
-    const six = Array.from({ length: 6 }, () => fileOf(PNG, 'a.png', 'image/png'));
+    const six = Array.from({ length: 6 }, () =>
+      fileOf(PNG, 'a.png', 'image/png')
+    );
     const tooMany = await uploadMedia(six, 'blog');
     const twoClips = await uploadMedia(
       [
@@ -284,7 +329,9 @@ describe('uploadMedia', () => {
     // served must still be the video type, never something a browser would render.
     const POLYGLOT = new Uint8Array([
       ...MP4,
-      ...new TextEncoder().encode('<html><script>alert(document.cookie)</script></html>'),
+      ...new TextEncoder().encode(
+        '<html><script>alert(document.cookie)</script></html>'
+      ),
     ]);
 
     it('stores an mp4 header followed by HTML as video/mp4, never a text type', async () => {
@@ -306,7 +353,10 @@ describe('uploadMedia', () => {
     it.each(['image/png', 'image/jpeg', 'image/svg+xml', 'text/html', ''])(
       'does not accept that polyglot as an image declared %p',
       async (type) => {
-        const res = await uploadMedia([fileOf(POLYGLOT, 'poc.png', type)], 'featured-work');
+        const res = await uploadMedia(
+          [fileOf(POLYGLOT, 'poc.png', type)],
+          'featured-work'
+        );
 
         expect(res.success).toBe(false);
         expect(uploadFile).not.toHaveBeenCalled();
@@ -316,9 +366,15 @@ describe('uploadMedia', () => {
 
     it.each([
       ['an HTML page', HTML],
-      ['HTML dressed as an ftyp box', new TextEncoder().encode('<!--ftypisom--><script>x</script>')],
+      [
+        'HTML dressed as an ftyp box',
+        new TextEncoder().encode('<!--ftypisom--><script>x</script>'),
+      ],
     ])('rejects %s declared video/mp4', async (_label, bytes) => {
-      const res = await uploadMedia([fileOf(bytes, 'poc.mp4', 'video/mp4')], 'featured-work');
+      const res = await uploadMedia(
+        [fileOf(bytes, 'poc.mp4', 'video/mp4')],
+        'featured-work'
+      );
 
       expect(res.success).toBe(false);
       expect(uploadFile).not.toHaveBeenCalled();

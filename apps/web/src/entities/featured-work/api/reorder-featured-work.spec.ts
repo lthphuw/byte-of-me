@@ -17,7 +17,10 @@ import {
 
 import type * as ReorderModule from './reorder-featured-work';
 
-import { resetTestUser, setTestUser } from '@/shared/lib/auth/set-test-user.test-helper';
+import {
+  resetTestUser,
+  setTestUser,
+} from '@/shared/lib/auth/set-test-user.test-helper';
 
 type Row = { id: string; sortOrder: number };
 const findMany = mock<(args: unknown) => Promise<Row[]>>();
@@ -103,7 +106,7 @@ describe('reorderFeaturedWork', () => {
     expect(update).not.toHaveBeenCalled();
   });
 
-  it('fails without writing when the id is not the caller\'s item', async () => {
+  it("fails without writing when the id is not the caller's item", async () => {
     const result = await reorderFeaturedWork('someone-elses', 'up');
 
     expect(result).toEqual({
@@ -128,7 +131,8 @@ describe('reorderFeaturedWork', () => {
       ['b', 0],
       ['c', 0],
     ]);
-    for (const [id, sortOrder] of writes()) final.set(id as string, sortOrder as number);
+    for (const [id, sortOrder] of writes())
+      final.set(id as string, sortOrder as number);
     expect([...final.entries()]).toEqual([
       ['a', 0],
       ['b', 2],

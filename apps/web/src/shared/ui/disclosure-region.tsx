@@ -39,7 +39,8 @@ export function DisclosureRegion({
         // also reset the duration and easing that the classes below set.
         animated &&
           'transition-[grid-template-rows,opacity] motion-reduce:[transition-property:opacity]',
-        animated && (open ? 'duration-250 ease-enter' : 'duration-200 ease-exit'),
+        animated &&
+          (open ? 'duration-250 ease-enter' : 'duration-200 ease-exit'),
         className
       )}
     >

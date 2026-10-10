@@ -11,7 +11,7 @@ export async function HomepageEducation() {
   const t = await getTranslations('homepage');
   const resp = await getAllPublicEducations();
 
-  const educations = resp.success ? (resp.data?.educations ?? []) : [];
+  const educations = resp.success ? resp.data?.educations ?? [] : [];
   if (educations.length === 0) return null;
 
   return (

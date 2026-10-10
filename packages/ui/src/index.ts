@@ -31,7 +31,7 @@ export * from './lib/rich-text-content';
 export * from './lib/sanitize';
 export * from './lib/utils';
 export * from './loading';
-export * from './motion'
+export * from './motion';
 export * from './multi-select';
 export * from './pagination';
 export * from './popover';

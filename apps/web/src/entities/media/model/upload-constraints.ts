@@ -60,7 +60,9 @@ export const ACCEPTED_MEDIA_MIME_TYPES = [
 
 export type AcceptedMediaMimeType = (typeof ACCEPTED_MEDIA_MIME_TYPES)[number];
 
-export function isVideoMimeType(mimeType: string): mimeType is AcceptedVideoMimeType {
+export function isVideoMimeType(
+  mimeType: string
+): mimeType is AcceptedVideoMimeType {
   return (ACCEPTED_VIDEO_MIME_TYPES as readonly string[]).includes(mimeType);
 }
 
@@ -70,7 +72,10 @@ export function isImageMimeType(mimeType: string): boolean {
 }
 
 /** The per-file ceiling for a (declared or sniffed) type: video gets its own, higher one. */
-export function maxUploadSizeFor(mimeType: string): { bytes: number; mb: number } {
+export function maxUploadSizeFor(mimeType: string): {
+  bytes: number;
+  mb: number;
+} {
   return isVideoMimeType(mimeType)
     ? { bytes: MAX_VIDEO_SIZE_BYTES, mb: MAX_VIDEO_SIZE_MB }
     : { bytes: MAX_IMAGE_SIZE_BYTES, mb: MAX_IMAGE_SIZE_MB };
@@ -113,7 +118,9 @@ export type MediaValidationError =
  * translate it — the same function guards the server action, where the user's
  * locale is not available under this repo's conventions.
  */
-export function findUploadViolation(files: File[]): MediaValidationError | null {
+export function findUploadViolation(
+  files: File[]
+): MediaValidationError | null {
   if (files.length > MAX_UPLOAD_BATCH) {
     return { kind: 'batch', max: MAX_UPLOAD_BATCH };
   }
@@ -128,7 +135,9 @@ export function findUploadViolation(files: File[]): MediaValidationError | null 
     }
   }
 
-  if (files.reduce((sum, file) => sum + file.size, 0) > MAX_UPLOAD_TOTAL_BYTES) {
+  if (
+    files.reduce((sum, file) => sum + file.size, 0) > MAX_UPLOAD_TOTAL_BYTES
+  ) {
     return { kind: 'total', maxSizeMb: MAX_UPLOAD_TOTAL_MB };
   }
 
@@ -198,10 +207,10 @@ function startsWithSvgElement(text: string): boolean {
     const [open, close] = rest.startsWith('<?')
       ? ['<?', '?>']
       : rest.startsWith('<!--')
-        ? ['<!--', '-->']
-        : /^<!doctype/i.test(rest)
-          ? ['<!', '>']
-          : [];
+      ? ['<!--', '-->']
+      : /^<!doctype/i.test(rest)
+      ? ['<!', '>']
+      : [];
     if (!open || !close) break;
 
     const end = rest.indexOf(close, open.length);
@@ -300,11 +309,16 @@ function isWebm(bytes: Uint8Array): boolean {
   const sizeLength = vintLength(bytes[4]);
   if (sizeLength === 0 || 4 + sizeLength > bytes.length) return false;
   let headerSize = bytes[4] & (0xff >> sizeLength);
-  for (let i = 1; i < sizeLength; i += 1) headerSize = headerSize * 256 + bytes[4 + i];
+  for (let i = 1; i < sizeLength; i += 1)
+    headerSize = headerSize * 256 + bytes[4 + i];
 
   const start = 4 + sizeLength;
   const end = start + headerSize;
-  if (headerSize === 0 || headerSize > MAX_EBML_HEADER_BYTES || end > bytes.length) {
+  if (
+    headerSize === 0 ||
+    headerSize > MAX_EBML_HEADER_BYTES ||
+    end > bytes.length
+  ) {
     return false;
   }
 
@@ -325,7 +339,8 @@ function isWebm(bytes: Uint8Array): boolean {
 
     const payload = at + idLength + lengthOfSize;
     if (payload + size > end) return false;
-    if (id === EBML_DOC_TYPE_ID) return ascii(bytes, payload, payload + size) === 'webm';
+    if (id === EBML_DOC_TYPE_ID)
+      return ascii(bytes, payload, payload + size) === 'webm';
     at = payload + size;
   }
 
@@ -383,7 +398,9 @@ export function sanitizeStoredFileName(name: string): string {
       const code = character.codePointAt(0) ?? 0;
       const isControl = code < 0x20 || (code >= 0x7f && code <= 0x9f);
 
-      return isControl || character === '/' || character === '\\' ? '_' : character;
+      return isControl || character === '/' || character === '\\'
+        ? '_'
+        : character;
     })
     .join('')
     .trim();

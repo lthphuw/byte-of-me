@@ -124,10 +124,7 @@ function cursorIn(state: EditorState, text: string): Transaction {
 /** Runs a prosemirror-tables command from the cell holding `text`. */
 function fromCell(
   text: string,
-  command: (
-    state: EditorState,
-    dispatch: (tr: Transaction) => void
-  ) => boolean
+  command: (state: EditorState, dispatch: (tr: Transaction) => void) => boolean
 ) {
   return (state: EditorState): Transaction => {
     const placed = state.apply(cursorIn(state, text));
@@ -148,15 +145,15 @@ describe('table header scope decorations', () => {
   it('scopes the header row by column and the row labels by row', () => {
     const doc = docOf([benchmarkTable()]);
 
-    expect(scoped(headerScopeDecorations.buildAll(doc).decorations, doc)).toEqual(
-      [
-        ['Model', 'col'],
-        ['AP', 'col'],
-        ['FPS', 'col'],
-        ['YOLOv8', 'row'],
-        ['RF-DETR', 'row'],
-      ]
-    );
+    expect(
+      scoped(headerScopeDecorations.buildAll(doc).decorations, doc)
+    ).toEqual([
+      ['Model', 'col'],
+      ['AP', 'col'],
+      ['FPS', 'col'],
+      ['YOLOv8', 'row'],
+      ['RF-DETR', 'row'],
+    ]);
   });
 
   it('leaves a table whose row labels are plain cells alone past the header row', () => {
@@ -173,12 +170,12 @@ describe('table header scope decorations', () => {
       },
     ]);
 
-    expect(scoped(headerScopeDecorations.buildAll(doc).decorations, doc)).toEqual(
-      [
-        ['Term', 'col'],
-        ['Meaning', 'col'],
-      ]
-    );
+    expect(
+      scoped(headerScopeDecorations.buildAll(doc).decorations, doc)
+    ).toEqual([
+      ['Term', 'col'],
+      ['Meaning', 'col'],
+    ]);
   });
 
   it('scopes nothing in a table with no rows', () => {
@@ -204,10 +201,9 @@ describe('table header scope decorations', () => {
 
       // Not vacuously equal: the decorations really did move.
       expect(carried.decorations.find(0, state.doc.content.size)[0].from).toBe(
-        headerScopeDecorations.buildAll(doc).decorations.find(
-          0,
-          doc.content.size
-        )[0].from + 5
+        headerScopeDecorations
+          .buildAll(doc)
+          .decorations.find(0, doc.content.size)[0].from + 5
       );
     });
 

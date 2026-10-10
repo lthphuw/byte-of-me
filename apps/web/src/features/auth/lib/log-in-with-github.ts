@@ -3,12 +3,11 @@
 import { logger } from '@byte-of-me/logger';
 import { getLocale } from 'next-intl/server';
 
-import { sanitizeCallbackUrl, signIn as nextAuthSignIn } from '@/shared/lib/auth';
+import {
+  sanitizeCallbackUrl,
+  signIn as nextAuthSignIn,
+} from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
-
-
-
-
 
 export async function logInWithGithub(callbackUrl: string) {
   try {

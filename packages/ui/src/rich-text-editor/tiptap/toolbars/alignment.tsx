@@ -16,7 +16,10 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuTrigger, Tooltip, TooltipContent, TooltipTrigger
+  DropdownMenuTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '../../../index';
 
 import { MobileToolbarGroup, MobileToolbarItem } from './mobile-toolbar-group';

@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'bun:test';
 
-import { buildPullRequestQuery, mapPullRequestResponse } from './github-pull-request-query';
+import {
+  buildPullRequestQuery,
+  mapPullRequestResponse,
+} from './github-pull-request-query';
 
 const refs = [
   { owner: 'roboflow', repo: 'rf-detr', number: 512 },
@@ -26,8 +29,16 @@ describe('buildPullRequestQuery', () => {
 describe('mapPullRequestResponse', () => {
   it('maps each alias back to its ref by position', () => {
     const out = mapPullRequestResponse(refs, {
-      pr0: { nameWithOwner: 'roboflow/rf-detr', stargazerCount: 4200, pullRequest: { number: 512 } },
-      pr1: { nameWithOwner: 'a/b', stargazerCount: 3, pullRequest: { number: 7 } },
+      pr0: {
+        nameWithOwner: 'roboflow/rf-detr',
+        stargazerCount: 4200,
+        pullRequest: { number: 512 },
+      },
+      pr1: {
+        nameWithOwner: 'a/b',
+        stargazerCount: 3,
+        pullRequest: { number: 7 },
+      },
     });
     expect(out).toEqual([
       { repo: 'roboflow/rf-detr', stars: 4200 },
@@ -43,7 +54,11 @@ describe('mapPullRequestResponse', () => {
     expect(out).toEqual([null, null]);
     const mixed = mapPullRequestResponse(refs, {
       pr0: null,
-      pr1: { nameWithOwner: 'a/b', stargazerCount: 3, pullRequest: { number: 512 } },
+      pr1: {
+        nameWithOwner: 'a/b',
+        stargazerCount: 3,
+        pullRequest: { number: 512 },
+      },
     });
     expect(mixed).toEqual([null, { repo: 'a/b', stars: 3 }]);
   });

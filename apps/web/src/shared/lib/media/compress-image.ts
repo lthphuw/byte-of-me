@@ -169,7 +169,7 @@ export async function compressImage(
   }
 
   const format: EncodableFormat =
-    config.format === 'webp' ? 'webp' : (encoderForMimeType(mimeType) ?? 'webp');
+    config.format === 'webp' ? 'webp' : encoderForMimeType(mimeType) ?? 'webp';
   const encoder = ENCODERS[format];
 
   const { data, info } = await encoder

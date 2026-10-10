@@ -75,10 +75,7 @@ const LinkToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         <Tooltip>
           <TooltipTrigger asChild>
-            <PopoverTrigger
-              disabled={!state.link.canSet}
-              asChild
-            >
+            <PopoverTrigger disabled={!state.link.canSet} asChild>
               <Button
                 variant="ghost"
                 size="sm"
@@ -152,7 +149,12 @@ const LinkToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
                       Remove
                     </Button>
                   )}
-                  <Button type="button" size="sm" className="h-8" onClick={apply}>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="h-8"
+                    onClick={apply}
+                  >
                     {currentHref ? 'Update' : 'Confirm'}
                   </Button>
                 </div>

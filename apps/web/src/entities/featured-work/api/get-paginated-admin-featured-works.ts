@@ -31,7 +31,12 @@ export async function getPaginatedAdminFeaturedWorks(
           // physical row order changes each time; sort so the fallback
           // language resolves the same way on every read.
           translations: {
-            select: { id: true, language: true, title: true, description: true },
+            select: {
+              id: true,
+              language: true,
+              title: true,
+              description: true,
+            },
             orderBy: { language: 'asc' },
           },
         },

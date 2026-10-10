@@ -28,7 +28,9 @@ type Preview = Pick<AdminFeaturedWorkMedia, 'url' | 'mimeType'>;
 const ACCEPT = ACCEPTED_MEDIA_MIME_TYPES.join(',');
 
 /** The form value for the demo pair: what the stored pair was, as the owner left it. */
-export function toDemoValues(stored: AdminFeaturedWorkMedia[] = []): DemoItem[] {
+export function toDemoValues(
+  stored: AdminFeaturedWorkMedia[] = []
+): DemoItem[] {
   return stored.map((item) => ({ mediaId: item.id, label: item.label }));
 }
 

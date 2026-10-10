@@ -4,7 +4,8 @@
  */
 
 /** Column tracks and gaps: one full-width column below md, number, title and meta from md. */
-export const ROW_TRACKS = 'grid-cols-1 md:grid-cols-[2rem_1fr_fit-content(45%)] md:gap-x-6';
+export const ROW_TRACKS =
+  'grid-cols-1 md:grid-cols-[2rem_1fr_fit-content(45%)] md:gap-x-6';
 
 /** A plain row's header. The loading skeleton renders this same class list. */
 export const PLAIN_ROW_HEADER = `grid ${ROW_TRACKS} gap-y-2 py-5`;

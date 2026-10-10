@@ -1,10 +1,9 @@
-import type {
-  S3Client} from '@aws-sdk/client-s3';
+import type { S3Client } from '@aws-sdk/client-s3';
 import {
   CopyObjectCommand,
   DeleteObjectCommand,
   GetObjectCommand,
-  PutObjectCommand
+  PutObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
@@ -35,7 +34,7 @@ export class Storage {
         Key: fileKey,
         Body: body,
         ContentType: contentType,
-      }),
+      })
     );
 
     return { fileKey };
@@ -46,7 +45,7 @@ export class Storage {
       new DeleteObjectCommand({
         Bucket: this.bucket,
         Key: key,
-      }),
+      })
     );
   }
 
@@ -70,7 +69,7 @@ export class Storage {
       new GetObjectCommand({
         Bucket: this.bucket,
         Key: key,
-      }),
+      })
     );
 
     return {
@@ -94,7 +93,7 @@ export class Storage {
         Bucket: this.bucket,
         CopySource: encodeURI(`${sourceBucket}/${sourceKey}`),
         Key: destKey,
-      }),
+      })
     );
 
     return { fileKey: destKey };

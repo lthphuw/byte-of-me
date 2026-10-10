@@ -137,7 +137,9 @@ describe('richTextToPlainText', () => {
               content: [
                 {
                   type: 'paragraph',
-                  content: [{ type: 'text', text: 'Step Size defines epochs.' }],
+                  content: [
+                    { type: 'text', text: 'Step Size defines epochs.' },
+                  ],
                 },
               ],
             },
@@ -230,7 +232,9 @@ describe('isRichTextBlank', () => {
           content: [
             {
               type: 'tableRow',
-              content: [{ type: 'tableCell', content: [{ type: 'paragraph' }] }],
+              content: [
+                { type: 'tableCell', content: [{ type: 'paragraph' }] },
+              ],
             },
           ],
         },
@@ -255,23 +259,41 @@ describe('isRichTextBlank', () => {
     ['an empty heading', { type: 'heading', attrs: { level: 2 } }],
     [
       'a heading holding only whitespace',
-      { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: ' ' }] },
+      {
+        type: 'heading',
+        attrs: { level: 2 },
+        content: [{ type: 'text', text: ' ' }],
+      },
     ],
     [
       'an empty bullet list',
-      { type: 'bulletList', content: [{ type: 'listItem', content: [emptyPara] }] },
+      {
+        type: 'bulletList',
+        content: [{ type: 'listItem', content: [emptyPara] }],
+      },
     ],
     [
       'an empty ordered list',
-      { type: 'orderedList', content: [{ type: 'listItem', content: [emptyPara] }] },
+      {
+        type: 'orderedList',
+        content: [{ type: 'listItem', content: [emptyPara] }],
+      },
     ],
-    ['an empty list item', { type: 'bulletList', content: [{ type: 'listItem' }] }],
+    [
+      'an empty list item',
+      { type: 'bulletList', content: [{ type: 'listItem' }] },
+    ],
     ['an empty blockquote', { type: 'blockquote', content: [emptyPara] }],
     [
       'a blockquote around an empty list',
       {
         type: 'blockquote',
-        content: [{ type: 'bulletList', content: [{ type: 'listItem', content: [emptyPara] }] }],
+        content: [
+          {
+            type: 'bulletList',
+            content: [{ type: 'listItem', content: [emptyPara] }],
+          },
+        ],
       },
     ],
     [
@@ -283,12 +305,28 @@ describe('isRichTextBlank', () => {
   });
 
   it.each([
-    ['a heading with text', { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'Results' }] }],
-    ['a list item with text', { type: 'bulletList', content: [{ type: 'listItem', content: [para('Step one')] }] }],
+    [
+      'a heading with text',
+      {
+        type: 'heading',
+        attrs: { level: 2 },
+        content: [{ type: 'text', text: 'Results' }],
+      },
+    ],
+    [
+      'a list item with text',
+      {
+        type: 'bulletList',
+        content: [{ type: 'listItem', content: [para('Step one')] }],
+      },
+    ],
     ['a quote with text', { type: 'blockquote', content: [para('Quoted')] }],
     [
       'a paragraph with a hard break before text',
-      { type: 'paragraph', content: [{ type: 'hardBreak' }, { type: 'text', text: 'after' }] },
+      {
+        type: 'paragraph',
+        content: [{ type: 'hardBreak' }, { type: 'text', text: 'after' }],
+      },
     ],
   ])('does not treat %s as blank', (_label, block) => {
     expect(isRichTextBlank(docOf(block))).toBe(false);

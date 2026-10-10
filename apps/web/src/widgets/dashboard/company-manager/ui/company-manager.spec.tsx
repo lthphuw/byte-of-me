@@ -66,7 +66,12 @@ const fullRecord = {
       startDate: null,
       endDate: null,
       translations: [
-        { id: 'rtr-1', language: 'en', title: 'Staff Engineer', description: null },
+        {
+          id: 'rtr-1',
+          language: 'en',
+          title: 'Staff Engineer',
+          description: null,
+        },
       ],
       tasks: [],
     },
@@ -140,7 +145,10 @@ function renderManager() {
 
   render(
     <QueryClientProvider client={queryClient}>
-      <NextIntlClientProvider locale="en" messages={{ dashboard: en.dashboard }}>
+      <NextIntlClientProvider
+        locale="en"
+        messages={{ dashboard: en.dashboard }}
+      >
         <CompanyManager />
       </NextIntlClientProvider>
     </QueryClientProvider>
@@ -242,7 +250,9 @@ describe('CompanyManager', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     await waitFor(() => expect(toastSuccess).toHaveBeenCalled());
-    expect(queryClient.getQueryData(companyKeys.detail('co-1'))).toBeUndefined();
+    expect(
+      queryClient.getQueryData(companyKeys.detail('co-1'))
+    ).toBeUndefined();
     await waitFor(() => expect(findMany).toHaveBeenCalledTimes(1));
     // The save went through the real action, with the record's own role.
     expect(txRole.update).toHaveBeenCalledTimes(1);

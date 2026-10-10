@@ -40,7 +40,9 @@ export async function uploadVideoDirect(
   if (!put.ok) {
     const detail = (await put.text().catch(() => '')).slice(0, 200);
     throw new Error(
-      `Storage refused "${file.name}" (HTTP ${put.status})${detail ? `: ${detail}` : ''}`
+      `Storage refused "${file.name}" (HTTP ${put.status})${
+        detail ? `: ${detail}` : ''
+      }`
     );
   }
 

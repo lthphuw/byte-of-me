@@ -93,7 +93,11 @@ describe('updateEducation', () => {
       'edu-1',
       input([
         known('keep', 'Dean list'),
-        { sortOrder: 1, translations: [{ language: 'en', title: 'New' }], imageIds: [] },
+        {
+          sortOrder: 1,
+          translations: [{ language: 'en', title: 'New' }],
+          imageIds: [],
+        },
       ])
     );
 
@@ -104,7 +108,9 @@ describe('updateEducation', () => {
     expect(achievement.update).toHaveBeenCalledTimes(1);
     expect(achievement.update.mock.calls[0]?.[0]).toMatchObject({
       where: { id: 'keep' },
-      data: { translations: { create: [{ language: 'en', title: 'Dean list' }] } },
+      data: {
+        translations: { create: [{ language: 'en', title: 'Dean list' }] },
+      },
     });
     expect(achievement.create).toHaveBeenCalledTimes(1);
     expect(achievement.create.mock.calls[0]?.[0]).toMatchObject({
@@ -140,7 +146,7 @@ describe('updateEducation', () => {
     expect(logError).toHaveBeenCalled();
   });
 
-  it('writes nothing when the entry is not the caller\'s', async () => {
+  it("writes nothing when the entry is not the caller's", async () => {
     txFindFirst.mockResolvedValue(null);
 
     const result = await updateEducation(

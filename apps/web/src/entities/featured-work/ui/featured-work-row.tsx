@@ -38,7 +38,9 @@ export function FeaturedWorkRow({
   if (github) {
     meta = (
       <>
-        <span className={`${META} [overflow-wrap:anywhere]`}>{github.repo}</span>
+        <span className={`${META} [overflow-wrap:anywhere]`}>
+          {github.repo}
+        </span>
         <span className={`${META} inline-flex items-center gap-1 tabular-nums`}>
           <Star aria-hidden className="size-3.5" />
           {t('featuredStars', { count: github.stars })}
@@ -50,7 +52,11 @@ export function FeaturedWorkRow({
   }
 
   const details: ReactNode = work.detailsHtml ? (
-    <RichTextHtml html={work.detailsHtml} variant="compact" className={DETAILS_PROSE} />
+    <RichTextHtml
+      html={work.detailsHtml}
+      variant="compact"
+      className={DETAILS_PROSE}
+    />
   ) : null;
 
   const media: FeaturedWorkDemoItem[] = work.media.map((item) => {

@@ -82,8 +82,9 @@ export function BlogManager() {
   useBlogReferenceOptions(isDialogOpen);
 
   const editingBlogResult = editing ? editingBlogQuery.data : undefined;
-  const fullEditingBlog =
-    editingBlogResult?.success ? editingBlogResult.data : null;
+  const fullEditingBlog = editingBlogResult?.success
+    ? editingBlogResult.data
+    : null;
   // "Not ready" covers both still-loading and a failed fetch — either way
   // `fullEditingBlog` stays null, and the dialog must not fall through to
   // mounting the form on a null/partial row.
@@ -92,8 +93,8 @@ export function BlogManager() {
     ? editingBlogResult && !editingBlogResult.success
       ? editingBlogResult.errorMsg
       : editingBlogQuery.isError
-        ? t('loadError')
-        : null
+      ? t('loadError')
+      : null
     : null;
 
   const newBlogButton = (

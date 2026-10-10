@@ -37,7 +37,11 @@ export async function finalizeVideoUpload(input: {
 }): Promise<ApiResponse<Media>> {
   const user = await requireAdmin();
 
-  const parsed = parseInput(videoUploadCompletionSchema, input, 'finalizeVideoUpload');
+  const parsed = parseInput(
+    videoUploadCompletionSchema,
+    input,
+    'finalizeVideoUpload'
+  );
   if (!parsed.ok) return { success: false, errorMsg: parsed.errorMsg };
   const { fileKey, fileName } = parsed.data;
 
@@ -93,7 +97,9 @@ export async function finalizeVideoUpload(input: {
     revalidateTag(CACHE_TAGS.MEDIA, 'max');
     return { success: true, data: media };
   } catch (error) {
-    logger.error(`Finalize video upload error: ${getErrorMessage(error)} [${fileKey}]`);
+    logger.error(
+      `Finalize video upload error: ${getErrorMessage(error)} [${fileKey}]`
+    );
     return { success: false, errorMsg: 'Could not finish the upload.' };
   }
 }

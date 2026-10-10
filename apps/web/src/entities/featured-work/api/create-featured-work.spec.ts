@@ -5,7 +5,15 @@
  */
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
-import { afterAll, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test';
+import {
+  afterAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+  spyOn,
+} from 'bun:test';
 
 import { createFeaturedWork } from './create-featured-work';
 
@@ -14,11 +22,11 @@ import { resetTestUser } from '@/shared/lib/auth/set-test-user.test-helper';
 
 const aggregate = mock(async (_args: unknown) => ({ _max: { sortOrder: 2 } }));
 const create = mock(async (_args: unknown) => ({ id: 'fw-new' }));
-type CountArgs = { where: { userId: string; id: { in: string[] }; OR: unknown[] } };
+type CountArgs = {
+  where: { userId: string; id: { in: string[] }; OR: unknown[] };
+};
 let ownedCount: (ids: string[]) => number = (ids) => ids.length;
-const count = mock(async (args: CountArgs) =>
-  ownedCount(args.where.id.in)
-);
+const count = mock(async (args: CountArgs) => ownedCount(args.where.id.in));
 
 const originals = {
   featuredWork: Object.getOwnPropertyDescriptor(prisma, 'featuredWork'),
@@ -53,7 +61,9 @@ afterAll(() => {
   resetTestUser();
 });
 
-const input = (media?: FeaturedWorkFormValues['media']): FeaturedWorkFormValues => ({
+const input = (
+  media?: FeaturedWorkFormValues['media']
+): FeaturedWorkFormValues => ({
   isPublished: true,
   url: '',
   translations: [{ language: 'en', title: 'INT8 vs FP16' }],
@@ -61,9 +71,18 @@ const input = (media?: FeaturedWorkFormValues['media']): FeaturedWorkFormValues 
 });
 
 type CreateArgs = {
-  data: { media: { create: Array<{ mediaId: string; sortOrder: number; label: string | null }> } };
+  data: {
+    media: {
+      create: Array<{
+        mediaId: string;
+        sortOrder: number;
+        label: string | null;
+      }>;
+    };
+  };
 };
-const written = () => (create.mock.calls[0]?.[0] as CreateArgs).data.media.create;
+const written = () =>
+  (create.mock.calls[0]?.[0] as CreateArgs).data.media.create;
 
 describe('createFeaturedWork demo media', () => {
   it('writes the pair with the work: slot from position, label trimmed, blank as null', async () => {
@@ -89,7 +108,7 @@ describe('createFeaturedWork demo media', () => {
     expect(count).not.toHaveBeenCalled();
   });
 
-  it("refuses media the admin does not own, and creates nothing", async () => {
+  it('refuses media the admin does not own, and creates nothing', async () => {
     ownedCount = () => 0;
 
     const res = await createFeaturedWork(input([{ mediaId: 'someone-elses' }]));
@@ -109,7 +128,9 @@ describe('createFeaturedWork demo media', () => {
     const three = await createFeaturedWork(
       input([{ mediaId: 'a' }, { mediaId: 'b' }, { mediaId: 'c' }])
     );
-    const twice = await createFeaturedWork(input([{ mediaId: 'a' }, { mediaId: 'a' }]));
+    const twice = await createFeaturedWork(
+      input([{ mediaId: 'a' }, { mediaId: 'a' }])
+    );
 
     expect(three.success).toBe(false);
     expect(twice.success).toBe(false);

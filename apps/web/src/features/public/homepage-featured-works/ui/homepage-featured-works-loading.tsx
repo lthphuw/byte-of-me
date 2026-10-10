@@ -24,7 +24,13 @@ const DESCRIPTION_LINES_WIDE = 5;
  * One line of the text a bar stands in for. The wrapper's height is `1lh` of the
  * surrounding text classes, so the row is as tall as the real one without a pixel value.
  */
-function Line({ className, barClassName }: { className?: string; barClassName?: string }) {
+function Line({
+  className,
+  barClassName,
+}: {
+  className?: string;
+  barClassName?: string;
+}) {
   return (
     <div className={cn('flex h-[1lh] items-center', className)}>
       <Skeleton className={cn('h-3', barClassName)} />
@@ -61,7 +67,9 @@ export function HomepageFeaturedWorksLoading() {
                 <Line barClassName="h-5 w-48 md:h-6" />
               </div>
               <div className={ROW_DESCRIPTION_TEXT}>
-                {[...Array(DESCRIPTION_LINES_PHONE)].map((__, line) => descriptionLine(line))}
+                {[...Array(DESCRIPTION_LINES_PHONE)].map((__, line) =>
+                  descriptionLine(line)
+                )}
               </div>
             </div>
             <div className={ROW_META_CELL}>

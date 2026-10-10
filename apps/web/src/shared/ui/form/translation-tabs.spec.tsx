@@ -66,7 +66,11 @@ type Values = z.infer<typeof schema>;
 /** Second translation is invalid; its second task is invalid too. */
 const DEFAULTS: Values = {
   translations: [
-    { language: 'en', title: 'English title', tasks: [{ language: 'en', content: 'ok' }] },
+    {
+      language: 'en',
+      title: 'English title',
+      tasks: [{ language: 'en', content: 'ok' }],
+    },
     {
       language: 'vi',
       title: '',

@@ -4,11 +4,16 @@ import React from 'react';
 import { ChevronDown } from 'lucide-react';
 
 import { useMediaQuery } from '../../../hooks/use-media-query';
-import { Button ,
+import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger, Tooltip, TooltipContent, TooltipTrigger } from '../../../index';
+  DropdownMenuTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '../../../index';
 import { cn } from '../../../lib/utils';
 
 import { MobileToolbarGroup, MobileToolbarItem } from './mobile-toolbar-group';

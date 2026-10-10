@@ -1,17 +1,21 @@
 'use client';
 
 import { useFieldArray, useForm } from 'react-hook-form';
-import { Button , DeleteButton ,
+import {
+  Button,
+  DeleteButton,
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle, Form } from '@byte-of-me/ui';
+  DialogTitle,
+  Form,
+} from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { AdminTag } from '@/entities/tag';
-import { type TagFormValues,tagSchema } from '@/entities/tag/model/tag-schema';
+import { type TagFormValues, tagSchema } from '@/entities/tag/model/tag-schema';
 import { useResetOnOpen } from '@/shared/hooks/use-reset-on-open';
 import { TextField } from '@/shared/ui';
 

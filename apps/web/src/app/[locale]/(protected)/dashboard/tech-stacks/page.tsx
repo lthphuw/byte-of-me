@@ -3,10 +3,6 @@ import type { Metadata } from 'next';
 import { getAllAdminTechStack } from '@/entities/tech-stack';
 import { TechStackManager } from '@/widgets/dashboard/tech-stack-manager';
 
-
-
-
-
 export const metadata: Metadata = {
   title: 'Tech Stack',
   description: 'Manage your professional technologies and tools.',

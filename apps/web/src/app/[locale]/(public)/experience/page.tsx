@@ -13,7 +13,9 @@ export function generateStaticParams() {
 // Hidden: nav links are gone and next.config.js redirects the route, so this body
 // runs only once that rule is removed. To bring it back, remove the rule and
 // restore the body (`setRequestLocale(locale); return <ExperienceContent />;`).
-export default async function ExperiencesPage({ params }: ExperiencesPageProps) {
+export default async function ExperiencesPage({
+  params,
+}: ExperiencesPageProps) {
   const { locale } = await params;
 
   redirect({ href: '/', locale: locale as LocaleType });

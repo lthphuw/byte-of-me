@@ -67,7 +67,10 @@ describe('computeTargetDimensions — never upscale', () => {
   });
 
   test('falls back to the input dimensions when a measurement is unknown', () => {
-    expect(computeTargetDimensions(0, 0, 2048)).toEqual({ width: 0, height: 0 });
+    expect(computeTargetDimensions(0, 0, 2048)).toEqual({
+      width: 0,
+      height: 0,
+    });
   });
 });
 

@@ -7,9 +7,9 @@ import {
 
 describe('imageCompressionConfigSchema', () => {
   test('accepts the defaults', () => {
-    expect(imageCompressionConfigSchema.safeParse(IMAGE_COMPRESSION_DEFAULTS).success).toBe(
-      true
-    );
+    expect(
+      imageCompressionConfigSchema.safeParse(IMAGE_COMPRESSION_DEFAULTS).success
+    ).toBe(true);
   });
 
   test('accepts the quality boundaries, 1 and 100', () => {
@@ -86,6 +86,8 @@ describe('imageCompressionConfigSchema', () => {
 
   test('rejects a config missing a required field', () => {
     const { enabled: _enabled, ...withoutEnabled } = IMAGE_COMPRESSION_DEFAULTS;
-    expect(imageCompressionConfigSchema.safeParse(withoutEnabled).success).toBe(false);
+    expect(imageCompressionConfigSchema.safeParse(withoutEnabled).success).toBe(
+      false
+    );
   });
 });

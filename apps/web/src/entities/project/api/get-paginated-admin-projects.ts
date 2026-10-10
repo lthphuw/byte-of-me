@@ -9,7 +9,6 @@ import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
-
 export async function getPaginatedAdminProjects(
   rawPage: number = 1,
   rawLimit: number = 20

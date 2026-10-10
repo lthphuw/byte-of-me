@@ -143,7 +143,7 @@ export const Icons = {
   sparkles: Sparkles,
 
   clap: ({ className, ...props }: LucideProps) => (
-   <PiHandsClapping className={className} {...props} />
+    <PiHandsClapping className={className} {...props} />
   ),
 
   // Custom SVG Icons

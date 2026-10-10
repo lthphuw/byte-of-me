@@ -16,10 +16,7 @@ interface ContentFadeProps {
 export function ContentFade({ children, className }: ContentFadeProps) {
   return (
     <div
-      className={cn(
-        'animate-in fade-in-0 duration-200 ease-enter',
-        className
-      )}
+      className={cn('animate-in fade-in-0 duration-200 ease-enter', className)}
     >
       {children}
     </div>

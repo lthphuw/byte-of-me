@@ -98,7 +98,10 @@ export function FeaturedWorkForm({
         className="space-y-6"
       >
         {translationsError && (
-          <p role="alert" className="text-[0.8rem] font-medium text-destructive-text">
+          <p
+            role="alert"
+            className="text-[0.8rem] font-medium text-destructive-text"
+          >
             {translationsError}
           </p>
         )}

@@ -9,7 +9,6 @@ import { cn } from '../../../lib/utils';
 
 import { useToolbar } from './toolbar-provider';
 
-
 // import type { Extension } from "@tiptap/core";
 
 // import type { Extension } from "@tiptap/core";

@@ -8,4 +8,4 @@ export type AdminTechStack = Prisma.TechStackGetPayload<{
   };
 }>;
 
-export type PublicTechStack = TechStack
+export type PublicTechStack = TechStack;

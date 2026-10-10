@@ -147,9 +147,9 @@ export function BibtexImport({ editor }: { editor: Editor }) {
           <p className="text-muted-foreground">
             {entries.length === 0 && skipped.length === 0
               ? 'No BibTeX entries found.'
-              : `${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}${
-                  skipped.length ? ` · ${skipped.length} skipped` : ''
-                }`}
+              : `${entries.length} ${
+                  entries.length === 1 ? 'entry' : 'entries'
+                }${skipped.length ? ` · ${skipped.length} skipped` : ''}`}
           </p>
 
           {entries.length > 0 && (

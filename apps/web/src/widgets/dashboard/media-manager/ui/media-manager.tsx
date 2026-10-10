@@ -99,7 +99,7 @@ export function MediaManager({
             isPlaceholderData={query.isPlaceholderData}
             setPage={setPage}
             remove={(id) => setMediaToDelete(id)}
-            deletingId={remove.isPending ? (remove.variables ?? null) : null}
+            deletingId={remove.isPending ? remove.variables ?? null : null}
             pagination={pagination}
           />
         </ManagerListState>

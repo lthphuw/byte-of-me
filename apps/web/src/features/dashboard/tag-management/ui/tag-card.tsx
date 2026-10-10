@@ -1,6 +1,6 @@
 'use client';
 
-import { DeleteButton , EditButton } from '@byte-of-me/ui';
+import { DeleteButton, EditButton } from '@byte-of-me/ui';
 import { Tag as TagIcon } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 

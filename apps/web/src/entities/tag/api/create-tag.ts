@@ -4,10 +4,7 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
-import {
-  type TagFormValues,
-  tagSchema,
-} from '@/entities/tag/model/tag-schema';
+import { type TagFormValues, tagSchema } from '@/entities/tag/model/tag-schema';
 import type { AdminTag } from '@/entities/tag/model/types';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';

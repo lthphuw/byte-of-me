@@ -15,7 +15,13 @@ import {
   useFieldArray,
   useWatch,
 } from 'react-hook-form';
-import { Button, Tabs, TabsContent, TabsList, TabsTrigger } from '@byte-of-me/ui';
+import {
+  Button,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@byte-of-me/ui';
 import { Languages, Trash } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -35,7 +41,7 @@ import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-s
  */
 type FieldArrayItem<
   T extends FieldValues,
-  TName extends ArrayPath<T>,
+  TName extends ArrayPath<T>
 > = FieldArrayPathValue<T, TName> extends
   | ReadonlyArray<infer U>
   | null
@@ -45,7 +51,7 @@ type FieldArrayItem<
 
 export interface TranslationTabsProps<
   T extends FieldValues = FieldValues,
-  TName extends ArrayPath<T> = ArrayPath<T>,
+  TName extends ArrayPath<T> = ArrayPath<T>
 > {
   control: Control<T>;
   /** Path to the translations array (e.g. "translations"). */
@@ -106,7 +112,7 @@ function getLanguageLabel(language: unknown): string {
  */
 export function TranslationTabs<
   T extends FieldValues,
-  TName extends ArrayPath<T>,
+  TName extends ArrayPath<T>
 >(props: TranslationTabsProps<T, TName>): ReactElement;
 export function TranslationTabs({
   control,

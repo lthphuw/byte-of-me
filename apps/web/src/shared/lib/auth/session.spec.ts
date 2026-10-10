@@ -75,7 +75,14 @@
  * threw `Unauthorized`. Reproduced against another spec file while
  * fixing this; see the review-fix report for the exact repro.
  */
-import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'bun:test';
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from 'bun:test';
 
 import { env } from '@/shared/config/env';
 

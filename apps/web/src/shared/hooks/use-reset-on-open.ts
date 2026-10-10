@@ -1,7 +1,11 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import type { DefaultValues, FieldValues, UseFormReturn } from 'react-hook-form';
+import type {
+  DefaultValues,
+  FieldValues,
+  UseFormReturn,
+} from 'react-hook-form';
 
 /**
  * Reset strategy for the small edit dialogs that keep their form mounted

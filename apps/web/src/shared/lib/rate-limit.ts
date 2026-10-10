@@ -48,7 +48,9 @@ export async function checkRateLimit({
 
     return { allowed: hit.count <= limit };
   } catch (error) {
-    logger.warn(`Rate limit check failed for ${key}: ${getErrorMessage(error)}`);
+    logger.warn(
+      `Rate limit check failed for ${key}: ${getErrorMessage(error)}`
+    );
     return { allowed: true };
   }
 }

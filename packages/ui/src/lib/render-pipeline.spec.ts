@@ -28,7 +28,10 @@ const doc = {
         },
         {
           type: 'tableRow',
-          content: [cell('tableCell', 'Edge'), cell('tableCell', 'Public HTML')],
+          content: [
+            cell('tableCell', 'Edge'),
+            cell('tableCell', 'Public HTML'),
+          ],
         },
       ],
     },
@@ -82,14 +85,20 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
           content: [
             {
               type: 'tableRow',
-              content: [cell('tableHeader', 'Model'), cell('tableHeader', 'AP50')],
+              content: [
+                cell('tableHeader', 'Model'),
+                cell('tableHeader', 'AP50'),
+              ],
             },
             // A malformed row in the middle: a table one row short of valid
             // must still render the rest, scopes included.
             { type: 'tableRow', content: [] },
             {
               type: 'tableRow',
-              content: [cell('tableHeader', 'YOLOv8'), cell('tableCell', '52.9')],
+              content: [
+                cell('tableHeader', 'YOLOv8'),
+                cell('tableCell', '52.9'),
+              ],
             },
           ],
         },
@@ -122,11 +131,17 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
               content: [
                 {
                   type: 'tableRow',
-                  content: [cell('tableHeader', 'Model'), cell('tableHeader', 'AP50')],
+                  content: [
+                    cell('tableHeader', 'Model'),
+                    cell('tableHeader', 'AP50'),
+                  ],
                 },
                 {
                   type: 'tableRow',
-                  content: [cell('tableCell', 'DETR'), cell('tableCell', '50.1')],
+                  content: [
+                    cell('tableCell', 'DETR'),
+                    cell('tableCell', '50.1'),
+                  ],
                 },
               ],
             },
@@ -152,7 +167,10 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
           type: 'doc',
           content: [
             { type: 'table' },
-            { type: 'paragraph', content: [{ type: 'text', text: 'Still here' }] },
+            {
+              type: 'paragraph',
+              content: [{ type: 'text', text: 'Still here' }],
+            },
           ],
         },
         renderExtensions
@@ -181,7 +199,11 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
           content: [
             {
               type: 'image',
-              attrs: { src: 'https://example.test/a.png', alt: 'A', caption: 'Fig 1' },
+              attrs: {
+                src: 'https://example.test/a.png',
+                alt: 'A',
+                caption: 'Fig 1',
+              },
             },
           ],
         },
@@ -203,7 +225,10 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
         {
           type: 'doc',
           content: [
-            { type: 'image', attrs: { src: 'https://example.test/a.png', alt: 'A' } },
+            {
+              type: 'image',
+              attrs: { src: 'https://example.test/a.png', alt: 'A' },
+            },
           ],
         },
         renderExtensions
@@ -220,10 +245,11 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
     // hints they all fetch eagerly alongside it; with `sanitizeHtml` unaware of
     // them the attributes would be stripped on the way out.
     const published = (content: object[]) =>
-      sanitizeHtml(
-        generateHTML({ type: 'doc', content }, renderExtensions)
-      );
-    const image = { type: 'image', attrs: { src: 'https://example.test/a.png', alt: 'A' } };
+      sanitizeHtml(generateHTML({ type: 'doc', content }, renderExtensions));
+    const image = {
+      type: 'image',
+      attrs: { src: 'https://example.test/a.png', alt: 'A' },
+    };
 
     const bare = published([image]);
     const captioned = published([
@@ -258,8 +284,14 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
               type: 'imageGroup',
               attrs: { caption: 'Before and after' },
               content: [
-                { type: 'image', attrs: { src: 'https://example.test/a.png', alt: 'A' } },
-                { type: 'image', attrs: { src: 'https://example.test/b.png', alt: 'B' } },
+                {
+                  type: 'image',
+                  attrs: { src: 'https://example.test/a.png', alt: 'A' },
+                },
+                {
+                  type: 'image',
+                  attrs: { src: 'https://example.test/b.png', alt: 'B' },
+                },
               ],
             },
           ],
@@ -282,7 +314,11 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
     const full = {
       type: 'doc',
       content: [
-        { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'H' }] },
+        {
+          type: 'heading',
+          attrs: { level: 2 },
+          content: [{ type: 'text', text: 'H' }],
+        },
         { type: 'paragraph', content: [{ type: 'text', text: 'p' }] },
         { type: 'horizontalRule' },
         {
@@ -290,7 +326,9 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
           content: [
             {
               type: 'listItem',
-              content: [{ type: 'paragraph', content: [{ type: 'text', text: 'li' }] }],
+              content: [
+                { type: 'paragraph', content: [{ type: 'text', text: 'li' }] },
+              ],
             },
           ],
         },

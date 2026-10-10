@@ -28,17 +28,20 @@ export interface ShortenNameOptions {
 /**
  * Safely shortens a given name based on the provided configuration options.
  * Handles extensive edge cases including Unicode, extra spaces, and missing data.
- * 
+ *
  * @param name - The full name string to be shortened.
  * @param options - Configuration options.
  * @returns The shortened name string.
  */
-export const shortenName = (name?: string | null, options: ShortenNameOptions = {}): string => {
+export const shortenName = (
+  name?: string | null,
+  options: ShortenNameOptions = {}
+): string => {
   const {
     variant = 'initials',
     nameOrder = 'last-first',
     maxLength = 15,
-    fallback = ''
+    fallback = '',
   } = options;
 
   // Edge Case 1: Falsy values, null, undefined, or incorrect types
@@ -57,7 +60,7 @@ export const shortenName = (name?: string | null, options: ShortenNameOptions = 
       if (parts.length === 1) {
         return Array.from(parts[0]).slice(0, 2).join('').toUpperCase();
       }
-      
+
       const firstInitial = Array.from(parts[0])[0];
       const lastInitial = Array.from(parts[parts.length - 1])[0];
       return `${firstInitial}${lastInitial}`.toUpperCase();
@@ -75,7 +78,9 @@ export const shortenName = (name?: string | null, options: ShortenNameOptions = 
       } else {
         // Western style output: "John D."
         const firstName = parts[0];
-        const lastNameInitial = Array.from(parts[parts.length - 1])[0].toUpperCase();
+        const lastNameInitial = Array.from(
+          parts[parts.length - 1]
+        )[0].toUpperCase();
         return `${firstName} ${lastNameInitial}.`;
       }
     }

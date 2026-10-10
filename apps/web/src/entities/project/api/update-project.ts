@@ -1,9 +1,12 @@
 'use server';
 
-import { prisma,type Project } from '@byte-of-me/db';
+import { prisma, type Project } from '@byte-of-me/db';
 import { revalidateTag } from 'next/cache';
 
-import { type ProjectFromValues, projectSchema } from '@/entities/project/model';
+import {
+  type ProjectFromValues,
+  projectSchema,
+} from '@/entities/project/model';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { idSchema, parseInput } from '@/shared/lib/validate-action-input';

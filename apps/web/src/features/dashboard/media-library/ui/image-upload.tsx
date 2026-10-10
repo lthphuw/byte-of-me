@@ -131,7 +131,9 @@ export function ImageUpload({
     const violation = findUploadViolation(files);
     if (violation?.kind === 'batch') {
       toast.error(t('upload.tooManyFilesTitle'), {
-        description: t('upload.tooManyFilesDescription', { max: violation.max }),
+        description: t('upload.tooManyFilesDescription', {
+          max: violation.max,
+        }),
       });
       return;
     }
@@ -178,7 +180,9 @@ export function ImageUpload({
         <p className="mt-2 text-sm">
           {isCompressing
             ? t('upload.compressingText')
-            : t(acceptVideo ? 'upload.dropzoneMediaText' : 'upload.dropzoneText')}
+            : t(
+                acceptVideo ? 'upload.dropzoneMediaText' : 'upload.dropzoneText'
+              )}
         </p>
         <input
           id="file-upload"

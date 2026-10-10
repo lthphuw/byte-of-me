@@ -23,10 +23,7 @@ export interface UseMediaLibraryMessages {
   deleteError: string;
 }
 
-export function useMediaLibrary(
-  page = 1,
-  messages?: UseMediaLibraryMessages
-) {
+export function useMediaLibrary(page = 1, messages?: UseMediaLibraryMessages) {
   const queryClient = useQueryClient();
 
   // Fetching

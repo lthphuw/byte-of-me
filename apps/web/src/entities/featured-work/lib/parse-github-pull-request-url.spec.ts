@@ -4,8 +4,12 @@ import { parseGithubPullRequestUrl } from './parse-github-pull-request-url';
 
 describe('parseGithubPullRequestUrl', () => {
   it('reads owner, repo and number from a PR url', () => {
-    expect(parseGithubPullRequestUrl('https://github.com/roboflow/rf-detr/pull/512')).toEqual({
-      owner: 'roboflow', repo: 'rf-detr', number: 512,
+    expect(
+      parseGithubPullRequestUrl('https://github.com/roboflow/rf-detr/pull/512')
+    ).toEqual({
+      owner: 'roboflow',
+      repo: 'rf-detr',
+      number: 512,
     });
   });
 
@@ -16,16 +20,28 @@ describe('parseGithubPullRequestUrl', () => {
       'https://github.com/a/b/pull/7#issuecomment-1',
       'http://www.github.com/a/b/pull/7/',
     ]) {
-      expect(parseGithubPullRequestUrl(url)).toEqual({ owner: 'a', repo: 'b', number: 7 });
+      expect(parseGithubPullRequestUrl(url)).toEqual({
+        owner: 'a',
+        repo: 'b',
+        number: 7,
+      });
     }
   });
 
   it('accepts the largest GraphQL Int and normalises leading zeros', () => {
-    expect(parseGithubPullRequestUrl('https://github.com/a/b/pull/2147483647')).toEqual({
-      owner: 'a', repo: 'b', number: 2147483647,
+    expect(
+      parseGithubPullRequestUrl('https://github.com/a/b/pull/2147483647')
+    ).toEqual({
+      owner: 'a',
+      repo: 'b',
+      number: 2147483647,
     });
-    expect(parseGithubPullRequestUrl('https://github.com/a/b/pull/007')).toEqual({
-      owner: 'a', repo: 'b', number: 7,
+    expect(
+      parseGithubPullRequestUrl('https://github.com/a/b/pull/007')
+    ).toEqual({
+      owner: 'a',
+      repo: 'b',
+      number: 7,
     });
   });
 

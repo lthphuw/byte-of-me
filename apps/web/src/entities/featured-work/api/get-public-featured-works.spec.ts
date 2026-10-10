@@ -10,7 +10,10 @@ import { beforeEach, describe, expect, it, mock, spyOn } from 'bun:test';
 import { getPublicFeaturedWorks } from './get-public-featured-works';
 
 import type { FeaturedWorkGithubDeps } from '@/entities/featured-work/lib/get-featured-work-github';
-import { loadPublicFeaturedWorks, toRows } from '@/entities/featured-work/lib/load-public-featured-works';
+import {
+  loadPublicFeaturedWorks,
+  toRows,
+} from '@/entities/featured-work/lib/load-public-featured-works';
 import type {
   FeaturedWorkGithub,
   GithubPullRequestRef,
@@ -54,7 +57,8 @@ function makeDeps(overrides: Partial<FeaturedWorkGithubDeps> = {}) {
   );
   const deps: FeaturedWorkGithubDeps = {
     getToken: () => 'token',
-    fetchGithub: fetchGithub as unknown as FeaturedWorkGithubDeps['fetchGithub'],
+    fetchGithub:
+      fetchGithub as unknown as FeaturedWorkGithubDeps['fetchGithub'],
     ...overrides,
   };
   return { deps, fetchGithub };
@@ -91,8 +95,18 @@ describe('toRows', () => {
           url: null,
           media: [],
           translations: [
-            { language: 'en', title: 'Hello', description: null, details: null },
-            { language: 'vi', title: 'Xin chào', description: null, details: null },
+            {
+              language: 'en',
+              title: 'Hello',
+              description: null,
+              details: null,
+            },
+            {
+              language: 'vi',
+              title: 'Xin chào',
+              description: null,
+              details: null,
+            },
           ],
         },
       ],
@@ -123,8 +137,18 @@ describe('toRows', () => {
           url: null,
           media: [],
           translations: [
-            { language: 'en', title: 'Hello', description: 'About', details: null },
-            { language: 'vi', title: '  ', description: 'Mô tả', details: null },
+            {
+              language: 'en',
+              title: 'Hello',
+              description: 'About',
+              details: null,
+            },
+            {
+              language: 'vi',
+              title: '  ',
+              description: 'Mô tả',
+              details: null,
+            },
           ],
         },
       ],
@@ -168,13 +192,12 @@ describe('details body', () => {
 
   const work = (
     translations: ReturnType<typeof translation>[]
-  ): Parameters<typeof toRows>[0] => [{ id: 'a', url: null, media: [], translations }];
+  ): Parameters<typeof toRows>[0] => [
+    { id: 'a', url: null, media: [], translations },
+  ];
 
   it('renders the stored body to sanitized HTML, not the stored JSON', () => {
-    const [detailsRow] = toRows(
-      work([translation('en', DETAILS_EN)]),
-      'en'
-    );
+    const [detailsRow] = toRows(work([translation('en', DETAILS_EN)]), 'en');
 
     expect(detailsRow?.detailsHtml).toBe('<p>How it was done.</p>');
   });
@@ -206,7 +229,10 @@ describe('details body', () => {
   it.each([
     ['null', null],
     ['an empty string', ''],
-    ['an empty document', JSON.stringify({ type: 'doc', content: [{ type: 'paragraph' }] })],
+    [
+      'an empty document',
+      JSON.stringify({ type: 'doc', content: [{ type: 'paragraph' }] }),
+    ],
     ['a whitespace-only document', doc('   ')],
   ])('gives no body for %s', (_label, details) => {
     const [blankRow] = toRows(work([translation('en', details)]), 'en');
@@ -230,10 +256,7 @@ describe('details body', () => {
 
   it('gives a vi row with no vi body no body, even when en has one', () => {
     const [viRow] = toRows(
-      work([
-        translation('en', DETAILS_EN),
-        translation('vi', null, 'Tiêu đề'),
-      ]),
+      work([translation('en', DETAILS_EN), translation('vi', null, 'Tiêu đề')]),
       'vi'
     );
 
@@ -335,7 +358,12 @@ describe('details body', () => {
 });
 
 describe('demo media', () => {
-  const item = (id: string, url: string, mimeType: string, label: string | null = null) => ({
+  const item = (
+    id: string,
+    url: string,
+    mimeType: string,
+    label: string | null = null
+  ) => ({
     label,
     media: { id, url, mimeType },
   });
@@ -353,8 +381,18 @@ describe('demo media', () => {
     );
 
     expect(mediaRow?.media).toEqual([
-      { id: 'm1', url: 'https://cdn.example/a.mp4', mimeType: 'video/mp4', label: 'FP16' },
-      { id: 'm2', url: 'https://cdn.example/b.webm', mimeType: 'video/webm', label: null },
+      {
+        id: 'm1',
+        url: 'https://cdn.example/a.mp4',
+        mimeType: 'video/mp4',
+        label: 'FP16',
+      },
+      {
+        id: 'm2',
+        url: 'https://cdn.example/b.webm',
+        mimeType: 'video/webm',
+        label: null,
+      },
     ]);
   });
 
@@ -384,7 +422,10 @@ describe('demo media', () => {
     );
     expect(mediaRow?.media.map((m) => m.id)).toEqual(['1', '2']);
 
-    const [bare] = toRows(withMedia([item('bad', 'ftp://x/y', 'image/png')]), 'en');
+    const [bare] = toRows(
+      withMedia([item('bad', 'ftp://x/y', 'image/png')]),
+      'en'
+    );
     expect(bare?.id).toBe('a');
     expect(bare?.media).toEqual([]);
   });
@@ -395,7 +436,11 @@ describe('demo media', () => {
 
     const args = findMany.mock.calls[0]?.[0];
     expect(args.select.media.orderBy).toEqual({ sortOrder: 'asc' });
-    expect(args.select.media.select.media.select).toEqual({ id: true, url: true, mimeType: true });
+    expect(args.select.media.select.media.select).toEqual({
+      id: true,
+      url: true,
+      mimeType: true,
+    });
   });
 });
 
@@ -418,7 +463,14 @@ describe('loadPublicFeaturedWorks', () => {
     expect(args.take).toBe(6);
     expect(args.select.translations.where.language.in).toEqual(['en']);
     expect(args.select.translations.select.details).toBe(true);
-    expect(result.map((w) => w.id)).toEqual(['w0', 'w1', 'w2', 'w3', 'w4', 'w5']);
+    expect(result.map((w) => w.id)).toEqual([
+      'w0',
+      'w1',
+      'w2',
+      'w3',
+      'w4',
+      'w5',
+    ]);
   });
 
   it('renders rows with no github when GITHUB_TOKEN is unset, and never calls GitHub', async () => {

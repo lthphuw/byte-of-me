@@ -48,7 +48,7 @@ export function DatePicker({
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {value ? (displayValue ?? format(value, 'PPP')) : placeholder}
+          {value ? displayValue ?? format(value, 'PPP') : placeholder}
         </Button>
       </PopoverTrigger>
 

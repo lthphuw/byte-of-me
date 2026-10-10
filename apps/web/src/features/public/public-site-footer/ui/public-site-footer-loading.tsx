@@ -1,9 +1,5 @@
 import { cn } from '@/shared/lib/utils';
 
-
-
-
-
 type PublicSiteFooterLoadingProps = React.HTMLAttributes<HTMLElement>;
 
 export function PublicSiteFooterLoading({

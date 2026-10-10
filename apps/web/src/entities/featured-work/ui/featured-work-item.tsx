@@ -3,7 +3,10 @@
 import { type ReactNode, useEffect, useState } from 'react';
 import { ArrowUpRight, ChevronDown } from 'lucide-react';
 
-import { FeaturedWorkDemo, type FeaturedWorkDemoItem } from './featured-work-demo';
+import {
+  FeaturedWorkDemo,
+  type FeaturedWorkDemoItem,
+} from './featured-work-demo';
 import {
   BODY_ROW,
   DETAILS_CELL,
@@ -110,7 +113,9 @@ export function FeaturedWorkItem({
 
   const header = (
     <div className={plain ? PLAIN_HEADER : BODY_HEADER}>
-      <span className={cn(ROW_NUMBER_TEXT, 'text-muted-foreground')}>{number}</span>
+      <span className={cn(ROW_NUMBER_TEXT, 'text-muted-foreground')}>
+        {number}
+      </span>
 
       <div className={ROW_BODY_STACK}>
         <h3 className={cn(ROW_TITLE_TEXT, '[overflow-wrap:anywhere]')}>
@@ -132,7 +137,12 @@ export function FeaturedWorkItem({
     return (
       <div id={anchorId} className={SCROLL_TARGET}>
         {href ? (
-          <a href={href} target="_blank" rel="noopener noreferrer" className={ROW_LINK}>
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={ROW_LINK}
+          >
             {header}
             <span className="sr-only">{newTabLabel}</span>
           </a>
@@ -147,7 +157,10 @@ export function FeaturedWorkItem({
     <div id={anchorId} className={cn(SCROLL_TARGET, 'grid pb-2', ROW_TRACKS)}>
       {header}
       {hasMedia && (
-        <FeaturedWorkDemo media={media} className={cn(BODY_ROW, !hasDetails && !footer && 'pb-3')} />
+        <FeaturedWorkDemo
+          media={media}
+          className={cn(BODY_ROW, !hasDetails && !footer && 'pb-3')}
+        />
       )}
       {(hasDetails || footer) && (
         <div className={cn(BODY_ROW, 'flex flex-wrap items-center gap-x-6')}>
@@ -157,7 +170,10 @@ export function FeaturedWorkItem({
               aria-expanded={open}
               aria-controls={panelId}
               onClick={toggle}
-              className={cn(ACTION, 'text-muted-foreground hover:text-foreground')}
+              className={cn(
+                ACTION,
+                'text-muted-foreground hover:text-foreground'
+              )}
             >
               {open ? hideDetailsLabel : showDetailsLabel}
               <ChevronDown
@@ -165,7 +181,9 @@ export function FeaturedWorkItem({
                 className={cn(
                   'size-4',
                   hasToggled ? CHEVRON_ARMED : CHEVRON_IDLE,
-                  open ? 'rotate-180 duration-250 ease-enter' : 'duration-200 ease-exit'
+                  open
+                    ? 'rotate-180 duration-250 ease-enter'
+                    : 'duration-200 ease-exit'
                 )}
               />
             </button>
@@ -174,7 +192,12 @@ export function FeaturedWorkItem({
         </div>
       )}
       {hasDetails && (
-        <DisclosureRegion id={panelId} open={open} animated={hasToggled} className={DETAILS_CELL}>
+        <DisclosureRegion
+          id={panelId}
+          open={open}
+          animated={hasToggled}
+          className={DETAILS_CELL}
+        >
           {/* The bottom padding sits inside the clip box, so a closed row keeps none. */}
           <div className="pb-3 pt-1">{details}</div>
         </DisclosureRegion>

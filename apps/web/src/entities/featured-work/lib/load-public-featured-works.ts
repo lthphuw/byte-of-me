@@ -11,16 +11,12 @@ import {
   getFeaturedWorkGithub,
 } from '@/entities/featured-work/lib/get-featured-work-github';
 import { safeLink } from '@/entities/featured-work/lib/safe-link';
-import {
-  FEATURED_WORK_MEDIA_MAX,
-} from '@/entities/featured-work/model/featured-work-schema';
+import { FEATURED_WORK_MEDIA_MAX } from '@/entities/featured-work/model/featured-work-schema';
 import type {
   PublicFeaturedWork,
   PublicFeaturedWorkMedia,
 } from '@/entities/featured-work/model/types';
-import {
-  ACCEPTED_VIDEO_MIME_TYPES,
-} from '@/entities/media/model/upload-constraints';
+import { ACCEPTED_VIDEO_MIME_TYPES } from '@/entities/media/model/upload-constraints';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import {
@@ -51,9 +47,13 @@ function toPublicMedia(items: StoredDemoItem[]): PublicFeaturedWorkMedia[] {
     .flatMap(({ label, media }) => {
       const isPlayable =
         media.mimeType.startsWith('image/') ||
-        (ACCEPTED_VIDEO_MIME_TYPES as readonly string[]).includes(media.mimeType);
+        (ACCEPTED_VIDEO_MIME_TYPES as readonly string[]).includes(
+          media.mimeType
+        );
       if (!isPlayable || safeLink(media.url).url === null) return [];
-      return [{ id: media.id, url: media.url, mimeType: media.mimeType, label }];
+      return [
+        { id: media.id, url: media.url, mimeType: media.mimeType, label },
+      ];
     })
     .slice(0, FEATURED_WORK_MEDIA_MAX);
 }
@@ -173,7 +173,7 @@ export async function loadPublicFeaturedWorks(
     data: {
       works: rows.map((row) => ({
         ...row,
-        github: row.url ? (github[row.url] ?? null) : null,
+        github: row.url ? github[row.url] ?? null : null,
       })),
     },
   };

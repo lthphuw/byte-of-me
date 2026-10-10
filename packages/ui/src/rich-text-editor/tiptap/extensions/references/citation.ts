@@ -42,7 +42,10 @@ export const Citation = CitationBase.extend({
           const ranges: { from: number; to: number }[] = [];
 
           state.doc.descendants((node, pos) => {
-            if (node.type.name === CITATION_NAME && node.attrs.refId === refId) {
+            if (
+              node.type.name === CITATION_NAME &&
+              node.attrs.refId === refId
+            ) {
               ranges.push({ from: pos, to: pos + node.nodeSize });
             }
             return true;

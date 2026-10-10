@@ -44,7 +44,9 @@ export function MermaidBlocks({ children }: { children: ReactNode }) {
         startOnLoad: false,
         securityLevel: 'strict',
         theme: isDark ? 'dark' : 'neutral',
-        themeVariables: isDark ? { textColor: `hsl(${foreground})` } : undefined,
+        themeVariables: isDark
+          ? { textColor: `hsl(${foreground})` }
+          : undefined,
         fontFamily: 'inherit',
         // On a parse error mermaid injects its own "Syntax error in text"
         // graphic into the DOM even when render() throws. Suppress that —

@@ -1,7 +1,13 @@
 'use client';
 
 import type { UseFormReturn } from 'react-hook-form';
-import { DatePicker , FormControl, FormField, FormItem, FormLabel } from '@byte-of-me/ui';
+import {
+  DatePicker,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
 import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';

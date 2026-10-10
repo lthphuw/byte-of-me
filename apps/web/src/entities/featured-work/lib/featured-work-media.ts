@@ -4,7 +4,9 @@ import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/feat
 import { ACCEPTED_VIDEO_MIME_TYPES } from '@/entities/media/model/upload-constraints';
 
 /** The join rows for a validated `media` array: a slot is its position in the array. */
-export function toMediaRows(media: NonNullable<FeaturedWorkFormValues['media']>) {
+export function toMediaRows(
+  media: NonNullable<FeaturedWorkFormValues['media']>
+) {
   return media.map((item, sortOrder) => ({
     mediaId: item.mediaId,
     sortOrder,

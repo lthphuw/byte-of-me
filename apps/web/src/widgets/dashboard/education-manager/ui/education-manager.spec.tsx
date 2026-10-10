@@ -143,7 +143,10 @@ function renderManager() {
 
   render(
     <QueryClientProvider client={queryClient}>
-      <NextIntlClientProvider locale="en" messages={{ dashboard: en.dashboard }}>
+      <NextIntlClientProvider
+        locale="en"
+        messages={{ dashboard: en.dashboard }}
+      >
         <EducationManager />
       </NextIntlClientProvider>
     </QueryClientProvider>
@@ -153,7 +156,9 @@ function renderManager() {
 }
 
 const openEditor = () =>
-  fireEvent.click(screen.getByRole('button', { name: 'Edit Hanoi University' }));
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Edit Hanoi University' })
+  );
 
 /** A field only the form renders. */
 const formField = () => screen.queryByText('Institution Logo');
@@ -200,8 +205,11 @@ describe('EducationManager', () => {
     expect(await screen.findByLabelText('Loading…')).toBeTruthy();
     expect(formField()).toBeNull();
     expect(
-      (screen.getByRole('button', { name: 'Save changes' }) as HTMLButtonElement)
-        .disabled
+      (
+        screen.getByRole('button', {
+          name: 'Save changes',
+        }) as HTMLButtonElement
+      ).disabled
     ).toBe(true);
 
     entry.resolve(fullEntry);
@@ -230,8 +238,11 @@ describe('EducationManager', () => {
     expect(screen.getByRole('alert')).toBeTruthy();
     expect(formField()).toBeNull();
     expect(
-      (screen.getByRole('button', { name: 'Save changes' }) as HTMLButtonElement)
-        .disabled
+      (
+        screen.getByRole('button', {
+          name: 'Save changes',
+        }) as HTMLButtonElement
+      ).disabled
     ).toBe(true);
 
     findFirst.mockResolvedValue(fullEntry);
@@ -256,12 +267,16 @@ describe('EducationManager', () => {
     const queryClient = renderManager();
     openEditor();
     await screen.findByText('Institution Logo');
-    expect(queryClient.getQueryData(educationKeys.detail('edu-1'))).toBeDefined();
+    expect(
+      queryClient.getQueryData(educationKeys.detail('edu-1'))
+    ).toBeDefined();
 
     fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
 
     await waitFor(() => expect(toastSuccess).toHaveBeenCalled());
-    expect(queryClient.getQueryData(educationKeys.detail('edu-1'))).toBeUndefined();
+    expect(
+      queryClient.getQueryData(educationKeys.detail('edu-1'))
+    ).toBeUndefined();
     await waitFor(() => expect(findMany).toHaveBeenCalledTimes(1));
     // The save went through the real action, with the entry's own achievement.
     expect(txAchievement.update).toHaveBeenCalledTimes(1);

@@ -91,7 +91,9 @@ export async function fetchMergedPullRequests(
 
     if (body.errors?.length || !body.data) {
       throw new Error(
-        `GitHub GraphQL error: ${body.errors?.map((e) => e.message).join('; ') ?? 'no data'}`
+        `GitHub GraphQL error: ${
+          body.errors?.map((e) => e.message).join('; ') ?? 'no data'
+        }`
       );
     }
 

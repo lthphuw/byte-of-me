@@ -62,8 +62,10 @@ export async function reorderFeaturedWork(
         }
 
         const swapped = rows.map((row) => {
-          if (row.id === current.id) return { ...row, sortOrder: neighbour.sortOrder };
-          if (row.id === neighbour.id) return { ...row, sortOrder: current.sortOrder };
+          if (row.id === current.id)
+            return { ...row, sortOrder: neighbour.sortOrder };
+          if (row.id === neighbour.id)
+            return { ...row, sortOrder: current.sortOrder };
           return row;
         });
 

@@ -74,8 +74,8 @@ describe('client message namespace lists', () => {
     PUBLIC_MESSAGE_NAMESPACES,
     AUTH_MESSAGE_NAMESPACES,
     DASHBOARD_MESSAGE_NAMESPACES,
-              PUBLIC_PRINT_MESSAGE_NAMESPACES,
-      } satisfies Record<string, readonly string[]>;
+    PUBLIC_PRINT_MESSAGE_NAMESPACES,
+  } satisfies Record<string, readonly string[]>;
 
   /** A namespace `pickMessages` dropped, i.e. one that is not in the file. */
   function unreachable(

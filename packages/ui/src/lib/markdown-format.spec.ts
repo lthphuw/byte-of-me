@@ -39,11 +39,17 @@ describe('formatMarkdown', () => {
     });
 
     it('keeps a two-space hard break, which is load-bearing', () => {
-      expect(formatMarkdown('line one  \nline two')).toBe('line one  \nline two\n');
+      expect(formatMarkdown('line one  \nline two')).toBe(
+        'line one  \nline two\n'
+      );
       // More than two collapse TO two rather than being trimmed away.
-      expect(formatMarkdown('line one     \nline two')).toBe('line one  \nline two\n');
+      expect(formatMarkdown('line one     \nline two')).toBe(
+        'line one  \nline two\n'
+      );
       // One trailing space is not a break, so it goes.
-      expect(formatMarkdown('line one \nline two')).toBe('line one\nline two\n');
+      expect(formatMarkdown('line one \nline two')).toBe(
+        'line one\nline two\n'
+      );
     });
   });
 
@@ -68,7 +74,9 @@ describe('formatMarkdown', () => {
 
   describe('lists', () => {
     it('unifies bullet markers, which is what splits a pasted list in two', () => {
-      expect(formatMarkdown('* one\n+ two\n- three')).toBe('- one\n- two\n- three\n');
+      expect(formatMarkdown('* one\n+ two\n- three')).toBe(
+        '- one\n- two\n- three\n'
+      );
     });
 
     it('collapses the space after a bullet marker', () => {
@@ -185,7 +193,9 @@ describe('formatMarkdown', () => {
     });
 
     it('only treats it as front matter at the very top', () => {
-      expect(formatMarkdown('text\n\n---\n\nmore')).toBe('text\n\n---\n\nmore\n');
+      expect(formatMarkdown('text\n\n---\n\nmore')).toBe(
+        'text\n\n---\n\nmore\n'
+      );
     });
   });
 

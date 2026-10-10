@@ -217,8 +217,8 @@ export function ExpandableRichText({
           !hasToggled
             ? INSTANT_TRANSITION
             : expanded
-              ? EXPAND_TRANSITION
-              : COLLAPSE_TRANSITION
+            ? EXPAND_TRANSITION
+            : COLLAPSE_TRANSITION
         }
         onAnimationComplete={() => setIsAnimating(false)}
       >

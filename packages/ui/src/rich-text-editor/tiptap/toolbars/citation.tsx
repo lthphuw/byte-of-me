@@ -46,7 +46,12 @@ const CitationToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const create = (item: ReferenceItem) => {
-      editor.chain().focus().upsertReference(item).insertCitation(item.id).run();
+      editor
+        .chain()
+        .focus()
+        .upsertReference(item)
+        .insertCitation(item.id)
+        .run();
       close();
     };
 

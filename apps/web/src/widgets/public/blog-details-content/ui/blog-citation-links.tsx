@@ -68,7 +68,9 @@ export function BlogCitationLinks({ targetId }: { targetId: string }) {
         return;
       }
 
-      const backlink = target.closest<HTMLElement>('a[data-reference-backlink]');
+      const backlink = target.closest<HTMLElement>(
+        'a[data-reference-backlink]'
+      );
       if (backlink) {
         const refId = backlink.dataset.referenceBacklink;
         if (!refId) return;

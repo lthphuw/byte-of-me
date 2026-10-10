@@ -95,10 +95,10 @@ export function EducationDialog({
             form={FORM_ID}
             disabled={loading || isLoadingInitialData || hasLoadError}
           >
-            {loading && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            {isEditing ? t('dialog.saveButton') : t('dialog.createSubmitButton')}
+            {loading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+            {isEditing
+              ? t('dialog.saveButton')
+              : t('dialog.createSubmitButton')}
           </Button>
         </DialogFooter>
       </DialogContent>

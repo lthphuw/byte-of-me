@@ -172,7 +172,8 @@ export function applyCitationNumbering(doc: JSONContent): JSONContent {
 
   const transform = (node: JSONContent): JSONContent => {
     if (node.type === CITATION_NAME) {
-      const refId = typeof node.attrs?.refId === 'string' ? node.attrs.refId : '';
+      const refId =
+        typeof node.attrs?.refId === 'string' ? node.attrs.refId : '';
       const order = numbers.get(refId) ?? null;
       const first = Boolean(refId) && order !== null && !seen.has(refId);
       if (first) seen.add(refId);

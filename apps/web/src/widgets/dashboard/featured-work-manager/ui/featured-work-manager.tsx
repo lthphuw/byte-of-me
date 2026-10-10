@@ -102,16 +102,19 @@ export function FeaturedWorkManager() {
     }
   }, [isMoving, works]);
 
-  const requestMove = (id: string, direction: 'up' | 'down', blocked: boolean) => {
+  const requestMove = (
+    id: string,
+    direction: 'up' | 'down',
+    blocked: boolean
+  ) => {
     if (blocked || isMoving) return;
     refocus.current = `${id}:${direction}`;
     move(id, direction);
   };
-  const moveButtonRef =
-    (key: string) => (node: HTMLButtonElement | null) => {
-      if (node) moveButtons.current.set(key, node);
-      else moveButtons.current.delete(key);
-    };
+  const moveButtonRef = (key: string) => (node: HTMLButtonElement | null) => {
+    if (node) moveButtons.current.set(key, node);
+    else moveButtons.current.delete(key);
+  };
   const moveButtonClass =
     'h-8 w-8 aria-disabled:cursor-not-allowed aria-disabled:opacity-50';
 
@@ -215,7 +218,11 @@ export function FeaturedWorkManager() {
                       aria-label={t('moveDownLabel', { name: title })}
                       aria-disabled={isMoving || position === totalCount - 1}
                       onClick={() =>
-                        requestMove(work.id, 'down', position === totalCount - 1)
+                        requestMove(
+                          work.id,
+                          'down',
+                          position === totalCount - 1
+                        )
                       }
                     >
                       <ChevronDown className="h-4 w-4" />

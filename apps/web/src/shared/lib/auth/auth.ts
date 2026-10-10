@@ -169,7 +169,9 @@ async function sendVerificationRequest({
     });
   } catch (error) {
     logger.error(
-      `[Nodemailer] Send verification email got error: ${getErrorMessage(error)}`
+      `[Nodemailer] Send verification email got error: ${getErrorMessage(
+        error
+      )}`
     );
     throw new Error('Could not send verification email.');
   }

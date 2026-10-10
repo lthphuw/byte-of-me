@@ -13,7 +13,10 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage, Input , SubmitButton } from '@byte-of-me/ui';
+  FormMessage,
+  Input,
+  SubmitButton,
+} from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 

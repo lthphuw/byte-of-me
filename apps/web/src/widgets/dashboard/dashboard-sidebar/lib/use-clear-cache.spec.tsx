@@ -95,7 +95,10 @@ describe('useClearCache', () => {
     await act(async () => {
       // Both dispatched before either has resolved — the shape of a double
       // click on a button that shows nothing for the first one.
-      await Promise.all([result.current.clearCache(), result.current.clearCache()]);
+      await Promise.all([
+        result.current.clearCache(),
+        result.current.clearCache(),
+      ]);
     });
 
     expect(logInfo).toHaveBeenCalledTimes(1);

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardContent , CopyButton , DeleteButton } from '@byte-of-me/ui';
+import { Card, CardContent, CopyButton, DeleteButton } from '@byte-of-me/ui';
 import { FileIcon, Play } from 'lucide-react';
 import Image from 'next/image';
 
@@ -83,9 +83,7 @@ export function MediaCard({
           <div className="absolute inset-0 z-20 flex flex-col justify-between bg-black/60 p-2 transition-opacity duration-200 sm:opacity-0 sm:focus-within:opacity-100 sm:group-hover:opacity-100">
             {/* Top Toolbar */}
             <div className="flex justify-end gap-1.5">
-              <CopyButton
-                content={media.url}
-              />
+              <CopyButton content={media.url} />
 
               {onDeleteMedia && (
                 <DeleteButton

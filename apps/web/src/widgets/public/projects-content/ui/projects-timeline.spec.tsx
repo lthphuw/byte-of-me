@@ -39,7 +39,10 @@ function project(id: string): PublicProject {
 function timeline(ids: string[], playEntrance: boolean) {
   return (
     <NextIntlClientProvider locale="en" messages={en}>
-      <ProjectsTimeline projects={ids.map(project)} playEntrance={playEntrance} />
+      <ProjectsTimeline
+        projects={ids.map(project)}
+        playEntrance={playEntrance}
+      />
     </NextIntlClientProvider>
   );
 }

@@ -99,7 +99,7 @@ export function useCrudManager<TItem extends { id: string }, TSaveInput>({
 
   const query = useQuery<ListResult>({
     queryKey: fetchPage
-      ? (pageKey?.(page) ?? [...queryKey, page])
+      ? pageKey?.(page) ?? [...queryKey, page]
       : [...queryKey],
     queryFn: async (): Promise<ListResult> => {
       if (fetchPage) return unwrapApiResponse(await fetchPage(page, pageSize));
@@ -126,8 +126,8 @@ export function useCrudManager<TItem extends { id: string }, TSaveInput>({
             ? messages.updated
             : messages.created
           : saved
-            ? `${entityLabel} updated`
-            : `${entityLabel} created`
+          ? `${entityLabel} updated`
+          : `${entityLabel} created`
       );
       closeDialog();
       // Removed rather than invalidated, and after `closeDialog` so the now
@@ -139,7 +139,9 @@ export function useCrudManager<TItem extends { id: string }, TSaveInput>({
       }
     },
     onError: () =>
-      toast.error(messages ? messages.saveError : `Failed to save ${lowerLabel}`),
+      toast.error(
+        messages ? messages.saveError : `Failed to save ${lowerLabel}`
+      ),
   });
 
   const deleteMutation = useMutation({
@@ -155,7 +157,9 @@ export function useCrudManager<TItem extends { id: string }, TSaveInput>({
       setItemToDelete(null);
     },
     onError: () =>
-      toast.error(messages ? messages.deleteError : `Could not delete ${lowerLabel}`),
+      toast.error(
+        messages ? messages.deleteError : `Could not delete ${lowerLabel}`
+      ),
   });
 
   const openCreateDialog = () => {
@@ -190,7 +194,8 @@ export function useCrudManager<TItem extends { id: string }, TSaveInput>({
     editing,
     isDialogOpen,
     /** For Dialog onOpenChange: closing clears the editing target. */
-    onDialogOpenChange: (open: boolean) => (open ? setIsDialogOpen(true) : closeDialog()),
+    onDialogOpenChange: (open: boolean) =>
+      open ? setIsDialogOpen(true) : closeDialog(),
     openCreateDialog,
     openEditDialog,
     closeDialog,
@@ -201,8 +206,7 @@ export function useCrudManager<TItem extends { id: string }, TSaveInput>({
     itemToDelete,
     requestDelete: (item: TItem) => setItemToDelete(item),
     cancelDelete: () => setItemToDelete(null),
-    confirmDelete: () =>
-      itemToDelete && deleteMutation.mutate(itemToDelete.id),
+    confirmDelete: () => itemToDelete && deleteMutation.mutate(itemToDelete.id),
     isDeleting: deleteMutation.isPending,
     /** True only for the item whose deletion is in flight. */
     isDeletingItem: (item: TItem) =>

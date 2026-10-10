@@ -7,7 +7,6 @@ import { getPublicProjectById } from '@/entities/project';
 import { Routes } from '@/shared/config/global';
 import { formatDate } from '@/shared/lib/utils';
 
-
 export async function BlogRelatedProjectCard({
   projectId,
   label,

@@ -47,7 +47,11 @@ function buildItemSpec(item: ReferenceItem): Spec {
     },
   ]);
 
-  return ['li', { id: `ref-${item.id}`, class: 'references-item' }, ...children];
+  return [
+    'li',
+    { id: `ref-${item.id}`, class: 'references-item' },
+    ...children,
+  ];
 }
 
 /**

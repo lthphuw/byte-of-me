@@ -25,17 +25,19 @@ const UPLOAD_URL_TTL_SECONDS = 300;
  * "An unexpected response was received from the server". The bytes are checked
  * by `finalizeVideoUpload`; this only vouches for the name, type and size claimed.
  */
-export async function prepareVideoUpload(
-  input: {
-    fileName: string;
-    mimeType: string;
-    size: number;
-    scope: MediaScope;
-  }
-): Promise<ApiResponse<{ uploadUrl: string; fileKey: string }>> {
+export async function prepareVideoUpload(input: {
+  fileName: string;
+  mimeType: string;
+  size: number;
+  scope: MediaScope;
+}): Promise<ApiResponse<{ uploadUrl: string; fileKey: string }>> {
   const user = await requireAdmin();
 
-  const parsed = parseInput(videoUploadRequestSchema, input, 'prepareVideoUpload');
+  const parsed = parseInput(
+    videoUploadRequestSchema,
+    input,
+    'prepareVideoUpload'
+  );
   if (!parsed.ok) return { success: false, errorMsg: parsed.errorMsg };
 
   try {

@@ -3,7 +3,6 @@ import type { Prisma } from '@byte-of-me/db/types';
 import type { PublicProject } from '@/entities/project/model/types';
 import type { Media, Tag } from '@/shared/types/models';
 
-
 /**
  * The editor's full post. `translations[]` keeps `content` — the language tabs
  * edit it — but the nested project/tag translations carry only the label each

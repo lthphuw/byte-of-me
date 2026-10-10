@@ -30,10 +30,7 @@ export async function HomepageContent() {
           readers with two "main" regions to choose between.
           The width comes from HomepageShell — a max-width here would sit inside
           the shell's narrower one and never apply. */}
-      <div
-        id="home"
-        className="space-y-12 md:space-y-16"
-      >
+      <div id="home" className="space-y-12 md:space-y-16">
         {/* `immediate`: the profile holds the page's LCP element (the h1). */}
         <RevealSection immediate>
           <Suspense fallback={<HomepageProfileLoading />}>

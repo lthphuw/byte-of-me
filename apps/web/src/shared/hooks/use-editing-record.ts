@@ -34,7 +34,7 @@ export function useEditingRecord<TRecord>({
     retry: false,
   });
 
-  const record = id === null ? null : (query.data ?? null);
+  const record = id === null ? null : query.data ?? null;
 
   return {
     record,

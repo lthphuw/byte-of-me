@@ -87,7 +87,9 @@ export function MediaSelect({
             </div>
             <div className="flex flex-col items-start truncate text-left">
               <span className="w-full truncate text-sm font-medium">
-                {selectedMedia ? selectedMedia.fileName : t('picker.selectMedia')}
+                {selectedMedia
+                  ? selectedMedia.fileName
+                  : t('picker.selectMedia')}
               </span>
               <span className="text-xs text-muted-foreground">
                 {selectedMedia

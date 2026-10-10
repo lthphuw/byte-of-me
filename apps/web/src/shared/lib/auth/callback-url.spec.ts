@@ -34,9 +34,9 @@ describe('sanitizeCallbackUrl', () => {
     }
 
     it('rejects a value carrying a newline, which could split a header', () => {
-      expect(sanitizeCallbackUrl('/notes\r\nLocation: //evil.example', 'en')).toBe(
-        '/en/dashboard'
-      );
+      expect(
+        sanitizeCallbackUrl('/notes\r\nLocation: //evil.example', 'en')
+      ).toBe('/en/dashboard');
     });
   });
 

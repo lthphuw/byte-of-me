@@ -3,11 +3,20 @@
  * it can be seen, one button to stop it and one to take it full screen.
  * Renders the real component; only the browser's media and observer APIs are stubbed.
  */
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
-import { FeaturedWorkDemo, type FeaturedWorkDemoItem } from './featured-work-demo';
+import {
+  FeaturedWorkDemo,
+  type FeaturedWorkDemoItem,
+} from './featured-work-demo';
 
 const fp16: FeaturedWorkDemoItem = {
   id: 'm1',
@@ -62,7 +71,8 @@ function stubMedia() {
   restores.push(() => {
     proto.play = original.play;
     proto.pause = original.pause;
-    if (original.paused) Object.defineProperty(proto, 'paused', original.paused);
+    if (original.paused)
+      Object.defineProperty(proto, 'paused', original.paused);
   });
 }
 
@@ -90,7 +100,8 @@ class FakeObserver {
 
 function stubObserver() {
   const original = globalThis.IntersectionObserver;
-  globalThis.IntersectionObserver = FakeObserver as unknown as typeof IntersectionObserver;
+  globalThis.IntersectionObserver =
+    FakeObserver as unknown as typeof IntersectionObserver;
   restores.push(() => {
     globalThis.IntersectionObserver = original;
   });
@@ -109,7 +120,8 @@ function stubReducedMotion(reduced: boolean) {
   });
 }
 
-const visible = (isIntersecting = true) => observers.at(-1)?.report(isIntersecting);
+const visible = (isIntersecting = true) =>
+  observers.at(-1)?.report(isIntersecting);
 
 beforeEach(() => {
   calls = [];
@@ -168,7 +180,9 @@ describe('FeaturedWorkDemo figures', () => {
     const { container } = render(<FeaturedWorkDemo media={[unlabelled]} />);
 
     expect(container.querySelector('figcaption')).toBeNull();
-    expect(screen.getByRole('img', { name: 'Faster detector export' })).toBeTruthy();
+    expect(
+      screen.getByRole('img', { name: 'Faster detector export' })
+    ).toBeTruthy();
   });
 
   it('draws a GIF as a lazy, async <img> named by its label', () => {
@@ -264,17 +278,25 @@ describe('FeaturedWorkDemo frame', () => {
     container.querySelector<HTMLElement>('figure .aspect-video');
   /** The inline ratio as written, `null` while the frame still holds the 16:9 reserve. */
   const ratioOf = (container: HTMLElement) => {
-    const match = /aspect-ratio:\s*([\d.]+)/.exec(frame(container)?.getAttribute('style') ?? '');
+    const match = /aspect-ratio:\s*([\d.]+)/.exec(
+      frame(container)?.getAttribute('style') ?? ''
+    );
     return match ? Number(match[1]) : null;
   };
 
-  it('reserves 16:9, then takes the clip\'s own ratio so a wide clip has no empty bars', () => {
+  it("reserves 16:9, then takes the clip's own ratio so a wide clip has no empty bars", () => {
     const { container } = render(<FeaturedWorkDemo media={[fp16]} />);
     expect(ratioOf(container)).toBeNull();
 
     const video = videoEl();
-    Object.defineProperty(video, 'videoWidth', { configurable: true, value: 1920 });
-    Object.defineProperty(video, 'videoHeight', { configurable: true, value: 670 });
+    Object.defineProperty(video, 'videoWidth', {
+      configurable: true,
+      value: 1920,
+    });
+    Object.defineProperty(video, 'videoHeight', {
+      configurable: true,
+      value: 670,
+    });
     act(() => {
       video.dispatchEvent(new Event('loadedmetadata'));
     });
@@ -295,8 +317,14 @@ describe('FeaturedWorkDemo frame', () => {
   it('gives an image its own ratio once it has loaded', () => {
     const { container } = render(<FeaturedWorkDemo media={[int8]} />);
     const image = screen.getByRole('img', { name: 'INT8' });
-    Object.defineProperty(image, 'naturalWidth', { configurable: true, value: 800 });
-    Object.defineProperty(image, 'naturalHeight', { configurable: true, value: 200 });
+    Object.defineProperty(image, 'naturalWidth', {
+      configurable: true,
+      value: 800,
+    });
+    Object.defineProperty(image, 'naturalHeight', {
+      configurable: true,
+      value: 200,
+    });
 
     fireEvent.load(image);
 
@@ -354,24 +382,33 @@ describe('FeaturedWorkDemo under reduced motion', () => {
     expect(calls).not.toContain('play');
     expect(clip().getAttribute('aria-pressed')).toBe('false');
   });
-
 });
 
 describe('FeaturedWorkDemo full screen', () => {
-  const fullscreenButton = () => screen.getByRole('button', { name: 'Full screen FP16' });
-  const original = Object.getOwnPropertyDescriptor(document, 'fullscreenEnabled');
+  const fullscreenButton = () =>
+    screen.getByRole('button', { name: 'Full screen FP16' });
+  const original = Object.getOwnPropertyDescriptor(
+    document,
+    'fullscreenEnabled'
+  );
   let requested: HTMLElement[] = [];
 
   beforeEach(() => {
     requested = [];
-    Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, value: true });
-    HTMLElement.prototype.requestFullscreen = function request(this: HTMLElement) {
+    Object.defineProperty(document, 'fullscreenEnabled', {
+      configurable: true,
+      value: true,
+    });
+    HTMLElement.prototype.requestFullscreen = function request(
+      this: HTMLElement
+    ) {
       requested.push(this);
       return Promise.resolve();
     };
   });
   afterEach(() => {
-    if (original) Object.defineProperty(document, 'fullscreenEnabled', original);
+    if (original)
+      Object.defineProperty(document, 'fullscreenEnabled', original);
     else Reflect.deleteProperty(document, 'fullscreenEnabled');
   });
 
@@ -383,10 +420,15 @@ describe('FeaturedWorkDemo full screen', () => {
   });
 
   it('offers none when the browser cannot take an element full screen', () => {
-    Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, value: false });
+    Object.defineProperty(document, 'fullscreenEnabled', {
+      configurable: true,
+      value: false,
+    });
     render(<FeaturedWorkDemo media={[fp16]} />);
 
-    expect(screen.queryByRole('button', { name: 'Full screen FP16' })).toBeNull();
+    expect(
+      screen.queryByRole('button', { name: 'Full screen FP16' })
+    ).toBeNull();
   });
 
   it('offers none for an image', () => {
@@ -408,14 +450,20 @@ describe('FeaturedWorkDemo full screen', () => {
     const video = videoEl();
     fireEvent.click(fullscreenButton());
 
-    Object.defineProperty(document, 'fullscreenElement', { configurable: true, value: video });
+    Object.defineProperty(document, 'fullscreenElement', {
+      configurable: true,
+      value: video,
+    });
     act(() => {
       document.dispatchEvent(new Event('fullscreenchange'));
     });
     expect(video.controls).toBe(true);
     expect(video.muted).toBe(false);
 
-    Object.defineProperty(document, 'fullscreenElement', { configurable: true, value: null });
+    Object.defineProperty(document, 'fullscreenElement', {
+      configurable: true,
+      value: null,
+    });
     act(() => {
       document.dispatchEvent(new Event('fullscreenchange'));
     });
@@ -433,11 +481,17 @@ describe('FeaturedWorkDemo full screen', () => {
     visible(false);
     expect(calls.at(-1)).not.toBe('pause');
 
-    Object.defineProperty(document, 'fullscreenElement', { configurable: true, value: video });
+    Object.defineProperty(document, 'fullscreenElement', {
+      configurable: true,
+      value: video,
+    });
     act(() => {
       document.dispatchEvent(new Event('fullscreenchange'));
     });
-    Object.defineProperty(document, 'fullscreenElement', { configurable: true, value: null });
+    Object.defineProperty(document, 'fullscreenElement', {
+      configurable: true,
+      value: null,
+    });
     act(() => {
       document.dispatchEvent(new Event('fullscreenchange'));
     });
@@ -447,7 +501,10 @@ describe('FeaturedWorkDemo full screen', () => {
   });
 
   it('uses the video presenter on Safari for iPhone, which has no element API', () => {
-    Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, value: undefined });
+    Object.defineProperty(document, 'fullscreenEnabled', {
+      configurable: true,
+      value: undefined,
+    });
     const presented: HTMLElement[] = [];
     Object.defineProperty(HTMLVideoElement.prototype, 'webkitEnterFullscreen', {
       configurable: true,

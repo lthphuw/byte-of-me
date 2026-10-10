@@ -1,7 +1,13 @@
 import type { Editor } from '@tiptap/core';
 import { Eye, Pencil } from 'lucide-react';
 
-import { Button, ScrollArea, ScrollBar, Separator, TooltipProvider } from '../../../index';
+import {
+  Button,
+  ScrollArea,
+  ScrollBar,
+  Separator,
+  TooltipProvider,
+} from '../../../index';
 import { cn } from '../../../lib/utils';
 
 import { AlignmentTooolbar } from './alignment';
@@ -73,9 +79,7 @@ export const EditorToolbar = ({
   // buttons (image, colour) with no visible way to reach them. The full
   // editor keeps the single scrolling row: it owns the page width.
   const row = (
-    <div
-      className={cn('flex items-center gap-1 px-2', compact && 'flex-wrap')}
-    >
+    <div className={cn('flex items-center gap-1 px-2', compact && 'flex-wrap')}>
       {/* History Group */}
       <UndoToolbar />
       <RedoToolbar />

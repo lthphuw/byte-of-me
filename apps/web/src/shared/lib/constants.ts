@@ -49,8 +49,8 @@ export type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];
 export const LAYOUT_CACHE_REVALIDATE_SECONDS = 3600;
 
 export enum INTERACTION {
-  LIKE= 'LIKE',
-  CLAP= 'CLAP',
+  LIKE = 'LIKE',
+  CLAP = 'CLAP',
 }
 
 /**

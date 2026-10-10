@@ -175,7 +175,11 @@ function normalizeLikeTiptap(value: unknown): unknown {
   if (node.type === 'heading' && !node.attrs?.['data-toc-id']) {
     headingIdCounter += 1;
     const id = `toc-${headingIdCounter}`;
-    next.attrs = { ...(next.attrs as Record<string, unknown>), id, 'data-toc-id': id };
+    next.attrs = {
+      ...(next.attrs as Record<string, unknown>),
+      id,
+      'data-toc-id': id,
+    };
   }
   if (Array.isArray(node.content)) {
     next.content = node.content.map(normalizeLikeTiptap);

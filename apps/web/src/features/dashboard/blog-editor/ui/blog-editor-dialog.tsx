@@ -46,7 +46,11 @@ export interface BlogEditorDialogProps {
 function BlogFormSkeleton() {
   const t = useTranslations('dashboard.blog');
   return (
-    <div className="space-y-6" aria-busy="true" aria-label={t('dialog.loadingLabel')}>
+    <div
+      className="space-y-6"
+      aria-busy="true"
+      aria-label={t('dialog.loadingLabel')}
+    >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Skeleton className="h-10 w-full" />
         <Skeleton className="h-10 w-full" />
@@ -97,7 +101,12 @@ export function BlogEditorDialog({
             <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
               <p className="text-sm text-muted-foreground">{loadError}</p>
               {onRetryLoad && (
-                <Button type="button" variant="outline" size="sm" onClick={onRetryLoad}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={onRetryLoad}
+                >
                   {t('dialog.retry')}
                 </Button>
               )}
@@ -128,7 +137,9 @@ export function BlogEditorDialog({
             disabled={loading || isLoadingInitialData || Boolean(loadError)}
           >
             {loading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
-            {isEditing ? t('dialog.saveButton') : t('dialog.createSubmitButton')}
+            {isEditing
+              ? t('dialog.saveButton')
+              : t('dialog.createSubmitButton')}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -69,7 +69,11 @@ function work(
   };
 }
 
-const tr = (language: string, title: string, description: string | null = null) => ({
+const tr = (
+  language: string,
+  title: string,
+  description: string | null = null
+) => ({
   id: `${language}-${title}`,
   language,
   title,
@@ -160,9 +164,14 @@ function renderManager(
 
   render(
     <QueryClientProvider client={queryClient}>
-      <NextIntlClientProvider locale={locale} messages={{
-          dashboard: (locale === 'vi' ? vi.dashboard : en.dashboard) as typeof en.dashboard,
-        }}>
+      <NextIntlClientProvider
+        locale={locale}
+        messages={{
+          dashboard: (locale === 'vi'
+            ? vi.dashboard
+            : en.dashboard) as typeof en.dashboard,
+        }}
+      >
         <FeaturedWorkManager />
       </NextIntlClientProvider>
     </QueryClientProvider>
@@ -241,7 +250,9 @@ const openEdit = (name: string) => fireEvent.click(button(`Edit ${name}`));
 /** Radix `TabsTrigger` selects on `mousedown`, not on `click`. */
 const clickTab = (label: string) =>
   act(() => {
-    fireEvent.mouseDown(screen.getByRole('tab', { name: label }), { button: 0 });
+    fireEvent.mouseDown(screen.getByRole('tab', { name: label }), {
+      button: 0,
+    });
   });
 
 /** Waits until the form is in: the English tab is open, so one title shows. */
@@ -265,9 +276,9 @@ beforeEach(() => {
   create.mockReset().mockResolvedValue(rows[0] ?? {});
   remove.mockReset().mockResolvedValue({});
   txFindFirst.mockReset().mockResolvedValue({ id: 'w1' });
-  txFindMany.mockReset().mockResolvedValue(
-    rows.map(({ id, sortOrder }) => ({ id, sortOrder }))
-  );
+  txFindMany
+    .mockReset()
+    .mockResolvedValue(rows.map(({ id, sortOrder }) => ({ id, sortOrder })));
   txUpdate.mockReset().mockResolvedValue({});
   txMediaCount.mockReset().mockImplementation(async (args) => {
     const { where } = args as { where: { id: { in: string[] } } };
@@ -331,7 +342,9 @@ describe('FeaturedWorkManager list', () => {
     expect(screen.getByText('No featured works yet')).toBeTruthy();
     fireEvent.click(button('Add Your First Entry'));
 
-    expect(screen.getByText('Add featured work', { selector: 'h2' })).toBeTruthy();
+    expect(
+      screen.getByText('Add featured work', { selector: 'h2' })
+    ).toBeTruthy();
   });
 });
 
@@ -373,7 +386,9 @@ describe('FeaturedWorkManager reorder', () => {
     await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(2));
     expect(
       txUpdate.mock.calls
-        .map((c) => c[0] as { where: { id: string }; data: { sortOrder: number } })
+        .map(
+          (c) => c[0] as { where: { id: string }; data: { sortOrder: number } }
+        )
         .map((a) => [a.where.id, a.data.sortOrder])
         .sort()
     ).toEqual([
@@ -425,9 +440,9 @@ describe('FeaturedWorkManager reorder', () => {
     release(rows.map(({ id, sortOrder }) => ({ id, sortOrder })));
     await waitFor(() => expect(findMany).toHaveBeenCalledTimes(1));
     await waitFor(() =>
-      expect(button('Move Faster export up').getAttribute('aria-disabled')).toBe(
-        'true'
-      )
+      expect(
+        button('Move Faster export up').getAttribute('aria-disabled')
+      ).toBe('true')
     );
     await waitFor(() => expect(up.getAttribute('aria-disabled')).toBe('false'));
     expect(focusedLabel()).toBe('Edit Release notes');
@@ -445,7 +460,9 @@ describe('FeaturedWorkManager reorder', () => {
 
     down.focus();
     fireEvent.click(down);
-    await waitFor(() => expect(down.getAttribute('aria-disabled')).toBe('true'));
+    await waitFor(() =>
+      expect(down.getAttribute('aria-disabled')).toBe('true')
+    );
     fireEvent.click(down);
     expect(focusedLabel()).toBe('Move Faster export down');
 
@@ -473,7 +490,9 @@ describe('FeaturedWorkManager editor', () => {
 
     fireEvent.click(button('Add featured work'));
     const [enTitle] = screen.getAllByLabelText('Title');
-    fireEvent.change(enTitle as HTMLElement, { target: { value: ' Faster export ' } });
+    fireEvent.change(enTitle as HTMLElement, {
+      target: { value: ' Faster export ' },
+    });
     fireEvent.click(screen.getByRole('button', { name: 'Add featured work' }));
 
     await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
@@ -525,7 +544,9 @@ describe('FeaturedWorkManager edit loads the full row', () => {
 
     expect(await screen.findByLabelText('Loading…')).toBeTruthy();
     // Editing from the first click on: the title must not flip to "Add" while loading.
-    expect(screen.getByText('Edit featured work', { selector: 'h2' })).toBeTruthy();
+    expect(
+      screen.getByText('Edit featured work', { selector: 'h2' })
+    ).toBeTruthy();
     expect(screen.queryAllByLabelText('Title')).toHaveLength(0);
     expect(button('Save changes').disabled).toBe(true);
 
@@ -537,7 +558,9 @@ describe('FeaturedWorkManager edit loads the full row', () => {
   });
 
   it('seeds the English editor with the stored body once the row arrives', async () => {
-    findFirst.mockResolvedValue(detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }));
+    findFirst.mockResolvedValue(
+      detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY })
+    );
     renderManager();
 
     openEdit('Faster export');
@@ -558,7 +581,9 @@ describe('FeaturedWorkManager edit loads the full row', () => {
     expect(screen.queryAllByLabelText('Title')).toHaveLength(0);
     expect(button('Save changes').disabled).toBe(true);
 
-    findFirst.mockResolvedValue(detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }));
+    findFirst.mockResolvedValue(
+      detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY })
+    );
     fireEvent.click(retry);
 
     await formLoaded();
@@ -576,7 +601,9 @@ describe('FeaturedWorkManager edit loads the full row', () => {
   });
 
   it('saving without touching the editor writes the stored body back unchanged', async () => {
-    findFirst.mockResolvedValue(detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }));
+    findFirst.mockResolvedValue(
+      detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY })
+    );
     renderManager();
 
     openEdit('Faster export');
@@ -586,7 +613,12 @@ describe('FeaturedWorkManager edit loads the full row', () => {
     await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
     // The editor reports its own normalised copy on open; that is not an edit.
     expect(savedTranslations()).toEqual([
-      { language: 'en', title: 'Faster export', description: null, details: EN_BODY },
+      {
+        language: 'en',
+        title: 'Faster export',
+        description: null,
+        details: EN_BODY,
+      },
     ]);
   });
 
@@ -599,11 +631,16 @@ describe('FeaturedWorkManager edit loads the full row', () => {
     fireEvent.click(button('Save changes'));
 
     await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
-    expect(savedTranslations()[0]).toMatchObject({ language: 'en', details: null });
+    expect(savedTranslations()[0]).toMatchObject({
+      language: 'en',
+      details: null,
+    });
   });
 
   it('clearing the editor saves no body', async () => {
-    findFirst.mockResolvedValue(detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }));
+    findFirst.mockResolvedValue(
+      detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY })
+    );
     renderManager();
 
     openEdit('Faster export');
@@ -618,7 +655,10 @@ describe('FeaturedWorkManager edit loads the full row', () => {
     fireEvent.click(button('Save changes'));
 
     await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
-    expect(savedTranslations()[0]).toMatchObject({ language: 'en', details: null });
+    expect(savedTranslations()[0]).toMatchObject({
+      language: 'en',
+      details: null,
+    });
   });
 
   it('submits a stored Vietnamese body the owner never opened', async () => {
@@ -634,8 +674,18 @@ describe('FeaturedWorkManager edit loads the full row', () => {
 
     await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
     expect(savedTranslations()).toEqual([
-      { language: 'en', title: 'Quantized model', description: null, details: EN_BODY },
-      { language: 'vi', title: 'Mô hình lượng tử', description: null, details: VI_BODY },
+      {
+        language: 'en',
+        title: 'Quantized model',
+        description: null,
+        details: EN_BODY,
+      },
+      {
+        language: 'vi',
+        title: 'Mô hình lượng tử',
+        description: null,
+        details: VI_BODY,
+      },
     ]);
   });
 
@@ -662,8 +712,18 @@ describe('FeaturedWorkManager edit loads the full row', () => {
 
     await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
     expect(savedTranslations()).toEqual([
-      { language: 'en', title: 'Quantized model', description: null, details: EN_BODY },
-      { language: 'vi', title: 'Mô hình lượng tử', description: null, details: edited },
+      {
+        language: 'en',
+        title: 'Quantized model',
+        description: null,
+        details: EN_BODY,
+      },
+      {
+        language: 'vi',
+        title: 'Mô hình lượng tử',
+        description: null,
+        details: edited,
+      },
     ]);
   });
 
@@ -677,49 +737,65 @@ describe('FeaturedWorkManager edit loads the full row', () => {
     clickTab('VI');
     const [viEditor] = __getEditorProps();
     act(() => {
-      viEditor?.onChange?.(JSON.parse(doc('Chỉ có nội dung.')), { initial: false });
+      viEditor?.onChange?.(JSON.parse(doc('Chỉ có nội dung.')), {
+        initial: false,
+      });
     });
     clickTab('EN');
     fireEvent.click(screen.getByRole('button', { name: 'Add featured work' }));
 
     expect(await screen.findByText('Title is required')).toBeTruthy();
-    expect(screen.getByRole('tab', { name: 'VI' }).getAttribute('aria-selected')).toBe(
-      'true'
-    );
+    expect(
+      screen.getByRole('tab', { name: 'VI' }).getAttribute('aria-selected')
+    ).toBe('true');
     expect(create).not.toHaveBeenCalled();
   });
 
   it('after a save, drops the cached row and refreshes the list', async () => {
-    findFirst.mockResolvedValue(detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }));
+    findFirst.mockResolvedValue(
+      detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY })
+    );
     const queryClient = renderManager();
 
     openEdit('Faster export');
     await formLoaded();
-    expect(queryClient.getQueryData(featuredWorkKeys.detail('w1'))).toBeDefined();
+    expect(
+      queryClient.getQueryData(featuredWorkKeys.detail('w1'))
+    ).toBeDefined();
 
     fireEvent.click(button('Save changes'));
 
     await waitFor(() => expect(toastSuccess).toHaveBeenCalled());
-    expect(queryClient.getQueryData(featuredWorkKeys.detail('w1'))).toBeUndefined();
+    expect(
+      queryClient.getQueryData(featuredWorkKeys.detail('w1'))
+    ).toBeUndefined();
     await waitFor(() => expect(findMany).toHaveBeenCalledTimes(1));
   });
 
   it('after a delete, drops the cached row', async () => {
-    findFirst.mockResolvedValue(detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }));
+    findFirst.mockResolvedValue(
+      detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY })
+    );
     const queryClient = renderManager();
 
     openEdit('Faster export');
     await formLoaded();
     fireEvent.click(button('Cancel'));
-    await waitFor(() => expect(screen.queryAllByLabelText('Title')).toHaveLength(0));
-    expect(queryClient.getQueryData(featuredWorkKeys.detail('w1'))).toBeDefined();
+    await waitFor(() =>
+      expect(screen.queryAllByLabelText('Title')).toHaveLength(0)
+    );
+    expect(
+      queryClient.getQueryData(featuredWorkKeys.detail('w1'))
+    ).toBeDefined();
 
     fireEvent.click(button('Delete Faster export'));
     fireEvent.click(button('Delete'));
 
     await waitFor(() => expect(remove).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(toastSuccess).toHaveBeenCalled());
-    expect(queryClient.getQueryData(featuredWorkKeys.detail('w1'))).toBeUndefined();
+    expect(
+      queryClient.getQueryData(featuredWorkKeys.detail('w1'))
+    ).toBeUndefined();
   });
 });
 
@@ -729,10 +805,11 @@ describe('FeaturedWorkManager demo pair', () => {
 
   /** The join rows the last update wrote, or null when it wrote none. */
   const savedMedia = () =>
-    (txMediaCreateMany.mock.calls[0]?.[0] as { data: Row[] } | undefined)?.data ?? null;
+    (txMediaCreateMany.mock.calls[0]?.[0] as { data: Row[] } | undefined)
+      ?.data ?? null;
 
   const stored = (id: string, mimeType = 'video/mp4') =>
-    ({ id, url: `https://cdn.example/${id}`, mimeType }) as Media;
+    ({ id, url: `https://cdn.example/${id}`, mimeType } as Media);
 
   const openWork = async (demo: ReturnType<typeof demoRow>[]) => {
     findFirst.mockResolvedValue(
@@ -744,11 +821,13 @@ describe('FeaturedWorkManager demo pair', () => {
   };
 
   const chooseFile = (file: File) => {
-    const input = document.querySelector<HTMLInputElement>('input[type="file"]');
+    const input =
+      document.querySelector<HTMLInputElement>('input[type="file"]');
     if (!input) throw new Error('no file input');
     fireEvent.change(input, { target: { files: [file] } });
   };
-  const clip = () => new File([new Uint8Array(8)], 'int8.mp4', { type: 'video/mp4' });
+  const clip = () =>
+    new File([new Uint8Array(8)], 'int8.mp4', { type: 'video/mp4' });
 
   /**
    * The form releases Save one commit AFTER the clip's slot renders: the slot
@@ -823,14 +902,20 @@ describe('FeaturedWorkManager demo pair', () => {
   it('shows the stored labels, one input per slot', async () => {
     await openWork([FP16, INT8]);
 
-    expect((screen.getByLabelText('Label 1') as HTMLInputElement).value).toBe('FP16');
-    expect((screen.getByLabelText('Label 2') as HTMLInputElement).value).toBe('INT8');
+    expect((screen.getByLabelText('Label 1') as HTMLInputElement).value).toBe(
+      'FP16'
+    );
+    expect((screen.getByLabelText('Label 2') as HTMLInputElement).value).toBe(
+      'INT8'
+    );
   });
 
   it('submits an edited label', async () => {
     await openWork([FP16, INT8]);
 
-    fireEvent.change(screen.getByLabelText('Label 2'), { target: { value: ' W8A8 ' } });
+    fireEvent.change(screen.getByLabelText('Label 2'), {
+      target: { value: ' W8A8 ' },
+    });
     await save();
 
     expect(savedMedia()).toEqual([
@@ -842,7 +927,9 @@ describe('FeaturedWorkManager demo pair', () => {
   it('stores an emptied label as none', async () => {
     await openWork([FP16]);
 
-    fireEvent.change(screen.getByLabelText('Label 1'), { target: { value: '' } });
+    fireEvent.change(screen.getByLabelText('Label 1'), {
+      target: { value: '' },
+    });
     await save();
 
     expect(savedMedia()).toEqual([
@@ -853,7 +940,9 @@ describe('FeaturedWorkManager demo pair', () => {
   it('limits a label to 24 characters', async () => {
     await openWork([FP16]);
 
-    expect(screen.getByLabelText('Label 1').getAttribute('maxlength')).toBe('24');
+    expect(screen.getByLabelText('Label 1').getAttribute('maxlength')).toBe(
+      '24'
+    );
   });
 
   it('adds an uploaded clip with its label', async () => {
@@ -865,8 +954,12 @@ describe('FeaturedWorkManager demo pair', () => {
 
     await screen.findByLabelText('Label 1');
     expect(uploadRecord).toHaveBeenCalledWith(file, 'featured-work');
-    expect(screen.getByLabelText('Demo 1').getAttribute('src')).toBe('https://cdn.example/m9');
-    fireEvent.change(screen.getByLabelText('Label 1'), { target: { value: 'INT8' } });
+    expect(screen.getByLabelText('Demo 1').getAttribute('src')).toBe(
+      'https://cdn.example/m9'
+    );
+    fireEvent.change(screen.getByLabelText('Label 1'), {
+      target: { value: 'INT8' },
+    });
     await save();
 
     expect(savedMedia()).toEqual([
@@ -909,7 +1002,9 @@ describe('FeaturedWorkManager demo pair', () => {
   });
 
   it('tells the owner when the upload fails and leaves the slot empty', async () => {
-    uploadRecord.mockRejectedValue(new Error('"int8.mp4" is larger than 10 MB.'));
+    uploadRecord.mockRejectedValue(
+      new Error('"int8.mp4" is larger than 10 MB.')
+    );
     await openWork([]);
 
     chooseFile(clip());
@@ -932,8 +1027,12 @@ describe('FeaturedWorkManager demo pair', () => {
 
     fireEvent.click(button('Remove demo 1'));
 
-    expect((screen.getByLabelText('Label 1') as HTMLInputElement).value).toBe('INT8');
-    expect(screen.getByAltText('Demo 1').getAttribute('src')).toBe('https://cdn.example/m2');
+    expect((screen.getByLabelText('Label 1') as HTMLInputElement).value).toBe(
+      'INT8'
+    );
+    expect(screen.getByAltText('Demo 1').getAttribute('src')).toBe(
+      'https://cdn.example/m2'
+    );
     expect(screen.queryByLabelText('Label 2')).toBeNull();
     expect(button('Upload demo 2')).toBeTruthy();
     await save();
@@ -948,22 +1047,29 @@ describe('FeaturedWorkManager demo pair', () => {
     renderManager([]);
 
     fireEvent.click(button('Add featured work'));
-    fireEvent.change(screen.getByLabelText('Title'), { target: { value: 'Faster export' } });
+    fireEvent.change(screen.getByLabelText('Title'), {
+      target: { value: 'Faster export' },
+    });
     chooseFile(clip());
     await screen.findByLabelText('Label 1');
-    fireEvent.change(screen.getByLabelText('Label 1'), { target: { value: 'FP16' } });
+    fireEvent.change(screen.getByLabelText('Label 1'), {
+      target: { value: 'FP16' },
+    });
     fireEvent.click(screen.getByRole('button', { name: 'Add featured work' }));
 
     await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
     expect(create.mock.calls[0]?.[0]).toMatchObject({
-      data: { media: { create: [{ mediaId: 'm9', sortOrder: 0, label: 'FP16' }] } },
+      data: {
+        media: { create: [{ mediaId: 'm9', sortOrder: 0, label: 'FP16' }] },
+      },
     });
     expect(mediaCount).toHaveBeenCalledTimes(1);
   });
   it('offers only images and mp4/webm in the file picker', async () => {
     await openWork([]);
 
-    const input = document.querySelector<HTMLInputElement>('input[type="file"]');
+    const input =
+      document.querySelector<HTMLInputElement>('input[type="file"]');
     expect(input?.getAttribute('accept')).toBe(
       'image/jpeg,image/png,image/webp,image/avif,image/gif,image/svg+xml,video/mp4,video/webm'
     );
@@ -1038,7 +1144,9 @@ describe('FeaturedWorkManager demo pair', () => {
 
     chooseFile(clip());
     await waitFor(() => expect(button('Upload demo 2').disabled).toBe(true));
-    fireEvent.change(screen.getByLabelText('Label 1'), { target: { value: 'W8A8' } });
+    fireEvent.change(screen.getByLabelText('Label 1'), {
+      target: { value: 'W8A8' },
+    });
     await act(async () => {
       landing.resolve(stored('m9'));
     });
@@ -1057,7 +1165,9 @@ describe('FeaturedWorkManager demo pair', () => {
 
     chooseFile(clip());
 
-    await waitFor(() => expect(toastError).toHaveBeenCalledWith('Upload failed'));
+    await waitFor(() =>
+      expect(toastError).toHaveBeenCalledWith('Upload failed')
+    );
     expect(screen.queryByLabelText('Label 2')).toBeNull();
     await save();
     expect(savedMedia()).toEqual([
@@ -1082,9 +1192,13 @@ describe('FeaturedWorkManager demo pair', () => {
     expect(txUpdate).not.toHaveBeenCalled();
   });
 
-  it('names a refused file in the owner\'s language, from the violation', async () => {
+  it("names a refused file in the owner's language, from the violation", async () => {
     uploadRecord.mockRejectedValue(
-      new MediaViolationError({ kind: 'size', fileName: 'int8.mp4', maxSizeMb: 10 })
+      new MediaViolationError({
+        kind: 'size',
+        fileName: 'int8.mp4',
+        maxSizeMb: 10,
+      })
     );
     await openWork([]);
 
@@ -1112,7 +1226,7 @@ describe('FeaturedWorkManager demo pair', () => {
     );
   });
 
-  it('puts focus on the new clip\'s label once it lands', async () => {
+  it("puts focus on the new clip's label once it lands", async () => {
     uploadRecord.mockResolvedValue(stored('m9'));
     await openWork([]);
 
@@ -1152,7 +1266,7 @@ describe('FeaturedWorkManager demo pair', () => {
     await waitFor(() => expect(focusedLabel()).toBe('Upload demo 1'));
   });
 
-  it('moves focus to the freed slot\'s upload button when slot 2 is removed', async () => {
+  it("moves focus to the freed slot's upload button when slot 2 is removed", async () => {
     await openWork([FP16, INT8]);
 
     button('Remove demo 2').focus();

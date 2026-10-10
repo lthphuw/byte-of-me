@@ -48,7 +48,9 @@ export async function updateBlogReadingTime(logId: string, seconds: number) {
     return { success: true };
   } catch (error) {
     logger.error(
-      `Failed to update reading time for log ${logId}: ${getErrorMessage(error)}`
+      `Failed to update reading time for log ${logId}: ${getErrorMessage(
+        error
+      )}`
     );
     return { success: false };
   }

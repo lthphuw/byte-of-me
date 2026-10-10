@@ -5,10 +5,6 @@ import { prisma } from '@byte-of-me/db';
 import { getAuthenticatedUser } from '@/shared/lib/auth';
 import type { INTERACTION } from '@/shared/lib/constants';
 
-
-
-
-
 export async function getBlogInteractionsForUser(
   blogId: string,
   interaction: INTERACTION

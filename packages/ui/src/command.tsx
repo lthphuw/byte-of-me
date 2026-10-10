@@ -36,7 +36,11 @@ interface CommandDialogProps extends DialogProps {
   shouldFilter?: boolean;
 }
 
-const CommandDialog = ({ children, shouldFilter, ...props }: CommandDialogProps) => {
+const CommandDialog = ({
+  children,
+  shouldFilter,
+  ...props
+}: CommandDialogProps) => {
   return (
     <Dialog {...props}>
       <DialogContent className="overflow-hidden p-0">

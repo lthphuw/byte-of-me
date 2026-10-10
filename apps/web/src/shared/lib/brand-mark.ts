@@ -159,7 +159,9 @@ function renderLayerSvg(layer: BrandLayer): string {
     label,
     `CMS layer: the mark gains a frame. Enclosure encodes access level.`,
     `${theme('stroke', 'ink')}
-  <rect class="ink" x="${shape.x}" y="${shape.y}" width="${shape.size}" height="${shape.size}" rx="${shape.rx}"
+  <rect class="ink" x="${shape.x}" y="${shape.y}" width="${
+      shape.size
+    }" height="${shape.size}" rx="${shape.rx}"
         fill="none" stroke="${INK_LIGHT}" stroke-width="${shape.strokeWidth}"/>
   ${markPath(mark, { stroke: INK_LIGHT, className: 'ink' })}`
   );

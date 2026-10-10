@@ -5,7 +5,12 @@ import { type Editor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
 
 import { useMediaQuery } from '../../../hooks/use-media-query';
-import { ScrollArea, ScrollBar, Separator, TooltipProvider } from '../../../index';
+import {
+  ScrollArea,
+  ScrollBar,
+  Separator,
+  TooltipProvider,
+} from '../../../index';
 import { AlignmentTooolbar } from '../toolbars/alignment';
 import { BlockquoteToolbar } from '../toolbars/blockquote';
 import { BoldToolbar } from '../toolbars/bold';

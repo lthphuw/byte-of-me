@@ -16,7 +16,9 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
  * as `initialData` — reusing it is exactly how an empty `content` field would
  * silently overwrite a published post on save.
  */
-export async function getAdminBlogById(id: string): Promise<ApiResponse<AdminBlog>> {
+export async function getAdminBlogById(
+  id: string
+): Promise<ApiResponse<AdminBlog>> {
   const session = await requireAdmin();
 
   const parsedId = parseInput(idSchema, id);

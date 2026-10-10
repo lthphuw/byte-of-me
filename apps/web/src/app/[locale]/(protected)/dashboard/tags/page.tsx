@@ -5,10 +5,6 @@ import { getPaginatedAdminTags, tagKeys } from '@/entities/tag';
 import { prefetchAdminPage } from '@/shared/lib/query/prefetch-admin-page';
 import { TagManager } from '@/widgets/dashboard/tag-manager';
 
-
-
-
-
 export const metadata: Metadata = {
   title: 'Tags',
   description: 'Organize and manage tags for projects and blog posts.',

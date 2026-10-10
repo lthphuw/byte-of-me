@@ -24,7 +24,8 @@ type PanelState =
 function countCitations(editor: Editor, refId: string): number {
   let count = 0;
   editor.state.doc.descendants((node) => {
-    if (node.type.name === CITATION_NAME && node.attrs.refId === refId) count += 1;
+    if (node.type.name === CITATION_NAME && node.attrs.refId === refId)
+      count += 1;
     return true;
   });
   return count;
@@ -37,9 +38,8 @@ function countCitations(editor: Editor, refId: string): number {
  */
 export function ReferencePanel({ editor }: { editor: Editor }) {
   const [state, setState] = React.useState<PanelState>({ mode: 'idle' });
-  const [pendingDelete, setPendingDelete] = React.useState<ReferenceItem | null>(
-    null
-  );
+  const [pendingDelete, setPendingDelete] =
+    React.useState<ReferenceItem | null>(null);
 
   const { ordered, title } = useEditorState({
     editor,
@@ -184,7 +184,9 @@ export function ReferencePanel({ editor }: { editor: Editor }) {
         title="Delete this reference?"
         description={
           citationCount > 0
-            ? `It is cited ${citationCount} time${citationCount === 1 ? '' : 's'} in the text. Those markers will be removed and the remaining references renumbered.`
+            ? `It is cited ${citationCount} time${
+                citationCount === 1 ? '' : 's'
+              } in the text. Those markers will be removed and the remaining references renumbered.`
             : 'The remaining references will be renumbered.'
         }
       />

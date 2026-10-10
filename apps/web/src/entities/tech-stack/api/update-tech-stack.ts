@@ -15,7 +15,6 @@ import { getErrorMessage } from '@/shared/lib/utils';
 import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-
 export async function updateTechStack(
   id: string,
   input: TechStackFormValues

@@ -36,7 +36,9 @@ export const imageCompressionConfigSchema = z.object({
   format: z.enum(IMAGE_COMPRESSION_FORMATS),
 });
 
-export type ImageCompressionConfig = z.infer<typeof imageCompressionConfigSchema>;
+export type ImageCompressionConfig = z.infer<
+  typeof imageCompressionConfigSchema
+>;
 
 /**
  * What every workspace starts with, and what an unreadable/missing config

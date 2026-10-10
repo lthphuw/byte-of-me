@@ -97,4 +97,6 @@ export const workspaceSettingsPatchSchema = workspaceSettingsSchema
     message: 'Empty settings patch',
   });
 
-export type WorkspaceSettingsPatch = z.infer<typeof workspaceSettingsPatchSchema>;
+export type WorkspaceSettingsPatch = z.infer<
+  typeof workspaceSettingsPatchSchema
+>;

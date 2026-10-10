@@ -125,7 +125,11 @@ export async function uploadMedia(
       // serves sensibly, and the editor's auto-upload builds its File as
       // `new File([blob], 'image')` anyway, with no extension to read.
       const fileExtension = extensionForMimeType(compressed.mimeType);
-      const fileKey = buildMediaFileKey(user.id, parsedScope.data, fileExtension);
+      const fileKey = buildMediaFileKey(
+        user.id,
+        parsedScope.data,
+        fileExtension
+      );
 
       await supabaseStorage.uploadFile({
         fileKey,
@@ -156,7 +160,9 @@ export async function uploadMedia(
   } catch (error) {
     const summary = describeFiles(files);
     logger.error(
-      `Upload error: ${describeUploadFailure(error)} [${summary}] scope=${parsedScope.data}`
+      `Upload error: ${describeUploadFailure(error)} [${summary}] scope=${
+        parsedScope.data
+      }`
     );
     return { success: false, errorMsg: explainUploadFailure(error, files) };
   }
@@ -166,7 +172,10 @@ const toMb = (bytes: number) => `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 
 const describeFiles = (files: File[]) =>
   files
-    .map((file) => `${sanitizeStoredFileName(file.name)} ${file.type} ${toMb(file.size)}`)
+    .map(
+      (file) =>
+        `${sanitizeStoredFileName(file.name)} ${file.type} ${toMb(file.size)}`
+    )
     .join(', ');
 
 /** `Name (HTTP status): message` — what an S3-style or Prisma error actually says. */
@@ -177,7 +186,9 @@ function describeUploadFailure(error: unknown): string {
   };
   const status = $metadata?.httpStatusCode;
 
-  return `${name ?? 'Error'}${status ? ` (HTTP ${status})` : ''}: ${getErrorMessage(error)}`;
+  return `${name ?? 'Error'}${
+    status ? ` (HTTP ${status})` : ''
+  }: ${getErrorMessage(error)}`;
 }
 
 /**

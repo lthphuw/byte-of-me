@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-
 type ExpandableTextProps = {
   content: string;
   defaultLines?: number;

@@ -1,7 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Button, Pagination, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@byte-of-me/ui';
+import {
+  Button,
+  Pagination,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@byte-of-me/ui';
 import { useQuery } from '@tanstack/react-query';
 import { NotebookPen, ShieldCheck } from 'lucide-react';
 import { useSession } from 'next-auth/react';

@@ -30,7 +30,9 @@ const png = (name: string, bytes = 8) =>
 
 const stored = (files: File[]) => ({
   success: true as const,
-  data: files.map((file) => ({ url: `https://cdn.example/${file.name}` }) as Media),
+  data: files.map(
+    (file) => ({ url: `https://cdn.example/${file.name}` } as Media)
+  ),
 });
 
 /** A clock the test advances by hand. */
@@ -188,7 +190,7 @@ describe('uploadSingleMedia refusals', () => {
     expect(upload).not.toHaveBeenCalled();
   });
 
-  it('carries the server\'s reason up when the upload is refused', async () => {
+  it("carries the server's reason up when the upload is refused", async () => {
     const { uploadSingleMedia } = setup({
       upload: mock(async () => ({
         success: false as const,
@@ -227,12 +229,23 @@ describe('uploadSingleMediaRecord clips', () => {
       uploadVideo,
       now: () => 1_000,
     });
-    return { uploadRecord, fetchCompressionConfig, compress, upload, uploadVideo };
+    return {
+      uploadRecord,
+      fetchCompressionConfig,
+      compress,
+      upload,
+      uploadVideo,
+    };
   }
 
   it('sends an mp4 straight to storage, not through the server action, without reading settings or compressing', async () => {
-    const { uploadRecord, fetchCompressionConfig, compress, upload, uploadVideo } =
-      setupRecord();
+    const {
+      uploadRecord,
+      fetchCompressionConfig,
+      compress,
+      upload,
+      uploadVideo,
+    } = setupRecord();
     const file = clip('int8.mp4', 9 * 1024 * 1024);
 
     const row = await uploadRecord(file, 'featured-work');
@@ -248,7 +261,10 @@ describe('uploadSingleMediaRecord clips', () => {
     const { uploadRecord, upload, uploadVideo } = setupRecord();
 
     await expect(
-      uploadRecord(clip('big.webm', 10 * 1024 * 1024 + 1, 'video/webm'), 'featured-work')
+      uploadRecord(
+        clip('big.webm', 10 * 1024 * 1024 + 1, 'video/webm'),
+        'featured-work'
+      )
     ).rejects.toThrow('"big.webm" is larger than 10 MB.');
     await expect(
       uploadRecord(clip('a.mov', 10, 'video/quicktime'), 'featured-work')
@@ -265,9 +281,12 @@ describe('uploadSingleMedia refuses video', () => {
   it.each(['video/mp4', 'video/webm'])(
     'refuses a %s with a message naming the file, and sends nothing',
     async (type) => {
-      const { uploadSingleMedia, fetchCompressionConfig, compress, upload } = setup();
+      const { uploadSingleMedia, fetchCompressionConfig, compress, upload } =
+        setup();
 
-      await expect(uploadSingleMedia(clip('demo.clip', type), 'blog')).rejects.toThrow(
+      await expect(
+        uploadSingleMedia(clip('demo.clip', type), 'blog')
+      ).rejects.toThrow(
         '"demo.clip" is a video. Only images can be added here; clips belong to a featured work\'s demo.'
       );
 
@@ -280,9 +299,9 @@ describe('uploadSingleMedia refuses video', () => {
   it('refuses a clip even under the featured-work scope', async () => {
     const { uploadSingleMedia, upload } = setup();
 
-    await expect(uploadSingleMedia(clip('a.mp4', 'video/mp4'), 'featured-work')).rejects.toThrow(
-      /is a video/
-    );
+    await expect(
+      uploadSingleMedia(clip('a.mp4', 'video/mp4'), 'featured-work')
+    ).rejects.toThrow(/is a video/);
     expect(upload).not.toHaveBeenCalled();
   });
 
@@ -292,16 +311,22 @@ describe('uploadSingleMedia refuses video', () => {
     ).rejects.toThrow(/"a\.webm" is a video/);
   });
 
-  it('still uploads an image through the editors\' uploader', async () => {
+  it("still uploads an image through the editors' uploader", async () => {
     const { uploadSingleMedia } = setup();
 
-    expect(await uploadSingleMedia(png('a.png'), 'blog')).toBe('https://cdn.example/a.png');
+    expect(await uploadSingleMedia(png('a.png'), 'blog')).toBe(
+      'https://cdn.example/a.png'
+    );
   });
 });
 
 describe('uploadSingleMediaRecord', () => {
   it('answers with the stored row, so a caller can attach the file by id', async () => {
-    const row = { id: 'm1', url: 'https://cdn.example/a.png', mimeType: 'image/webp' } as Media;
+    const row = {
+      id: 'm1',
+      url: 'https://cdn.example/a.png',
+      mimeType: 'image/webp',
+    } as Media;
     const upload = mock(async () => ({ success: true as const, data: [row] }));
     const uploadRecord = createSingleMediaRecordUploader({
       fetchCompressionConfig: mock(async () => config),
@@ -314,7 +339,11 @@ describe('uploadSingleMediaRecord', () => {
   });
 
   it('is the one uploader that takes a clip, under the featured-work scope', async () => {
-    const row = { id: 'm2', url: 'https://cdn.example/a.mp4', mimeType: 'video/mp4' } as Media;
+    const row = {
+      id: 'm2',
+      url: 'https://cdn.example/a.mp4',
+      mimeType: 'video/mp4',
+    } as Media;
     const upload = mock(async () => ({ success: true as const, data: [] }));
     const uploadVideo = mock(async () => row);
     const compress = mock(async (file: File) => file);
@@ -345,7 +374,9 @@ describe('uploadSingleMediaRecord', () => {
       type: 'video/webm',
     });
 
-    const error = await uploadRecord(big, 'featured-work').catch((e: unknown) => e);
+    const error = await uploadRecord(big, 'featured-work').catch(
+      (e: unknown) => e
+    );
 
     expect(error).toBeInstanceOf(MediaViolationError);
     expect((error as MediaViolationError).violation).toEqual({
@@ -361,7 +392,10 @@ describe('uploadSingleMediaRecord', () => {
     const uploadRecord = createSingleMediaRecordUploader({
       fetchCompressionConfig: mock(async () => config),
       compress: mock(async (file: File) => file),
-      upload: mock(async () => ({ success: false as const, errorMsg: 'Storage is full' })),
+      upload: mock(async () => ({
+        success: false as const,
+        errorMsg: 'Storage is full',
+      })),
       now: () => 1_000,
     });
 

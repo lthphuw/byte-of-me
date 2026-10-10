@@ -46,7 +46,8 @@ export function getNestedHeadings(json: JSONContent) {
   if (json.content) {
     json.content.forEach((node: JSONContent) => {
       if (node.type === 'heading') {
-        const text = node.content?.map((c: JSONContent) => c.text).join('') || '';
+        const text =
+          node.content?.map((c: JSONContent) => c.text).join('') || '';
         // Create a slug if ID doesn't exist
         const id = node.attrs!.id || text.toLowerCase().replace(/\s+/g, '-');
 

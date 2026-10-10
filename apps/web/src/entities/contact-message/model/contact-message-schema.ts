@@ -27,7 +27,11 @@ export function createContactMessageSchema(
   t: (key: ContactMessageErrorKey) => string = (key) => DEFAULT_MESSAGES[key]
 ) {
   return z.object({
-    name: z.string().trim().min(2, t('nameTooShort')).max(100, t('nameTooLong')),
+    name: z
+      .string()
+      .trim()
+      .min(2, t('nameTooShort'))
+      .max(100, t('nameTooLong')),
 
     email: z.string().trim().email(t('emailInvalid')),
 

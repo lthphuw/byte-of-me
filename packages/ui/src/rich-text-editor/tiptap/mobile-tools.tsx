@@ -171,7 +171,7 @@ export function MobileEditorTools({
                   // Left open deliberately: formatting on a phone comes in
                   // runs — bold, then a list, then a heading — and closing
                   // after each one would cost a tap every time.
-                  }}
+                }}
               >
                 <Icon className="h-4 w-4" />
               </button>

@@ -333,33 +333,30 @@ export const TipTapFloatingMenu = memo(function TipTapFloatingMenu({
   const menuStateRef = useRef({ isOpen, search });
   menuStateRef.current = { isOpen, search };
 
-  const shouldShow = useCallback(
-    ({ state }: ShouldShowProps) => {
-      const { $from } = state.selection;
-      const currentLineText = $from.parent.textBetween(
-        0,
-        $from.parentOffset,
-        '\n',
-        ' '
-      );
+  const shouldShow = useCallback(({ state }: ShouldShowProps) => {
+    const { $from } = state.selection;
+    const currentLineText = $from.parent.textBetween(
+      0,
+      $from.parentOffset,
+      '\n',
+      ' '
+    );
 
-      const isSlashCommand =
-        currentLineText.startsWith('/') &&
-        $from.parent.type.name !== 'codeBlock' &&
-        $from.parentOffset === currentLineText.length;
+    const isSlashCommand =
+      currentLineText.startsWith('/') &&
+      $from.parent.type.name !== 'codeBlock' &&
+      $from.parentOffset === currentLineText.length;
 
-      if (!isSlashCommand) {
-        if (menuStateRef.current.isOpen) setIsOpen(false);
-        return false;
-      }
+    if (!isSlashCommand) {
+      if (menuStateRef.current.isOpen) setIsOpen(false);
+      return false;
+    }
 
-      const query = currentLineText.slice(1).trim();
-      if (query !== menuStateRef.current.search) setSearch(query);
-      if (!menuStateRef.current.isOpen) setIsOpen(true);
-      return true;
-    },
-    []
-  );
+    const query = currentLineText.slice(1).trim();
+    if (query !== menuStateRef.current.search) setSearch(query);
+    if (!menuStateRef.current.isOpen) setIsOpen(true);
+    return true;
+  }, []);
 
   useEffect(() => {
     if (selectedIndex >= 0 && itemRefs.current[selectedIndex]) {

@@ -70,7 +70,9 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
 
               {/* Author */}
               <Separator className="my-8 md:my-12" />
-              <Suspense fallback={<Skeleton className="h-28 w-full rounded-xl" />}>
+              <Suspense
+                fallback={<Skeleton className="h-28 w-full rounded-xl" />}
+              >
                 <ContentFade>
                   <BlogAuthorCard
                     author={blog.author}

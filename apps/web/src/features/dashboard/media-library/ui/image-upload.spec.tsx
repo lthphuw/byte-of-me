@@ -4,8 +4,22 @@
  * server would refuse as a whole (too many files, too many bytes) is answered here,
  * in the active locale, before anything is sent. Renders the real component.
  */
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+  spyOn,
+} from 'bun:test';
 import { NextIntlClientProvider } from 'next-intl';
 import { toast } from 'sonner';
 
@@ -30,7 +44,10 @@ const uploadFiles = mock(async (_files: File[]) => {});
 
 function renderUpload(acceptVideo: boolean) {
   return render(
-    <NextIntlClientProvider locale="en" messages={{ dashboard: { media: en.dashboard.media } }}>
+    <NextIntlClientProvider
+      locale="en"
+      messages={{ dashboard: { media: en.dashboard.media } }}
+    >
       <ImageUpload
         uploadFiles={uploadFiles}
         compressionConfig={compressionOff}
@@ -63,7 +80,11 @@ describe('ImageUpload with video', () => {
     expect(container.querySelector('input')?.getAttribute('accept')).toBe(
       'image/*,video/mp4,video/webm'
     );
-    choose(container, fileOf('int8.mp4', 'video/mp4'), fileOf('fp16.webm', 'video/webm'));
+    choose(
+      container,
+      fileOf('int8.mp4', 'video/mp4'),
+      fileOf('fp16.webm', 'video/webm')
+    );
 
     expect(await screen.findByText('int8.mp4')).toBeTruthy();
     expect(screen.getByText('fp16.webm')).toBeTruthy();
@@ -73,11 +94,15 @@ describe('ImageUpload with video', () => {
   it('refuses a clip by default, as an image-only dialog always did', async () => {
     const { container } = renderUpload(false);
 
-    expect(container.querySelector('input')?.getAttribute('accept')).toBe('image/*');
+    expect(container.querySelector('input')?.getAttribute('accept')).toBe(
+      'image/*'
+    );
     choose(container, fileOf('int8.mp4', 'video/mp4'));
 
     await waitFor(() => expect(toastError).toHaveBeenCalledTimes(1));
-    expect(toastError.mock.calls[0]?.[1]).toEqual({ description: 'int8.mp4 is not an image.' });
+    expect(toastError.mock.calls[0]?.[1]).toEqual({
+      description: 'int8.mp4 is not an image.',
+    });
     expect(screen.queryByText('int8.mp4')).toBeNull();
   });
 
@@ -92,10 +117,11 @@ describe('ImageUpload with video', () => {
     );
 
     await waitFor(() => expect(toastError).toHaveBeenCalledTimes(2));
-    expect(toastError.mock.calls.map((call) => (call[1] as { description: string }).description)).toEqual([
-      'big.mp4 exceeds 10MB.',
-      'big.png exceeds 3MB.',
-    ]);
+    expect(
+      toastError.mock.calls.map(
+        (call) => (call[1] as { description: string }).description
+      )
+    ).toEqual(['big.mp4 exceeds 10MB.', 'big.png exceeds 3MB.']);
     expect(screen.getByText('ok.mp4')).toBeTruthy();
   });
 
@@ -106,7 +132,9 @@ describe('ImageUpload with video', () => {
       fileOf('a.mp4', 'video/mp4', 10 * MiB),
       fileOf('b.webm', 'video/webm', 10 * MiB)
     );
-    fireEvent.click(await screen.findByRole('button', { name: 'Upload 2 Files' }));
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Upload 2 Files' })
+    );
 
     expect(toastError.mock.calls[0]?.[0]).toBe('Files too large');
     expect(toastError.mock.calls[0]?.[1]).toEqual({
@@ -117,8 +145,13 @@ describe('ImageUpload with video', () => {
 
   it('answers more than five files before sending them', async () => {
     const { container } = renderUpload(false);
-    choose(container, ...Array.from({ length: 6 }, (_, i) => fileOf(`${i}.png`, 'image/png')));
-    fireEvent.click(await screen.findByRole('button', { name: 'Upload 6 Files' }));
+    choose(
+      container,
+      ...Array.from({ length: 6 }, (_, i) => fileOf(`${i}.png`, 'image/png'))
+    );
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Upload 6 Files' })
+    );
 
     expect(toastError.mock.calls[0]?.[0]).toBe('Too many files');
     expect(toastError.mock.calls[0]?.[1]).toEqual({

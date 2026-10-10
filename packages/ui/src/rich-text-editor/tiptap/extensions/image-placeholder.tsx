@@ -1,6 +1,5 @@
 'use client';
 
- 
 // @ts-nocheck
 import { type ChangeEvent, type FormEvent, useState } from 'react';
 import {
@@ -13,8 +12,18 @@ import {
 } from '@tiptap/react';
 import { Image, Link, Loader2, Upload, X } from 'lucide-react';
 
-import { Button, Input, Tabs, TabsContent, TabsList, TabsTrigger, } from '../../../index';
-import { isValidUrl, NODE_HANDLES_SELECTED_STYLE_CLASSNAME, } from '../../../lib/tiptap-utils';
+import {
+  Button,
+  Input,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '../../../index';
+import {
+  isValidUrl,
+  NODE_HANDLES_SELECTED_STYLE_CLASSNAME,
+} from '../../../lib/tiptap-utils';
 import { cn } from '../../../lib/utils';
 
 import { imageUploadFn, resolveImages } from './upload-images';
@@ -244,9 +253,7 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
                 Remove
               </Button>
               <Button disabled={uploading}>
-                {uploading && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
+                {uploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Upload
               </Button>
             </div>
@@ -299,7 +306,9 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
           placeholder="Enter image URL..."
         />
         {urlError && (
-          <p className="text-xs text-destructive-text">Please enter a valid URL</p>
+          <p className="text-xs text-destructive-text">
+            Please enter a valid URL
+          </p>
         )}
       </div>
       <div className="space-y-2">

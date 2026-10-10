@@ -63,7 +63,11 @@ describe('markNumericTableColumns', () => {
       ])
     );
 
-    expect(marked(doc).slice(1).map((r) => r[0])).toEqual([false, false]);
+    expect(
+      marked(doc)
+        .slice(1)
+        .map((r) => r[0])
+    ).toEqual([false, false]);
   });
 
   it('leaves a column alone when one cell is prose', () => {
@@ -75,11 +79,24 @@ describe('markNumericTableColumns', () => {
       ])
     );
 
-    expect(marked(doc).slice(1).map((r) => r[1])).toEqual([false, false]);
+    expect(
+      marked(doc)
+        .slice(1)
+        .map((r) => r[1])
+    ).toEqual([false, false]);
   });
 
   it('accepts the decoration real benchmark tables carry', () => {
-    const values = ['3.2M', '21.4', '~5', '60.1', '1,024', '4.4', '82%', '2.3×'];
+    const values = [
+      '3.2M',
+      '21.4',
+      '~5',
+      '60.1',
+      '1,024',
+      '4.4',
+      '82%',
+      '2.3×',
+    ];
     const doc = markNumericTableColumns(
       table([
         row([cell('Model', 'tableHeader'), cell('V', 'tableHeader')]),
@@ -87,7 +104,11 @@ describe('markNumericTableColumns', () => {
       ])
     );
 
-    expect(marked(doc).slice(1).every((r) => r[1])).toBe(true);
+    expect(
+      marked(doc)
+        .slice(1)
+        .every((r) => r[1])
+    ).toBe(true);
   });
 
   it('treats blanks and dashes as neither proof nor disproof', () => {
@@ -104,12 +125,11 @@ describe('markNumericTableColumns', () => {
 
     // Two figures are enough to call it; the blank and the dash neither prove
     // nor disprove it, and take the column's alignment like everything else.
-    expect(marked(doc).slice(1).map((r) => r[1])).toEqual([
-      true,
-      true,
-      true,
-      true,
-    ]);
+    expect(
+      marked(doc)
+        .slice(1)
+        .map((r) => r[1])
+    ).toEqual([true, true, true, true]);
   });
 
   it('needs two figures before it calls a column numeric', () => {
@@ -121,7 +141,11 @@ describe('markNumericTableColumns', () => {
       ])
     );
 
-    expect(marked(doc).slice(1).map((r) => r[1])).toEqual([false, false]);
+    expect(
+      marked(doc)
+        .slice(1)
+        .map((r) => r[1])
+    ).toEqual([false, false]);
   });
 
   it('keeps columns aligned across a colspan', () => {

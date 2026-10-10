@@ -1,7 +1,17 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Badge , Card, CardContent, CardHeader, CardTitle , DeleteButton , EditButton , Icons, richTextToPlainText } from '@byte-of-me/ui';
+import {
+  Badge,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  DeleteButton,
+  EditButton,
+  Icons,
+  richTextToPlainText,
+} from '@byte-of-me/ui';
 import { ExternalLink } from 'lucide-react';
 import { useLocale } from 'next-intl';
 

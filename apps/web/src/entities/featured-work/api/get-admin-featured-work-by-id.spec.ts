@@ -58,12 +58,20 @@ const ROWS: Row[] = [
       {
         sortOrder: 0,
         label: 'FP16',
-        media: { id: 'm1', url: 'https://cdn.example/a.mp4', mimeType: 'video/mp4' },
+        media: {
+          id: 'm1',
+          url: 'https://cdn.example/a.mp4',
+          mimeType: 'video/mp4',
+        },
       },
       {
         sortOrder: 1,
         label: null,
-        media: { id: 'm2', url: 'https://cdn.example/b.gif', mimeType: 'image/gif' },
+        media: {
+          id: 'm2',
+          url: 'https://cdn.example/b.gif',
+          mimeType: 'image/gif',
+        },
       },
     ],
     translations: [
@@ -148,13 +156,29 @@ describe('getAdminFeaturedWorkById', () => {
 
     if (!res.success) throw new Error('expected success');
     expect(res.data.media).toEqual([
-      { id: 'm1', url: 'https://cdn.example/a.mp4', mimeType: 'video/mp4', label: 'FP16', sortOrder: 0 },
-      { id: 'm2', url: 'https://cdn.example/b.gif', mimeType: 'image/gif', label: null, sortOrder: 1 },
+      {
+        id: 'm1',
+        url: 'https://cdn.example/a.mp4',
+        mimeType: 'video/mp4',
+        label: 'FP16',
+        sortOrder: 0,
+      },
+      {
+        id: 'm2',
+        url: 'https://cdn.example/b.gif',
+        mimeType: 'image/gif',
+        label: null,
+        sortOrder: 1,
+      },
     ]);
     // The join row's own shape does not leak next to the flat one.
-    expect(Object.keys(res.data.media[0] ?? {}).sort()).toEqual(
-      ['id', 'label', 'mimeType', 'sortOrder', 'url']
-    );
+    expect(Object.keys(res.data.media[0] ?? {}).sort()).toEqual([
+      'id',
+      'label',
+      'mimeType',
+      'sortOrder',
+      'url',
+    ]);
   });
 
   it('asks for the pair in slot order', async () => {

@@ -1,6 +1,5 @@
 import { getTranslations } from 'next-intl/server';
 
-
 type Props = {
   url: string;
   host: string;

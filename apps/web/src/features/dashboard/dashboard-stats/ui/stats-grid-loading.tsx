@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader , Skeleton } from '@byte-of-me/ui';
+import { Card, CardContent, CardHeader, Skeleton } from '@byte-of-me/ui';
 
 export function StatsGridLoading() {
   return (
@@ -6,10 +6,7 @@ export function StatsGridLoading() {
       {/* Primary Stats Skeleton */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Card
-            key={i}
-            className="border-none bg-card/60 shadow-sm"
-          >
+          <Card key={i} className="border-none bg-card/60 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <Skeleton className="h-3 w-20" />
               <Skeleton className="h-4 w-4 rounded-full" />

@@ -2,9 +2,9 @@ import chalk from 'chalk';
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
 
-
 const LEVELS: LogLevel[] = ['debug', 'info', 'warn', 'error', 'silent'];
-let currentLevel: LogLevel = process.env.NODE_ENV === 'production' ? 'info' : 'debug';
+let currentLevel: LogLevel =
+  process.env.NODE_ENV === 'production' ? 'info' : 'debug';
 
 // Validate initial log level
 if (!LEVELS.includes(currentLevel)) {
@@ -46,7 +46,10 @@ export class Logger {
 
   setLogLevel(level: LogLevel): void {
     if (!LEVELS.includes(level)) {
-      this._log('warn', `Invalid log level: ${level}. Available levels: ${LEVELS.join(', ')}`);
+      this._log(
+        'warn',
+        `Invalid log level: ${level}. Available levels: ${LEVELS.join(', ')}`
+      );
       return;
     }
     currentLevel = level;
@@ -61,12 +64,19 @@ export class Logger {
     return LEVELS.indexOf(level) >= LEVELS.indexOf(currentLevel);
   }
 
-  private log(level: LogLevel, message: string, meta?: Record<string, unknown>): void {
+  private log(
+    level: LogLevel,
+    message: string,
+    meta?: Record<string, unknown>
+  ): void {
     this._log(level, message, { namespace: this.name, ...meta });
   }
 
-
-  private _log(level: LogLevel, message: string, meta?: Record<string, unknown>): void {
+  private _log(
+    level: LogLevel,
+    message: string,
+    meta?: Record<string, unknown>
+  ): void {
     if (!this._shouldLog(level)) return;
 
     const logObject = {

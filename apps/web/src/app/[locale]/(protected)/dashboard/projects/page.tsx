@@ -5,10 +5,6 @@ import { getPaginatedAdminProjects, projectKeys } from '@/entities/project';
 import { prefetchAdminPage } from '@/shared/lib/query/prefetch-admin-page';
 import { ProjectManager } from '@/widgets/dashboard/project-manager';
 
-
-
-
-
 export const metadata: Metadata = {
   title: 'Projects',
   description: 'Showcase your work and manage project details.',

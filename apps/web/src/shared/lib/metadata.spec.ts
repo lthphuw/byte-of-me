@@ -12,7 +12,7 @@ import { routing } from '@/shared/i18n/routing';
 
 describe('buildSiteJsonLd', () => {
   const payload = JSON.stringify(
-    buildSiteJsonLd({ locale: 'en', description: 'd' }),
+    buildSiteJsonLd({ locale: 'en', description: 'd' })
   );
 
   it('does not publish an email address, since every page carries this graph', () => {
@@ -28,18 +28,18 @@ describe('buildAlternates', () => {
   it('lists every locale and points x-default at the default locale', () => {
     const { languages } = buildAlternates(
       `${siteConfig.url}/vi/blogs/x`,
-      '/blogs/x',
+      '/blogs/x'
     );
 
     for (const locale of routing.locales) {
       expect(languages).toHaveProperty(
         locale,
-        `${siteConfig.url}/${locale}/blogs/x`,
+        `${siteConfig.url}/${locale}/blogs/x`
       );
     }
     expect(languages).toHaveProperty(
       'x-default',
-      `${siteConfig.url}/${routing.defaultLocale}/blogs/x`,
+      `${siteConfig.url}/${routing.defaultLocale}/blogs/x`
     );
   });
 
@@ -60,7 +60,7 @@ describe('buildPublicPageMetadata', () => {
     });
 
     expect(alternates).toEqual(
-      buildAlternates(`${siteConfig.url}/en/projects`, '/projects'),
+      buildAlternates(`${siteConfig.url}/en/projects`, '/projects')
     );
   });
 });

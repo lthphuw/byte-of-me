@@ -3,11 +3,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import {
-  BRAND_LAYERS,
-  FAVICON_FILES,
-  renderFaviconSvg,
-} from './brand-mark';
+import { BRAND_LAYERS, FAVICON_FILES, renderFaviconSvg } from './brand-mark';
 import { buildIconSet } from './metadata';
 
 const ICONS_DIR = path.join(import.meta.dir, '../../../public/icons');
@@ -35,7 +31,9 @@ describe('buildIconSet', () => {
     for (const layer of BRAND_LAYERS) {
       const icon = (buildIconSet(layer) as { icon: { type?: string }[] }).icon;
       expect(icon[0]?.type).toBe('image/svg+xml');
-      expect(icon.slice(1).every((entry) => entry.type === 'image/png')).toBe(true);
+      expect(icon.slice(1).every((entry) => entry.type === 'image/png')).toBe(
+        true
+      );
     }
   });
 
@@ -52,7 +50,7 @@ describe('buildIconSet', () => {
 
   it('shares one apple-touch icon across layers — the home screen is not per-space', () => {
     const apples = BRAND_LAYERS.map(
-      (layer) => (buildIconSet(layer) as { apple: string }).apple,
+      (layer) => (buildIconSet(layer) as { apple: string }).apple
     );
     expect(new Set(apples).size).toBe(1);
   });
@@ -67,7 +65,11 @@ describe('buildIconSet', () => {
         shortcut: string;
         apple: string;
       };
-      for (const url of [...set.icon.map((e) => e.url), set.shortcut, set.apple]) {
+      for (const url of [
+        ...set.icon.map((e) => e.url),
+        set.shortcut,
+        set.apple,
+      ]) {
         if (!existsSync(path.join(publicDir, url))) missing.push(url);
       }
     }
@@ -78,7 +80,8 @@ describe('buildIconSet', () => {
 
   it('gives the three layers distinct tab favicons', () => {
     const svgs = BRAND_LAYERS.map(
-      (layer) => (buildIconSet(layer) as { icon: { url: string }[] }).icon[0]!.url,
+      (layer) =>
+        (buildIconSet(layer) as { icon: { url: string }[] }).icon[0]!.url
     );
     expect(new Set(svgs).size).toBe(BRAND_LAYERS.length);
   });
@@ -94,7 +97,8 @@ describe('generated icon assets', () => {
   it('match what brand-mark.ts currently describes', () => {
     const drifted = FAVICON_FILES.filter(
       (file) =>
-        readFileSync(path.join(ICONS_DIR, file), 'utf8') !== renderFaviconSvg(file),
+        readFileSync(path.join(ICONS_DIR, file), 'utf8') !==
+        renderFaviconSvg(file)
     );
 
     expect(drifted).toEqual([]);
@@ -105,8 +109,14 @@ describe('generated icon assets', () => {
     // identical across platforms or versions, a sha256 of the source is. The
     // lockfile is written by the same run that writes the PNGs, so a match
     // proves the two came from the same source text.
-    const lockPath = path.join(import.meta.dir, '../../../../../scripts/icons.lock.json');
-    const locked = JSON.parse(readFileSync(lockPath, 'utf8')) as Record<string, string>;
+    const lockPath = path.join(
+      import.meta.dir,
+      '../../../../../scripts/icons.lock.json'
+    );
+    const locked = JSON.parse(readFileSync(lockPath, 'utf8')) as Record<
+      string,
+      string
+    >;
 
     expect(Object.keys(locked).sort()).toEqual([...FAVICON_FILES].sort());
 

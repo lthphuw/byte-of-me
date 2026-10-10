@@ -1,10 +1,43 @@
 // Tags allowed to survive sanitization. Everything else is dropped (its text
 // content is kept but rendered inert).
 const ALLOWED_TAGS = new Set([
-  'b', 'i', 'em', 'strong', 's', 'u', 'mark', 'p', 'br', 'hr', 'span', 'div',
-  'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'code',
-  'pre', 'a', 'img', 'figure', 'figcaption', 'table', 'thead', 'tbody', 'tr',
-  'th', 'td', 'sup', 'sub', 'section',
+  'b',
+  'i',
+  'em',
+  'strong',
+  's',
+  'u',
+  'mark',
+  'p',
+  'br',
+  'hr',
+  'span',
+  'div',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'ul',
+  'ol',
+  'li',
+  'blockquote',
+  'code',
+  'pre',
+  'a',
+  'img',
+  'figure',
+  'figcaption',
+  'table',
+  'thead',
+  'tbody',
+  'tr',
+  'th',
+  'td',
+  'sup',
+  'sub',
+  'section',
 ]);
 
 // Attributes allowed on surviving tags. Notably excludes all `on*` event
@@ -20,9 +53,25 @@ const ALLOWED_TAGS = new Set([
 // no-op. It names a header's direction, carries no script, and its only
 // consumer is assistive tech.
 const ALLOWED_ATTRS = new Set([
-  'href', 'src', 'alt', 'title', 'class', 'target', 'rel', 'colspan',
-  'rowspan', 'scope', 'start', 'type', 'width', 'height', 'id', 'aria-label',
-  'data-citation', 'data-citation-link', 'data-reference-list',
+  'href',
+  'src',
+  'alt',
+  'title',
+  'class',
+  'target',
+  'rel',
+  'colspan',
+  'rowspan',
+  'scope',
+  'start',
+  'type',
+  'width',
+  'height',
+  'id',
+  'aria-label',
+  'data-citation',
+  'data-citation-link',
+  'data-reference-list',
   'data-reference-backlink',
   // Which table columns hold figures, worked out at render time by
   // `markNumericTableColumns`. Carries no script — the styles read it to
@@ -31,9 +80,11 @@ const ALLOWED_ATTRS = new Set([
   // The LaTeX source of a math node, and which flavour it is. Carries no
   // script — it is read back by `MathRenderer`, which hands it to KaTeX with
   // `throwOnError: false`. KaTeX itself is the parser, not this.
-  'data-latex', 'data-type',
+  'data-latex',
+  'data-type',
   // Image loading hints, kept only with a value from `ENUMERATED_ATTRS`.
-  'loading', 'decoding',
+  'loading',
+  'decoding',
 ]);
 
 // Attributes whose value must come from a closed set; any other value drops
@@ -147,10 +198,7 @@ export function sanitizeHtml(html: string): string {
       let value = attr[2].replace(/^["']|["']$/g, '');
       const allowedValues = ENUMERATED_ATTRS[attrName];
       if (allowedValues && !allowedValues.has(value.toLowerCase())) continue;
-      if (
-        (attrName === 'href' || attrName === 'src') &&
-        isUnsafeUrl(value)
-      ) {
+      if ((attrName === 'href' || attrName === 'src') && isUnsafeUrl(value)) {
         value = '#';
       }
       attrs.push(`${attrName}="${value.replace(/"/g, '&quot;')}"`);

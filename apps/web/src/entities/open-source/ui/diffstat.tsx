@@ -38,8 +38,8 @@ export function Diffstat({
               i < added
                 ? 'h-2 w-2 rounded-[2px] bg-primary'
                 : i < added + removed
-                  ? 'h-2 w-2 rounded-[2px] bg-muted-foreground/50'
-                  : 'h-2 w-2 rounded-[2px] bg-border'
+                ? 'h-2 w-2 rounded-[2px] bg-muted-foreground/50'
+                : 'h-2 w-2 rounded-[2px] bg-border'
             }
           />
         ))}

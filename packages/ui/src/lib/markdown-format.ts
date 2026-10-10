@@ -116,7 +116,11 @@ function indentWidth(text: string): number {
  * positive means a line is left exactly as the author wrote it, which is the
  * default this whole module falls back to anyway.
  */
-function isIndentedCode(text: string, previousBlank: boolean, previousCode: boolean): boolean {
+function isIndentedCode(
+  text: string,
+  previousBlank: boolean,
+  previousCode: boolean
+): boolean {
   if (text.trim() === '') return false;
   if (indentWidth(text) < 4) return false;
   return previousBlank || previousCode;
@@ -155,7 +159,8 @@ function formatLine(raw: string, previousBlank: boolean): string {
   // HEADING — so rewriting `***` to `---` in that position would silently
   // promote the paragraph above it to an `<h2>`. In that one position the
   // line is left exactly as written.
-  if (THEMATIC_BREAK.test(expanded)) return previousBlank ? '---' : expanded.trimEnd();
+  if (THEMATIC_BREAK.test(expanded))
+    return previousBlank ? '---' : expanded.trimEnd();
 
   const quote = BLOCKQUOTE.exec(expanded);
   if (quote) {
@@ -166,7 +171,11 @@ function formatLine(raw: string, previousBlank: boolean): string {
     const depth = (markers.match(/>/g) ?? []).length;
     const prefix = '> '.repeat(depth);
     const inner = formatLine(rest, previousBlank);
-    return trimEnd(inner === '' ? `${indent}${prefix.trimEnd()}` : `${indent}${prefix}${inner}`);
+    return trimEnd(
+      inner === ''
+        ? `${indent}${prefix.trimEnd()}`
+        : `${indent}${prefix}${inner}`
+    );
   }
 
   const heading = ATX_HEADING.exec(expanded);
@@ -192,10 +201,15 @@ function formatLine(raw: string, previousBlank: boolean): string {
     // markdown formatter can do that changes a document an author may have
     // meant (an all-`1.` list is a documented style), and this module does not
     // change documents.
-    return trimEnd(collapseInteriorWhitespace(`${indent}${number}${delimiter} `, rest));
+    return trimEnd(
+      collapseInteriorWhitespace(`${indent}${number}${delimiter} `, rest)
+    );
   }
 
-  const indent = expanded.slice(0, expanded.length - expanded.trimStart().length);
+  const indent = expanded.slice(
+    0,
+    expanded.length - expanded.trimStart().length
+  );
   return trimEnd(collapseInteriorWhitespace(indent, expanded.trimStart()));
 }
 
@@ -339,7 +353,10 @@ function classify(source: string): Line[] {
       if (closes) {
         // Only the fence line itself is tidied — the indent is kept, because
         // inside a list a fence's indent is what keeps it in the list.
-        lines.push({ text: `${fenceMatch[1]}${fenceMatch[2]}`, verbatim: true });
+        lines.push({
+          text: `${fenceMatch[1]}${fenceMatch[2]}`,
+          verbatim: true,
+        });
         fence = null;
       } else {
         lines.push({ text, verbatim: true });
@@ -362,7 +379,10 @@ function classify(source: string): Line[] {
     }
 
     const code = isIndentedCode(text, previousBlank, previousCode);
-    lines.push({ text: code ? text.replace(/[ \t]+$/, '') : text, verbatim: code });
+    lines.push({
+      text: code ? text.replace(/[ \t]+$/, '') : text,
+      verbatim: code,
+    });
 
     previousBlank = text.trim() === '';
     previousCode = code;
@@ -390,8 +410,12 @@ export function formatMarkdown(source: string): string {
     // a paragraph, and collapsing blank runs happens later.
     const previous = classified[index - 1];
     const previousBlank =
-      previous === undefined || (!previous.verbatim && previous.text.trim() === '');
-    formatted.push({ text: formatLine(line.text, previousBlank), verbatim: false });
+      previous === undefined ||
+      (!previous.verbatim && previous.text.trim() === '');
+    formatted.push({
+      text: formatLine(line.text, previousBlank),
+      verbatim: false,
+    });
   }
 
   const out: string[] = [];

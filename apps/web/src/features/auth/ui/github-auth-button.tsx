@@ -1,6 +1,6 @@
 'use client';
 
-import { Button , Icons } from '@byte-of-me/ui';
+import { Button, Icons } from '@byte-of-me/ui';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 

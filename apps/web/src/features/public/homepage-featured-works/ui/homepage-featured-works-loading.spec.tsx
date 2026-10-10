@@ -13,7 +13,8 @@ import { PLAIN_ROW_HEADER } from '@/entities/featured-work/ui/featured-work-row-
 
 afterEach(cleanup);
 
-const classesOf = (element: Element) => element.className.split(/\s+/).filter(Boolean);
+const classesOf = (element: Element) =>
+  element.className.split(/\s+/).filter(Boolean);
 
 describe('HomepageFeaturedWorksLoading', () => {
   it('draws its rows with the same classes as a plain featured work row, bar the hover hook', () => {
@@ -43,8 +44,12 @@ describe('HomepageFeaturedWorksLoading', () => {
     const headerClasses = classesOf(header);
 
     expect(headerClasses).toContain('grid');
-    expect(skeletonClasses.filter((name) => !headerClasses.includes(name))).toEqual([]);
-    expect(headerClasses.filter((name) => !skeletonClasses.includes(name))).toEqual(['group']);
+    expect(
+      skeletonClasses.filter((name) => !headerClasses.includes(name))
+    ).toEqual([]);
+    expect(
+      headerClasses.filter((name) => !skeletonClasses.includes(name))
+    ).toEqual(['group']);
   });
 
   it('draws four rows, each a plain row header with a title bar, a description and a meta cell', () => {
@@ -53,7 +58,9 @@ describe('HomepageFeaturedWorksLoading', () => {
 
     expect(rows).toHaveLength(4);
     for (const row of rows) {
-      expect(classesOf(row)).toEqual(expect.arrayContaining(PLAIN_ROW_HEADER.split(' ')));
+      expect(classesOf(row)).toEqual(
+        expect.arrayContaining(PLAIN_ROW_HEADER.split(' '))
+      );
       // number, title column, meta cell
       expect(row.children).toHaveLength(3);
       const description = row.querySelector('.leading-relaxed');
@@ -66,6 +73,8 @@ describe('HomepageFeaturedWorksLoading', () => {
     const header = container.firstElementChild?.firstElementChild;
 
     expect(header?.classList.contains('animate-pulse')).toBe(true);
-    expect(header?.nextElementSibling?.classList.contains('divide-y')).toBe(true);
+    expect(header?.nextElementSibling?.classList.contains('divide-y')).toBe(
+      true
+    );
   });
 });

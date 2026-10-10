@@ -73,7 +73,9 @@ export function BlogMetaFields({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="none">{t('meta.projectNone')}</SelectItem>
+                    <SelectItem value="none">
+                      {t('meta.projectNone')}
+                    </SelectItem>
 
                     {projects?.map((project) => (
                       <SelectItem key={project.id} value={project.id}>

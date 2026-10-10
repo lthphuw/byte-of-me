@@ -10,7 +10,10 @@ import { AchievementFold } from './achievement-fold';
 
 function renderFold() {
   return render(
-    <AchievementFold showMoreLabel="2 more achievements" showLessLabel="Show less">
+    <AchievementFold
+      showMoreLabel="2 more achievements"
+      showLessLabel="Show less"
+    >
       <a href="https://example.com/certificate">Folded certificate</a>
     </AchievementFold>
   );
@@ -39,7 +42,9 @@ describe('AchievementFold', () => {
   it('opens on click: the label becomes show less and the rows are released', () => {
     renderFold();
 
-    fireEvent.click(screen.getByRole('button', { name: '2 more achievements' }));
+    fireEvent.click(
+      screen.getByRole('button', { name: '2 more achievements' })
+    );
 
     const toggle = screen.getByRole('button', { name: 'Show less' });
     expect(toggle.getAttribute('aria-expanded')).toBe('true');
@@ -49,7 +54,9 @@ describe('AchievementFold', () => {
   it('closes on the second click, returning to the first state', () => {
     renderFold();
 
-    fireEvent.click(screen.getByRole('button', { name: '2 more achievements' }));
+    fireEvent.click(
+      screen.getByRole('button', { name: '2 more achievements' })
+    );
     fireEvent.click(screen.getByRole('button', { name: 'Show less' }));
 
     const toggle = screen.getByRole('button', { name: '2 more achievements' });

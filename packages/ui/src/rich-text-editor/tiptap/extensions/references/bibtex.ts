@@ -109,9 +109,7 @@ const BARE_ACCENT = new RegExp(
  * resolved, escapes unescaped, grouping braces gone, whitespace collapsed.
  */
 function readLatex(raw: string): string {
-  let text = raw
-    .replace(/\\\{/g, LITERAL_OPEN)
-    .replace(/\\\}/g, LITERAL_CLOSE);
+  let text = raw.replace(/\\\{/g, LITERAL_OPEN).replace(/\\\}/g, LITERAL_CLOSE);
 
   text = text
     .replace(BRACED_ACCENT, (_, command: string, letter: string) => {

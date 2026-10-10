@@ -29,6 +29,8 @@ interface ExperienceLayoutProps {
   children?: React.ReactNode;
 }
 
-export default async function ExperienceLayout({ children }: ExperienceLayoutProps) {
+export default async function ExperienceLayout({
+  children,
+}: ExperienceLayoutProps) {
   return <>{children}</>;
 }

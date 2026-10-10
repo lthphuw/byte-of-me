@@ -13,10 +13,7 @@ import { useTranslations } from 'next-intl';
 
 import { ProjectForm } from './project-form';
 
-import type {
-  AdminProject,
-  ProjectFromValues,
-} from '@/entities/project/model';
+import type { AdminProject, ProjectFromValues } from '@/entities/project/model';
 import { useProjectReferenceOptions } from '@/widgets/dashboard/project-manager/lib/use-project-reference-options';
 
 const FORM_ID = 'project-form';

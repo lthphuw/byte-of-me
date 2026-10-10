@@ -16,8 +16,9 @@ describe('parseBlogFilters', () => {
   });
 
   it('reads tags and the search term', () => {
-    expect(parseBlogFilters(new URLSearchParams('tags=react,bun&q=hydration')))
-      .toEqual({ tagSlugs: ['react', 'bun'], search: 'hydration' });
+    expect(
+      parseBlogFilters(new URLSearchParams('tags=react,bun&q=hydration'))
+    ).toEqual({ tagSlugs: ['react', 'bun'], search: 'hydration' });
   });
 
   it('keeps every tag when the param repeats', () => {

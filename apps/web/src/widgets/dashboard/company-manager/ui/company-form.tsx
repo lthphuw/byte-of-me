@@ -237,7 +237,9 @@ export function CompanyForm({
         />
 
         <div className="space-y-4 border-t pt-4">
-          <h3 className="text-sm font-medium">{t('dialog.translationsTitle')}</h3>
+          <h3 className="text-sm font-medium">
+            {t('dialog.translationsTitle')}
+          </h3>
           <TranslationTabs
             control={form.control}
             name="translations"
@@ -263,7 +265,9 @@ export function CompanyForm({
                 appendRole({
                   startDate: null,
                   endDate: null,
-                  translations: [{ language: 'en', title: '', description: '' }],
+                  translations: [
+                    { language: 'en', title: '', description: '' },
+                  ],
                   tasks: [],
                 })
               }

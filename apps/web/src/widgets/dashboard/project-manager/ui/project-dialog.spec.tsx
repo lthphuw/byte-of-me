@@ -60,7 +60,10 @@ function renderDialog(
 
   const tree = (data: AdminProject | null) => (
     <QueryClientProvider client={queryClient}>
-      <NextIntlClientProvider locale="en" messages={{ dashboard: en.dashboard }}>
+      <NextIntlClientProvider
+        locale="en"
+        messages={{ dashboard: en.dashboard }}
+      >
         <ProjectDialog
           key={data?.id ?? 'new'}
           open
@@ -74,19 +77,26 @@ function renderDialog(
   );
 
   const view = render(tree(initialData));
-  return { onSubmit, rerenderWith: (data: AdminProject | null) => view.rerender(tree(data)) };
+  return {
+    onSubmit,
+    rerenderWith: (data: AdminProject | null) => view.rerender(tree(data)),
+  };
 }
 
 describe('ProjectDialog', () => {
-  it('opens an edit already holding the project\'s values', () => {
+  it("opens an edit already holding the project's values", () => {
     renderDialog(project);
 
     expect(screen.getByDisplayValue('my-portfolio')).toBeTruthy();
     expect(screen.getByDisplayValue('Portfolio')).toBeTruthy();
     expect(screen.getByDisplayValue('2024-05-01')).toBeTruthy();
-    expect(screen.getByDisplayValue('https://github.com/me/portfolio')).toBeTruthy();
     expect(
-      screen.getByRole('checkbox', { name: 'Published' }).getAttribute('aria-checked')
+      screen.getByDisplayValue('https://github.com/me/portfolio')
+    ).toBeTruthy();
+    expect(
+      screen
+        .getByRole('checkbox', { name: 'Published' })
+        .getAttribute('aria-checked')
     ).toBe('true');
   });
 
@@ -98,7 +108,9 @@ describe('ProjectDialog', () => {
     expect(screen.queryByDisplayValue('my-portfolio')).toBeNull();
     expect(screen.queryByDisplayValue('Portfolio')).toBeNull();
     expect(
-      screen.getByRole('checkbox', { name: 'Published' }).getAttribute('aria-checked')
+      screen
+        .getByRole('checkbox', { name: 'Published' })
+        .getAttribute('aria-checked')
     ).toBe('false');
   });
 

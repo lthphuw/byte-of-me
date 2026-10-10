@@ -7,7 +7,8 @@ import {
   MARK_VIEWBOX,
 } from '@/shared/lib/brand-mark';
 
-export interface BrandMarkProps extends Omit<SVGProps<SVGSVGElement>, 'children'> {
+export interface BrandMarkProps
+  extends Omit<SVGProps<SVGSVGElement>, 'children'> {
   /** Which enclosure to draw. Defaults to the bare mark. */
   layer?: BrandLayer;
   /** Rendered box in pixels. Matches lucide's default so it drops in cleanly. */

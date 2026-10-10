@@ -1,6 +1,6 @@
 'use client';
 
-import { Button , Skeleton } from '@byte-of-me/ui';
+import { Button, Skeleton } from '@byte-of-me/ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { EyeOff, Reply } from 'lucide-react';
 import Link from 'next/link';

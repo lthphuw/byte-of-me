@@ -66,7 +66,11 @@ describe('FeaturedWorkRow', () => {
   });
 
   it('falls back to the host alone when there are no GitHub details', () => {
-    renderRow({ url: 'https://example.com/post', host: 'example.com', github: null });
+    renderRow({
+      url: 'https://example.com/post',
+      host: 'example.com',
+      github: null,
+    });
 
     expect(screen.getByText('example.com')).toBeTruthy();
     expect(screen.queryByText(/stars?$/)).toBeNull();
@@ -121,7 +125,9 @@ describe('FeaturedWorkRow with details', () => {
   it('keeps the body in the page while it is closed, so it can be read as text', () => {
     renderRow({ detailsHtml: DETAILS_HTML });
 
-    expect(screen.getByText('How it was done: a streaming writer.')).toBeTruthy();
+    expect(
+      screen.getByText('How it was done: a streaming writer.')
+    ).toBeTruthy();
   });
 
   it('keeps the link out of the toggle, so one control never holds another', () => {
@@ -140,16 +146,25 @@ describe('FeaturedWorkRow with details', () => {
     });
 
     expect(
-      screen.getByRole('link', { name: 'Visit example.com (opens in a new tab)' })
+      screen.getByRole('link', {
+        name: 'Visit example.com (opens in a new tab)',
+      })
     ).toBeTruthy();
   });
 
   it('expands a work with details and no url, with no link anywhere', () => {
-    renderRow({ detailsHtml: DETAILS_HTML, url: null, host: null, github: null });
+    renderRow({
+      detailsHtml: DETAILS_HTML,
+      url: null,
+      host: null,
+      github: null,
+    });
 
     expect(screen.getAllByRole('button')).toHaveLength(1);
     expect(screen.queryByRole('link')).toBeNull();
-    expect(screen.getByText('How it was done: a streaming writer.')).toBeTruthy();
+    expect(
+      screen.getByText('How it was done: a streaming writer.')
+    ).toBeTruthy();
   });
 
   it('gives a work without details no toggle at all', () => {
@@ -161,8 +176,18 @@ describe('FeaturedWorkRow with details', () => {
 
 describe('FeaturedWorkRow with a demo', () => {
   const media = [
-    { id: 'm1', url: 'https://cdn.example.com/fp16.mp4', mimeType: 'video/mp4', label: 'FP16' },
-    { id: 'm2', url: 'https://cdn.example.com/int8.gif', mimeType: 'image/gif', label: null },
+    {
+      id: 'm1',
+      url: 'https://cdn.example.com/fp16.mp4',
+      mimeType: 'video/mp4',
+      label: 'FP16',
+    },
+    {
+      id: 'm2',
+      url: 'https://cdn.example.com/int8.gif',
+      mimeType: 'image/gif',
+      label: null,
+    },
   ];
 
   it('shows a work that has only a demo at once, with no toggle and the link beside it', () => {
@@ -182,7 +207,9 @@ describe('FeaturedWorkRow with a demo', () => {
     renderRow({ media });
 
     expect(screen.getByRole('button', { name: 'Play FP16' })).toBeTruthy();
-    expect(screen.getByRole('img', { name: 'Faster detector export' })).toBeTruthy();
+    expect(
+      screen.getByRole('img', { name: 'Faster detector export' })
+    ).toBeTruthy();
     expect(document.querySelectorAll('figcaption')).toHaveLength(1);
   });
 
@@ -190,7 +217,10 @@ describe('FeaturedWorkRow with a demo', () => {
     const homepage = vi.homepage as unknown as typeof en.homepage;
     render(
       <NextIntlClientProvider locale="vi" messages={{ homepage }}>
-        <FeaturedWorkRow work={{ ...base, media: media.slice(0, 1) }} index={0} />
+        <FeaturedWorkRow
+          work={{ ...base, media: media.slice(0, 1) }}
+          index={0}
+        />
       </NextIntlClientProvider>
     );
 

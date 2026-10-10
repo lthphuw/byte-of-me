@@ -75,7 +75,11 @@ export async function getPaginatedPublicCommentsForBlog(
         const MAX_DEPTH = 20;
         const descendants: (typeof roots)[number][] = [];
         let parentIds = rootIds;
-        for (let depth = 0; depth < MAX_DEPTH && parentIds.length > 0; depth++) {
+        for (
+          let depth = 0;
+          depth < MAX_DEPTH && parentIds.length > 0;
+          depth++
+        ) {
           const level = await prisma.comment.findMany({
             where: {
               blogId,

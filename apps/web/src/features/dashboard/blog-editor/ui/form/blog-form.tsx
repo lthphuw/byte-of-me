@@ -31,7 +31,6 @@ import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text
 /** Images pasted into this editor land under the `blog` prefix in storage. */
 const uploadImage = createScopedImageUploader('blog');
 
-
 const emptyTranslation = () => ({
   language: 'en',
   title: '',
@@ -82,7 +81,12 @@ export interface BlogFormProps {
   formId?: string;
 }
 
-export function BlogForm({ initialData, onSubmit, loading, formId }: BlogFormProps) {
+export function BlogForm({
+  initialData,
+  onSubmit,
+  loading,
+  formId,
+}: BlogFormProps) {
   const t = useTranslations('dashboard.blog');
   const { tagOptions, projects, isTagLoading, isProjectLoading } =
     useBlogReferenceOptions();
@@ -110,11 +114,7 @@ export function BlogForm({ initialData, onSubmit, loading, formId }: BlogFormPro
 
   return (
     <Form {...form}>
-      <form
-        id={formId}
-        onSubmit={handleSubmit}
-        className="space-y-6"
-      >
+      <form id={formId} onSubmit={handleSubmit} className="space-y-6">
         {autosave.restorable && (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm">
             <span>

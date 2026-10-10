@@ -11,10 +11,6 @@ import {
 import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-
-
-
-
 export async function logInToDashboard(
   email: string,
   // Widened from `string`: the raw `?from=` is whatever was on the URL, so

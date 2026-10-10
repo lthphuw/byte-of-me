@@ -23,7 +23,6 @@ import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
 
-
 export function CommentManager() {
   const t = useTranslations('dashboard.comment');
   const tShared = useTranslations('dashboard.shared');
@@ -39,36 +38,27 @@ export function CommentManager() {
     if (comment.project) {
       return t('source.project', {
         title:
-          comment.project.translations[0]?.title ??
-          t('source.untitledProject'),
+          comment.project.translations[0]?.title ?? t('source.untitledProject'),
       });
     }
     return t('source.unknown');
   }
 
   const [page, setPage] = useState(1);
-  const [commentToHide, setCommentToHide] = useState<AdminComment | null>(
-    null
-  );
+  const [commentToHide, setCommentToHide] = useState<AdminComment | null>(null);
 
-  const {
-    data,
-    isLoading,
-    isError,
-    refetch,
-    isFetching,
-    isPlaceholderData,
-  } = useQuery({
-    queryKey: commentKeys.adminList(page),
-    // The action resolves with an ApiResponse rather than throwing, so unwrap
-    // here (as `useCrudManager` does): reading `success` in the component
-    // instead would leave `isError` false and render EMPTY on a server failure.
-    queryFn: async () =>
-      unwrapApiResponse(
-        await getPaginatedAdminComments(page, ADMIN_PAGE_SIZE)
-      ),
-    placeholderData: (prev) => prev,
-  });
+  const { data, isLoading, isError, refetch, isFetching, isPlaceholderData } =
+    useQuery({
+      queryKey: commentKeys.adminList(page),
+      // The action resolves with an ApiResponse rather than throwing, so unwrap
+      // here (as `useCrudManager` does): reading `success` in the component
+      // instead would leave `isError` false and render EMPTY on a server failure.
+      queryFn: async () =>
+        unwrapApiResponse(
+          await getPaginatedAdminComments(page, ADMIN_PAGE_SIZE)
+        ),
+      placeholderData: (prev) => prev,
+    });
 
   const comments = data?.data ?? [];
   const pagination = data?.meta;

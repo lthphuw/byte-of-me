@@ -4,7 +4,10 @@ import { type FeaturedWork, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
-import { ownsAllMedia, toMediaRows } from '@/entities/featured-work/lib/featured-work-media';
+import {
+  ownsAllMedia,
+  toMediaRows,
+} from '@/entities/featured-work/lib/featured-work-media';
 import {
   type FeaturedWorkFormValues,
   featuredWorkSchema,
@@ -74,7 +77,9 @@ export async function updateFeaturedWork(
 
         if (values.media) {
           // Delete, then create: a swap of the two slots reuses both unique keys.
-          await tx.featuredWorkMedia.deleteMany({ where: { featuredWorkId: id } });
+          await tx.featuredWorkMedia.deleteMany({
+            where: { featuredWorkId: id },
+          });
           if (values.media.length > 0) {
             await tx.featuredWorkMedia.createMany({
               data: toMediaRows(values.media).map((row) => ({

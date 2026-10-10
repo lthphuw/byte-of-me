@@ -22,7 +22,9 @@ export async function StatsGrid() {
   // nothing left a labelled region with no content and no explanation.
   if (!dataResp.success || !dataResp.data) {
     return (
-      <p className="text-sm text-destructive-text">{tDashboard('sectionError')}</p>
+      <p className="text-sm text-destructive-text">
+        {tDashboard('sectionError')}
+      </p>
     );
   }
   const stats = dataResp.data;
@@ -76,10 +78,7 @@ export async function StatsGrid() {
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {primaryStats.map((s) => (
-          <Card
-            key={s.label}
-            className="border-none bg-card/60 shadow-sm"
-          >
+          <Card key={s.label} className="border-none bg-card/60 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 {s.label}

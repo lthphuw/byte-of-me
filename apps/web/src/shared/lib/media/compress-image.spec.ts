@@ -21,14 +21,22 @@ const GIF = Buffer.from(
 
 describe('compressImage — SVG and GIF pass through untouched', () => {
   test('returns the SVG buffer and mime type unchanged', async () => {
-    const result = await compressImage(SVG, 'image/svg+xml', IMAGE_COMPRESSION_DEFAULTS);
+    const result = await compressImage(
+      SVG,
+      'image/svg+xml',
+      IMAGE_COMPRESSION_DEFAULTS
+    );
 
     expect(result.buffer.equals(SVG)).toBe(true);
     expect(result.mimeType).toBe('image/svg+xml');
   });
 
   test('returns the GIF buffer and mime type unchanged', async () => {
-    const result = await compressImage(GIF, 'image/gif', IMAGE_COMPRESSION_DEFAULTS);
+    const result = await compressImage(
+      GIF,
+      'image/gif',
+      IMAGE_COMPRESSION_DEFAULTS
+    );
 
     expect(result.buffer.equals(GIF)).toBe(true);
     expect(result.mimeType).toBe('image/gif');

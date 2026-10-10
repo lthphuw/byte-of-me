@@ -4,7 +4,15 @@
  */
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
-import { beforeEach, describe, expect, it, mock, setSystemTime, spyOn } from 'bun:test';
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+  setSystemTime,
+  spyOn,
+} from 'bun:test';
 
 import { checkRateLimit } from './rate-limit';
 

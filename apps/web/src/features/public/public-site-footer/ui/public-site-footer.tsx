@@ -9,10 +9,6 @@ import { Link } from '@/shared/i18n/navigation';
 import { cn, ensureValidUrl } from '@/shared/lib/utils';
 import { BrandMark } from '@/shared/ui/brand-mark';
 
-
-
-
-
 type SiteFooterProps = React.HTMLAttributes<HTMLElement>;
 
 export async function PublicSiteFooter({ className }: SiteFooterProps) {
@@ -46,7 +42,7 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
           </h2>
         </div>
 
-        <PublicSiteFooterNav/>
+        <PublicSiteFooterNav />
 
         <div className="flex flex-col items-center gap-2 md:items-end">
           <div className="flex gap-4">

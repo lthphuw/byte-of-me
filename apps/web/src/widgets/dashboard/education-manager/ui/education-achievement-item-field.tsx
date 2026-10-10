@@ -18,12 +18,7 @@ import {
   toEditorContent,
 } from '@byte-of-me/ui';
 import { Reorder, useDragControls } from 'framer-motion';
-import {
-  ChevronDown,
-  GripVertical,
-  ImageIcon,
-  Trash,
-} from 'lucide-react';
+import { ChevronDown, GripVertical, ImageIcon, Trash } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
@@ -36,7 +31,6 @@ import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text
 
 /** Images pasted into this editor land under the `education` prefix in storage. */
 const uploadImage = createScopedImageUploader('education');
-
 
 interface EducationAchievementItemFieldProps {
   /** `useFieldArray` field id — the stable value framer-motion reorders by. */
@@ -100,8 +94,8 @@ export function EducationAchievementItemField({
       event.key === 'ArrowUp'
         ? index - 1
         : event.key === 'ArrowDown'
-          ? index + 1
-          : null;
+        ? index + 1
+        : null;
 
     if (to === null || to < 0 || to >= total) return;
     event.preventDefault();
@@ -196,64 +190,64 @@ export function EducationAchievementItemField({
             height 0, and padding on it would jump the first frame. */}
         <CollapsibleContent>
           <div className="space-y-4 border-t p-4">
-          <FormField
-            control={control}
-            name={`achievements.${index}.imageIds`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('achievements.imagesLabel')}</FormLabel>
-                <FormControl>
-                  <MediaMultiSelect
-                    value={field.value ?? []}
-                    onChange={field.onChange}
+            <FormField
+              control={control}
+              name={`achievements.${index}.imageIds`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('achievements.imagesLabel')}</FormLabel>
+                  <FormControl>
+                    <MediaMultiSelect
+                      value={field.value ?? []}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <TranslationTabs
+              control={control}
+              name={`achievements.${index}.translations`}
+              newTranslation={() => ({ language: '', title: '', content: '' })}
+              renderFields={(i) => (
+                <>
+                  <TextField
+                    control={control}
+                    name={`achievements.${index}.translations.${i}.title`}
+                    label={t('achievements.titleLabel')}
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
-          <TranslationTabs
-            control={control}
-            name={`achievements.${index}.translations`}
-            newTranslation={() => ({ language: '', title: '', content: '' })}
-            renderFields={(i) => (
-              <>
-                <TextField
-                  control={control}
-                  name={`achievements.${index}.translations.${i}.title`}
-                  label={t('achievements.titleLabel')}
-                />
-
-                <FormField
-                  control={control}
-                  name={`achievements.${index}.translations.${i}.content`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('achievements.contentLabel')}</FormLabel>
-                      <FormControl>
-                        <RichTextEditor
-                          compact
-                          minHeight={140}
-                          placeholder={t('achievements.contentPlaceholder')}
-                          className="rounded-md"
-                          // Tiptap reads `value` once, on mount. Rendering is
-                          // gated by the language tab and the collapsible above,
-                          // so a remount always picks up the current form value.
-                          value={toEditorContent(field.value)}
-                          onChange={(json) =>
-                            field.onChange(fromEditorContent(json))
-                          }
-                          uploadImage={uploadImage}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
-          />
+                  <FormField
+                    control={control}
+                    name={`achievements.${index}.translations.${i}.content`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('achievements.contentLabel')}</FormLabel>
+                        <FormControl>
+                          <RichTextEditor
+                            compact
+                            minHeight={140}
+                            placeholder={t('achievements.contentPlaceholder')}
+                            className="rounded-md"
+                            // Tiptap reads `value` once, on mount. Rendering is
+                            // gated by the language tab and the collapsible above,
+                            // so a remount always picks up the current form value.
+                            value={toEditorContent(field.value)}
+                            onChange={(json) =>
+                              field.onChange(fromEditorContent(json))
+                            }
+                            uploadImage={uploadImage}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
+            />
           </div>
         </CollapsibleContent>
       </Collapsible>

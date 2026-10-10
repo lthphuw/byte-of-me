@@ -41,7 +41,9 @@ describe('sanitizeHtml', () => {
 
   describe('script execution vectors', () => {
     it('removes script blocks with their contents', () => {
-      expect(sanitizeHtml('<p>a</p><script>alert(1)</script>')).toBe('<p>a</p>');
+      expect(sanitizeHtml('<p>a</p><script>alert(1)</script>')).toBe(
+        '<p>a</p>'
+      );
     });
 
     it('removes style, iframe, object, embed and noscript blocks', () => {
@@ -170,7 +172,7 @@ describe('sanitizeHtml', () => {
   });
 
   it('escapes quotes inside a kept attribute value', () => {
-    expect(sanitizeHtml('<p title=\'a"b\'>x</p>')).toBe(
+    expect(sanitizeHtml("<p title='a\"b'>x</p>")).toBe(
       '<p title="a&quot;b">x</p>'
     );
   });
