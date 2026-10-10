@@ -5,10 +5,7 @@ import { PLAIN_ROW_HEADER } from '@/entities/featured-work/ui/featured-work-row-
 export function HomepageFeaturedWorksLoading() {
   return (
     <div className="space-y-6 md:space-y-8">
-      <div className="space-y-2">
-        <Skeleton className="h-7 w-40 md:h-9 md:w-56" />
-        <Skeleton className="h-4 w-56 md:w-72" />
-      </div>
+      <Skeleton className="h-7 w-40 md:h-9 md:w-56" />
 
       <div className="divide-y rounded-xl border bg-card px-4 md:px-6">
         {[...Array(3)].map((_, i) => (

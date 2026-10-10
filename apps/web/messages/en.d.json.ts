@@ -245,7 +245,6 @@ declare const messages: {
     "openSourceTitle": "Open source",
     "viewAllContributions": "All contributions",
     "featuredWorksTitle": "Featured works",
-    "featuredWorksSubtitle": "Features I’m proudest of",
     "featuredMerged": "Merged",
     "featuredStars": "{count, plural, one {# star} other {# stars}}",
     "featuredViewOnGithub": "View on GitHub",

@@ -13,14 +13,9 @@ export async function HomepageFeaturedWorks() {
 
   return (
     <section id="featured-works" className="space-y-6 md:space-y-8">
-      <div className="space-y-2">
-        <h2 className="text-xl font-semibold md:text-3xl">
-          {t('featuredWorksTitle')}
-        </h2>
-        <p className="text-xs text-muted-foreground md:text-sm">
-          {t('featuredWorksSubtitle')}
-        </p>
-      </div>
+      <h2 className="text-xl font-semibold md:text-3xl">
+        {t('featuredWorksTitle')}
+      </h2>
 
       <ul className="divide-y rounded-xl border bg-card px-4 md:px-6">
         {works.map((work, index) => (
