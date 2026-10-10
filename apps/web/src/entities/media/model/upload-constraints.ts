@@ -13,7 +13,7 @@
 export const MAX_IMAGE_SIZE_MB = 3;
 export const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
 
-/** A short demo clip, not a film: well under the server-action body limit. */
+/** A short demo clip, not a film. It goes browser → storage; a server action body tops out at 4.5 MB on Vercel. */
 export const MAX_VIDEO_SIZE_MB = 10;
 export const MAX_VIDEO_SIZE_BYTES = MAX_VIDEO_SIZE_MB * 1024 * 1024;
 

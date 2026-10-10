@@ -4,6 +4,7 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
+import { buildMediaFileKey } from '@/entities/media/model/media-file-key';
 import { mediaScopeSchema } from '@/entities/media/model/media-schema';
 import {
   type AcceptedMediaMimeType,
@@ -21,7 +22,6 @@ import { supabaseStorage } from '@/shared/api';
 import { env } from '@/shared/config/env';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { generateFriendlyId } from '@/shared/lib/friendly-id';
 import { compressImage } from '@/shared/lib/media/compress-image';
 import { getErrorMessage } from '@/shared/lib/utils';
 import { parseInput } from '@/shared/lib/validate-action-input';
@@ -125,12 +125,7 @@ export async function uploadMedia(
       // serves sensibly, and the editor's auto-upload builds its File as
       // `new File([blob], 'image')` anyway, with no extension to read.
       const fileExtension = extensionForMimeType(compressed.mimeType);
-      const now = new Date();
-      // Scope first, then date. Grouping by what the image is FOR is the axis
-      // someone actually browses by; the date only disambiguates within it.
-      const fileKey = `users/${user.id}/media/${parsedScope.data}/${now.getFullYear()}/${String(
-        now.getMonth() + 1
-      ).padStart(2, '0')}/${generateFriendlyId()}.${fileExtension}`;
+      const fileKey = buildMediaFileKey(user.id, parsedScope.data, fileExtension);
 
       await supabaseStorage.uploadFile({
         fileKey,

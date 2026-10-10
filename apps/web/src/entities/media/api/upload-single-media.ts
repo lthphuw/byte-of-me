@@ -1,4 +1,5 @@
 import { uploadMedia } from './upload-media';
+import { uploadVideoDirect } from './upload-video-direct';
 
 import {
   describeVideoNotAllowed,
@@ -24,10 +25,12 @@ const defaultDeps = {
   fetchCompressionConfig: getImageCompressionSettings,
   compress: compressInBrowser,
   upload: uploadMedia,
+  uploadVideo: uploadVideoDirect,
   now: Date.now,
 };
 
-type SingleMediaUploaderDeps = typeof defaultDeps;
+type SingleMediaUploaderDeps = Omit<typeof defaultDeps, 'uploadVideo'> &
+  Partial<Pick<typeof defaultDeps, 'uploadVideo'>>;
 
 /**
  * The single-file uploader that answers with the stored `Media` row, for callers
@@ -100,6 +103,12 @@ export function createSingleMediaRecordUploader(
     const violation = findUploadViolation([compressed]);
     if (violation) {
       throw new MediaViolationError(violation);
+    }
+
+    // A clip goes browser → storage: Vercel refuses a function request body over
+    // 4.5 MB, which a server action would hit long before the 10 MB clip cap.
+    if (isVideoMimeType(compressed.type)) {
+      return (deps.uploadVideo ?? defaultDeps.uploadVideo)(compressed, scope);
     }
 
     const res = await deps.upload([compressed], scope);
