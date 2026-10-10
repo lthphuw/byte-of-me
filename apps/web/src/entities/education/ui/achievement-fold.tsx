@@ -4,6 +4,7 @@ import { type ReactNode, useId, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
+import { DisclosureRegion } from '@/shared/ui/disclosure-region';
 
 interface AchievementFoldProps {
   /** The folded achievements, rendered by the server parent. */
@@ -18,11 +19,10 @@ interface AchievementFoldProps {
  * toggle stays at the very end of the list, so "show less" is always the last
  * thing under what it collapses.
  *
- * The height animates through a `grid-template-rows` 0fr -> 1fr transition,
- * which needs no measurement (the rows hold carousels and expandable text whose
- * heights are only known after layout). The folded rows stay in the DOM, still
- * laid out, so their carousels size correctly; `inert` takes them out of the tab
- * order and the accessibility tree while they are collapsed.
+ * The folded rows hold carousels and expandable text whose heights are only known
+ * after layout, so the height reveal is `DisclosureRegion`, which needs no
+ * measurement. The rows stay in the DOM, still laid out, so the carousels size
+ * correctly while collapsed.
  */
 export function AchievementFold({
   children,
@@ -34,20 +34,10 @@ export function AchievementFold({
 
   return (
     <div>
-      <div
-        id={regionId}
-        inert={!open}
-        className={cn(
-          'grid transition-[grid-template-rows,opacity] motion-reduce:transition-none',
-          // A transition takes its timing from the state it ends in, so each
-          // branch carries its own: open eases out, close is shorter and eases in.
-          open
-            ? 'grid-rows-[1fr] opacity-100 duration-250 ease-enter'
-            : 'grid-rows-[0fr] opacity-0 duration-200 ease-exit'
-        )}
-      >
-        <div className="min-h-0 overflow-hidden">{children}</div>
-      </div>
+      {/* This fold never opens on load, so its transitions are always armed. */}
+      <DisclosureRegion id={regionId} open={open} animated>
+        {children}
+      </DisclosureRegion>
 
       <button
         type="button"
