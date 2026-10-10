@@ -11,7 +11,16 @@ import {
   getFeaturedWorkGithub,
 } from '@/entities/featured-work/lib/get-featured-work-github';
 import { safeLink } from '@/entities/featured-work/lib/safe-link';
-import type { PublicFeaturedWork } from '@/entities/featured-work/model/types';
+import {
+  FEATURED_WORK_MEDIA_MAX,
+} from '@/entities/featured-work/model/featured-work-schema';
+import type {
+  PublicFeaturedWork,
+  PublicFeaturedWorkMedia,
+} from '@/entities/featured-work/model/types';
+import {
+  ACCEPTED_VIDEO_MIME_TYPES,
+} from '@/entities/media/model/upload-constraints';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import {
@@ -24,8 +33,30 @@ const MAX_WORKS = 6;
 
 type FeaturedWorkRow = Pick<
   PublicFeaturedWork,
-  'id' | 'title' | 'description' | 'detailsHtml' | 'url' | 'host'
+  'id' | 'title' | 'description' | 'detailsHtml' | 'url' | 'host' | 'media'
 >;
+
+interface StoredDemoItem {
+  label: string | null;
+  media: { id: string; url: string; mimeType: string };
+}
+
+/**
+ * The demo pair a visitor may be served. The database is not trusted any more than
+ * it is for `url`: an item whose file is not an http(s) url, or is not an image or
+ * an accepted video, is dropped on its own and never blanks its siblings.
+ */
+function toPublicMedia(items: StoredDemoItem[]): PublicFeaturedWorkMedia[] {
+  return items
+    .flatMap(({ label, media }) => {
+      const isPlayable =
+        media.mimeType.startsWith('image/') ||
+        (ACCEPTED_VIDEO_MIME_TYPES as readonly string[]).includes(media.mimeType);
+      if (!isPlayable || safeLink(media.url).url === null) return [];
+      return [{ id: media.id, url: media.url, mimeType: media.mimeType, label }];
+    })
+    .slice(0, FEATURED_WORK_MEDIA_MAX);
+}
 
 /**
  * Sanitized HTML of one row's details, or null. Runs inside the cached handler,
@@ -43,6 +74,8 @@ export function toRows(
   works: Array<{
     id: string;
     url: string | null;
+    /** In slot order (the query sorts them). */
+    media: StoredDemoItem[];
     translations: Array<{
       language: string;
       title: string;
@@ -65,6 +98,7 @@ export function toRows(
         // Row-level: the body comes from the translation the title came from.
         detailsHtml: toDetailsHtml(translation.details),
         ...safeLink(work.url),
+        media: toPublicMedia(work.media),
       },
     ];
   });
@@ -84,6 +118,13 @@ async function getPublicFeaturedWorkRows(): Promise<
           select: {
             id: true,
             url: true,
+            media: {
+              orderBy: { sortOrder: 'asc' },
+              select: {
+                label: true,
+                media: { select: { id: true, url: true, mimeType: true } },
+              },
+            },
             translations: {
               where: { language: { in: getTranslationLanguages(locale) } },
               orderBy: { language: 'asc' },
@@ -101,9 +142,9 @@ async function getPublicFeaturedWorkRows(): Promise<
       },
       {
         cache: true,
-        // Versioned: rows cached before `detailsHtml` existed would otherwise
-        // serve without it. No `revalidate` is set, so they never expire by time.
-        cacheKey: ['featured-works-rows-v2'],
+        // Versioned: rows cached before `media` existed would otherwise serve
+        // without it. No `revalidate` is set, so they never expire by time.
+        cacheKey: ['featured-works-rows-v3'],
         cacheTags: [CACHE_TAGS.FEATURED_WORK],
       }
     );

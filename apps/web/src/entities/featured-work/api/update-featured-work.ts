@@ -4,6 +4,7 @@ import { type FeaturedWork, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
+import { ownsAllMedia, toMediaRows } from '@/entities/featured-work/lib/featured-work-media';
 import {
   type FeaturedWorkFormValues,
   featuredWorkSchema,
@@ -42,6 +43,16 @@ export async function updateFeaturedWork(
           return { success: false, errorMsg: 'Featured work not found' };
         }
 
+        // `media` omitted keeps the stored pair; `[]` clears it. Unlike `details`
+        // (rewritten with the translations), the pair is its own table, so a caller
+        // that never sends it must not lose it.
+        if (values.media) {
+          const mediaIds = values.media.map((m) => m.mediaId);
+          if (!(await ownsAllMedia(tx, user.id, mediaIds))) {
+            return { success: false, errorMsg: 'Media not found' };
+          }
+        }
+
         // `sortOrder` is deliberately untouched: only `reorderFeaturedWork` moves an entry.
         const featuredWork = await tx.featuredWork.update({
           where: { id },
@@ -60,6 +71,19 @@ export async function updateFeaturedWork(
             },
           },
         });
+
+        if (values.media) {
+          // Delete, then create: a swap of the two slots reuses both unique keys.
+          await tx.featuredWorkMedia.deleteMany({ where: { featuredWorkId: id } });
+          if (values.media.length > 0) {
+            await tx.featuredWorkMedia.createMany({
+              data: toMediaRows(values.media).map((row) => ({
+                ...row,
+                featuredWorkId: id,
+              })),
+            });
+          }
+        }
 
         return { success: true, data: featuredWork };
       }

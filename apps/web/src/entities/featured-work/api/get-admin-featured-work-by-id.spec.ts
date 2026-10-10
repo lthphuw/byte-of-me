@@ -36,6 +36,11 @@ const DETAILS_EN = JSON.stringify({
 type Row = {
   id: string;
   userId: string;
+  media: Array<{
+    sortOrder: number;
+    label: string | null;
+    media: { id: string; url: string; mimeType: string };
+  }>;
   translations: Array<{
     id: string;
     language: string;
@@ -49,6 +54,18 @@ const ROWS: Row[] = [
   {
     id: 'fw-owned',
     userId: 'admin-1',
+    media: [
+      {
+        sortOrder: 0,
+        label: 'FP16',
+        media: { id: 'm1', url: 'https://cdn.example/a.mp4', mimeType: 'video/mp4' },
+      },
+      {
+        sortOrder: 1,
+        label: null,
+        media: { id: 'm2', url: 'https://cdn.example/b.gif', mimeType: 'image/gif' },
+      },
+    ],
     translations: [
       {
         id: 't-en',
@@ -69,6 +86,7 @@ const ROWS: Row[] = [
   {
     id: 'fw-other',
     userId: 'someone-else',
+    media: [],
     translations: [
       {
         id: 't-other',
@@ -123,6 +141,29 @@ describe('getAdminFeaturedWorkById', () => {
       ['en', DETAILS_EN],
       ['vi', null],
     ]);
+  });
+
+  it('returns the demo pair flat: id, url, mimeType, label and slot', async () => {
+    const res = await getAdminFeaturedWorkById('fw-owned');
+
+    if (!res.success) throw new Error('expected success');
+    expect(res.data.media).toEqual([
+      { id: 'm1', url: 'https://cdn.example/a.mp4', mimeType: 'video/mp4', label: 'FP16', sortOrder: 0 },
+      { id: 'm2', url: 'https://cdn.example/b.gif', mimeType: 'image/gif', label: null, sortOrder: 1 },
+    ]);
+    // The join row's own shape does not leak next to the flat one.
+    expect(Object.keys(res.data.media[0] ?? {}).sort()).toEqual(
+      ['id', 'label', 'mimeType', 'sortOrder', 'url']
+    );
+  });
+
+  it('asks for the pair in slot order', async () => {
+    await getAdminFeaturedWorkById('fw-owned');
+
+    const args = findFirst.mock.calls[0]?.[0] as unknown as {
+      include: { media: { orderBy: unknown } };
+    };
+    expect(args.include.media.orderBy).toEqual({ sortOrder: 'asc' });
   });
 
   it('is not found when the id belongs to another owner', async () => {

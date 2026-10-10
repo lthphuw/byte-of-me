@@ -41,6 +41,7 @@ function row(id: string, url: string | null = null, title = `Work ${id}`) {
   return {
     id,
     url,
+    media: [],
     translations: [
       { language: 'en', title, description: `About ${id}`, details: null },
     ],
@@ -77,6 +78,7 @@ describe('toRows', () => {
         detailsHtml: null,
         url: null,
         host: null,
+        media: [],
       },
     ]);
   });
@@ -87,6 +89,7 @@ describe('toRows', () => {
         {
           id: 'a',
           url: null,
+          media: [],
           translations: [
             { language: 'en', title: 'Hello', description: null, details: null },
             { language: 'vi', title: 'Xin chào', description: null, details: null },
@@ -102,7 +105,7 @@ describe('toRows', () => {
   it('skips a work with no translations or an empty title instead of throwing', () => {
     const rows = toRows(
       [
-        { id: 'none', url: null, translations: [] },
+        { id: 'none', url: null, media: [], translations: [] },
         row('blank', null, ''),
         row('ok'),
       ],
@@ -118,6 +121,7 @@ describe('toRows', () => {
         {
           id: 'a',
           url: null,
+          media: [],
           translations: [
             { language: 'en', title: 'Hello', description: 'About', details: null },
             { language: 'vi', title: '  ', description: 'Mô tả', details: null },
@@ -164,7 +168,7 @@ describe('details body', () => {
 
   const work = (
     translations: ReturnType<typeof translation>[]
-  ): Parameters<typeof toRows>[0] => [{ id: 'a', url: null, translations }];
+  ): Parameters<typeof toRows>[0] => [{ id: 'a', url: null, media: [], translations }];
 
   it('renders the stored body to sanitized HTML, not the stored JSON', () => {
     const [detailsRow] = toRows(
@@ -254,6 +258,7 @@ describe('details body', () => {
       {
         id: 'a',
         url: null,
+        media: [],
         translations: [translation('en', DETAILS_EN)],
       },
     ]);
@@ -329,6 +334,71 @@ describe('details body', () => {
   });
 });
 
+describe('demo media', () => {
+  const item = (id: string, url: string, mimeType: string, label: string | null = null) => ({
+    label,
+    media: { id, url, mimeType },
+  });
+  const withMedia = (media: ReturnType<typeof item>[]) => [
+    { ...row('a'), media },
+  ];
+
+  it('maps the stored pair to id, url, mimeType and label, in the order given', () => {
+    const [mediaRow] = toRows(
+      withMedia([
+        item('m1', 'https://cdn.example/a.mp4', 'video/mp4', 'FP16'),
+        item('m2', 'https://cdn.example/b.webm', 'video/webm', null),
+      ]),
+      'en'
+    );
+
+    expect(mediaRow?.media).toEqual([
+      { id: 'm1', url: 'https://cdn.example/a.mp4', mimeType: 'video/mp4', label: 'FP16' },
+      { id: 'm2', url: 'https://cdn.example/b.webm', mimeType: 'video/webm', label: null },
+    ]);
+  });
+
+  it('drops an item that is not an http(s) url or not an image or accepted video, and keeps its sibling', () => {
+    const [mediaRow] = toRows(
+      withMedia([
+        item('bad1', 'javascript:alert(1)', 'image/png'),
+        item('bad2', 'data:image/png;base64,AAAA', 'image/png'),
+        item('bad3', 'https://cdn.example/x.pdf', 'application/pdf'),
+        item('bad4', 'https://cdn.example/x.mov', 'video/quicktime'),
+        item('ok', 'https://cdn.example/y.gif', 'image/gif', 'INT8'),
+      ]),
+      'en'
+    );
+
+    expect(mediaRow?.media.map((m) => m.id)).toEqual(['ok']);
+  });
+
+  it('never serves more than two items, and the work still shows without media', () => {
+    const [mediaRow] = toRows(
+      withMedia([
+        item('1', 'https://cdn.example/1.png', 'image/png'),
+        item('2', 'https://cdn.example/2.png', 'image/png'),
+        item('3', 'https://cdn.example/3.png', 'image/png'),
+      ]),
+      'en'
+    );
+    expect(mediaRow?.media.map((m) => m.id)).toEqual(['1', '2']);
+
+    const [bare] = toRows(withMedia([item('bad', 'ftp://x/y', 'image/png')]), 'en');
+    expect(bare?.id).toBe('a');
+    expect(bare?.media).toEqual([]);
+  });
+
+  it('asks the database for the pair in slot order', async () => {
+    findMany.mockReset().mockResolvedValue([]);
+    await works(makeDeps().deps);
+
+    const args = findMany.mock.calls[0]?.[0];
+    expect(args.select.media.orderBy).toEqual({ sortOrder: 'asc' });
+    expect(args.select.media.select.media.select).toEqual({ id: true, url: true, mimeType: true });
+  });
+});
+
 describe('loadPublicFeaturedWorks', () => {
   beforeEach(() => {
     findMany.mockReset().mockResolvedValue([]);
@@ -367,6 +437,7 @@ describe('loadPublicFeaturedWorks', () => {
         url: PR_URL,
         host: 'github.com',
         github: null,
+        media: [],
       },
     ]);
     expect(fetchGithub).not.toHaveBeenCalled();

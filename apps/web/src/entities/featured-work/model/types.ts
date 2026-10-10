@@ -12,9 +12,19 @@ export type AdminFeaturedWork = Prisma.FeaturedWorkGetPayload<{
   };
 }>;
 
+/** One slot of the demo pair as the editor shows it; `sortOrder` is 0 or 1. */
+export interface AdminFeaturedWorkMedia {
+  id: string;
+  url: string;
+  mimeType: string;
+  label: string | null;
+  sortOrder: number;
+}
+
 /**
  * The full row the editor dialog edits. `details` is a stringified TipTap document
  * (at most 32,768 characters), so it stays out of the list: the dialog loads this by id.
+ * `media` is the demo pair, flattened and ordered by slot; the list never carries it.
  */
 export type AdminFeaturedWorkDetail = Prisma.FeaturedWorkGetPayload<{
   include: {
@@ -28,7 +38,16 @@ export type AdminFeaturedWorkDetail = Prisma.FeaturedWorkGetPayload<{
       };
     };
   };
-}>;
+}> & { media: AdminFeaturedWorkMedia[] };
+
+/** One demo item as the homepage renders it: a validated http(s) url. */
+export interface PublicFeaturedWorkMedia {
+  id: string;
+  url: string;
+  mimeType: string;
+  /** Language-neutral tag such as "FP16"; null falls back to the work title in the UI. */
+  label: string | null;
+}
 
 /** What the homepage renders: translated, with `host` and the GitHub facts resolved. */
 export interface PublicFeaturedWork {
@@ -41,4 +60,6 @@ export interface PublicFeaturedWork {
   /** Hostname of `url` without a leading `www.`; null when there is no url. */
   host: string | null;
   github: FeaturedWorkGithub | null;
+  /** The side-by-side demo pair in slot order; empty when the work has none. */
+  media: PublicFeaturedWorkMedia[];
 }

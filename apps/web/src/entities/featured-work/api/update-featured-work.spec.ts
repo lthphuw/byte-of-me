@@ -3,7 +3,9 @@
  * the `details` it writes is whatever the caller sent. An omitted `details` is
  * stored as null: a caller that does not send the body clears it. That is
  * deliberate and pinned here, so a form that drops the field cannot wipe a body
- * unnoticed. The transaction runs against a fake `tx`; no database is touched.
+ * unnoticed. The demo pair is the opposite, also pinned: an omitted `media` keeps
+ * the stored pair and only an explicit `[]` clears it. The transaction runs
+ * against a fake `tx`; no database is touched.
  */
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
@@ -34,6 +36,22 @@ const DETAILS = JSON.stringify({
 
 const findFirst = mock(async (_args: unknown) => ({ id: 'fw-1' }));
 const update = mock(async (_args: unknown) => ({ id: 'fw-1' }));
+/** Every write to the pair, in the order the transaction made it. */
+const mediaWrites: string[] = [];
+const deleteMany = mock(async (_args: unknown) => {
+  mediaWrites.push('deleteMany');
+  return { count: 0 };
+});
+const createMany = mock(async (_args: unknown) => {
+  mediaWrites.push('createMany');
+  return { count: 0 };
+});
+/** How many of the asked-for media ids the admin owns; set per test. */
+type CountArgs = { where: { userId: string; id: { in: string[] }; OR: unknown[] } };
+let ownedCount: (ids: string[]) => number = (ids) => ids.length;
+const count = mock(async (args: CountArgs) =>
+  ownedCount(args.where.id.in)
+);
 
 const originalTransaction = Object.getOwnPropertyDescriptor(
   prisma,
@@ -41,7 +59,11 @@ const originalTransaction = Object.getOwnPropertyDescriptor(
 );
 Object.defineProperty(prisma, '$transaction', {
   value: (fn: (tx: unknown) => Promise<unknown>) =>
-    fn({ featuredWork: { findFirst, update } }),
+    fn({
+      featuredWork: { findFirst, update },
+      featuredWorkMedia: { deleteMany, createMany },
+      media: { count },
+    }),
   writable: true,
   configurable: true,
 });
@@ -51,6 +73,11 @@ const logError = spyOn(logger, 'error').mockImplementation(() => {});
 beforeEach(() => {
   findFirst.mockClear();
   update.mockClear();
+  deleteMany.mockClear();
+  createMany.mockClear();
+  count.mockClear();
+  mediaWrites.length = 0;
+  ownedCount = (ids) => ids.length;
   logError.mockClear();
 });
 
@@ -104,5 +131,83 @@ describe('updateFeaturedWork details', () => {
     expect(writtenTranslations()).toEqual([
       expect.objectContaining({ language: 'en', details: DETAILS }),
     ]);
+  });
+});
+
+const pair = [
+  { mediaId: 'm-fp16', label: ' FP16 ' },
+  { mediaId: 'm-int8', label: '' },
+];
+
+describe('updateFeaturedWork demo media', () => {
+  it('keeps the stored pair when the caller omits media, and still saves the rest', async () => {
+    const res = await updateFeaturedWork('fw-1', input([{ language: 'en', title: 'A' }]));
+
+    expect(res.success).toBe(true);
+    expect(update).toHaveBeenCalledTimes(1);
+    expect(deleteMany).not.toHaveBeenCalled();
+    expect(createMany).not.toHaveBeenCalled();
+    expect(count).not.toHaveBeenCalled();
+  });
+
+  it('clears the pair when the caller sends an empty array', async () => {
+    const res = await updateFeaturedWork('fw-1', {
+      ...input([{ language: 'en', title: 'A' }]),
+      media: [],
+    });
+
+    expect(res.success).toBe(true);
+    expect(deleteMany).toHaveBeenCalledTimes(1);
+    expect(deleteMany.mock.calls[0]?.[0]).toEqual({ where: { featuredWorkId: 'fw-1' } });
+    expect(createMany).not.toHaveBeenCalled();
+  });
+
+  it('replaces the pair with the sent one: slot from position, label trimmed, blank as null', async () => {
+    const res = await updateFeaturedWork('fw-1', {
+      ...input([{ language: 'en', title: 'A' }]),
+      media: pair,
+    });
+
+    expect(res.success).toBe(true);
+    // Delete first: a swap of the two slots would otherwise hit both unique keys.
+    expect(mediaWrites).toEqual(['deleteMany', 'createMany']);
+    expect(createMany.mock.calls[0]?.[0]).toEqual({
+      data: [
+        { featuredWorkId: 'fw-1', mediaId: 'm-fp16', sortOrder: 0, label: 'FP16' },
+        { featuredWorkId: 'fw-1', mediaId: 'm-int8', sortOrder: 1, label: null },
+      ],
+    });
+  });
+
+  it("refuses media the admin does not own, and writes nothing", async () => {
+    ownedCount = (ids) => ids.length - 1;
+
+    const res = await updateFeaturedWork('fw-1', {
+      ...input([{ language: 'en', title: 'A' }]),
+      media: pair,
+    });
+
+    expect(res).toEqual({ success: false, errorMsg: 'Media not found' });
+    const where = (count.mock.calls[0]?.[0] as CountArgs).where;
+    expect(where.userId).toBe('admin-1');
+    expect(where.id.in).toEqual(['m-fp16', 'm-int8']);
+    expect(update).not.toHaveBeenCalled();
+    expect(mediaWrites).toEqual([]);
+  });
+
+  it('refuses a third item or the same file twice before opening a transaction', async () => {
+    const three = await updateFeaturedWork('fw-1', {
+      ...input([{ language: 'en', title: 'A' }]),
+      media: [{ mediaId: 'a' }, { mediaId: 'b' }, { mediaId: 'c' }],
+    });
+    const twice = await updateFeaturedWork('fw-1', {
+      ...input([{ language: 'en', title: 'A' }]),
+      media: [{ mediaId: 'a' }, { mediaId: 'a' }],
+    });
+
+    expect(three.success).toBe(false);
+    expect(twice.success).toBe(false);
+    expect(findFirst).not.toHaveBeenCalled();
+    expect(update).not.toHaveBeenCalled();
   });
 });

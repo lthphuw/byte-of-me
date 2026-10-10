@@ -407,6 +407,7 @@ export const ModelName = {
   Education: 'Education',
   FeaturedWork: 'FeaturedWork',
   FeaturedWorkTranslation: 'FeaturedWorkTranslation',
+  FeaturedWorkMedia: 'FeaturedWorkMedia',
   EducationTranslation: 'EducationTranslation',
   EducationAchievement: 'EducationAchievement',
   EducationAchievementTranslation: 'EducationAchievementTranslation',
@@ -452,7 +453,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "featuredWork" | "featuredWorkTranslation" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "workspaceSettings"
+    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "featuredWork" | "featuredWorkTranslation" | "featuredWorkMedia" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "workspaceSettings"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1193,6 +1194,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.FeaturedWorkTranslationCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.FeaturedWorkTranslationCountAggregateOutputType> | number
+        }
+      }
+    }
+    FeaturedWorkMedia: {
+      payload: Prisma.$FeaturedWorkMediaPayload<ExtArgs>
+      fields: Prisma.FeaturedWorkMediaFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FeaturedWorkMediaFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkMediaPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FeaturedWorkMediaFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkMediaPayload>
+        }
+        findFirst: {
+          args: Prisma.FeaturedWorkMediaFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkMediaPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FeaturedWorkMediaFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkMediaPayload>
+        }
+        findMany: {
+          args: Prisma.FeaturedWorkMediaFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkMediaPayload>[]
+        }
+        create: {
+          args: Prisma.FeaturedWorkMediaCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkMediaPayload>
+        }
+        createMany: {
+          args: Prisma.FeaturedWorkMediaCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FeaturedWorkMediaCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkMediaPayload>[]
+        }
+        delete: {
+          args: Prisma.FeaturedWorkMediaDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkMediaPayload>
+        }
+        update: {
+          args: Prisma.FeaturedWorkMediaUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkMediaPayload>
+        }
+        deleteMany: {
+          args: Prisma.FeaturedWorkMediaDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FeaturedWorkMediaUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FeaturedWorkMediaUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkMediaPayload>[]
+        }
+        upsert: {
+          args: Prisma.FeaturedWorkMediaUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkMediaPayload>
+        }
+        aggregate: {
+          args: Prisma.FeaturedWorkMediaAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFeaturedWorkMedia>
+        }
+        groupBy: {
+          args: Prisma.FeaturedWorkMediaGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeaturedWorkMediaGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FeaturedWorkMediaCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeaturedWorkMediaCountAggregateOutputType> | number
         }
       }
     }
@@ -3592,6 +3667,16 @@ export const FeaturedWorkTranslationScalarFieldEnum = {
 export type FeaturedWorkTranslationScalarFieldEnum = (typeof FeaturedWorkTranslationScalarFieldEnum)[keyof typeof FeaturedWorkTranslationScalarFieldEnum]
 
 
+export const FeaturedWorkMediaScalarFieldEnum = {
+  sortOrder: 'sortOrder',
+  label: 'label',
+  featuredWorkId: 'featuredWorkId',
+  mediaId: 'mediaId'
+} as const
+
+export type FeaturedWorkMediaScalarFieldEnum = (typeof FeaturedWorkMediaScalarFieldEnum)[keyof typeof FeaturedWorkMediaScalarFieldEnum]
+
+
 export const EducationTranslationScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
@@ -4249,6 +4334,7 @@ export type GlobalOmitConfig = {
   education?: Prisma.EducationOmit
   featuredWork?: Prisma.FeaturedWorkOmit
   featuredWorkTranslation?: Prisma.FeaturedWorkTranslationOmit
+  featuredWorkMedia?: Prisma.FeaturedWorkMediaOmit
   educationTranslation?: Prisma.EducationTranslationOmit
   educationAchievement?: Prisma.EducationAchievementOmit
   educationAchievementTranslation?: Prisma.EducationAchievementTranslationOmit

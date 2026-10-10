@@ -196,6 +196,8 @@ model FeaturedWork {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   translations FeaturedWorkTranslation[]
+  // The side-by-side demo pair (a clip or GIF each), at most two.
+  media        FeaturedWorkMedia[]
 
   @@index([userId, isPublished, sortOrder], map: "idx_featured_works_public_list")
   @@map("featured_works")
@@ -217,6 +219,25 @@ model FeaturedWorkTranslation {
 
   @@unique([featuredWorkId, language])
   @@map("featured_work_translations")
+}
+
+// One slot of a featured work's demo pair. `sortOrder` is the slot (0 or 1); the unique
+// key makes a third item or a duplicate slot impossible, and the primary key stops
+// the same file filling both slots. `label` is a language-neutral tag ("FP16"), not translated.
+model FeaturedWorkMedia {
+  sortOrder Int     @map("sort_order")
+  label     String?
+
+  featuredWorkId String       @map("featured_work_id")
+  featuredWork   FeaturedWork @relation(fields: [featuredWorkId], references: [id], onDelete: Cascade)
+
+  mediaId String @map("media_id")
+  media   Media  @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@id([featuredWorkId, mediaId])
+  @@unique([featuredWorkId, sortOrder])
+  @@index([mediaId], map: "idx_featured_work_media_media_id")
+  @@map("featured_work_media")
 }
 
 model EducationTranslation {
@@ -710,6 +731,7 @@ model Media {
   educationSchema     Education[]
   educationAchiements AchievementOnMedias[]
   blogs               Blog[]
+  featuredWorkMedia   FeaturedWorkMedia[]
 
   // The library is paged by owner, newest first.
   @@index([userId, createdAt(sort: Desc)], map: "idx_media_user_created_at")

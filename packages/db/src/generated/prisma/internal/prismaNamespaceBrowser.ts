@@ -61,6 +61,7 @@ export const ModelName = {
   Education: 'Education',
   FeaturedWork: 'FeaturedWork',
   FeaturedWorkTranslation: 'FeaturedWorkTranslation',
+  FeaturedWorkMedia: 'FeaturedWorkMedia',
   EducationTranslation: 'EducationTranslation',
   EducationAchievement: 'EducationAchievement',
   EducationAchievementTranslation: 'EducationAchievementTranslation',
@@ -244,6 +245,16 @@ export const FeaturedWorkTranslationScalarFieldEnum = {
 } as const
 
 export type FeaturedWorkTranslationScalarFieldEnum = (typeof FeaturedWorkTranslationScalarFieldEnum)[keyof typeof FeaturedWorkTranslationScalarFieldEnum]
+
+
+export const FeaturedWorkMediaScalarFieldEnum = {
+  sortOrder: 'sortOrder',
+  label: 'label',
+  featuredWorkId: 'featuredWorkId',
+  mediaId: 'mediaId'
+} as const
+
+export type FeaturedWorkMediaScalarFieldEnum = (typeof FeaturedWorkMediaScalarFieldEnum)[keyof typeof FeaturedWorkMediaScalarFieldEnum]
 
 
 export const EducationTranslationScalarFieldEnum = {

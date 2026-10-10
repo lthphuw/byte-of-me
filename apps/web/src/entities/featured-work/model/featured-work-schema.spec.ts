@@ -131,3 +131,35 @@ describe('featuredWorkSchema', () => {
     });
   });
 });
+
+describe('featuredWorkSchema media', () => {
+  const parse = (media: unknown) => featuredWorkSchema.safeParse({ ...base, media });
+
+  it('is optional: omitted stays undefined, [] stays empty', () => {
+    expect(featuredWorkSchema.parse(base).media).toBeUndefined();
+    expect(parse([]).data?.media).toEqual([]);
+  });
+
+  it('accepts one or two items and trims the label, turning blank into null', () => {
+    expect(
+      parse([{ mediaId: 'a', label: '  FP16  ' }, { mediaId: 'b', label: '  ' }]).data?.media
+    ).toEqual([
+      { mediaId: 'a', label: 'FP16' },
+      { mediaId: 'b', label: null },
+    ]);
+    expect(parse([{ mediaId: 'a' }]).data?.media).toEqual([{ mediaId: 'a', label: undefined }]);
+  });
+
+  it('allows a 24-character label and refuses 25', () => {
+    expect(parse([{ mediaId: 'a', label: 'x'.repeat(24) }]).success).toBe(true);
+    expect(parse([{ mediaId: 'a', label: 'x'.repeat(25) }]).success).toBe(false);
+  });
+
+  it('refuses a third item, an empty id and the same file twice', () => {
+    expect(parse([{ mediaId: 'a' }, { mediaId: 'b' }, { mediaId: 'c' }]).success).toBe(false);
+    expect(parse([{ mediaId: '' }]).success).toBe(false);
+    const twice = parse([{ mediaId: 'a' }, { mediaId: 'a' }]);
+    expect(twice.success).toBe(false);
+    expect(twice.error?.issues[0]?.message).toBe('The same file cannot be used twice');
+  });
+});

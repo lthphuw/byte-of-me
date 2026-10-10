@@ -4,6 +4,7 @@ import { type FeaturedWork, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
+import { ownsAllMedia, toMediaRows } from '@/entities/featured-work/lib/featured-work-media';
 import {
   type FeaturedWorkFormValues,
   featuredWorkSchema,
@@ -25,6 +26,11 @@ export async function createFeaturedWork(
       return { success: false, errorMsg: parsed.errorMsg };
     }
     const values = parsed.data;
+
+    const media = values.media ?? [];
+    if (!(await ownsAllMedia(prisma, user.id, media.map((m) => m.mediaId)))) {
+      return { success: false, errorMsg: 'Media not found' };
+    }
 
     // The form has no order field: a new entry goes to the end of the list.
     const { _max } = await prisma.featuredWork.aggregate({
@@ -48,6 +54,8 @@ export async function createFeaturedWork(
             details: t.details ?? null,
           })),
         },
+
+        media: { create: toMediaRows(media) },
       },
     });
 

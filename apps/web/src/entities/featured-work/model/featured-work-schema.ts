@@ -15,6 +15,24 @@ const detailsSchema = z
   .transform((value) => (value && !isRichTextBlank(value) ? value : null))
   .optional();
 
+/** The demo is a side-by-side pair: one slot per item. */
+export const FEATURED_WORK_MEDIA_MAX = 2;
+export const FEATURED_WORK_MEDIA_LABEL_MAX_LENGTH = 24;
+
+// '' (an emptied input) and whitespace both mean "no label"; stored as null.
+const mediaLabelSchema = z
+  .string()
+  .trim()
+  .max(FEATURED_WORK_MEDIA_LABEL_MAX_LENGTH, 'Label is too long')
+  .nullable()
+  .transform((value) => value || null)
+  .optional();
+
+export const featuredWorkMediaItemSchema = z.object({
+  mediaId: z.string().min(1, 'mediaId is required'),
+  label: mediaLabelSchema,
+});
+
 export const featuredWorkTranslationSchema = z.object({
   id: z.string().optional(),
   language: z.string().min(1),
@@ -36,6 +54,17 @@ export const featuredWorkSchema = z.object({
       'Must be an http(s) URL'
     )
     .nullable()
+    .optional(),
+  // Omitted = keep the stored pair, [] = clear it (see `updateFeaturedWork`).
+  // A slot's `sortOrder` is its array position, so it is not part of the input.
+  media: z
+    .array(featuredWorkMediaItemSchema)
+    .max(FEATURED_WORK_MEDIA_MAX, 'At most two demo items')
+    // The primary key is (work, media): one file cannot fill both slots.
+    .refine(
+      (list) => new Set(list.map((item) => item.mediaId)).size === list.length,
+      'The same file cannot be used twice'
+    )
     .optional(),
   translations: z
     .array(featuredWorkTranslationSchema)

@@ -234,6 +234,7 @@ export type FeaturedWorkWhereInput = {
   userId?: Prisma.StringFilter<"FeaturedWork"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   translations?: Prisma.FeaturedWorkTranslationListRelationFilter
+  media?: Prisma.FeaturedWorkMediaListRelationFilter
 }
 
 export type FeaturedWorkOrderByWithRelationInput = {
@@ -246,6 +247,7 @@ export type FeaturedWorkOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   translations?: Prisma.FeaturedWorkTranslationOrderByRelationAggregateInput
+  media?: Prisma.FeaturedWorkMediaOrderByRelationAggregateInput
 }
 
 export type FeaturedWorkWhereUniqueInput = Prisma.AtLeast<{
@@ -261,6 +263,7 @@ export type FeaturedWorkWhereUniqueInput = Prisma.AtLeast<{
   userId?: Prisma.StringFilter<"FeaturedWork"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   translations?: Prisma.FeaturedWorkTranslationListRelationFilter
+  media?: Prisma.FeaturedWorkMediaListRelationFilter
 }, "id">
 
 export type FeaturedWorkOrderByWithAggregationInput = {
@@ -300,6 +303,7 @@ export type FeaturedWorkCreateInput = {
   url?: string | null
   user: Prisma.UserCreateNestedOneWithoutFeaturedWorksInput
   translations?: Prisma.FeaturedWorkTranslationCreateNestedManyWithoutFeaturedWorkInput
+  media?: Prisma.FeaturedWorkMediaCreateNestedManyWithoutFeaturedWorkInput
 }
 
 export type FeaturedWorkUncheckedCreateInput = {
@@ -311,6 +315,7 @@ export type FeaturedWorkUncheckedCreateInput = {
   url?: string | null
   userId: string
   translations?: Prisma.FeaturedWorkTranslationUncheckedCreateNestedManyWithoutFeaturedWorkInput
+  media?: Prisma.FeaturedWorkMediaUncheckedCreateNestedManyWithoutFeaturedWorkInput
 }
 
 export type FeaturedWorkUpdateInput = {
@@ -322,6 +327,7 @@ export type FeaturedWorkUpdateInput = {
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutFeaturedWorksNestedInput
   translations?: Prisma.FeaturedWorkTranslationUpdateManyWithoutFeaturedWorkNestedInput
+  media?: Prisma.FeaturedWorkMediaUpdateManyWithoutFeaturedWorkNestedInput
 }
 
 export type FeaturedWorkUncheckedUpdateInput = {
@@ -333,6 +339,7 @@ export type FeaturedWorkUncheckedUpdateInput = {
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   translations?: Prisma.FeaturedWorkTranslationUncheckedUpdateManyWithoutFeaturedWorkNestedInput
+  media?: Prisma.FeaturedWorkMediaUncheckedUpdateManyWithoutFeaturedWorkNestedInput
 }
 
 export type FeaturedWorkCreateManyInput = {
@@ -477,6 +484,20 @@ export type FeaturedWorkUpdateOneRequiredWithoutTranslationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.FeaturedWorkUpdateToOneWithWhereWithoutTranslationsInput, Prisma.FeaturedWorkUpdateWithoutTranslationsInput>, Prisma.FeaturedWorkUncheckedUpdateWithoutTranslationsInput>
 }
 
+export type FeaturedWorkCreateNestedOneWithoutMediaInput = {
+  create?: Prisma.XOR<Prisma.FeaturedWorkCreateWithoutMediaInput, Prisma.FeaturedWorkUncheckedCreateWithoutMediaInput>
+  connectOrCreate?: Prisma.FeaturedWorkCreateOrConnectWithoutMediaInput
+  connect?: Prisma.FeaturedWorkWhereUniqueInput
+}
+
+export type FeaturedWorkUpdateOneRequiredWithoutMediaNestedInput = {
+  create?: Prisma.XOR<Prisma.FeaturedWorkCreateWithoutMediaInput, Prisma.FeaturedWorkUncheckedCreateWithoutMediaInput>
+  connectOrCreate?: Prisma.FeaturedWorkCreateOrConnectWithoutMediaInput
+  upsert?: Prisma.FeaturedWorkUpsertWithoutMediaInput
+  connect?: Prisma.FeaturedWorkWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.FeaturedWorkUpdateToOneWithWhereWithoutMediaInput, Prisma.FeaturedWorkUpdateWithoutMediaInput>, Prisma.FeaturedWorkUncheckedUpdateWithoutMediaInput>
+}
+
 export type FeaturedWorkCreateWithoutUserInput = {
   id?: string
   createdAt?: Date | string
@@ -485,6 +506,7 @@ export type FeaturedWorkCreateWithoutUserInput = {
   isPublished?: boolean
   url?: string | null
   translations?: Prisma.FeaturedWorkTranslationCreateNestedManyWithoutFeaturedWorkInput
+  media?: Prisma.FeaturedWorkMediaCreateNestedManyWithoutFeaturedWorkInput
 }
 
 export type FeaturedWorkUncheckedCreateWithoutUserInput = {
@@ -495,6 +517,7 @@ export type FeaturedWorkUncheckedCreateWithoutUserInput = {
   isPublished?: boolean
   url?: string | null
   translations?: Prisma.FeaturedWorkTranslationUncheckedCreateNestedManyWithoutFeaturedWorkInput
+  media?: Prisma.FeaturedWorkMediaUncheckedCreateNestedManyWithoutFeaturedWorkInput
 }
 
 export type FeaturedWorkCreateOrConnectWithoutUserInput = {
@@ -544,6 +567,7 @@ export type FeaturedWorkCreateWithoutTranslationsInput = {
   isPublished?: boolean
   url?: string | null
   user: Prisma.UserCreateNestedOneWithoutFeaturedWorksInput
+  media?: Prisma.FeaturedWorkMediaCreateNestedManyWithoutFeaturedWorkInput
 }
 
 export type FeaturedWorkUncheckedCreateWithoutTranslationsInput = {
@@ -554,6 +578,7 @@ export type FeaturedWorkUncheckedCreateWithoutTranslationsInput = {
   isPublished?: boolean
   url?: string | null
   userId: string
+  media?: Prisma.FeaturedWorkMediaUncheckedCreateNestedManyWithoutFeaturedWorkInput
 }
 
 export type FeaturedWorkCreateOrConnectWithoutTranslationsInput = {
@@ -580,6 +605,7 @@ export type FeaturedWorkUpdateWithoutTranslationsInput = {
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutFeaturedWorksNestedInput
+  media?: Prisma.FeaturedWorkMediaUpdateManyWithoutFeaturedWorkNestedInput
 }
 
 export type FeaturedWorkUncheckedUpdateWithoutTranslationsInput = {
@@ -590,6 +616,67 @@ export type FeaturedWorkUncheckedUpdateWithoutTranslationsInput = {
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  media?: Prisma.FeaturedWorkMediaUncheckedUpdateManyWithoutFeaturedWorkNestedInput
+}
+
+export type FeaturedWorkCreateWithoutMediaInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sortOrder?: number
+  isPublished?: boolean
+  url?: string | null
+  user: Prisma.UserCreateNestedOneWithoutFeaturedWorksInput
+  translations?: Prisma.FeaturedWorkTranslationCreateNestedManyWithoutFeaturedWorkInput
+}
+
+export type FeaturedWorkUncheckedCreateWithoutMediaInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sortOrder?: number
+  isPublished?: boolean
+  url?: string | null
+  userId: string
+  translations?: Prisma.FeaturedWorkTranslationUncheckedCreateNestedManyWithoutFeaturedWorkInput
+}
+
+export type FeaturedWorkCreateOrConnectWithoutMediaInput = {
+  where: Prisma.FeaturedWorkWhereUniqueInput
+  create: Prisma.XOR<Prisma.FeaturedWorkCreateWithoutMediaInput, Prisma.FeaturedWorkUncheckedCreateWithoutMediaInput>
+}
+
+export type FeaturedWorkUpsertWithoutMediaInput = {
+  update: Prisma.XOR<Prisma.FeaturedWorkUpdateWithoutMediaInput, Prisma.FeaturedWorkUncheckedUpdateWithoutMediaInput>
+  create: Prisma.XOR<Prisma.FeaturedWorkCreateWithoutMediaInput, Prisma.FeaturedWorkUncheckedCreateWithoutMediaInput>
+  where?: Prisma.FeaturedWorkWhereInput
+}
+
+export type FeaturedWorkUpdateToOneWithWhereWithoutMediaInput = {
+  where?: Prisma.FeaturedWorkWhereInput
+  data: Prisma.XOR<Prisma.FeaturedWorkUpdateWithoutMediaInput, Prisma.FeaturedWorkUncheckedUpdateWithoutMediaInput>
+}
+
+export type FeaturedWorkUpdateWithoutMediaInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  user?: Prisma.UserUpdateOneRequiredWithoutFeaturedWorksNestedInput
+  translations?: Prisma.FeaturedWorkTranslationUpdateManyWithoutFeaturedWorkNestedInput
+}
+
+export type FeaturedWorkUncheckedUpdateWithoutMediaInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  translations?: Prisma.FeaturedWorkTranslationUncheckedUpdateManyWithoutFeaturedWorkNestedInput
 }
 
 export type FeaturedWorkCreateManyUserInput = {
@@ -609,6 +696,7 @@ export type FeaturedWorkUpdateWithoutUserInput = {
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   translations?: Prisma.FeaturedWorkTranslationUpdateManyWithoutFeaturedWorkNestedInput
+  media?: Prisma.FeaturedWorkMediaUpdateManyWithoutFeaturedWorkNestedInput
 }
 
 export type FeaturedWorkUncheckedUpdateWithoutUserInput = {
@@ -619,6 +707,7 @@ export type FeaturedWorkUncheckedUpdateWithoutUserInput = {
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
   url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   translations?: Prisma.FeaturedWorkTranslationUncheckedUpdateManyWithoutFeaturedWorkNestedInput
+  media?: Prisma.FeaturedWorkMediaUncheckedUpdateManyWithoutFeaturedWorkNestedInput
 }
 
 export type FeaturedWorkUncheckedUpdateManyWithoutUserInput = {
@@ -637,10 +726,12 @@ export type FeaturedWorkUncheckedUpdateManyWithoutUserInput = {
 
 export type FeaturedWorkCountOutputType = {
   translations: number
+  media: number
 }
 
 export type FeaturedWorkCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   translations?: boolean | FeaturedWorkCountOutputTypeCountTranslationsArgs
+  media?: boolean | FeaturedWorkCountOutputTypeCountMediaArgs
 }
 
 /**
@@ -660,6 +751,13 @@ export type FeaturedWorkCountOutputTypeCountTranslationsArgs<ExtArgs extends run
   where?: Prisma.FeaturedWorkTranslationWhereInput
 }
 
+/**
+ * FeaturedWorkCountOutputType without action
+ */
+export type FeaturedWorkCountOutputTypeCountMediaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FeaturedWorkMediaWhereInput
+}
+
 
 export type FeaturedWorkSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -671,6 +769,7 @@ export type FeaturedWorkSelect<ExtArgs extends runtime.Types.Extensions.Internal
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   translations?: boolean | Prisma.FeaturedWork$translationsArgs<ExtArgs>
+  media?: boolean | Prisma.FeaturedWork$mediaArgs<ExtArgs>
   _count?: boolean | Prisma.FeaturedWorkCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["featuredWork"]>
 
@@ -710,6 +809,7 @@ export type FeaturedWorkOmit<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type FeaturedWorkInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   translations?: boolean | Prisma.FeaturedWork$translationsArgs<ExtArgs>
+  media?: boolean | Prisma.FeaturedWork$mediaArgs<ExtArgs>
   _count?: boolean | Prisma.FeaturedWorkCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type FeaturedWorkIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -724,6 +824,7 @@ export type $FeaturedWorkPayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     translations: Prisma.$FeaturedWorkTranslationPayload<ExtArgs>[]
+    media: Prisma.$FeaturedWorkMediaPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1129,6 +1230,7 @@ export interface Prisma__FeaturedWorkClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   translations<T extends Prisma.FeaturedWork$translationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FeaturedWork$translationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeaturedWorkTranslationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  media<T extends Prisma.FeaturedWork$mediaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FeaturedWork$mediaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeaturedWorkMediaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1587,6 +1689,30 @@ export type FeaturedWork$translationsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.FeaturedWorkTranslationScalarFieldEnum | Prisma.FeaturedWorkTranslationScalarFieldEnum[]
+}
+
+/**
+ * FeaturedWork.media
+ */
+export type FeaturedWork$mediaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FeaturedWorkMedia
+   */
+  select?: Prisma.FeaturedWorkMediaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FeaturedWorkMedia
+   */
+  omit?: Prisma.FeaturedWorkMediaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FeaturedWorkMediaInclude<ExtArgs> | null
+  where?: Prisma.FeaturedWorkMediaWhereInput
+  orderBy?: Prisma.FeaturedWorkMediaOrderByWithRelationInput | Prisma.FeaturedWorkMediaOrderByWithRelationInput[]
+  cursor?: Prisma.FeaturedWorkMediaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FeaturedWorkMediaScalarFieldEnum | Prisma.FeaturedWorkMediaScalarFieldEnum[]
 }
 
 /**
