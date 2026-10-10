@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && bunx turbo run build --filter=web",
+  "ignoreCommand": "cd ../.. && bunx turbo query affected --base=$VERCEL_GIT_PREVIOUS_SHA --packages web --exit-code; [ $? -eq 0 ] && exit 0; exit 1",
+  "regions": ["hnd1"]
+}

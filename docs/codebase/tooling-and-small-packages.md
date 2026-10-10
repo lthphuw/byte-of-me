@@ -46,7 +46,7 @@
 
 - `build` has no dependsOn, so it does not build dependency workspaces first; outputs `dist/**` and `.next/**` minus `.next/cache` and `.next/dev`; inputs add `.env*`. Web's build reads its packages from source (`transpilePackages`).
 - Local cache cap: `cacheMaxSize` `5GB` and `cacheMaxAge` `14d` (eviction runs at the start of each `turbo run`). Without them the cache never shrinks, and the web build entry is about 6 MB compressed.
-- Vercel: the repo has no `vercel.json`, so these live in the Vercel project settings. Build command `cd ../.. && turbo run build --filter=web`; Root Directory `apps/web`; Ignored Build Step `turbo query affected --base=$VERCEL_GIT_PREVIOUS_SHA --packages web --exit-code` (per the Vercel and Turborepo docs, 2026-08-28). Verify these in the dashboard, since the repo cannot show them.
+- Vercel: `apps/web/vercel.json` sets `framework` (nextjs), `buildCommand` (`cd ../.. && bunx turbo run build --filter=web`), `ignoreCommand` and `regions` (`hnd1`, Tokyo, next to Supabase in `ap-northeast-1`). The file is read from the Root Directory, so the dashboard's Root Directory must be `apps/web`; the repo cannot show that setting. `ignoreCommand` runs `turbo query affected` and skips the build (exit 0) when no package affects `web`; any other result builds. Vercel's install step is left to auto-detection (bun.lock).
 - `generate` dependsOn `^generate`. Nothing else has a dependsOn.
 - `cache: false` on `dev`, `lint:fix`, `generate`, all `db:*`; `persistent` on `dev` and `db:migrate:dev`.
 - `globalDependencies`: `eslint.config.mjs`, `packages/config/typescript/*.json`. `db:*` have no root script: `bun run --filter '@byte-of-me/db' db:push`.
