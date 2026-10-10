@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { type DefaultValues, useForm } from 'react-hook-form';
 import {
   Form,
@@ -53,12 +53,15 @@ interface FeaturedWorkFormProps {
   /** The full row, with each language's body. The list row has no bodies. */
   initialData?: AdminFeaturedWorkDetail;
   onSubmit: (data: FeaturedWorkFormValues) => void;
+  /** Reports a demo clip in flight; a save then would leave it out. */
+  onUploadingChange?: (isUploading: boolean) => void;
 }
 
 export function FeaturedWorkForm({
   formId,
   initialData,
   onSubmit,
+  onUploadingChange,
 }: FeaturedWorkFormProps) {
   const t = useTranslations('dashboard.featuredWorks');
 
@@ -68,6 +71,16 @@ export function FeaturedWorkForm({
     resolver: featuredWorkResolver,
     defaultValues,
   });
+
+  // The Save button is disabled meanwhile; this also stops Enter in an input.
+  const isUploading = useRef(false);
+  const handleUploadingChange = useCallback(
+    (value: boolean) => {
+      isUploading.current = value;
+      onUploadingChange?.(value);
+    },
+    [onUploadingChange]
+  );
 
   // The server answers a repeated language with one generic message. It names
   // no tab, so it sits above the tabs where it shows on whichever is open.
@@ -79,7 +92,9 @@ export function FeaturedWorkForm({
     <Form {...form}>
       <form
         id={formId}
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit((data) => {
+          if (!isUploading.current) onSubmit(data);
+        })}
         className="space-y-6"
       >
         {translationsError && (
@@ -147,7 +162,11 @@ export function FeaturedWorkForm({
           control={form.control}
           name="media"
           render={({ field }) => (
-            <FeaturedWorkDemo field={field} initialMedia={initialData?.media} />
+            <FeaturedWorkDemo
+              field={field}
+              initialMedia={initialData?.media}
+              onUploadingChange={handleUploadingChange}
+            />
           )}
         />
 

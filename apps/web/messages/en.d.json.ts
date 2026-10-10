@@ -631,8 +631,7 @@ declare const messages: {
         "previewLabel": "Demo {slot, number}",
         "labelLabel": "Label {slot, number}",
         "removeButton": "Remove",
-        "removeLabel": "Remove demo {slot, number}",
-        "uploadFailed": "Upload failed"
+        "removeLabel": "Remove demo {slot, number}"
       }
     },
     "media": {

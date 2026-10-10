@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import {
   Button,
   Dialog,
@@ -54,6 +55,7 @@ export function FeaturedWorkDialog({
   loading,
 }: FeaturedWorkDialogProps) {
   const t = useTranslations('dashboard.featuredWorks');
+  const [isUploading, setIsUploading] = useState(false);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -79,6 +81,7 @@ export function FeaturedWorkDialog({
               formId={FORM_ID}
               initialData={initialData ?? undefined}
               onSubmit={onSubmit}
+              onUploadingChange={setIsUploading}
             />
           </EditRecordGate>
         </div>
@@ -94,7 +97,9 @@ export function FeaturedWorkDialog({
           <Button
             type="submit"
             form={FORM_ID}
-            disabled={loading || isLoadingInitialData || hasLoadError}
+            disabled={
+              loading || isLoadingInitialData || hasLoadError || isUploading
+            }
           >
             {loading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />

@@ -630,9 +630,8 @@ declare const messages: {
         "uploadLabel": "Tải lên demo {slot, number}",
         "previewLabel": "Demo {slot, number}",
         "labelLabel": "Nhãn {slot, number}",
-        "removeButton": "Gỡ",
-        "removeLabel": "Gỡ demo {slot, number}",
-        "uploadFailed": "Tải lên thất bại"
+        "removeButton": "Xóa",
+        "removeLabel": "Xóa demo {slot, number}"
       }
     },
     "media": {

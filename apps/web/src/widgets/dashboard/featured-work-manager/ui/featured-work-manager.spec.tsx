@@ -31,12 +31,15 @@ import { toast } from 'sonner';
 // The catalogue lives outside `src/`, so the `@/` alias cannot reach it.
 // eslint-disable-next-line import-alias/import-alias
 import en from '../../../../../messages/en.json';
+// eslint-disable-next-line import-alias/import-alias
+import vi from '../../../../../messages/vi.json';
 
 import { FeaturedWorkManager } from './featured-work-manager';
 
 import { featuredWorkKeys } from '@/entities/featured-work/model/query-keys';
 import type { AdminFeaturedWork } from '@/entities/featured-work/model/types';
 import * as singleUpload from '@/entities/media/api/upload-single-media';
+import { MediaViolationError } from '@/entities/media/model/upload-constraints';
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 import type { Media } from '@/shared/types/models';
 import {
@@ -157,7 +160,9 @@ function renderManager(
 
   render(
     <QueryClientProvider client={queryClient}>
-      <NextIntlClientProvider locale={locale} messages={{ dashboard: en.dashboard }}>
+      <NextIntlClientProvider locale={locale} messages={{
+          dashboard: (locale === 'vi' ? vi.dashboard : en.dashboard) as typeof en.dashboard,
+        }}>
         <FeaturedWorkManager />
       </NextIntlClientProvider>
     </QueryClientProvider>
@@ -946,5 +951,229 @@ describe('FeaturedWorkManager demo pair', () => {
       data: { media: { create: [{ mediaId: 'm9', sortOrder: 0, label: 'FP16' }] } },
     });
     expect(mediaCount).toHaveBeenCalledTimes(1);
+  });
+  it('offers only images and mp4/webm in the file picker', async () => {
+    await openWork([]);
+
+    const input = document.querySelector<HTMLInputElement>('input[type="file"]');
+    expect(input?.getAttribute('accept')).toBe(
+      'image/jpeg,image/png,image/webp,image/avif,image/gif,image/svg+xml,video/mp4,video/webm'
+    );
+  });
+
+  it('holds Save while a clip is uploading, then submits the clip once it lands', async () => {
+    const landing = deferred<Media>();
+    uploadRecord.mockReturnValue(landing.promise);
+    await openWork([]);
+
+    chooseFile(clip());
+    await waitFor(() => expect(button('Save changes').disabled).toBe(true));
+    fireEvent.click(button('Save changes'));
+    expect(txUpdate).not.toHaveBeenCalled();
+
+    await act(async () => {
+      landing.resolve(stored('m9'));
+    });
+    await screen.findByLabelText('Label 1');
+    expect(button('Save changes').disabled).toBe(false);
+    await save();
+
+    expect(savedMedia()).toEqual([
+      { featuredWorkId: 'w1', mediaId: 'm9', sortOrder: 0, label: null },
+    ]);
+  });
+
+  it('releases Save when the upload fails', async () => {
+    let fail!: (reason: Error) => void;
+    uploadRecord.mockReturnValue(
+      new Promise<Media>((_, reject) => {
+        fail = reject;
+      })
+    );
+    await openWork([]);
+
+    chooseFile(clip());
+    await waitFor(() => expect(button('Save changes').disabled).toBe(true));
+    await act(async () => {
+      fail(new Error('Storage is full'));
+    });
+
+    await waitFor(() => expect(button('Save changes').disabled).toBe(false));
+    expect(toastError).toHaveBeenCalledWith('Upload failed', {
+      description: 'Storage is full',
+    });
+  });
+
+  it('appends a late upload after the slot it was started for was removed', async () => {
+    const landing = deferred<Media>();
+    uploadRecord.mockReturnValue(landing.promise);
+    await openWork([FP16]);
+
+    chooseFile(clip());
+    await waitFor(() => expect(button('Upload demo 2').disabled).toBe(true));
+    fireEvent.click(button('Remove demo 1'));
+    await act(async () => {
+      landing.resolve(stored('m9'));
+    });
+    await screen.findByLabelText('Label 1');
+    await save();
+
+    expect(savedMedia()).toEqual([
+      { featuredWorkId: 'w1', mediaId: 'm9', sortOrder: 0, label: null },
+    ]);
+  });
+
+  it('keeps a label edited while the upload was in flight', async () => {
+    const landing = deferred<Media>();
+    uploadRecord.mockReturnValue(landing.promise);
+    await openWork([FP16]);
+
+    chooseFile(clip());
+    await waitFor(() => expect(button('Upload demo 2').disabled).toBe(true));
+    fireEvent.change(screen.getByLabelText('Label 1'), { target: { value: 'W8A8' } });
+    await act(async () => {
+      landing.resolve(stored('m9'));
+    });
+    await screen.findByLabelText('Label 2');
+    await save();
+
+    expect(savedMedia()).toEqual([
+      { featuredWorkId: 'w1', mediaId: 'm1', sortOrder: 0, label: 'W8A8' },
+      { featuredWorkId: 'w1', mediaId: 'm9', sortOrder: 1, label: null },
+    ]);
+  });
+
+  it('says so, and attaches nothing, when the upload answers with a clip the pair already holds', async () => {
+    uploadRecord.mockResolvedValue(stored('m1'));
+    await openWork([FP16]);
+
+    chooseFile(clip());
+
+    await waitFor(() => expect(toastError).toHaveBeenCalledWith('Upload failed'));
+    expect(screen.queryByLabelText('Label 2')).toBeNull();
+    await save();
+    expect(savedMedia()).toEqual([
+      { featuredWorkId: 'w1', mediaId: 'm1', sortOrder: 0, label: 'FP16' },
+    ]);
+  });
+
+  it('ignores an upload that lands after the form has closed', async () => {
+    const landing = deferred<Media>();
+    uploadRecord.mockReturnValue(landing.promise);
+    await openWork([]);
+
+    chooseFile(clip());
+    await waitFor(() => expect(button('Upload demo 1').disabled).toBe(true));
+    cleanup();
+    await act(async () => {
+      landing.resolve(stored('m9'));
+    });
+
+    expect(toastError).not.toHaveBeenCalled();
+    expect(logError).not.toHaveBeenCalled();
+    expect(txUpdate).not.toHaveBeenCalled();
+  });
+
+  it('names a refused file in the owner\'s language, from the violation', async () => {
+    uploadRecord.mockRejectedValue(
+      new MediaViolationError({ kind: 'size', fileName: 'int8.mp4', maxSizeMb: 10 })
+    );
+    await openWork([]);
+
+    chooseFile(clip());
+
+    await waitFor(() =>
+      expect(toastError).toHaveBeenCalledWith('File too large', {
+        description: 'int8.mp4 exceeds 10MB.',
+      })
+    );
+  });
+
+  it('names an unsupported file type', async () => {
+    uploadRecord.mockRejectedValue(
+      new MediaViolationError({ kind: 'type', fileName: 'a.mov' })
+    );
+    await openWork([]);
+
+    chooseFile(clip());
+
+    await waitFor(() =>
+      expect(toastError).toHaveBeenCalledWith('Invalid type', {
+        description: 'a.mov is not an image, MP4 or WebM file.',
+      })
+    );
+  });
+
+  it('puts focus on the new clip\'s label once it lands', async () => {
+    uploadRecord.mockResolvedValue(stored('m9'));
+    await openWork([]);
+
+    button('Upload demo 1').focus();
+    chooseFile(clip());
+
+    await screen.findByLabelText('Label 1');
+    await waitFor(() => expect(focusedLabel()).toBe('Label 1'));
+  });
+
+  it('puts focus back on the upload button after a failed upload', async () => {
+    uploadRecord.mockRejectedValue(new Error('Storage is full'));
+    await openWork([]);
+
+    button('Upload demo 1').focus();
+    chooseFile(clip());
+
+    await waitFor(() => expect(button('Upload demo 1').disabled).toBe(false));
+    await waitFor(() => expect(focusedLabel()).toBe('Upload demo 1'));
+  });
+
+  it('moves focus to the clip that moved up when slot 1 is removed', async () => {
+    await openWork([FP16, INT8]);
+
+    button('Remove demo 1').focus();
+    fireEvent.click(button('Remove demo 1'));
+
+    await waitFor(() => expect(focusedLabel()).toBe('Label 1'));
+  });
+
+  it('moves focus to the upload button when the last clip is removed', async () => {
+    await openWork([FP16]);
+
+    button('Remove demo 1').focus();
+    fireEvent.click(button('Remove demo 1'));
+
+    await waitFor(() => expect(focusedLabel()).toBe('Upload demo 1'));
+  });
+
+  it('moves focus to the freed slot\'s upload button when slot 2 is removed', async () => {
+    await openWork([FP16, INT8]);
+
+    button('Remove demo 2').focus();
+    fireEvent.click(button('Remove demo 2'));
+
+    await waitFor(() => expect(focusedLabel()).toBe('Upload demo 2'));
+  });
+
+  it('does not take focus from a field the owner has moved on to', async () => {
+    await openWork([FP16]);
+    const title = screen.getByLabelText('Title');
+
+    fireEvent.click(button('Remove demo 1'));
+    title.focus();
+
+    await waitFor(() => expect(document.activeElement).toBe(title));
+  });
+
+  it('names its controls in Vietnamese', async () => {
+    findFirst.mockResolvedValue(
+      detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }, [FP16])
+    );
+    renderManager(rows, 'vi');
+    fireEvent.click(button('Sửa Faster export'));
+    await screen.findByLabelText('Nhãn 1');
+
+    expect(screen.getByRole('group', { name: 'Demo' })).toBeTruthy();
+    expect(screen.getByLabelText('Demo 1')).toBeTruthy();
+    expect(button('Xóa demo 1')).toBeTruthy();
+    expect(button('Tải lên demo 2').textContent).toBe('Tải lên');
   });
 });
