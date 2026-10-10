@@ -21,7 +21,14 @@ export const featuredWorkSchema = z.object({
     )
     .nullable()
     .optional(),
-  translations: z.array(featuredWorkTranslationSchema).min(1),
+  translations: z
+    .array(featuredWorkTranslationSchema)
+    .min(1)
+    // The DB is unique on (featuredWorkId, language); catch it here, not as a raw Prisma P2002.
+    .refine(
+      (list) => new Set(list.map((t) => t.language)).size === list.length,
+      'Each language may appear once'
+    ),
 });
 
 export type FeaturedWorkFormValues = z.infer<typeof featuredWorkSchema>;

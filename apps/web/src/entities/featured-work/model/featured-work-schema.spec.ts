@@ -34,4 +34,28 @@ describe('featuredWorkSchema', () => {
       }).success
     ).toBe(false);
   });
+
+  it('rejects two translations in the same language with a clean message', () => {
+    const result = featuredWorkSchema.safeParse({
+      ...base,
+      translations: [
+        { language: 'en', title: 'A' },
+        { language: 'en', title: 'B' },
+      ],
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0]?.message).toBe('Each language may appear once');
+  });
+
+  it('accepts one translation per language', () => {
+    expect(
+      featuredWorkSchema.safeParse({
+        ...base,
+        translations: [
+          { language: 'en', title: 'A' },
+          { language: 'vi', title: 'B' },
+        ],
+      }).success
+    ).toBe(true);
+  });
 });

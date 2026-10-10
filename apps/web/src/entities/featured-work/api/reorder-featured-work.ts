@@ -3,12 +3,15 @@
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
+import { z } from 'zod';
 
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getErrorMessage } from '@/shared/lib/utils';
 import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
+
+const directionSchema = z.enum(['up', 'down']);
 
 export async function reorderFeaturedWork(
   id: string,
@@ -20,6 +23,12 @@ export async function reorderFeaturedWork(
     const parsedId = parseInput(idSchema, id);
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };
+    }
+
+    // A server action is a public endpoint: the TypeScript union is not enforced at runtime.
+    const parsedDirection = parseInput(directionSchema, direction);
+    if (!parsedDirection.ok) {
+      return { success: false, errorMsg: parsedDirection.errorMsg };
     }
 
     const result = await prisma.$transaction(

@@ -138,6 +138,14 @@ describe('reorderFeaturedWork', () => {
     ]);
   });
 
+  it('rejects an unknown direction without reading or writing', async () => {
+    const result = await reorderFeaturedWork('b', 'sideways' as 'up');
+
+    expect(result.success).toBe(false);
+    expect(findMany).not.toHaveBeenCalled();
+    expect(update).not.toHaveBeenCalled();
+  });
+
   it('refuses a non-admin caller before reading anything', async () => {
     setTestUser({ id: 'user-2', role: 'USER' });
     try {
