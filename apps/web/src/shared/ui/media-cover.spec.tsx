@@ -11,6 +11,7 @@ function Box({ src }: { src: string }) {
   const { ref, drawn } = useMediaDrawn<HTMLDivElement>();
   return (
     <div ref={ref}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={src} alt="" />
       <MediaCover drawn={drawn} />
     </div>

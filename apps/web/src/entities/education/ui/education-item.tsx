@@ -5,9 +5,8 @@ import Image from 'next/image';
 import { AchievementFold } from './achievement-fold';
 import { AchievementItem } from './achievement-item';
 
-import { MediaFrame } from '@/shared/ui/media-cover';
-
 import type { PublicEducation } from '@/entities/education/model/types';
+import { MediaFrame } from '@/shared/ui/media-cover';
 
 export function EducationItem({
   edu,
