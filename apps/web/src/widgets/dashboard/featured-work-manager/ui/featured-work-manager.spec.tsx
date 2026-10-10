@@ -37,8 +37,8 @@ import { FeaturedWorkManager } from './featured-work-manager';
 import { featuredWorkKeys } from '@/entities/featured-work/model/query-keys';
 import type { AdminFeaturedWork } from '@/entities/featured-work/model/types';
 import * as singleUpload from '@/entities/media/api/upload-single-media';
-import type { Media } from '@/shared/types/models';
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
+import type { Media } from '@/shared/types/models';
 import {
   __getEditorProps,
   __getMountedValues,
