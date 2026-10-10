@@ -27,7 +27,7 @@ const GLYPH = 'ml-1 inline size-4 align-baseline text-muted-foreground';
  */
 const HIT_AREA =
   'text-left before:absolute before:inset-y-0 before:-inset-x-3 before:rounded-lg focus-visible:outline-none focus-visible:before:ring-2 focus-visible:before:ring-inset focus-visible:before:ring-ring';
-/** Armed with the first user toggle, so a deep link opens the row and the chevron without a turn. */
+/** Armed by the first user toggle. A deep link opens the row and turns the chevron with no animation. */
 const CHEVRON_ARMED = 'transition-transform motion-reduce:transition-none';
 const ROW_LINK =
   '-mx-3 block rounded-lg px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
