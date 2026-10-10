@@ -5,6 +5,7 @@ import { getPublicBlogBySlug } from '@/entities/blog/api/get-public-blog-by-slug
 import { getPublishedBlogSlugs } from '@/entities/blog/api/get-published-blog-slugs';
 import { host } from '@/shared/config/host';
 import { routing } from '@/shared/i18n/routing';
+import { SITE_PERSON_ID } from '@/shared/lib/metadata';
 import type { LocaleType } from '@/shared/types';
 import { JsonLd } from '@/shared/ui/json-ld';
 import { BlogDetailsContent } from '@/widgets/public';
@@ -48,9 +49,8 @@ export default async function BlogDetailPage({
     inLanguage: locale,
     image: blog.coverImage?.url ?? undefined,
     keywords: blog.tags.map((tag) => tag.name).join(', ') || undefined,
-    author: blog.author?.name
-      ? { '@type': 'Person', name: blog.author.name }
-      : undefined,
+    // A reference to the site's Person node, which the locale layout already emits.
+    author: { '@id': SITE_PERSON_ID },
     mainEntityOfPage: `${host}/${locale}/blogs/${blog.slug}`,
   };
 

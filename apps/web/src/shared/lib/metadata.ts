@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 
 import { host } from '@/shared/config/host';
 import { siteConfig } from '@/shared/config/site';
+import { routing } from '@/shared/i18n/routing';
 import type { BrandLayer } from '@/shared/lib/brand-mark';
 import type { JsonLdObject } from '@/shared/ui/json-ld';
 
@@ -15,6 +16,9 @@ import type { JsonLdObject } from '@/shared/ui/json-ld';
  * which lets the `BlogPosting` on a post reference the same Person without
  * repeating it.
  */
+/** `@id` of the site's Person node. Blog posts point here as their author. */
+export const SITE_PERSON_ID = `${siteConfig.url}/#person`;
+
 export function buildSiteJsonLd({
   locale,
   description,
@@ -22,8 +26,6 @@ export function buildSiteJsonLd({
   locale: string;
   description: string;
 }): JsonLdObject {
-  const personId = `${siteConfig.url}/#person`;
-
   return {
     '@context': 'https://schema.org',
     '@graph': [
@@ -34,14 +36,15 @@ export function buildSiteJsonLd({
         name: siteConfig.name,
         description,
         inLanguage: locale,
-        publisher: { '@id': personId },
+        publisher: { '@id': SITE_PERSON_ID },
       },
       {
         '@type': 'Person',
-        '@id': personId,
+        '@id': SITE_PERSON_ID,
         name: 'lthphuw',
         url: siteConfig.url,
-        email: siteConfig.email,
+        // No email: this graph ships on every page and scrapers read it. Contact
+        // goes through the visible mail link on the page.
         sameAs: [siteConfig.links.github],
       },
     ],
@@ -79,6 +82,31 @@ export function buildIconSet(layer: BrandLayer): Metadata['icons'] {
     ],
     shortcut: `/icons/mark-${layer}-32.png`,
     apple: '/apple-touch-icon.png',
+  };
+}
+
+const FEED_URL = `${siteConfig.url}/feed.xml`;
+
+/**
+ * Canonical, hreflang (with `x-default`) and feed autodiscovery for one page.
+ * `path` is the locale-less route, `''` for the homepage. Next replaces
+ * `alternates` per layer, so each page must build it here or lose the feed link.
+ */
+export function buildAlternates(
+  canonical: string,
+  path: string
+): NonNullable<Metadata['alternates']> {
+  return {
+    canonical,
+    languages: {
+      ...Object.fromEntries(
+        routing.locales.map(
+          (locale) => [locale, `${siteConfig.url}/${locale}${path}`] as const
+        )
+      ),
+      'x-default': `${siteConfig.url}/${routing.defaultLocale}${path}`,
+    },
+    types: { 'application/rss+xml': FEED_URL },
   };
 }
 
@@ -140,13 +168,7 @@ export function buildPublicPageMetadata({
     keywords: [...pageKeywords, ...siteConfig.keywords].map((key) =>
       key.toLowerCase()
     ),
-    alternates: {
-      canonical: url,
-      languages: {
-        vi: `${siteConfig.url}/vi/${segment}`,
-        en: `${siteConfig.url}/en/${segment}`,
-      },
-    },
+    alternates: buildAlternates(url, `/${segment}`),
     openGraph: {
       title: fullTitle,
       description,

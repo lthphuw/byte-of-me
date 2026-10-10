@@ -4,6 +4,7 @@ import { getPublicBlogBySlug } from '@/entities/blog/api/get-public-blog-by-slug
 import { getPublicUserProfile } from '@/entities/user-profile';
 import { host } from '@/shared/config/host';
 import { siteConfig } from '@/shared/config/site';
+import { buildAlternates } from '@/shared/lib/metadata';
 
 export async function generateMetadata({
   params,
@@ -51,13 +52,7 @@ export async function generateMetadata({
     creator: authorName,
     publisher: siteConfig.name,
 
-    alternates: {
-      canonical: url,
-      languages: {
-        vi: `${siteConfig.url}/vi/blogs/${slug}`,
-        en: `${siteConfig.url}/en/blogs/${slug}`,
-      },
-    },
+    alternates: buildAlternates(url, `/blogs/${slug}`),
 
     robots: {
       index: true,

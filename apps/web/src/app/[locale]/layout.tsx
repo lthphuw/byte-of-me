@@ -19,7 +19,11 @@ import {
   ROOT_MESSAGE_NAMESPACES,
 } from '@/shared/i18n/messages';
 import { routing } from '@/shared/i18n/routing';
-import { buildIconSet,buildSiteJsonLd } from '@/shared/lib/metadata';
+import {
+  buildAlternates,
+  buildIconSet,
+  buildSiteJsonLd,
+} from '@/shared/lib/metadata';
 import { cn } from '@/shared/lib/utils';
 // Imported by path, not through '@/shared/ui': that barrel reaches the rich
 // text editor, and the locale layout wraps every public page.
@@ -73,17 +77,11 @@ export async function generateMetadata({
     applicationName: `${t('title')} | Byte of me`,
     generator: 'Next.js',
     manifest: '/site.webmanifest',
-    alternates: {
-      canonical: url,
-      languages: {
-        vi: `${siteConfig.url}/vi`,
-        en: `${siteConfig.url}/en`,
-      },
-    },
+    alternates: buildAlternates(url, ''),
     openGraph: {
       type: 'website',
       locale: locale === 'vi' ? 'vi_VN' : 'en_US',
-      url: siteConfig.url,
+      url,
       title: `${t('title')} | Byte of me`,
       description: t('description'),
       siteName: 'Byte of me',
@@ -115,6 +113,8 @@ export async function generateMetadata({
         index: true,
         follow: true,
         noimageindex: false,
+        // Lets Google show large image previews; without it the default is a small thumbnail.
+        'max-image-preview': 'large',
       },
     },
     category: 'technology',
