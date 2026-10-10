@@ -237,11 +237,6 @@ declare const messages: {
   },
   "homepage": {
     "myStory": "Hành trình của tôi",
-    "selectedProjects": "Dự án tiêu biểu",
-    "aFewThingsIveBuiltRecently": "Một vài sản phẩm tôi đã thực hiện gần đây",
-    "viewProject": "Xem dự án",
-    "viewAllProjects": "Xem tất cả dự án",
-    "thereAreNoProjectsYet": "Hiện chưa có dự án nào",
     "haveAnIdeaInMind": "Bạn đang có một ý tưởng?",
     "alwaysInterestedInThoughtfulProjectsAndGoodCollaboration": "Tôi luôn hứng thú với những dự án được đầu tư nghiêm túc và những mối hợp tác tốt đẹp.",
     "letsWorkTogether": "Cùng hợp tác",

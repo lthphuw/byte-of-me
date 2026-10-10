@@ -14,7 +14,6 @@ export * from './homepage-education';
 export * from './homepage-featured-works';
 export * from './homepage-open-source';
 export * from './homepage-profile';
-export * from './homepage-recent-projects';
 export * from './homepage-tech-stack';
 export * from './project-filters';
 export * from './projects-open-source';
