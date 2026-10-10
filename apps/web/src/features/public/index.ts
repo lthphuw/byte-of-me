@@ -11,6 +11,7 @@ export * from './contact-infos';
 export * from './contact-me';
 export * from './homepage-cta';
 export * from './homepage-education';
+export * from './homepage-featured-works';
 export * from './homepage-open-source';
 export * from './homepage-profile';
 export * from './homepage-recent-projects';

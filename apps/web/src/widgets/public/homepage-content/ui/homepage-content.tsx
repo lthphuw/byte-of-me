@@ -6,6 +6,8 @@ import {
   HomepageContactCta,
   HomepageEducation,
   HomepageEducationLoading,
+  HomepageFeaturedWorks,
+  HomepageFeaturedWorksLoading,
   HomepageOpenSource,
   HomepageOpenSourceLoading,
   HomepageProfile,
@@ -18,8 +20,8 @@ import {
 import { RevealSection } from '@/shared/ui';
 
 /**
- * The whole public introduction on one page: who, what was contributed
- * upstream, what was built, where from, what with, then the way to reach out.
+ * The whole public introduction on one page: who, what was featured, what was
+ * contributed upstream, what was built, where from, what with, then the way to reach out.
  * It absorbed `/about`, so each block stays short and links onward for detail.
  */
 export async function HomepageContent() {
@@ -41,9 +43,15 @@ export async function HomepageContent() {
           </Suspense>
         </RevealSection>
 
-        {/* `empty:hidden` on the three optional blocks: each renders nothing
+        {/* `empty:hidden` on the optional blocks: each renders nothing
             when its data is missing (no token, GitHub down, nothing authored),
             and an empty wrapper would still add a `space-y` gap. */}
+        <RevealSection className="empty:hidden">
+          <Suspense fallback={<HomepageFeaturedWorksLoading />}>
+            <HomepageFeaturedWorks />
+          </Suspense>
+        </RevealSection>
+
         <RevealSection className="empty:hidden">
           <Suspense fallback={<HomepageOpenSourceLoading />}>
             <HomepageOpenSource />

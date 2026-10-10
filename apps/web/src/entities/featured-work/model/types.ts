@@ -11,3 +11,14 @@ export type AdminFeaturedWork = Prisma.FeaturedWorkGetPayload<{
     };
   };
 }>;
+
+/** What the homepage renders: translated, with `host` and the GitHub facts resolved. */
+export interface PublicFeaturedWork {
+  id: string;
+  title: string;
+  description: string | null;
+  url: string | null;
+  /** Hostname of `url` without a leading `www.`; null when there is no url. */
+  host: string | null;
+  github: FeaturedWorkGithub | null;
+}
