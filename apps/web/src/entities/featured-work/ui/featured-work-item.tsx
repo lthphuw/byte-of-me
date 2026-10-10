@@ -25,7 +25,13 @@ const GLYPH = 'ml-1 inline size-4 align-baseline text-muted-foreground';
  */
 const HIT_AREA =
   'text-left before:absolute before:inset-y-0 before:-inset-x-3 before:rounded-lg focus-visible:outline-none focus-visible:before:ring-2 focus-visible:before:ring-inset focus-visible:before:ring-ring';
-/** Armed by the first user toggle. A deep link opens the row and turns the chevron with no animation. */
+/**
+ * The chevron animates only after the first user toggle, and only its transform.
+ * Until then `transition-none` stops the default `transition-property: all` that the
+ * duration and easing classes would otherwise turn on: a deep link or a hashchange
+ * turns the chevron with no animation, matching the panel.
+ */
+const CHEVRON_IDLE = 'transition-none';
 const CHEVRON_ARMED = 'transition-transform motion-reduce:transition-none';
 const ROW_LINK =
   '-mx-3 block rounded-lg px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
@@ -99,7 +105,7 @@ export function FeaturedWorkItem({
                 aria-hidden
                 className={cn(
                   GLYPH,
-                  hasToggled && CHEVRON_ARMED,
+                  hasToggled ? CHEVRON_ARMED : CHEVRON_IDLE,
                   open ? 'rotate-180 duration-250 ease-enter' : 'duration-200 ease-exit'
                 )}
               />

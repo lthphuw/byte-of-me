@@ -106,6 +106,47 @@ describe('FeaturedWorkItem disclosure', () => {
   });
 });
 
+describe('FeaturedWorkItem chevron', () => {
+  const chevron = () => {
+    const icon = toggle().querySelector('svg');
+    if (!icon) throw new Error('the toggle has no chevron');
+    return icon;
+  };
+
+  it('does not transition before the first toggle, whether shut or opened by a deep link', () => {
+    window.location.hash = `#${ANCHOR}`;
+    renderItem();
+
+    expect(toggle().getAttribute('aria-expanded')).toBe('true');
+    expect(chevron().classList.contains('transition-none')).toBe(true);
+    expect(chevron().classList.contains('transition-transform')).toBe(false);
+  });
+
+  it('transitions only its transform, and not under reduced motion, once toggled', () => {
+    renderItem();
+    fireEvent.click(toggle());
+
+    const classes = chevron().classList;
+    expect(classes.contains('transition-transform')).toBe(true);
+    expect(classes.contains('motion-reduce:transition-none')).toBe(true);
+    expect(classes.contains('transition-none')).toBe(false);
+  });
+
+  it('goes back to no transition when a deep link opens the row after it was toggled', async () => {
+    renderItem();
+    fireEvent.click(toggle());
+    fireEvent.click(toggle());
+    expect(chevron().classList.contains('transition-transform')).toBe(true);
+
+    act(() => {
+      window.location.hash = `#${ANCHOR}`;
+    });
+
+    await waitFor(() => expect(toggle().getAttribute('aria-expanded')).toBe('true'));
+    expect(chevron().classList.contains('transition-none')).toBe(true);
+  });
+});
+
 describe('FeaturedWorkItem deep links', () => {
   it('opens its own row on mount when the hash names it', () => {
     window.location.hash = `#${ANCHOR}`;
