@@ -143,8 +143,9 @@ async function getPublicFeaturedWorkRows(): Promise<
       {
         cache: true,
         // Versioned: rows cached before `media` existed would otherwise serve
-        // without it. No `revalidate` is set, so they never expire by time.
-        cacheKey: ['featured-works-rows-v3'],
+        // without it. No `revalidate` is set, so they never expire by time. v4: rows
+        // cached before the first clip was attached, which a tag revalidation served stale.
+        cacheKey: ['featured-works-rows-v4'],
         cacheTags: [CACHE_TAGS.FEATURED_WORK],
       }
     );
