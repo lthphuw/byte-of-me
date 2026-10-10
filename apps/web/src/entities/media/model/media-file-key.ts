@@ -1,6 +1,6 @@
-import { generateFriendlyId } from '@/shared/lib/friendly-id';
-
 import type { MediaScope } from './upload-constraints';
+
+import { generateFriendlyId } from '@/shared/lib/friendly-id';
 
 /**
  * Scope first, then date: grouping by what the file is FOR is the axis someone
