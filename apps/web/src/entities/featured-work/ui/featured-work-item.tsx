@@ -5,10 +5,8 @@ import { ArrowUpRight, ChevronDown } from 'lucide-react';
 
 import { FeaturedWorkDemo, type FeaturedWorkDemoItem } from './featured-work-demo';
 import {
-  BODY_CLIP_SPAN,
-  BODY_GRID,
-  BODY_SPAN,
-  DEMO_CELL,
+  BODY_ROW,
+  DETAILS_CELL,
   PLAIN_ROW_HEADER,
   ROW_BODY_STACK,
   ROW_DESCRIPTION_TEXT,
@@ -16,7 +14,6 @@ import {
   ROW_NUMBER_TEXT,
   ROW_TITLE_TEXT,
   ROW_TRACKS,
-  TITLE_CELL,
 } from './featured-work-row-classes';
 
 import { cn } from '@/shared/lib/utils';
@@ -24,21 +21,18 @@ import { DisclosureRegion } from '@/shared/ui/disclosure-region';
 
 const PLAIN_HEADER = `group ${PLAIN_ROW_HEADER}`;
 /**
- * An expandable row's header spans the row grid and takes its columns (subgrid),
- * so the body below it lines up with the title column and never reaches the meta one.
+ * A row with a demo or details spans the row grid and takes its columns (subgrid),
+ * so what sits under it lines up with the title column. The demo follows at once,
+ * so the header keeps less room below than a plain row's.
  */
-const DISCLOSURE_HEADER = 'group relative col-span-full grid grid-cols-subgrid gap-y-2 py-5';
+const BODY_HEADER = 'col-span-full grid grid-cols-subgrid gap-y-2 pb-4 pt-5';
 const SCROLL_TARGET = 'scroll-mt-24 md:scroll-mt-28';
-/** Today's look: the title keeps its hairline underline; `group-hover:` is hover-gated by config. */
+/** A plain row's title keeps its hairline underline; `group-hover:` is hover-gated by config. */
 const TITLE_UNDERLINE =
   'underline decoration-border underline-offset-4 group-hover:decoration-primary';
 const GLYPH = 'ml-1 inline size-4 align-baseline text-muted-foreground';
-/**
- * The header box is the hit area: the button's `::before` stretches over it, and
- * its focus ring sits inside the card edge with the same 12px room as the link row.
- */
-const HIT_AREA =
-  'text-left before:absolute before:inset-y-0 before:-inset-x-3 before:rounded-lg focus-visible:outline-none focus-visible:before:ring-2 focus-visible:before:ring-inset focus-visible:before:ring-ring';
+const ACTION =
+  'inline-flex min-h-11 items-center gap-1 rounded-sm text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 /**
  * The chevron animates only after the first user toggle, and only its transform.
  * Until then `transition-none` stops the default `transition-property: all` that the
@@ -64,9 +58,12 @@ interface FeaturedWorkItemProps {
   newTabLabel: string;
   /** Server-rendered details text. Null when the work has none. */
   details: ReactNode;
-  /** The demo pair. A row is expandable when it has `details` or at least one item. */
+  /** The demo pair, always on show. A row with no details and no demo is plain. */
   media: FeaturedWorkDemoItem[];
-  /** The last element of an expandable body: the external link. */
+  /** The details toggle's label while the details are shut / open. */
+  showDetailsLabel: string;
+  hideDetailsLabel: string;
+  /** The external link, on the action line under the demo. */
   footer?: ReactNode;
 }
 
@@ -80,10 +77,13 @@ export function FeaturedWorkItem({
   newTabLabel,
   details,
   media,
+  showDetailsLabel,
+  hideDetailsLabel,
   footer,
 }: FeaturedWorkItemProps) {
   const hasMedia = media.length > 0;
-  const expandable = Boolean(details) || hasMedia;
+  const hasDetails = Boolean(details);
+  const plain = !hasMedia && !hasDetails;
   const [open, setOpen] = useState(false);
   const [hasToggled, setHasToggled] = useState(false);
   const panelId = `${anchorId}-details`;
@@ -91,7 +91,7 @@ export function FeaturedWorkItem({
   // Only this row's own id is compared with the hash. Streamed Suspense sections
   // can leave the same id in the document twice, so a DOM lookup would be wrong.
   useEffect(() => {
-    if (!expandable) return;
+    if (!hasDetails) return;
     const openIfTargeted = () => {
       if (window.location.hash !== `#${anchorId}`) return;
       // A deep link opens without animating, so the transition is disarmed first.
@@ -101,7 +101,7 @@ export function FeaturedWorkItem({
     openIfTargeted();
     window.addEventListener('hashchange', openIfTargeted);
     return () => window.removeEventListener('hashchange', openIfTargeted);
-  }, [anchorId, expandable]);
+  }, [anchorId, hasDetails]);
 
   const toggle = () => {
     setHasToggled(true);
@@ -109,35 +109,13 @@ export function FeaturedWorkItem({
   };
 
   const header = (
-    <div className={expandable ? DISCLOSURE_HEADER : PLAIN_HEADER}>
+    <div className={plain ? PLAIN_HEADER : BODY_HEADER}>
       <span className={cn(ROW_NUMBER_TEXT, 'text-muted-foreground')}>{number}</span>
 
       <div className={ROW_BODY_STACK}>
         <h3 className={cn(ROW_TITLE_TEXT, '[overflow-wrap:anywhere]')}>
-          {expandable ? (
-            <button
-              type="button"
-              aria-expanded={open}
-              aria-controls={panelId}
-              onClick={toggle}
-              className={HIT_AREA}
-            >
-              <span className={TITLE_UNDERLINE}>{title}</span>
-              <ChevronDown
-                aria-hidden
-                className={cn(
-                  GLYPH,
-                  hasToggled ? CHEVRON_ARMED : CHEVRON_IDLE,
-                  open ? 'rotate-180 duration-250 ease-enter' : 'duration-200 ease-exit'
-                )}
-              />
-            </button>
-          ) : (
-            <>
-              <span className={href ? TITLE_UNDERLINE : undefined}>{title}</span>
-              {href && <ArrowUpRight aria-hidden className={GLYPH} />}
-            </>
-          )}
+          <span className={href ? TITLE_UNDERLINE : undefined}>{title}</span>
+          {href && <ArrowUpRight aria-hidden className={GLYPH} />}
         </h3>
         {description && (
           <p className={cn(ROW_DESCRIPTION_TEXT, 'text-muted-foreground')}>
@@ -146,13 +124,11 @@ export function FeaturedWorkItem({
         )}
       </div>
 
-      {meta && (
-        <div className={ROW_META_CELL}>{meta}</div>
-      )}
+      {meta && <div className={ROW_META_CELL}>{meta}</div>}
     </div>
   );
 
-  if (!expandable) {
+  if (plain) {
     return (
       <div id={anchorId} className={SCROLL_TARGET}>
         {href ? (
@@ -168,29 +144,41 @@ export function FeaturedWorkItem({
   }
 
   return (
-    <div id={anchorId} className={cn(SCROLL_TARGET, 'grid', ROW_TRACKS)}>
+    <div id={anchorId} className={cn(SCROLL_TARGET, 'grid pb-2', ROW_TRACKS)}>
       {header}
-      <DisclosureRegion
-        id={panelId}
-        open={open}
-        animated={hasToggled}
-        className={cn('col-start-2 min-w-0', hasMedia && BODY_SPAN)}
-        innerClassName={hasMedia ? BODY_CLIP_SPAN : undefined}
-      >
-        {/* The bottom padding sits inside the clip box, so a closed row keeps only the header's padding. */}
-        {hasMedia ? (
-          <div className={BODY_GRID}>
-            {details && <div className={TITLE_CELL}>{details}</div>}
-            <FeaturedWorkDemo media={media} open={open} className={DEMO_CELL} />
-            {footer && <div className={TITLE_CELL}>{footer}</div>}
-          </div>
-        ) : (
-          <div className="pb-5">
-            {details}
-            {footer}
-          </div>
-        )}
-      </DisclosureRegion>
+      {hasMedia && (
+        <FeaturedWorkDemo media={media} className={cn(BODY_ROW, !hasDetails && !footer && 'pb-3')} />
+      )}
+      {(hasDetails || footer) && (
+        <div className={cn(BODY_ROW, 'flex flex-wrap items-center gap-x-6')}>
+          {hasDetails && (
+            <button
+              type="button"
+              aria-expanded={open}
+              aria-controls={panelId}
+              onClick={toggle}
+              className={cn(ACTION, 'text-muted-foreground hover:text-foreground')}
+            >
+              {open ? hideDetailsLabel : showDetailsLabel}
+              <ChevronDown
+                aria-hidden
+                className={cn(
+                  'size-4',
+                  hasToggled ? CHEVRON_ARMED : CHEVRON_IDLE,
+                  open ? 'rotate-180 duration-250 ease-enter' : 'duration-200 ease-exit'
+                )}
+              />
+            </button>
+          )}
+          {footer}
+        </div>
+      )}
+      {hasDetails && (
+        <DisclosureRegion id={panelId} open={open} animated={hasToggled} className={DETAILS_CELL}>
+          {/* The bottom padding sits inside the clip box, so a closed row keeps none. */}
+          <div className="pb-3 pt-1">{details}</div>
+        </DisclosureRegion>
+      )}
     </div>
   );
 }

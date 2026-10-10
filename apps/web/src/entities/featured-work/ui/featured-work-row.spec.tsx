@@ -3,7 +3,7 @@
  * number and the repo/host line. Renders the real component
  * inside the real English catalogue.
  */
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'bun:test';
 import { NextIntlClientProvider } from 'next-intl';
 
@@ -106,7 +106,7 @@ describe('FeaturedWorkRow', () => {
 const DETAILS_HTML = '<p>How it was done: a streaming writer.</p>';
 
 describe('FeaturedWorkRow with details', () => {
-  it('expands from its title, and its one link sits at the end of the body', () => {
+  it('expands from its details toggle, and its one link sits on the action line beside it', () => {
     renderRow({ detailsHtml: DETAILS_HTML });
 
     expect(screen.getAllByRole('button')).toHaveLength(1);
@@ -115,7 +115,7 @@ describe('FeaturedWorkRow with details', () => {
     });
     expect(link.getAttribute('href')).toBe(base.url);
     expect(screen.getAllByRole('link')).toHaveLength(1);
-    expect(link.closest('[inert]')).not.toBeNull();
+    expect(link.closest('[inert]')).toBeNull();
   });
 
   it('keeps the body in the page while it is closed, so it can be read as text', () => {
@@ -124,10 +124,10 @@ describe('FeaturedWorkRow with details', () => {
     expect(screen.getByText('How it was done: a streaming writer.')).toBeTruthy();
   });
 
-  it('keeps the link out of the toggle, so the header never shows a second control', () => {
+  it('keeps the link out of the toggle, so one control never holds another', () => {
     renderRow({ detailsHtml: DETAILS_HTML });
 
-    const toggle = screen.getByRole('button', { name: 'Faster detector export' });
+    const toggle = screen.getByRole('button', { name: 'Show details' });
     expect(toggle.querySelector('a')).toBeNull();
   });
 
@@ -165,22 +165,21 @@ describe('FeaturedWorkRow with a demo', () => {
     { id: 'm2', url: 'https://cdn.example.com/int8.gif', mimeType: 'image/gif', label: null },
   ];
 
-  it('expands a work that has only a demo, keeping the link at the end of the body', () => {
+  it('shows a work that has only a demo at once, with no toggle and the link beside it', () => {
     renderRow({ media });
 
-    const toggle = screen.getByRole('button', { name: 'Faster detector export' });
-    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(screen.queryByRole('button', { name: /details$/ })).toBeNull();
+    expect(document.querySelectorAll('figure')).toHaveLength(2);
     const link = screen.getByRole('link', {
       name: 'View on GitHub (opens in a new tab)',
     });
     expect(link.getAttribute('href')).toBe(base.url);
-    expect(link.closest('[inert]')).not.toBeNull();
+    expect(link.closest('[inert]')).toBeNull();
     expect(screen.getAllByRole('link')).toHaveLength(1);
   });
 
   it('names each clip and image from its label, or the work title when it has none', () => {
     renderRow({ media });
-    fireEvent.click(screen.getByRole('button', { name: 'Faster detector export' }));
 
     expect(screen.getByRole('button', { name: 'Play FP16' })).toBeTruthy();
     expect(screen.getByRole('img', { name: 'Faster detector export' })).toBeTruthy();
@@ -194,7 +193,6 @@ describe('FeaturedWorkRow with a demo', () => {
         <FeaturedWorkRow work={{ ...base, media: media.slice(0, 1) }} index={0} />
       </NextIntlClientProvider>
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Faster detector export' }));
 
     expect(screen.getByRole('button', { name: 'Phát FP16' })).toBeTruthy();
   });

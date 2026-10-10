@@ -20,8 +20,8 @@ const EXTERNAL_LINK =
   'inline-flex min-h-11 items-center gap-1 rounded-sm text-sm font-medium text-primary underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 
 /**
- * One numbered line of the homepage list. A work with details or a demo expands in
- * place, and its external link moves to the end of the body. A work with neither
+ * One numbered line of the homepage list. A work's demo is always on show; its details
+ * expand in place, and its external link sits on the action line under the demo. A work with neither
  * stays one link, or static when it has no url.
  */
 export function FeaturedWorkRow({
@@ -62,6 +62,7 @@ export function FeaturedWorkRow({
       caption: item.label,
       name,
       playLabel: t('featuredDemoPlay', { label: name }),
+      fullscreenLabel: t('featuredDemoFullscreen', { label: name }),
     };
   });
   const expandable = Boolean(details) || media.length > 0;
@@ -93,6 +94,8 @@ export function FeaturedWorkRow({
       newTabLabel={t('featuredOpensInNewTab')}
       details={details}
       media={media}
+      showDetailsLabel={t('featuredShowDetails')}
+      hideDetailsLabel={t('featuredHideDetails')}
       footer={footer}
     />
   );

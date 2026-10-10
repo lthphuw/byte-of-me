@@ -13,11 +13,11 @@ import { cn } from '@/shared/lib/utils';
 /** Four rows, like the owner's list; a taller skeleton would shrink the page on resolve. */
 const ROWS = 4;
 /**
- * Description lines, drawn at the lengths the real rows measure (2026-10-10, four
- * works: 746px at 1280 and 1433px at 390): about five lines in the wide column and
- * about eleven in the 244px phone column. The extra six hide from md.
+ * Description lines, drawn at the lengths the real rows measure (2026-10-10): about
+ * five lines in the wide column and six in the 302px phone column at a 400px viewport.
+ * The extra one hides from md.
  */
-const DESCRIPTION_LINES_PHONE = 11;
+const DESCRIPTION_LINES_PHONE = 6;
 const DESCRIPTION_LINES_WIDE = 5;
 
 /**

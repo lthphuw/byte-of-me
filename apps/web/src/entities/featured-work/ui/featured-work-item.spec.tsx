@@ -1,6 +1,6 @@
 /**
- * An expandable featured work as a visitor meets it: one toggle per row, a body
- * that is inert until the row opens, and deep links that open their own row only.
+ * A featured work as a visitor meets it: the demo always on show, one details toggle
+ * per row whose body is inert until it opens, and deep links that open their own row only.
  * Renders the real component; no mocks.
  */
 import type { ComponentProps } from 'react';
@@ -21,6 +21,8 @@ const work: Omit<ComponentProps<typeof FeaturedWorkItem>, 'anchorId'> = {
   href: null,
   newTabLabel: '(opens in a new tab)',
   media: [],
+  showDetailsLabel: 'Show details',
+  hideDetailsLabel: 'Hide details',
   details: (
     <>
       <p>How it was done: a streaming writer.</p>
@@ -35,7 +37,7 @@ function renderItem(props: Partial<ComponentProps<typeof FeaturedWorkItem>> = {}
   return render(<FeaturedWorkItem anchorId={ANCHOR} {...work} {...props} />);
 }
 
-const toggle = () => screen.getByRole('button', { name: 'Faster detector export' });
+const toggle = () => screen.getByRole('button', { name: /details$/ });
 const bodyLink = () => screen.getByRole('link', { name: 'View on GitHub' });
 /** The body's region: the element the toggle's `aria-controls` names. */
 function controlledRegion(): HTMLElement {
@@ -59,18 +61,27 @@ afterEach(() => {
 });
 
 describe('FeaturedWorkItem disclosure', () => {
-  it('has one toggle, collapsed, whose aria-expanded flips on each click', () => {
+  it('has one toggle, collapsed, whose aria-expanded and label flip on each click', () => {
     renderItem();
 
     expect(screen.getAllByRole('button')).toHaveLength(1);
     expect(toggle().getAttribute('aria-expanded')).toBe('false');
+    expect(toggle().textContent).toBe('Show details');
     expect(controlledRegion()).toBeTruthy();
 
     fireEvent.click(toggle());
     expect(toggle().getAttribute('aria-expanded')).toBe('true');
+    expect(toggle().textContent).toBe('Hide details');
 
     fireEvent.click(toggle());
     expect(toggle().getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('leaves the title as plain text, not a button', () => {
+    renderItem();
+
+    expect(screen.queryByRole('button', { name: 'Faster detector export' })).toBeNull();
+    expect(screen.getByRole('heading', { name: 'Faster detector export' })).toBeTruthy();
   });
 
   it('keeps the body inert while closed and releases it once open', () => {
@@ -210,6 +221,7 @@ const pair: ComponentProps<typeof FeaturedWorkItem>['media'] = [
     caption: 'FP16',
     name: 'FP16',
     playLabel: 'Play FP16',
+    fullscreenLabel: 'Full screen FP16',
   },
   {
     id: 'm2',
@@ -218,80 +230,81 @@ const pair: ComponentProps<typeof FeaturedWorkItem>['media'] = [
     caption: 'INT8',
     name: 'INT8',
     playLabel: 'Play INT8',
+    fullscreenLabel: 'Full screen INT8',
   },
 ];
 /** A work with a demo and no details: the shape of the first live work. */
 const mediaOnly = { details: null, media: pair } as const;
 
 describe('FeaturedWorkItem demo', () => {
-  it('is expandable with details, with a demo, or with both, and plain with neither', () => {
+  it('is plain with neither, details-only with a toggle, and demo-only with none', () => {
     renderItem({ details: null, media: [] });
-    expect(screen.queryByRole('button', { name: 'Faster detector export' })).toBeNull();
-    cleanup();
-
-    renderItem({ details: null, media: pair });
-    expect(toggle().getAttribute('aria-expanded')).toBe('false');
+    expect(screen.queryByRole('button')).toBeNull();
     cleanup();
 
     renderItem({ media: [] });
     expect(toggle().getAttribute('aria-expanded')).toBe('false');
     cleanup();
 
-    renderItem({ media: pair });
-    expect(toggle().getAttribute('aria-expanded')).toBe('false');
+    renderItem(mediaOnly);
+    expect(screen.queryByRole('button', { name: /details$/ })).toBeNull();
+    expect(document.querySelectorAll('figure')).toHaveLength(2);
   });
 
-  it('keeps the media unmounted until the row is opened, then keeps it after it closes', () => {
-    renderItem(mediaOnly);
-    expect(document.querySelector('video, img')).toBeNull();
+  it('draws the demo at once, with the details still shut', () => {
+    renderItem({ media: pair });
 
-    fireEvent.click(toggle());
     expect(document.querySelector('video')).not.toBeNull();
     expect(document.querySelector('img')).not.toBeNull();
-
-    fireEvent.click(toggle());
-    expect(document.querySelector('video')).not.toBeNull();
+    expect(toggle().getAttribute('aria-expanded')).toBe('false');
     expect(controlledRegion().hasAttribute('inert')).toBe(true);
   });
 
-  it('leaves the clip out of the tab order while the row is closed', () => {
-    renderItem(mediaOnly);
-    fireEvent.click(toggle());
+  it('keeps the clip out of the shut details, so it stays reachable by keyboard', () => {
+    renderItem({ media: pair });
+
     const clip = screen.getByRole('button', { name: 'Play FP16' });
+
     expect(clip.closest('[inert]')).toBeNull();
-
-    fireEvent.click(toggle());
-
-    expect(clip.closest('[inert]')).toBe(controlledRegion());
+    expect(controlledRegion().contains(clip)).toBe(false);
   });
 
-  it('opens a media-only work from the deep link and mounts its media', () => {
+  it('leaves a demo-only work alone when the hash names it', () => {
     window.location.hash = `#${ANCHOR}`;
     renderItem(mediaOnly);
 
-    expect(toggle().getAttribute('aria-expanded')).toBe('true');
-    expect(controlledRegion().hasAttribute('inert')).toBe(false);
     expect(document.querySelectorAll('figure')).toHaveLength(2);
-    expect(document.querySelector('video')).not.toBeNull();
+    expect(document.querySelector(`#${ANCHOR}-details`)).toBeNull();
   });
 
-  it('puts details first, then the demo, then the footer link', () => {
+  it('puts the demo first, then the action line, then the details', () => {
     renderItem({
       media: pair,
       footer: <a href="https://example.com/work">Visit example.com</a>,
     });
     fireEvent.click(toggle());
 
-    const region = controlledRegion();
     const order = [
-      region.querySelector('p'),
-      region.querySelector('figure'),
+      document.querySelector('figure'),
+      toggle(),
       screen.getByRole('link', { name: 'Visit example.com' }),
+      controlledRegion(),
     ];
     for (let i = 0; i < order.length - 1; i += 1) {
       const position = order[i]?.compareDocumentPosition(order[i + 1] as Node);
       expect((position ?? 0) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     }
+  });
+
+  it('keeps the external link visible while the details are shut', () => {
+    renderItem({
+      media: pair,
+      footer: <a href="https://example.com/work">Visit example.com</a>,
+    });
+
+    const link = screen.getByRole('link', { name: 'Visit example.com' });
+
+    expect(link.closest('[inert]')).toBeNull();
   });
 });
 
@@ -328,12 +341,30 @@ describe('FeaturedWorkItem body grid classes', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('places the region from the title track to the last line, from md', () => {
+  it('places the demo and the action line from the title track to the last, from md', () => {
+    const { container } = renderItem({
+      media: pair,
+      footer: <a href="https://example.com/work">Visit example.com</a>,
+    });
+    const demo = container.querySelector('figure')?.parentElement;
+    const actions = toggle().parentElement;
+
+    for (const element of [demo, actions]) {
+      expect(element?.classList.contains('md:col-start-2')).toBe(true);
+      expect(element?.classList.contains('md:col-end-[-1]')).toBe(true);
+    }
+  });
+
+  it('keeps the details in the title track', () => {
     const { container } = renderItem(mediaOnly);
     const region = container.querySelector<HTMLElement>(`#${ANCHOR}-details`);
 
-    expect(region?.classList.contains('col-start-2')).toBe(true);
-    expect(region?.classList.contains('md:col-end-[-1]')).toBe(true);
-    expect(region?.classList.contains('md:grid-cols-subgrid')).toBe(true);
+    expect(region).toBeNull();
+    cleanup();
+
+    const withDetails = renderItem({ media: pair }).container;
+    const details = withDetails.querySelector<HTMLElement>(`#${ANCHOR}-details`);
+    expect(details?.classList.contains('md:col-start-2')).toBe(true);
+    expect(details?.classList.contains('md:col-end-[-1]')).toBe(false);
   });
 });

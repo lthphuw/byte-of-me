@@ -3,7 +3,7 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { useIntersection } from '@byte-of-me/ui/hooks/use-intersection';
 import { useMediaQuery } from '@byte-of-me/ui/hooks/use-media-query';
-import { Play } from 'lucide-react';
+import { Maximize, Play } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
 
@@ -18,6 +18,8 @@ export interface FeaturedWorkDemoItem {
   name: string;
   /** The video button's accessible name: "Play {name}"; `aria-pressed` says it plays. */
   playLabel: string;
+  /** The full-screen button's accessible name: "Full screen {name}". */
+  fullscreenLabel: string;
 }
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
@@ -40,38 +42,83 @@ function playQuietly(video: HTMLVideoElement) {
   video.play().catch(() => undefined);
 }
 
+/** Safari on iPhone has no element Fullscreen API: only the video's own presenter. */
+type FullscreenVideo = HTMLVideoElement & {
+  webkitEnterFullscreen?: () => void;
+  webkitSupportsFullscreen?: boolean;
+};
+
+function canFullscreen(video: FullscreenVideo): boolean {
+  return (
+    document.fullscreenEnabled === true ||
+    (typeof video.webkitEnterFullscreen === 'function' &&
+      video.webkitSupportsFullscreen !== false)
+  );
+}
+
 /**
- * One clip. The whole frame is a button; the clip plays while its row is open and it
- * is on screen, unless the visitor asked for reduced motion or paused it themselves.
+ * One clip. The frame is a play/pause button; it plays while it is on screen unless
+ * the visitor asked for reduced motion or paused it themselves. A second button
+ * beside it (never inside: a button may not hold a button) opens it full screen,
+ * where the native controls and the sound come on.
  */
 function DemoVideo({
   src,
   playLabel,
-  open,
+  fullscreenLabel,
 }: {
   src: string;
   playLabel: string;
-  open: boolean;
+  fullscreenLabel: string;
 }) {
   const reducedMotion = useMediaQuery(REDUCED_MOTION);
   const { ref: frameRef, entry } = useIntersection<HTMLButtonElement>(VISIBLE);
   const inView = entry?.isIntersecting ?? false;
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<FullscreenVideo>(null);
   const [playing, setPlaying] = useState(false);
   const [userPaused, setUserPaused] = useState(false);
   const [failed, setFailed] = useState(false);
-
-  // A pause the visitor chose lasts until the row closes.
-  useEffect(() => {
-    if (!open) setUserPaused(false);
-  }, [open]);
+  const [fullscreen, setFullscreen] = useState(false);
+  // Set the moment full screen is asked for: the page leaves the viewport before the
+  // `fullscreenchange` event arrives, and the visibility effect would pause the clip in between.
+  const fullscreenAsked = useRef(false);
+  // Known only in the browser, so the button appears after mount.
+  const [fullscreenReady, setFullscreenReady] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || failed) return;
-    if (open && inView && !reducedMotion && !userPaused) playQuietly(video);
+    if (video) setFullscreenReady(canFullscreen(video));
+  }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || failed || fullscreen || fullscreenAsked.current) return;
+    if (inView && !reducedMotion && !userPaused) playQuietly(video);
     else video.pause();
-  }, [open, inView, reducedMotion, userPaused, failed]);
+  }, [inView, reducedMotion, userPaused, failed, fullscreen]);
+
+  // Full screen is the one place the clip has sound and controls; leaving it restores the loop.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const sync = (isFullscreen: boolean) => {
+      fullscreenAsked.current = isFullscreen;
+      video.controls = isFullscreen;
+      video.muted = !isFullscreen;
+      setFullscreen(isFullscreen);
+    };
+    const onDocument = () => sync(document.fullscreenElement === video);
+    document.addEventListener('fullscreenchange', onDocument);
+    const onBegin = () => sync(true);
+    const onEnd = () => sync(false);
+    video.addEventListener('webkitbeginfullscreen', onBegin);
+    video.addEventListener('webkitendfullscreen', onEnd);
+    return () => {
+      document.removeEventListener('fullscreenchange', onDocument);
+      video.removeEventListener('webkitbeginfullscreen', onBegin);
+      video.removeEventListener('webkitendfullscreen', onEnd);
+    };
+  }, []);
 
   const toggle = () => {
     const video = videoRef.current;
@@ -85,78 +132,99 @@ function DemoVideo({
     }
   };
 
+  const enterFullscreen = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    fullscreenAsked.current = true;
+    if (document.fullscreenEnabled && video.requestFullscreen) {
+      // A refused request leaves the page as it was, so the loop goes back to the viewport's rule.
+      video.requestFullscreen().catch(() => {
+        fullscreenAsked.current = false;
+      });
+    } else {
+      video.webkitEnterFullscreen?.();
+    }
+    playQuietly(video);
+  };
+
   // A clip that will not load keeps its frame and is no longer offered as playable.
   if (failed) return <Frame />;
 
   return (
-    <button
-      ref={frameRef}
-      type="button"
-      aria-label={playLabel}
-      aria-pressed={playing}
-      onClick={toggle}
-      className="block w-full rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
-    >
-      <Frame>
-        <video
-          ref={videoRef}
-          src={`${src}${FIRST_FRAME}`}
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          onPlay={() => setPlaying(true)}
-          onPause={() => setPlaying(false)}
-          onError={() => {
-            setPlaying(false);
-            setFailed(true);
-          }}
-          className="size-full object-contain"
-        />
-        {/* Shown whenever the clip is not moving, so a refused play() still reads as tappable. */}
-        {!playing && (
-          <span className="absolute inset-0 flex items-center justify-center">
-            <span className="flex size-12 items-center justify-center rounded-full bg-background/80 text-foreground">
-              <Play aria-hidden className="size-5 fill-current" />
+    <div className="relative">
+      <button
+        ref={frameRef}
+        type="button"
+        aria-label={playLabel}
+        aria-pressed={playing}
+        onClick={toggle}
+        className="block w-full rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+      >
+        <Frame>
+          <video
+            ref={videoRef}
+            src={`${src}${FIRST_FRAME}`}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            onPlay={() => setPlaying(true)}
+            onPause={() => setPlaying(false)}
+            onError={() => {
+              setPlaying(false);
+              setFailed(true);
+            }}
+            className="size-full object-contain"
+          />
+          {/* Shown whenever the clip is not moving, so a refused play() still reads as tappable. */}
+          {!playing && (
+            <span className="absolute inset-0 flex items-center justify-center">
+              <span className="flex size-12 items-center justify-center rounded-full bg-background/80 text-foreground">
+                <Play aria-hidden className="size-5 fill-current" />
+              </span>
             </span>
+          )}
+        </Frame>
+      </button>
+      {fullscreenReady && (
+        <button
+          type="button"
+          aria-label={fullscreenLabel}
+          onClick={enterFullscreen}
+          className="absolute bottom-1 right-1 flex size-11 items-center justify-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <span className="flex size-8 items-center justify-center rounded-full bg-background/80 text-foreground">
+            <Maximize aria-hidden className="size-4" />
           </span>
-        )}
-      </Frame>
-    </button>
+        </button>
+      )}
+    </div>
   );
 }
 
-function DemoFigure({
-  item,
-  open,
-  mounted,
-}: {
-  item: FeaturedWorkDemoItem;
-  open: boolean;
-  mounted: boolean;
-}) {
-  let media: ReactNode = <Frame />;
-  if (mounted && item.isVideo) {
-    media = <DemoVideo src={item.url} playLabel={item.playLabel} open={open} />;
-  } else if (mounted) {
-    media = (
-      <Frame>
-        {/* A plain <img> is the only way a stored SVG or GIF is drawn: never inline, never <object>. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={item.url}
-          alt={item.name}
-          loading="lazy"
-          decoding="async"
-          className="size-full object-contain"
-        />
-      </Frame>
-    );
-  }
+function DemoFigure({ item }: { item: FeaturedWorkDemoItem }) {
+  const media: ReactNode = item.isVideo ? (
+    <DemoVideo
+      src={item.url}
+      playLabel={item.playLabel}
+      fullscreenLabel={item.fullscreenLabel}
+    />
+  ) : (
+    <Frame>
+      {/* A plain <img> is the only way a stored SVG or GIF is drawn: never inline, never <object>. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={item.url}
+        alt={item.name}
+        loading="lazy"
+        decoding="async"
+        className="size-full object-contain"
+      />
+    </Frame>
+  );
 
   return (
-    // A never-opened row prints its text but no empty frames.
-    <figure className={cn('min-w-0', !mounted && 'print:hidden')}>
+    <figure className="min-w-0">
       {media}
       {item.caption && (
         <figcaption className="mt-2 font-mono text-xs text-muted-foreground [overflow-wrap:anywhere]">
@@ -169,31 +237,25 @@ function DemoFigure({
 
 interface FeaturedWorkDemoProps {
   media: FeaturedWorkDemoItem[];
-  /** The row's open state. Media mounts at the first true and stays mounted. */
-  open: boolean;
-  /** Placement in the body grid, e.g. `md:col-span-2`. */
+  /** Placement in the row grid, e.g. `md:col-start-2`. */
   className?: string;
 }
 
 /**
- * The side-by-side demo of a featured work. A collapsed row holds empty 16:9
- * frames and fetches nothing; the first opening mounts the media.
+ * The side-by-side demo of a featured work, always on show: a clip plays while it is
+ * on screen, an image loads lazily, and each sits in a reserved 16:9 frame.
  */
-export function FeaturedWorkDemo({ media, open, className }: FeaturedWorkDemoProps) {
-  const [mounted, setMounted] = useState(open);
-  if (open && !mounted) setMounted(true);
-
+export function FeaturedWorkDemo({ media, className }: FeaturedWorkDemoProps) {
   return (
-    // `pt-1` leaves room for the button's focus ring inside the region's clip box.
     <div
       className={cn(
-        'grid min-w-0 gap-4 pt-1 md:gap-6',
+        'grid min-w-0 gap-4 md:gap-6',
         media.length > 1 ? 'sm:grid-cols-2' : 'max-w-xl',
         className
       )}
     >
       {media.map((item) => (
-        <DemoFigure key={item.id} item={item} open={open} mounted={mounted} />
+        <DemoFigure key={item.id} item={item} />
       ))}
     </div>
   );

@@ -34,6 +34,8 @@ describe('HomepageFeaturedWorksLoading', () => {
         newTabLabel="(opens in a new tab)"
         details={null}
         media={[]}
+        showDetailsLabel="Show details"
+        hideDetailsLabel="Hide details"
       />
     );
     const header = plain.getByText('01').parentElement;
