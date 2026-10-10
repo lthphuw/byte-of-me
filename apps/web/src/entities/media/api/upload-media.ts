@@ -23,6 +23,7 @@ import { env } from '@/shared/config/env';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { compressImage } from '@/shared/lib/media/compress-image';
+import { readMp4Dimensions } from '@/shared/lib/media/mp4-dimensions';
 import { getErrorMessage } from '@/shared/lib/utils';
 import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
@@ -119,6 +120,12 @@ export async function uploadMedia(
       const compressed = isVideoMimeType(mimeType)
         ? { buffer, mimeType }
         : await compressImage(buffer, mimeType, compression);
+      // The size of what is stored: the compressor's own for an image (after the
+      // resize it may have made), the track header's for a clip.
+      const size =
+        'width' in compressed
+          ? { width: compressed.width, height: compressed.height }
+          : readMp4Dimensions(compressed.buffer);
 
       // From the POST-compression MIME type, not the filename or the original
       // type: a webp buffer written under a `.jpg` key is a file no CDN
@@ -147,6 +154,8 @@ export async function uploadMedia(
           fileName: sanitizeStoredFileName(file.name),
           mimeType: compressed.mimeType,
           size: compressed.buffer.byteLength,
+          width: size?.width ?? null,
+          height: size?.height ?? null,
           provider: 'SUPABASE',
           userId: user.id,
         },

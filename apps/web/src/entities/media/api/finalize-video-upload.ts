@@ -15,6 +15,7 @@ import {
   sanitizeStoredFileName,
 } from '@/entities/media/model/upload-constraints';
 import { supabaseStorage } from '@/shared/api';
+import { readMp4Dimensions } from '@/shared/lib/media/mp4-dimensions';
 import { env } from '@/shared/config/env';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
@@ -81,6 +82,7 @@ export async function finalizeVideoUpload(input: {
       };
     }
 
+    const dimensions = readMp4Dimensions(bytes);
     const media = await prisma.media.create({
       data: {
         url: await supabaseStorage.getPublicUrl(fileKey),
@@ -89,6 +91,8 @@ export async function finalizeVideoUpload(input: {
         fileName: sanitizeStoredFileName(fileName),
         mimeType,
         size: bytes.byteLength,
+        width: dimensions?.width ?? null,
+        height: dimensions?.height ?? null,
         provider: 'SUPABASE',
         userId: user.id,
       },
