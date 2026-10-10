@@ -25,6 +25,15 @@ export const motionEase = {
   in: [0.3, 0, 1, 1] as [number, number, number, number],
 };
 
+/**
+ * Opacity a below-the-fold block waits at before its reveal. Zero reads as a hole
+ * in the page while the block is still off screen; a faded placeholder keeps the
+ * space visibly occupied and then comes up to full.
+ */
+export const motionOpacity = {
+  placeholder: 0.2,
+};
+
 /** Default scroll-reveal viewport: fire once, slightly before fully in view. */
 export const motionViewport = { once: true, margin: '-80px' };
 

@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { getPublicFeaturedWorks } from '@/entities/featured-work/api/get-public-featured-works';
 import { FeaturedWorkRow } from '@/entities/featured-work/ui/featured-work-row';
+import { ContentFade } from '@/shared/ui';
 
 export async function HomepageFeaturedWorks() {
   const t = await getTranslations('homepage');
@@ -12,18 +13,20 @@ export async function HomepageFeaturedWorks() {
   if (works.length === 0) return null;
 
   return (
-    <section id="featured-works" className="space-y-6 md:space-y-8">
-      <h2 className="text-xl font-semibold md:text-3xl">
-        {t('featuredWorksTitle')}
-      </h2>
+    <ContentFade>
+      <section id="featured-works" className="space-y-6 md:space-y-8">
+        <h2 className="text-xl font-semibold md:text-3xl">
+          {t('featuredWorksTitle')}
+        </h2>
 
-      <ul className="divide-y rounded-xl border bg-card px-4 md:px-6">
-        {works.map((work, index) => (
-          <li key={work.id}>
-            <FeaturedWorkRow work={work} index={index} />
-          </li>
-        ))}
-      </ul>
-    </section>
+        <ul className="divide-y rounded-xl border bg-card px-4 md:px-6">
+          {works.map((work, index) => (
+            <li key={work.id}>
+              <FeaturedWorkRow work={work} index={index} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    </ContentFade>
   );
 }

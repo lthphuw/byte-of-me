@@ -1,6 +1,11 @@
 import type { Variants } from 'framer-motion';
 
-import { motionDuration, motionEase, motionStagger } from './tokens';
+import {
+  motionDuration,
+  motionEase,
+  motionOpacity,
+  motionStagger,
+} from './tokens';
 
 /**
  * Gap between siblings for a list of `count`: the full `motionStagger.step`,
@@ -18,7 +23,7 @@ export function staggerStep(count: number): number {
  * an optional `custom` delay: `<m.div custom={0.1} variants={fadeUp} />`.
  */
 export const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 10 },
+  hidden: { opacity: motionOpacity.placeholder, y: 10 },
   visible: (delay = 0) => ({
     opacity: 1,
     y: 0,

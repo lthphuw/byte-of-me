@@ -1,7 +1,18 @@
 import { describe, expect, it } from 'bun:test';
 
 import { motionStagger } from './tokens';
-import { staggerStep } from './variants';
+import { fadeUp, staggerStep } from './variants';
+
+// A section below the fold waits as a faded placeholder: at zero it is a hole in
+// the page until it scrolls in (.claude/rules/motion.md).
+describe('fadeUp', () => {
+  it('starts faded but not invisible', () => {
+    const { opacity } = fadeUp.hidden as { opacity: number };
+
+    expect(opacity).toBeGreaterThan(0);
+    expect(opacity).toBeLessThan(1);
+  });
+});
 
 // A long list must not keep its tail waiting: whatever the length, the last item
 // starts inside the stagger budget (.claude/rules/motion.md).
