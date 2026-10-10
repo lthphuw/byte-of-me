@@ -54,6 +54,8 @@ interface FeaturedWorkItemProps {
   meta: ReactNode;
   /** Plain rows only: the whole row becomes this external link. */
   href: string | null;
+  /** Screen-reader suffix of that link: "(opens in a new tab)". */
+  newTabLabel: string;
   /** Server-rendered body, ending with the external link. Null for a plain row. */
   details: ReactNode;
 }
@@ -65,6 +67,7 @@ export function FeaturedWorkItem({
   description,
   meta,
   href,
+  newTabLabel,
   details,
 }: FeaturedWorkItemProps) {
   const expandable = Boolean(details);
@@ -142,6 +145,7 @@ export function FeaturedWorkItem({
         {href ? (
           <a href={href} target="_blank" rel="noopener noreferrer" className={ROW_LINK}>
             {header}
+            <span className="sr-only">{newTabLabel}</span>
           </a>
         ) : (
           header

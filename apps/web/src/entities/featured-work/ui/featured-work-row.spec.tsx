@@ -45,6 +45,7 @@ describe('FeaturedWorkRow', () => {
     expect(link.getAttribute('href')).toBe(base.url);
     expect(link.getAttribute('target')).toBe('_blank');
     expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+    expect(link.textContent).toContain('(opens in a new tab)');
     expect(screen.getAllByRole('link')).toHaveLength(1);
   });
 

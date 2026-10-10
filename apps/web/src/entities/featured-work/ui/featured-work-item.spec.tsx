@@ -19,6 +19,7 @@ const work: Omit<ComponentProps<typeof FeaturedWorkItem>, 'anchorId'> = {
   description: 'Cut the export time in half.',
   meta: <span>roboflow/rf-detr</span>,
   href: null,
+  newTabLabel: '(opens in a new tab)',
   details: (
     <>
       <p>How it was done: a streaming writer.</p>
@@ -186,5 +187,16 @@ describe('FeaturedWorkItem deep links', () => {
     // was handled. This row's listener was registered first, so it has run too.
     await waitFor(() => expect(toggleFor(other).getAttribute('aria-expanded')).toBe('true'));
     expect(toggleFor(ANCHOR).getAttribute('aria-expanded')).toBe('false');
+  });
+});
+
+describe('FeaturedWorkItem plain row', () => {
+  it('is one new-tab link whose accessible name says it opens in a new tab', () => {
+    renderItem({ href: 'https://example.com/post', details: null });
+
+    const link = screen.getByRole('link');
+    expect(link.getAttribute('target')).toBe('_blank');
+    expect(link.textContent).toContain('(opens in a new tab)');
+    expect(screen.getByRole('link', { name: /Faster detector export.*\(opens in a new tab\)/ })).toBe(link);
   });
 });

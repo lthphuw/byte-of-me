@@ -31,6 +31,7 @@ describe('HomepageFeaturedWorksLoading', () => {
         description={null}
         meta={null}
         href={null}
+        newTabLabel="(opens in a new tab)"
         details={null}
       />
     );

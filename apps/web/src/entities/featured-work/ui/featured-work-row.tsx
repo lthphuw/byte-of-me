@@ -84,6 +84,7 @@ export function FeaturedWorkRow({
       description={work.description}
       meta={meta}
       href={details ? null : url}
+      newTabLabel={t('featuredOpensInNewTab')}
       details={details}
     />
   );
