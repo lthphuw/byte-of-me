@@ -110,3 +110,59 @@ describe('FeaturedWorkRow', () => {
     expect(screen.getByText(/9\.755 sao/)).toBeTruthy();
   });
 });
+
+const DETAILS_HTML = '<p>How it was done: a streaming writer.</p>';
+
+describe('FeaturedWorkRow with details', () => {
+  it('expands from its title, and its one link sits at the end of the body', () => {
+    renderRow({ detailsHtml: DETAILS_HTML });
+
+    expect(screen.getAllByRole('button')).toHaveLength(1);
+    const link = screen.getByRole('link', {
+      name: 'View on GitHub (opens in a new tab)',
+    });
+    expect(link.getAttribute('href')).toBe(base.url);
+    expect(screen.getAllByRole('link')).toHaveLength(1);
+    expect(link.closest('[inert]')).not.toBeNull();
+  });
+
+  it('keeps the body in the page while it is closed, so it can be read as text', () => {
+    renderRow({ detailsHtml: DETAILS_HTML });
+
+    expect(screen.getByText('How it was done: a streaming writer.')).toBeTruthy();
+  });
+
+  it('keeps the link out of the toggle, so the header never shows a second control', () => {
+    renderRow({ detailsHtml: DETAILS_HTML });
+
+    const toggle = screen.getByRole('button', { name: 'Faster detector export' });
+    expect(toggle.querySelector('a')).toBeNull();
+  });
+
+  it('names the host instead of GitHub when the work has no GitHub details', () => {
+    renderRow({
+      detailsHtml: DETAILS_HTML,
+      url: 'https://example.com/post',
+      host: 'example.com',
+      github: null,
+    });
+
+    expect(
+      screen.getByRole('link', { name: 'Visit example.com (opens in a new tab)' })
+    ).toBeTruthy();
+  });
+
+  it('expands a work with details and no url, with no link anywhere', () => {
+    renderRow({ detailsHtml: DETAILS_HTML, url: null, host: null, github: null });
+
+    expect(screen.getAllByRole('button')).toHaveLength(1);
+    expect(screen.queryByRole('link')).toBeNull();
+    expect(screen.getByText('How it was done: a streaming writer.')).toBeTruthy();
+  });
+
+  it('gives a work without details no toggle at all', () => {
+    renderRow();
+
+    expect(screen.queryByRole('button')).toBeNull();
+  });
+});
