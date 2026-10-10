@@ -1,5 +1,7 @@
 import { Skeleton } from '@byte-of-me/ui';
 
+import { PLAIN_ROW_HEADER } from '@/entities/featured-work/ui/featured-work-row-classes';
+
 export function HomepageFeaturedWorksLoading() {
   return (
     <div className="space-y-6 md:space-y-8">
@@ -12,7 +14,7 @@ export function HomepageFeaturedWorksLoading() {
         {[...Array(3)].map((_, i) => (
           <div
             key={i}
-            className="grid grid-cols-[2rem_1fr] gap-x-4 gap-y-2 py-5 md:grid-cols-[2rem_1fr_fit-content(45%)] md:gap-x-6"
+            className={PLAIN_ROW_HEADER}
           >
             <Skeleton className="mt-1 h-4 w-5" />
             <div className="min-w-0 space-y-2">

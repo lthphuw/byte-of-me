@@ -3,14 +3,12 @@
 import { type ReactNode, useEffect, useState } from 'react';
 import { ArrowUpRight, ChevronDown } from 'lucide-react';
 
+import { PLAIN_ROW_HEADER, ROW_TRACKS } from './featured-work-row-classes';
+
 import { cn } from '@/shared/lib/utils';
 import { DisclosureRegion } from '@/shared/ui/disclosure-region';
 
-/** Number, title and meta columns from md; below that, the title column and the meta under it. */
-const ROW_GRID =
-  'grid-cols-[2rem_1fr] gap-x-4 md:grid-cols-[2rem_1fr_fit-content(45%)] md:gap-x-6';
-/** A plain row's header. The loading skeleton copies these classes; keep them in step. */
-const PLAIN_HEADER = `group ${ROW_GRID} gap-y-2 py-5`;
+const PLAIN_HEADER = `group ${PLAIN_ROW_HEADER}`;
 /**
  * An expandable row's header spans the row grid and takes its columns (subgrid),
  * so the body below it lines up with the title column and never reaches the meta one.
@@ -143,7 +141,7 @@ export function FeaturedWorkItem({
   }
 
   return (
-    <div id={anchorId} className={cn(SCROLL_TARGET, 'grid', ROW_GRID)}>
+    <div id={anchorId} className={cn(SCROLL_TARGET, 'grid', ROW_TRACKS)}>
       {header}
       <DisclosureRegion
         id={panelId}

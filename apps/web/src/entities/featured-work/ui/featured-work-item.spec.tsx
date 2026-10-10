@@ -12,26 +12,25 @@ import { FeaturedWorkItem } from './featured-work-item';
 
 const ANCHOR = 'featured-works-w1';
 
+/** The row's content, shared by every item a test renders. */
+const work: Omit<ComponentProps<typeof FeaturedWorkItem>, 'anchorId'> = {
+  number: '01',
+  title: 'Faster detector export',
+  description: 'Cut the export time in half.',
+  meta: <span>roboflow/rf-detr</span>,
+  href: null,
+  details: (
+    <>
+      <p>How it was done: a streaming writer.</p>
+      <a href="https://github.com/roboflow/rf-detr/pull/512" target="_blank" rel="noopener noreferrer">
+        View on GitHub
+      </a>
+    </>
+  ),
+};
+
 function renderItem(props: Partial<ComponentProps<typeof FeaturedWorkItem>> = {}) {
-  return render(
-    <FeaturedWorkItem
-      anchorId={ANCHOR}
-      number="01"
-      title="Faster detector export"
-      description="Cut the export time in half."
-      meta={<span>roboflow/rf-detr</span>}
-      href={null}
-      details={
-        <>
-          <p>How it was done: a streaming writer.</p>
-          <a href="https://github.com/roboflow/rf-detr/pull/512" target="_blank" rel="noopener noreferrer">
-            View on GitHub
-          </a>
-        </>
-      }
-      {...props}
-    />
-  );
+  return render(<FeaturedWorkItem anchorId={ANCHOR} {...work} {...props} />);
 }
 
 const toggle = () => screen.getByRole('button', { name: 'Faster detector export' });
@@ -42,6 +41,14 @@ function controlledRegion(): HTMLElement {
   const region = id ? document.getElementById(id) : null;
   if (!region) throw new Error('aria-controls does not name an element');
   return region;
+}
+/** The toggle of the row with this id, found by the id it controls. */
+function toggleFor(anchorId: string): HTMLElement {
+  const button = document.querySelector<HTMLElement>(
+    `button[aria-controls="${anchorId}-details"]`
+  );
+  if (!button) throw new Error(`no toggle controls ${anchorId}-details`);
+  return button;
 }
 
 afterEach(() => {
@@ -119,14 +126,24 @@ describe('FeaturedWorkItem deep links', () => {
     await waitFor(() => expect(toggle().getAttribute('aria-expanded')).toBe('true'));
   });
 
-  it('leaves a row shut when the hash names a different row', async () => {
-    renderItem();
+  it('leaves a row shut when the hash changes to a different row', async () => {
+    const other = 'featured-works-other';
+    render(
+      <>
+        <FeaturedWorkItem anchorId={ANCHOR} {...work} />
+        <FeaturedWorkItem anchorId={other} {...work} />
+      </>
+    );
+    expect(toggleFor(ANCHOR).getAttribute('aria-expanded')).toBe('false');
+    expect(toggleFor(other).getAttribute('aria-expanded')).toBe('false');
 
     act(() => {
-      window.location.hash = '#featured-works-other';
+      window.location.hash = `#${other}`;
     });
 
-    await waitFor(() => expect(window.location.hash).toBe('#featured-works-other'));
-    expect(toggle().getAttribute('aria-expanded')).toBe('false');
+    // The other row opens from the hashchange event itself, which proves the event
+    // was handled. This row's listener was registered first, so it has run too.
+    await waitFor(() => expect(toggleFor(other).getAttribute('aria-expanded')).toBe('true'));
+    expect(toggleFor(ANCHOR).getAttribute('aria-expanded')).toBe('false');
   });
 });

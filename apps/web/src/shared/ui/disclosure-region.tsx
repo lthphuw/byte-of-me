@@ -32,8 +32,10 @@ export function DisclosureRegion({
       className={cn(
         'grid print:grid-rows-[1fr] print:opacity-100',
         open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
+        // Reduced motion sets only the property: a `transition-[...]` utility would
+        // also reset the duration and easing that the classes below set.
         animated &&
-          'transition-[grid-template-rows,opacity] motion-reduce:transition-[opacity]',
+          'transition-[grid-template-rows,opacity] motion-reduce:[transition-property:opacity]',
         animated && (open ? 'duration-250 ease-enter' : 'duration-200 ease-exit'),
         className
       )}
