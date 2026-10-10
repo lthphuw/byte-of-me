@@ -12,7 +12,6 @@ import { getPublicFeaturedWorks } from './get-public-featured-works';
 import type { FeaturedWorkGithubDeps } from '@/entities/featured-work/lib/get-featured-work-github';
 import { loadPublicFeaturedWorks, toRows } from '@/entities/featured-work/lib/load-public-featured-works';
 import type {
-  AdminFeaturedWork,
   FeaturedWorkGithub,
   GithubPullRequestRef,
 } from '@/entities/featured-work/model/types';
@@ -47,11 +46,6 @@ function row(id: string, url: string | null = null, title = `Work ${id}`) {
     ],
   };
 }
-
-// Compile-time contract, enforced by `tsc`: the admin list row never carries the rendered body.
-const adminRowLacksDetailsHtml: 'detailsHtml' extends keyof AdminFeaturedWork
-  ? never
-  : true = true;
 
 function makeDeps(overrides: Partial<FeaturedWorkGithubDeps> = {}) {
   const fetchGithub = mock(
@@ -269,9 +263,69 @@ describe('details body', () => {
     expect(result[0]?.detailsHtml).toBe('<p>How it was done.</p>');
   });
 
-  it('keeps the rendered body out of the admin list row type', () => {
-    // The assertion is the annotation on `adminRowLacksDetailsHtml`: tsc fails if the key appears.
-    expect(adminRowLacksDetailsHtml).toBe(true);
+  it('gives no body for a node type the render schema does not know', () => {
+    const [unknownRow] = toRows(
+      work([
+        translation(
+          'en',
+          JSON.stringify({ type: 'doc', content: [{ type: 'bogus' }] })
+        ),
+      ]),
+      'en'
+    );
+
+    expect(unknownRow?.detailsHtml).toBeNull();
+  });
+
+  it('gives no body for a bare node that is not a document', () => {
+    // A paragraph at the top level parses and has text, but it is not a body.
+    const [bareRow] = toRows(
+      work([
+        translation(
+          'en',
+          JSON.stringify({
+            type: 'paragraph',
+            content: [{ type: 'text', text: 'Loose paragraph' }],
+          })
+        ),
+      ]),
+      'en'
+    );
+
+    expect(bareRow?.detailsHtml).toBeNull();
+  });
+
+  it('renders a document with lists and headings to HTML', () => {
+    const rich = JSON.stringify({
+      type: 'doc',
+      content: [
+        {
+          type: 'heading',
+          attrs: { level: 3 },
+          content: [{ type: 'text', text: 'Results' }],
+        },
+        {
+          type: 'bulletList',
+          content: [
+            {
+              type: 'listItem',
+              content: [
+                {
+                  type: 'paragraph',
+                  content: [{ type: 'text', text: 'Export 2x faster' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    const [richRow] = toRows(work([translation('en', rich)]), 'en');
+
+    expect(richRow?.detailsHtml).toContain('Results');
+    expect(richRow?.detailsHtml).toContain('<li>');
+    expect(richRow?.detailsHtml).toContain('Export 2x faster');
+    expect(richRow?.detailsHtml).not.toContain('"type"');
   });
 });
 

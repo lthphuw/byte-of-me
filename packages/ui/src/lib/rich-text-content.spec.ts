@@ -220,14 +220,6 @@ describe('isRichTextBlank', () => {
     expect(isRichTextBlank(text)).toBe(false);
   });
 
-  it('does not treat an image-only document as blank', () => {
-    const image = JSON.stringify({
-      type: 'doc',
-      content: [{ type: 'image', attrs: { src: '/a.png' } }],
-    });
-    expect(isRichTextBlank(image)).toBe(false);
-  });
-
   it('does not treat a table with empty cells as blank', () => {
     // The author built the table on purpose, and the form shows it.
     const table = JSON.stringify({
@@ -249,6 +241,80 @@ describe('isRichTextBlank', () => {
 
   it('does not treat legacy plain text with content as blank', () => {
     expect(isRichTextBlank('an older plain-text description')).toBe(false);
+  });
+
+  const docOf = (...content: unknown[]) =>
+    JSON.stringify({ type: 'doc', content });
+  const para = (text: string) => ({
+    type: 'paragraph',
+    content: [{ type: 'text', text }],
+  });
+  const emptyPara = { type: 'paragraph' };
+
+  it.each([
+    ['an empty heading', { type: 'heading', attrs: { level: 2 } }],
+    [
+      'a heading holding only whitespace',
+      { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: ' ' }] },
+    ],
+    [
+      'an empty bullet list',
+      { type: 'bulletList', content: [{ type: 'listItem', content: [emptyPara] }] },
+    ],
+    [
+      'an empty ordered list',
+      { type: 'orderedList', content: [{ type: 'listItem', content: [emptyPara] }] },
+    ],
+    ['an empty list item', { type: 'bulletList', content: [{ type: 'listItem' }] }],
+    ['an empty blockquote', { type: 'blockquote', content: [emptyPara] }],
+    [
+      'a blockquote around an empty list',
+      {
+        type: 'blockquote',
+        content: [{ type: 'bulletList', content: [{ type: 'listItem', content: [emptyPara] }] }],
+      },
+    ],
+    [
+      'a paragraph holding only a hard break',
+      { type: 'paragraph', content: [{ type: 'hardBreak' }] },
+    ],
+  ])('treats %s as blank', (_label, block) => {
+    expect(isRichTextBlank(docOf(block))).toBe(true);
+  });
+
+  it.each([
+    ['a heading with text', { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'Results' }] }],
+    ['a list item with text', { type: 'bulletList', content: [{ type: 'listItem', content: [para('Step one')] }] }],
+    ['a quote with text', { type: 'blockquote', content: [para('Quoted')] }],
+    [
+      'a paragraph with a hard break before text',
+      { type: 'paragraph', content: [{ type: 'hardBreak' }, { type: 'text', text: 'after' }] },
+    ],
+  ])('does not treat %s as blank', (_label, block) => {
+    expect(isRichTextBlank(docOf(block))).toBe(false);
+  });
+
+  it('does not treat an image-only document as blank', () => {
+    // Decision: an image is a deliberate element even with no caption or text.
+    expect(
+      isRichTextBlank(docOf({ type: 'image', attrs: { src: '/a.png' } }))
+    ).toBe(false);
+  });
+
+  it('does not treat a code-block-only document as blank', () => {
+    // Decision: a code block is content on its own, the same as a table with
+    // empty cells, so a block of code is never hidden behind a toggle.
+    expect(
+      isRichTextBlank(
+        docOf({ type: 'codeBlock', content: [{ type: 'text', text: 'npm i' }] })
+      )
+    ).toBe(false);
+    expect(isRichTextBlank(docOf({ type: 'codeBlock' }))).toBe(false);
+  });
+
+  it('does not treat a document holding only a horizontal rule as blank', () => {
+    // Decision, unchanged: a rule is a deliberate element, not an empty block.
+    expect(isRichTextBlank(docOf({ type: 'horizontalRule' }))).toBe(false);
   });
 
   it('never throws on parsed JSON that is not shaped like a document', () => {

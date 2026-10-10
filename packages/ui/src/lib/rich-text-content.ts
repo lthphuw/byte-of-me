@@ -96,10 +96,25 @@ export function richTextToPlainText(value?: string | null): string {
 }
 
 /**
- * True when a stored value shows nothing: no text, and no node other than the
- * doc and its paragraphs. Image-only and table-only bodies are not blank, and
- * neither is legacy plain text with content. Never throws, whatever the shape
- * of the parsed JSON.
+ * Block nodes that hold content only through their children. An empty one
+ * shows nothing, so it is blank. Every other node type (image, code block,
+ * rule, table, math) is a deliberate element and counts as content on its own.
+ */
+const CONTAINER_NODE_TYPES = new Set([
+  'doc',
+  'paragraph',
+  'heading',
+  'blockquote',
+  'bulletList',
+  'orderedList',
+  'listItem',
+]);
+
+/**
+ * True when a stored value shows nothing: no text, and no deliberate element
+ * (image, code block, rule, table) — only empty containers such as paragraphs,
+ * headings, lists and quotes. Legacy plain text with content is not blank.
+ * Never throws, whatever the shape of the parsed JSON.
  */
 export function isRichTextBlank(value?: string | null): boolean {
   if (!value?.trim()) return true;
@@ -112,8 +127,8 @@ function hasSubstance(node: unknown): boolean {
   if (!node || typeof node !== 'object') return false;
   const { type, text, content } = node as JSONContent;
   if (type === 'text') return typeof text === 'string' && text.trim() !== '';
-  if (typeof type === 'string' && type !== 'doc' && type !== 'paragraph') {
-    return true;
-  }
+  // A line break carries no words: a paragraph of nothing but one is empty.
+  if (type === 'hardBreak') return false;
+  if (typeof type === 'string' && !CONTAINER_NODE_TYPES.has(type)) return true;
   return Array.isArray(content) && content.some(hasSubstance);
 }

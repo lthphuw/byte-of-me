@@ -3,7 +3,7 @@ import {
   isRichTextBlank,
   parseRichTextContent,
 } from '@byte-of-me/ui/lib/rich-text-content';
-import { renderRichTextHtml } from '@byte-of-me/ui/rich-text-render';
+import { renderRichTextDocumentHtml } from '@byte-of-me/ui/rich-text-render';
 
 import {
   defaultFeaturedWorkGithubDeps,
@@ -29,12 +29,13 @@ type FeaturedWorkRow = Pick<
 
 /**
  * Sanitized HTML of one row's details, or null. Runs inside the cached handler,
- * so a cache hit skips TipTap and the sanitizer. A value that does not parse as
- * a document shows no toggle; it is never printed as raw text.
+ * so a cache hit skips TipTap and the sanitizer. Only a `doc` that renders is a
+ * body: anything else shows no toggle, and the stored JSON is never printed.
  */
 function toDetailsHtml(details: string | null): string | null {
-  if (isRichTextBlank(details) || !parseRichTextContent(details)) return null;
-  return renderRichTextHtml(details);
+  if (isRichTextBlank(details)) return null;
+  if (parseRichTextContent(details)?.type !== 'doc') return null;
+  return renderRichTextDocumentHtml(details);
 }
 
 /** A work with no usable translation is skipped: one bad row must not blank the section. */
