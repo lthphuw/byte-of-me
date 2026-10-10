@@ -1,4 +1,4 @@
-// `get-published-blog-slugs` and `get-public-feed-blogs` are intentionally NOT
+// `get-published-blogs` and `get-public-feed-blogs` are intentionally NOT
 // re-exported here. This barrel is reachable from client components (via
 // entities/blog/index.ts), and every module below is shielded from the client
 // bundle by its own `'use server'` directive. Those two are plain server

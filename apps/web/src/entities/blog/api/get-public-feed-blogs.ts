@@ -18,7 +18,7 @@ export type PublicFeedBlog = {
  * The most recent published posts, shaped for the RSS feed.
  *
  * Plain server module rather than a `'use server'` action for the same reason as
- * `getPublishedBlogSlugs`: the feed route is statically rendered and the query is
+ * `getPublishedBlogs`: the feed route is statically rendered and the query is
  * locale-independent, so the locale-aware public-action wrapper adds nothing.
  */
 export async function getPublicFeedBlogs(): Promise<PublicFeedBlog[]> {

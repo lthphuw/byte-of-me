@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 
 import { getPublicBlogBySlug } from '@/entities/blog/api/get-public-blog-by-slug';
-import { getPublishedBlogSlugs } from '@/entities/blog/api/get-published-blog-slugs';
+import { getPublishedBlogs } from '@/entities/blog/api/get-published-blogs';
 import { host } from '@/shared/config/host';
 import { routing } from '@/shared/i18n/routing';
 import { SITE_PERSON_ID } from '@/shared/lib/metadata';
@@ -11,9 +11,9 @@ import { JsonLd } from '@/shared/ui/json-ld';
 import { BlogDetailsContent } from '@/widgets/public';
 
 export async function generateStaticParams() {
-  const slugs = await getPublishedBlogSlugs();
+  const blogs = await getPublishedBlogs();
 
-  return slugs.flatMap((slug) =>
+  return blogs.flatMap(({ slug }) =>
     routing.locales.map((locale) => ({
       locale,
       slug,

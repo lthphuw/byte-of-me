@@ -39,7 +39,7 @@ apps/web/src/
 - **Login**: `apps/web/src/app/[locale]/(auth)/layout.tsx:16-20` sends a signed-in admin to `/dashboard`.
 - **Redirects**: `apps/web/next.config.js:192-207`: `/about` to `/`, `/:locale(en|vi)/about` to `/:locale`, both permanent.
 - **Route handlers**: `apps/web/src/app/api/og/route.tsx:47-170` takes `?title` (max 80) and `?subtitle` (max 90), reads Cal Sans with `readFile`, returns 500 text on failure. `apps/web/src/app/api/auth/[...nextauth]/route.ts:3` exports `GET`, `POST` from `handlers`. `apps/web/src/app/feed.xml/route.ts` is RSS for the default locale only, `revalidate = 3600` (`:8`).
-- **Metadata routes**: `apps/web/src/app/robots.ts` allows `/api/og`, disallows `/dashboard`, `/en/dashboard`, `/vi/dashboard` and `/api/` (`:7-19`). `apps/web/src/app/sitemap.ts` lists `sitemapConfig` keys plus published blog slugs, in every locale.
+- **Metadata routes**: `apps/web/src/app/robots.ts` allows `/api/og`, disallows `/dashboard`, `/en/dashboard`, `/vi/dashboard` and `/api/` (`:7-19`). `apps/web/src/app/sitemap.ts` lists `sitemapConfig` keys plus every published post (`getPublishedBlogs`), in every locale. A post's `lastmod` is its `updatedAt`; static pages carry none. Each URL lists `x-default` beside `en` and `vi`.
 - **Edge caching**: `apps/web/next.config.js:208-300` `headers()`, in the match order below.
 
 **Cache-Control rules, match order** (`apps/web/next.config.js`)

@@ -1,7 +1,7 @@
 import { prisma } from '@byte-of-me/db';
 
 /**
- * Slugs of every published post.
+ * Every published post, with the time it was last edited.
  *
  * Deliberately a plain server module instead of a `'use server'` action with an
  * `ApiResponse` envelope: the callers (`sitemap.ts`, `generateStaticParams`) run
@@ -10,11 +10,11 @@ import { prisma } from '@byte-of-me/db';
  * locale-independent, and a failure should fail the build loudly rather than be
  * swallowed into `{ success: false }` and silently produce an empty sitemap.
  */
-export async function getPublishedBlogSlugs(): Promise<string[]> {
-  const blogs = await prisma.blog.findMany({
+export async function getPublishedBlogs(): Promise<
+  { slug: string; updatedAt: Date }[]
+> {
+  return prisma.blog.findMany({
     where: { isPublished: true },
-    select: { slug: true },
+    select: { slug: true, updatedAt: true },
   });
-
-  return blogs.map((blog) => blog.slug);
 }
