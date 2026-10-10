@@ -750,7 +750,15 @@ describe('FeaturedWorkManager demo pair', () => {
   };
   const clip = () => new File([new Uint8Array(8)], 'int8.mp4', { type: 'video/mp4' });
 
+  /**
+   * The form releases Save one commit AFTER the clip's slot renders: the slot
+   * (and its label) appears when the upload lands, but the manager learns the
+   * upload is over from an effect, which re-renders the button later. A click
+   * on a still-disabled button is dropped, so wait for Save to be live (the
+   * signal that the upload is fully over) instead of racing it off the label.
+   */
   const save = async () => {
+    await waitFor(() => expect(button('Save changes').disabled).toBe(false));
     fireEvent.click(button('Save changes'));
     await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
   };
@@ -975,7 +983,7 @@ describe('FeaturedWorkManager demo pair', () => {
       landing.resolve(stored('m9'));
     });
     await screen.findByLabelText('Label 1');
-    expect(button('Save changes').disabled).toBe(false);
+    await waitFor(() => expect(button('Save changes').disabled).toBe(false));
     await save();
 
     expect(savedMedia()).toEqual([
