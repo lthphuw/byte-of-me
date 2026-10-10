@@ -194,13 +194,33 @@ describe('FeaturedWorkManager list', () => {
 });
 
 describe('FeaturedWorkManager reorder', () => {
-  it('disables moving up on the first entry and down on the last', () => {
+  const isDisabled = (name: string) =>
+    button(name).getAttribute('aria-disabled') === 'true';
+
+  it('marks moving up on the first entry and down on the last as disabled', () => {
     renderManager();
 
-    expect(button('Move Faster export up').disabled).toBe(true);
-    expect(button('Move Faster export down').disabled).toBe(false);
-    expect(button('Move Release notes up').disabled).toBe(false);
-    expect(button('Move Release notes down').disabled).toBe(true);
+    expect(isDisabled('Move Faster export up')).toBe(true);
+    expect(isDisabled('Move Faster export down')).toBe(false);
+    expect(isDisabled('Move Release notes up')).toBe(false);
+    expect(isDisabled('Move Release notes down')).toBe(true);
+  });
+
+  it('keeps the edge buttons focusable and inert', () => {
+    renderManager();
+    const first = button('Move Faster export up');
+    const last = button('Move Release notes down');
+
+    first.focus();
+    fireEvent.click(first);
+    last.focus();
+    fireEvent.click(last);
+
+    expect(first.disabled).toBe(false);
+    expect(last.disabled).toBe(false);
+    expect(document.activeElement).toBe(last);
+    expect(txFindMany).not.toHaveBeenCalled();
+    expect(txUpdate).not.toHaveBeenCalled();
   });
 
   it('moves the entry through the action, then refreshes the list', async () => {
@@ -220,6 +240,49 @@ describe('FeaturedWorkManager reorder', () => {
     ]);
     await waitFor(() => expect(findMany).toHaveBeenCalledTimes(1));
     expect(toastError).not.toHaveBeenCalled();
+  });
+
+  it('keeps focus on the arrow that was pressed, before and after the list reorders', async () => {
+    findMany.mockResolvedValue([rows[1], rows[0], rows[2]] as Row[]);
+    renderManager();
+    const up = button('Move Quantized model up');
+
+    up.focus();
+    fireEvent.click(up);
+
+    // Not `disabled`: a disabled button would drop focus to <body> at once.
+    await waitFor(() => expect(up.getAttribute('aria-disabled')).toBe('true'));
+    expect(document.activeElement).toBe(up);
+    await waitFor(() => expect(findMany).toHaveBeenCalledTimes(1));
+    // The refetch moved the entry to the top; its arrow still holds focus.
+    await waitFor(() => {
+      const moved = button('Move Quantized model up');
+      expect(moved.getAttribute('aria-disabled')).toBe('true');
+      expect(document.activeElement).toBe(moved);
+    });
+    // Idle again: the same arrow of the next row can be pressed.
+    expect(isDisabled('Move Faster export up')).toBe(false);
+  });
+
+  it('ignores a second press while a move is in flight', async () => {
+    let release!: (rows: Row[]) => void;
+    txFindMany.mockReturnValue(
+      new Promise<Row[]>((resolve) => {
+        release = resolve;
+      })
+    );
+    renderManager();
+    const down = button('Move Faster export down');
+
+    down.focus();
+    fireEvent.click(down);
+    await waitFor(() => expect(down.getAttribute('aria-disabled')).toBe('true'));
+    fireEvent.click(down);
+    expect(document.activeElement).toBe(down);
+
+    release(rows.map(({ id, sortOrder }) => ({ id, sortOrder })));
+    await waitFor(() => expect(findMany).toHaveBeenCalledTimes(1));
+    expect(txFindMany).toHaveBeenCalledTimes(1);
   });
 
   it('says so when the move fails, and writes nothing', async () => {

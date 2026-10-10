@@ -617,8 +617,8 @@ declare const messages: {
       "dialog": {
         "createTitle": "Thêm công việc nổi bật",
         "editTitle": "Chỉnh sửa công việc nổi bật",
-        "createDescription": "Ghim một đóng góp lên trang chủ. Chỉ cần nhập bản tiếng Anh.",
-        "editDescription": "Cập nhật mục này. Chỉ cần nhập bản tiếng Anh.",
+        "createDescription": "Thêm một mục nổi bật để ghim lên trang chủ.",
+        "editDescription": "Cập nhật mục nổi bật đã ghim này.",
         "cancelButton": "Hủy",
         "saveButton": "Lưu thay đổi",
         "createSubmitButton": "Thêm công việc nổi bật"

@@ -614,8 +614,8 @@
       "dialog": {
         "createTitle": "Add featured work",
         "editTitle": "Edit featured work",
-        "createDescription": "Pin a contribution to the homepage. Only the English text is required.",
-        "editDescription": "Update this entry. Only the English text is required.",
+        "createDescription": "Add a feature to pin on the homepage.",
+        "editDescription": "Update this pinned feature.",
         "cancelButton": "Cancel",
         "saveButton": "Save changes",
         "createSubmitButton": "Add featured work"

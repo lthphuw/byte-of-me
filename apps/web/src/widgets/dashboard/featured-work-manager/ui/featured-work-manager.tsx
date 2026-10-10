@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import {
   Badge,
   Button,
@@ -72,6 +73,31 @@ export function FeaturedWorkManager() {
   });
   const { move, isMoving } = useReorderFeaturedWork(t('toast.reorderError'));
 
+  // The arrows stay focusable (`aria-disabled`, not `disabled`) so a keyboard
+  // user can press one repeatedly. Reordering the list moves DOM nodes, which
+  // drops focus, so it is put back on the arrow that was used once the
+  // refetch has landed (`isMoving` stays true until then).
+  const moveButtons = useRef(new Map<string, HTMLButtonElement>());
+  const refocus = useRef<string | null>(null);
+  useEffect(() => {
+    if (isMoving || refocus.current === null) return;
+    moveButtons.current.get(refocus.current)?.focus();
+    refocus.current = null;
+  }, [isMoving, works]);
+
+  const requestMove = (id: string, direction: 'up' | 'down', blocked: boolean) => {
+    if (blocked || isMoving) return;
+    refocus.current = `${id}:${direction}`;
+    move(id, direction);
+  };
+  const moveButtonRef =
+    (key: string) => (node: HTMLButtonElement | null) => {
+      if (node) moveButtons.current.set(key, node);
+      else moveButtons.current.delete(key);
+    };
+  const moveButtonClass =
+    'h-8 w-8 aria-disabled:cursor-not-allowed aria-disabled:opacity-50';
+
   // Position in the whole list, not on this page: the first row of page 2 can
   // still move up, and only the very first and very last entries cannot move.
   const firstPosition = ((pagination?.currentPage ?? 1) - 1) * ADMIN_PAGE_SIZE;
@@ -105,7 +131,7 @@ export function FeaturedWorkManager() {
             </Button>
           }
         >
-          <ol className="grid gap-4">
+          <ol role="list" className="grid gap-4">
             {works.map((work, index) => {
               // Admin reads keep every locale ordered `language: 'asc'`, so
               // the first row is always English — resolve against the
@@ -152,24 +178,28 @@ export function FeaturedWorkManager() {
                   <div className="flex shrink-0 items-center gap-1">
                     {/* Never hover-gated: a touch screen has no hover to reveal them. */}
                     <Button
+                      ref={moveButtonRef(`${work.id}:up`)}
                       type="button"
                       size="icon"
                       variant="ghost"
-                      className="h-8 w-8"
+                      className={moveButtonClass}
                       aria-label={t('moveUpLabel', { name: title })}
-                      disabled={isMoving || position === 0}
-                      onClick={() => move(work.id, 'up')}
+                      aria-disabled={isMoving || position === 0}
+                      onClick={() => requestMove(work.id, 'up', position === 0)}
                     >
                       <ChevronUp className="h-4 w-4" />
                     </Button>
                     <Button
+                      ref={moveButtonRef(`${work.id}:down`)}
                       type="button"
                       size="icon"
                       variant="ghost"
-                      className="h-8 w-8"
+                      className={moveButtonClass}
                       aria-label={t('moveDownLabel', { name: title })}
-                      disabled={isMoving || position === totalCount - 1}
-                      onClick={() => move(work.id, 'down')}
+                      aria-disabled={isMoving || position === totalCount - 1}
+                      onClick={() =>
+                        requestMove(work.id, 'down', position === totalCount - 1)
+                      }
                     >
                       <ChevronDown className="h-4 w-4" />
                     </Button>
