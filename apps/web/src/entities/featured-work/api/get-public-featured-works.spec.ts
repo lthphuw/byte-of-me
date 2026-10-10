@@ -11,7 +11,11 @@ import { getPublicFeaturedWorks } from './get-public-featured-works';
 
 import type { FeaturedWorkGithubDeps } from '@/entities/featured-work/lib/get-featured-work-github';
 import { loadPublicFeaturedWorks, toRows } from '@/entities/featured-work/lib/load-public-featured-works';
-import type { FeaturedWorkGithub, GithubPullRequestRef } from '@/entities/featured-work/model/types';
+import type {
+  AdminFeaturedWork,
+  FeaturedWorkGithub,
+  GithubPullRequestRef,
+} from '@/entities/featured-work/model/types';
 
 const findMany = mock();
 Object.defineProperty(prisma, 'featuredWork', {
@@ -23,13 +27,31 @@ Object.defineProperty(prisma, 'featuredWork', {
 const PR_URL = 'https://github.com/roboflow/rf-detr/pull/512';
 const GITHUB: FeaturedWorkGithub = { repo: 'roboflow/rf-detr', stars: 4200, merged: true };
 
+const DETAILS_EN = doc('How it was done.');
+const DETAILS_VI = doc('Cách làm.');
+
+/** A stored TipTap document with one paragraph of text, the codec the dashboard writes. */
+function doc(text: string): string {
+  return JSON.stringify({
+    type: 'doc',
+    content: [{ type: 'paragraph', content: [{ type: 'text', text }] }],
+  });
+}
+
 function row(id: string, url: string | null = null, title = `Work ${id}`) {
   return {
     id,
     url,
-    translations: [{ language: 'en', title, description: `About ${id}` }],
+    translations: [
+      { language: 'en', title, description: `About ${id}`, details: null },
+    ],
   };
 }
+
+// Compile-time contract, enforced by `tsc`: the admin list row never carries the rendered body.
+const adminRowLacksDetailsHtml: 'detailsHtml' extends keyof AdminFeaturedWork
+  ? never
+  : true = true;
 
 function makeDeps(overrides: Partial<FeaturedWorkGithubDeps> = {}) {
   const fetchGithub = mock(
@@ -54,7 +76,14 @@ describe('toRows', () => {
     const rows = toRows([row('a')], 'vi');
 
     expect(rows).toEqual([
-      { id: 'a', title: 'Work a', description: 'About a', url: null, host: null },
+      {
+        id: 'a',
+        title: 'Work a',
+        description: 'About a',
+        detailsHtml: null,
+        url: null,
+        host: null,
+      },
     ]);
   });
 
@@ -65,8 +94,8 @@ describe('toRows', () => {
           id: 'a',
           url: null,
           translations: [
-            { language: 'en', title: 'Hello', description: null },
-            { language: 'vi', title: 'Xin chào', description: null },
+            { language: 'en', title: 'Hello', description: null, details: null },
+            { language: 'vi', title: 'Xin chào', description: null, details: null },
           ],
         },
       ],
@@ -96,8 +125,8 @@ describe('toRows', () => {
           id: 'a',
           url: null,
           translations: [
-            { language: 'en', title: 'Hello', description: 'About' },
-            { language: 'vi', title: '  ', description: 'Mô tả' },
+            { language: 'en', title: 'Hello', description: 'About', details: null },
+            { language: 'vi', title: '  ', description: 'Mô tả', details: null },
           ],
         },
       ],
@@ -131,6 +160,121 @@ describe('toRows url handling', () => {
   });
 });
 
+describe('details body', () => {
+  /** A translation as the query returns it, with a body. */
+  const translation = (
+    language: string,
+    details: string | null,
+    title = `Title ${language}`
+  ) => ({ language, title, description: null, details });
+
+  const work = (
+    translations: ReturnType<typeof translation>[]
+  ): Parameters<typeof toRows>[0] => [{ id: 'a', url: null, translations }];
+
+  it('renders the stored body to sanitized HTML, not the stored JSON', () => {
+    const [detailsRow] = toRows(
+      work([translation('en', DETAILS_EN)]),
+      'en'
+    );
+
+    expect(detailsRow?.detailsHtml).toBe('<p>How it was done.</p>');
+  });
+
+  it('neutralizes script text and unsafe link targets in the body', () => {
+    const hostile = JSON.stringify({
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            { type: 'text', text: '<script>alert(1)</script>' },
+            {
+              type: 'text',
+              text: 'click',
+              marks: [{ type: 'link', attrs: { href: 'javascript:alert(1)' } }],
+            },
+          ],
+        },
+      ],
+    });
+    const [hostileRow] = toRows(work([translation('en', hostile)]), 'en');
+
+    expect(hostileRow?.detailsHtml).toContain('click');
+    expect(hostileRow?.detailsHtml).not.toContain('<script');
+    expect(hostileRow?.detailsHtml).not.toContain('javascript:');
+  });
+
+  it.each([
+    ['null', null],
+    ['an empty string', ''],
+    ['an empty document', JSON.stringify({ type: 'doc', content: [{ type: 'paragraph' }] })],
+    ['a whitespace-only document', doc('   ')],
+  ])('gives no body for %s', (_label, details) => {
+    const [blankRow] = toRows(work([translation('en', details)]), 'en');
+
+    expect(blankRow?.detailsHtml).toBeNull();
+  });
+
+  it.each([
+    ['truncated JSON', '{"type":'],
+    ['a bare number', '42'],
+    ['the literal null', 'null'],
+    ['a JSON array', '[1,2,3]'],
+  ])('gives no body for %s, and does not throw', (_label, details) => {
+    let result: ReturnType<typeof toRows> = [];
+    expect(() => {
+      result = toRows(work([translation('en', details)]), 'en');
+    }).not.toThrow();
+
+    expect(result[0]?.detailsHtml).toBeNull();
+  });
+
+  it('gives a vi row with no vi body no body, even when en has one', () => {
+    const [viRow] = toRows(
+      work([
+        translation('en', DETAILS_EN),
+        translation('vi', null, 'Tiêu đề'),
+      ]),
+      'vi'
+    );
+
+    expect(viRow?.title).toBe('Tiêu đề');
+    expect(viRow?.detailsHtml).toBeNull();
+  });
+
+  it("renders the visitor's own language body when it has one", () => {
+    const [viRow] = toRows(
+      work([
+        translation('en', DETAILS_EN),
+        translation('vi', DETAILS_VI, 'Tiêu đề'),
+      ]),
+      'vi'
+    );
+
+    expect(viRow?.detailsHtml).toBe('<p>Cách làm.</p>');
+  });
+
+  it('carries the body through the loader to the homepage row', async () => {
+    findMany.mockReset().mockResolvedValue([
+      {
+        id: 'a',
+        url: null,
+        translations: [translation('en', DETAILS_EN)],
+      },
+    ]);
+
+    const result = await works(makeDeps().deps);
+
+    expect(result[0]?.detailsHtml).toBe('<p>How it was done.</p>');
+  });
+
+  it('keeps the rendered body out of the admin list row type', () => {
+    // The assertion is the annotation on `adminRowLacksDetailsHtml`: tsc fails if the key appears.
+    expect(adminRowLacksDetailsHtml).toBe(true);
+  });
+});
+
 describe('loadPublicFeaturedWorks', () => {
   beforeEach(() => {
     findMany.mockReset().mockResolvedValue([]);
@@ -149,6 +293,7 @@ describe('loadPublicFeaturedWorks', () => {
     expect(args.orderBy).toEqual([{ sortOrder: 'asc' }, { id: 'asc' }]);
     expect(args.take).toBe(6);
     expect(args.select.translations.where.language.in).toEqual(['en']);
+    expect(args.select.translations.select.details).toBe(true);
     expect(result.map((w) => w.id)).toEqual(['w0', 'w1', 'w2', 'w3', 'w4', 'w5']);
   });
 
@@ -164,6 +309,7 @@ describe('loadPublicFeaturedWorks', () => {
         id: 'a',
         title: 'Work a',
         description: 'About a',
+        detailsHtml: null,
         url: PR_URL,
         host: 'github.com',
         github: null,

@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'bun:test';
 
-import { featuredWorkSchema } from './featured-work-schema';
+import {
+  FEATURED_WORK_DETAILS_MAX_LENGTH,
+  featuredWorkSchema,
+} from './featured-work-schema';
+
+const EMPTY_DOC = JSON.stringify({ type: 'doc', content: [{ type: 'paragraph' }] });
+const TEXT_DOC = JSON.stringify({
+  type: 'doc',
+  content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Shipped it.' }] }],
+});
 
 const base = {
   isPublished: true,
@@ -71,5 +80,54 @@ describe('featuredWorkSchema', () => {
 
   it('accepts an English-only translation', () => {
     expect(featuredWorkSchema.safeParse(base).success).toBe(true);
+  });
+
+  describe('details', () => {
+    const withDetails = (details: unknown) =>
+      featuredWorkSchema.safeParse({
+        ...base,
+        translations: [{ language: 'en', title: 'INT8 quantization', details }],
+      });
+
+    it('is optional in every language, English included', () => {
+      expect(withDetails(undefined).success).toBe(true);
+      expect(
+        featuredWorkSchema.safeParse({
+          ...base,
+          translations: [
+            { language: 'en', title: 'INT8 quantization' },
+            { language: 'vi', title: 'Lượng tử hóa INT8' },
+          ],
+        }).success
+      ).toBe(true);
+    });
+
+    it('keeps a body with text as the stored string', () => {
+      const result = withDetails(TEXT_DOC);
+      expect(result.success).toBe(true);
+      expect(result.data?.translations[0]?.details).toBe(TEXT_DOC);
+    });
+
+    it('stores an empty document as null', () => {
+      const result = withDetails(EMPTY_DOC);
+      expect(result.success).toBe(true);
+      expect(result.data?.translations[0]?.details).toBeNull();
+    });
+
+    it('stores an empty string as null', () => {
+      expect(withDetails('').data?.translations[0]?.details).toBeNull();
+    });
+
+    it('accepts a body of exactly the maximum length', () => {
+      const body = 'x'.repeat(FEATURED_WORK_DETAILS_MAX_LENGTH);
+      expect(withDetails(body).success).toBe(true);
+    });
+
+    it('rejects a body one character over the maximum, reported on that translation', () => {
+      const result = withDetails('x'.repeat(FEATURED_WORK_DETAILS_MAX_LENGTH + 1));
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0]?.path).toEqual(['translations', 0, 'details']);
+      expect(result.error?.issues[0]?.message).toBe('Details are too long');
+    });
   });
 });

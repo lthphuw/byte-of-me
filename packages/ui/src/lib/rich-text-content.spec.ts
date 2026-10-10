@@ -2,6 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import {
   fromEditorContent,
+  isRichTextBlank,
   parseRichTextContent,
   richTextToPlainText,
   toEditorContent,
@@ -180,5 +181,88 @@ describe('richTextToPlainText', () => {
     });
 
     expect(richTextToPlainText(richDoc)).toBe('Only me');
+  });
+});
+
+describe('isRichTextBlank', () => {
+  it('treats absent, empty and whitespace-only values as blank', () => {
+    expect(isRichTextBlank(null)).toBe(true);
+    expect(isRichTextBlank(undefined)).toBe(true);
+    expect(isRichTextBlank('')).toBe(true);
+    expect(isRichTextBlank('   \n\t ')).toBe(true);
+  });
+
+  it('treats a document of empty paragraphs as blank', () => {
+    expect(isRichTextBlank(JSON.stringify(doc))).toBe(true);
+    expect(
+      isRichTextBlank(
+        JSON.stringify({
+          type: 'doc',
+          content: [{ type: 'paragraph' }, { type: 'paragraph', content: [] }],
+        })
+      )
+    ).toBe(true);
+  });
+
+  it('treats a document whose text is only whitespace as blank', () => {
+    const spaces = JSON.stringify({
+      type: 'doc',
+      content: [{ type: 'paragraph', content: [{ type: 'text', text: '  ' }] }],
+    });
+    expect(isRichTextBlank(spaces)).toBe(true);
+  });
+
+  it('does not treat a document with text as blank', () => {
+    const text = JSON.stringify({
+      type: 'doc',
+      content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hi' }] }],
+    });
+    expect(isRichTextBlank(text)).toBe(false);
+  });
+
+  it('does not treat an image-only document as blank', () => {
+    const image = JSON.stringify({
+      type: 'doc',
+      content: [{ type: 'image', attrs: { src: '/a.png' } }],
+    });
+    expect(isRichTextBlank(image)).toBe(false);
+  });
+
+  it('does not treat a table with empty cells as blank', () => {
+    // The author built the table on purpose, and the form shows it.
+    const table = JSON.stringify({
+      type: 'doc',
+      content: [
+        {
+          type: 'table',
+          content: [
+            {
+              type: 'tableRow',
+              content: [{ type: 'tableCell', content: [{ type: 'paragraph' }] }],
+            },
+          ],
+        },
+      ],
+    });
+    expect(isRichTextBlank(table)).toBe(false);
+  });
+
+  it('does not treat legacy plain text with content as blank', () => {
+    expect(isRichTextBlank('an older plain-text description')).toBe(false);
+  });
+
+  it('never throws on parsed JSON that is not shaped like a document', () => {
+    const shapes = [
+      '{"type":"doc","content":"abc"}',
+      '{"type":"doc","content":[null, 3, "x"]}',
+      '{"type":"doc","content":[{"type":"text","text":7}]}',
+      '[1,2,3]',
+      'null',
+      '{"type":',
+    ];
+    for (const shape of shapes) {
+      expect(() => isRichTextBlank(shape)).not.toThrow();
+    }
+    expect(isRichTextBlank('{"type":"doc","content":"abc"}')).toBe(true);
   });
 });

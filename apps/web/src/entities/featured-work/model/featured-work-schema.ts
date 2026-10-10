@@ -1,10 +1,26 @@
+import { isRichTextBlank } from '@byte-of-me/ui/lib/rich-text-content';
 import { z } from 'zod';
+
+/** Stored TipTap JSON, in characters. A size guard, not a word budget. */
+export const FEATURED_WORK_DETAILS_MAX_LENGTH = 32_768;
+
+// Optional in every language, English included: only the title is required.
+// `parseInput` and the client resolver both run this, so the transform is the
+// one place a blank body becomes `null`. The outer `.optional()` keeps the key
+// optional in the inferred type, so forms that do not send it still type-check.
+const detailsSchema = z
+  .string()
+  .max(FEATURED_WORK_DETAILS_MAX_LENGTH, 'Details are too long')
+  .nullable()
+  .transform((value) => (value && !isRichTextBlank(value) ? value : null))
+  .optional();
 
 export const featuredWorkTranslationSchema = z.object({
   id: z.string().optional(),
   language: z.string().min(1),
   title: z.string().trim().min(1, 'Title is required').max(120),
   description: z.string().trim().max(400).nullable().optional(),
+  details: detailsSchema,
 });
 
 export const featuredWorkSchema = z.object({

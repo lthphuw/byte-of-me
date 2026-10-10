@@ -55,6 +55,7 @@ export async function updateFeaturedWork(
                 language: t.language,
                 title: t.title,
                 description: t.description || null,
+                details: t.details ?? null,
               })),
             },
           },

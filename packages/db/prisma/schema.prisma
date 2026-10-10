@@ -209,6 +209,8 @@ model FeaturedWorkTranslation {
   language    String
   title       String
   description String? @db.Text
+  // Stringified TipTap document, the Project/Education codec. Null = no body, no toggle.
+  details     String? @db.Text
 
   featuredWorkId String       @map("featured_work_id")
   featuredWork   FeaturedWork @relation(fields: [featuredWorkId], references: [id], onDelete: Cascade)

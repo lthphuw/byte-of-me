@@ -94,3 +94,26 @@ export function richTextToPlainText(value?: string | null): string {
       .trim()
   );
 }
+
+/**
+ * True when a stored value shows nothing: no text, and no node other than the
+ * doc and its paragraphs. Image-only and table-only bodies are not blank, and
+ * neither is legacy plain text with content. Never throws, whatever the shape
+ * of the parsed JSON.
+ */
+export function isRichTextBlank(value?: string | null): boolean {
+  if (!value?.trim()) return true;
+  const doc = parseRichTextContent(value);
+  if (!doc) return false;
+  return !hasSubstance(doc);
+}
+
+function hasSubstance(node: unknown): boolean {
+  if (!node || typeof node !== 'object') return false;
+  const { type, text, content } = node as JSONContent;
+  if (type === 'text') return typeof text === 'string' && text.trim() !== '';
+  if (typeof type === 'string' && type !== 'doc' && type !== 'paragraph') {
+    return true;
+  }
+  return Array.isArray(content) && content.some(hasSubstance);
+}

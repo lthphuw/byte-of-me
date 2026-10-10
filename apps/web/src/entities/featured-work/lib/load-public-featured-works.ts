@@ -1,4 +1,9 @@
 import { prisma } from '@byte-of-me/db';
+import {
+  isRichTextBlank,
+  parseRichTextContent,
+} from '@byte-of-me/ui/lib/rich-text-content';
+import { renderRichTextHtml } from '@byte-of-me/ui/rich-text-render';
 
 import {
   defaultFeaturedWorkGithubDeps,
@@ -19,8 +24,18 @@ const MAX_WORKS = 6;
 
 type FeaturedWorkRow = Pick<
   PublicFeaturedWork,
-  'id' | 'title' | 'description' | 'url' | 'host'
+  'id' | 'title' | 'description' | 'detailsHtml' | 'url' | 'host'
 >;
+
+/**
+ * Sanitized HTML of one row's details, or null. Runs inside the cached handler,
+ * so a cache hit skips TipTap and the sanitizer. A value that does not parse as
+ * a document shows no toggle; it is never printed as raw text.
+ */
+function toDetailsHtml(details: string | null): string | null {
+  if (isRichTextBlank(details) || !parseRichTextContent(details)) return null;
+  return renderRichTextHtml(details);
+}
 
 /** A work with no usable translation is skipped: one bad row must not blank the section. */
 export function toRows(
@@ -31,6 +46,7 @@ export function toRows(
       language: string;
       title: string;
       description: string | null;
+      details: string | null;
     }>;
   }>,
   locale: string
@@ -45,6 +61,8 @@ export function toRows(
         id: work.id,
         title: translation.title,
         description: translation.description,
+        // Row-level: the body comes from the translation the title came from.
+        detailsHtml: toDetailsHtml(translation.details),
         ...safeLink(work.url),
       },
     ];
@@ -68,7 +86,12 @@ async function getPublicFeaturedWorkRows(): Promise<
             translations: {
               where: { language: { in: getTranslationLanguages(locale) } },
               orderBy: { language: 'asc' },
-              select: { language: true, title: true, description: true },
+              select: {
+                language: true,
+                title: true,
+                description: true,
+                details: true,
+              },
             },
           },
         });
@@ -77,7 +100,9 @@ async function getPublicFeaturedWorkRows(): Promise<
       },
       {
         cache: true,
-        cacheKey: ['featured-works-rows'],
+        // Versioned: rows cached before `detailsHtml` existed would otherwise
+        // serve without it. No `revalidate` is set, so they never expire by time.
+        cacheKey: ['featured-works-rows-v2'],
         cacheTags: [CACHE_TAGS.FEATURED_WORK],
       }
     );

@@ -239,6 +239,7 @@ export const FeaturedWorkTranslationScalarFieldEnum = {
   language: 'language',
   title: 'title',
   description: 'description',
+  details: 'details',
   featuredWorkId: 'featuredWorkId'
 } as const
 

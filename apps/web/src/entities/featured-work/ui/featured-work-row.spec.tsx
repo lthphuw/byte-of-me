@@ -21,6 +21,7 @@ const base: PublicFeaturedWork = {
   id: 'w1',
   title: 'Faster detector export',
   description: 'Cut the export time in half.',
+  detailsHtml: null,
   url: 'https://github.com/roboflow/rf-detr/pull/512',
   host: 'github.com',
   github: { repo: 'roboflow/rf-detr', stars: 4200, merged: true },
