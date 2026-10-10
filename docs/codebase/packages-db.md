@@ -72,7 +72,7 @@ Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`).
 | `BlogTranslation` (`blog_translations`) | `language`, `title`, `description`, `content` | `(blogId, language)` | → Blog (cascade) | parent: Blog |
 | `BlogStatisticLog` (`blog_view_logs`) | view stats: `isAnonymous`, `viewerId`, `referrer`, `deviceType`, `browser`, `countryCode` | — | → Blog (cascade); viewer → User (no onDelete) | — |
 | **Media, engagement & contact** | | | | |
-| `Media` (`media`) | `fileName`, `fileKey`, `mimeType`, `size`, `provider`, `bucket`, `url` | `fileKey` | user → User (setNull); back-relations from Company, TechStack, Education, Blog, FeaturedWorkMedia, AchievementOnMedias | — |
+| `Media` (`media`) | `fileName`, `fileKey`, `mimeType`, `size`, `provider`, `bucket`, `url`, `width`, `height` (pixel size, nullable) | `fileKey` | user → User (setNull); back-relations from Company, TechStack, Education, Blog, FeaturedWorkMedia, AchievementOnMedias | — |
 | `Interaction` (`interactions`) | `type` (String, e.g. LIKE, CLAP); optional `blogId`, `projectId` | `(userId, blogId, type)`; `(userId, projectId, type)` | → User, Blog, Project (cascade) | — |
 | `Comment` (`comments`) | `content`, `isDeleted`, `parentId` (threads) | — | → User, Blog, Project, parent Comment (cascade) | — |
 | `ContactMessage` (`contact_messages`) | `name`, `email`, `subject`, `message`, `isRead`, `isReplied` | — | user → User (no onDelete) | — |
@@ -88,6 +88,7 @@ Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`).
 | 1 (Aug 16) | `workspace_settings` |
 | 1 (Aug 19) | Hot-path indexes; uses `CONCURRENTLY` (see Run) |
 | 3 (Oct 10) | Featured works: base, details, demo media |
+| 3 (Oct 10) | `media.width`, `media.height`: nullable, additive; applied to production 2026-10-10 by `prisma migrate deploy`, 25 existing rows left NULL until backfilled |
 
 ## Key flows
 

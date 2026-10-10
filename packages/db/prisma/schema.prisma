@@ -721,6 +721,11 @@ model Media {
   provider String
   bucket   String
   url      String
+  // Pixel size of the stored file, as the browser will draw it (EXIF-rotated, after
+  // compression). Null for a file whose size could not be read; a reader then falls
+  // back to a box and takes the ratio on load. Layout hints, not a security boundary.
+  width    Int?
+  height   Int?
 
   userId String? @map("user_id")
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
