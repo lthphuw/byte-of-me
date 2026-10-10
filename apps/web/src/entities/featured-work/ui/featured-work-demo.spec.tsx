@@ -259,6 +259,51 @@ describe('FeaturedWorkDemo video', () => {
   });
 });
 
+describe('FeaturedWorkDemo frame', () => {
+  const frame = (container: HTMLElement) =>
+    container.querySelector<HTMLElement>('figure .aspect-video');
+  /** The inline ratio as written, `null` while the frame still holds the 16:9 reserve. */
+  const ratioOf = (container: HTMLElement) => {
+    const match = /aspect-ratio:\s*([\d.]+)/.exec(frame(container)?.getAttribute('style') ?? '');
+    return match ? Number(match[1]) : null;
+  };
+
+  it('reserves 16:9, then takes the clip\'s own ratio so a wide clip has no empty bars', () => {
+    const { container } = render(<FeaturedWorkDemo media={[fp16]} />);
+    expect(ratioOf(container)).toBeNull();
+
+    const video = videoEl();
+    Object.defineProperty(video, 'videoWidth', { configurable: true, value: 1920 });
+    Object.defineProperty(video, 'videoHeight', { configurable: true, value: 670 });
+    act(() => {
+      video.dispatchEvent(new Event('loadedmetadata'));
+    });
+
+    expect(ratioOf(container)).toBeCloseTo(1920 / 670, 3);
+  });
+
+  it('keeps 16:9 when the file reports no size', () => {
+    const { container } = render(<FeaturedWorkDemo media={[fp16]} />);
+
+    act(() => {
+      videoEl().dispatchEvent(new Event('loadedmetadata'));
+    });
+
+    expect(ratioOf(container)).toBeNull();
+  });
+
+  it('gives an image its own ratio once it has loaded', () => {
+    const { container } = render(<FeaturedWorkDemo media={[int8]} />);
+    const image = screen.getByRole('img', { name: 'INT8' });
+    Object.defineProperty(image, 'naturalWidth', { configurable: true, value: 800 });
+    Object.defineProperty(image, 'naturalHeight', { configurable: true, value: 200 });
+
+    fireEvent.load(image);
+
+    expect(ratioOf(container)).toBe(4);
+  });
+});
+
 describe('FeaturedWorkDemo play/pause button', () => {
   it('pauses and resumes a playing clip on click', () => {
     render(<FeaturedWorkDemo media={[fp16]} />);

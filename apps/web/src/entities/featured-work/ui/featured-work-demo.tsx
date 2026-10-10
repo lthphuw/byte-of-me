@@ -28,13 +28,24 @@ const VISIBLE = { threshold: 0.25 };
 /** `#t=0.1` makes the browser decode a first frame to show while the clip is paused. */
 const FIRST_FRAME = '#t=0.1';
 
-/** The reserved 16:9 box: it holds its size before the media arrives, so nothing shifts. */
-function Frame({ children }: { children?: ReactNode }) {
+/**
+ * The media's box. It reserves 16:9 so nothing shifts before the file arrives, then
+ * takes the file's own ratio, so a wide clip is not framed by empty bars.
+ */
+function Frame({ children, ratio }: { children?: ReactNode; ratio?: number }) {
   return (
-    <span className="relative block aspect-video overflow-hidden rounded-md border border-border bg-muted">
+    <span
+      style={ratio ? { aspectRatio: ratio } : undefined}
+      className="relative block aspect-video overflow-hidden rounded-md border border-border bg-muted"
+    >
       {children}
     </span>
   );
+}
+
+/** Width over height of a loaded file, or undefined while its size is unknown. */
+function ratioOf(width: number, height: number): number | undefined {
+  return width > 0 && height > 0 ? width / height : undefined;
 }
 
 function playQuietly(video: HTMLVideoElement) {
@@ -79,6 +90,7 @@ function DemoVideo({
   const [userPaused, setUserPaused] = useState(false);
   const [failed, setFailed] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
+  const [ratio, setRatio] = useState<number>();
   // Set the moment full screen is asked for: the page leaves the viewport before the
   // `fullscreenchange` event arrives, and the visibility effect would pause the clip in between.
   const fullscreenAsked = useRef(false);
@@ -87,7 +99,12 @@ function DemoVideo({
 
   useEffect(() => {
     const video = videoRef.current;
-    if (video) setFullscreenReady(canFullscreen(video));
+    if (!video) return;
+    setFullscreenReady(canFullscreen(video));
+    // The server-rendered video may have its size before React listens for the event.
+    if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
+      setRatio(ratioOf(video.videoWidth, video.videoHeight));
+    }
   }, []);
 
   useEffect(() => {
@@ -160,7 +177,7 @@ function DemoVideo({
         onClick={toggle}
         className="block w-full rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
       >
-        <Frame>
+        <Frame ratio={ratio}>
           <video
             ref={videoRef}
             src={`${src}${FIRST_FRAME}`}
@@ -168,6 +185,9 @@ function DemoVideo({
             loop
             playsInline
             preload="metadata"
+            onLoadedMetadata={(event) =>
+              setRatio(ratioOf(event.currentTarget.videoWidth, event.currentTarget.videoHeight))
+            }
             onPlay={() => setPlaying(true)}
             onPause={() => setPlaying(false)}
             onError={() => {
@@ -202,6 +222,35 @@ function DemoVideo({
   );
 }
 
+function DemoImage({ src, alt }: { src: string; alt: string }) {
+  const [ratio, setRatio] = useState<number>();
+  const imageRef = useRef<HTMLImageElement>(null);
+
+  // A cached image can finish before hydration, and its `load` event is gone.
+  useEffect(() => {
+    const image = imageRef.current;
+    if (image?.complete) setRatio(ratioOf(image.naturalWidth, image.naturalHeight));
+  }, []);
+
+  return (
+    <Frame ratio={ratio}>
+      {/* A plain <img> is the only way a stored SVG or GIF is drawn: never inline, never <object>. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        ref={imageRef}
+        src={src}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        onLoad={(event) =>
+          setRatio(ratioOf(event.currentTarget.naturalWidth, event.currentTarget.naturalHeight))
+        }
+        className="size-full object-contain"
+      />
+    </Frame>
+  );
+}
+
 function DemoFigure({ item }: { item: FeaturedWorkDemoItem }) {
   const media: ReactNode = item.isVideo ? (
     <DemoVideo
@@ -210,17 +259,7 @@ function DemoFigure({ item }: { item: FeaturedWorkDemoItem }) {
       fullscreenLabel={item.fullscreenLabel}
     />
   ) : (
-    <Frame>
-      {/* A plain <img> is the only way a stored SVG or GIF is drawn: never inline, never <object>. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={item.url}
-        alt={item.name}
-        loading="lazy"
-        decoding="async"
-        className="size-full object-contain"
-      />
-    </Frame>
+    <DemoImage src={item.url} alt={item.name} />
   );
 
   return (
