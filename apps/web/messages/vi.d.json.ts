@@ -153,7 +153,6 @@ declare const messages: {
     "backToBlogs": "Quay lại danh sách bài viết",
     "goHome": "Về trang chủ",
     "relatedProject": "Dự án liên quan",
-    "viewProject": "Xem dự án",
     "views": "{count} lượt xem",
     "avgRead": "Đọc {time}p",
     "readingTime": "{time} phút đọc",

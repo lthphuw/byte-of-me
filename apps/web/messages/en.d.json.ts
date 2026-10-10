@@ -153,7 +153,6 @@ declare const messages: {
     "backToBlogs": "Back to blogs",
     "goHome": "Go to homepage",
     "relatedProject": "Related Project",
-    "viewProject": "View project",
     "views": "{count, plural, =0 {No views} one {# view} other {# views}}",
     "avgRead": "{time}m avg. read",
     "readingTime": "{time} min read",

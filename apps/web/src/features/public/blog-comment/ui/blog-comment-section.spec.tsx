@@ -48,6 +48,10 @@ const originalDocument = globalThis.document;
 let BlogCommentSection: typeof BlogCommentSectionModule.BlogCommentSection;
 
 beforeAll(async () => {
+  // Client-only dependencies load with the DOM still present: a module first
+  // imported while the globals are gone stays cached in server mode for the whole
+  // `bun test` process and breaks every later spec that renders it.
+  await import('@byte-of-me/ui');
   Reflect.deleteProperty(globalThis, 'window');
   Reflect.deleteProperty(globalThis, 'document');
   ({ BlogCommentSection } = await import('./blog-comment-section'));
