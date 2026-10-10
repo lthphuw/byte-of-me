@@ -9,6 +9,8 @@ interface DisclosureRegionProps {
   animated: boolean;
   /** Placement in the parent grid, e.g. `col-start-2`. */
   className?: string;
+  /** The clip box's own classes, e.g. a subgrid that hands the parent's columns to the body. */
+  innerClassName?: string;
   children: ReactNode;
 }
 
@@ -23,6 +25,7 @@ export function DisclosureRegion({
   open,
   animated,
   className,
+  innerClassName,
   children,
 }: DisclosureRegionProps) {
   return (
@@ -42,7 +45,9 @@ export function DisclosureRegion({
     >
       {/* `overflow-clip`, not hidden: a clip box is not a scroll container. The
           negative margin and padding keep room for a focus ring on an edge link. */}
-      <div className="-mx-1 min-h-0 overflow-clip px-1">{children}</div>
+      <div className={cn('-mx-1 min-h-0 overflow-clip px-1', innerClassName)}>
+        {children}
+      </div>
     </div>
   );
 }

@@ -3,7 +3,7 @@
  * number and the repo/host line. Renders the real component
  * inside the real English catalogue.
  */
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'bun:test';
 import { NextIntlClientProvider } from 'next-intl';
 
@@ -156,5 +156,46 @@ describe('FeaturedWorkRow with details', () => {
     renderRow();
 
     expect(screen.queryByRole('button')).toBeNull();
+  });
+});
+
+describe('FeaturedWorkRow with a demo', () => {
+  const media = [
+    { id: 'm1', url: 'https://cdn.example.com/fp16.mp4', mimeType: 'video/mp4', label: 'FP16' },
+    { id: 'm2', url: 'https://cdn.example.com/int8.gif', mimeType: 'image/gif', label: null },
+  ];
+
+  it('expands a work that has only a demo, keeping the link at the end of the body', () => {
+    renderRow({ media });
+
+    const toggle = screen.getByRole('button', { name: 'Faster detector export' });
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    const link = screen.getByRole('link', {
+      name: 'View on GitHub (opens in a new tab)',
+    });
+    expect(link.getAttribute('href')).toBe(base.url);
+    expect(link.closest('[inert]')).not.toBeNull();
+    expect(screen.getAllByRole('link')).toHaveLength(1);
+  });
+
+  it('names each clip and image from its label, or the work title when it has none', () => {
+    renderRow({ media });
+    fireEvent.click(screen.getByRole('button', { name: 'Faster detector export' }));
+
+    expect(screen.getByRole('button', { name: 'Play/Pause FP16' })).toBeTruthy();
+    expect(screen.getByRole('img', { name: 'Faster detector export' })).toBeTruthy();
+    expect(document.querySelectorAll('figcaption')).toHaveLength(1);
+  });
+
+  it('names the clip button in Vietnamese', () => {
+    const homepage = vi.homepage as unknown as typeof en.homepage;
+    render(
+      <NextIntlClientProvider locale="vi" messages={{ homepage }}>
+        <FeaturedWorkRow work={{ ...base, media: media.slice(0, 1) }} index={0} />
+      </NextIntlClientProvider>
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Faster detector export' }));
+
+    expect(screen.getByRole('button', { name: 'Phát/Tạm dừng FP16' })).toBeTruthy();
   });
 });

@@ -20,6 +20,7 @@ const work: Omit<ComponentProps<typeof FeaturedWorkItem>, 'anchorId'> = {
   meta: <span>roboflow/rf-detr</span>,
   href: null,
   newTabLabel: '(opens in a new tab)',
+  media: [],
   details: (
     <>
       <p>How it was done: a streaming writer.</p>
@@ -198,5 +199,98 @@ describe('FeaturedWorkItem plain row', () => {
     expect(link.getAttribute('target')).toBe('_blank');
     expect(link.textContent).toContain('(opens in a new tab)');
     expect(screen.getByRole('link', { name: /Faster detector export.*\(opens in a new tab\)/ })).toBe(link);
+  });
+});
+
+const pair: ComponentProps<typeof FeaturedWorkItem>['media'] = [
+  {
+    id: 'm1',
+    url: 'https://cdn.example.com/fp16.mp4',
+    isVideo: true,
+    caption: 'FP16',
+    name: 'FP16',
+    toggleLabel: 'Play/Pause FP16',
+  },
+  {
+    id: 'm2',
+    url: 'https://cdn.example.com/int8.gif',
+    isVideo: false,
+    caption: 'INT8',
+    name: 'INT8',
+    toggleLabel: 'Play/Pause INT8',
+  },
+];
+/** A work with a demo and no details: the shape of the first live work. */
+const mediaOnly = { details: null, media: pair } as const;
+
+describe('FeaturedWorkItem demo', () => {
+  it('is expandable with details, with a demo, or with both, and plain with neither', () => {
+    renderItem({ details: null, media: [] });
+    expect(screen.queryByRole('button', { name: 'Faster detector export' })).toBeNull();
+    cleanup();
+
+    renderItem({ details: null, media: pair });
+    expect(toggle().getAttribute('aria-expanded')).toBe('false');
+    cleanup();
+
+    renderItem({ media: [] });
+    expect(toggle().getAttribute('aria-expanded')).toBe('false');
+    cleanup();
+
+    renderItem({ media: pair });
+    expect(toggle().getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('keeps the media unmounted until the row is opened, then keeps it after it closes', () => {
+    renderItem(mediaOnly);
+    expect(document.querySelector('video, img')).toBeNull();
+
+    fireEvent.click(toggle());
+    expect(document.querySelector('video')).not.toBeNull();
+    expect(document.querySelector('img')).not.toBeNull();
+
+    fireEvent.click(toggle());
+    expect(document.querySelector('video')).not.toBeNull();
+    expect(controlledRegion().hasAttribute('inert')).toBe(true);
+  });
+
+  it('leaves the clip out of the tab order while the row is closed', () => {
+    renderItem(mediaOnly);
+    fireEvent.click(toggle());
+    const clip = screen.getByRole('button', { name: 'Play/Pause FP16' });
+    expect(clip.closest('[inert]')).toBeNull();
+
+    fireEvent.click(toggle());
+
+    expect(clip.closest('[inert]')).toBe(controlledRegion());
+  });
+
+  it('opens a media-only work from the deep link and mounts its media', () => {
+    window.location.hash = `#${ANCHOR}`;
+    renderItem(mediaOnly);
+
+    expect(toggle().getAttribute('aria-expanded')).toBe('true');
+    expect(controlledRegion().hasAttribute('inert')).toBe(false);
+    expect(document.querySelectorAll('figure')).toHaveLength(2);
+    expect(document.querySelector('video')).not.toBeNull();
+  });
+
+  it('puts details first, then the demo, then the footer link', () => {
+    renderItem({
+      media: pair,
+      footer: <a href="https://example.com/work">Visit example.com</a>,
+    });
+    fireEvent.click(toggle());
+
+    const region = controlledRegion();
+    const order = [
+      region.querySelector('p'),
+      region.querySelector('figure'),
+      screen.getByRole('link', { name: 'Visit example.com' }),
+    ];
+    for (let i = 0; i < order.length - 1; i += 1) {
+      const position = order[i]?.compareDocumentPosition(order[i + 1] as Node);
+      expect((position ?? 0) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    }
   });
 });

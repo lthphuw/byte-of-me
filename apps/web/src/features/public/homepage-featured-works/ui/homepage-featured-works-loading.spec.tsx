@@ -33,6 +33,7 @@ describe('HomepageFeaturedWorksLoading', () => {
         href={null}
         newTabLabel="(opens in a new tab)"
         details={null}
+        media={[]}
       />
     );
     const header = plain.getByText('01').parentElement;

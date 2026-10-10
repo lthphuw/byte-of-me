@@ -248,6 +248,7 @@ declare const messages: {
     "featuredViewOnGithub": "View on GitHub",
     "featuredVisitHost": "Visit {host}",
     "featuredOpensInNewTab": "(opens in a new tab)",
+    "featuredDemoToggle": "Play/Pause {label}",
     "skillsTitle": "Stack",
     "educationTitle": "Education",
     "present": "Present",
