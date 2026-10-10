@@ -1,0 +1,281 @@
+/**
+ * What the owner can do on the featured-work dashboard: read the list, reorder
+ * it, and save an entry whose Vietnamese text is blank. Drives the real manager,
+ * dialog, form and server actions; only Prisma is replaced.
+ */
+import { prisma } from '@byte-of-me/db';
+import { logger } from '@byte-of-me/logger';
+import { QueryClientProvider } from '@tanstack/react-query';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
+import {
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+  spyOn,
+} from 'bun:test';
+import { NextIntlClientProvider } from 'next-intl';
+import { toast } from 'sonner';
+
+// The catalogue lives outside `src/`, so the `@/` alias cannot reach it.
+// eslint-disable-next-line import-alias/import-alias
+import en from '../../../../../messages/en.json';
+
+import { FeaturedWorkManager } from './featured-work-manager';
+
+import { featuredWorkKeys } from '@/entities/featured-work/model/query-keys';
+import type { AdminFeaturedWork } from '@/entities/featured-work/model/types';
+import { makeQueryClient } from '@/shared/lib/query/get-query-client';
+
+const NOW = new Date('2026-01-01T00:00:00.000Z');
+
+function work(
+  id: string,
+  sortOrder: number,
+  translations: AdminFeaturedWork['translations'],
+  extra: Partial<AdminFeaturedWork> = {}
+): AdminFeaturedWork {
+  return {
+    id,
+    createdAt: NOW,
+    updatedAt: NOW,
+    sortOrder,
+    isPublished: true,
+    url: null,
+    userId: 'admin-1',
+    translations,
+    ...extra,
+  };
+}
+
+const tr = (language: string, title: string, description: string | null = null) => ({
+  id: `${language}-${title}`,
+  language,
+  title,
+  description,
+});
+
+const rows = [
+  work('w1', 0, [tr('en', 'Faster export')], {
+    url: 'https://www.github.com/a/b/pull/1',
+  }),
+  work('w2', 1, [tr('en', 'Quantized model'), tr('vi', 'Mô hình lượng tử')]),
+  work('w3', 2, [tr('en', 'Release notes')], { isPublished: false }),
+];
+
+const meta = (totalCount: number) => ({
+  currentPage: 1,
+  totalPages: 1,
+  totalCount,
+  hasMore: false,
+});
+
+type Row = Record<string, unknown>;
+const findMany = mock<(args: unknown) => Promise<Row[]>>();
+const count = mock<(args: unknown) => Promise<number>>();
+const aggregate = mock<(args: unknown) => Promise<Row>>();
+const create = mock<(args: unknown) => Promise<Row>>();
+const txFindMany = mock<(args: unknown) => Promise<Row[]>>();
+const txUpdate = mock<(args: unknown) => Promise<Row>>();
+
+const originals = {
+  featuredWork: Object.getOwnPropertyDescriptor(prisma, 'featuredWork'),
+  transaction: Object.getOwnPropertyDescriptor(prisma, '$transaction'),
+};
+Object.defineProperty(prisma, 'featuredWork', {
+  value: { findMany, count, aggregate, create },
+  writable: true,
+  configurable: true,
+});
+Object.defineProperty(prisma, '$transaction', {
+  value: (fn: (tx: unknown) => Promise<unknown>) =>
+    fn({ featuredWork: { findMany: txFindMany, update: txUpdate } }),
+  writable: true,
+  configurable: true,
+});
+
+const logError = spyOn(logger, 'error').mockImplementation(() => {});
+const toastSuccess = spyOn(toast, 'success').mockImplementation(() => 1);
+const toastError = spyOn(toast, 'error').mockImplementation(() => 1);
+
+function renderManager(
+  list: AdminFeaturedWork[] = rows,
+  locale: 'en' | 'vi' = 'en'
+) {
+  const queryClient = makeQueryClient();
+  // What the page's server prefetch leaves in the cache.
+  queryClient.setQueryData(featuredWorkKeys.adminPage(1), {
+    data: list,
+    meta: meta(list.length),
+  });
+
+  render(
+    <QueryClientProvider client={queryClient}>
+      <NextIntlClientProvider locale={locale} messages={{ dashboard: en.dashboard }}>
+        <FeaturedWorkManager />
+      </NextIntlClientProvider>
+    </QueryClientProvider>
+  );
+
+  return queryClient;
+}
+
+const button = (name: string) =>
+  screen.getByRole('button', { name }) as HTMLButtonElement;
+
+beforeEach(() => {
+  findMany.mockReset().mockResolvedValue(rows);
+  count.mockReset().mockResolvedValue(rows.length);
+  aggregate.mockReset().mockResolvedValue({ _max: { sortOrder: 2 } });
+  create.mockReset().mockResolvedValue(rows[0] ?? {});
+  txFindMany.mockReset().mockResolvedValue(
+    rows.map(({ id, sortOrder }) => ({ id, sortOrder }))
+  );
+  txUpdate.mockReset().mockResolvedValue({});
+  logError.mockClear();
+  toastSuccess.mockClear();
+  toastError.mockClear();
+});
+
+afterEach(cleanup);
+
+afterAll(() => {
+  if (originals.featuredWork)
+    Object.defineProperty(prisma, 'featuredWork', originals.featuredWork);
+  if (originals.transaction)
+    Object.defineProperty(prisma, '$transaction', originals.transaction);
+  logError.mockRestore();
+  toastSuccess.mockRestore();
+  toastError.mockRestore();
+});
+
+describe('FeaturedWorkManager list', () => {
+  it('renders the prefetched page, numbered, without reading the list again', () => {
+    renderManager();
+
+    expect(screen.getByText('Faster export')).toBeTruthy();
+    expect(screen.getByText('github.com')).toBeTruthy();
+    expect(screen.getByText('3')).toBeTruthy();
+    expect(findMany).not.toHaveBeenCalled();
+  });
+
+  it('resolves each title against the dashboard locale', () => {
+    renderManager(rows, 'vi');
+
+    expect(screen.getByText('Mô hình lượng tử')).toBeTruthy();
+    // No Vietnamese text: falls back to English.
+    expect(screen.getByText('Faster export')).toBeTruthy();
+  });
+
+  it('marks an unpublished entry as a draft and a live one as published', () => {
+    renderManager();
+
+    expect(screen.getAllByText('Draft')).toHaveLength(1);
+    expect(screen.getAllByText('Published')).toHaveLength(2);
+  });
+
+  it('offers the create action when there is nothing yet', () => {
+    renderManager([]);
+
+    expect(screen.getByText('No featured work yet')).toBeTruthy();
+    fireEvent.click(button('Add Your First One'));
+
+    expect(screen.getByText('Add featured work', { selector: 'h2' })).toBeTruthy();
+  });
+});
+
+describe('FeaturedWorkManager reorder', () => {
+  it('disables moving up on the first entry and down on the last', () => {
+    renderManager();
+
+    expect(button('Move Faster export up').disabled).toBe(true);
+    expect(button('Move Faster export down').disabled).toBe(false);
+    expect(button('Move Release notes up').disabled).toBe(false);
+    expect(button('Move Release notes down').disabled).toBe(true);
+  });
+
+  it('moves the entry through the action, then refreshes the list', async () => {
+    renderManager();
+
+    fireEvent.click(button('Move Quantized model up'));
+
+    await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(2));
+    expect(
+      txUpdate.mock.calls
+        .map((c) => c[0] as { where: { id: string }; data: { sortOrder: number } })
+        .map((a) => [a.where.id, a.data.sortOrder])
+        .sort()
+    ).toEqual([
+      ['w1', 1],
+      ['w2', 0],
+    ]);
+    await waitFor(() => expect(findMany).toHaveBeenCalledTimes(1));
+    expect(toastError).not.toHaveBeenCalled();
+  });
+
+  it('says so when the move fails, and writes nothing', async () => {
+    txFindMany.mockRejectedValue(new Error('connection lost'));
+    renderManager();
+
+    fireEvent.click(button('Move Quantized model down'));
+
+    await waitFor(() =>
+      expect(toastError).toHaveBeenCalledWith('Could not change the order')
+    );
+    expect(txUpdate).not.toHaveBeenCalled();
+  });
+});
+
+describe('FeaturedWorkManager editor', () => {
+  it('submits only the English text when Vietnamese is left blank', async () => {
+    renderManager([]);
+
+    fireEvent.click(button('Add featured work'));
+    const [enTitle] = screen.getAllByLabelText('Title');
+    fireEvent.change(enTitle as HTMLElement, { target: { value: ' Faster export ' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Add featured work' }));
+
+    await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
+    expect(create.mock.calls[0]?.[0]).toMatchObject({
+      data: {
+        sortOrder: 3,
+        isPublished: false,
+        translations: { create: [{ language: 'en', title: 'Faster export' }] },
+      },
+    });
+    await waitFor(() => expect(toastSuccess).toHaveBeenCalled());
+  });
+
+  it('keeps an empty form from saving, naming the missing title', async () => {
+    renderManager([]);
+
+    fireEvent.click(button('Add featured work'));
+    fireEvent.click(screen.getByRole('button', { name: 'Add featured work' }));
+
+    expect(await screen.findByText('Title is required')).toBeTruthy();
+    expect(create).not.toHaveBeenCalled();
+  });
+
+  it('shows the repeated-language error the server would only call invalid', async () => {
+    renderManager([
+      work('w9', 0, [tr('en', 'First'), tr('en', 'Second')]),
+    ]);
+
+    fireEvent.click(button('Edit First'));
+    fireEvent.click(await screen.findByRole('button', { name: 'Save changes' }));
+
+    expect((await screen.findByRole('alert')).textContent).toBe(
+      'Each language may appear once'
+    );
+    expect(txUpdate).not.toHaveBeenCalled();
+  });
+});

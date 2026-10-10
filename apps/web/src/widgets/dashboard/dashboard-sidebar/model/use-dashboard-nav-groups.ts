@@ -53,6 +53,11 @@ export function useDashboardNavGroups(): NavDrawerGroup[] {
           icon: Icons.projects,
         },
         {
+          href: '/dashboard/featured-works',
+          label: t('items.featuredWorks'),
+          icon: Icons.sparkles,
+        },
+        {
           href: '/dashboard/blogs',
           label: t('items.blogs'),
           icon: Icons.blogs,

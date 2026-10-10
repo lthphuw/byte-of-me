@@ -315,6 +315,7 @@
         "dashboard": "Dashboard",
         "profile": "Profile",
         "projects": "Projects",
+        "featuredWorks": "Featured work",
         "blogs": "Blogs",
         "comments": "Comments",
         "media": "Media Library",
@@ -585,6 +586,47 @@
         "contentLabel": "Content",
         "contentPlaceholder": "Describe this achievement…"
       }
+    },
+    "featuredWorks": {
+      "title": "Featured work",
+      "description": "Pin the contributions you want visitors to see first on the homepage.",
+      "createButton": "Add featured work",
+      "emptyTitle": "No featured work yet",
+      "emptyDescription": "Add a pull request, release or write-up you’re proud of.",
+      "emptyAction": "Add Your First One",
+      "untitled": "Untitled featured work",
+      "editLabel": "Edit {name}",
+      "deleteLabel": "Delete {name}",
+      "moveUpLabel": "Move {name} up",
+      "moveDownLabel": "Move {name} down",
+      "published": "Published",
+      "draft": "Draft",
+      "deleteTitle": "Delete featured work?",
+      "deleteDescription": "Are you sure you want to delete <name></name>?",
+      "toast": {
+        "created": "Featured work created",
+        "updated": "Featured work updated",
+        "deleted": "Featured work deleted",
+        "saveError": "Failed to save featured work",
+        "deleteError": "Could not delete featured work",
+        "reorderError": "Could not change the order"
+      },
+      "dialog": {
+        "createTitle": "Add featured work",
+        "editTitle": "Edit featured work",
+        "createDescription": "Pin a contribution to the homepage. Only the English text is required.",
+        "editDescription": "Update this entry. Only the English text is required.",
+        "cancelButton": "Cancel",
+        "saveButton": "Save changes",
+        "createSubmitButton": "Add featured work"
+      },
+      "titleLabel": "Title",
+      "descriptionLabel": "Description",
+      "urlLabel": "Link",
+      "urlPlaceholder": "https://github.com/owner/repo/pull/123",
+      "publishedLabel": "Published",
+      "languageEn": "English",
+      "languageVi": "Vietnamese"
     },
     "media": {
       "title": "Media Library",

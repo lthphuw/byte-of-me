@@ -318,6 +318,7 @@ declare const messages: {
         "dashboard": "Bảng điều khiển",
         "profile": "Hồ sơ",
         "projects": "Dự án",
+        "featuredWorks": "Công việc nổi bật",
         "blogs": "Bài viết",
         "comments": "Bình luận",
         "media": "Thư viện",
@@ -588,6 +589,47 @@ declare const messages: {
         "contentLabel": "Nội dung",
         "contentPlaceholder": "Mô tả thành tích này…"
       }
+    },
+    "featuredWorks": {
+      "title": "Công việc nổi bật",
+      "description": "Ghim những đóng góp bạn muốn khách truy cập thấy đầu tiên trên trang chủ.",
+      "createButton": "Thêm công việc nổi bật",
+      "emptyTitle": "Chưa có công việc nổi bật",
+      "emptyDescription": "Thêm một pull request, bản phát hành hoặc bài viết mà bạn tự hào.",
+      "emptyAction": "Thêm mục đầu tiên",
+      "untitled": "Công việc nổi bật chưa đặt tên",
+      "editLabel": "Sửa {name}",
+      "deleteLabel": "Xóa {name}",
+      "moveUpLabel": "Chuyển {name} lên trên",
+      "moveDownLabel": "Chuyển {name} xuống dưới",
+      "published": "Đã xuất bản",
+      "draft": "Bản nháp",
+      "deleteTitle": "Xóa công việc nổi bật?",
+      "deleteDescription": "Bạn có chắc chắn muốn xóa <name></name> không?",
+      "toast": {
+        "created": "Đã thêm công việc nổi bật",
+        "updated": "Đã cập nhật công việc nổi bật",
+        "deleted": "Đã xóa công việc nổi bật",
+        "saveError": "Lưu công việc nổi bật thất bại",
+        "deleteError": "Không thể xóa công việc nổi bật",
+        "reorderError": "Không thể thay đổi thứ tự"
+      },
+      "dialog": {
+        "createTitle": "Thêm công việc nổi bật",
+        "editTitle": "Chỉnh sửa công việc nổi bật",
+        "createDescription": "Ghim một đóng góp lên trang chủ. Chỉ cần nhập bản tiếng Anh.",
+        "editDescription": "Cập nhật mục này. Chỉ cần nhập bản tiếng Anh.",
+        "cancelButton": "Hủy",
+        "saveButton": "Lưu thay đổi",
+        "createSubmitButton": "Thêm công việc nổi bật"
+      },
+      "titleLabel": "Tiêu đề",
+      "descriptionLabel": "Mô tả",
+      "urlLabel": "Liên kết",
+      "urlPlaceholder": "https://github.com/owner/repo/pull/123",
+      "publishedLabel": "Đã xuất bản",
+      "languageEn": "Tiếng Anh",
+      "languageVi": "Tiếng Việt"
     },
     "media": {
       "title": "Thư viện",

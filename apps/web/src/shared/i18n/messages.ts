@@ -61,6 +61,7 @@ export const DASHBOARD_MESSAGE_NAMESPACES = [
   'dashboard.company',
   'dashboard.contactGallery',
   'dashboard.education',
+  'dashboard.featuredWorks',
   'dashboard.media',
   'dashboard.project',
   'dashboard.shared',
