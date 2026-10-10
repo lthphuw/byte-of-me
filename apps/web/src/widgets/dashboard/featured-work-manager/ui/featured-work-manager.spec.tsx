@@ -162,10 +162,11 @@ const doc = (text: string) =>
 const EN_BODY = doc('Calibrated on 512 COCO images.');
 const VI_BODY = doc('Đã hiệu chỉnh trên 512 ảnh COCO.');
 
-/** What the by-id read returns: the list row's fields, with each body attached. */
+/** What the database hands the by-id read: the list row's fields, each body, and the demo pair's join rows. */
 function detailOf(list: AdminFeaturedWork, bodies: Record<string, string> = {}) {
   return {
     ...list,
+    media: [],
     translations: list.translations.map((t) => ({
       id: t.id,
       language: t.language,
