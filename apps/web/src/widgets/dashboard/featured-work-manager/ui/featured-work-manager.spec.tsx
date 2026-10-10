@@ -264,6 +264,33 @@ describe('FeaturedWorkManager reorder', () => {
     expect(isDisabled('Move Faster export up')).toBe(false);
   });
 
+  it('does not pull focus back when the user has moved on during the move', async () => {
+    let release!: (rows: Row[]) => void;
+    txFindMany.mockReturnValue(
+      new Promise<Row[]>((resolve) => {
+        release = resolve;
+      })
+    );
+    renderManager();
+    const up = button('Move Quantized model up');
+
+    up.focus();
+    fireEvent.click(up);
+    await waitFor(() => expect(up.getAttribute('aria-disabled')).toBe('true'));
+    const edit = button('Edit Release notes');
+    edit.focus();
+
+    release(rows.map(({ id, sortOrder }) => ({ id, sortOrder })));
+    await waitFor(() => expect(findMany).toHaveBeenCalledTimes(1));
+    await waitFor(() =>
+      expect(button('Move Faster export up').getAttribute('aria-disabled')).toBe(
+        'true'
+      )
+    );
+    await waitFor(() => expect(up.getAttribute('aria-disabled')).toBe('false'));
+    expect(document.activeElement).toBe(edit);
+  });
+
   it('ignores a second press while a move is in flight', async () => {
     let release!: (rows: Row[]) => void;
     txFindMany.mockReturnValue(

@@ -76,13 +76,20 @@ export function FeaturedWorkManager() {
   // The arrows stay focusable (`aria-disabled`, not `disabled`) so a keyboard
   // user can press one repeatedly. Reordering the list moves DOM nodes, which
   // drops focus, so it is put back on the arrow that was used once the
-  // refetch has landed (`isMoving` stays true until then).
+  // refetch has landed (`isMoving` stays true until then), unless the user
+  // has already moved focus elsewhere.
   const moveButtons = useRef(new Map<string, HTMLButtonElement>());
   const refocus = useRef<string | null>(null);
   useEffect(() => {
     if (isMoving || refocus.current === null) return;
-    moveButtons.current.get(refocus.current)?.focus();
+    const target = moveButtons.current.get(refocus.current);
     refocus.current = null;
+    // Moving a node leaves focus on <body>; anywhere else means the user
+    // went on (Edit, Delete, a dialog) during the round trip, so leave it.
+    const active = document.activeElement;
+    if (active === null || active === document.body || active === target) {
+      target?.focus();
+    }
   }, [isMoving, works]);
 
   const requestMove = (id: string, direction: 'up' | 'down', blocked: boolean) => {
