@@ -126,7 +126,7 @@ flowchart TB
 
 Solid arrows are runtime dependencies; dashed arrows are build-time only — `@byte-of-me/config` ships no code, only `tsconfig` presets that each workspace extends by relative path.
 
-Every package is consumed as **TypeScript source** via `transpilePackages`, so there is no build step before `bun run dev`. Turborepo still runs `build` for the packages that emit declarations (`db`, `storage`, `logger`) because `check-types` and `test` depend on `^build`.
+Every package is consumed as **TypeScript source** via `transpilePackages`, so there is no build step before `bun run dev`. `turbo run build` still runs `build` for the packages that have a build script (`db`, `storage`, `logger`), but nothing consumes their `dist/`. The `build` task has no `^build` dependency, so `turbo run build --filter=web` builds only the web app.
 
 `@byte-of-me/ui` uses **subpath exports** rather than one barrel — `./rich-text-editor`, `./rich-text`, `./lib/sanitize`. That is deliberate: importing the barrel from a public-site client component would drag all of TipTap into the visitor's bundle.
 

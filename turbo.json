@@ -4,12 +4,11 @@
     "eslint.config.mjs",
     "packages/config/typescript/*.json"
   ],
+  "cacheMaxSize": "5GB",
+  "cacheMaxAge": "14d",
   "tasks": {
     "check-types": {},
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
       "inputs": [
         "$TURBO_DEFAULT$",
         ".env*"

@@ -7,7 +7,7 @@
 ```text
 .
 ├── package.json          root scripts; workspaces apps/* packages/*; workspaces.catalog; bun@1.4.3
-├── turbo.json            task graph, cache rules, build env allowlist (names only)
+├── turbo.json            task graph, cache rules and size cap, build env allowlist (names only)
 ├── eslint.config.mjs     the only ESLint config (flat); every workspace uses it
 ├── tsconfig.json         extends packages/config nextjs.json; paths @/* @db/* @logger/*
 ├── scripts/
@@ -32,7 +32,7 @@
 | script | runs | use it when |
 | --- | --- | --- |
 | `dev` | `turbo run dev` (only `apps/web`: `next dev --turbopack`) | running the site locally |
-| `build` | `turbo run build` (web, db, storage, logger) | production build; also writes package `dist/` |
+| `build` | `turbo run build` (web, db, storage, logger); `turbo run build --filter=web` for web only | production build; db, storage and logger also write `dist/`, which nothing consumes |
 | `check` | `bash scripts/check.sh` (steps in Run) | before you call work done |
 | `check-types` | `turbo run check-types` | type errors only |
 | `lint` / `lint:fix` | `turbo run lint` / `turbo run lint:fix` | lint, or autofix |
@@ -42,9 +42,11 @@
 | `gen:icons` | `bun run scripts/gen-icons.ts` | after editing `brand-mark.ts` |
 | `format` / `format:check` | `prettier --write` / `--check` on `{apps,packages}/*/src/**` | see Gotchas |
 
-### Turbo graph (`turbo.json`, Turbo 2.9.14)
+### Turbo graph (`turbo.json`, Turbo 2.11.7)
 
-- `build` dependsOn `^build` (dependency workspaces build first); outputs `dist/**` and `.next/**` minus `.next/cache` and `.next/dev`; inputs add `.env*`.
+- `build` has no dependsOn, so it does not build dependency workspaces first; outputs `dist/**` and `.next/**` minus `.next/cache` and `.next/dev`; inputs add `.env*`. Web's build reads its packages from source (`transpilePackages`).
+- Local cache cap: `cacheMaxSize` `5GB` and `cacheMaxAge` `14d` (eviction runs at the start of each `turbo run`). Without them the cache never shrinks, and the web build entry is about 6 MB compressed.
+- Vercel: the repo has no `vercel.json`, so these live in the Vercel project settings. Build command `cd ../.. && turbo run build --filter=web`; Root Directory `apps/web`; Ignored Build Step `turbo query affected --base=$VERCEL_GIT_PREVIOUS_SHA --packages web --exit-code` (per the Vercel and Turborepo docs, 2026-08-28). Verify these in the dashboard, since the repo cannot show them.
 - `generate` dependsOn `^generate`. Nothing else has a dependsOn.
 - `cache: false` on `dev`, `lint:fix`, `generate`, all `db:*`; `persistent` on `dev` and `db:migrate:dev`.
 - `globalDependencies`: `eslint.config.mjs`, `packages/config/typescript/*.json`. `db:*` have no root script: `bun run --filter '@byte-of-me/db' db:push`.
