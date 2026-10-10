@@ -58,6 +58,7 @@ import { ImageGroup } from './extensions/image-group';
 import { ImagePlaceholder } from './extensions/image-placeholder';
 import { LinkSuggestion } from './extensions/link-suggestion';
 import { NotesBlockMath, NotesInlineMath } from './extensions/math';
+import { MermaidSize } from './extensions/mermaid-size';
 import { NumericTableColumns } from './extensions/numeric-columns-plugin';
 import { Citation } from './extensions/references/citation';
 import { ReferenceList } from './extensions/references/reference-list';
@@ -107,6 +108,7 @@ export function createExtensions(options?: {
     CodeBlockLowlight.configure({
       lowlight,
     }),
+    MermaidSize,
     CustomHeading,
     Placeholder.configure({
       placeholder: options?.placeholder ?? DEFAULT_PLACEHOLDER,

@@ -2,6 +2,8 @@
 
 import { type ReactNode, useEffect, useRef } from 'react';
 
+import { type MermaidSize, parseMermaidSize } from './mermaid-size';
+
 /**
  * Progressive enhancement for mermaid diagrams in rendered rich text.
  *
@@ -12,6 +14,10 @@ import { type ReactNode, useEffect, useRef } from 'react';
  * so pages without diagrams never download it. When rendering fails (syntax
  * error in the snippet) the code block is left as-is — readable source beats
  * a broken image.
+ *
+ * A block that carries its natural size (`data-mermaid-size`, set by the
+ * editor) is given a box of that size first, pulsing on the muted surface, and
+ * the diagram is drawn into it. The swap then changes nothing below it.
  */
 export function MermaidBlocks({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -62,6 +68,18 @@ export function MermaidBlocks({ children }: { children: ReactNode }) {
           pre.dataset.mermaidSource ?? code.textContent?.trim() ?? '';
         if (!source) continue;
 
+        // Reserve the box before the library has drawn anything, on the first draw
+        // only: a theme redraw keeps the diagram it already has until the new one lands.
+        const size = parseMermaidSize(pre.dataset.mermaidSize);
+        if (size && !hostOf(pre)) {
+          createHost(pre);
+        }
+        const reserved = hostOf(pre);
+        if (size && reserved && !reserved.dataset.mermaidDrawn) {
+          reserve(reserved, size);
+          pre.style.display = 'none';
+        }
+
         try {
           const { svg } = await mermaid.render(
             `mermaid-${(seq += 1)}-${Math.random().toString(36).slice(2, 8)}`,
@@ -69,23 +87,21 @@ export function MermaidBlocks({ children }: { children: ReactNode }) {
           );
           if (cancelled) return;
 
-          const host =
-            pre.nextElementSibling instanceof HTMLElement &&
-            pre.nextElementSibling.dataset.mermaidHost === 'true'
-              ? pre.nextElementSibling
-              : document.createElement('div');
-          host.dataset.mermaidHost = 'true';
-          host.className = 'my-6 flex justify-center overflow-x-auto';
+          const host = hostOf(pre) ?? createHost(pre);
+          release(host);
           host.innerHTML = svg;
+          host.dataset.mermaidDrawn = 'true';
 
-          if (host !== pre.nextElementSibling) {
-            pre.after(host);
-          }
           // Keep the source in the DOM (hidden) so a theme switch can redraw.
           pre.dataset.mermaidSource = source;
           pre.style.display = 'none';
         } catch {
-          // Invalid diagram: leave the source code block visible.
+          // Invalid diagram: back to the readable source. A diagram drawn before
+          // (a theme redraw) keeps its last good drawing instead.
+          const host = hostOf(pre);
+          if (host?.dataset.mermaidDrawn) continue;
+          host?.remove();
+          pre.style.display = '';
         }
       }
     };
@@ -105,4 +121,41 @@ export function MermaidBlocks({ children }: { children: ReactNode }) {
   }, []);
 
   return <div ref={ref}>{children}</div>;
+}
+
+const DRAWN_CLASS = 'my-6 flex justify-center overflow-x-auto';
+const PENDING_CLASS =
+  'mx-auto my-6 rounded-md bg-muted motion-safe:animate-pulse';
+
+/** The host made beside a source block, if there is one. */
+function hostOf(pre: HTMLElement): HTMLElement | null {
+  const next = pre.nextElementSibling;
+  return next instanceof HTMLElement && next.dataset.mermaidHost === 'true'
+    ? next
+    : null;
+}
+
+function createHost(pre: HTMLElement): HTMLElement {
+  const host = document.createElement('div');
+  host.dataset.mermaidHost = 'true';
+  host.className = DRAWN_CLASS;
+  pre.after(host);
+  return host;
+}
+
+/**
+ * The diagram's box before it is drawn. Mermaid caps its SVG at the viewBox width, so
+ * the box is capped the same way: the width is the smaller of the column and the
+ * diagram, and the height follows from the diagram's own ratio.
+ */
+function reserve(host: HTMLElement, size: MermaidSize) {
+  host.className = PENDING_CLASS;
+  host.style.width = `min(100%, ${size.width}px)`;
+  host.style.aspectRatio = `${size.width} / ${size.height}`;
+}
+
+function release(host: HTMLElement) {
+  host.className = DRAWN_CLASS;
+  host.style.width = '';
+  host.style.aspectRatio = '';
 }

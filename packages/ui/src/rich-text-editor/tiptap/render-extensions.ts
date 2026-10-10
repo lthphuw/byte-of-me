@@ -35,6 +35,7 @@ import { common, createLowlight } from 'lowlight';
 
 import { eachScopedHeader, type HeaderScope } from './extensions/header-scopes';
 import { ImageBase, ImageGroupBase } from './extensions/image-base';
+import { MermaidSize } from './extensions/mermaid-size';
 import { CitationBase } from './extensions/references/citation-base';
 import { ReferenceListBase } from './extensions/references/reference-list-base';
 
@@ -275,6 +276,7 @@ export const renderExtensions = [
     underline: false,
   }),
   CodeBlockLowlight.configure({ lowlight }),
+  MermaidSize,
   CustomHeading,
   TextAlign.configure({ types: ['heading', 'paragraph'] }),
   TextStyle,

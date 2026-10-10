@@ -85,6 +85,8 @@ const ALLOWED_ATTRS = new Set([
   // Image loading hints, kept only with a value from `ENUMERATED_ATTRS`.
   'loading',
   'decoding',
+  // A mermaid diagram's natural `WxH`, kept only when it matches `PATTERN_ATTRS`.
+  'data-mermaid-size',
 ]);
 
 // Attributes whose value must come from a closed set; any other value drops
@@ -92,6 +94,12 @@ const ALLOWED_ATTRS = new Set([
 const ENUMERATED_ATTRS: Record<string, ReadonlySet<string>> = {
   loading: new Set(['lazy', 'eager']),
   decoding: new Set(['async', 'sync', 'auto']),
+};
+
+// Attributes whose value must match a fixed shape. The shape is the whole check: a
+// layout hint that is not a plain number pair is dropped, never passed through.
+const PATTERN_ATTRS: Record<string, RegExp> = {
+  'data-mermaid-size': /^\d{1,5}x\d{1,5}$/,
 };
 
 const VOID_TAGS = new Set(['br', 'hr', 'img']);
@@ -198,6 +206,8 @@ export function sanitizeHtml(html: string): string {
       let value = attr[2].replace(/^["']|["']$/g, '');
       const allowedValues = ENUMERATED_ATTRS[attrName];
       if (allowedValues && !allowedValues.has(value.toLowerCase())) continue;
+      const pattern = PATTERN_ATTRS[attrName];
+      if (pattern && !pattern.test(value)) continue;
       if ((attrName === 'href' || attrName === 'src') && isUnsafeUrl(value)) {
         value = '#';
       }

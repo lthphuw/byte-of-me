@@ -337,3 +337,45 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
     expect(() => generateHTML(full, renderExtensions)).not.toThrow();
   });
 });
+
+describe('render pipeline: mermaid size', () => {
+  it('writes the editor-measured size onto the code block', () => {
+    const sized = sanitizeHtml(
+      generateHTML(
+        {
+          type: 'doc',
+          content: [
+            {
+              type: 'codeBlock',
+              attrs: { language: 'mermaid', mermaidSize: '612x288' },
+              content: [{ type: 'text', text: 'flowchart TB\n  A --> B' }],
+            },
+          ],
+        },
+        renderExtensions
+      )
+    );
+
+    expect(sized).toContain('data-mermaid-size="612x288"');
+  });
+
+  it('writes no size attribute on a block the editor has not measured', () => {
+    const unsized = sanitizeHtml(
+      generateHTML(
+        {
+          type: 'doc',
+          content: [
+            {
+              type: 'codeBlock',
+              attrs: { language: 'mermaid' },
+              content: [{ type: 'text', text: 'flowchart TB\n  A --> B' }],
+            },
+          ],
+        },
+        renderExtensions
+      )
+    );
+
+    expect(unsized).not.toContain('data-mermaid-size');
+  });
+});

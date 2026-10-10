@@ -15,7 +15,8 @@ packages/ui/
     ├── rich-text.tsx        RichText: server component, stored Tiptap JSON -> HTML
     ├── rich-text-html.tsx   RichTextHtml: client-safe printer of already-sanitised HTML
     ├── rich-text-render.ts  renderRichTextHtml, renderRichTextDocumentHtml: server only
-    ├── mermaid-blocks.tsx   MermaidBlocks: client; swaps mermaid blocks for SVG (lazy import)
+    ├── mermaid-blocks.tsx   MermaidBlocks: client; swaps mermaid blocks for SVG (lazy import); reserves a box of the stored size first
+    ├── mermaid-size.ts      svgNaturalSize / parseMermaidSize: a diagram's WxH, the `data-mermaid-size` attribute
     ├── math-renderer.tsx    MathRenderer: client; KaTeX over data-latex placeholders
     ├── hooks/               use-clipboard, use-debounce, use-intersection, use-lock-body, use-media-query
     ├── lib/                 cn, sanitize, rich-text-content codec, markdown-format, reduced-motion
@@ -62,7 +63,7 @@ packages/ui/
 
 ## Key flows
 
-- Public rich text: `RichText` (`packages/ui/src/rich-text.tsx:22`) → `renderRichTextHtml` (`packages/ui/src/rich-text-render.ts:50`) → `generateHTML(…, renderExtensions)` after citation numbering and numeric-column marking (`rich-text-render.ts:26-29`) → `sanitizeHtml` (`packages/ui/src/lib/sanitize.ts:121`) → `RichTextHtml` (`packages/ui/src/rich-text-html.tsx:50`). Body `<img>`s carry no width or height, so the full variant reserves `aspect-[auto_16/9]` on the muted surface until each file draws (`rich-text-html.tsx`, the "Images / media" class group); the ratio is only known to the browser after load.
+- Public rich text: `RichText` (`packages/ui/src/rich-text.tsx:22`) → `renderRichTextHtml` (`packages/ui/src/rich-text-render.ts:50`) → `generateHTML(…, renderExtensions)` after citation numbering and numeric-column marking (`rich-text-render.ts:26-29`) → `sanitizeHtml` (`packages/ui/src/lib/sanitize.ts:121`) → `RichTextHtml` (`packages/ui/src/rich-text-html.tsx:50`). Body `<img>`s carry no width or height, so the full variant reserves `aspect-[auto_16/9]` on the muted surface until each file draws (`rich-text-html.tsx`, the "Images / media" class group); the ratio is only known to the browser after load. Mermaid code blocks carry `data-mermaid-size="WxH"`, written by the editor's `MermaidSize` extension (`rich-text-editor/tiptap/extensions/mermaid-size.ts`) once a diagram's text changes while the editor is focused, and kept by `sanitizeHtml` only when it matches `PATTERN_ATTRS`. Blocks saved before that carry no size and still swap in unreserved; they gain one the next time their author edits the diagram.
 - Client needing rendered rich text: a server action returns `renderRichTextHtml` output; the client prints it with `RichTextHtml` (e.g. `apps/web/src/entities/project/ui/project-timeline-item.tsx:6`).
 - Dashboard editing: `LazyRichTextEditor` (`apps/web/src/shared/ui/lazy-rich-text-editor.tsx:16`, `ssr: false`) → `RichTextEditor` (`packages/ui/src/rich-text-editor/tiptap/rich-text-editor.tsx:501`). Forms seed with `toEditorContent` and save `fromEditorContent(json)` (`apps/web/src/widgets/dashboard/project-manager/ui/project-form.tsx:241-243`).
 - Stored value parsing: `parseRichTextContent` accepts any object; legacy plain text passes through and becomes a paragraph (`packages/ui/src/lib/rich-text-content.ts:23,44`).

@@ -177,3 +177,19 @@ describe('sanitizeHtml', () => {
     );
   });
 });
+
+describe('sanitizeHtml: mermaid size', () => {
+  it('keeps a well-formed data-mermaid-size on a code block', () => {
+    expect(
+      sanitizeHtml('<pre data-mermaid-size="612x288"><code>x</code></pre>')
+    ).toContain('data-mermaid-size="612x288"');
+  });
+
+  it('drops a data-mermaid-size that is not a plain number pair', () => {
+    expect(
+      sanitizeHtml(
+        '<pre data-mermaid-size="612x288;color:red"><code>x</code></pre>'
+      )
+    ).not.toContain('data-mermaid-size');
+  });
+});
