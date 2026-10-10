@@ -173,7 +173,7 @@ export function EducationManager() {
                     </div>
                   </div>
 
-                  <div className="flex shrink-0 items-center gap-2 transition-opacity sm:opacity-0 sm:focus-within:opacity-100 sm:group-hover:opacity-100">
+                  <div className="flex shrink-0 items-center gap-2 transition-opacity sm:focus-within:opacity-100 sm:group-hover:opacity-100 can-hover:sm:opacity-0">
                     <EditButton
                       label={t('editLabel', { name: title })}
                       onClick={() => openEditDialog(edu)}

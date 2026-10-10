@@ -24,7 +24,7 @@ export function FeaturedWorkRow({
     : undefined;
 
   const row = (
-    <div className="group grid grid-cols-[2rem_1fr] gap-x-4 gap-y-2 py-5 md:grid-cols-[2rem_1fr_auto] md:gap-x-6">
+    <div className="group grid grid-cols-[2rem_1fr] gap-x-4 gap-y-2 py-5 md:grid-cols-[2rem_1fr_fit-content(45%)] md:gap-x-6">
       <span className="pt-1 text-xs tabular-nums text-muted-foreground">
         {String(index + 1).padStart(2, '0')}
       </span>
@@ -47,7 +47,7 @@ export function FeaturedWorkRow({
       </div>
 
       {(github || host) && (
-        <div className="col-start-2 flex flex-wrap items-center gap-x-4 gap-y-2 md:col-start-3 md:flex-col md:items-end">
+        <div className="col-start-2 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 md:col-start-3 md:max-w-[45%] md:flex-col md:items-end">
           {github ? (
             <>
               <span className={`${META} [overflow-wrap:anywhere]`}>
@@ -66,7 +66,7 @@ export function FeaturedWorkRow({
               )}
             </>
           ) : (
-            <span className={META}>{host}</span>
+            <span className={`${META} [overflow-wrap:anywhere]`}>{host}</span>
           )}
         </div>
       )}
@@ -80,7 +80,7 @@ export function FeaturedWorkRow({
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="-mx-3 block rounded-lg px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {row}
     </a>
