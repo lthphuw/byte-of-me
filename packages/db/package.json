@@ -18,6 +18,7 @@
     "lint:fix": "eslint src --fix",
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:apply": "bun run prisma/apply-migrations.ts",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed"
   },

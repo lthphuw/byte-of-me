@@ -1,8 +1,8 @@
-version: '3.9'
-
 services:
   postgres:
-    image: postgres:16
+    # PostgreSQL 17 is required: migration 20260807140000 uses SET EXPRESSION.
+    # Locked by tag and digest to 17.6, the version production runs.
+    image: postgres:17.6@sha256:00bc86618629af00d2937fdc5a5d63db3ff8450acf52f0636ec813c7f4902929
     container_name: byteofme_postgres
     restart: always
     environment:
@@ -12,12 +12,22 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      # New name on purpose: the old postgres_data volume holds a PG16 cluster.
+      - postgres17_data:/var/lib/postgresql/data
     healthcheck:
       test: [ 'CMD-SHELL', 'pg_isready -U admin -d byte_of_me' ]
       interval: 5s
       retries: 5
       timeout: 3s
+
+  # Local SMTP inbox: magic-link sign-in emails land here. UI: http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:v1.31.4@sha256:b68349e3a014b90c5610bfb26b2ae36f3892d7b8cf25ee140c6c71c98d2fcf48
+    container_name: byteofme_mailpit
+    restart: always
+    ports:
+      - '1025:1025'
+      - '8025:8025'
 
   # Use Prisma Studio instead of Adminer
   # adminer:
@@ -31,4 +41,4 @@ services:
   #       condition: service_healthy
 
 volumes:
-  postgres_data:
+  postgres17_data:

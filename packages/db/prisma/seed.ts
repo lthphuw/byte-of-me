@@ -7,8 +7,31 @@ import { prisma } from '../src';
  */
 const SEED_AUTHOR_ID = 'cseedauthor0000000000001';
 
+/**
+ * The seeded admin signs in with this address, so it must be the one typed on
+ * the login page. Read from EMAIL in packages/db/.env.
+ */
+function readSeedEmail(): string {
+  const email = process.env.EMAIL?.trim();
+  if (!email) {
+    throw new Error('EMAIL is not set. Add it to packages/db/.env (the seeded admin signs in with it).');
+  }
+  return email;
+}
+
 async function main() {
   console.log('Seeding database...');
+
+  const email = readSeedEmail();
+
+  // A user who signed in before seeding owns this email under another id, and
+  // the site would read the wrong author. Say so, instead of a raw P2002.
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing && existing.id !== SEED_AUTHOR_ID) {
+    throw new Error(
+      `${email} already belongs to user ${existing.id}. Reset the database, then seed before signing in (docs/setup.md).`
+    );
+  }
 
   // --- USER ---
   const birthdate = new Date(2002, 10, 20);
@@ -20,7 +43,7 @@ async function main() {
     create: {
       id: SEED_AUTHOR_ID,
       role: 'ADMIN',
-      email: 'lthphuw@gmail.com',
+      email,
       emailVerified: new Date(),
       userProfile: {
         create: {
@@ -45,7 +68,7 @@ async function main() {
       },
       socialLinks: {
         create: [
-          { platform: 'email', url: 'lthphuw@gmail.com', sortOrder: 0 },
+          { platform: 'email', url: email, sortOrder: 0 },
           { platform: 'github', url: 'https://github.com/lthphuw', sortOrder: 1 },
           { platform: 'portfolio', url: 'https://phu-lth.space', sortOrder: 2 },
           { platform: 'linkedIn', url: 'https://www.linkedin.com/in/phu-lth', sortOrder: 3 },
@@ -82,7 +105,7 @@ async function main() {
     }
   });
 
-  const techData: any[] = [
+  const techData: { name: string; slug: string; group: string }[] = [
     { name: 'TypeScript', slug: 'typescript', group: 'Language' },
     { name: 'Next.js', slug: 'nextjs', group: 'Frontend' },
     { name: 'PostgreSQL', slug: 'postgresql', group: 'Database' },
@@ -142,7 +165,7 @@ async function main() {
         ]
       },
       techStacks: {
-        create: createdStacks.map((stack: any) => ({ techStackId: stack.id }))
+        create: createdStacks.map(stack => ({ techStackId: stack.id }))
       }
     }
   });
@@ -199,8 +222,8 @@ async function main() {
     });
   }
 
-  console.log('Seeding completed!');
-  console.log(`AUTHOR_ID=${user.id}  <-- set this in apps/web/.env`);
+  console.log(`Seeding completed. Sign in as ${email} (magic link, see docs/setup.md).`);
+  console.log(`AUTHOR_ID=${user.id} is already in apps/web/.env.example; copy it to apps/web/.env.`);
 }
 
 main()
