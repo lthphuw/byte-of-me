@@ -22,6 +22,10 @@ import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { featuredWorkResolver } from '@/widgets/dashboard/featured-work-manager/lib/featured-work-resolver';
 import { toTranslationValues } from '@/widgets/dashboard/featured-work-manager/lib/translation-values';
+import {
+  FeaturedWorkDemo,
+  toDemoValues,
+} from '@/widgets/dashboard/featured-work-manager/ui/featured-work-demo';
 
 /**
  * A featured work is a project contribution, so pasted images land under the
@@ -35,6 +39,10 @@ function toFormValues(
   return {
     isPublished: initialData?.isPublished ?? false,
     url: initialData?.url ?? '',
+    // Always set, even to []: the update action keeps a pair it is not sent, so
+    // a form that left this out could never clear one, and one that dropped the
+    // loaded pair would erase it.
+    media: toDemoValues(initialData?.media),
     translations: toTranslationValues(initialData?.translations),
   };
 }
@@ -132,6 +140,14 @@ export function FeaturedWorkForm({
                 )}
               />
             </>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="media"
+          render={({ field }) => (
+            <FeaturedWorkDemo field={field} initialMedia={initialData?.media} />
           )}
         />
 

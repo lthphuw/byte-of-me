@@ -36,6 +36,8 @@ import { FeaturedWorkManager } from './featured-work-manager';
 
 import { featuredWorkKeys } from '@/entities/featured-work/model/query-keys';
 import type { AdminFeaturedWork } from '@/entities/featured-work/model/types';
+import * as singleUpload from '@/entities/media/api/upload-single-media';
+import type { Media } from '@/shared/types/models';
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 import {
   __getEditorProps,
@@ -96,11 +98,22 @@ const remove = mock<(args: unknown) => Promise<Row>>();
 const txFindFirst = mock<(args: unknown) => Promise<Row | null>>();
 const txFindMany = mock<(args: unknown) => Promise<Row[]>>();
 const txUpdate = mock<(args: unknown) => Promise<Row>>();
+const txMediaCount = mock<(args: unknown) => Promise<number>>();
+const txMediaDeleteMany = mock<(args: unknown) => Promise<Row>>();
+const txMediaCreateMany = mock<(args: unknown) => Promise<Row>>();
+
+const mediaCount = mock<(args: unknown) => Promise<number>>();
 
 const originals = {
+  media: Object.getOwnPropertyDescriptor(prisma, 'media'),
   featuredWork: Object.getOwnPropertyDescriptor(prisma, 'featuredWork'),
   transaction: Object.getOwnPropertyDescriptor(prisma, '$transaction'),
 };
+Object.defineProperty(prisma, 'media', {
+  value: { count: mediaCount },
+  writable: true,
+  configurable: true,
+});
 Object.defineProperty(prisma, 'featuredWork', {
   value: { findFirst, findMany, count, aggregate, create, delete: remove },
   writable: true,
@@ -114,6 +127,11 @@ Object.defineProperty(prisma, '$transaction', {
         findMany: txFindMany,
         update: txUpdate,
       },
+      media: { count: txMediaCount },
+      featuredWorkMedia: {
+        deleteMany: txMediaDeleteMany,
+        createMany: txMediaCreateMany,
+      },
     }),
   writable: true,
   configurable: true,
@@ -122,6 +140,9 @@ Object.defineProperty(prisma, '$transaction', {
 const logError = spyOn(logger, 'error').mockImplementation(() => {});
 const toastSuccess = spyOn(toast, 'success').mockImplementation(() => 1);
 const toastError = spyOn(toast, 'error').mockImplementation(() => 1);
+// The browser-side upload (compression settings + the upload action) is replaced
+// whole: what the form does with the stored row is under test, not the pipeline.
+const uploadRecord = spyOn(singleUpload, 'uploadSingleMediaRecord');
 
 function renderManager(
   list: AdminFeaturedWork[] = rows,
@@ -162,11 +183,27 @@ const doc = (text: string) =>
 const EN_BODY = doc('Calibrated on 512 COCO images.');
 const VI_BODY = doc('Đã hiệu chỉnh trên 512 ảnh COCO.');
 
+/** A `featured_work_media` row as Prisma returns it for the by-id read. */
+const demoRow = (
+  id: string,
+  sortOrder: number,
+  label: string | null,
+  mimeType = 'video/mp4'
+) => ({
+  sortOrder,
+  label,
+  media: { id, url: `https://cdn.example/${id}`, mimeType },
+});
+
 /** What the database hands the by-id read: the list row's fields, each body, and the demo pair's join rows. */
-function detailOf(list: AdminFeaturedWork, bodies: Record<string, string> = {}) {
+function detailOf(
+  list: AdminFeaturedWork,
+  bodies: Record<string, string> = {},
+  demo: ReturnType<typeof demoRow>[] = []
+) {
   return {
     ...list,
-    media: [],
+    media: demo,
     translations: list.translations.map((t) => ({
       id: t.id,
       language: t.language,
@@ -227,6 +264,17 @@ beforeEach(() => {
     rows.map(({ id, sortOrder }) => ({ id, sortOrder }))
   );
   txUpdate.mockReset().mockResolvedValue({});
+  txMediaCount.mockReset().mockImplementation(async (args) => {
+    const { where } = args as { where: { id: { in: string[] } } };
+    return where.id.in.length;
+  });
+  mediaCount.mockReset().mockImplementation(async (args) => {
+    const { where } = args as { where: { id: { in: string[] } } };
+    return where.id.in.length;
+  });
+  txMediaDeleteMany.mockReset().mockResolvedValue({});
+  txMediaCreateMany.mockReset().mockResolvedValue({});
+  uploadRecord.mockReset();
   __resetMountedValues();
   logError.mockClear();
   toastSuccess.mockClear();
@@ -236,6 +284,7 @@ beforeEach(() => {
 afterEach(cleanup);
 
 afterAll(() => {
+  if (originals.media) Object.defineProperty(prisma, 'media', originals.media);
   if (originals.featuredWork)
     Object.defineProperty(prisma, 'featuredWork', originals.featuredWork);
   if (originals.transaction)
@@ -243,6 +292,7 @@ afterAll(() => {
   logError.mockRestore();
   toastSuccess.mockRestore();
   toastError.mockRestore();
+  uploadRecord.mockRestore();
 });
 
 describe('FeaturedWorkManager list', () => {
@@ -665,5 +715,236 @@ describe('FeaturedWorkManager edit loads the full row', () => {
     await waitFor(() => expect(remove).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(toastSuccess).toHaveBeenCalled());
     expect(queryClient.getQueryData(featuredWorkKeys.detail('w1'))).toBeUndefined();
+  });
+});
+
+describe('FeaturedWorkManager demo pair', () => {
+  const FP16 = demoRow('m1', 0, 'FP16');
+  const INT8 = demoRow('m2', 1, 'INT8', 'image/gif');
+
+  /** The join rows the last update wrote, or null when it wrote none. */
+  const savedMedia = () =>
+    (txMediaCreateMany.mock.calls[0]?.[0] as { data: Row[] } | undefined)?.data ?? null;
+
+  const stored = (id: string, mimeType = 'video/mp4') =>
+    ({ id, url: `https://cdn.example/${id}`, mimeType }) as Media;
+
+  const openWork = async (demo: ReturnType<typeof demoRow>[]) => {
+    findFirst.mockResolvedValue(
+      detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }, demo)
+    );
+    renderManager();
+    openEdit('Faster export');
+    await formLoaded();
+  };
+
+  const chooseFile = (file: File) => {
+    const input = document.querySelector<HTMLInputElement>('input[type="file"]');
+    if (!input) throw new Error('no file input');
+    fireEvent.change(input, { target: { files: [file] } });
+  };
+  const clip = () => new File([new Uint8Array(8)], 'int8.mp4', { type: 'video/mp4' });
+
+  const save = async () => {
+    fireEvent.click(button('Save changes'));
+    await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
+  };
+
+  it('re-submits the same pair when the section is left alone', async () => {
+    await openWork([FP16, INT8]);
+
+    await save();
+
+    expect(savedMedia()).toEqual([
+      { featuredWorkId: 'w1', mediaId: 'm1', sortOrder: 0, label: 'FP16' },
+      { featuredWorkId: 'w1', mediaId: 'm2', sortOrder: 1, label: 'INT8' },
+    ]);
+  });
+
+  it('re-submits a clip that was stored without a label as unlabelled', async () => {
+    await openWork([demoRow('m1', 0, null)]);
+
+    await save();
+
+    expect(savedMedia()).toEqual([
+      { featuredWorkId: 'w1', mediaId: 'm1', sortOrder: 0, label: null },
+    ]);
+  });
+
+  it('clears the pair when both are removed', async () => {
+    await openWork([FP16, INT8]);
+
+    fireEvent.click(button('Remove demo 1'));
+    fireEvent.click(button('Remove demo 1'));
+    await save();
+
+    expect(txMediaDeleteMany).toHaveBeenCalledTimes(1);
+    expect(savedMedia()).toBeNull();
+  });
+
+  it('sends an empty pair for a work that has none, so a stored one is never kept by omission', async () => {
+    await openWork([]);
+
+    await save();
+
+    expect(txMediaDeleteMany).toHaveBeenCalledTimes(1);
+    expect(savedMedia()).toBeNull();
+  });
+
+  it('previews a stored clip muted, looping and loading only its metadata', async () => {
+    await openWork([FP16, INT8]);
+
+    const video = screen.getByLabelText('Demo 1') as HTMLVideoElement;
+    expect(video.tagName).toBe('VIDEO');
+    expect(video.getAttribute('src')).toBe('https://cdn.example/m1');
+    expect(video.getAttribute('preload')).toBe('metadata');
+    expect(video.hasAttribute('autoplay')).toBe(false);
+    expect(video.muted).toBe(true);
+    expect(video.loop).toBe(true);
+    // A GIF is an image, not a video.
+    const image = screen.getByAltText('Demo 2');
+    expect(image.tagName).toBe('IMG');
+    expect(image.getAttribute('src')).toBe('https://cdn.example/m2');
+  });
+
+  it('shows the stored labels, one input per slot', async () => {
+    await openWork([FP16, INT8]);
+
+    expect((screen.getByLabelText('Label 1') as HTMLInputElement).value).toBe('FP16');
+    expect((screen.getByLabelText('Label 2') as HTMLInputElement).value).toBe('INT8');
+  });
+
+  it('submits an edited label', async () => {
+    await openWork([FP16, INT8]);
+
+    fireEvent.change(screen.getByLabelText('Label 2'), { target: { value: ' W8A8 ' } });
+    await save();
+
+    expect(savedMedia()).toEqual([
+      { featuredWorkId: 'w1', mediaId: 'm1', sortOrder: 0, label: 'FP16' },
+      { featuredWorkId: 'w1', mediaId: 'm2', sortOrder: 1, label: 'W8A8' },
+    ]);
+  });
+
+  it('stores an emptied label as none', async () => {
+    await openWork([FP16]);
+
+    fireEvent.change(screen.getByLabelText('Label 1'), { target: { value: '' } });
+    await save();
+
+    expect(savedMedia()).toEqual([
+      { featuredWorkId: 'w1', mediaId: 'm1', sortOrder: 0, label: null },
+    ]);
+  });
+
+  it('limits a label to 24 characters', async () => {
+    await openWork([FP16]);
+
+    expect(screen.getByLabelText('Label 1').getAttribute('maxlength')).toBe('24');
+  });
+
+  it('adds an uploaded clip with its label', async () => {
+    uploadRecord.mockResolvedValue(stored('m9'));
+    await openWork([]);
+
+    const file = clip();
+    chooseFile(file);
+
+    await screen.findByLabelText('Label 1');
+    expect(uploadRecord).toHaveBeenCalledWith(file, 'featured-work');
+    expect(screen.getByLabelText('Demo 1').getAttribute('src')).toBe('https://cdn.example/m9');
+    fireEvent.change(screen.getByLabelText('Label 1'), { target: { value: 'INT8' } });
+    await save();
+
+    expect(savedMedia()).toEqual([
+      { featuredWorkId: 'w1', mediaId: 'm9', sortOrder: 0, label: 'INT8' },
+    ]);
+    expect(txMediaCount).toHaveBeenCalledTimes(1);
+  });
+
+  it('puts a second upload in the second slot', async () => {
+    uploadRecord.mockResolvedValue(stored('m9'));
+    await openWork([FP16]);
+
+    chooseFile(clip());
+
+    await screen.findByLabelText('Label 2');
+    await save();
+
+    expect(savedMedia()).toEqual([
+      { featuredWorkId: 'w1', mediaId: 'm1', sortOrder: 0, label: 'FP16' },
+      { featuredWorkId: 'w1', mediaId: 'm9', sortOrder: 1, label: null },
+    ]);
+  });
+
+  it('offers slot 2 only once slot 1 is filled, and neither when both are', async () => {
+    uploadRecord.mockResolvedValue(stored('m9'));
+    await openWork([]);
+
+    expect(button('Upload demo 1')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Upload demo 2' })).toBeNull();
+
+    chooseFile(clip());
+    await screen.findByLabelText('Label 1');
+    expect(screen.queryByRole('button', { name: 'Upload demo 1' })).toBeNull();
+    expect(button('Upload demo 2')).toBeTruthy();
+
+    uploadRecord.mockResolvedValue(stored('m10'));
+    chooseFile(clip());
+    await screen.findByLabelText('Label 2');
+    expect(screen.queryByRole('button', { name: /^Upload demo/ })).toBeNull();
+  });
+
+  it('tells the owner when the upload fails and leaves the slot empty', async () => {
+    uploadRecord.mockRejectedValue(new Error('"int8.mp4" is larger than 10 MB.'));
+    await openWork([]);
+
+    chooseFile(clip());
+
+    await waitFor(() =>
+      expect(toastError).toHaveBeenCalledWith('Upload failed', {
+        description: '"int8.mp4" is larger than 10 MB.',
+      })
+    );
+    await waitFor(() => expect(button('Upload demo 1').disabled).toBe(false));
+    expect(screen.queryByLabelText('Label 1')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Upload demo 2' })).toBeNull();
+
+    await save();
+    expect(savedMedia()).toBeNull();
+  });
+
+  it('moves slot 2 into slot 1 when slot 1 is removed', async () => {
+    await openWork([FP16, INT8]);
+
+    fireEvent.click(button('Remove demo 1'));
+
+    expect((screen.getByLabelText('Label 1') as HTMLInputElement).value).toBe('INT8');
+    expect(screen.getByAltText('Demo 1').getAttribute('src')).toBe('https://cdn.example/m2');
+    expect(screen.queryByLabelText('Label 2')).toBeNull();
+    expect(button('Upload demo 2')).toBeTruthy();
+    await save();
+
+    expect(savedMedia()).toEqual([
+      { featuredWorkId: 'w1', mediaId: 'm2', sortOrder: 0, label: 'INT8' },
+    ]);
+  });
+
+  it('creates a work with a clip', async () => {
+    uploadRecord.mockResolvedValue(stored('m9'));
+    renderManager([]);
+
+    fireEvent.click(button('Add featured work'));
+    fireEvent.change(screen.getByLabelText('Title'), { target: { value: 'Faster export' } });
+    chooseFile(clip());
+    await screen.findByLabelText('Label 1');
+    fireEvent.change(screen.getByLabelText('Label 1'), { target: { value: 'FP16' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Add featured work' }));
+
+    await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
+    expect(create.mock.calls[0]?.[0]).toMatchObject({
+      data: { media: { create: [{ mediaId: 'm9', sortOrder: 0, label: 'FP16' }] } },
+    });
+    expect(mediaCount).toHaveBeenCalledTimes(1);
   });
 });

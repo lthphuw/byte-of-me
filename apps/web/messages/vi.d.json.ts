@@ -624,7 +624,17 @@ declare const messages: {
       "detailsLabel": "Chi tiết",
       "urlLabel": "Liên kết",
       "urlPlaceholder": "https://github.com/owner/repo/pull/123",
-      "publishedLabel": "Đã xuất bản"
+      "publishedLabel": "Đã xuất bản",
+      "demo": {
+        "title": "Demo",
+        "uploadButton": "Tải lên",
+        "uploadLabel": "Tải lên demo {slot, number}",
+        "previewLabel": "Demo {slot, number}",
+        "labelLabel": "Nhãn {slot, number}",
+        "removeButton": "Gỡ",
+        "removeLabel": "Gỡ demo {slot, number}",
+        "uploadFailed": "Tải lên thất bại"
+      }
     },
     "media": {
       "title": "Thư viện",

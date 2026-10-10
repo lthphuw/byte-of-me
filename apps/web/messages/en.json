@@ -621,7 +621,17 @@
       "detailsLabel": "Details",
       "urlLabel": "Link",
       "urlPlaceholder": "https://github.com/owner/repo/pull/123",
-      "publishedLabel": "Published"
+      "publishedLabel": "Published",
+      "demo": {
+        "title": "Demo",
+        "uploadButton": "Upload",
+        "uploadLabel": "Upload demo {slot, number}",
+        "previewLabel": "Demo {slot, number}",
+        "labelLabel": "Label {slot, number}",
+        "removeButton": "Remove",
+        "removeLabel": "Remove demo {slot, number}",
+        "uploadFailed": "Upload failed"
+      }
     },
     "media": {
       "title": "Media Library",
