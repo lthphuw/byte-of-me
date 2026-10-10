@@ -563,6 +563,8 @@ export const MediaScalarFieldEnum = {
   provider: 'provider',
   bucket: 'bucket',
   url: 'url',
+  width: 'width',
+  height: 'height',
   userId: 'userId'
 } as const
 

@@ -28,10 +28,14 @@ export type AggregateMedia = {
 
 export type MediaAvgAggregateOutputType = {
   size: number | null
+  width: number | null
+  height: number | null
 }
 
 export type MediaSumAggregateOutputType = {
   size: number | null
+  width: number | null
+  height: number | null
 }
 
 export type MediaMinAggregateOutputType = {
@@ -45,6 +49,8 @@ export type MediaMinAggregateOutputType = {
   provider: string | null
   bucket: string | null
   url: string | null
+  width: number | null
+  height: number | null
   userId: string | null
 }
 
@@ -59,6 +65,8 @@ export type MediaMaxAggregateOutputType = {
   provider: string | null
   bucket: string | null
   url: string | null
+  width: number | null
+  height: number | null
   userId: string | null
 }
 
@@ -73,6 +81,8 @@ export type MediaCountAggregateOutputType = {
   provider: number
   bucket: number
   url: number
+  width: number
+  height: number
   userId: number
   _all: number
 }
@@ -80,10 +90,14 @@ export type MediaCountAggregateOutputType = {
 
 export type MediaAvgAggregateInputType = {
   size?: true
+  width?: true
+  height?: true
 }
 
 export type MediaSumAggregateInputType = {
   size?: true
+  width?: true
+  height?: true
 }
 
 export type MediaMinAggregateInputType = {
@@ -97,6 +111,8 @@ export type MediaMinAggregateInputType = {
   provider?: true
   bucket?: true
   url?: true
+  width?: true
+  height?: true
   userId?: true
 }
 
@@ -111,6 +127,8 @@ export type MediaMaxAggregateInputType = {
   provider?: true
   bucket?: true
   url?: true
+  width?: true
+  height?: true
   userId?: true
 }
 
@@ -125,6 +143,8 @@ export type MediaCountAggregateInputType = {
   provider?: true
   bucket?: true
   url?: true
+  width?: true
+  height?: true
   userId?: true
   _all?: true
 }
@@ -226,6 +246,8 @@ export type MediaGroupByOutputType = {
   provider: string
   bucket: string
   url: string
+  width: number | null
+  height: number | null
   userId: string | null
   _count: MediaCountAggregateOutputType | null
   _avg: MediaAvgAggregateOutputType | null
@@ -263,6 +285,8 @@ export type MediaWhereInput = {
   provider?: Prisma.StringFilter<"Media"> | string
   bucket?: Prisma.StringFilter<"Media"> | string
   url?: Prisma.StringFilter<"Media"> | string
+  width?: Prisma.IntNullableFilter<"Media"> | number | null
+  height?: Prisma.IntNullableFilter<"Media"> | number | null
   userId?: Prisma.StringNullableFilter<"Media"> | string | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   companies?: Prisma.CompanyListRelationFilter
@@ -284,6 +308,8 @@ export type MediaOrderByWithRelationInput = {
   provider?: Prisma.SortOrder
   bucket?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  width?: Prisma.SortOrderInput | Prisma.SortOrder
+  height?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   companies?: Prisma.CompanyOrderByRelationAggregateInput
@@ -308,6 +334,8 @@ export type MediaWhereUniqueInput = Prisma.AtLeast<{
   provider?: Prisma.StringFilter<"Media"> | string
   bucket?: Prisma.StringFilter<"Media"> | string
   url?: Prisma.StringFilter<"Media"> | string
+  width?: Prisma.IntNullableFilter<"Media"> | number | null
+  height?: Prisma.IntNullableFilter<"Media"> | number | null
   userId?: Prisma.StringNullableFilter<"Media"> | string | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   companies?: Prisma.CompanyListRelationFilter
@@ -329,6 +357,8 @@ export type MediaOrderByWithAggregationInput = {
   provider?: Prisma.SortOrder
   bucket?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  width?: Prisma.SortOrderInput | Prisma.SortOrder
+  height?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.MediaCountOrderByAggregateInput
   _avg?: Prisma.MediaAvgOrderByAggregateInput
@@ -351,6 +381,8 @@ export type MediaScalarWhereWithAggregatesInput = {
   provider?: Prisma.StringWithAggregatesFilter<"Media"> | string
   bucket?: Prisma.StringWithAggregatesFilter<"Media"> | string
   url?: Prisma.StringWithAggregatesFilter<"Media"> | string
+  width?: Prisma.IntNullableWithAggregatesFilter<"Media"> | number | null
+  height?: Prisma.IntNullableWithAggregatesFilter<"Media"> | number | null
   userId?: Prisma.StringNullableWithAggregatesFilter<"Media"> | string | null
 }
 
@@ -365,6 +397,8 @@ export type MediaCreateInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   user?: Prisma.UserCreateNestedOneWithoutMediaInput
   companies?: Prisma.CompanyCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutLogoInput
@@ -385,6 +419,8 @@ export type MediaUncheckedCreateInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   userId?: string | null
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutLogoInput
@@ -405,6 +441,8 @@ export type MediaUpdateInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneWithoutMediaNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutLogoNestedInput
@@ -425,6 +463,8 @@ export type MediaUncheckedUpdateInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutLogoNestedInput
@@ -445,6 +485,8 @@ export type MediaCreateManyInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   userId?: string | null
 }
 
@@ -459,6 +501,8 @@ export type MediaUpdateManyMutationInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type MediaUncheckedUpdateManyInput = {
@@ -472,6 +516,8 @@ export type MediaUncheckedUpdateManyInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -506,11 +552,15 @@ export type MediaCountOrderByAggregateInput = {
   provider?: Prisma.SortOrder
   bucket?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  width?: Prisma.SortOrder
+  height?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
 export type MediaAvgOrderByAggregateInput = {
   size?: Prisma.SortOrder
+  width?: Prisma.SortOrder
+  height?: Prisma.SortOrder
 }
 
 export type MediaMaxOrderByAggregateInput = {
@@ -524,6 +574,8 @@ export type MediaMaxOrderByAggregateInput = {
   provider?: Prisma.SortOrder
   bucket?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  width?: Prisma.SortOrder
+  height?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -538,11 +590,15 @@ export type MediaMinOrderByAggregateInput = {
   provider?: Prisma.SortOrder
   bucket?: Prisma.SortOrder
   url?: Prisma.SortOrder
+  width?: Prisma.SortOrder
+  height?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
 export type MediaSumOrderByAggregateInput = {
   size?: Prisma.SortOrder
+  width?: Prisma.SortOrder
+  height?: Prisma.SortOrder
 }
 
 export type MediaCreateNestedManyWithoutUserInput = {
@@ -690,6 +746,8 @@ export type MediaCreateWithoutUserInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   companies?: Prisma.CompanyCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutLogoInput
   educationSchema?: Prisma.EducationCreateNestedManyWithoutLogoInput
@@ -709,6 +767,8 @@ export type MediaUncheckedCreateWithoutUserInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutLogoInput
   educationSchema?: Prisma.EducationUncheckedCreateNestedManyWithoutLogoInput
@@ -757,6 +817,8 @@ export type MediaScalarWhereInput = {
   provider?: Prisma.StringFilter<"Media"> | string
   bucket?: Prisma.StringFilter<"Media"> | string
   url?: Prisma.StringFilter<"Media"> | string
+  width?: Prisma.IntNullableFilter<"Media"> | number | null
+  height?: Prisma.IntNullableFilter<"Media"> | number | null
   userId?: Prisma.StringNullableFilter<"Media"> | string | null
 }
 
@@ -771,6 +833,8 @@ export type MediaCreateWithoutEducationSchemaInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   user?: Prisma.UserCreateNestedOneWithoutMediaInput
   companies?: Prisma.CompanyCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutLogoInput
@@ -790,6 +854,8 @@ export type MediaUncheckedCreateWithoutEducationSchemaInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   userId?: string | null
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutLogoInput
@@ -825,6 +891,8 @@ export type MediaUpdateWithoutEducationSchemaInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneWithoutMediaNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutLogoNestedInput
@@ -844,6 +912,8 @@ export type MediaUncheckedUpdateWithoutEducationSchemaInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutLogoNestedInput
@@ -863,6 +933,8 @@ export type MediaCreateWithoutFeaturedWorkMediaInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   user?: Prisma.UserCreateNestedOneWithoutMediaInput
   companies?: Prisma.CompanyCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutLogoInput
@@ -882,6 +954,8 @@ export type MediaUncheckedCreateWithoutFeaturedWorkMediaInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   userId?: string | null
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutLogoInput
@@ -917,6 +991,8 @@ export type MediaUpdateWithoutFeaturedWorkMediaInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneWithoutMediaNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutLogoNestedInput
@@ -936,6 +1012,8 @@ export type MediaUncheckedUpdateWithoutFeaturedWorkMediaInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutLogoNestedInput
@@ -955,6 +1033,8 @@ export type MediaCreateWithoutEducationAchiementsInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   user?: Prisma.UserCreateNestedOneWithoutMediaInput
   companies?: Prisma.CompanyCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutLogoInput
@@ -974,6 +1054,8 @@ export type MediaUncheckedCreateWithoutEducationAchiementsInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   userId?: string | null
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutLogoInput
@@ -1009,6 +1091,8 @@ export type MediaUpdateWithoutEducationAchiementsInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneWithoutMediaNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutLogoNestedInput
@@ -1028,6 +1112,8 @@ export type MediaUncheckedUpdateWithoutEducationAchiementsInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutLogoNestedInput
@@ -1047,6 +1133,8 @@ export type MediaCreateWithoutTechStacksInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   user?: Prisma.UserCreateNestedOneWithoutMediaInput
   companies?: Prisma.CompanyCreateNestedManyWithoutLogoInput
   educationSchema?: Prisma.EducationCreateNestedManyWithoutLogoInput
@@ -1066,6 +1154,8 @@ export type MediaUncheckedCreateWithoutTechStacksInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   userId?: string | null
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutLogoInput
   educationSchema?: Prisma.EducationUncheckedCreateNestedManyWithoutLogoInput
@@ -1101,6 +1191,8 @@ export type MediaUpdateWithoutTechStacksInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneWithoutMediaNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutLogoNestedInput
   educationSchema?: Prisma.EducationUpdateManyWithoutLogoNestedInput
@@ -1120,6 +1212,8 @@ export type MediaUncheckedUpdateWithoutTechStacksInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutLogoNestedInput
   educationSchema?: Prisma.EducationUncheckedUpdateManyWithoutLogoNestedInput
@@ -1139,6 +1233,8 @@ export type MediaCreateWithoutCompaniesInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   user?: Prisma.UserCreateNestedOneWithoutMediaInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutLogoInput
   educationSchema?: Prisma.EducationCreateNestedManyWithoutLogoInput
@@ -1158,6 +1254,8 @@ export type MediaUncheckedCreateWithoutCompaniesInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   userId?: string | null
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutLogoInput
   educationSchema?: Prisma.EducationUncheckedCreateNestedManyWithoutLogoInput
@@ -1193,6 +1291,8 @@ export type MediaUpdateWithoutCompaniesInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneWithoutMediaNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutLogoNestedInput
   educationSchema?: Prisma.EducationUpdateManyWithoutLogoNestedInput
@@ -1212,6 +1312,8 @@ export type MediaUncheckedUpdateWithoutCompaniesInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutLogoNestedInput
   educationSchema?: Prisma.EducationUncheckedUpdateManyWithoutLogoNestedInput
@@ -1231,6 +1333,8 @@ export type MediaCreateWithoutBlogsInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   user?: Prisma.UserCreateNestedOneWithoutMediaInput
   companies?: Prisma.CompanyCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackCreateNestedManyWithoutLogoInput
@@ -1250,6 +1354,8 @@ export type MediaUncheckedCreateWithoutBlogsInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
   userId?: string | null
   companies?: Prisma.CompanyUncheckedCreateNestedManyWithoutLogoInput
   techStacks?: Prisma.TechStackUncheckedCreateNestedManyWithoutLogoInput
@@ -1285,6 +1391,8 @@ export type MediaUpdateWithoutBlogsInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneWithoutMediaNestedInput
   companies?: Prisma.CompanyUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutLogoNestedInput
@@ -1304,6 +1412,8 @@ export type MediaUncheckedUpdateWithoutBlogsInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutLogoNestedInput
@@ -1323,6 +1433,8 @@ export type MediaCreateManyUserInput = {
   provider: string
   bucket: string
   url: string
+  width?: number | null
+  height?: number | null
 }
 
 export type MediaUpdateWithoutUserInput = {
@@ -1336,6 +1448,8 @@ export type MediaUpdateWithoutUserInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   companies?: Prisma.CompanyUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUpdateManyWithoutLogoNestedInput
   educationSchema?: Prisma.EducationUpdateManyWithoutLogoNestedInput
@@ -1355,6 +1469,8 @@ export type MediaUncheckedUpdateWithoutUserInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   companies?: Prisma.CompanyUncheckedUpdateManyWithoutLogoNestedInput
   techStacks?: Prisma.TechStackUncheckedUpdateManyWithoutLogoNestedInput
   educationSchema?: Prisma.EducationUncheckedUpdateManyWithoutLogoNestedInput
@@ -1374,6 +1490,8 @@ export type MediaUncheckedUpdateManyWithoutUserInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   bucket?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  width?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  height?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 
@@ -1463,6 +1581,8 @@ export type MediaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   provider?: boolean
   bucket?: boolean
   url?: boolean
+  width?: boolean
+  height?: boolean
   userId?: boolean
   user?: boolean | Prisma.Media$userArgs<ExtArgs>
   companies?: boolean | Prisma.Media$companiesArgs<ExtArgs>
@@ -1485,6 +1605,8 @@ export type MediaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   provider?: boolean
   bucket?: boolean
   url?: boolean
+  width?: boolean
+  height?: boolean
   userId?: boolean
   user?: boolean | Prisma.Media$userArgs<ExtArgs>
 }, ExtArgs["result"]["media"]>
@@ -1500,6 +1622,8 @@ export type MediaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   provider?: boolean
   bucket?: boolean
   url?: boolean
+  width?: boolean
+  height?: boolean
   userId?: boolean
   user?: boolean | Prisma.Media$userArgs<ExtArgs>
 }, ExtArgs["result"]["media"]>
@@ -1515,10 +1639,12 @@ export type MediaSelectScalar = {
   provider?: boolean
   bucket?: boolean
   url?: boolean
+  width?: boolean
+  height?: boolean
   userId?: boolean
 }
 
-export type MediaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "fileName" | "fileKey" | "mimeType" | "size" | "provider" | "bucket" | "url" | "userId", ExtArgs["result"]["media"]>
+export type MediaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "fileName" | "fileKey" | "mimeType" | "size" | "provider" | "bucket" | "url" | "width" | "height" | "userId", ExtArgs["result"]["media"]>
 export type MediaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.Media$userArgs<ExtArgs>
   companies?: boolean | Prisma.Media$companiesArgs<ExtArgs>
@@ -1558,6 +1684,8 @@ export type $MediaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     provider: string
     bucket: string
     url: string
+    width: number | null
+    height: number | null
     userId: string | null
   }, ExtArgs["result"]["media"]>
   composites: {}
@@ -1999,6 +2127,8 @@ export interface MediaFieldRefs {
   readonly provider: Prisma.FieldRef<"Media", 'String'>
   readonly bucket: Prisma.FieldRef<"Media", 'String'>
   readonly url: Prisma.FieldRef<"Media", 'String'>
+  readonly width: Prisma.FieldRef<"Media", 'Int'>
+  readonly height: Prisma.FieldRef<"Media", 'Int'>
   readonly userId: Prisma.FieldRef<"Media", 'String'>
 }
     
