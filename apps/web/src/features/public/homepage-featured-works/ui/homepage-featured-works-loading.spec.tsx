@@ -9,6 +9,7 @@ import { afterEach, describe, expect, it } from 'bun:test';
 import { HomepageFeaturedWorksLoading } from './homepage-featured-works-loading';
 
 import { FeaturedWorkItem } from '@/entities/featured-work/ui/featured-work-item';
+import { PLAIN_ROW_HEADER } from '@/entities/featured-work/ui/featured-work-row-classes';
 
 afterEach(cleanup);
 
@@ -40,5 +41,27 @@ describe('HomepageFeaturedWorksLoading', () => {
     expect(headerClasses).toContain('grid');
     expect(skeletonClasses.filter((name) => !headerClasses.includes(name))).toEqual([]);
     expect(headerClasses.filter((name) => !skeletonClasses.includes(name))).toEqual(['group']);
+  });
+
+  it('draws four rows, each a plain row header with a title bar, a description and a meta cell', () => {
+    const { container } = render(<HomepageFeaturedWorksLoading />);
+    const rows = [...container.querySelectorAll('.divide-y > div')];
+
+    expect(rows).toHaveLength(4);
+    for (const row of rows) {
+      expect(classesOf(row)).toEqual(expect.arrayContaining(PLAIN_ROW_HEADER.split(' ')));
+      // number, title column, meta cell
+      expect(row.children).toHaveLength(3);
+      const description = row.querySelector('.leading-relaxed');
+      expect(description?.children.length).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it('keeps the heading to a single title bar, with no subtitle line under it', () => {
+    const { container } = render(<HomepageFeaturedWorksLoading />);
+    const header = container.firstElementChild?.firstElementChild;
+
+    expect(header?.classList.contains('animate-pulse')).toBe(true);
+    expect(header?.nextElementSibling?.classList.contains('divide-y')).toBe(true);
   });
 });

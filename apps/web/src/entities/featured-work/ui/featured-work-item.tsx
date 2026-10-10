@@ -3,7 +3,15 @@
 import { type ReactNode, useEffect, useState } from 'react';
 import { ArrowUpRight, ChevronDown } from 'lucide-react';
 
-import { PLAIN_ROW_HEADER, ROW_TRACKS } from './featured-work-row-classes';
+import {
+  PLAIN_ROW_HEADER,
+  ROW_BODY_STACK,
+  ROW_DESCRIPTION_TEXT,
+  ROW_META_CELL,
+  ROW_NUMBER_TEXT,
+  ROW_TITLE_TEXT,
+  ROW_TRACKS,
+} from './featured-work-row-classes';
 
 import { cn } from '@/shared/lib/utils';
 import { DisclosureRegion } from '@/shared/ui/disclosure-region';
@@ -86,12 +94,10 @@ export function FeaturedWorkItem({
 
   const header = (
     <div className={expandable ? DISCLOSURE_HEADER : PLAIN_HEADER}>
-      <span className="pt-1 text-xs tabular-nums text-muted-foreground">
-        {number}
-      </span>
+      <span className={cn(ROW_NUMBER_TEXT, 'text-muted-foreground')}>{number}</span>
 
-      <div className="min-w-0 space-y-2">
-        <h3 className="font-heading text-lg tracking-tight [overflow-wrap:anywhere] md:text-xl">
+      <div className={ROW_BODY_STACK}>
+        <h3 className={cn(ROW_TITLE_TEXT, '[overflow-wrap:anywhere]')}>
           {expandable ? (
             <button
               type="button"
@@ -118,16 +124,14 @@ export function FeaturedWorkItem({
           )}
         </h3>
         {description && (
-          <p className="text-sm leading-relaxed text-muted-foreground">
+          <p className={cn(ROW_DESCRIPTION_TEXT, 'text-muted-foreground')}>
             {description}
           </p>
         )}
       </div>
 
       {meta && (
-        <div className="col-start-2 flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 md:col-start-3 md:flex-col md:items-end md:text-right">
-          {meta}
-        </div>
+        <div className={ROW_META_CELL}>{meta}</div>
       )}
     </div>
   );
