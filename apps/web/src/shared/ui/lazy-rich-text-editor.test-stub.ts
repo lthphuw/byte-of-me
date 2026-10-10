@@ -106,6 +106,15 @@ export function __getCurrentProps(): FakeRichTextEditorProps | undefined {
   return currentProps;
 }
 
+// Every instance still mounted, in mount order. One form can mount several
+// editors at once (one per language), so a spec reaches one by position.
+const liveEditors = new Set<{ props: FakeRichTextEditorProps }>();
+
+/** The props of every mounted instance, in mount order, as of each one's latest render. */
+export function __getEditorProps(): FakeRichTextEditorProps[] {
+  return [...liveEditors].map((entry) => entry.props);
+}
+
 export function __resetMountedValues(): void {
   mountedValues = [];
   currentValue = undefined;
@@ -210,6 +219,15 @@ export function __typeInBody(extra: string): void {
 }
 
 function FakeRichTextEditor(props: FakeRichTextEditorProps) {
+  // Registered once per mount, removed on unmount; `props` tracks each render.
+  const [entry] = React.useState(() => {
+    const created = { props };
+    liveEditors.add(created);
+    return created;
+  });
+  entry.props = props;
+  React.useEffect(() => () => void liveEditors.delete(entry), [entry]);
+
   const recordedRef = React.useRef(false);
   // The document THIS instance opened with, normalised — see
   // `normalizeLikeTiptap`. Per-instance rather than read back off
@@ -268,6 +286,7 @@ plugin({
         LazyRichTextEditor: FakeRichTextEditor,
         __getMountedValues,
         __getCurrentProps,
+        __getEditorProps,
         __resetMountedValues,
         __typeInBody,
       },

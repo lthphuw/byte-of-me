@@ -9,21 +9,28 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  fromEditorContent,
   Switch,
+  toEditorContent,
 } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
-import type { AdminFeaturedWork } from '@/entities/featured-work';
+import type { AdminFeaturedWorkDetail } from '@/entities/featured-work';
 import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
-import { TextField } from '@/shared/ui';
+import { createScopedImageUploader } from '@/entities/media';
+import { TextField, TranslationTabs } from '@/shared/ui';
+import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { featuredWorkResolver } from '@/widgets/dashboard/featured-work-manager/lib/featured-work-resolver';
-import {
-  FEATURED_WORK_LANGUAGES,
-  toTranslationValues,
-} from '@/widgets/dashboard/featured-work-manager/lib/translation-values';
+import { toTranslationValues } from '@/widgets/dashboard/featured-work-manager/lib/translation-values';
+
+/**
+ * A featured work is a project contribution, so pasted images land under the
+ * `project` prefix; `MEDIA_SCOPES` is a closed list and stays untouched here.
+ */
+const uploadImage = createScopedImageUploader('project');
 
 function toFormValues(
-  initialData?: AdminFeaturedWork
+  initialData?: AdminFeaturedWorkDetail
 ): DefaultValues<FeaturedWorkFormValues> {
   return {
     isPublished: initialData?.isPublished ?? false,
@@ -35,7 +42,8 @@ function toFormValues(
 interface FeaturedWorkFormProps {
   /** Set by the dialog so its footer button can submit this form. */
   formId: string;
-  initialData?: AdminFeaturedWork;
+  /** The full row, with each language's body. The list row has no bodies. */
+  initialData?: AdminFeaturedWorkDetail;
   onSubmit: (data: FeaturedWorkFormValues) => void;
 }
 
@@ -53,16 +61,11 @@ export function FeaturedWorkForm({
     defaultValues,
   });
 
-  // The server answers a repeated language with one generic message, so this
-  // array-level error is only ever shown here.
+  // The server answers a repeated language with one generic message. It names
+  // no tab, so it sits above the tabs where it shows on whichever is open.
   const translationsError =
     form.formState.errors.translations?.root?.message ??
     form.formState.errors.translations?.message;
-
-  const languageLabels = {
-    en: t('languageEn'),
-    vi: t('languageVi'),
-  } as const;
 
   return (
     <Form {...form}>
@@ -71,30 +74,66 @@ export function FeaturedWorkForm({
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-6"
       >
-        {FEATURED_WORK_LANGUAGES.map((language, i) => (
-          <fieldset key={language} className="min-w-0 space-y-4">
-            <legend className="mb-3 text-sm font-medium">
-              {languageLabels[language]}
-            </legend>
-            <TextField
-              control={form.control}
-              name={`translations.${i}.title`}
-              label={t('titleLabel')}
-            />
-            <TextField
-              control={form.control}
-              name={`translations.${i}.description`}
-              label={t('descriptionLabel')}
-              multiline
-            />
-          </fieldset>
-        ))}
-
         {translationsError && (
           <p role="alert" className="text-[0.8rem] font-medium text-destructive-text">
             {translationsError}
           </p>
         )}
+
+        {/* One tab per language, English first. A hidden tab's editor unmounts,
+            but its body stays in form state: seeded back on return, submitted. */}
+        <TranslationTabs
+          control={form.control}
+          name="translations"
+          newTranslation={() => ({
+            language: '',
+            title: '',
+            description: '',
+            details: '',
+          })}
+          renderFields={(index) => (
+            <>
+              <TextField
+                control={form.control}
+                name={`translations.${index}.title`}
+                label={t('titleLabel')}
+              />
+              <TextField
+                control={form.control}
+                name={`translations.${index}.description`}
+                label={t('descriptionLabel')}
+                multiline
+              />
+              <FormField
+                control={form.control}
+                name={`translations.${index}.details`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('detailsLabel')}</FormLabel>
+                    <FormControl>
+                      <RichTextEditor
+                        compact
+                        minHeight={140}
+                        className="rounded-md"
+                        value={toEditorContent(field.value)}
+                        // Ignores the editor's own normalised copy of the loaded
+                        // body (not an edit), so an untouched save writes the
+                        // stored string back unchanged.
+                        onChange={(json, meta) => {
+                          if (!meta.initial) {
+                            field.onChange(fromEditorContent(json));
+                          }
+                        }}
+                        uploadImage={uploadImage}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
+        />
 
         <TextField
           control={form.control}

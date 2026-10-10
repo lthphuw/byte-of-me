@@ -1,12 +1,14 @@
 /**
  * What the owner can do on the featured-work dashboard: read the list, reorder
- * it, and save an entry whose Vietnamese text is blank. Drives the real manager,
- * dialog, form and server actions; only Prisma is replaced.
+ * it, and edit an entry. An edit opens on the full row loaded by id, and a save
+ * must write every language's body back, even when the owner never touched it.
+ * Drives the real manager, dialog, form and server actions; only Prisma is replaced.
  */
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { QueryClientProvider } from '@tanstack/react-query';
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -35,6 +37,11 @@ import { FeaturedWorkManager } from './featured-work-manager';
 import { featuredWorkKeys } from '@/entities/featured-work/model/query-keys';
 import type { AdminFeaturedWork } from '@/entities/featured-work/model/types';
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
+import {
+  __getEditorProps,
+  __getMountedValues,
+  __resetMountedValues,
+} from '@/shared/ui/lazy-rich-text-editor.test-stub';
 
 const NOW = new Date('2026-01-01T00:00:00.000Z');
 
@@ -80,10 +87,13 @@ const meta = (totalCount: number) => ({
 });
 
 type Row = Record<string, unknown>;
+const findFirst = mock<(args: unknown) => Promise<Row | null>>();
 const findMany = mock<(args: unknown) => Promise<Row[]>>();
 const count = mock<(args: unknown) => Promise<number>>();
 const aggregate = mock<(args: unknown) => Promise<Row>>();
 const create = mock<(args: unknown) => Promise<Row>>();
+const remove = mock<(args: unknown) => Promise<Row>>();
+const txFindFirst = mock<(args: unknown) => Promise<Row | null>>();
 const txFindMany = mock<(args: unknown) => Promise<Row[]>>();
 const txUpdate = mock<(args: unknown) => Promise<Row>>();
 
@@ -92,13 +102,19 @@ const originals = {
   transaction: Object.getOwnPropertyDescriptor(prisma, '$transaction'),
 };
 Object.defineProperty(prisma, 'featuredWork', {
-  value: { findMany, count, aggregate, create },
+  value: { findFirst, findMany, count, aggregate, create, delete: remove },
   writable: true,
   configurable: true,
 });
 Object.defineProperty(prisma, '$transaction', {
   value: (fn: (tx: unknown) => Promise<unknown>) =>
-    fn({ featuredWork: { findMany: txFindMany, update: txUpdate } }),
+    fn({
+      featuredWork: {
+        findFirst: txFindFirst,
+        findMany: txFindMany,
+        update: txUpdate,
+      },
+    }),
   writable: true,
   configurable: true,
 });
@@ -138,15 +154,79 @@ const focusedLabel = () => document.activeElement?.getAttribute('aria-label');
 const button = (name: string) =>
   screen.getByRole('button', { name }) as HTMLButtonElement;
 
+const doc = (text: string) =>
+  JSON.stringify({
+    type: 'doc',
+    content: [{ type: 'paragraph', content: [{ type: 'text', text }] }],
+  });
+const EN_BODY = doc('Calibrated on 512 COCO images.');
+const VI_BODY = doc('Đã hiệu chỉnh trên 512 ảnh COCO.');
+
+/** What the by-id read returns: the list row's fields, with each body attached. */
+function detailOf(list: AdminFeaturedWork, bodies: Record<string, string> = {}) {
+  return {
+    ...list,
+    translations: list.translations.map((t) => ({
+      id: t.id,
+      language: t.language,
+      title: t.title,
+      description: t.description,
+      details: bodies[t.language] ?? null,
+    })),
+  };
+}
+
+/** The translations the last update wrote: `deleteMany` then `create`. */
+function savedTranslations() {
+  const args = txUpdate.mock.calls[0]?.[0] as {
+    data: {
+      translations: {
+        create: Array<{
+          language: string;
+          title: string;
+          description: string | null;
+          details: string | null;
+        }>;
+      };
+    };
+  };
+  return args.data.translations.create;
+}
+
+const openEdit = (name: string) => fireEvent.click(button(`Edit ${name}`));
+
+/** Radix `TabsTrigger` selects on `mousedown`, not on `click`. */
+const clickTab = (label: string) =>
+  act(() => {
+    fireEvent.mouseDown(screen.getByRole('tab', { name: label }), { button: 0 });
+  });
+
+/** Waits until the form is in: the English tab is open, so one title shows. */
+const formLoaded = () =>
+  waitFor(() => expect(screen.getByLabelText('Title')).toBeTruthy());
+
+/** A promise the test settles by hand, to hold the by-id read open. */
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((res) => {
+    resolve = res;
+  });
+  return { promise, resolve };
+}
+
 beforeEach(() => {
+  findFirst.mockReset().mockResolvedValue(null);
   findMany.mockReset().mockResolvedValue(rows);
   count.mockReset().mockResolvedValue(rows.length);
   aggregate.mockReset().mockResolvedValue({ _max: { sortOrder: 2 } });
   create.mockReset().mockResolvedValue(rows[0] ?? {});
+  remove.mockReset().mockResolvedValue({});
+  txFindFirst.mockReset().mockResolvedValue({ id: 'w1' });
   txFindMany.mockReset().mockResolvedValue(
     rows.map(({ id, sortOrder }) => ({ id, sortOrder }))
   );
   txUpdate.mockReset().mockResolvedValue({});
+  __resetMountedValues();
   logError.mockClear();
   toastSuccess.mockClear();
   toastError.mockClear();
@@ -345,7 +425,9 @@ describe('FeaturedWorkManager editor', () => {
       data: {
         sortOrder: 3,
         isPublished: false,
-        translations: { create: [{ language: 'en', title: 'Faster export' }] },
+        translations: {
+          create: [{ language: 'en', title: 'Faster export', details: null }],
+        },
       },
     });
     await waitFor(() => expect(toastSuccess).toHaveBeenCalled());
@@ -362,16 +444,225 @@ describe('FeaturedWorkManager editor', () => {
   });
 
   it('shows the repeated-language error the server would only call invalid', async () => {
-    renderManager([
-      work('w9', 0, [tr('en', 'First'), tr('en', 'Second')]),
-    ]);
+    const dup = work('w9', 0, [tr('en', 'First'), tr('en', 'Second')]);
+    findFirst.mockResolvedValue(detailOf(dup));
+    renderManager([dup]);
 
-    fireEvent.click(button('Edit First'));
-    fireEvent.click(await screen.findByRole('button', { name: 'Save changes' }));
+    openEdit('First');
+    await formLoaded();
+    fireEvent.click(button('Save changes'));
 
     expect((await screen.findByRole('alert')).textContent).toBe(
       'Each language may appear once'
     );
     expect(txUpdate).not.toHaveBeenCalled();
+  });
+});
+
+describe('FeaturedWorkManager edit loads the full row', () => {
+  it('keeps the form unmounted, and saving disabled, until the full row arrives', async () => {
+    const row = deferred<Row | null>();
+    findFirst.mockReturnValue(row.promise);
+    renderManager();
+
+    openEdit('Faster export');
+
+    expect(await screen.findByLabelText('Loading…')).toBeTruthy();
+    // Editing from the first click on: the title must not flip to "Add" while loading.
+    expect(screen.getByText('Edit featured work', { selector: 'h2' })).toBeTruthy();
+    expect(screen.queryAllByLabelText('Title')).toHaveLength(0);
+    expect(button('Save changes').disabled).toBe(true);
+
+    row.resolve(detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }));
+
+    await formLoaded();
+    expect(screen.queryByLabelText('Loading…')).toBeNull();
+    expect(button('Save changes').disabled).toBe(false);
+  });
+
+  it('seeds the English editor with the stored body once the row arrives', async () => {
+    findFirst.mockResolvedValue(detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }));
+    renderManager();
+
+    openEdit('Faster export');
+    await formLoaded();
+
+    expect(__getMountedValues()).toContainEqual(JSON.parse(EN_BODY));
+    expect(screen.getByText('Details')).toBeTruthy();
+  });
+
+  it('shows a retry when the row fails to load, and recovers on Retry', async () => {
+    findFirst.mockRejectedValueOnce(new Error('connection lost'));
+    renderManager();
+
+    openEdit('Faster export');
+
+    const retry = await screen.findByRole('button', { name: 'Retry' });
+    expect(screen.getByRole('alert')).toBeTruthy();
+    expect(screen.queryAllByLabelText('Title')).toHaveLength(0);
+    expect(button('Save changes').disabled).toBe(true);
+
+    findFirst.mockResolvedValue(detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }));
+    fireEvent.click(retry);
+
+    await formLoaded();
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
+  it('treats a row that no longer exists as a failed load, not an empty form', async () => {
+    findFirst.mockResolvedValue(null);
+    renderManager();
+
+    openEdit('Faster export');
+
+    expect(await screen.findByRole('alert')).toBeTruthy();
+    expect(screen.queryAllByLabelText('Title')).toHaveLength(0);
+  });
+
+  it('saving without touching the editor writes the stored body back unchanged', async () => {
+    findFirst.mockResolvedValue(detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }));
+    renderManager();
+
+    openEdit('Faster export');
+    await formLoaded();
+    fireEvent.click(button('Save changes'));
+
+    await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
+    // The editor reports its own normalised copy on open; that is not an edit.
+    expect(savedTranslations()).toEqual([
+      { language: 'en', title: 'Faster export', description: null, details: EN_BODY },
+    ]);
+  });
+
+  it('writes no body when the row has none', async () => {
+    findFirst.mockResolvedValue(detailOf(rows[0] as AdminFeaturedWork));
+    renderManager();
+
+    openEdit('Faster export');
+    await formLoaded();
+    fireEvent.click(button('Save changes'));
+
+    await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
+    expect(savedTranslations()[0]).toMatchObject({ language: 'en', details: null });
+  });
+
+  it('clearing the editor saves no body', async () => {
+    findFirst.mockResolvedValue(detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }));
+    renderManager();
+
+    openEdit('Faster export');
+    await formLoaded();
+    const [englishEditor] = __getEditorProps();
+    act(() => {
+      englishEditor?.onChange?.(
+        { type: 'doc', content: [{ type: 'paragraph' }] },
+        { initial: false }
+      );
+    });
+    fireEvent.click(button('Save changes'));
+
+    await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
+    expect(savedTranslations()[0]).toMatchObject({ language: 'en', details: null });
+  });
+
+  it('submits a stored Vietnamese body the owner never opened', async () => {
+    findFirst.mockResolvedValue(
+      detailOf(rows[1] as AdminFeaturedWork, { en: EN_BODY, vi: VI_BODY })
+    );
+    renderManager();
+
+    openEdit('Quantized model');
+    await formLoaded();
+    // The Vietnamese tab is never shown: its editor was never mounted.
+    fireEvent.click(button('Save changes'));
+
+    await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
+    expect(savedTranslations()).toEqual([
+      { language: 'en', title: 'Quantized model', description: null, details: EN_BODY },
+      { language: 'vi', title: 'Mô hình lượng tử', description: null, details: VI_BODY },
+    ]);
+  });
+
+  it('keeps an edited Vietnamese body through a switch to English and back', async () => {
+    const edited = doc('Bản đã sửa.');
+    findFirst.mockResolvedValue(
+      detailOf(rows[1] as AdminFeaturedWork, { en: EN_BODY, vi: VI_BODY })
+    );
+    renderManager();
+
+    openEdit('Quantized model');
+    await formLoaded();
+    clickTab('VI');
+    const [viEditor] = __getEditorProps();
+    act(() => {
+      viEditor?.onChange?.(JSON.parse(edited), { initial: false });
+    });
+    clickTab('EN');
+    clickTab('VI');
+    // The Vietnamese editor is seeded back with what the owner typed.
+    expect(__getMountedValues()).toContainEqual(JSON.parse(edited));
+    clickTab('EN');
+    fireEvent.click(button('Save changes'));
+
+    await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
+    expect(savedTranslations()).toEqual([
+      { language: 'en', title: 'Quantized model', description: null, details: EN_BODY },
+      { language: 'vi', title: 'Mô hình lượng tử', description: null, details: edited },
+    ]);
+  });
+
+  it('brings a tab holding a body without a title forward, with its error', async () => {
+    renderManager([]);
+
+    fireEvent.click(button('Add featured work'));
+    fireEvent.change(screen.getByLabelText('Title'), {
+      target: { value: 'Faster export' },
+    });
+    clickTab('VI');
+    const [viEditor] = __getEditorProps();
+    act(() => {
+      viEditor?.onChange?.(JSON.parse(doc('Chỉ có nội dung.')), { initial: false });
+    });
+    clickTab('EN');
+    fireEvent.click(screen.getByRole('button', { name: 'Add featured work' }));
+
+    expect(await screen.findByText('Title is required')).toBeTruthy();
+    expect(screen.getByRole('tab', { name: 'VI' }).getAttribute('aria-selected')).toBe(
+      'true'
+    );
+    expect(create).not.toHaveBeenCalled();
+  });
+
+  it('after a save, drops the cached row and refreshes the list', async () => {
+    findFirst.mockResolvedValue(detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }));
+    const queryClient = renderManager();
+
+    openEdit('Faster export');
+    await formLoaded();
+    expect(queryClient.getQueryData(featuredWorkKeys.detail('w1'))).toBeDefined();
+
+    fireEvent.click(button('Save changes'));
+
+    await waitFor(() => expect(toastSuccess).toHaveBeenCalled());
+    expect(queryClient.getQueryData(featuredWorkKeys.detail('w1'))).toBeUndefined();
+    await waitFor(() => expect(findMany).toHaveBeenCalledTimes(1));
+  });
+
+  it('after a delete, drops the cached row', async () => {
+    findFirst.mockResolvedValue(detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }));
+    const queryClient = renderManager();
+
+    openEdit('Faster export');
+    await formLoaded();
+    fireEvent.click(button('Cancel'));
+    await waitFor(() => expect(screen.queryAllByLabelText('Title')).toHaveLength(0));
+    expect(queryClient.getQueryData(featuredWorkKeys.detail('w1'))).toBeDefined();
+
+    fireEvent.click(button('Delete Faster export'));
+    fireEvent.click(button('Delete'));
+
+    await waitFor(() => expect(remove).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(toastSuccess).toHaveBeenCalled());
+    expect(queryClient.getQueryData(featuredWorkKeys.detail('w1'))).toBeUndefined();
   });
 });

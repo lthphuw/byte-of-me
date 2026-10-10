@@ -14,16 +14,30 @@ import { useTranslations } from 'next-intl';
 
 import { FeaturedWorkForm } from './featured-work-form';
 
-import type { AdminFeaturedWork } from '@/entities/featured-work';
+import type { AdminFeaturedWorkDetail } from '@/entities/featured-work';
 import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
+import { EditRecordGate } from '@/shared/ui/edit-record-gate';
 
 const FORM_ID = 'featured-work-form';
 
 interface FeaturedWorkDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** The list row being edited; absent for "new". It carries every field. */
-  initialData?: Nullable<AdminFeaturedWork>;
+  /**
+   * Whether this dialog edits an entry. Set from the list row, so the title
+   * does not flip to "Add" while the full row is still loading.
+   */
+  isEditing: boolean;
+  /** The full row, loaded by id. Carries each language's body. */
+  initialData?: Nullable<AdminFeaturedWorkDetail>;
+  /**
+   * The full row is loading or its fetch failed. The list row carries no
+   * bodies, so the form stays unmounted until this clears.
+   */
+  isLoadingInitialData?: boolean;
+  /** The full-row fetch failed; the dialog offers `onRetryLoad` instead. */
+  hasLoadError?: boolean;
+  onRetryLoad?: () => void;
   onSubmit: (data: FeaturedWorkFormValues) => void;
   loading?: boolean;
 }
@@ -31,12 +45,15 @@ interface FeaturedWorkDialogProps {
 export function FeaturedWorkDialog({
   open,
   onOpenChange,
+  isEditing,
   initialData,
+  isLoadingInitialData = false,
+  hasLoadError = false,
+  onRetryLoad,
   onSubmit,
   loading,
 }: FeaturedWorkDialogProps) {
   const t = useTranslations('dashboard.featuredWorks');
-  const isEditing = Boolean(initialData);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -53,11 +70,17 @@ export function FeaturedWorkDialog({
         </DialogHeader>
 
         <div className="min-w-0 flex-1 overflow-y-auto px-6 py-5">
-          <FeaturedWorkForm
-            formId={FORM_ID}
-            initialData={initialData ?? undefined}
-            onSubmit={onSubmit}
-          />
+          <EditRecordGate
+            isNotReady={isLoadingInitialData}
+            hasError={hasLoadError}
+            onRetry={() => onRetryLoad?.()}
+          >
+            <FeaturedWorkForm
+              formId={FORM_ID}
+              initialData={initialData ?? undefined}
+              onSubmit={onSubmit}
+            />
+          </EditRecordGate>
         </div>
 
         <DialogFooter className="shrink-0 gap-2 border-t bg-muted/30 px-6 py-4">
@@ -68,7 +91,11 @@ export function FeaturedWorkDialog({
           >
             {t('dialog.cancelButton')}
           </Button>
-          <Button type="submit" form={FORM_ID} disabled={loading}>
+          <Button
+            type="submit"
+            form={FORM_ID}
+            disabled={loading || isLoadingInitialData || hasLoadError}
+          >
             {loading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}

@@ -620,11 +620,10 @@ declare const messages: {
       },
       "titleLabel": "Tiêu đề",
       "descriptionLabel": "Mô tả",
+      "detailsLabel": "Chi tiết",
       "urlLabel": "Liên kết",
       "urlPlaceholder": "https://github.com/owner/repo/pull/123",
-      "publishedLabel": "Đã xuất bản",
-      "languageEn": "Tiếng Anh",
-      "languageVi": "Tiếng Việt"
+      "publishedLabel": "Đã xuất bản"
     },
     "media": {
       "title": "Thư viện",

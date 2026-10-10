@@ -620,11 +620,10 @@ declare const messages: {
       },
       "titleLabel": "Title",
       "descriptionLabel": "Description",
+      "detailsLabel": "Details",
       "urlLabel": "Link",
       "urlPlaceholder": "https://github.com/owner/repo/pull/123",
-      "publishedLabel": "Published",
-      "languageEn": "English",
-      "languageVi": "Vietnamese"
+      "publishedLabel": "Published"
     },
     "media": {
       "title": "Media Library",

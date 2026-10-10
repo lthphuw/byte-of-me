@@ -15,6 +15,20 @@ const run = (translations: FeaturedWorkFormValues['translations']) =>
     { fields: {}, shouldUseNativeValidation: false }
   );
 
+const BODY = JSON.stringify({
+  type: 'doc',
+  content: [
+    {
+      type: 'paragraph',
+      content: [{ type: 'text', text: 'Calibrated on 512 images.' }],
+    },
+  ],
+});
+const EMPTY_DOC = JSON.stringify({
+  type: 'doc',
+  content: [{ type: 'paragraph' }],
+});
+
 describe('featuredWorkResolver', () => {
   it('drops a blank Vietnamese translation from the submitted values', async () => {
     const result = await run([
@@ -76,5 +90,42 @@ describe('featuredWorkResolver', () => {
     expect(result.errors.translations?.root?.message).toBe(
       'Each language may appear once'
     );
+  });
+
+  it('keeps a Vietnamese body that has no title, and names the title as missing', async () => {
+    const result = await run([
+      { language: 'en', title: 'A', description: '', details: null },
+      { language: 'vi', title: '', description: '', details: BODY },
+    ]);
+
+    expect(result.errors.translations?.[0]).toBeUndefined();
+    expect(result.errors.translations?.[1]?.title?.message).toBe(
+      'Title is required'
+    );
+  });
+
+  it('drops a Vietnamese row whose only content is an empty document', async () => {
+    const result = await run([
+      { language: 'en', title: 'A', description: '', details: null },
+      { language: 'vi', title: '', description: '', details: EMPTY_DOC },
+    ]);
+
+    expect(result.errors).toEqual({});
+    expect(result.values.translations).toEqual([
+      { language: 'en', title: 'A', description: '', details: null },
+    ]);
+  });
+
+  it('stores an empty document as no body and keeps a body that has text', async () => {
+    const result = await run([
+      { language: 'en', title: 'A', description: '', details: EMPTY_DOC },
+      { language: 'vi', title: 'Tiêu đề', description: '', details: BODY },
+    ]);
+
+    expect(result.errors).toEqual({});
+    expect(result.values.translations).toEqual([
+      { language: 'en', title: 'A', description: '', details: null },
+      { language: 'vi', title: 'Tiêu đề', description: '', details: BODY },
+    ]);
   });
 });

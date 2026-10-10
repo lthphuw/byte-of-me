@@ -17,12 +17,14 @@ import { FeaturedWorkDialog } from './featured-work-dialog';
 import type { AdminFeaturedWork } from '@/entities/featured-work';
 import { createFeaturedWork } from '@/entities/featured-work/api/create-featured-work';
 import { deleteFeaturedWork } from '@/entities/featured-work/api/delete-featured-work';
+import { getAdminFeaturedWorkById } from '@/entities/featured-work/api/get-admin-featured-work-by-id';
 import { getPaginatedAdminFeaturedWorks } from '@/entities/featured-work/api/get-paginated-admin-featured-works';
 import { updateFeaturedWork } from '@/entities/featured-work/api/update-featured-work';
 import { safeLink } from '@/entities/featured-work/lib/safe-link';
 import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
 import { featuredWorkKeys } from '@/entities/featured-work/model/query-keys';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
+import { useEditingRecord } from '@/shared/hooks/use-editing-record';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
@@ -64,12 +66,22 @@ export function FeaturedWorkManager() {
       saveError: t('toast.saveError'),
       deleteError: t('toast.deleteError'),
     },
+    // Saving or deleting leaves `featuredWorkKeys.detail(id)`, the row the
+    // editor loads, holding the pre-save bodies; no list invalidation reaches it.
+    detailKey: (work) => featuredWorkKeys.detail(work.id),
     pageSize: ADMIN_PAGE_SIZE,
     pageKey: featuredWorkKeys.adminPage,
     fetchPage: (page, limit) => getPaginatedAdminFeaturedWorks(page, limit),
     create: createFeaturedWork,
     update: updateFeaturedWork,
     remove: deleteFeaturedWork,
+  });
+  // The list row carries no bodies, so the dialog loads the full row by id.
+  // "New" (`editing` is null) fetches nothing and opens an empty form.
+  const fullWork = useEditingRecord({
+    id: editing?.id ?? null,
+    queryKey: featuredWorkKeys.detail,
+    fetchRecord: getAdminFeaturedWorkById,
   });
   const { move, isMoving } = useReorderFeaturedWork(t('toast.reorderError'));
 
@@ -245,7 +257,11 @@ export function FeaturedWorkManager() {
         key={editing?.id ?? 'new'}
         open={isDialogOpen}
         onOpenChange={onDialogOpenChange}
-        initialData={editing}
+        isEditing={Boolean(editing)}
+        initialData={fullWork.record}
+        isLoadingInitialData={fullWork.isNotReady}
+        hasLoadError={fullWork.hasError}
+        onRetryLoad={fullWork.retry}
         onSubmit={(values) => save(values)}
         loading={isSaving}
       />
