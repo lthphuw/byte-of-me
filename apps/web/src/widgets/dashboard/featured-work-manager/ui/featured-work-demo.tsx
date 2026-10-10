@@ -89,7 +89,9 @@ export function FeaturedWorkDemo({
   }, [isUploading, onUploadingChange]);
 
   // A removed or disabled control drops focus to <body>; hand it on, unless the
-  // owner has already moved to something else.
+  // owner has already moved to something else. Focus parked on an ancestor (the
+  // Radix dialog's focus scope wraps this component) is not a move, so it still
+  // hands on.
   useEffect(() => {
     const target = focusAfter.current;
     if (!target) return;
@@ -98,6 +100,7 @@ export function FeaturedWorkDemo({
     if (
       active &&
       active !== document.body &&
+      !active.contains(container.current) &&
       !container.current?.contains(active)
     ) {
       return;
