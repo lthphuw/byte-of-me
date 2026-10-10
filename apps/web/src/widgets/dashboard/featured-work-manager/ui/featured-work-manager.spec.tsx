@@ -192,8 +192,8 @@ describe('FeaturedWorkManager list', () => {
   it('offers the create action when there is nothing yet', () => {
     renderManager([]);
 
-    expect(screen.getByText('No featured work yet')).toBeTruthy();
-    fireEvent.click(button('Add Your First One'));
+    expect(screen.getByText('No featured works yet')).toBeTruthy();
+    fireEvent.click(button('Add Your First Entry'));
 
     expect(screen.getByText('Add featured work', { selector: 'h2' })).toBeTruthy();
   });

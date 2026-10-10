@@ -10,6 +10,8 @@ import { NextIntlClientProvider } from 'next-intl';
 // The catalogue lives outside `src/`, so the `@/` alias cannot reach it.
 // eslint-disable-next-line import-alias/import-alias
 import en from '../../../../messages/en.json';
+// eslint-disable-next-line import-alias/import-alias
+import vi from '../../../../messages/vi.json';
 
 import { FeaturedWorkRow } from './featured-work-row';
 
@@ -90,5 +92,20 @@ describe('FeaturedWorkRow', () => {
     const { container } = renderRow({ description: null });
 
     expect(container.querySelector('p')).toBeNull();
+  });
+
+  it('groups Vietnamese star counts with the locale separator', () => {
+    // The typed catalogue is English literals; the cast only widens it for this locale.
+    const homepage = vi.homepage as unknown as typeof en.homepage;
+    render(
+      <NextIntlClientProvider locale="vi" messages={{ homepage }}>
+        <FeaturedWorkRow
+          work={{ ...base, github: { repo: 'a/b', stars: 9755, merged: false } }}
+          index={0}
+        />
+      </NextIntlClientProvider>
+    );
+
+    expect(screen.getByText(/9\.755 sao/)).toBeTruthy();
   });
 });
