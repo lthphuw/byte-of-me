@@ -225,6 +225,41 @@ describe('uploadMedia', () => {
     expect(res.success).toBe(true);
   });
 
+  describe('when storage or the database refuses', () => {
+    const clip = () => fileOf(padded(MP4, 7 * MiB), 'demo.mp4', 'video/mp4');
+
+    it('names the file and the bucket limit when storage answers EntityTooLarge', async () => {
+      uploadFile.mockRejectedValue(
+        Object.assign(new Error('The object exceeded the maximum allowed size'), {
+          name: 'EntityTooLarge',
+          $metadata: { httpStatusCode: 413 },
+        })
+      );
+
+      const res = await uploadMedia([clip()], 'featured-work');
+
+      expect(res.success).toBe(false);
+      expect(res.errorMsg).toContain('demo.mp4');
+      expect(res.errorMsg).toContain('7.0 MB');
+      expect(res.errorMsg).toContain('storage bucket');
+    });
+
+    it('carries the cause for any other failure instead of a bare "failed"', async () => {
+      uploadFile.mockRejectedValue(
+        Object.assign(new Error('Access denied'), {
+          name: 'AccessDenied',
+          $metadata: { httpStatusCode: 403 },
+        })
+      );
+
+      const res = await uploadMedia([clip()], 'featured-work');
+
+      expect(res.success).toBe(false);
+      expect(res.errorMsg).toContain('AccessDenied');
+      expect(res.errorMsg).toContain('403');
+    });
+  });
+
   it('keeps the batch rule and the request total', async () => {
     const six = Array.from({ length: 6 }, () => fileOf(PNG, 'a.png', 'image/png'));
     const tooMany = await uploadMedia(six, 'blog');

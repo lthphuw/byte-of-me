@@ -159,7 +159,43 @@ export async function uploadMedia(
     revalidateTag(CACHE_TAGS.MEDIA, 'max');
     return { success: true, data: results };
   } catch (error) {
-    logger.error(`Upload error: ${getErrorMessage(error)}`);
-    return { success: false, errorMsg: 'Failed to upload one or more files.' };
+    const summary = describeFiles(files);
+    logger.error(
+      `Upload error: ${describeUploadFailure(error)} [${summary}] scope=${parsedScope.data}`
+    );
+    return { success: false, errorMsg: explainUploadFailure(error, files) };
   }
+}
+
+const toMb = (bytes: number) => `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+
+const describeFiles = (files: File[]) =>
+  files
+    .map((file) => `${sanitizeStoredFileName(file.name)} ${file.type} ${toMb(file.size)}`)
+    .join(', ');
+
+/** `Name (HTTP status): message` — what an S3-style or Prisma error actually says. */
+function describeUploadFailure(error: unknown): string {
+  const { name, $metadata } = (error ?? {}) as {
+    name?: string;
+    $metadata?: { httpStatusCode?: number };
+  };
+  const status = $metadata?.httpStatusCode;
+
+  return `${name ?? 'Error'}${status ? ` (HTTP ${status})` : ''}: ${getErrorMessage(error)}`;
+}
+
+/**
+ * The reason a stored upload failed, for the author. The storage bucket has its
+ * own size limit, separate from ours; hitting it used to read as a bare
+ * "Failed to upload", with the cause only in the server log.
+ */
+function explainUploadFailure(error: unknown, files: File[]): string {
+  const summary = describeFiles(files);
+
+  if ((error as { name?: string } | null)?.name === 'EntityTooLarge') {
+    return `The storage bucket refused ${summary}: it is over the bucket's own file size limit (Supabase → Storage → bucket settings).`;
+  }
+
+  return `Failed to upload ${summary}. ${describeUploadFailure(error)}`;
 }
