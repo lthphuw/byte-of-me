@@ -39,15 +39,42 @@ describe('featuredWorkResolver', () => {
     );
   });
 
-  it('keeps the error on Vietnamese when English was dropped', async () => {
+  it('reports a blank English title even when only Vietnamese was filled', async () => {
     const result = await run([
       { language: 'en', title: '', description: '' },
+      { language: 'vi', title: 'Tiêu đề', description: '' },
+    ]);
+
+    expect(result.errors.translations?.[0]?.title?.message).toBe(
+      'Title is required'
+    );
+    expect(result.errors.translations?.[1]).toBeUndefined();
+  });
+
+  it('keeps the error on Vietnamese when only its title is missing', async () => {
+    const result = await run([
+      { language: 'en', title: 'A', description: '' },
       { language: 'vi', title: '', description: 'Chỉ có mô tả' },
     ]);
 
     expect(result.errors.translations?.[0]).toBeUndefined();
     expect(result.errors.translations?.[1]?.title?.message).toBe(
       'Title is required'
+    );
+  });
+
+  it('keeps the "each language once" error next to the field errors', async () => {
+    const result = await run([
+      { language: 'en', title: '', description: '' },
+      { language: 'vi', title: 'Một', description: '' },
+      { language: 'vi', title: 'Hai', description: '' },
+    ]);
+
+    expect(result.errors.translations?.[0]?.title?.message).toBe(
+      'Title is required'
+    );
+    expect(result.errors.translations?.root?.message).toBe(
+      'Each language may appear once'
     );
   });
 });

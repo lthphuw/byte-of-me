@@ -58,4 +58,18 @@ describe('featuredWorkSchema', () => {
       }).success
     ).toBe(true);
   });
+
+  it('requires an English translation, reported on the English title', () => {
+    const result = featuredWorkSchema.safeParse({
+      ...base,
+      translations: [{ language: 'vi', title: 'Chỉ tiếng Việt' }],
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0]?.message).toBe('English title is required');
+    expect(result.error?.issues[0]?.path).toEqual(['translations', 0, 'title']);
+  });
+
+  it('accepts an English-only translation', () => {
+    expect(featuredWorkSchema.safeParse(base).success).toBe(true);
+  });
 });

@@ -13,10 +13,8 @@ const blank = (language: string): Translation => ({
 });
 
 /**
- * Index 0 is always `en` and index 1 always `vi`, so the form can address them
- * by position. A stored translation in any other language, or a repeat of one
- * already placed, follows hidden: saving must not silently delete it, and a
- * repeat is what the schema's "each language once" check exists to report.
+ * Index 0 is `en`, index 1 `vi`. Other or repeated languages follow hidden, so
+ * saving never deletes them and the schema can report the repeat.
  */
 export function toTranslationValues(
   stored: AdminFeaturedWork['translations'] = []
@@ -46,14 +44,12 @@ const isBlank = (t: Translation) =>
   !t.title.trim() && !(t.description ?? '').trim();
 
 /**
- * Positions to submit: every translation with a title or a description, so an
- * untouched `vi` stays optional. At least the first one is always kept, so an
- * empty form still reports "Title is required" instead of an empty list.
+ * Index 0 (`en`) is always kept so a blank title is reported under the English
+ * field; any other translation is kept only if it has a title or description.
  */
 export function keptTranslationIndexes(
   translations: readonly Translation[]
 ): number[] {
   if (translations.length === 0) return [];
-  const kept = translations.flatMap((t, i) => (isBlank(t) ? [] : [i]));
-  return kept.length > 0 ? kept : [0];
+  return translations.flatMap((t, i) => (i === 0 || !isBlank(t) ? [i] : []));
 }

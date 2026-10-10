@@ -28,7 +28,12 @@ export const featuredWorkSchema = z.object({
     .refine(
       (list) => new Set(list.map((t) => t.language)).size === list.length,
       'Each language may appear once'
-    ),
+    )
+    // /en is the default locale and the fallback for every other one.
+    .refine((list) => list.some((t) => t.language === 'en'), {
+      message: 'English title is required',
+      path: [0, 'title'],
+    }),
 });
 
 export type FeaturedWorkFormValues = z.infer<typeof featuredWorkSchema>;

@@ -11,10 +11,8 @@ import {
 const validate = zodResolver(featuredWorkSchema);
 
 /**
- * Validates the schema against the form with its blank translations removed,
- * so `submit` receives exactly what the action will store. Errors come back
- * indexed by the shortened list; they are moved back onto the field that
- * produced them, or an error on `vi` would be drawn under `en`.
+ * Validates with blank translations removed so `submit` gets what the action
+ * stores; errors are moved back to the form index of the field that raised them.
  */
 export const featuredWorkResolver: Resolver<FeaturedWorkFormValues> = async (
   values,
@@ -35,6 +33,7 @@ export const featuredWorkResolver: Resolver<FeaturedWorkFormValues> = async (
   );
 
   const byKept = result.errors.translations;
+  const root = byKept?.root;
   if (!Array.isArray(byKept)) return result;
 
   const byForm: FieldErrors<FeaturedWorkFormValues>['translations'] = [];
@@ -42,6 +41,8 @@ export const featuredWorkResolver: Resolver<FeaturedWorkFormValues> = async (
     const formIndex = kept[i];
     if (entry && formIndex !== undefined) byForm[formIndex] = entry;
   });
+  // The array-level errors ("each language once") live on `root`, not an index.
+  if (root) byForm.root = root;
   // An error array only exists on a failed result, whose `values` is empty.
   return { values: {}, errors: { ...result.errors, translations: byForm } };
 };
