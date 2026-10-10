@@ -23,7 +23,7 @@ apps/web/src/
       [...rest]/page.tsx            notFound()
       (public)/                     force-static; header + footer
         page.tsx -> HomepageContent     blogs/ -> BlogsContent     projects/ -> ProjectsContent
-        contact/ -> ContactContent      blogs/[slug]/ -> BlogDetailsContent     experience/ -> redirect('/')
+        contact/ -> ContactContent      blogs/[slug]/ -> BlogDetailsContent     experience/ -> redirect('/') (behind a 308 in next.config.js)
       (auth)/auth/login -> AdminAuthLogInView     force-dynamic; admin -> /dashboard
       (print)/print/blogs/[slug] -> BlogPrintTrigger + PrintableDocument     public, no shell
       (protected)/                  force-dynamic; admin guard on the view
@@ -38,7 +38,7 @@ apps/web/src/
 - **Locale root**: `apps/web/src/app/[locale]/layout.tsx:145-193` calls `notFound()` for an unknown locale and mounts only the `error` namespace (`apps/web/src/shared/i18n/messages.ts:21`). Public, auth, print and dashboard layouts mount their own messages.
 - **Admin view guard**: `apps/web/src/app/[locale]/(protected)/layout.tsx:23-40` calls `getAuthenticatedAdmin()`, else redirects to `/auth/login` with `from` = `x-pathname`. The nested dashboard layout has no guard of its own; server actions guard separately (AGENTS §5).
 - **Login**: `apps/web/src/app/[locale]/(auth)/layout.tsx:16-20` sends a signed-in admin to `/dashboard`.
-- **Redirects**: `apps/web/next.config.js:192-207`: `/about` to `/`, `/:locale(en|vi)/about` to `/:locale`, both permanent.
+- **Redirects**: `apps/web/next.config.js:192-220`: `/about` to `/`, `/:locale(en|vi)/about` to `/:locale`, and `/experience` to `/` in both forms, all permanent.
 - **Route handlers**: `apps/web/src/app/api/og/route.tsx:47-170` takes `?title` (max 80) and `?subtitle` (max 90), reads Cal Sans with `readFile`, returns 500 text on failure. `apps/web/src/app/api/auth/[...nextauth]/route.ts:3` exports `GET`, `POST` from `handlers`. `apps/web/src/app/feed.xml/route.ts` is RSS for the default locale only, `revalidate = 3600` (`:8`).
 - **Metadata routes**: `apps/web/src/app/robots.ts` allows `/api/og`, disallows `/dashboard`, `/en/dashboard`, `/vi/dashboard` and `/api/` (`:7-19`). `apps/web/src/app/sitemap.ts` lists `sitemapConfig` keys plus every published post (`getPublishedBlogs`), in every locale. A post's `lastmod` is its `updatedAt`; static pages carry none. Each URL lists `x-default` beside `en` and `vi`. `apps/web/src/app/llms.txt/route.ts` serves `/llms.txt`: the homepage, the list pages and every published post with its summary, English only, `revalidate = 3600`.
 - **Edge caching**: `apps/web/next.config.js:208-300` `headers()`, in the match order below.
@@ -80,7 +80,7 @@ apps/web/src/
 - Rule 1 excludes any path containing `dashboard`, not only a segment. `/en/blogs/dashboard-tips` gets no public rule and falls back to Next's own default (`s-maxage=31536000` when static; `apps/web/node_modules/next/dist/server/lib/cache-control.js:19`).
 - `next dev` replaces every HTML response's Cache-Control with `no-cache, must-revalidate` (`apps/web/node_modules/next/dist/server/base-server.js:1106-1108`). Check headers only on `bun run preview`.
 - `/api/og` caching belongs to rule 5, not the route. `ImageResponse` sets `cache-control: public, max-age=0, must-revalidate` (`apps/web/node_modules/next/dist/server/og/image-response.js:58`), but routing already set the header, so Next drops it (`apps/web/node_modules/next/dist/server/send-response.js:46-52`).
-- `/en/experience` redirects to `/` (`apps/web/src/app/[locale]/(public)/experience/page.tsx:19`), is absent from `apps/web/src/shared/config/sitemap.ts:14-18`, and is `noindex` (`apps/web/src/app/[locale]/(public)/experience/layout.tsx:25`).
+- `/en/experience` is a permanent 308 to `/` from `apps/web/next.config.js`, so `experience/page.tsx` and its `loading.tsx` run only once that rule is removed. It is absent from `apps/web/src/shared/config/sitemap.ts:14-18`. `experience/layout.tsx` keeps `noindex` for the case where the rule is removed before the page returns.
 - The proxy matcher skips dotted paths (`apps/web/src/proxy.ts:25`), so `/feed.xml`, `/robots.txt` and `/sitemap.xml` never get a locale prefix.
 - `apps/web/src/app/not-found.tsx:16`: the `;` after `<Error statusCode={404} />` renders as visible text on the root 404.
 

@@ -10,9 +10,9 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-// The Experience page is intentionally hidden: its nav links are removed and
-// the route redirects to the homepage. To bring it back, restore the original
-// page body (`setRequestLocale(locale); return <ExperienceContent />;`).
+// Hidden: nav links are gone and next.config.js redirects the route, so this body
+// runs only once that rule is removed. To bring it back, remove the rule and
+// restore the body (`setRequestLocale(locale); return <ExperienceContent />;`).
 export default async function ExperiencesPage({ params }: ExperiencesPageProps) {
   const { locale } = await params;
 

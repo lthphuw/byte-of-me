@@ -203,6 +203,19 @@ const nextConfig = {
         destination: '/',
         permanent: true,
       },
+      {
+        // Experience is hidden, not deleted: its page body is parked in
+        // (public)/experience/page.tsx. Permanent, so old links move to the
+        // homepage with a real 308 instead of a 200 shell.
+        source: '/:locale(en|vi)/experience',
+        destination: '/:locale',
+        permanent: true,
+      },
+      {
+        source: '/experience',
+        destination: '/',
+        permanent: true,
+      },
     ];
   },
   async headers() {

@@ -19,9 +19,8 @@ export async function generateMetadata({
       description: t('description'),
       keywords: t('keywords'),
     }),
-    // The page body redirects to the homepage, so this URL answers 200 with a
-    // `meta refresh` and no content. Without `noindex` Google indexes that empty
-    // shell under the title "Experience". Drop this block when the page returns.
+    // next.config.js redirects this URL, so `noindex` only matters if that rule is
+    // removed before the page body returns: then the empty shell must stay out.
     robots: { index: false, follow: true },
   };
 }

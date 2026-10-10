@@ -91,7 +91,7 @@ every slice: index.ts -> ui/index.ts -> ui/*.tsx (+ lib/, model/); *.spec.ts(x) 
 ## Gotchas
 
 - `purgeEntireCache` is not in `apps/web/src/shared/lib/revalidate.ts` as AGENTS §6 says; that file does not exist. The function is `apps/web/src/widgets/dashboard/dashboard-sidebar/lib/purge-entire-cache.ts`.
-- `experience-content` is unmounted: `apps/web/src/app/[locale]/(public)/experience/page.tsx` redirects to `/`, and its comment gives the restore step. Only that route's `loading.tsx` still uses `ExperienceShell`.
+- `experience-content` is unmounted: a permanent redirect in `apps/web/next.config.js` sends `/experience` to `/`, and `apps/web/src/app/[locale]/(public)/experience/page.tsx` gives the restore step. Only that route's `loading.tsx` still uses `ExperienceShell`.
 - Shell exports are uneven: the `ui/index.ts` barrels of blogs, projects, experience and blog-details export their shell; homepage and contact do not, so `apps/web/src/app/[locale]/(public)/loading.tsx:4` and `apps/web/src/app/[locale]/(public)/contact/loading.tsx:4` deep-import theirs.
 - `apps/web/src/widgets/dashboard/education-manager/ui/index.tsx` is the only `ui/` barrel with a `.tsx` extension.
 - `apps/web/src/widgets/dashboard/education-manager/ui/education-form.tsx:38-44` lazy-loads a field with `dynamic(..., { ssr: false })`.
