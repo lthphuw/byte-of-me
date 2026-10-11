@@ -1,6 +1,11 @@
 'use client';
 
-import { type ReactNode, useEffect, useState } from 'react';
+import {
+  type ReactNode,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import {
   Pagination,
   Tabs,
@@ -34,6 +39,9 @@ import { ProjectsTimeline } from '@/widgets/public/projects-content/ui/projects-
 
 const OPEN_SOURCE_VIEW = 'open-source';
 
+// `false` during hydration and `true` after it, with no effect. See `hydrated`.
+const subscribeNothing = () => () => {};
+
 const TAB_PILL =
   'pointer-events-none absolute inset-y-1 left-1 -z-10 w-[calc(50%-0.25rem)] rounded-md bg-background shadow motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-sleek';
 
@@ -59,10 +67,20 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
   const pathname = usePathname();
   // The URL is the source of truth, like the filters: a shared link opens on
   // the right tab and back/forward move between them.
-  const view =
+  const urlView =
     openSource && searchParams.get('view') === OPEN_SOURCE_VIEW
       ? OPEN_SOURCE_VIEW
       : 'projects';
+  // The static HTML is built without query params, so it always shows the
+  // Projects tab. Reading `?view=` during the first render makes hydration
+  // disagree with that HTML (React #418: the title and tab text differ), so the
+  // URL view is applied once hydrated. A deep link switches right after.
+  const hydrated = useSyncExternalStore(
+    subscribeNothing,
+    () => true,
+    () => false
+  );
+  const view = hydrated ? urlView : 'projects';
   const isOpenSourceView = view === OPEN_SOURCE_VIEW;
   // Always an explicit `?view=`, even for the default tab. Navigating back to
   // the bare pathname from `?view=open-source` is silently dropped by the Next
@@ -75,10 +93,12 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
   // `view`) lags the click. Each panel also takes the entrance only while it is
   // the current view — Radix flips `data-state` a commit after `view` does, so
   // an unconditional class made the panel being left replay it before hiding.
-  const [lastView, setLastView] = useState(view);
+  // Compares the URL view, not the hydrated one: applying it after hydration is
+  // not a user switch, so a deep link does not replay the panel entrance.
+  const [lastView, setLastView] = useState(urlView);
   const [hasSwitched, setHasSwitched] = useState(false);
-  if (view !== lastView) {
-    setLastView(view);
+  if (urlView !== lastView) {
+    setLastView(urlView);
     setHasSwitched(true);
   }
   const tPagination = useTranslations('components.pagination');
