@@ -3,40 +3,6 @@
 @tailwind utilities;
 
 @layer utilities {
-  /**
-   * Animates a native `<details>` open and closed where the browser can: the
-   * `::details-content` box tweens `block-size` between 0 and `auto`
-   * (`interpolate-size`), and `content-visibility` flips at the end of the
-   * close. Browsers without either feature keep the instant toggle.
-   */
-  @supports (interpolate-size: allow-keywords) {
-    @media (prefers-reduced-motion: no-preference) {
-      .details-smooth {
-        interpolate-size: allow-keywords;
-      }
-
-      /* The transition on a rule is the one used when arriving at that rule's
-         state: closing runs shorter and accelerates away, opening is the
-         gentle curve. */
-      .details-smooth::details-content {
-        block-size: 0;
-        overflow-y: clip;
-        transition:
-          block-size 200ms cubic-bezier(0.3, 0, 1, 1),
-          content-visibility 200ms allow-discrete;
-      }
-
-      .details-smooth[open]::details-content {
-        block-size: auto;
-        transition:
-          block-size 250ms cubic-bezier(0.21, 0.47, 0.32, 0.98),
-          content-visibility 250ms allow-discrete;
-      }
-    }
-  }
-}
-
-@layer utilities {
   .break-safe {
     hyphens: auto;
     overflow-wrap: anywhere;
@@ -117,6 +83,7 @@
   --destructive-foreground: 0 0% 98%;
   --destructive-text: 0 74% 42%;
   --ring: 237.6 73.9% 61%;
+  --merged: 261 69% 59%;
 }
 
 @layer base {
@@ -158,6 +125,7 @@
     --destructive-text: 0 74% 42%;
 
     --ring: 237.6 73.9% 61%;
+    --merged: 261 69% 59%;
 
     --radius: 0.5rem;
 
@@ -213,6 +181,7 @@
     --destructive-text: 0 90% 78%;
 
     --ring: 231.3 100% 77.1%;
+    --merged: 262 89% 71%;
 
     --radius: 0.5rem;
 

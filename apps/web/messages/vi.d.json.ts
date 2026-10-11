@@ -304,7 +304,14 @@ declare const messages: {
     "openSource": {
       "prCount": "{count} PR",
       "summary": "{prs} pull request đã merge trên {repos} dự án",
-      "openRepo": "Mở trên GitHub"
+      "openRepo": "Mở trên GitHub",
+      "searchPlaceholder": "Tìm pull request",
+      "clearSearch": "Xoá tìm kiếm",
+      "repoLabel": "Lọc theo repo",
+      "allRepos": "Tất cả repo · {count, number}",
+      "view": "Xem",
+      "merged": "Pull request đã merge",
+      "empty": "Không có pull request nào khớp bộ lọc."
     }
   },
   "dashboard": {

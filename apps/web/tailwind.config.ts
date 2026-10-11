@@ -57,6 +57,9 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        // Merged pull requests (`text-merged`). Purple is a status hue, not a
+        // brand one: the icon beside it and the word "merged" carry the state.
+        merged: 'hsl(var(--merged))',
         brand: {
           '50': 'hsl(var(--brand-50))',
           '100': 'hsl(var(--brand-100))',

@@ -23,6 +23,12 @@ export interface OpenSourceRepo {
   pullRequests: OpenSourcePullRequest[];
 }
 
+/** A merged PR with the repo it belongs to, for the flat list on `/projects`. */
+export interface OpenSourceLedgerItem extends OpenSourcePullRequest {
+  /** `owner/name` of the repo the PR was merged into. */
+  repo: string;
+}
+
 /** One merged pull request as GitHub's GraphQL search returns it. */
 export interface GithubPullRequestNode {
   title: string;
