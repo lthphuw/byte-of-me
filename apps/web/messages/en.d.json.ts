@@ -4,7 +4,7 @@
 declare const messages: {
   "metadata": {
     "title": "Phu Luong",
-    "description": "Showcasing passion, experience, and projects — one byte at a time.",
+    "description": "Fullstack developer working on computer vision and the web apps around it.",
     "experience": {
       "title": "Experience",
       "description": "A professional timeline of my roles and hands-on contributions.",

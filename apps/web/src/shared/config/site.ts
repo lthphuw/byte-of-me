@@ -6,7 +6,7 @@ export const siteConfig: SiteConfig = {
   name: 'Byte of me',
   shortName: 'Phu',
   description:
-    'Showcasing passion, experience, and projects — one byte at a time.',
+    'Fullstack developer working on computer vision and the web apps around it.',
   url: host,
   // The `/api/og` route renders a 1200x630 card and takes an optional
   // `?title=`. Pointing the default here means the generator is the single
@@ -20,48 +20,41 @@ export const siteConfig: SiteConfig = {
     // Myself
     'Byte of me',
     'byte-of-me',
-    'hoang phu',
-    'Phu',
-    'Phú',
     'phu-lth',
-    'phulth',
-    'Phu Luong Thanh Hoang',
-    'Phu - Luong Thanh Hoang',
+    'lthphuw',
+    'Lương Thanh Hoàng Phú',
     'Phú Lương',
     'Phu Luong',
-    'lthphuw',
+    'Phu Luong Thanh Hoang',
 
     // Role
-    'Frontend Developer',
     'Fullstack Developer',
-    'Web Developer Portfolio',
-    'Software Engineer',
+    'Computer Vision',
 
     // Topic
     'Portfolio',
-    'Personal Website',
-    'Personal Blog Template',
-    'Minimal Blog',
-    'Digital Garden',
+    'Personal Blog',
     'Developer Notes',
-    'Blog Template',
-    'Open Source Portfolio',
-    'Next.js Personal Website',
-    'Developer Portfolio with Blog',
+    'Projects',
+    'Thị giác máy tính',
+    'Lập trình web',
 
     // Techstack
-    'Next.js',
-    'React',
     'TypeScript',
+    'JavaScript',
+    'React',
+    'Next.js',
     'Tailwind CSS',
-    'Prisma ORM',
-    'Supabase',
-    'Next.js Starter',
-    'i18n',
-    'internationalization',
-    'next-intl',
+    'Prisma',
+    'PostgreSQL',
+    'Python',
+    'FastAPI',
+    'Go',
+    'Docker',
 
-    // Hosting
-    'Vercel',
+    // i18n
+    'i18n',
+    'next-intl',
+    'Bilingual',
   ],
 };

@@ -4,7 +4,7 @@
 declare const messages: {
   "metadata": {
     "title": "Phú Lương",
-    "description": "Nơi lưu giữ đam mê và kinh nghiệm cá nhân — từng byte một.",
+    "description": "Fullstack developer làm về thị giác máy tính và các ứng dụng web quanh nó.",
     "experience": {
       "title": "Kinh nghiệm",
       "description": "Các cột mốc và công việc tôi đã từng đảm nhận.",
