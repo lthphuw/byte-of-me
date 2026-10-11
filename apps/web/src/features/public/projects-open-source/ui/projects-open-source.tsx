@@ -25,6 +25,10 @@ import { FilterSearchInput } from '@/shared/ui';
 
 const ALL_REPOS = '*';
 
+// Hidden for now: the repo picker covers the list today. Set to `true` to show
+// the search again; the filter and its strings stay wired.
+const SEARCH_ENABLED = false;
+
 /**
  * The merged-PR ledger on `/projects`. One flat list, newest first, filtered
  * by a free-text search and a repo picker, and paged 20 at a time. Choosing a
@@ -88,13 +92,15 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
   return (
     <div className="space-y-6 md:space-y-8">
       <div className="flex flex-col gap-3 sm:flex-row">
-        <FilterSearchInput
-          value={text}
-          onChange={changeText}
-          placeholder={t('searchPlaceholder')}
-          clearLabel={t('clearSearch')}
-          className="flex-1"
-        />
+        {SEARCH_ENABLED && (
+          <FilterSearchInput
+            value={text}
+            onChange={changeText}
+            placeholder={t('searchPlaceholder')}
+            clearLabel={t('clearSearch')}
+            className="flex-1"
+          />
+        )}
         <Select value={repoFilter} onValueChange={changeRepo}>
           <SelectTrigger
             aria-label={t('repoLabel')}
