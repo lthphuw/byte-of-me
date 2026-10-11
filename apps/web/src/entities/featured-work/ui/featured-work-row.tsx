@@ -101,6 +101,12 @@ export function FeaturedWorkRow({
       newTabLabel={t('featuredOpensInNewTab')}
       details={details}
       media={media}
+      demoControls={{
+        zoomIn: t('featuredDemoZoomIn'),
+        zoomOut: t('featuredDemoZoomOut'),
+        zoomReset: t('featuredDemoZoomReset'),
+        exitFullscreen: t('featuredDemoExitFullscreen'),
+      }}
       showDetailsLabel={t('featuredShowDetails')}
       hideDetailsLabel={t('featuredHideDetails')}
       footer={footer}

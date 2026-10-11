@@ -15,6 +15,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
 import {
   FeaturedWorkDemo,
+  type FeaturedWorkDemoControlLabels,
   type FeaturedWorkDemoItem,
 } from './featured-work-demo';
 
@@ -37,6 +38,13 @@ const int8: FeaturedWorkDemoItem = {
   name: 'INT8',
   playLabel: 'Play INT8',
   fullscreenLabel: 'Full screen INT8',
+};
+
+const controlLabels: FeaturedWorkDemoControlLabels = {
+  zoomIn: 'Zoom in',
+  zoomOut: 'Zoom out',
+  zoomReset: 'Reset zoom',
+  exitFullscreen: 'Exit full screen',
 };
 
 // --- browser stubs -------------------------------------------------------------
@@ -181,7 +189,7 @@ const videoEl = () => {
 
 describe('FeaturedWorkDemo mounting', () => {
   it('draws the media at once, with no row to open', () => {
-    const { container } = render(<FeaturedWorkDemo media={[fp16, int8]} />);
+    const { container } = render(<FeaturedWorkDemo media={[fp16, int8]} controlLabels={controlLabels} />);
 
     expect(container.querySelector('video')).not.toBeNull();
     expect(container.querySelector('img')).not.toBeNull();
@@ -191,7 +199,7 @@ describe('FeaturedWorkDemo mounting', () => {
 
 describe('FeaturedWorkDemo figures', () => {
   it('renders a pair as two figures, each captioned with its label', () => {
-    const { container } = render(<FeaturedWorkDemo media={[fp16, int8]} />);
+    const { container } = render(<FeaturedWorkDemo media={[fp16, int8]} controlLabels={controlLabels} />);
 
     const figures = container.querySelectorAll('figure');
     expect(figures).toHaveLength(2);
@@ -200,7 +208,7 @@ describe('FeaturedWorkDemo figures', () => {
   });
 
   it('renders a single item as one figure', () => {
-    const { container } = render(<FeaturedWorkDemo media={[fp16]} />);
+    const { container } = render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
 
     expect(container.querySelectorAll('figure')).toHaveLength(1);
   });
@@ -211,7 +219,7 @@ describe('FeaturedWorkDemo figures', () => {
       caption: null,
       name: 'Faster detector export',
     };
-    const { container } = render(<FeaturedWorkDemo media={[unlabelled]} />);
+    const { container } = render(<FeaturedWorkDemo media={[unlabelled]} controlLabels={controlLabels} />);
 
     expect(container.querySelector('figcaption')).toBeNull();
     expect(
@@ -220,7 +228,7 @@ describe('FeaturedWorkDemo figures', () => {
   });
 
   it('draws a GIF as a lazy, async <img> named by its label', () => {
-    render(<FeaturedWorkDemo media={[int8]} />);
+    render(<FeaturedWorkDemo media={[int8]} controlLabels={controlLabels} />);
 
     const image = screen.getByRole('img', { name: 'INT8' });
     expect(image.tagName).toBe('IMG');
@@ -232,7 +240,7 @@ describe('FeaturedWorkDemo figures', () => {
 
 describe('FeaturedWorkDemo video', () => {
   it('is muted, looping, inline and not set to autoplay', () => {
-    render(<FeaturedWorkDemo media={[fp16]} />);
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
 
     const video = videoEl();
     expect(video.muted).toBe(true);
@@ -243,7 +251,7 @@ describe('FeaturedWorkDemo video', () => {
   });
 
   it('requests no file until the clip nears the screen', () => {
-    render(<FeaturedWorkDemo media={[fp16]} />);
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
 
     const video = videoEl();
     expect(video.getAttribute('preload')).toBe('none');
@@ -256,7 +264,7 @@ describe('FeaturedWorkDemo video', () => {
   });
 
   it('keeps the file it has requested when the clip scrolls back out of reach', () => {
-    render(<FeaturedWorkDemo media={[fp16]} />);
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
     nearClip(true);
 
     nearClip(false);
@@ -265,14 +273,16 @@ describe('FeaturedWorkDemo video', () => {
   });
 
   it('is controlled by one button named after its label, reporting whether it plays', () => {
-    render(<FeaturedWorkDemo media={[fp16]} />);
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
 
     expect(clip().getAttribute('aria-pressed')).toBe('false');
-    expect(screen.getAllByRole('button')).toHaveLength(1);
+    expect(
+      screen.getAllByRole('button').map((b) => b.getAttribute('aria-label'))
+    ).toEqual(['Play FP16', 'Full screen FP16']);
   });
 
   it('plays while the clip is on screen', () => {
-    render(<FeaturedWorkDemo media={[fp16]} />);
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
     expect(calls).not.toContain('play');
 
     visible(true);
@@ -282,7 +292,7 @@ describe('FeaturedWorkDemo video', () => {
   });
 
   it('pauses when it scrolls out of view, and plays again when it returns', () => {
-    render(<FeaturedWorkDemo media={[fp16]} />);
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
     visible(true);
 
     visible(false);
@@ -296,7 +306,7 @@ describe('FeaturedWorkDemo video', () => {
   it('survives a refused play() without throwing, and still shows the play mark', () => {
     HTMLMediaElement.prototype.play = () =>
       Promise.reject(new DOMException('blocked', 'NotAllowedError'));
-    render(<FeaturedWorkDemo media={[fp16]} />);
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
 
     expect(() => visible(true)).not.toThrow();
     expect(clip().getAttribute('aria-pressed')).toBe('false');
@@ -304,7 +314,7 @@ describe('FeaturedWorkDemo video', () => {
   });
 
   it('shows the play mark only while the clip is not moving', () => {
-    render(<FeaturedWorkDemo media={[fp16]} />);
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
     expect(clip().querySelector('svg')).not.toBeNull();
 
     visible(true);
@@ -315,7 +325,7 @@ describe('FeaturedWorkDemo video', () => {
   });
 
   it('keeps the frame but drops the button when the clip fails to load', () => {
-    const { container } = render(<FeaturedWorkDemo media={[fp16]} />);
+    const { container } = render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
 
     act(() => {
       videoEl().dispatchEvent(new Event('error'));
@@ -329,7 +339,7 @@ describe('FeaturedWorkDemo video', () => {
 
 describe('FeaturedWorkDemo placeholder', () => {
   it('covers a clip until its file has drawn, then fades the cover out', () => {
-    render(<FeaturedWorkDemo media={[fp16]} />);
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
     expect(placeholder().classList.contains('opacity-0')).toBe(false);
     expect(placeholder().classList.contains('motion-safe:animate-pulse')).toBe(
       true
@@ -347,7 +357,7 @@ describe('FeaturedWorkDemo placeholder', () => {
   });
 
   it('fades an image cover out once the image has loaded', () => {
-    render(<FeaturedWorkDemo media={[int8]} />);
+    render(<FeaturedWorkDemo media={[int8]} controlLabels={controlLabels} />);
     expect(placeholder().classList.contains('opacity-0')).toBe(false);
 
     fireEvent.load(screen.getByRole('img', { name: 'INT8' }));
@@ -356,7 +366,7 @@ describe('FeaturedWorkDemo placeholder', () => {
   });
 
   it('lifts an image cover when the file is broken, so it never pulses forever', () => {
-    render(<FeaturedWorkDemo media={[int8]} />);
+    render(<FeaturedWorkDemo media={[int8]} controlLabels={controlLabels} />);
 
     fireEvent.error(screen.getByRole('img', { name: 'INT8' }));
 
@@ -376,7 +386,7 @@ describe('FeaturedWorkDemo frame', () => {
   };
 
   it("reserves 16:9, then takes the clip's own ratio so a wide clip has no empty bars", () => {
-    const { container } = render(<FeaturedWorkDemo media={[fp16]} />);
+    const { container } = render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
     expect(ratioOf(container)).toBeNull();
 
     const video = videoEl();
@@ -396,7 +406,7 @@ describe('FeaturedWorkDemo frame', () => {
   });
 
   it('keeps 16:9 when the file reports no size', () => {
-    const { container } = render(<FeaturedWorkDemo media={[fp16]} />);
+    const { container } = render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
 
     act(() => {
       videoEl().dispatchEvent(new Event('loadedmetadata'));
@@ -407,13 +417,13 @@ describe('FeaturedWorkDemo frame', () => {
 
   it('takes the stored size before the file has drawn, so the box never waits for it', () => {
     const sized = { ...fp16, knownRatio: 1920 / 670 };
-    const { container } = render(<FeaturedWorkDemo media={[sized]} />);
+    const { container } = render(<FeaturedWorkDemo media={[sized]} controlLabels={controlLabels} />);
 
     expect(ratioOf(container)).toBeCloseTo(1920 / 670, 3);
   });
 
   it('gives an image its own ratio once it has loaded', () => {
-    const { container } = render(<FeaturedWorkDemo media={[int8]} />);
+    const { container } = render(<FeaturedWorkDemo media={[int8]} controlLabels={controlLabels} />);
     const image = screen.getByRole('img', { name: 'INT8' });
     Object.defineProperty(image, 'naturalWidth', {
       configurable: true,
@@ -432,7 +442,7 @@ describe('FeaturedWorkDemo frame', () => {
 
 describe('FeaturedWorkDemo play/pause button', () => {
   it('pauses and resumes a playing clip on click', () => {
-    render(<FeaturedWorkDemo media={[fp16]} />);
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
     visible(true);
 
     fireEvent.click(clip());
@@ -443,7 +453,7 @@ describe('FeaturedWorkDemo play/pause button', () => {
   });
 
   it('keeps a clip the visitor paused paused when it scrolls back into view', () => {
-    render(<FeaturedWorkDemo media={[fp16]} />);
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
     visible(true);
     fireEvent.click(clip());
 
@@ -455,7 +465,7 @@ describe('FeaturedWorkDemo play/pause button', () => {
 
   it('toggles from the keyboard with Enter and with Space', async () => {
     const user = userEvent.setup();
-    render(<FeaturedWorkDemo media={[fp16]} />);
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
     visible(true);
 
     await user.tab();
@@ -473,7 +483,7 @@ describe('FeaturedWorkDemo under reduced motion', () => {
   beforeEach(() => stubReducedMotion(true));
 
   it('does not autoplay when the clip is on screen', () => {
-    render(<FeaturedWorkDemo media={[fp16]} />);
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
 
     visible(true);
 
@@ -485,14 +495,23 @@ describe('FeaturedWorkDemo under reduced motion', () => {
 describe('FeaturedWorkDemo full screen', () => {
   const fullscreenButton = () =>
     screen.getByRole('button', { name: 'Full screen FP16' });
+  const zoomIn = () => screen.getByRole('button', { name: 'Zoom in' });
+  const zoomOut = () => screen.getByRole('button', { name: 'Zoom out' });
+  const level = () => screen.getByRole('button', { name: /Reset zoom/ });
+  const exit = () => screen.getByRole('button', { name: 'Exit full screen' });
+  /** The box full screen takes: the clip's own button sits inside it, beside the toolbar. */
+  const stage = () => clip().parentElement as HTMLElement;
   const original = Object.getOwnPropertyDescriptor(
     document,
     'fullscreenEnabled'
   );
+  const originalRequest = HTMLElement.prototype.requestFullscreen;
   let requested: HTMLElement[] = [];
+  let refuse = false;
 
   beforeEach(() => {
     requested = [];
+    refuse = false;
     Object.defineProperty(document, 'fullscreenEnabled', {
       configurable: true,
       value: true,
@@ -501,77 +520,85 @@ describe('FeaturedWorkDemo full screen', () => {
       this: HTMLElement
     ) {
       requested.push(this);
-      return Promise.resolve();
+      return refuse
+        ? Promise.reject(new Error('refused'))
+        : Promise.resolve();
     };
   });
   afterEach(() => {
+    HTMLElement.prototype.requestFullscreen = originalRequest;
     if (original)
       Object.defineProperty(document, 'fullscreenEnabled', original);
     else Reflect.deleteProperty(document, 'fullscreenEnabled');
   });
 
   it('offers a button beside the play button, never inside it', () => {
-    render(<FeaturedWorkDemo media={[fp16]} />);
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
 
     expect(fullscreenButton()).toBeTruthy();
     expect(clip().contains(fullscreenButton())).toBe(false);
   });
 
-  it('offers none when the browser cannot take an element full screen', () => {
-    Object.defineProperty(document, 'fullscreenEnabled', {
-      configurable: true,
-      value: false,
-    });
-    render(<FeaturedWorkDemo media={[fp16]} />);
-
-    expect(
-      screen.queryByRole('button', { name: 'Full screen FP16' })
-    ).toBeNull();
-  });
-
   it('offers none for an image', () => {
-    render(<FeaturedWorkDemo media={[int8]} />);
+    render(<FeaturedWorkDemo media={[int8]} controlLabels={controlLabels} />);
 
     expect(screen.queryByRole('button', { name: /Full screen/ })).toBeNull();
   });
 
-  it('takes the video itself full screen', () => {
-    render(<FeaturedWorkDemo media={[fp16]} />);
+  it('takes the clip stage full screen where the browser has an element API', () => {
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
 
     fireEvent.click(fullscreenButton());
 
-    expect(requested).toEqual([videoEl()]);
+    expect(requested).toEqual([stage()]);
   });
 
-  it('turns controls and sound on in full screen and restores the loop on leaving', () => {
-    render(<FeaturedWorkDemo media={[fp16]} />);
-    const video = videoEl();
+  it('shows the toolbar in place when the browser refuses element full screen', () => {
+    refuse = true;
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
+
     fireEvent.click(fullscreenButton());
 
-    Object.defineProperty(document, 'fullscreenElement', {
+    expect(zoomIn()).toBeTruthy();
+    expect(exit()).toBeTruthy();
+  });
+
+  it('shows the toolbar in place where the browser has no element API, as on iPhone', () => {
+    Object.defineProperty(document, 'fullscreenEnabled', {
       configurable: true,
-      value: video,
+      value: false,
     });
-    act(() => {
-      document.dispatchEvent(new Event('fullscreenchange'));
-    });
-    expect(video.controls).toBe(true);
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
+
+    fireEvent.click(fullscreenButton());
+
+    expect(requested).toEqual([]);
+    expect(zoomIn()).toBeTruthy();
+  });
+
+  it('turns sound on in full screen and mutes again on leaving', () => {
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
+    const video = videoEl();
+    fireEvent.click(fullscreenButton());
     expect(video.muted).toBe(false);
 
-    Object.defineProperty(document, 'fullscreenElement', {
-      configurable: true,
-      value: null,
-    });
-    act(() => {
-      document.dispatchEvent(new Event('fullscreenchange'));
-    });
-    expect(video.controls).toBe(false);
+    fireEvent.click(exit());
+
     expect(video.muted).toBe(true);
+    expect(screen.queryByRole('button', { name: 'Zoom in' })).toBeNull();
+  });
+
+  it('leaves with Escape', () => {
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
+    fireEvent.click(fullscreenButton());
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(screen.queryByRole('button', { name: 'Zoom in' })).toBeNull();
   });
 
   it('keeps playing while the page leaves the viewport for full screen, and resumes on leaving', () => {
-    render(<FeaturedWorkDemo media={[fp16]} />);
-    const video = videoEl();
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
     visible(true);
     fireEvent.click(fullscreenButton());
 
@@ -581,7 +608,7 @@ describe('FeaturedWorkDemo full screen', () => {
 
     Object.defineProperty(document, 'fullscreenElement', {
       configurable: true,
-      value: video,
+      value: stage(),
     });
     act(() => {
       document.dispatchEvent(new Event('fullscreenchange'));
@@ -598,23 +625,41 @@ describe('FeaturedWorkDemo full screen', () => {
     expect(calls.at(-1)).toBe('play');
   });
 
-  it('uses the video presenter on Safari for iPhone, which has no element API', () => {
-    Object.defineProperty(document, 'fullscreenEnabled', {
-      configurable: true,
-      value: undefined,
-    });
-    const presented: HTMLElement[] = [];
-    Object.defineProperty(HTMLVideoElement.prototype, 'webkitEnterFullscreen', {
-      configurable: true,
-      value(this: HTMLElement) {
-        presented.push(this);
-      },
-    });
-    render(<FeaturedWorkDemo media={[fp16]} />);
+  it('zooms in and out in steps, and the level reads back', () => {
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
+    fireEvent.click(fullscreenButton());
+    expect(zoomOut().hasAttribute('disabled')).toBe(true);
 
+    fireEvent.click(zoomIn());
+    expect(level().textContent).toContain('150%');
+    expect(videoEl().style.transform).toContain('scale(1.5)');
+
+    fireEvent.click(zoomIn());
+    fireEvent.click(zoomIn());
+    fireEvent.click(zoomIn());
+    expect(level().textContent).toContain('400%');
+    expect(zoomIn().hasAttribute('disabled')).toBe(true);
+
+    fireEvent.click(zoomOut());
+    expect(level().textContent).toContain('300%');
+  });
+
+  it('puts the picture back at 100% when full screen is left and entered again', () => {
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
+    fireEvent.click(fullscreenButton());
+    fireEvent.click(zoomIn());
+
+    fireEvent.click(exit());
     fireEvent.click(fullscreenButton());
 
-    expect(presented).toEqual([videoEl()]);
-    Reflect.deleteProperty(HTMLVideoElement.prototype, 'webkitEnterFullscreen');
+    expect(level().textContent).toContain('100%');
+    expect(videoEl().style.transform).toBe('');
+  });
+
+  it('draws the clip unzoomed on the page, outside full screen', () => {
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
+
+    expect(screen.queryByRole('button', { name: 'Zoom in' })).toBeNull();
+    expect(videoEl().style.transform).toBe('');
   });
 });

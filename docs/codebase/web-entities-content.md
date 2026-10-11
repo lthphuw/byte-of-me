@@ -27,7 +27,7 @@ apps/web/src/entities/                 (* = 'use client')
     │                                  fetch-featured-work-github, parse-github-pull-request-url,
     │                                  github-pull-request-query, safe-link
     ├── model/                         featured-work-schema.ts  types.ts  query-keys.ts (featuredWorkKeys)
-    ├── ui/                            featured-work-row, featured-work-item*, featured-work-demo*, featured-work-row-classes
+    ├── ui/                            featured-work-row, featured-work-item*, featured-work-demo*, use-demo-zoom, featured-work-row-classes
     └── index.ts                       api + model + ui
 ```
 
@@ -81,7 +81,7 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 - Save: `apps/web/src/shared/hooks/use-crud-manager.ts` invalidates the list key (`:122`) and removes the detail key (`:137-138`) in `onSuccess`.
 - Homepage featured works: `apps/web/src/features/public/homepage-featured-works/ui/homepage-featured-works.tsx:8` → `get-public-featured-works.ts` → `lib/load-public-featured-works.ts` (DB rows) → `lib/get-featured-work-github.ts` (GitHub facts, 1 h; failure returns `{}`).
 - Blog body images: `getPublicBlogBySlug` reads each body image's stored size from its media row (`apps/web/src/entities/blog/lib/read-image-sizes.ts`), cached with the post under the `image-sizes` key.
-- Homepage media: each clip's box takes the stored size (`media.width`/`height`, from `load-public-featured-works.ts`) before the file is fetched, and the file's own metadata only corrects it. Each clip's file is requested only once it is within 200 px of the screen (`apps/web/src/entities/featured-work/ui/featured-work-demo.tsx`, `NEAR`), then kept. A clip and an image sit under a pulsing cover until their file draws, and the cover fades out in place (`MediaCover`, `shared/ui/media-cover.tsx`).
+- Homepage media: each clip's box takes the stored size (`media.width`/`height`, from `load-public-featured-works.ts`) before the file is fetched, and the file's own metadata only corrects it. Each clip's file is requested only once it is within 200 px of the screen (`apps/web/src/entities/featured-work/ui/featured-work-demo.tsx`, `NEAR`), then kept. A clip and an image sit under a pulsing cover until their file draws, and the cover fades out in place (`MediaCover`, `shared/ui/media-cover.tsx`). Full screen (`featured-work-demo.tsx`) takes the clip's stage with sound on, through the browser's element API where it exists. Where the browser refuses it or has none (iPhone Safari), the same stage is pinned to the viewport instead. A toolbar zooms 1×–4× (steps, pinch, one-finger pan; `use-demo-zoom.ts`), and the zoom resets on leaving.
 - Experience and education: `apps/web/src/widgets/public/experience-content/ui/experience-content.tsx:19` (`getAllPublicCompanies`); `apps/web/src/features/public/homepage-education/ui/homepage-education.tsx:12` (`getAllPublicEducations`).
 
 ## Recipes

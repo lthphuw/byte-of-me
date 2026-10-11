@@ -5,6 +5,7 @@ import { ArrowUpRight, ChevronDown } from 'lucide-react';
 
 import {
   FeaturedWorkDemo,
+  type FeaturedWorkDemoControlLabels,
   type FeaturedWorkDemoItem,
 } from './featured-work-demo';
 import {
@@ -63,6 +64,8 @@ interface FeaturedWorkItemProps {
   details: ReactNode;
   /** The demo pair, always on show. A row with no details and no demo is plain. */
   media: FeaturedWorkDemoItem[];
+  /** The full-screen toolbar's labels for the demo pair. */
+  demoControls: FeaturedWorkDemoControlLabels;
   /** The details toggle's label while the details are shut / open. */
   showDetailsLabel: string;
   hideDetailsLabel: string;
@@ -80,6 +83,7 @@ export function FeaturedWorkItem({
   newTabLabel,
   details,
   media,
+  demoControls,
   showDetailsLabel,
   hideDetailsLabel,
   footer,
@@ -159,6 +163,7 @@ export function FeaturedWorkItem({
       {hasMedia && (
         <FeaturedWorkDemo
           media={media}
+          controlLabels={demoControls}
           className={cn(BODY_ROW, !hasDetails && !footer && 'pb-3')}
         />
       )}

@@ -35,6 +35,12 @@ describe('HomepageFeaturedWorksLoading', () => {
         newTabLabel="(opens in a new tab)"
         details={null}
         media={[]}
+        demoControls={{
+          zoomIn: 'Zoom in',
+          zoomOut: 'Zoom out',
+          zoomReset: 'Reset zoom',
+          exitFullscreen: 'Exit full screen',
+        }}
         showDetailsLabel="Show details"
         hideDetailsLabel="Hide details"
       />
