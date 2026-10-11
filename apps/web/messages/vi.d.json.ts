@@ -21,9 +21,63 @@ declare const messages: {
       "keywords": "Liên hệ, Kết nối, Thông tin liên lạc, Hợp tác, Email"
     },
     "blogs": {
-      "title": "Blog",
+      "title": "Bài viết",
       "description": "Chia sẻ ngắn về lập trình và phát triển phần mềm.",
       "keywords": "Blog, Bài viết, Chia sẻ, Hướng dẫn, Lập trình"
+    },
+    "blogNotFound": {
+      "title": "Không tìm thấy bài viết",
+      "description": "Không tìm thấy bài viết này."
+    },
+    "login": {
+      "title": "Đăng nhập",
+      "description": "Đăng nhập để quản lý trang quản trị Byte of me."
+    },
+    "dashboard": {
+      "home": {
+        "title": "Bảng điều khiển",
+        "description": "Hồ sơ, số liệu tương tác và tin nhắn của bạn."
+      },
+      "projects": {
+        "title": "Dự án",
+        "description": "Quản lý các dự án và chi tiết của chúng."
+      },
+      "featuredWorks": {
+        "title": "Featured works",
+        "description": "Chọn các mục sẽ được ghim lên đầu trang chủ."
+      },
+      "blogs": {
+        "title": "Bài viết",
+        "description": "Viết, chỉnh sửa và xuất bản bài viết của bạn."
+      },
+      "comments": {
+        "title": "Bình luận",
+        "description": "Kiểm duyệt bình luận trên bài viết của bạn."
+      },
+      "companies": {
+        "title": "Công ty",
+        "description": "Quản lý các công ty và vị trí trong quá trình công tác."
+      },
+      "educations": {
+        "title": "Học vấn",
+        "description": "Quản lý lịch sử học tập, chứng chỉ và thành tích của bạn."
+      },
+      "media": {
+        "title": "Thư viện",
+        "description": "Tải lên và sắp xếp hình ảnh, banner và các tài nguyên khác."
+      },
+      "tags": {
+        "title": "Thẻ",
+        "description": "Sắp xếp các thẻ dùng cho dự án và bài viết."
+      },
+      "techStacks": {
+        "title": "Công nghệ",
+        "description": "Quản lý các công nghệ và công cụ bạn sử dụng."
+      },
+      "userProfile": {
+        "title": "Hồ sơ",
+        "description": "Cập nhật hồ sơ công khai, liên kết mạng xã hội và cài đặt hiển thị của bạn."
+      }
     }
   },
   "global": {

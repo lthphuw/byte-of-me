@@ -1,21 +1,26 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
 import { getWorkspaceSettings } from '@/entities/workspace-settings/api/get-workspace-settings';
 import { MediaManager } from '@/widgets/dashboard/media-manager';
 
-export const metadata: Metadata = {
-  title: 'Media Library',
-  description: 'Upload and organize your images, banners, and assets.',
-  robots: {
-    index: false,
-    follow: false,
-    nocache: true,
-    googleBot: {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('metadata.dashboard.media');
+
+  return {
+    title: t('title'),
+    description: t('description'),
+    robots: {
       index: false,
       follow: false,
+      nocache: true,
+      googleBot: {
+        index: false,
+        follow: false,
+      },
     },
-  },
-};
+  };
+}
 
 export default async function MediaPage() {
   // Imported by its own path rather than through `@/entities/workspace-settings`

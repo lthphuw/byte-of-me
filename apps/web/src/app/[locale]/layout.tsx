@@ -56,6 +56,11 @@ export async function generateMetadata({
 
   const t = await getTranslations('metadata');
   const url = `${host}/${locale}`;
+  // Same card every other public page gets: localized title and description,
+  // not the English site tagline the bare endpoint falls back to.
+  const ogImage =
+    `${siteConfig.ogImage}?title=${encodeURIComponent(t('title'))}` +
+    `&subtitle=${encodeURIComponent(t('description'))}`;
 
   return {
     metadataBase: new URL(siteConfig.url),
@@ -83,7 +88,7 @@ export async function generateMetadata({
       // promised a large one.
       images: [
         {
-          url: siteConfig.ogImage,
+          url: ogImage,
           width: 1200,
           height: 630,
           alt: `${t('title')} | Byte of me`,
@@ -95,7 +100,7 @@ export async function generateMetadata({
       title: `${t('title')} | Byte of me`,
       description: t('description'),
       creator: '@lthphuw',
-      images: [siteConfig.ogImage],
+      images: [ogImage],
     },
     icons: buildIconSet('public'),
     robots: {

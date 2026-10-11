@@ -6,7 +6,7 @@ export const siteConfig: SiteConfig = {
   name: 'Byte of me',
   shortName: 'Phu',
   description:
-    'Passion, experience, projects, hobbies — all logged, one byte at a time.',
+    'Showcasing passion, experience, and projects — one byte at a time.',
   url: host,
   // The `/api/og` route renders a 1200x630 card and takes an optional
   // `?title=`. Pointing the default here means the generator is the single

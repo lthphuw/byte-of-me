@@ -4,7 +4,6 @@ import { BarChart3 } from 'lucide-react';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
-import { getOwnerDisplayName } from '@/entities/user-profile/api/get-owner-display-name';
 import {
   AnalyticsOverview,
   AnalyticsOverviewLoading,
@@ -16,15 +15,11 @@ import {
 import { ContactMessageGallery } from '@/widgets/dashboard/contact-message-gallery/ui/contact-message-gallery';
 
 export async function generateMetadata(): Promise<Metadata> {
-  // `getOwnerDisplayName`, not `getUserProfile`: a name is all a tab label
-  // needs, and `DashboardProfile` reads the full profile in this same request —
-  // which `getUserProfile`'s `'use server'` puts beyond React `cache()`.
-  const userName = await getOwnerDisplayName();
+  const t = await getTranslations('metadata.dashboard.home');
 
   return {
-    title: `Dashboard | Welcome, ${userName}`,
-    description:
-      'Manage your personal portfolio, track engagement stats, and view messages.',
+    title: t('title'),
+    description: t('description'),
     robots: {
       index: false,
       follow: false,

@@ -18,9 +18,63 @@
       "keywords": "Contact, Get in touch, Collaboration, Hire me, Email"
     },
     "blogs": {
-      "title": "Blog",
+      "title": "Blogs",
       "description": "Insights, tutorials, and reflections on technology and development.",
       "keywords": "Blog, Articles, Writing, Tutorials, Software development"
+    },
+    "blogNotFound": {
+      "title": "Post not found",
+      "description": "This post could not be found."
+    },
+    "login": {
+      "title": "Log in",
+      "description": "Sign in to manage your Byte of me dashboard."
+    },
+    "dashboard": {
+      "home": {
+        "title": "Dashboard",
+        "description": "Your profile, engagement stats, and messages at a glance."
+      },
+      "projects": {
+        "title": "Projects",
+        "description": "Manage your projects and their details."
+      },
+      "featuredWorks": {
+        "title": "Featured works",
+        "description": "Choose the work pinned to the top of your homepage."
+      },
+      "blogs": {
+        "title": "Blogs",
+        "description": "Write, edit, and publish your blog posts."
+      },
+      "comments": {
+        "title": "Comments",
+        "description": "Moderate comments on your blog posts."
+      },
+      "companies": {
+        "title": "Companies",
+        "description": "Manage the companies and roles in your work history."
+      },
+      "educations": {
+        "title": "Education",
+        "description": "Manage your academic history, certifications, and achievements."
+      },
+      "media": {
+        "title": "Media Library",
+        "description": "Upload and organize images, banners, and other assets."
+      },
+      "tags": {
+        "title": "Tags",
+        "description": "Organize the tags used by projects and blog posts."
+      },
+      "techStacks": {
+        "title": "Tech Stacks",
+        "description": "Manage the technologies and tools you work with."
+      },
+      "userProfile": {
+        "title": "Profile",
+        "description": "Update your public profile, social links, and display settings."
+      }
     }
   },
   "global": {

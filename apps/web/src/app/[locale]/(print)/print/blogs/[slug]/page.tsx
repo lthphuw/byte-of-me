@@ -47,10 +47,16 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const res = await getPublicBlogBySlug(slug);
+  const [res, t] = await Promise.all([
+    getPublicBlogBySlug(slug),
+    getTranslations('metadata'),
+  ]);
   const title = res.success ? res.data.title.trim() : '';
 
-  return { ...BASE_METADATA, title: { absolute: title || 'Blog' } };
+  return {
+    ...BASE_METADATA,
+    title: { absolute: title || t('blogs.title') },
+  };
 }
 
 /**

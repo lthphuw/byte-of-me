@@ -1,22 +1,26 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
 import { getAdminUserProfile } from '@/entities/user-profile';
 import { UserProfileManager } from '@/widgets/dashboard/user-profile-manager';
 
-export const metadata: Metadata = {
-  title: 'Profile Manager',
-  description:
-    'Update your public profile information, social links, and display settings.',
-  robots: {
-    index: false,
-    follow: false,
-    nocache: true,
-    googleBot: {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('metadata.dashboard.userProfile');
+
+  return {
+    title: t('title'),
+    description: t('description'),
+    robots: {
       index: false,
       follow: false,
+      nocache: true,
+      googleBot: {
+        index: false,
+        follow: false,
+      },
     },
-  },
-};
+  };
+}
 
 export default async function UserProfilePage() {
   const resp = await getAdminUserProfile();

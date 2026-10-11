@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
 import { getPublicBlogBySlug } from '@/entities/blog/api/get-public-blog-by-slug';
 import { getPublicUserProfile } from '@/entities/user-profile';
@@ -13,17 +14,18 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, slug } = await params;
 
-  const [{ data: blog, success }, { data: author }] = await Promise.all([
+  const [{ data: blog, success }, { data: author }, t] = await Promise.all([
     getPublicBlogBySlug(slug),
     getPublicUserProfile(),
+    getTranslations('metadata'),
   ]);
 
   const url = `${host}/${locale}/blogs/${slug}`;
 
   if (!success || !blog) {
     return {
-      title: 'Blog not found',
-      description: '',
+      title: t('blogNotFound.title'),
+      description: t('blogNotFound.description'),
       robots: {
         index: false,
         follow: false,
@@ -31,16 +33,18 @@ export async function generateMetadata({
     };
   }
 
+  // A post without a summary describes the blog section, not an empty string.
+  const description = blog.description || t('blogs.description');
   // Posts without a cover image used to be shared with no preview at all.
   // Fall back to the generated card, titled with the post.
   const image =
     blog?.coverImage?.url ??
     `${siteConfig.ogImage}?title=${encodeURIComponent(blog.title)}` +
-      `&subtitle=${encodeURIComponent(blog.description || '')}`;
+      `&subtitle=${encodeURIComponent(description)}`;
   const authorName = author?.displayName || 'Phu Luong';
   return {
     title: blog.title,
-    description: blog.description || '',
+    description,
     keywords: [
       'bài viết',
       'blog',
@@ -66,7 +70,7 @@ export async function generateMetadata({
 
     openGraph: {
       title: `${blog.title} | ${siteConfig.name}`,
-      description: blog.description || '',
+      description,
       url,
       type: 'article',
       locale: locale === 'vi' ? 'vi_VN' : 'en_US',
@@ -94,7 +98,7 @@ export async function generateMetadata({
     twitter: {
       card: 'summary_large_image',
       title: `${blog.title} | ${siteConfig.name}`,
-      description: blog.description || '',
+      description,
       creator: '@lthphuw',
       images: [image],
     },

@@ -1,24 +1,29 @@
 import { HydrationBoundary } from '@tanstack/react-query';
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
 import { getPaginatedAdminFeaturedWorks } from '@/entities/featured-work/api/get-paginated-admin-featured-works';
 import { featuredWorkKeys } from '@/entities/featured-work/model/query-keys';
 import { prefetchAdminPage } from '@/shared/lib/query/prefetch-admin-page';
 import { FeaturedWorkManager } from '@/widgets/dashboard/featured-work-manager';
 
-export const metadata: Metadata = {
-  title: 'Featured work',
-  description: 'Choose the contributions pinned to the top of your homepage.',
-  robots: {
-    index: false,
-    follow: false,
-    nocache: true,
-    googleBot: {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('metadata.dashboard.featuredWorks');
+
+  return {
+    title: t('title'),
+    description: t('description'),
+    robots: {
       index: false,
       follow: false,
+      nocache: true,
+      googleBot: {
+        index: false,
+        follow: false,
+      },
     },
-  },
-};
+  };
+}
 
 export default async function FeaturedWorksPage() {
   const state = await prefetchAdminPage(

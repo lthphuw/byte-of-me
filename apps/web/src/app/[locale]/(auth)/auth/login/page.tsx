@@ -1,31 +1,37 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
+import { siteConfig } from '@/shared/config/site';
 import { AdminAuthLogInView } from '@/widgets/auth/admin-auth-log-in-view';
 
-export const metadata: Metadata = {
-  title: 'Login | Byte of Me',
-  description:
-    'Secure access to the Byte of Me dashboard to manage blogs, projects, and site analytics.',
-  robots: {
-    index: false,
-    follow: false,
-    nocache: true,
-    googleBot: {
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('metadata.login');
+  const fullTitle = `${t('title')} | ${siteConfig.name}`;
+
+  return {
+    title: t('title'),
+    description: t('description'),
+    robots: {
       index: false,
       follow: false,
+      nocache: true,
+      googleBot: {
+        index: false,
+        follow: false,
+      },
     },
-  },
-  openGraph: {
-    title: 'Login | Byte of Me',
-    description: 'Admin gateway for the Byte of Me CMS.',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Login | Byte of Me',
-    description: 'Admin gateway for the Byte of Me CMS.',
-  },
-};
+    openGraph: {
+      title: fullTitle,
+      description: t('description'),
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary',
+      title: fullTitle,
+      description: t('description'),
+    },
+  };
+}
 
 export default function LoginPage() {
   return <AdminAuthLogInView />;
