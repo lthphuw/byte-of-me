@@ -10,7 +10,7 @@ environment variables, and the monorepo overview.
 | --- | --- | --- |
 | `/` | — | Redirects to `/en` |
 | `/[locale]` | `(public)` | Homepage |
-| `/[locale]/about` · `/experience` · `/projects` · `/blogs` · `/blogs/[slug]` · `/contact` | `(public)` | Server-rendered, cached at the edge |
+| `/projects` · `/blogs` · `/blogs/[slug]` · `/contact` | `(public)` | Server-rendered, cached at the edge |
 | `/[locale]/auth/login` | `(auth)` | Email magic link, GitHub, Google |
 | `/[locale]/print/blogs/[slug]` | `(print)` | Chromeless article view for "Save as PDF" |
 | `/[locale]/dashboard/*` | `(protected)` | Admin only; `no-store` |

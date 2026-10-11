@@ -23,7 +23,7 @@ apps/web/src/
       [...rest]/page.tsx            notFound()
       (public)/                     force-static; header + footer
         page.tsx -> HomepageContent     blogs/ -> BlogsContent     projects/ -> ProjectsContent
-        contact/ -> ContactContent      blogs/[slug]/ -> BlogDetailsContent     experience/ -> redirect('/') (behind a 308 in next.config.js)
+        contact/ -> ContactContent      blogs/[slug]/ -> BlogDetailsContent
       (auth)/auth/login -> AdminAuthLogInView     force-dynamic; admin -> /dashboard
       (print)/print/blogs/[slug] -> BlogPrintTrigger + PrintableDocument     public, no shell
       (protected)/                  force-dynamic; admin guard on the view
@@ -81,7 +81,7 @@ There is no `/api` rule. `/api/og` sets its own `Cache-Control` (`apps/web/src/a
 - Rule 1 excludes any path containing `dashboard`, not only a segment. `/en/blogs/dashboard-tips` gets no public rule and falls back to Next's own default (`s-maxage=31536000` when static; `apps/web/node_modules/next/dist/server/lib/cache-control.js:19`).
 - `next dev` replaces every HTML response's Cache-Control with `no-cache, must-revalidate` (`apps/web/node_modules/next/dist/server/base-server.js:1106-1108`). Check headers only on `bun run preview`.
 - `/api/og` sets its own `Cache-Control` in `apps/web/src/app/api/og/route.tsx:167`. Production does not apply `headers()` to function responses: on `phu-lth.space`, `/api/og` answered `public, max-age=0, must-revalidate` (the `ImageResponse` default, `apps/web/node_modules/next/dist/server/og/image-response.js:58`) and `/api/auth/session` answered Auth.js's own `private, no-cache, no-store`, while `next start` showed the configured values. Locally a routing header overrides the route's (`apps/web/node_modules/next/dist/server/send-response.js:46-52`), which hid the difference. A header set in the route is what both environments serve.
-- `/en/experience` is a permanent 308 to `/` from `apps/web/next.config.js`, so `experience/page.tsx` and its `loading.tsx` run only once that rule is removed. It is absent from `apps/web/src/shared/config/sitemap.ts:14-18`. `experience/layout.tsx` keeps `noindex` for the case where the rule is removed before the page returns.
+- `/experience` and `/en|vi/experience` are permanent 308s to `/` from `apps/web/next.config.js`. The page itself is gone; the redirect stays so old links keep working.
 - The proxy matcher skips dotted paths (`apps/web/src/proxy.ts:25`), so `/feed.xml`, `/robots.txt` and `/sitemap.xml` never get a locale prefix.
 - `apps/web/src/app/not-found.tsx:16`: the `;` after `<Error statusCode={404} />` renders as visible text on the root 404.
 

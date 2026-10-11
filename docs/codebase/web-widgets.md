@@ -20,7 +20,7 @@ apps/web/src/widgets/
     ├── index.ts                                re-exports the 8 public slices; app imports from here
     ├── homepage-content/                       server; a Suspense per data block
     ├── public-site-header/                     client island; lib/use-account.ts reads the next-auth session
-    └── ...                                     blog-details, blogs, contact, experience, footer, projects
+    └── ...                                     blog-details, blogs, contact, footer, projects
 every slice: index.ts -> ui/index.ts -> ui/*.tsx (+ lib/, model/); *.spec.ts(x) sit beside the code
 ```
 
@@ -46,7 +46,6 @@ every slice: index.ts -> ui/index.ts -> ui/*.tsx (+ lib/, model/); *.spec.ts(x) 
 | `apps/web/src/widgets/public/blog-details-content/` | public | `@/entities/blog`, `@/features/public` (group), `@/features/public/blog-print` | server entry, 7 client files |
 | `apps/web/src/widgets/public/blogs-content/` | public | `@/entities/blog`, `@/features/public/blog-filters` | client |
 | `apps/web/src/widgets/public/contact-content/` | public | `@/features/public` (group) | server |
-| `apps/web/src/widgets/public/experience-content/` | public | `@/entities/company` | server, not mounted |
 | `apps/web/src/widgets/public/homepage-content/` | public | `@/features/public` (group) | server |
 | `apps/web/src/widgets/public/projects-content/` | public | `@/entities/project`, `@/features/public/project-filters` | client |
 | `apps/web/src/widgets/public/public-site-footer/` | public | `@/features/public/public-site-footer` | server |
@@ -91,8 +90,7 @@ every slice: index.ts -> ui/index.ts -> ui/*.tsx (+ lib/, model/); *.spec.ts(x) 
 ## Gotchas
 
 - `purgeEntireCache` is not in `apps/web/src/shared/lib/revalidate.ts` as AGENTS §6 says; that file does not exist. The function is `apps/web/src/widgets/dashboard/dashboard-sidebar/lib/purge-entire-cache.ts`.
-- `experience-content` is unmounted: a permanent redirect in `apps/web/next.config.js` sends `/experience` to `/`, and `apps/web/src/app/[locale]/(public)/experience/page.tsx` gives the restore step. Only that route's `loading.tsx` still uses `ExperienceShell`.
-- Shell exports are uneven: the `ui/index.ts` barrels of blogs, projects, experience and blog-details export their shell; homepage and contact do not, so `apps/web/src/app/[locale]/(public)/loading.tsx:4` and `apps/web/src/app/[locale]/(public)/contact/loading.tsx:4` deep-import theirs.
+- Shell exports are uneven: the `ui/index.ts` barrels of blogs, projects and blog-details export their shell; homepage and contact do not, so `apps/web/src/app/[locale]/(public)/loading.tsx:4` and `apps/web/src/app/[locale]/(public)/contact/loading.tsx:4` deep-import theirs.
 - `apps/web/src/widgets/dashboard/education-manager/ui/index.tsx` is the only `ui/` barrel with a `.tsx` extension.
 - `apps/web/src/widgets/dashboard/education-manager/ui/education-form.tsx:38-44` lazy-loads a field with `dynamic(..., { ssr: false })`.
 - 13 `'use server'` files sit in `apps/web/src/features/*/lib/`, and the purge action is a 14th file outside `entities/*/api/`. Find them with `rg -l "^'use server'" apps/web/src`.

@@ -1,7 +1,5 @@
 import type { Prisma } from '@byte-of-me/db/types';
 
-import type { Media } from '@/shared/types/models';
-
 /**
  * The editor's full record. Roles, tasks and every translation live here only:
  * the list row below never carries them, so the dialog loads this by id
@@ -54,39 +52,3 @@ export type AdminCompanyListItem = Prisma.CompanyGetPayload<{
   };
 }>;
 
-export interface PublicTask {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-
-  sortOrder: number;
-  content: string;
-}
-
-export interface PublicRole {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-
-  startDate: Maybe<Date>;
-  endDate: Maybe<Date>;
-  title: Maybe<string>;
-  description: Maybe<string>;
-  tasks: PublicTask[];
-}
-
-export interface PublicCompany {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-
-  company: string;
-  location: string;
-  description: Maybe<string>;
-
-  startDate: Date;
-  endDate: Maybe<Date>;
-
-  logo: Maybe<Media>;
-  roles: PublicRole[];
-}

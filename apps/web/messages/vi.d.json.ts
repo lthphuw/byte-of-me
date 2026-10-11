@@ -5,11 +5,6 @@ declare const messages: {
   "metadata": {
     "title": "Phú Lương",
     "description": "Fullstack developer làm về thị giác máy tính và các ứng dụng web quanh nó.",
-    "experience": {
-      "title": "Kinh nghiệm",
-      "description": "Các cột mốc và công việc tôi đã từng đảm nhận.",
-      "keywords": "Kinh nghiệm, Kinh nghiệm làm việc, Quá trình công tác, Việc làm, Vị trí đã đảm nhận"
-    },
     "projects": {
       "title": "Dự án",
       "description": "Những sản phẩm cá nhân tôi đã xây dựng.",
@@ -91,8 +86,7 @@ declare const messages: {
     "i18nToggle": {
       "toggleLanguage": "Chuyển đổi ngôn ngữ",
       "vietnamese": "Tiếng Việt",
-      "english": "Tiếng Anh",
-      "french": "Tiếng Pháp"
+      "english": "Tiếng Anh"
     },
     "modeToggle": {
       "toggleTheme": "Chuyển đổi giao diện",
@@ -100,45 +94,26 @@ declare const messages: {
       "dark": "Tối",
       "system": "Theo hệ thống"
     },
-    "search": {
-      "searchProjects": "Tìm kiếm dự án",
-      "all": "Tất cả"
-    },
     "header": {
       "skipToContent": "Chuyển đến nội dung chính",
       "nav": {
         "home": "Trang chủ",
-        "experience": "Kinh nghiệm",
         "projects": "Dự án",
         "blogs": "Bài viết",
-        "hobbies": "Sở thích",
-        "more": "Thêm",
-        "letsTalk": "Liên hệ",
-        "askMe": "Hỏi tôi",
-        "anythingAboutMe": "Mọi thứ về tôi",
-        "cv": "CV"
+        "letsTalk": "Liên hệ"
       }
     },
     "footer": {
       "home": "Trang chủ",
       "builtBy": "Xây dựng bởi",
-      "openSource": "Mã nguồn mở tại",
-      "links": "Liên kết nhanh",
       "projects": "Dự án",
-      "experience": "Kinh nghiệm",
       "blogs": "Bài viết",
-      "cv": "CV",
-      "anythingAboutMe": "Mọi thứ về tôi",
       "contact": "Liên hệ",
-      "connect": "Kết nối",
       "email": "Email",
-      "navigation": "Điều hướng chân trang",
-      "license": "Cấp phép theo",
-      "rights": "Mọi quyền được bảo lưu."
+      "navigation": "Điều hướng chân trang"
     }
   },
   "notFound": {
-    "pageNotFound404": "404 — Không tìm thấy trang",
     "oopsPageNotFound": "Rất tiếc! Trang không tồn tại",
     "sorryWeCouldntFindThatPage": "Xin lỗi, tôi không thể tìm thấy trang bạn yêu cầu",
     "pleaseCheckTheUrlOrGoBackHome": "Vui lòng kiểm tra lại đường dẫn hoặc quay về trang chủ",
@@ -157,24 +132,15 @@ declare const messages: {
     "goBack": "Quay lại",
     "home": "Trang chủ",
     "reportForMe": "Báo cáo lỗi",
-    "reportForMeAboutThisError": "Gửi báo cáo chi tiết về lỗi này",
     "send": "Gửi",
     "errorDetails": "Chi tiết lỗi",
     "copyError": "Sao chép lỗi",
-    "copied": "Đã sao chép!",
-    "missingQuestion": "Bạn chưa nhập câu hỏi. Vui lòng thử lại.",
-    "invalidInput": "Nội dung câu hỏi có thể không phù hợp. Vui lòng kiểm tra và thử lại.",
-    "missingThreadId": "Không tìm thấy mã cuộc trò chuyện. Vui lòng tải lại trang.",
-    "failedToDelete": "Không thể xoá cuộc trò chuyện. Vui lòng thử lại sau hoặc tải lại trang."
+    "copied": "Đã sao chép!"
   },
   "project": {
     "details": "Chi tiết",
     "gitHub": "GitHub",
     "all": "Tất cả",
-    "thereAreNoProjectsYet": "Hiện chưa có dự án nào",
-    "loadingProjectList": "Đang tải danh sách dự án",
-    "failedToLoadProjectList": "Không thể tải danh sách dự án. Vui lòng thử lại.",
-    "backToProjects": "Quay lại danh sách dự án",
     "noProjectsFound": "Chưa có dự án nào được thêm vào.",
     "noProjectsMatchYourSearch": "Không tìm thấy dự án nào khớp với bộ lọc của bạn.",
     "pageTitle": "Dự án",
@@ -190,9 +156,6 @@ declare const messages: {
   "blog": {
     "details": "Chi tiết",
     "all": "Tất cả",
-    "thereAreNoBlogsYet": "Hiện chưa có bài viết nào",
-    "loadingBlogList": "Đang tải danh sách bài viết",
-    "failedToLoadBlogList": "Không thể tải danh sách bài viết. Vui lòng thử lại.",
     "noBlogsFound": "Chưa có bài viết nào. Hãy quay lại sau nhé!",
     "noBlogsMatchYourSearch": "Không tìm thấy bài viết nào khớp với tìm kiếm của bạn.",
     "pageTitle": "Bài viết",
@@ -201,11 +164,6 @@ declare const messages: {
     "showDraftsHint": "Chỉ admin thấy — khách truy cập không bao giờ thấy bản nháp"
   },
   "blogDetails": {
-    "failedToLoadBlog": "Không thể tải bài viết",
-    "blogNotFoundTitle": "Không tìm thấy bài viết",
-    "blogNotFoundDescription": "Rất tiếc, bài viết bạn đang tìm kiếm không tồn tại hoặc đã được di chuyển.",
-    "backToBlogs": "Quay lại danh sách bài viết",
-    "goHome": "Về trang chủ",
     "relatedProject": "Dự án liên quan",
     "views": "{count} lượt xem",
     "avgRead": "Đọc {time}p",
@@ -230,7 +188,6 @@ declare const messages: {
     "posting": "Đang đăng...",
     "postCommentFailed": "Đăng bình luận thất bại, vui lòng thử lại sau",
     "interactFailed": "Tương tác bài viết thất bại, vui lòng thử lại sau",
-    "justNow": "vừa xong",
     "reply": "Trả lời",
     "replyTo": "Trả lời",
     "cancel": "Huỷ",
@@ -316,11 +273,6 @@ declare const messages: {
     "ongoing": "Đang học",
     "moreAchievements": "Xem thêm {count} thành tựu",
     "showLess": "Thu gọn"
-  },
-  "experience": {
-    "title": "Kinh nghiệm làm việc",
-    "updating": "Đang cập nhật...",
-    "present": "Hiện tại"
   },
   "components": {
     "expandableText": {
@@ -522,9 +474,6 @@ declare const messages: {
       }
     },
     "common": {
-      "nav": {
-        "soonBadge": "Sắp ra mắt"
-      },
       "stats": {
         "messagesLabel": "Tin nhắn",
         "messagesSub": "{count, number} mới",
@@ -1005,7 +954,6 @@ declare const messages: {
     "signInWithGithub": "Tiếp tục với GitHub",
     "signInWithGoogle": "Tiếp tục với Google",
     "emailPlaceholder": "email@example.com",
-    "sendMagicLink": "Gửi liên kết đăng nhập",
     "accessDenied": "Tài khoản đó không có quyền truy cập dashboard này.",
     "signInFailed": "Không thể hoàn tất đăng nhập. Vui lòng thử lại."
   },

@@ -203,9 +203,8 @@ const nextConfig = {
         permanent: true,
       },
       {
-        // Experience is hidden, not deleted: its page body is parked in
-        // (public)/experience/page.tsx. Permanent, so old links move to the
-        // homepage with a real 308 instead of a 200 shell.
+        // The experience page is gone; old links move to the homepage with a
+        // permanent redirect instead of a 404.
         source: '/:locale(en|vi)/experience',
         destination: '/:locale',
         permanent: true,

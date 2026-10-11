@@ -5,11 +5,6 @@ declare const messages: {
   "metadata": {
     "title": "Phu Luong",
     "description": "Fullstack developer working on computer vision and the web apps around it.",
-    "experience": {
-      "title": "Experience",
-      "description": "A professional timeline of my roles and hands-on contributions.",
-      "keywords": "Experience, Work history, Career timeline, Roles, Employment"
-    },
     "projects": {
       "title": "Projects",
       "description": "A collection of my work, from academic builds to real-world solutions.",
@@ -91,8 +86,7 @@ declare const messages: {
     "i18nToggle": {
       "toggleLanguage": "Toggle language",
       "vietnamese": "Vietnamese",
-      "english": "English",
-      "french": "French"
+      "english": "English"
     },
     "modeToggle": {
       "toggleTheme": "Toggle theme",
@@ -100,45 +94,26 @@ declare const messages: {
       "dark": "Dark",
       "system": "System"
     },
-    "search": {
-      "searchProjects": "Search projects",
-      "all": "All"
-    },
     "header": {
       "skipToContent": "Skip to main content",
       "nav": {
         "home": "Home",
-        "experience": "Experience",
         "projects": "Projects",
         "blogs": "Blogs",
-        "hobbies": "Hobbies",
-        "more": "More",
-        "letsTalk": "Let's talk",
-        "askMe": "Ask Me",
-        "anythingAboutMe": "Anything about me",
-        "cv": "CV"
+        "letsTalk": "Let's talk"
       }
     },
     "footer": {
       "home": "Home",
       "builtBy": "Built by",
-      "openSource": "Open source on",
-      "links": "Quick Links",
       "projects": "Projects",
-      "experience": "Experience",
-      "cv": "CV",
-      "anythingAboutMe": "Anything about me",
       "contact": "Contact",
-      "connect": "Connect",
       "blogs": "Blogs",
       "email": "Email",
-      "navigation": "Footer Navigation",
-      "license": "Licensed under",
-      "rights": "All rights reserved."
+      "navigation": "Footer Navigation"
     }
   },
   "notFound": {
-    "pageNotFound404": "404 - Page Not Found",
     "oopsPageNotFound": "Oops! Page not found",
     "sorryWeCouldntFindThatPage": "Sorry, we couldn’t find that page",
     "pleaseCheckTheUrlOrGoBackHome": "Please check the URL or go back home",
@@ -157,24 +132,15 @@ declare const messages: {
     "goBack": "Go back",
     "home": "Home",
     "reportForMe": "Report this error",
-    "reportForMeAboutThisError": "Send a report about this error",
     "send": "Send",
     "errorDetails": "Error Details",
     "copyError": "Copy Error",
-    "copied": "Copied!",
-    "missingQuestion": "You haven't entered a question. Please try again.",
-    "invalidInput": "Your question may contain inappropriate content. Please check and try again.",
-    "missingThreadId": "Missing conversation ID. Please refresh the page and try again.",
-    "failedToDelete": "Something went wrong while deleting the conversation. Please try again later or refresh the page."
+    "copied": "Copied!"
   },
   "project": {
     "details": "Details",
     "gitHub": "GitHub",
     "all": "All",
-    "thereAreNoProjectsYet": "There are no projects yet",
-    "loadingProjectList": "Loading project list",
-    "failedToLoadProjectList": "Failed to load project list Please try again",
-    "backToProjects": "Back to projects",
     "noProjectsFound": "No projects have been added yet.",
     "noProjectsMatchYourSearch": "No projects match your current filters or search query.",
     "pageTitle": "Projects",
@@ -190,9 +156,6 @@ declare const messages: {
   "blog": {
     "details": "Details",
     "all": "All",
-    "thereAreNoBlogsYet": "There are no blogs yet",
-    "loadingBlogList": "Loading blog list",
-    "failedToLoadBlogList": "Failed to load blog list. Please try again",
     "noBlogsFound": "No blogs found yet. Stay tuned for future posts!",
     "noBlogsMatchYourSearch": "No blogs match your current search or filters.",
     "pageTitle": "Blog",
@@ -201,11 +164,6 @@ declare const messages: {
     "showDraftsHint": "Admin only — visitors never see drafts"
   },
   "blogDetails": {
-    "failedToLoadBlog": "Failed to load blog",
-    "blogNotFoundTitle": "Blog Post Not Found",
-    "blogNotFoundDescription": "Sorry, the article you are looking for doesn't exist or has been moved.",
-    "backToBlogs": "Back to blogs",
-    "goHome": "Go to homepage",
     "relatedProject": "Related Project",
     "views": "{count, plural, =0 {No views} one {# view} other {# views}}",
     "avgRead": "{time}m avg. read",
@@ -230,7 +188,6 @@ declare const messages: {
     "posting": "Posting...",
     "postCommentFailed": "Failed to post comment",
     "interactFailed": "Failed to interact the post",
-    "justNow": "just now",
     "reply": "Reply",
     "replyTo": "Reply to",
     "cancel": "Cancel",
@@ -316,11 +273,6 @@ declare const messages: {
     "ongoing": "Ongoing",
     "moreAchievements": "{count, plural, one {# more achievement} other {# more achievements}}",
     "showLess": "Show less"
-  },
-  "experience": {
-    "title": "Work Experience",
-    "updating": "Updating...",
-    "present": "Present"
   },
   "components": {
     "expandableText": {
@@ -522,9 +474,6 @@ declare const messages: {
       }
     },
     "common": {
-      "nav": {
-        "soonBadge": "Soon"
-      },
       "stats": {
         "messagesLabel": "Messages",
         "messagesSub": "{count, number} new",
@@ -1005,7 +954,6 @@ declare const messages: {
     "signInWithGithub": "Continue with GitHub",
     "signInWithGoogle": "Continue with Google",
     "emailPlaceholder": "name@example.com",
-    "sendMagicLink": "Send Magic Link",
     "accessDenied": "That account is not authorized to access this dashboard.",
     "signInFailed": "Sign in could not be completed. Please try again."
   },

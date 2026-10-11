@@ -1,7 +1,6 @@
 export * from './blog-details-content';
 export * from './blogs-content';
 export * from './contact-content';
-export * from './experience-content';
 export * from './homepage-content';
 export * from './projects-content';
 export * from './public-site-footer';

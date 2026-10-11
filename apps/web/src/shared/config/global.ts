@@ -2,7 +2,6 @@ import type { GlobalConfig } from '@/shared/types';
 
 export enum Routes {
   Homepage = '/',
-  Experience = '/experience',
   Projects = '/projects',
   Blogs = '/blogs',
   Contact = '/contact',

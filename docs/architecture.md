@@ -39,7 +39,7 @@ flowchart TB
         CDN["Edge cache"]
 
         subgraph next["Next.js 16 · App Router · Turbopack"]
-            PUB["Public route group<br/>home · about · experience<br/>projects · blogs · contact"]
+            PUB["Public route group<br/>home · projects · blogs · contact"]
             PROT["Protected route group<br/>dashboard"]
             AUTHR["Auth.js route handler"]
             OG["OG image route<br/>Satori"]

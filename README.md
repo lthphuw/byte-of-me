@@ -19,10 +19,9 @@ The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced 
 ## Highlights
 
 ### Public portfolio
-- **Home, About, Experience, Projects, Blogs, Contact** — server-rendered, SEO-friendly, and richly animated with Framer Motion.
+- **Home, Projects, Blogs, Contact** — server-rendered, SEO-friendly, and richly animated with Framer Motion.
 - **Full-featured blog** — cover hero, author byline, breadcrumb, table of contents, reading-progress bar, related posts, related project, prev/next navigation, and per-post **likes, claps, and threaded comments**.
 - **Filterable, paginated** project and blog listings with shareable, URL-based filters.
-- **A vertical experience timeline** rendered from live CMS data (companies → roles → tasks).
 - **Contact form** that persists the message and delivers it over SMTP (Nodemailer).
 - **SEO & sharing built in** — dynamic OG images (`/api/og`, Satori), `sitemap.ts`, `robots.ts`, `/llms.txt` (an index for AI assistants), PWA manifest (`public/site.webmanifest`), per-route metadata.
 
@@ -93,7 +92,7 @@ byte-of-me/
 │       └── src/
 │           ├── app/
 │           │   ├── [locale]/
-│           │   │   ├── (public)/         # about · blogs/[slug] · contact · experience · projects
+│           │   │   ├── (public)/         # blogs/[slug] · contact · projects
 │           │   │   ├── (protected)/      # dashboard/* (admin only)
 │           │   │   ├── (auth)/           # auth/login
 │           │   │   ├── (print)/          # print/blogs/[slug]

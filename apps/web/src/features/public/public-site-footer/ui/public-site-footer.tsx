@@ -78,18 +78,6 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
               <Icons.email size={20} />
             </a>
           </div>
-
-          {/*<p className="text-sm text-gray-400">*/}
-          {/*  {t('license')}{' '}*/}
-          {/*  <a*/}
-          {/*    href="https://github.com/lthphuw/byte-of-me/blob/main/LICENSE.md"*/}
-          {/*    target="_blank"*/}
-          {/*    rel="noopener noreferrer"*/}
-          {/*    className="hover:text-blue-400"*/}
-          {/*  >*/}
-          {/*    MIT*/}
-          {/*  </a>*/}
-          {/*</p>*/}
         </div>
       </div>
     </footer>
