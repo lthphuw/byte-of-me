@@ -106,6 +106,16 @@ describe('hideComment', () => {
     expect(isHidden()).toBe(true);
   });
 
+  it('reports a comment that does not exist as not-found, not forbidden', async () => {
+    setTestUser({ id: 'user-other', role: 'USER', email: 'visitor@example.com' });
+
+    const res = await hideComment('cl9ebqhxk00009b600tymydzz');
+
+    expect(res.success).toBe(false);
+    if (res.success) throw new Error('unreachable');
+    expect(res.errorCode).toBe('not-found');
+  });
+
   it('refuses another visitor with the forbidden code and writes nothing', async () => {
     setTestUser({ id: 'user-other', role: 'USER', email: 'visitor@example.com' });
 
