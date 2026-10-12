@@ -27,7 +27,7 @@ apps/web/src/
       (auth)/auth/login -> AdminAuthLogInView     force-dynamic; admin -> /dashboard
       (print)/print/blogs/[slug] -> BlogPrintTrigger + PrintableDocument     public, no shell
       (protected)/                  force-dynamic; admin guard on the view
-        dashboard/layout.tsx        DashboardSidebar, WorkspaceSettingsProvider, dashboard messages
+        dashboard/layout.tsx        DashboardSidebar, HydrationBoundary (settings prefetch), dashboard messages
         dashboard/page.tsx          features/dashboard + ContactMessageGallery
         dashboard/<x>/page.tsx      <X>Manager: blogs comments companies educations featured-works media projects tags tech-stacks user-profile
 ```
@@ -66,7 +66,7 @@ There is no `/api` rule. `/api/og` sets its own `Cache-Control` (`apps/web/src/a
    4. New namespace: add to `PUBLIC_MESSAGE_NAMESPACES` (`apps/web/src/shared/i18n/messages.ts:26`); strings go in both `apps/web/messages/en.json` and `apps/web/messages/vi.json`.
    5. If it should be indexed, add it to `sitemapConfig` in `apps/web/src/shared/config/sitemap.ts`.
 2. **Dashboard page** (model folder: `apps/web/src/app/[locale]/(protected)/dashboard/tags/`)
-   1. Copy its `page.tsx` (`prefetchAdminPage` + `HydrationBoundary` + noindex `metadata`) and `loading.tsx` to `apps/web/src/app/[locale]/(protected)/dashboard/<name>/`.
+   1. Copy its `page.tsx` (`getQueryClient` + `prefetchQuery(<x>Queries.adminPage(1))` + `dehydrate` in `HydrationBoundary` + noindex `metadata`) and `loading.tsx` to `apps/web/src/app/[locale]/(protected)/dashboard/<name>/`.
    2. Widget `apps/web/src/widgets/dashboard/<name>-manager/` (`index.ts` + `ui/`), modelled on `apps/web/src/widgets/dashboard/tag-manager/`.
    3. Nav link in `apps/web/src/widgets/dashboard/dashboard-sidebar/model/use-dashboard-nav-groups.ts`.
    4. New namespace: add to `DASHBOARD_MESSAGE_NAMESPACES` (`apps/web/src/shared/i18n/messages.ts:52`).
@@ -102,7 +102,6 @@ bun run preview    # build, then next start (blocks; curl from a second shell)
 - `apps/web/src/app/providers/global-provider.tsx:4` (§7): a `'use client'` provider mounted on every page imports the `@byte-of-me/ui` root barrel; §7 says client entry points use subpaths.
 - `AGENTS.md:110` (§3): 13 deep `@/entities/<slice>/api/...` and 8 deep `@/widgets/<group>/<slice>/...` imports in `apps/web/src/app` (e.g. `apps/web/src/app/sitemap.ts:5`, `apps/web/src/app/[locale]/(protected)/dashboard/companies/page.tsx:4`). `apps/web/src/app/[locale]/(protected)/dashboard/layout.tsx:43-45` is the only stated reason; §3 has no carve-out.
 - `AGENTS.md:442` (§11.14): comment blocks far over three lines: `apps/web/next.config.js:119-140` (22 lines), `:12-29` (18), `apps/web/src/app/[locale]/(print)/layout.tsx:10-32` (23).
-- `AGENTS.md:133` (§4): fixed UI text belongs in next-intl, but `apps/web/src/app/[locale]/(protected)/dashboard/tags/page.tsx:13-14` and `apps/web/src/app/[locale]/(auth)/auth/login/page.tsx:6` hardcode English titles.
 
 ## See also
 
