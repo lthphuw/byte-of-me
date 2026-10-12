@@ -16,7 +16,8 @@ export type QueryStateProps = {
   /** Background refetch: the list stays visible and a corner spinner shows. */
   isFetching?: boolean;
   isEmpty: boolean;
-  onRetry: () => void;
+  /** Shows the Retry button only when given. */
+  onRetry?: () => void;
   /** Same classes as the content it stands in for (AGENTS §14). */
   skeleton: ReactNode;
   errorTitle: string;
@@ -60,9 +61,11 @@ export function QueryState({
             <EmptyTitle>{errorTitle}</EmptyTitle>
             <EmptyDescription>{errorDescription}</EmptyDescription>
           </EmptyHeader>
-          <Button variant="outline" size="sm" onClick={onRetry}>
-            {retryLabel}
-          </Button>
+          {onRetry && (
+            <Button variant="outline" size="sm" onClick={onRetry}>
+              {retryLabel}
+            </Button>
+          )}
         </Empty>
       </div>
     );

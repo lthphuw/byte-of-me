@@ -81,7 +81,8 @@ declare const messages: {
       "signOut": "Sign out",
       "admin": "Admin",
       "viewer": "Viewer",
-      "openAccount": "Open account menu"
+      "openAccount": "Open account menu",
+      "signOutFailed": "Sign out could not be completed. Please try again."
     },
     "i18nToggle": {
       "toggleLanguage": "Toggle language",
@@ -135,7 +136,8 @@ declare const messages: {
     "send": "Send",
     "errorDetails": "Error Details",
     "copyError": "Copy Error",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "tryAgain": "Try again"
   },
   "project": {
     "details": "Details",
@@ -151,7 +153,10 @@ declare const messages: {
     "completed": "Completed",
     "undated": "Undated",
     "tabProjects": "Projects",
-    "tabOpenSource": "Open source"
+    "tabOpenSource": "Open source",
+    "loadErrorTitle": "The projects could not be loaded.",
+    "loadErrorDescription": "Check your connection, then try again.",
+    "retry": "Retry"
   },
   "blog": {
     "details": "Details",
@@ -161,7 +166,10 @@ declare const messages: {
     "pageTitle": "Blog",
     "count": "{count, plural, =0 {No posts} one {# post} other {# posts}}",
     "showDrafts": "Drafts",
-    "showDraftsHint": "Admin only — visitors never see drafts"
+    "showDraftsHint": "Admin only — visitors never see drafts",
+    "loadErrorTitle": "Posts could not be loaded",
+    "loadErrorDescription": "The list did not load. Check your connection and try again.",
+    "retry": "Retry"
   },
   "blogDetails": {
     "relatedProject": "Related Project",
@@ -200,7 +208,13 @@ declare const messages: {
     "relatedPosts": "Related posts",
     "previousPost": "Previous",
     "nextPost": "Next",
-    "aboutTheAuthor": "About the author"
+    "aboutTheAuthor": "About the author",
+    "retry": "Retry",
+    "statsLoadFailed": "Stats could not be loaded",
+    "replyingTo": "Replying to @{user}",
+    "analyticsFailed": "Could not save your reading activity",
+    "breadcrumb": "Breadcrumb",
+    "readingProgress": "Reading progress"
   },
   "contact": {
     "letsWorkTogether": "Let’s work together",
@@ -272,7 +286,10 @@ declare const messages: {
     "present": "Present",
     "ongoing": "Ongoing",
     "moreAchievements": "{count, plural, one {# more achievement} other {# more achievements}}",
-    "showLess": "Show less"
+    "showLess": "Show less",
+    "profileUnavailableTitle": "Profile Not Set Up",
+    "profileUnavailableDescription": "The public profile you are looking for is currently unavailable or hasn't been configured yet.",
+    "returnHome": "Return Home"
   },
   "components": {
     "expandableText": {
@@ -285,14 +302,18 @@ declare const messages: {
       "seeMore": "See more",
       "searchProject": "Search project...",
       "tags": "Tags",
-      "techStack": "Tech stack"
+      "techStack": "Tech stack",
+      "loadError": "Could not load the filters.",
+      "retry": "Retry"
     },
     "blogFilters": {
       "filters": "Filters",
       "reset": "Reset",
       "seeMore": "See more",
       "searchBlog": "Search blog...",
-      "tags": "Tags"
+      "tags": "Tags",
+      "loadError": "Could not load the filters.",
+      "retry": "Retry"
     },
     "blogCard": {
       "views": "{count, plural, =0 {No views} one {# view} other {# views}}",
@@ -318,6 +339,11 @@ declare const messages: {
       "view": "View",
       "merged": "Merged pull request",
       "empty": "No merged pull requests match these filters."
+    },
+    "sectionLoadError": {
+      "title": "This section could not be loaded.",
+      "description": "Try again later.",
+      "retry": "Retry"
     }
   },
   "dashboard": {
@@ -347,10 +373,9 @@ declare const messages: {
         "clearCache": "Clear Cache",
         "viewSite": "View Site",
         "signOut": "Sign out",
+        "signOutError": "Sign out failed",
         "cacheSuccess": "System updated",
-        "cacheSuccessDesc": "All caches have been cleared successfully.",
-        "cacheError": "Update failed",
-        "cacheErrorDesc": "An error occurred while clearing caches."
+        "cacheError": "Update failed"
       }
     },
     "dashboard": {
@@ -429,7 +454,8 @@ declare const messages: {
         "publishedLabel": "Published",
         "coverImageLabel": "Cover Image",
         "tagsLabel": "Tags",
-        "tagsPlaceholder": "Select tags..."
+        "tagsPlaceholder": "Select tags...",
+        "optionsError": "The options could not be loaded."
       },
       "overview": {
         "viewsChartTitle": "Views — last 30 days",
@@ -521,7 +547,6 @@ declare const messages: {
         "endDateLabel": "End Date",
         "techStackLabel": "Tech Stack",
         "techStackPlaceholder": "Select tech stack",
-        "techStackLoading": "Loading tech stacks…",
         "techStackError": "Tech stacks could not be loaded.",
         "translationsTitle": "Translations",
         "descriptionLabel": "Description",
@@ -694,11 +719,9 @@ declare const messages: {
         "totalTooLargeDescription": "Together they exceed {maxSize, number}MB. Upload fewer at once.",
         "successTitle": "Success",
         "successDescription": "All images uploaded.",
-        "uploadFailedTitle": "Upload failed",
         "uploadButton": "{count, plural, =1 {Upload 1 File} other {Upload # Files}}"
       },
       "toast": {
-        "uploadSuccess": "Upload successful",
         "uploadError": "Upload failed",
         "deleteSuccess": "Media deleted",
         "deleteError": "Could not delete media"
@@ -754,8 +777,10 @@ declare const messages: {
         "publishedLabel": "Published",
         "techStackLabel": "Tech Stack",
         "techStackPlaceholder": "Select tech stack",
+        "noTechStackOptions": "No tech stacks yet.",
         "tagsLabel": "Tags",
         "tagsPlaceholder": "Select tags",
+        "noTagOptions": "No tags yet.",
         "translationsLabel": "Content Translations",
         "titleLabel": "Title",
         "descriptionLabel": "Description",
@@ -915,8 +940,13 @@ declare const messages: {
         "urlInvalid": "Enter a full https:// address, or an email address",
         "languageRequired": "Language is required"
       },
+      "loadError": {
+        "title": "Profile not found",
+        "description": "Could not load your profile data at this time."
+      },
       "toast": {
         "updated": "Profile updated",
+        "loadError": "Profile could not be refreshed",
         "saveError": "Save failed"
       }
     },
@@ -955,7 +985,15 @@ declare const messages: {
     "signInWithGoogle": "Continue with Google",
     "emailPlaceholder": "name@example.com",
     "accessDenied": "That account is not authorized to access this dashboard.",
-    "signInFailed": "Sign in could not be completed. Please try again."
+    "signInFailed": "Sign in could not be completed. Please try again.",
+    "back": "Back",
+    "welcomeBack": "Welcome back",
+    "enterEmailToSignIn": "Enter your email to sign in to your account",
+    "email": "Email",
+    "signInWithEmail": "Sign in with email",
+    "sendLinkFailed": "Failed to send login link. Please try again.",
+    "checkEmailTitle": "Check your email",
+    "checkEmailDescription": "We sent you a login link to {email}. Be sure to check your spam too."
   },
   "email": {
     "signIn": {

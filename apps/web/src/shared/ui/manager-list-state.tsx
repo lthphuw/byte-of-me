@@ -1,15 +1,9 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import {
-  Button,
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-  Loading,
-} from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
+
+import { QueryState } from '@/shared/ui/query-state';
 
 export interface ManagerListStateProps {
   isLoading: boolean;
@@ -24,14 +18,17 @@ export interface ManagerListStateProps {
    * the standard corner spinner — the host must be `relative` for it to land.
    */
   isFetching?: boolean;
-  /** Optional skeleton shown while loading; defaults to the standard one. */
-  skeleton?: ReactNode;
+  /**
+   * The loading placeholder, with the classes of the content it stands in for
+   * (AGENTS §14). Required: every loading state shows a skeleton.
+   */
+  skeleton: ReactNode;
   children: ReactNode;
 }
 
 /**
  * The standard list body for dashboard managers:
- * loading → error (with retry) → empty (with CTA) → content.
+ * loading (skeleton) → error (with retry) → empty (with CTA) → content.
  */
 export function ManagerListState({
   isLoading,
@@ -47,67 +44,22 @@ export function ManagerListState({
 }: ManagerListStateProps) {
   const t = useTranslations('dashboard.shared');
 
-  if (isLoading) {
-    return (
-      skeleton ?? (
-        <div className="flex h-64 flex-col items-center justify-center gap-3">
-          <Loading />
-          <p className="animate-pulse text-xs text-muted-foreground">
-            {t('managerListState.loading')}
-          </p>
-        </div>
-      )
-    );
-  }
-
-  // Only meaningful once the first page has painted; while `isLoading` the
-  // skeleton already says the list is busy.
-  const refetchSpinner = isFetching ? (
-    <div className="pointer-events-none absolute right-2 top-2">
-      <Loading />
-    </div>
-  ) : null;
-
-  let body: ReactNode = children;
-
-  if (isError) {
-    body = (
-      <div className="flex justify-center py-20">
-        <Empty>
-          <EmptyHeader>
-            <EmptyTitle>{t('managerListState.errorTitle')}</EmptyTitle>
-            <EmptyDescription>
-              {t('managerListState.errorDescription')}
-            </EmptyDescription>
-          </EmptyHeader>
-          {onRetry && (
-            <Button variant="outline" size="sm" onClick={onRetry}>
-              {t('managerListState.retry')}
-            </Button>
-          )}
-        </Empty>
-      </div>
-    );
-  } else if (isEmpty) {
-    body = (
-      <div className="flex justify-center py-20">
-        <Empty>
-          <EmptyHeader>
-            <EmptyTitle>{emptyTitle}</EmptyTitle>
-            {emptyDescription && (
-              <EmptyDescription>{emptyDescription}</EmptyDescription>
-            )}
-          </EmptyHeader>
-          {emptyAction}
-        </Empty>
-      </div>
-    );
-  }
-
   return (
-    <>
-      {body}
-      {refetchSpinner}
-    </>
+    <QueryState
+      isLoading={isLoading}
+      isError={Boolean(isError)}
+      isFetching={isFetching}
+      isEmpty={isEmpty}
+      onRetry={onRetry}
+      skeleton={skeleton}
+      errorTitle={t('managerListState.errorTitle')}
+      errorDescription={t('managerListState.errorDescription')}
+      retryLabel={t('managerListState.retry')}
+      emptyTitle={emptyTitle}
+      emptyDescription={emptyDescription}
+      emptyAction={emptyAction}
+    >
+      {children}
+    </QueryState>
   );
 }

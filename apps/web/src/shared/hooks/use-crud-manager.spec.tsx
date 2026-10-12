@@ -42,10 +42,10 @@ function setup(
         queryKey: root,
         entityLabel: 'Thing',
         fetchPage,
+        pageKey: overrides.pageKey ?? ((page) => [...root, page]),
         create,
         update: create,
         remove: create,
-        ...overrides,
       }),
     {
       wrapper: ({ children }: { children: ReactNode }) => (

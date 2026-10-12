@@ -9,6 +9,7 @@
 import type { ReactNode } from 'react';
 import type { QueryClient } from '@tanstack/react-query';
 import {
+  dehydrate,
   hydrate,
   QueryClient as Client,
   QueryClientProvider,
@@ -22,8 +23,9 @@ import { educationKeys } from '@/entities/education/model/query-keys';
 import { projectKeys } from '@/entities/project/model/query-keys';
 import { tagKeys } from '@/entities/tag/model/query-keys';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
+import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
-import { prefetchAdminPage } from '@/shared/lib/query/prefetch-admin-page';
+import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
 
 type AdminKeys = {
   adminList: () => readonly unknown[];
@@ -98,29 +100,33 @@ describe.each(entities)('$name admin keys', ({ keys, picker, outside }) => {
     expect(queryClient.getQueryState(outside)?.isInvalidated).toBe(false);
   });
 
-  // Managers pass `pageKey`; the hook's default (`adminList()` plus the page)
-  // must produce the same key, or a manager that omits it would miss the prefetch.
-  describe.each([
-    ['the default page key', false],
-    ['an explicit pageKey', true],
-  ])('manager using %s', (_label, withPageKey) => {
+  // Managers pass the `adminPage` factory the server prefetch also calls, so
+  // the client key cannot drift from the prefetched one.
+  describe('manager using the page key', () => {
     it('renders the server-prefetched first page without a client fetch', async () => {
-      const fetchPage = mock(async () => ({
+      const fetchPage = mock(async (_page: number, _limit: number) => ({
         success: true as const,
         data: { data: [{ id: 'row' }], meta },
       }));
       const noop = mock(async () => ({ success: true as const, data: null }));
 
-      const state = await prefetchAdminPage(keys.adminPage, fetchPage);
+      // The server prefetch, spelled out: page 1 under the entity's own key
+      // factory, through the fetch the manager runs, then dehydrated.
+      const serverClient = makeQueryClient();
+      await serverClient.prefetchQuery({
+        queryKey: keys.adminPage(1),
+        queryFn: async () =>
+          unwrapApiResponse(await fetchPage(1, ADMIN_PAGE_SIZE)),
+      });
       const queryClient: QueryClient = makeQueryClient();
-      hydrate(queryClient, state);
+      hydrate(queryClient, dehydrate(serverClient));
       fetchPage.mockClear();
 
       const { result } = renderHook(
         () =>
           useCrudManager<{ id: string }, unknown>({
             queryKey: keys.adminList(),
-            ...(withPageKey ? { pageKey: keys.adminPage } : {}),
+            pageKey: keys.adminPage,
             entityLabel: 'Row',
             fetchPage,
             create: noop,

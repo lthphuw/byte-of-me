@@ -81,7 +81,8 @@ declare const messages: {
       "signOut": "Đăng xuất",
       "admin": "Admin",
       "viewer": "Người xem",
-      "openAccount": "Mở menu tài khoản"
+      "openAccount": "Mở menu tài khoản",
+      "signOutFailed": "Không thể đăng xuất. Vui lòng thử lại."
     },
     "i18nToggle": {
       "toggleLanguage": "Chuyển đổi ngôn ngữ",
@@ -135,7 +136,8 @@ declare const messages: {
     "send": "Gửi",
     "errorDetails": "Chi tiết lỗi",
     "copyError": "Sao chép lỗi",
-    "copied": "Đã sao chép!"
+    "copied": "Đã sao chép!",
+    "tryAgain": "Thử lại"
   },
   "project": {
     "details": "Chi tiết",
@@ -151,7 +153,10 @@ declare const messages: {
     "completed": "Đã xong",
     "undated": "Chưa rõ thời gian",
     "tabProjects": "Dự án",
-    "tabOpenSource": "Open source"
+    "tabOpenSource": "Open source",
+    "loadErrorTitle": "Không tải được danh sách dự án.",
+    "loadErrorDescription": "Kiểm tra kết nối rồi thử lại.",
+    "retry": "Thử lại"
   },
   "blog": {
     "details": "Chi tiết",
@@ -161,7 +166,10 @@ declare const messages: {
     "pageTitle": "Bài viết",
     "count": "{count, plural, =0 {Chưa có bài viết} other {# bài viết}}",
     "showDrafts": "Bản nháp",
-    "showDraftsHint": "Chỉ admin thấy — khách truy cập không bao giờ thấy bản nháp"
+    "showDraftsHint": "Chỉ admin thấy — khách truy cập không bao giờ thấy bản nháp",
+    "loadErrorTitle": "Không thể tải bài viết",
+    "loadErrorDescription": "Danh sách chưa tải được. Kiểm tra kết nối rồi thử lại.",
+    "retry": "Thử lại"
   },
   "blogDetails": {
     "relatedProject": "Dự án liên quan",
@@ -200,7 +208,13 @@ declare const messages: {
     "relatedPosts": "Bài viết liên quan",
     "previousPost": "Trước",
     "nextPost": "Tiếp",
-    "aboutTheAuthor": "Về tác giả"
+    "aboutTheAuthor": "Về tác giả",
+    "retry": "Thử lại",
+    "statsLoadFailed": "Không tải được số liệu",
+    "replyingTo": "Đang trả lời @{user}",
+    "analyticsFailed": "Không lưu được hoạt động đọc của bạn",
+    "breadcrumb": "Đường dẫn",
+    "readingProgress": "Tiến độ đọc"
   },
   "contact": {
     "letsWorkTogether": "Cùng hợp tác",
@@ -272,7 +286,10 @@ declare const messages: {
     "present": "Hiện tại",
     "ongoing": "Đang học",
     "moreAchievements": "Xem thêm {count} thành tựu",
-    "showLess": "Thu gọn"
+    "showLess": "Thu gọn",
+    "profileUnavailableTitle": "Chưa thiết lập hồ sơ",
+    "profileUnavailableDescription": "Hồ sơ công khai bạn đang tìm hiện chưa khả dụng hoặc chưa được thiết lập.",
+    "returnHome": "Về trang chủ"
   },
   "components": {
     "expandableText": {
@@ -285,14 +302,18 @@ declare const messages: {
       "seeMore": "Xem thêm",
       "searchProject": "Tìm kiếm dự án...",
       "tags": "Thẻ",
-      "techStack": "Công nghệ"
+      "techStack": "Công nghệ",
+      "loadError": "Không tải được bộ lọc.",
+      "retry": "Thử lại"
     },
     "blogFilters": {
       "filters": "Bộ lọc",
       "reset": "Đặt lại",
       "seeMore": "Xem thêm",
       "searchBlog": "Tìm kiếm bài viết...",
-      "tags": "Thẻ"
+      "tags": "Thẻ",
+      "loadError": "Không tải được bộ lọc.",
+      "retry": "Thử lại"
     },
     "blogCard": {
       "views": "{count} lượt xem",
@@ -318,6 +339,11 @@ declare const messages: {
       "view": "Xem",
       "merged": "Pull request đã merge",
       "empty": "Không có pull request nào khớp bộ lọc."
+    },
+    "sectionLoadError": {
+      "title": "Không tải được phần này.",
+      "description": "Vui lòng thử lại sau.",
+      "retry": "Thử lại"
     }
   },
   "dashboard": {
@@ -347,10 +373,9 @@ declare const messages: {
         "clearCache": "Xóa cache",
         "viewSite": "Xem trang web",
         "signOut": "Đăng xuất",
+        "signOutError": "Đăng xuất thất bại",
         "cacheSuccess": "Hệ thống đã cập nhật",
-        "cacheSuccessDesc": "Tất cả bộ nhớ đệm đã được xóa.",
-        "cacheError": "Cập nhật thất bại",
-        "cacheErrorDesc": "Có lỗi xảy ra khi xóa bộ nhớ đệm."
+        "cacheError": "Cập nhật thất bại"
       }
     },
     "dashboard": {
@@ -429,7 +454,8 @@ declare const messages: {
         "publishedLabel": "Đã xuất bản",
         "coverImageLabel": "Ảnh bìa",
         "tagsLabel": "Thẻ",
-        "tagsPlaceholder": "Chọn thẻ..."
+        "tagsPlaceholder": "Chọn thẻ...",
+        "optionsError": "Không tải được danh sách lựa chọn."
       },
       "overview": {
         "viewsChartTitle": "Lượt xem — 30 ngày qua",
@@ -521,7 +547,6 @@ declare const messages: {
         "endDateLabel": "Ngày kết thúc",
         "techStackLabel": "Công nghệ sử dụng",
         "techStackPlaceholder": "Chọn công nghệ",
-        "techStackLoading": "Đang tải danh sách công nghệ…",
         "techStackError": "Không thể tải danh sách công nghệ.",
         "translationsTitle": "Bản dịch",
         "descriptionLabel": "Mô tả",
@@ -694,11 +719,9 @@ declare const messages: {
         "totalTooLargeDescription": "Tổng dung lượng vượt quá {maxSize, number}MB. Hãy tải lên ít tệp hơn mỗi lần.",
         "successTitle": "Thành công",
         "successDescription": "Tất cả hình ảnh đã được tải lên.",
-        "uploadFailedTitle": "Tải lên thất bại",
         "uploadButton": "Tải lên {count} tệp"
       },
       "toast": {
-        "uploadSuccess": "Tải lên thành công",
         "uploadError": "Tải lên thất bại",
         "deleteSuccess": "Đã xóa media",
         "deleteError": "Không thể xóa media"
@@ -754,8 +777,10 @@ declare const messages: {
         "publishedLabel": "Đã xuất bản",
         "techStackLabel": "Công nghệ sử dụng",
         "techStackPlaceholder": "Chọn công nghệ",
+        "noTechStackOptions": "Chưa có công nghệ nào.",
         "tagsLabel": "Thẻ",
         "tagsPlaceholder": "Chọn thẻ",
+        "noTagOptions": "Chưa có thẻ nào.",
         "translationsLabel": "Bản dịch nội dung",
         "titleLabel": "Tiêu đề",
         "descriptionLabel": "Mô tả",
@@ -915,8 +940,13 @@ declare const messages: {
         "urlInvalid": "Nhập đường dẫn https:// đầy đủ, hoặc một địa chỉ email",
         "languageRequired": "Vui lòng nhập ngôn ngữ"
       },
+      "loadError": {
+        "title": "Không tìm thấy hồ sơ",
+        "description": "Hiện chưa thể tải dữ liệu hồ sơ của bạn."
+      },
       "toast": {
         "updated": "Đã cập nhật hồ sơ",
+        "loadError": "Không thể làm mới hồ sơ",
         "saveError": "Lưu thất bại"
       }
     },
@@ -955,7 +985,15 @@ declare const messages: {
     "signInWithGoogle": "Tiếp tục với Google",
     "emailPlaceholder": "email@example.com",
     "accessDenied": "Tài khoản đó không có quyền truy cập dashboard này.",
-    "signInFailed": "Không thể hoàn tất đăng nhập. Vui lòng thử lại."
+    "signInFailed": "Không thể hoàn tất đăng nhập. Vui lòng thử lại.",
+    "back": "Quay lại",
+    "welcomeBack": "Chào mừng bạn trở lại",
+    "enterEmailToSignIn": "Nhập email để đăng nhập vào tài khoản của bạn",
+    "email": "Email",
+    "signInWithEmail": "Đăng nhập bằng email",
+    "sendLinkFailed": "Không thể gửi liên kết đăng nhập. Vui lòng thử lại.",
+    "checkEmailTitle": "Kiểm tra email của bạn",
+    "checkEmailDescription": "Chúng tôi đã gửi liên kết đăng nhập tới {email}. Hãy kiểm tra cả thư rác nhé."
   },
   "email": {
     "signIn": {

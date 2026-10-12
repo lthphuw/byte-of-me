@@ -2,6 +2,7 @@
 
 import { useInfiniteQuery } from '@tanstack/react-query';
 
+import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
@@ -41,11 +42,8 @@ export function useInfiniteListQuery<T>({
 }: InfiniteListQueryOptions<T>) {
   return useInfiniteQuery({
     queryKey,
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await fetchPage(pageParam as number);
-      if (!response.success) throw new Error(response.errorMsg);
-      return response.data;
-    },
+    queryFn: async ({ pageParam = 1 }) =>
+      unwrapApiResponse(await fetchPage(pageParam)),
     getNextPageParam: (lastPage) => {
       return lastPage?.meta.hasMore
         ? lastPage?.meta.currentPage + 1

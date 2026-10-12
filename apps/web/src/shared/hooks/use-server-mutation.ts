@@ -15,8 +15,11 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export type ServerMutationOptions<TVariables, TData> = {
   mutationFn: (variables: TVariables) => Promise<ApiResponse<TData>>;
-  /** Localised generic failure text: the fallback for every failure (D2). */
-  errorMessage: string;
+  /**
+   * Localised generic failure text, the fallback for every failure (D2). Omit
+   * it for a background write that must stay silent: the failure is logged only.
+   */
+  errorMessage?: string;
   /** Localised text per `errorCode`, for actions that name their reason. */
   errorMessages?: Partial<Record<string, string>>;
   successMessage?: string;
@@ -25,6 +28,21 @@ export type ServerMutationOptions<TVariables, TData> = {
   /** Runs only after the envelope check passed. */
   onSuccess?: (data: TData, variables: TVariables) => void;
 };
+
+/**
+ * A server action that calls `redirect()` rejects its promise with a
+ * `NEXT_REDIRECT;` digest. The navigation has already started, so the
+ * rejection is not a failure and must not toast as one.
+ */
+export function isRedirectSignal(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'digest' in error &&
+    typeof error.digest === 'string' &&
+    error.digest.startsWith('NEXT_REDIRECT;')
+  );
+}
 
 /**
  * The one client write path: unwraps the envelope, so `onSuccess` runs only
@@ -51,10 +69,12 @@ export function useServerMutation<TVariables, TData>({
       onSuccess?.(data, variables);
     },
     onError: (error) => {
+      if (isRedirectSignal(error)) return;
       console.error(error);
       const code =
         error instanceof ServerActionError ? error.errorCode : undefined;
-      toast.error((code && errorMessages?.[code]) || errorMessage);
+      const message = (code && errorMessages?.[code]) || errorMessage;
+      if (message) toast.error(message);
     },
   });
 }

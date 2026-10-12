@@ -51,6 +51,13 @@ export default function Error({
 
           <div className="mt-2 flex flex-col flex-wrap gap-4 md:flex-row">
             <GoBackButton>{t('goBack')}</GoBackButton>
+            <Button
+              variant="secondary"
+              className="w-full gap-1 py-3 text-lg shadow-md md:w-auto md:py-2 md:text-base"
+              onClick={reset}
+            >
+              {t('tryAgain')}
+            </Button>
             <Link href={Routes.Homepage}>
               <Button
                 variant="secondary"

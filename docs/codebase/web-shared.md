@@ -11,7 +11,7 @@ apps/web/src/shared/
 ├── config/   env.ts (validated env, keys in ../environment.md), site.ts, global.ts (nav, `Routes`),
 │             host.ts (base URL), language.ts (`supportedLanguages`), sitemap.ts
 ├── hooks/    client hooks: use-crud-manager, use-editing-record, use-infinite-list-query,
-│             use-url-synced-search, use-form-autosave, use-reset-on-open,
+│             use-server-mutation, use-url-synced-search, use-form-autosave, use-reset-on-open,
 │             use-reveal-on-invalid-submit, use-print-on-fonts-ready
 ├── i18n/     routing.ts (locales), request.ts (next-intl request config),
 │             navigation.ts (Link, useRouter, ...), messages.ts (client namespace lists, `pickMessages`)
@@ -35,9 +35,10 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 | `apps/web/src/shared/lib/i18n-utils.ts` | DB translations: `getTranslationLanguages`, `getTranslatedContent` | 23 files: `apps/web/src/entities/blog/`, `apps/web/src/entities/project/`, `apps/web/src/entities/user-profile/` |
 | `apps/web/src/shared/lib/rate-limit.ts` | `checkRateLimit` (fixed window, fails open) | 6 files: `apps/web/src/features/public/`, `apps/web/src/entities/comment/`, `apps/web/src/entities/contact-message/`, `apps/web/src/shared/lib/auth/` |
 | `apps/web/src/shared/lib/client-ip.ts` | `getClientIp(headers)`: Vercel header, `x-real-ip`, `x-forwarded-for`, else `'unknown'` | 3 files: `apps/web/src/entities/contact-message/`, `apps/web/src/features/public/`, `apps/web/src/shared/lib/auth/` |
-| `apps/web/src/shared/lib/query/` | `getQueryClient`, `makeQueryClient`, `prefetchAdminPage`, `unwrapApiResponse` (throws `ServerActionError`, which carries `errorCode`), `ADMIN_PAGE_SIZE` (12), `ADMIN_OPTIONS_LIMIT` (500) | 23 files: `apps/web/src/app/[locale]/`, `apps/web/src/widgets/dashboard/`, `apps/web/src/shared/hooks/` |
-| `apps/web/src/shared/hooks/use-server-mutation.ts` | `useServerMutation`: the one client write path. Unwraps the envelope, runs `onSuccess` only on success, invalidates keys, toasts `errorMessage` (or the `errorMessages[errorCode]` text) on failure | every write hook under `apps/web/src/entities/*/query/` and `apps/web/src/features/` |
-| `apps/web/src/shared/ui/query-state.tsx` | `QueryState`: skeleton while loading, error with retry, empty state, then content. Strings come from the caller | `ManagerListState` and the public list widgets |
+| `apps/web/src/shared/lib/query/` | `getQueryClient`, `makeQueryClient`, `unwrapApiResponse` (throws `ServerActionError`, which carries `errorCode`), `ADMIN_PAGE_SIZE` (12), `ADMIN_OPTIONS_LIMIT` (500) | 23 files: `apps/web/src/app/[locale]/`, `apps/web/src/widgets/dashboard/`, `apps/web/src/shared/hooks/` |
+| `apps/web/src/shared/hooks/use-server-mutation.ts` | `useServerMutation`: the one client write path. Unwraps the envelope, invalidates the `invalidate` keys and runs `onSuccess` only on success; on failure logs `errorMsg` with `console.error` and toasts `errorMessages[errorCode]`, else `errorMessage` | the write hooks in `apps/web/src/entities/*/query/` and the features that save through them |
+| `apps/web/src/shared/ui/query-state.tsx` | `QueryState`: skeleton while loading, error block with a retry button, empty block, then content; a background refetch keeps the content and shows a corner spinner. Every string comes from the caller | the dashboard managers (through `ManagerListState`) and the public list widgets; see [web-widgets.md](web-widgets.md) |
+| `apps/web/src/shared/ui/section-load-error.tsx` | `SectionLoadError`: the error block for a server-rendered section. It takes a `retryLabel` (which calls `router.refresh()`) only on a dynamic route | the public server sections, with no retry (static pages re-serve the failure), and the dashboard sections, with retry |
 | `apps/web/src/shared/lib/media/` | image compression: shared `image-compression-rules.ts` and `-config.ts`; `compress-in-browser.ts` (client), `compress-image.ts` (server, sharp); `mp4-dimensions.ts` (server, `readMp4Dimensions`: an MP4's display size from its `tkhd` box, no decoder) | 10 files: `apps/web/src/entities/media/`, `apps/web/src/features/dashboard/`, `apps/web/src/entities/workspace-settings/` |
 | `apps/web/src/shared/lib/metadata.ts` | `buildPublicPageMetadata`, `buildAlternates` (canonical, hreflang with `x-default`, RSS link), `buildSiteJsonLd` (no email), `SITE_PERSON_ID` (the `@id` blog posts reference as author), `buildIconSet` | the layouts under `apps/web/src/app/[locale]/` and the blog post page |
 | `apps/web/src/shared/lib/brand-mark.ts` | mark geometry, `renderFaviconSvg`; source for favicons and the og card | 3 files: `apps/web/src/shared/ui/brand-mark.tsx`, `apps/web/src/shared/lib/metadata.ts`, `apps/web/src/app/api/og/route.tsx` |
@@ -45,6 +46,15 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 | `apps/web/src/shared/ui/media-cover.tsx` | `MediaCover` (pulse until drawn, then fades out), `MediaFrame` (box around one image or video), `useMediaDrawn` (checks the media at mount, then listens for load or error) | `apps/web/src/entities/blog/ui/blog-card.tsx`, `apps/web/src/entities/education/ui/education-item.tsx`, `achievement-images.tsx`, `apps/web/src/entities/featured-work/ui/featured-work-demo.tsx` |
 | `apps/web/src/shared/ui/content-fade.tsx` | `ContentFade`: CSS fade-in for a Suspense-resolved block, opacity only | `apps/web/src/widgets/public/` (blog details, contact, footer), `apps/web/src/features/public/homepage-*`, `blog-live-stats.tsx` |
 | `apps/web/src/shared/lib/templates/sign-in-template.ts` | sign-in email HTML (`email` namespace) | 1 file: `apps/web/src/shared/lib/auth/auth.ts` |
+
+### Client query layer
+
+| piece | does | rule it carries |
+| --- | --- | --- |
+| `unwrapApiResponse<T>(res)` (`apps/web/src/shared/lib/query/unwrap-api-response.ts`) | returns `data` on success; throws `ServerActionError` on `{ success: false }` | the only way a query or mutation reads an envelope (AGENTS §8) |
+| `ServerActionError` (same file) | `message` is the action's `errorMsg`; `errorCode` is the reason the action named, `undefined` when it named none | a refused read is an error to TanStack, never an empty list |
+| `useServerMutation` (`apps/web/src/shared/hooks/use-server-mutation.ts`) | `mutationFn` → `unwrapApiResponse`, then the success path; the failure path is `onError` | a refused write runs no success path: no toast, no closed dialog |
+| `QueryState` (`apps/web/src/shared/ui/query-state.tsx`) | loading, error, empty, then children | the three states on every client read (AGENTS §9) |
 
 ### Auth helpers (`apps/web/src/shared/lib/auth/`)
 
@@ -59,7 +69,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 | `github-userinfo.ts` | `fetchGitHubProfile`: adds `email_verified` from the GitHub emails endpoint | `auth.ts` |
 | `magic-link-rate-limit.ts` | `isMagicLinkRequestAllowed`: 5 mails per 600 s per IP, fails open | `auth.ts` (:103) |
 | `normalize-email.ts` | `normalizeEmail`: trim and lowercase | `site-owner.ts`, `github-userinfo.ts` |
-| `set-test-user.test-helper.ts` | `setTestUser`, `resetTestUser` (specs only) | 8 spec files |
+| `set-test-user.test-helper.ts` | `setTestUser`, `resetTestUser` (specs only) | 12 spec files |
 | `index.ts` | barrel: `admin-oauth-providers`, `auth`, `callback-url`, `normalize-email`, `session`; `site-owner` arrives via `session` | n/a |
 
 ### i18n: two systems (AGENTS §4)
@@ -91,7 +101,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 | `apps/web/src/shared/ui/lazy-rich-text-editor.test-stub.ts` | replaces the TipTap editor for every spec |
 
 - DB guard: `test-setup.ts` sets the two database URL env vars to a local, unreachable placeholder unconditionally, then throws if either is non-local. Bun loads `apps/web/.env` before preloads, so a `??=` default would keep production (AGENTS §10).
-- Identity: specs run as the stub admin. Switch with `setTestUser`, restore with `resetTestUser` in `afterAll` (8 spec files do).
+- Identity: specs run as the stub admin. Switch with `setTestUser`, restore with `resetTestUser` in `afterAll` or `afterEach` (12 spec files call `setTestUser`).
 - Specs are `*.spec.ts(x)`, rendered with `@testing-library/react`; `mock.module()` is banned (AGENTS §10).
 - Preloads are process-wide: a stub added to `bunfig.toml` affects every spec.
 
@@ -102,7 +112,9 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 - Redirect target: every sign-in entry point passes `from` through `sanitizeCallbackUrl(from, locale)` (`apps/web/src/shared/lib/auth/callback-url.ts:40`).
 - Public read: `handlePublicAction` (`apps/web/src/shared/api/public-action-template.ts:91`) catches, logs, and returns a generic `errorMsg` with `errorCode: 'unknown'`; it wraps `withPublicActionHandler` (`:34`), which adds the locale and optional `unstable_cache`.
 - Public write: `parseInput` (`apps/web/src/shared/lib/validate-action-input.ts:49`), then `checkRateLimit` (`apps/web/src/shared/lib/rate-limit.ts:23`), then Prisma, then `revalidateTag` after the write.
-- Admin list: `prefetchAdminPage(pageKey, fetchPage)` on the server and `useCrudManager` on the client share the key factory and the fetcher, and both use `ADMIN_PAGE_SIZE`.
+- Admin list: each dashboard page prefetches `<entity>Queries.adminPage(1)` into a `HydrationBoundary`, and `useCrudManager` reads the same `pageKey` factory, so both use one key and one query function. Both use `ADMIN_PAGE_SIZE`.
+- Client read: a `queryOptions` factory in `apps/web/src/entities/<slice>/query/<slice>-queries.ts` binds a key to its query function. A server `prefetchQuery` and the client hook both call that factory, so the hydrated entry is the one the hook reads (AGENTS §6).
+- Client write: a component calls `useServerMutation({ mutationFn, invalidate, onSuccess })`. The `invalidate` keys come from the entity's `model/query-keys.ts` factory.
 - Image upload: `compressInBrowser` (canvas) and `compressImage` (sharp, `server-only`) both apply `image-compression-rules.ts`, so they agree on skip and size rules.
 
 ## Recipes
@@ -123,11 +135,12 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 - `parseInput` returns `ok`, not `success`: `{ ok: false, errorMsg, errorCode: 'invalid', detail }`; `detail` is for logs only.
 - `checkRateLimit` and `isMagicLinkRequestAllowed` report "allowed" on any database error. This is deliberate fail-open.
 - Owner identity is the owner override, else the contact address; that address defaults to a literal at `apps/web/src/shared/config/env.ts:11`, so set the override in production (see ../environment.md).
-- `purgeEntireCache` is not in `apps/web/src/shared/lib/revalidate.ts`, the path AGENTS §6 gives; that file does not exist. The helper is under `apps/web/src/widgets/dashboard/dashboard-sidebar/lib/`.
 - `revalidateTag`'s second argument is `'max'` in 31 calls and `'default'` in 3: copy the neighbouring action rather than choosing.
 - `withPublicActionHandler` appends only `locale` to `unstable_cache` keys; every other input the handler closes over must be in `cacheKey` (AGENTS §8).
-- Per-record tags are raw strings: `cacheTags: [CACHE_TAGS.BLOG, slug]` (`apps/web/src/entities/blog/api/get-public-blog-by-slug.ts:91`) is cleared by `revalidateTag(blog.slug, 'max')` (`apps/web/src/features/public/toggle-blog-interactions/lib/toggle-blog-interaction.ts:80`); change one, change both.
+- Per-record tags are raw strings: `cacheTags: [CACHE_TAGS.BLOG, slug]` (`apps/web/src/entities/blog/api/get-public-blog-by-slug.ts:91`) is cleared by `revalidateTag(blog.slug, 'max')` (`apps/web/src/entities/blog/api/toggle-blog-interaction.ts:84`); change one, change both.
 - `ADMIN_PAGE_SIZE` is not part of the admin query key (`apps/web/src/shared/lib/query/admin-list.ts`); a prefetch and a manager that disagree hydrate the wrong rows.
+- `requireAdmin()` above an action's `try` makes the call reject, which the client sees as an error with no envelope. Inside the `try` the same refusal becomes a failure envelope. Both fail closed. The workspace-settings actions use the first form (`apps/web/src/entities/workspace-settings/api/get-admin-workspace-settings.ts`).
+- `errorCode` is set only when the action names its reason. `ServerActionError.errorCode` is `undefined` otherwise, so every `errorMessages` map needs `errorMessage` as its fallback (AGENTS §9).
 
 ## Run
 

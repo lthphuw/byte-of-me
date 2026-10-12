@@ -5,7 +5,7 @@ import { environmentManager, QueryClient } from '@tanstack/react-query';
  * Single construction point so server prefetching and the client provider
  * share the same defaults. The 60s staleTime keeps freshly hydrated or
  * fetched data from refetching on every remount; individual queries override
- * it where they need to (e.g. the blogs list uses 5 minutes).
+ * it where they need to (e.g. the blog stats query uses 5 minutes).
  */
 export function makeQueryClient() {
   return new QueryClient({

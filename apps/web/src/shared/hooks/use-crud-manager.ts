@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+
+import { useServerMutation } from './use-server-mutation';
 
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
@@ -11,9 +13,8 @@ import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
 export type CrudManagerOptions<TItem extends { id: string }, TSaveInput> = {
   /**
-   * Query-key root from the entity's key factory (e.g. `blogKeys.adminList()`);
-   * the page number is appended automatically when paginated, unless `pageKey`
-   * says otherwise.
+   * Query-key root from the entity's key factory (e.g. `blogKeys.adminList()`).
+   * Every save and delete invalidates this root, so all pages refetch.
    */
   queryKey: readonly unknown[];
   /** Human label used in toasts, e.g. 'Tag' → 'Tag created'. */
@@ -38,7 +39,11 @@ export type CrudManagerOptions<TItem extends { id: string }, TSaveInput> = {
    * when the item is saved or deleted, forcing the next edit to re-fetch.
    */
   detailKey?: (item: TItem) => readonly unknown[];
-  pageSize?: number;
+  /**
+   * Only `ADMIN_PAGE_SIZE`. The page key is built from the page number alone, so
+   * another size would share its cache entry with the page the server prefetched.
+   */
+  pageSize?: typeof ADMIN_PAGE_SIZE;
   create: (values: TSaveInput) => Promise<ApiResponse<unknown>>;
   update: (id: string, values: TSaveInput) => Promise<ApiResponse<unknown>>;
   remove: (id: string) => Promise<ApiResponse<unknown>>;
@@ -49,11 +54,11 @@ export type CrudManagerOptions<TItem extends { id: string }, TSaveInput> = {
         limit: number
       ) => Promise<ApiResponse<PaginatedData<TItem>>>;
       /**
-       * Key of one page — the entity's `adminPage` — so the server prefetch
-       * and this hook call one factory. Defaults to `[...queryKey, page]`,
-       * which every `adminPage` equals.
+       * Key of one page: the entity's `adminPage`, so the server prefetch and
+       * this hook call one factory. Required: a key built here could differ
+       * from the prefetch and hydrate the wrong rows.
        */
-      pageKey?: (page: number) => readonly unknown[];
+      pageKey: (page: number) => readonly unknown[];
       fetchAll?: never;
       initialItems?: never;
     }
@@ -97,10 +102,12 @@ export function useCrudManager<TItem extends { id: string }, TSaveInput>({
 
   type ListResult = { data: TItem[]; meta?: PaginatedData<TItem>['meta'] };
 
+  // A paginated list always has a `pageKey` (the type requires it). A
+  // non-paginated list keys on the root.
+  const listKey = fetchPage && pageKey ? pageKey(page) : [...queryKey];
+
   const query = useQuery<ListResult>({
-    queryKey: fetchPage
-      ? pageKey?.(page) ?? [...queryKey, page]
-      : [...queryKey],
+    queryKey: listKey,
     queryFn: async (): Promise<ListResult> => {
       if (fetchPage) return unwrapApiResponse(await fetchPage(page, pageSize));
       if (!fetchAll) {
@@ -112,20 +119,22 @@ export function useCrudManager<TItem extends { id: string }, TSaveInput>({
     initialData: initialItems ? { data: initialItems } : undefined,
   });
 
-  const saveMutation = useMutation({
-    mutationFn: async (values: TSaveInput) =>
-      unwrapApiResponse(
-        await (editing ? update(editing.id, values) : create(values))
-      ),
-    onSuccess: () => {
-      const saved = editing;
-      queryClient.invalidateQueries({ queryKey });
+  type SaveInput = { values: TSaveInput; target: Nullable<TItem> };
+
+  const saveMutation = useServerMutation<SaveInput, unknown>({
+    mutationFn: ({ values, target }) =>
+      target ? update(target.id, values) : create(values),
+    errorMessage: messages
+      ? messages.saveError
+      : `Failed to save ${lowerLabel}`,
+    invalidate: [queryKey],
+    onSuccess: (_data, { target }) => {
       toast.success(
         messages
-          ? saved
+          ? target
             ? messages.updated
             : messages.created
-          : saved
+          : target
           ? `${entityLabel} updated`
           : `${entityLabel} created`
       );
@@ -134,32 +143,25 @@ export function useCrudManager<TItem extends { id: string }, TSaveInput>({
       // disabled observer does not refetch on the way out: an invalidated but
       // still-present entry would be handed to the editor for one render on
       // the next open, which is exactly the pre-save document we are dropping.
-      if (saved && detailKey) {
-        queryClient.removeQueries({ queryKey: detailKey(saved) });
+      if (target && detailKey) {
+        queryClient.removeQueries({ queryKey: detailKey(target) });
       }
     },
-    onError: () =>
-      toast.error(
-        messages ? messages.saveError : `Failed to save ${lowerLabel}`
-      ),
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => unwrapApiResponse(await remove(id)),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey });
+  const deleteMutation = useServerMutation<TItem, unknown>({
+    mutationFn: (item) => remove(item.id),
+    errorMessage: messages
+      ? messages.deleteError
+      : `Could not delete ${lowerLabel}`,
+    invalidate: [queryKey],
+    onSuccess: (_data, item) => {
       toast.success(messages ? messages.deleted : `${entityLabel} deleted`);
       // The same per-item cache as a save. The id cannot be reopened, but
       // its document would otherwise sit in memory until garbage collection.
-      if (itemToDelete && detailKey) {
-        queryClient.removeQueries({ queryKey: detailKey(itemToDelete) });
-      }
+      if (detailKey) queryClient.removeQueries({ queryKey: detailKey(item) });
       setItemToDelete(null);
     },
-    onError: () =>
-      toast.error(
-        messages ? messages.deleteError : `Could not delete ${lowerLabel}`
-      ),
   });
 
   const openCreateDialog = () => {
@@ -199,14 +201,15 @@ export function useCrudManager<TItem extends { id: string }, TSaveInput>({
     openCreateDialog,
     openEditDialog,
     closeDialog,
-    save: saveMutation.mutate,
+    save: (values: TSaveInput) =>
+      saveMutation.mutate({ values, target: editing }),
     isSaving: saveMutation.isPending,
 
     // Delete confirmation
     itemToDelete,
     requestDelete: (item: TItem) => setItemToDelete(item),
     cancelDelete: () => setItemToDelete(null),
-    confirmDelete: () => itemToDelete && deleteMutation.mutate(itemToDelete.id),
+    confirmDelete: () => itemToDelete && deleteMutation.mutate(itemToDelete),
     isDeleting: deleteMutation.isPending,
     /** True only for the item whose deletion is in flight. */
     isDeletingItem: (item: TItem) =>
