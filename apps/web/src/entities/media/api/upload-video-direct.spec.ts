@@ -37,7 +37,10 @@ describe('uploadVideoDirect', () => {
   it('asks for a URL, PUTs the file to it, then records it', async () => {
     const { deps, prepare, put, finalize } = setup();
 
-    expect(await uploadVideoDirect(file, 'featured-work', deps)).toBe(row);
+    expect(await uploadVideoDirect(file, 'featured-work', deps)).toEqual({
+      success: true,
+      data: row,
+    });
 
     expect(prepare).toHaveBeenCalledWith({
       fileName: 'demo.mp4',
@@ -64,9 +67,10 @@ describe('uploadVideoDirect', () => {
       })),
     });
 
-    await expect(
-      uploadVideoDirect(file, 'featured-work', deps)
-    ).rejects.toThrow('Could not start the upload.');
+    expect(await uploadVideoDirect(file, 'featured-work', deps)).toEqual({
+      success: false,
+      errorMsg: 'Could not start the upload.',
+    });
     expect(put).not.toHaveBeenCalled();
   });
 
@@ -75,9 +79,10 @@ describe('uploadVideoDirect', () => {
       put: mock(async () => new Response('EntityTooLarge', { status: 413 })),
     });
 
-    await expect(
-      uploadVideoDirect(file, 'featured-work', deps)
-    ).rejects.toThrow('Storage refused "demo.mp4" (HTTP 413): EntityTooLarge');
+    expect(await uploadVideoDirect(file, 'featured-work', deps)).toEqual({
+      success: false,
+      errorMsg: 'Storage refused "demo.mp4" (HTTP 413): EntityTooLarge',
+    });
     expect(finalize).not.toHaveBeenCalled();
   });
 
@@ -89,8 +94,9 @@ describe('uploadVideoDirect', () => {
       })),
     });
 
-    await expect(
-      uploadVideoDirect(file, 'featured-work', deps)
-    ).rejects.toThrow('not an accepted image or video format');
+    expect(await uploadVideoDirect(file, 'featured-work', deps)).toEqual({
+      success: false,
+      errorMsg: '"demo.mp4" is not an accepted image or video format.',
+    });
   });
 });

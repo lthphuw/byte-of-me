@@ -6,7 +6,6 @@
 import { describe, expect, it, mock } from 'bun:test';
 
 import {
-  createScopedImageUploader,
   createSingleMediaRecordUploader,
   createSingleMediaUploader,
 } from './upload-single-media';
@@ -303,12 +302,6 @@ describe('uploadSingleMedia refuses video', () => {
       uploadSingleMedia(clip('a.mp4', 'video/mp4'), 'featured-work')
     ).rejects.toThrow(/is a video/);
     expect(upload).not.toHaveBeenCalled();
-  });
-
-  it('refuses a clip through the scoped uploader the editors are given', async () => {
-    await expect(
-      createScopedImageUploader('blog')(clip('a.webm', 'video/webm'))
-    ).rejects.toThrow(/"a\.webm" is a video/);
   });
 
   it("still uploads an image through the editors' uploader", async () => {

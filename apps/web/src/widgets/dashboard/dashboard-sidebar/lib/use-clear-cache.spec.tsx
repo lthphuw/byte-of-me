@@ -16,6 +16,7 @@
  * constructing an error (AGENTS §10).
  */
 import { logger } from '@byte-of-me/logger';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
 import {
   afterAll,
@@ -41,9 +42,7 @@ const messages = {
     sidebar: {
       actions: {
         cacheSuccess: 'System updated',
-        cacheSuccessDesc: 'All caches have been cleared successfully.',
         cacheError: 'Update failed',
-        cacheErrorDesc: 'An error occurred while clearing caches.',
       },
     },
   },
@@ -60,11 +59,14 @@ const logError = spyOn(logger, 'error');
 const toastError = spyOn(toast, 'error');
 
 function renderClearCache() {
+  const queryClient = new QueryClient();
   return renderHook(() => useClearCache(), {
     wrapper: ({ children }) => (
-      <NextIntlClientProvider locale="en" messages={messages}>
-        {children}
-      </NextIntlClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <NextIntlClientProvider locale="en" messages={messages}>
+          {children}
+        </NextIntlClientProvider>
+      </QueryClientProvider>
     ),
   });
 }

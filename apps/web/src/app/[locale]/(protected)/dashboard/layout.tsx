@@ -1,14 +1,15 @@
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 
-import { WorkspaceSettingsProvider } from '@/entities/workspace-settings';
-import { getWorkspaceSettings } from '@/entities/workspace-settings/api/get-workspace-settings';
+import { workspaceSettingsQueries } from '@/entities/workspace-settings/query/workspace-settings-queries';
 import {
   DASHBOARD_MESSAGE_NAMESPACES,
   pickMessages,
 } from '@/shared/i18n/messages';
 import { buildIconSet } from '@/shared/lib/metadata';
+import { getQueryClient } from '@/shared/lib/query/get-query-client';
 import { SkipToContentLink } from '@/shared/ui/skip-to-content-link';
 import { DashboardSidebar } from '@/widgets/dashboard/dashboard-sidebar/ui/dashboard-sidebar';
 
@@ -33,21 +34,15 @@ export default async function DashboardLayout({
     DASHBOARD_MESSAGE_NAMESPACES
   );
 
-  // Read on the server and seeded into the provider so every form under the
-  // dashboard — blog, project, education, profile — shares the owner's real
-  // `imageCompression` config through `ImageUpload`'s context fallback,
-  // instead of each one silently defaulting to `IMAGE_COMPRESSION_DEFAULTS`.
-  // Only `MediaManager`'s own compression popover writes through this
-  // provider's `update`; every other consumer here only ever reads it.
-  //
-  // Imported by its own path rather than through `@/entities/workspace-settings`
-  // because it is a plain server module that value-imports prisma; the barrel is
-  // client-reachable. Its own `api/index.ts` says the same thing at more length.
-  const settings = await getWorkspaceSettings();
+  // The owner's settings, prefetched and hydrated, so the first client render
+  // already holds them: `useWorkspaceSettings()` reads this query, and every
+  // form under the dashboard gets the real `imageCompression` config.
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery(workspaceSettingsQueries.current());
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <WorkspaceSettingsProvider initial={settings}>
+      <HydrationBoundary state={dehydrate(queryClient)}>
         {/* `paddingLeft`/`paddingRight`, not a Tailwind class: this is the
             landscape left/right safe area (see `[locale]/layout.tsx`'s
             `viewportFit: 'cover'`), applied once here so whichever child is
@@ -96,7 +91,7 @@ export default async function DashboardLayout({
             </main>
           </div>
         </div>
-      </WorkspaceSettingsProvider>
+      </HydrationBoundary>
     </NextIntlClientProvider>
   );
 }

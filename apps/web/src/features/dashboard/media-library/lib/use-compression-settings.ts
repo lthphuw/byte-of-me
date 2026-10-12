@@ -1,57 +1,43 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
-import { updateWorkspaceSettings } from '@/entities/workspace-settings';
+import {
+  useUpdateImageCompression,
+  useWorkspaceSettings,
+} from '@/entities/workspace-settings/query';
 import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
 
 /**
- * The compression settings popover's own state — read from the server once
- * (`dashboard/media/page.tsx` → `getWorkspaceSettings`) and written in the
- * background from here on.
- *
- * A smaller cousin of `WorkspaceSettingsContext`: that provider tracks a
- * whole settings object with many controls that can each be mid-flight at
- * once, which this popover does not need — it owns exactly one nested field,
- * and the popover holds it open for one editing session rather than the
- * whole workspace's lifetime. `updateWorkspaceSettings` still receives the
- * WHOLE `imageCompression` object on every write, never a single inner key:
- * the `preferences` column merges patches with a shallow `jsonb ||`, which
- * REPLACES the `imageCompression` key outright rather than merging inside it.
+ * The compression popover's state, read from the settings query. A change shows
+ * at once in `draft`, and the draft is dropped when the LATEST write settles: on
+ * success the query holds the server's answer, on refusal the controls fall back
+ * to it.
  */
-export function useCompressionSettings(initial: ImageCompressionConfig) {
-  const [config, setConfig] = useState(initial);
-  const [saveError, setSaveError] = useState(false);
-
-  /** What the server last confirmed — what a failed write rolls back to. */
-  const confirmed = useRef(initial);
-
-  const mutation = useMutation({
-    mutationFn: (next: ImageCompressionConfig) =>
-      updateWorkspaceSettings({ imageCompression: next }),
-    onSuccess: (result) => {
-      if (result.success) {
-        confirmed.current = result.data.imageCompression;
-        setConfig(result.data.imageCompression);
-        setSaveError(false);
-      } else {
-        setConfig(confirmed.current);
-        setSaveError(true);
-      }
-    },
-    onError: () => {
-      setConfig(confirmed.current);
-      setSaveError(true);
-    },
-  });
+export function useCompressionSettings() {
+  const t = useTranslations('dashboard.media.compression');
+  const { imageCompression } = useWorkspaceSettings();
+  const save = useUpdateImageCompression({ errorMessage: t('saveError') });
+  const [draft, setDraft] = useState<ImageCompressionConfig | null>(null);
+  const latestWrite = useRef(0);
 
   const update = (patch: Partial<ImageCompressionConfig>) => {
-    const next = { ...config, ...patch };
-    setConfig(next);
-    setSaveError(false);
-    mutation.mutate(next);
+    const next = { ...(draft ?? imageCompression), ...patch };
+    latestWrite.current += 1;
+    const write = latestWrite.current;
+    setDraft(next);
+    save.mutate(next, {
+      onSettled: () => {
+        if (write === latestWrite.current) setDraft(null);
+      },
+    });
   };
 
-  return { config, update, isSaving: mutation.isPending, saveError };
+  return {
+    config: draft ?? imageCompression,
+    update,
+    isSaving: save.isPending,
+    saveError: save.isError,
+  };
 }

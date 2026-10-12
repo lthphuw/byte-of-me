@@ -1,12 +1,8 @@
 'use client';
 
-import { getPaginatedMedia } from '@/entities/media/api/get-paginated-media';
-import { mediaKeys } from '@/entities/media/model/query-keys';
+import { MEDIA_PAGE_SIZE, mediaQueries } from '@/entities/media/query/media-queries';
 import { useInfiniteListQuery } from '@/shared/hooks/use-infinite-list-query';
 
-export function useMediaInfiniteQuery(limit: number = 12) {
-  return useInfiniteListQuery({
-    queryKey: mediaKeys.infinite(limit),
-    fetchPage: (page) => getPaginatedMedia({ page, limit }),
-  });
+export function useMediaInfiniteQuery(limit: number = MEDIA_PAGE_SIZE) {
+  return useInfiniteListQuery(mediaQueries.infinite(limit));
 }

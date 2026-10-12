@@ -17,14 +17,12 @@ import {
   Skeleton,
   useDebounce,
 } from '@byte-of-me/ui';
-import { useQuery } from '@tanstack/react-query';
 import { MessageSquare, Search, X } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import type { AdminContactMessage } from '@/entities/contact-message';
-import { getPaginatedContactMessages } from '@/entities/contact-message/api/get-paginated-contacts';
-import { contactMessageKeys } from '@/entities/contact-message/model/query-keys';
-import { ManagerListState } from '@/shared/ui';
+import { useContactMessages } from '@/entities/contact-message/query';
+import { QueryState } from '@/shared/ui/query-state';
 
 export function ContactMessageGallery() {
   const t = useTranslations('dashboard.contactGallery');
@@ -37,20 +35,8 @@ export function ContactMessageGallery() {
   const [selectedMessage, setSelectedMessage] =
     useState<AdminContactMessage | null>(null);
 
-  const { data, isLoading, isError, refetch, isPlaceholderData } = useQuery({
-    queryKey: contactMessageKeys.list(page, debouncedSearch),
-    // The action resolves with an ApiResponse rather than throwing, so unwrap
-    // here: reading `success` in the component would leave `isError` false and
-    // render the EMPTY state ("No messages found") on a server failure.
-    queryFn: async () => {
-      const res = await getPaginatedContactMessages(page, 6, {
-        search: debouncedSearch,
-      });
-      if (!res.success) throw new Error(res.errorMsg);
-      return res.data;
-    },
-    placeholderData: (prev) => prev,
-  });
+  const { data, isLoading, isError, refetch, isPlaceholderData } =
+    useContactMessages(page, debouncedSearch);
 
   const messages = data?.data ?? [];
   const meta = data?.meta;
@@ -97,12 +83,15 @@ export function ContactMessageGallery() {
       </div>
 
       {/* Gallery */}
-      <ManagerListState
+      <QueryState
         isLoading={isLoading}
         isError={isError}
-        onRetry={() => refetch()}
+        onRetry={() => void refetch()}
         isEmpty={messages.length === 0}
         emptyTitle={t('noMessages')}
+        errorTitle={tShared('managerListState.errorTitle')}
+        errorDescription={tShared('managerListState.errorDescription')}
+        retryLabel={tShared('managerListState.retry')}
         skeleton={
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -159,7 +148,7 @@ export function ContactMessageGallery() {
             </Card>
           ))}
         </div>
-      </ManagerListState>
+      </QueryState>
 
       {/* Pagination */}
       <Pagination

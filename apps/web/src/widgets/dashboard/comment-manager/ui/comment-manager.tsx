@@ -10,24 +10,22 @@ import {
   ConfirmDeleteDialog,
   Pagination,
 } from '@byte-of-me/ui';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Eye, EyeOff } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { getPaginatedAdminComments } from '@/entities/comment/api/get-paginated-admin-comments';
-import { setCommentVisibility } from '@/entities/comment/api/set-comment-visibility';
-import { commentKeys } from '@/entities/comment/model/query-keys';
 import type { AdminComment } from '@/entities/comment/model/types';
-import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
-import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
+import {
+  useAdminComments,
+  useSetCommentVisibility,
+} from '@/entities/comment/query';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
+import { CommentListSkeleton } from '@/widgets/dashboard/comment-manager/ui/comment-list-skeleton';
 
 export function CommentManager() {
   const t = useTranslations('dashboard.comment');
   const tShared = useTranslations('dashboard.shared');
   const format = useFormatter();
-  const queryClient = useQueryClient();
 
   function commentSource(comment: AdminComment): string {
     if (comment.blog) {
@@ -48,36 +46,30 @@ export function CommentManager() {
   const [commentToHide, setCommentToHide] = useState<AdminComment | null>(null);
 
   const { data, isLoading, isError, refetch, isFetching, isPlaceholderData } =
-    useQuery({
-      queryKey: commentKeys.adminList(page),
-      // The action resolves with an ApiResponse rather than throwing, so unwrap
-      // here (as `useCrudManager` does): reading `success` in the component
-      // instead would leave `isError` false and render EMPTY on a server failure.
-      queryFn: async () =>
-        unwrapApiResponse(
-          await getPaginatedAdminComments(page, ADMIN_PAGE_SIZE)
-        ),
-      placeholderData: (prev) => prev,
-    });
+    useAdminComments(page);
 
   const comments = data?.data ?? [];
   const pagination = data?.meta;
 
-  const visibilityMutation = useMutation({
-    mutationFn: ({ id, hidden }: { id: string; hidden: boolean }) =>
-      setCommentVisibility(id, hidden),
-    onSuccess: (_, { hidden }) => {
-      queryClient.invalidateQueries({ queryKey: commentKeys.adminAll() });
-      toast(hidden ? t('toast.hidden') : t('toast.restored'));
-      setCommentToHide(null);
-    },
-    onError: () => toast.error(t('toast.updateError')),
-  });
+  const visibility = useSetCommentVisibility();
+
+  // The toast and the dialog close wait for the envelope; a refusal is reported
+  // by the hook and leaves the dialog open.
+  const setVisibility = (commentId: string, hidden: boolean) =>
+    visibility.mutate(
+      { commentId, hidden },
+      {
+        onSuccess: () => {
+          toast(hidden ? t('toast.hidden') : t('toast.restored'));
+          setCommentToHide(null);
+        },
+      }
+    );
 
   // The id of the row being toggled, not "a toggle is running": the flag alone
   // disabled every Restore button on the page while one was in flight.
-  const pendingVisibilityId = visibilityMutation.isPending
-    ? visibilityMutation.variables?.id
+  const pendingVisibilityId = visibility.isPending
+    ? visibility.variables?.commentId
     : undefined;
 
   return (
@@ -93,6 +85,7 @@ export function CommentManager() {
           isEmpty={comments.length === 0}
           emptyTitle={t('emptyTitle')}
           emptyDescription={t('emptyDescription')}
+          skeleton={<CommentListSkeleton />}
         >
           <div className="flex flex-col gap-2">
             {comments.map((comment) => (
@@ -141,12 +134,7 @@ export function CommentManager() {
                       variant="outline"
                       className="gap-2"
                       disabled={pendingVisibilityId === comment.id}
-                      onClick={() =>
-                        visibilityMutation.mutate({
-                          id: comment.id,
-                          hidden: false,
-                        })
-                      }
+                      onClick={() => setVisibility(comment.id, false)}
                     >
                       <Eye className="h-4 w-4" />
                       {t('actions.restore')}
@@ -188,11 +176,10 @@ export function CommentManager() {
 
       <ConfirmDeleteDialog
         isOpen={!!commentToHide}
-        isLoading={visibilityMutation.isPending}
+        isLoading={visibility.isPending}
         onClose={() => setCommentToHide(null)}
         onConfirm={() =>
-          commentToHide &&
-          visibilityMutation.mutate({ id: commentToHide.id, hidden: true })
+          commentToHide && setVisibility(commentToHide.id, true)
         }
         title={t('dialog.hideTitle')}
         description={t('dialog.hideDescription')}

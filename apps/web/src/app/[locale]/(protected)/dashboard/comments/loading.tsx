@@ -1,1 +1,1 @@
-export { DashboardPageLoading as default } from '@/shared/ui/dashboard-page-loading';
+export { CommentManagerLoading as default } from '@/widgets/dashboard/comment-manager';

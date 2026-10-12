@@ -20,8 +20,11 @@ import { useTranslations } from 'next-intl';
 
 import { isImageMimeType } from '@/entities/media/model/upload-constraints';
 import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media/query';
+import { useWorkspaceSettings } from '@/entities/workspace-settings/query';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
+import { MediaPickerSkeleton } from '@/features/dashboard/media-library/ui/media-picker-skeleton';
 import { cn } from '@/shared/lib/utils';
+import { QueryState } from '@/shared/ui/query-state';
 
 type MediaMultiSelectProps = Omit<
   ButtonProps,
@@ -40,11 +43,19 @@ export function MediaMultiSelect({
   ...triggerProps
 }: MediaMultiSelectProps) {
   const t = useTranslations('dashboard.media');
+  const tShared = useTranslations('dashboard.shared');
   const [isUploadOpen, setIsUploadOpen] = useState(false);
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useMediaInfiniteQuery(12);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+    refetch,
+  } = useMediaInfiniteQuery();
+  const { imageCompression } = useWorkspaceSettings();
   const uploadMutation = useMediaUpload({
-    uploadSuccess: t('toast.uploadSuccess'),
     uploadError: t('toast.uploadError'),
   });
 
@@ -143,6 +154,7 @@ export function MediaMultiSelect({
                   <DialogTitle>{t('picker.uploadAssetsTitle')}</DialogTitle>
                 </DialogHeader>
                 <ImageUpload
+                  compressionConfig={imageCompression}
                   uploadFiles={async (files) => {
                     await uploadMutation.mutateAsync(files);
                     setIsUploadOpen(false);
@@ -183,11 +195,18 @@ export function MediaMultiSelect({
 
         <ScrollArea className="h-80">
           <div className="p-3">
-            {isLoading ? (
-              <div className="flex h-40 flex-col items-center justify-center gap-2">
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              </div>
-            ) : (
+            <QueryState
+              isLoading={isLoading}
+              isError={isError}
+              onRetry={() => void refetch()}
+              isEmpty={allMedia.length === 0 && !hasNextPage}
+              skeleton={<MediaPickerSkeleton />}
+              errorTitle={tShared('managerListState.errorTitle')}
+              errorDescription={tShared('managerListState.errorDescription')}
+              retryLabel={tShared('managerListState.retry')}
+              emptyTitle={t('empty.title')}
+              emptyDescription={t('empty.description')}
+            >
               <div className="grid grid-cols-4 gap-2">
                 {allMedia.map((media) => {
                   const isSelected = value.includes(media.id);
@@ -221,22 +240,22 @@ export function MediaMultiSelect({
                   );
                 })}
               </div>
-            )}
-            {hasNextPage && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="mt-4 w-full"
-                onClick={() => fetchNextPage()}
-                disabled={isFetchingNextPage}
-              >
-                {isFetchingNextPage ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                ) : (
-                  t('picker.loadMore')
-                )}
-              </Button>
-            )}
+              {hasNextPage && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mt-4 w-full"
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
+                >
+                  {isFetchingNextPage ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    t('picker.loadMore')
+                  )}
+                </Button>
+              )}
+            </QueryState>
           </div>
         </ScrollArea>
       </PopoverContent>

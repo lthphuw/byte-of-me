@@ -1,35 +1,26 @@
 'use client';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-
 import { uploadMedia } from '@/entities/media/api/upload-media';
 import { mediaKeys } from '@/entities/media/model/query-keys';
+import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 /**
- * Whole, pre-translated toast sentences (the i18n path) — see
- * `UseMediaLibraryMessages` in `use-media-library.ts` for why this hook takes
- * strings instead of translating internally.
+ * Whole, pre-translated toast sentences. An entity cannot pick its `dashboard.*`
+ * namespace, so the caller passes the text.
  */
-export interface UseMediaUploadMessages {
-  uploadSuccess: string;
+export interface MediaUploadMessages {
   uploadError: string;
 }
 
-export function useMediaUpload(messages?: UseMediaUploadMessages) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
+/**
+ * The one client upload write. It reports only failure: the upload dialog that
+ * called it says success, since it knows how many files it sent. A refusal
+ * leaves that dialog open (`mutateAsync` rejects).
+ */
+export function useMediaUpload({ uploadError }: MediaUploadMessages) {
+  return useServerMutation({
     mutationFn: (files: File[]) => uploadMedia(files),
-    onSuccess: (res) => {
-      if (res.success) {
-        queryClient.invalidateQueries({ queryKey: mediaKeys.all });
-        toast(messages ? messages.uploadSuccess : 'Upload successful');
-      } else {
-        toast.error(messages ? messages.uploadError : 'Upload failed', {
-          description: res.errorMsg,
-        });
-      }
-    },
+    errorMessage: uploadError,
+    invalidate: [mediaKeys.all],
   });
 }

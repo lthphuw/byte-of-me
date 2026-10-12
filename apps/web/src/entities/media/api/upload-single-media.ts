@@ -12,6 +12,10 @@ import {
 import { getImageCompressionSettings } from '@/entities/workspace-settings/api/get-image-compression-settings';
 import { compressInBrowser } from '@/shared/lib/media/compress-in-browser';
 import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
+import {
+  ServerActionError,
+  unwrapApiResponse,
+} from '@/shared/lib/query/unwrap-api-response';
 import type { Media } from '@/shared/types/models';
 
 /**
@@ -22,10 +26,13 @@ import type { Media } from '@/shared/types/models';
 const COMPRESSION_CONFIG_TTL_MS = 30_000;
 
 const defaultDeps = {
-  fetchCompressionConfig: getImageCompressionSettings,
+  fetchCompressionConfig: async () =>
+    unwrapApiResponse(await getImageCompressionSettings()),
   compress: compressInBrowser,
   upload: uploadMedia,
-  uploadVideo: uploadVideoDirect,
+  // The editors take a clip's row or a throw, so the envelope is unwrapped here.
+  uploadVideo: async (file: File, scope: MediaScope) =>
+    unwrapApiResponse(await uploadVideoDirect(file, scope)),
   now: Date.now,
 };
 
@@ -114,10 +121,11 @@ export function createSingleMediaRecordUploader(
     const res = await deps.upload([compressed], scope);
 
     if (!res?.success || !res.data?.[0]?.url) {
-      // Carry the server's reason up. It used to be flattened to a bare "Upload
-      // failed", which the editor then swallowed into the console — leaving the
-      // author looking at a `blob:` URL that only resolves in their own tab.
-      throw new Error(res?.errorMsg || 'Upload failed');
+      // The server's reason is English, so it is kept for the console. A caller
+      // that shows the author a message must show its own localised text instead.
+      throw new ServerActionError(
+        res?.errorMsg || 'Upload failed without a reason from the server'
+      );
     }
 
     return res.data[0];
@@ -153,8 +161,3 @@ function wrapAsUrlUploader(
 /** One instance for the app: the settings memo and the compression bound are shared. */
 export const uploadSingleMediaRecord = createSingleMediaRecordUploader();
 export const uploadSingleMedia = wrapAsUrlUploader(uploadSingleMediaRecord);
-
-/** Binds `uploadSingleMedia` to a scope, for passing as `uploadImage`. */
-export function createScopedImageUploader(scope: MediaScope) {
-  return (file: File) => uploadSingleMedia(file, scope);
-}

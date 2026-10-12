@@ -1,1 +1,1 @@
-export { DashboardPageLoading as default } from '@/shared/ui/dashboard-page-loading';
+export { MediaManagerLoading as default } from '@/widgets/dashboard/media-manager';

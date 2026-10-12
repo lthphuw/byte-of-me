@@ -95,13 +95,12 @@ export async function updateWorkspaceSettings(
       select: { preferences: true },
     });
 
-    // `getWorkspaceSettings` caches this row across requests, and it is what
-    // `dashboard/layout.tsx` seeds the settings provider from on every navigation.
-    // Without this line the popover would appear to save — the action returns
-    // the new value and the client applies it — and then the very next
-    // navigation would repaint the dashboard at the OLD value, which reads
-    // as "my setting didn't stick" rather than as a caching bug. After the
-    // write and outside any transaction, per §8.
+    // The settings row is cached across requests (`readWorkspaceSettings`), and
+    // the dashboard layout prefetches it on every full load. Without this line
+    // the popover would appear to save — the action returns the new value and
+    // the client applies it — and the next full load would paint the OLD value,
+    // which reads as "my setting didn't stick" rather than as a caching bug.
+    // After the write and outside any transaction, per §8.
     revalidateTag(CACHE_TAGS.WORKSPACE_SETTINGS, 'max');
 
     // Returned re-parsed rather than echoing the patch back: the caller applies

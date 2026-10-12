@@ -13,23 +13,17 @@ import {
   MAX_UPLOAD_BATCH,
   maxUploadSizeFor,
 } from '@/entities/media/model/upload-constraints';
-import { useWorkspaceSettings } from '@/entities/workspace-settings';
 import { compressInBrowser } from '@/shared/lib/media/compress-in-browser';
 import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
 
 export interface ImageUploadProps {
-  uploadFiles: (files: File[]) => Promise<void>;
   /**
-   * From the media dashboard's compression settings popover — see
-   * `MediaManager`. Optional because `MediaSelect`/`MediaMultiSelect` also
-   * render this component from inside other dashboard forms (blog, project,
-   * education, profile), far from that popover's state; when omitted this
-   * falls back to `useWorkspaceSettings()`, seeded server-side by
-   * `dashboard/layout.tsx` — the owner's REAL configured settings, not a
-   * hardcoded default. Compression toggled off there now actually stays off
-   * for every upload path, not just the media library's own dialog.
+   * Rejects when the batch is refused. The mutation behind it reports the
+   * refusal, so this component keeps the files listed for a retry.
    */
-  compressionConfig?: ImageCompressionConfig;
+  uploadFiles: (files: File[]) => Promise<void>;
+  /** The owner's compression settings, from `useWorkspaceSettings()`. */
+  compressionConfig: ImageCompressionConfig;
   /**
    * Also take mp4/webm clips. Off for the pickers (blog covers, logos), which
    * can only draw an image; on for the media library itself.
@@ -43,13 +37,10 @@ export function ImageUpload({
   acceptVideo = false,
 }: ImageUploadProps) {
   const t = useTranslations('dashboard.media');
-  const { settings } = useWorkspaceSettings();
-  const effectiveCompressionConfig =
-    compressionConfig ?? settings.imageCompression;
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
-  const acceptedTypes = acceptVideo
+  const acceptedTypes: readonly string[] = acceptVideo
     ? ACCEPTED_MEDIA_MIME_TYPES
     : ACCEPTED_IMAGE_MIME_TYPES;
 
@@ -76,8 +67,8 @@ export function ImageUpload({
             // The shared list, not `startsWith('image/')`: the server accepts
             // a fixed set, and letting a format through here only moves the
             // rejection later.
-            acceptedTypes.includes(file.type as never)
-              ? compressInBrowser(file, effectiveCompressionConfig)
+            acceptedTypes.includes(file.type)
+              ? compressInBrowser(file, compressionConfig)
               : null
           )
         );
@@ -153,8 +144,8 @@ export function ImageUpload({
         description: t('upload.successDescription'),
       });
       setFiles([]);
-    } catch (error) {
-      toast.error(t('upload.uploadFailedTitle'));
+    } catch {
+      // The mutation behind `uploadFiles` has already shown the refusal.
     } finally {
       setIsUploading(false);
     }

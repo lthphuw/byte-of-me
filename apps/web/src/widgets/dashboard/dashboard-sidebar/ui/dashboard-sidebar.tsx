@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl';
 
 import { DashboardNavRail } from './dashboard-nav-rail';
 
-import { logOutDashboard } from '@/features/auth/lib';
 import { BrandMark } from '@/shared/ui/brand-mark';
 import {
   NavDrawer,
@@ -13,6 +12,7 @@ import {
   NavDrawerLink,
 } from '@/shared/ui/nav-drawer';
 import { useClearCache } from '@/widgets/dashboard/dashboard-sidebar/lib/use-clear-cache';
+import { useLogOutDashboard } from '@/widgets/dashboard/dashboard-sidebar/lib/use-log-out-dashboard';
 import { useDashboardNavGroups } from '@/widgets/dashboard/dashboard-sidebar/model/use-dashboard-nav-groups';
 
 /**
@@ -32,6 +32,7 @@ export function DashboardSidebar() {
   const t = useTranslations('dashboard.sidebar');
   const groups = useDashboardNavGroups();
   const { clearCache, isPending: cacheClearing } = useClearCache();
+  const { signOut } = useLogOutDashboard();
 
   return (
     <>
@@ -76,7 +77,12 @@ export function DashboardSidebar() {
                 <span>{t('actions.viewSite')}</span>
               </NavDrawerLink>
 
-              <form action={logOutDashboard}>
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  signOut();
+                }}
+              >
                 <NavDrawerAction type="submit">
                   <LogOut className="size-4" />
                   <span>{t('actions.signOut')}</span>

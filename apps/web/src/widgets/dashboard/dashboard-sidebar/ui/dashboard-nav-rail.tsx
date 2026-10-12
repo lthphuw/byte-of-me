@@ -9,13 +9,13 @@ import {
 import { DatabaseZap, ExternalLink, Loader2, LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { logOutDashboard } from '@/features/auth/lib';
 import { Link, usePathname } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import { BrandMark } from '@/shared/ui/brand-mark';
 import { ColorSchemeModeToggle } from '@/shared/ui/color-scheme-toggle';
 import { I18nToggle } from '@/shared/ui/language-toggle';
 import { useClearCache } from '@/widgets/dashboard/dashboard-sidebar/lib/use-clear-cache';
+import { useLogOutDashboard } from '@/widgets/dashboard/dashboard-sidebar/lib/use-log-out-dashboard';
 import { useDashboardNavGroups } from '@/widgets/dashboard/dashboard-sidebar/model/use-dashboard-nav-groups';
 
 /** The one place a rail button's size, radius and colours are decided. */
@@ -43,6 +43,7 @@ export function DashboardNavRail() {
   const groups = useDashboardNavGroups();
   const pathname = usePathname();
   const { clearCache, isPending: cacheClearing } = useClearCache();
+  const { signOut } = useLogOutDashboard();
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -162,7 +163,12 @@ export function DashboardNavRail() {
             </TooltipContent>
           </Tooltip>
 
-          <form action={logOutDashboard}>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              signOut();
+            }}
+          >
             <Tooltip>
               <TooltipTrigger asChild>
                 <button

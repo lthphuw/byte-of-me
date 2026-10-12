@@ -31,6 +31,8 @@ import { MediaMultiSelect } from './media-multi-select';
 import { MediaSelect } from './media-select';
 
 import { mediaKeys } from '@/entities/media/model/query-keys';
+import { workspaceSettingsKeys } from '@/entities/workspace-settings/model/query-keys';
+import { WORKSPACE_SETTINGS_DEFAULTS } from '@/entities/workspace-settings/model/settings-schema';
 
 // `@testing-library/react` only auto-registers cleanup against a Jest/Vitest
 // shaped global, which `bun:test` is not — and these cases reach their control
@@ -59,20 +61,31 @@ const messages = {
         selectedAlt: 'Selected',
         loadMore: 'Load More',
       },
+      empty: {
+        title: 'No media found',
+        description:
+          'Your library is empty. Upload your first image to get started.',
+      },
       toast: {
-        uploadSuccess: 'Upload successful',
         uploadError: 'Upload failed',
+      },
+    },
+    shared: {
+      managerListState: {
+        errorTitle: 'Something went wrong',
+        errorDescription: 'The list could not be loaded. Please try again.',
+        retry: 'Retry',
       },
     },
   },
 } as const;
 
 /**
- * An empty media library, seeded into the cache rather than fetched. The
- * pickers call `useMediaInfiniteQuery` themselves and there is no prop to turn
- * it off; priming the key the entity's own factory produces is what keeps this
- * spec from reaching for a server action (and a database) to assert on an
- * `aria-` attribute.
+ * An empty media library and the default settings, seeded into the cache rather
+ * than fetched. The pickers call `useMediaInfiniteQuery` and `useWorkspaceSettings`
+ * themselves and there is no prop to turn either off; priming the keys the
+ * entities' own factories produce is what keeps this spec from reaching for a
+ * server action (and a database) to assert on an `aria-` attribute.
  */
 function makeQueryClient(): QueryClient {
   const queryClient = new QueryClient({
@@ -90,6 +103,10 @@ function makeQueryClient(): QueryClient {
     ],
     pageParams: [1],
   });
+  queryClient.setQueryData(
+    workspaceSettingsKeys.current(),
+    WORKSPACE_SETTINGS_DEFAULTS
+  );
 
   return queryClient;
 }
