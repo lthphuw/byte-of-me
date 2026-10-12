@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   Button,
   Empty,
@@ -9,6 +9,8 @@ import {
   EmptyTitle,
   Loading,
 } from '@byte-of-me/ui';
+
+import { ContentFade } from './content-fade';
 
 export type QueryStateProps = {
   isLoading: boolean;
@@ -49,6 +51,11 @@ export function QueryState({
   emptyAction,
   children,
 }: QueryStateProps) {
+  // Once a skeleton has shown, the content that replaces it fades in. Content
+  // hydrated from the server never starts at opacity 0: that delays LCP.
+  const [afterSkeleton, setAfterSkeleton] = useState(isLoading);
+  if (isLoading && !afterSkeleton) setAfterSkeleton(true);
+
   if (isLoading) return <>{skeleton}</>;
 
   let body: ReactNode = children;
@@ -87,7 +94,7 @@ export function QueryState({
 
   return (
     <>
-      {body}
+      {afterSkeleton ? <ContentFade>{body}</ContentFade> : body}
       {isFetching ? (
         <div className="pointer-events-none absolute right-2 top-2">
           <Loading />
