@@ -38,7 +38,7 @@ afterEach(() => {
 describe('BlogReadingProgress', () => {
   it('reports how far the reader has scrolled through the page', async () => {
     setPage({ scrollHeight: 2000, clientHeight: 1000 });
-    render(<BlogReadingProgress />);
+    render(<BlogReadingProgress label="Reading progress" />);
     const bar = screen.getByRole('progressbar');
 
     setPage({ scrollHeight: 2000, clientHeight: 1000, scrollTop: 500 });
@@ -50,7 +50,7 @@ describe('BlogReadingProgress', () => {
 
   it('stays empty on a page too short to scroll', async () => {
     setPage({ scrollHeight: 800, clientHeight: 800 });
-    render(<BlogReadingProgress />);
+    render(<BlogReadingProgress label="Reading progress" />);
     const bar = screen.getByRole('progressbar');
 
     // Give the scroll tracker its frame; a zero-length scroll range makes it

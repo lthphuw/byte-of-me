@@ -3,6 +3,7 @@
 import { type Comment, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
+import { z } from 'zod';
 
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
@@ -17,14 +18,19 @@ export async function setCommentVisibility(
   try {
     await requireAdmin();
 
-    const parsedId = parseInput(idSchema, commentId);
+    const parsedId = parseInput(idSchema, commentId, 'setCommentVisibility');
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };
     }
 
+    const parsedHidden = parseInput(z.boolean(), hidden, 'setCommentVisibility');
+    if (!parsedHidden.ok) {
+      return { success: false, errorMsg: parsedHidden.errorMsg };
+    }
+
     const comment = await prisma.comment.update({
-      where: { id: commentId },
-      data: { isDeleted: hidden },
+      where: { id: parsedId.data },
+      data: { isDeleted: parsedHidden.data },
     });
 
     revalidateTag(CACHE_TAGS.COMMENT, 'max');

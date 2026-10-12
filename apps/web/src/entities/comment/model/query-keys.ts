@@ -12,6 +12,3 @@ export const commentKeys = {
   adminAll: () => [...commentKeys.all, 'admin-list'] as const,
   adminList: (page: number) => [...commentKeys.adminAll(), page] as const,
 };
-
-/** @deprecated Alias kept for existing imports — use `commentKeys.thread`. */
-export const commentKey = commentKeys.thread;

@@ -57,7 +57,9 @@ export function CommentForm({
       >
         {replyTo && (
           <div className="flex items-center justify-between rounded-md bg-muted px-3 py-2 text-xs">
-            <span>Replying to @{replyTo.replyingToUser}</span>
+            <span>
+              {t('replyingTo', { user: replyTo.replyingToUser })}
+            </span>
             <button
               onClick={onCancelReply}
               className="text-muted-foreground hover:text-foreground"

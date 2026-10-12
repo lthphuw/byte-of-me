@@ -1,7 +1,9 @@
 import { Avatar, AvatarFallback, AvatarImage, Card } from '@byte-of-me/ui';
+import { getTranslations } from 'next-intl/server';
 
 import type { BlogAuthor } from '@/entities/blog';
 import { getPublicUserProfile } from '@/entities/user-profile/api/get-public-user-profile';
+import { SectionLoadError } from '@/shared/ui';
 
 export async function BlogAuthorCard({
   author,
@@ -11,7 +13,17 @@ export async function BlogAuthorCard({
   label: string;
 }) {
   const resp = await getPublicUserProfile();
-  const profile = resp.success ? resp.data : null;
+  const tError = await getTranslations('components.sectionLoadError');
+  // A failed profile read is an error even when the post's author is known.
+  if (!resp.success) {
+    return (
+      <SectionLoadError
+        title={tError('title')}
+        description={tError('description')}
+      />
+    );
+  }
+  const profile = resp.data;
 
   const name = author?.name || profile?.displayName || '';
   const bio = profile?.bio;

@@ -2,7 +2,7 @@ import { cache } from 'react';
 
 import 'server-only';
 
-import { getBlogInteractionsForUser } from '@/features/public/toggle-blog-interactions/lib/get-blog-interactions-for-user';
+import { getBlogInteractionsForUser } from '@/entities/blog/api/get-blog-interactions-for-user';
 
 /**
  * The action bar renders twice per post, so the wrappers would repeat the

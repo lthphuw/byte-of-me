@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Separator, Skeleton } from '@byte-of-me/ui';
+import { Separator } from '@byte-of-me/ui';
 import { getTranslations } from 'next-intl/server';
 
 import { BlogContent } from './blog-content';
@@ -7,10 +7,13 @@ import { BlogContent } from './blog-content';
 import type { PublicBlog } from '@/entities/blog';
 import {
   BlogAdjacentNav,
+  BlogAdjacentNavSkeleton,
   BlogAnalytics,
   BlogAuthorCard,
+  BlogAuthorCardSkeleton,
   BlogCommentSection,
   BlogRelatedPosts,
+  BlogRelatedPostsSkeleton,
   BlogRelatedProjectCard,
   RelatedProjectCardSkeleton,
 } from '@/features/public';
@@ -33,7 +36,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
 
   return (
     <ArticleHeadingsProvider targetId={ARTICLE_ID}>
-      <BlogReadingProgress />
+      <BlogReadingProgress label={t('readingProgress')} />
 
       <BlogDetailsShell>
         <div className="w-full">
@@ -70,9 +73,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
 
               {/* Author */}
               <Separator className="my-8 md:my-12" />
-              <Suspense
-                fallback={<Skeleton className="h-28 w-full rounded-xl" />}
-              >
+              <Suspense fallback={<BlogAuthorCardSkeleton />}>
                 <ContentFade>
                   <BlogAuthorCard
                     author={blog.author}
@@ -103,7 +104,9 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
               {/* Related posts */}
               <Separator className="my-8 md:my-12" />
               <Suspense
-                fallback={<Skeleton className="h-64 w-full rounded-xl" />}
+                fallback={
+                  <BlogRelatedPostsSkeleton label={t('relatedPosts')} />
+                }
               >
                 <ContentFade>
                   <BlogRelatedPosts
@@ -116,9 +119,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
 
               {/* Prev / Next */}
               <div className="mt-6 md:mt-8" />
-              <Suspense
-                fallback={<Skeleton className="h-20 w-full rounded-xl" />}
-              >
+              <Suspense fallback={<BlogAdjacentNavSkeleton />}>
                 <ContentFade>
                   <BlogAdjacentNav
                     blogId={blog.id}

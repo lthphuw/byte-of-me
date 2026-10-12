@@ -1,7 +1,6 @@
 'use client';
 
-import { getPaginatedPublicCommentsForBlog } from '@/entities/comment/api/get-paginated-public-comments-for-blog';
-import { commentKey } from '@/entities/comment/model';
+import { commentQueries } from '@/entities/comment/query/comment-queries';
 import {
   type InfiniteListQueryBehavior,
   useInfiniteListQuery,
@@ -13,9 +12,7 @@ export function useCommentInfiniteQuery(
   options?: InfiniteListQueryBehavior
 ) {
   return useInfiniteListQuery({
-    queryKey: commentKey(blogId, limit),
-    fetchPage: (page) =>
-      getPaginatedPublicCommentsForBlog({ page, limit, blogId }),
+    ...commentQueries.threadInfinite(blogId, limit),
     ...options,
   });
 }

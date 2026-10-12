@@ -1,20 +1,19 @@
 'use client';
 
-import { useState } from 'react';
-import { Button, motionDuration, motionEase } from '@byte-of-me/ui';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { type ComponentType, useState } from 'react';
+import { Button, Icons, motionDuration, motionEase } from '@byte-of-me/ui';
 import { AnimatePresence, m } from 'framer-motion';
 import { Heart } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
 
-import { blogKeys } from '@/entities/blog/model/query-keys';
+import { InteractionButtonLoading } from './interaction-button-loading';
+
 import { AuthModal } from '@/features/auth/ui/auth-modal';
 import {
-  getBlogInteractionsForUser,
-  toggleBlogInteraction,
-} from '@/features/public/toggle-blog-interactions/lib';
+  useBlogInteraction,
+  type UseBlogInteractionOptions,
+} from '@/features/public/toggle-blog-interactions/lib/use-blog-interaction';
 import { INTERACTION } from '@/shared/lib/constants';
 import { cn } from '@/shared/lib/utils';
 
@@ -27,69 +26,57 @@ const BURST_TRANSITION = {
   opacity: { duration: motionDuration.base, ease: 'easeOut' },
 } as const;
 
-export function LikeButton({
-  blogId,
-  blogSlug,
-  initialData,
-}: {
-  blogId: string;
-  blogSlug: string;
-  initialData: { isInteracted: boolean; count: number };
-}) {
+/** The two reactions differ in icon and colour only; the motion is shared. */
+const TONE: Record<
+  INTERACTION,
+  {
+    Icon: ComponentType<{ className?: string }>;
+    active: string;
+    burst: string;
+    dot: string;
+    filled: string;
+  }
+> = {
+  [INTERACTION.CLAP]: {
+    Icon: Icons.clap,
+    active: 'text-amber-500',
+    burst: 'bg-amber-500/30',
+    dot: 'bg-amber-500',
+    filled: 'fill-amber-500 stroke-amber-500',
+  },
+  [INTERACTION.LIKE]: {
+    Icon: Heart,
+    active: 'text-red-500',
+    burst: 'bg-red-500/30',
+    dot: 'bg-red-500',
+    filled: 'fill-red-500 stroke-red-500',
+  },
+};
+
+export function BlogInteractionButton(props: UseBlogInteractionOptions) {
   const t = useTranslations('blogDetails');
   const { data: session } = useSession();
-  const queryClient = useQueryClient();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const interaction = useBlogInteraction(props);
+  const tone = TONE[props.kind];
 
-  const { data } = useQuery({
-    queryKey: blogKeys.like(blogId),
-    queryFn: () => getBlogInteractionsForUser(blogId, INTERACTION.LIKE),
-    enabled: !!session,
-    initialData,
-  });
+  if (!interaction.hasData) {
+    return interaction.isError ? (
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={interaction.retry}
+        className="h-8 px-2 text-xs text-muted-foreground"
+      >
+        {t('retry')}
+      </Button>
+    ) : (
+      <InteractionButtonLoading />
+    );
+  }
 
-  const { isInteracted, count } = data;
-
-  const mutation = useMutation({
-    // The action resolves with an ApiResponse instead of throwing, so
-    // unwrap-and-throw here to keep onError driving the optimistic rollback.
-    mutationFn: async () => {
-      const res = await toggleBlogInteraction(
-        blogId,
-        blogSlug,
-        INTERACTION.LIKE
-      );
-      if (!res.success) throw new Error(res.errorMsg);
-    },
-    onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: blogKeys.like(blogId) });
-      const prev = queryClient.getQueryData<{
-        isInteracted: boolean;
-        count: number;
-      }>(blogKeys.like(blogId));
-      queryClient.setQueryData<{ isInteracted: boolean; count: number }>(
-        blogKeys.like(blogId),
-        (old) =>
-          old
-            ? {
-                isInteracted: !old.isInteracted,
-                count: old.isInteracted ? old.count - 1 : old.count + 1,
-              }
-            : old
-      );
-      return { prev };
-    },
-    onError: (_, __, ctx) => {
-      queryClient.setQueryData(blogKeys.like(blogId), ctx?.prev);
-      toast(t('interactFailed'));
-    },
-    // Reconcile the optimistic count (and the live stats row) with the server
-    // regardless of outcome.
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: blogKeys.like(blogId) });
-      queryClient.invalidateQueries({ queryKey: blogKeys.stats(blogId) });
-    },
-  });
+  const { isInteracted, count } = interaction;
+  const { Icon } = tone;
 
   return (
     <>
@@ -101,11 +88,13 @@ export function LikeButton({
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => (session ? mutation.mutate() : setIsAuthModalOpen(true))}
-        disabled={mutation.isPending}
+        onClick={() =>
+          session ? void interaction.toggle() : setIsAuthModalOpen(true)
+        }
+        disabled={interaction.isToggling}
         className={cn(
           'px-0 group gap-2 hover:bg-transparent',
-          isInteracted && 'text-red-500'
+          isInteracted && tone.active
         )}
       >
         <div className="relative flex h-6 w-6 items-center justify-center">
@@ -123,7 +112,10 @@ export function LikeButton({
                     },
                   }}
                   transition={BURST_TRANSITION}
-                  className="absolute h-full w-full rounded-full bg-red-500/30"
+                  className={cn(
+                    'absolute h-full w-full rounded-full',
+                    tone.burst
+                  )}
                 />
                 {[...Array(6)].map((_, i) => (
                   <m.span
@@ -136,7 +128,7 @@ export function LikeButton({
                       scale: 1.2,
                     }}
                     transition={BURST_TRANSITION}
-                    className="absolute h-1.5 w-1.5 rounded-full bg-red-500"
+                    className={cn('absolute h-1.5 w-1.5 rounded-full', tone.dot)}
                   />
                 ))}
               </>
@@ -148,10 +140,10 @@ export function LikeButton({
             initial={false}
             transition={{ duration: motionDuration.base }}
           >
-            <Heart
+            <Icon
               className={cn(
                 'h-5 w-5 transition-colors duration-200',
-                isInteracted ? 'fill-red-500 stroke-red-500' : 'stroke-current'
+                isInteracted ? tone.filled : 'stroke-current'
               )}
             />
           </m.div>

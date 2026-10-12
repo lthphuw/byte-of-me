@@ -3,8 +3,11 @@
 import { useRef } from 'react';
 import { m, useMotionValueEvent, useScroll, useTransform } from 'framer-motion';
 
-/** Thin fixed bar at the top of the viewport that fills as the reader scrolls. */
-export function BlogReadingProgress() {
+/**
+ * Thin fixed bar at the top of the viewport that fills as the reader scrolls.
+ * `label` is passed from the server page: this client file reads no catalogue.
+ */
+export function BlogReadingProgress({ label }: { label: string }) {
   const { scrollY, scrollYProgress } = useScroll();
   const bar = useRef<HTMLDivElement>(null);
 
@@ -31,7 +34,7 @@ export function BlogReadingProgress() {
         className="h-full origin-left bg-primary"
         style={{ scaleX: progress }}
         role="progressbar"
-        aria-label="Reading progress"
+        aria-label={label}
         aria-valuenow={0}
         aria-valuemin={0}
         aria-valuemax={100}

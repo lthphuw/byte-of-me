@@ -1,10 +1,10 @@
 import { Suspense } from 'react';
 
 import {
-  ClapButtonWrapper,
+  BlogInteractionWrapper,
   InteractionButtonLoading,
-  LikeButtonWrapper,
 } from '@/features/public';
+import { INTERACTION } from '@/shared/lib/constants';
 import { ContentFade } from '@/shared/ui';
 import { BlogCommentShareActions } from '@/widgets/public/blog-details-content/ui/blog-comment-share-actions';
 
@@ -34,13 +34,21 @@ export function BlogActionBar({
       <div className={'ml-[-4px] flex items-center gap-2'}>
         <Suspense fallback={<InteractionButtonLoading />}>
           <ContentFade>
-            <LikeButtonWrapper blogId={blogId} blogSlug={blogSlug} />
+            <BlogInteractionWrapper
+              kind={INTERACTION.LIKE}
+              blogId={blogId}
+              blogSlug={blogSlug}
+            />
           </ContentFade>
         </Suspense>
 
         <Suspense fallback={<InteractionButtonLoading />}>
           <ContentFade>
-            <ClapButtonWrapper blogId={blogId} blogSlug={blogSlug} />
+            <BlogInteractionWrapper
+              kind={INTERACTION.CLAP}
+              blogId={blogId}
+              blogSlug={blogSlug}
+            />
           </ContentFade>
         </Suspense>
       </div>

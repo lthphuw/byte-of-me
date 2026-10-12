@@ -1,13 +1,11 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { setRequestLocale } from 'next-intl/server';
 
-import { getPaginatedPublicBlogs } from '@/entities/blog';
-import { blogKeys } from '@/entities/blog/model/query-keys';
-import { getPaginatedPublicTags, tagKeys } from '@/entities/tag';
+import { blogQueries } from '@/entities/blog/query';
+import { tagQueries } from '@/entities/tag/query';
 import { BLOG_FILTER_TAG_LIMIT, DEFAULT_BLOG_FILTERS } from '@/features/public';
 import { routing } from '@/shared/i18n/routing';
 import { getQueryClient } from '@/shared/lib/query/get-query-client';
-import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
 import type { LocaleType } from '@/shared/types';
 import { BlogsContent } from '@/widgets/public';
 
@@ -43,28 +41,12 @@ export default async function BlogsPage({ params }: BlogsPageProps) {
   // The filter bar's tag chips are prefetched in the same pass, with the same
   // key and limit as `useTagInfiniteQuery` in `BlogFilters`; otherwise they
   // are a second client action after hydration and pop in under the header.
+  // The factory unwraps the envelope, so a refused read throws inside
+  // prefetchQuery and nothing is hydrated: the client then reads it itself.
   const queryClient = getQueryClient();
   await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: blogKeys.publicList(1, DEFAULT_BLOG_FILTERS),
-      queryFn: () =>
-        getPaginatedPublicBlogs({
-          ...DEFAULT_BLOG_FILTERS,
-          page: 1,
-          limit: 6,
-        }),
-    }),
-    queryClient.prefetchInfiniteQuery({
-      queryKey: tagKeys.infinite(BLOG_FILTER_TAG_LIMIT),
-      queryFn: async ({ pageParam }) =>
-        unwrapApiResponse(
-          await getPaginatedPublicTags({
-            page: pageParam,
-            limit: BLOG_FILTER_TAG_LIMIT,
-          })
-        ),
-      initialPageParam: 1,
-    }),
+    queryClient.prefetchQuery(blogQueries.publicList(1, DEFAULT_BLOG_FILTERS)),
+    queryClient.prefetchInfiniteQuery(tagQueries.infinite(BLOG_FILTER_TAG_LIMIT)),
   ]);
 
   return (

@@ -9,23 +9,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@byte-of-me/ui';
-import { useQuery } from '@tanstack/react-query';
 import { NotebookPen, ShieldCheck } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 
-// Narrow import on purpose: `@/entities` re-exports every entity, so a
-// client component importing it drags unrelated server-rendering modules
-// (education-item -> RichText -> tiptap) into the public bundle.
-import {
-  BlogCardSkeleton,
-  BlogEmpty,
-  blogKeys,
-  getPaginatedPublicBlogs,
-} from '@/entities/blog';
+// Narrow import on purpose: the `@/entities` root barrel pulls unrelated
+// server-rendering modules (education-item -> RichText -> tiptap) into the
+// public bundle, so a client component imports the slice instead.
+import { BlogCardSkeleton, BlogEmpty } from '@/entities/blog';
+import { usePublicBlogList } from '@/entities/blog/query';
 import { BlogFilters, useBlogFilters } from '@/features/public/blog-filters';
-import { HYDRATED_LIST_BEHAVIOR } from '@/shared/hooks/use-infinite-list-query';
-import { ListPageHeader } from '@/shared/ui';
+import { ListPageHeader, QueryState } from '@/shared/ui';
 import { BlogsGrid } from '@/widgets/public/blogs-content/ui/blogs-grid';
 import { BlogsShell } from '@/widgets/public/blogs-content/ui/blogs-shell';
 
@@ -39,24 +33,13 @@ export function BlogsContent() {
   const isAdmin = session?.user?.role === 'ADMIN';
   const [showDrafts, setShowDrafts] = useState(false);
   const includeDrafts = isAdmin && showDrafts;
-  const { data, isLoading, isPlaceholderData } = useQuery({
-    // The drafts variant only exists after an admin interaction, so it may
-    // fetch live; the base key hydrates from the server prefetch in
-    // blogs/page.tsx.
-    queryKey: includeDrafts
-      ? blogKeys.publicListWithDrafts(page, filters)
-      : blogKeys.publicList(page, filters),
-    queryFn: () =>
-      getPaginatedPublicBlogs({ ...filters, page, limit: 6, includeDrafts }),
-    placeholderData: (previousData) => previousData,
-    // The server-prefetched default page comes from a tag-purged cache entry,
-    // so never refetch it on mount. Filter/page changes use a new key and
-    // still fetch live.
-    ...HYDRATED_LIST_BEHAVIOR,
-  });
+  // The drafts variant only exists after an admin interaction, so it fetches
+  // live; the base key hydrates from the server prefetch in blogs/page.tsx.
+  const { data, isLoading, isError, isPlaceholderData, refetch } =
+    usePublicBlogList(page, filters, includeDrafts);
 
-  const blogs = data?.data?.data || [];
-  const pagination = data?.data?.meta || {
+  const blogs = data?.data ?? [];
+  const pagination = data?.meta ?? {
     currentPage: 1,
     totalCount: 0,
     totalPages: 1,
@@ -64,11 +47,6 @@ export function BlogsContent() {
   };
   const hasActiveFilters =
     filters?.search?.length > 0 || filters?.tagSlugs?.length > 0;
-
-  // Only when there is genuinely nothing to show. `isFetching` cannot be part
-  // of this: it blanked a fully rendered list behind skeletons whenever a
-  // background refetch ran. A refetch updates the list in place instead.
-  const showSkeletons = isLoading;
 
   // The entrance belongs to the first result set of this mount. A ref, not
   // state: flipping it must not cost a render, and the grid reads it at mount.
@@ -93,7 +71,9 @@ export function BlogsContent() {
           the subtitle. Projects drops its strapline for the same reason. */}
       <ListPageHeader
         title={t('pageTitle')}
-        count={t('count', { count: pagination.totalCount })}
+        // No count until a result exists: the fallback total of 0 would read
+        // "No posts" beside a skeleton or a failed read.
+        count={data ? t('count', { count: pagination.totalCount }) : undefined}
       >
         <BlogFilters value={filters} onChange={updateFilters} />
 
@@ -128,24 +108,38 @@ export function BlogsContent() {
         )}
       </ListPageHeader>
 
-      {showSkeletons ? (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-10">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <BlogCardSkeleton key={i} />
-          ))}
-        </div>
-      ) : blogs.length === 0 ? (
-        <div className="flex items-center justify-center py-16">
-          <BlogEmpty isSearch={hasActiveFilters} />
-        </div>
-      ) : (
-        <BlogsGrid
-          blogs={blogs}
-          playEntrance={!entrancePlayed.current}
-          isStale={isPlaceholderData}
-          onTagClick={toggleTag}
-        />
-      )}
+      <QueryState
+        isLoading={isLoading}
+        isError={isError}
+        // The empty case renders below as `BlogEmpty`, which tells a search
+        // with no matches from a blog with no posts.
+        isEmpty={false}
+        onRetry={() => void refetch()}
+        skeleton={
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-10">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <BlogCardSkeleton key={i} />
+            ))}
+          </div>
+        }
+        errorTitle={t('loadErrorTitle')}
+        errorDescription={t('loadErrorDescription')}
+        retryLabel={t('retry')}
+        emptyTitle={t('noBlogsFound')}
+      >
+        {blogs.length === 0 ? (
+          <div className="flex items-center justify-center py-16">
+            <BlogEmpty isSearch={hasActiveFilters} />
+          </div>
+        ) : (
+          <BlogsGrid
+            blogs={blogs}
+            playEntrance={!entrancePlayed.current}
+            isStale={isPlaceholderData}
+            onTagClick={toggleTag}
+          />
+        )}
+      </QueryState>
 
       <Pagination
         setPage={setPage}

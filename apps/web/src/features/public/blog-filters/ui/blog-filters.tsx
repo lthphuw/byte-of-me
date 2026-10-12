@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@byte-of-me/ui';
+import { Button, Skeleton } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -45,6 +45,9 @@ export function BlogFilters({ value, onChange }: BlogFiltersProps) {
     fetchNextPage: fetchNextTags,
     hasNextPage: hasNextTags,
     isFetchingNextPage: isFetchingTags,
+    isLoading: isLoadingTags,
+    isError: isTagError,
+    refetch: refetchTags,
   } = useTagInfiniteQuery(BLOG_FILTER_TAG_LIMIT, HYDRATED_LIST_BEHAVIOR);
 
   const allTags = tagData?.pages.flatMap((page) => page.data) || [];
@@ -86,6 +89,28 @@ export function BlogFilters({ value, onChange }: BlogFiltersProps) {
           </Button>
         )}
       </div>
+
+      {isLoadingTags && (
+        <div className="flex flex-wrap items-center gap-2" aria-busy="true">
+          {Array.from({ length: 6 }, (_, index) => (
+            <Skeleton key={index} className="h-6 w-20 rounded-full" />
+          ))}
+        </div>
+      )}
+
+      {isTagError && allTags.length === 0 && (
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span>{t('loadError')}</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => void refetchTags()}
+            className="h-6 px-2 text-[11px]"
+          >
+            {t('retry')}
+          </Button>
+        </div>
+      )}
 
       {allTags.length > 0 && (
         <div className="flex flex-wrap items-center gap-2">

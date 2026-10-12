@@ -1,21 +1,29 @@
 'use server';
 
 import { prisma } from '@byte-of-me/db';
+import { logger } from '@byte-of-me/logger';
 import { cookies, headers } from 'next/headers';
 import { userAgent } from 'next/server';
 
 import { getClientIp } from '@/shared/lib/client-ip';
-import { CUID_PATTERN } from '@/shared/lib/public-input-schema';
+import { cuidSchema } from '@/shared/lib/public-input-schema';
 import { checkRateLimit } from '@/shared/lib/rate-limit';
+import { getErrorMessage } from '@/shared/lib/utils';
+import { parseInput } from '@/shared/lib/validate-action-input';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-export async function trackBlogView(blogId: string) {
-  // Anonymous endpoint — reject malformed ids before they reach the DB.
-  if (typeof blogId !== 'string' || !CUID_PATTERN.test(blogId)) {
-    return { success: false };
+/** Resolves to the view's log id, which the reading-time beats are sent against. */
+export async function trackBlogView(
+  blogId: string
+): Promise<ApiResponse<string>> {
+  // Anonymous endpoint: reject malformed ids before they reach the DB.
+  const parsed = parseInput(cuidSchema, blogId, 'trackBlogView');
+  if (!parsed.ok) {
+    return { success: false, errorMsg: parsed.errorMsg };
   }
 
   const cookieStore = await cookies();
-  const viewCookieName = `viewed_${blogId}`;
+  const viewCookieName = `viewed_${parsed.data}`;
   const existingLogId = cookieStore.get(viewCookieName)?.value;
 
   if (existingLogId) {
@@ -25,22 +33,20 @@ export async function trackBlogView(blogId: string) {
   try {
     const headerList = await headers();
 
-    // Fire-and-forget analytics: a throttled client is simply not recorded,
-    // no error surfaces to the reader.
     const { allowed } = await checkRateLimit({
       key: `view:${getClientIp(headerList)}`,
       limit: 60,
       windowSec: 60,
     });
     if (!allowed) {
-      return { success: false };
+      return { success: false, errorMsg: 'Too many views from this client' };
     }
 
-    const { device, browser, os } = userAgent({ headers: headerList });
+    const { device, browser } = userAgent({ headers: headerList });
 
     const log = await prisma.blogStatisticLog.create({
       data: {
-        blogId,
+        blogId: parsed.data,
         deviceType: device.type || 'desktop',
         browser: browser.name || 'unknown',
         countryCode: headerList.get('x-vercel-ip-country') || 'Unknown',
@@ -59,6 +65,8 @@ export async function trackBlogView(blogId: string) {
 
     return { success: true, data: log.id };
   } catch (error) {
-    return { success: false };
+    const errorMsg = getErrorMessage(error, 'Failed to record the view');
+    logger.error(`[BlogAnalytics] trackBlogView: ${errorMsg}`);
+    return { success: false, errorMsg };
   }
 }

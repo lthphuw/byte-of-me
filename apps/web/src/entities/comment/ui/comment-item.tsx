@@ -1,15 +1,14 @@
 'use client';
 
 import { Button, Skeleton } from '@byte-of-me/ui';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { EyeOff, Reply } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
-import { toast } from 'sonner';
 
 import { hideComment } from '@/entities/comment/api/hide-comment';
 import { commentKeys, type PublicComment } from '@/entities/comment/model';
+import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 import { getRelativeTime } from '@/shared/lib/utils';
 
 export function CommentItem({
@@ -28,23 +27,11 @@ export function CommentItem({
   const isRemovable =
     session?.user?.role === 'ADMIN' || session?.user?.id === comment.user.id;
 
-  const queryClient = useQueryClient();
-
-  const hideMutation = useMutation({
-    // hideComment resolves with an ApiResponse instead of throwing, so
-    // unwrap-and-throw here to keep onError driving the failure toast.
-    mutationFn: async () => {
-      const res = await hideComment(comment.id);
-      if (!res.success) throw new Error(res.errorMsg);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: commentKeys.threads(comment.blogId),
-      });
-    },
-    onError: () => {
-      toast(t('hideCommentFailed'));
-    },
+  // The same action serves the author and the owner; the server decides which.
+  const hideMutation = useServerMutation<void, null>({
+    mutationFn: () => hideComment(comment.id),
+    errorMessage: t('hideCommentFailed'),
+    invalidate: [commentKeys.threads(comment.blogId)],
   });
 
   if (hideMutation.isPending) {

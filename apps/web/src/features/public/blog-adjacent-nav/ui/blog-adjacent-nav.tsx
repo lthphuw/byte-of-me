@@ -1,7 +1,9 @@
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 
 import { getAdjacentPublicBlogs } from '@/entities/blog/api/get-adjacent-public-blogs';
 import { Link } from '@/shared/i18n/navigation';
+import { SectionLoadError } from '@/shared/ui';
 
 export async function BlogAdjacentNav({
   blogId,
@@ -14,10 +16,22 @@ export async function BlogAdjacentNav({
   prevLabel: string;
   nextLabel: string;
 }) {
-  const resp = await getAdjacentPublicBlogs(publishedDate ?? null, blogId);
-  const prev = resp.success ? resp.data.prev : null;
-  const next = resp.success ? resp.data.next : null;
+  const [resp, tError] = await Promise.all([
+    getAdjacentPublicBlogs(publishedDate ?? null, blogId),
+    getTranslations('components.sectionLoadError'),
+  ]);
+  if (!resp.success) {
+    return (
+      <SectionLoadError
+        title={tError('title')}
+        description={tError('description')}
+      />
+    );
+  }
+  const prev = resp.data.prev;
+  const next = resp.data.next;
 
+  // Both missing is a successful read with no neighbour, not a failure.
   if (!prev && !next) return null;
 
   return (

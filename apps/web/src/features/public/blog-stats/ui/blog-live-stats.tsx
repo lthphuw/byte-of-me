@@ -1,13 +1,12 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { Button } from '@byte-of-me/ui';
 import { Eye, Hourglass } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { BlogLiveStatsSkeleton } from './blog-live-stats-loading';
 
-import { getPublicBlogStats } from '@/entities/blog/api/get-public-blog-stats';
-import { blogKeys } from '@/entities/blog/model/query-keys';
+import { usePublicBlogStats } from '@/entities/blog/query';
 import { ContentFade } from '@/shared/ui/content-fade';
 
 // The public segment is statically generated, so a server render of these
@@ -15,22 +14,26 @@ import { ContentFade } from '@/shared/ui/content-fade';
 // genuinely live.
 export function BlogLiveStats({ blogId }: { blogId: string }) {
   const t = useTranslations('blogDetails');
+  const { data: stats, isError, refetch } = usePublicBlogStats(blogId);
 
-  const { data: stats, isLoading } = useQuery({
-    queryKey: blogKeys.stats(blogId),
-    // Unwrap the ApiResponse envelope; throwing on failure lets TanStack
-    // Query keep any previously fetched stats instead of caching an error
-    // payload, and the `!stats` fallback below renders the skeleton.
-    queryFn: async () => {
-      const res = await getPublicBlogStats(blogId);
-      if (!res.success) throw new Error(res.errorMsg);
-      return res.data;
-    },
-    staleTime: 1000 * 60 * 5,
-  });
-
-  if (isLoading || !stats) {
-    return <BlogLiveStatsSkeleton />;
+  // No numbers yet: the skeleton while the read runs, and a retry if it failed.
+  // Never a zero standing in for a failed read.
+  if (!stats) {
+    return isError ? (
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground md:text-base">
+        <span>{t('statsLoadFailed')}</span>
+        <Button
+          variant="link"
+          size="sm"
+          className="h-auto p-0"
+          onClick={() => void refetch()}
+        >
+          {t('retry')}
+        </Button>
+      </div>
+    ) : (
+      <BlogLiveStatsSkeleton />
+    );
   }
 
   // The skeleton above is swapped for these numbers when the query resolves; the fade

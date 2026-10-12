@@ -9,7 +9,7 @@ export async function BlogBreadcrumb({ title }: { title: string }) {
 
   return (
     <nav
-      aria-label="Breadcrumb"
+      aria-label={t('breadcrumb')}
       className="mb-6 flex items-center gap-2 text-sm text-muted-foreground"
     >
       {/* The two labels never shrink and never wrap. Everything here was
