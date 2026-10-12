@@ -12,6 +12,9 @@ import { PublicSiteFooterSection } from '@/widgets/public/public-site-footer';
 import { PublicSiteHeader } from '@/widgets/public/public-site-header';
 
 export const dynamic = 'force-static';
+// A read that failed at build time would stay in the prerendered HTML until the
+// next deploy. Hourly regeneration heals it (AGENTS §6).
+export const revalidate = 3600;
 
 interface PublicLayoutProps {
   children?: React.ReactNode;

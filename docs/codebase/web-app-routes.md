@@ -21,7 +21,7 @@ apps/web/src/
       layout.tsx                    html/body, locale guard, SessionProvider, JSON-LD, Analytics
       error.tsx, not-found.tsx      locale-aware error boundary and 404
       [...rest]/page.tsx            notFound()
-      (public)/                     force-static; header + footer
+      (public)/                     force-static, revalidate 3600; header + footer
         page.tsx -> HomepageContent     blogs/ -> BlogsContent     projects/ -> ProjectsContent
         contact/ -> ContactContent      blogs/[slug]/ -> BlogDetailsContent
       (auth)/auth/login -> AdminAuthLogInView     force-dynamic; admin -> /dashboard
