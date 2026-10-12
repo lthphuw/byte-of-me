@@ -7,16 +7,27 @@ import { PublicSiteFooterNav } from '@/features/public/public-site-footer/ui/pub
 import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
 import { cn, ensureValidUrl } from '@/shared/lib/utils';
+import { SectionLoadError } from '@/shared/ui';
 import { BrandMark } from '@/shared/ui/brand-mark';
 
 type SiteFooterProps = React.HTMLAttributes<HTMLElement>;
 
 export async function PublicSiteFooter({ className }: SiteFooterProps) {
-  const [t, resp] = await Promise.all([
+  const [t, tError, resp] = await Promise.all([
     getTranslations('global.footer'),
+    getTranslations('components.sectionLoadError'),
     getPublicInfoForFooter(),
   ]);
-  if (!resp.success) return null;
+  if (!resp.success) {
+    return (
+      <footer className={cn('py-8 relative z-20', className)}>
+        <SectionLoadError
+          title={tError('title')}
+          description={tError('description')}
+        />
+      </footer>
+    );
+  }
 
   const { email, displayName, socialLinks } = resp.data;
 

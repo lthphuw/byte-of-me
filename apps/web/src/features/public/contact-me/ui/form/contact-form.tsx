@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useTransition } from 'react';
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Button,
@@ -20,12 +20,13 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import {
-  type ContactMessageFailureCode,
   type ContactMessageFormValues,
   createContactMessageSchema,
   MESSAGE_MAX_LENGTH,
   sendContactMessage,
 } from '@/entities/contact-message';
+import { useServerMutation } from '@/shared/hooks/use-server-mutation';
+import { ServerActionError } from '@/shared/lib/query/unwrap-api-response';
 
 const EMPTY_VALUES: ContactMessageFormValues = {
   name: '',
@@ -37,26 +38,14 @@ const EMPTY_VALUES: ContactMessageFormValues = {
 export function ContactForm() {
   const t = useTranslations('contact.form');
   const tValidation = useTranslations('contact.validation');
-  const [isPending, startTransition] = useTransition();
-  const [result, setResult] = useState<{ ok: boolean; message: string } | null>(
-    null
-  );
 
   // The action reports *why* it failed as a code; `errorMsg` is English, and a
   // Vietnamese visitor who hit the rate limit used to be shown it verbatim.
-  // Listed case by case so a code added server-side later falls to `undefined`
-  // and the caller renders `errorMsg` rather than an empty box.
-  const failureMessage = (code: ContactMessageFailureCode | undefined) => {
-    switch (code) {
-      case 'invalid':
-        return t('errors.invalid');
-      case 'rate-limited':
-        return t('errors.rateLimited');
-      case 'unknown':
-        return t('errors.unknown');
-      default:
-        return undefined;
-    }
+  // A code this map does not list falls back to the generic `errorMessage`.
+  const failureMessages: Partial<Record<string, string>> = {
+    invalid: t('errors.invalid'),
+    'rate-limited': t('errors.rateLimited'),
+    unknown: t('errors.unknown'),
   };
 
   // The schema carries message *keys*; the locale is only knowable here, since
@@ -72,25 +61,26 @@ export function ContactForm() {
     defaultValues: EMPTY_VALUES,
   });
 
-  const onSubmit = (values: ContactMessageFormValues) => {
-    setResult(null);
+  const sendMessage = useServerMutation({
+    mutationFn: sendContactMessage,
+    errorMessage: t('errors.unknown'),
+    errorMessages: failureMessages,
+    onSuccess: () => {
+      form.reset(EMPTY_VALUES);
+      toast.success(t('successTitle'));
+    },
+  });
 
-    startTransition(async () => {
-      const res = await sendContactMessage(values);
+  // The inline notice reads the same mutation result as the toast.
+  const failureCode =
+    sendMessage.error instanceof ServerActionError
+      ? sendMessage.error.errorCode
+      : undefined;
+  const failureText =
+    (failureCode && failureMessages[failureCode]) || t('errors.unknown');
 
-      if (res.success) {
-        form.reset(EMPTY_VALUES);
-        setResult({ ok: true, message: t('successDescription') });
-        toast.success(t('successTitle'));
-        return;
-      }
-
-      const message =
-        failureMessage(res.errorCode) || res.errorMsg || t('errors.unknown');
-      setResult({ ok: false, message });
-      toast.error(t('errorTitle'), { description: message });
-    });
-  };
+  const onSubmit = (values: ContactMessageFormValues) =>
+    sendMessage.mutate(values);
 
   return (
     <Form {...form}>
@@ -106,18 +96,20 @@ export function ContactForm() {
         {/* Mounted at all times so the success text is announced when it
             appears; a live region inserted together with its content is not. */}
         <div role="status" aria-live="polite" className="empty:hidden">
-          {result?.ok ? (
+          {sendMessage.isSuccess ? (
             <div className="flex items-start gap-2 rounded-md border border-border bg-muted/40 p-3">
               <Icons.check aria-hidden className="mt-0.5 size-4 shrink-0" />
               <div className="space-y-2 text-sm">
                 <p className="font-medium">{t('successTitle')}</p>
-                <p className="text-muted-foreground">{result.message}</p>
+                <p className="text-muted-foreground">
+                  {t('successDescription')}
+                </p>
               </div>
             </div>
           ) : null}
         </div>
 
-        {result && !result.ok ? (
+        {sendMessage.isError ? (
           <div
             role="alert"
             className="flex items-start gap-2 rounded-md border border-destructive/50 p-3"
@@ -130,7 +122,7 @@ export function ContactForm() {
               <p className="font-medium text-destructive-text">
                 {t('errorTitle')}
               </p>
-              <p className="text-muted-foreground">{result.message}</p>
+              <p className="text-muted-foreground">{failureText}</p>
             </div>
           </div>
         ) : null}
@@ -262,10 +254,12 @@ export function ContactForm() {
         <Button
           type="submit"
           className="h-11 w-full md:h-9"
-          disabled={isPending}
+          disabled={sendMessage.isPending}
         >
-          {isPending && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
-          {isPending ? t('submitting') : t('submit')}
+          {sendMessage.isPending && (
+            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+          )}
+          {sendMessage.isPending ? t('submitting') : t('submit')}
         </Button>
       </form>
     </Form>

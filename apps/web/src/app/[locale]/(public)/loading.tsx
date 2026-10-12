@@ -1,17 +1,23 @@
-import { Skeleton } from '@byte-of-me/ui';
-
-import { cn } from '@/shared/lib/utils';
+import {
+  HomepageEducationLoading,
+  HomepageFeaturedWorksLoading,
+  HomepageOpenSourceLoading,
+  HomepageProfileLoading,
+  HomepageTechStackLoading,
+} from '@/features/public';
 import { HomepageShell } from '@/widgets/public/homepage-content/ui/homepage-shell';
 
+/** The homepage's blocks, in the same order and spacing as `HomepageContent`. */
 export default function HomeLoading() {
   return (
-    <HomepageShell>
-      <Skeleton className={cn('w-[50%] h-20')} />
-      <Skeleton className={cn('w-[100%] h-7')} />
-      <Skeleton className={cn('w-full h-[300px] md:h-[540px]')} />
-      <Skeleton className={cn('w-full h-7')} />
-      <Skeleton className={cn('w-[80%] h-[100px]')} />
-      <Skeleton className={cn('w-[50%] h-[40px]')} />
+    <HomepageShell aria-busy="true">
+      <div className="space-y-12 md:space-y-16">
+        <HomepageProfileLoading />
+        <HomepageFeaturedWorksLoading />
+        <HomepageOpenSourceLoading />
+        <HomepageEducationLoading />
+        <HomepageTechStackLoading />
+      </div>
     </HomepageShell>
   );
 }

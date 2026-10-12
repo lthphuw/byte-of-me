@@ -2,15 +2,17 @@ import { getTranslations } from 'next-intl/server';
 
 import { getPublicFeaturedWorks } from '@/entities/featured-work/api/get-public-featured-works';
 import { FeaturedWorkRow } from '@/entities/featured-work/ui/featured-work-row';
-import { ContentFade } from '@/shared/ui';
+import { ContentFade, SectionLoadError } from '@/shared/ui';
 
 export async function HomepageFeaturedWorks() {
   const t = await getTranslations('homepage');
+  const tError = await getTranslations('components.sectionLoadError');
   const resp = await getPublicFeaturedWorks();
 
   const works = resp.success ? resp.data.works : [];
   // No empty state: a section that says "nothing here" is worse than no section.
-  if (works.length === 0) return null;
+  // A failed read is not empty, so it keeps the heading and shows the error.
+  if (resp.success && works.length === 0) return null;
 
   return (
     <ContentFade>
@@ -19,13 +21,20 @@ export async function HomepageFeaturedWorks() {
           {t('featuredWorksTitle')}
         </h2>
 
-        <ul className="divide-y rounded-xl border bg-card px-4 md:px-6">
-          {works.map((work, index) => (
-            <li key={work.id}>
-              <FeaturedWorkRow work={work} index={index} />
-            </li>
-          ))}
-        </ul>
+        {resp.success ? (
+          <ul className="divide-y rounded-xl border bg-card px-4 md:px-6">
+            {works.map((work, index) => (
+              <li key={work.id}>
+                <FeaturedWorkRow work={work} index={index} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <SectionLoadError
+            title={tError('title')}
+            description={tError('description')}
+          />
+        )}
       </section>
     </ContentFade>
   );

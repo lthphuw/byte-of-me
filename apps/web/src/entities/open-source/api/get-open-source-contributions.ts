@@ -17,8 +17,8 @@ const REVALIDATE_SECONDS = 3600;
  *
  * The data lives on GitHub, not in our database, so nothing in the app can
  * invalidate it: the cache entry refreshes by time. A failed refresh throws
- * out of the cached function, which leaves the previous entry in place and
- * makes the page hide the section only when there has never been a good read.
+ * out of the cached function, which leaves the previous entry in place, so the
+ * page shows its error state only when there has never been a good read.
  * A missing token is not cached at all, see below.
  */
 export async function getOpenSourceContributions(): Promise<

@@ -65,7 +65,7 @@ export function UserActionToggle() {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          onClick={() => void signOutEverywhere()}
+          onClick={signOutEverywhere}
           className="cursor-pointer gap-2"
         >
           <LogOut className="size-4" />

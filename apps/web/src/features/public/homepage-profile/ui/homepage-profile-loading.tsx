@@ -39,9 +39,9 @@ export function HomepageProfileLoading() {
           <Skeleton className="h-6 w-44" />
         </div>
 
-        {/* Right Column (Quote/Image Placeholder) */}
-        <div className="hidden md:block">
-          <Skeleton className="mx-auto aspect-square w-full max-w-[300px] rounded-2xl" />
+        {/* Right Column (the quote card: below the bio on a phone, beside it from md) */}
+        <div className="flex justify-center md:justify-end">
+          <Skeleton className="h-40 w-full rounded-xl md:aspect-square md:h-auto md:max-w-[300px]" />
         </div>
       </div>
     </div>

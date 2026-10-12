@@ -8,8 +8,11 @@ import {
   signIn as nextAuthSignIn,
 } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-export async function logInWithGoogle(callbackUrl: string) {
+export async function logInWithGoogle(
+  callbackUrl: string
+): Promise<ApiResponse<null>> {
   try {
     // The action is callable directly: never trust the value as a redirect or log.
     const destination = sanitizeCallbackUrl(callbackUrl, await getLocale());
@@ -27,8 +30,10 @@ export async function logInWithGoogle(callbackUrl: string) {
       { redirect: true, redirectTo: destination },
       { prompt: 'login' }
     );
+    return { success: true, data: null };
   } catch (error) {
     const errorMsg = getErrorMessage(error);
+    // The redirect signal is the success path: rethrow it, never envelope it.
     if (errorMsg.includes('NEXT_REDIRECT')) throw error;
     logger.error(`Google login error: ${errorMsg}`);
     return { success: false, errorMsg };

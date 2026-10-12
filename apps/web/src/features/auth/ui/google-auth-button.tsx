@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 import { logInToDashboardWithOAuth } from '@/features/auth/lib/log-in-to-dashboard-with-oauth';
 import { logInWithGoogle } from '@/features/auth/lib/log-in-with-google';
 import type { AuthButtonProps } from '@/features/auth/ui/auth-button-props';
+import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 export function GoogleAuthButton({
   className,
@@ -18,19 +19,21 @@ export function GoogleAuthButton({
   const t = useTranslations('auth');
   const pathname = usePathname();
 
-  const handleLogin = async () => {
-    const destination = callbackUrl ?? pathname;
-
-    if (surface === 'admin') {
-      await logInToDashboardWithOAuth('google', destination);
-      return;
-    }
-
-    await logInWithGoogle(destination);
-  };
+  const signIn = useServerMutation<string, null>({
+    mutationFn: (destination) =>
+      surface === 'admin'
+        ? logInToDashboardWithOAuth('google', destination)
+        : logInWithGoogle(destination),
+    errorMessage: t('signInFailed'),
+  });
 
   return (
-    <Button variant="outline" onClick={handleLogin} className={className}>
+    <Button
+      variant="outline"
+      onClick={() => signIn.mutate(callbackUrl ?? pathname)}
+      disabled={signIn.isPending}
+      className={className}
+    >
       <Icons.google className="mr-2 h-4 w-4" />
       {t('signInWithGoogle')}
     </Button>

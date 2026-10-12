@@ -9,6 +9,7 @@ import {
   signIn as nextAuthSignIn,
 } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
  * The providers the sign-in page may start an admin OAuth flow with.
@@ -37,7 +38,7 @@ export type AdminOAuthProvider = keyof typeof ADMIN_OAUTH_PROVIDERS;
 export async function logInToDashboardWithOAuth(
   provider: AdminOAuthProvider,
   callbackUrl: string
-) {
+): Promise<ApiResponse<null>> {
   const providerId = ADMIN_OAUTH_PROVIDERS[provider];
 
   if (!providerId) {
@@ -68,6 +69,7 @@ export async function logInToDashboardWithOAuth(
       // `[object Object]`, so the prompt never reaches the provider.
       { prompt: 'login' }
     );
+    return { success: true, data: null };
   } catch (error) {
     const errorMsg = getErrorMessage(error);
     // `redirect: true` reports success by throwing the framework's redirect

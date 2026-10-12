@@ -1,5 +1,6 @@
 'use client';
 
+import { Skeleton } from '@byte-of-me/ui/skeleton';
 import { LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -16,10 +17,23 @@ import { UserAvatar } from '@/widgets/public/public-site-header/ui/user-avatar';
  * The email rather than the name: `useAccount` falls back to the role when
  * there is no name, and "Admin" identifies nobody. Sign out is an icon on the
  * right — it is the only action here, so it needs a position, not a label.
+ * While the session loads, the row is a skeleton with the same three columns.
  */
 export function PublicHeaderAccountPanel() {
   const t = useTranslations('global.userToggle');
-  const { account, signOutEverywhere } = useAccount();
+  const { account, isLoading, signOutEverywhere } = useAccount();
+
+  if (isLoading) {
+    return (
+      <div className="mt-1 flex items-center gap-2 border-t border-border/60 pl-3 pt-1">
+        <Skeleton className="size-7 shrink-0 rounded-full" />
+        <div className="min-w-0 flex-1">
+          <Skeleton className="h-4 w-40 max-w-full" />
+        </div>
+        <div className="size-11 shrink-0" />
+      </div>
+    );
+  }
 
   if (!account) return null;
 
@@ -35,7 +49,7 @@ export function PublicHeaderAccountPanel() {
           the box §14 asks for is not. */}
       <button
         type="button"
-        onClick={() => void signOutEverywhere()}
+        onClick={signOutEverywhere}
         aria-label={t('signOut')}
         className="flex size-11 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
       >

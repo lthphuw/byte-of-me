@@ -45,7 +45,7 @@ export function AdminAuthLogInView() {
           className={cn(buttonVariants({ variant: 'ghost' }), 'gap-2')}
         >
           <Icons.chevronLeft className="h-4 w-4" />
-          Back
+          {t('back')}
         </Link>
       </m.div>
 
@@ -64,10 +64,10 @@ export function AdminAuthLogInView() {
               you are in, and at the gate you are not in one yet. */}
           <BrandMark className="mx-auto mb-2 h-8 w-8" />
           <h1 className="text-2xl font-semibold tracking-tight">
-            Welcome back
+            {t('welcomeBack')}
           </h1>
           <p className="text-sm text-muted-foreground">
-            Enter your email to sign in to your account
+            {t('enterEmailToSignIn')}
           </p>
         </div>
 

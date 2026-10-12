@@ -1,11 +1,11 @@
 'use client';
 
-import { useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 
 import { logOut } from '@/features/auth/lib/log-out';
+import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 import { shortenName } from '@/widgets/public/public-site-header/lib/shorten-name';
 
 export interface Account {
@@ -25,27 +25,39 @@ export interface Account {
  * A hook because the account appears in two places that look nothing alike —
  * a circular trigger on desktop, a row in the nav panel on a phone — and they
  * must not disagree about what sign out does. `null` when signed out, which is
- * the common case on a public site.
+ * the common case on a public site. `isLoading` while the session request is
+ * in flight, so a caller draws a skeleton rather than nothing.
  */
 export function useAccount(): {
   account: Account | null;
-  signOutEverywhere: () => Promise<void>;
+  isLoading: boolean;
+  signOutEverywhere: () => void;
 } {
   const t = useTranslations('global.userToggle');
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const queryClient = useQueryClient();
+  const isLoading = status === 'loading';
 
-  const signOutEverywhere = useCallback(async () => {
-    // The cache first: it holds answers that were authorised by the session
-    // about to be destroyed, and a full reload is not a guarantee that
-    // anything in memory is gone before the next render reads it.
-    queryClient.clear();
-    await Promise.all([logOut(), signOut({ redirect: false })]);
-    window.location.reload();
-  }, [queryClient]);
+  const logOutMutation = useServerMutation<void, null>({
+    mutationFn: async () => {
+      // The client session is cleared only after the server confirms the
+      // sign-out, so a refusal leaves both sides signed in.
+      const res = await logOut();
+      if (res.success) await signOut({ redirect: false });
+      return res;
+    },
+    errorMessage: t('signOutFailed'),
+    onSuccess: () => {
+      // Cleared only once the sign-out is confirmed: a refused one leaves the
+      // session, and the answers it authorised, in place. Then a full reload.
+      queryClient.clear();
+      window.location.reload();
+    },
+  });
+  const signOutEverywhere = () => logOutMutation.mutate();
 
   const user = session?.user;
-  if (!user) return { account: null, signOutEverywhere };
+  if (!user) return { account: null, isLoading, signOutEverywhere };
 
   const isAdmin = user.role?.toLocaleUpperCase() === 'ADMIN';
 
@@ -68,6 +80,7 @@ export function useAccount(): {
       roleLabel: t(isAdmin ? 'admin' : 'viewer'),
       isAdmin,
     },
+    isLoading,
     signOutEverywhere,
   };
 }

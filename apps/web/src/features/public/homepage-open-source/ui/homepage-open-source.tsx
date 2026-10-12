@@ -5,18 +5,38 @@ import { getOpenSourceContributions } from '@/entities/open-source/api/get-open-
 import { RepoLinkRow } from '@/entities/open-source/ui/repo-link-row';
 import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
-import { ContentFade } from '@/shared/ui';
+import { ContentFade, SectionLoadError } from '@/shared/ui';
 
 const TOP_REPOS = 3;
 
 export async function HomepageOpenSource() {
   const t = await getTranslations('homepage');
   const tOss = await getTranslations('components.openSource');
+  const tError = await getTranslations('components.sectionLoadError');
   const resp = await getOpenSourceContributions();
 
-  const repos = resp.success ? resp.data.repos : [];
+  // The header's summary and link need the repos, so a failure keeps only the
+  // heading and the error.
+  if (!resp.success) {
+    return (
+      <ContentFade>
+        <section id="open-source" className="space-y-6 md:space-y-8">
+          <h2 className="text-xl font-semibold md:text-3xl">
+            {t('openSourceTitle')}
+          </h2>
+
+          <SectionLoadError
+            title={tError('title')}
+            description={tError('description')}
+          />
+        </section>
+      </ContentFade>
+    );
+  }
+
+  const repos = resp.data.repos;
   // No empty state: a section that says "nothing here" is worse than no
-  // section. A missing token or a GitHub outage both land here.
+  // section. A missing token lands here too, since its read succeeds empty.
   if (repos.length === 0) return null;
 
   const totalPrs = repos.reduce((sum, repo) => sum + repo.prCount, 0);

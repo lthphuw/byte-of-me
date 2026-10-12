@@ -38,9 +38,9 @@ export async function HomepageContent() {
           </Suspense>
         </RevealSection>
 
-        {/* `empty:hidden` on the optional blocks: each renders nothing
-            when its data is missing (no token, GitHub down, nothing authored),
-            and an empty wrapper would still add a `space-y` gap. */}
+        {/* `empty:hidden` on the optional blocks: each renders nothing when its
+            data is missing (no token, nothing authored), and an empty wrapper
+            would still add a `space-y` gap. A failed read renders its error. */}
         <RevealSection className="empty:hidden">
           <Suspense fallback={<HomepageFeaturedWorksLoading />}>
             <HomepageFeaturedWorks />

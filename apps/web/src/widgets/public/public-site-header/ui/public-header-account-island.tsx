@@ -1,6 +1,6 @@
 'use client';
 
-import { useMediaQuery } from '@byte-of-me/ui';
+import { Skeleton, useMediaQuery } from '@byte-of-me/ui';
 
 import { useAccount } from '@/widgets/public/public-site-header/lib/use-account';
 import {
@@ -15,7 +15,8 @@ import { UserActionToggle } from '@/widgets/public/public-site-header/ui/user-ac
  * they read as two pills with a gap; at rest, unpadded, as one row.
  *
  * Unmounted rather than hidden when signed out or below `md`: it is a flex
- * item, and one that only looks hidden still holds its slot.
+ * item, and one that only looks hidden still holds its slot. While the session
+ * loads it holds the avatar's place with a skeleton of the same size.
  */
 export function PublicHeaderAccountIsland({
   docked,
@@ -24,12 +25,12 @@ export function PublicHeaderAccountIsland({
   docked: boolean;
   geometry: IslandGeometry;
 }) {
-  const { account } = useAccount();
+  const { account, isLoading } = useAccount();
   // The same query `useIslandGeometry` branches on, so the account can never
   // be on a different side of the breakpoint than the geometry around it.
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
-  if (!account || !isDesktop) return null;
+  if (!isDesktop || (!account && !isLoading)) return null;
 
   return (
     <HeaderIsland
@@ -42,7 +43,11 @@ export function PublicHeaderAccountIsland({
       // a mistake between two things that should look adjacent.
       padding={docked ? undefined : { left: 0 }}
     >
-      <UserActionToggle />
+      {account ? (
+        <UserActionToggle />
+      ) : (
+        <Skeleton className="size-9 rounded-full" />
+      )}
     </HeaderIsland>
   );
 }
