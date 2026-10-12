@@ -61,6 +61,7 @@ async function open(value: JSONContent, compact = false): Promise<Emit[]> {
   await React.act(async () => {
     render(
       <RichTextEditor
+        uploadFailedText="Upload failed"
         value={value}
         compact={compact}
         onChange={(json, meta) => emits.push({ json, initial: meta.initial })}
@@ -131,6 +132,7 @@ describe('RichTextEditor onChange', () => {
     await React.act(async () => {
       container = render(
         <RichTextEditor
+          uploadFailedText="Upload failed"
           value={HEADING_DOC}
           onChange={(json, meta) => emits.push({ json, initial: meta.initial })}
         />
@@ -201,6 +203,7 @@ describe('RichTextEditor onChange timing', () => {
           }}
         >
           <RichTextEditor
+            uploadFailedText="Upload failed"
             value={PLAIN_DOC}
             onChange={(json, meta) => {
               if (meta.initial) return;
@@ -319,6 +322,7 @@ describe('RichTextEditor value prop', () => {
     await React.act(async () => {
       rendered = render(
         <RichTextEditor
+          uploadFailedText="Upload failed"
           value={structuredClone(PLAIN_DOC)}
           onChange={() => {}}
         />
@@ -346,6 +350,7 @@ describe('RichTextEditor value prop', () => {
     await React.act(async () => {
       rendered?.rerender(
         <RichTextEditor
+          uploadFailedText="Upload failed"
           value={structuredClone(HEADING_DOC)}
           onChange={() => {}}
         />
@@ -384,7 +389,12 @@ describe('RichTextEditor toolbar state', () => {
     let container: HTMLElement | undefined;
     await React.act(async () => {
       container = render(
-        <RichTextEditor compact value={BOLD_THEN_PLAIN} onChange={() => {}} />
+        <RichTextEditor
+          compact
+          value={BOLD_THEN_PLAIN}
+          onChange={() => {}}
+          uploadFailedText="Upload failed"
+        />
       ).container;
     });
     await React.act(async () => {
@@ -444,6 +454,7 @@ describe('RichTextEditor image rows', () => {
     await React.act(async () => {
       container = render(
         <RichTextEditor
+          uploadFailedText="Upload failed"
           value={{
             type: 'doc',
             content: [
@@ -492,6 +503,7 @@ describe('RichTextEditor image rows', () => {
     await React.act(async () => {
       container = render(
         <RichTextEditor
+          uploadFailedText="Upload failed"
           value={{
             type: 'doc',
             content: [
@@ -560,6 +572,7 @@ describe('RichTextEditor onEditorApi', () => {
     await React.act(async () => {
       unmount = render(
         <RichTextEditor
+          uploadFailedText="Upload failed"
           value={HEADING_DOC}
           onChange={() => {}}
           onEditorApi={(api) => seen.push(api)}
@@ -646,7 +659,11 @@ describe('RichTextEditor table header scopes', () => {
 
     await React.act(async () => {
       container = render(
-        <RichTextEditor value={value} onChange={() => {}} />
+        <RichTextEditor
+          value={value}
+          onChange={() => {}}
+          uploadFailedText="Upload failed"
+        />
       ).container;
     });
     await React.act(async () => {

@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'bun:test';
+import { describe, expect, it, spyOn } from 'bun:test';
+import { toast } from 'sonner';
 
 import { uploadImages } from './upload-images';
 
@@ -15,7 +16,8 @@ describe('uploadImages', () => {
         new Promise<string>((resolve) => {
           started += 1;
           releases.push(() => resolve(`/media/${f.name}`));
-        })
+        }),
+      'Upload failed'
     );
 
     await Promise.resolve();
@@ -40,9 +42,31 @@ describe('uploadImages', () => {
       async (f) => {
         if (f.name === 'big.png') throw new Error('big.png is too large');
         return `/media/${f.name}`;
-      }
+      },
+      'Upload failed'
     );
 
     expect(result.map((image) => image.alt)).toEqual(['a.png', 'c.png']);
+  });
+
+  it('shows the failure text it was given when a refusal has no message', async () => {
+    const toastError = spyOn(toast, 'error').mockImplementation(() => 1);
+
+    try {
+      const result = await uploadImages(
+        [file('big.png'), file('blank.png')],
+        async (f) => {
+          if (f.name === 'big.png') throw new Error('big.png is too large');
+          throw new Error('');
+        },
+        'Tải lên thất bại'
+      );
+
+      expect(result).toEqual([]);
+      expect(toastError).toHaveBeenCalledWith('big.png is too large');
+      expect(toastError).toHaveBeenCalledWith('Tải lên thất bại');
+    } finally {
+      toastError.mockRestore();
+    }
   });
 });

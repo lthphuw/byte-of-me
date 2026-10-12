@@ -26,7 +26,11 @@ import {
 } from '../../../lib/tiptap-utils';
 import { cn } from '../../../lib/utils';
 
-import { imageUploadFn, resolveImages } from './upload-images';
+import {
+  imageUploadFailedText,
+  imageUploadFn,
+  resolveImages,
+} from './upload-images';
 import { useImageUpload } from './use-image-upload';
 
 export interface ImagePlaceholderOptions {
@@ -117,6 +121,8 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
 
   const [insertingMany, setInsertingMany] = useState(false);
 
+  const uploadFailedText = imageUploadFailedText(editor);
+
   const {
     previewUrl,
     fileInputRef,
@@ -125,6 +131,7 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
     uploading,
     error,
   } = useImageUpload({
+    uploadFailedText,
     onUpload: (imageUrl) => {
       editor
         .chain()
@@ -152,7 +159,7 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
     void (async () => {
       setInsertingMany(true);
       try {
-        const images = await resolveImages(editor, files);
+        const images = await resolveImages(editor, files, uploadFailedText);
         if (images.length > 0) {
           editor.chain().focus().setImageGroup(images).run();
           setIsExpanded(false);

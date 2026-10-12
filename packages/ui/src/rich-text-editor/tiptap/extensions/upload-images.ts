@@ -6,21 +6,42 @@ import type { ImageUploadFn } from './image-base';
 /** An uploaded file, as the `image` node's attributes. */
 export type UploadedImage = { src: string; alt: string };
 
+/** The options the consumer configures on the image extension. */
+type ImageExtensionOptions = {
+  uploadFn?: ImageUploadFn;
+  uploadFailedText?: string;
+};
+
 /**
- * The uploader the consumer configured on the image extension.
+ * The image extension's options, read off the live editor.
  *
- * Read off the live editor rather than threaded through props: every insert
- * path (the placeholder node, the row's add button, the phone toolbar) sits in
- * a node view or a toolbar, and none of them is rendered by the component that
- * owns the option.
+ * Read there rather than threaded through props: every insert path (the
+ * placeholder node, the row's add button, the phone toolbar) sits in a node
+ * view or a toolbar, and none of them is rendered by the component that owns
+ * the option.
  */
-export function imageUploadFn(editor: Editor): ImageUploadFn | undefined {
+function imageExtensionOptions(
+  editor: Editor
+): ImageExtensionOptions | undefined {
   const extension = editor.extensionManager.extensions.find(
     (ext) => ext.name === 'image'
   );
 
-  return (extension?.options as { uploadFn?: ImageUploadFn } | undefined)
-    ?.uploadFn;
+  return extension?.options as ImageExtensionOptions | undefined;
+}
+
+/** The uploader the consumer configured on the image extension. */
+export function imageUploadFn(editor: Editor): ImageUploadFn | undefined {
+  return imageExtensionOptions(editor)?.uploadFn;
+}
+
+/**
+ * The failure text the consumer configured on the image extension. Empty when
+ * the editor has no image extension, which also means it has no uploader, so
+ * nothing can fail.
+ */
+export function imageUploadFailedText(editor: Editor): string {
+  return imageExtensionOptions(editor)?.uploadFailedText ?? '';
 }
 
 /**
@@ -31,11 +52,14 @@ export function imageUploadFn(editor: Editor): ImageUploadFn | undefined {
  * large is worse than getting three. The report is the part that used to be
  * missing: `uploadSingleMedia` throws with a message naming the file and the
  * limit, and the drop/paste path swallowed it, so an author whose upload was
- * refused saw nothing at all and an image just failed to appear.
+ * refused saw nothing at all and an image just failed to appear. A refusal with
+ * no message of its own shows `uploadFailedText`, already translated by the
+ * caller.
  */
 export async function uploadImages(
   files: File[],
-  upload: ImageUploadFn
+  upload: ImageUploadFn,
+  uploadFailedText: string
 ): Promise<UploadedImage[]> {
   // All at once, not one after another: a pasted batch is capped upstream
   // (`MAX_UPLOAD_BATCH`) and the uploader bounds its own compression. Results
@@ -46,9 +70,7 @@ export async function uploadImages(
         return { src: await upload(file), alt: file.name };
       } catch (err) {
         toast.error(
-          err instanceof Error && err.message
-            ? err.message
-            : `Could not upload ${file.name}`
+          err instanceof Error && err.message ? err.message : uploadFailedText
         );
         return null;
       }
@@ -67,7 +89,8 @@ export async function uploadImages(
  */
 export async function resolveImages(
   editor: Editor,
-  files: File[]
+  files: File[],
+  uploadFailedText: string
 ): Promise<UploadedImage[]> {
   const upload = imageUploadFn(editor);
 
@@ -78,7 +101,7 @@ export async function resolveImages(
     }));
   }
 
-  return uploadImages(files, upload);
+  return uploadImages(files, upload, uploadFailedText);
 }
 
 /** The image files a drop, a paste or a file input carries. */

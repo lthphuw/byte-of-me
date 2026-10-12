@@ -90,8 +90,10 @@ const lowlight = createLowlight(common);
 
 const DEFAULT_PLACEHOLDER = "Write, type '/' for commands";
 
-export function createExtensions(options?: {
+export function createExtensions(options: {
   uploadImage?: ImageUploadFn;
+  /** Shown when an upload is refused. Required, so no editor can drop it. */
+  uploadFailedText: string;
   placeholder?: string;
   /** Registers KaTeX math nodes (`$…$` inline, `$$…$$` block). Opt-in. */
   withMath?: boolean;
@@ -111,7 +113,7 @@ export function createExtensions(options?: {
     MermaidSize,
     CustomHeading,
     Placeholder.configure({
-      placeholder: options?.placeholder ?? DEFAULT_PLACEHOLDER,
+      placeholder: options.placeholder ?? DEFAULT_PLACEHOLDER,
     }),
     TextAlign.configure({ types: ['heading', 'paragraph'] }),
     TextStyle,
@@ -121,7 +123,10 @@ export function createExtensions(options?: {
     Link,
     Color,
     Highlight.configure({ multicolor: true }),
-    ImageExtension.configure({ uploadFn: options?.uploadImage }),
+    ImageExtension.configure({
+      uploadFn: options.uploadImage,
+      uploadFailedText: options.uploadFailedText,
+    }),
     // Two or more images side by side, with one caption for the row. Every
     // editor built from this list gets it — full, compact (the dashboard
     // dialogs) and chromeless (notes) — because the row is a document node,
@@ -147,7 +152,7 @@ export function createExtensions(options?: {
     ReferenceList,
     // A typo inside a formula must render as an error message in red, not
     // throw out of ProseMirror's render path and blank the editor.
-    ...(options?.withMath
+    ...(options.withMath
       ? [
           NotesInlineMath.configure({ katexOptions: { throwOnError: false } }),
           NotesBlockMath.configure({ katexOptions: { throwOnError: false } }),
@@ -264,6 +269,13 @@ type RichTextEditorProps = {
   value?: Content;
   onChange?: (value: JSONContent, meta: RichTextChangeMeta) => void;
   uploadImage?: ImageUploadFn;
+  /**
+   * The text an author sees when an image upload is refused and the refusal
+   * carries no message of its own. The app supplies it in its own language;
+   * this package has no English copy to fall back on. Required, not optional:
+   * an optional prop would let an editor drop the message with no type error.
+   */
+  uploadFailedText: string;
   /**
    * Drops the outline/references sidebar and lets the editor size itself to
    * its content, so it can sit inside a form card instead of owning a page.
@@ -479,10 +491,11 @@ function insertUploadedImages(
   view: { state: EditorState; dispatch: (tr: Transaction) => void },
   files: File[],
   upload: ImageUploadFn,
+  uploadFailedText: string,
   at?: number
 ): void {
   void (async () => {
-    const uploaded = await uploadImages(files, upload);
+    const uploaded = await uploadImages(files, upload, uploadFailedText);
     let insertAt = at;
 
     for (const image of uploaded) {
@@ -502,6 +515,7 @@ export function RichTextEditor({
   value,
   onChange,
   uploadImage,
+  uploadFailedText,
   compact = false,
   minHeight,
   placeholder,
@@ -739,7 +753,13 @@ export function RichTextEditor({
           left: (event as DragEvent).clientX,
           top: (event as DragEvent).clientY,
         });
-        insertUploadedImages(view, files, uploadImage, dropped?.pos);
+        insertUploadedImages(
+          view,
+          files,
+          uploadImage,
+          uploadFailedText,
+          dropped?.pos
+        );
         return true;
       },
 
@@ -753,11 +773,11 @@ export function RichTextEditor({
         if (files.length === 0) return false;
 
         event.preventDefault();
-        insertUploadedImages(view, files, uploadImage);
+        insertUploadedImages(view, files, uploadImage, uploadFailedText);
         return true;
       },
     }),
-    [spellCheck, surfaceAttributes, uploadImage]
+    [spellCheck, surfaceAttributes, uploadFailedText, uploadImage]
   );
 
   /*
@@ -768,7 +788,12 @@ export function RichTextEditor({
    */
   const extensions = useMemo(
     () => [
-      ...createExtensions({ uploadImage, placeholder, withMath }),
+      ...createExtensions({
+        uploadImage,
+        uploadFailedText,
+        placeholder,
+        withMath,
+      }),
       // Registered only when a consumer wants it, so `[[` stays two literal
       // brackets everywhere else — a code snippet in a blog post is not a
       // link picker.
@@ -812,6 +837,7 @@ export function RichTextEditor({
       onLinkTrigger,
       placeholder,
       reportOutline,
+      uploadFailedText,
       uploadImage,
       withMath,
     ]
@@ -1543,7 +1569,11 @@ export function RichTextEditor({
           fed a transaction -> re-render loop on phones. Only chromeless: every
           other editor already has its real toolbar on screen at every width. */}
       {chromeless && !rawActive && (
-        <MobileEditorTools editor={editor} uploadImage={uploadImage} />
+        <MobileEditorTools
+          editor={editor}
+          uploadImage={uploadImage}
+          uploadFailedText={uploadFailedText}
+        />
       )}
     </div>
   );

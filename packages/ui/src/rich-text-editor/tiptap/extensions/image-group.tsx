@@ -15,7 +15,11 @@ import { cn } from '../../../lib/utils';
 
 import { IMAGE_GROUP_NAME, ImageGroupBase } from './image-base';
 import { ImageCaption } from './image-caption';
-import { imageFilesFrom, resolveImages } from './upload-images';
+import {
+  imageFilesFrom,
+  imageUploadFailedText,
+  resolveImages,
+} from './upload-images';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -124,7 +128,11 @@ function ImageGroupView({
 
     setUploading(true);
     try {
-      const images = await resolveImages(editor, files);
+      const images = await resolveImages(
+        editor,
+        files,
+        imageUploadFailedText(editor)
+      );
       if (images.length === 0) return;
 
       // Resolved after the upload, never before it: the round trip gives the

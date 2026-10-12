@@ -178,7 +178,11 @@ describe('FormControl wiring', () => {
     // one a label can meaningfully point at, and the wrapper it used to be
     // attached to (blog-form's rounded border) is not focusable at all.
     const { container, target } = await submitAndResolveLabelTarget(
-      <RichTextEditor compact onChange={() => {}} />,
+      <RichTextEditor
+        compact
+        onChange={() => {}}
+        uploadFailedText="Upload failed"
+      />,
       '.ProseMirror'
     );
     expectWiredUp(container, target, '[contenteditable="true"][tabindex]');
@@ -194,7 +198,11 @@ describe('FormControl wiring', () => {
     // "valid" forever — the state it was created in. `aria-invalid` flipping on
     // the SAME element is what proves the live write is doing its job.
     const container = await mount(
-      <RichTextEditor compact onChange={() => {}} />,
+      <RichTextEditor
+        compact
+        onChange={() => {}}
+        uploadFailedText="Upload failed"
+      />,
       '.ProseMirror'
     );
     const surface = container.querySelector('.ProseMirror');

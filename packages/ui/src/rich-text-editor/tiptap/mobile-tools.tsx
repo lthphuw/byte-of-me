@@ -105,9 +105,12 @@ const TOOLS: Tool[] = [
 export function MobileEditorTools({
   editor,
   uploadImage,
+  uploadFailedText,
 }: {
   editor: Editor;
   uploadImage?: ImageUploadFn;
+  /** What the author sees when an upload is refused, already translated. */
+  uploadFailedText: string;
 }) {
   const [open, setOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -124,7 +127,7 @@ export function MobileEditorTools({
   // rule the image placeholder follows on a desktop, so the gesture means the
   // same thing on both.
   const insertImages = async (files: File[]) => {
-    const images = await resolveImages(editor, files);
+    const images = await resolveImages(editor, files, uploadFailedText);
     if (images.length > 0) editor.chain().focus().setImageGroup(images).run();
   };
 

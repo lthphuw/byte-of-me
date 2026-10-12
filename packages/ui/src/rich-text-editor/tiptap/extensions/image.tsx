@@ -42,6 +42,11 @@ export type { ImageUploadFn };
 
 type ExtendedImageOptions = ImageOptions & {
   uploadFn?: ImageUploadFn;
+  /**
+   * What the author sees when an upload is refused without a message of its
+   * own. `createExtensions` sets it from the editor's `uploadFailedText`.
+   */
+  uploadFailedText: string;
 };
 
 /**
@@ -63,16 +68,34 @@ export const ImageExtension = ImageBase.extend<ExtendedImageOptions>({
       allowBase64: parent.allowBase64 ?? true,
       HTMLAttributes: parent.HTMLAttributes ?? {},
       uploadFn: undefined,
+      uploadFailedText: '',
     };
   },
 
   addNodeView() {
-    return ReactNodeViewRenderer(TiptapImage);
+    // A node view receives its node and the editor, not the extension's
+    // options, so the failure text is read here and handed over.
+    const { uploadFailedText } = this.options;
+
+    return ReactNodeViewRenderer((props: NodeViewProps) => (
+      <TiptapImage {...props} uploadFailedText={uploadFailedText} />
+    ));
   },
 });
 
-function TiptapImage(props: NodeViewProps) {
-  const { node, editor, selected, deleteNode, updateAttributes } = props;
+type TiptapImageProps = NodeViewProps & {
+  uploadFailedText: string;
+};
+
+function TiptapImage(props: TiptapImageProps) {
+  const {
+    node,
+    editor,
+    selected,
+    deleteNode,
+    updateAttributes,
+    uploadFailedText,
+  } = props;
 
   const imageRef = useRef<HTMLImageElement | null>(null);
   const nodeRef = useRef<HTMLElement | null>(null);
@@ -128,7 +151,7 @@ function TiptapImage(props: NodeViewProps) {
         // there. The message carries the server's reason, so "larger than 3 MB"
         // reaches the author instead of a silent gap.
         toast.error(
-          err instanceof Error && err.message ? err.message : 'Upload failed'
+          err instanceof Error && err.message ? err.message : uploadFailedText
         );
         deleteNode();
       } finally {
@@ -137,7 +160,13 @@ function TiptapImage(props: NodeViewProps) {
     };
 
     upload();
-  }, [node.attrs.src, uploadFn, updateAttributes, deleteNode]);
+  }, [
+    node.attrs.src,
+    uploadFn,
+    uploadFailedText,
+    updateAttributes,
+    deleteNode,
+  ]);
 
   /**
    * Manual upload (replace image)
@@ -145,6 +174,7 @@ function TiptapImage(props: NodeViewProps) {
   const { fileInputRef, handleFileChange, handleRemove, uploading, error } =
     useImageUpload({
       uploadFn,
+      uploadFailedText,
       onUpload: (url) => {
         updateAttributes({
           src: url,

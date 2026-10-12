@@ -8,12 +8,18 @@ interface UseImageUploadProps {
    * ImageExtension's auto-upload effect converts the blob: src afterwards.
    */
   uploadFn?: (file: File) => Promise<string>;
+  /**
+   * What the author sees when an upload is refused without a message of its
+   * own. Already translated by the caller; this hook holds no copy of its own.
+   */
+  uploadFailedText: string;
 }
 
 export function useImageUpload({
   onUpload,
   uploadFn,
-}: UseImageUploadProps = {}) {
+  uploadFailedText,
+}: UseImageUploadProps) {
   const previewRef = useRef<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -31,15 +37,16 @@ export function useImageUpload({
         setError(null);
         return uploadedUrl;
       } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Upload failed';
-        setError(errorMessage);
-        throw new Error(errorMessage);
+        setError(
+          err instanceof Error && err.message ? err.message : uploadFailedText
+        );
+        // Rethrown as it arrived: the console keeps the uploader's own error.
+        throw err;
       } finally {
         setUploading(false);
       }
     },
-    [uploadFn]
+    [uploadFailedText, uploadFn]
   );
 
   const handleThumbnailClick = useCallback(() => {
