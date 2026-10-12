@@ -51,9 +51,16 @@ function BlogFormSkeleton() {
       aria-busy="true"
       aria-label={t('dialog.loadingLabel')}
     >
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-10 w-full" />
+      {/* Same two columns and gap as BlogMetaFields */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="space-y-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <div className="space-y-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
       </div>
       <Skeleton className="h-10 w-full" />
       <Skeleton className="h-64 w-full" />

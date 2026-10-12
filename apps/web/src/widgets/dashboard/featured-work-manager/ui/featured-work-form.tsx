@@ -17,7 +17,7 @@ import { useTranslations } from 'next-intl';
 
 import type { AdminFeaturedWorkDetail } from '@/entities/featured-work';
 import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
-import { createScopedImageUploader } from '@/entities/media';
+import { useScopedImageUploader } from '@/entities/media/query';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { featuredWorkResolver } from '@/widgets/dashboard/featured-work-manager/lib/featured-work-resolver';
@@ -26,12 +26,6 @@ import {
   FeaturedWorkDemo,
   toDemoValues,
 } from '@/widgets/dashboard/featured-work-manager/ui/featured-work-demo';
-
-/**
- * A featured work is a project contribution, so pasted images land under the
- * `project` prefix; `MEDIA_SCOPES` is a closed list and stays untouched here.
- */
-const uploadImage = createScopedImageUploader('project');
 
 function toFormValues(
   initialData?: AdminFeaturedWorkDetail
@@ -63,7 +57,12 @@ export function FeaturedWorkForm({
   onSubmit,
   onUploadingChange,
 }: FeaturedWorkFormProps) {
+  // A featured work is a project contribution, so pasted images land under
+  // the `project` prefix; `MEDIA_SCOPES` is a closed list and stays untouched
+  // here.
+  const uploadImage = useScopedImageUploader('project');
   const t = useTranslations('dashboard.featuredWorks');
+  const tMedia = useTranslations('dashboard.media');
 
   // Seeded once, at mount: the dialog is keyed on the edited row.
   const [defaultValues] = useState(() => toFormValues(initialData));
@@ -151,6 +150,7 @@ export function FeaturedWorkForm({
                           }
                         }}
                         uploadImage={uploadImage}
+                        uploadFailedText={tMedia('toast.uploadError')}
                       />
                     </FormControl>
                     <FormMessage />

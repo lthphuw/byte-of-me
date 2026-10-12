@@ -13,17 +13,17 @@ import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { EducationDialog } from './education-dialog';
+import { EducationListLoading } from './education-list-loading';
 
 import type { AdminEducationListItem } from '@/entities/education';
 import { createEducation } from '@/entities/education/api/create-education';
 import { deleteEducation } from '@/entities/education/api/delete-education';
-import { getAdminEducationById } from '@/entities/education/api/get-admin-education-by-id';
 import { getPaginatedAdminEducations } from '@/entities/education/api/get-paginated-admin-educations';
 import { updateEducation } from '@/entities/education/api/update-education';
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
 import { educationKeys } from '@/entities/education/model/query-keys';
+import { educationQueries, useAdminEducationById } from '@/entities/education/query';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
-import { useEditingRecord } from '@/shared/hooks/use-editing-record';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { formatDate } from '@/shared/lib/utils';
@@ -69,7 +69,7 @@ export function EducationManager() {
     // loads — holding pre-save content that no list invalidation reaches.
     detailKey: (education) => educationKeys.detail(education.id),
     pageSize: ADMIN_PAGE_SIZE,
-    pageKey: educationKeys.adminPage,
+    pageKey: (page) => educationQueries.adminPage(page).queryKey,
     fetchPage: (page, limit) => getPaginatedAdminEducations(page, limit),
     create: createEducation,
     update: updateEducation,
@@ -78,11 +78,7 @@ export function EducationManager() {
 
   // The list row carries no achievements, so the dialog loads the full entry
   // by id; "New" (`editing` is null) fetches nothing and opens an empty form.
-  const fullEducation = useEditingRecord({
-    id: editing?.id ?? null,
-    queryKey: educationKeys.detail,
-    fetchRecord: getAdminEducationById,
-  });
+  const fullEducation = useAdminEducationById(editing?.id);
 
   return (
     <div className="space-y-6">
@@ -103,6 +99,7 @@ export function EducationManager() {
           isError={isError}
           onRetry={() => refetch()}
           isFetching={isFetching}
+          skeleton={<EducationListLoading />}
           isEmpty={educations.length === 0}
           emptyTitle={t('emptyTitle')}
           emptyDescription={t('emptyDescription')}

@@ -1,17 +1,24 @@
 import { getTranslations } from 'next-intl/server';
 
 import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
+import { SectionLoadError } from '@/shared/ui';
 
 export async function DashboardProfile() {
-  const [profileRes, t] = await Promise.all([
+  const [profileRes, t, tError] = await Promise.all([
     getUserProfile(),
     getTranslations('dashboard.dashboard'),
+    getTranslations('components.sectionLoadError'),
   ]);
 
   // Not `null`: this is the page's `h1`, so failing silently left the
   // dashboard with no heading at all.
-  if (!profileRes.success || !profileRes.data) {
-    return <p className="text-sm text-destructive-text">{t('sectionError')}</p>;
+  if (!profileRes.success) {
+    return (
+      <SectionLoadError
+        title={t('sectionError')}
+        retryLabel={tError('retry')}
+      />
+    );
   }
 
   const userProfile = profileRes.data;

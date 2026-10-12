@@ -2,13 +2,13 @@
 
 import type { Control } from 'react-hook-form';
 import {
+  Button,
   Checkbox,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  Loading,
   MultiSelect,
   type Option,
   Select,
@@ -16,29 +16,31 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Skeleton,
 } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
 import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import type { ProjectOption } from '@/entities/project/api/get-admin-project-options';
+import type { PickerState } from '@/features/dashboard/blog-editor/lib/use-blog-reference-options';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import { TextField } from '@/shared/ui';
 
 interface BlogMetaFieldsProps {
   control: Control<BlogFormValues>;
   projects: ProjectOption[];
+  projectsState: PickerState;
   tagOptions: Option[];
-  isProjectLoading: boolean;
-  isTagLoading: boolean;
+  tagsState: PickerState;
 }
 
 /** Everything above the translation tabs: slug, relations, flags, cover. */
 export function BlogMetaFields({
   control,
   projects,
+  projectsState,
   tagOptions,
-  isProjectLoading,
-  isTagLoading,
+  tagsState,
 }: BlogMetaFieldsProps) {
   const t = useTranslations('dashboard.blog');
   return (
@@ -55,8 +57,13 @@ export function BlogMetaFields({
           control={control}
           name="projectId"
           render={({ field }) =>
-            isProjectLoading ? (
-              <Loading />
+            projectsState.isLoading ? (
+              <PickerSkeleton />
+            ) : projectsState.isError ? (
+              <PickerError
+                label={t('meta.projectLabel')}
+                onRetry={projectsState.retry}
+              />
             ) : (
               <FormItem>
                 <FormLabel>{t('meta.projectLabel')}</FormLabel>
@@ -131,8 +138,13 @@ export function BlogMetaFields({
           control={control}
           name="tagIds"
           render={({ field }) =>
-            isTagLoading ? (
-              <Loading />
+            tagsState.isLoading ? (
+              <PickerSkeleton />
+            ) : tagsState.isError ? (
+              <PickerError
+                label={t('meta.tagsLabel')}
+                onRetry={tagsState.retry}
+              />
             ) : (
               <FormItem>
                 <FormLabel>{t('meta.tagsLabel')}</FormLabel>
@@ -149,6 +161,40 @@ export function BlogMetaFields({
             )
           }
         />
+      </div>
+    </div>
+  );
+}
+
+/** A picker's place while its options load: a label line over a select-height bar. */
+function PickerSkeleton() {
+  return (
+    <div className="space-y-2" aria-busy="true">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-10 w-full" />
+    </div>
+  );
+}
+
+/** A picker whose options failed. Never an empty select, which reads as "none exist". */
+function PickerError({
+  label,
+  onRetry,
+}: {
+  label: string;
+  onRetry: () => void;
+}) {
+  const t = useTranslations('dashboard.blog');
+  const tShared = useTranslations('dashboard.shared');
+
+  return (
+    <div className="space-y-2">
+      <p className="text-sm font-medium leading-none">{label}</p>
+      <div className="flex items-center gap-2 text-[0.8rem] font-medium text-destructive-text">
+        <span>{t('meta.optionsError')}</span>
+        <Button type="button" size="sm" variant="outline" onClick={onRetry}>
+          {tShared('managerListState.retry')}
+        </Button>
       </div>
     </div>
   );

@@ -16,12 +16,9 @@ import {
 } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
-import { createScopedImageUploader } from '@/entities/media';
+import { useScopedImageUploader } from '@/entities/media/query';
 import type { UserProfileFormValues } from '@/entities/user-profile';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
-
-/** Images pasted into this editor land under the `profile` prefix in storage. */
-const uploadImage = createScopedImageUploader('profile');
 
 /** The editor's empty document, which is what an untouched "About me" holds. */
 function hasRichText(value: unknown): boolean {
@@ -44,8 +41,11 @@ export function ProfileTranslationCard({
   index,
   onRemove,
 }: ProfileTranslationCardProps) {
+  // Images pasted into this editor land under the `profile` prefix in storage.
+  const uploadImage = useScopedImageUploader('profile');
   const t = useTranslations('dashboard.userProfile');
   const tShared = useTranslations('dashboard.shared');
+  const tMedia = useTranslations('dashboard.media');
   // Holds the language code being confirmed — nothing here subscribes to the
   // form, so the label has to be captured at click time to be current.
   const [confirmingLanguage, setConfirmingLanguage] = useState<string | null>(
@@ -215,6 +215,7 @@ export function ProfileTranslationCard({
                   value={field.value}
                   onChange={field.onChange}
                   uploadImage={uploadImage}
+                  uploadFailedText={tMedia('toast.uploadError')}
                 />
               </FormControl>
               <FormMessage />

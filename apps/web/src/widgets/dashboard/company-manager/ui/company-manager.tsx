@@ -13,17 +13,17 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
 import { CompanyDialog } from './company-dialog';
+import { CompanyListLoading } from './company-list-loading';
 
 import { createCompany } from '@/entities/company/api/create-company';
 import { deleteCompany } from '@/entities/company/api/delete-company';
-import { getAdminCompanyById } from '@/entities/company/api/get-admin-company-by-id';
 import { getPaginatedAdminCompanies } from '@/entities/company/api/get-paginated-admin-companies';
 import { updateCompany } from '@/entities/company/api/update-company';
 import type { CompanyFormValues } from '@/entities/company/model/company-schema';
 import { companyKeys } from '@/entities/company/model/query-keys';
 import type { AdminCompanyListItem } from '@/entities/company/model/types';
+import { companyQueries, useAdminCompanyById } from '@/entities/company/query';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
-import { useEditingRecord } from '@/shared/hooks/use-editing-record';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { formatDate } from '@/shared/lib/utils';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
@@ -67,7 +67,7 @@ export function CompanyManager() {
     // loads — holding pre-save content that no list invalidation reaches.
     detailKey: (company) => companyKeys.detail(company.id),
     pageSize: ADMIN_PAGE_SIZE,
-    pageKey: companyKeys.adminPage,
+    pageKey: (page) => companyQueries.adminPage(page).queryKey,
     fetchPage: (page, limit) => getPaginatedAdminCompanies(page, limit),
     create: createCompany,
     update: updateCompany,
@@ -76,11 +76,7 @@ export function CompanyManager() {
 
   // The list row carries no roles or tasks, so the dialog loads the full
   // record by id; "New" (`editing` is null) fetches nothing and opens empty.
-  const fullCompany = useEditingRecord({
-    id: editing?.id ?? null,
-    queryKey: companyKeys.detail,
-    fetchRecord: getAdminCompanyById,
-  });
+  const fullCompany = useAdminCompanyById(editing?.id);
 
   return (
     <div className="space-y-6">
@@ -101,6 +97,7 @@ export function CompanyManager() {
           isError={isError}
           onRetry={() => refetch()}
           isFetching={isFetching}
+          skeleton={<CompanyListLoading />}
           isEmpty={companies.length === 0}
           emptyTitle={t('emptyTitle')}
           emptyDescription={t('emptyDescription')}

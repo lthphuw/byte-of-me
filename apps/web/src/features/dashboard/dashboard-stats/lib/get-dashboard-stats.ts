@@ -7,6 +7,7 @@ import { unstable_cache } from 'next/cache';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getErrorMessage } from '@/shared/lib/utils';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export type DashboardStats = {
   totalMessages: number;
@@ -122,8 +123,7 @@ async function readDashboardStats(userId: string): Promise<DashboardStats> {
 }
 
 export async function getDashboardStats(): Promise<
-  | { success: true; data: DashboardStats }
-  | { success: false; data: null; errorMsg: string }
+  ApiResponse<DashboardStats>
 > {
   try {
     // Stays here, and stays *outside* the cached callback, for two separate
@@ -161,6 +161,6 @@ export async function getDashboardStats(): Promise<
   } catch (error) {
     const errorMsg = getErrorMessage(error, 'Failed to fetch dashboard stats');
     logger.error(`Get Dashboard stats  Error: ${errorMsg}`);
-    return { success: false, data: null, errorMsg };
+    return { success: false, errorMsg };
   }
 }

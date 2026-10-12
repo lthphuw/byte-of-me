@@ -39,8 +39,12 @@ import { FeaturedWorkManager } from './featured-work-manager';
 import { featuredWorkKeys } from '@/entities/featured-work/model/query-keys';
 import type { AdminFeaturedWork } from '@/entities/featured-work/model/types';
 import * as singleUpload from '@/entities/media/api/upload-single-media';
+import * as videoDirect from '@/entities/media/api/upload-video-direct';
 import { MediaViolationError } from '@/entities/media/model/upload-constraints';
+import { workspaceSettingsKeys } from '@/entities/workspace-settings/model/query-keys';
+import { WORKSPACE_SETTINGS_DEFAULTS } from '@/entities/workspace-settings/model/settings-schema';
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { Media } from '@/shared/types/models';
 import {
   __getEditorProps,
@@ -150,6 +154,8 @@ const toastError = spyOn(toast, 'error').mockImplementation(() => 1);
 // The browser-side upload (compression settings + the upload action) is replaced
 // whole: what the form does with the stored row is under test, not the pipeline.
 const uploadRecord = spyOn(singleUpload, 'uploadSingleMediaRecord');
+// A clip goes to storage through its signed URL (`useVideoUpload`), not the image pipeline.
+const uploadClip = spyOn(videoDirect, 'uploadVideoDirect');
 
 function renderManager(
   list: AdminFeaturedWork[] = rows,
@@ -161,6 +167,11 @@ function renderManager(
     data: list,
     meta: meta(list.length),
   });
+
+  queryClient.setQueryData(
+    workspaceSettingsKeys.current(),
+    WORKSPACE_SETTINGS_DEFAULTS
+  );
 
   render(
     <QueryClientProvider client={queryClient}>
@@ -291,6 +302,7 @@ beforeEach(() => {
   txMediaDeleteMany.mockReset().mockResolvedValue({});
   txMediaCreateMany.mockReset().mockResolvedValue({});
   uploadRecord.mockReset();
+  uploadClip.mockReset();
   __resetMountedValues();
   logError.mockClear();
   toastSuccess.mockClear();
@@ -309,6 +321,7 @@ afterAll(() => {
   toastSuccess.mockRestore();
   toastError.mockRestore();
   uploadRecord.mockRestore();
+  uploadClip.mockRestore();
 });
 
 describe('FeaturedWorkManager list', () => {
@@ -808,8 +821,11 @@ describe('FeaturedWorkManager demo pair', () => {
     (txMediaCreateMany.mock.calls[0]?.[0] as { data: Row[] } | undefined)
       ?.data ?? null;
 
-  const stored = (id: string, mimeType = 'video/mp4') =>
-    ({ id, url: `https://cdn.example/${id}`, mimeType } as Media);
+  // `uploadVideoDirect` answers with the envelope its mutation unwraps.
+  const stored = (id: string, mimeType = 'video/mp4'): ApiResponse<Media> => ({
+    success: true,
+    data: { id, url: `https://cdn.example/${id}`, mimeType } as Media,
+  });
 
   const openWork = async (demo: ReturnType<typeof demoRow>[]) => {
     findFirst.mockResolvedValue(
@@ -946,14 +962,14 @@ describe('FeaturedWorkManager demo pair', () => {
   });
 
   it('adds an uploaded clip with its label', async () => {
-    uploadRecord.mockResolvedValue(stored('m9'));
+    uploadClip.mockResolvedValue(stored('m9'));
     await openWork([]);
 
     const file = clip();
     chooseFile(file);
 
     await screen.findByLabelText('Label 1');
-    expect(uploadRecord).toHaveBeenCalledWith(file, 'featured-work');
+    expect(uploadClip).toHaveBeenCalledWith(file, 'featured-work');
     expect(screen.getByLabelText('Demo 1').getAttribute('src')).toBe(
       'https://cdn.example/m9'
     );
@@ -969,7 +985,7 @@ describe('FeaturedWorkManager demo pair', () => {
   });
 
   it('puts a second upload in the second slot', async () => {
-    uploadRecord.mockResolvedValue(stored('m9'));
+    uploadClip.mockResolvedValue(stored('m9'));
     await openWork([FP16]);
 
     chooseFile(clip());
@@ -984,7 +1000,7 @@ describe('FeaturedWorkManager demo pair', () => {
   });
 
   it('offers slot 2 only once slot 1 is filled, and neither when both are', async () => {
-    uploadRecord.mockResolvedValue(stored('m9'));
+    uploadClip.mockResolvedValue(stored('m9'));
     await openWork([]);
 
     expect(button('Upload demo 1')).toBeTruthy();
@@ -995,14 +1011,14 @@ describe('FeaturedWorkManager demo pair', () => {
     expect(screen.queryByRole('button', { name: 'Upload demo 1' })).toBeNull();
     expect(button('Upload demo 2')).toBeTruthy();
 
-    uploadRecord.mockResolvedValue(stored('m10'));
+    uploadClip.mockResolvedValue(stored('m10'));
     chooseFile(clip());
     await screen.findByLabelText('Label 2');
     expect(screen.queryByRole('button', { name: /^Upload demo/ })).toBeNull();
   });
 
   it('tells the owner when the upload fails and leaves the slot empty', async () => {
-    uploadRecord.mockRejectedValue(
+    uploadClip.mockRejectedValue(
       new Error('"int8.mp4" is larger than 10 MB.')
     );
     await openWork([]);
@@ -1010,9 +1026,7 @@ describe('FeaturedWorkManager demo pair', () => {
     chooseFile(clip());
 
     await waitFor(() =>
-      expect(toastError).toHaveBeenCalledWith('Upload failed', {
-        description: '"int8.mp4" is larger than 10 MB.',
-      })
+      expect(toastError).toHaveBeenCalledWith('Upload failed')
     );
     await waitFor(() => expect(button('Upload demo 1').disabled).toBe(false));
     expect(screen.queryByLabelText('Label 1')).toBeNull();
@@ -1043,7 +1057,7 @@ describe('FeaturedWorkManager demo pair', () => {
   });
 
   it('creates a work with a clip', async () => {
-    uploadRecord.mockResolvedValue(stored('m9'));
+    uploadClip.mockResolvedValue(stored('m9'));
     renderManager([]);
 
     fireEvent.click(button('Add featured work'));
@@ -1076,8 +1090,8 @@ describe('FeaturedWorkManager demo pair', () => {
   });
 
   it('holds Save while a clip is uploading, then submits the clip once it lands', async () => {
-    const landing = deferred<Media>();
-    uploadRecord.mockReturnValue(landing.promise);
+    const landing = deferred<ApiResponse<Media>>();
+    uploadClip.mockReturnValue(landing.promise);
     await openWork([]);
 
     chooseFile(clip());
@@ -1099,8 +1113,8 @@ describe('FeaturedWorkManager demo pair', () => {
 
   it('releases Save when the upload fails', async () => {
     let fail!: (reason: Error) => void;
-    uploadRecord.mockReturnValue(
-      new Promise<Media>((_, reject) => {
+    uploadClip.mockReturnValue(
+      new Promise<ApiResponse<Media>>((_, reject) => {
         fail = reject;
       })
     );
@@ -1113,14 +1127,12 @@ describe('FeaturedWorkManager demo pair', () => {
     });
 
     await waitFor(() => expect(button('Save changes').disabled).toBe(false));
-    expect(toastError).toHaveBeenCalledWith('Upload failed', {
-      description: 'Storage is full',
-    });
+    expect(toastError).toHaveBeenCalledWith('Upload failed');
   });
 
   it('appends a late upload after the slot it was started for was removed', async () => {
-    const landing = deferred<Media>();
-    uploadRecord.mockReturnValue(landing.promise);
+    const landing = deferred<ApiResponse<Media>>();
+    uploadClip.mockReturnValue(landing.promise);
     await openWork([FP16]);
 
     chooseFile(clip());
@@ -1138,8 +1150,8 @@ describe('FeaturedWorkManager demo pair', () => {
   });
 
   it('keeps a label edited while the upload was in flight', async () => {
-    const landing = deferred<Media>();
-    uploadRecord.mockReturnValue(landing.promise);
+    const landing = deferred<ApiResponse<Media>>();
+    uploadClip.mockReturnValue(landing.promise);
     await openWork([FP16]);
 
     chooseFile(clip());
@@ -1160,7 +1172,7 @@ describe('FeaturedWorkManager demo pair', () => {
   });
 
   it('says so, and attaches nothing, when the upload answers with a clip the pair already holds', async () => {
-    uploadRecord.mockResolvedValue(stored('m1'));
+    uploadClip.mockResolvedValue(stored('m1'));
     await openWork([FP16]);
 
     chooseFile(clip());
@@ -1176,8 +1188,8 @@ describe('FeaturedWorkManager demo pair', () => {
   });
 
   it('ignores an upload that lands after the form has closed', async () => {
-    const landing = deferred<Media>();
-    uploadRecord.mockReturnValue(landing.promise);
+    const landing = deferred<ApiResponse<Media>>();
+    uploadClip.mockReturnValue(landing.promise);
     await openWork([]);
 
     chooseFile(clip());
@@ -1193,22 +1205,20 @@ describe('FeaturedWorkManager demo pair', () => {
   });
 
   it("names a refused file in the owner's language, from the violation", async () => {
-    uploadRecord.mockRejectedValue(
-      new MediaViolationError({
-        kind: 'size',
-        fileName: 'int8.mp4',
-        maxSizeMb: 10,
-      })
-    );
     await openWork([]);
 
-    chooseFile(clip());
+    chooseFile(
+      new File([new Uint8Array(11 * 1024 * 1024)], 'int8.mp4', {
+        type: 'video/mp4',
+      })
+    );
 
     await waitFor(() =>
       expect(toastError).toHaveBeenCalledWith('File too large', {
         description: 'int8.mp4 exceeds 10MB.',
       })
     );
+    expect(uploadClip).not.toHaveBeenCalled();
   });
 
   it('names an unsupported file type', async () => {
@@ -1217,7 +1227,7 @@ describe('FeaturedWorkManager demo pair', () => {
     );
     await openWork([]);
 
-    chooseFile(clip());
+    chooseFile(new File([new Uint8Array(8)], 'a.mov', { type: 'video/quicktime' }));
 
     await waitFor(() =>
       expect(toastError).toHaveBeenCalledWith('Invalid type', {
@@ -1227,7 +1237,7 @@ describe('FeaturedWorkManager demo pair', () => {
   });
 
   it("puts focus on the new clip's label once it lands", async () => {
-    uploadRecord.mockResolvedValue(stored('m9'));
+    uploadClip.mockResolvedValue(stored('m9'));
     await openWork([]);
 
     button('Upload demo 1').focus();
@@ -1238,7 +1248,7 @@ describe('FeaturedWorkManager demo pair', () => {
   });
 
   it('puts focus back on the upload button after a failed upload', async () => {
-    uploadRecord.mockRejectedValue(new Error('Storage is full'));
+    uploadClip.mockRejectedValue(new Error('Storage is full'));
     await openWork([]);
 
     button('Upload demo 1').focus();

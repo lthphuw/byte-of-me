@@ -1,10 +1,9 @@
-import { HydrationBoundary } from '@tanstack/react-query';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
-import { getPaginatedAdminEducations } from '@/entities/education/api/get-paginated-admin-educations';
-import { educationKeys } from '@/entities/education/model/query-keys';
-import { prefetchAdminPage } from '@/shared/lib/query/prefetch-admin-page';
+import { educationQueries } from '@/entities/education/query';
+import { getQueryClient } from '@/shared/lib/query/get-query-client';
 import { EducationManager } from '@/widgets/dashboard/education-manager';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -26,13 +25,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function EducationPage() {
-  const state = await prefetchAdminPage(
-    educationKeys.adminPage,
-    getPaginatedAdminEducations
-  );
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery(educationQueries.adminPage(1));
 
   return (
-    <HydrationBoundary state={state}>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="space-y-6">
         <EducationManager />
       </div>

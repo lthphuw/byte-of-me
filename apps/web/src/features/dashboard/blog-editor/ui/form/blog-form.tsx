@@ -22,14 +22,11 @@ import {
   blogFormSchema,
   type BlogFormValues,
 } from '@/entities/blog/model/blog-schema';
-import { createScopedImageUploader } from '@/entities/media/api/upload-single-media';
+import { useScopedImageUploader } from '@/entities/media/query';
 import { useBlogReferenceOptions } from '@/features/dashboard/blog-editor/lib/use-blog-reference-options';
 import { useFormAutosave } from '@/shared/hooks/use-form-autosave';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
-
-/** Images pasted into this editor land under the `blog` prefix in storage. */
-const uploadImage = createScopedImageUploader('blog');
 
 const emptyTranslation = () => ({
   language: 'en',
@@ -87,8 +84,11 @@ export function BlogForm({
   loading,
   formId,
 }: BlogFormProps) {
+  // Images pasted into this editor land under the `blog` prefix in storage.
+  const uploadImage = useScopedImageUploader('blog');
   const t = useTranslations('dashboard.blog');
-  const { tagOptions, projects, isTagLoading, isProjectLoading } =
+  const tMedia = useTranslations('dashboard.media');
+  const { tagOptions, projects, tagsState, projectsState } =
     useBlogReferenceOptions();
 
   // Seeded once, at mount: the host mounts this form on a loaded post and keys
@@ -140,9 +140,9 @@ export function BlogForm({
         <BlogMetaFields
           control={form.control}
           projects={projects}
+          projectsState={projectsState}
           tagOptions={tagOptions}
-          isProjectLoading={isProjectLoading}
-          isTagLoading={isTagLoading}
+          tagsState={tagsState}
         />
 
         {/* Translations Section */}
@@ -194,6 +194,7 @@ export function BlogForm({
                             value={field.value}
                             onChange={field.onChange}
                             uploadImage={uploadImage}
+                            uploadFailedText={tMedia('toast.uploadError')}
                           />
                         </FormControl>
                       </div>

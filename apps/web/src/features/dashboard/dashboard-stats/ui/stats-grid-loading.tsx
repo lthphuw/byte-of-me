@@ -11,9 +11,9 @@ export function StatsGridLoading() {
               <Skeleton className="h-3 w-20" />
               <Skeleton className="h-4 w-4 rounded-full" />
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent>
               <Skeleton className="h-8 w-12" />
-              <Skeleton className="h-3 w-16" />
+              <Skeleton className="mt-1 h-3 w-16" />
             </CardContent>
           </Card>
         ))}
@@ -27,9 +27,9 @@ export function StatsGridLoading() {
             className="flex items-center gap-3 rounded-xl border border-dashed bg-muted/30 p-4"
           >
             <Skeleton className="h-8 w-8 rounded-lg" />
-            <div className="space-y-2">
+            <div>
               <Skeleton className="h-5 w-8" />
-              <Skeleton className="h-3 w-14" />
+              <Skeleton className="mt-1 h-3 w-14" />
             </div>
           </div>
         ))}

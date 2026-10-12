@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
 import { getAdminUserProfile } from '@/entities/user-profile';
+import { SectionLoadError } from '@/shared/ui';
 import { UserProfileManager } from '@/widgets/dashboard/user-profile-manager';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -23,17 +24,19 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function UserProfilePage() {
-  const resp = await getAdminUserProfile();
+  const [resp, tError] = await Promise.all([
+    getAdminUserProfile(),
+    getTranslations('components.sectionLoadError'),
+  ]);
 
-  if (!resp.success || !resp.data) {
+  if (!resp.success) {
     return (
       <div className="flex h-[400px] items-center justify-center rounded-xl border-2 border-dashed">
-        <div className="text-center">
-          <h3 className="font-semibold">Profile not found</h3>
-          <p className="text-sm text-muted-foreground">
-            Could not load your profile data at this time.
-          </p>
-        </div>
+        <SectionLoadError
+          title={tError('title')}
+          description={tError('description')}
+          retryLabel={tError('retry')}
+        />
       </div>
     );
   }

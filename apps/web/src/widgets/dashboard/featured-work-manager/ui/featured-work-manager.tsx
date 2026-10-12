@@ -13,18 +13,18 @@ import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { FeaturedWorkDialog } from './featured-work-dialog';
+import { FeaturedWorkListLoading } from './featured-work-list-loading';
 
 import type { AdminFeaturedWork } from '@/entities/featured-work';
 import { createFeaturedWork } from '@/entities/featured-work/api/create-featured-work';
 import { deleteFeaturedWork } from '@/entities/featured-work/api/delete-featured-work';
-import { getAdminFeaturedWorkById } from '@/entities/featured-work/api/get-admin-featured-work-by-id';
 import { getPaginatedAdminFeaturedWorks } from '@/entities/featured-work/api/get-paginated-admin-featured-works';
 import { updateFeaturedWork } from '@/entities/featured-work/api/update-featured-work';
 import { safeLink } from '@/entities/featured-work/lib/safe-link';
 import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
 import { featuredWorkKeys } from '@/entities/featured-work/model/query-keys';
+import { featuredWorkQueries, useAdminFeaturedWorkById } from '@/entities/featured-work/query';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
-import { useEditingRecord } from '@/shared/hooks/use-editing-record';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
@@ -70,7 +70,7 @@ export function FeaturedWorkManager() {
     // editor loads, holding the pre-save bodies; no list invalidation reaches it.
     detailKey: (work) => featuredWorkKeys.detail(work.id),
     pageSize: ADMIN_PAGE_SIZE,
-    pageKey: featuredWorkKeys.adminPage,
+    pageKey: (page) => featuredWorkQueries.adminPage(page).queryKey,
     fetchPage: (page, limit) => getPaginatedAdminFeaturedWorks(page, limit),
     create: createFeaturedWork,
     update: updateFeaturedWork,
@@ -78,11 +78,7 @@ export function FeaturedWorkManager() {
   });
   // The list row carries no bodies, so the dialog loads the full row by id.
   // "New" (`editing` is null) fetches nothing and opens an empty form.
-  const fullWork = useEditingRecord({
-    id: editing?.id ?? null,
-    queryKey: featuredWorkKeys.detail,
-    fetchRecord: getAdminFeaturedWorkById,
-  });
+  const fullWork = useAdminFeaturedWorkById(editing?.id);
   const { move, isMoving } = useReorderFeaturedWork(t('toast.reorderError'));
 
   // Arrows use `aria-disabled` so they stay focusable. A reorder moves DOM
@@ -142,6 +138,7 @@ export function FeaturedWorkManager() {
           isError={isError}
           onRetry={() => refetch()}
           isFetching={isFetching}
+          skeleton={<FeaturedWorkListLoading />}
           isEmpty={works.length === 0}
           emptyTitle={t('emptyTitle')}
           emptyDescription={t('emptyDescription')}

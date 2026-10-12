@@ -3,6 +3,7 @@ import { Eye, Hand, Heart } from 'lucide-react';
 import { getFormatter, getTranslations } from 'next-intl/server';
 
 import { getAnalyticsOverview } from '@/features/dashboard/blog-analytics-overview/lib';
+import { SectionLoadError } from '@/shared/ui';
 
 const DAY_LABEL_INTERVAL = 5;
 
@@ -24,19 +25,21 @@ function dayOfMonth(date: string): number {
 }
 
 export async function AnalyticsOverview() {
-  const [t, tDashboard, format, dataResp] = await Promise.all([
+  const [t, tDashboard, format, dataResp, tError] = await Promise.all([
     getTranslations('dashboard.blog'),
     getTranslations('dashboard.dashboard'),
     getFormatter(),
     getAnalyticsOverview(),
+    getTranslations('components.sectionLoadError'),
   ]);
   // Not `null`: the "Analytics" heading renders above regardless, so a failed
   // read left a titled section with nothing under it.
-  if (!dataResp.success || !dataResp.data) {
+  if (!dataResp.success) {
     return (
-      <p className="text-sm text-destructive-text">
-        {tDashboard('sectionError')}
-      </p>
+      <SectionLoadError
+        title={tDashboard('sectionError')}
+        retryLabel={tError('retry')}
+      />
     );
   }
   const {

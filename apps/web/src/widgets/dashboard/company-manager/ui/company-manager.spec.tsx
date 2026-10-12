@@ -35,6 +35,8 @@ import { CompanyManager } from './company-manager';
 import { companyKeys } from '@/entities/company/model/query-keys';
 import { mediaKeys } from '@/entities/media/model/query-keys';
 import { techStackKeys } from '@/entities/tech-stack/model/query-keys';
+import { workspaceSettingsKeys } from '@/entities/workspace-settings/model/query-keys';
+import { WORKSPACE_SETTINGS_DEFAULTS } from '@/entities/workspace-settings/model/settings-schema';
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 
 const NOW = new Date('2026-01-01T00:00:00.000Z');
@@ -142,6 +144,11 @@ function renderManager() {
     ],
     pageParams: [1],
   });
+
+  queryClient.setQueryData(
+    workspaceSettingsKeys.current(),
+    WORKSPACE_SETTINGS_DEFAULTS
+  );
 
   render(
     <QueryClientProvider client={queryClient}>

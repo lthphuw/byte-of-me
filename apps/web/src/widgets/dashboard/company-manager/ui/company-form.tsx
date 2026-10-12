@@ -14,6 +14,7 @@ import {
   FormMessage,
   Icons,
   MultiSelect,
+  Skeleton,
 } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus } from 'lucide-react';
@@ -26,8 +27,8 @@ import {
   companySchema,
 } from '@/entities/company/model/company-schema';
 import type { AdminCompany } from '@/entities/company/model/types';
+import type { TechStackOptionsResult } from '@/entities/tech-stack/query';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
-import type { TechStackOptionsResult } from '@/features/dashboard/tech-stack-management';
 import { TextField, TranslationTabs } from '@/shared/ui';
 
 function toFormValues(
@@ -204,18 +205,18 @@ export function CompanyForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('dialog.techStackLabel')}</FormLabel>
-              <FormControl>
-                <MultiSelect
-                  options={techStacks.options}
-                  selected={field.value || []}
-                  onValueChange={field.onChange}
-                  placeholder={
-                    techStacks.isLoading
-                      ? t('dialog.techStackLoading')
-                      : t('dialog.techStackPlaceholder')
-                  }
-                />
-              </FormControl>
+              {techStacks.isLoading ? (
+                <Skeleton className="h-10 w-full" />
+              ) : (
+                <FormControl>
+                  <MultiSelect
+                    options={techStacks.options}
+                    selected={field.value || []}
+                    onValueChange={field.onChange}
+                    placeholder={t('dialog.techStackPlaceholder')}
+                  />
+                </FormControl>
+              )}
               {/* An empty option list otherwise reads as "no tech stacks
                   exist", and saving from it drops every association. */}
               {techStacks.isError && (

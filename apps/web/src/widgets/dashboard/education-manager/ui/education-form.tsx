@@ -17,18 +17,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 
+import { EducationAchievementsFieldLoading } from './education-achievements-field-loading';
+
 import type { AdminEducation } from '@/entities/education';
 import {
   type EducationFormValues,
   educationSchema,
 } from '@/entities/education/model/education-schema';
-import { createScopedImageUploader } from '@/entities/media';
+import { useScopedImageUploader } from '@/entities/media/query';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
-
-/** Images pasted into this editor land under the `education` prefix in storage. */
-const uploadImage = createScopedImageUploader('education');
 
 /**
  * Reorder pulls framer-motion's heavy projection half and only renders inside
@@ -42,9 +41,7 @@ const EducationAchievementsField = dynamic(
     ).then((mod) => mod.EducationAchievementsField),
   {
     ssr: false,
-    loading: () => (
-      <div className="min-h-[120px] w-full animate-pulse rounded-md border bg-muted/30" />
-    ),
+    loading: () => <EducationAchievementsFieldLoading />,
   }
 );
 
@@ -101,7 +98,11 @@ export function EducationForm({
   initialData,
   onSubmit,
 }: EducationFormProps) {
+  // Images pasted into this editor land under the `education` prefix in
+  // storage.
+  const uploadImage = useScopedImageUploader('education');
   const t = useTranslations('dashboard.education');
+  const tMedia = useTranslations('dashboard.media');
 
   // Seeded once, at mount: the dialog mounts this on a loaded entry. A later
   // `form.reset` would remount every editor (new field-array ids) and wipe edits.
@@ -222,6 +223,7 @@ export function EducationForm({
                             field.onChange(fromEditorContent(json))
                           }
                           uploadImage={uploadImage}
+                          uploadFailedText={tMedia('toast.uploadError')}
                         />
                       </FormControl>
                       <FormMessage />

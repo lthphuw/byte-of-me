@@ -3,58 +3,41 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import type { AdminUserProfile } from '@/entities/user-profile';
-import { getAdminUserProfile } from '@/entities/user-profile/api/get-user-profile-with-translations';
 import { saveProfile } from '@/entities/user-profile/api/save-profile';
 import { userProfileKeys } from '@/entities/user-profile/model/query-keys';
 import {
   createUserProfileSchema,
   type UserProfileFormValues,
 } from '@/entities/user-profile/model/user-profile-schema';
+import { useUserProfile } from '@/entities/user-profile/query';
+import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 import { firstErroredIndex } from '@/shared/ui';
 
 export function useProfileController(initUser: AdminUserProfile) {
   const t = useTranslations('dashboard.userProfile');
   const tValidation = useTranslations('dashboard.userProfile.validation');
   const tShared = useTranslations('dashboard.shared');
-  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<string>('');
 
-  const {
-    data: user,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: userProfileKeys.profile(initUser.id),
-    // getAdminUserProfile resolves (never throws) with an ApiResponse — unwrap
-    // it so a failure sets `isError` instead of yielding `{ success: false }`,
-    // whose missing `data` left `user` undefined and the screen blank.
-    queryFn: async () => {
-      const res = await getAdminUserProfile();
-      if (!res.success) {
-        throw new Error(res.errorMsg);
-      }
-      return res.data;
-    },
-    initialData: initUser,
-    // The form seeds once (below), so a focus refetch after the 60s staleTime
-    // would only be thrown away.
-    refetchOnWindowFocus: false,
-  });
+  const { data: user, isError, error, refetch } = useUserProfile(initUser);
 
   // A failed refetch is otherwise silent: TanStack keeps the last good profile
-  // on screen, so nothing about the form says it is now out of date.
+  // on screen, so nothing about the form says it is now out of date. The form
+  // stays up, and the toast offers Retry.
   useEffect(() => {
-    if (isError) {
-      toast.error(tShared('managerListState.errorTitle'), {
-        description: error?.message,
-      });
-    }
-  }, [isError, error, tShared]);
+    if (!isError) return;
+    console.error(error);
+    toast.error(t('toast.loadError'), {
+      action: {
+        label: tShared('managerListState.retry'),
+        onClick: () => void refetch(),
+      },
+    });
+  }, [isError, error, refetch, t, tShared]);
 
   // The schema carries message *keys*; the locale is only knowable here, since
   // the entity is also parsed server-side and cannot call next-intl.
@@ -73,27 +56,11 @@ export function useProfileController(initUser: AdminUserProfile) {
     name: 'translations',
   });
 
-  const saveMutation = useMutation({
-    // saveProfile resolves (never throws) with an ApiResponse — unwrap it so
-    // a { success: false } result reaches onError instead of onSuccess.
-    mutationFn: async (values: Parameters<typeof saveProfile>[0]) => {
-      const res = await saveProfile(values);
-      if (!res.success) {
-        throw new Error(res.errorMsg);
-      }
-      return res.data;
-    },
-    onSuccess: () => {
-      toast(t('toast.updated'));
-      queryClient.invalidateQueries({
-        queryKey: userProfileKeys.profile(initUser.id),
-      });
-    },
-    onError: (err) => {
-      toast.error(t('toast.saveError'), {
-        description: err?.message,
-      });
-    },
+  const saveMutation = useServerMutation({
+    mutationFn: saveProfile,
+    errorMessage: t('toast.saveError'),
+    successMessage: t('toast.updated'),
+    invalidate: [userProfileKeys.profile(initUser.id)],
   });
 
   const parseAboutMe = useCallback((content: unknown) => {

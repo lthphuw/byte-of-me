@@ -22,15 +22,12 @@ import { ChevronDown, GripVertical, ImageIcon, Trash } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
-import { createScopedImageUploader } from '@/entities/media';
+import { useScopedImageUploader } from '@/entities/media/query';
 import { MediaMultiSelect } from '@/features/dashboard/media-library/ui/media-multi-select';
 import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-submit';
 import { cn } from '@/shared/lib/utils';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
-
-/** Images pasted into this editor land under the `education` prefix in storage. */
-const uploadImage = createScopedImageUploader('education');
 
 interface EducationAchievementItemFieldProps {
   /** `useFieldArray` field id — the stable value framer-motion reorders by. */
@@ -53,8 +50,12 @@ export function EducationAchievementItemField({
   move,
   defaultOpen = false,
 }: EducationAchievementItemFieldProps) {
+  // Images pasted into this editor land under the `education` prefix in
+  // storage.
+  const uploadImage = useScopedImageUploader('education');
   const t = useTranslations('dashboard.education');
   const tShared = useTranslations('dashboard.shared');
+  const tMedia = useTranslations('dashboard.media');
   const dragControls = useDragControls();
   const [open, setOpen] = useState(defaultOpen);
   const [confirmingRemove, setConfirmingRemove] = useState(false);
@@ -239,6 +240,7 @@ export function EducationAchievementItemField({
                               field.onChange(fromEditorContent(json))
                             }
                             uploadImage={uploadImage}
+                            uploadFailedText={tMedia('toast.uploadError')}
                           />
                         </FormControl>
                         <FormMessage />

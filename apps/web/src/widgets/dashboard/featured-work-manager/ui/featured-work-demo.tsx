@@ -15,10 +15,11 @@ import {
 } from '@/entities/featured-work/model/featured-work-schema';
 import {
   ACCEPTED_MEDIA_MIME_TYPES,
+  findUploadViolation,
   isVideoMimeType,
   MediaViolationError,
-  uploadSingleMediaRecord,
 } from '@/entities/media';
+import { useMediaRecordUpload, useVideoUpload } from '@/entities/media/query';
 
 type DemoItem = NonNullable<FeaturedWorkFormValues['media']>[number];
 
@@ -52,8 +53,12 @@ export function FeaturedWorkDemo({
   initialMedia = [],
   onUploadingChange,
 }: FeaturedWorkDemoProps) {
+  const imageUpload = useMediaRecordUpload();
   const t = useTranslations('dashboard.featuredWorks.demo');
   const tMedia = useTranslations('dashboard.media');
+  const videoUpload = useVideoUpload({
+    uploadError: tMedia('toast.uploadError'),
+  });
   const headingId = useId();
   const { getValues } = useFormContext<FeaturedWorkFormValues>();
 
@@ -113,9 +118,10 @@ export function FeaturedWorkDemo({
   const toastUploadError = (error: unknown) => {
     const title = tMedia('toast.uploadError');
     if (!(error instanceof MediaViolationError)) {
-      toast.error(title, {
-        description: error instanceof Error ? error.message : undefined,
-      });
+      // A refusal or a network failure. The server's text is English, so it goes
+      // to the console; the author reads only the localised title.
+      console.error(error);
+      toast.error(title);
       return;
     }
     const { violation } = error;
@@ -151,12 +157,22 @@ export function FeaturedWorkDemo({
     }
   };
 
+  // A clip skips the image pipeline, so it is checked here before any bytes leave.
+  const uploadClip = (file: File) => {
+    const violation = findUploadViolation([file]);
+    if (violation) return Promise.reject(new MediaViolationError(violation));
+    return videoUpload.mutateAsync({ file, scope: 'featured-work' });
+  };
+
   const upload = async (file: File) => {
     if (isUploadingRef.current) return;
     isUploadingRef.current = true;
     setIsUploading(true);
+    const isVideo = isVideoMimeType(file.type);
     try {
-      const stored = await uploadSingleMediaRecord(file, 'featured-work');
+      const stored = isVideo
+        ? await uploadClip(file)
+        : await imageUpload.mutateAsync({ file, scope: 'featured-work' });
       // The form may have closed while the file was on its way: nothing to attach to.
       if (!isMounted.current) return;
       setPreviews((prev) => ({
@@ -176,7 +192,11 @@ export function FeaturedWorkDemo({
         toast.error(tMedia('toast.uploadError'));
       }
     } catch (error) {
-      toastUploadError(error);
+      // The clip hook has already toasted a server or network failure, so only
+      // a refusal made here, and the image path, still report through the demo.
+      if (!isVideo || error instanceof MediaViolationError) {
+        toastUploadError(error);
+      }
       focusAfter.current = `upload-${(getValues('media') ?? []).length}`;
     } finally {
       isUploadingRef.current = false;

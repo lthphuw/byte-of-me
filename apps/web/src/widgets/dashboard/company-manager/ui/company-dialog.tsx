@@ -13,7 +13,7 @@ import { CompanyForm } from './company-form';
 
 import type { CompanyFormValues } from '@/entities/company/model/company-schema';
 import type { AdminCompany } from '@/entities/company/model/types';
-import { useTechStackOptions } from '@/features/dashboard/tech-stack-management';
+import { useTechStackOptions } from '@/entities/tech-stack/query';
 import { EditRecordGate } from '@/shared/ui/edit-record-gate';
 
 interface CompanyDialogProps {

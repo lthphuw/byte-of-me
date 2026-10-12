@@ -1,20 +1,21 @@
 'use client';
 
 import { Button, ConfirmDeleteDialog, Pagination } from '@byte-of-me/ui';
-import { useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+
+import { BlogListLoading } from './blog-list-loading';
 
 import {
   type AdminBlogListItem,
   createBlog,
   deleteBlog,
-  getAdminBlogById,
   getPaginatedAdminBlogs,
   updateBlog,
 } from '@/entities/blog';
 import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import { blogKeys } from '@/entities/blog/model/query-keys';
+import { blogQueries, useAdminBlogById } from '@/entities/blog/query';
 import { BlogEditorCard } from '@/entities/blog/ui/blog-editor-card';
 import { BlogEditorDialog } from '@/features/dashboard/blog-editor';
 import { useBlogReferenceOptions } from '@/features/dashboard/blog-editor/lib/use-blog-reference-options';
@@ -59,43 +60,20 @@ export function BlogManager() {
     // below loads — holding pre-save content that no list invalidation reaches.
     detailKey: (blog) => blogKeys.detail(blog.id),
     fetchPage: (page, limit) => getPaginatedAdminBlogs(page, limit),
-    pageKey: blogKeys.adminPage,
+    pageKey: (page) => blogQueries.adminPage(page).queryKey,
     create: createBlog,
     update: updateBlog,
     remove: deleteBlog,
   });
 
   // The list row never carries `content` (see AdminBlogListItem), so the
-  // editor dialog needs the full post fetched separately. Disabled entirely
-  // for "New Blog" (`editing` is null there) — no id, no fetch, empty form.
-  const editingBlogQuery = useQuery({
-    queryKey: blogKeys.detail(editing?.id ?? ''),
-    queryFn: () => getAdminBlogById(editing?.id ?? ''),
-    enabled: Boolean(editing),
-    // The form seeds once per post, so a focus refetch of the full post in
-    // every locale would only be thrown away.
-    refetchOnWindowFocus: false,
-  });
+  // editor dialog loads the full post by id. "New Blog" (`editing` is null)
+  // fetches nothing and opens an empty form.
+  const fullBlog = useAdminBlogById(editing?.id);
 
   // Starts the pickers' fetches with the dialog instead of after the post
   // above resolves (the form mounts only then); the form reads the same keys.
   useBlogReferenceOptions(isDialogOpen);
-
-  const editingBlogResult = editing ? editingBlogQuery.data : undefined;
-  const fullEditingBlog = editingBlogResult?.success
-    ? editingBlogResult.data
-    : null;
-  // "Not ready" covers both still-loading and a failed fetch — either way
-  // `fullEditingBlog` stays null, and the dialog must not fall through to
-  // mounting the form on a null/partial row.
-  const isEditingBlogNotReady = Boolean(editing) && !fullEditingBlog;
-  const editingBlogLoadError = editing
-    ? editingBlogResult && !editingBlogResult.success
-      ? editingBlogResult.errorMsg
-      : editingBlogQuery.isError
-      ? t('loadError')
-      : null
-    : null;
 
   const newBlogButton = (
     <Button size="sm" onClick={openCreateDialog}>
@@ -116,6 +94,7 @@ export function BlogManager() {
         isLoading={isLoading}
         isError={isError}
         onRetry={() => refetch()}
+        skeleton={<BlogListLoading />}
         isEmpty={blogs.length === 0}
         emptyTitle={t('emptyTitle')}
         emptyDescription={t('emptyDescription')}
@@ -152,10 +131,10 @@ export function BlogManager() {
         key={editing?.id ?? 'new'}
         open={isDialogOpen}
         onOpenChange={onDialogOpenChange}
-        initialData={fullEditingBlog}
-        isLoadingInitialData={isEditingBlogNotReady}
-        loadError={editingBlogLoadError}
-        onRetryLoad={() => editingBlogQuery.refetch()}
+        initialData={fullBlog.record}
+        isLoadingInitialData={fullBlog.isNotReady}
+        loadError={fullBlog.hasError ? t('loadError') : null}
+        onRetryLoad={fullBlog.retry}
         onSubmit={(values) =>
           save({
             ...values,

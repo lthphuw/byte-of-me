@@ -12,6 +12,7 @@ import {
   getTranslationLanguages,
 } from '@/shared/lib/i18n-utils';
 import { getErrorMessage } from '@/shared/lib/utils';
+import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 const DAYS = 30;
 
@@ -150,9 +151,9 @@ async function readAggregates(since: Date): Promise<AggregateRow[]> {
  * translations read were two Tokyo round trips for one display string each.
  *
  * The titles are display-only, so one locale (+ the `'en'` fallback) is enough
- * — the same rule `getOwnerDisplayName` follows, and the same rule the nested
- * `select` applied; it is just spelled as a join predicate now, title column
- * only. `LEFT JOIN` rather than an inner one, so a post with no translation in
+ * — the same rule the nested `select` applied; it is just spelled as a join
+ * predicate now, title column only. `LEFT JOIN` rather than an inner one, so a
+ * post with no translation in
  * either language still comes back and can fall through to its slug, exactly
  * as `findMany` + `getTranslatedContent` did before.
  */
@@ -255,8 +256,7 @@ async function readAnalyticsOverview(
 }
 
 export async function getAnalyticsOverview(): Promise<
-  | { success: true; data: AnalyticsOverviewData }
-  | { success: false; data: null; errorMsg: string }
+  ApiResponse<AnalyticsOverviewData>
 > {
   try {
     // Both of these read request state — the session and the negotiated locale
@@ -310,6 +310,6 @@ export async function getAnalyticsOverview(): Promise<
       'Failed to fetch analytics overview'
     );
     logger.error(`Get analytics overview error: ${errorMsg}`);
-    return { success: false, data: null, errorMsg };
+    return { success: false, errorMsg };
   }
 }

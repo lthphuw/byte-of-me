@@ -1,0 +1,26 @@
+import { queryOptions } from '@tanstack/react-query';
+
+import { getAdminEducationById } from '@/entities/education/api/get-admin-education-by-id';
+import { getPaginatedAdminEducations } from '@/entities/education/api/get-paginated-admin-educations';
+import { educationKeys } from '@/entities/education/model/query-keys';
+import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
+import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
+
+export const educationQueries = {
+  /** One page of the manager list. The server prefetch and `useCrudManager` share this key. */
+  adminPage: (page: number) =>
+    queryOptions({
+      queryKey: educationKeys.adminPage(page),
+      queryFn: async () =>
+        unwrapApiResponse(
+          await getPaginatedAdminEducations(page, ADMIN_PAGE_SIZE)
+        ),
+    }),
+  /** The full entry, achievements included, that the edit dialog loads. */
+  adminById: (educationId: string) =>
+    queryOptions({
+      queryKey: educationKeys.detail(educationId),
+      queryFn: async () =>
+        unwrapApiResponse(await getAdminEducationById(educationId)),
+    }),
+};

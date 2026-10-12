@@ -11,20 +11,23 @@ import {
 import { getTranslations } from 'next-intl/server';
 
 import { getDashboardStats } from '@/features/dashboard/dashboard-stats/lib';
+import { SectionLoadError } from '@/shared/ui';
 
 export async function StatsGrid() {
-  const [dataResp, t, tDashboard] = await Promise.all([
+  const [dataResp, t, tDashboard, tError] = await Promise.all([
     getDashboardStats(),
     getTranslations('dashboard.common'),
     getTranslations('dashboard.dashboard'),
+    getTranslations('components.sectionLoadError'),
   ]);
   // Not `null`: the section's heading still renders above, so returning
   // nothing left a labelled region with no content and no explanation.
-  if (!dataResp.success || !dataResp.data) {
+  if (!dataResp.success) {
     return (
-      <p className="text-sm text-destructive-text">
-        {tDashboard('sectionError')}
-      </p>
+      <SectionLoadError
+        title={tDashboard('sectionError')}
+        retryLabel={tError('retry')}
+      />
     );
   }
   const stats = dataResp.data;

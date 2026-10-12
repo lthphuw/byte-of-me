@@ -24,9 +24,9 @@ export function AnalyticsOverviewLoading() {
                 />
               ))}
             </div>
-            <div className="mt-1 flex justify-between">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-3 w-6" />
+            <div className="mt-1 flex gap-0.5">
+              {BAR_HEIGHTS.map((_, i) => (
+                <Skeleton key={i} className="h-3 flex-1" />
               ))}
             </div>
           </CardContent>
@@ -41,7 +41,7 @@ export function AnalyticsOverviewLoading() {
             <div className="space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="space-y-1.5">
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-baseline justify-between gap-3">
                     <Skeleton className="h-4 w-40" />
                     <Skeleton className="h-3 w-8" />
                   </div>
@@ -61,9 +61,9 @@ export function AnalyticsOverviewLoading() {
               <Skeleton className="h-3 w-20" />
               <Skeleton className="h-4 w-4 rounded-full" />
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent>
               <Skeleton className="h-8 w-12" />
-              <Skeleton className="h-3 w-24" />
+              <Skeleton className="mt-1 h-3 w-24" />
             </CardContent>
           </Card>
         ))}
