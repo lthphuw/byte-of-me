@@ -12,7 +12,7 @@ apps/web/src/shared/
 │             host.ts (base URL), language.ts (`supportedLanguages`), sitemap.ts
 ├── hooks/    client hooks: use-crud-manager, use-editing-record, use-infinite-list-query,
 │             use-server-mutation, use-url-synced-search, use-form-autosave, use-reset-on-open,
-│             use-reveal-on-invalid-submit, use-print-on-fonts-ready
+│             use-reveal-on-invalid-submit, use-print-on-fonts-ready, use-editor-labels
 ├── i18n/     routing.ts (locales), request.ts (next-intl request config),
 │             navigation.ts (Link, useRouter, ...), messages.ts (client namespace lists, `pickMessages`)
 ├── lib/      server and pure helpers (tables below); auth/, query/, media/, templates/
@@ -38,7 +38,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 | `apps/web/src/shared/lib/query/` | `getQueryClient`, `makeQueryClient`, `unwrapApiResponse` (throws `ServerActionError`, which carries `errorCode`), `ADMIN_PAGE_SIZE` (12), `ADMIN_OPTIONS_LIMIT` (500) | 23 files: `apps/web/src/app/[locale]/`, `apps/web/src/widgets/dashboard/`, `apps/web/src/shared/hooks/` |
 | `apps/web/src/shared/hooks/use-server-mutation.ts` | `useServerMutation`: the one client write path. Unwraps the envelope, invalidates the `invalidate` keys and runs `onSuccess` only on success; on failure logs `errorMsg` with `console.error` and toasts `errorMessages[errorCode]`, else `errorMessage` | the write hooks in `apps/web/src/entities/*/query/` and the features that save through them |
 | `apps/web/src/shared/ui/query-state.tsx` | `QueryState`: skeleton while loading, error block with a retry button, empty block, then content; a background refetch keeps the content and shows a corner spinner. Every string comes from the caller | the dashboard managers (through `ManagerListState`) and the public list widgets; see [web-widgets.md](web-widgets.md) |
-| `apps/web/src/shared/ui/section-load-error.tsx` | `SectionLoadError`: the error block for a server-rendered section. It takes a `retryLabel` (which calls `router.refresh()`) only on a dynamic route | the public server sections, with no retry (static pages re-serve the failure), and the dashboard sections, with retry |
+| `apps/web/src/shared/ui/section-load-error.tsx` | `SectionLoadError`: the error block for a server-rendered section. It takes a `retryLabel` (which calls `router.refresh()`) only on a dynamic route | the public server sections, with no retry (static pages re-serve the prerendered HTML until hourly regeneration), and the dashboard sections, with retry |
 | `apps/web/src/shared/lib/media/` | image compression: shared `image-compression-rules.ts` and `-config.ts`; `compress-in-browser.ts` (client), `compress-image.ts` (server, sharp); `mp4-dimensions.ts` (server, `readMp4Dimensions`: an MP4's display size from its `tkhd` box, no decoder) | 10 files: `apps/web/src/entities/media/`, `apps/web/src/features/dashboard/`, `apps/web/src/entities/workspace-settings/` |
 | `apps/web/src/shared/lib/metadata.ts` | `buildPublicPageMetadata`, `buildAlternates` (canonical, hreflang with `x-default`, RSS link), `buildSiteJsonLd` (no email), `SITE_PERSON_ID` (the `@id` blog posts reference as author), `buildIconSet` | the layouts under `apps/web/src/app/[locale]/` and the blog post page |
 | `apps/web/src/shared/lib/brand-mark.ts` | mark geometry, `renderFaviconSvg`; source for favicons and the og card | 3 files: `apps/web/src/shared/ui/brand-mark.tsx`, `apps/web/src/shared/lib/metadata.ts`, `apps/web/src/app/api/og/route.tsx` |
