@@ -5,31 +5,30 @@ import type { Option } from '@byte-of-me/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useLocale } from 'next-intl';
 
-import { getAdminTagOptions } from '@/entities/tag/api/get-admin-tag-options';
-import { tagKeys } from '@/entities/tag/model/query-keys';
-import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
+import { tagQueries } from '@/entities/tag/query/tag-queries';
 
 /**
- * Admin tags mapped to picker options, shared by the blog form and the project
- * dialog so both read one cache entry. Not exported from the slice barrel: it
- * would pull an admin action into the public filters' bundle.
+ * Admin tags as picker options. The blog editor and the project dialog read the
+ * same cache entry, so a tag saved on one page is already on the other.
  */
 export function useTagOptions(enabled = true): {
   tagOptions: Option[];
   isLoading: boolean;
+  isError: boolean;
+  retry: () => void;
 } {
   const locale = useLocale();
-
-  const { data, isLoading } = useQuery({
-    queryKey: tagKeys.options(locale),
-    queryFn: async () => unwrapApiResponse(await getAdminTagOptions()),
-    enabled,
-  });
+  const query = useQuery({ ...tagQueries.options(locale), enabled });
 
   const tagOptions = useMemo(
-    () => data?.map((tag) => ({ label: tag.name, value: tag.id })) ?? [],
-    [data]
+    () => query.data?.map((tag) => ({ label: tag.name, value: tag.id })) ?? [],
+    [query.data]
   );
 
-  return { tagOptions, isLoading };
+  return {
+    tagOptions,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    retry: () => void query.refetch(),
+  };
 }

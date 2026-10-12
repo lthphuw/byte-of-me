@@ -13,27 +13,22 @@ import {
   TabsList,
   TabsTrigger,
 } from '@byte-of-me/ui';
-import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
-// Narrow import on purpose: `@/entities` re-exports every entity, so a
-// client component importing it drags unrelated server-rendering modules
-// (education-item -> RichText -> tiptap) into the public bundle.
-import {
-  getPaginatedPublicProjects,
-  ProjectEmpty,
-  projectKeys,
-  ProjectTimelineItemSkeleton,
-} from '@/entities/project';
+// Narrow import on purpose: the `@/entities` root barrel pulls unrelated
+// server-rendering modules (education-item -> RichText -> tiptap) into the
+// public bundle, so a client component imports the slice instead.
+import { ProjectEmpty, ProjectTimelineItemSkeleton } from '@/entities/project';
+import { usePublicProjectList } from '@/entities/project/query';
 import {
   ProjectFilters,
   useProjectFilters,
 } from '@/features/public/project-filters';
-import { HYDRATED_LIST_BEHAVIOR } from '@/shared/hooks/use-infinite-list-query';
 import { usePathname, useRouter } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import { ListPageHeader } from '@/shared/ui';
+import { QueryState } from '@/shared/ui/query-state';
 import { ProjectsShell } from '@/widgets/public/projects-content/ui/projects-shell';
 import { ProjectsTimeline } from '@/widgets/public/projects-content/ui/projects-timeline';
 
@@ -53,11 +48,11 @@ const PANEL_ENTER =
 
 interface ProjectsContentProps {
   /**
-   * The server-rendered Open source list and its one-line summary. Absent when
-   * there is nothing to show, which also removes the tab switch. Handed in as a
-   * node so none of that markup becomes client JavaScript.
+   * The server-rendered Open source list and its summary; `null` removes the tab.
+   * A failed read passes its error as `list` with no summary, so the tab stays.
+   * Handed in as a node so none of that markup becomes client JavaScript.
    */
-  openSource?: { list: ReactNode; summary: string } | null;
+  openSource?: { list: ReactNode; summary?: string } | null;
 }
 
 export function ProjectsContent({ openSource }: ProjectsContentProps) {
@@ -108,25 +103,16 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
     filters.tagSlugs.length > 0 ||
     filters.techStackSlugs.length > 0;
 
-  const { data, isLoading, isPlaceholderData } = useQuery({
-    queryKey: projectKeys.publicList(page, filters),
-    queryFn: () => getPaginatedPublicProjects({ ...filters, page, limit: 8 }),
-    placeholderData: (previousData) => previousData,
-    // Same as the blogs list: never refetch the hydrated page on mount.
-    ...HYDRATED_LIST_BEHAVIOR,
-  });
+  const { data, isLoading, isError, isPlaceholderData, refetch } =
+    usePublicProjectList(page, filters);
 
-  const projects = data?.data?.data || [];
-  const pagination = data?.data?.meta || {
+  const projects = data?.data ?? [];
+  const pagination = data?.meta ?? {
     currentPage: 1,
     totalCount: 0,
     totalPages: 1,
     hasMore: false,
   };
-
-  // Same reasoning as the blogs list: gating on `isFetching` hid the
-  // already-rendered list behind skeletons whenever a refetch ran.
-  const showSkeletons = isLoading;
 
   // The timeline entrance belongs to the first result set of this mount. Held
   // here, not in the timeline: that unmounts on an empty result and would
@@ -197,7 +183,9 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
           count={
             isOpenSourceView && openSource
               ? openSource.summary
-              : t('count', { count: pagination.totalCount })
+              : data
+                ? t('count', { count: pagination.totalCount })
+                : undefined
           }
         >
           {tabs}
@@ -219,32 +207,48 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
             hasSwitched && !isOpenSourceView && PANEL_ENTER
           )}
         >
-          {showSkeletons ? (
-            <ol className="border-l border-border/60">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <ProjectTimelineItemSkeleton key={i} />
-              ))}
-            </ol>
-          ) : projects.length === 0 ? (
-            <div className="flex items-center justify-center py-16">
-              <ProjectEmpty isSearch={hasActiveFilters} />
-            </div>
-          ) : (
-            <div
-              className={`transition-opacity duration-200 ${
-                isPlaceholderData
-                  ? 'pointer-events-none opacity-50'
-                  : 'opacity-100'
-              }`}
-            >
-              <ProjectsTimeline
-                projects={projects}
-                playEntrance={!hasShownResults}
-                onTagClick={toggleTag}
-                onTechClick={toggleTech}
-              />
-            </div>
-          )}
+          {/* Gated on `isLoading`, not `isFetching`: a refetch keeps the list on
+              screen, and only the first load of a result set shows skeletons.
+              `isEmpty` stays false because ProjectEmpty (with its icon) is the
+              empty state here. */}
+          <QueryState
+            isLoading={isLoading}
+            isError={isError}
+            isEmpty={false}
+            onRetry={() => void refetch()}
+            skeleton={
+              <ol className="border-l border-border/60">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <ProjectTimelineItemSkeleton key={i} />
+                ))}
+              </ol>
+            }
+            errorTitle={t('loadErrorTitle')}
+            errorDescription={t('loadErrorDescription')}
+            retryLabel={t('retry')}
+            emptyTitle=""
+          >
+            {projects.length === 0 ? (
+              <div className="flex items-center justify-center py-16">
+                <ProjectEmpty isSearch={hasActiveFilters} />
+              </div>
+            ) : (
+              <div
+                className={`transition-opacity duration-200 ${
+                  isPlaceholderData
+                    ? 'pointer-events-none opacity-50'
+                    : 'opacity-100'
+                }`}
+              >
+                <ProjectsTimeline
+                  projects={projects}
+                  playEntrance={!hasShownResults}
+                  onTagClick={toggleTag}
+                  onTechClick={toggleTech}
+                />
+              </div>
+            )}
+          </QueryState>
 
           <Pagination
             setPage={setPage}

@@ -13,6 +13,7 @@ import {
   fromEditorContent,
   MultiSelect,
   type Option,
+  Skeleton,
   toEditorContent,
 } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,17 +21,15 @@ import { useTranslations } from 'next-intl';
 
 import { ProjectCoauthorFields } from './project-coauthor-fields';
 
-import { createScopedImageUploader } from '@/entities/media';
+import { useScopedImageUploader } from '@/entities/media/query';
 import {
   type AdminProject,
   type ProjectFromValues,
   projectSchema,
 } from '@/entities/project/model';
-import { TextField, TranslationTabs } from '@/shared/ui';
+import { ContentFade, TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
-
-/** Images pasted into this editor land under the `project` prefix in storage. */
-const uploadImage = createScopedImageUploader('project');
+import { QueryState } from '@/shared/ui/query-state';
 
 function toFormValues(
   initialData?: AdminProject
@@ -74,23 +73,81 @@ function toFormValues(
   };
 }
 
+/** One picker's options and read state. A picker shows its own skeleton, error and empty state. */
+type ProjectPickerState = {
+  options: Option[];
+  isLoading: boolean;
+  isError: boolean;
+  retry: () => void;
+};
+
+interface ProjectPickerProps {
+  picker: ProjectPickerState;
+  placeholder: string;
+  emptyTitle: string;
+  selected: string[];
+  onChange: (value: string[]) => void;
+}
+
+/**
+ * A multi-select that never shows an empty list in place of a failed read: a
+ * silent empty picker lets a save drop associations, so a failure shows Retry.
+ */
+function ProjectPicker({
+  picker,
+  placeholder,
+  emptyTitle,
+  selected,
+  onChange,
+}: ProjectPickerProps) {
+  const tShared = useTranslations('dashboard.shared');
+
+  return (
+    <QueryState
+      isLoading={picker.isLoading}
+      isError={picker.isError}
+      isEmpty={picker.options.length === 0}
+      onRetry={picker.retry}
+      skeleton={<Skeleton className="h-10 w-full" />}
+      errorTitle={tShared('managerListState.errorTitle')}
+      errorDescription={tShared('managerListState.errorDescription')}
+      retryLabel={tShared('managerListState.retry')}
+      emptyTitle={emptyTitle}
+    >
+      <ContentFade>
+        <FormControl>
+          <MultiSelect
+            options={picker.options}
+            selected={selected}
+            onValueChange={onChange}
+            placeholder={placeholder}
+          />
+        </FormControl>
+      </ContentFade>
+    </QueryState>
+  );
+}
+
 interface ProjectFormProps {
   /** Set by the dialog so its footer button can submit this form. */
   formId: string;
   initialData?: AdminProject;
-  tagOptions: Option[];
-  techOptions: Option[];
+  tags: ProjectPickerState;
+  techStacks: ProjectPickerState;
   onSubmit: (values: ProjectFromValues) => void;
 }
 
 export function ProjectForm({
   formId,
   initialData,
-  tagOptions,
-  techOptions,
+  tags,
+  techStacks,
   onSubmit,
 }: ProjectFormProps) {
+  // Images pasted into this editor land under the `project` prefix in storage.
+  const uploadImage = useScopedImageUploader('project');
   const t = useTranslations('dashboard.project');
+  const tMedia = useTranslations('dashboard.media');
 
   // Seeded once, at mount: the dialog mounts this per open and keys itself per
   // project. A later `form.reset` would remount every editor (new field-array ids).
@@ -170,14 +227,13 @@ export function ProjectForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('dialog.techStackLabel')}</FormLabel>
-                <FormControl>
-                  <MultiSelect
-                    options={techOptions}
-                    selected={field.value || []}
-                    onValueChange={field.onChange}
-                    placeholder={t('dialog.techStackPlaceholder')}
-                  />
-                </FormControl>
+                <ProjectPicker
+                  picker={techStacks}
+                  placeholder={t('dialog.techStackPlaceholder')}
+                  emptyTitle={t('dialog.noTechStackOptions')}
+                  selected={field.value || []}
+                  onChange={field.onChange}
+                />
                 <FormMessage />
               </FormItem>
             )}
@@ -190,14 +246,13 @@ export function ProjectForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('dialog.tagsLabel')}</FormLabel>
-                <FormControl>
-                  <MultiSelect
-                    options={tagOptions}
-                    selected={field.value || []}
-                    onValueChange={field.onChange}
-                    placeholder={t('dialog.tagsPlaceholder')}
-                  />
-                </FormControl>
+                <ProjectPicker
+                  picker={tags}
+                  placeholder={t('dialog.tagsPlaceholder')}
+                  emptyTitle={t('dialog.noTagOptions')}
+                  selected={field.value || []}
+                  onChange={field.onChange}
+                />
                 <FormMessage />
               </FormItem>
             )}
@@ -243,6 +298,7 @@ export function ProjectForm({
                             field.onChange(fromEditorContent(json))
                           }
                           uploadImage={uploadImage}
+                          uploadFailedText={tMedia('toast.uploadError')}
                         />
                       </FormControl>
                       <FormMessage />

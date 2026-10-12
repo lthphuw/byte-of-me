@@ -1,9 +1,9 @@
-import { HydrationBoundary } from '@tanstack/react-query';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
-import { getPaginatedAdminProjects, projectKeys } from '@/entities/project';
-import { prefetchAdminPage } from '@/shared/lib/query/prefetch-admin-page';
+import { projectQueries } from '@/entities/project/query';
+import { getQueryClient } from '@/shared/lib/query/get-query-client';
 import { ProjectManager } from '@/widgets/dashboard/project-manager';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -25,13 +25,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProjectsPage() {
-  const state = await prefetchAdminPage(
-    projectKeys.adminPage,
-    getPaginatedAdminProjects
-  );
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery(projectQueries.adminPage(1));
 
   return (
-    <HydrationBoundary state={state}>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="space-y-6">
         <ProjectManager />
       </div>

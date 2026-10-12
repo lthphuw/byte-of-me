@@ -1,7 +1,9 @@
 'use server';
 
 import { prisma } from '@byte-of-me/db';
+import { logger } from '@byte-of-me/logger';
 
+import { adminProjectInclude } from '@/entities/project/model/admin-project-include';
 import type { AdminProject } from '@/entities/project/model/types';
 import { requireAdmin } from '@/shared/lib/auth';
 import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
@@ -28,40 +30,7 @@ export async function getPaginatedAdminProjects(
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
-        include: {
-          // project-editor-card.tsx and project-dialog.tsx read title and
-          // description only (see AdminProject); createdAt/updatedAt never
-          // reach either.
-          translations: {
-            select: {
-              id: true,
-              language: true,
-              title: true,
-              description: true,
-            },
-          },
-          techStacks: true,
-          tags: {
-            include: {
-              tag: {
-                include: {
-                  translations: {
-                    select: {
-                      id: true,
-                      language: true,
-                      name: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-          coauthors: {
-            include: {
-              coauthor: true,
-            },
-          },
-        },
+        include: adminProjectInclude,
       }),
       prisma.project.count({
         where: { userId },
@@ -76,9 +45,8 @@ export async function getPaginatedAdminProjects(
       },
     };
   } catch (error) {
-    return {
-      success: false,
-      errorMsg: getErrorMessage(error, 'Failed to fetch media'),
-    };
+    const errorMsg = getErrorMessage(error, 'Failed to fetch projects');
+    logger.error(`[Project] getPaginatedAdminProjects: ${errorMsg}`);
+    return { success: false, errorMsg };
   }
 }

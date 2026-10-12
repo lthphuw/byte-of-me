@@ -23,22 +23,15 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function TechStackPage() {
+  // The seed is only a head start. When this read fails, the manager loads the
+  // list itself and shows its own skeleton, error and retry.
   const resp = await getAllAdminTechStack();
-
-  if (!resp.success || !resp.data) {
-    return (
-      <div className="flex h-[400px] flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed">
-        <h3 className="text-lg font-semibold">Failed to load tech stack</h3>
-        <p className="text-sm text-muted-foreground">
-          Please check your connection or try again later.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
-      <TechStackManager initialTechStacks={resp.data} />
+      <TechStackManager
+        initialTechStacks={resp.success ? resp.data : undefined}
+      />
     </div>
   );
 }

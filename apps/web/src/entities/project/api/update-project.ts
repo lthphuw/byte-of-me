@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma, type Project } from '@byte-of-me/db';
+import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
 import {
@@ -9,6 +10,7 @@ import {
 } from '@/entities/project/model';
 import { requireAdmin } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
+import { getErrorMessage } from '@/shared/lib/utils';
 import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
@@ -16,83 +18,91 @@ export async function updateProject(
   id: string,
   input: ProjectFromValues
 ): Promise<ApiResponse<Project>> {
-  await requireAdmin();
+  try {
+    await requireAdmin();
 
-  const parsedId = parseInput(idSchema, id);
-  if (!parsedId.ok) {
-    return { success: false, errorMsg: parsedId.errorMsg };
-  }
-  const parsed = parseInput(projectSchema, input);
-  if (!parsed.ok) {
-    return { success: false, errorMsg: parsed.errorMsg };
-  }
-  const data = parsed.data;
+    const parsedId = parseInput(idSchema, id);
+    if (!parsedId.ok) {
+      return { success: false, errorMsg: parsedId.errorMsg };
+    }
+    const parsed = parseInput(projectSchema, input);
+    if (!parsed.ok) {
+      return { success: false, errorMsg: parsed.errorMsg };
+    }
+    const data = parsed.data;
 
-  const project = await prisma.$transaction(async (tx) => {
-    const previousJoins = await tx.projectOnProjectCoAuthor.findMany({
-      where: { projectId: id },
-      select: { coauthorId: true },
-    });
-    const previousCoauthorIds = previousJoins.map((join) => join.coauthorId);
+    const project = await prisma.$transaction(async (tx) => {
+      const previousJoins = await tx.projectOnProjectCoAuthor.findMany({
+        where: { projectId: id },
+        select: { coauthorId: true },
+      });
+      const previousCoauthorIds = previousJoins.map(
+        (join) => join.coauthorId
+      );
 
-    const updated = await tx.project.update({
-      where: { id },
-      data: {
-        slug: data.slug,
-        githubLink: data.githubLink || null,
-        liveLink: data.liveLink || null,
-        startDate: data.startDate ? new Date(data.startDate) : null,
-        endDate: data.endDate ? new Date(data.endDate) : null,
-        isPublished: data.isPublished,
+      const updated = await tx.project.update({
+        where: { id },
+        data: {
+          slug: data.slug,
+          githubLink: data.githubLink || null,
+          liveLink: data.liveLink || null,
+          startDate: data.startDate ? new Date(data.startDate) : null,
+          endDate: data.endDate ? new Date(data.endDate) : null,
+          isPublished: data.isPublished,
 
-        techStacks: {
-          deleteMany: {},
-          create: data.techStackIds?.map((techId) => ({
-            techStack: { connect: { id: techId } },
-          })),
-        },
+          techStacks: {
+            deleteMany: {},
+            create: data.techStackIds?.map((techId) => ({
+              techStack: { connect: { id: techId } },
+            })),
+          },
 
-        tags: {
-          deleteMany: {},
-          create:
-            data.tagIds?.map((tagId) => ({
-              tag: { connect: { id: tagId } },
-            })) || [],
-        },
+          tags: {
+            deleteMany: {},
+            create:
+              data.tagIds?.map((tagId) => ({
+                tag: { connect: { id: tagId } },
+              })) || [],
+          },
 
-        coauthors: {
-          deleteMany: {},
-          create:
-            data.coauthors?.map((coauthor) => ({
-              coauthor: {
-                create: {
-                  fullName: coauthor.fullName,
-                  email: coauthor.email || null,
+          coauthors: {
+            deleteMany: {},
+            create:
+              data.coauthors?.map((coauthor) => ({
+                coauthor: {
+                  create: {
+                    fullName: coauthor.fullName,
+                    email: coauthor.email || null,
+                  },
                 },
-              },
-            })) ?? [],
-        },
+              })) ?? [],
+          },
 
-        translations: {
-          deleteMany: {},
-          create: data.translations,
-        },
-      },
-    });
-
-    if (previousCoauthorIds.length > 0) {
-      await tx.coauthor.deleteMany({
-        where: {
-          id: { in: previousCoauthorIds },
-          projects: { none: {} },
+          translations: {
+            deleteMany: {},
+            create: data.translations,
+          },
         },
       });
-    }
 
-    return updated;
-  });
+      if (previousCoauthorIds.length > 0) {
+        await tx.coauthor.deleteMany({
+          where: {
+            id: { in: previousCoauthorIds },
+            projects: { none: {} },
+          },
+        });
+      }
 
-  revalidateTag(CACHE_TAGS.PROJECT, 'max');
+      return updated;
+    });
 
-  return { success: true, data: project };
+    revalidateTag(CACHE_TAGS.PROJECT, 'max');
+
+    return { success: true, data: project };
+  } catch (error) {
+    const errorMsg = getErrorMessage(error);
+    logger.error(`[Project] update: ${errorMsg}`);
+    return { success: false, errorMsg };
+  }
 }

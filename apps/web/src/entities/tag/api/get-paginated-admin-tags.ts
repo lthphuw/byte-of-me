@@ -3,7 +3,8 @@
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
-import type { AdminTag } from '@/entities/tag';
+import { adminTagInclude } from '@/entities/tag/model/admin-tag-include';
+import type { AdminTag } from '@/entities/tag/model/types';
 import { requireAdmin } from '@/shared/lib/auth';
 import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
 import { getErrorMessage } from '@/shared/lib/utils';
@@ -24,17 +25,7 @@ export async function getPaginatedAdminTags(
     const skip = (page - 1) * limit;
     const [tags, totalCount] = await Promise.all([
       prisma.tag.findMany({
-        include: {
-          // TagCard/TagDialog render `name` only; TagTranslation has no
-          // other content column, so this only drops the two timestamps.
-          translations: {
-            select: {
-              id: true,
-              language: true,
-              name: true,
-            },
-          },
-        },
+        include: adminTagInclude,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,

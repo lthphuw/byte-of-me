@@ -11,4 +11,6 @@ export const tagKeys = {
   options: (locale: string) =>
     [...tagKeys.adminList(), 'options', locale] as const,
   infinite: (limit: number) => [...tagKeys.all, 'infinite', limit] as const,
+  /** One full record for the edit dialog. Outside `adminList`: a save drops it through `detailKey`. */
+  detail: (id: string) => [...tagKeys.all, 'detail', id] as const,
 };

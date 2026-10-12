@@ -1,19 +1,13 @@
 'use client';
 
-import { getPaginatedPublicTechStacks } from '@/entities/tech-stack/api/get-paginated-public-tech-stacks';
-import { techStackKeys } from '@/entities/tech-stack/model/query-keys';
-import {
-  type InfiniteListQueryBehavior,
-  useInfiniteListQuery,
-} from '@/shared/hooks/use-infinite-list-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
+
+import { techStackQueries } from '@/entities/tech-stack/query/tech-stack-queries';
+import type { InfiniteListQueryBehavior } from '@/shared/hooks/use-infinite-list-query';
 
 export function useTechStackInfiniteQuery(
   limit: number = 12,
   options?: InfiniteListQueryBehavior
 ) {
-  return useInfiniteListQuery({
-    queryKey: techStackKeys.infinite(limit),
-    fetchPage: (page) => getPaginatedPublicTechStacks({ page, limit }),
-    ...options,
-  });
+  return useInfiniteQuery({ ...techStackQueries.infinite(limit), ...options });
 }

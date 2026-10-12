@@ -5,6 +5,7 @@ import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ProjectDialog } from './project-dialog';
+import { ProjectListLoading } from './project-list-loading';
 
 import {
   createProject,
@@ -14,6 +15,7 @@ import {
 } from '@/entities/project';
 import type { AdminProject, ProjectFromValues } from '@/entities/project/model';
 import { projectKeys } from '@/entities/project/model/query-keys';
+import { useAdminProjectById } from '@/entities/project/query';
 import { ProjectEditorCard } from '@/entities/project/ui/project-editor-card';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
@@ -54,6 +56,9 @@ export function ProjectManager() {
       saveError: t('toast.saveError'),
       deleteError: t('toast.deleteError'),
     },
+    // A save leaves `projectKeys.detail(id)`, the record the dialog loads,
+    // holding pre-save content that no list invalidation reaches.
+    detailKey: (project) => projectKeys.detail(project.id),
     pageSize: ADMIN_PAGE_SIZE,
     pageKey: projectKeys.adminPage,
     fetchPage: (page, limit) => getPaginatedAdminProjects(page, limit),
@@ -61,6 +66,10 @@ export function ProjectManager() {
     update: updateProject,
     remove: deleteProject,
   });
+
+  // The list row is not the editor's source: the dialog loads the full record
+  // by id. "New" (`editing` is null) fetches nothing.
+  const fullProject = useAdminProjectById(editing?.id ?? null);
 
   const newProjectButton = (
     <Button size="sm" onClick={openCreateDialog}>
@@ -86,6 +95,7 @@ export function ProjectManager() {
           onRetry={() => refetch()}
           isFetching={isFetching}
           isEmpty={projects.length === 0}
+          skeleton={<ProjectListLoading />}
           emptyTitle={t('emptyTitle')}
           emptyDescription={t('emptyDescription')}
           emptyAction={newProjectButton}
@@ -131,7 +141,10 @@ export function ProjectManager() {
         key={editing?.id ?? 'new'}
         open={isDialogOpen}
         onOpenChange={onDialogOpenChange}
-        initialData={editing}
+        initialData={fullProject.record}
+        isLoadingInitialData={fullProject.isNotReady}
+        hasLoadError={fullProject.hasError}
+        onRetryLoad={fullProject.retry}
         onSubmit={(values) =>
           save({
             ...values,

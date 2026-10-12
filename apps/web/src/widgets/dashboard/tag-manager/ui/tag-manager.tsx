@@ -5,6 +5,7 @@ import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { TagDialog } from './tag-dialog';
+import { TagListLoading } from './tag-list-loading';
 
 import {
   type AdminTag,
@@ -15,6 +16,7 @@ import {
   tagKeys,
   updateTag,
 } from '@/entities/tag';
+import { useAdminTagById } from '@/entities/tag/query';
 import { TagCard } from '@/features/dashboard/tag-management';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
@@ -55,6 +57,9 @@ export function TagManager() {
       saveError: t('toast.saveError'),
       deleteError: t('toast.deleteError'),
     },
+    // A save leaves `tagKeys.detail(id)`, the record the dialog loads, holding
+    // pre-save content that no list invalidation reaches.
+    detailKey: (tag) => tagKeys.detail(tag.id),
     pageSize: ADMIN_PAGE_SIZE,
     pageKey: tagKeys.adminPage,
     fetchPage: (page, limit) => getPaginatedAdminTags(page, limit),
@@ -62,6 +67,10 @@ export function TagManager() {
     update: updateTag,
     remove: deleteTag,
   });
+
+  // The list row is not the editor's source: the dialog loads the tag's full
+  // record by id. "New" (`editing` is null) fetches nothing.
+  const fullTag = useAdminTagById(editing?.id ?? null);
 
   return (
     <div className="space-y-6">
@@ -87,6 +96,7 @@ export function TagManager() {
           onRetry={() => refetch()}
           isFetching={isFetching}
           isEmpty={tags.length === 0}
+          skeleton={<TagListLoading />}
           emptyTitle={t('emptyTitle')}
           emptyDescription={t('emptyDescription')}
           emptyAction={
@@ -134,7 +144,10 @@ export function TagManager() {
         key={editing?.id || 'new'}
         open={isDialogOpen}
         onOpenChange={onDialogOpenChange}
-        initialData={editing}
+        initialData={fullTag.record}
+        isLoadingInitialData={fullTag.isNotReady}
+        hasLoadError={fullTag.hasError}
+        onRetryLoad={fullTag.retry}
         onSubmit={(data) => save(data)}
         loading={isSaving}
       />
