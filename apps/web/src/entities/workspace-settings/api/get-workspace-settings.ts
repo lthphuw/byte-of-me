@@ -1,13 +1,11 @@
 import { cache } from 'react';
 import { prisma } from '@byte-of-me/db';
-import { logger } from '@byte-of-me/logger';
 import { unstable_cache } from 'next/cache';
 
 import 'server-only';
 
 import {
   parseWorkspaceSettings,
-  WORKSPACE_SETTINGS_DEFAULTS,
   type WorkspaceSettings,
 } from '@/entities/workspace-settings/model/settings-schema';
 import { requireAdmin } from '@/shared/lib/auth';
@@ -17,7 +15,9 @@ import {
 } from '@/shared/lib/constants';
 
 /**
- * The database half of {@link getWorkspaceSettings}, behind Next's data cache.
+ * The database half of the workspace-settings reads, behind Next's data cache.
+ * Exported for the server actions in this folder: each one calls `requireAdmin()`
+ * itself and passes the admin's id here, so every caller shares one cache entry.
  *
  * `ownerId` is an argument rather than something the callback reads for
  * itself, because an `unstable_cache` callback has no session: it runs outside
@@ -34,7 +34,7 @@ import {
  * round-trip is lossless (contrast `getAdjacentPublicBlogs`, which has to
  * accept `Date | string` for exactly that reason).
  */
-const readWorkspaceSettings = (ownerId: string) =>
+export const readWorkspaceSettings = (ownerId: string) =>
   unstable_cache(
     async () => {
       const row = await prisma.workspaceSettings.findUnique({
@@ -59,53 +59,42 @@ const readWorkspaceSettings = (ownerId: string) =>
   )();
 
 /**
- * The author's dashboard settings, read on the server.
+ * The owner's dashboard settings, read on the server.
  *
- * NOT a server action — no `'use server'` — for the same reason
- * `getOwnerDisplayName` is not one: that is what allows React's `cache()`.
+ * NOT a server action — no `'use server'` — so React's `cache()` can wrap it and
+ * client code cannot import it. Server code that already runs on the server
+ * calls it (the upload action, `uploadMedia`). Client components read the same
+ * row through `workspaceSettingsQueries.current()`, which wraps
+ * `getAdminWorkspaceSettings`.
  *
  * Reading on the SERVER rather than fetching after hydration is the whole
  * reason this table exists rather than another `localStorage` key: the first
  * frame already reflects what the author saved.
  *
  * Two caches, doing two different jobs. React's `cache()` on the outside gives
- * within-request dedupe: `dashboard/layout.tsx` seeds the provider and
- * `dashboard/media/page.tsx` reads the compression config, and both can
- * co-occur in one render. Next's
- * `unstable_cache` on the inside gives the across-request half, which is the
- * one that matters here — the `(protected)` group is `force-dynamic`, so every
- * navigation used to pay a Supabase round trip to re-read a JSON blob that
- * only changes when the author moves a switch. It is tagged rather than left
- * on a timer precisely because that switch has to appear to save: a stale read
- * here is indistinguishable, from the author's chair, from the write having
- * failed.
+ * within-request dedupe: a render that reads the settings twice pays for one
+ * read. Next's `unstable_cache` on the inside gives the across-request half,
+ * which is the one that matters here — the `(protected)` group is
+ * `force-dynamic`, so every navigation used to pay a Supabase round trip to
+ * re-read a JSON blob that only changes when the author moves a switch. It is
+ * tagged rather than left on a timer precisely because that switch has to
+ * appear to save: a stale read here is indistinguishable, from the author's
+ * chair, from the write having failed.
  *
  * `requireAdmin()` stays outside both caches. §5's rule is that a query guards
  * itself, and a cached callback has no session to guard with — so the guard
  * runs on every call, hit or miss, and only the row read is skipped.
  *
- * Deliberately not going through TanStack Query's prefetch/hydrate path
- * either. That machinery earns its keep for lists that refetch and mutate;
- * this is one flat object read once per page load, and the failure mode of
- * getting the hydration key wrong is a workspace stuck on skeletons with
- * nothing logged.
- *
- * Never throws. A settings read that fails must not take down a page that has
- * already begun rendering, and every field has a defined default — so the
- * fallback is a fully usable workspace rather than an error. The `try` spans
- * the cached read as well, so a cache MISS that throws is caught here;
- * `unstable_cache` stores nothing for a rejected callback, so the next request
- * retries rather than inheriting the failure.
+ * Fails closed. A caller who is not the owner gets the refusal `requireAdmin()`
+ * throws, and a failed read throws as well. Nothing falls back to
+ * `WORKSPACE_SETTINGS_DEFAULTS`: a silent default would have the upload path
+ * compress with built-in settings instead of the owner's saved ones, and
+ * nothing would say so.
  */
 export const getWorkspaceSettings = cache(
   async (): Promise<WorkspaceSettings> => {
-    try {
-      const admin = await requireAdmin();
+    const admin = await requireAdmin();
 
-      return await readWorkspaceSettings(admin.id);
-    } catch (error) {
-      logger.warn(`Get workspace settings failed: ${String(error)}`);
-      return { ...WORKSPACE_SETTINGS_DEFAULTS };
-    }
+    return readWorkspaceSettings(admin.id);
   }
 );

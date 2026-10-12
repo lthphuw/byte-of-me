@@ -202,7 +202,7 @@ sequenceDiagram
 
     rect rgba(225, 29, 72, 0.14)
     Note over U,DB: Admin write — uncached, role-checked
-    U->>SA: submit form (server action)
+    U->>SA: useServerMutation calls the action
     SA->>G: requireAdmin()
     G->>DB: resolve role from session
     alt role is ADMIN
@@ -211,12 +211,16 @@ sequenceDiagram
         P->>DB: SQL
         SA->>CDN: revalidateTag(CACHE_TAGS.BLOG)
         SA-->>U: ApiResponse success
+        Note over U: unwrapApiResponse, invalidate keys, onSuccess, toast
     else anything else
         G-->>SA: throw Unauthorized
-        SA-->>U: ApiResponse error
+        SA-->>U: rejects, or returns a failure envelope
+        Note over U: onError, localised errorMessage toast
     end
     end
 ```
+
+A guard placed above the action's `try` makes the promise reject; a guard inside it returns a failure envelope. Both fail closed, and both reach the client as a failed mutation. A refused business rule is a third case: the action returns `{ success: false, errorMsg }` (and an `errorCode` when it names its reason), and the client throws `ServerActionError` from `unwrapApiResponse`. In every case the success path does not run.
 
 **Two independent guards, on purpose:**
 
@@ -285,6 +289,45 @@ Locales are `en` (default) and `vi`, declared once in `src/shared/i18n/routing.t
 
 ---
 
+## Client reads and writes
+
+Every client read and write goes through TanStack Query. The one exception is a write that throws instead of returning an envelope (the image uploaders), which uses `useMutation` directly. A server prefetch and the client hook both call the same `queryOptions` factory (`entities/<slice>/query/<slice>-queries.ts`), so the key and the query function cannot drift apart. A mismatch raises no error: it falls through to a client fetch and leaves skeletons on screen.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant L as Layout (RSC)
+    participant F as queryOptions factory
+    participant QC as QueryClient
+    participant H as Client hook
+    participant SA as Server action
+    participant DB as PostgreSQL
+
+    rect rgba(99, 102, 241, 0.14)
+    Note over L,DB: Read — prefetch on the server, hydrate on the client
+    L->>F: prefetchQuery(options)
+    F->>SA: queryFn → unwrapApiResponse(await action())
+    SA->>DB: read
+    DB-->>SA: rows
+    SA-->>F: ApiResponse
+    F-->>QC: data, or a thrown ServerActionError
+    QC-->>H: dehydrated state through HydrationBoundary, same key
+    Note over H: skeleton while loading, QueryState with retry on error, empty state
+    end
+
+    rect rgba(225, 29, 72, 0.14)
+    Note over H,DB: Write — useServerMutation
+    H->>SA: mutationFn(variables)
+    SA-->>H: ApiResponse
+    alt success
+        H->>QC: invalidateQueries for the factory keys
+        Note over H: onSuccess, successMessage
+    else refused or failed
+        Note over H: toast the localised message for the code, else the fallback. No success path.
+    end
+    end
+```
+
 ## Caching & invalidation
 
 Three layers, each invalidated differently:
@@ -293,7 +336,7 @@ Three layers, each invalidated differently:
 | --- | --- | --- |
 | Vercel edge (`headers()`) | Public HTML, 1h + 24h SWR | Time, or a deploy |
 | Next.js data cache | Tagged queries | `revalidateTag(CACHE_TAGS.X)` inside the mutating server action |
-| TanStack Query | Client-side server state in the dashboard | Query invalidation after a mutation resolves |
+| TanStack Query | Every client read and write, dashboard and public lists (image uploads are the one `useMutation` that throws) | `useServerMutation` invalidates the factory keys after the envelope check |
 
 `CACHE_TAGS` (`src/shared/lib/constants.ts`) is the single list of tags — `blog`, `company`, `contact-message`, `education`, `featured-work`, `media`, `open-source`, `project`, `social-link`, `tag`, `tech-stack`, `user-profile`, `comment`, `workspace-settings`. A mutation that forgets its tag is the usual cause of "I saved it but the public page is stale."
 
@@ -314,6 +357,7 @@ Blog view counts deliberately sit outside all of this: `trackBlogView` writes a 
 | Add a dashboard editor | A **separate by-id read** for the form — never reuse the list row. See below |
 | Add a translatable content field | `packages/db/prisma/schema.prisma` → the `*Translation` model → migration |
 | Add a shared component | `packages/ui/src/` + an entry in `exports` if it should be deep-imported |
+| Add a client read or write | `entities/<slice>/query/` (a `<slice>-queries.ts` factory and a `use-*.ts` hook); writes through `useServerMutation` (`shared/hooks/use-server-mutation.ts`) |
 | Change cache behaviour | `next.config.js` `headers()` for edge, `CACHE_TAGS` for data |
 | Change who can do something | `src/shared/lib/auth/session.ts` |
 

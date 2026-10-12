@@ -57,8 +57,12 @@ There is no `middleware.ts`; the locale comes from the `[locale]` segment.
 
 - Reads happen in Server Components, as high in the tree as possible.
 - Mutations are server actions in `entities/*/api/`, each guarded by
-  `requireAdmin()` from `src/shared/lib/auth`.
-- Client-side server state uses TanStack Query (`src/shared/lib/query`).
+  `requireAdmin()` from `src/shared/lib/auth`. Every action returns an
+  `ApiResponse` envelope.
+- Client-side server state uses TanStack Query: `queryOptions` factories and
+  hooks in `src/entities/<slice>/query/`, writes through `useServerMutation`
+  (`src/shared/hooks/use-server-mutation.ts`), and the envelope unwrap in
+  `src/shared/lib/query/unwrap-api-response.ts`.
 
 ## Scripts
 

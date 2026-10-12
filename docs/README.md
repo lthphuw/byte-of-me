@@ -32,8 +32,11 @@ rg -n '<symbol, path or route>' docs README.md apps/web/README.md
 | Routes, layouts, route handlers, metadata routes, `next.config.js` redirects and `headers()` | [codebase/web-app-routes.md](codebase/web-app-routes.md) |
 | SEO and metadata: `sitemap.ts`, `robots.ts`, `llms.txt`, `feed.xml`, JSON-LD, alternates | [codebase/web-app-routes.md](codebase/web-app-routes.md) and [codebase/web-shared.md](codebase/web-shared.md) |
 | `apps/web/src/entities/**` (server API, query keys, cache tags) | [codebase/web-entities-content.md](codebase/web-entities-content.md), [codebase/web-entities-supporting.md](codebase/web-entities-supporting.md) |
+| `apps/web/src/entities/*/query/**` and `entities/*/model/query-keys.ts` (`queryOptions` factories, client read and write hooks) | [codebase/web-entities-content.md](codebase/web-entities-content.md), [codebase/web-entities-supporting.md](codebase/web-entities-supporting.md), and [codebase/web-shared.md](codebase/web-shared.md) for the shared hooks they call |
 | `apps/web/src/widgets/**` | [codebase/web-widgets.md](codebase/web-widgets.md) |
 | `apps/web/src/features/**` | [codebase/web-features.md](codebase/web-features.md) |
+| `apps/web/src/shared/lib/query/**` (`unwrapApiResponse`, `ServerActionError`, query client, admin prefetch) and `apps/web/src/shared/hooks/**` (`useServerMutation`, list and edit hooks) | [codebase/web-shared.md](codebase/web-shared.md) |
+| `apps/web/src/shared/ui/query-state.tsx` (`QueryState`: skeleton, error and empty states) | [codebase/web-shared.md](codebase/web-shared.md) |
 | `apps/web/src/shared/**` (helpers, i18n, auth, metadata, test wiring) | [codebase/web-shared.md](codebase/web-shared.md) |
 | `packages/db/**` (schema, migrations, seed) | [codebase/packages-db.md](codebase/packages-db.md) |
 | `packages/ui/**` | [codebase/packages-ui.md](codebase/packages-ui.md) |
