@@ -1,9 +1,10 @@
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
-import { ReactNodeViewRenderer } from '@tiptap/react';
+
+import { type EditorLabels, EMPTY_EDITOR_LABELS } from '../../editor-labels';
 
 import { normalizeReferenceItems } from './numbering';
 import { ReferenceListBase } from './reference-list-base';
-import { ReferenceListView } from './reference-list-view';
+import { createReferenceListNodeView } from './reference-list-view';
 import {
   CITATION_NAME,
   DEFAULT_REFERENCES_TITLE,
@@ -58,13 +59,26 @@ export function findReferenceList(
   return found;
 }
 
+type ReferenceListOptions = {
+  /** The editor's labels, handed to the node view. `createExtensions` sets it. */
+  labels: EditorLabels;
+};
+
 /**
  * Editable bibliography node: the render schema from `reference-list-base.ts`
  * plus the node view and commands, which only the editor needs.
  */
-export const ReferenceList = ReferenceListBase.extend({
+export const ReferenceList = ReferenceListBase.extend<ReferenceListOptions>({
+  addOptions() {
+    return { labels: EMPTY_EDITOR_LABELS };
+  },
+
   addNodeView() {
-    return ReactNodeViewRenderer(ReferenceListView);
+    // A node view receives its node and the editor, not the extension's
+    // options, so the labels are read here and handed over.
+    const { labels } = this.options;
+
+    return createReferenceListNodeView(labels);
   },
 
   addCommands() {

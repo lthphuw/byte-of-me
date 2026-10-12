@@ -11,7 +11,7 @@ import { useToolbar } from './toolbar-provider';
 
 const StrikeThroughToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, onClick, children, ...props }, ref) => {
-    const { editor, state } = useToolbar();
+    const { editor, state, labels } = useToolbar();
     return (
       <Tooltip>
         <TooltipTrigger asChild>
@@ -35,7 +35,7 @@ const StrikeThroughToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <span>Strikethrough</span>
+          <span>{labels.strikethrough}</span>
           <span className="text-muted-foreground ml-1 text-xs">
             (cmd + shift + x)
           </span>

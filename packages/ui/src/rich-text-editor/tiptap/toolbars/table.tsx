@@ -27,7 +27,7 @@ import { useToolbar } from './toolbar-provider';
  */
 const TableToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, ...props }, ref) => {
-    const { editor, state } = useToolbar();
+    const { editor, state, labels } = useToolbar();
     const inTable = state.table.active;
 
     if (!inTable) {
@@ -53,7 +53,7 @@ const TableToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <span>Insert table</span>
+            <span>{labels.insertTable}</span>
           </TooltipContent>
         </Tooltip>
       );
@@ -76,35 +76,35 @@ const TableToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
           <DropdownMenuItem
             onClick={() => editor?.chain().focus().addRowAfter().run()}
           >
-            Add row below
+            {labels.addRowBelow}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => editor?.chain().focus().addColumnAfter().run()}
           >
-            Add column right
+            {labels.addColumnRight}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => editor?.chain().focus().deleteRow().run()}
           >
-            Delete row
+            {labels.deleteRow}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => editor?.chain().focus().deleteColumn().run()}
           >
-            Delete column
+            {labels.deleteColumn}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => editor?.chain().focus().toggleHeaderRow().run()}
           >
-            Toggle header row
+            {labels.toggleHeaderRow}
           </DropdownMenuItem>
           <DropdownMenuItem
             className="text-destructive-text focus:text-destructive-text"
             onClick={() => editor?.chain().focus().deleteTable().run()}
           >
-            Delete table
+            {labels.deleteTable}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -11,7 +11,7 @@ import { useToolbar } from './toolbar-provider';
 
 const UnderlineToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, onClick, children, ...props }, ref) => {
-    const { editor, state } = useToolbar();
+    const { editor, state, labels } = useToolbar();
     return (
       <Tooltip>
         <TooltipTrigger asChild>
@@ -35,7 +35,7 @@ const UnderlineToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <span>Underline</span>
+          <span>{labels.underline}</span>
           <span className="text-muted-foreground ml-1 text-xs">(cmd + u)</span>
         </TooltipContent>
       </Tooltip>

@@ -23,7 +23,7 @@ import { useToolbar } from './toolbar-provider';
 
 const LinkToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, ...props }, ref) => {
-    const { editor, state } = useToolbar();
+    const { editor, state, labels } = useToolbar();
     const [open, setOpen] = React.useState(false);
     const [link, setLink] = React.useState('');
 
@@ -89,13 +89,13 @@ const LinkToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
               >
                 <p className="mr-2 text-base">↗</p>
                 <p className={'decoration-gray-7 underline underline-offset-4'}>
-                  Link
+                  {labels.link}
                 </p>
               </Button>
             </PopoverTrigger>
           </TooltipTrigger>
           <TooltipContent>
-            <span>Link</span>
+            <span>{labels.link}</span>
           </TooltipContent>
         </Tooltip>
 
@@ -116,10 +116,8 @@ const LinkToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
               <X className="h-4 w-4" />
             </PopoverClose>
             <div>
-              <Label>Link</Label>
-              <p className="text-muted-foreground text-sm">
-                Attach a link to the selected text
-              </p>
+              <Label>{labels.link}</Label>
+              <p className="text-muted-foreground text-sm">{labels.linkHint}</p>
               <div className="mt-3 flex flex-col items-end justify-end gap-3">
                 <Input
                   autoFocus
@@ -146,7 +144,7 @@ const LinkToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
                       onClick={remove}
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
-                      Remove
+                      {labels.remove}
                     </Button>
                   )}
                   <Button
@@ -155,7 +153,7 @@ const LinkToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
                     className="h-8"
                     onClick={apply}
                   >
-                    {currentHref ? 'Update' : 'Confirm'}
+                    {currentHref ? labels.update : labels.confirm}
                   </Button>
                 </div>
               </div>

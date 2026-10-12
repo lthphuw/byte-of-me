@@ -24,6 +24,7 @@ import {
 } from '@/entities/blog/model/blog-schema';
 import { useScopedImageUploader } from '@/entities/media/query';
 import { useBlogReferenceOptions } from '@/features/dashboard/blog-editor/lib/use-blog-reference-options';
+import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
 import { useFormAutosave } from '@/shared/hooks/use-form-autosave';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
@@ -88,6 +89,7 @@ export function BlogForm({
   const uploadImage = useScopedImageUploader('blog');
   const t = useTranslations('dashboard.blog');
   const tMedia = useTranslations('dashboard.media');
+  const editorLabels = useEditorLabels();
   const { tagOptions, projects, tagsState, projectsState } =
     useBlogReferenceOptions();
 
@@ -194,6 +196,7 @@ export function BlogForm({
                             value={field.value}
                             onChange={field.onChange}
                             uploadImage={uploadImage}
+                            labels={editorLabels}
                             uploadFailedText={tMedia('toast.uploadError')}
                           />
                         </FormControl>

@@ -11,7 +11,7 @@ import { useToolbar } from './toolbar-provider';
 
 const HardBreakToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, onClick, children, ...props }, ref) => {
-    const { editor } = useToolbar();
+    const { editor, labels } = useToolbar();
     return (
       <Tooltip>
         <TooltipTrigger asChild>
@@ -30,7 +30,7 @@ const HardBreakToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <span>Hard break</span>
+          <span>{labels.hardBreak}</span>
         </TooltipContent>
       </Tooltip>
     );

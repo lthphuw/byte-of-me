@@ -28,6 +28,7 @@ import {
   FormMessage,
 } from './form';
 import { MultiSelect } from './multi-select';
+import { testEditorLabels } from './rich-text-editor/tiptap/editor-labels.test-fixture';
 import { RichTextEditor } from './rich-text-editor/tiptap/rich-text-editor';
 
 // `@testing-library/react` only auto-registers cleanup for a Jest/Vitest-shaped
@@ -182,6 +183,7 @@ describe('FormControl wiring', () => {
         compact
         onChange={() => {}}
         uploadFailedText="Upload failed"
+        labels={testEditorLabels}
       />,
       '.ProseMirror'
     );
@@ -202,6 +204,7 @@ describe('FormControl wiring', () => {
         compact
         onChange={() => {}}
         uploadFailedText="Upload failed"
+        labels={testEditorLabels}
       />,
       '.ProseMirror'
     );

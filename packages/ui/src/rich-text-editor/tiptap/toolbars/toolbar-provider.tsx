@@ -7,6 +7,8 @@ import {
   useEditorState,
 } from '@tiptap/react';
 
+import type { EditorLabels } from '../editor-labels';
+
 export const HEADING_LEVELS = [1, 2, 3, 4] as const;
 export type HeadingLevel = (typeof HEADING_LEVELS)[number];
 
@@ -133,6 +135,8 @@ function selectToolbarState({
 export interface ToolbarContextProps {
   editor: Editor;
   state: ToolbarState;
+  /** The app's text for every control; see `EditorLabels`. */
+  labels: EditorLabels;
 }
 
 export const ToolbarContext = React.createContext<ToolbarContextProps | null>(
@@ -141,15 +145,23 @@ export const ToolbarContext = React.createContext<ToolbarContextProps | null>(
 
 interface ToolbarProviderProps {
   editor: Editor;
+  labels: EditorLabels;
   children: React.ReactNode;
 }
 
-export const ToolbarProvider = ({ editor, children }: ToolbarProviderProps) => {
+export const ToolbarProvider = ({
+  editor,
+  labels,
+  children,
+}: ToolbarProviderProps) => {
   // `useEditorState` hands back the previous object while the selection is
   // deep-equal, so the memoised value below only changes — and the controls
   // only re-render — when something a control displays actually did.
   const state = useEditorState({ editor, selector: selectToolbarState });
-  const value = React.useMemo(() => ({ editor, state }), [editor, state]);
+  const value = React.useMemo(
+    () => ({ editor, state, labels }),
+    [editor, state, labels]
+  );
 
   return (
     <ToolbarContext.Provider value={value}>{children}</ToolbarContext.Provider>

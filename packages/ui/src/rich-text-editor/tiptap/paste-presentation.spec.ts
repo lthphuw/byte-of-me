@@ -18,10 +18,14 @@ import { generateJSON } from '@tiptap/html';
 import type { JSONContent } from '@tiptap/react';
 import { describe, expect, test } from 'bun:test';
 
+import { testEditorLabels } from './editor-labels.test-fixture';
 import { stripPastedPresentation } from './paste-presentation';
 import { createExtensions } from './rich-text-editor';
 
-const extensions = createExtensions({ uploadFailedText: 'Upload failed' });
+const extensions = createExtensions({
+  uploadFailedText: 'Upload failed',
+  labels: testEditorLabels,
+});
 
 /** The document the editor would hold after pasting `html`. */
 function paste(html: string): JSONContent {

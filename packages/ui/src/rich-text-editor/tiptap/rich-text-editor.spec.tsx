@@ -24,6 +24,7 @@ import { cleanup, fireEvent, render } from '@testing-library/react';
 import type { Editor, JSONContent } from '@tiptap/react';
 import { afterEach, describe, expect, spyOn, test } from 'bun:test';
 
+import { testEditorLabels } from './editor-labels.test-fixture';
 import { RichTextEditor, type RichTextEditorApi } from './rich-text-editor';
 
 const PLAIN_DOC: JSONContent = {
@@ -62,6 +63,7 @@ async function open(value: JSONContent, compact = false): Promise<Emit[]> {
     render(
       <RichTextEditor
         uploadFailedText="Upload failed"
+        labels={testEditorLabels}
         value={value}
         compact={compact}
         onChange={(json, meta) => emits.push({ json, initial: meta.initial })}
@@ -133,6 +135,7 @@ describe('RichTextEditor onChange', () => {
       container = render(
         <RichTextEditor
           uploadFailedText="Upload failed"
+          labels={testEditorLabels}
           value={HEADING_DOC}
           onChange={(json, meta) => emits.push({ json, initial: meta.initial })}
         />
@@ -204,6 +207,7 @@ describe('RichTextEditor onChange timing', () => {
         >
           <RichTextEditor
             uploadFailedText="Upload failed"
+            labels={testEditorLabels}
             value={PLAIN_DOC}
             onChange={(json, meta) => {
               if (meta.initial) return;
@@ -323,6 +327,7 @@ describe('RichTextEditor value prop', () => {
       rendered = render(
         <RichTextEditor
           uploadFailedText="Upload failed"
+          labels={testEditorLabels}
           value={structuredClone(PLAIN_DOC)}
           onChange={() => {}}
         />
@@ -351,6 +356,7 @@ describe('RichTextEditor value prop', () => {
       rendered?.rerender(
         <RichTextEditor
           uploadFailedText="Upload failed"
+          labels={testEditorLabels}
           value={structuredClone(HEADING_DOC)}
           onChange={() => {}}
         />
@@ -394,6 +400,7 @@ describe('RichTextEditor toolbar state', () => {
           value={BOLD_THEN_PLAIN}
           onChange={() => {}}
           uploadFailedText="Upload failed"
+          labels={testEditorLabels}
         />
       ).container;
     });
@@ -455,6 +462,7 @@ describe('RichTextEditor image rows', () => {
       container = render(
         <RichTextEditor
           uploadFailedText="Upload failed"
+          labels={testEditorLabels}
           value={{
             type: 'doc',
             content: [
@@ -504,6 +512,7 @@ describe('RichTextEditor image rows', () => {
       container = render(
         <RichTextEditor
           uploadFailedText="Upload failed"
+          labels={testEditorLabels}
           value={{
             type: 'doc',
             content: [
@@ -573,6 +582,7 @@ describe('RichTextEditor onEditorApi', () => {
       unmount = render(
         <RichTextEditor
           uploadFailedText="Upload failed"
+          labels={testEditorLabels}
           value={HEADING_DOC}
           onChange={() => {}}
           onEditorApi={(api) => seen.push(api)}
@@ -663,6 +673,7 @@ describe('RichTextEditor table header scopes', () => {
           value={value}
           onChange={() => {}}
           uploadFailedText="Upload failed"
+          labels={testEditorLabels}
         />
       ).container;
     });

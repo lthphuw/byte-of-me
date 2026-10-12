@@ -13,7 +13,7 @@ const ImagePlaceholderToolbar = React.forwardRef<
   HTMLButtonElement,
   ButtonProps
 >(({ className, onClick, children, ...props }, ref) => {
-  const { editor, state } = useToolbar();
+  const { editor, state, labels } = useToolbar();
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -37,7 +37,7 @@ const ImagePlaceholderToolbar = React.forwardRef<
         </Button>
       </TooltipTrigger>
       <TooltipContent>
-        <span>Image</span>
+        <span>{labels.image}</span>
       </TooltipContent>
     </Tooltip>
   );

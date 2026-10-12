@@ -32,6 +32,7 @@ import {
   Separator,
 } from '../../../index';
 import { cn } from '../../../lib/utils';
+import { type EditorLabels, EMPTY_EDITOR_LABELS } from '../editor-labels';
 
 import { ImageBase, type ImageUploadFn } from './image-base';
 import { ImageCaption } from './image-caption';
@@ -47,6 +48,8 @@ type ExtendedImageOptions = ImageOptions & {
    * own. `createExtensions` sets it from the editor's `uploadFailedText`.
    */
   uploadFailedText: string;
+  /** The editor's labels, handed to the node view. `createExtensions` sets it. */
+  labels: EditorLabels;
 };
 
 /**
@@ -69,22 +72,28 @@ export const ImageExtension = ImageBase.extend<ExtendedImageOptions>({
       HTMLAttributes: parent.HTMLAttributes ?? {},
       uploadFn: undefined,
       uploadFailedText: '',
+      labels: EMPTY_EDITOR_LABELS,
     };
   },
 
   addNodeView() {
     // A node view receives its node and the editor, not the extension's
-    // options, so the failure text is read here and handed over.
-    const { uploadFailedText } = this.options;
+    // options, so the failure text and the labels are read here and handed over.
+    const { uploadFailedText, labels } = this.options;
 
     return ReactNodeViewRenderer((props: NodeViewProps) => (
-      <TiptapImage {...props} uploadFailedText={uploadFailedText} />
+      <TiptapImage
+        {...props}
+        uploadFailedText={uploadFailedText}
+        labels={labels}
+      />
     ));
   },
 });
 
 type TiptapImageProps = NodeViewProps & {
   uploadFailedText: string;
+  labels: EditorLabels;
 };
 
 function TiptapImage(props: TiptapImageProps) {
@@ -95,6 +104,7 @@ function TiptapImage(props: TiptapImageProps) {
     deleteNode,
     updateAttributes,
     uploadFailedText,
+    labels,
   } = props;
 
   const imageRef = useRef<HTMLImageElement | null>(null);
@@ -266,7 +276,7 @@ function TiptapImage(props: TiptapImageProps) {
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
                     <ImageIcon className="mr-2 size-4" />
-                    Replace Image
+                    {labels.replaceImage}
                   </DropdownMenuSubTrigger>
 
                   <DropdownMenuSubContent className="w-56 space-y-3 p-3">
@@ -284,23 +294,23 @@ function TiptapImage(props: TiptapImageProps) {
                       disabled={uploading}
                     >
                       {uploading && <Loader2 className="mr-2 animate-spin" />}
-                      Upload
+                      {labels.upload}
                     </Button>
 
                     <Input
                       value={imageUrl}
                       onChange={(e) => setImageUrl(e.target.value)}
-                      placeholder="Image URL"
+                      placeholder={labels.imageUrl}
                     />
 
                     <Button onClick={handleImageUrlSubmit} disabled={!imageUrl}>
-                      Use URL
+                      {labels.useUrl}
                     </Button>
 
                     <Input
                       value={altText}
                       onChange={(e) => setAltText(e.target.value)}
-                      placeholder="Alt text"
+                      placeholder={labels.altText}
                     />
 
                     {error && (
@@ -313,7 +323,7 @@ function TiptapImage(props: TiptapImageProps) {
 
                 <DropdownMenuItem onClick={deleteNode}>
                   <Trash className="mr-2 size-4" />
-                  Delete
+                  {labels.delete}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -328,7 +338,7 @@ function TiptapImage(props: TiptapImageProps) {
           typeof node.attrs.caption === 'string' ? node.attrs.caption : ''
         }
         editable={editor.isEditable}
-        placeholder="Add a caption"
+        placeholder={labels.addCaption}
         onChange={(caption) => updateAttributes({ caption })}
       />
     </NodeViewWrapper>

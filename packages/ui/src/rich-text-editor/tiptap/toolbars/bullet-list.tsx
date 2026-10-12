@@ -11,7 +11,7 @@ import { useToolbar } from './toolbar-provider';
 
 const BulletListToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, onClick, children, ...props }, ref) => {
-    const { editor, state } = useToolbar();
+    const { editor, state, labels } = useToolbar();
 
     return (
       <Tooltip>
@@ -36,7 +36,7 @@ const BulletListToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <span>Bullet list</span>
+          <span>{labels.bulletList}</span>
         </TooltipContent>
       </Tooltip>
     );

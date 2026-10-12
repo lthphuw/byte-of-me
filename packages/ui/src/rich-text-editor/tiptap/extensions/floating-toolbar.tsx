@@ -11,6 +11,7 @@ import {
   Separator,
   TooltipProvider,
 } from '../../../index';
+import type { EditorLabels } from '../editor-labels';
 import { AlignmentTooolbar } from '../toolbars/alignment';
 import { BlockquoteToolbar } from '../toolbars/blockquote';
 import { BoldToolbar } from '../toolbars/bold';
@@ -25,7 +26,13 @@ import { OrderedListToolbar } from '../toolbars/ordered-list';
 import { ToolbarProvider } from '../toolbars/toolbar-provider';
 import { UnderlineToolbar } from '../toolbars/underline';
 
-export function FloatingToolbar({ editor }: { editor: Editor | null }) {
+export function FloatingToolbar({
+  editor,
+  labels,
+}: {
+  editor: Editor | null;
+  labels: EditorLabels;
+}) {
   const isMobile = useMediaQuery('(max-width: 640px)');
 
   // Prevent default context menu on mobile
@@ -62,7 +69,7 @@ export function FloatingToolbar({ editor }: { editor: Editor | null }) {
           editor={editor}
           className="mx-0 w-full min-w-full rounded-sm border bg-background shadow-sm"
         >
-          <ToolbarProvider editor={editor}>
+          <ToolbarProvider editor={editor} labels={labels}>
             <ScrollArea className="h-fit w-full py-0.5">
               <div className="flex items-center gap-0.5 px-2">
                 <div className="flex items-center gap-0.5 p-1">

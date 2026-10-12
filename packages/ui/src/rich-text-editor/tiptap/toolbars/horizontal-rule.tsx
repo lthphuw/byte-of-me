@@ -11,7 +11,7 @@ import { useToolbar } from './toolbar-provider';
 
 const HorizontalRuleToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, onClick, children, ...props }, ref) => {
-    const { editor } = useToolbar();
+    const { editor, labels } = useToolbar();
     return (
       <Tooltip>
         <TooltipTrigger asChild>
@@ -30,7 +30,7 @@ const HorizontalRuleToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <span>Horizontal Rule</span>
+          <span>{labels.horizontalRule}</span>
         </TooltipContent>
       </Tooltip>
     );

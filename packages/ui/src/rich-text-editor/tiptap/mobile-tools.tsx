@@ -18,6 +18,7 @@ import {
 
 import { cn } from '../../lib/utils';
 
+import type { EditorLabelKey, EditorLabels } from './editor-labels';
 import type { ImageUploadFn } from './extensions/image';
 import { imageFilesFrom, resolveImages } from './extensions/upload-images';
 
@@ -37,7 +38,8 @@ import { imageFilesFrom, resolveImages } from './extensions/upload-images';
 
 type Tool = {
   key: string;
-  label: string;
+  /** The `EditorLabels` entry this button is named by. */
+  labelKey: EditorLabelKey;
   icon: typeof Bold;
   run: (editor: Editor) => void;
   isActive?: (editor: Editor) => boolean;
@@ -46,56 +48,56 @@ type Tool = {
 const TOOLS: Tool[] = [
   {
     key: 'h1',
-    label: 'Heading 1',
+    labelKey: 'heading1',
     icon: Heading1,
     run: (e) => e.chain().focus().toggleHeading({ level: 1 }).run(),
     isActive: (e) => e.isActive('heading', { level: 1 }),
   },
   {
     key: 'h2',
-    label: 'Heading 2',
+    labelKey: 'heading2',
     icon: Heading2,
     run: (e) => e.chain().focus().toggleHeading({ level: 2 }).run(),
     isActive: (e) => e.isActive('heading', { level: 2 }),
   },
   {
     key: 'bold',
-    label: 'Bold',
+    labelKey: 'bold',
     icon: Bold,
     run: (e) => e.chain().focus().toggleBold().run(),
     isActive: (e) => e.isActive('bold'),
   },
   {
     key: 'italic',
-    label: 'Italic',
+    labelKey: 'italic',
     icon: Italic,
     run: (e) => e.chain().focus().toggleItalic().run(),
     isActive: (e) => e.isActive('italic'),
   },
   {
     key: 'bullet',
-    label: 'Bullet list',
+    labelKey: 'bulletList',
     icon: List,
     run: (e) => e.chain().focus().toggleBulletList().run(),
     isActive: (e) => e.isActive('bulletList'),
   },
   {
     key: 'ordered',
-    label: 'Numbered list',
+    labelKey: 'numberedList',
     icon: ListOrdered,
     run: (e) => e.chain().focus().toggleOrderedList().run(),
     isActive: (e) => e.isActive('orderedList'),
   },
   {
     key: 'quote',
-    label: 'Quote',
+    labelKey: 'quote',
     icon: Quote,
     run: (e) => e.chain().focus().toggleBlockquote().run(),
     isActive: (e) => e.isActive('blockquote'),
   },
   {
     key: 'code',
-    label: 'Code block',
+    labelKey: 'codeBlock',
     icon: Code,
     run: (e) => e.chain().focus().toggleCodeBlock().run(),
     isActive: (e) => e.isActive('codeBlock'),
@@ -106,11 +108,13 @@ export function MobileEditorTools({
   editor,
   uploadImage,
   uploadFailedText,
+  labels,
 }: {
   editor: Editor;
   uploadImage?: ImageUploadFn;
   /** What the author sees when an upload is refused, already translated. */
   uploadFailedText: string;
+  labels: EditorLabels;
 }) {
   const [open, setOpen] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -140,13 +144,13 @@ export function MobileEditorTools({
         <div
           className="pointer-events-auto absolute bottom-20 right-4 grid w-44 grid-cols-4 gap-1 rounded-xl border bg-popover p-2 shadow-lg"
           role="menu"
-          aria-label="Formatting"
+          aria-label={labels.formatting}
         >
           {uploadImage && (
             <button
               type="button"
               role="menuitem"
-              aria-label="Insert image"
+              aria-label={labels.insertImage}
               className="flex aspect-square items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
               onClick={() => fileInput.current?.click()}
             >
@@ -161,7 +165,7 @@ export function MobileEditorTools({
                 key={tool.key}
                 type="button"
                 role="menuitem"
-                aria-label={tool.label}
+                aria-label={labels[tool.labelKey]}
                 aria-pressed={pressed[index]}
                 className={cn(
                   'flex aspect-square items-center justify-center rounded-md hover:bg-muted',
@@ -185,7 +189,9 @@ export function MobileEditorTools({
 
       <button
         type="button"
-        aria-label={open ? 'Close formatting tools' : 'Open formatting tools'}
+        aria-label={
+          open ? labels.closeFormattingTools : labels.openFormattingTools
+        }
         aria-expanded={open}
         className="pointer-events-auto absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg"
         onClick={() => setOpen((v) => !v)}

@@ -1,7 +1,7 @@
-import { ReactNodeViewRenderer } from '@tiptap/react';
+import { type EditorLabels, EMPTY_EDITOR_LABELS } from '../../editor-labels';
 
 import { CitationBase } from './citation-base';
-import { CitationView } from './citation-view';
+import { createCitationNodeView } from './citation-view';
 import { CITATION_NAME } from './types';
 
 declare module '@tiptap/core' {
@@ -15,13 +15,26 @@ declare module '@tiptap/core' {
   }
 }
 
+type CitationOptions = {
+  /** The editor's labels, handed to the node view. `createExtensions` sets it. */
+  labels: EditorLabels;
+};
+
 /**
  * Editable citation node: the render schema from `citation-base.ts` plus the
  * node view and commands, which only the editor needs.
  */
-export const Citation = CitationBase.extend({
+export const Citation = CitationBase.extend<CitationOptions>({
+  addOptions() {
+    return { labels: EMPTY_EDITOR_LABELS };
+  },
+
   addNodeView() {
-    return ReactNodeViewRenderer(CitationView, { as: 'span' });
+    // A node view receives its node and the editor, not the extension's
+    // options, so the labels are read here and handed over.
+    const { labels } = this.options;
+
+    return createCitationNodeView(labels);
   },
 
   addCommands() {

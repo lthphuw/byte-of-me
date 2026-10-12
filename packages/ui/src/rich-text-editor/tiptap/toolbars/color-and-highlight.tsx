@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../../../index';
 import { ScrollArea } from '../../../index';
 import { Separator } from '../../../index';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../../index';
+import type { EditorLabels } from '../editor-labels';
 
 import { MobileToolbarGroup, MobileToolbarItem } from './mobile-toolbar-group';
 import { useToolbar } from './toolbar-provider';
@@ -22,30 +23,30 @@ type TextStylingExtensions =
   | Extension<ColorOptions>
   | Extension<HighlightOptions>;
 
-const TEXT_COLORS = [
-  { name: 'Default', color: 'var(--editor-text-default)' },
-  { name: 'Gray', color: 'var(--editor-text-gray)' },
-  { name: 'Brown', color: 'var(--editor-text-brown)' },
-  { name: 'Orange', color: 'var(--editor-text-orange)' },
-  { name: 'Yellow', color: 'var(--editor-text-yellow)' },
-  { name: 'Green', color: 'var(--editor-text-green)' },
-  { name: 'Blue', color: 'var(--editor-text-blue)' },
-  { name: 'Purple', color: 'var(--editor-text-purple)' },
-  { name: 'Pink', color: 'var(--editor-text-pink)' },
-  { name: 'Red', color: 'var(--editor-text-red)' },
+const getTextColors = (labels: EditorLabels) => [
+  { name: labels.colorDefault, color: 'var(--editor-text-default)' },
+  { name: labels.colorGray, color: 'var(--editor-text-gray)' },
+  { name: labels.colorBrown, color: 'var(--editor-text-brown)' },
+  { name: labels.colorOrange, color: 'var(--editor-text-orange)' },
+  { name: labels.colorYellow, color: 'var(--editor-text-yellow)' },
+  { name: labels.colorGreen, color: 'var(--editor-text-green)' },
+  { name: labels.colorBlue, color: 'var(--editor-text-blue)' },
+  { name: labels.colorPurple, color: 'var(--editor-text-purple)' },
+  { name: labels.colorPink, color: 'var(--editor-text-pink)' },
+  { name: labels.colorRed, color: 'var(--editor-text-red)' },
 ];
 
-const HIGHLIGHT_COLORS = [
-  { name: 'Default', color: 'var(--editor-highlight-default)' },
-  { name: 'Gray', color: 'var(--editor-highlight-gray)' },
-  { name: 'Brown', color: 'var(--editor-highlight-brown)' },
-  { name: 'Orange', color: 'var(--editor-highlight-orange)' },
-  { name: 'Yellow', color: 'var(--editor-highlight-yellow)' },
-  { name: 'Green', color: 'var(--editor-highlight-green)' },
-  { name: 'Blue', color: 'var(--editor-highlight-blue)' },
-  { name: 'Purple', color: 'var(--editor-highlight-purple)' },
-  { name: 'Pink', color: 'var(--editor-highlight-pink)' },
-  { name: 'Red', color: 'var(--editor-highlight-red)' },
+const getHighlightColors = (labels: EditorLabels) => [
+  { name: labels.colorDefault, color: 'var(--editor-highlight-default)' },
+  { name: labels.colorGray, color: 'var(--editor-highlight-gray)' },
+  { name: labels.colorBrown, color: 'var(--editor-highlight-brown)' },
+  { name: labels.colorOrange, color: 'var(--editor-highlight-orange)' },
+  { name: labels.colorYellow, color: 'var(--editor-highlight-yellow)' },
+  { name: labels.colorGreen, color: 'var(--editor-highlight-green)' },
+  { name: labels.colorBlue, color: 'var(--editor-highlight-blue)' },
+  { name: labels.colorPurple, color: 'var(--editor-highlight-purple)' },
+  { name: labels.colorPink, color: 'var(--editor-highlight-pink)' },
+  { name: labels.colorRed, color: 'var(--editor-highlight-red)' },
 ];
 
 interface ColorHighlightButtonProps {
@@ -82,8 +83,10 @@ const ColorHighlightButton = ({
 );
 
 export const ColorHighlightToolbar = () => {
-  const { editor, state } = useToolbar();
+  const { editor, state, labels } = useToolbar();
   const isMobile = useMediaQuery('(max-width: 640px)');
+  const textColors = getTextColors(labels);
+  const highlightColors = getHighlightColors(labels);
 
   const currentColor = state.color;
   const currentHighlight = state.highlight;
@@ -109,10 +112,10 @@ export const ColorHighlightToolbar = () => {
   if (isMobile) {
     return (
       <div className="flex gap-1">
-        <MobileToolbarGroup label="Color">
-          {TEXT_COLORS.map(({ name, color }) => (
+        <MobileToolbarGroup label={labels.color}>
+          {textColors.map(({ name, color }) => (
             <MobileToolbarItem
-              key={name}
+              key={color}
               onClick={() => handleSetColor(color)}
               active={currentColor === color}
             >
@@ -126,10 +129,10 @@ export const ColorHighlightToolbar = () => {
           ))}
         </MobileToolbarGroup>
 
-        <MobileToolbarGroup label="Highlight">
-          {HIGHLIGHT_COLORS.map(({ name, color }) => (
+        <MobileToolbarGroup label={labels.highlight}>
+          {highlightColors.map(({ name, color }) => (
             <MobileToolbarItem
-              key={name}
+              key={color}
               onClick={() => handleSetHighlight(color)}
               active={currentHighlight === color}
             >
@@ -168,17 +171,17 @@ export const ColorHighlightToolbar = () => {
               </Button>
             </PopoverTrigger>
           </TooltipTrigger>
-          <TooltipContent>Text Color & Highlight</TooltipContent>
+          <TooltipContent>{labels.textColorAndHighlight}</TooltipContent>
         </Tooltip>
 
         <PopoverContent align="start" className="w-56 p-1 dark:bg-gray-2">
           <ScrollArea className="max-h-80 overflow-y-auto pr-2">
             <div className="mb-2.5 mt-2 px-2 text-xs text-muted-foreground">
-              Color
+              {labels.color}
             </div>
-            {TEXT_COLORS.map(({ name, color }) => (
+            {textColors.map(({ name, color }) => (
               <ColorHighlightButton
-                key={name}
+                key={color}
                 name={name}
                 color={color}
                 isActive={currentColor === color}
@@ -189,11 +192,11 @@ export const ColorHighlightToolbar = () => {
             <Separator className="my-3" />
 
             <div className="mb-2.5 w-full px-2 pr-3 text-xs text-muted-foreground">
-              Background
+              {labels.background}
             </div>
-            {HIGHLIGHT_COLORS.map(({ name, color }) => (
+            {highlightColors.map(({ name, color }) => (
               <ColorHighlightButton
-                key={name}
+                key={color}
                 name={name}
                 color={color}
                 isActive={currentHighlight === color}

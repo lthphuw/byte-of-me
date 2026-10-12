@@ -18,6 +18,7 @@ import { useTranslations } from 'next-intl';
 import type { AdminFeaturedWorkDetail } from '@/entities/featured-work';
 import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
 import { useScopedImageUploader } from '@/entities/media/query';
+import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { featuredWorkResolver } from '@/widgets/dashboard/featured-work-manager/lib/featured-work-resolver';
@@ -63,6 +64,7 @@ export function FeaturedWorkForm({
   const uploadImage = useScopedImageUploader('project');
   const t = useTranslations('dashboard.featuredWorks');
   const tMedia = useTranslations('dashboard.media');
+  const editorLabels = useEditorLabels();
 
   // Seeded once, at mount: the dialog is keyed on the edited row.
   const [defaultValues] = useState(() => toFormValues(initialData));
@@ -150,6 +152,7 @@ export function FeaturedWorkForm({
                           }
                         }}
                         uploadImage={uploadImage}
+                        labels={editorLabels}
                         uploadFailedText={tMedia('toast.uploadError')}
                       />
                     </FormControl>

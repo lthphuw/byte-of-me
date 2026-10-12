@@ -27,6 +27,7 @@ import {
   type ProjectFromValues,
   projectSchema,
 } from '@/entities/project/model';
+import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
 import { ContentFade, TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { QueryState } from '@/shared/ui/query-state';
@@ -148,6 +149,7 @@ export function ProjectForm({
   const uploadImage = useScopedImageUploader('project');
   const t = useTranslations('dashboard.project');
   const tMedia = useTranslations('dashboard.media');
+  const editorLabels = useEditorLabels();
 
   // Seeded once, at mount: the dialog mounts this per open and keys itself per
   // project. A later `form.reset` would remount every editor (new field-array ids).
@@ -298,6 +300,7 @@ export function ProjectForm({
                             field.onChange(fromEditorContent(json))
                           }
                           uploadImage={uploadImage}
+                          labels={editorLabels}
                           uploadFailedText={tMedia('toast.uploadError')}
                         />
                       </FormControl>

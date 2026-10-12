@@ -6,6 +6,7 @@ import { AlertTriangle, ClipboardPaste, X } from 'lucide-react';
 
 import { Button } from '../../../../button';
 import { Textarea } from '../../../../textarea';
+import type { EditorLabels } from '../../editor-labels';
 
 import { parseBibtex } from './bibtex';
 import { formatReferenceLabel } from './format';
@@ -20,13 +21,23 @@ const PLACEHOLDER = `@article{faster-rcnn,
   url     = {https://arxiv.org/abs/1506.01497}
 }`;
 
+/**
+ * Says why the parser skipped an entry. `parseBibtex` words its reasons in
+ * English; the one it gives today is translated, anything else shows as written.
+ */
+function skipReason(reason: string, labels: EditorLabels): string {
+  return reason === 'no title' ? labels.noTitle : reason;
+}
+
 /** One line of the preview: the entry, and whether it lands on an existing id. */
 function PreviewRow({
   item,
   replaces,
+  labels,
 }: {
   item: ReferenceItem;
   replaces: boolean;
+  labels: EditorLabels;
 }) {
   const detail = [item.authors, item.year, item.source]
     .filter(Boolean)
@@ -40,7 +51,7 @@ function PreviewRow({
       />
       <span className="min-w-0 flex-1">
         <span className="block break-words font-medium leading-snug">
-          {formatReferenceLabel(item)}
+          {formatReferenceLabel(item, labels.untitled)}
         </span>
         {detail && (
           <span className="block break-words text-muted-foreground">
@@ -50,7 +61,7 @@ function PreviewRow({
       </span>
       {replaces && (
         <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">
-          update
+          {labels.updateBadge}
         </span>
       )}
     </li>
@@ -65,7 +76,13 @@ function PreviewRow({
  * wrong thing should see that before committing, not after. Nothing reaches
  * the document until "Add" — the panel is a staging area.
  */
-export function BibtexImport({ editor }: { editor: Editor }) {
+export function BibtexImport({
+  editor,
+  labels,
+}: {
+  editor: Editor;
+  labels: EditorLabels;
+}) {
   const [open, setOpen] = React.useState(false);
   const [text, setText] = React.useState('');
 
@@ -103,7 +120,7 @@ export function BibtexImport({ editor }: { editor: Editor }) {
         onClick={() => setOpen(true)}
       >
         <ClipboardPaste className="mr-1.5 h-3.5 w-3.5" />
-        Import BibTeX
+        {labels.importBibtex}
       </Button>
     );
   }
@@ -111,13 +128,13 @@ export function BibtexImport({ editor }: { editor: Editor }) {
   return (
     <div className="space-y-2 rounded-md border bg-background p-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium">Import BibTeX</span>
+        <span className="text-xs font-medium">{labels.importBibtex}</span>
         <Button
           type="button"
           size="icon"
           variant="ghost"
           className="h-6 w-6"
-          title="Close"
+          title={labels.close}
           onClick={close}
         >
           <X className="h-3 w-3" />
@@ -146,10 +163,12 @@ export function BibtexImport({ editor }: { editor: Editor }) {
         <div className="space-y-1.5 text-xs">
           <p className="text-muted-foreground">
             {entries.length === 0 && skipped.length === 0
-              ? 'No BibTeX entries found.'
+              ? labels.noBibtexEntries
               : `${entries.length} ${
-                  entries.length === 1 ? 'entry' : 'entries'
-                }${skipped.length ? ` · ${skipped.length} skipped` : ''}`}
+                  entries.length === 1 ? labels.entry : labels.entries
+                }${
+                  skipped.length ? ` · ${skipped.length} ${labels.skipped}` : ''
+                }`}
           </p>
 
           {entries.length > 0 && (
@@ -159,6 +178,7 @@ export function BibtexImport({ editor }: { editor: Editor }) {
                   key={item.id}
                   item={item}
                   replaces={existingIds.has(item.id)}
+                  labels={labels}
                 />
               ))}
             </ul>
@@ -171,7 +191,8 @@ export function BibtexImport({ editor }: { editor: Editor }) {
             >
               <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
               <span className="min-w-0 break-words">
-                <code className="font-mono">{entry.key}</code> — {entry.reason}
+                <code className="font-mono">{entry.key}</code> —{' '}
+                {skipReason(entry.reason, labels)}
               </span>
             </p>
           ))}
@@ -180,7 +201,7 @@ export function BibtexImport({ editor }: { editor: Editor }) {
 
       <div className="flex justify-end gap-2">
         <Button type="button" size="sm" variant="ghost" onClick={close}>
-          Cancel
+          {labels.cancel}
         </Button>
         <Button
           type="button"
@@ -188,7 +209,7 @@ export function BibtexImport({ editor }: { editor: Editor }) {
           disabled={entries.length === 0}
           onClick={submit}
         >
-          Add {entries.length || ''}
+          {labels.add} {entries.length || ''}
         </Button>
       </div>
     </div>

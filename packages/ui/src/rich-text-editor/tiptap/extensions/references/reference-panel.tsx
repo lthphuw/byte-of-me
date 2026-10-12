@@ -9,6 +9,7 @@ import { Button } from '../../../../button';
 import { ConfirmDeleteDialog } from '../../../../confirm-delete-dialog';
 import { Input } from '../../../../input';
 import { Label } from '../../../../label';
+import type { EditorLabels } from '../../editor-labels';
 
 import { BibtexImport } from './bibtex-import';
 import { formatReferenceLabel } from './format';
@@ -36,7 +37,13 @@ function countCitations(editor: Editor, refId: string): number {
  * cited in the text with the toolbar's citation button or each entry's
  * "Insert" action.
  */
-export function ReferencePanel({ editor }: { editor: Editor }) {
+export function ReferencePanel({
+  editor,
+  labels,
+}: {
+  editor: Editor;
+  labels: EditorLabels;
+}) {
   const [state, setState] = React.useState<PanelState>({ mode: 'idle' });
   const [pendingDelete, setPendingDelete] =
     React.useState<ReferenceItem | null>(null);
@@ -70,7 +77,7 @@ export function ReferencePanel({ editor }: { editor: Editor }) {
       {ordered.length > 0 && (
         <div className="space-y-1">
           <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">
-            Section heading
+            {labels.sectionHeading}
           </Label>
           <Input
             className="h-8 text-sm"
@@ -94,7 +101,7 @@ export function ReferencePanel({ editor }: { editor: Editor }) {
                 [{index + 1}]
               </span>
               <p className="min-w-0 flex-1 break-words font-medium leading-snug">
-                {formatReferenceLabel(item)}
+                {formatReferenceLabel(item, labels.untitled)}
               </p>
             </div>
 
@@ -104,20 +111,20 @@ export function ReferencePanel({ editor }: { editor: Editor }) {
                 size="sm"
                 variant="ghost"
                 className="h-7 px-2"
-                title="Insert citation at cursor"
+                title={labels.insertCitationAtCursor}
                 onClick={() =>
                   editor.chain().focus().insertCitation(item.id).run()
                 }
               >
                 <Quote className="mr-1 h-3 w-3" />
-                Insert
+                {labels.insert}
               </Button>
               <Button
                 type="button"
                 size="icon"
                 variant="ghost"
                 className="h-7 w-7"
-                title="Edit reference"
+                title={labels.editReference}
                 onClick={() => setState({ mode: 'edit', item })}
               >
                 <Pencil className="h-3 w-3" />
@@ -127,7 +134,7 @@ export function ReferencePanel({ editor }: { editor: Editor }) {
                 size="icon"
                 variant="ghost"
                 className="h-7 w-7 text-destructive-text"
-                title="Delete reference"
+                title={labels.deleteReference}
                 onClick={() => setPendingDelete(item)}
               >
                 <Trash2 className="h-3 w-3" />
@@ -138,6 +145,7 @@ export function ReferencePanel({ editor }: { editor: Editor }) {
               <div className="mt-2 border-t pt-2">
                 <ReferenceForm
                   value={state.item}
+                  labels={labels}
                   onSubmit={save}
                   onCancel={() => setState({ mode: 'idle' })}
                 />
@@ -150,6 +158,7 @@ export function ReferencePanel({ editor }: { editor: Editor }) {
       {state.mode === 'create' ? (
         <div className="rounded-md border bg-background p-2">
           <ReferenceForm
+            labels={labels}
             onSubmit={save}
             onCancel={() => setState({ mode: 'idle' })}
           />
@@ -164,16 +173,15 @@ export function ReferencePanel({ editor }: { editor: Editor }) {
             onClick={() => setState({ mode: 'create' })}
           >
             <Plus className="mr-1 h-3.5 w-3.5" />
-            Add reference
+            {labels.addReference}
           </Button>
-          <BibtexImport editor={editor} />
+          <BibtexImport editor={editor} labels={labels} />
         </div>
       )}
 
       {ordered.length === 0 && state.mode !== 'create' && (
         <p className="text-xs leading-relaxed text-muted-foreground">
-          References are numbered by the order they are first cited, and render
-          as a bibliography at the end of the article.
+          {labels.referencesNumbering}
         </p>
       )}
 
@@ -181,14 +189,19 @@ export function ReferencePanel({ editor }: { editor: Editor }) {
         isOpen={pendingDelete !== null}
         onClose={() => setPendingDelete(null)}
         onConfirm={confirmDelete}
-        title="Delete this reference?"
+        title={labels.deleteReferenceTitle}
         description={
           citationCount > 0
-            ? `It is cited ${citationCount} time${
-                citationCount === 1 ? '' : 's'
-              } in the text. Those markers will be removed and the remaining references renumbered.`
-            : 'The remaining references will be renumbered.'
+            ? `${labels.citedCountPrefix} ${citationCount} ${
+                citationCount === 1
+                  ? labels.citedTimeSingular
+                  : labels.citedTimePlural
+              } ${labels.citedCountSuffix}`
+            : labels.renumberedReferences
         }
+        // Without these the dialog's buttons fall back to its English defaults.
+        actionText={labels.delete}
+        cancelText={labels.cancel}
       />
     </div>
   );

@@ -26,7 +26,7 @@ import { MobileToolbarGroup, MobileToolbarItem } from './mobile-toolbar-group';
 import { useToolbar } from './toolbar-provider';
 
 export const AlignmentTooolbar = () => {
-  const { editor, state } = useToolbar();
+  const { editor, state, labels } = useToolbar();
   const isMobile = useMediaQuery('(max-width: 640px)');
   const handleAlign = (value: string) => {
     editor?.chain().focus().setTextAlign(value).run();
@@ -37,22 +37,22 @@ export const AlignmentTooolbar = () => {
 
   const alignmentOptions = [
     {
-      name: 'Left Align',
+      name: labels.alignLeft,
       value: 'left',
       icon: <AlignLeft className="h-4 w-4" />,
     },
     {
-      name: 'Center Align',
+      name: labels.alignCenter,
       value: 'center',
       icon: <AlignCenter className="h-4 w-4" />,
     },
     {
-      name: 'Right Align',
+      name: labels.alignRight,
       value: 'right',
       icon: <AlignRight className="h-4 w-4" />,
     },
     {
-      name: 'Justify Align',
+      name: labels.alignJustify,
       value: 'justify',
       icon: <AlignJustify className="h-4 w-4" />,
     },
@@ -66,7 +66,8 @@ export const AlignmentTooolbar = () => {
     return (
       <MobileToolbarGroup
         label={
-          alignmentOptions[findIndex(currentTextAlign)]?.name ?? 'Left Align'
+          alignmentOptions[findIndex(currentTextAlign)]?.name ??
+          labels.alignLeft
         }
       >
         {alignmentOptions.map((option, index) => (
@@ -97,7 +98,7 @@ export const AlignmentTooolbar = () => {
             </Button>
           </DropdownMenuTrigger>
         </TooltipTrigger>
-        <TooltipContent>Text Alignment</TooltipContent>
+        <TooltipContent>{labels.textAlignment}</TooltipContent>
       </Tooltip>
       <DropdownMenuContent
         loop

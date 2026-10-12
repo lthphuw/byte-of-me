@@ -11,7 +11,7 @@ import { useToolbar } from './toolbar-provider';
 
 const RedoToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, onClick, children, ...props }, ref) => {
-    const { editor, state } = useToolbar();
+    const { editor, state, labels } = useToolbar();
 
     return (
       <Tooltip>
@@ -32,7 +32,7 @@ const RedoToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <span>Redo</span>
+          <span>{labels.redo}</span>
         </TooltipContent>
       </Tooltip>
     );

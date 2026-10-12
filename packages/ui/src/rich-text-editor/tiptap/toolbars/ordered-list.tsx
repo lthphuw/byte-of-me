@@ -11,7 +11,7 @@ import { useToolbar } from './toolbar-provider';
 
 const OrderedListToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, onClick, children, ...props }, ref) => {
-    const { editor, state } = useToolbar();
+    const { editor, state, labels } = useToolbar();
     return (
       <Tooltip>
         <TooltipTrigger asChild>
@@ -35,7 +35,7 @@ const OrderedListToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <span>Ordered list</span>
+          <span>{labels.orderedList}</span>
         </TooltipContent>
       </Tooltip>
     );

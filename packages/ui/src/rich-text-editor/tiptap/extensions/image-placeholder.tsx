@@ -25,6 +25,7 @@ import {
   NODE_HANDLES_SELECTED_STYLE_CLASSNAME,
 } from '../../../lib/tiptap-utils';
 import { cn } from '../../../lib/utils';
+import { type EditorLabels, EMPTY_EDITOR_LABELS } from '../editor-labels';
 
 import {
   imageUploadFailedText,
@@ -37,6 +38,10 @@ export interface ImagePlaceholderOptions {
   HTMLAttributes: Record<string, unknown>;
   onUpload?: (url: string) => void;
   onError?: (error: string) => void;
+  /**
+   * The editor's labels, handed to the node view. `createExtensions` sets it.
+   */
+  labels: EditorLabels;
 }
 
 declare module '@tiptap/core' {
@@ -58,6 +63,7 @@ export const ImagePlaceholder = Node.create<ImagePlaceholderOptions>({
       HTMLAttributes: {},
       onUpload: () => {},
       onError: () => {},
+      labels: EMPTY_EDITOR_LABELS,
     };
   },
 
@@ -72,9 +78,18 @@ export const ImagePlaceholder = Node.create<ImagePlaceholderOptions>({
   },
 
   addNodeView() {
-    return ReactNodeViewRenderer(ImagePlaceholderComponent, {
-      className: NODE_HANDLES_SELECTED_STYLE_CLASSNAME,
-    });
+    // A node view receives its node and the editor, not the extension's
+    // options, so the labels are read here and handed over.
+    const { labels } = this.options;
+
+    return ReactNodeViewRenderer(
+      (props: NodeViewProps) => (
+        <ImagePlaceholderComponent {...props} labels={labels} />
+      ),
+      {
+        className: NODE_HANDLES_SELECTED_STYLE_CLASSNAME,
+      }
+    );
   },
 
   addCommands() {
@@ -88,8 +103,10 @@ export const ImagePlaceholder = Node.create<ImagePlaceholderOptions>({
   },
 });
 
-function ImagePlaceholderComponent(props: NodeViewProps) {
-  const { editor, extension, selected } = props;
+function ImagePlaceholderComponent(
+  props: NodeViewProps & { labels: EditorLabels }
+) {
+  const { editor, extension, selected, labels } = props;
 
   /**
    * Whether THIS editor was configured with a real uploader (read off the
@@ -242,14 +259,14 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
         <div className="space-y-4">
           <img
             src={previewUrl}
-            alt="Preview"
+            alt={labels.preview}
             className="mx-auto max-h-[200px] rounded-lg object-cover"
           />
           <div className="space-y-2">
             <Input
               value={altText}
               onChange={(e) => setAltText(e.target.value)}
-              placeholder="Alt text (optional)"
+              placeholder={labels.altTextOptional}
             />
             <div className="flex justify-end gap-2">
               <Button
@@ -257,11 +274,11 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
                 onClick={handleRemove}
                 disabled={uploading}
               >
-                Remove
+                {labels.remove}
               </Button>
               <Button disabled={uploading}>
                 {uploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Upload
+                {labels.upload}
               </Button>
             </div>
           </div>
@@ -288,10 +305,10 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
             )}
             <div>
               <p className="text-sm font-medium">
-                Click to upload or drag and drop
+                {labels.clickToUploadOrDrop}
               </p>
               <p className="text-xs text-muted-foreground">
-                SVG, PNG, JPG or GIF — pick several for a row
+                {labels.imageFormatsPickSeveral}
               </p>
             </div>
           </label>
@@ -310,11 +327,11 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
             setUrl(e.target.value);
             if (urlError) setUrlError(false);
           }}
-          placeholder="Enter image URL..."
+          placeholder={labels.enterImageUrl}
         />
         {urlError && (
           <p className="text-xs text-destructive-text">
-            Please enter a valid URL
+            {labels.enterValidUrl}
           </p>
         )}
       </div>
@@ -322,11 +339,11 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
         <Input
           value={altText}
           onChange={(e) => setAltText(e.target.value)}
-          placeholder="Alt text (optional)"
+          placeholder={labels.altTextOptional}
         />
       </div>
       <Button onClick={handleInsertEmbed} className="w-full" disabled={!url}>
-        Add Image
+        {labels.addImage}
       </Button>
     </div>
   );
@@ -349,17 +366,17 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
             </div>
             <div className="text-center">
               <p className="text-sm font-medium">
-                Click to upload or drag and drop
+                {labels.clickToUploadOrDrop}
               </p>
               <p className="text-xs text-muted-foreground">
-                SVG, PNG, JPG or GIF
+                {labels.imageFormats}
               </p>
             </div>
           </div>
         ) : (
           <div className="rounded-lg border bg-card p-4 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Add Image</h3>
+              <h3 className="text-lg font-semibold">{labels.addImage}</h3>
               <Button
                 variant="ghost"
                 size="icon"
@@ -380,11 +397,11 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="upload">
                     <Upload className="mr-2 h-4 w-4" />
-                    Upload
+                    {labels.upload}
                   </TabsTrigger>
                   <TabsTrigger value="url">
                     <Link className="mr-2 h-4 w-4" />
-                    URL
+                    {labels.url}
                   </TabsTrigger>
                 </TabsList>
 

@@ -24,7 +24,7 @@ import { useToolbar } from './toolbar-provider';
 
 const CitationToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, ...props }, ref) => {
-    const { editor } = useToolbar();
+    const { editor, labels } = useToolbar();
     const [open, setOpen] = React.useState(false);
     const [creating, setCreating] = React.useState(false);
 
@@ -82,7 +82,7 @@ const CitationToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             </PopoverTrigger>
           </TooltipTrigger>
           <TooltipContent>
-            <span>Cite a reference</span>
+            <span>{labels.cite}</span>
           </TooltipContent>
         </Tooltip>
 
@@ -93,8 +93,9 @@ const CitationToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
         >
           {showForm ? (
             <div className="space-y-2">
-              <p className="text-sm font-medium">New reference</p>
+              <p className="text-sm font-medium">{labels.newReference}</p>
               <ReferenceForm
+                labels={labels}
                 onSubmit={create}
                 onCancel={() =>
                   ordered.length === 0 ? close() : setCreating(false)
@@ -103,7 +104,7 @@ const CitationToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             </div>
           ) : (
             <div className="space-y-2">
-              <p className="text-sm font-medium">Insert citation</p>
+              <p className="text-sm font-medium">{labels.insertCitation}</p>
               <ul className="max-h-64 space-y-1 overflow-y-auto">
                 {ordered.map((item, index) => (
                   <li key={item.id}>
@@ -116,7 +117,7 @@ const CitationToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
                         [{index + 1}]
                       </span>
                       <span className="min-w-0 break-words">
-                        {formatReferenceLabel(item)}
+                        {formatReferenceLabel(item, labels.untitled)}
                       </span>
                     </button>
                   </li>
@@ -130,7 +131,7 @@ const CitationToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 onClick={() => setCreating(true)}
               >
                 <Plus className="mr-1 h-3.5 w-3.5" />
-                New reference
+                {labels.newReference}
               </Button>
             </div>
           )}

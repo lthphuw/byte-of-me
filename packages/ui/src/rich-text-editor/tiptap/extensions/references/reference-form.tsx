@@ -5,27 +5,46 @@ import * as React from 'react';
 import { Button } from '../../../../button';
 import { Input } from '../../../../input';
 import { Label } from '../../../../label';
+import type { EditorLabels } from '../../editor-labels';
 
 import { createReferenceId, type ReferenceItem } from './types';
 
 type ReferenceFormProps = {
   /** Entry being edited, or `null`/undefined when adding a new one. */
   value?: ReferenceItem | null;
+  /** The editor's labels; the app supplies them. */
+  labels: EditorLabels;
   onSubmit: (item: ReferenceItem) => void;
   onCancel: () => void;
 };
 
-const FIELDS: {
+// The placeholders are sample citation data, not interface text, so they stay
+// in English; the field names come from the app.
+function referenceFields(labels: EditorLabels): {
   key: Exclude<keyof ReferenceItem, 'id'>;
   label: string;
   placeholder: string;
-}[] = [
-  { key: 'title', label: 'Title', placeholder: 'Attention is all you need' },
-  { key: 'authors', label: 'Authors', placeholder: 'Vaswani, A. et al.' },
-  { key: 'source', label: 'Source', placeholder: 'NeurIPS' },
-  { key: 'year', label: 'Year', placeholder: '2017' },
-  { key: 'url', label: 'URL', placeholder: 'https://arxiv.org/abs/1706.03762' },
-];
+}[] {
+  return [
+    {
+      key: 'title',
+      label: labels.title,
+      placeholder: 'Attention is all you need',
+    },
+    {
+      key: 'authors',
+      label: labels.authors,
+      placeholder: 'Vaswani, A. et al.',
+    },
+    { key: 'source', label: labels.source, placeholder: 'NeurIPS' },
+    { key: 'year', label: labels.year, placeholder: '2017' },
+    {
+      key: 'url',
+      label: labels.url,
+      placeholder: 'https://arxiv.org/abs/1706.03762',
+    },
+  ];
+}
 
 /**
  * Fields for one bibliography entry. Deliberately not a `<form>` element: the
@@ -34,6 +53,7 @@ const FIELDS: {
  */
 export function ReferenceForm({
   value,
+  labels,
   onSubmit,
   onCancel,
 }: ReferenceFormProps) {
@@ -73,7 +93,7 @@ export function ReferenceForm({
         }
       }}
     >
-      {FIELDS.map((field) => (
+      {referenceFields(labels).map((field) => (
         <div key={field.key} className="space-y-1">
           <Label className="text-xs" htmlFor={`${draft.id}-${field.key}`}>
             {field.label}
@@ -96,10 +116,10 @@ export function ReferenceForm({
 
       <div className="flex justify-end gap-2 pt-1">
         <Button type="button" size="sm" variant="ghost" onClick={onCancel}>
-          Cancel
+          {labels.cancel}
         </Button>
         <Button type="button" size="sm" disabled={!canSubmit} onClick={submit}>
-          {value ? 'Save' : 'Add'}
+          {value ? labels.save : labels.add}
         </Button>
       </div>
     </div>

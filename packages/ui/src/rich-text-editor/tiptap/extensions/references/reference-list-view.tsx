@@ -4,18 +4,26 @@ import * as React from 'react';
 import {
   NodeViewWrapper,
   type ReactNodeViewProps,
+  ReactNodeViewRenderer,
   useEditorState,
 } from '@tiptap/react';
 
+import type { EditorLabels } from '../../editor-labels';
+
 import { formatReferenceText } from './format';
 import { readReferencesFromDoc } from './numbering';
+
+type ReferenceListViewProps = ReactNodeViewProps & {
+  /** The editor's labels; `createReferenceListNodeView` hands them in. */
+  labels: EditorLabels;
+};
 
 /**
  * Read-only preview of the bibliography inside the editor. It mirrors what the
  * article will show, while all editing happens in the references panel — the
  * entries are structured data, not free text.
  */
-export function ReferenceListView({ editor }: ReactNodeViewProps) {
+export function ReferenceListView({ editor, labels }: ReferenceListViewProps) {
   const { ordered, title } = useEditorState({
     editor,
     selector: ({ editor: current }) => {
@@ -36,7 +44,7 @@ export function ReferenceListView({ editor }: ReactNodeViewProps) {
         <div className="mb-3 flex items-baseline justify-between gap-3">
           <p className="text-base font-semibold">{title}</p>
           <span className="shrink-0 text-[10px] uppercase tracking-widest text-muted-foreground">
-            Edit in References panel
+            {labels.editInReferencesPanel}
           </span>
         </div>
 
@@ -60,10 +68,21 @@ export function ReferenceListView({ editor }: ReactNodeViewProps) {
           </ol>
         ) : (
           <p className="text-sm text-muted-foreground">
-            No references yet. Add one from the References panel.
+            {labels.noReferencesYet}
           </p>
         )}
       </div>
     </NodeViewWrapper>
   );
+}
+
+/**
+ * The node view `reference-list.ts` registers. It is built here because a node
+ * view gets its node and the editor but not the extension's options, and a
+ * `.ts` file has no JSX to hand the labels over with.
+ */
+export function createReferenceListNodeView(labels: EditorLabels) {
+  return ReactNodeViewRenderer((props: ReactNodeViewProps) => (
+    <ReferenceListView {...props} labels={labels} />
+  ));
 }

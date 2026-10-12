@@ -23,18 +23,20 @@ export const HeadingsToolbar = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ className, ...props }, ref) => {
-  const { editor, state } = useToolbar();
+  const { editor, state, labels } = useToolbar();
   const isMobile = useMediaQuery('(max-width: 640px)');
   const activeLevel = state.headingLevel;
 
   if (isMobile) {
     return (
-      <MobileToolbarGroup label={activeLevel ? `H${activeLevel}` : 'Normal'}>
+      <MobileToolbarGroup
+        label={activeLevel ? `H${activeLevel}` : labels.normal}
+      >
         <MobileToolbarItem
           onClick={() => editor?.chain().focus().setParagraph().run()}
           active={!state.headingActive}
         >
-          Normal
+          {labels.normal}
         </MobileToolbarItem>
         {HEADING_LEVELS.map((level) => (
           <MobileToolbarItem
@@ -67,7 +69,7 @@ export const HeadingsToolbar = React.forwardRef<
               ref={ref}
               {...props}
             >
-              {activeLevel ? `H${activeLevel}` : 'Normal'}
+              {activeLevel ? `H${activeLevel}` : labels.normal}
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -79,7 +81,7 @@ export const HeadingsToolbar = React.forwardRef<
                 !state.headingActive && 'bg-accent'
               )}
             >
-              Normal
+              {labels.normal}
             </DropdownMenuItem>
             {HEADING_LEVELS.map((level) => (
               <DropdownMenuItem
@@ -99,7 +101,7 @@ export const HeadingsToolbar = React.forwardRef<
         </DropdownMenu>
       </TooltipTrigger>
       <TooltipContent>
-        <span>Headings</span>
+        <span>{labels.headings}</span>
       </TooltipContent>
     </Tooltip>
   );

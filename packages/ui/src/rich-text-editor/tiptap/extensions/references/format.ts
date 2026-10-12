@@ -25,7 +25,14 @@ export function formatReferenceText(item: ReferenceItem): string {
   return SENTENCE_END.test(text) ? text : `${text}.`;
 }
 
-/** Short label for lists where the full citation would be too long. */
-export function formatReferenceLabel(item: ReferenceItem): string {
-  return item.title || item.url || item.source || item.authors || 'Untitled';
+/**
+ * Short label for lists where the full citation would be too long. `untitled`
+ * is what an entry with nothing to show is called; the caller supplies it so
+ * this file carries no interface text.
+ */
+export function formatReferenceLabel(
+  item: ReferenceItem,
+  untitled: string
+): string {
+  return item.title || item.url || item.source || item.authors || untitled;
 }

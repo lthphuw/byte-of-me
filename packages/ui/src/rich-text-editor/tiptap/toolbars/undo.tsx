@@ -11,7 +11,7 @@ import { useToolbar } from './toolbar-provider';
 
 const UndoToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, onClick, children, ...props }, ref) => {
-    const { editor, state } = useToolbar();
+    const { editor, state, labels } = useToolbar();
 
     return (
       <Tooltip>
@@ -32,7 +32,7 @@ const UndoToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <span>Undo</span>
+          <span>{labels.undo}</span>
         </TooltipContent>
       </Tooltip>
     );

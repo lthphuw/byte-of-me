@@ -40,6 +40,7 @@ import {
   ScrollArea,
 } from '../../../index';
 import { cn } from '../../../lib/utils';
+import type { EditorLabels } from '../editor-labels';
 
 interface CommandItemType {
   title: string;
@@ -55,75 +56,81 @@ type CommandGroupType = {
   items: Omit<CommandItemType, 'group'>[];
 };
 
-const groups: CommandGroupType[] = [
+/**
+ * The slash menu's entries, built from the app's text rather than held as a
+ * constant: every group name, title and description is a label (see
+ * `EditorLabels`). `keywords` are search aliases that are never drawn, so they
+ * stay as written.
+ */
+const buildGroups = (labels: EditorLabels): CommandGroupType[] => [
   {
-    group: 'Basic blocks',
+    group: labels.basicBlocks,
     items: [
       {
-        title: 'Text',
-        description: 'Just start writing with plain text',
+        title: labels.text,
+        description: labels.textDescription,
         icon: ChevronRight,
         keywords: 'paragraph text',
         command: (editor) => editor.chain().focus().clearNodes().run(),
       },
       {
-        title: 'Heading 1',
-        description: 'Large section heading',
+        title: labels.heading1,
+        description: labels.heading1Description,
         icon: Heading1,
         keywords: 'h1 title header',
         command: (editor) =>
           editor.chain().focus().toggleHeading({ level: 1 }).run(),
       },
       {
-        title: 'Heading 2',
-        description: 'Medium section heading',
+        title: labels.heading2,
+        description: labels.heading2Description,
         icon: Heading2,
         keywords: 'h2 subtitle',
         command: (editor) =>
           editor.chain().focus().toggleHeading({ level: 2 }).run(),
       },
       {
-        title: 'Heading 3',
-        description: 'Small section heading',
+        title: labels.heading3,
+        description: labels.heading3Description,
         icon: Heading3,
         keywords: 'h3 subheader',
         command: (editor) =>
           editor.chain().focus().toggleHeading({ level: 3 }).run(),
       },
       {
-        title: 'Bullet List',
-        description: 'Create a simple bullet list',
+        title: labels.bulletList,
+        description: labels.bulletListDescription,
         icon: List,
         keywords: 'unordered ul bullets',
         command: (editor) => editor.chain().focus().toggleBulletList().run(),
       },
       {
-        title: 'Numbered List',
-        description: 'Create a ordered list',
+        title: labels.numberedList,
+        description: labels.numberedListDescription,
         icon: ListOrdered,
         keywords: 'numbered ol',
         command: (editor) => editor.chain().focus().toggleOrderedList().run(),
       },
       {
-        title: 'Code Block',
-        description: 'Capture code snippets',
+        title: labels.codeBlock,
+        description: labels.codeBlockDescription,
         icon: Code2,
         keywords: 'code snippet pre',
         command: (editor) => editor.chain().focus().toggleCodeBlock().run(),
       },
       {
-        title: 'Image',
+        title: labels.image,
         // Picking more than one file in the dialog inserts them as a row, so
         // the one entry covers both shapes — see `image-placeholder.tsx`.
-        description: 'Insert one image, or several side by side',
+        description: labels.imageDescription,
         icon: ImageIcon,
         keywords: 'image picture photo row gallery side by side',
         command: (editor) =>
           editor.chain().focus().insertImagePlaceholder().run(),
       },
       {
-        title: 'Horizontal Rule',
-        description: 'Add a horizontal divider',
+        title: labels.horizontalRule,
+        description: labels.horizontalRuleDescription,
         icon: Minus,
         keywords: 'horizontal rule divider',
         command: (editor) => editor.chain().focus().setHorizontalRule().run(),
@@ -131,25 +138,25 @@ const groups: CommandGroupType[] = [
     ],
   },
   {
-    group: 'Inline',
+    group: labels.inline,
     items: [
       {
-        title: 'Quote',
-        description: 'Capture a quotation',
+        title: labels.quote,
+        description: labels.quoteDescription,
         icon: Quote,
         keywords: 'blockquote cite',
         command: (editor) => editor.chain().focus().toggleBlockquote().run(),
       },
       {
-        title: 'Code',
-        description: 'Inline code snippet',
+        title: labels.code,
+        description: labels.codeDescription,
         icon: CodeSquare,
         keywords: 'code inline',
         command: (editor) => editor.chain().focus().toggleCode().run(),
       },
       {
-        title: 'Blockquote',
-        description: 'Block quote',
+        title: labels.blockquote,
+        description: labels.blockquoteDescription,
         icon: TextQuote,
         keywords: 'blockquote quote',
         command: (editor) => editor.chain().focus().toggleBlockquote().run(),
@@ -157,26 +164,26 @@ const groups: CommandGroupType[] = [
     ],
   },
   {
-    group: 'Alignment',
+    group: labels.alignment,
     items: [
       {
-        title: 'Align Left',
-        description: 'Align text to the left',
+        title: labels.alignLeft,
+        description: labels.alignLeftDescription,
         icon: AlignLeft,
         keywords: 'align left',
         command: (editor) => editor.chain().focus().setTextAlign('left').run(),
       },
       {
-        title: 'Align Center',
-        description: 'Center align text',
+        title: labels.alignCenter,
+        description: labels.alignCenterDescription,
         icon: AlignCenter,
         keywords: 'align center',
         command: (editor) =>
           editor.chain().focus().setTextAlign('center').run(),
       },
       {
-        title: 'Align Right',
-        description: 'Align text to the right',
+        title: labels.alignRight,
+        description: labels.alignRightDescription,
         icon: AlignRight,
         keywords: 'align right',
         command: (editor) => editor.chain().focus().setTextAlign('right').run(),
@@ -192,12 +199,15 @@ type ShouldShowProps = Parameters<
 /**
  * Memoised: the host re-renders for outline, preview and raw-mode state, and each
  * one would rebuild ~20 cmdk items whether or not the menu is open. Safe to skip —
- * the only prop is the editor, and what shows is own state, set from `shouldShow`.
+ * the props are the editor and the labels, and neither changes between those
+ * renders; what shows is own state, set from `shouldShow`.
  */
 export const TipTapFloatingMenu = memo(function TipTapFloatingMenu({
   editor,
+  labels,
 }: {
   editor: Editor;
+  labels: EditorLabels;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -205,6 +215,8 @@ export const TipTapFloatingMenu = memo(function TipTapFloatingMenu({
   const commandRef = useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const groups = useMemo(() => buildGroups(labels), [labels]);
 
   const filteredGroups = useMemo(
     () =>
@@ -225,7 +237,7 @@ export const TipTapFloatingMenu = memo(function TipTapFloatingMenu({
           ),
         }))
         .filter((group) => group.items.length > 0),
-    [debouncedSearch]
+    [groups, debouncedSearch]
   );
 
   const flatFilteredItems = useMemo(
@@ -390,7 +402,7 @@ export const TipTapFloatingMenu = memo(function TipTapFloatingMenu({
         <ScrollArea className="max-h-[330px]">
           <CommandList>
             <CommandEmpty className="py-3 text-center text-sm text-muted-foreground">
-              No results found
+              {labels.noResults}
             </CommandEmpty>
 
             {filteredGroups.map((group, groupIndex) => (

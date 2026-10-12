@@ -9,6 +9,7 @@ import {
   TooltipProvider,
 } from '../../../index';
 import { cn } from '../../../lib/utils';
+import type { EditorLabels } from '../editor-labels';
 
 import { AlignmentTooolbar } from './alignment';
 import { BlockquoteToolbar } from './blockquote';
@@ -34,6 +35,8 @@ import { UndoToolbar } from './undo';
 
 type EditorToolbarProps = {
   editor: Editor;
+  /** The app's text for every control on this bar. Required; see `EditorLabels`. */
+  labels: EditorLabels;
   /**
    * Hides the tools that depend on the references sidebar (citations) or on a
    * long document (search & replace), which compact editors don't have.
@@ -47,6 +50,7 @@ type EditorToolbarProps = {
 
 export const EditorToolbar = ({
   editor,
+  labels,
   compact = false,
   previewing = false,
   onTogglePreview,
@@ -57,7 +61,7 @@ export const EditorToolbar = ({
     return (
       <div className="sticky top-0 z-20 flex w-full items-center justify-between border-b bg-background px-3 py-1.5">
         <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Preview — exactly as visitors will see it
+          {labels.previewNotice}
         </span>
         <Button
           type="button"
@@ -67,7 +71,7 @@ export const EditorToolbar = ({
           onClick={onTogglePreview}
         >
           <Pencil className="h-3.5 w-3.5" />
-          Edit
+          {labels.edit}
         </Button>
       </div>
     );
@@ -130,7 +134,7 @@ export const EditorToolbar = ({
           onClick={onTogglePreview}
         >
           <Eye className="h-3.5 w-3.5" />
-          Preview
+          {labels.preview}
         </Button>
       )}
     </div>
@@ -138,7 +142,7 @@ export const EditorToolbar = ({
 
   return (
     <div className="sticky top-0 z-20 hidden w-full border-b bg-background sm:block">
-      <ToolbarProvider editor={editor}>
+      <ToolbarProvider editor={editor} labels={labels}>
         <TooltipProvider>
           {compact ? (
             <div className="py-0.5">{row}</div>

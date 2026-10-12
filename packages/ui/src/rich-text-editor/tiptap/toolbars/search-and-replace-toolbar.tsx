@@ -19,7 +19,7 @@ import { type SearchAndReplaceStorage } from '../extensions/search-and-replace';
 import { useToolbar } from './toolbar-provider';
 
 export function SearchAndReplaceToolbar() {
-  const { editor } = useToolbar();
+  const { editor, labels } = useToolbar();
 
   const [open, setOpen] = useState(false);
   const [replacing, setReplacing] = useState(false);
@@ -79,12 +79,12 @@ export function SearchAndReplaceToolbar() {
               className={cn('h-8 w-max px-3 font-normal')}
             >
               <Repeat className="mr-2 h-4 w-4" />
-              <p>Search & Replace</p>
+              <p>{labels.searchAndReplace}</p>
             </Button>
           </PopoverTrigger>
         </TooltipTrigger>
         <TooltipContent>
-          <span>Search & Replace</span>
+          <span>{labels.searchAndReplace}</span>
         </TooltipContent>
       </Tooltip>
 
@@ -106,7 +106,7 @@ export function SearchAndReplaceToolbar() {
               onChange={(e) => {
                 setSearchText(e.target.value);
               }}
-              placeholder="Search..."
+              placeholder={labels.searchPlaceholder}
             />
             <span>
               {resultCount === 0 ? selectedResult : selectedResult + 1}/
@@ -169,27 +169,29 @@ export function SearchAndReplaceToolbar() {
               >
                 <ArrowLeftIcon className="h-4 w-4" />
               </Button>
-              <h2 className="text-sm font-medium">Search and replace</h2>
+              <h2 className="text-sm font-medium">
+                {labels.searchAndReplaceTitle}
+              </h2>
             </div>
 
             <div className="my-2 w-full">
               <div className="mb-3">
                 <Label className="mb-1 text-xs text-muted-foreground">
-                  Search
+                  {labels.search}
                 </Label>
                 <Input
                   value={searchText}
                   onChange={(e) => {
                     setSearchText(e.target.value);
                   }}
-                  placeholder="Search..."
+                  placeholder={labels.searchPlaceholder}
                 />
                 {resultCount === 0 ? selectedResult : selectedResult + 1}/
                 {resultCount}
               </div>
               <div className="mb-2">
                 <Label className="mb-1 text-xs text-muted-foreground">
-                  Replace with
+                  {labels.replaceWith}
                 </Label>
                 <Input
                   className="w-full"
@@ -197,7 +199,7 @@ export function SearchAndReplaceToolbar() {
                   onChange={(e) => {
                     setReplaceText(e.target.value);
                   }}
-                  placeholder="Replace..."
+                  placeholder={labels.replacePlaceholder}
                 />
               </div>
               <div className="mt-3 flex items-center space-x-2">
@@ -212,7 +214,7 @@ export function SearchAndReplaceToolbar() {
                   htmlFor="match_case"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  Match case
+                  {labels.matchCase}
                 </Label>
               </div>
             </div>
@@ -244,14 +246,14 @@ export function SearchAndReplaceToolbar() {
                   variant="secondary"
                   onClick={replaceAll}
                 >
-                  Replace All
+                  {labels.replaceAll}
                 </Button>
                 <Button
                   onClick={replace}
                   size="sm"
                   className="h-7 px-3 text-xs"
                 >
-                  Replace
+                  {labels.replace}
                 </Button>
               </div>
             </div>

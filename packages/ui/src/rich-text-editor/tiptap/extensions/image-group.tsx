@@ -12,6 +12,7 @@ import { ImagePlus, Loader2, Trash } from 'lucide-react';
 
 import { Button } from '../../../button';
 import { cn } from '../../../lib/utils';
+import { type EditorLabels, EMPTY_EDITOR_LABELS } from '../editor-labels';
 
 import { IMAGE_GROUP_NAME, ImageGroupBase } from './image-base';
 import { ImageCaption } from './image-caption';
@@ -37,13 +38,33 @@ declare module '@tiptap/core' {
   }
 }
 
+type ImageGroupOptions = {
+  /**
+   * The editor's labels, handed to the node view. `createExtensions` sets it.
+   */
+  labels: EditorLabels;
+};
+
 /**
  * Editable row node: the render schema from `image-base.ts` plus the node view
  * and command, which only the editor needs.
  */
-export const ImageGroup = ImageGroupBase.extend({
+export const ImageGroup = ImageGroupBase.extend<ImageGroupOptions>({
+  addOptions() {
+    return {
+      ...this.parent?.(),
+      labels: EMPTY_EDITOR_LABELS,
+    };
+  },
+
   addNodeView() {
-    return ReactNodeViewRenderer(ImageGroupView);
+    // A node view receives its node and the editor, not the extension's
+    // options, so the labels are read here and handed over.
+    const { labels } = this.options;
+
+    return ReactNodeViewRenderer((props: NodeViewProps) => (
+      <ImageGroupView {...props} labels={labels} />
+    ));
   },
 
   /**
@@ -119,7 +140,8 @@ function ImageGroupView({
   getPos,
   updateAttributes,
   deleteNode,
-}: NodeViewProps) {
+  labels,
+}: NodeViewProps & { labels: EditorLabels }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -176,7 +198,7 @@ function ImageGroupView({
           typeof node.attrs.caption === 'string' ? node.attrs.caption : ''
         }
         editable={editor.isEditable}
-        placeholder="Caption for this row"
+        placeholder={labels.rowCaption}
         onChange={(caption) => updateAttributes({ caption })}
       />
 
@@ -185,7 +207,7 @@ function ImageGroupView({
           <Button
             size="icon"
             variant="ghost"
-            aria-label="Add an image to this row"
+            aria-label={labels.addImageToRow}
             disabled={uploading}
             onClick={() => fileInputRef.current?.click()}
           >
@@ -199,7 +221,7 @@ function ImageGroupView({
           <Button
             size="icon"
             variant="ghost"
-            aria-label="Delete this row"
+            aria-label={labels.deleteImageRow}
             onClick={deleteNode}
           >
             <Trash className="size-4" />

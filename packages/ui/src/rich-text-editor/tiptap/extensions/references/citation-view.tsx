@@ -4,19 +4,26 @@ import * as React from 'react';
 import {
   NodeViewWrapper,
   type ReactNodeViewProps,
+  ReactNodeViewRenderer,
   useEditorState,
 } from '@tiptap/react';
 
 import { cn } from '../../../../lib/utils';
+import type { EditorLabels } from '../../editor-labels';
 
 import { readReferencesFromDoc } from './numbering';
+
+type CitationViewProps = ReactNodeViewProps & {
+  /** The editor's labels; `createCitationNodeView` hands them in. */
+  labels: EditorLabels;
+};
 
 /**
  * Renders the `[n]` marker inside the editor. The number is selected straight
  * from editor state so every marker renumbers itself the moment a citation is
  * inserted, removed, or moved.
  */
-export function CitationView({ editor, node }: ReactNodeViewProps) {
+export function CitationView({ editor, node, labels }: CitationViewProps) {
   const refId = typeof node.attrs.refId === 'string' ? node.attrs.refId : '';
 
   const order = useEditorState({
@@ -35,10 +42,22 @@ export function CitationView({ editor, node }: ReactNodeViewProps) {
             ? 'bg-destructive/10 text-destructive-text'
             : 'bg-primary/10 text-primary'
         )}
-        title={order === null ? 'Reference was deleted' : undefined}
+        title={order === null ? labels.referenceDeleted : undefined}
       >
         {order === null ? '[?]' : `[${order}]`}
       </sup>
     </NodeViewWrapper>
+  );
+}
+
+/**
+ * The node view `citation.ts` registers. It is built here because a node view
+ * gets its node and the editor but not the extension's options, and a `.ts`
+ * file has no JSX to hand the labels over with.
+ */
+export function createCitationNodeView(labels: EditorLabels) {
+  return ReactNodeViewRenderer(
+    (props: ReactNodeViewProps) => <CitationView {...props} labels={labels} />,
+    { as: 'span' }
   );
 }

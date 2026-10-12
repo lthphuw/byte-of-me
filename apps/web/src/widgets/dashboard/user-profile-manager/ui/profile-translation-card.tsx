@@ -18,6 +18,7 @@ import { useTranslations } from 'next-intl';
 
 import { useScopedImageUploader } from '@/entities/media/query';
 import type { UserProfileFormValues } from '@/entities/user-profile';
+import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
 /** The editor's empty document, which is what an untouched "About me" holds. */
@@ -46,6 +47,7 @@ export function ProfileTranslationCard({
   const t = useTranslations('dashboard.userProfile');
   const tShared = useTranslations('dashboard.shared');
   const tMedia = useTranslations('dashboard.media');
+  const editorLabels = useEditorLabels();
   // Holds the language code being confirmed — nothing here subscribes to the
   // form, so the label has to be captured at click time to be current.
   const [confirmingLanguage, setConfirmingLanguage] = useState<string | null>(
@@ -215,6 +217,7 @@ export function ProfileTranslationCard({
                   value={field.value}
                   onChange={field.onChange}
                   uploadImage={uploadImage}
+                  labels={editorLabels}
                   uploadFailedText={tMedia('toast.uploadError')}
                 />
               </FormControl>

@@ -49,6 +49,7 @@ import { formatMarkdown } from '../../lib/markdown-format';
 import { scrollIntoViewBehavior } from '../../lib/prefers-reduced-motion';
 import { cn } from '../../lib/utils';
 
+import type { EditorLabels } from './editor-labels';
 import { EditorPreview } from './editor-preview';
 import { TipTapFloatingMenu } from './extensions/floating-menu';
 import { FloatingToolbar } from './extensions/floating-toolbar';
@@ -88,12 +89,12 @@ import 'katex/dist/katex.min.css';
 // The editor is already a lazy chunk, so the full common grammar set is fine.
 const lowlight = createLowlight(common);
 
-const DEFAULT_PLACEHOLDER = "Write, type '/' for commands";
-
 export function createExtensions(options: {
   uploadImage?: ImageUploadFn;
   /** Shown when an upload is refused. Required, so no editor can drop it. */
   uploadFailedText: string;
+  /** The app's text for every control the extensions draw. Required, like `uploadFailedText`. */
+  labels: EditorLabels;
   placeholder?: string;
   /** Registers KaTeX math nodes (`$…$` inline, `$$…$$` block). Opt-in. */
   withMath?: boolean;
@@ -113,7 +114,7 @@ export function createExtensions(options: {
     MermaidSize,
     CustomHeading,
     Placeholder.configure({
-      placeholder: options.placeholder ?? DEFAULT_PLACEHOLDER,
+      placeholder: options.placeholder ?? options.labels.defaultPlaceholder,
     }),
     TextAlign.configure({ types: ['heading', 'paragraph'] }),
     TextStyle,
@@ -126,13 +127,14 @@ export function createExtensions(options: {
     ImageExtension.configure({
       uploadFn: options.uploadImage,
       uploadFailedText: options.uploadFailedText,
+      labels: options.labels,
     }),
     // Two or more images side by side, with one caption for the row. Every
     // editor built from this list gets it — full, compact (the dashboard
     // dialogs) and chromeless (notes) — because the row is a document node,
     // not a chrome feature.
-    ImageGroup,
-    ImagePlaceholder,
+    ImageGroup.configure({ labels: options.labels }),
+    ImagePlaceholder.configure({ labels: options.labels }),
     SearchAndReplace,
     Typography,
     TableKit.configure({ table: { resizable: false } }),
@@ -148,8 +150,8 @@ export function createExtensions(options: {
     // Markdown in, markdown understood: pasting a README-style document turns
     // into real headings/lists/tables/code blocks instead of flat text.
     Markdown,
-    Citation,
-    ReferenceList,
+    Citation.configure({ labels: options.labels }),
+    ReferenceList.configure({ labels: options.labels }),
     // A typo inside a formula must render as an error message in red, not
     // throw out of ProseMirror's render path and blank the editor.
     ...(options.withMath
@@ -276,6 +278,12 @@ type RichTextEditorProps = {
    * an optional prop would let an editor drop the message with no type error.
    */
   uploadFailedText: string;
+  /**
+   * Every line of text the editor draws: toolbar and menu labels, tabs, aria
+   * names and placeholders. The app translates it; see `EditorLabels`. Required
+   * for the same reason as `uploadFailedText`.
+   */
+  labels: EditorLabels;
   /**
    * Drops the outline/references sidebar and lets the editor size itself to
    * its content, so it can sit inside a form card instead of owning a page.
@@ -516,6 +524,7 @@ export function RichTextEditor({
   onChange,
   uploadImage,
   uploadFailedText,
+  labels,
   compact = false,
   minHeight,
   placeholder,
@@ -791,6 +800,7 @@ export function RichTextEditor({
       ...createExtensions({
         uploadImage,
         uploadFailedText,
+        labels,
         placeholder,
         withMath,
       }),
@@ -834,6 +844,7 @@ export function RichTextEditor({
       chromeless,
       compact,
       handleLinkTrigger,
+      labels,
       onLinkTrigger,
       placeholder,
       reportOutline,
@@ -1417,6 +1428,7 @@ export function RichTextEditor({
       {!chromeless && (
         <EditorToolbar
           editor={editor}
+          labels={labels}
           compact={compact}
           previewing={preview !== null}
           onTogglePreview={
@@ -1470,8 +1482,8 @@ export function RichTextEditor({
               bar and slash palette off phones is now a product choice, not a fix. */}
           {!compact && !isNarrow && !rawActive && (
             <>
-              <FloatingToolbar editor={editor} />
-              <TipTapFloatingMenu editor={editor} />
+              <FloatingToolbar editor={editor} labels={labels} />
+              <TipTapFloatingMenu editor={editor} labels={labels} />
             </>
           )}
           {rawActive && (
@@ -1488,7 +1500,7 @@ export function RichTextEditor({
               onSelect={noteMarkdownPosition}
               onKeyUp={noteMarkdownPosition}
               spellCheck={spellCheck}
-              aria-label="Markdown source"
+              aria-label={labels.markdownSource}
               className="min-h-full w-full resize-none bg-transparent font-mono text-sm leading-relaxed outline-none"
             />
           )}
@@ -1509,8 +1521,10 @@ export function RichTextEditor({
           <aside className="hidden w-72 shrink-0 bg-muted/10 lg:block">
             <Tabs defaultValue="outline" className="flex h-full flex-col">
               <TabsList className="m-3 grid grid-cols-2">
-                <TabsTrigger value="outline">Outline</TabsTrigger>
-                <TabsTrigger value="references">References</TabsTrigger>
+                <TabsTrigger value="outline">{labels.outlineTab}</TabsTrigger>
+                <TabsTrigger value="references">
+                  {labels.referencesTab}
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent
@@ -1547,7 +1561,7 @@ export function RichTextEditor({
                   ))}
                   {items.length === 0 && (
                     <p className="px-4 py-1 text-xs text-muted-foreground">
-                      Headings you add will show up here.
+                      {labels.outlineEmpty}
                     </p>
                   )}
                 </div>
@@ -1557,7 +1571,7 @@ export function RichTextEditor({
                 value="references"
                 className="mt-0 min-h-0 flex-1 overflow-y-auto px-4 pb-6"
               >
-                <ReferencePanel editor={editor} />
+                <ReferencePanel editor={editor} labels={labels} />
               </TabsContent>
             </Tabs>
           </aside>
@@ -1573,6 +1587,7 @@ export function RichTextEditor({
           editor={editor}
           uploadImage={uploadImage}
           uploadFailedText={uploadFailedText}
+          labels={labels}
         />
       )}
     </div>
