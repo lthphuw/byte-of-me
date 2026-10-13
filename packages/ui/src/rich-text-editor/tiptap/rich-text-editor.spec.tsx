@@ -462,7 +462,51 @@ describe('RichTextEditor toolbar layout', () => {
     expect(bold.closest('[data-radix-scroll-area-viewport]')).not.toBeNull();
     expect(preview.closest('[data-radix-scroll-area-viewport]')).toBeNull();
   });
+
+  test('draws the bar at the top of the frame when no target is given', async () => {
+    await open(PLAIN_DOC);
+
+    const bold = screen.getByRole('button', { name: testEditorLabels.bold });
+    expect(frameOf(bold)).not.toBeNull();
+  });
+
+  test('draws the bar into toolbarTarget, and never inside the frame', async () => {
+    const target = document.createElement('div');
+    document.body.appendChild(target);
+
+    await React.act(async () => {
+      render(
+        <RichTextEditor
+          uploadFailedText="Upload failed"
+          labels={testEditorLabels}
+          value={PLAIN_DOC}
+          toolbarTarget={target}
+        />
+      );
+    });
+    await waitForSurface();
+
+    const bold = screen.getByRole('button', { name: testEditorLabels.bold });
+    expect(target.contains(bold)).toBe(true);
+    expect(frameOf(bold)).toBeNull();
+    target.remove();
+  });
 });
+
+/** The editor frame that holds `node`, or `null` when `node` is outside it. */
+function frameOf(node: Element): Element | null {
+  return node.closest('.overflow-clip');
+}
+
+/** Waits for the writing surface, the same condition `open` waits on. */
+async function waitForSurface(): Promise<void> {
+  const deadline = Date.now() + 5000;
+  while (!document.querySelector('.ProseMirror') && Date.now() < deadline) {
+    await React.act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    });
+  }
+}
 
 /**
  * A row of images is a document node, so it has to survive being *opened* —

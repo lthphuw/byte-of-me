@@ -131,6 +131,13 @@ export function BlogForm({
     `blog-draft:${initialData?.id ?? 'new'}`
   );
 
+  // The editor's bar is pinned here, above the fields: its card sits ~950px down
+  // a phone form, so the card's own bar never opens on screen. `min-h-11` reserves
+  // 44px until the editor mounts; the bar is 41px on desktop and 49px on touch.
+  const [toolbarTarget, setToolbarTarget] = useState<HTMLDivElement | null>(
+    null
+  );
+
   // No `onInvalid` handler revealing the erroring language tab: TranslationTabs
   // subscribes to its own errors and reveals itself, at every nesting level.
   const handleSubmit = form.handleSubmit((values) =>
@@ -140,6 +147,12 @@ export function BlogForm({
   return (
     <Form {...form}>
       <form id={formId} onSubmit={handleSubmit} className="space-y-6">
+        {/* Spans the body's padding and sticks to its outer top edge, so no field shows above the bar. */}
+        <div
+          ref={setToolbarTarget}
+          className="sticky -top-4 z-30 -mx-4 -mt-4 min-h-11 bg-background md:-mx-6"
+        />
+
         {autosave.restorable && (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-muted/40 px-4 py-3 text-sm">
             <span>
@@ -217,6 +230,7 @@ export function BlogForm({
                       <div className="rounded-md border">
                         <FormControl>
                           <RichTextEditor
+                            toolbarTarget={toolbarTarget}
                             value={field.value}
                             // The editor's own normalised copy of the loaded body
                             // is not an edit: without this an untouched form is dirty.

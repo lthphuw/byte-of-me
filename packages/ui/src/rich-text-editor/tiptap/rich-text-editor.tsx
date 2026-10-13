@@ -13,6 +13,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { createPortal } from 'react-dom';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { Color } from '@tiptap/extension-color';
 import Highlight from '@tiptap/extension-highlight';
@@ -306,6 +307,12 @@ type RichTextEditorProps = {
    */
   chromeless?: boolean;
   /**
+   * Renders the toolbar into this element instead of the top of the frame.
+   * A frame far down a long form opens its bar off screen, so a consumer that
+   * needs the bar visible passes a sticky element it owns, and the bar goes there.
+   */
+  toolbarTarget?: HTMLElement | null;
+  /**
    * Makes the writing surface take the height its parent gives it instead of
    * the fixed `h-[min(720px,62dvh)]` below.
    *
@@ -529,6 +536,7 @@ export function RichTextEditor({
   minHeight,
   placeholder,
   chromeless = false,
+  toolbarTarget = null,
   fill = false,
   onLinkTrigger,
   withMath = false,
@@ -1401,6 +1409,20 @@ export function RichTextEditor({
 
   if (!editor) return null;
 
+  const toolbar = (
+    <EditorToolbar
+      editor={editor}
+      labels={labels}
+      compact={compact}
+      previewing={preview !== null}
+      onTogglePreview={
+        compact
+          ? undefined
+          : () => setPreview((p) => (p ? null : editor.getJSON()))
+      }
+    />
+  );
+
   return (
     <div
       // Picks the tighter of the two rhythms in `editor-surface.css`. An
@@ -1425,19 +1447,8 @@ export function RichTextEditor({
         className
       )}
     >
-      {!chromeless && (
-        <EditorToolbar
-          editor={editor}
-          labels={labels}
-          compact={compact}
-          previewing={preview !== null}
-          onTogglePreview={
-            compact
-              ? undefined
-              : () => setPreview((p) => (p ? null : editor.getJSON()))
-          }
-        />
-      )}
+      {!chromeless &&
+        (toolbarTarget ? createPortal(toolbar, toolbarTarget) : toolbar)}
 
       <div
         // Viewport-relative on tall screens, capped on short ones — a fixed
