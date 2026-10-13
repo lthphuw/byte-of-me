@@ -270,8 +270,6 @@ declare const messages: {
     "viewAllContributions": "All contributions",
     "featuredWorksTitle": "Featured works",
     "featuredStars": "{count, plural, one {# star} other {# stars}}",
-    "featuredViewOnGithub": "View on GitHub",
-    "featuredVisitHost": "Visit {host}",
     "featuredOpensInNewTab": "(opens in a new tab)",
     "featuredDemoPlay": "Play {label}",
     "featuredDemoFullscreen": "Full screen {label}",

@@ -1,20 +1,24 @@
 import { Skeleton } from '@byte-of-me/ui';
 
 import {
-  PLAIN_ROW_HEADER,
-  ROW_BODY_STACK,
-  ROW_META_CELL,
-  ROW_NUMBER_TEXT,
-  ROW_TITLE_TEXT,
+  WORK_BODY,
+  WORK_HEAD,
+  WORK_MEDIA_BLEED,
+  WORK_META,
+  WORK_ROW,
+  WORK_TITLE,
 } from '@/entities/featured-work/ui/featured-work-row-classes';
 import { cn } from '@/shared/lib/utils';
 
-/** Four rows, like the owner's list; a taller skeleton would shrink the page on resolve. */
-const ROWS = 4;
+/**
+ * Two works, about what the homepage shows now. Each one has a demo and a body, so the
+ * list keeps roughly its height when it resolves.
+ */
+const ROWS = 2;
 
 /**
  * One line of the text a bar stands in for. The wrapper's height is `1lh` of the
- * surrounding text classes, so the row is as tall as the real one without a pixel value.
+ * surrounding text classes, so the line is as tall as the real one without a pixel value.
  */
 function Line({
   className,
@@ -35,24 +39,37 @@ export function HomepageFeaturedWorksLoading() {
     <div className="space-y-6 md:space-y-8">
       <Skeleton className="h-7 w-40 md:h-9 md:w-56" />
 
-      <div className="divide-y rounded-xl border bg-card px-4 md:px-6">
+      <ul>
         {[...Array(ROWS)].map((_, i) => (
-          <div key={i} className={PLAIN_ROW_HEADER}>
-            <div className={ROW_NUMBER_TEXT}>
-              <Line barClassName="w-5" />
-            </div>
-            <div className={ROW_BODY_STACK}>
-              <div className={ROW_TITLE_TEXT}>
-                <Line barClassName="h-5 w-48 md:h-6" />
+          <li key={i} className={WORK_ROW}>
+            <div className={WORK_HEAD}>
+              <div className={WORK_TITLE}>
+                <Line barClassName="h-5 w-3/4 md:h-7 md:w-2/3" />
+              </div>
+              <div className={WORK_META}>
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-4 w-16" />
               </div>
             </div>
-            <div className={ROW_META_CELL}>
-              <Skeleton className="h-4 w-28" />
-              <Skeleton className="h-4 w-16" />
+
+            <div
+              className={cn(
+                WORK_MEDIA_BLEED,
+                'flex gap-3 md:grid md:grid-cols-2 md:gap-4'
+              )}
+            >
+              <Skeleton className="aspect-video w-[84%] shrink-0 rounded-md md:w-full" />
+              <Skeleton className="hidden aspect-video shrink-0 rounded-md md:block md:w-full" />
             </div>
-          </div>
+
+            <div className={WORK_BODY}>
+              <Line barClassName="w-full" />
+              <Line barClassName="w-full" />
+              <Line barClassName="w-2/3" />
+            </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }

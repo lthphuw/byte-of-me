@@ -1,6 +1,6 @@
 /**
- * What a visitor can observe on one featured-work line: the link behaviour, the
- * number, the repo/host line, and the details, which always show. Renders the real
+ * What a visitor can observe on one featured work: the title is its only link, the
+ * repo/host line, the demo, and the details, which always show. Renders the real
  * component inside the real English catalogue.
  */
 import { cleanup, render, screen } from '@testing-library/react';
@@ -27,10 +27,10 @@ const base: PublicFeaturedWork = {
   media: [],
 };
 
-function renderRow(work: Partial<PublicFeaturedWork> = {}, index = 0) {
+function renderRow(work: Partial<PublicFeaturedWork> = {}) {
   return render(
     <NextIntlClientProvider locale="en" messages={{ homepage: en.homepage }}>
-      <FeaturedWorkRow work={{ ...base, ...work }} index={index} />
+      <FeaturedWorkRow work={{ ...base, ...work }} />
     </NextIntlClientProvider>
   );
 }
@@ -75,13 +75,10 @@ describe('FeaturedWorkRow', () => {
     expect(screen.queryByText(/stars?$/)).toBeNull();
   });
 
-  it('numbers rows from 01 using the zero-based index', () => {
-    renderRow({}, 0);
-    expect(screen.getByText('01')).toBeTruthy();
-    cleanup();
+  it('draws no row number before the title', () => {
+    renderRow();
 
-    renderRow({}, 9);
-    expect(screen.getByText('10')).toBeTruthy();
+    expect(screen.queryByText(/^(NaN|\d{2})$/)).toBeNull();
   });
 
   it('draws no paragraph of its own for a work without details', () => {
@@ -97,7 +94,6 @@ describe('FeaturedWorkRow', () => {
       <NextIntlClientProvider locale="vi" messages={{ homepage }}>
         <FeaturedWorkRow
           work={{ ...base, github: { repo: 'a/b', stars: 9755 } }}
-          index={0}
         />
       </NextIntlClientProvider>
     );
@@ -109,34 +105,17 @@ describe('FeaturedWorkRow', () => {
 const DETAILS_HTML = '<p>How it was done: a streaming writer.</p>';
 
 describe('FeaturedWorkRow with details', () => {
-  it('shows the details at once, with no toggle, and its one link beside them', () => {
+  it('shows the details at once, with no toggle and no link of their own', () => {
     renderRow({ detailsHtml: DETAILS_HTML });
 
     expect(screen.queryByRole('button')).toBeNull();
     expect(
       screen.getByText('How it was done: a streaming writer.')
     ).toBeTruthy();
-    const link = screen.getByRole('link', {
-      name: 'View on GitHub (opens in a new tab)',
-    });
-    expect(link.getAttribute('href')).toBe(base.url);
     expect(screen.getAllByRole('link')).toHaveLength(1);
-    expect(link.closest('[inert]')).toBeNull();
-  });
-
-  it('names the host instead of GitHub when the work has no GitHub details', () => {
-    renderRow({
-      detailsHtml: DETAILS_HTML,
-      url: 'https://example.com/post',
-      host: 'example.com',
-      github: null,
-    });
-
     expect(
-      screen.getByRole('link', {
-        name: 'Visit example.com (opens in a new tab)',
-      })
-    ).toBeTruthy();
+      screen.queryByRole('link', { name: 'View on GitHub (opens in a new tab)' })
+    ).toBeNull();
   });
 
   it('shows a work with details and no url, with no link anywhere', () => {
@@ -181,16 +160,15 @@ describe('FeaturedWorkRow with a demo', () => {
     },
   ];
 
-  it('shows a work that has only a demo at once, with the link beside the demo', () => {
+  it('makes the title the one link, with the demo and no link beside it', () => {
     renderRow({ media });
 
     expect(screen.queryByRole('button', { name: /details$/ })).toBeNull();
     expect(document.querySelectorAll('figure')).toHaveLength(2);
     const link = screen.getByRole('link', {
-      name: 'View on GitHub (opens in a new tab)',
+      name: /Faster detector export.*\(opens in a new tab\)/,
     });
     expect(link.getAttribute('href')).toBe(base.url);
-    expect(link.closest('[inert]')).toBeNull();
     expect(screen.getAllByRole('link')).toHaveLength(1);
   });
 
@@ -208,10 +186,7 @@ describe('FeaturedWorkRow with a demo', () => {
     const homepage = vi.homepage as unknown as typeof en.homepage;
     render(
       <NextIntlClientProvider locale="vi" messages={{ homepage }}>
-        <FeaturedWorkRow
-          work={{ ...base, media: media.slice(0, 1) }}
-          index={0}
-        />
+        <FeaturedWorkRow work={{ ...base, media: media.slice(0, 1) }} />
       </NextIntlClientProvider>
     );
 

@@ -270,8 +270,6 @@ declare const messages: {
     "viewAllContributions": "Tất cả đóng góp",
     "featuredWorksTitle": "Featured works",
     "featuredStars": "{count, number} sao",
-    "featuredViewOnGithub": "Xem trên GitHub",
-    "featuredVisitHost": "Truy cập {host}",
     "featuredOpensInNewTab": "(mở trong tab mới)",
     "featuredDemoPlay": "Phát {label}",
     "featuredDemoFullscreen": "Toàn màn hình {label}",

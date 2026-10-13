@@ -451,13 +451,15 @@ function DemoFigure({
 interface FeaturedWorkDemoProps {
   media: FeaturedWorkDemoItem[];
   controlLabels: FeaturedWorkDemoControlLabels;
-  /** Placement in the row grid, e.g. `md:col-start-2`. */
+  /** Placement around the demo, e.g. its bleed to the screen edge on a phone. */
   className?: string;
 }
 
 /**
- * The side-by-side demo of a featured work, always on show: a clip plays while it is
- * on screen, an image loads lazily, and each sits in a reserved 16:9 frame.
+ * The demo of a featured work, always on show: a clip plays while it is on screen, an
+ * image loads lazily, and each sits in a reserved 16:9 frame. On a phone the pair is a
+ * swipeable strip, each figure most of the width so the next one shows at its edge;
+ * from md the pair sits side by side.
  */
 export function FeaturedWorkDemo({
   media,
@@ -467,8 +469,9 @@ export function FeaturedWorkDemo({
   return (
     <div
       className={cn(
-        'grid min-w-0 gap-4 md:gap-6',
-        media.length > 1 ? 'sm:grid-cols-2' : 'max-w-xl',
+        'flex min-w-0 snap-x snap-mandatory scroll-px-8 gap-3 overflow-x-auto [scrollbar-width:none] [&>figure]:w-[84%] [&>figure]:shrink-0 [&>figure]:snap-start',
+        'md:grid md:gap-4 md:overflow-visible md:[&>figure]:w-auto',
+        media.length > 1 ? 'md:grid-cols-2' : 'md:max-w-xl',
         className
       )}
     >

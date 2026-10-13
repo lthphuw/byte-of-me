@@ -22,10 +22,10 @@ export async function HomepageFeaturedWorks() {
         </h2>
 
         {resp.success ? (
-          <ul className="divide-y rounded-xl border bg-card px-4 md:px-6">
-            {works.map((work, index) => (
+          <ul>
+            {works.map((work) => (
               <li key={work.id}>
-                <FeaturedWorkRow work={work} index={index} />
+                <FeaturedWorkRow work={work} />
               </li>
             ))}
           </ul>
