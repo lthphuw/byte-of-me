@@ -4,10 +4,10 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
+import { TAG_MUTATION_TAGS } from '@/entities/tag/model/revalidation';
 import { type TagFormValues, tagSchema } from '@/entities/tag/model/tag-schema';
 import type { AdminTag } from '@/entities/tag/model/types';
 import { requireAdmin } from '@/shared/lib/auth';
-import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getErrorMessage } from '@/shared/lib/utils';
 import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
@@ -15,9 +15,9 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 export async function createTag(
   input: TagFormValues
 ): Promise<ApiResponse<AdminTag>> {
-  try {
-    await requireAdmin();
+  await requireAdmin();
 
+  try {
     const parsed = parseInput(tagSchema, input);
     if (!parsed.ok) {
       return { success: false, errorMsg: parsed.errorMsg };
@@ -42,7 +42,7 @@ export async function createTag(
       },
     });
 
-    revalidateTag(CACHE_TAGS.TAG, 'max');
+    for (const tagName of TAG_MUTATION_TAGS) revalidateTag(tagName, 'max');
 
     return { success: true, data: tag };
   } catch (error) {

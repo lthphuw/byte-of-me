@@ -4,8 +4,6 @@ import { Button, ConfirmDeleteDialog, Pagination } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { BlogListLoading } from './blog-list-loading';
-
 import {
   type AdminBlogListItem,
   createBlog,
@@ -20,16 +18,23 @@ import { BlogEditorCard } from '@/entities/blog/ui/blog-editor-card';
 import { BlogEditorDialog } from '@/features/dashboard/blog-editor';
 import { useBlogReferenceOptions } from '@/features/dashboard/blog-editor/lib/use-blog-reference-options';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
-import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
+import {
+  ManagerListState,
+  ManagerPageHeader,
+  RecordListSkeleton,
+} from '@/shared/ui';
 
 export function BlogManager() {
   const t = useTranslations('dashboard.blog');
   const tShared = useTranslations('dashboard.shared');
+  const crud = useTranslations('dashboard.shared.crud');
+  const entity = t('entity');
   const {
     items: blogs,
     pagination,
     isLoading,
     isError,
+    isFetching,
     refetch,
     isPlaceholderData,
     setPage,
@@ -47,18 +52,10 @@ export function BlogManager() {
     isDeleting,
     isDeletingItem,
   } = useCrudManager<AdminBlogListItem, BlogFormValues>({
-    queryKey: blogKeys.adminList(),
-    entityLabel: 'Blog',
-    messages: {
-      created: t('toast.created'),
-      updated: t('toast.updated'),
-      deleted: t('toast.deleted'),
-      saveError: t('toast.saveError'),
-      deleteError: t('toast.deleteError'),
-    },
-    // Saving a post leaves `blogKeys.detail(id)` — the document the editor
-    // below loads — holding pre-save content that no list invalidation reaches.
-    detailKey: (blog) => blogKeys.detail(blog.id),
+    entity,
+    // Every blog key is refreshed, the public lists included. The per-post
+    // detail is dropped on save and delete.
+    keys: { all: blogKeys.all, detail: blogKeys.detail },
     fetchPage: (page, limit) => getPaginatedAdminBlogs(page, limit),
     pageKey: (page) => blogQueries.adminPage(page).queryKey,
     create: createBlog,
@@ -76,11 +73,30 @@ export function BlogManager() {
   useBlogReferenceOptions(isDialogOpen);
 
   const newBlogButton = (
-    <Button size="sm" onClick={openCreateDialog}>
+    <Button
+      size="sm"
+      className="min-h-11 can-hover:min-h-9"
+      onClick={openCreateDialog}
+    >
       <Plus className="mr-2 h-4 w-4" />
       {t('createButton')}
     </Button>
   );
+
+  const pager =
+    pagination && pagination.totalPages > 1 ? (
+      <Pagination
+        pagination={pagination}
+        setPage={setPage}
+        isPlaceholderData={isPlaceholderData}
+        pageLabel={tShared('pagination.pageLabel', {
+          page: pagination.currentPage,
+          totalPages: pagination.totalPages,
+        })}
+        previousLabel={tShared('pagination.previous')}
+        nextLabel={tShared('pagination.next')}
+      />
+    ) : undefined;
 
   return (
     <div className="space-y-6">
@@ -90,62 +106,44 @@ export function BlogManager() {
         action={newBlogButton}
       />
 
-      <ManagerListState
-        isLoading={isLoading}
-        isError={isError}
-        onRetry={() => refetch()}
-        skeleton={<BlogListLoading />}
-        isEmpty={blogs.length === 0}
-        emptyTitle={t('emptyTitle')}
-        emptyDescription={t('emptyDescription')}
-        emptyAction={newBlogButton}
-      >
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {blogs.map((blog) => (
-            <BlogEditorCard
-              key={blog.id}
-              blog={blog}
-              onEdit={openEditDialog}
-              onDelete={() => requestDelete(blog)}
-              isPending={isDeletingItem(blog)}
-            />
-          ))}
-        </div>
-      </ManagerListState>
-
-      {blogs.length > 0 && (
-        <Pagination
-          pagination={pagination}
-          setPage={setPage}
-          isPlaceholderData={isPlaceholderData}
-          pageLabel={tShared('pagination.pageLabel', {
-            page: pagination?.currentPage ?? 1,
-            totalPages: pagination?.totalPages ?? 1,
-          })}
-          previousLabel={tShared('pagination.previous')}
-          nextLabel={tShared('pagination.next')}
-        />
-      )}
+      {/* `relative` so ManagerListState's background-refetch spinner lands on the list. */}
+      <div className="relative">
+        <ManagerListState
+          isLoading={isLoading}
+          isError={isError}
+          isFetching={isFetching}
+          onRetry={() => refetch()}
+          skeleton={<RecordListSkeleton variant="grid" />}
+          isEmpty={blogs.length === 0}
+          emptyTitle={t('emptyTitle')}
+          emptyDescription={t('emptyDescription')}
+          emptyAction={newBlogButton}
+          pagination={pager}
+        >
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {blogs.map((blog) => (
+              <BlogEditorCard
+                key={blog.id}
+                blog={blog}
+                onEdit={() => openEditDialog(blog)}
+                onDelete={() => requestDelete(blog)}
+                isPending={isDeletingItem(blog)}
+              />
+            ))}
+          </div>
+        </ManagerListState>
+      </div>
 
       <BlogEditorDialog
         key={editing?.id ?? 'new'}
         open={isDialogOpen}
         onOpenChange={onDialogOpenChange}
         initialData={fullBlog.record}
-        isLoadingInitialData={fullBlog.isNotReady}
-        loadError={fullBlog.hasError ? t('loadError') : null}
-        onRetryLoad={fullBlog.retry}
-        onSubmit={(values) =>
-          save({
-            ...values,
-            translations:
-              values.translations?.map((t) => ({
-                ...t,
-                content: JSON.stringify(t.content),
-              })) || [],
-          })
-        }
-        loading={isSaving}
+        isNotReady={fullBlog.isNotReady}
+        hasError={fullBlog.hasError}
+        onRetry={fullBlog.retry}
+        isPending={isSaving}
+        onSubmit={save}
       />
 
       <ConfirmDeleteDialog
@@ -153,8 +151,11 @@ export function BlogManager() {
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
-        title={t('deleteTitle')}
-        description={t('deleteDescription')}
+        title={crud('deleteTitle', { entity })}
+        description={crud('deleteDescription', {
+          name:
+            itemToDelete?.translations?.[0]?.title || itemToDelete?.slug || '',
+        })}
         actionText={tShared('confirmDelete.actionText')}
         cancelText={tShared('confirmDelete.cancelText')}
       />

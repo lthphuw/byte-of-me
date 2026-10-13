@@ -1,115 +1,106 @@
 'use client';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  DeleteButton,
-  EditButton,
-  ImagePlaceholder,
-} from '@byte-of-me/ui';
-import { Calendar, Eye, EyeOff } from 'lucide-react';
+import { Badge } from '@byte-of-me/ui';
+import { Calendar, Eye, EyeOff, ImageOff } from 'lucide-react';
 import Image from 'next/image';
+import { useLocale, useTranslations } from 'next-intl';
 
 import type { AdminBlogListItem } from '@/entities/blog';
 import { formatDate } from '@/shared/lib/utils';
+import { RecordListItem, RecordRowActions } from '@/shared/ui';
 
-interface BlogCardProps {
+interface BlogEditorCardProps {
   blog: AdminBlogListItem;
-  onEdit: (blog: AdminBlogListItem) => void;
-  onDelete: (id: string) => void;
+  onEdit: () => void;
+  onDelete: () => void;
   isPending?: boolean;
 }
 
+/** One post in the manager's grid: a cover thumbnail, its meta, and the row actions. */
 export function BlogEditorCard({
   blog,
   onEdit,
   onDelete,
   isPending,
-}: BlogCardProps) {
+}: BlogEditorCardProps) {
+  const t = useTranslations('dashboard.blog');
+  const locale = useLocale();
   const mainTranslation = blog.translations?.[0];
   const coverImageUrl = blog.coverImage?.url;
+  const title = mainTranslation?.title || t('card.untitled');
 
   return (
-    <Card className="group flex h-full flex-col overflow-hidden border-muted-foreground/10 transition-all hover:shadow-md">
-      {/* Aspect Ratio Container for Image */}
-      <div className="relative aspect-video w-full overflow-hidden border-b">
-        {coverImageUrl ? (
-          <Image
-            src={coverImageUrl}
-            alt={mainTranslation?.title || 'Blog cover'}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <ImagePlaceholder text="No Cover" />
-        )}
+    <RecordListItem
+      className="items-start"
+      leading={
+        <div className="relative size-14 overflow-hidden rounded-md border bg-muted">
+          {coverImageUrl ? (
+            <Image
+              src={coverImageUrl}
+              alt=""
+              fill
+              sizes="56px"
+              className="object-cover"
+            />
+          ) : (
+            <div className="flex size-full items-center justify-center text-muted-foreground">
+              <ImageOff className="size-5" aria-hidden />
+              <span className="sr-only">{t('card.noCover')}</span>
+            </div>
+          )}
+        </div>
+      }
+      actions={
+        <RecordRowActions
+          name={title}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          disabled={isPending}
+        />
+      }
+    >
+      <div className="min-w-0 space-y-2">
+        <p className="truncate font-semibold">{title}</p>
 
-        <div className="absolute right-2 top-2">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+          <span className="max-w-full truncate font-mono">/{blog.slug}</span>
           <Badge
             variant={blog.isPublished ? 'default' : 'secondary'}
-            className="bg-opacity-80 font-medium backdrop-blur-md"
+            className="font-medium"
           >
             {blog.isPublished ? (
-              <>
-                <Eye className="mr-1 h-3 w-3" /> Published
-              </>
+              <Eye className="mr-1 size-3" aria-hidden />
             ) : (
-              <>
-                <EyeOff className="mr-1 h-3 w-3" /> Draft
-              </>
+              <EyeOff className="mr-1 size-3" aria-hidden />
             )}
+            {blog.isPublished ? t('meta.publishedLabel') : t('card.draft')}
           </Badge>
+          {blog.publishedDate && (
+            <span className="flex items-center gap-1">
+              <Calendar className="size-3.5" aria-hidden />
+              {formatDate(blog.publishedDate, locale)}
+            </span>
+          )}
         </div>
-      </div>
 
-      <CardHeader className="space-y-1 p-4 pb-2">
-        <h3 className="line-clamp-2 min-h-[2.5rem] font-bold leading-tight transition-colors group-hover:text-primary">
-          {mainTranslation?.title || 'Untitled Blog'}
-        </h3>
-        <p className="w-fit truncate rounded bg-muted/50 px-1 font-mono text-[11px] text-muted-foreground">
-          /{blog.slug}
-        </p>
-      </CardHeader>
-
-      <CardContent className="flex-grow p-4 pt-0">
-        <p className="mb-4 line-clamp-2 text-sm text-muted-foreground">
-          {mainTranslation?.description ||
-            'No description provided for this blog post.'}
+        <p className="line-clamp-2 text-sm text-muted-foreground">
+          {mainTranslation?.description || t('card.noDescription')}
         </p>
 
-        <div className="mt-auto flex flex-wrap gap-1.5">
-          {blog.tags?.map((t) => (
-            <Badge
-              key={t.tagId}
-              variant="outline"
-              className="px-2 py-0 text-[10px] font-normal"
-            >
-              {t.tag?.translations?.[0]?.name || t.tag?.id}
-            </Badge>
-          ))}
-        </div>
-      </CardContent>
-
-      <CardFooter className="flex items-center justify-between border-t bg-muted/5 p-3">
-        {blog.publishedDate && (
-          <div className="flex items-center text-[11px] text-muted-foreground">
-            <Calendar className="mr-1 h-3.5 w-3.5" />
-            {formatDate(blog.publishedDate)}
+        {blog.tags?.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {blog.tags.map((link) => (
+              <Badge
+                key={link.tagId}
+                variant="outline"
+                className="px-2 py-0 text-[10px] font-normal"
+              >
+                {link.tag?.translations?.[0]?.name || link.tag?.id}
+              </Badge>
+            ))}
           </div>
         )}
-
-        <div className="flex gap-1">
-          <EditButton isSubmitting={isPending} onClick={() => onEdit(blog)} />
-          <DeleteButton
-            isSubmitting={isPending}
-            onClick={() => onDelete(blog.id)}
-          />
-        </div>
-      </CardFooter>
-    </Card>
+      </div>
+    </RecordListItem>
   );
 }

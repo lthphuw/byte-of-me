@@ -15,9 +15,9 @@ export async function getPaginatedAdminTags(
   rawPage: number = 1,
   rawLimit: number = 20
 ): Promise<ApiResponse<PaginatedData<AdminTag>>> {
-  try {
-    await requireAdmin();
+  await requireAdmin();
 
+  try {
     const { page, limit } = clampPagination(
       { page: rawPage, limit: rawLimit },
       { defaultLimit: 20 }
@@ -42,7 +42,7 @@ export async function getPaginatedAdminTags(
     };
   } catch (error) {
     const errorMsg = getErrorMessage(error);
-    logger.error(`[Service Error] getAdminTag: ${errorMsg}`);
+    logger.error(`[Service Error] getPaginatedAdminTags: ${errorMsg}`);
     return {
       success: false,
       errorMsg,

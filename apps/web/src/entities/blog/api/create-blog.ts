@@ -52,7 +52,7 @@ export async function createBlog(
             language: t.language,
             title: t.title,
             description: t.description,
-            content: t.content,
+            content: JSON.stringify(t.content),
           })),
         },
       },

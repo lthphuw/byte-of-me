@@ -18,8 +18,9 @@ export type TagOption = { id: string; slug: string; name: string };
  * per-locale translation rows. Capped at ADMIN_OPTIONS_LIMIT, newest first.
  */
 export async function getAdminTagOptions(): Promise<ApiResponse<TagOption[]>> {
+  await requireAdmin();
+
   try {
-    await requireAdmin();
     const locale = await getLocale();
 
     const tags = await prisma.tag.findMany({

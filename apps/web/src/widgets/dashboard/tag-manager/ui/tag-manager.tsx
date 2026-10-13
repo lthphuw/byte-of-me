@@ -2,16 +2,16 @@
 
 import { Button, ConfirmDeleteDialog, Pagination } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { TagDialog } from './tag-dialog';
-import { TagListLoading } from './tag-list-loading';
 
 import {
   type AdminTag,
   createTag,
   deleteTag,
   getPaginatedAdminTags,
+  tagDisplayName,
   type TagFormValues,
   tagKeys,
   updateTag,
@@ -19,12 +19,18 @@ import {
 import { useAdminTagById } from '@/entities/tag/query';
 import { TagCard } from '@/features/dashboard/tag-management';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
-import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
-import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
+import {
+  ManagerListState,
+  ManagerPageHeader,
+  RecordListSkeleton,
+} from '@/shared/ui';
 
 export function TagManager() {
   const t = useTranslations('dashboard.tag');
   const tShared = useTranslations('dashboard.shared');
+  const crud = useTranslations('dashboard.shared.crud');
+  const locale = useLocale();
+  const entity = t('entity');
   const {
     items: tags,
     pagination,
@@ -48,21 +54,12 @@ export function TagManager() {
     isDeleting,
     isDeletingItem,
   } = useCrudManager<AdminTag, TagFormValues>({
-    queryKey: tagKeys.adminList(),
-    entityLabel: 'Tag',
-    messages: {
-      created: t('toast.created'),
-      updated: t('toast.updated'),
-      deleted: t('toast.deleted'),
-      saveError: t('toast.saveError'),
-      deleteError: t('toast.deleteError'),
-    },
-    // A save leaves `tagKeys.detail(id)`, the record the dialog loads, holding
-    // pre-save content that no list invalidation reaches.
-    detailKey: (tag) => tagKeys.detail(tag.id),
-    pageSize: ADMIN_PAGE_SIZE,
-    pageKey: tagKeys.adminPage,
+    entity,
+    // Every tag key is refreshed on save: lists, picker options, the chip row
+    // and the detail. Public blogs are refreshed on the server (TAG_MUTATION_TAGS).
+    keys: { all: tagKeys.all, detail: tagKeys.detail },
     fetchPage: (page, limit) => getPaginatedAdminTags(page, limit),
+    pageKey: tagKeys.adminPage,
     create: createTag,
     update: updateTag,
     remove: deleteTag,
@@ -72,51 +69,70 @@ export function TagManager() {
   // record by id. "New" (`editing` is null) fetches nothing.
   const fullTag = useAdminTagById(editing?.id ?? null);
 
+  const createButton = (
+    <Button
+      size="sm"
+      className="min-h-11 gap-2 shadow-sm can-hover:min-h-9"
+      onClick={openCreateDialog}
+    >
+      <Plus className="h-4 w-4" />
+      {t('createButton')}
+    </Button>
+  );
+
+  const pager =
+    pagination && pagination.totalPages > 1 ? (
+      <Pagination
+        pagination={pagination}
+        setPage={setPage}
+        isPlaceholderData={isPlaceholderData}
+        pageLabel={tShared('pagination.pageLabel', {
+          page: pagination.currentPage,
+          totalPages: pagination.totalPages,
+        })}
+        previousLabel={tShared('pagination.previous')}
+        nextLabel={tShared('pagination.next')}
+      />
+    ) : undefined;
+
   return (
     <div className="space-y-6">
       <ManagerPageHeader
         title={t('title')}
         description={t('description')}
-        action={
-          <Button
-            size="sm"
-            onClick={openCreateDialog}
-            className="gap-2 shadow-sm"
-          >
-            <Plus className="h-4 w-4" />
-            {t('createButton')}
-          </Button>
-        }
+        action={createButton}
       />
 
+      {/* `relative` so ManagerListState's refetch spinner lands on the list. */}
       <div className="relative min-h-[300px]">
         <ManagerListState
           isLoading={isLoading}
           isError={isError}
           onRetry={() => refetch()}
           isFetching={isFetching}
+          skeleton={<RecordListSkeleton variant="grid" />}
           isEmpty={tags.length === 0}
-          skeleton={<TagListLoading />}
           emptyTitle={t('emptyTitle')}
           emptyDescription={t('emptyDescription')}
           emptyAction={
             <Button
               variant="outline"
               size="sm"
-              className="mt-4"
+              className="mt-4 min-h-11 can-hover:min-h-9"
               onClick={openCreateDialog}
             >
               {t('emptyAction')}
             </Button>
           }
+          pagination={pager}
         >
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {tags.map((tag) => (
               <TagCard
                 key={tag.id}
                 tag={tag}
-                onEdit={() => openEditDialog(tag)}
-                onDelete={() => requestDelete(tag)}
+                onEdit={openEditDialog}
+                onDelete={requestDelete}
                 isDeleting={isDeletingItem(tag)}
               />
             ))}
@@ -124,32 +140,16 @@ export function TagManager() {
         </ManagerListState>
       </div>
 
-      {pagination && tags.length > 0 && (
-        <div className="pt-4">
-          <Pagination
-            pagination={pagination}
-            setPage={setPage}
-            isPlaceholderData={isPlaceholderData}
-            pageLabel={tShared('pagination.pageLabel', {
-              page: pagination.currentPage,
-              totalPages: pagination.totalPages,
-            })}
-            previousLabel={tShared('pagination.previous')}
-            nextLabel={tShared('pagination.next')}
-          />
-        </div>
-      )}
-
       <TagDialog
         key={editing?.id || 'new'}
         open={isDialogOpen}
         onOpenChange={onDialogOpenChange}
         initialData={fullTag.record}
-        isLoadingInitialData={fullTag.isNotReady}
-        hasLoadError={fullTag.hasError}
-        onRetryLoad={fullTag.retry}
-        onSubmit={(data) => save(data)}
-        loading={isSaving}
+        isNotReady={fullTag.isNotReady}
+        hasError={fullTag.hasError}
+        onRetry={fullTag.retry}
+        isPending={isSaving}
+        onSubmit={save}
       />
 
       <ConfirmDeleteDialog
@@ -157,13 +157,9 @@ export function TagManager() {
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
-        title={t('deleteTitle')}
-        description={t.rich('deleteDescription', {
-          name: () => (
-            <span className="font-semibold text-foreground">
-              "{itemToDelete?.slug}"
-            </span>
-          ),
+        title={crud('deleteTitle', { entity })}
+        description={crud('deleteDescription', {
+          name: itemToDelete ? tagDisplayName(itemToDelete, locale) : '',
         })}
         actionText={tShared('confirmDelete.actionText')}
         cancelText={tShared('confirmDelete.cancelText')}

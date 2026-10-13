@@ -17,7 +17,7 @@ export async function updateBlog(
   id: string,
   input: BlogFormValues
 ): Promise<ApiResponse<Blog>> {
-  await requireAdmin();
+  const session = await requireAdmin();
 
   const parsedId = parseInput(idSchema, id);
   if (!parsedId.ok) {
@@ -31,55 +31,51 @@ export async function updateBlog(
 
   try {
     const updatedBlog = await prisma.$transaction(async (tx) => {
-      // Delete-and-recreate the translations; the two steps are ordered, but
-      // the pair is independent of the blog row update below.
-      const replaceTranslations = async () => {
-        await tx.blogTranslation.deleteMany({
-          where: { blogId: id },
-        });
+      // Ordered on purpose: the owner check is the blog update, so it must
+      // fail before any translation row is replaced.
+      const blog = await tx.blog.update({
+        where: { id, userId: session.id },
+        data: {
+          slug: data.slug.toLowerCase().trim(),
+          publishedDate: data.publishedDate,
+          isPublished: data.isPublished,
+          coverImageId: data.coverImageId ?? null,
+          projectId:
+            !data.projectId || data.projectId === 'none'
+              ? null
+              : data.projectId,
 
-        await tx.blogTranslation.createMany({
-          data: data.translations.map((t) => ({
-            blogId: id,
-            language: t.language,
-            title: t.title,
-            description: t.description ?? null,
-            content: t.content,
-          })),
-        });
-      };
-
-      const [blog] = await Promise.all([
-        tx.blog.update({
-          where: { id },
-          data: {
-            slug: data.slug.toLowerCase().trim(),
-            publishedDate: data.publishedDate,
-            isPublished: data.isPublished,
-            coverImageId: data.coverImageId ?? null,
-            projectId:
-              !data.projectId || data.projectId === 'none'
-                ? null
-                : data.projectId,
-
-            tags: {
-              deleteMany: {},
-              create:
-                data.tagIds?.map((tagId) => ({
-                  tag: {
-                    connect: { id: tagId },
-                  },
-                })) ?? [],
-            },
+          tags: {
+            deleteMany: {},
+            create:
+              data.tagIds?.map((tagId) => ({
+                tag: {
+                  connect: { id: tagId },
+                },
+              })) ?? [],
           },
-        }),
-        replaceTranslations(),
-      ]);
+        },
+      });
+
+      // Delete-and-recreate the translations inside the same transaction.
+      await tx.blogTranslation.deleteMany({
+        where: { blogId: id },
+      });
+
+      await tx.blogTranslation.createMany({
+        data: data.translations.map((t) => ({
+          blogId: id,
+          language: t.language,
+          title: t.title,
+          description: t.description ?? null,
+          content: JSON.stringify(t.content),
+        })),
+      });
 
       return blog;
     });
 
-    revalidateTag(CACHE_TAGS.BLOG, 'default');
+    revalidateTag(CACHE_TAGS.BLOG, 'max');
 
     return { success: true, data: updatedBlog };
   } catch (error) {

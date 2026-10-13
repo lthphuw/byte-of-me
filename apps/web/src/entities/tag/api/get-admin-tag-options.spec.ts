@@ -125,12 +125,10 @@ describe('getAdminTagOptions', () => {
     ]);
   });
 
-  it('refuses a non-admin caller without touching the database', async () => {
+  it('rejects a non-admin caller, before the database is touched', async () => {
     setTestUser({ id: 'user-2', role: 'USER', email: 'visitor@example.com' });
 
-    const res = await getAdminTagOptions();
-
-    expect(res.success).toBe(false);
+    await expect(getAdminTagOptions()).rejects.toThrow('Unauthorized');
     expect(findMany).not.toHaveBeenCalled();
   });
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { type DefaultValues, useForm } from 'react-hook-form';
 import {
   Button,
@@ -10,8 +10,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Icons,
 } from '@byte-of-me/ui';
+import { parseRichTextContent } from '@byte-of-me/ui/lib/rich-text-content';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 
@@ -26,14 +26,35 @@ import { useScopedImageUploader } from '@/entities/media/query';
 import { useBlogReferenceOptions } from '@/features/dashboard/blog-editor/lib/use-blog-reference-options';
 import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
 import { useFormAutosave } from '@/shared/hooks/use-form-autosave';
+import {
+  type RichTextDoc,
+  richTextDocSchema,
+} from '@/shared/lib/rich-text-doc-schema';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
+
+/**
+ * A stored body as a TipTap document. Stored text that is not a document is
+ * kept as one paragraph: an unreadable body is shown, never replaced by an
+ * empty one that the next save would write back over it.
+ */
+function toBodyDoc(stored: string | null | undefined): RichTextDoc {
+  const doc = richTextDocSchema.safeParse(parseRichTextContent(stored));
+  if (doc.success) return doc.data;
+
+  return {
+    type: 'doc',
+    content: stored
+      ? [{ type: 'paragraph', content: [{ type: 'text', text: stored }] }]
+      : [{ type: 'paragraph' }],
+  };
+}
 
 const emptyTranslation = () => ({
   language: 'en',
   title: '',
   description: '',
-  content: '<p></p>',
+  content: toBodyDoc(''),
 });
 
 function toFormValues(initialData?: AdminBlog): DefaultValues<BlogFormValues> {
@@ -61,11 +82,7 @@ function toFormValues(initialData?: AdminBlog): DefaultValues<BlogFormValues> {
       initialData.translations?.length > 0
         ? initialData.translations.map((it) => ({
             ...it,
-            content: it.content
-              ? typeof it.content === 'string'
-                ? JSON.parse(it.content)
-                : it.content
-              : '<p></p>',
+            content: toBodyDoc(it.content),
           }))
         : [emptyTranslation()],
   };
@@ -74,15 +91,16 @@ function toFormValues(initialData?: AdminBlog): DefaultValues<BlogFormValues> {
 export interface BlogFormProps {
   initialData?: AdminBlog;
   onSubmit: (data: BlogFormValues) => void;
-  loading: boolean;
-  /** Set by a dialog host so its footer button can submit this form. */
-  formId?: string;
+  /** Reports unsaved changes, so the dialog host can ask before it closes. */
+  onDirtyChange: (dirty: boolean) => void;
+  /** The id the dialog's footer Save button submits. */
+  formId: string;
 }
 
 export function BlogForm({
   initialData,
   onSubmit,
-  loading,
+  onDirtyChange,
   formId,
 }: BlogFormProps) {
   // Images pasted into this editor land under the `blog` prefix in storage.
@@ -102,6 +120,11 @@ export function BlogForm({
     defaultValues,
   });
 
+  const { isDirty } = form.formState;
+  useEffect(() => {
+    onDirtyChange(isDirty);
+  }, [isDirty, onDirtyChange]);
+
   const autosave = useFormAutosave(
     form,
     `blog-draft:${initialData?.id ?? 'new'}`
@@ -118,20 +141,26 @@ export function BlogForm({
     <Form {...form}>
       <form id={formId} onSubmit={handleSubmit} className="space-y-6">
         {autosave.restorable && (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-muted/40 px-4 py-3 text-sm">
             <span>
               {t('form.draftFound', {
                 time: autosave.restorable.toLocaleTimeString(),
               })}
             </span>
             <span className="flex gap-2">
-              <Button type="button" size="sm" onClick={autosave.restore}>
+              <Button
+                type="button"
+                size="sm"
+                className="min-h-11 can-hover:min-h-9"
+                onClick={autosave.restore}
+              >
                 {t('form.restore')}
               </Button>
               <Button
                 type="button"
                 size="sm"
                 variant="outline"
+                className="min-h-11 can-hover:min-h-9"
                 onClick={autosave.discard}
               >
                 {t('form.discard')}
@@ -157,12 +186,7 @@ export function BlogForm({
             control={form.control}
             name="translations"
             className="w-full"
-            newTranslation={() => ({
-              language: '',
-              title: '',
-              description: '',
-              content: '',
-            })}
+            newTranslation={() => ({ ...emptyTranslation(), language: '' })}
             renderFields={(i) => (
               <>
                 <TextField
@@ -209,25 +233,6 @@ export function BlogForm({
             )}
           />
         </div>
-
-        {/* When hosted in a dialog, the dialog's fixed footer submits via
-            the form id instead — no second save button inside the scroll. */}
-        {!formId && (
-          <div className="flex justify-end gap-4 border-t pt-6">
-            <Button
-              type="submit"
-              size="lg"
-              className="min-w-[120px]"
-              disabled={loading}
-            >
-              {loading ? (
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                t('form.savePost')
-              )}
-            </Button>
-          </div>
-        )}
       </form>
     </Form>
   );

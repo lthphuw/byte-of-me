@@ -14,10 +14,12 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
  * The edit dialog's source of truth: a tag's per-language rows, one per locale.
  * Reusing a list row would open the form on whatever the list selects (AGENTS §8).
  */
-export async function getAdminTagById(id: string): Promise<ApiResponse<AdminTag>> {
-  try {
-    await requireAdmin();
+export async function getAdminTagById(
+  id: string
+): Promise<ApiResponse<AdminTag>> {
+  await requireAdmin();
 
+  try {
     const parsedId = parseInput(idSchema, id);
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };

@@ -7,17 +7,26 @@ import {
   slugListSchema,
   slugSchema,
 } from '@/shared/lib/public-input-schema';
+import { richTextDocSchema } from '@/shared/lib/rich-text-doc-schema';
+
+/** Lowercase words joined by single hyphens, as the public URL carries them. */
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export const blogTranslationSchema = z.object({
   language: z.string(),
 
-  title: z.string(),
+  title: z.string().trim().min(1, 'validation.required'),
   description: z.string().nullable().optional(),
-  content: z.any(),
+  /** A TipTap document. The database column stores it as a JSON string. */
+  content: richTextDocSchema,
 });
 
 export const blogFormSchema = z.object({
-  slug: z.string(),
+  slug: z
+    .string()
+    .trim()
+    .min(1, 'validation.required')
+    .regex(SLUG_PATTERN, 'validation.invalidSlug'),
   publishedDate: z.date().nullable().optional(),
   isPublished: z.boolean(),
 

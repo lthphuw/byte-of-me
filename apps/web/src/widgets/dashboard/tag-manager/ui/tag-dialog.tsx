@@ -1,17 +1,8 @@
 'use client';
 
-import { useFieldArray, useForm } from 'react-hook-form';
-import {
-  Button,
-  DeleteButton,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Form,
-} from '@byte-of-me/ui';
+import { useForm } from 'react-hook-form';
+import { Form } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { TagFormLoading } from './tag-form-loading';
@@ -19,32 +10,36 @@ import { TagFormLoading } from './tag-form-loading';
 import type { AdminTag } from '@/entities/tag';
 import { type TagFormValues, tagSchema } from '@/entities/tag/model/tag-schema';
 import { useResetOnOpen } from '@/shared/hooks/use-reset-on-open';
-import { ContentFade, TextField } from '@/shared/ui';
-import { QueryState } from '@/shared/ui/query-state';
+import { RecordDialog, TextField, TranslationTabs } from '@/shared/ui';
+import { EditRecordGate } from '@/shared/ui/edit-record-gate';
+
+const FORM_ID = 'tag-editor-form';
+
+export interface TagDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  /** The full tag, with one row per language. `null` for a new tag. */
+  initialData: Nullable<AdminTag>;
+  /** The full tag is loading or was never requested, so the form must not mount yet. */
+  isNotReady: boolean;
+  hasError: boolean;
+  onRetry: () => void;
+  isPending: boolean;
+  onSubmit: (values: TagFormValues) => void;
+}
 
 export function TagDialog({
   open,
   onOpenChange,
   initialData,
-  isLoadingInitialData = false,
-  hasLoadError = false,
-  onRetryLoad,
+  isNotReady,
+  hasError,
+  onRetry,
+  isPending,
   onSubmit,
-  loading,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  initialData: Nullable<AdminTag>;
-  /** The full record is loading or its fetch failed. The form stays unmounted until it arrives. */
-  isLoadingInitialData?: boolean;
-  /** The full-record fetch failed; the dialog offers `onRetryLoad` instead. */
-  hasLoadError?: boolean;
-  onRetryLoad?: () => void;
-  onSubmit: (values: TagFormValues) => void;
-  loading: boolean;
-}) {
+}: TagDialogProps) {
   const t = useTranslations('dashboard.tag');
-  const tShared = useTranslations('dashboard.shared');
+  const crud = useTranslations('dashboard.shared.crud');
   const form = useForm<TagFormValues>({
     resolver: zodResolver(tagSchema),
     defaultValues: {
@@ -53,128 +48,66 @@ export function TagDialog({
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: 'translations',
-  });
-
   useResetOnOpen(form, open, initialData, (data) => ({
     slug: data.slug,
-    translations: data.translations.map((t) => ({
-      id: t.id,
-      language: t.language,
-      name: t.name,
+    translations: data.translations.map((translation) => ({
+      id: translation.id,
+      language: translation.language,
+      name: translation.name,
     })),
   }));
 
-  const handleSubmit = (values: TagFormValues) => {
-    onSubmit(values);
-  };
-
-  // Loading counts as editing before the record arrives: only "new" reaches
-  // here with neither `initialData` nor a pending fetch.
-  const isEditing = Boolean(initialData) || isLoadingInitialData;
+  // Loading counts as editing before the record arrives: only "new" has neither.
+  const isEditing = Boolean(initialData) || isNotReady;
+  const entity = t('entity');
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>
-            {isEditing ? t('dialog.editTitle') : t('dialog.createTitle')}
-          </DialogTitle>
-        </DialogHeader>
+    <RecordDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={
+        isEditing ? crud('editTitle', { entity }) : crud('newTitle', { entity })
+      }
+      formId={FORM_ID}
+      isPending={isPending}
+      isDirty={form.formState.isDirty}
+    >
+      <EditRecordGate
+        isNotReady={isNotReady}
+        hasError={hasError}
+        onRetry={onRetry}
+        skeleton={<TagFormLoading />}
+      >
+        <Form {...form}>
+          <form
+            id={FORM_ID}
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-5"
+          >
+            <TextField
+              control={form.control}
+              name="slug"
+              label={t('dialog.slugLabel')}
+              placeholder={t('dialog.slugPlaceholder')}
+            />
 
-        {/* A dialog has no empty state, so `isEmpty` stays false. */}
-        <QueryState
-          isLoading={isLoadingInitialData && !hasLoadError}
-          isError={hasLoadError}
-          isEmpty={false}
-          onRetry={() => onRetryLoad?.()}
-          skeleton={<TagFormLoading />}
-          errorTitle={tShared('managerListState.errorTitle')}
-          errorDescription={tShared('managerListState.errorDescription')}
-          retryLabel={tShared('managerListState.retry')}
-          emptyTitle=""
-        >
-          <ContentFade>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(handleSubmit)}
-              className="space-y-5"
-            >
-              {/* Slug */}
-              <TextField
-                control={form.control}
-                name="slug"
-                label={t('dialog.slugLabel')}
-                placeholder={t('dialog.slugPlaceholder')}
-              />
-
-              {/* Translations */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium">
-                    {t('dialog.translationsLabel')}
-                  </p>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() => append({ language: '', name: '' })}
-                  >
-                    {t('dialog.addButton')}
-                  </Button>
-                </div>
-
-                {fields.map((field, index) => (
-                  <div
-                    key={field.id}
-                    className="flex items-center gap-2 rounded-lg border p-2"
-                  >
-                    <TextField
-                      control={form.control}
-                      name={`translations.${index}.language`}
-                      label={t('dialog.languageLabel')}
-                      placeholder={t('dialog.languagePlaceholder')}
-                      className="w-20"
-                    />
-
-                    <TextField
-                      control={form.control}
-                      name={`translations.${index}.name`}
-                      label={t('dialog.nameLabel')}
-                      placeholder={t('dialog.namePlaceholder')}
-                      className="flex-1"
-                    />
-
-                    <DeleteButton
-                      label={tShared('translationTabs.removeLanguage')}
-                      onClick={() => remove(index)}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              {/* Actions */}
-              <div className="flex justify-end gap-2 pt-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => onOpenChange(false)}
-                >
-                  {t('dialog.cancelButton')}
-                </Button>
-
-                <Button type="submit" disabled={loading}>
-                  {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                  {t('dialog.saveButton')}
-                </Button>
-              </div>
-            </form>
-          </Form>
-          </ContentFade>
-        </QueryState>
-      </DialogContent>
-    </Dialog>
+            <TranslationTabs
+              control={form.control}
+              name="translations"
+              className="w-full"
+              newTranslation={() => ({ language: '', name: '' })}
+              renderFields={(i) => (
+                <TextField
+                  control={form.control}
+                  name={`translations.${i}.name`}
+                  label={t('dialog.nameLabel')}
+                  placeholder={t('dialog.namePlaceholder')}
+                />
+              )}
+            />
+          </form>
+        </Form>
+      </EditRecordGate>
+    </RecordDialog>
   );
 }

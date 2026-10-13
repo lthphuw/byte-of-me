@@ -67,7 +67,7 @@ export const EditorToolbar = ({
           type="button"
           variant="outline"
           size="sm"
-          className="h-8 gap-2"
+          className="h-8 gap-2 max-sm:min-h-11"
           onClick={onTogglePreview}
         >
           <Pencil className="h-3.5 w-3.5" />
@@ -82,8 +82,15 @@ export const EditorToolbar = ({
   // — the ScrollArea below with its hidden scrollbar — leaves the overflowing
   // buttons (image, colour) with no visible way to reach them. The full
   // editor keeps the single scrolling row: it owns the page width.
+  // Phones: 44px touch targets (AGENTS §14). The row scrolls sideways, and
+  // Preview leads it so the way to the rendered page is in view.
   const row = (
-    <div className={cn('flex items-center gap-1 px-2', compact && 'flex-wrap')}>
+    <div
+      className={cn(
+        'flex items-center gap-1 px-2 max-sm:[&_button]:min-h-11 max-sm:[&_button]:min-w-11',
+        compact && 'flex-wrap'
+      )}
+    >
       {/* History Group */}
       <UndoToolbar />
       <RedoToolbar />
@@ -130,7 +137,7 @@ export const EditorToolbar = ({
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 gap-2 px-2 text-xs"
+          className="h-8 gap-2 px-2 text-xs max-sm:order-first"
           onClick={onTogglePreview}
         >
           <Eye className="h-3.5 w-3.5" />
@@ -141,7 +148,14 @@ export const EditorToolbar = ({
   );
 
   return (
-    <div className="sticky top-0 z-20 hidden w-full border-b bg-background sm:block">
+    <div
+      className={cn(
+        'sticky top-0 z-20 w-full border-b bg-background',
+        // Compact editors keep the bar off phones: at 44px touch targets its
+        // wrapped rows would fill the dialog. Full editors show it at every width.
+        compact && 'hidden sm:block'
+      )}
+    >
       <ToolbarProvider editor={editor} labels={labels}>
         <TooltipProvider>
           {compact ? (

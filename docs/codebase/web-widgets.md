@@ -35,7 +35,7 @@ every slice: index.ts -> ui/index.ts -> ui/*.tsx (+ lib/, model/); *.spec.ts(x) 
 | widget | group | composes | server or client |
 | --- | --- | --- | --- |
 | `apps/web/src/widgets/auth/admin-auth-log-in-view/` | auth | `@/features/auth` | client |
-| `apps/web/src/widgets/dashboard/blog-manager/` | dashboard | `@/entities/blog`, `@/entities/blog/query`, `@/features/dashboard/blog-editor` | client |
+| `apps/web/src/widgets/dashboard/blog-manager/` | dashboard | `@/entities/blog`, `@/entities/blog/query`, `@/features/dashboard/blog-editor`, `@/shared/ui` | client |
 | `apps/web/src/widgets/dashboard/comment-manager/` | dashboard | `@/entities/comment/query` | client |
 | `apps/web/src/widgets/dashboard/company-manager/` | dashboard | `@/entities/company`, `@/entities/company/query`, `@/entities/media`, `@/entities/tech-stack`, `@/features/dashboard/media-library`, `@/features/dashboard/tech-stack-management` | client |
 | `apps/web/src/widgets/dashboard/contact-message-gallery/` | dashboard | `@/entities/contact-message/query` | client |
@@ -44,7 +44,7 @@ every slice: index.ts -> ui/index.ts -> ui/*.tsx (+ lib/, model/); *.spec.ts(x) 
 | `apps/web/src/widgets/dashboard/featured-work-manager/` | dashboard | `@/entities/featured-work/api/*`, `@/entities/featured-work/lib/safe-link`, `@/entities/featured-work/model`, `@/entities/featured-work/query`, `@/entities/media`, `@/entities/media/query`, `@/shared/ui/edit-record-gate` | client |
 | `apps/web/src/widgets/dashboard/media-manager/` | dashboard | `@/entities/media/query`, `@/features/dashboard/media-library` | client |
 | `apps/web/src/widgets/dashboard/project-manager/` | dashboard | `@/entities/media/query`, `@/entities/project/api/*`, `@/entities/project/model`, `@/entities/project/query`, `@/entities/project/ui/project-editor-card`, `@/entities/tag/query`, `@/entities/tech-stack/query`, `@/shared/ui/edit-record-gate`, `@/shared/ui/query-state` | client |
-| `apps/web/src/widgets/dashboard/tag-manager/` | dashboard | `@/entities/tag`, `@/entities/tag/query`, `@/features/dashboard/tag-management`, `@/shared/ui/query-state` | client |
+| `apps/web/src/widgets/dashboard/tag-manager/` | dashboard | `@/entities/tag`, `@/entities/tag/query`, `@/features/dashboard/tag-management`, `@/shared/ui`, `@/shared/ui/edit-record-gate` | client |
 | `apps/web/src/widgets/dashboard/tech-stack-manager/` | dashboard | `@/entities/tech-stack`, `@/entities/tech-stack/query`, `@/features/dashboard/media-library`, `@/features/dashboard/tech-stack-management`, `@/shared/ui/query-state` | client |
 | `apps/web/src/widgets/dashboard/user-profile-manager/` | dashboard | `@/entities/media`, `@/entities/user-profile`, `@/features/dashboard/manage-social-link-form`, `@/features/dashboard/update-profile` | client |
 | `apps/web/src/widgets/public/blog-details-content/` | public | `@/entities/blog`, `@/features/public` (group), `@/features/public/blog-print` | server entry, 7 client files |

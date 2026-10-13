@@ -4,26 +4,27 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
+import { TAG_MUTATION_TAGS } from '@/entities/tag/model/revalidation';
 import { requireAdmin } from '@/shared/lib/auth';
-import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getErrorMessage } from '@/shared/lib/utils';
 import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function deleteTag(id: string): Promise<ApiResponse<null>> {
-  try {
-    await requireAdmin();
+  await requireAdmin();
 
+  try {
     const parsedId = parseInput(idSchema, id);
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };
     }
 
+    // Deleting a tag cascades its `BlogTag` rows, so posts change too.
     await prisma.tag.delete({
       where: { id },
     });
 
-    revalidateTag(CACHE_TAGS.TAG, 'max');
+    for (const tagName of TAG_MUTATION_TAGS) revalidateTag(tagName, 'max');
 
     return { success: true, data: null };
   } catch (error) {
