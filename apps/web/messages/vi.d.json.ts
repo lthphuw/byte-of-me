@@ -468,7 +468,13 @@ declare const messages: {
         "allTimeSub": "Tổng cộng",
         "last30DaysSub": "{count, number} trong 30 ngày qua"
       },
-      "entity": "Bài viết"
+      "entity": "Bài viết",
+      "card": {
+        "untitled": "Bài viết chưa đặt tên",
+        "noCover": "Chưa có ảnh bìa",
+        "draft": "Bản nháp",
+        "noDescription": "Chưa có mô tả."
+      }
     },
     "comment": {
       "title": "Bình luận",
@@ -570,7 +576,9 @@ declare const messages: {
       "task": {
         "sortLabel": "Thứ tự",
         "contentLabel": "Công việc",
-        "removeButton": "Xóa công việc"
+        "removeButton": "Xóa công việc",
+        "removeConfirmTitle": "Xóa công việc này?",
+        "removeConfirmDescription": "Công việc này sẽ bị xóa khỏi biểu mẫu. Thay đổi chỉ được ghi lại khi bạn lưu kinh nghiệm làm việc."
       },
       "entity": "Công ty"
     },
@@ -627,7 +635,9 @@ declare const messages: {
         "imagesLabel": "Hình ảnh",
         "titleLabel": "Tiêu đề",
         "contentLabel": "Nội dung",
-        "contentPlaceholder": "Mô tả thành tích này…"
+        "contentPlaceholder": "Mô tả thành tích này…",
+        "moveUpLabel": "Chuyển {name} lên trên",
+        "moveDownLabel": "Chuyển {name} xuống dưới"
       },
       "entity": "Học vấn"
     },
@@ -673,7 +683,8 @@ declare const messages: {
         "previewLabel": "Demo {slot, number}",
         "labelLabel": "Nhãn {slot, number}",
         "removeButton": "Xóa",
-        "removeLabel": "Xóa demo {slot, number}"
+        "removeLabel": "Xóa demo {slot, number}",
+        "uploadSuccess": "Đã tải lên demo"
       },
       "entity": "Mục nổi bật"
     },
@@ -719,7 +730,9 @@ declare const messages: {
         "totalTooLargeDescription": "Tổng dung lượng vượt quá {maxSize, number}MB. Hãy tải lên ít tệp hơn mỗi lần.",
         "successTitle": "Thành công",
         "successDescription": "Tất cả hình ảnh đã được tải lên.",
-        "uploadButton": "Tải lên {count} tệp"
+        "uploadButton": "Tải lên {count} tệp",
+        "chooseFiles": "Chọn tệp",
+        "removeFile": "Bỏ {name}"
       },
       "toast": {
         "uploadError": "Tải lên thất bại",
@@ -1026,11 +1039,6 @@ declare const messages: {
       "resetButton": "Đặt lại",
       "cancelButton": "Hủy",
       "saveButton": "Lưu",
-      "reset": {
-        "confirmTitle": "Bỏ các thay đổi chưa lưu?",
-        "confirmDescription": "Mọi chỉnh sửa của bạn, ở tất cả các ngôn ngữ, sẽ được khôi phục về hồ sơ đã lưu gần nhất.",
-        "confirmAction": "Bỏ thay đổi"
-      },
       "translations": {
         "heading": "Bản dịch",
         "addLanguage": "Thêm ngôn ngữ",
@@ -1153,7 +1161,10 @@ declare const messages: {
       "tooLong": "Nội dung quá dài",
       "invalidSlug": "Chỉ dùng chữ thường, số và dấu gạch ngang",
       "invalidFormat": "Định dạng không hợp lệ",
-      "selectOne": "Chọn một mục"
+      "selectOne": "Chọn một mục",
+      "duplicateLanguage": "Mỗi ngôn ngữ chỉ được dùng một lần",
+      "duplicateMedia": "Không thể dùng cùng một tệp hai lần",
+      "tooManyItems": "Có quá nhiều mục"
     }
   },
   "auth": {

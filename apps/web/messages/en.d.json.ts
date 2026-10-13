@@ -468,7 +468,13 @@ declare const messages: {
         "allTimeSub": "All time",
         "last30DaysSub": "{count, number} in last 30 days"
       },
-      "entity": "Blog post"
+      "entity": "Blog post",
+      "card": {
+        "untitled": "Untitled post",
+        "noCover": "No cover",
+        "draft": "Draft",
+        "noDescription": "No description provided."
+      }
     },
     "comment": {
       "title": "Comments",
@@ -570,7 +576,9 @@ declare const messages: {
       "task": {
         "sortLabel": "Sort",
         "contentLabel": "Task",
-        "removeButton": "Remove task"
+        "removeButton": "Remove task",
+        "removeConfirmTitle": "Remove this task?",
+        "removeConfirmDescription": "The task will be removed from this form. Nothing is saved until you save the work experience."
       },
       "entity": "Company"
     },
@@ -627,7 +635,9 @@ declare const messages: {
         "imagesLabel": "Images",
         "titleLabel": "Title",
         "contentLabel": "Content",
-        "contentPlaceholder": "Describe this achievement…"
+        "contentPlaceholder": "Describe this achievement…",
+        "moveUpLabel": "Move {name} up",
+        "moveDownLabel": "Move {name} down"
       },
       "entity": "Education"
     },
@@ -673,7 +683,8 @@ declare const messages: {
         "previewLabel": "Demo {slot, number}",
         "labelLabel": "Label {slot, number}",
         "removeButton": "Remove",
-        "removeLabel": "Remove demo {slot, number}"
+        "removeLabel": "Remove demo {slot, number}",
+        "uploadSuccess": "Demo uploaded"
       },
       "entity": "Featured work"
     },
@@ -719,7 +730,9 @@ declare const messages: {
         "totalTooLargeDescription": "Together they exceed {maxSize, number}MB. Upload fewer at once.",
         "successTitle": "Success",
         "successDescription": "All images uploaded.",
-        "uploadButton": "{count, plural, =1 {Upload 1 File} other {Upload # Files}}"
+        "uploadButton": "{count, plural, =1 {Upload 1 File} other {Upload # Files}}",
+        "chooseFiles": "Choose files",
+        "removeFile": "Remove {name}"
       },
       "toast": {
         "uploadError": "Upload failed",
@@ -1026,11 +1039,6 @@ declare const messages: {
       "resetButton": "Reset",
       "cancelButton": "Cancel",
       "saveButton": "Save",
-      "reset": {
-        "confirmTitle": "Discard unsaved changes?",
-        "confirmDescription": "Every edit you have made, in every language, will be reverted to the last saved profile.",
-        "confirmAction": "Discard changes"
-      },
       "translations": {
         "heading": "Translations",
         "addLanguage": "Add Language",
@@ -1153,7 +1161,10 @@ declare const messages: {
       "tooLong": "This is too long",
       "invalidSlug": "Use lowercase letters, numbers and hyphens only",
       "invalidFormat": "This format is not valid",
-      "selectOne": "Choose an option"
+      "selectOne": "Choose an option",
+      "duplicateLanguage": "Each language may appear once",
+      "duplicateMedia": "The same file cannot be used twice",
+      "tooManyItems": "There are too many items"
     }
   },
   "auth": {
