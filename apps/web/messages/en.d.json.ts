@@ -371,7 +371,9 @@ declare const messages: {
         "signOut": "Sign out",
         "signOutError": "Sign out failed",
         "cacheSuccess": "System updated",
-        "cacheError": "Update failed"
+        "cacheError": "Update failed",
+        "collapseNav": "Collapse navigation",
+        "expandNav": "Expand navigation"
       }
     },
     "dashboard": {
@@ -400,7 +402,8 @@ declare const messages: {
       "noSubjectProvided": "No subject provided",
       "close": "Close",
       "clearSearch": "Clear search",
-      "readMessageFrom": "Read the message from {name}"
+      "readMessageFrom": "Read the message from {name}",
+      "entity": "Message"
     },
     "blog": {
       "title": "Blog Posts",
@@ -464,7 +467,8 @@ declare const messages: {
         "blogViewsLabel": "Blog Views",
         "allTimeSub": "All time",
         "last30DaysSub": "{count, number} in last 30 days"
-      }
+      },
+      "entity": "Blog post"
     },
     "comment": {
       "title": "Comments",
@@ -493,7 +497,8 @@ declare const messages: {
       "dialog": {
         "hideTitle": "Hide Comment",
         "hideDescription": "This comment will no longer be visible to visitors. You can restore it later."
-      }
+      },
+      "entity": "Comment"
     },
     "common": {
       "stats": {
@@ -566,7 +571,8 @@ declare const messages: {
         "sortLabel": "Sort",
         "contentLabel": "Task",
         "removeButton": "Remove task"
-      }
+      },
+      "entity": "Company"
     },
     "education": {
       "title": "Education",
@@ -622,7 +628,8 @@ declare const messages: {
         "titleLabel": "Title",
         "contentLabel": "Content",
         "contentPlaceholder": "Describe this achievement…"
-      }
+      },
+      "entity": "Education"
     },
     "featuredWorks": {
       "title": "Featured works",
@@ -667,7 +674,8 @@ declare const messages: {
         "labelLabel": "Label {slot, number}",
         "removeButton": "Remove",
         "removeLabel": "Remove demo {slot, number}"
-      }
+      },
+      "entity": "Featured work"
     },
     "media": {
       "title": "Media Library",
@@ -886,7 +894,8 @@ declare const messages: {
         "title": "Title",
         "url": "URL",
         "close": "Close"
-      }
+      },
+      "entity": "File"
     },
     "project": {
       "title": "Projects",
@@ -946,7 +955,8 @@ declare const messages: {
         "deleted": "Project deleted",
         "saveError": "Failed to save project",
         "deleteError": "Could not delete project"
-      }
+      },
+      "entity": "Project"
     },
     "tag": {
       "title": "Tags",
@@ -977,7 +987,8 @@ declare const messages: {
         "deleted": "Tag deleted",
         "saveError": "Failed to save tag",
         "deleteError": "Could not delete tag"
-      }
+      },
+      "entity": "Tag"
     },
     "techStack": {
       "title": "Tech Stack",
@@ -1006,7 +1017,8 @@ declare const messages: {
         "deleted": "Tech stack deleted",
         "saveError": "Failed to save tech stack",
         "deleteError": "Could not delete tech stack"
-      }
+      },
+      "entity": "Tech stack"
     },
     "userProfile": {
       "title": "Profile Settings",
@@ -1077,15 +1089,12 @@ declare const messages: {
         "urlInvalid": "Enter a full https:// address, or an email address",
         "languageRequired": "Language is required"
       },
-      "loadError": {
-        "title": "Profile not found",
-        "description": "Could not load your profile data at this time."
-      },
       "toast": {
         "updated": "Profile updated",
         "loadError": "Profile could not be refreshed",
         "saveError": "Save failed"
-      }
+      },
+      "entity": "Profile"
     },
     "shared": {
       "translationTabs": {
@@ -1112,7 +1121,39 @@ declare const messages: {
       "actions": {
         "editItem": "Edit {name}",
         "deleteItem": "Delete {name}"
+      },
+      "crud": {
+        "newTitle": "New {entity}",
+        "editTitle": "Edit {entity}",
+        "created": "{entity} created",
+        "updated": "{entity} updated",
+        "deleted": "{entity} deleted",
+        "saveError": "Couldn't save {entity}",
+        "deleteError": "Couldn't delete {entity}",
+        "deleteTitle": "Delete {entity}?",
+        "deleteDescription": "{name} will be permanently deleted. This can't be undone.",
+        "discardTitle": "Discard unsaved changes?",
+        "discardDescription": "Your changes will be lost.",
+        "discard": "Discard",
+        "keepEditing": "Keep editing",
+        "save": "Save",
+        "saving": "Saving…",
+        "cancel": "Cancel",
+        "close": "Close",
+        "editItem": "Edit {name}",
+        "deleteItem": "Delete {name}"
       }
+    },
+    "validation": {
+      "required": "This field is required",
+      "invalidUrl": "Enter a valid URL",
+      "invalidEmail": "Enter a valid email",
+      "invalidDate": "Enter a valid date",
+      "invalidNumber": "Enter a number",
+      "tooLong": "This is too long",
+      "invalidSlug": "Use lowercase letters, numbers and hyphens only",
+      "invalidFormat": "This format is not valid",
+      "selectOne": "Choose an option"
     }
   },
   "auth": {

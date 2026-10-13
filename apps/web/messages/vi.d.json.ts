@@ -371,7 +371,9 @@ declare const messages: {
         "signOut": "Đăng xuất",
         "signOutError": "Đăng xuất thất bại",
         "cacheSuccess": "Hệ thống đã cập nhật",
-        "cacheError": "Cập nhật thất bại"
+        "cacheError": "Cập nhật thất bại",
+        "collapseNav": "Thu gọn điều hướng",
+        "expandNav": "Mở rộng điều hướng"
       }
     },
     "dashboard": {
@@ -400,7 +402,8 @@ declare const messages: {
       "noSubjectProvided": "Không có tiêu đề",
       "close": "Đóng",
       "clearSearch": "Xóa nội dung tìm kiếm",
-      "readMessageFrom": "Đọc tin nhắn từ {name}"
+      "readMessageFrom": "Đọc tin nhắn từ {name}",
+      "entity": "Tin nhắn"
     },
     "blog": {
       "title": "Bài viết",
@@ -464,7 +467,8 @@ declare const messages: {
         "blogViewsLabel": "Lượt xem bài viết",
         "allTimeSub": "Tổng cộng",
         "last30DaysSub": "{count, number} trong 30 ngày qua"
-      }
+      },
+      "entity": "Bài viết"
     },
     "comment": {
       "title": "Bình luận",
@@ -493,7 +497,8 @@ declare const messages: {
       "dialog": {
         "hideTitle": "Ẩn bình luận",
         "hideDescription": "Bình luận này sẽ không còn hiển thị với khách truy cập. Bạn có thể khôi phục lại sau."
-      }
+      },
+      "entity": "Bình luận"
     },
     "common": {
       "stats": {
@@ -566,7 +571,8 @@ declare const messages: {
         "sortLabel": "Thứ tự",
         "contentLabel": "Công việc",
         "removeButton": "Xóa công việc"
-      }
+      },
+      "entity": "Công ty"
     },
     "education": {
       "title": "Học vấn",
@@ -622,10 +628,11 @@ declare const messages: {
         "titleLabel": "Tiêu đề",
         "contentLabel": "Nội dung",
         "contentPlaceholder": "Mô tả thành tích này…"
-      }
+      },
+      "entity": "Học vấn"
     },
     "featuredWorks": {
-      "title": "Featured works",
+      "title": "Mục nổi bật",
       "description": "Ghim những đóng góp bạn muốn khách truy cập thấy đầu tiên trên trang chủ.",
       "createButton": "Thêm featured work",
       "emptyTitle": "Chưa có featured work nào",
@@ -667,7 +674,8 @@ declare const messages: {
         "labelLabel": "Nhãn {slot, number}",
         "removeButton": "Xóa",
         "removeLabel": "Xóa demo {slot, number}"
-      }
+      },
+      "entity": "Mục nổi bật"
     },
     "media": {
       "title": "Thư viện",
@@ -886,7 +894,8 @@ declare const messages: {
         "title": "Tiêu đề",
         "url": "Đường dẫn",
         "close": "Đóng"
-      }
+      },
+      "entity": "Tệp"
     },
     "project": {
       "title": "Dự án",
@@ -946,7 +955,8 @@ declare const messages: {
         "deleted": "Đã xóa dự án",
         "saveError": "Lưu dự án thất bại",
         "deleteError": "Không thể xóa dự án"
-      }
+      },
+      "entity": "Dự án"
     },
     "tag": {
       "title": "Thẻ",
@@ -977,7 +987,8 @@ declare const messages: {
         "deleted": "Đã xóa thẻ",
         "saveError": "Lưu thẻ thất bại",
         "deleteError": "Không thể xóa thẻ"
-      }
+      },
+      "entity": "Thẻ"
     },
     "techStack": {
       "title": "Công nghệ",
@@ -1006,7 +1017,8 @@ declare const messages: {
         "deleted": "Đã xóa công nghệ",
         "saveError": "Lưu công nghệ thất bại",
         "deleteError": "Không thể xóa công nghệ"
-      }
+      },
+      "entity": "Công nghệ"
     },
     "userProfile": {
       "title": "Cài đặt hồ sơ",
@@ -1077,15 +1089,12 @@ declare const messages: {
         "urlInvalid": "Nhập đường dẫn https:// đầy đủ, hoặc một địa chỉ email",
         "languageRequired": "Vui lòng nhập ngôn ngữ"
       },
-      "loadError": {
-        "title": "Không tìm thấy hồ sơ",
-        "description": "Hiện chưa thể tải dữ liệu hồ sơ của bạn."
-      },
       "toast": {
         "updated": "Đã cập nhật hồ sơ",
         "loadError": "Không thể làm mới hồ sơ",
         "saveError": "Lưu thất bại"
-      }
+      },
+      "entity": "Hồ sơ"
     },
     "shared": {
       "translationTabs": {
@@ -1112,7 +1121,39 @@ declare const messages: {
       "actions": {
         "editItem": "Sửa {name}",
         "deleteItem": "Xóa {name}"
+      },
+      "crud": {
+        "newTitle": "Thêm {entity}",
+        "editTitle": "Sửa {entity}",
+        "created": "Đã tạo {entity}",
+        "updated": "Đã cập nhật {entity}",
+        "deleted": "Đã xóa {entity}",
+        "saveError": "Không thể lưu {entity}",
+        "deleteError": "Không thể xóa {entity}",
+        "deleteTitle": "Xóa {entity}?",
+        "deleteDescription": "{name} sẽ bị xóa vĩnh viễn. Không thể hoàn tác.",
+        "discardTitle": "Bỏ thay đổi chưa lưu?",
+        "discardDescription": "Các thay đổi chưa lưu sẽ bị mất.",
+        "discard": "Bỏ thay đổi",
+        "keepEditing": "Tiếp tục chỉnh sửa",
+        "save": "Lưu",
+        "saving": "Đang lưu…",
+        "cancel": "Hủy",
+        "close": "Đóng",
+        "editItem": "Sửa {name}",
+        "deleteItem": "Xóa {name}"
       }
+    },
+    "validation": {
+      "required": "Trường này là bắt buộc",
+      "invalidUrl": "Nhập URL hợp lệ",
+      "invalidEmail": "Nhập email hợp lệ",
+      "invalidDate": "Nhập ngày hợp lệ",
+      "invalidNumber": "Nhập một số",
+      "tooLong": "Nội dung quá dài",
+      "invalidSlug": "Chỉ dùng chữ thường, số và dấu gạch ngang",
+      "invalidFormat": "Định dạng không hợp lệ",
+      "selectOne": "Chọn một mục"
     }
   },
   "auth": {

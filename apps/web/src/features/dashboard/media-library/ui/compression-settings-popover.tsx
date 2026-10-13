@@ -69,7 +69,15 @@ export function CompressionSettingsPopover({
               {t('description')}
             </p>
           </div>
-          <SaveStatus isSaving={isSaving} saveError={saveError} t={t} />
+          <SaveStatus
+            isSaving={isSaving}
+            saveError={saveError}
+            labels={{
+              saving: t('saving'),
+              saved: t('saved'),
+              saveError: t('saveError'),
+            }}
+          />
         </div>
 
         <div className="flex items-center justify-between gap-4">
@@ -134,11 +142,11 @@ export function CompressionSettingsPopover({
 function SaveStatus({
   isSaving,
   saveError,
-  t,
+  labels,
 }: {
   isSaving: boolean;
   saveError: boolean;
-  t: ReturnType<typeof useTranslations>;
+  labels: { saving: string; saved: string; saveError: string };
 }) {
   if (saveError) {
     return (
@@ -147,7 +155,7 @@ function SaveStatus({
         aria-live="polite"
       >
         <TriangleAlert className="size-3.5" />
-        {t('saveError')}
+        {labels.saveError}
       </span>
     );
   }
@@ -160,12 +168,12 @@ function SaveStatus({
       {isSaving ? (
         <>
           <Loader2 className="size-3.5 animate-spin" />
-          {t('saving')}
+          {labels.saving}
         </>
       ) : (
         <>
           <Check className="size-3.5" />
-          {t('saved')}
+          {labels.saved}
         </>
       )}
     </span>
