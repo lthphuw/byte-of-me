@@ -36,6 +36,7 @@ const BoldToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             }}
             disabled={!state.toggles.bold.can}
             ref={ref}
+            aria-label={labels.bold}
             {...props}
           >
             {children ?? <BoldIcon className="h-4 w-4" />}

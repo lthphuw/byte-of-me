@@ -47,6 +47,7 @@ const TableToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
               }
               disabled={!state.table.canInsert}
               ref={ref}
+              aria-label={labels.insertTable}
               {...props}
             >
               <TableIcon className="h-4 w-4" />
@@ -67,6 +68,7 @@ const TableToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             size="icon"
             className={cn('h-8 w-8 bg-accent p-0 sm:h-9 sm:w-9', className)}
             ref={ref}
+            aria-label={labels.tableOptions}
             {...props}
           >
             <TableIcon className="h-4 w-4" />

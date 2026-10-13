@@ -165,6 +165,7 @@ export const ColorHighlightToolbar = () => {
                   color: currentColor,
                 }}
                 className={cn('h-8 w-14 p-0 font-normal')}
+                aria-label={labels.textColorAndHighlight}
               >
                 <span className="text-md">A</span>
                 <ChevronDownIcon className="ml-2 h-4 w-4" />

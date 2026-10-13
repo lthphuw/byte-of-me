@@ -50,6 +50,7 @@ export function useEditorLabels(): EditorLabels {
       orderedList: t('orderedList'),
       horizontalRule: t('horizontalRule'),
       insertTable: t('insertTable'),
+      tableOptions: t('tableOptions'),
       addRowBelow: t('addRowBelow'),
       addColumnRight: t('addColumnRight'),
       deleteRow: t('deleteRow'),

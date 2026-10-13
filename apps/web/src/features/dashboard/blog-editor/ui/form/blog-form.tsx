@@ -218,7 +218,11 @@ export function BlogForm({
                         <FormControl>
                           <RichTextEditor
                             value={field.value}
-                            onChange={field.onChange}
+                            // The editor's own normalised copy of the loaded body
+                            // is not an edit: without this an untouched form is dirty.
+                            onChange={(json, meta) => {
+                              if (!meta.initial) field.onChange(json);
+                            }}
                             uploadImage={uploadImage}
                             labels={editorLabels}
                             uploadFailedText={tMedia('toast.uploadError')}

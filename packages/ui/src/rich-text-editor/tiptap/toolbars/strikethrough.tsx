@@ -29,6 +29,7 @@ const StrikeThroughToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             }}
             disabled={!state.toggles.strike.can}
             ref={ref}
+            aria-label={labels.strikethrough}
             {...props}
           >
             {children ?? <Strikethrough className="h-4 w-4" />}

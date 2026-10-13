@@ -29,6 +29,7 @@ const CodeToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             }}
             disabled={!state.toggles.code.can}
             ref={ref}
+            aria-label={labels.code}
             {...props}
           >
             {children ?? <Code2 className="h-4 w-4" />}

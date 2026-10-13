@@ -29,6 +29,7 @@ const ItalicToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             }}
             disabled={!state.toggles.italic.can}
             ref={ref}
+            aria-label={labels.italic}
             {...props}
           >
             {children ?? <ItalicIcon className="h-4 w-4" />}

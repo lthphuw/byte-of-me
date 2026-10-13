@@ -75,7 +75,7 @@ export function BlogMetaFields({
                   value={field.value || 'none'}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="min-h-11 can-hover:min-h-9">
                       <SelectValue placeholder={t('meta.projectPlaceholder')} />
                     </SelectTrigger>
                   </FormControl>
@@ -101,7 +101,7 @@ export function BlogMetaFields({
           control={control}
           name="isPublished"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+            <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 can-hover:items-start">
               <FormControl>
                 <Checkbox
                   checked={field.value}
@@ -109,7 +109,10 @@ export function BlogMetaFields({
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel>{t('meta.publishedLabel')}</FormLabel>
+                {/* The label is the tap target; the 16px checkbox alone is not one. */}
+                <FormLabel className="flex min-h-11 items-center can-hover:inline">
+                  {t('meta.publishedLabel')}
+                </FormLabel>
               </div>
             </FormItem>
           )}

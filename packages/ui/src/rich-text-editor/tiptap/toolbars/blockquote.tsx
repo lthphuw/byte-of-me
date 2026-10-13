@@ -29,6 +29,7 @@ const BlockquoteToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             }}
             disabled={!state.toggles.blockquote.can}
             ref={ref}
+            aria-label={labels.blockquote}
             {...props}
           >
             {children ?? <TextQuote className="h-4 w-4" />}

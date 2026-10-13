@@ -1580,9 +1580,9 @@ export function RichTextEditor({
 
       {/* Anchored to the editor FRAME, outside the scrolling column: nested in it
           an `absolute inset-0` overlay scrolls away with the document, and once
-          fed a transaction -> re-render loop on phones. Only chromeless: every
-          other editor already has its real toolbar on screen at every width. */}
-      {chromeless && !rawActive && (
+          fed a transaction -> re-render loop on phones. Compact editors are left
+          out: their bar is hidden below `sm` on purpose. */}
+      {!compact && !rawActive && preview === null && (
         <MobileEditorTools
           editor={editor}
           uploadImage={uploadImage}

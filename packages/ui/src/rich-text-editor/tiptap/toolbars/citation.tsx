@@ -75,6 +75,7 @@ const CitationToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 size="icon"
                 className={cn('h-8 w-8 p-0 sm:h-9 sm:w-9', className)}
                 ref={ref}
+                aria-label={labels.cite}
                 {...props}
               >
                 <Quote className="h-4 w-4" />

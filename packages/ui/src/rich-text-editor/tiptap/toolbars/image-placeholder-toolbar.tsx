@@ -31,6 +31,7 @@ const ImagePlaceholderToolbar = React.forwardRef<
             onClick?.(e);
           }}
           ref={ref}
+          aria-label={labels.image}
           {...props}
         >
           {children ?? <Image className="h-4 w-4" />}

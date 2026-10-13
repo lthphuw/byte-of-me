@@ -870,7 +870,8 @@ declare const messages: {
         "year": "Năm",
         "title": "Tiêu đề",
         "url": "Đường dẫn",
-        "close": "Đóng"
+        "close": "Đóng",
+        "tableOptions": "Tùy chọn bảng"
       },
       "entity": "Tệp"
     },

@@ -24,6 +24,7 @@ const HorizontalRuleToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
               onClick?.(e);
             }}
             ref={ref}
+            aria-label={labels.horizontalRule}
             {...props}
           >
             {children ?? <SeparatorHorizontal className="h-4 w-4" />}

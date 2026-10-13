@@ -870,7 +870,8 @@ declare const messages: {
         "year": "Year",
         "title": "Title",
         "url": "URL",
-        "close": "Close"
+        "close": "Close",
+        "tableOptions": "Table options"
       },
       "entity": "File"
     },

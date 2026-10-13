@@ -26,6 +26,7 @@ const RedoToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             }}
             disabled={!state.canRedo}
             ref={ref}
+            aria-label={labels.redo}
             {...props}
           >
             {children ?? <Redo2 className="h-4 w-4" />}

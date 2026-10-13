@@ -26,6 +26,7 @@ const UndoToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             }}
             disabled={!state.canUndo}
             ref={ref}
+            aria-label={labels.undo}
             {...props}
           >
             {children ?? <Undo2 className="h-4 w-4" />}

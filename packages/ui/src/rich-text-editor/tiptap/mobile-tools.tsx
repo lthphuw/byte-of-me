@@ -23,17 +23,9 @@ import type { ImageUploadFn } from './extensions/image';
 import { imageFilesFrom, resolveImages } from './extensions/upload-images';
 
 /**
- * The touch counterpart to drag-and-drop and markdown input rules.
- *
- * On a desktop the chromeless editor needs no buttons: `## ` becomes a
- * heading as it is typed, and an image is dragged onto the page. Neither
- * gesture exists on a phone — there is no drag source, and a soft keyboard
- * makes `> ` and `- ` fiddly rather than fluent — so the same affordances are
- * reachable from one thumb-sized button instead of a bar that would eat a
- * quarter of a small screen.
- *
- * Rendered only under `md`, and only for the chromeless editor: everywhere
- * else the real toolbar is already on screen.
+ * The touch counterpart to markdown input rules and drag-and-drop, neither of
+ * which a phone has. One thumb-sized button opens the tools; it shows under `md`
+ * only, and never on a compact editor, whose bar is hidden below `sm`.
  */
 
 type Tool = {
@@ -142,7 +134,7 @@ export function MobileEditorTools({
           opened. */}
       {open && (
         <div
-          className="pointer-events-auto absolute bottom-20 right-4 grid w-44 grid-cols-4 gap-1 rounded-xl border bg-popover p-2 shadow-lg"
+          className="pointer-events-auto absolute bottom-20 right-4 grid w-52 grid-cols-4 gap-1 rounded-xl border bg-popover p-2 shadow-lg"
           role="menu"
           aria-label={labels.formatting}
         >
@@ -151,7 +143,7 @@ export function MobileEditorTools({
               type="button"
               role="menuitem"
               aria-label={labels.insertImage}
-              className="flex aspect-square items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+              className="flex aspect-square min-h-11 min-w-11 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
               onClick={() => fileInput.current?.click()}
             >
               <ImageIcon className="h-4 w-4" />
@@ -168,7 +160,7 @@ export function MobileEditorTools({
                 aria-label={labels[tool.labelKey]}
                 aria-pressed={pressed[index]}
                 className={cn(
-                  'flex aspect-square items-center justify-center rounded-md hover:bg-muted',
+                  'flex aspect-square min-h-11 min-w-11 items-center justify-center rounded-md hover:bg-muted',
                   pressed[index]
                     ? 'bg-muted text-foreground'
                     : 'text-muted-foreground hover:text-foreground'

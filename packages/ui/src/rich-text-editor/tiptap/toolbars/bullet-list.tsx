@@ -30,6 +30,7 @@ const BulletListToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             }}
             disabled={!state.toggles.bulletList.can}
             ref={ref}
+            aria-label={labels.bulletList}
             {...props}
           >
             {children ?? <List className="h-4 w-4" />}

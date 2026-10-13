@@ -29,6 +29,7 @@ const UnderlineToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             }}
             disabled={!state.toggles.underline.can}
             ref={ref}
+            aria-label={labels.underline}
             {...props}
           >
             {children ?? <UnderlineIcon className="h-4 w-4" />}

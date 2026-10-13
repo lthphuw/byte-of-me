@@ -29,6 +29,7 @@ const OrderedListToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             }}
             disabled={!state.toggles.orderedList.can}
             ref={ref}
+            aria-label={labels.orderedList}
             {...props}
           >
             {children ?? <ListOrdered className="h-4 w-4" />}

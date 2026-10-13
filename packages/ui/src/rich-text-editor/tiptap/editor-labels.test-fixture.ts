@@ -43,6 +43,7 @@ export const testEditorLabels: EditorLabels = {
   deleteColumn: 'Delete column',
   toggleHeaderRow: 'Toggle header row',
   deleteTable: 'Delete table',
+  tableOptions: 'Table options',
   textAlignment: 'Text Alignment',
   alignLeft: 'Left Align',
   alignCenter: 'Center Align',
