@@ -86,10 +86,9 @@ export function DashboardNavRail({
       <aside
         aria-label={t('navAriaLabel')}
         className={cn(
-          'sticky top-0 z-40 hidden h-dvh shrink-0 flex-col overflow-x-clip border-r border-border/50 bg-card pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 transition-[width] motion-reduce:transition-none lg:flex',
-          expanded
-            ? 'w-60 duration-200 ease-out'
-            : 'w-14 items-center gap-1 duration-150 ease-in'
+          'sticky top-0 z-40 hidden h-dvh shrink-0 flex-col overflow-x-clip border-r border-border/50 bg-card pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 lg:flex',
+          // No width animation: .claude/rules/motion.md rules out animating width.
+          expanded ? 'w-60' : 'w-14 items-center gap-1'
         )}
       >
         {expanded ? (

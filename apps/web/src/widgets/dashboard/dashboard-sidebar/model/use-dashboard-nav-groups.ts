@@ -19,8 +19,7 @@ import type { NavDrawerGroup } from '@/shared/ui/nav-drawer';
  * Labels are resolved with literal `t('items.x')` calls rather than a
  * `labelKey` field looked up dynamically — next-intl's generated declarations
  * only type-check literal keys, so a dynamic lookup would silently accept a
- * key that does not exist. Same reason `use-space-nav-items.ts` does it this
- * way.
+ * key that does not exist.
  */
 export function useDashboardNavGroups(): NavDrawerGroup[] {
   const t = useTranslations('dashboard.sidebar');
