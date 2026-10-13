@@ -279,8 +279,6 @@ declare const messages: {
     "featuredDemoZoomOut": "Zoom out",
     "featuredDemoZoomReset": "Reset zoom",
     "featuredDemoExitFullscreen": "Exit full screen",
-    "featuredShowDetails": "Show details",
-    "featuredHideDetails": "Hide details",
     "skillsTitle": "Stack",
     "educationTitle": "Education",
     "present": "Present",
@@ -640,8 +638,6 @@ declare const messages: {
       "deleteLabel": "Delete {name}",
       "moveUpLabel": "Move {name} up",
       "moveDownLabel": "Move {name} down",
-      "published": "Published",
-      "draft": "Draft",
       "deleteTitle": "Delete featured work?",
       "deleteDescription": "Are you sure you want to delete <name></name>?",
       "toast": {
@@ -662,11 +658,9 @@ declare const messages: {
         "createSubmitButton": "Add featured work"
       },
       "titleLabel": "Title",
-      "descriptionLabel": "Description",
       "detailsLabel": "Details",
       "urlLabel": "Link",
       "urlPlaceholder": "https://github.com/owner/repo/pull/123",
-      "publishedLabel": "Published",
       "demo": {
         "title": "Demo",
         "uploadButton": "Upload",

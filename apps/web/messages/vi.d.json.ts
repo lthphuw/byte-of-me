@@ -279,8 +279,6 @@ declare const messages: {
     "featuredDemoZoomOut": "Thu nhỏ",
     "featuredDemoZoomReset": "Đặt lại mức phóng",
     "featuredDemoExitFullscreen": "Thoát toàn màn hình",
-    "featuredShowDetails": "Xem chi tiết",
-    "featuredHideDetails": "Thu gọn chi tiết",
     "skillsTitle": "Công nghệ",
     "educationTitle": "Học vấn",
     "present": "Hiện tại",
@@ -640,8 +638,6 @@ declare const messages: {
       "deleteLabel": "Xóa {name}",
       "moveUpLabel": "Chuyển {name} lên trên",
       "moveDownLabel": "Chuyển {name} xuống dưới",
-      "published": "Đã xuất bản",
-      "draft": "Bản nháp",
       "deleteTitle": "Xóa featured work?",
       "deleteDescription": "Bạn có chắc chắn muốn xóa <name></name> không?",
       "toast": {
@@ -662,11 +658,9 @@ declare const messages: {
         "createSubmitButton": "Thêm featured work"
       },
       "titleLabel": "Tiêu đề",
-      "descriptionLabel": "Mô tả",
       "detailsLabel": "Chi tiết",
       "urlLabel": "Liên kết",
       "urlPlaceholder": "https://github.com/owner/repo/pull/123",
-      "publishedLabel": "Đã xuất bản",
       "demo": {
         "title": "Demo",
         "uploadButton": "Tải lên",
