@@ -408,26 +408,8 @@
       "createButton": "Bài viết mới",
       "emptyTitle": "Chưa có bài viết nào",
       "emptyDescription": "Tạo bài viết đầu tiên của bạn.",
-      "deleteTitle": "Xóa bài viết?",
-      "deleteDescription": "Hành động này không thể hoàn tác.",
-      "loadError": "Không thể tải bài viết này.",
       "dialog": {
-        "editTitle": "Chỉnh sửa bài viết",
-        "createTitle": "Tạo bài viết",
-        "editDescription": "Cập nhật bài viết và các bản dịch, sau đó lưu lại.",
-        "createDescription": "Viết bài, thêm bản dịch và xuất bản khi sẵn sàng.",
-        "retry": "Thử lại",
-        "loadingLabel": "Đang tải bài viết",
-        "cancelButton": "Hủy",
-        "saveButton": "Lưu thay đổi",
-        "createSubmitButton": "Tạo bài viết"
-      },
-      "toast": {
-        "created": "Đã tạo bài viết",
-        "updated": "Đã cập nhật bài viết",
-        "deleted": "Đã xóa bài viết",
-        "saveError": "Lưu bài viết thất bại",
-        "deleteError": "Không thể xóa bài viết"
+        "loadingLabel": "Đang tải bài viết"
       },
       "form": {
         "draftFound": "Đã tìm thấy bản nháp chưa lưu lúc {time}.",
@@ -438,8 +420,7 @@
         "titlePlaceholder": "Tiêu đề bài viết...",
         "descriptionLabel": "Mô tả ngắn",
         "descriptionPlaceholder": "Tóm tắt ngắn gọn về bài viết...",
-        "bodyLabel": "Nội dung bài viết",
-        "savePost": "Lưu bài viết"
+        "bodyLabel": "Nội dung bài viết"
       },
       "meta": {
         "slugLabel": "Slug",
@@ -646,28 +627,11 @@
       "emptyDescription": "Thêm một pull request, bản phát hành hoặc bài viết mà bạn tự hào.",
       "emptyAction": "Thêm mục đầu tiên",
       "untitled": "Featured work chưa đặt tên",
-      "editLabel": "Sửa {name}",
-      "deleteLabel": "Xóa {name}",
       "moveUpLabel": "Chuyển {name} lên trên",
       "moveDownLabel": "Chuyển {name} xuống dưới",
-      "deleteTitle": "Xóa featured work?",
-      "deleteDescription": "Bạn có chắc chắn muốn xóa <name></name> không?",
-      "toast": {
-        "created": "Đã thêm featured work",
-        "updated": "Đã cập nhật featured work",
-        "deleted": "Đã xóa featured work",
-        "saveError": "Lưu featured work thất bại",
-        "deleteError": "Không thể xóa featured work",
-        "reorderError": "Không thể thay đổi thứ tự"
-      },
       "dialog": {
-        "createTitle": "Thêm featured work",
-        "editTitle": "Chỉnh sửa featured work",
         "createDescription": "Thêm một featured work để ghim lên trang chủ.",
-        "editDescription": "Cập nhật featured work đã ghim này.",
-        "cancelButton": "Hủy",
-        "saveButton": "Lưu thay đổi",
-        "createSubmitButton": "Thêm featured work"
+        "editDescription": "Cập nhật featured work đã ghim này."
       },
       "titleLabel": "Tiêu đề",
       "detailsLabel": "Chi tiết",
@@ -913,13 +877,7 @@
       "createButton": "Dự án mới",
       "emptyTitle": "Chưa có dự án nào",
       "emptyDescription": "Tạo dự án đầu tiên để giới thiệu công việc của bạn.",
-      "editLabel": "Sửa {name}",
-      "deleteLabel": "Xóa {name}",
-      "deleteTitle": "Xóa dự án?",
-      "deleteDescription": "Hành động này không thể hoàn tác. Dự án và toàn bộ dữ liệu liên quan sẽ bị xóa vĩnh viễn khỏi máy chủ.",
       "dialog": {
-        "createTitle": "Dự án mới",
-        "editTitle": "Chỉnh sửa dự án",
         "createDescription": "Mô tả dự án, liên kết với công nghệ và thẻ, sau đó viết nội dung cho từng ngôn ngữ.",
         "editDescription": "Cập nhật liên kết, thời gian và nội dung theo từng ngôn ngữ của dự án này.",
         "slugLabel": "Slug",
@@ -940,10 +898,7 @@
         "translationsLabel": "Bản dịch nội dung",
         "titleLabel": "Tiêu đề",
         "descriptionLabel": "Mô tả",
-        "descriptionPlaceholder": "Dự án này là gì và làm được điều gì…",
-        "saveButton": "Lưu dự án",
-        "savingButton": "Đang lưu...",
-        "cancelButton": "Hủy"
+        "descriptionPlaceholder": "Dự án này là gì và làm được điều gì…"
       },
       "coauthors": {
         "title": "Đồng tác giả",
@@ -959,13 +914,6 @@
         "githubLinkLabel": "Mở kho mã GitHub của {name} (mở trong tab mới)",
         "liveLinkLabel": "Mở trang demo của {name} (mở trong tab mới)"
       },
-      "toast": {
-        "created": "Đã tạo dự án",
-        "updated": "Đã cập nhật dự án",
-        "deleted": "Đã xóa dự án",
-        "saveError": "Lưu dự án thất bại",
-        "deleteError": "Không thể xóa dự án"
-      },
       "entity": "Dự án"
     },
     "tag": {
@@ -975,28 +923,11 @@
       "emptyTitle": "Chưa có thẻ nào",
       "emptyDescription": "Tạo thẻ để sắp xếp thư viện nội dung của bạn.",
       "emptyAction": "Tạo thẻ đầu tiên",
-      "deleteTitle": "Xóa thẻ",
-      "deleteDescription": "Thao tác này sẽ xóa vĩnh viễn thẻ <name></name>. Hành động này không thể hoàn tác.",
       "dialog": {
-        "createTitle": "Tạo thẻ",
-        "editTitle": "Chỉnh sửa thẻ",
         "slugLabel": "Slug",
         "slugPlaceholder": "reactjs",
-        "translationsLabel": "Bản dịch",
-        "addButton": "Thêm",
-        "languageLabel": "Ngôn ngữ",
-        "languagePlaceholder": "en",
         "nameLabel": "Tên",
-        "namePlaceholder": "React",
-        "cancelButton": "Hủy",
-        "saveButton": "Lưu"
-      },
-      "toast": {
-        "created": "Đã tạo thẻ",
-        "updated": "Đã cập nhật thẻ",
-        "deleted": "Đã xóa thẻ",
-        "saveError": "Lưu thẻ thất bại",
-        "deleteError": "Không thể xóa thẻ"
+        "namePlaceholder": "React"
       },
       "entity": "Thẻ"
     },

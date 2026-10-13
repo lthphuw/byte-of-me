@@ -26,12 +26,12 @@ import { companyKeys } from '@/entities/company/model/query-keys';
 import { educationKeys } from '@/entities/education/model/query-keys';
 import { projectKeys } from '@/entities/project/model/query-keys';
 import { tagKeys } from '@/entities/tag/model/query-keys';
-import { useCrudManager } from '@/shared/hooks/use-crud-manager';
+import { type CrudKeys, useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
 
-type AdminKeys = {
+type AdminKeys = CrudKeys & {
   adminList: () => readonly unknown[];
   adminPage: (page: number) => readonly unknown[];
 };
@@ -129,9 +129,9 @@ describe.each(entities)('$name admin keys', ({ keys, picker, outside }) => {
       const { result } = renderHook(
         () =>
           useCrudManager<{ id: string }, unknown>({
-            queryKey: keys.adminList(),
+            entity: 'Row',
+            keys,
             pageKey: keys.adminPage,
-            entityLabel: 'Row',
             fetchPage,
             create: noop,
             update: noop,

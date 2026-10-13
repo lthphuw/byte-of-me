@@ -90,7 +90,7 @@ packages/ui/
 - Run tests from this directory. `bunfig.toml` resolves its preload against cwd, so `bun test packages/ui` from the root skips `happydom.ts` (AGENTS §10). `@happy-dom/global-registrator` and `@testing-library/react` are declared only in the root `package.json`.
 - `packages/ui/README.md` is stale. Its "Known flagged code" paths (`src/rich-text-editor/blocks/**`, `src/rich-text-editor/editor/**`) and `lexical` deps do not exist. No file in `packages/ui/src` imports `next-intl`, so `expandable-text` does not translate. `filter-multi-select-section` does not exist. `apps/web/src/shared/lib` re-exports `cn` but not `sanitizeHtml`. "Every module is reachable by subpath" is wrong (see the second bullet).
 - `EditButton` and `DeleteButton` (`edit-button.tsx`, `delete-button.tsx`) are `size="icon"` with `min-h-11 min-w-11`, and `can-hover:min-h-9 can-hover:min-w-9` under a fine pointer: 44 px on touch, 36 px with a mouse. All eleven consumers are dashboard surfaces (`rg -n "EditButton|DeleteButton" apps packages`), so there is no size prop.
-- `ConfirmDeleteDialog` takes `description: ReactNode`, so a caller may pass JSX. Its default strings are English, because this package has no next-intl context.
+- `ConfirmDeleteDialog` takes `description: string`. Its default strings are English, because this package has no next-intl context.
 
 ## Run
 

@@ -34,9 +34,9 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 export async function updateWorkspaceSettings(
   input: WorkspaceSettingsPatch
 ): Promise<ApiResponse<WorkspaceSettings>> {
-  try {
-    const session = await requireAdmin();
+  const session = await requireAdmin();
 
+  try {
     const parsed = parseInput(workspaceSettingsPatchSchema, input);
     if (!parsed.ok) {
       return { success: false, errorMsg: parsed.errorMsg };

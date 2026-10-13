@@ -64,7 +64,7 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 | `education` | `EDUCATION` | education: create, update, delete; media delete |
 | `featured-work` | `FEATURED_WORK` | featured-work: create, update, delete, reorder; media delete |
 | `media` | `MEDIA` | media: upload, finalize video, delete |
-| `project` | `PROJECT` | project: create, update, delete; media delete |
+| `project` | `PROJECT` | project: create, update, delete; tag: create, update, delete; tech-stack: create, update, delete; media delete |
 | `social-link` | `SOCIAL` | user-profile: save-profile (social-link itself never revalidates) |
 | `tag` | `TAG` | tag: create, update, delete |
 | `tech-stack` | `TECH` | tech-stack: create, update, delete; media delete |
@@ -82,7 +82,7 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 - Public post: `apps/web/src/app/[locale]/(public)/blogs/[slug]/page.tsx:32` → `get-public-blog-by-slug.ts` (tags `blog` + slug); prev/next and related are separate cached reads.
 - Editors load the full row by id on open (`get-admin-*-by-id`), never the list row: `apps/web/src/widgets/dashboard/company-manager/ui/company-manager.tsx:73`; blog at `blog-manager.tsx:69`.
 - Dashboard lists are prefetched with `*Keys.adminPage` into `HydrationBoundary`: `apps/web/src/app/[locale]/(protected)/dashboard/{blogs,companies,educations,featured-works}/page.tsx`.
-- Save: `apps/web/src/shared/hooks/use-crud-manager.ts` invalidates the root key (`:184`) and removes the detail key (`:190-191`) in `onSuccess`.
+- Save: `apps/web/src/shared/hooks/use-crud-manager.ts` invalidates `keys.all` (`:133`) and removes the detail key (`:139-141`) in `onSuccess`.
 - Homepage featured works: `apps/web/src/features/public/homepage-featured-works/ui/homepage-featured-works.tsx:8` → `get-public-featured-works.ts` → `lib/load-public-featured-works.ts` (DB rows) → `lib/get-featured-work-github.ts` (GitHub facts, 1 h; failure returns `{}`).
 - Blog body images: `getPublicBlogBySlug` reads each body image's stored size from its media row (`apps/web/src/entities/blog/lib/read-image-sizes.ts`), cached with the post under the `image-sizes` key.
 - Homepage media: each clip's box takes the stored size (`media.width`/`height`, from `load-public-featured-works.ts`) before the file is fetched, and the file's own metadata only corrects it. Each clip's file is requested only once it is within 200 px of the screen (`apps/web/src/entities/featured-work/ui/featured-work-demo.tsx`, `NEAR`), then kept. A clip and an image sit under a pulsing cover until their file draws, and the cover fades out in place (`MediaCover`, `shared/ui/media-cover.tsx`). Full screen (`featured-work-demo.tsx`) takes the clip's stage with sound on, through the browser's element API where it exists. Where the browser refuses it or has none (iPhone Safari), the same stage is pinned to the viewport instead. A toolbar zooms 1×–4× (steps, pinch, one-finger pan; `use-demo-zoom.ts`), and the zoom resets on leaving.

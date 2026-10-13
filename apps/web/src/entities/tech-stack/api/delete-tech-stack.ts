@@ -4,8 +4,8 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
+import { TECH_MUTATION_TAGS } from '@/entities/tech-stack/model/revalidation';
 import { requireAdmin } from '@/shared/lib/auth';
-import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getErrorMessage } from '@/shared/lib/utils';
 import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
@@ -30,7 +30,7 @@ export async function deleteTechStack(id: string): Promise<ApiResponse<null>> {
       };
     }
 
-    revalidateTag(CACHE_TAGS.TECH, 'max');
+    for (const tag of TECH_MUTATION_TAGS) revalidateTag(tag, 'max');
 
     return { success: true, data: null };
   } catch (error) {

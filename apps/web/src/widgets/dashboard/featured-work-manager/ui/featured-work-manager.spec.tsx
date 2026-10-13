@@ -985,6 +985,7 @@ describe('FeaturedWorkManager demo pair', () => {
     await screen.findByLabelText('Label 1');
     expect(uploadClip).toHaveBeenCalledWith(file, 'featured-work');
     expect(toastSuccess).toHaveBeenCalledTimes(1);
+    expect(toastSuccess).toHaveBeenCalledWith('Demo uploaded');
     expect(screen.getByLabelText('Demo 1').getAttribute('src')).toBe(
       'https://cdn.example/m9'
     );

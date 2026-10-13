@@ -26,7 +26,11 @@ import { toast } from 'sonner';
 // eslint-disable-next-line import-alias/import-alias
 import en from '../../../messages/en.json';
 
-import { type CrudKeys, useCrudManager } from './use-crud-manager';
+import {
+  type CrudKeys,
+  type CrudSaveOptions,
+  useCrudManager,
+} from './use-crud-manager';
 
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
@@ -37,13 +41,9 @@ const root = ['thing', 'admin-list'] as const;
 const meta = { currentPage: 1, totalPages: 1, totalCount: 1, hasMore: false };
 const seeded: PaginatedData<Item> = { data: [{ id: 'seeded' }], meta };
 const keys: CrudKeys = { all: root, detail: (id) => [...root, 'detail', id] };
-const legacy = { queryKey: root, entityLabel: 'Thing' };
-const withKeys = { entity: 'Thing', keys };
 
 const spyToastSuccess = spyOn(toast, 'success').mockImplementation(() => 1);
 const spyToastError = spyOn(toast, 'error').mockImplementation(() => 1);
-
-type Identity = typeof legacy | typeof withKeys;
 
 type Overrides = {
   pageKey?: (page: number) => readonly unknown[];
@@ -57,11 +57,7 @@ type Overrides = {
   remove?: () => Promise<{ success: true; data: null }>;
 };
 
-function setup(
-  queryClient: QueryClient,
-  identity: Identity = legacy,
-  overrides: Overrides = {}
-) {
+function setup(queryClient: QueryClient, overrides: Overrides = {}) {
   const fetchPage =
     overrides.fetchPage ??
     mock(async () => ({
@@ -76,7 +72,8 @@ function setup(
   const hook = renderHook(
     () =>
       useCrudManager<Item, { name: string }>({
-        ...identity,
+        entity: 'Thing',
+        keys,
         fetchPage,
         pageKey: overrides.pageKey ?? ((page) => [...root, page]),
         create,
@@ -109,7 +106,7 @@ afterAll(() => {
 });
 
 describe('useCrudManager page key', () => {
-  it('serves page 1 from a cache entry seeded under [queryKey, 1] without fetching', () => {
+  it('serves page 1 from a cache entry seeded under [root, 1] without fetching', () => {
     const queryClient = makeQueryClient();
     queryClient.setQueryData([...root, 1], seeded);
 
@@ -124,7 +121,7 @@ describe('useCrudManager page key', () => {
     const queryClient = makeQueryClient();
     queryClient.setQueryData(['custom-page', 1], seeded);
 
-    const { result, fetchPage } = setup(queryClient, legacy, {
+    const { result, fetchPage } = setup(queryClient, {
       pageKey: (page) => ['custom-page', page],
     });
 
@@ -162,11 +159,56 @@ describe('useCrudManager save', () => {
       queryClient.getQueryState(['thing', 'public-list'])?.isInvalidated
     ).toBe(false);
   });
+
+  it('runs onSaved once the save succeeds', async () => {
+    const onSaved = mock(() => {});
+    const { result } = setup(makeQueryClient());
+
+    act(() => result.current.openCreateDialog());
+    act(() => result.current.save({ name: 'new' }, { onSaved }));
+
+    await waitFor(() => expect(onSaved).toHaveBeenCalledTimes(1));
+  });
+
+  it('does not run onSaved when the save is refused', async () => {
+    const create = mock(async () => ({
+      success: false as const,
+      errorMsg: 'Session expired',
+    }));
+    const onSaved = mock(() => {});
+    const { result } = setup(makeQueryClient(), { create });
+    const consoleSpy = spyOn(console, 'error').mockImplementation(() => {});
+
+    act(() => result.current.openCreateDialog());
+    act(() => result.current.save({ name: 'new' }, { onSaved }));
+
+    await waitFor(() => expect(spyToastError).toHaveBeenCalled());
+    expect(onSaved).not.toHaveBeenCalled();
+    consoleSpy.mockRestore();
+  });
+
+  it('saves when a form hands over its submit event as the second argument', async () => {
+    const { result, create } = setup(makeQueryClient());
+
+    act(() => result.current.openCreateDialog());
+    // react-hook-form's handleSubmit calls the save it was given with (data, event).
+    act(() =>
+      result.current.save(
+        { name: 'new' },
+        new Event('submit') as unknown as CrudSaveOptions
+      )
+    );
+
+    await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
+    await waitFor(() =>
+      expect(spyToastSuccess).toHaveBeenCalledWith('Thing created')
+    );
+  });
 });
 
-describe('useCrudManager with entity and keys', () => {
+describe('useCrudManager toasts and deletes', () => {
   it('shows the created toast with the entity name', async () => {
-    const { result } = setup(makeQueryClient(), withKeys);
+    const { result } = setup(makeQueryClient());
 
     act(() => result.current.openCreateDialog());
     act(() => result.current.save({ name: 'new' }));
@@ -181,7 +223,7 @@ describe('useCrudManager with entity and keys', () => {
       success: false as const,
       errorMsg: 'Session expired',
     }));
-    const { result } = setup(makeQueryClient(), withKeys, { create });
+    const { result } = setup(makeQueryClient(), { create });
     const consoleSpy = spyOn(console, 'error').mockImplementation(() => {});
 
     act(() => result.current.openCreateDialog());
@@ -198,7 +240,7 @@ describe('useCrudManager with entity and keys', () => {
     const queryClient = makeQueryClient();
     const nested = [...root, 'options', 'en'];
     queryClient.setQueryData(nested, [{ id: 'option' }]);
-    const { result, remove } = setup(queryClient, withKeys);
+    const { result, remove } = setup(queryClient);
 
     act(() => result.current.requestDelete({ id: 'row-1' }));
     act(() => result.current.confirmDelete());
@@ -224,7 +266,7 @@ describe('useCrudManager with entity and keys', () => {
       totalPages = 1;
       return { success: true as const, data: null };
     });
-    const { result } = setup(makeQueryClient(), withKeys, {
+    const { result } = setup(makeQueryClient(), {
       fetchPage,
       remove,
     });

@@ -11,11 +11,11 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
  * Revalidates the entire application by targeting the root layout.
  */
 export async function purgeEntireCache(): Promise<ApiResponse<null>> {
-  try {
-    // Server actions are public HTTP endpoints — without this gate anyone can
-    // stampede the cache into repeated full purges.
-    await requireAdmin();
+  // Server actions are public HTTP endpoints — without this gate anyone can
+  // stampede the cache into repeated full purges.
+  await requireAdmin();
 
+  try {
     revalidatePath('/', 'layout');
 
     logger.info(`[Cache] Successfully purged entire application cache.`);

@@ -23,7 +23,7 @@ export interface BlogEditorDialogProps {
   hasError: boolean;
   onRetry: () => void;
   isPending: boolean;
-  onSubmit: (values: BlogFormValues) => void;
+  onSubmit: (values: BlogFormValues, options: { onSaved: () => void }) => void;
 }
 
 /** Stands in for the form while the post loads. Its editor is the editor's `h-64` minimum. */

@@ -1,19 +1,7 @@
 /**
- * What this spec defends about the Clear Cache button's only two guarantees:
- * one click means one purge, and a purge that did not happen never reports
- * that it did.
- *
- * Both were broken. The callers were a bare `void clearCache()` with no pending
- * state, so a full-layout revalidate — which is not instant — looked exactly
- * like a click that had not registered, and the natural response started a
- * second purge. And `purgeEntireCache` catches its own failures and returns
- * them in an envelope rather than throwing, which made the hook's `catch`
- * unreachable: an unauthorized purge toasted "System updated".
- *
- * The real server action runs here — `revalidatePath` is the preload's no-op
- * and `requireAdmin` is the preload's identity stub, so the failure path is
- * reached by actually removing the caller's identity rather than by
- * constructing an error (AGENTS §10).
+ * One click starts one purge, and a completed purge reports success. A refused
+ * purge rejects from the action, is toasted once, and never rejects the click
+ * handler. The real server action runs, so the refusal comes from `requireAdmin`.
  */
 import { logger } from '@byte-of-me/logger';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -30,6 +18,7 @@ import {
 import { NextIntlClientProvider } from 'next-intl';
 import { toast } from 'sonner';
 
+import { purgeEntireCache } from './purge-entire-cache';
 import { useClearCache } from './use-clear-cache';
 
 import {
@@ -52,7 +41,6 @@ const messages = {
 // counts purges — there is nothing else observable, `revalidatePath` being a
 // preload no-op.
 const logInfo = spyOn(logger, 'info');
-const logError = spyOn(logger, 'error');
 // Only the failure toast is spyable: the success one is sonner's bare
 // `toast(...)` call, and a plain function has no property to replace. That is
 // enough to tell the two branches apart, which is the whole contract here.
@@ -73,7 +61,6 @@ function renderClearCache() {
 
 beforeEach(() => {
   logInfo.mockClear();
-  logError.mockClear();
   toastError.mockClear();
 });
 
@@ -86,7 +73,6 @@ afterAll(() => {
   // that leaves it cleared makes an unrelated action throw "Unauthorized".
   resetTestUser();
   logInfo.mockRestore();
-  logError.mockRestore();
   toastError.mockRestore();
 });
 
@@ -125,20 +111,29 @@ describe('useClearCache', () => {
     setTestUser(null);
     const { result } = renderClearCache();
 
+    // Resolves rather than rejects: the refusal is toasted, never rethrown.
     await act(async () => {
       await result.current.clearCache();
     });
 
     resetTestUser();
 
-    // The envelope IS the failure path: `purgeEntireCache` swallows the
-    // `requireAdmin` throw and reports `success: false`, so a hook that only
-    // watches for a rejection announces "System updated" for a purge that
-    // never ran.
     expect(toastError).toHaveBeenCalledTimes(1);
     // Nothing reached the success branch: the action never got as far as its
     // completion log.
     expect(logInfo).not.toHaveBeenCalled();
-    expect(logError).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('purgeEntireCache', () => {
+  test('rejects a refused caller before any purge runs', async () => {
+    setTestUser(null);
+
+    try {
+      await expect(purgeEntireCache()).rejects.toThrow('Unauthorized');
+      expect(logInfo).not.toHaveBeenCalled();
+    } finally {
+      resetTestUser();
+    }
   });
 });

@@ -90,7 +90,8 @@ function toFormValues(initialData?: AdminBlog): DefaultValues<BlogFormValues> {
 
 export interface BlogFormProps {
   initialData?: AdminBlog;
-  onSubmit: (data: BlogFormValues) => void;
+  /** `options.onSaved` runs once the save has landed, which is when the draft is cleared. */
+  onSubmit: (data: BlogFormValues, options: { onSaved: () => void }) => void;
   /** Reports unsaved changes, so the dialog host can ask before it closes. */
   onDirtyChange: (dirty: boolean) => void;
   /** The id the dialog's footer Save button submits. */
@@ -132,10 +133,9 @@ export function BlogForm({
 
   // No `onInvalid` handler revealing the erroring language tab: TranslationTabs
   // subscribes to its own errors and reveals itself, at every nesting level.
-  const handleSubmit = form.handleSubmit((values) => {
-    autosave.clear();
-    onSubmit(values);
-  });
+  const handleSubmit = form.handleSubmit((values) =>
+    onSubmit(values, { onSaved: autosave.clear })
+  );
 
   return (
     <Form {...form}>

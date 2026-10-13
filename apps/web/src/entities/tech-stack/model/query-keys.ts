@@ -8,6 +8,6 @@ export const techStackKeys = {
   options: () => [...techStackKeys.list(), 'options'] as const,
   infinite: (limit: number) =>
     [...techStackKeys.all, 'infinite', limit] as const,
-  /** One full record for the edit dialog. Outside `list`: a save drops it through `detailKey`. */
+  /** One full record for the edit dialog. Outside `list`: a save drops it through `keys.detail`. */
   detail: (id: string) => [...techStackKeys.all, 'detail', id] as const,
 };

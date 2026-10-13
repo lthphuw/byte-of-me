@@ -411,26 +411,8 @@ declare const messages: {
       "createButton": "New Blog",
       "emptyTitle": "No blogs found",
       "emptyDescription": "Create your first blog.",
-      "deleteTitle": "Delete Blog?",
-      "deleteDescription": "This action cannot be undone.",
-      "loadError": "Failed to load this post.",
       "dialog": {
-        "editTitle": "Edit blog",
-        "createTitle": "Create blog",
-        "editDescription": "Update the post and its translations, then save.",
-        "createDescription": "Write the post, add translations, and publish when ready.",
-        "retry": "Retry",
-        "loadingLabel": "Loading blog",
-        "cancelButton": "Cancel",
-        "saveButton": "Save changes",
-        "createSubmitButton": "Create post"
-      },
-      "toast": {
-        "created": "Blog created",
-        "updated": "Blog updated",
-        "deleted": "Blog deleted",
-        "saveError": "Failed to save blog",
-        "deleteError": "Could not delete blog"
+        "loadingLabel": "Loading blog"
       },
       "form": {
         "draftFound": "Unsaved draft from {time} found.",
@@ -441,8 +423,7 @@ declare const messages: {
         "titlePlaceholder": "Post title...",
         "descriptionLabel": "Short Description",
         "descriptionPlaceholder": "Brief summary of the post...",
-        "bodyLabel": "Body Content",
-        "savePost": "Save Post"
+        "bodyLabel": "Body Content"
       },
       "meta": {
         "slugLabel": "Slug",
@@ -649,28 +630,11 @@ declare const messages: {
       "emptyDescription": "Add a pull request, release or write-up you’re proud of.",
       "emptyAction": "Add Your First Entry",
       "untitled": "Untitled featured work",
-      "editLabel": "Edit {name}",
-      "deleteLabel": "Delete {name}",
       "moveUpLabel": "Move {name} up",
       "moveDownLabel": "Move {name} down",
-      "deleteTitle": "Delete featured work?",
-      "deleteDescription": "Are you sure you want to delete <name></name>?",
-      "toast": {
-        "created": "Featured work created",
-        "updated": "Featured work updated",
-        "deleted": "Featured work deleted",
-        "saveError": "Failed to save featured work",
-        "deleteError": "Could not delete featured work",
-        "reorderError": "Could not change the order"
-      },
       "dialog": {
-        "createTitle": "Add featured work",
-        "editTitle": "Edit featured work",
         "createDescription": "Add a feature to pin on the homepage.",
-        "editDescription": "Update this pinned feature.",
-        "cancelButton": "Cancel",
-        "saveButton": "Save changes",
-        "createSubmitButton": "Add featured work"
+        "editDescription": "Update this pinned feature."
       },
       "titleLabel": "Title",
       "detailsLabel": "Details",
@@ -916,13 +880,7 @@ declare const messages: {
       "createButton": "New Project",
       "emptyTitle": "No projects found",
       "emptyDescription": "Create your first project to showcase your work.",
-      "editLabel": "Edit {name}",
-      "deleteLabel": "Delete {name}",
-      "deleteTitle": "Delete Project?",
-      "deleteDescription": "This action cannot be undone. This will permanently delete the project and remove its data from our servers.",
       "dialog": {
-        "createTitle": "New Project",
-        "editTitle": "Edit Project",
         "createDescription": "Describe the project, link it to your tech stack and tags, then write the content for each language.",
         "editDescription": "Update this project's links, dates and per-language content.",
         "slugLabel": "Slug",
@@ -943,10 +901,7 @@ declare const messages: {
         "translationsLabel": "Content Translations",
         "titleLabel": "Title",
         "descriptionLabel": "Description",
-        "descriptionPlaceholder": "What this project is, and what it does…",
-        "saveButton": "Save Project",
-        "savingButton": "Saving...",
-        "cancelButton": "Cancel"
+        "descriptionPlaceholder": "What this project is, and what it does…"
       },
       "coauthors": {
         "title": "Co-authors",
@@ -962,13 +917,6 @@ declare const messages: {
         "githubLinkLabel": "Open the GitHub repository for {name} (opens in a new tab)",
         "liveLinkLabel": "Open the live site for {name} (opens in a new tab)"
       },
-      "toast": {
-        "created": "Project created",
-        "updated": "Project updated",
-        "deleted": "Project deleted",
-        "saveError": "Failed to save project",
-        "deleteError": "Could not delete project"
-      },
       "entity": "Project"
     },
     "tag": {
@@ -978,28 +926,11 @@ declare const messages: {
       "emptyTitle": "No tags found",
       "emptyDescription": "Create tags to organize your content library.",
       "emptyAction": "Create First Tag",
-      "deleteTitle": "Delete Tag",
-      "deleteDescription": "This will permanently delete the tag <name></name>. This action cannot be undone.",
       "dialog": {
-        "createTitle": "Create Tag",
-        "editTitle": "Edit Tag",
         "slugLabel": "Slug",
         "slugPlaceholder": "reactjs",
-        "translationsLabel": "Translations",
-        "addButton": "Add",
-        "languageLabel": "Language",
-        "languagePlaceholder": "en",
         "nameLabel": "Name",
-        "namePlaceholder": "React",
-        "cancelButton": "Cancel",
-        "saveButton": "Save"
-      },
-      "toast": {
-        "created": "Tag created",
-        "updated": "Tag updated",
-        "deleted": "Tag deleted",
-        "saveError": "Failed to save tag",
-        "deleteError": "Could not delete tag"
+        "namePlaceholder": "React"
       },
       "entity": "Tag"
     },
