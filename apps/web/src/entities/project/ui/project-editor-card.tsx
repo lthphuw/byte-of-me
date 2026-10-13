@@ -20,6 +20,10 @@ export interface ProjectEditorCardLabels {
   liveLink: string;
 }
 
+/** 44px on touch; under `can-hover:` the 16px icon keeps its desktop box. */
+const LINK_CLASS =
+  'flex min-h-11 min-w-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground can-hover:min-h-0 can-hover:min-w-0';
+
 interface ProjectEditorCardProps {
   project: AdminProject;
   labels: ProjectEditorCardLabels;
@@ -80,7 +84,7 @@ export function ProjectEditorCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={labels.githubLink}
-                className="text-muted-foreground transition-colors hover:text-foreground"
+                className={LINK_CLASS}
               >
                 <Icons.github size={16} className="h-4 w-4" />
               </a>
@@ -91,7 +95,7 @@ export function ProjectEditorCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={labels.liveLink}
-                className="text-muted-foreground transition-colors hover:text-foreground"
+                className={LINK_CLASS}
               >
                 <ExternalLink className="h-4 w-4" />
               </a>

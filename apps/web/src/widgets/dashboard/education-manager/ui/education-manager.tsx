@@ -104,7 +104,11 @@ export function EducationManager() {
         title={t('title')}
         description={t('description')}
         action={
-          <Button onClick={openCreateDialog} size="sm" className="gap-2">
+          <Button
+            onClick={openCreateDialog}
+            size="sm"
+            className="min-h-11 gap-2 can-hover:min-h-8"
+          >
             <Plus className="h-4 w-4" />
             {t('createButton')}
           </Button>
@@ -121,7 +125,12 @@ export function EducationManager() {
           emptyTitle={t('emptyTitle')}
           emptyDescription={t('emptyDescription')}
           emptyAction={
-            <Button variant="outline" size="sm" onClick={openCreateDialog}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="min-h-11 can-hover:min-h-8"
+              onClick={openCreateDialog}
+            >
               {t('emptyAction')}
             </Button>
           }
@@ -194,6 +203,7 @@ export function EducationManager() {
         key={editing?.id ?? 'new'}
         open={isDialogOpen}
         onOpenChange={onDialogOpenChange}
+        isEditing={Boolean(editing)}
         initialData={fullEducation.record}
         isLoadingInitialData={fullEducation.isNotReady}
         hasLoadError={fullEducation.hasError}

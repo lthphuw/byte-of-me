@@ -28,6 +28,7 @@ import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-s
 import { cn } from '@/shared/lib/utils';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
+import { achievementHasContent } from '@/widgets/dashboard/education-manager/lib/achievement-has-content';
 
 /** 44px on touch; 36px only with a fine pointer, under `can-hover:`. */
 const TOUCH_TARGET = 'min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9';
@@ -80,9 +81,12 @@ export function EducationAchievementItemField({
   const imageCount = imageIds?.length ?? 0;
   const name = summary || t('achievements.untitled');
 
-  // A row the user just added and never typed into is not worth a
-  // confirmation; both values are already subscribed above, so this is free.
-  const hasContent = Boolean(summary) || imageCount > 0;
+  // `compute` re-renders only when the answer flips, not on every keystroke.
+  const hasContent = useWatch({
+    control,
+    name: `achievements.${index}`,
+    compute: achievementHasContent,
+  });
 
   const handleRemove = () => {
     if (hasContent) setConfirmingRemove(true);
@@ -100,7 +104,7 @@ export function EducationAchievementItemField({
           <CollapsibleTrigger asChild>
             <button
               type="button"
-              className="flex min-w-0 flex-1 items-center gap-2 rounded px-1 py-1.5 text-left transition-colors hover:bg-muted/50"
+              className="flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded px-1 py-1.5 text-left transition-colors hover:bg-muted/50 can-hover:min-h-8"
             >
               {/* `min-w-0` is what lets `truncate` actually clip: without it
                   a nowrap flex item refuses to shrink below its text width and

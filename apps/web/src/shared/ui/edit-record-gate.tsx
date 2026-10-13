@@ -37,7 +37,13 @@ export function EditRecordGate({
         className="flex flex-col items-center justify-center gap-3 py-16 text-center"
       >
         <p className="text-sm text-muted-foreground">{t('errorTitle')}</p>
-        <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="min-h-11 can-hover:min-h-8"
+          onClick={onRetry}
+        >
           {t('retry')}
         </Button>
       </div>

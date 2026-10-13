@@ -52,6 +52,33 @@ describe('useServerMutation', () => {
     const { result } = renderHook(
       () =>
         useServerMutation<void, null>({
+          mutationFn: async () => {
+            throw new Error('Failed to fetch');
+          },
+          errorMessage: 'Could not save',
+          onSuccess,
+        }),
+      { wrapper: wrapperFor() }
+    );
+
+    act(() => {
+      result.current.mutate(undefined);
+    });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    expect(onSuccess).not.toHaveBeenCalled();
+    expect(spyError).toHaveBeenCalledWith('Could not save');
+    spyError.mockRestore();
+    spyConsole.mockRestore();
+  });
+
+  test('does not run onSuccess and shows the error toast when the action refuses', async () => {
+    const spyError = spyOn(toast, 'error').mockImplementation(() => 1);
+    const spyConsole = spyOn(console, 'error').mockImplementation(() => {});
+    const onSuccess = mock(() => {});
+    const { result } = renderHook(
+      () =>
+        useServerMutation<void, null>({
           mutationFn: async () => ({
             success: false,
             errorMsg: 'Session expired',

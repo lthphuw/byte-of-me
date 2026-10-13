@@ -293,21 +293,21 @@ describe('findUploadViolation', () => {
     expect(findUploadViolation(files.slice(0, MAX_UPLOAD_BATCH))).toBeNull();
   });
 
-  it('keeps five full-size images allowed but refuses a batch over the request total', () => {
+  it('keeps five full-size images allowed, and leaves clips out of the request total', () => {
     const fiveImages = Array.from({ length: 5 }, () =>
       sized(MAX_IMAGE_SIZE_BYTES, 'image/png')
     );
     expect(findUploadViolation(fiveImages)).toBeNull();
 
-    const twoClips = [
+    // Two clips at their cap are 30 MB, but they go direct: only the three
+    // images travel in the action body, so the batch counts 9 MB.
+    const clipsAndImages = [
       sized(MAX_VIDEO_SIZE_BYTES, 'video/mp4'),
       sized(MAX_VIDEO_SIZE_BYTES, 'video/webm'),
+      ...fiveImages.slice(0, 3),
     ];
     expect(MAX_UPLOAD_TOTAL_BYTES).toBeLessThan(20 * 1024 * 1024);
-    expect(findUploadViolation(twoClips)).toEqual({
-      kind: 'total',
-      maxSizeMb: 16,
-    });
+    expect(findUploadViolation(clipsAndImages)).toBeNull();
   });
 });
 

@@ -46,7 +46,11 @@ export const companySchema = z.object({
   company: z.string().min(1, 'validation.required'),
   location: z.string().min(1, 'validation.required'),
 
-  startDate: z.date(),
+  // zod 3 option names: `required_error` covers a cleared date, `invalid_type_error` a non-date.
+  startDate: z.date({
+    required_error: 'validation.required',
+    invalid_type_error: 'validation.invalidDate',
+  }),
   endDate: z.date().nullable().optional(),
 
   logoId: z.string().nullable().optional(),

@@ -61,6 +61,10 @@ export function ProjectDialog({
       formId={FORM_ID}
       isPending={loading}
       isDirty={isDirty}
+      // Save waits for the full project, as the gate below holds the form back.
+      submitDisabled={
+        isEditing && (isLoadingInitialData || hasLoadError || !initialData)
+      }
     >
       <EditRecordGate
         isNotReady={isLoadingInitialData}

@@ -32,6 +32,8 @@ export interface RecordDialogProps {
   isPending?: boolean;
   /** A close request asks before the form's unsaved changes are dropped. */
   isDirty?: boolean;
+  /** Disables the default Save, e.g. while the record is still loading. */
+  submitDisabled?: boolean;
   submitLabel?: string;
   /** `null` renders no footer at all, for a read-only record. */
   footer?: ReactNode | null;
@@ -57,6 +59,7 @@ export function RecordDialog({
   formId,
   isPending = false,
   isDirty = false,
+  submitDisabled = false,
   submitLabel,
   footer,
   children,
@@ -87,6 +90,7 @@ export function RecordDialog({
             'md:max-h-[90dvh] md:w-full',
             SIZE_CLASS[size]
           )}
+          closeLabel={t('close')}
           onEscapeKeyDown={(event) => {
             event.preventDefault();
             requestClose();
@@ -125,7 +129,7 @@ export function RecordDialog({
                     type="submit"
                     form={formId}
                     className="min-h-11 can-hover:min-h-9"
-                    disabled={isPending}
+                    disabled={isPending || submitDisabled}
                   >
                     {isPending ? (
                       <>

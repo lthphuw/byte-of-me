@@ -17,6 +17,8 @@ const FORM_ID = 'company-form';
 interface CompanyDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Set from the list row, so the title does not flip while the record loads. */
+  isEditing: boolean;
   initialData?: Nullable<AdminCompany>;
   /**
    * The full record is loading or its fetch failed. The list row carries no
@@ -33,6 +35,7 @@ interface CompanyDialogProps {
 export function CompanyDialog({
   open,
   onOpenChange,
+  isEditing,
   initialData,
   isLoadingInitialData = false,
   hasLoadError = false,
@@ -47,9 +50,6 @@ export function CompanyDialog({
   // parallel with the record the form is gated on.
   const techStacks = useTechStackOptions(open);
   const [isDirty, setIsDirty] = useState(false);
-  // Loading counts as editing before the record arrives: only "new" reaches
-  // here with neither `initialData` nor a pending fetch.
-  const isEditing = Boolean(initialData) || isLoadingInitialData;
 
   return (
     <RecordDialog
@@ -67,6 +67,10 @@ export function CompanyDialog({
       formId={FORM_ID}
       isPending={loading}
       isDirty={isDirty}
+      // Save waits for the full record, as the gate below holds the form back.
+      submitDisabled={
+        isEditing && (isLoadingInitialData || hasLoadError || !initialData)
+      }
     >
       <EditRecordGate
         isNotReady={isLoadingInitialData}

@@ -24,6 +24,7 @@ import type { CompanyFormValues } from '@/entities/company/model/company-schema'
 import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-submit';
 import { cn } from '@/shared/lib/utils';
 import { TextField, TranslationTabs } from '@/shared/ui';
+import { roleHasContent } from '@/widgets/dashboard/company-manager/lib/role-has-content';
 
 interface CompanyRoleItemFieldProps {
   index: number;
@@ -60,10 +61,12 @@ export function CompanyRoleItemField({
     name: `roles.${index}.translations.0.title`,
   });
 
-  // A role the user just added and never filled in is not worth a
-  // confirmation; one carrying a title or tasks takes typing to rebuild.
-  // Both values are already subscribed above, so this costs no extra render.
-  const hasContent = Boolean(title) || tasks.length > 0;
+  // `compute` re-renders only when the answer flips, not on every keystroke.
+  const hasContent = useWatch({
+    control,
+    name: `roles.${index}`,
+    compute: roleHasContent,
+  });
 
   const handleRemove = () => {
     if (hasContent) setConfirmingRemove(true);
@@ -82,7 +85,7 @@ export function CompanyRoleItemField({
             type="button"
             variant="ghost"
             size="sm"
-            className="min-h-11 gap-2 can-hover:min-h-9"
+            className="min-h-11 min-w-0 gap-2 can-hover:min-h-9"
           >
             <ChevronDown
               className={cn(
@@ -90,7 +93,7 @@ export function CompanyRoleItemField({
                 !open && '-rotate-90'
               )}
             />
-            <span className="font-medium">
+            <span className="min-w-0 truncate font-medium">
               {title || t('role.fallbackTitle', { index: index + 1 })}
             </span>
           </Button>

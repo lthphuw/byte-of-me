@@ -87,7 +87,11 @@ export function TechStackManager({
         title={t('title')}
         description={t('description')}
         action={
-          <Button onClick={openCreateDialog} size="sm" className="gap-2">
+          <Button
+            onClick={openCreateDialog}
+            size="sm"
+            className="min-h-11 gap-2 can-hover:min-h-8"
+          >
             <Plus className="h-4 w-4" />
             {newLabel}
           </Button>
@@ -106,7 +110,12 @@ export function TechStackManager({
           skeleton={<RecordListSkeleton variant="grid" />}
           emptyTitle={t('emptyTitle')}
           emptyAction={
-            <Button variant="outline" size="sm" onClick={openCreateDialog}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="min-h-11 can-hover:min-h-8"
+              onClick={openCreateDialog}
+            >
               <Plus className="h-4 w-4" />
               {newLabel}
             </Button>
@@ -139,6 +148,7 @@ export function TechStackManager({
         key={editingTech?.id || 'new'}
         open={isDialogOpen}
         onOpenChange={onDialogOpenChange}
+        isEditing={Boolean(editingTech)}
         initialData={fullTech.record}
         isLoadingInitialData={fullTech.isNotReady}
         hasLoadError={fullTech.hasError}

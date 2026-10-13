@@ -68,6 +68,10 @@ export function FeaturedWorkDialog({
       // A clip in flight holds Save and closing, like a save in progress.
       isPending={loading || isUploading}
       isDirty={isDirty}
+      // Save waits for the full row, as the gate below holds the form back.
+      submitDisabled={
+        isEditing && (isLoadingInitialData || hasLoadError || !initialData)
+      }
     >
       <EditRecordGate
         isNotReady={isLoadingInitialData}

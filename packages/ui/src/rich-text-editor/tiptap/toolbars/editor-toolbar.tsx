@@ -67,7 +67,7 @@ export const EditorToolbar = ({
           type="button"
           variant="outline"
           size="sm"
-          className="h-8 gap-2 max-sm:min-h-11"
+          className="h-8 gap-2 min-h-11 can-hover:min-h-8"
           onClick={onTogglePreview}
         >
           <Pencil className="h-3.5 w-3.5" />
@@ -82,12 +82,12 @@ export const EditorToolbar = ({
   // — the ScrollArea below with its hidden scrollbar — leaves the overflowing
   // buttons (image, colour) with no visible way to reach them. The full
   // editor keeps the single scrolling row: it owns the page width.
-  // Phones: 44px touch targets (AGENTS §14). The row scrolls sideways, and
-  // Preview leads it so the way to the rendered page is in view.
+  // Touch: 44px targets at every width (AGENTS §14); a fine pointer keeps each
+  // button's own height. The row scrolls sideways; Preview leads it on phones.
   const row = (
     <div
       className={cn(
-        'flex items-center gap-1 px-2 max-sm:[&_button]:min-h-11 max-sm:[&_button]:min-w-11',
+        'flex items-center gap-1 px-2 [&_button]:min-h-11 [&_button]:min-w-11 can-hover:[&_button]:min-h-8 can-hover:[&_button]:min-w-8',
         compact && 'flex-wrap'
       )}
     >

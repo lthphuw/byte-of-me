@@ -16,6 +16,8 @@ const FORM_ID = 'education-form';
 interface EducationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Set from the list row, so the title does not flip while the entry loads. */
+  isEditing: boolean;
   initialData?: Nullable<AdminEducation>;
   /**
    * The full entry is loading or its fetch failed. The list row carries no
@@ -32,6 +34,7 @@ interface EducationDialogProps {
 export function EducationDialog({
   open,
   onOpenChange,
+  isEditing,
   initialData,
   isLoadingInitialData = false,
   hasLoadError = false,
@@ -42,9 +45,6 @@ export function EducationDialog({
   const t = useTranslations('dashboard.education');
   const tCrud = useTranslations('dashboard.shared.crud');
   const [isDirty, setIsDirty] = useState(false);
-  // Loading counts as editing before the entry arrives: only "new" reaches
-  // here with neither `initialData` nor a pending fetch.
-  const isEditing = Boolean(initialData) || isLoadingInitialData;
 
   return (
     <RecordDialog
@@ -62,6 +62,10 @@ export function EducationDialog({
       formId={FORM_ID}
       isPending={loading}
       isDirty={isDirty}
+      // Save waits for the full entry, as the gate below holds the form back.
+      submitDisabled={
+        isEditing && (isLoadingInitialData || hasLoadError || !initialData)
+      }
     >
       <EditRecordGate
         isNotReady={isLoadingInitialData}

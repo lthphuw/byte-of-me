@@ -41,6 +41,7 @@ export function ImageUpload({
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
+  const isBusy = isCompressing || isUploading;
   const acceptedTypes: readonly string[] = acceptVideo
     ? ACCEPTED_MEDIA_MIME_TYPES
     : ACCEPTED_IMAGE_MIME_TYPES;
@@ -51,7 +52,8 @@ export function ImageUpload({
   // uploads at. `compressInBrowser` itself is a no-op for SVG/GIF/a disabled
   // config, so this loop is safe to run unconditionally.
   const handleFiles = async (incomingFiles: FileList | null) => {
-    if (!incomingFiles) return;
+    // A batch in flight takes no new files, so the upload sends what was listed.
+    if (!incomingFiles || isBusy) return;
 
     setIsCompressing(true);
     try {
@@ -156,7 +158,7 @@ export function ImageUpload({
           and its click bubbles here to open the same input. */}
       <div
         className="cursor-pointer rounded-xl border-2 border-dashed p-8 text-center aria-disabled:pointer-events-none aria-disabled:opacity-60"
-        aria-disabled={isCompressing}
+        aria-disabled={isBusy}
         onDrop={(e) => {
           e.preventDefault();
           void handleFiles(e.dataTransfer.files);
@@ -180,7 +182,7 @@ export function ImageUpload({
           type="button"
           variant="outline"
           className="mt-4 min-h-11 can-hover:min-h-9"
-          disabled={isCompressing}
+          disabled={isBusy}
         >
           {t('upload.chooseFiles')}
         </Button>
@@ -192,7 +194,7 @@ export function ImageUpload({
         multiple
         className="hidden"
         accept={acceptVideo ? 'image/*,video/mp4,video/webm' : 'image/*'}
-        disabled={isCompressing}
+        disabled={isBusy}
         onChange={(e) => void handleFiles(e.target.files)}
       />
 

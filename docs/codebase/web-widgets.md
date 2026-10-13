@@ -98,7 +98,7 @@ every slice: index.ts -> ui/index.ts -> ui/*.tsx (+ lib/, model/); *.spec.ts(x) 
 - `purgeEntireCache` is not in `apps/web/src/shared/lib/revalidate.ts` as AGENTS §6 says; that file does not exist. The function is `apps/web/src/widgets/dashboard/dashboard-sidebar/lib/purge-entire-cache.ts`.
 - Shell exports are uneven: the `ui/index.ts` barrels of blogs, projects and blog-details export their shell; homepage and contact do not, so `apps/web/src/app/[locale]/(public)/loading.tsx:4` and `apps/web/src/app/[locale]/(public)/contact/loading.tsx:4` deep-import theirs.
 - `apps/web/src/widgets/dashboard/education-manager/ui/index.tsx` is the only `ui/` barrel with a `.tsx` extension.
-- `apps/web/src/widgets/dashboard/education-manager/ui/education-form.tsx:34-43` lazy-loads the achievements editor with `dynamic(..., { ssr: false })`, so it loads as its own chunk; it renders only inside the dialog.
+- `apps/web/src/widgets/dashboard/education-manager/ui/education-form.tsx:35-44` lazy-loads the achievements editor with `dynamic(..., { ssr: false })`, so it loads as its own chunk; it renders only inside the dialog.
 - 13 `'use server'` files sit in `apps/web/src/features/*/lib/`, and the purge action is a 14th file outside `entities/*/api/`. Find them with `rg -l "^'use server'" apps/web/src`.
 - Specs that swap methods on the real `prisma` singleton with `Object.defineProperty` and restore them in `afterAll`: the widget specs `company-manager`, `education-manager` and `featured-work-manager`, and the `refusal.spec.ts` files in `apps/web/src/entities/{blog,company,education,featured-work,project,tag,tech-stack,user-profile}/api/`. `apps/web/src/widgets/dashboard/company-manager/ui/company-manager.spec.tsx` swaps at `:101-114` and restores at `:189-192`.
 

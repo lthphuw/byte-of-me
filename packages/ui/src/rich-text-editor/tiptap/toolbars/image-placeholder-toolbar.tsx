@@ -21,7 +21,7 @@ const ImagePlaceholderToolbar = React.forwardRef<
           variant="ghost"
           size="icon"
           className={cn(
-            'h-8 w-8 p-0 sm:h-9 sm:w-9',
+            'h-8 w-8 p-0 sm:h-9 sm:w-9 min-h-11 min-w-11 can-hover:min-h-8 can-hover:min-w-8',
             state.imagePlaceholderActive && 'bg-accent',
             className
           )}

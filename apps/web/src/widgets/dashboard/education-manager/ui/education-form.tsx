@@ -28,6 +28,7 @@ import { useScopedImageUploader } from '@/entities/media/query';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
 import { TextField, TranslationTabs } from '@/shared/ui';
+import { FieldMessage } from '@/shared/ui/form';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
 /** The achievements editor renders only inside the dialog, so it loads as its own chunk. */
@@ -158,13 +159,13 @@ export function EducationForm({
           <FormField
             control={form.control}
             name="startDate"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t('dialog.startDateLabel')}</FormLabel>
                 <FormControl>
                   <DatePicker value={field.value} onChange={field.onChange} />
                 </FormControl>
-                <FormMessage />
+                <FieldMessage message={fieldState.error?.message} />
               </FormItem>
             )}
           />

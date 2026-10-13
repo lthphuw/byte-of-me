@@ -175,9 +175,15 @@ export function TranslationTabs({
   return (
     <Tabs value={tab} onValueChange={setTab} className={className}>
       <div className="mb-2 flex w-full flex-wrap items-center justify-between gap-2">
-        <TabsList>
+        {/* h-auto fits a 44px touch trigger. With a fine pointer the 28px */}
+        {/* triggers keep the list at its h-9 height. */}
+        <TabsList className="h-auto">
           {fields.map((f, i) => (
-            <TabsTrigger key={f.id} value={String(i)}>
+            <TabsTrigger
+              key={f.id}
+              value={String(i)}
+              className="min-h-11 can-hover:min-h-7"
+            >
               {getLanguageLabel(languages[i])}
             </TabsTrigger>
           ))}
@@ -187,6 +193,7 @@ export function TranslationTabs({
           type="button"
           size="sm"
           variant="outline"
+          className="min-h-11 can-hover:min-h-8"
           onClick={() => append(newTranslation())}
         >
           <Languages /> {t('translationTabs.addLanguage')}
@@ -209,6 +216,7 @@ export function TranslationTabs({
               type="button"
               size="sm"
               variant="outline"
+              className="min-h-11 can-hover:min-h-8"
               onClick={() => {
                 remove(i);
                 setTab('0');

@@ -1,12 +1,19 @@
 'use client';
 
 import { type Control, useFieldArray } from 'react-hook-form';
-import { Button } from '@byte-of-me/ui';
+import {
+  Button,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  Input,
+} from '@byte-of-me/ui';
 import { Plus, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { ProjectFromValues } from '@/entities/project/model';
-import { TextField } from '@/shared/ui';
+import { FieldMessage, TextField } from '@/shared/ui';
 
 interface ProjectCoauthorFieldsProps {
   control: Control<ProjectFromValues>;
@@ -46,12 +53,25 @@ export function ProjectCoauthorFields({ control }: ProjectCoauthorFieldsProps) {
             label={t('coauthors.nameLabel')}
             placeholder={t('coauthors.namePlaceholder')}
           />
-          <TextField
+          {/* type="text": a native email check would block submit before the zod message shows. */}
+          <FormField
             control={control}
             name={`coauthors.${index}.email`}
-            label={t('coauthors.emailLabel')}
-            type="email"
-            placeholder={t('coauthors.emailPlaceholder')}
+            render={({ field, fieldState }) => (
+              <FormItem>
+                <FormLabel>{t('coauthors.emailLabel')}</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    inputMode="email"
+                    placeholder={t('coauthors.emailPlaceholder')}
+                    {...field}
+                    value={field.value ?? ''}
+                  />
+                </FormControl>
+                <FieldMessage message={fieldState.error?.message} />
+              </FormItem>
+            )}
           />
           <Button
             type="button"

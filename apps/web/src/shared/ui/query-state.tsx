@@ -77,7 +77,12 @@ export function QueryState({
             <EmptyDescription>{errorDescription}</EmptyDescription>
           </EmptyHeader>
           {onRetry && (
-            <Button variant="outline" size="sm" onClick={onRetry}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="min-h-11 can-hover:min-h-8"
+              onClick={onRetry}
+            >
               {retryLabel}
             </Button>
           )}

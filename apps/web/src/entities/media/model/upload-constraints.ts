@@ -20,7 +20,7 @@ export const MAX_VIDEO_SIZE_BYTES = MAX_VIDEO_SIZE_MB * 1024 * 1024;
 /**
  * How many files one batch may carry.
  *
- * Bounded because the whole batch travels in a single server action request,
+ * Bounded because a batch's images travel in a single server action request,
  * and `serverActions.bodySizeLimit` in `next.config.js` is a flat `'20mb'`
  * that `MAX_UPLOAD_TOTAL_BYTES` plus multipart overhead has to fit comfortably
  * under — not the other way around. Raising either without raising that limit
@@ -30,9 +30,8 @@ export const MAX_VIDEO_SIZE_BYTES = MAX_VIDEO_SIZE_MB * 1024 * 1024;
 export const MAX_UPLOAD_BATCH = 5;
 
 /**
- * What one request may carry in total. Five images at the 3 MB cap are 15 MB, so
- * this leaves every image-only batch as it was; it exists because five videos at
- * their own 15 MB cap would be 75 MB and hit the framework's body limit instead.
+ * The most the images of one request may carry; a clip goes direct and is not
+ * counted. Five images at the 3 MB cap are 15 MB, so this binds only if a cap rises.
  */
 export const MAX_UPLOAD_TOTAL_MB = 16;
 export const MAX_UPLOAD_TOTAL_BYTES = MAX_UPLOAD_TOTAL_MB * 1024 * 1024;
@@ -116,10 +115,10 @@ export type MediaValidationError =
  * The route a file takes. A clip goes browser → storage (`direct`); an image goes
  * through `uploadMedia` (`action`). A file over its own ceiling takes neither.
  */
-export function pickUploadPath(file: { type: string; size: number }):
-  | { path: 'action' }
-  | { path: 'direct' }
-  | { error: 'too-large' } {
+export function pickUploadPath(file: {
+  type: string;
+  size: number;
+}): { path: 'action' } | { path: 'direct' } | { error: 'too-large' } {
   if (file.size > maxUploadSizeFor(file.type).bytes) {
     return { error: 'too-large' };
   }
@@ -151,9 +150,11 @@ export function findUploadViolation(
     }
   }
 
-  if (
-    files.reduce((sum, file) => sum + file.size, 0) > MAX_UPLOAD_TOTAL_BYTES
-  ) {
+  // Only images travel in the server action body; a clip goes browser → storage.
+  const imageBytes = files
+    .filter((file) => !isVideoMimeType(file.type))
+    .reduce((sum, file) => sum + file.size, 0);
+  if (imageBytes > MAX_UPLOAD_TOTAL_BYTES) {
     return { kind: 'total', maxSizeMb: MAX_UPLOAD_TOTAL_MB };
   }
 

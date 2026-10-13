@@ -6,6 +6,8 @@ import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
 import type { AdminBlogListItem } from '@/entities/blog';
+import { tagDisplayName } from '@/entities/tag';
+import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { formatDate } from '@/shared/lib/utils';
 import { RecordListItem, RecordRowActions } from '@/shared/ui';
 
@@ -25,7 +27,9 @@ export function BlogEditorCard({
 }: BlogEditorCardProps) {
   const t = useTranslations('dashboard.blog');
   const locale = useLocale();
-  const mainTranslation = blog.translations?.[0];
+  // Admin reads return every locale in no fixed order, so resolve against the
+  // dashboard's locale (then 'en') rather than taking the first row.
+  const mainTranslation = getTranslatedContent(blog.translations ?? [], locale);
   const coverImageUrl = blog.coverImage?.url;
   const title = mainTranslation?.title || t('card.untitled');
 
@@ -95,7 +99,7 @@ export function BlogEditorCard({
                 variant="outline"
                 className="px-2 py-0 text-[10px] font-normal"
               >
-                {link.tag?.translations?.[0]?.name || link.tag?.id}
+                {tagDisplayName(link.tag, locale)}
               </Badge>
             ))}
           </div>

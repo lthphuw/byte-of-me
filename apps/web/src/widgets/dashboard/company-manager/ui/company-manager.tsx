@@ -95,7 +95,11 @@ export function CompanyManager() {
         title={t('title')}
         description={t('description')}
         action={
-          <Button onClick={openCreateDialog} size="sm" className="gap-2">
+          <Button
+            onClick={openCreateDialog}
+            size="sm"
+            className="min-h-11 gap-2 can-hover:min-h-8"
+          >
             <Plus className="h-4 w-4" />
             {t('createButton')}
           </Button>
@@ -112,7 +116,12 @@ export function CompanyManager() {
           emptyTitle={t('emptyTitle')}
           emptyDescription={t('emptyDescription')}
           emptyAction={
-            <Button variant="outline" size="sm" onClick={openCreateDialog}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="min-h-11 can-hover:min-h-8"
+              onClick={openCreateDialog}
+            >
               {t('emptyAction')}
             </Button>
           }
@@ -186,6 +195,7 @@ export function CompanyManager() {
         key={editing?.id ?? 'new'}
         open={isDialogOpen}
         onOpenChange={onDialogOpenChange}
+        isEditing={Boolean(editing)}
         initialData={fullCompany.record}
         isLoadingInitialData={fullCompany.isNotReady}
         hasLoadError={fullCompany.hasError}

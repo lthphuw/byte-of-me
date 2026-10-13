@@ -30,6 +30,7 @@ const FORM_ID = 'tech-stack-form';
 export function TechStackDialog({
   open,
   onOpenChange,
+  isEditing,
   initialData,
   isLoadingInitialData = false,
   hasLoadError = false,
@@ -39,6 +40,8 @@ export function TechStackDialog({
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  /** Set from the list row, so the title does not flip while the record loads. */
+  isEditing: boolean;
   initialData: AdminTechStack | null;
   /** The full record is loading or its fetch failed. The form stays unmounted until it arrives. */
   isLoadingInitialData?: boolean;
@@ -69,10 +72,6 @@ export function TechStackDialog({
     logoId: data.logoId ?? null,
   }));
 
-  // Loading counts as editing before the record arrives: only "new" reaches
-  // here with neither `initialData` nor a pending fetch.
-  const isEditing = Boolean(initialData) || isLoadingInitialData;
-
   return (
     <RecordDialog
       open={open}
@@ -89,6 +88,10 @@ export function TechStackDialog({
       formId={FORM_ID}
       isPending={loading}
       isDirty={form.formState.isDirty}
+      // Save waits for the full record, as the gate below holds the form back.
+      submitDisabled={
+        isEditing && (isLoadingInitialData || hasLoadError || !initialData)
+      }
     >
       <EditRecordGate
         isNotReady={isLoadingInitialData}

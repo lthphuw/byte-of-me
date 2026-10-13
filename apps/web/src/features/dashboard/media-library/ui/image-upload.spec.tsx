@@ -5,6 +5,7 @@
  * in the active locale, before anything is sent. Renders the real component.
  */
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -125,7 +126,7 @@ describe('ImageUpload with video', () => {
     expect(screen.getByText('ok.mp4')).toBeTruthy();
   });
 
-  it('answers a request that is too big as a whole before sending it', async () => {
+  it('sends two full-size clips without counting them toward the request total', async () => {
     const { container } = renderUpload(true);
     choose(
       container,
@@ -136,11 +137,12 @@ describe('ImageUpload with video', () => {
       await screen.findByRole('button', { name: 'Upload 2 Files' })
     );
 
-    expect(toastError.mock.calls[0]?.[0]).toBe('Files too large');
-    expect(toastError.mock.calls[0]?.[1]).toEqual({
-      description: 'Together they exceed 16MB. Upload fewer at once.',
-    });
-    expect(uploadFiles).not.toHaveBeenCalled();
+    await waitFor(() => expect(uploadFiles).toHaveBeenCalledTimes(1));
+    expect(uploadFiles.mock.calls[0]?.[0].map((file) => file.name)).toEqual([
+      'a.mp4',
+      'b.webm',
+    ]);
+    expect(toastError).not.toHaveBeenCalled();
   });
 
   it('answers more than five files before sending them', async () => {
@@ -158,5 +160,45 @@ describe('ImageUpload with video', () => {
       description: 'Upload at most 5 files at once.',
     });
     expect(uploadFiles).not.toHaveBeenCalled();
+  });
+});
+
+describe('ImageUpload while a batch uploads', () => {
+  it('locks the picker and the drop zone, so no file joins the batch in flight', async () => {
+    let finish = () => {};
+    uploadFiles.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = () => resolve();
+        })
+    );
+    const { container } = renderUpload(false);
+    choose(container, fileOf('first.png', 'image/png'));
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Upload 1 File' })
+    );
+
+    const input =
+      container.querySelector<HTMLInputElement>('input[type="file"]');
+    const zone = container.querySelector('[aria-disabled]');
+    if (!input || !zone) throw new Error('no picker or drop zone');
+    await waitFor(() => expect(input.disabled).toBe(true));
+    expect(zone.getAttribute('aria-disabled')).toBe('true');
+
+    choose(container, fileOf('late.png', 'image/png'));
+    fireEvent.drop(zone, {
+      dataTransfer: { files: [fileOf('dropped.png', 'image/png')] },
+    });
+    // A listed file lands after its compression, on a later tick; let it land
+    // while the upload is still pending.
+    await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+    expect(screen.queryByText('late.png')).toBeNull();
+    expect(screen.queryByText('dropped.png')).toBeNull();
+
+    finish();
+    await waitFor(() => expect(input.disabled).toBe(false));
+    expect(uploadFiles.mock.calls[0]?.[0].map((file) => file.name)).toEqual([
+      'first.png',
+    ]);
   });
 });

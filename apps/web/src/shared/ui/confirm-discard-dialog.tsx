@@ -36,9 +36,14 @@ export function ConfirmDiscardDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{t('keepEditing')}</AlertDialogCancel>
+          <AlertDialogCancel className="min-h-11 can-hover:min-h-9">
+            {t('keepEditing')}
+          </AlertDialogCancel>
           {/* Not destructive: spec 4.5 reserves that style for irreversible deletes. */}
-          <AlertDialogAction onClick={onDiscard}>
+          <AlertDialogAction
+            className="min-h-11 can-hover:min-h-9"
+            onClick={onDiscard}
+          >
             {t('discard')}
           </AlertDialogAction>
         </AlertDialogFooter>

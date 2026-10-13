@@ -42,11 +42,14 @@ export function ConfirmDeleteDialog({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>
+          <AlertDialogCancel
+            className="min-h-11 can-hover:min-h-9"
+            disabled={isLoading}
+          >
             {cancelText}
           </AlertDialogCancel>
           <AlertDialogAction
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="min-h-11 bg-destructive text-destructive-foreground hover:bg-destructive/90 can-hover:min-h-9"
             onClick={(e) => {
               e.preventDefault();
               onConfirm();

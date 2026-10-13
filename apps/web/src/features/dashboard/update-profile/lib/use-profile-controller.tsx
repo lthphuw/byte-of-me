@@ -6,6 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
+import { rebaseAfterSave, toProfileFormValues } from './profile-form-state';
+
 import {
   type AdminUserProfile,
   createUserProfileSchema,
@@ -63,33 +65,11 @@ export function useProfileController(initUser: AdminUserProfile) {
     invalidate: [userProfileKeys.all],
   });
 
-  const parseAboutMe = useCallback((content: unknown) => {
-    if (!content || content === '<p></p>') return '<p></p>';
-    if (typeof content !== 'string') return content;
-    try {
-      return content.startsWith('{') || content.startsWith('[')
-        ? JSON.parse(content)
-        : content;
-    } catch {
-      return content;
-    }
-  }, []);
-
   const resetForm = useCallback(
     (userData: AdminUserProfile) => {
-      form.reset({
-        birthdate: userData.userProfile?.birthdate
-          ? new Date(userData.userProfile.birthdate)
-          : null,
-        socialLinks: userData.socialLinks ?? [],
-        translations:
-          userData.userProfile?.translations?.map((t) => ({
-            ...t,
-            aboutMe: parseAboutMe(t.aboutMe),
-          })) || [],
-      });
+      form.reset(toProfileFormValues(userData));
     },
-    [form, parseAboutMe]
+    [form]
   );
 
   // Seed once per profile, not on every `user` identity: a refetch (the
@@ -125,7 +105,7 @@ export function useProfileController(initUser: AdminUserProfile) {
       saveMutation.mutate(payload, {
         // The saved values become the baseline, so the form is no longer dirty.
         // `keepValues` keeps anything typed while the save was in flight.
-        onSuccess: () => form.reset(values, { keepValues: true }),
+        onSuccess: () => rebaseAfterSave(form, values),
       });
     },
     // A translation error otherwise renders inside an unmounted tab: Save

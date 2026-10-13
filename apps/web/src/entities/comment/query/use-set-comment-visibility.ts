@@ -15,10 +15,15 @@ export function useSetCommentVisibility() {
   const t = useTranslations('dashboard.comment');
 
   return useServerMutation({
-    mutationFn: ({ commentId, hidden }: { commentId: string; hidden: boolean }) =>
-      setCommentVisibility(commentId, hidden),
+    mutationFn: ({
+      commentId,
+      hidden,
+    }: {
+      commentId: string;
+      hidden: boolean;
+    }) => setCommentVisibility(commentId, hidden),
     errorMessage: t('toast.updateError'),
-    invalidate: [commentKeys.adminAll()],
+    invalidate: [commentKeys.all],
     onSuccess: (_data, { hidden }) =>
       toast.success(hidden ? t('toast.hidden') : t('toast.restored')),
   });

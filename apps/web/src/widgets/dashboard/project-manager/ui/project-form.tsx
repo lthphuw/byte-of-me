@@ -113,7 +113,7 @@ function ProjectPicker({
       isError={picker.isError}
       isEmpty={picker.options.length === 0}
       onRetry={picker.retry}
-      skeleton={<Skeleton className="h-10 w-full" />}
+      skeleton={<Skeleton className="h-11 w-full can-hover:h-10" />}
       errorTitle={tShared('managerListState.errorTitle')}
       errorDescription={tShared('managerListState.errorDescription')}
       retryLabel={tShared('managerListState.retry')}
@@ -121,7 +121,9 @@ function ProjectPicker({
     >
       <ContentFade>
         <FormControl>
+          {/* 40px is the trigger's desktop height; `can-hover:min-h-9` would shrink it. */}
           <MultiSelect
+            className="min-h-11 can-hover:min-h-10"
             options={picker.options}
             selected={selected}
             onValueChange={onChange}
@@ -217,7 +219,7 @@ export function ProjectForm({
           control={form.control}
           name="isPublished"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+            <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 can-hover:items-start">
               <FormControl>
                 <Checkbox
                   checked={field.value}
@@ -225,7 +227,10 @@ export function ProjectForm({
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel>{t('dialog.publishedLabel')}</FormLabel>
+                {/* The label is the tap target; the 16px checkbox alone is not one. */}
+                <FormLabel className="flex min-h-11 items-center can-hover:inline">
+                  {t('dialog.publishedLabel')}
+                </FormLabel>
               </div>
             </FormItem>
           )}
