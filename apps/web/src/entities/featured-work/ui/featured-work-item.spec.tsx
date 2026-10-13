@@ -174,11 +174,26 @@ describe('FeaturedWorkItem demo layout', () => {
     expect(strip?.classList.contains('md:grid-cols-2')).toBe(true);
   });
 
-  it('bleeds the strip to the screen edge on a phone and drops the bleed from md', () => {
+  it('gives a single clip the full width of the card on a phone', () => {
+    renderItem({ media: pair.slice(0, 1) });
+
+    const strip = document.querySelector('figure')?.parentElement;
+    expect(strip?.className).toContain('[&>figure]:w-full');
+    expect(strip?.className).not.toContain('[&>figure]:w-[82%]');
+  });
+
+  it('sizes each clip of a pair to most of the card, so the next one peeks in', () => {
     renderItem({ media: pair });
 
     const strip = document.querySelector('figure')?.parentElement;
-    expect(strip?.classList.contains('-mx-8')).toBe(true);
+    expect(strip?.className).toContain('[&>figure]:w-[82%]');
+  });
+
+  it('bleeds the strip to the card edge on a phone and drops the bleed from md', () => {
+    renderItem({ media: pair });
+
+    const strip = document.querySelector('figure')?.parentElement;
+    expect(strip?.classList.contains('-mx-4')).toBe(true);
     expect(strip?.classList.contains('md:mx-0')).toBe(true);
   });
 });

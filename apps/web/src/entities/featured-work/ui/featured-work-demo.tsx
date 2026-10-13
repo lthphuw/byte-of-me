@@ -469,9 +469,11 @@ export function FeaturedWorkDemo({
   return (
     <div
       className={cn(
-        'flex min-w-0 snap-x snap-mandatory scroll-px-8 gap-3 overflow-x-auto [scrollbar-width:none] [&>figure]:w-[84%] [&>figure]:shrink-0 [&>figure]:snap-start',
+        'flex min-w-0 snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto [scrollbar-width:none] [&>figure]:shrink-0 [&>figure]:snap-start',
+        // A pair is a strip of large clips, the next one peeking in; one clip takes the card.
+        media.length > 1 ? '[&>figure]:w-[82%]' : '[&>figure]:w-full',
         'md:grid md:gap-4 md:overflow-visible md:[&>figure]:w-auto',
-        media.length > 1 ? 'md:grid-cols-2' : 'md:max-w-xl',
+        media.length > 1 && 'md:grid-cols-2',
         className
       )}
     >

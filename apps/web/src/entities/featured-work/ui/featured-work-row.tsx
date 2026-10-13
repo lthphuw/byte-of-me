@@ -11,11 +11,11 @@ import { isVideoMimeType } from '@/entities/media/model/upload-constraints';
 
 const META = 'inline-flex items-center gap-1';
 /**
- * Overrides on RichTextHtml's compact variant for the body. The text is the work's
- * account, so it sets at body size, not the compact card size.
+ * Overrides on RichTextHtml's compact variant for the body. The author's headings stay
+ * at body size so they do not out-size the work's title.
  */
 const DETAILS_PROSE =
-  'max-w-prose text-base leading-[1.65] [&>:last-child]:mb-0 [&_p]:text-base [&_p]:leading-[1.65] [&_h1]:text-lg [&_h1]:font-semibold [&_h2]:text-lg [&_h2]:font-semibold [&_tr>:first-child]:bg-card';
+  'max-w-prose [&>:last-child]:mb-0 [&_h1]:text-base [&_h1]:font-semibold [&_h2]:text-base [&_h2]:font-semibold [&_tr>:first-child]:bg-card';
 
 /**
  * One featured work on the homepage. Its title is the only link, to the work's url;

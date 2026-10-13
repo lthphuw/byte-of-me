@@ -39,16 +39,16 @@ export function HomepageFeaturedWorksLoading() {
     <div className="space-y-6 md:space-y-8">
       <Skeleton className="h-7 w-40 md:h-9 md:w-56" />
 
-      <ul>
+      <ul className="divide-y overflow-hidden rounded-xl border bg-card px-4 md:px-5">
         {[...Array(ROWS)].map((_, i) => (
           <li key={i} className={WORK_ROW}>
             <div className={WORK_HEAD}>
               <div className={WORK_TITLE}>
-                <Line barClassName="h-5 w-3/4 md:h-7 md:w-2/3" />
+                <Line barClassName="h-4 w-3/4 md:h-5 md:w-2/3" />
               </div>
               <div className={WORK_META}>
-                <Skeleton className="h-4 w-28" />
-                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-3 w-14" />
               </div>
             </div>
 
@@ -58,7 +58,7 @@ export function HomepageFeaturedWorksLoading() {
                 'flex gap-3 md:grid md:grid-cols-2 md:gap-4'
               )}
             >
-              <Skeleton className="aspect-video w-[84%] shrink-0 rounded-md md:w-full" />
+              <Skeleton className="aspect-video w-[82%] shrink-0 rounded-md md:w-full" />
               <Skeleton className="hidden aspect-video shrink-0 rounded-md md:block md:w-full" />
             </div>
 
