@@ -18,7 +18,7 @@ apps/web/src/shared/
 ├── lib/      server and pure helpers (tables below); auth/, query/, media/, templates/
 ├── types/    api/ (ApiResponse, PaginatedData), models/ (hand-written Media, Project, Tag, TechStack),
 │             index.d.ts (LocaleType, SiteConfig, global Nullable/Maybe), next-auth.d.ts (session.user)
-└── ui/       app components; index.ts barrel exports 11 of 22 modules, the rest are imported by path
+└── ui/       app components; index.ts barrel re-exports 17 entries (form/ included), the rest are imported by path
 apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces; *.d.json.ts generated and tracked
 ```
 
@@ -36,8 +36,9 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 | `apps/web/src/shared/lib/rate-limit.ts` | `checkRateLimit` (fixed window, fails open) | 6 files: `apps/web/src/features/public/`, `apps/web/src/entities/comment/`, `apps/web/src/entities/contact-message/`, `apps/web/src/shared/lib/auth/` |
 | `apps/web/src/shared/lib/client-ip.ts` | `getClientIp(headers)`: Vercel header, `x-real-ip`, `x-forwarded-for`, else `'unknown'` | 3 files: `apps/web/src/entities/contact-message/`, `apps/web/src/features/public/`, `apps/web/src/shared/lib/auth/` |
 | `apps/web/src/shared/lib/query/` | `getQueryClient`, `makeQueryClient`, `unwrapApiResponse` (throws `ServerActionError`, which carries `errorCode`), `ADMIN_PAGE_SIZE` (12), `ADMIN_OPTIONS_LIMIT` (500) | 23 files: `apps/web/src/app/[locale]/`, `apps/web/src/widgets/dashboard/`, `apps/web/src/shared/hooks/` |
-| `apps/web/src/shared/hooks/use-server-mutation.ts` | `useServerMutation`: the one client write path. Unwraps the envelope, invalidates the `invalidate` keys and runs `onSuccess` only on success; on failure logs `errorMsg` with `console.error` and toasts `errorMessages[errorCode]`, else `errorMessage` | the write hooks in `apps/web/src/entities/*/query/` and the features that save through them |
-| `apps/web/src/shared/ui/query-state.tsx` | `QueryState`: skeleton while loading, error block with a retry button, empty block, then content; a background refetch keeps the content and shows a corner spinner. Every string comes from the caller | the dashboard managers (through `ManagerListState`) and the public list widgets; see [web-widgets.md](web-widgets.md) |
+| `apps/web/src/shared/hooks/use-server-mutation.ts` | `useServerMutation`: the one client write path. Unwraps the envelope, invalidates the `invalidate` keys and runs `onSuccess` only on success, then toasts `successMessage` with `toast.success`; on failure logs `errorMsg` with `console.error` and toasts `errorMessages[errorCode]`, else `errorMessage` | the write hooks in `apps/web/src/entities/*/query/` and the features that save through them |
+| `apps/web/src/shared/ui/query-state.tsx` | `QueryState`: skeleton while loading, error block with a retry button, empty block, then content; a background refetch keeps the content and shows a corner spinner. A `pagination` slot is drawn under the content and in the empty state. Every string comes from the caller | the dashboard managers (through `ManagerListState`) and the public list widgets; see [web-widgets.md](web-widgets.md) |
+| `apps/web/src/shared/lib/rich-text-doc-schema.ts` | `richTextDocSchema` (zod): the top level of a TipTap document, `type: 'doc'` with loose blocks. `RichTextDoc` is its inferred type | no non-spec consumer yet |
 | `apps/web/src/shared/ui/section-load-error.tsx` | `SectionLoadError`: the error block for a server-rendered section. It takes a `retryLabel` (which calls `router.refresh()`) only on a dynamic route | the public server sections, with no retry (static pages re-serve the prerendered HTML until hourly regeneration), and the dashboard sections, with retry |
 | `apps/web/src/shared/lib/media/` | image compression: shared `image-compression-rules.ts` and `-config.ts`; `compress-in-browser.ts` (client), `compress-image.ts` (server, sharp); `mp4-dimensions.ts` (server, `readMp4Dimensions`: an MP4's display size from its `tkhd` box, no decoder) | 10 files: `apps/web/src/entities/media/`, `apps/web/src/features/dashboard/`, `apps/web/src/entities/workspace-settings/` |
 | `apps/web/src/shared/lib/metadata.ts` | `buildPublicPageMetadata`, `buildAlternates` (canonical, hreflang with `x-default`, RSS link), `buildSiteJsonLd` (no email), `SITE_PERSON_ID` (the `@id` blog posts reference as author), `buildIconSet` | the layouts under `apps/web/src/app/[locale]/` and the blog post page |
@@ -55,6 +56,21 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 | `ServerActionError` (same file) | `message` is the action's `errorMsg`; `errorCode` is the reason the action named, `undefined` when it named none | a refused read is an error to TanStack, never an empty list |
 | `useServerMutation` (`apps/web/src/shared/hooks/use-server-mutation.ts`) | `mutationFn` → `unwrapApiResponse`, then the success path; the failure path is `onError` | a refused write runs no success path: no toast, no closed dialog |
 | `QueryState` (`apps/web/src/shared/ui/query-state.tsx`) | loading, error, empty, then children | the three states on every client read (AGENTS §9) |
+
+### Dashboard CRUD kit
+
+| piece | does | rule it carries |
+| --- | --- | --- |
+| `useCrudManager` (`apps/web/src/shared/hooks/use-crud-manager.ts:116`) | the page-kept list, the create or edit dialog state, the delete confirmation, and the three writes | takes `entity` (the translated noun) and `keys: CrudKeys` (`:16`). Toasts come from `dashboard.shared.crud`; a write invalidates `keys.all` and then drops `keys.detail(id)`. Without them the legacy branch runs (`entityLabel`, `messages`, `detailKey`, `:33`) with English fallbacks |
+| `useCrudManager` page clamp | when the last row of the last page is deleted, the page steps back to the new last page | placeholder data is skipped, because it describes the page being left |
+| `useCrudManager` dirty state | none: the hook does not own the form | the form's `formState.isDirty` is passed to `RecordDialog isDirty` |
+| `RecordDialog` (`apps/web/src/shared/ui/record-dialog.tsx:51`) | the one create or edit dialog: full screen below `md`, centred from `md`, Save submits the form named by `formId` | every close path goes through `requestClose`: blocked while `isPending`, asks through `ConfirmDiscardDialog` when `isDirty`. `footer={null}` for a read-only record |
+| `ConfirmDiscardDialog` (`apps/web/src/shared/ui/confirm-discard-dialog.tsx:22`) | the unsaved-changes prompt | "Keep editing" closes the prompt only; "Discard" closes the dialog too |
+| `RecordListItem`, `RecordRowActions`, `RecordListSkeleton` (`apps/web/src/shared/ui/record-list.tsx`) | one record row: optional leading, a main slot, actions | row actions are 44 px on touch and 36 px under `can-hover:`, named from `dashboard.shared.crud.editItem` and `deleteItem`. The skeleton is the same row, so a loaded row keeps its height |
+| `ManagerPageLoading`, `FormSkeleton` (`apps/web/src/shared/ui/manager-page-loading.tsx:44`, `:20`) | the page header and body skeleton, for `list`, `grid` or `form` | use it for both the route `loading.tsx` and the client loading state, so the two match (AGENTS §9) |
+| `ManagerListState` | loading, error, empty, then content | optional `skeleton` (default a `RecordListSkeleton` of `skeletonRows`, default 6) and optional `pagination` (under the content and in the empty state) |
+| `EditRecordGate` | holds an edit form back until its record loads | optional `skeleton`; the default is `FormSkeleton` labelled with `managerListState.loading` |
+| `FieldMessage` (`apps/web/src/shared/ui/form/field-message.tsx:17`) | the error text under a field, carrying the id that `FormControl` names in `aria-describedby` | a `validation.<name>` message is translated through `dashboard.validation`; any other text shows as it is. Render it inside a `FormItem`. `TextField` uses it |
 
 ### Auth helpers (`apps/web/src/shared/lib/auth/`)
 
@@ -112,7 +128,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 - Redirect target: every sign-in entry point passes `from` through `sanitizeCallbackUrl(from, locale)` (`apps/web/src/shared/lib/auth/callback-url.ts:40`).
 - Public read: `handlePublicAction` (`apps/web/src/shared/api/public-action-template.ts:91`) catches, logs, and returns a generic `errorMsg` with `errorCode: 'unknown'`; it wraps `withPublicActionHandler` (`:34`), which adds the locale and optional `unstable_cache`.
 - Public write: `parseInput` (`apps/web/src/shared/lib/validate-action-input.ts:49`), then `checkRateLimit` (`apps/web/src/shared/lib/rate-limit.ts:23`), then Prisma, then `revalidateTag` after the write.
-- Admin list: each dashboard page prefetches `<entity>Queries.adminPage(1)` into a `HydrationBoundary`, and `useCrudManager` reads the same `pageKey` factory, so both use one key and one query function. Both use `ADMIN_PAGE_SIZE`.
+- Admin list: each dashboard page prefetches `<entity>Queries.adminPage(1)` into a `HydrationBoundary`, and `useCrudManager` reads the same `pageKey` factory, so both use one key and one query function. Both use `ADMIN_PAGE_SIZE`. The manager also takes the entity's `keys` (its `model/query-keys.ts` factory), which supplies the toasts' noun and the invalidation root.
 - Client read: a `queryOptions` factory in `apps/web/src/entities/<slice>/query/<slice>-queries.ts` binds a key to its query function. A server `prefetchQuery` and the client hook both call that factory, so the hydrated entry is the one the hook reads (AGENTS §6).
 - Client write: a component calls `useServerMutation({ mutationFn, invalidate, onSuccess })`. The `invalidate` keys come from the entity's `model/query-keys.ts` factory.
 - Image upload: `compressInBrowser` (canvas) and `compressImage` (sharp, `server-only`) both apply `image-compression-rules.ts`, so they agree on skip and size rules.
@@ -142,6 +158,8 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 - `ADMIN_PAGE_SIZE` is not part of the admin query key (`apps/web/src/shared/lib/query/admin-list.ts`); a prefetch and a manager that disagree hydrate the wrong rows.
 - `requireAdmin()` above an action's `try` makes the call reject, which the client sees as an error with no envelope. Inside the `try` the same refusal becomes a failure envelope. Both fail closed. The workspace-settings actions use the first form (`apps/web/src/entities/workspace-settings/api/get-admin-workspace-settings.ts`).
 - `errorCode` is set only when the action names its reason. `ServerActionError.errorCode` is `undefined` otherwise, so every `errorMessages` map needs `errorMessage` as its fallback (AGENTS §9).
+- `useCrudManager` (with `entity`), `RecordRowActions` and `FieldMessage` read next-intl at render. A spec that renders them needs a `NextIntlClientProvider`; without one next-intl throws `Failed to call useTranslations`.
+- `FieldMessage` translates `validation.*` through the `dashboard.validation` namespace. Every client catalogue that shows it must list that namespace in `apps/web/src/shared/i18n/messages.ts`; without it the key shows as its dotted path.
 
 ## Run
 

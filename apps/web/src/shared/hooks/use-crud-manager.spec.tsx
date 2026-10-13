@@ -10,10 +10,23 @@ import type { ReactNode } from 'react';
 import type { QueryClient } from '@tanstack/react-query';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
-import { afterEach, describe, expect, it, mock, spyOn } from 'bun:test';
+import {
+  afterAll,
+  afterEach,
+  describe,
+  expect,
+  it,
+  mock,
+  spyOn,
+} from 'bun:test';
+import { NextIntlClientProvider } from 'next-intl';
 import { toast } from 'sonner';
 
-import { useCrudManager } from './use-crud-manager';
+// The catalogue lives outside `src/`, so the `@/` alias cannot reach it.
+// eslint-disable-next-line import-alias/import-alias
+import en from '../../../messages/en.json';
+
+import { type CrudKeys, useCrudManager } from './use-crud-manager';
 
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
@@ -23,45 +36,76 @@ type Item = { id: string };
 const root = ['thing', 'admin-list'] as const;
 const meta = { currentPage: 1, totalPages: 1, totalCount: 1, hasMore: false };
 const seeded: PaginatedData<Item> = { data: [{ id: 'seeded' }], meta };
+const keys: CrudKeys = { all: root, detail: (id) => [...root, 'detail', id] };
+const legacy = { queryKey: root, entityLabel: 'Thing' };
+const withKeys = { entity: 'Thing', keys };
 
 const spyToastSuccess = spyOn(toast, 'success').mockImplementation(() => 1);
+const spyToastError = spyOn(toast, 'error').mockImplementation(() => 1);
+
+type Identity = typeof legacy | typeof withKeys;
+
+type Overrides = {
+  pageKey?: (page: number) => readonly unknown[];
+  fetchPage?: (
+    page: number,
+    limit: number
+  ) => Promise<{ success: true; data: PaginatedData<Item> }>;
+  create?: () => Promise<
+    { success: true; data: null } | { success: false; errorMsg: string }
+  >;
+  remove?: () => Promise<{ success: true; data: null }>;
+};
 
 function setup(
   queryClient: QueryClient,
-  overrides: { pageKey?: (page: number) => readonly unknown[] } = {}
+  identity: Identity = legacy,
+  overrides: Overrides = {}
 ) {
-  const fetchPage = mock(async () => ({
-    success: true as const,
-    data: { data: [{ id: 'fetched' }], meta },
-  }));
-  const create = mock(async () => ({ success: true as const, data: null }));
+  const fetchPage =
+    overrides.fetchPage ??
+    mock(async () => ({
+      success: true as const,
+      data: { data: [{ id: 'fetched' }], meta },
+    }));
+  const create =
+    overrides.create ??
+    mock(async () => ({ success: true as const, data: null }));
+  const remove = overrides.remove ?? create;
 
   const hook = renderHook(
     () =>
       useCrudManager<Item, { name: string }>({
-        queryKey: root,
-        entityLabel: 'Thing',
+        ...identity,
         fetchPage,
         pageKey: overrides.pageKey ?? ((page) => [...root, page]),
         create,
         update: create,
-        remove: create,
+        remove,
       }),
     {
       wrapper: ({ children }: { children: ReactNode }) => (
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
+        <NextIntlClientProvider locale="en" messages={en}>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </NextIntlClientProvider>
       ),
     }
   );
 
-  return { ...hook, fetchPage, create };
+  return { ...hook, fetchPage, create, remove };
 }
 
 afterEach(() => {
   cleanup();
   spyToastSuccess.mockClear();
+  spyToastError.mockClear();
+});
+
+afterAll(() => {
+  spyToastSuccess.mockRestore();
+  spyToastError.mockRestore();
 });
 
 describe('useCrudManager page key', () => {
@@ -80,7 +124,7 @@ describe('useCrudManager page key', () => {
     const queryClient = makeQueryClient();
     queryClient.setQueryData(['custom-page', 1], seeded);
 
-    const { result, fetchPage } = setup(queryClient, {
+    const { result, fetchPage } = setup(queryClient, legacy, {
       pageKey: (page) => ['custom-page', page],
     });
 
@@ -117,5 +161,83 @@ describe('useCrudManager save', () => {
     expect(
       queryClient.getQueryState(['thing', 'public-list'])?.isInvalidated
     ).toBe(false);
+  });
+});
+
+describe('useCrudManager with entity and keys', () => {
+  it('shows the created toast with the entity name', async () => {
+    const { result } = setup(makeQueryClient(), withKeys);
+
+    act(() => result.current.openCreateDialog());
+    act(() => result.current.save({ name: 'new' }));
+
+    await waitFor(() =>
+      expect(spyToastSuccess).toHaveBeenCalledWith('Thing created')
+    );
+  });
+
+  it('keeps the dialog open and shows the error toast on failure', async () => {
+    const create = mock(async () => ({
+      success: false as const,
+      errorMsg: 'Session expired',
+    }));
+    const { result } = setup(makeQueryClient(), withKeys, { create });
+    const consoleSpy = spyOn(console, 'error').mockImplementation(() => {});
+
+    act(() => result.current.openCreateDialog());
+    act(() => result.current.save({ name: 'new' }));
+
+    await waitFor(() =>
+      expect(spyToastError).toHaveBeenCalledWith("Couldn't save Thing")
+    );
+    expect(result.current.isDialogOpen).toBe(true);
+    consoleSpy.mockRestore();
+  });
+
+  it('invalidates the entity root key after a delete', async () => {
+    const queryClient = makeQueryClient();
+    const nested = [...root, 'options', 'en'];
+    queryClient.setQueryData(nested, [{ id: 'option' }]);
+    const { result, remove } = setup(queryClient, withKeys);
+
+    act(() => result.current.requestDelete({ id: 'row-1' }));
+    act(() => result.current.confirmDelete());
+
+    await waitFor(() => expect(remove).toHaveBeenCalledWith('row-1'));
+    await waitFor(() =>
+      expect(queryClient.getQueryState(nested)?.isInvalidated).toBe(true)
+    );
+  });
+
+  it('clamps the page after the last row is deleted', async () => {
+    let rowsOnLastPage: Item[] = [{ id: 'last' }];
+    let totalPages = 2;
+    const fetchPage = mock(async (page: number) => ({
+      success: true as const,
+      data: {
+        data: page === 1 ? [{ id: 'first' }] : rowsOnLastPage,
+        meta: { ...meta, currentPage: page, totalPages },
+      },
+    }));
+    const remove = mock(async () => {
+      rowsOnLastPage = [];
+      totalPages = 1;
+      return { success: true as const, data: null };
+    });
+    const { result } = setup(makeQueryClient(), withKeys, {
+      fetchPage,
+      remove,
+    });
+
+    act(() => result.current.setPage(2));
+    await waitFor(() => expect(result.current.items).toEqual([{ id: 'last' }]));
+
+    act(() => result.current.requestDelete({ id: 'last' }));
+    act(() => result.current.confirmDelete());
+
+    await waitFor(() => expect(result.current.page).toBe(1));
+    await waitFor(() =>
+      expect(result.current.items).toEqual([{ id: 'first' }])
+    );
   });
 });

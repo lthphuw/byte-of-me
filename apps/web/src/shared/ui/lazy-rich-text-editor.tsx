@@ -1,5 +1,6 @@
 'use client';
 
+import { Skeleton } from '@byte-of-me/ui';
 import dynamic from 'next/dynamic';
 
 /**
@@ -16,8 +17,15 @@ export const LazyRichTextEditor = dynamic(
     import('@byte-of-me/ui/rich-text-editor').then((mod) => mod.RichTextEditor),
   {
     ssr: false,
+    // The editor's minimum height (h-64), so the blog editor loads without a jump.
     loading: () => (
-      <div className="min-h-[160px] w-full animate-pulse rounded-md border bg-muted/30" />
+      <div
+        aria-busy="true"
+        className="h-64 w-full space-y-2 rounded-md border p-3"
+      >
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-40 w-full" />
+      </div>
     ),
   }
 );

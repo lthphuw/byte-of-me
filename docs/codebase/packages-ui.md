@@ -89,6 +89,8 @@ packages/ui/
 - Classes used only in `packages/ui` are generated because of the `apps/web/tailwind.config.ts:8` content glob. Do not narrow that glob.
 - Run tests from this directory. `bunfig.toml` resolves its preload against cwd, so `bun test packages/ui` from the root skips `happydom.ts` (AGENTS §10). `@happy-dom/global-registrator` and `@testing-library/react` are declared only in the root `package.json`.
 - `packages/ui/README.md` is stale. Its "Known flagged code" paths (`src/rich-text-editor/blocks/**`, `src/rich-text-editor/editor/**`) and `lexical` deps do not exist. No file in `packages/ui/src` imports `next-intl`, so `expandable-text` does not translate. `filter-multi-select-section` does not exist. `apps/web/src/shared/lib` re-exports `cn` but not `sanitizeHtml`. "Every module is reachable by subpath" is wrong (see the second bullet).
+- `EditButton` and `DeleteButton` (`edit-button.tsx`, `delete-button.tsx`) are `size="icon"` with `min-h-11 min-w-11`, and `can-hover:min-h-9 can-hover:min-w-9` under a fine pointer: 44 px on touch, 36 px with a mouse. All eleven consumers are dashboard surfaces (`rg -n "EditButton|DeleteButton" apps packages`), so there is no size prop.
+- `ConfirmDeleteDialog` takes `description: ReactNode`, so a caller may pass JSX. Its default strings are English, because this package has no next-intl context.
 
 ## Run
 
@@ -107,6 +109,7 @@ cd packages/ui && bun test src/lib/utils.spec.ts  # one spec file, from this dir
 
 - §7 (apps/web imports of `@byte-of-me/ui`): no real violation. The static closure of 143 client entries reaches no `rich-text*`, TipTap, KaTeX or Mermaid module. The only editor path is the dashboard-only `apps/web/src/shared/ui/lazy-rich-text-editor.tsx:16`. 92 client files import the root barrel, which carries no TipTap.
 - `packages/ui/src/dialog.tsx:24`, `alert-dialog.tsx:21`, `sheet.tsx:24`, `drawer.tsx:31`: §14, hardcoded `bg-black/80` scrim.
+- `packages/ui/src/dialog.tsx:72`: §4, the built-in close button's accessible name is the English `Close`; `DialogContent` takes no label prop, so every locale hears English.
 - `packages/ui/src/rich-text-editor/tiptap/extensions/image.tsx:196-197`: §14, `bg-black/40` and `text-white` on the upload overlay.
 - `packages/ui/src/rich-text-editor/tiptap/toolbars/color-and-highlight.tsx:174`: §14, `dark:bg-gray-2`.
 - `packages/ui/src/rich-text-editor/tiptap/toolbars/link.tsx:93-94`: §14, text arrow `↗` used as an icon (Lucide only) and a `decoration-gray-7` class.

@@ -69,6 +69,7 @@ export const DASHBOARD_MESSAGE_NAMESPACES = [
   'dashboard.tag',
   'dashboard.techStack',
   'dashboard.userProfile',
+  'dashboard.validation',
   'error',
   'global',
 ] as const;

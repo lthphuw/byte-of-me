@@ -16,6 +16,10 @@ import {
 } from '@tanstack/react-query';
 import { cleanup, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, mock } from 'bun:test';
+import { NextIntlClientProvider } from 'next-intl';
+
+// eslint-disable-next-line import-alias/import-alias -- messages sit outside src, which no alias reaches
+import messages from '../../messages/en.json';
 
 import { blogKeys } from '@/entities/blog/model/query-keys';
 import { companyKeys } from '@/entities/company/model/query-keys';
@@ -135,9 +139,11 @@ describe.each(entities)('$name admin keys', ({ keys, picker, outside }) => {
           }),
         {
           wrapper: ({ children }: { children: ReactNode }) => (
-            <QueryClientProvider client={queryClient}>
-              {children}
-            </QueryClientProvider>
+            <NextIntlClientProvider locale="en" messages={messages}>
+              <QueryClientProvider client={queryClient}>
+                {children}
+              </QueryClientProvider>
+            </NextIntlClientProvider>
           ),
         }
       );

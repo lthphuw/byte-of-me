@@ -1,14 +1,18 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Button, Skeleton } from '@byte-of-me/ui';
+import { Button } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
+
+import { FormSkeleton } from './manager-page-loading';
 
 interface EditRecordGateProps {
   /** The full record has not arrived: loading, or never requested. */
   isNotReady: boolean;
   hasError: boolean;
   onRetry: () => void;
+  /** The form's own skeleton, shown while the record loads. */
+  skeleton?: ReactNode;
   /** The form. Rendered only once the record is in hand. */
   children: ReactNode;
 }
@@ -21,6 +25,7 @@ export function EditRecordGate({
   isNotReady,
   hasError,
   onRetry,
+  skeleton,
   children,
 }: EditRecordGateProps) {
   const t = useTranslations('dashboard.shared.managerListState');
@@ -40,16 +45,7 @@ export function EditRecordGate({
   }
 
   if (isNotReady) {
-    return (
-      <div className="space-y-6" aria-busy="true" aria-label={t('loading')}>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-        </div>
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-48 w-full" />
-      </div>
-    );
+    return skeleton ?? <FormSkeleton label={t('loading')} />;
   }
 
   return children;

@@ -28,6 +28,8 @@ export type QueryStateProps = {
   emptyTitle: string;
   emptyDescription?: string;
   emptyAction?: ReactNode;
+  /** Shown under the content and in the empty state, never while loading or failed. */
+  pagination?: ReactNode;
   children: ReactNode;
 };
 
@@ -49,6 +51,7 @@ export function QueryState({
   emptyTitle,
   emptyDescription,
   emptyAction,
+  pagination,
   children,
 }: QueryStateProps) {
   // Once a skeleton has shown, the content that replaces it fades in. Content
@@ -58,7 +61,12 @@ export function QueryState({
 
   if (isLoading) return <>{skeleton}</>;
 
-  let body: ReactNode = children;
+  let body: ReactNode = (
+    <>
+      {children}
+      {pagination}
+    </>
+  );
 
   if (isError) {
     body = (
@@ -78,17 +86,20 @@ export function QueryState({
     );
   } else if (isEmpty) {
     body = (
-      <div className="flex justify-center py-20">
-        <Empty>
-          <EmptyHeader>
-            <EmptyTitle>{emptyTitle}</EmptyTitle>
-            {emptyDescription && (
-              <EmptyDescription>{emptyDescription}</EmptyDescription>
-            )}
-          </EmptyHeader>
-          {emptyAction}
-        </Empty>
-      </div>
+      <>
+        <div className="flex justify-center py-20">
+          <Empty>
+            <EmptyHeader>
+              <EmptyTitle>{emptyTitle}</EmptyTitle>
+              {emptyDescription && (
+                <EmptyDescription>{emptyDescription}</EmptyDescription>
+              )}
+            </EmptyHeader>
+            {emptyAction}
+          </Empty>
+        </div>
+        {pagination}
+      </>
     );
   }
 

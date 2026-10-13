@@ -65,7 +65,7 @@ export function useServerMutation<TVariables, TData>({
       for (const queryKey of invalidate) {
         queryClient.invalidateQueries({ queryKey });
       }
-      if (successMessage) toast(successMessage);
+      if (successMessage) toast.success(successMessage);
       onSuccess?.(data, variables);
     },
     onError: (error) => {

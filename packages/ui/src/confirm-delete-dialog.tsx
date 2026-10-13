@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { Loader2 } from 'lucide-react';
 
 import {
@@ -19,7 +20,8 @@ interface ConfirmDeleteDialogProps {
   onConfirm: () => void;
   isLoading?: boolean;
   title?: string;
-  description?: string | React.ReactNode;
+  /** Accepts JSX for the callers that still pass it. */
+  description?: ReactNode;
   actionText?: string;
   cancelText?: string;
 }

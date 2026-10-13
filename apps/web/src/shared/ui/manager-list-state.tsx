@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { QueryState } from '@/shared/ui/query-state';
+import { RecordListSkeleton } from '@/shared/ui/record-list';
 
 export interface ManagerListStateProps {
   isLoading: boolean;
@@ -18,11 +19,15 @@ export interface ManagerListStateProps {
    * the standard corner spinner — the host must be `relative` for it to land.
    */
   isFetching?: boolean;
+  /** The pager. Shown under the content and in the empty state. */
+  pagination?: ReactNode;
+  /** Rows in the default loading skeleton. */
+  skeletonRows?: number;
   /**
    * The loading placeholder, with the classes of the content it stands in for
-   * (AGENTS §14). Required: every loading state shows a skeleton.
+   * (AGENTS §14). Defaults to a record-list skeleton of `skeletonRows`.
    */
-  skeleton: ReactNode;
+  skeleton?: ReactNode;
   children: ReactNode;
 }
 
@@ -39,6 +44,8 @@ export function ManagerListState({
   emptyDescription,
   emptyAction,
   isFetching,
+  pagination,
+  skeletonRows = 6,
   skeleton,
   children,
 }: ManagerListStateProps) {
@@ -51,13 +58,14 @@ export function ManagerListState({
       isFetching={isFetching}
       isEmpty={isEmpty}
       onRetry={onRetry}
-      skeleton={skeleton}
+      skeleton={skeleton ?? <RecordListSkeleton rows={skeletonRows} />}
       errorTitle={t('managerListState.errorTitle')}
       errorDescription={t('managerListState.errorDescription')}
       retryLabel={t('managerListState.retry')}
       emptyTitle={emptyTitle}
       emptyDescription={emptyDescription}
       emptyAction={emptyAction}
+      pagination={pagination}
     >
       {children}
     </QueryState>

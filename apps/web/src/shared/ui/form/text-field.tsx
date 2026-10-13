@@ -7,10 +7,11 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   Input,
   Textarea,
 } from '@byte-of-me/ui';
+
+import { FieldMessage } from './field-message';
 
 export interface TextFieldProps<T extends FieldValues = FieldValues> {
   control: Control<T>;
@@ -24,7 +25,7 @@ export interface TextFieldProps<T extends FieldValues = FieldValues> {
 
 /**
  * Standard text input field: FormField -> FormItem -> FormLabel ->
- * FormControl -> (Input | Textarea) -> FormMessage.
+ * FormControl -> (Input | Textarea) -> FieldMessage.
  */
 export function TextField<T extends FieldValues>(
   props: TextFieldProps<T>
@@ -42,7 +43,7 @@ export function TextField({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <FormItem className={className}>
           <FormLabel>{label}</FormLabel>
           <FormControl>
@@ -61,7 +62,7 @@ export function TextField({
               />
             )}
           </FormControl>
-          <FormMessage />
+          <FieldMessage message={fieldState.error?.message} />
         </FormItem>
       )}
     />
