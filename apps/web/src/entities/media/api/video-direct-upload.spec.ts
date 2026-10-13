@@ -103,8 +103,14 @@ describe('prepareVideoUpload', () => {
     });
   });
 
+  it('signs a clip at exactly 15 MB', async () => {
+    const res = await prepareVideoUpload({ ...request, size: 15 * MiB });
+
+    expect(res.success).toBe(true);
+  });
+
   it.each([
-    ['a clip over 10 MB', { ...request, size: 10 * MiB + 1 }],
+    ['a clip over 15 MB', { ...request, size: 15 * MiB + 1 }],
     [
       'a type that is not mp4/webm',
       { ...request, mimeType: 'video/quicktime' },
@@ -151,8 +157,8 @@ describe('finalizeVideoUpload', () => {
     expect(mediaCreate).not.toHaveBeenCalled();
   });
 
-  it('deletes an object over 10 MB without reading it', async () => {
-    getFile.mockResolvedValue(object(MP4, 10 * MiB + 1));
+  it('deletes an object over 15 MB without reading it', async () => {
+    getFile.mockResolvedValue(object(MP4, 15 * MiB + 1));
 
     const res = await finalizeVideoUpload({
       fileKey: KEY,
@@ -160,7 +166,7 @@ describe('finalizeVideoUpload', () => {
     });
 
     expect(res.success).toBe(false);
-    expect(res.errorMsg).toContain('10 MB');
+    expect(res.errorMsg).toContain('15 MB');
     expect(deleteFile).toHaveBeenCalledWith(KEY);
     expect(mediaCreate).not.toHaveBeenCalled();
   });

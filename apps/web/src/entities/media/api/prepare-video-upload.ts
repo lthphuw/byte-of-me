@@ -14,7 +14,7 @@ import { getErrorMessage } from '@/shared/lib/utils';
 import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
-/** Long enough for a slow upload of 10 MB to start; the URL only ever writes one key. */
+/** Long enough for a slow upload of 15 MB to start; the URL only ever writes one key. */
 const UPLOAD_URL_TTL_SECONDS = 300;
 
 /**

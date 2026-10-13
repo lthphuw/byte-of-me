@@ -113,7 +113,7 @@ export function createSingleMediaRecordUploader(
     }
 
     // A clip goes browser → storage: Vercel refuses a function request body over
-    // 4.5 MB, which a server action would hit long before the 10 MB clip cap.
+    // 4.5 MB, which a server action would hit long before the 15 MB clip cap.
     if (isVideoMimeType(compressed.type)) {
       return (deps.uploadVideo ?? defaultDeps.uploadVideo)(compressed, scope);
     }

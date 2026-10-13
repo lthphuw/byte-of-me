@@ -242,7 +242,7 @@ Built for Vercel:
 
 - `outputFileTracingRoot` points at the monorepo root so Bun's symlinked `node_modules` are traced correctly; `outputFileTracingExcludes` targets build-only packages (esbuild, typescript, prisma CLI) in Bun's `node_modules/.bun` store. Measured 2026-08-01: none of them are reachable from a server entry point, so file tracing never pulls them in and the excludes remove nothing today — they are correct, not load-bearing.
 - Remote images are allowed only from the Supabase Storage host configured in `next.config.js`.
-- Server actions accept bodies up to 3 MB (media uploads).
+- Server actions accept bodies up to 20 MB (`serverActions.bodySizeLimit` in `apps/web/next.config.js`), but Vercel caps a function request body at 4.5 MB before that. A featured-work clip (up to 15 MB) therefore uploads browser → storage directly through a signed URL.
 - Every variable in the **Environment variables** table is declared in `turbo.json` under `build.env` so Turborepo's cache key tracks it.
 
 ---

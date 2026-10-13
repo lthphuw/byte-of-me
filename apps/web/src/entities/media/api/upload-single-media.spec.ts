@@ -256,15 +256,15 @@ describe('uploadSingleMediaRecord clips', () => {
     expect(upload).not.toHaveBeenCalled();
   });
 
-  it('refuses a clip over 10 MB and a type outside mp4/webm, without uploading', async () => {
+  it('refuses a clip over 15 MB and a type outside mp4/webm, without uploading', async () => {
     const { uploadRecord, upload, uploadVideo } = setupRecord();
 
     await expect(
       uploadRecord(
-        clip('big.webm', 10 * 1024 * 1024 + 1, 'video/webm'),
+        clip('big.webm', 15 * 1024 * 1024 + 1, 'video/webm'),
         'featured-work'
       )
-    ).rejects.toThrow('"big.webm" is larger than 10 MB.');
+    ).rejects.toThrow('"big.webm" is larger than 15 MB.');
     await expect(
       uploadRecord(clip('a.mov', 10, 'video/quicktime'), 'featured-work')
     ).rejects.toThrow('"a.mov" is not an accepted image or video format.');
@@ -363,7 +363,7 @@ describe('uploadSingleMediaRecord', () => {
       upload,
       now: () => 1_000,
     });
-    const big = new File([new Uint8Array(10 * 1024 * 1024 + 1)], 'big.webm', {
+    const big = new File([new Uint8Array(15 * 1024 * 1024 + 1)], 'big.webm', {
       type: 'video/webm',
     });
 
@@ -375,9 +375,9 @@ describe('uploadSingleMediaRecord', () => {
     expect((error as MediaViolationError).violation).toEqual({
       kind: 'size',
       fileName: 'big.webm',
-      maxSizeMb: 10,
+      maxSizeMb: 15,
     });
-    expect((error as Error).message).toBe('"big.webm" is larger than 10 MB.');
+    expect((error as Error).message).toBe('"big.webm" is larger than 15 MB.');
     expect(upload).not.toHaveBeenCalled();
   });
 

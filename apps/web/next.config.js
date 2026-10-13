@@ -100,7 +100,7 @@ const nextConfig = {
   experimental: {
     serverActions: {
       // A flat '20mb', not computed from the per-file ceilings — MAX_UPLOAD_TOTAL_MB
-      // (16: five 3 MB images, or one 10 MB clip and a few images) is sized to
+      // (16: five 3 MB images, or one 15 MB clip with at most 1 MB beside it) is sized to
       // fit comfortably under it, not the other way around; see
       // `docs(day-entry): correct why the photo limits are what they are`.
       //

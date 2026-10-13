@@ -9,7 +9,7 @@ const defaultDeps = {
   prepare: prepareVideoUpload,
   finalize: finalizeVideoUpload,
   // RAW-FETCH (R8): the bytes go to a presigned storage URL. A server action
-  // body is capped at 4.5 MB on Vercel, and a clip can be 10 MB.
+  // body is capped at 4.5 MB on Vercel, and a clip can be 15 MB.
   put: (url: string, init: RequestInit) => fetch(url, init),
 };
 

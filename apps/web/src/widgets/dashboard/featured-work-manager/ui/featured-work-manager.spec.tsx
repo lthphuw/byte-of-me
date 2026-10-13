@@ -1019,7 +1019,7 @@ describe('FeaturedWorkManager demo pair', () => {
 
   it('tells the owner when the upload fails and leaves the slot empty', async () => {
     uploadClip.mockRejectedValue(
-      new Error('"int8.mp4" is larger than 10 MB.')
+      new Error('"int8.mp4" is larger than 15 MB.')
     );
     await openWork([]);
 
@@ -1208,14 +1208,14 @@ describe('FeaturedWorkManager demo pair', () => {
     await openWork([]);
 
     chooseFile(
-      new File([new Uint8Array(11 * 1024 * 1024)], 'int8.mp4', {
+      new File([new Uint8Array(16 * 1024 * 1024)], 'int8.mp4', {
         type: 'video/mp4',
       })
     );
 
     await waitFor(() =>
       expect(toastError).toHaveBeenCalledWith('File too large', {
-        description: 'int8.mp4 exceeds 10MB.',
+        description: 'int8.mp4 exceeds 15MB.',
       })
     );
     expect(uploadClip).not.toHaveBeenCalled();

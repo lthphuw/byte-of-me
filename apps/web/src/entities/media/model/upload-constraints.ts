@@ -14,7 +14,7 @@ export const MAX_IMAGE_SIZE_MB = 3;
 export const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
 
 /** A short demo clip, not a film. It goes browser → storage; a server action body tops out at 4.5 MB on Vercel. */
-export const MAX_VIDEO_SIZE_MB = 10;
+export const MAX_VIDEO_SIZE_MB = 15;
 export const MAX_VIDEO_SIZE_BYTES = MAX_VIDEO_SIZE_MB * 1024 * 1024;
 
 /**
@@ -32,7 +32,7 @@ export const MAX_UPLOAD_BATCH = 5;
 /**
  * What one request may carry in total. Five images at the 3 MB cap are 15 MB, so
  * this leaves every image-only batch as it was; it exists because five videos at
- * their own 10 MB cap would be 50 MB and hit the framework's body limit instead.
+ * their own 15 MB cap would be 75 MB and hit the framework's body limit instead.
  */
 export const MAX_UPLOAD_TOTAL_MB = 16;
 export const MAX_UPLOAD_TOTAL_BYTES = MAX_UPLOAD_TOTAL_MB * 1024 * 1024;

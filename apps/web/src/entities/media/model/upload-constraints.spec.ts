@@ -246,7 +246,7 @@ describe('findUploadViolation', () => {
     ).toBeNull();
   });
 
-  it('rejects a video over 10 MB and an image over 3 MB, each with its own limit', () => {
+  it('rejects a video over 15 MB and an image over 3 MB, each with its own limit', () => {
     expect(
       findUploadViolation([
         sized(MAX_VIDEO_SIZE_BYTES + 1, 'video/mp4', 'a.mp4'),
@@ -254,7 +254,7 @@ describe('findUploadViolation', () => {
     ).toEqual({
       kind: 'size',
       fileName: 'a.mp4',
-      maxSizeMb: 10,
+      maxSizeMb: 15,
     });
     expect(
       findUploadViolation([

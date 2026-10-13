@@ -235,9 +235,9 @@ describe('uploadMedia', () => {
     expect(uploadFile).not.toHaveBeenCalled();
   });
 
-  it('refuses a video over 10 MB and an image over 3 MB, before storage', async () => {
+  it('refuses a video over 15 MB and an image over 3 MB, before storage', async () => {
     const bigClip = await uploadMedia(
-      [fileOf(padded(MP4, 10 * MiB + 1), 'big.mp4', 'video/mp4')],
+      [fileOf(padded(MP4, 15 * MiB + 1), 'big.mp4', 'video/mp4')],
       'featured-work'
     );
     const bigImage = await uploadMedia(
@@ -247,7 +247,7 @@ describe('uploadMedia', () => {
 
     expect(bigClip).toEqual({
       success: false,
-      errorMsg: '"big.mp4" is larger than 10 MB.',
+      errorMsg: '"big.mp4" is larger than 15 MB.',
     });
     expect(bigImage).toEqual({
       success: false,
@@ -256,9 +256,9 @@ describe('uploadMedia', () => {
     expect(uploadFile).not.toHaveBeenCalled();
   });
 
-  it('accepts a clip at exactly 10 MB', async () => {
+  it('accepts a clip at exactly 15 MB', async () => {
     const res = await uploadMedia(
-      [fileOf(padded(MP4, 10 * MiB), 'max.mp4', 'video/mp4')],
+      [fileOf(padded(MP4, 15 * MiB), 'max.mp4', 'video/mp4')],
       'featured-work'
     );
 
@@ -310,8 +310,8 @@ describe('uploadMedia', () => {
     const tooMany = await uploadMedia(six, 'blog');
     const twoClips = await uploadMedia(
       [
-        fileOf(padded(MP4, 10 * MiB), 'a.mp4', 'video/mp4'),
-        fileOf(padded(MP4, 10 * MiB), 'b.mp4', 'video/mp4'),
+        fileOf(padded(MP4, 15 * MiB), 'a.mp4', 'video/mp4'),
+        fileOf(padded(MP4, 15 * MiB), 'b.mp4', 'video/mp4'),
       ],
       'featured-work'
     );

@@ -106,14 +106,14 @@ describe('ImageUpload with video', () => {
     expect(screen.queryByText('int8.mp4')).toBeNull();
   });
 
-  it('holds a clip to 10 MB and an image to 3 MB, naming the limit', async () => {
+  it('holds a clip to 15 MB and an image to 3 MB, naming the limit', async () => {
     const { container } = renderUpload(true);
 
     choose(
       container,
-      fileOf('big.mp4', 'video/mp4', 10 * MiB + 1),
+      fileOf('big.mp4', 'video/mp4', 15 * MiB + 1),
       fileOf('big.png', 'image/png', 3 * MiB + 1),
-      fileOf('ok.mp4', 'video/mp4', 10 * MiB)
+      fileOf('ok.mp4', 'video/mp4', 15 * MiB)
     );
 
     await waitFor(() => expect(toastError).toHaveBeenCalledTimes(2));
@@ -121,7 +121,7 @@ describe('ImageUpload with video', () => {
       toastError.mock.calls.map(
         (call) => (call[1] as { description: string }).description
       )
-    ).toEqual(['big.mp4 exceeds 10MB.', 'big.png exceeds 3MB.']);
+    ).toEqual(['big.mp4 exceeds 15MB.', 'big.png exceeds 3MB.']);
     expect(screen.getByText('ok.mp4')).toBeTruthy();
   });
 
@@ -129,8 +129,8 @@ describe('ImageUpload with video', () => {
     const { container } = renderUpload(true);
     choose(
       container,
-      fileOf('a.mp4', 'video/mp4', 10 * MiB),
-      fileOf('b.webm', 'video/webm', 10 * MiB)
+      fileOf('a.mp4', 'video/mp4', 15 * MiB),
+      fileOf('b.webm', 'video/webm', 15 * MiB)
     );
     fireEvent.click(
       await screen.findByRole('button', { name: 'Upload 2 Files' })
