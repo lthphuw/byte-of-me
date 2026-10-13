@@ -16,8 +16,8 @@ export const PLAIN_ROW_HEADER = `grid ${ROW_TRACKS} gap-y-2 py-5`;
  * bar is exactly one line of the text it stands in for and the heights cannot drift.
  */
 
-/** The title column's stack: title above description. */
-export const ROW_BODY_STACK = 'min-w-0 space-y-2';
+/** The title column. */
+export const ROW_BODY_STACK = 'min-w-0';
 /**
  * The row number. From md it is the left column, top-aligned to the title's first line.
  * On a phone it is an eyebrow above the title with a hairline running to the card's
@@ -26,7 +26,6 @@ export const ROW_BODY_STACK = 'min-w-0 space-y-2';
 export const ROW_NUMBER_TEXT =
   'flex items-center gap-3 text-xs tabular-nums after:h-px after:flex-1 after:bg-border md:block md:pt-1 md:after:hidden';
 export const ROW_TITLE_TEXT = 'font-heading text-lg tracking-tight md:text-xl';
-export const ROW_DESCRIPTION_TEXT = 'text-sm leading-relaxed';
 /** Below md the meta sits under the title; from md it is the third column. */
 export const ROW_META_CELL =
   'flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 md:col-start-3 md:flex-col md:items-end md:text-right';

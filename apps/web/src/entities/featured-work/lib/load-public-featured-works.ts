@@ -29,7 +29,7 @@ const MAX_WORKS = 6;
 
 type FeaturedWorkRow = Pick<
   PublicFeaturedWork,
-  'id' | 'title' | 'description' | 'detailsHtml' | 'url' | 'host' | 'media'
+  'id' | 'title' | 'detailsHtml' | 'url' | 'host' | 'media'
 >;
 
 interface StoredDemoItem {
@@ -74,7 +74,7 @@ function toPublicMedia(items: StoredDemoItem[]): PublicFeaturedWorkMedia[] {
 /**
  * Sanitized HTML of one row's details, or null. Runs inside the cached handler,
  * so a cache hit skips TipTap and the sanitizer. Only a `doc` that renders is a
- * body: anything else shows no toggle, and the stored JSON is never printed.
+ * body: anything else shows no details, and the stored JSON is never printed.
  */
 function toDetailsHtml(details: string | null): string | null {
   if (isRichTextBlank(details)) return null;
@@ -92,7 +92,6 @@ export function toRows(
     translations: Array<{
       language: string;
       title: string;
-      description: string | null;
       details: string | null;
     }>;
   }>,
@@ -107,7 +106,6 @@ export function toRows(
       {
         id: work.id,
         title: translation.title,
-        description: translation.description,
         // Row-level: the body comes from the translation the title came from.
         detailsHtml: toDetailsHtml(translation.details),
         ...safeLink(work.url),
@@ -125,7 +123,7 @@ async function getPublicFeaturedWorkRows(): Promise<
       'getPublicFeaturedWorkRows',
       async ({ locale, userId }) => {
         const works = await prisma.featuredWork.findMany({
-          where: { userId, isPublished: true },
+          where: { userId },
           orderBy: [{ sortOrder: 'asc' }, { id: 'asc' }],
           take: MAX_WORKS,
           select: {
@@ -152,7 +150,6 @@ async function getPublicFeaturedWorkRows(): Promise<
               select: {
                 language: true,
                 title: true,
-                description: true,
                 details: true,
               },
             },
@@ -167,7 +164,8 @@ async function getPublicFeaturedWorkRows(): Promise<
         // without it. No `revalidate` is set, so they never expire by time. v4: rows
         // cached before the first clip was attached, which a tag revalidation served stale.
         // v5: the demo items carry each file's pixel size, which v4 rows lack.
-        cacheKey: ['featured-works-rows-v5'],
+        // v6: no is_published filter any more, so v5 rows would hide the drafts that now show.
+        cacheKey: ['featured-works-rows-v6'],
         cacheTags: [CACHE_TAGS.FEATURED_WORK],
       }
     );

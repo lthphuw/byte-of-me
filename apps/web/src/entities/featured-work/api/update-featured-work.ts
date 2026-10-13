@@ -60,7 +60,6 @@ export async function updateFeaturedWork(
         const featuredWork = await tx.featuredWork.update({
           where: { id },
           data: {
-            isPublished: values.isPublished,
             url: values.url || null,
 
             translations: {
@@ -68,7 +67,6 @@ export async function updateFeaturedWork(
               create: values.translations.map((t) => ({
                 language: t.language,
                 title: t.title,
-                description: t.description || null,
                 details: t.details ?? null,
               })),
             },

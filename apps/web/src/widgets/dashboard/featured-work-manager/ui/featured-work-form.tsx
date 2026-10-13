@@ -10,7 +10,6 @@ import {
   FormLabel,
   FormMessage,
   fromEditorContent,
-  Switch,
   toEditorContent,
 } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
@@ -32,7 +31,6 @@ function toFormValues(
   initialData?: AdminFeaturedWorkDetail
 ): DefaultValues<FeaturedWorkFormValues> {
   return {
-    isPublished: initialData?.isPublished ?? false,
     url: initialData?.url ?? '',
     // Always set, even to []: the update action keeps a pair it is not sent, so
     // a form that left this out could never clear one, and one that dropped the
@@ -115,7 +113,6 @@ export function FeaturedWorkForm({
           newTranslation={() => ({
             language: '',
             title: '',
-            description: '',
             details: '',
           })}
           renderFields={(index) => (
@@ -124,12 +121,6 @@ export function FeaturedWorkForm({
                 control={form.control}
                 name={`translations.${index}.title`}
                 label={t('titleLabel')}
-              />
-              <TextField
-                control={form.control}
-                name={`translations.${index}.description`}
-                label={t('descriptionLabel')}
-                multiline
               />
               <FormField
                 control={form.control}
@@ -181,23 +172,6 @@ export function FeaturedWorkForm({
           name="url"
           label={t('urlLabel')}
           placeholder={t('urlPlaceholder')}
-        />
-
-        <FormField
-          control={form.control}
-          name="isPublished"
-          render={({ field }) => (
-            <FormItem className="flex items-center justify-between gap-4 space-y-0 rounded-md border p-3">
-              <FormLabel>{t('publishedLabel')}</FormLabel>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
         />
       </form>
     </Form>

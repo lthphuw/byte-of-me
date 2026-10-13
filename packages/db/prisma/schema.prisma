@@ -186,11 +186,10 @@ model FeaturedWork {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  sortOrder   Int     @default(0) @map("sort_order")
-  isPublished Boolean @default(false) @map("is_published")
+  sortOrder Int     @default(0) @map("sort_order")
   // A PR, commit or post that proves the feature. Optional on purpose: an
   // unmerged or off-GitHub piece of work is still worth pinning.
-  url         String?
+  url       String?
 
   userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -199,7 +198,7 @@ model FeaturedWork {
   // The side-by-side demo pair (a clip or GIF each), at most two.
   media        FeaturedWorkMedia[]
 
-  @@index([userId, isPublished, sortOrder], map: "idx_featured_works_public_list")
+  @@index([userId, sortOrder], map: "idx_featured_works_public_list")
   @@map("featured_works")
 }
 
@@ -208,11 +207,10 @@ model FeaturedWorkTranslation {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  language    String
-  title       String
-  description String? @db.Text
-  // Stringified TipTap document, the Project/Education codec. Null = no body, no toggle.
-  details     String? @db.Text
+  language String
+  title    String
+  // Stringified TipTap document, the Project/Education codec. Null = no body.
+  details  String? @db.Text
 
   featuredWorkId String       @map("featured_work_id")
   featuredWork   FeaturedWork @relation(fields: [featuredWorkId], references: [id], onDelete: Cascade)

@@ -3645,7 +3645,6 @@ export const FeaturedWorkScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   sortOrder: 'sortOrder',
-  isPublished: 'isPublished',
   url: 'url',
   userId: 'userId'
 } as const
@@ -3659,7 +3658,6 @@ export const FeaturedWorkTranslationScalarFieldEnum = {
   updatedAt: 'updatedAt',
   language: 'language',
   title: 'title',
-  description: 'description',
   details: 'details',
   featuredWorkId: 'featuredWorkId'
 } as const

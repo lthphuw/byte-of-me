@@ -3,7 +3,6 @@ import { Skeleton } from '@byte-of-me/ui';
 import {
   PLAIN_ROW_HEADER,
   ROW_BODY_STACK,
-  ROW_DESCRIPTION_TEXT,
   ROW_META_CELL,
   ROW_NUMBER_TEXT,
   ROW_TITLE_TEXT,
@@ -12,13 +11,6 @@ import { cn } from '@/shared/lib/utils';
 
 /** Four rows, like the owner's list; a taller skeleton would shrink the page on resolve. */
 const ROWS = 4;
-/**
- * Description lines, drawn at the lengths the real rows measure (2026-10-10): about
- * five lines in the wide column and six in the 302px phone column at a 400px viewport.
- * The extra one hides from md.
- */
-const DESCRIPTION_LINES_PHONE = 6;
-const DESCRIPTION_LINES_WIDE = 5;
 
 /**
  * One line of the text a bar stands in for. The wrapper's height is `1lh` of the
@@ -38,19 +30,6 @@ function Line({
   );
 }
 
-function descriptionLine(index: number) {
-  const hiddenFromMd = index >= DESCRIPTION_LINES_WIDE;
-  const lastWide = index === DESCRIPTION_LINES_WIDE - 1;
-  const lastPhone = index === DESCRIPTION_LINES_PHONE - 1;
-  return (
-    <Line
-      key={index}
-      className={hiddenFromMd ? 'md:hidden' : undefined}
-      barClassName={cn('w-full', lastWide && 'md:w-3/5', lastPhone && 'w-2/5')}
-    />
-  );
-}
-
 export function HomepageFeaturedWorksLoading() {
   return (
     <div className="space-y-6 md:space-y-8">
@@ -65,11 +44,6 @@ export function HomepageFeaturedWorksLoading() {
             <div className={ROW_BODY_STACK}>
               <div className={ROW_TITLE_TEXT}>
                 <Line barClassName="h-5 w-48 md:h-6" />
-              </div>
-              <div className={ROW_DESCRIPTION_TEXT}>
-                {[...Array(DESCRIPTION_LINES_PHONE)].map((__, line) =>
-                  descriptionLine(line)
-                )}
               </div>
             </div>
             <div className={ROW_META_CELL}>

@@ -128,7 +128,7 @@ function writtenTranslations(): UpdateArgs['data']['translations']['create'] {
 
 const input = (
   translations: FeaturedWorkFormValues['translations']
-): FeaturedWorkFormValues => ({ isPublished: true, url: '', translations });
+): FeaturedWorkFormValues => ({ url: '', translations });
 
 describe('updateFeaturedWork details', () => {
   it('stores a translation sent without details as null, clearing any stored body', async () => {
@@ -159,6 +159,23 @@ const pair = [
   { mediaId: 'm-fp16', label: ' FP16 ' },
   { mediaId: 'm-int8', label: '' },
 ];
+
+describe('updateFeaturedWork publishing and body', () => {
+  it('writes no publish flag and no description: a work is always published', async () => {
+    const res = await updateFeaturedWork(
+      'fw-1',
+      input([{ language: 'en', title: 'INT8 quantization' }])
+    );
+
+    expect(res.success).toBe(true);
+    const data = (update.mock.calls[0]?.[0] as { data: Record<string, unknown> })
+      .data;
+    expect(Object.keys(data)).not.toContain('isPublished');
+    expect(Object.keys(writtenTranslations()[0] ?? {})).not.toContain(
+      'description'
+    );
+  });
+});
 
 describe('updateFeaturedWork demo media', () => {
   it('keeps the stored pair when the caller omits media, and still saves the rest', async () => {

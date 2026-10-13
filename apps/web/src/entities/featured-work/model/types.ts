@@ -14,7 +14,7 @@ export interface FeaturedWorkGithub {
 export type AdminFeaturedWork = Prisma.FeaturedWorkGetPayload<{
   include: {
     translations: {
-      select: { id: true; language: true; title: true; description: true };
+      select: { id: true; language: true; title: true };
     };
   };
 }>;
@@ -40,7 +40,6 @@ export type AdminFeaturedWorkDetail = Prisma.FeaturedWorkGetPayload<{
         id: true;
         language: true;
         title: true;
-        description: true;
         details: true;
       };
     };
@@ -63,7 +62,6 @@ export interface PublicFeaturedWorkMedia {
 export interface PublicFeaturedWork {
   id: string;
   title: string;
-  description: string | null;
   /** Sanitized HTML of this language's details body, or null. Never the stored JSON. */
   detailsHtml: string | null;
   url: string | null;

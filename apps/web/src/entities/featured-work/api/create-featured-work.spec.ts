@@ -64,7 +64,6 @@ afterAll(() => {
 const input = (
   media?: FeaturedWorkFormValues['media']
 ): FeaturedWorkFormValues => ({
-  isPublished: true,
   url: '',
   translations: [{ language: 'en', title: 'INT8 vs FP16' }],
   media,
@@ -135,5 +134,22 @@ describe('createFeaturedWork demo media', () => {
     expect(three.success).toBe(false);
     expect(twice.success).toBe(false);
     expect(create).not.toHaveBeenCalled();
+  });
+});
+
+describe('createFeaturedWork publishing and body', () => {
+  it('writes no publish flag and no description: a work is always published', async () => {
+    const res = await createFeaturedWork(input());
+
+    expect(res.success).toBe(true);
+    const data = (create.mock.calls[0]?.[0] as { data: Record<string, unknown> })
+      .data;
+    expect(Object.keys(data)).not.toContain('isPublished');
+    const translations = data.translations as {
+      create: Array<Record<string, unknown>>;
+    };
+    expect(Object.keys(translations.create[0] ?? {})).not.toContain(
+      'description'
+    );
   });
 });

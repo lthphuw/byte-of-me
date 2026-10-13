@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 import {
-  Badge,
   Button,
   ConfirmDeleteDialog,
   DeleteButton,
@@ -177,12 +176,6 @@ export function FeaturedWorkManager() {
                         {title}
                       </h4>
                       <div className="flex flex-wrap items-center gap-2 pt-1">
-                        <Badge
-                          variant={work.isPublished ? 'secondary' : 'outline'}
-                          className="px-2 py-0 text-[10px]"
-                        >
-                          {work.isPublished ? t('published') : t('draft')}
-                        </Badge>
                         {host && (
                           <span className="truncate text-xs text-muted-foreground">
                             {host}

@@ -35,7 +35,6 @@ export async function getPaginatedAdminFeaturedWorks(
               id: true,
               language: true,
               title: true,
-              description: true,
             },
             orderBy: { language: 'asc' },
           },

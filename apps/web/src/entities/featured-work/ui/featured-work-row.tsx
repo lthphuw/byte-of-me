@@ -20,8 +20,8 @@ const EXTERNAL_LINK =
   'inline-flex min-h-11 items-center gap-1 rounded-sm text-sm font-medium text-primary underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 
 /**
- * One numbered line of the homepage list. A work's demo is always on show; its details
- * expand in place, and its external link sits on the action line under the demo. A work with neither
+ * One numbered line of the homepage list. Its demo and details are always on show,
+ * and its external link sits on the action line under them. A work with neither
  * stays one link, or static when it has no url.
  */
 export function FeaturedWorkRow({
@@ -72,10 +72,10 @@ export function FeaturedWorkRow({
       fullscreenLabel: t('featuredDemoFullscreen', { label: name }),
     };
   });
-  const expandable = Boolean(details) || media.length > 0;
+  const hasBody = Boolean(details) || media.length > 0;
 
   const footer: ReactNode =
-    expandable && url ? (
+    hasBody && url ? (
       <a
         href={url}
         target="_blank"
@@ -95,9 +95,8 @@ export function FeaturedWorkRow({
       anchorId={`featured-works-${work.id}`}
       number={String(index + 1).padStart(2, '0')}
       title={work.title}
-      description={work.description}
       meta={meta}
-      href={expandable ? null : url}
+      href={hasBody ? null : url}
       newTabLabel={t('featuredOpensInNewTab')}
       details={details}
       media={media}
@@ -107,8 +106,6 @@ export function FeaturedWorkRow({
         zoomReset: t('featuredDemoZoomReset'),
         exitFullscreen: t('featuredDemoExitFullscreen'),
       }}
-      showDetailsLabel={t('featuredShowDetails')}
-      hideDetailsLabel={t('featuredHideDetails')}
       footer={footer}
     />
   );

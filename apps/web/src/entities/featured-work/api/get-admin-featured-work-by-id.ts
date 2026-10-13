@@ -35,7 +35,6 @@ export async function getAdminFeaturedWorkById(
             id: true,
             language: true,
             title: true,
-            description: true,
             details: true,
           },
           orderBy: { language: 'asc' },

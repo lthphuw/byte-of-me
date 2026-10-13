@@ -1,18 +1,10 @@
 /**
- * A featured work as a visitor meets it: the demo always on show, one details toggle
- * per row whose body is inert until it opens, and deep links that open their own row only.
- * Renders the real component; no mocks.
+ * A featured work as a visitor meets it: the demo and the details are always on
+ * show, there is no toggle, and the external link sits on the action line under the
+ * demo. Renders the real component; no mocks.
  */
 import type { ComponentProps } from 'react';
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'bun:test';
 
 import { FeaturedWorkItem } from './featured-work-item';
@@ -23,7 +15,6 @@ const ANCHOR = 'featured-works-w1';
 const work: Omit<ComponentProps<typeof FeaturedWorkItem>, 'anchorId'> = {
   number: '01',
   title: 'Faster detector export',
-  description: 'Cut the export time in half.',
   meta: <span>roboflow/rf-detr</span>,
   href: null,
   newTabLabel: '(opens in a new tab)',
@@ -34,8 +25,6 @@ const work: Omit<ComponentProps<typeof FeaturedWorkItem>, 'anchorId'> = {
     zoomReset: 'Reset zoom',
     exitFullscreen: 'Exit full screen',
   },
-  showDetailsLabel: 'Show details',
-  hideDetailsLabel: 'Hide details',
   details: (
     <>
       <p>How it was done: a streaming writer.</p>
@@ -56,44 +45,17 @@ function renderItem(
   return render(<FeaturedWorkItem anchorId={ANCHOR} {...work} {...props} />);
 }
 
-const toggle = () => screen.getByRole('button', { name: /details$/ });
-const bodyLink = () => screen.getByRole('link', { name: 'View on GitHub' });
-/** The body's region: the element the toggle's `aria-controls` names. */
-function controlledRegion(): HTMLElement {
-  const id = toggle().getAttribute('aria-controls');
-  const region = id ? document.getElementById(id) : null;
-  if (!region) throw new Error('aria-controls does not name an element');
-  return region;
-}
-/** The toggle of the row with this id, found by the id it controls. */
-function toggleFor(anchorId: string): HTMLElement {
-  const button = document.querySelector<HTMLElement>(
-    `button[aria-controls="${anchorId}-details"]`
-  );
-  if (!button) throw new Error(`no toggle controls ${anchorId}-details`);
-  return button;
-}
+const bodyText = () => screen.getByText('How it was done: a streaming writer.');
 
-afterEach(() => {
-  cleanup();
-  window.location.hash = '';
-});
+afterEach(cleanup);
 
-describe('FeaturedWorkItem disclosure', () => {
-  it('has one toggle, collapsed, whose aria-expanded and label flip on each click', () => {
+describe('FeaturedWorkItem details', () => {
+  it('shows the details at once, with no toggle and nothing inert', () => {
     renderItem();
 
-    expect(screen.getAllByRole('button')).toHaveLength(1);
-    expect(toggle().getAttribute('aria-expanded')).toBe('false');
-    expect(toggle().textContent).toBe('Show details');
-    expect(controlledRegion()).toBeTruthy();
-
-    fireEvent.click(toggle());
-    expect(toggle().getAttribute('aria-expanded')).toBe('true');
-    expect(toggle().textContent).toBe('Hide details');
-
-    fireEvent.click(toggle());
-    expect(toggle().getAttribute('aria-expanded')).toBe('false');
+    expect(screen.queryByRole('button')).toBeNull();
+    expect(bodyText()).toBeTruthy();
+    expect(document.querySelector('[inert]')).toBeNull();
   });
 
   it('leaves the title as plain text, not a button', () => {
@@ -107,127 +69,13 @@ describe('FeaturedWorkItem disclosure', () => {
     ).toBeTruthy();
   });
 
-  it('keeps the body inert while closed and releases it once open', () => {
-    renderItem();
+  it('draws no details block for a work without details', () => {
+    renderItem({ details: null });
 
-    expect(controlledRegion().hasAttribute('inert')).toBe(true);
-    expect(bodyLink().closest('[inert]')).not.toBeNull();
-
-    fireEvent.click(toggle());
-
-    expect(controlledRegion().hasAttribute('inert')).toBe(false);
-    expect(bodyLink().closest('[inert]')).toBeNull();
-  });
-
-  it('does not write the hash when toggled', () => {
-    renderItem();
-
-    fireEvent.click(toggle());
-
-    expect(window.location.hash).toBe('');
-  });
-
-  it('toggles from the keyboard with Enter and with Space', async () => {
-    const user = userEvent.setup();
-    renderItem();
-
-    await user.tab();
-    expect(document.activeElement).toBe(toggle());
-
-    await user.keyboard('{Enter}');
-    expect(toggle().getAttribute('aria-expanded')).toBe('true');
-
-    await user.keyboard(' ');
-    expect(toggle().getAttribute('aria-expanded')).toBe('false');
-  });
-});
-
-describe('FeaturedWorkItem chevron', () => {
-  const chevron = () => {
-    const icon = toggle().querySelector('svg');
-    if (!icon) throw new Error('the toggle has no chevron');
-    return icon;
-  };
-
-  it('does not transition before the first toggle, whether shut or opened by a deep link', () => {
-    window.location.hash = `#${ANCHOR}`;
-    renderItem();
-
-    expect(toggle().getAttribute('aria-expanded')).toBe('true');
-    expect(chevron().classList.contains('transition-none')).toBe(true);
-    expect(chevron().classList.contains('transition-transform')).toBe(false);
-  });
-
-  it('transitions only its transform, and not under reduced motion, once toggled', () => {
-    renderItem();
-    fireEvent.click(toggle());
-
-    const classes = chevron().classList;
-    expect(classes.contains('transition-transform')).toBe(true);
-    expect(classes.contains('motion-reduce:transition-none')).toBe(true);
-    expect(classes.contains('transition-none')).toBe(false);
-  });
-
-  it('goes back to no transition when a deep link opens the row after it was toggled', async () => {
-    renderItem();
-    fireEvent.click(toggle());
-    fireEvent.click(toggle());
-    expect(chevron().classList.contains('transition-transform')).toBe(true);
-
-    act(() => {
-      window.location.hash = `#${ANCHOR}`;
-    });
-
-    await waitFor(() =>
-      expect(toggle().getAttribute('aria-expanded')).toBe('true')
-    );
-    expect(chevron().classList.contains('transition-none')).toBe(true);
-  });
-});
-
-describe('FeaturedWorkItem deep links', () => {
-  it('opens its own row on mount when the hash names it', () => {
-    window.location.hash = `#${ANCHOR}`;
-    renderItem();
-
-    expect(toggle().getAttribute('aria-expanded')).toBe('true');
-    expect(controlledRegion().hasAttribute('inert')).toBe(false);
-  });
-
-  it('opens its own row when the hash changes to it', async () => {
-    renderItem();
-    expect(toggle().getAttribute('aria-expanded')).toBe('false');
-
-    act(() => {
-      window.location.hash = `#${ANCHOR}`;
-    });
-
-    await waitFor(() =>
-      expect(toggle().getAttribute('aria-expanded')).toBe('true')
-    );
-  });
-
-  it('leaves a row shut when the hash changes to a different row', async () => {
-    const other = 'featured-works-other';
-    render(
-      <>
-        <FeaturedWorkItem anchorId={ANCHOR} {...work} />
-        <FeaturedWorkItem anchorId={other} {...work} />
-      </>
-    );
-    expect(toggleFor(ANCHOR).getAttribute('aria-expanded')).toBe('false');
-    expect(toggleFor(other).getAttribute('aria-expanded')).toBe('false');
-
-    act(() => {
-      window.location.hash = `#${other}`;
-    });
-
-    // The other row opens from the hashchange event itself, which proves the event
-    // was handled. This row's listener was registered first, so it has run too.
-    await waitFor(() =>
-      expect(toggleFor(other).getAttribute('aria-expanded')).toBe('true')
-    );
-    expect(toggleFor(ANCHOR).getAttribute('aria-expanded')).toBe('false');
+    expect(
+      screen.queryByText('How it was done: a streaming writer.')
+    ).toBeNull();
+    expect(screen.queryByRole('button')).toBeNull();
   });
 });
 
@@ -268,48 +116,35 @@ const pair: ComponentProps<typeof FeaturedWorkItem>['media'] = [
     fullscreenLabel: 'Full screen INT8',
   },
 ];
-/** A work with a demo and no details: the shape of the first live work. */
-const mediaOnly = { details: null, media: pair } as const;
 
 describe('FeaturedWorkItem demo', () => {
-  it('is plain with neither, details-only with a toggle, and demo-only with none', () => {
+  it('is plain with neither a demo nor details, and shows each one it has', () => {
     renderItem({ details: null, media: [] });
     expect(screen.queryByRole('button')).toBeNull();
+    expect(document.querySelectorAll('figure')).toHaveLength(0);
     cleanup();
 
     renderItem({ media: [] });
-    expect(toggle().getAttribute('aria-expanded')).toBe('false');
+    expect(bodyText()).toBeTruthy();
+    expect(screen.queryByRole('button')).toBeNull();
     cleanup();
 
-    renderItem(mediaOnly);
-    expect(screen.queryByRole('button', { name: /details$/ })).toBeNull();
+    renderItem({ details: null, media: pair });
     expect(document.querySelectorAll('figure')).toHaveLength(2);
+    expect(
+      screen.queryByText('How it was done: a streaming writer.')
+    ).toBeNull();
   });
 
-  it('draws the demo at once, with the details still shut', () => {
+  it('draws the demo and the details together, with no toggle', () => {
     renderItem({ media: pair });
 
     expect(document.querySelector('video')).not.toBeNull();
     expect(document.querySelector('img')).not.toBeNull();
-    expect(toggle().getAttribute('aria-expanded')).toBe('false');
-    expect(controlledRegion().hasAttribute('inert')).toBe(true);
-  });
-
-  it('keeps the clip out of the shut details, so it stays reachable by keyboard', () => {
-    renderItem({ media: pair });
-
-    const clip = screen.getByRole('button', { name: 'Play FP16' });
-
-    expect(clip.closest('[inert]')).toBeNull();
-    expect(controlledRegion().contains(clip)).toBe(false);
-  });
-
-  it('leaves a demo-only work alone when the hash names it', () => {
-    window.location.hash = `#${ANCHOR}`;
-    renderItem(mediaOnly);
-
-    expect(document.querySelectorAll('figure')).toHaveLength(2);
-    expect(document.querySelector(`#${ANCHOR}-details`)).toBeNull();
+    expect(bodyText()).toBeTruthy();
+    expect(
+      screen.queryByRole('button', { name: /details$/ })
+    ).toBeNull();
   });
 
   it('puts the demo first, then the action line, then the details', () => {
@@ -317,13 +152,11 @@ describe('FeaturedWorkItem demo', () => {
       media: pair,
       footer: <a href="https://example.com/work">Visit example.com</a>,
     });
-    fireEvent.click(toggle());
 
     const order = [
       document.querySelector('figure'),
-      toggle(),
       screen.getByRole('link', { name: 'Visit example.com' }),
-      controlledRegion(),
+      bodyText(),
     ];
     for (let i = 0; i < order.length - 1; i += 1) {
       const position = order[i]?.compareDocumentPosition(order[i + 1] as Node);
@@ -331,7 +164,7 @@ describe('FeaturedWorkItem demo', () => {
     }
   });
 
-  it('keeps the external link visible while the details are shut', () => {
+  it('keeps the external link outside any inert region', () => {
     renderItem({
       media: pair,
       footer: <a href="https://example.com/work">Visit example.com</a>,
@@ -359,7 +192,6 @@ describe('FeaturedWorkItem body grid classes', () => {
   const isStart = (name: string) => /(^|:)col-start-/.test(name);
 
   it('never lets a col-span reset a col-start that applies at its breakpoint', () => {
-    window.location.hash = `#${ANCHOR}`;
     const { container } = renderItem({
       media: pair,
       footer: <a href="https://example.com/work">Visit example.com</a>,
@@ -385,7 +217,8 @@ describe('FeaturedWorkItem body grid classes', () => {
       footer: <a href="https://example.com/work">Visit example.com</a>,
     });
     const demo = container.querySelector('figure')?.parentElement;
-    const actions = toggle().parentElement;
+    const actions = screen.getByRole('link', { name: 'Visit example.com' })
+      .parentElement;
 
     for (const element of [demo, actions]) {
       expect(element?.classList.contains('md:col-start-2')).toBe(true);
@@ -394,17 +227,10 @@ describe('FeaturedWorkItem body grid classes', () => {
   });
 
   it('keeps the details in the title track', () => {
-    const { container } = renderItem(mediaOnly);
-    const region = container.querySelector<HTMLElement>(`#${ANCHOR}-details`);
+    renderItem();
+    const details = bodyText().closest<HTMLElement>('.md\\:col-start-2');
 
-    expect(region).toBeNull();
-    cleanup();
-
-    const withDetails = renderItem({ media: pair }).container;
-    const details = withDetails.querySelector<HTMLElement>(
-      `#${ANCHOR}-details`
-    );
-    expect(details?.classList.contains('md:col-start-2')).toBe(true);
+    expect(details).not.toBeNull();
     expect(details?.classList.contains('md:col-end-[-1]')).toBe(false);
   });
 });

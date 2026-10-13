@@ -103,10 +103,10 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
    3. Filter translations with `where: { language: { in: getTranslationLanguages(locale) } }` and a narrow `select` (`get-all-public-educations.ts:35`).
    4. Tag with `CACHE_TAGS.X` so the entity's mutations revalidate it.
 3. **New column on an entity** (model: featured-work)
-   1. `apps/web/src/entities/featured-work/model/featured-work-schema.ts:44` (`featuredWorkSchema`) and `model/types.ts`.
-   2. Write path: `api/create-featured-work.ts:41-58`, `api/update-featured-work.ts:57-73`.
-   3. Read path: `api/get-admin-featured-work-by-id.ts`; public `select` in `lib/load-public-featured-works.ts:114-139`, mapping in `toRows` (`:73-105`).
-   4. If the cached public row changes shape, bump `featured-works-rows-v4` at `lib/load-public-featured-works.ts:148` (precedent: commit `56fc32bd`).
+   1. `apps/web/src/entities/featured-work/model/featured-work-schema.ts:43` (`featuredWorkSchema`) and `model/types.ts`.
+   2. Write path: `api/create-featured-work.ts` (`prisma.featuredWork.create`), `api/update-featured-work.ts` (`tx.featuredWork.update`).
+   3. Read path: `api/get-admin-featured-work-by-id.ts`; public `select` in `lib/load-public-featured-works.ts` (`getPublicFeaturedWorkRows`), mapping in `toRows` (`:86`).
+   4. If the cached public row changes shape, bump `featured-works-rows-v6` at `lib/load-public-featured-works.ts:168` (precedent: commit `56fc32bd`).
    5. UI: `apps/web/src/widgets/dashboard/featured-work-manager/ui/featured-work-form.tsx`, `apps/web/src/entities/featured-work/ui/featured-work-row.tsx`.
 
 ## Gotchas
@@ -114,8 +114,8 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 - `requireAdmin()` throws `Error('Unauthorized')` (`apps/web/src/shared/lib/auth/session.ts:65`). Inside `try` it becomes `errorMsg: 'Unauthorized'`; before `try` (blog) it escapes as a thrown error.
 - `apps/web/src/entities/blog/api/update-blog.ts:82` revalidates with profile `'default'`. Every other blog, company, education and featured-work call uses `'max'`. The type takes any string (`apps/web/node_modules/next/dist/server/web/spec-extension/revalidate.d.ts:13`). No comment explains it.
 - `update-blog.ts:53-54` updates by `id` only. Company, education and featured-work updates first run `findFirst({ where: { id, userId } })`, and `delete-blog.ts:22-25` scopes by `userId`. Latent only: `getAuthenticatedAdmin()` admits just the site owner (`apps/web/src/shared/lib/auth/session.ts:43-62`).
-- Revalidate only after commit: `update-company.ts:155-157`, `update-education.ts:129-131`, `update-featured-work.ts:94-96`, `reorder-featured-work.ts:90-92`.
-- Public cache keys are string literals, not factories: `featured-works-rows-v4` (`load-public-featured-works.ts:148`). Bump the version when the cached row shape changes.
+- Revalidate only after commit: `update-company.ts:155-157`, `update-education.ts:129-131`, `update-featured-work.ts:97-99`, `reorder-featured-work.ts:90-92`.
+- Public cache keys are string literals, not factories: `featured-works-rows-v6` (`load-public-featured-works.ts:168`). Bump the version when the cached row shape changes.
 - Per the comment at `get-adjacent-public-blogs.ts:26-28`, a cache hit returns `Date` fields as strings; callers accept `Date | string`.
 - Company and education `api/index.ts` export only the public read. Admin actions are imported by deep path (see deviations).
 - Two blog modules are off the barrel on purpose (`apps/web/src/entities/blog/api/index.ts:1-6`). Import them by path: `apps/web/src/app/sitemap.ts:5`, `apps/web/src/app/feed.xml/route.ts:1`.
@@ -138,7 +138,7 @@ cd apps/web && bun test src/entities/featured-work   # one slice, bun path filte
 - `apps/web/src/entities/blog/api/get-adjacent-public-blogs.ts:25`: `currentId` is never validated (§8 step 2).
 - `apps/web/src/entities/featured-work/api/reorder-featured-work.ts:14`: `directionSchema` is declared outside `model/featured-work-schema.ts` (§8).
 - `apps/web/src/entities/blog/model/types.ts:3`, `apps/web/src/entities/blog/api/get-paginated-public-blogs.ts:7`: import `@/entities/project/model/types`, another slice's internals (§3 "never sideways").
-- `apps/web/src/entities/featured-work/lib/featured-work-media.ts:4`, `lib/load-public-featured-works.ts:23`, `ui/featured-work-row.tsx:10`: import `@/entities/media/model/upload-constraints` (§3).
+- `apps/web/src/entities/featured-work/lib/featured-work-media.ts:4`, `lib/load-public-featured-works.ts:19`, `ui/featured-work-row.tsx:10`: import `@/entities/media/model/upload-constraints` (§3).
 - 73 import lines in 40 files outside these slices reach `api/`, `model/`, `ui/` or `lib/` directly instead of the slice barrel (§3). Example: `apps/web/src/widgets/dashboard/company-manager/ui/company-manager.tsx:17-24`.
 
 ## See also

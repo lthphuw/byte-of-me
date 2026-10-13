@@ -29,7 +29,6 @@ describe('HomepageFeaturedWorksLoading', () => {
         anchorId="featured-works-w1"
         number="01"
         title="Faster detector export"
-        description={null}
         meta={null}
         href={null}
         newTabLabel="(opens in a new tab)"
@@ -41,8 +40,6 @@ describe('HomepageFeaturedWorksLoading', () => {
           zoomReset: 'Reset zoom',
           exitFullscreen: 'Exit full screen',
         }}
-        showDetailsLabel="Show details"
-        hideDetailsLabel="Hide details"
       />
     );
     const header = plain.getByText('01').parentElement;
@@ -58,7 +55,7 @@ describe('HomepageFeaturedWorksLoading', () => {
     ).toEqual(['group']);
   });
 
-  it('draws four rows, each a plain row header with a title bar, a description and a meta cell', () => {
+  it('draws four rows, each a plain row header with a title bar and a meta cell, and no description line', () => {
     const { container } = render(<HomepageFeaturedWorksLoading />);
     const rows = [...container.querySelectorAll('.divide-y > div')];
 
@@ -69,8 +66,7 @@ describe('HomepageFeaturedWorksLoading', () => {
       );
       // number, title column, meta cell
       expect(row.children).toHaveLength(3);
-      const description = row.querySelector('.leading-relaxed');
-      expect(description?.children.length).toBeGreaterThanOrEqual(2);
+      expect(row.querySelector('.leading-relaxed')).toBeNull();
     }
   });
 

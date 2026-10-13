@@ -9,11 +9,10 @@ import { featuredWorkResolver } from './featured-work-resolver';
 import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
 
 const run = (translations: FeaturedWorkFormValues['translations']) =>
-  featuredWorkResolver(
-    { isPublished: false, url: '', translations },
-    undefined,
-    { fields: {}, shouldUseNativeValidation: false }
-  );
+  featuredWorkResolver({ url: '', translations }, undefined, {
+    fields: {},
+    shouldUseNativeValidation: false,
+  });
 
 const BODY = JSON.stringify({
   type: 'doc',
@@ -32,20 +31,20 @@ const EMPTY_DOC = JSON.stringify({
 describe('featuredWorkResolver', () => {
   it('drops a blank Vietnamese translation from the submitted values', async () => {
     const result = await run([
-      { language: 'en', title: 'A', description: '' },
-      { language: 'vi', title: '', description: '' },
+      { language: 'en', title: 'A' },
+      { language: 'vi', title: '' },
     ]);
 
     expect(result.errors).toEqual({});
     expect(result.values.translations).toEqual([
-      { language: 'en', title: 'A', description: '' },
+      { language: 'en', title: 'A' },
     ]);
   });
 
   it('reports a missing title on the blank form instead of submitting nothing', async () => {
     const result = await run([
-      { language: 'en', title: '', description: '' },
-      { language: 'vi', title: '', description: '' },
+      { language: 'en', title: '' },
+      { language: 'vi', title: '' },
     ]);
 
     expect(result.errors.translations?.[0]?.title?.message).toBe(
@@ -55,8 +54,8 @@ describe('featuredWorkResolver', () => {
 
   it('reports a blank English title even when only Vietnamese was filled', async () => {
     const result = await run([
-      { language: 'en', title: '', description: '' },
-      { language: 'vi', title: 'Tiêu đề', description: '' },
+      { language: 'en', title: '' },
+      { language: 'vi', title: 'Tiêu đề' },
     ]);
 
     expect(result.errors.translations?.[0]?.title?.message).toBe(
@@ -67,8 +66,8 @@ describe('featuredWorkResolver', () => {
 
   it('keeps the error on Vietnamese when only its title is missing', async () => {
     const result = await run([
-      { language: 'en', title: 'A', description: '' },
-      { language: 'vi', title: '', description: 'Chỉ có mô tả' },
+      { language: 'en', title: 'A' },
+      { language: 'vi', title: '', details: BODY },
     ]);
 
     expect(result.errors.translations?.[0]).toBeUndefined();
@@ -79,9 +78,9 @@ describe('featuredWorkResolver', () => {
 
   it('keeps the "each language once" error next to the field errors', async () => {
     const result = await run([
-      { language: 'en', title: '', description: '' },
-      { language: 'vi', title: 'Một', description: '' },
-      { language: 'vi', title: 'Hai', description: '' },
+      { language: 'en', title: '' },
+      { language: 'vi', title: 'Một' },
+      { language: 'vi', title: 'Hai' },
     ]);
 
     expect(result.errors.translations?.[0]?.title?.message).toBe(
@@ -94,8 +93,8 @@ describe('featuredWorkResolver', () => {
 
   it('keeps a Vietnamese body that has no title, and names the title as missing', async () => {
     const result = await run([
-      { language: 'en', title: 'A', description: '', details: null },
-      { language: 'vi', title: '', description: '', details: BODY },
+      { language: 'en', title: 'A', details: null },
+      { language: 'vi', title: '', details: BODY },
     ]);
 
     expect(result.errors.translations?.[0]).toBeUndefined();
@@ -106,26 +105,26 @@ describe('featuredWorkResolver', () => {
 
   it('drops a Vietnamese row whose only content is an empty document', async () => {
     const result = await run([
-      { language: 'en', title: 'A', description: '', details: null },
-      { language: 'vi', title: '', description: '', details: EMPTY_DOC },
+      { language: 'en', title: 'A', details: null },
+      { language: 'vi', title: '', details: EMPTY_DOC },
     ]);
 
     expect(result.errors).toEqual({});
     expect(result.values.translations).toEqual([
-      { language: 'en', title: 'A', description: '', details: null },
+      { language: 'en', title: 'A', details: null },
     ]);
   });
 
   it('stores an empty document as no body and keeps a body that has text', async () => {
     const result = await run([
-      { language: 'en', title: 'A', description: '', details: EMPTY_DOC },
-      { language: 'vi', title: 'Tiêu đề', description: '', details: BODY },
+      { language: 'en', title: 'A', details: EMPTY_DOC },
+      { language: 'vi', title: 'Tiêu đề', details: BODY },
     ]);
 
     expect(result.errors).toEqual({});
     expect(result.values.translations).toEqual([
-      { language: 'en', title: 'A', description: '', details: null },
-      { language: 'vi', title: 'Tiêu đề', description: '', details: BODY },
+      { language: 'en', title: 'A', details: null },
+      { language: 'vi', title: 'Tiêu đề', details: BODY },
     ]);
   });
 });

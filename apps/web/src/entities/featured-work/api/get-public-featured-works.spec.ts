@@ -1,5 +1,5 @@
 /**
- * Homepage contract: published works only, in order, capped at six; a work with no
+ * Homepage contract: every work, in order, capped at six; a work with no
  * usable translation is skipped; GitHub facts can never fail the section.
  * Prisma's delegate is replaced and the GitHub fetcher injected: no database, no network.
  */
@@ -46,7 +46,7 @@ function row(id: string, url: string | null = null, title = `Work ${id}`) {
     url,
     media: [],
     translations: [
-      { language: 'en', title, description: `About ${id}`, details: null },
+      { language: 'en', title, details: null },
     ],
   };
 }
@@ -78,7 +78,6 @@ describe('toRows', () => {
       {
         id: 'a',
         title: 'Work a',
-        description: 'About a',
         detailsHtml: null,
         url: null,
         host: null,
@@ -98,13 +97,11 @@ describe('toRows', () => {
             {
               language: 'en',
               title: 'Hello',
-              description: null,
               details: null,
             },
             {
               language: 'vi',
               title: 'Xin chào',
-              description: null,
               details: null,
             },
           ],
@@ -140,13 +137,11 @@ describe('toRows', () => {
             {
               language: 'en',
               title: 'Hello',
-              description: 'About',
               details: null,
             },
             {
               language: 'vi',
               title: '  ',
-              description: 'Mô tả',
               details: null,
             },
           ],
@@ -155,9 +150,7 @@ describe('toRows', () => {
       'vi'
     );
 
-    expect(rows.map((r) => [r.id, r.title, r.description])).toEqual([
-      ['a', 'Hello', 'About'],
-    ]);
+    expect(rows.map((r) => [r.id, r.title])).toEqual([['a', 'Hello']]);
   });
 });
 
@@ -188,7 +181,7 @@ describe('details body', () => {
     language: string,
     details: string | null,
     title = `Title ${language}`
-  ) => ({ language, title, description: null, details });
+  ) => ({ language, title, details });
 
   const work = (
     translations: ReturnType<typeof translation>[]
@@ -455,7 +448,7 @@ describe('loadPublicFeaturedWorks', () => {
     findMany.mockReset().mockResolvedValue([]);
   });
 
-  it('selects only published works, ordered and capped at six', async () => {
+  it('selects every work, ordered and capped at six', async () => {
     findMany.mockResolvedValue(
       Array.from({ length: 6 }, (_, i) => row(`w${i}`))
     );
@@ -464,7 +457,7 @@ describe('loadPublicFeaturedWorks', () => {
 
     expect(findMany).toHaveBeenCalledTimes(1);
     const args = findMany.mock.calls[0]?.[0];
-    expect(args.where.isPublished).toBe(true);
+    expect(args.where).not.toHaveProperty('isPublished');
     expect(args.orderBy).toEqual([{ sortOrder: 'asc' }, { id: 'asc' }]);
     expect(args.take).toBe(6);
     expect(args.select.translations.where.language.in).toEqual(['en']);
@@ -490,7 +483,6 @@ describe('loadPublicFeaturedWorks', () => {
       {
         id: 'a',
         title: 'Work a',
-        description: 'About a',
         detailsHtml: null,
         url: PR_URL,
         host: 'github.com',

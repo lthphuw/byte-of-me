@@ -45,7 +45,6 @@ type Row = {
     id: string;
     language: string;
     title: string;
-    description: string | null;
     details: string | null;
   }>;
 };
@@ -79,14 +78,12 @@ const ROWS: Row[] = [
         id: 't-en',
         language: 'en',
         title: 'INT8 quantization',
-        description: null,
         details: DETAILS_EN,
       },
       {
         id: 't-vi',
         language: 'vi',
         title: 'Lượng tử hóa',
-        description: null,
         details: null,
       },
     ],
@@ -100,7 +97,6 @@ const ROWS: Row[] = [
         id: 't-other',
         language: 'en',
         title: 'Not yours',
-        description: null,
         details: null,
       },
     ],

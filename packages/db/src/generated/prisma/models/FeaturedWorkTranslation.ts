@@ -30,7 +30,6 @@ export type FeaturedWorkTranslationMinAggregateOutputType = {
   updatedAt: Date | null
   language: string | null
   title: string | null
-  description: string | null
   details: string | null
   featuredWorkId: string | null
 }
@@ -41,7 +40,6 @@ export type FeaturedWorkTranslationMaxAggregateOutputType = {
   updatedAt: Date | null
   language: string | null
   title: string | null
-  description: string | null
   details: string | null
   featuredWorkId: string | null
 }
@@ -52,7 +50,6 @@ export type FeaturedWorkTranslationCountAggregateOutputType = {
   updatedAt: number
   language: number
   title: number
-  description: number
   details: number
   featuredWorkId: number
   _all: number
@@ -65,7 +62,6 @@ export type FeaturedWorkTranslationMinAggregateInputType = {
   updatedAt?: true
   language?: true
   title?: true
-  description?: true
   details?: true
   featuredWorkId?: true
 }
@@ -76,7 +72,6 @@ export type FeaturedWorkTranslationMaxAggregateInputType = {
   updatedAt?: true
   language?: true
   title?: true
-  description?: true
   details?: true
   featuredWorkId?: true
 }
@@ -87,7 +82,6 @@ export type FeaturedWorkTranslationCountAggregateInputType = {
   updatedAt?: true
   language?: true
   title?: true
-  description?: true
   details?: true
   featuredWorkId?: true
   _all?: true
@@ -171,7 +165,6 @@ export type FeaturedWorkTranslationGroupByOutputType = {
   updatedAt: Date
   language: string
   title: string
-  description: string | null
   details: string | null
   featuredWorkId: string
   _count: FeaturedWorkTranslationCountAggregateOutputType | null
@@ -203,7 +196,6 @@ export type FeaturedWorkTranslationWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"FeaturedWorkTranslation"> | Date | string
   language?: Prisma.StringFilter<"FeaturedWorkTranslation"> | string
   title?: Prisma.StringFilter<"FeaturedWorkTranslation"> | string
-  description?: Prisma.StringNullableFilter<"FeaturedWorkTranslation"> | string | null
   details?: Prisma.StringNullableFilter<"FeaturedWorkTranslation"> | string | null
   featuredWorkId?: Prisma.StringFilter<"FeaturedWorkTranslation"> | string
   featuredWork?: Prisma.XOR<Prisma.FeaturedWorkScalarRelationFilter, Prisma.FeaturedWorkWhereInput>
@@ -215,7 +207,6 @@ export type FeaturedWorkTranslationOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   language?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  description?: Prisma.SortOrderInput | Prisma.SortOrder
   details?: Prisma.SortOrderInput | Prisma.SortOrder
   featuredWorkId?: Prisma.SortOrder
   featuredWork?: Prisma.FeaturedWorkOrderByWithRelationInput
@@ -231,7 +222,6 @@ export type FeaturedWorkTranslationWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"FeaturedWorkTranslation"> | Date | string
   language?: Prisma.StringFilter<"FeaturedWorkTranslation"> | string
   title?: Prisma.StringFilter<"FeaturedWorkTranslation"> | string
-  description?: Prisma.StringNullableFilter<"FeaturedWorkTranslation"> | string | null
   details?: Prisma.StringNullableFilter<"FeaturedWorkTranslation"> | string | null
   featuredWorkId?: Prisma.StringFilter<"FeaturedWorkTranslation"> | string
   featuredWork?: Prisma.XOR<Prisma.FeaturedWorkScalarRelationFilter, Prisma.FeaturedWorkWhereInput>
@@ -243,7 +233,6 @@ export type FeaturedWorkTranslationOrderByWithAggregationInput = {
   updatedAt?: Prisma.SortOrder
   language?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  description?: Prisma.SortOrderInput | Prisma.SortOrder
   details?: Prisma.SortOrderInput | Prisma.SortOrder
   featuredWorkId?: Prisma.SortOrder
   _count?: Prisma.FeaturedWorkTranslationCountOrderByAggregateInput
@@ -260,7 +249,6 @@ export type FeaturedWorkTranslationScalarWhereWithAggregatesInput = {
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"FeaturedWorkTranslation"> | Date | string
   language?: Prisma.StringWithAggregatesFilter<"FeaturedWorkTranslation"> | string
   title?: Prisma.StringWithAggregatesFilter<"FeaturedWorkTranslation"> | string
-  description?: Prisma.StringNullableWithAggregatesFilter<"FeaturedWorkTranslation"> | string | null
   details?: Prisma.StringNullableWithAggregatesFilter<"FeaturedWorkTranslation"> | string | null
   featuredWorkId?: Prisma.StringWithAggregatesFilter<"FeaturedWorkTranslation"> | string
 }
@@ -271,7 +259,6 @@ export type FeaturedWorkTranslationCreateInput = {
   updatedAt?: Date | string
   language: string
   title: string
-  description?: string | null
   details?: string | null
   featuredWork: Prisma.FeaturedWorkCreateNestedOneWithoutTranslationsInput
 }
@@ -282,7 +269,6 @@ export type FeaturedWorkTranslationUncheckedCreateInput = {
   updatedAt?: Date | string
   language: string
   title: string
-  description?: string | null
   details?: string | null
   featuredWorkId: string
 }
@@ -293,7 +279,6 @@ export type FeaturedWorkTranslationUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   featuredWork?: Prisma.FeaturedWorkUpdateOneRequiredWithoutTranslationsNestedInput
 }
@@ -304,7 +289,6 @@ export type FeaturedWorkTranslationUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   featuredWorkId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -315,7 +299,6 @@ export type FeaturedWorkTranslationCreateManyInput = {
   updatedAt?: Date | string
   language: string
   title: string
-  description?: string | null
   details?: string | null
   featuredWorkId: string
 }
@@ -326,7 +309,6 @@ export type FeaturedWorkTranslationUpdateManyMutationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -336,7 +318,6 @@ export type FeaturedWorkTranslationUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   featuredWorkId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -362,7 +343,6 @@ export type FeaturedWorkTranslationCountOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   language?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   details?: Prisma.SortOrder
   featuredWorkId?: Prisma.SortOrder
 }
@@ -373,7 +353,6 @@ export type FeaturedWorkTranslationMaxOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   language?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   details?: Prisma.SortOrder
   featuredWorkId?: Prisma.SortOrder
 }
@@ -384,7 +363,6 @@ export type FeaturedWorkTranslationMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   language?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   details?: Prisma.SortOrder
   featuredWorkId?: Prisma.SortOrder
 }
@@ -437,7 +415,6 @@ export type FeaturedWorkTranslationCreateWithoutFeaturedWorkInput = {
   updatedAt?: Date | string
   language: string
   title: string
-  description?: string | null
   details?: string | null
 }
 
@@ -447,7 +424,6 @@ export type FeaturedWorkTranslationUncheckedCreateWithoutFeaturedWorkInput = {
   updatedAt?: Date | string
   language: string
   title: string
-  description?: string | null
   details?: string | null
 }
 
@@ -486,7 +462,6 @@ export type FeaturedWorkTranslationScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"FeaturedWorkTranslation"> | Date | string
   language?: Prisma.StringFilter<"FeaturedWorkTranslation"> | string
   title?: Prisma.StringFilter<"FeaturedWorkTranslation"> | string
-  description?: Prisma.StringNullableFilter<"FeaturedWorkTranslation"> | string | null
   details?: Prisma.StringNullableFilter<"FeaturedWorkTranslation"> | string | null
   featuredWorkId?: Prisma.StringFilter<"FeaturedWorkTranslation"> | string
 }
@@ -497,7 +472,6 @@ export type FeaturedWorkTranslationCreateManyFeaturedWorkInput = {
   updatedAt?: Date | string
   language: string
   title: string
-  description?: string | null
   details?: string | null
 }
 
@@ -507,7 +481,6 @@ export type FeaturedWorkTranslationUpdateWithoutFeaturedWorkInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -517,7 +490,6 @@ export type FeaturedWorkTranslationUncheckedUpdateWithoutFeaturedWorkInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -527,7 +499,6 @@ export type FeaturedWorkTranslationUncheckedUpdateManyWithoutFeaturedWorkInput =
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -539,7 +510,6 @@ export type FeaturedWorkTranslationSelect<ExtArgs extends runtime.Types.Extensio
   updatedAt?: boolean
   language?: boolean
   title?: boolean
-  description?: boolean
   details?: boolean
   featuredWorkId?: boolean
   featuredWork?: boolean | Prisma.FeaturedWorkDefaultArgs<ExtArgs>
@@ -551,7 +521,6 @@ export type FeaturedWorkTranslationSelectCreateManyAndReturn<ExtArgs extends run
   updatedAt?: boolean
   language?: boolean
   title?: boolean
-  description?: boolean
   details?: boolean
   featuredWorkId?: boolean
   featuredWork?: boolean | Prisma.FeaturedWorkDefaultArgs<ExtArgs>
@@ -563,7 +532,6 @@ export type FeaturedWorkTranslationSelectUpdateManyAndReturn<ExtArgs extends run
   updatedAt?: boolean
   language?: boolean
   title?: boolean
-  description?: boolean
   details?: boolean
   featuredWorkId?: boolean
   featuredWork?: boolean | Prisma.FeaturedWorkDefaultArgs<ExtArgs>
@@ -575,12 +543,11 @@ export type FeaturedWorkTranslationSelectScalar = {
   updatedAt?: boolean
   language?: boolean
   title?: boolean
-  description?: boolean
   details?: boolean
   featuredWorkId?: boolean
 }
 
-export type FeaturedWorkTranslationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "language" | "title" | "description" | "details" | "featuredWorkId", ExtArgs["result"]["featuredWorkTranslation"]>
+export type FeaturedWorkTranslationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "language" | "title" | "details" | "featuredWorkId", ExtArgs["result"]["featuredWorkTranslation"]>
 export type FeaturedWorkTranslationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   featuredWork?: boolean | Prisma.FeaturedWorkDefaultArgs<ExtArgs>
 }
@@ -602,7 +569,6 @@ export type $FeaturedWorkTranslationPayload<ExtArgs extends runtime.Types.Extens
     updatedAt: Date
     language: string
     title: string
-    description: string | null
     details: string | null
     featuredWorkId: string
   }, ExtArgs["result"]["featuredWorkTranslation"]>
@@ -1034,7 +1000,6 @@ export interface FeaturedWorkTranslationFieldRefs {
   readonly updatedAt: Prisma.FieldRef<"FeaturedWorkTranslation", 'DateTime'>
   readonly language: Prisma.FieldRef<"FeaturedWorkTranslation", 'String'>
   readonly title: Prisma.FieldRef<"FeaturedWorkTranslation", 'String'>
-  readonly description: Prisma.FieldRef<"FeaturedWorkTranslation", 'String'>
   readonly details: Prisma.FieldRef<"FeaturedWorkTranslation", 'String'>
   readonly featuredWorkId: Prisma.FieldRef<"FeaturedWorkTranslation", 'String'>
 }

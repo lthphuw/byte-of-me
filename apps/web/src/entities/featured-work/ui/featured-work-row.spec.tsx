@@ -1,7 +1,7 @@
 /**
  * What a visitor can observe on one featured-work line: the link behaviour, the
- * number and the repo/host line. Renders the real component
- * inside the real English catalogue.
+ * number, the repo/host line, and the details, which always show. Renders the real
+ * component inside the real English catalogue.
  */
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'bun:test';
@@ -20,7 +20,6 @@ import type { PublicFeaturedWork } from '@/entities/featured-work/model/types';
 const base: PublicFeaturedWork = {
   id: 'w1',
   title: 'Faster detector export',
-  description: 'Cut the export time in half.',
   detailsHtml: null,
   url: 'https://github.com/roboflow/rf-detr/pull/512',
   host: 'github.com',
@@ -85,8 +84,8 @@ describe('FeaturedWorkRow', () => {
     expect(screen.getByText('10')).toBeTruthy();
   });
 
-  it('renders no description paragraph when the description is null', () => {
-    const { container } = renderRow({ description: null });
+  it('draws no paragraph of its own for a work without details', () => {
+    const { container } = renderRow();
 
     expect(container.querySelector('p')).toBeNull();
   });
@@ -110,31 +109,19 @@ describe('FeaturedWorkRow', () => {
 const DETAILS_HTML = '<p>How it was done: a streaming writer.</p>';
 
 describe('FeaturedWorkRow with details', () => {
-  it('expands from its details toggle, and its one link sits on the action line beside it', () => {
+  it('shows the details at once, with no toggle, and its one link beside them', () => {
     renderRow({ detailsHtml: DETAILS_HTML });
 
-    expect(screen.getAllByRole('button')).toHaveLength(1);
+    expect(screen.queryByRole('button')).toBeNull();
+    expect(
+      screen.getByText('How it was done: a streaming writer.')
+    ).toBeTruthy();
     const link = screen.getByRole('link', {
       name: 'View on GitHub (opens in a new tab)',
     });
     expect(link.getAttribute('href')).toBe(base.url);
     expect(screen.getAllByRole('link')).toHaveLength(1);
     expect(link.closest('[inert]')).toBeNull();
-  });
-
-  it('keeps the body in the page while it is closed, so it can be read as text', () => {
-    renderRow({ detailsHtml: DETAILS_HTML });
-
-    expect(
-      screen.getByText('How it was done: a streaming writer.')
-    ).toBeTruthy();
-  });
-
-  it('keeps the link out of the toggle, so one control never holds another', () => {
-    renderRow({ detailsHtml: DETAILS_HTML });
-
-    const toggle = screen.getByRole('button', { name: 'Show details' });
-    expect(toggle.querySelector('a')).toBeNull();
   });
 
   it('names the host instead of GitHub when the work has no GitHub details', () => {
@@ -152,7 +139,7 @@ describe('FeaturedWorkRow with details', () => {
     ).toBeTruthy();
   });
 
-  it('expands a work with details and no url, with no link anywhere', () => {
+  it('shows a work with details and no url, with no link anywhere', () => {
     renderRow({
       detailsHtml: DETAILS_HTML,
       url: null,
@@ -160,14 +147,14 @@ describe('FeaturedWorkRow with details', () => {
       github: null,
     });
 
-    expect(screen.getAllByRole('button')).toHaveLength(1);
+    expect(screen.queryByRole('button')).toBeNull();
     expect(screen.queryByRole('link')).toBeNull();
     expect(
       screen.getByText('How it was done: a streaming writer.')
     ).toBeTruthy();
   });
 
-  it('gives a work without details no toggle at all', () => {
+  it('gives a work without details no button at all', () => {
     renderRow();
 
     expect(screen.queryByRole('button')).toBeNull();
@@ -194,7 +181,7 @@ describe('FeaturedWorkRow with a demo', () => {
     },
   ];
 
-  it('shows a work that has only a demo at once, with no toggle and the link beside it', () => {
+  it('shows a work that has only a demo at once, with the link beside the demo', () => {
     renderRow({ media });
 
     expect(screen.queryByRole('button', { name: /details$/ })).toBeNull();

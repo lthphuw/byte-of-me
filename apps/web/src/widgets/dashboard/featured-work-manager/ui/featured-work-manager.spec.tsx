@@ -65,7 +65,6 @@ function work(
     createdAt: NOW,
     updatedAt: NOW,
     sortOrder,
-    isPublished: true,
     url: null,
     userId: 'admin-1',
     translations,
@@ -73,15 +72,10 @@ function work(
   };
 }
 
-const tr = (
-  language: string,
-  title: string,
-  description: string | null = null
-) => ({
+const tr = (language: string, title: string) => ({
   id: `${language}-${title}`,
   language,
   title,
-  description,
 });
 
 const rows = [
@@ -89,7 +83,7 @@ const rows = [
     url: 'https://www.github.com/a/b/pull/1',
   }),
   work('w2', 1, [tr('en', 'Quantized model'), tr('vi', 'Mô hình lượng tử')]),
-  work('w3', 2, [tr('en', 'Release notes')], { isPublished: false }),
+  work('w3', 2, [tr('en', 'Release notes')]),
 ];
 
 const meta = (totalCount: number) => ({
@@ -233,7 +227,6 @@ function detailOf(
       id: t.id,
       language: t.language,
       title: t.title,
-      description: t.description,
       details: bodies[t.language] ?? null,
     })),
   };
@@ -247,7 +240,6 @@ function savedTranslations() {
         create: Array<{
           language: string;
           title: string;
-          description: string | null;
           details: string | null;
         }>;
       };
@@ -342,11 +334,11 @@ describe('FeaturedWorkManager list', () => {
     expect(screen.getByText('Faster export')).toBeTruthy();
   });
 
-  it('marks an unpublished entry as a draft and a live one as published', () => {
+  it('shows no publish status: every entry is live', () => {
     renderManager();
 
-    expect(screen.getAllByText('Draft')).toHaveLength(1);
-    expect(screen.getAllByText('Published')).toHaveLength(2);
+    expect(screen.queryByText('Draft')).toBeNull();
+    expect(screen.queryByText('Published')).toBeNull();
   });
 
   it('offers the create action when there is nothing yet', () => {
@@ -512,7 +504,6 @@ describe('FeaturedWorkManager editor', () => {
     expect(create.mock.calls[0]?.[0]).toMatchObject({
       data: {
         sortOrder: 3,
-        isPublished: false,
         translations: {
           create: [{ language: 'en', title: 'Faster export', details: null }],
         },
@@ -629,7 +620,6 @@ describe('FeaturedWorkManager edit loads the full row', () => {
       {
         language: 'en',
         title: 'Faster export',
-        description: null,
         details: EN_BODY,
       },
     ]);
@@ -690,13 +680,11 @@ describe('FeaturedWorkManager edit loads the full row', () => {
       {
         language: 'en',
         title: 'Quantized model',
-        description: null,
         details: EN_BODY,
       },
       {
         language: 'vi',
         title: 'Mô hình lượng tử',
-        description: null,
         details: VI_BODY,
       },
     ]);
@@ -728,13 +716,11 @@ describe('FeaturedWorkManager edit loads the full row', () => {
       {
         language: 'en',
         title: 'Quantized model',
-        description: null,
         details: EN_BODY,
       },
       {
         language: 'vi',
         title: 'Mô hình lượng tử',
-        description: null,
         details: edited,
       },
     ]);

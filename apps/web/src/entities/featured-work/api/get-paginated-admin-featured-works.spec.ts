@@ -62,7 +62,6 @@ describe('getPaginatedAdminFeaturedWorks', () => {
     expect(res.success).toBe(true);
     const args = findMany.mock.calls[0]?.[0] as ListArgs;
     expect(Object.keys(args.include.translations.select).sort()).toEqual([
-      'description',
       'id',
       'language',
       'title',

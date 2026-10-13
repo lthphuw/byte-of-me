@@ -50,7 +50,6 @@ export async function createFeaturedWork(
     const featuredWork = await prisma.featuredWork.create({
       data: {
         sortOrder: (_max.sortOrder ?? -1) + 1,
-        isPublished: values.isPublished,
         url: values.url || null,
 
         user: { connect: { id: user.id } },
@@ -59,7 +58,6 @@ export async function createFeaturedWork(
           create: values.translations.map((t) => ({
             language: t.language,
             title: t.title,
-            description: t.description || null,
             details: t.details ?? null,
           })),
         },

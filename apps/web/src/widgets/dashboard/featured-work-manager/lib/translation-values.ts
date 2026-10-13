@@ -12,7 +12,6 @@ type StoredTranslation = AdminFeaturedWorkDetail['translations'][number];
 const blank = (language: string): Translation => ({
   language,
   title: '',
-  description: '',
   details: '',
 });
 
@@ -21,7 +20,6 @@ const blank = (language: string): Translation => ({
 const toTranslation = (t: StoredTranslation): Translation => ({
   language: t.language,
   title: t.title,
-  description: t.description ?? '',
   details: t.details ?? '',
 });
 
@@ -44,14 +42,12 @@ export function toTranslationValues(
 }
 
 /**
- * A translation with no title, description or body shows nothing, so it is
- * dropped. A body alone is not blank: it keeps the row, and the title error
- * then names the language instead of silently losing the body.
+ * A translation with no title and no body shows nothing, so it is dropped. A body
+ * alone is not blank: it keeps the row, and the title error then names the language
+ * instead of silently losing the body.
  */
 const isBlank = (t: Translation) =>
-  !t.title.trim() &&
-  !(t.description ?? '').trim() &&
-  isRichTextBlank(t.details);
+  !t.title.trim() && isRichTextBlank(t.details);
 
 /**
  * Index 0 (`en`) is always kept so a blank title is reported under the English

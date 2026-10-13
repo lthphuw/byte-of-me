@@ -17,7 +17,6 @@ const TEXT_DOC = JSON.stringify({
 });
 
 const base = {
-  isPublished: true,
   translations: [{ language: 'en', title: 'INT8 quantization' }],
 };
 

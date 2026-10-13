@@ -45,8 +45,8 @@ Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`).
 | `EducationAchievementTranslation` (`education_achievement_translations`) | `language`, `title`, `content` | `(educationAchievementId, language)` | → EducationAchievement (cascade) | parent: EducationAchievement |
 | `AchievementOnMedias` (`achievement_medias`) | join; timestamps only | `(educationAchievementId, mediaId)`; no `id` | → EducationAchievement, → Media (cascade) | — |
 | **Featured works** | | | | |
-| `FeaturedWork` (`featured_works`) | `isPublished`, `sortOrder`, `url` (proof link) | index `(userId, isPublished, sortOrder)` | user → User (cascade) | `FeaturedWorkTranslation` |
-| `FeaturedWorkTranslation` (`featured_work_translations`) | `language`, `title`, `description`, `details` (TipTap JSON string) | `(featuredWorkId, language)` | → FeaturedWork (cascade) | parent: FeaturedWork |
+| `FeaturedWork` (`featured_works`) | `sortOrder`, `url` (proof link) | index `(userId, sortOrder)` | user → User (cascade) | `FeaturedWorkTranslation` |
+| `FeaturedWorkTranslation` (`featured_work_translations`) | `language`, `title`, `details` (TipTap JSON string) | `(featuredWorkId, language)` | → FeaturedWork (cascade) | parent: FeaturedWork |
 | `FeaturedWorkMedia` (`featured_work_media`) | `sortOrder` (slot 0 or 1), `label` | `(featuredWorkId, mediaId)`; `(featuredWorkId, sortOrder)`; no `id` | → FeaturedWork, → Media (cascade) | — |
 | **Work experience** | | | | |
 | `Company` (`companies`) | `company`, `location`, `startDate`, `endDate` | — | user → User (cascade); logo → Media (setNull) | `CompanyTranslation` |
@@ -78,7 +78,7 @@ Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`).
 | `ContactMessage` (`contact_messages`) | `name`, `email`, `subject`, `message`, `isRead`, `isReplied` | — | user → User (no onDelete) | — |
 | `RateLimitHit` (`rate_limit_hits`) | `key`, `windowStart`, `count` | `(key, windowStart)`; no `id` | — | — |
 
-### Migrations (36 folders, by purpose)
+### Migrations (38 folders, by purpose)
 
 | Folders | Purpose |
 |---|---|
@@ -88,7 +88,8 @@ Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`).
 | 1 (Aug 16) | `workspace_settings` |
 | 1 (Aug 19) | Hot-path indexes; uses `CONCURRENTLY` (see Run) |
 | 3 (Oct 10) | Featured works: base, details, demo media |
-| 3 (Oct 10) | `media.width`, `media.height`: nullable, additive; applied to production 2026-10-10 by `prisma migrate deploy`, 25 existing rows left NULL until backfilled |
+| 1 (Oct 10) | `media.width`, `media.height`: nullable, additive; applied to production 2026-10-10 by `prisma migrate deploy`, 25 existing rows left NULL until backfilled |
+| 1 (Oct 13) | Featured works: drop `is_published` and `featured_work_translations.description`. Destructive, the only migration here that is not additive; applied to production by hand, not by `migrate dev` |
 
 ## Key flows
 
