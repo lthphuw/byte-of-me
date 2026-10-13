@@ -1,6 +1,9 @@
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
+import { mediaQueries } from '@/entities/media/query/media-queries';
+import { getQueryClient } from '@/shared/lib/query/get-query-client';
 import { MediaManager } from '@/widgets/dashboard/media-manager';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -21,10 +24,16 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function MediaPage() {
+export default async function MediaPage() {
+  // The options the manager's `useMediaLibrary(1)` uses: one key, one query function.
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery(mediaQueries.library(1));
+
   return (
-    <div className="space-y-6">
-      <MediaManager />
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <div className="space-y-6">
+        <MediaManager />
+      </div>
+    </HydrationBoundary>
   );
 }

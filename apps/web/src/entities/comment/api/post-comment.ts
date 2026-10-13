@@ -72,7 +72,7 @@ export async function postComment(
       );
     });
 
-    revalidateTag(CACHE_TAGS.COMMENT, 'default');
+    revalidateTag(CACHE_TAGS.COMMENT, 'max');
 
     return {
       success: true,

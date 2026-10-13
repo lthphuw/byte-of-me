@@ -7,19 +7,21 @@ import {
   AvatarImage,
   Badge,
   Button,
-  ConfirmDeleteDialog,
   Pagination,
 } from '@byte-of-me/ui';
 import { Eye, EyeOff } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
-import { toast } from 'sonner';
 
 import type { AdminComment } from '@/entities/comment/model/types';
 import {
   useAdminComments,
   useSetCommentVisibility,
 } from '@/entities/comment/query';
-import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
+import {
+  ManagerListState,
+  ManagerPageHeader,
+  RecordListItem,
+} from '@/shared/ui';
 import { CommentListSkeleton } from '@/widgets/dashboard/comment-manager/ui/comment-list-skeleton';
 
 export function CommentManager() {
@@ -43,7 +45,6 @@ export function CommentManager() {
   }
 
   const [page, setPage] = useState(1);
-  const [commentToHide, setCommentToHide] = useState<AdminComment | null>(null);
 
   const { data, isLoading, isError, refetch, isFetching, isPlaceholderData } =
     useAdminComments(page);
@@ -53,21 +54,8 @@ export function CommentManager() {
 
   const visibility = useSetCommentVisibility();
 
-  // The toast and the dialog close wait for the envelope; a refusal is reported
-  // by the hook and leaves the dialog open.
-  const setVisibility = (commentId: string, hidden: boolean) =>
-    visibility.mutate(
-      { commentId, hidden },
-      {
-        onSuccess: () => {
-          toast(hidden ? t('toast.hidden') : t('toast.restored'));
-          setCommentToHide(null);
-        },
-      }
-    );
-
-  // The id of the row being toggled, not "a toggle is running": the flag alone
-  // disabled every Restore button on the page while one was in flight.
+  // The id of the row being toggled, not "a toggle is running": a shared flag
+  // would disable every button on the page while one was in flight.
   const pendingVisibilityId = visibility.isPending
     ? visibility.variables?.commentId
     : undefined;
@@ -80,30 +68,75 @@ export function CommentManager() {
         <ManagerListState
           isLoading={isLoading}
           isError={isError}
-          onRetry={() => refetch()}
+          onRetry={() => void refetch()}
           isFetching={isFetching}
           isEmpty={comments.length === 0}
           emptyTitle={t('emptyTitle')}
           emptyDescription={t('emptyDescription')}
+          pagination={
+            pagination && pagination.totalPages > 1 ? (
+              <Pagination
+                pagination={pagination}
+                setPage={setPage}
+                isPlaceholderData={isPlaceholderData}
+                pageLabel={tShared('pagination.pageLabel', {
+                  page: pagination.currentPage,
+                  totalPages: pagination.totalPages,
+                })}
+                previousLabel={tShared('pagination.previous')}
+                nextLabel={tShared('pagination.next')}
+              />
+            ) : undefined
+          }
           skeleton={<CommentListSkeleton />}
         >
-          <div className="flex flex-col gap-2">
+          <div className="space-y-3">
             {comments.map((comment) => (
-              <div
+              <RecordListItem
                 key={comment.id}
-                className="flex items-start gap-3 rounded-lg border bg-card p-3"
+                className="items-start"
+                leading={
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage
+                      src={comment.user.image ?? undefined}
+                      alt={comment.user.name ?? t('avatarFallbackAlt')}
+                    />
+                    <AvatarFallback>
+                      {(comment.user.name ?? '?').charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                }
+                actions={
+                  comment.isDeleted ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="min-h-11 gap-2 can-hover:min-h-9"
+                      disabled={pendingVisibilityId === comment.id}
+                      onClick={() =>
+                        visibility.mutate({ commentId: comment.id, hidden: false })
+                      }
+                    >
+                      <Eye className="h-4 w-4" />
+                      {t('actions.restore')}
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="min-h-11 gap-2 can-hover:min-h-9"
+                      disabled={pendingVisibilityId === comment.id}
+                      onClick={() =>
+                        visibility.mutate({ commentId: comment.id, hidden: true })
+                      }
+                    >
+                      <EyeOff className="h-4 w-4" />
+                      {t('actions.hide')}
+                    </Button>
+                  )
+                }
               >
-                <Avatar className="h-8 w-8 shrink-0">
-                  <AvatarImage
-                    src={comment.user.image ?? undefined}
-                    alt={comment.user.name ?? t('avatarFallbackAlt')}
-                  />
-                  <AvatarFallback>
-                    {(comment.user.name ?? '?').charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-
-                <div className="min-w-0 flex-1 space-y-1">
+                <div className="min-w-0 space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-sm font-medium">
                       {comment.user.name ?? comment.user.email}
@@ -126,66 +159,11 @@ export function CommentManager() {
                     {commentSource(comment)}
                   </p>
                 </div>
-
-                <div className="flex shrink-0 items-center gap-1">
-                  {comment.isDeleted ? (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="gap-2"
-                      disabled={pendingVisibilityId === comment.id}
-                      onClick={() => setVisibility(comment.id, false)}
-                    >
-                      <Eye className="h-4 w-4" />
-                      {t('actions.restore')}
-                    </Button>
-                  ) : (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="gap-2"
-                      disabled={pendingVisibilityId === comment.id}
-                      onClick={() => setCommentToHide(comment)}
-                    >
-                      <EyeOff className="h-4 w-4" />
-                      {t('actions.hide')}
-                    </Button>
-                  )}
-                </div>
-              </div>
+              </RecordListItem>
             ))}
           </div>
         </ManagerListState>
       </div>
-
-      {pagination && comments.length > 0 && (
-        <div className="pt-4">
-          <Pagination
-            pagination={pagination}
-            setPage={setPage}
-            isPlaceholderData={isPlaceholderData}
-            pageLabel={tShared('pagination.pageLabel', {
-              page: pagination.currentPage,
-              totalPages: pagination.totalPages,
-            })}
-            previousLabel={tShared('pagination.previous')}
-            nextLabel={tShared('pagination.next')}
-          />
-        </div>
-      )}
-
-      <ConfirmDeleteDialog
-        isOpen={!!commentToHide}
-        isLoading={visibility.isPending}
-        onClose={() => setCommentToHide(null)}
-        onConfirm={() =>
-          commentToHide && setVisibility(commentToHide.id, true)
-        }
-        title={t('dialog.hideTitle')}
-        description={t('dialog.hideDescription')}
-        actionText={t('actions.hide')}
-        cancelText={tShared('confirmDelete.cancelText')}
-      />
     </div>
   );
 }

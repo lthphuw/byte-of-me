@@ -73,7 +73,7 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 | `open-source` | `OPEN_SOURCE` | none: time-based only (`constants.ts:14-15`) |
 | `workspace-settings` | `WORKSPACE_SETTINGS` | workspace-settings: update |
 
-- "media delete" = `apps/web/src/entities/media/api/delete-media.ts:47-57`, which loops over BLOG, COMPANY, EDUCATION, FEATURED_WORK, PROJECT, TECH, USER.
+- "media delete" = `apps/web/src/entities/media/api/delete-media.ts:54-65`, which loops over BLOG, COMPANY, EDUCATION, FEATURED_WORK, PROJECT, TECH, USER.
 - The per-post tag `blog.slug` is not a key. It is revalidated by `apps/web/src/entities/blog/api/toggle-blog-interaction.ts:84`.
 
 ## Key flows

@@ -4,27 +4,21 @@ import { useMemo, useState } from 'react';
 import {
   Button,
   type ButtonProps,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
   Popover,
   PopoverContent,
   PopoverTrigger,
   ScrollArea,
 } from '@byte-of-me/ui';
-import { Check, ChevronDown, ImageIcon, Loader2, Plus, X } from 'lucide-react';
+import { Check, ChevronDown, ImageIcon, Plus, X } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
 import { isImageMimeType } from '@/entities/media/model/upload-constraints';
-import { useMediaInfiniteQuery, useMediaUpload } from '@/entities/media/query';
+import { useMediaInfiniteQuery } from '@/entities/media/query';
 import { useWorkspaceSettings } from '@/entities/workspace-settings/query';
-import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
-import { MediaPickerSkeleton } from '@/features/dashboard/media-library/ui/media-picker-skeleton';
+import { MediaPickerGrid } from '@/features/dashboard/media-library/ui/media-picker-grid';
+import { MediaPickerUploadDialog } from '@/features/dashboard/media-library/ui/media-picker-upload-dialog';
 import { cn } from '@/shared/lib/utils';
-import { QueryState } from '@/shared/ui/query-state';
 
 type MediaMultiSelectProps = Omit<
   ButtonProps,
@@ -43,29 +37,17 @@ export function MediaMultiSelect({
   ...triggerProps
 }: MediaMultiSelectProps) {
   const t = useTranslations('dashboard.media');
-  const tShared = useTranslations('dashboard.shared');
   const [isUploadOpen, setIsUploadOpen] = useState(false);
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-    isError,
-    refetch,
-  } = useMediaInfiniteQuery();
+  const library = useMediaInfiniteQuery();
   const { imageCompression } = useWorkspaceSettings();
-  const uploadMutation = useMediaUpload({
-    uploadError: t('toast.uploadError'),
-  });
 
   // The library also holds demo clips; a picker draws an `<img>`, so it lists images only.
   const allMedia = useMemo(
     () =>
-      (data?.pages.flatMap((page) => page?.data ?? []) || []).filter((media) =>
-        isImageMimeType(media.mimeType)
+      (library.data?.pages.flatMap((page) => page?.data ?? []) || []).filter(
+        (media) => isImageMimeType(media.mimeType)
       ),
-    [data]
+    [library.data]
   );
 
   const selectedMedia = allMedia.filter((m) => value.includes(m?.id));
@@ -84,7 +66,7 @@ export function MediaMultiSelect({
           variant="outline"
           {...triggerProps}
           className={cn(
-            'min-h-[56px] w-full justify-between border-2 border-dashed px-3 transition-all hover:border-primary hover:bg-primary/5',
+            'min-h-[56px] w-full justify-between border-2 border-dashed px-3 hover:border-primary hover:bg-primary/5',
             className
           )}
         >
@@ -127,7 +109,10 @@ export function MediaMultiSelect({
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[420px] p-0 shadow-xl" align="start">
+      <PopoverContent
+        className="w-[min(400px,calc(100vw-2rem))] p-0 shadow-xl"
+        align="start"
+      >
         <div className="flex items-center justify-between border-b bg-muted/30 p-3">
           <span className="text-xs font-bold uppercase text-muted-foreground">
             {t('picker.libraryLabel')}
@@ -137,31 +122,24 @@ export function MediaMultiSelect({
               <Button
                 size="sm"
                 variant="ghost"
-                className="h-7 px-2 text-xs hover:text-destructive-text"
+                className="min-h-11 px-2 text-xs hover:text-destructive-text can-hover:min-h-9"
                 onClick={() => onChange([])}
               >
                 {t('picker.clearAll')}
               </Button>
             )}
-            <Dialog open={isUploadOpen} onOpenChange={setIsUploadOpen}>
-              <DialogTrigger asChild>
-                <Button size="sm" className="h-7 gap-1 px-2 text-[10px]">
-                  <Plus className="h-3 w-3" /> {t('picker.uploadButton')}
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>{t('picker.uploadAssetsTitle')}</DialogTitle>
-                </DialogHeader>
-                <ImageUpload
-                  compressionConfig={imageCompression}
-                  uploadFiles={async (files) => {
-                    await uploadMutation.mutateAsync(files);
-                    setIsUploadOpen(false);
-                  }}
-                />
-              </DialogContent>
-            </Dialog>
+            <Button
+              size="sm"
+              className="min-h-11 gap-1 px-2 text-xs can-hover:min-h-9"
+              onClick={() => setIsUploadOpen(true)}
+            >
+              <Plus className="h-3 w-3" /> {t('picker.uploadButton')}
+            </Button>
+            <MediaPickerUploadDialog
+              open={isUploadOpen}
+              onOpenChange={setIsUploadOpen}
+              compressionConfig={imageCompression}
+            />
           </div>
         </div>
 
@@ -169,25 +147,27 @@ export function MediaMultiSelect({
           <ScrollArea className="max-h-24 border-b bg-background">
             <div className="flex flex-wrap gap-2 p-3">
               {selectedMedia.map((media) => (
-                <div
+                <button
                   key={media.id}
-                  className="group relative h-12 w-12 overflow-hidden rounded border"
+                  type="button"
+                  aria-label={t('upload.removeFile', { name: media.fileName })}
+                  onClick={() => toggleSelect(media.id)}
+                  className="relative size-11 shrink-0 overflow-hidden rounded border"
                 >
                   <Image
                     src={media.url}
-                    width={48}
-                    height={48}
-                    className="h-full w-full object-cover"
-                    alt={media.fileName}
+                    width={44}
+                    height={44}
+                    className="size-full object-cover"
+                    alt=""
                   />
-                  <button
-                    type="button"
-                    onClick={() => toggleSelect(media.id)}
-                    className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100"
+                  <span
+                    aria-hidden
+                    className="absolute right-0.5 top-0.5 flex size-4 items-center justify-center rounded-full bg-foreground text-background"
                   >
-                    <X className="h-4 w-4 text-white" />
-                  </button>
-                </div>
+                    <X className="size-3" />
+                  </span>
+                </button>
               ))}
             </div>
           </ScrollArea>
@@ -195,67 +175,39 @@ export function MediaMultiSelect({
 
         <ScrollArea className="h-80">
           <div className="p-3">
-            <QueryState
-              isLoading={isLoading}
-              isError={isError}
-              onRetry={() => void refetch()}
-              isEmpty={allMedia.length === 0 && !hasNextPage}
-              skeleton={<MediaPickerSkeleton />}
-              errorTitle={tShared('managerListState.errorTitle')}
-              errorDescription={tShared('managerListState.errorDescription')}
-              retryLabel={tShared('managerListState.retry')}
-              emptyTitle={t('empty.title')}
-              emptyDescription={t('empty.description')}
-            >
-              <div className="grid grid-cols-4 gap-2">
-                {allMedia.map((media) => {
-                  const isSelected = value.includes(media.id);
-                  return (
-                    <button
-                      key={media.id}
-                      type="button"
-                      onClick={() => toggleSelect(media.id)}
-                      className={cn(
-                        'relative aspect-square rounded-md border-2 overflow-hidden transition-all',
-                        isSelected
-                          ? 'border-primary ring-2 ring-primary/20'
-                          : 'border-transparent hover:border-primary/50'
-                      )}
-                    >
-                      <Image
-                        src={media.url}
-                        fill
-                        sizes="120px"
-                        className="h-full w-full object-cover"
-                        alt={media.fileName}
-                      />
-                      {isSelected && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-primary/20">
-                          <div className="rounded-full bg-primary p-0.5 text-white">
-                            <Check className="h-3 w-3" />
-                          </div>
+            <MediaPickerGrid query={library} isEmpty={allMedia.length === 0}>
+              {allMedia.map((media) => {
+                const isSelected = value.includes(media.id);
+                return (
+                  <button
+                    key={media.id}
+                    type="button"
+                    onClick={() => toggleSelect(media.id)}
+                    className={cn(
+                      'relative aspect-square overflow-hidden rounded-md border-2 transition-[border-color,box-shadow]',
+                      isSelected
+                        ? 'border-primary ring-2 ring-primary/20'
+                        : 'border-transparent hover:border-primary/50'
+                    )}
+                  >
+                    <Image
+                      src={media.url}
+                      fill
+                      sizes="120px"
+                      className="h-full w-full object-cover"
+                      alt={media.fileName}
+                    />
+                    {isSelected && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-primary/20">
+                        <div className="rounded-full bg-primary p-0.5 text-primary-foreground">
+                          <Check className="h-3 w-3" />
                         </div>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-              {hasNextPage && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mt-4 w-full"
-                  onClick={() => fetchNextPage()}
-                  disabled={isFetchingNextPage}
-                >
-                  {isFetchingNextPage ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                  ) : (
-                    t('picker.loadMore')
-                  )}
-                </Button>
-              )}
-            </QueryState>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </MediaPickerGrid>
           </div>
         </ScrollArea>
       </PopoverContent>

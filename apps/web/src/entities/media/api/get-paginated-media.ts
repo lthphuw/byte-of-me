@@ -15,8 +15,9 @@ import type { Media } from '@/shared/types/models';
 export async function getPaginatedMedia(
   pagination: PaginatedParams
 ): Promise<ApiResponse<PaginatedData<Media>>> {
+  const session = await requireAdmin();
+
   try {
-    const session = await requireAdmin();
     const { page, limit } = clampPagination(pagination, { defaultLimit: 10 });
     const skip = (page - 1) * limit;
 

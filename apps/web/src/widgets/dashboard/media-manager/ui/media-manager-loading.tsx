@@ -12,8 +12,8 @@ export function MediaManagerLoading() {
           <Skeleton className="h-5 w-80 max-w-full" />
         </div>
         <div className="flex items-center gap-2">
-          <Skeleton className="h-8 w-28" />
-          <Skeleton className="h-8 w-32" />
+          <Skeleton className="h-11 w-28 can-hover:h-9" />
+          <Skeleton className="h-11 w-32 can-hover:h-9" />
         </div>
       </div>
       <div className="relative min-h-[300px]">

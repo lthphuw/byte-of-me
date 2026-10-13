@@ -142,14 +142,10 @@ describe('hideComment', () => {
     expect(isHidden()).toBe(false);
   });
 
-  it('refuses an anonymous caller and reports it through errorMsg', async () => {
+  it('refuses an anonymous caller by rejecting, and writes nothing', async () => {
     setTestUser(null);
 
-    const res = await hideComment(COMMENT_ID);
-
-    expect(res.success).toBe(false);
-    if (res.success) throw new Error('unreachable');
-    expect(res.errorMsg).toBe('Unauthorized');
+    await expect(hideComment(COMMENT_ID)).rejects.toThrow('Unauthorized');
     expect(isHidden()).toBe(false);
   });
 });

@@ -1,16 +1,19 @@
 import { Skeleton } from '@byte-of-me/ui';
 
-/** Rows of the loaded thread list (`comment-manager.tsx`), with the same row classes. */
+import { RecordListItem } from '@/shared/ui/record-list';
+
+/** Rows of the admin comment list (`comment-manager.tsx`), in the same item and action slots. */
 export function CommentListSkeleton() {
   return (
-    <div className="flex flex-col gap-2">
-      {Array.from({ length: 5 }, (_, index) => (
-        <div
+    <div className="space-y-3" aria-busy="true">
+      {Array.from({ length: 6 }, (_, index) => (
+        <RecordListItem
           key={index}
-          className="flex items-start gap-3 rounded-lg border bg-card p-3"
+          className="items-start"
+          leading={<Skeleton className="h-8 w-8 rounded-full" />}
+          actions={<Skeleton className="h-11 w-20 can-hover:h-9" />}
         >
-          <Skeleton className="h-8 w-8 shrink-0 rounded-full" />
-          <div className="min-w-0 flex-1 space-y-1">
+          <div className="min-w-0 space-y-2">
             <div className="flex items-center gap-2">
               <Skeleton className="h-4 w-28" />
               <Skeleton className="h-3 w-20" />
@@ -18,8 +21,7 @@ export function CommentListSkeleton() {
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-3 w-1/2" />
           </div>
-          <Skeleton className="h-8 w-20 shrink-0" />
-        </div>
+        </RecordListItem>
       ))}
     </div>
   );

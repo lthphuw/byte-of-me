@@ -13,7 +13,7 @@
 export const MAX_IMAGE_SIZE_MB = 3;
 export const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
 
-/** A short demo clip, not a film. It goes browser → storage; a server action body tops out at 4.5 MB on Vercel. */
+/** A short demo clip. It goes browser → storage, never through `uploadMedia`: a server action body tops out at 4.5 MB on Vercel. */
 export const MAX_VIDEO_SIZE_MB = 15;
 export const MAX_VIDEO_SIZE_BYTES = MAX_VIDEO_SIZE_MB * 1024 * 1024;
 
@@ -107,9 +107,25 @@ export function describeVideoNotAllowed(fileName: string): string {
 
 export type MediaValidationError =
   | { kind: 'type'; fileName: string }
+  | { kind: 'video'; fileName: string }
   | { kind: 'size'; fileName: string; maxSizeMb: number }
   | { kind: 'batch'; max: number }
   | { kind: 'total'; maxSizeMb: number };
+
+/**
+ * The route a file takes. A clip goes browser → storage (`direct`); an image goes
+ * through `uploadMedia` (`action`). A file over its own ceiling takes neither.
+ */
+export function pickUploadPath(file: { type: string; size: number }):
+  | { path: 'action' }
+  | { path: 'direct' }
+  | { error: 'too-large' } {
+  if (file.size > maxUploadSizeFor(file.type).bytes) {
+    return { error: 'too-large' };
+  }
+
+  return isVideoMimeType(file.type) ? { path: 'direct' } : { path: 'action' };
+}
 
 /**
  * The first thing wrong with `files`, or `null` if they are all acceptable.
@@ -158,6 +174,8 @@ export function describeViolation(violation: MediaValidationError): string {
       return `Too many files at once. Upload at most ${violation.max}.`;
     case 'type':
       return `"${violation.fileName}" is not an accepted image or video format.`;
+    case 'video':
+      return `"${violation.fileName}" is a video. This upload takes images only; clips go through the direct upload.`;
     case 'size':
       return `"${violation.fileName}" is larger than ${violation.maxSizeMb} MB.`;
     case 'total':

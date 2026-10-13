@@ -1,8 +1,8 @@
 /**
  * `scope` and `file.type` come from the caller and must not be trusted: a bad
- * scope or bytes that are neither an image nor an mp4/webm clip are refused before
- * storage, and what is stored follows the bytes. Storage and Prisma are replaced
- * so nothing real is written.
+ * scope, bytes that are not an image, and any video are refused before storage.
+ * Clips take the direct path (`uploadVideoDirect`). Storage and Prisma are
+ * replaced so nothing real is written.
  */
 import { prisma } from '@byte-of-me/db';
 import { beforeEach, describe, expect, it, mock, spyOn } from 'bun:test';
@@ -147,7 +147,7 @@ describe('uploadMedia', () => {
     expect(fileName.endsWith('evil.png')).toBe(true);
   });
 
-  it('stores an mp4 byte for byte under the featured-work scope, even with compression on', async () => {
+  it('refuses an mp4 under any scope, even with compression on, before storage', async () => {
     compressionEnabled = true;
 
     const res = await uploadMedia(
@@ -155,32 +155,22 @@ describe('uploadMedia', () => {
       'featured-work'
     );
 
-    expect(res.success).toBe(true);
-    const [{ fileKey, contentType, body }] = uploadFile.mock.calls[0] as [
-      { fileKey: string; contentType: string; body: Buffer }
-    ];
-    expect(contentType).toBe('video/mp4');
-    expect(fileKey).toMatch(
-      /\/media\/featured-work\/\d{4}\/\d{2}\/[^/]+\.mp4$/
-    );
-    expect(Buffer.compare(body, Buffer.from(MP4))).toBe(0);
-    const data = mediaCreate.mock.calls[0]?.[0].data;
-    expect(data.mimeType).toBe('video/mp4');
-    expect(data.size).toBe(MP4.byteLength);
+    expect(res.success).toBe(false);
+    expect(res.errorMsg).toContain('int8.mp4');
+    expect(res.errorMsg).toContain('video');
+    expect(uploadFile).not.toHaveBeenCalled();
+    expect(mediaCreate).not.toHaveBeenCalled();
   });
 
-  it('stores a webm as webm', async () => {
+  it('refuses a webm, which is a clip too', async () => {
     const res = await uploadMedia(
       [fileOf(WEBM, 'fp16.webm', 'video/webm')],
       'featured-work'
     );
 
-    expect(res.success).toBe(true);
-    const [{ fileKey, contentType }] = uploadFile.mock.calls[0] as [
-      { fileKey: string; contentType: string }
-    ];
-    expect(contentType).toBe('video/webm');
-    expect(fileKey).toMatch(/\.webm$/);
+    expect(res.success).toBe(false);
+    expect(uploadFile).not.toHaveBeenCalled();
+    expect(mediaCreate).not.toHaveBeenCalled();
   });
 
   it('keeps accepting a GIF as an image, stored untouched', async () => {
@@ -235,20 +225,12 @@ describe('uploadMedia', () => {
     expect(uploadFile).not.toHaveBeenCalled();
   });
 
-  it('refuses a video over 15 MB and an image over 3 MB, before storage', async () => {
-    const bigClip = await uploadMedia(
-      [fileOf(padded(MP4, 15 * MiB + 1), 'big.mp4', 'video/mp4')],
-      'featured-work'
-    );
+  it('refuses an image over 3 MB, before storage', async () => {
     const bigImage = await uploadMedia(
       [fileOf(padded(PNG, 3 * MiB + 1), 'big.png', 'image/png')],
       'featured-work'
     );
 
-    expect(bigClip).toEqual({
-      success: false,
-      errorMsg: '"big.mp4" is larger than 15 MB.',
-    });
     expect(bigImage).toEqual({
       success: false,
       errorMsg: '"big.png" is larger than 3 MB.',
@@ -256,17 +238,18 @@ describe('uploadMedia', () => {
     expect(uploadFile).not.toHaveBeenCalled();
   });
 
-  it('accepts a clip at exactly 15 MB', async () => {
+  it('refuses a clip at exactly 15 MB, the most the direct path takes', async () => {
     const res = await uploadMedia(
       [fileOf(padded(MP4, 15 * MiB), 'max.mp4', 'video/mp4')],
       'featured-work'
     );
 
-    expect(res.success).toBe(true);
+    expect(res.success).toBe(false);
+    expect(uploadFile).not.toHaveBeenCalled();
   });
 
   describe('when storage or the database refuses', () => {
-    const clip = () => fileOf(padded(MP4, 7 * MiB), 'demo.mp4', 'video/mp4');
+    const image = () => fileOf(padded(PNG, 2.5 * MiB), 'demo.png', 'image/png');
 
     it('names the file and the bucket limit when storage answers EntityTooLarge', async () => {
       uploadFile.mockRejectedValue(
@@ -279,11 +262,11 @@ describe('uploadMedia', () => {
         )
       );
 
-      const res = await uploadMedia([clip()], 'featured-work');
+      const res = await uploadMedia([image()], 'blog');
 
       expect(res.success).toBe(false);
-      expect(res.errorMsg).toContain('demo.mp4');
-      expect(res.errorMsg).toContain('7.0 MB');
+      expect(res.errorMsg).toContain('demo.png');
+      expect(res.errorMsg).toContain('2.5 MB');
       expect(res.errorMsg).toContain('storage bucket');
     });
 
@@ -295,7 +278,7 @@ describe('uploadMedia', () => {
         })
       );
 
-      const res = await uploadMedia([clip()], 'featured-work');
+      const res = await uploadMedia([image()], 'blog');
 
       expect(res.success).toBe(false);
       expect(res.errorMsg).toContain('AccessDenied');
@@ -303,24 +286,16 @@ describe('uploadMedia', () => {
     });
   });
 
-  it('keeps the batch rule and the request total', async () => {
+  it('keeps the batch rule', async () => {
     const six = Array.from({ length: 6 }, () =>
       fileOf(PNG, 'a.png', 'image/png')
     );
     const tooMany = await uploadMedia(six, 'blog');
-    const twoClips = await uploadMedia(
-      [
-        fileOf(padded(MP4, 15 * MiB), 'a.mp4', 'video/mp4'),
-        fileOf(padded(MP4, 15 * MiB), 'b.mp4', 'video/mp4'),
-      ],
-      'featured-work'
-    );
 
     expect(tooMany).toEqual({
       success: false,
       errorMsg: 'Too many files at once. Upload at most 5.',
     });
-    expect(twoClips.success).toBe(false);
     expect(uploadFile).not.toHaveBeenCalled();
   });
 
@@ -334,20 +309,15 @@ describe('uploadMedia', () => {
       ),
     ]);
 
-    it('stores an mp4 header followed by HTML as video/mp4, never a text type', async () => {
+    it('refuses an mp4 header followed by HTML, declared as a video, before storage', async () => {
       const res = await uploadMedia(
         [fileOf(POLYGLOT, 'poc.mp4', 'video/mp4')],
         'featured-work'
       );
 
-      expect(res.success).toBe(true);
-      const [{ contentType, fileKey }] = uploadFile.mock.calls[0] as [
-        { contentType: string; fileKey: string }
-      ];
-      expect(contentType).toBe('video/mp4');
-      expect(contentType).not.toMatch(/^text\/|html|javascript/);
-      expect(fileKey).toMatch(/\.mp4$/);
-      expect(mediaCreate.mock.calls[0]?.[0].data.mimeType).toBe('video/mp4');
+      expect(res.success).toBe(false);
+      expect(uploadFile).not.toHaveBeenCalled();
+      expect(mediaCreate).not.toHaveBeenCalled();
     });
 
     it.each(['image/png', 'image/jpeg', 'image/svg+xml', 'text/html', ''])(

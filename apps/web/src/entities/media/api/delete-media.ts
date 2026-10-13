@@ -13,9 +13,9 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { Media } from '@/shared/types/models';
 
 export async function deleteMedia(id: string): Promise<ApiResponse<Media>> {
-  try {
-    const user = await requireAdmin();
+  const user = await requireAdmin();
 
+  try {
     const parsedId = parseInput(idSchema, id);
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };
@@ -32,8 +32,7 @@ export async function deleteMedia(id: string): Promise<ApiResponse<Media>> {
       return { success: false, errorMsg: 'Media not found' };
     }
 
-    await supabaseStorage.deleteFile(media.fileKey);
-
+    // The row goes first: if it fails, the file stays and nothing points at a gap.
     const res = await prisma.media.delete({
       where: {
         id,
@@ -41,9 +40,17 @@ export async function deleteMedia(id: string): Promise<ApiResponse<Media>> {
     });
     revalidateTag(CACHE_TAGS.MEDIA, 'max');
 
-    // Media is embedded inside the cached payloads of these entities (covers,
-    // logos, achievement images, featured-work demos and details), so deleting a
-    // file must also invalidate them or the public site keeps serving the dead URL.
+    try {
+      await supabaseStorage.deleteFile(media.fileKey);
+    } catch (error) {
+      // The row is gone, so a failed storage delete only leaves an orphan object.
+      logger.warn(
+        `Delete media: storage object of ${media.id} not removed: ${getErrorMessage(error)}`
+      );
+    }
+
+    // Media is embedded in the cached payloads of these entities (covers, logos,
+    // demos), so a deleted file must refresh them or the site serves a dead URL.
     const embeddingTags = [
       CACHE_TAGS.BLOG,
       CACHE_TAGS.COMPANY,

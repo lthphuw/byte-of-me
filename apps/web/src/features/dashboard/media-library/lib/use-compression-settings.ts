@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import {
   useUpdateImageCompression,
@@ -28,6 +29,7 @@ export function useCompressionSettings() {
     const write = latestWrite.current;
     setDraft(next);
     save.mutate(next, {
+      onSuccess: () => toast.success(t('saved')),
       onSettled: () => {
         if (write === latestWrite.current) setDraft(null);
       },

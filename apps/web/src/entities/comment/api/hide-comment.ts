@@ -18,9 +18,9 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 export async function hideComment(
   commentId: string
 ): Promise<ApiResponse<null>> {
-  try {
-    const user = await requireUser();
+  const user = await requireUser();
 
+  try {
     const parsedId = parseInput(idSchema, commentId, 'hideComment');
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };

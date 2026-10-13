@@ -14,9 +14,9 @@ export async function getPaginatedAdminComments(
   rawPage: number = 1,
   rawLimit: number = 20
 ): Promise<ApiResponse<PaginatedData<AdminComment>>> {
-  try {
-    const session = await requireAdmin();
+  const session = await requireAdmin();
 
+  try {
     const { page, limit } = clampPagination(
       { page: rawPage, limit: rawLimit },
       { defaultLimit: 20 }

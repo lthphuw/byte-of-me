@@ -85,7 +85,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 | `github-userinfo.ts` | `fetchGitHubProfile`: adds `email_verified` from the GitHub emails endpoint | `auth.ts` |
 | `magic-link-rate-limit.ts` | `isMagicLinkRequestAllowed`: 5 mails per 600 s per IP, fails open | `auth.ts` (:103) |
 | `normalize-email.ts` | `normalizeEmail`: trim and lowercase | `site-owner.ts`, `github-userinfo.ts` |
-| `set-test-user.test-helper.ts` | `setTestUser`, `resetTestUser` (specs only) | 12 spec files |
+| `set-test-user.test-helper.ts` | `setTestUser`, `resetTestUser` (specs only) | 24 spec files |
 | `index.ts` | barrel: `admin-oauth-providers`, `auth`, `callback-url`, `normalize-email`, `session`; `site-owner` arrives via `session` | n/a |
 
 ### i18n: two systems (AGENTS §4)
@@ -117,7 +117,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 | `apps/web/src/shared/ui/lazy-rich-text-editor.test-stub.ts` | replaces the TipTap editor for every spec |
 
 - DB guard: `test-setup.ts` sets the two database URL env vars to a local, unreachable placeholder unconditionally, then throws if either is non-local. Bun loads `apps/web/.env` before preloads, so a `??=` default would keep production (AGENTS §10).
-- Identity: specs run as the stub admin. Switch with `setTestUser`, restore with `resetTestUser` in `afterAll` or `afterEach` (12 spec files call `setTestUser`).
+- Identity: specs run as the stub admin. Switch with `setTestUser`, restore with `resetTestUser` in `afterAll` or `afterEach` (24 spec files call `setTestUser`).
 - Specs are `*.spec.ts(x)`, rendered with `@testing-library/react`; `mock.module()` is banned (AGENTS §10).
 - Preloads are process-wide: a stub added to `bunfig.toml` affects every spec.
 
@@ -151,7 +151,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 - `parseInput` returns `ok`, not `success`: `{ ok: false, errorMsg, errorCode: 'invalid', detail }`; `detail` is for logs only.
 - `checkRateLimit` and `isMagicLinkRequestAllowed` report "allowed" on any database error. This is deliberate fail-open.
 - Owner identity is the owner override, else the contact address; that address defaults to a literal at `apps/web/src/shared/config/env.ts:11`, so set the override in production (see ../environment.md).
-- `revalidateTag`'s second argument is `'max'` in all 37 calls; none uses `'default'`.
+- `revalidateTag`'s second argument is `'max'` in all 38 calls; none uses `'default'`.
 - `withPublicActionHandler` appends only `locale` to `unstable_cache` keys; every other input the handler closes over must be in `cacheKey` (AGENTS §8).
 - Measured 2026-10-13 (`next start`): a client-invoked public action (`getPaginatedPublicBlogs`) runs its nine queries on the first call and none on identical replays, with the same body. One key with an empty result; the TTL is not measured. Page GETs never reach the wrapper: those pages are prerendered.
 - Per-record tags are raw strings: `cacheTags: [CACHE_TAGS.BLOG, slug]` (`apps/web/src/entities/blog/api/get-public-blog-by-slug.ts:95`) is cleared by `revalidateTag(blog.slug, 'max')` (`apps/web/src/entities/blog/api/toggle-blog-interaction.ts:84`); change one, change both.

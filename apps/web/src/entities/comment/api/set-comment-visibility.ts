@@ -15,9 +15,9 @@ export async function setCommentVisibility(
   commentId: string,
   hidden: boolean
 ): Promise<ApiResponse<Comment>> {
-  try {
-    await requireAdmin();
+  await requireAdmin();
 
+  try {
     const parsedId = parseInput(idSchema, commentId, 'setCommentVisibility');
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };

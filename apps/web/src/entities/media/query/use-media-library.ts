@@ -9,6 +9,7 @@ import {
   type MediaUploadMessages,
   useMediaUpload,
 } from '@/entities/media/query/use-media-upload';
+import { useVideoUpload } from '@/entities/media/query/use-video-upload';
 import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 interface MediaLibraryMessages extends MediaUploadMessages {
@@ -16,7 +17,7 @@ interface MediaLibraryMessages extends MediaUploadMessages {
   deleteError: string;
 }
 
-/** The library grid for `page`, with its upload and delete writes. */
+/** The library grid for `page`, with its image and clip uploads and its delete. */
 export function useMediaLibrary(page: number, messages: MediaLibraryMessages) {
   const query = useQuery({
     ...mediaQueries.library(page),
@@ -25,6 +26,7 @@ export function useMediaLibrary(page: number, messages: MediaLibraryMessages) {
     placeholderData: (previous) => previous,
   });
   const upload = useMediaUpload(messages);
+  const uploadClip = useVideoUpload(messages);
   const remove = useServerMutation({
     mutationFn: (id: string) => deleteMedia(id),
     errorMessage: messages.deleteError,
@@ -32,5 +34,5 @@ export function useMediaLibrary(page: number, messages: MediaLibraryMessages) {
     invalidate: [mediaKeys.all],
   });
 
-  return { query, upload, remove };
+  return { query, upload, uploadClip, remove };
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@byte-of-me/ui';
 import { ImageIcon, Loader2, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -37,6 +37,7 @@ export function ImageUpload({
   acceptVideo = false,
 }: ImageUploadProps) {
   const t = useTranslations('dashboard.media');
+  const inputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
@@ -139,10 +140,8 @@ export function ImageUpload({
 
     setIsUploading(true);
     try {
+      // The success toast comes from the mutation behind `uploadFiles`.
       await uploadFiles(files);
-      toast(t('upload.successTitle'), {
-        description: t('upload.successDescription'),
-      });
       setFiles([]);
     } catch {
       // The mutation behind `uploadFiles` has already shown the refusal.
@@ -153,15 +152,17 @@ export function ImageUpload({
 
   return (
     <div className="space-y-4">
+      {/* The zone is a secondary target: the button inside is the keyboard path,
+          and its click bubbles here to open the same input. */}
       <div
-        className="cursor-pointer rounded-xl border-2 border-dashed p-8 text-center hover:bg-primary/5 aria-disabled:pointer-events-none aria-disabled:opacity-60"
+        className="cursor-pointer rounded-xl border-2 border-dashed p-8 text-center aria-disabled:pointer-events-none aria-disabled:opacity-60"
         aria-disabled={isCompressing}
         onDrop={(e) => {
           e.preventDefault();
           void handleFiles(e.dataTransfer.files);
         }}
         onDragOver={(e) => e.preventDefault()}
-        onClick={() => document.getElementById('file-upload')?.click()}
+        onClick={() => inputRef.current?.click()}
       >
         {isCompressing ? (
           <Loader2 className="mx-auto h-10 w-10 animate-spin text-muted-foreground" />
@@ -175,16 +176,25 @@ export function ImageUpload({
                 acceptVideo ? 'upload.dropzoneMediaText' : 'upload.dropzoneText'
               )}
         </p>
-        <input
-          id="file-upload"
-          type="file"
-          multiple
-          className="hidden"
-          accept={acceptVideo ? 'image/*,video/mp4,video/webm' : 'image/*'}
+        <Button
+          type="button"
+          variant="outline"
+          className="mt-4 min-h-11 can-hover:min-h-9"
           disabled={isCompressing}
-          onChange={(e) => void handleFiles(e.target.files)}
-        />
+        >
+          {t('upload.chooseFiles')}
+        </Button>
       </div>
+
+      <input
+        ref={inputRef}
+        type="file"
+        multiple
+        className="hidden"
+        accept={acceptVideo ? 'image/*,video/mp4,video/webm' : 'image/*'}
+        disabled={isCompressing}
+        onChange={(e) => void handleFiles(e.target.files)}
+      />
 
       <div className="grid gap-2">
         {files.map((file, idx) => (
@@ -194,8 +204,11 @@ export function ImageUpload({
           >
             <span className="max-w-[200px] truncate text-xs">{file.name}</span>
             <Button
+              type="button"
               variant="ghost"
               size="icon"
+              className="min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9"
+              aria-label={t('upload.removeFile', { name: file.name })}
               onClick={() => removeFile(idx)}
               disabled={isUploading}
             >
@@ -206,7 +219,7 @@ export function ImageUpload({
       </div>
 
       <Button
-        className="w-full"
+        className="min-h-11 w-full can-hover:min-h-9"
         onClick={handleUpload}
         disabled={files.length === 0 || isUploading || isCompressing}
       >

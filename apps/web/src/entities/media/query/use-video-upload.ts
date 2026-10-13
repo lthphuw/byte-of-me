@@ -8,6 +8,7 @@ import type { Media } from '@/shared/types/models';
 
 interface VideoUploadMessages {
   uploadError: string;
+  uploadSuccess?: string;
 }
 
 interface VideoUploadVariables {
@@ -19,10 +20,14 @@ interface VideoUploadVariables {
  * A clip from the browser to storage and into the library, through a signed URL
  * (`uploadVideoDirect`). Resolves with the stored row.
  */
-export function useVideoUpload({ uploadError }: VideoUploadMessages) {
+export function useVideoUpload({
+  uploadError,
+  uploadSuccess,
+}: VideoUploadMessages) {
   return useServerMutation<VideoUploadVariables, Media>({
     mutationFn: ({ file, scope }) => uploadVideoDirect(file, scope),
     errorMessage: uploadError,
+    successMessage: uploadSuccess,
     invalidate: [mediaKeys.all],
   });
 }

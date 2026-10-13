@@ -10,17 +10,21 @@ import { useServerMutation } from '@/shared/hooks/use-server-mutation';
  */
 export interface MediaUploadMessages {
   uploadError: string;
+  uploadSuccess: string;
 }
 
 /**
- * The one client upload write. It reports only failure: the upload dialog that
- * called it says success, since it knows how many files it sent. A refusal
- * leaves that dialog open (`mutateAsync` rejects).
+ * The one client upload write for images. It reports success and failure itself:
+ * `mutateAsync` rejects on a refusal, which leaves the caller's dialog open.
  */
-export function useMediaUpload({ uploadError }: MediaUploadMessages) {
+export function useMediaUpload({
+  uploadError,
+  uploadSuccess,
+}: MediaUploadMessages) {
   return useServerMutation({
     mutationFn: (files: File[]) => uploadMedia(files),
     errorMessage: uploadError,
+    successMessage: uploadSuccess,
     invalidate: [mediaKeys.all],
   });
 }

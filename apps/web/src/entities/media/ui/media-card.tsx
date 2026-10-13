@@ -35,7 +35,7 @@ export function MediaCard({
   return (
     <Card
       className={cn(
-        'group relative aspect-square overflow-hidden border-none bg-muted/40 transition-all duration-300 hover:ring-2 hover:ring-primary/20',
+        'group relative aspect-square overflow-hidden border-none bg-muted/40 transition-shadow duration-300 hover:ring-2 hover:ring-primary/20',
         className
       )}
     >
@@ -64,26 +64,27 @@ export function MediaCard({
               />
               <Play
                 aria-hidden
-                className="absolute bottom-2 left-2 size-4 fill-white text-white drop-shadow-md"
+                className="absolute bottom-2 left-2 size-4 fill-background text-background drop-shadow-md"
               />
             </>
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-2">
               <FileIcon className="h-10 w-10 text-muted-foreground/40 transition-transform group-hover:scale-110" />
               <span className="text-[10px] font-medium uppercase tracking-tighter text-muted-foreground">
-                {media.mimeType.split('/')[1] || 'File'}
+                {media.mimeType.split('/')[1] ?? media.mimeType}
               </span>
             </div>
           )}
 
-          {/* Action Overlay. Hover-revealed only from `sm`: on touch there is
-              no hover, so an `opacity-0` overlay stayed invisible yet
-              hit-testable and a tap could fire an unseen Delete.
-              `focus-within` covers the keyboard path. */}
-          <div className="absolute inset-0 z-20 flex flex-col justify-between bg-black/60 p-2 transition-opacity duration-200 sm:opacity-0 sm:focus-within:opacity-100 sm:group-hover:opacity-100">
+          {/* Action Overlay. Always shown: a hover-only overlay left the buttons
+              out of reach on touch and invisible to the keyboard. */}
+          <div className="absolute inset-0 z-20 flex flex-col justify-between bg-foreground/60 p-2 text-background">
             {/* Top Toolbar */}
-            <div className="flex justify-end gap-1.5">
-              <CopyButton content={media.url} />
+            <div className="flex justify-end gap-2">
+              <CopyButton
+                content={media.url}
+                className="min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9"
+              />
 
               {onDeleteMedia && (
                 <DeleteButton
@@ -97,11 +98,11 @@ export function MediaCard({
             </div>
 
             {/* Bottom Info Section */}
-            <div className="transition-transform duration-300 sm:translate-y-2 sm:group-hover:translate-y-0">
-              <p className="truncate text-[11px] font-semibold leading-tight text-white drop-shadow-md">
+            <div>
+              <p className="truncate text-[11px] font-semibold leading-tight drop-shadow-md">
                 {media.fileName}
               </p>
-              <p className="mt-0.5 text-[9px] font-medium text-white/80">
+              <p className="mt-0.5 text-[9px] font-medium opacity-80">
                 {formatImageSize(media.size)}
               </p>
             </div>
