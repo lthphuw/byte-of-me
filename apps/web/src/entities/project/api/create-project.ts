@@ -17,9 +17,9 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 export async function createProject(
   input: ProjectFromValues
 ): Promise<ApiResponse<Project>> {
-  try {
-    const session = await requireAdmin();
+  const session = await requireAdmin();
 
+  try {
     const parsed = parseInput(projectSchema, input);
     if (!parsed.ok) {
       return { success: false, errorMsg: parsed.errorMsg };

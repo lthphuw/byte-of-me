@@ -1,38 +1,43 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import {
-  Button,
-  ConfirmDeleteDialog,
-  DeleteButton,
-  EditButton,
-  Pagination,
-} from '@byte-of-me/ui';
+import { Button, ConfirmDeleteDialog, Pagination } from '@byte-of-me/ui';
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { FeaturedWorkDialog } from './featured-work-dialog';
-import { FeaturedWorkListLoading } from './featured-work-list-loading';
 
-import type { AdminFeaturedWork } from '@/entities/featured-work';
 import { createFeaturedWork } from '@/entities/featured-work/api/create-featured-work';
 import { deleteFeaturedWork } from '@/entities/featured-work/api/delete-featured-work';
 import { getPaginatedAdminFeaturedWorks } from '@/entities/featured-work/api/get-paginated-admin-featured-works';
 import { updateFeaturedWork } from '@/entities/featured-work/api/update-featured-work';
 import { safeLink } from '@/entities/featured-work/lib/safe-link';
-import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
-import { featuredWorkKeys } from '@/entities/featured-work/model/query-keys';
-import { featuredWorkQueries, useAdminFeaturedWorkById } from '@/entities/featured-work/query';
+import {
+  type AdminFeaturedWork,
+  type FeaturedWorkFormValues,
+  featuredWorkKeys,
+} from '@/entities/featured-work/model';
+import {
+  featuredWorkQueries,
+  useAdminFeaturedWorkById,
+} from '@/entities/featured-work/query';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
-import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
+import {
+  ManagerListState,
+  ManagerPageHeader,
+  RecordListItem,
+  RecordRowActions,
+} from '@/shared/ui';
 import { useReorderFeaturedWork } from '@/widgets/dashboard/featured-work-manager/lib/use-reorder-featured-work';
 
 export function FeaturedWorkManager() {
   const t = useTranslations('dashboard.featuredWorks');
+  const crud = useTranslations('dashboard.shared.crud');
   const tShared = useTranslations('dashboard.shared');
   const locale = useLocale();
+  const entity = t('entity');
   const {
     items: works,
     pagination,
@@ -54,23 +59,12 @@ export function FeaturedWorkManager() {
     cancelDelete,
     confirmDelete,
     isDeleting,
-    isDeletingItem,
   } = useCrudManager<AdminFeaturedWork, FeaturedWorkFormValues>({
-    queryKey: featuredWorkKeys.adminList(),
-    entityLabel: 'Featured work',
-    messages: {
-      created: t('toast.created'),
-      updated: t('toast.updated'),
-      deleted: t('toast.deleted'),
-      saveError: t('toast.saveError'),
-      deleteError: t('toast.deleteError'),
-    },
-    // Saving or deleting leaves `featuredWorkKeys.detail(id)`, the row the
-    // editor loads, holding the pre-save bodies; no list invalidation reaches it.
-    detailKey: (work) => featuredWorkKeys.detail(work.id),
+    entity,
+    keys: featuredWorkKeys,
     pageSize: ADMIN_PAGE_SIZE,
     pageKey: (page) => featuredWorkQueries.adminPage(page).queryKey,
-    fetchPage: (page, limit) => getPaginatedAdminFeaturedWorks(page, limit),
+    fetchPage: getPaginatedAdminFeaturedWorks,
     create: createFeaturedWork,
     update: updateFeaturedWork,
     remove: deleteFeaturedWork,
@@ -78,7 +72,10 @@ export function FeaturedWorkManager() {
   // The list row carries no bodies, so the dialog loads the full row by id.
   // "New" (`editing` is null) fetches nothing and opens an empty form.
   const fullWork = useAdminFeaturedWorkById(editing?.id);
-  const { move, isMoving } = useReorderFeaturedWork(t('toast.reorderError'));
+  const { move, isMoving } = useReorderFeaturedWork({
+    updated: crud('updated', { entity }),
+    saveError: crud('saveError', { entity }),
+  });
 
   // Arrows use `aria-disabled` so they stay focusable. A reorder moves DOM
   // nodes and drops focus; it is restored once the refetch lands, unless the
@@ -110,133 +107,33 @@ export function FeaturedWorkManager() {
     if (node) moveButtons.current.set(key, node);
     else moveButtons.current.delete(key);
   };
+  // 44px on touch; 36px only with a fine pointer, under `can-hover:`.
   const moveButtonClass =
-    'h-8 w-8 aria-disabled:cursor-not-allowed aria-disabled:opacity-50';
+    'min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9 aria-disabled:cursor-not-allowed aria-disabled:opacity-50';
 
   // Position in the whole list, not on this page: the first row of page 2 can
   // still move up, and only the very first and very last entries cannot move.
   const firstPosition = ((pagination?.currentPage ?? 1) - 1) * ADMIN_PAGE_SIZE;
   const totalCount = pagination?.totalCount ?? works.length;
 
-  return (
-    <div className="space-y-6">
-      <ManagerPageHeader
-        title={t('title')}
-        description={t('description')}
-        action={
-          <Button onClick={openCreateDialog} size="sm" className="gap-2">
-            <Plus className="h-4 w-4" />
-            {t('createButton')}
-          </Button>
-        }
-      />
+  const titleOf = (work: AdminFeaturedWork) =>
+    getTranslatedContent(work.translations, locale)?.title || t('untitled');
 
-      <div className="relative min-h-[200px] space-y-4">
-        <ManagerListState
-          isLoading={isLoading}
-          isError={isError}
-          onRetry={() => refetch()}
-          isFetching={isFetching}
-          skeleton={<FeaturedWorkListLoading />}
-          isEmpty={works.length === 0}
-          emptyTitle={t('emptyTitle')}
-          emptyDescription={t('emptyDescription')}
-          emptyAction={
-            <Button variant="outline" size="sm" onClick={openCreateDialog}>
-              {t('emptyAction')}
-            </Button>
-          }
-        >
-          <ol role="list" className="grid gap-4">
-            {works.map((work, index) => {
-              // Admin reads keep every locale ordered `language: 'asc'`, so
-              // the first row is always English — resolve against the
-              // dashboard's own locale instead.
-              const title =
-                getTranslatedContent(work.translations, locale)?.title ||
-                t('untitled');
-              const { host } = safeLink(work.url);
-              const position = firstPosition + index;
+  const newWorkButton = (
+    <Button
+      onClick={openCreateDialog}
+      size="sm"
+      className="min-h-11 gap-2 can-hover:min-h-9"
+    >
+      <Plus className="h-4 w-4" />
+      {t('createButton')}
+    </Button>
+  );
 
-              return (
-                <li
-                  key={work.id}
-                  className="group flex items-center justify-between gap-4 rounded-xl border bg-card p-4 transition-colors hover:border-primary/50"
-                >
-                  <div className="flex min-w-0 items-center gap-4">
-                    <span
-                      aria-hidden
-                      className="w-6 shrink-0 text-center text-sm font-medium tabular-nums text-muted-foreground"
-                    >
-                      {position + 1}
-                    </span>
-
-                    <div className="min-w-0 space-y-1">
-                      <h4 className="truncate font-semibold leading-none">
-                        {title}
-                      </h4>
-                      <div className="flex flex-wrap items-center gap-2 pt-1">
-                        {host && (
-                          <span className="truncate text-xs text-muted-foreground">
-                            {host}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex shrink-0 items-center gap-1">
-                    {/* Never hover-gated: a touch screen has no hover to reveal them. */}
-                    <Button
-                      ref={moveButtonRef(`${work.id}:up`)}
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      className={moveButtonClass}
-                      aria-label={t('moveUpLabel', { name: title })}
-                      aria-disabled={isMoving || position === 0}
-                      onClick={() => requestMove(work.id, 'up', position === 0)}
-                    >
-                      <ChevronUp className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      ref={moveButtonRef(`${work.id}:down`)}
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      className={moveButtonClass}
-                      aria-label={t('moveDownLabel', { name: title })}
-                      aria-disabled={isMoving || position === totalCount - 1}
-                      onClick={() =>
-                        requestMove(
-                          work.id,
-                          'down',
-                          position === totalCount - 1
-                        )
-                      }
-                    >
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                    <div className="flex items-center gap-1 transition-opacity sm:focus-within:opacity-100 sm:group-hover:opacity-100 can-hover:sm:opacity-0">
-                      <EditButton
-                        label={t('editLabel', { name: title })}
-                        onClick={() => openEditDialog(work)}
-                      />
-                      <DeleteButton
-                        label={t('deleteLabel', { name: title })}
-                        isSubmitting={isDeletingItem(work)}
-                        onClick={() => requestDelete(work)}
-                      />
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ol>
-        </ManagerListState>
-      </div>
-
-      {works.length > 0 && (
+  // Shown while there is more than one page, even when the current page is empty.
+  const pager =
+    (pagination?.totalPages ?? 1) > 1 ? (
+      <div className="mt-6">
         <Pagination
           pagination={pagination}
           setPage={setPage}
@@ -248,7 +145,117 @@ export function FeaturedWorkManager() {
           previousLabel={tShared('pagination.previous')}
           nextLabel={tShared('pagination.next')}
         />
-      )}
+      </div>
+    ) : null;
+
+  return (
+    <div className="space-y-6">
+      <ManagerPageHeader
+        title={t('title')}
+        description={t('description')}
+        action={newWorkButton}
+      />
+
+      <div className="relative min-h-[200px]">
+        <ManagerListState
+          isLoading={isLoading}
+          isError={isError}
+          onRetry={() => refetch()}
+          isFetching={isFetching}
+          isEmpty={works.length === 0}
+          pagination={pager}
+          emptyTitle={t('emptyTitle')}
+          emptyDescription={t('emptyDescription')}
+          emptyAction={
+            <Button
+              variant="outline"
+              size="sm"
+              className="min-h-11 can-hover:min-h-9"
+              onClick={openCreateDialog}
+            >
+              {t('emptyAction')}
+            </Button>
+          }
+        >
+          <ol role="list" className="grid gap-4">
+            {works.map((work, index) => {
+              const title = titleOf(work);
+              const { host } = safeLink(work.url);
+              const position = firstPosition + index;
+
+              return (
+                <li key={work.id}>
+                  <RecordListItem
+                    leading={
+                      <span
+                        aria-hidden
+                        className="hidden w-6 text-center text-sm font-medium tabular-nums text-muted-foreground sm:block"
+                      >
+                        {position + 1}
+                      </span>
+                    }
+                    actions={
+                      <>
+                        {/* Never hover-gated: a touch screen has no hover to reveal them. */}
+                        <div className="flex flex-col gap-1 sm:flex-row sm:items-center">
+                          <Button
+                            ref={moveButtonRef(`${work.id}:up`)}
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            className={moveButtonClass}
+                            aria-label={t('moveUpLabel', { name: title })}
+                            aria-disabled={isMoving || position === 0}
+                            onClick={() =>
+                              requestMove(work.id, 'up', position === 0)
+                            }
+                          >
+                            <ChevronUp className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            ref={moveButtonRef(`${work.id}:down`)}
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            className={moveButtonClass}
+                            aria-label={t('moveDownLabel', { name: title })}
+                            aria-disabled={
+                              isMoving || position === totalCount - 1
+                            }
+                            onClick={() =>
+                              requestMove(
+                                work.id,
+                                'down',
+                                position === totalCount - 1
+                              )
+                            }
+                          >
+                            <ChevronDown className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <RecordRowActions
+                          name={title}
+                          onEdit={() => openEditDialog(work)}
+                          onDelete={() => requestDelete(work)}
+                        />
+                      </>
+                    }
+                  >
+                    <h4 className="truncate font-semibold leading-none">
+                      {title}
+                    </h4>
+                    {host && (
+                      <p className="truncate pt-1 text-xs text-muted-foreground">
+                        {host}
+                      </p>
+                    )}
+                  </RecordListItem>
+                </li>
+              );
+            })}
+          </ol>
+        </ManagerListState>
+      </div>
 
       <FeaturedWorkDialog
         key={editing?.id ?? 'new'}
@@ -259,7 +266,7 @@ export function FeaturedWorkManager() {
         isLoadingInitialData={fullWork.isNotReady}
         hasLoadError={fullWork.hasError}
         onRetryLoad={fullWork.retry}
-        onSubmit={(values) => save(values)}
+        onSubmit={save}
         loading={isSaving}
       />
 
@@ -268,16 +275,9 @@ export function FeaturedWorkManager() {
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
-        title={t('deleteTitle')}
-        description={t.rich('deleteDescription', {
-          name: () => (
-            <span className="font-medium text-foreground">
-              {(workToDelete &&
-                getTranslatedContent(workToDelete.translations, locale)
-                  ?.title) ||
-                t('untitled')}
-            </span>
-          ),
+        title={crud('deleteTitle', { entity })}
+        description={crud('deleteDescription', {
+          name: workToDelete ? titleOf(workToDelete) : '',
         })}
         actionText={tShared('confirmDelete.actionText')}
         cancelText={tShared('confirmDelete.cancelText')}

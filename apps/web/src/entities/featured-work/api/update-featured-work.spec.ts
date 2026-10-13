@@ -168,8 +168,9 @@ describe('updateFeaturedWork publishing and body', () => {
     );
 
     expect(res.success).toBe(true);
-    const data = (update.mock.calls[0]?.[0] as { data: Record<string, unknown> })
-      .data;
+    const data = (
+      update.mock.calls[0]?.[0] as { data: Record<string, unknown> }
+    ).data;
     expect(Object.keys(data)).not.toContain('isPublished');
     expect(Object.keys(writtenTranslations()[0] ?? {})).not.toContain(
       'description'

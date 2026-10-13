@@ -17,9 +17,9 @@ export async function reorderFeaturedWork(
   id: string,
   direction: 'up' | 'down'
 ): Promise<ApiResponse<null>> {
-  try {
-    const user = await requireAdmin();
+  const user = await requireAdmin();
 
+  try {
     const parsedId = parseInput(idSchema, id);
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };

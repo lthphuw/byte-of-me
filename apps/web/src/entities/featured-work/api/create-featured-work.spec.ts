@@ -142,8 +142,9 @@ describe('createFeaturedWork publishing and body', () => {
     const res = await createFeaturedWork(input());
 
     expect(res.success).toBe(true);
-    const data = (create.mock.calls[0]?.[0] as { data: Record<string, unknown> })
-      .data;
+    const data = (
+      create.mock.calls[0]?.[0] as { data: Record<string, unknown> }
+    ).data;
     expect(Object.keys(data)).not.toContain('isPublished');
     const translations = data.translations as {
       create: Array<Record<string, unknown>>;

@@ -15,8 +15,8 @@ export const projectKeys = {
   options: (locale: string) =>
     [...projectKeys.adminList(), 'options', locale] as const,
   /**
-   * One full record for the edit dialog. Outside `adminList`: a save drops it
-   * through the manager's `detailKey`, because no list invalidation reaches it.
+   * One full record for the edit dialog. Under `all`, so a save's root
+   * invalidation reaches it; the manager then removes it.
    */
   detail: (id: string) => [...projectKeys.all, 'detail', id] as const,
 };

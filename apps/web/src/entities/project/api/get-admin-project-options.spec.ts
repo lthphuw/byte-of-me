@@ -136,12 +136,10 @@ describe('getAdminProjectOptions', () => {
     ]);
   });
 
-  it('refuses a non-admin caller without touching the database', async () => {
+  it('rejects a non-admin caller without touching the database', async () => {
     setTestUser({ id: 'user-2', role: 'USER', email: 'visitor@example.com' });
 
-    const res = await getAdminProjectOptions();
-
-    expect(res.success).toBe(false);
+    await expect(getAdminProjectOptions()).rejects.toThrow('Unauthorized');
     expect(findMany).not.toHaveBeenCalled();
   });
 

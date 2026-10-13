@@ -144,7 +144,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
    2. Use a key prefix not listed above; return the failure envelope when `allowed` is false.
 3. **Add a cached public read.**
    1. Copy `apps/web/src/entities/blog/api/get-public-blog-by-slug.ts:21-22` and `:89-91`: `handlePublicAction` around `withPublicActionHandler` with `cache: true`, `cacheKey`, `cacheTags`.
-   2. In the mutating action, call `revalidateTag(CACHE_TAGS.X, 'max')` after the write, as in `apps/web/src/entities/project/api/update-project.ts:92`.
+   2. In the mutating action, call `revalidateTag(CACHE_TAGS.X, 'max')` after the write, as in `apps/web/src/entities/project/api/update-project.ts:103`.
 
 ## Gotchas
 

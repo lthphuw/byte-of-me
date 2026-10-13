@@ -21,9 +21,9 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 export async function createFeaturedWork(
   input: FeaturedWorkFormValues
 ): Promise<ApiResponse<FeaturedWork>> {
-  try {
-    const user = await requireAdmin();
+  const user = await requireAdmin();
 
+  try {
     const parsed = parseInput(featuredWorkSchema, input);
     if (!parsed.ok) {
       return { success: false, errorMsg: parsed.errorMsg };

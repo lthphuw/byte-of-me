@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { type DefaultValues, useForm } from 'react-hook-form';
 import {
   Form,
@@ -8,17 +8,16 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   fromEditorContent,
   toEditorContent,
 } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
-import type { AdminFeaturedWorkDetail } from '@/entities/featured-work';
 import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
+import type { AdminFeaturedWorkDetail } from '@/entities/featured-work/model/types';
 import { useScopedImageUploader } from '@/entities/media/query';
 import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
-import { TextField, TranslationTabs } from '@/shared/ui';
+import { FieldMessage, TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { featuredWorkResolver } from '@/widgets/dashboard/featured-work-manager/lib/featured-work-resolver';
 import { toTranslationValues } from '@/widgets/dashboard/featured-work-manager/lib/translation-values';
@@ -48,6 +47,8 @@ interface FeaturedWorkFormProps {
   onSubmit: (data: FeaturedWorkFormValues) => void;
   /** Reports a demo clip in flight; a save then would leave it out. */
   onUploadingChange?: (isUploading: boolean) => void;
+  /** Reports unsaved changes, so the dialog asks before closing over them. */
+  onDirtyChange: (isDirty: boolean) => void;
 }
 
 export function FeaturedWorkForm({
@@ -55,6 +56,7 @@ export function FeaturedWorkForm({
   initialData,
   onSubmit,
   onUploadingChange,
+  onDirtyChange,
 }: FeaturedWorkFormProps) {
   // A featured work is a project contribution, so pasted images land under
   // the `project` prefix; `MEDIA_SCOPES` is a closed list and stays untouched
@@ -70,6 +72,8 @@ export function FeaturedWorkForm({
     resolver: featuredWorkResolver,
     defaultValues,
   });
+  const { isDirty } = form.formState;
+  useEffect(() => onDirtyChange(isDirty), [isDirty, onDirtyChange]);
 
   // The Save button is disabled meanwhile; this also stops Enter in an input.
   const isUploading = useRef(false);
@@ -81,11 +85,19 @@ export function FeaturedWorkForm({
     [onUploadingChange]
   );
 
-  // The server answers a repeated language with one generic message. It names
-  // no tab, so it sits above the tabs where it shows on whichever is open.
-  const translationsError =
+  // A repeated language names no tab, so no field can carry its message: it
+  // sits above the tabs and is translated here, as `FieldMessage` does.
+  const tValidation = useTranslations('dashboard.validation');
+  const translationsKey =
     form.formState.errors.translations?.root?.message ??
     form.formState.errors.translations?.message;
+  const translationsError = translationsKey?.startsWith('validation.')
+    ? tValidation(
+        translationsKey.slice('validation.'.length) as Parameters<
+          typeof tValidation
+        >[0]
+      )
+    : translationsKey;
 
   return (
     <Form {...form}>
@@ -125,7 +137,7 @@ export function FeaturedWorkForm({
               <FormField
                 control={form.control}
                 name={`translations.${index}.details`}
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>{t('detailsLabel')}</FormLabel>
                     <FormControl>
@@ -147,7 +159,7 @@ export function FeaturedWorkForm({
                         uploadFailedText={tMedia('toast.uploadError')}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FieldMessage message={fieldState.error?.message} />
                   </FormItem>
                 )}
               />
@@ -158,9 +170,10 @@ export function FeaturedWorkForm({
         <FormField
           control={form.control}
           name="media"
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FeaturedWorkDemo
               field={field}
+              error={fieldState.error?.message}
               initialMedia={initialData?.media}
               onUploadingChange={handleUploadingChange}
             />

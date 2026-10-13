@@ -18,9 +18,9 @@ export async function updateProject(
   id: string,
   input: ProjectFromValues
 ): Promise<ApiResponse<Project>> {
-  try {
-    await requireAdmin();
+  const user = await requireAdmin();
 
+  try {
     const parsedId = parseInput(idSchema, id);
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };
@@ -36,12 +36,10 @@ export async function updateProject(
         where: { projectId: id },
         select: { coauthorId: true },
       });
-      const previousCoauthorIds = previousJoins.map(
-        (join) => join.coauthorId
-      );
+      const previousCoauthorIds = previousJoins.map((join) => join.coauthorId);
 
       const updated = await tx.project.update({
-        where: { id },
+        where: { id, userId: user.id },
         data: {
           slug: data.slug,
           githubLink: data.githubLink || null,
@@ -80,7 +78,11 @@ export async function updateProject(
 
           translations: {
             deleteMany: {},
-            create: data.translations,
+            create: data.translations.map((t) => ({
+              language: t.language,
+              title: t.title,
+              description: t.description,
+            })),
           },
         },
       });
@@ -97,7 +99,9 @@ export async function updateProject(
       return updated;
     });
 
+    // Public blogs embed the related project's title and slug.
     revalidateTag(CACHE_TAGS.PROJECT, 'max');
+    revalidateTag(CACHE_TAGS.BLOG, 'max');
 
     return { success: true, data: project };
   } catch (error) {

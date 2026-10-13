@@ -28,6 +28,7 @@ export function ProjectCoauthorFields({ control }: ProjectCoauthorFieldsProps) {
           type="button"
           size="sm"
           variant="outline"
+          className="min-h-11 can-hover:min-h-9"
           onClick={() => append({ fullName: '', email: '' })}
         >
           <Plus /> {t('coauthors.addButton')}
@@ -56,7 +57,7 @@ export function ProjectCoauthorFields({ control }: ProjectCoauthorFieldsProps) {
             type="button"
             size="icon"
             variant="ghost"
-            className="md:mt-8"
+            className="min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9 md:mt-8"
             onClick={() => remove(index)}
             aria-label={t('coauthors.removeButton')}
           >

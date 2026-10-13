@@ -6,15 +6,28 @@ export const projectTranslationSchema = z.object({
   description: z.string(),
 });
 
+// Messages are `validation.*` keys: the form translates them at display time.
 export const projectCoauthorSchema = z.object({
-  fullName: z.string().min(1, 'Name is required'),
-  email: z.string().email().optional().or(z.literal('')),
+  fullName: z.string().min(1, 'validation.required'),
+  email: z
+    .string()
+    .email('validation.invalidEmail')
+    .optional()
+    .or(z.literal('')),
 });
 
 export const projectSchema = z.object({
-  slug: z.string().min(1, 'Slug is required'),
-  githubLink: z.string().url().optional().or(z.literal('')),
-  liveLink: z.string().url().optional().or(z.literal('')),
+  slug: z.string().min(1, 'validation.required'),
+  githubLink: z
+    .string()
+    .url('validation.invalidUrl')
+    .optional()
+    .or(z.literal('')),
+  liveLink: z
+    .string()
+    .url('validation.invalidUrl')
+    .optional()
+    .or(z.literal('')),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   isPublished: z.boolean(),

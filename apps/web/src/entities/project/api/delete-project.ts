@@ -11,16 +11,18 @@ import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function deleteProject(id: string): Promise<ApiResponse<null>> {
-  try {
-    await requireAdmin();
+  const user = await requireAdmin();
 
+  try {
     const parsedId = parseInput(idSchema, id);
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };
     }
 
-    await prisma.project.delete({ where: { id } });
+    await prisma.project.delete({ where: { id, userId: user.id } });
+    // Public blogs embed the related project's title and slug.
     revalidateTag(CACHE_TAGS.PROJECT, 'max');
+    revalidateTag(CACHE_TAGS.BLOG, 'max');
 
     return { success: true, data: null };
   } catch (error) {

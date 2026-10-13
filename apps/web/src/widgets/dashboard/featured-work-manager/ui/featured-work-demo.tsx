@@ -2,17 +2,17 @@
 
 import { type ChangeEvent, useEffect, useId, useRef, useState } from 'react';
 import { type ControllerRenderProps, useFormContext } from 'react-hook-form';
-import { Button, FormItem, FormMessage, Input } from '@byte-of-me/ui';
+import { Button, FormItem, Input } from '@byte-of-me/ui';
 import { Loader2, Upload, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import type { AdminFeaturedWorkMedia } from '@/entities/featured-work';
 import {
   FEATURED_WORK_MEDIA_LABEL_MAX_LENGTH,
   FEATURED_WORK_MEDIA_MAX,
   type FeaturedWorkFormValues,
 } from '@/entities/featured-work/model/featured-work-schema';
+import type { AdminFeaturedWorkMedia } from '@/entities/featured-work/model/types';
 import {
   ACCEPTED_MEDIA_MIME_TYPES,
   findUploadViolation,
@@ -20,6 +20,7 @@ import {
   MediaViolationError,
 } from '@/entities/media';
 import { useMediaRecordUpload, useVideoUpload } from '@/entities/media/query';
+import { FieldMessage } from '@/shared/ui';
 
 type DemoItem = NonNullable<FeaturedWorkFormValues['media']>[number];
 
@@ -38,6 +39,8 @@ export function toDemoValues(
 interface FeaturedWorkDemoProps {
   /** The `media` field, from the form's `FormField` (it also scopes the error line). */
   field: ControllerRenderProps<FeaturedWorkFormValues, 'media'>;
+  /** The message for the whole pair (a repeated file, too many items), if any. */
+  error?: string;
   /** The stored pair, for the previews of the clips the form opened with. */
   initialMedia?: AdminFeaturedWorkMedia[];
   /** True while a clip is uploading: the form must not be saved until it lands. */
@@ -50,6 +53,7 @@ interface FeaturedWorkDemoProps {
  */
 export function FeaturedWorkDemo({
   field,
+  error,
   initialMedia = [],
   onUploadingChange,
 }: FeaturedWorkDemoProps) {
@@ -188,6 +192,7 @@ export function FeaturedWorkDemo({
       ) {
         focusAfter.current = `label-${latest.length}`;
         field.onChange([...latest, { mediaId: stored.id, label: null }]);
+        toast.success(t('uploadSuccess'));
       } else {
         toast.error(tMedia('toast.uploadError'));
       }
@@ -291,7 +296,7 @@ export function FeaturedWorkDemo({
                   maxLength={FEATURED_WORK_MEDIA_LABEL_MAX_LENGTH}
                   aria-label={t('labelLabel', { slot })}
                   data-demo-focus={`label-${index}`}
-                  className="min-w-0"
+                  className="min-h-11 min-w-0 can-hover:min-h-9"
                   onChange={(event) => setLabel(index, event.target.value)}
                   onBlur={field.onBlur}
                 />
@@ -299,7 +304,7 @@ export function FeaturedWorkDemo({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="shrink-0 gap-1"
+                  className="min-h-11 shrink-0 gap-1 can-hover:min-h-9"
                   aria-label={t('removeLabel', { slot })}
                   onClick={() => remove(index)}
                 >
@@ -321,7 +326,7 @@ export function FeaturedWorkDemo({
         aria-hidden
         onChange={onFileChosen}
       />
-      <FormMessage />
+      <FieldMessage message={error} />
     </FormItem>
   );
 }

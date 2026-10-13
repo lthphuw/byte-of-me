@@ -21,8 +21,9 @@ export type ProjectOption = { id: string; slug: string; title: string };
 export async function getAdminProjectOptions(): Promise<
   ApiResponse<ProjectOption[]>
 > {
+  const session = await requireAdmin();
+
   try {
-    const session = await requireAdmin();
     const locale = await getLocale();
 
     const projects = await prisma.project.findMany({

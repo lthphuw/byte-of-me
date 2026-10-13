@@ -8,9 +8,10 @@ export const FEATURED_WORK_DETAILS_MAX_LENGTH = 32_768;
 // `parseInput` and the client resolver both run this, so the transform is the
 // one place a blank body becomes `null`. The outer `.optional()` keeps the key
 // optional in the inferred type, so forms that do not send it still type-check.
+// Every message is a `validation.*` key, translated by the form at display time.
 const detailsSchema = z
   .string()
-  .max(FEATURED_WORK_DETAILS_MAX_LENGTH, 'Details are too long')
+  .max(FEATURED_WORK_DETAILS_MAX_LENGTH, 'validation.tooLong')
   .nullable()
   .transform((value) => (value && !isRichTextBlank(value) ? value : null))
   .optional();
@@ -23,20 +24,24 @@ export const FEATURED_WORK_MEDIA_LABEL_MAX_LENGTH = 24;
 const mediaLabelSchema = z
   .string()
   .trim()
-  .max(FEATURED_WORK_MEDIA_LABEL_MAX_LENGTH, 'Label is too long')
+  .max(FEATURED_WORK_MEDIA_LABEL_MAX_LENGTH, 'validation.tooLong')
   .nullable()
   .transform((value) => value || null)
   .optional();
 
 export const featuredWorkMediaItemSchema = z.object({
-  mediaId: z.string().min(1, 'mediaId is required'),
+  mediaId: z.string().min(1, 'validation.required'),
   label: mediaLabelSchema,
 });
 
 export const featuredWorkTranslationSchema = z.object({
   id: z.string().optional(),
   language: z.string().min(1),
-  title: z.string().trim().min(1, 'Title is required').max(120),
+  title: z
+    .string()
+    .trim()
+    .min(1, 'validation.required')
+    .max(120, 'validation.tooLong'),
   details: detailsSchema,
 });
 
@@ -46,10 +51,10 @@ export const featuredWorkSchema = z.object({
   url: z
     .string()
     .trim()
-    .max(2048)
+    .max(2048, 'validation.tooLong')
     .refine(
       (v) => v === '' || /^https?:\/\/\S+$/i.test(v),
-      'Must be an http(s) URL'
+      'validation.invalidUrl'
     )
     .nullable()
     .optional(),
@@ -57,24 +62,24 @@ export const featuredWorkSchema = z.object({
   // A slot's `sortOrder` is its array position, so it is not part of the input.
   media: z
     .array(featuredWorkMediaItemSchema)
-    .max(FEATURED_WORK_MEDIA_MAX, 'At most two demo items')
+    .max(FEATURED_WORK_MEDIA_MAX, 'validation.tooManyItems')
     // The primary key is (work, media): one file cannot fill both slots.
     .refine(
       (list) => new Set(list.map((item) => item.mediaId)).size === list.length,
-      'The same file cannot be used twice'
+      'validation.duplicateMedia'
     )
     .optional(),
   translations: z
     .array(featuredWorkTranslationSchema)
-    .min(1)
+    .min(1, 'validation.required')
     // The DB is unique on (featuredWorkId, language); catch it here, not as a raw Prisma P2002.
     .refine(
       (list) => new Set(list.map((t) => t.language)).size === list.length,
-      'Each language may appear once'
+      'validation.duplicateLanguage'
     )
     // /en is the default locale and the fallback for every other one.
     .refine((list) => list.some((t) => t.language === 'en'), {
-      message: 'English title is required',
+      message: 'validation.required',
       path: [0, 'title'],
     }),
 });

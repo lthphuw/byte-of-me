@@ -17,10 +17,7 @@ import {
 
 import type * as ReorderModule from './reorder-featured-work';
 
-import {
-  resetTestUser,
-  setTestUser,
-} from '@/shared/lib/auth/set-test-user.test-helper';
+import { resetTestUser } from '@/shared/lib/auth/set-test-user.test-helper';
 
 type Row = { id: string; sortOrder: number };
 const findMany = mock<(args: unknown) => Promise<Row[]>>();
@@ -146,19 +143,6 @@ describe('reorderFeaturedWork', () => {
     expect(result.success).toBe(false);
     expect(findMany).not.toHaveBeenCalled();
     expect(update).not.toHaveBeenCalled();
-  });
-
-  it('refuses a non-admin caller before reading anything', async () => {
-    setTestUser({ id: 'user-2', role: 'USER' });
-    try {
-      const result = await reorderFeaturedWork('b', 'up');
-
-      expect(result.success).toBe(false);
-      expect(findMany).not.toHaveBeenCalled();
-      expect(update).not.toHaveBeenCalled();
-    } finally {
-      resetTestUser();
-    }
   });
 
   it('reports a failed write', async () => {

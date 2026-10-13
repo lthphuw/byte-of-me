@@ -49,7 +49,8 @@ const project: AdminProject = {
 
 function renderDialog(
   initialData: AdminProject | null,
-  onSubmit = mock<(values: unknown) => void>()
+  onSubmit = mock<(values: unknown) => void>(),
+  onOpenChange = mock<(open: boolean) => void>()
 ) {
   // The pickers read these; seeding keeps the spec off the server actions.
   const queryClient = new QueryClient({
@@ -67,7 +68,8 @@ function renderDialog(
         <ProjectDialog
           key={data?.id ?? 'new'}
           open
-          onOpenChange={() => {}}
+          onOpenChange={onOpenChange}
+          isEditing={data !== null}
           initialData={data}
           onSubmit={onSubmit}
           loading={false}
@@ -79,6 +81,7 @@ function renderDialog(
   const view = render(tree(initialData));
   return {
     onSubmit,
+    onOpenChange,
     rerenderWith: (data: AdminProject | null) => view.rerender(tree(data)),
   };
 }
@@ -117,7 +120,7 @@ describe('ProjectDialog', () => {
   it('submits the seeded project, so saving an untouched edit keeps its data', async () => {
     const { onSubmit } = renderDialog(project);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Save Project' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(onSubmit.mock.calls[0]?.[0]).toMatchObject({
@@ -126,5 +129,30 @@ describe('ProjectDialog', () => {
       startDate: '2024-05-01',
       translations: [{ language: 'en', title: 'Portfolio' }],
     });
+  });
+
+  it('closes an untouched edit on Cancel without asking', () => {
+    const { onOpenChange } = renderDialog(project);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+    expect(screen.queryByText('Discard unsaved changes?')).toBeNull();
+  });
+
+  it('asks before discarding an edit, and closes only on Discard', async () => {
+    const { onOpenChange } = renderDialog(project);
+
+    fireEvent.change(screen.getByDisplayValue('Portfolio'), {
+      target: { value: 'Renamed' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(await screen.findByText('Discard unsaved changes?')).toBeTruthy();
+    expect(onOpenChange).not.toHaveBeenCalledWith(false);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Discard' }));
+
+    expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 });

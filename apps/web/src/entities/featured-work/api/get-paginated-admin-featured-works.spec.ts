@@ -76,12 +76,12 @@ describe('getPaginatedAdminFeaturedWorks', () => {
     expect(args.where).toEqual({ userId: 'admin-1' });
   });
 
-  it('gives a non-admin the failure envelope without querying', async () => {
+  it('rejects a non-admin caller without querying', async () => {
     setTestUser({ id: 'reader-1', role: 'USER' });
     try {
-      const res = await getPaginatedAdminFeaturedWorks();
-
-      expect(res.success).toBe(false);
+      await expect(getPaginatedAdminFeaturedWorks()).rejects.toThrow(
+        'Unauthorized'
+      );
       expect(findMany).not.toHaveBeenCalled();
     } finally {
       resetTestUser();

@@ -348,7 +348,7 @@ describe('FeaturedWorkManager list', () => {
     fireEvent.click(button('Add Your First Entry'));
 
     expect(
-      screen.getByText('Add featured work', { selector: 'h2' })
+      screen.getByText('New Featured work', { selector: 'h2' })
     ).toBeTruthy();
   });
 });
@@ -401,6 +401,7 @@ describe('FeaturedWorkManager reorder', () => {
       ['w2', 0],
     ]);
     await waitFor(() => expect(findMany).toHaveBeenCalledTimes(1));
+    expect(toastSuccess).toHaveBeenCalledWith('Featured work updated');
     expect(toastError).not.toHaveBeenCalled();
   });
 
@@ -483,7 +484,7 @@ describe('FeaturedWorkManager reorder', () => {
     fireEvent.click(button('Move Quantized model down'));
 
     await waitFor(() =>
-      expect(toastError).toHaveBeenCalledWith('Could not change the order')
+      expect(toastError).toHaveBeenCalledWith("Couldn't save Featured work")
     );
     expect(txUpdate).not.toHaveBeenCalled();
   });
@@ -498,7 +499,7 @@ describe('FeaturedWorkManager editor', () => {
     fireEvent.change(enTitle as HTMLElement, {
       target: { value: ' Faster export ' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Add featured work' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
     expect(create.mock.calls[0]?.[0]).toMatchObject({
@@ -516,9 +517,9 @@ describe('FeaturedWorkManager editor', () => {
     renderManager([]);
 
     fireEvent.click(button('Add featured work'));
-    fireEvent.click(screen.getByRole('button', { name: 'Add featured work' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
-    expect(await screen.findByText('Title is required')).toBeTruthy();
+    expect(await screen.findByText('This field is required')).toBeTruthy();
     expect(create).not.toHaveBeenCalled();
   });
 
@@ -529,7 +530,7 @@ describe('FeaturedWorkManager editor', () => {
 
     openEdit('First');
     await formLoaded();
-    fireEvent.click(button('Save changes'));
+    fireEvent.click(button('Save'));
 
     expect((await screen.findByRole('alert')).textContent).toBe(
       'Each language may appear once'
@@ -539,7 +540,7 @@ describe('FeaturedWorkManager editor', () => {
 });
 
 describe('FeaturedWorkManager edit loads the full row', () => {
-  it('keeps the form unmounted, and saving disabled, until the full row arrives', async () => {
+  it('keeps the form unmounted, and writes nothing, until the full row arrives', async () => {
     const row = deferred<Row | null>();
     findFirst.mockReturnValue(row.promise);
     renderManager();
@@ -547,18 +548,20 @@ describe('FeaturedWorkManager edit loads the full row', () => {
     openEdit('Faster export');
 
     expect(await screen.findByLabelText('Loading…')).toBeTruthy();
-    // Editing from the first click on: the title must not flip to "Add" while loading.
+    // Editing from the first click on: the title must not flip to "New" while loading.
     expect(
-      screen.getByText('Edit featured work', { selector: 'h2' })
+      screen.getByText('Edit Featured work', { selector: 'h2' })
     ).toBeTruthy();
     expect(screen.queryAllByLabelText('Title')).toHaveLength(0);
-    expect(button('Save changes').disabled).toBe(true);
+    // No form is mounted, so a Save now has nothing to submit.
+    fireEvent.click(button('Save'));
+    expect(txUpdate).not.toHaveBeenCalled();
 
     row.resolve(detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }));
 
     await formLoaded();
     expect(screen.queryByLabelText('Loading…')).toBeNull();
-    expect(button('Save changes').disabled).toBe(false);
+    expect(button('Save').disabled).toBe(false);
   });
 
   it('seeds the English editor with the stored body once the row arrives', async () => {
@@ -583,7 +586,8 @@ describe('FeaturedWorkManager edit loads the full row', () => {
     const retry = await screen.findByRole('button', { name: 'Retry' });
     expect(screen.getByRole('alert')).toBeTruthy();
     expect(screen.queryAllByLabelText('Title')).toHaveLength(0);
-    expect(button('Save changes').disabled).toBe(true);
+    fireEvent.click(button('Save'));
+    expect(txUpdate).not.toHaveBeenCalled();
 
     findFirst.mockResolvedValue(
       detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY })
@@ -612,7 +616,7 @@ describe('FeaturedWorkManager edit loads the full row', () => {
 
     openEdit('Faster export');
     await formLoaded();
-    fireEvent.click(button('Save changes'));
+    fireEvent.click(button('Save'));
 
     await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
     // The editor reports its own normalised copy on open; that is not an edit.
@@ -631,7 +635,7 @@ describe('FeaturedWorkManager edit loads the full row', () => {
 
     openEdit('Faster export');
     await formLoaded();
-    fireEvent.click(button('Save changes'));
+    fireEvent.click(button('Save'));
 
     await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
     expect(savedTranslations()[0]).toMatchObject({
@@ -655,7 +659,7 @@ describe('FeaturedWorkManager edit loads the full row', () => {
         { initial: false }
       );
     });
-    fireEvent.click(button('Save changes'));
+    fireEvent.click(button('Save'));
 
     await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
     expect(savedTranslations()[0]).toMatchObject({
@@ -673,7 +677,7 @@ describe('FeaturedWorkManager edit loads the full row', () => {
     openEdit('Quantized model');
     await formLoaded();
     // The Vietnamese tab is never shown: its editor was never mounted.
-    fireEvent.click(button('Save changes'));
+    fireEvent.click(button('Save'));
 
     await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
     expect(savedTranslations()).toEqual([
@@ -709,7 +713,7 @@ describe('FeaturedWorkManager edit loads the full row', () => {
     // The Vietnamese editor is seeded back with what the owner typed.
     expect(__getMountedValues()).toContainEqual(JSON.parse(edited));
     clickTab('EN');
-    fireEvent.click(button('Save changes'));
+    fireEvent.click(button('Save'));
 
     await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
     expect(savedTranslations()).toEqual([
@@ -741,9 +745,9 @@ describe('FeaturedWorkManager edit loads the full row', () => {
       });
     });
     clickTab('EN');
-    fireEvent.click(screen.getByRole('button', { name: 'Add featured work' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
-    expect(await screen.findByText('Title is required')).toBeTruthy();
+    expect(await screen.findByText('This field is required')).toBeTruthy();
     expect(
       screen.getByRole('tab', { name: 'VI' }).getAttribute('aria-selected')
     ).toBe('true');
@@ -762,7 +766,7 @@ describe('FeaturedWorkManager edit loads the full row', () => {
       queryClient.getQueryData(featuredWorkKeys.detail('w1'))
     ).toBeDefined();
 
-    fireEvent.click(button('Save changes'));
+    fireEvent.click(button('Save'));
 
     await waitFor(() => expect(toastSuccess).toHaveBeenCalled());
     expect(
@@ -795,6 +799,30 @@ describe('FeaturedWorkManager edit loads the full row', () => {
     expect(
       queryClient.getQueryData(featuredWorkKeys.detail('w1'))
     ).toBeUndefined();
+  });
+
+  it('asks before discarding an edited entry, and closes only on Discard', async () => {
+    findFirst.mockResolvedValue(
+      detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY })
+    );
+    renderManager();
+
+    openEdit('Faster export');
+    await formLoaded();
+    fireEvent.change(screen.getByLabelText('Title'), {
+      target: { value: 'Faster export v2' },
+    });
+    fireEvent.click(button('Cancel'));
+
+    expect(await screen.findByText('Discard unsaved changes?')).toBeTruthy();
+    expect(screen.getAllByLabelText('Title')).toHaveLength(1);
+
+    fireEvent.click(button('Discard'));
+
+    await waitFor(() =>
+      expect(screen.queryAllByLabelText('Title')).toHaveLength(0)
+    );
+    expect(txUpdate).not.toHaveBeenCalled();
   });
 });
 
@@ -839,8 +867,8 @@ describe('FeaturedWorkManager demo pair', () => {
    * signal that the upload is fully over) instead of racing it off the label.
    */
   const save = async () => {
-    await waitFor(() => expect(button('Save changes').disabled).toBe(false));
-    fireEvent.click(button('Save changes'));
+    await waitFor(() => expect(button('Save').disabled).toBe(false));
+    fireEvent.click(button('Save'));
     await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
   };
 
@@ -956,6 +984,7 @@ describe('FeaturedWorkManager demo pair', () => {
 
     await screen.findByLabelText('Label 1');
     expect(uploadClip).toHaveBeenCalledWith(file, 'featured-work');
+    expect(toastSuccess).toHaveBeenCalledTimes(1);
     expect(screen.getByLabelText('Demo 1').getAttribute('src')).toBe(
       'https://cdn.example/m9'
     );
@@ -1004,9 +1033,7 @@ describe('FeaturedWorkManager demo pair', () => {
   });
 
   it('tells the owner when the upload fails and leaves the slot empty', async () => {
-    uploadClip.mockRejectedValue(
-      new Error('"int8.mp4" is larger than 15 MB.')
-    );
+    uploadClip.mockRejectedValue(new Error('"int8.mp4" is larger than 15 MB.'));
     await openWork([]);
 
     chooseFile(clip());
@@ -1055,7 +1082,7 @@ describe('FeaturedWorkManager demo pair', () => {
     fireEvent.change(screen.getByLabelText('Label 1'), {
       target: { value: 'FP16' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Add featured work' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
     expect(create.mock.calls[0]?.[0]).toMatchObject({
@@ -1081,15 +1108,16 @@ describe('FeaturedWorkManager demo pair', () => {
     await openWork([]);
 
     chooseFile(clip());
-    await waitFor(() => expect(button('Save changes').disabled).toBe(true));
-    fireEvent.click(button('Save changes'));
+    // While the clip is in flight Save is held: it reads "Saving…" and is disabled.
+    await waitFor(() => expect(button('Saving…').disabled).toBe(true));
+    fireEvent.click(button('Saving…'));
     expect(txUpdate).not.toHaveBeenCalled();
 
     await act(async () => {
       landing.resolve(stored('m9'));
     });
     await screen.findByLabelText('Label 1');
-    await waitFor(() => expect(button('Save changes').disabled).toBe(false));
+    await waitFor(() => expect(button('Save').disabled).toBe(false));
     await save();
 
     expect(savedMedia()).toEqual([
@@ -1107,12 +1135,12 @@ describe('FeaturedWorkManager demo pair', () => {
     await openWork([]);
 
     chooseFile(clip());
-    await waitFor(() => expect(button('Save changes').disabled).toBe(true));
+    await waitFor(() => expect(button('Saving…').disabled).toBe(true));
     await act(async () => {
       fail(new Error('Storage is full'));
     });
 
-    await waitFor(() => expect(button('Save changes').disabled).toBe(false));
+    await waitFor(() => expect(button('Save').disabled).toBe(false));
     expect(toastError).toHaveBeenCalledWith('Upload failed');
   });
 
@@ -1213,7 +1241,9 @@ describe('FeaturedWorkManager demo pair', () => {
     );
     await openWork([]);
 
-    chooseFile(new File([new Uint8Array(8)], 'a.mov', { type: 'video/quicktime' }));
+    chooseFile(
+      new File([new Uint8Array(8)], 'a.mov', { type: 'video/quicktime' })
+    );
 
     await waitFor(() =>
       expect(toastError).toHaveBeenCalledWith('Invalid type', {

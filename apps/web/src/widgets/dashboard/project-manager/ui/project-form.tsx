@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { type DefaultValues, useForm } from 'react-hook-form';
 import {
   Checkbox,
@@ -9,7 +9,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   fromEditorContent,
   MultiSelect,
   type Option,
@@ -28,7 +27,12 @@ import {
   projectSchema,
 } from '@/entities/project/model';
 import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
-import { ContentFade, TextField, TranslationTabs } from '@/shared/ui';
+import {
+  ContentFade,
+  FieldMessage,
+  TextField,
+  TranslationTabs,
+} from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { QueryState } from '@/shared/ui/query-state';
 
@@ -136,6 +140,8 @@ interface ProjectFormProps {
   tags: ProjectPickerState;
   techStacks: ProjectPickerState;
   onSubmit: (values: ProjectFromValues) => void;
+  /** Reports unsaved changes, so the dialog asks before closing over them. */
+  onDirtyChange: (isDirty: boolean) => void;
 }
 
 export function ProjectForm({
@@ -144,6 +150,7 @@ export function ProjectForm({
   tags,
   techStacks,
   onSubmit,
+  onDirtyChange,
 }: ProjectFormProps) {
   // Images pasted into this editor land under the `project` prefix in storage.
   const uploadImage = useScopedImageUploader('project');
@@ -151,13 +158,15 @@ export function ProjectForm({
   const tMedia = useTranslations('dashboard.media');
   const editorLabels = useEditorLabels();
 
-  // Seeded once, at mount: the dialog mounts this per open and keys itself per
-  // project. A later `form.reset` would remount every editor (new field-array ids).
+  // Seeded once, at mount: the dialog content mounts per open, and the manager
+  // keys the dialog per project. A `form.reset` would remount every editor.
   const [defaultValues] = useState(() => toFormValues(initialData));
   const form = useForm<ProjectFromValues>({
     resolver: zodResolver(projectSchema),
     defaultValues,
   });
+  const { isDirty } = form.formState;
+  useEffect(() => onDirtyChange(isDirty), [isDirty, onDirtyChange]);
 
   // No `onInvalid` handler revealing the erroring language tab: TranslationTabs
   // subscribes to its own errors and reveals itself, at every nesting level.
@@ -226,7 +235,7 @@ export function ProjectForm({
           <FormField
             control={form.control}
             name="techStackIds"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t('dialog.techStackLabel')}</FormLabel>
                 <ProjectPicker
@@ -236,7 +245,7 @@ export function ProjectForm({
                   selected={field.value || []}
                   onChange={field.onChange}
                 />
-                <FormMessage />
+                <FieldMessage message={fieldState.error?.message} />
               </FormItem>
             )}
           />
@@ -245,7 +254,7 @@ export function ProjectForm({
           <FormField
             control={form.control}
             name="tagIds"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t('dialog.tagsLabel')}</FormLabel>
                 <ProjectPicker
@@ -255,7 +264,7 @@ export function ProjectForm({
                   selected={field.value || []}
                   onChange={field.onChange}
                 />
-                <FormMessage />
+                <FieldMessage message={fieldState.error?.message} />
               </FormItem>
             )}
           />
@@ -286,7 +295,7 @@ export function ProjectForm({
                 <FormField
                   control={form.control}
                   name={`translations.${index}.description`}
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel>{t('dialog.descriptionLabel')}</FormLabel>
                       <FormControl>
@@ -296,15 +305,19 @@ export function ProjectForm({
                           placeholder={t('dialog.descriptionPlaceholder')}
                           className="rounded-md"
                           value={toEditorContent(field.value)}
-                          onChange={(json) =>
-                            field.onChange(fromEditorContent(json))
-                          }
+                          // The editor's own normalised copy of the loaded body
+                          // is not an edit: without this an untouched form is dirty.
+                          onChange={(json, meta) => {
+                            if (!meta.initial) {
+                              field.onChange(fromEditorContent(json));
+                            }
+                          }}
                           uploadImage={uploadImage}
                           labels={editorLabels}
                           uploadFailedText={tMedia('toast.uploadError')}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FieldMessage message={fieldState.error?.message} />
                     </FormItem>
                   )}
                 />

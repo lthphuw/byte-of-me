@@ -15,10 +15,10 @@ export async function getPaginatedAdminProjects(
   rawPage: number = 1,
   rawLimit: number = 20
 ): Promise<ApiResponse<PaginatedData<AdminProject>>> {
-  try {
-    const session = await requireAdmin();
-    const userId = session.id;
+  const session = await requireAdmin();
+  const userId = session.id;
 
+  try {
     const { page, limit } = clampPagination(
       { page: rawPage, limit: rawLimit },
       { defaultLimit: 20 }

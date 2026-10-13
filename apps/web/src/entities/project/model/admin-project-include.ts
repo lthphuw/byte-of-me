@@ -1,10 +1,9 @@
 import type { Prisma } from '@byte-of-me/db/types';
 
 /**
- * The owner's view of a project (`AdminProject`). The manager's list and the
- * by-id read share it, so the edit dialog sees the same fields the list does.
- * Narrow on purpose: the editor reads title and description only, so the
- * timestamps stay out.
+ * The owner's view of a project (`AdminProject`). The paginated list and the
+ * by-id read share it, so the edit dialog sees what the list sees. Translations
+ * keep to the fields the editor reads, plus `id`.
  */
 export const adminProjectInclude = {
   translations: {

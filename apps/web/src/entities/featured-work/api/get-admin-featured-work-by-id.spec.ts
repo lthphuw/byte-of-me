@@ -204,12 +204,12 @@ describe('getAdminFeaturedWorkById', () => {
     });
   });
 
-  it('gives a non-admin the failure envelope without querying', async () => {
+  it('rejects a non-admin caller without querying', async () => {
     setTestUser({ id: 'reader-1', role: 'USER' });
     try {
-      const res = await getAdminFeaturedWorkById('fw-owned');
-
-      expect(res.success).toBe(false);
+      await expect(getAdminFeaturedWorkById('fw-owned')).rejects.toThrow(
+        'Unauthorized'
+      );
       expect(findFirst).not.toHaveBeenCalled();
     } finally {
       resetTestUser();

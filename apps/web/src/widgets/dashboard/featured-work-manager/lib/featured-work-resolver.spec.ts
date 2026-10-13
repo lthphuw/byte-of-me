@@ -48,7 +48,7 @@ describe('featuredWorkResolver', () => {
     ]);
 
     expect(result.errors.translations?.[0]?.title?.message).toBe(
-      'Title is required'
+      'validation.required'
     );
   });
 
@@ -59,7 +59,7 @@ describe('featuredWorkResolver', () => {
     ]);
 
     expect(result.errors.translations?.[0]?.title?.message).toBe(
-      'Title is required'
+      'validation.required'
     );
     expect(result.errors.translations?.[1]).toBeUndefined();
   });
@@ -72,7 +72,7 @@ describe('featuredWorkResolver', () => {
 
     expect(result.errors.translations?.[0]).toBeUndefined();
     expect(result.errors.translations?.[1]?.title?.message).toBe(
-      'Title is required'
+      'validation.required'
     );
   });
 
@@ -84,10 +84,10 @@ describe('featuredWorkResolver', () => {
     ]);
 
     expect(result.errors.translations?.[0]?.title?.message).toBe(
-      'Title is required'
+      'validation.required'
     );
     expect(result.errors.translations?.root?.message).toBe(
-      'Each language may appear once'
+      'validation.duplicateLanguage'
     );
   });
 
@@ -99,7 +99,7 @@ describe('featuredWorkResolver', () => {
 
     expect(result.errors.translations?.[0]).toBeUndefined();
     expect(result.errors.translations?.[1]?.title?.message).toBe(
-      'Title is required'
+      'validation.required'
     );
   });
 

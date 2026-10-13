@@ -45,9 +45,7 @@ function row(id: string, url: string | null = null, title = `Work ${id}`) {
     id,
     url,
     media: [],
-    translations: [
-      { language: 'en', title, details: null },
-    ],
+    translations: [{ language: 'en', title, details: null }],
   };
 }
 

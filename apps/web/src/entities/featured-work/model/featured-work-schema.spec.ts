@@ -64,7 +64,7 @@ describe('featuredWorkSchema', () => {
     });
     expect(result.success).toBe(false);
     expect(result.error?.issues[0]?.message).toBe(
-      'Each language may appear once'
+      'validation.duplicateLanguage'
     );
   });
 
@@ -86,7 +86,7 @@ describe('featuredWorkSchema', () => {
       translations: [{ language: 'vi', title: 'Chỉ tiếng Việt' }],
     });
     expect(result.success).toBe(false);
-    expect(result.error?.issues[0]?.message).toBe('English title is required');
+    expect(result.error?.issues[0]?.message).toBe('validation.required');
     expect(result.error?.issues[0]?.path).toEqual(['translations', 0, 'title']);
   });
 
@@ -145,7 +145,7 @@ describe('featuredWorkSchema', () => {
         0,
         'details',
       ]);
-      expect(result.error?.issues[0]?.message).toBe('Details are too long');
+      expect(result.error?.issues[0]?.message).toBe('validation.tooLong');
     });
   });
 });
@@ -188,8 +188,6 @@ describe('featuredWorkSchema media', () => {
     expect(parse([{ mediaId: '' }]).success).toBe(false);
     const twice = parse([{ mediaId: 'a' }, { mediaId: 'a' }]);
     expect(twice.success).toBe(false);
-    expect(twice.error?.issues[0]?.message).toBe(
-      'The same file cannot be used twice'
-    );
+    expect(twice.error?.issues[0]?.message).toBe('validation.duplicateMedia');
   });
 });

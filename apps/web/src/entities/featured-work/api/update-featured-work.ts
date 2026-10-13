@@ -22,9 +22,9 @@ export async function updateFeaturedWork(
   id: string,
   input: FeaturedWorkFormValues
 ): Promise<ApiResponse<FeaturedWork>> {
-  try {
-    const user = await requireAdmin();
+  const user = await requireAdmin();
 
+  try {
     const parsedId = parseInput(idSchema, id);
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };

@@ -10,7 +10,7 @@ export interface FeaturedWorkGithub {
   stars: number;
 }
 
-/** One row of the admin list and the editor's `initialData`: the whole entry is small. */
+/** One row of the admin list. The editor loads `AdminFeaturedWorkDetail` by id instead. */
 export type AdminFeaturedWork = Prisma.FeaturedWorkGetPayload<{
   include: {
     translations: {
