@@ -83,11 +83,12 @@ export const EditorToolbar = ({
   // buttons (image, colour) with no visible way to reach them. The full
   // editor keeps the single scrolling row: it owns the page width.
   // Touch: 44px targets at every width (AGENTS §14); a fine pointer keeps each
-  // button's own height. The row scrolls sideways; Preview leads it on phones.
+  // button's own height. The row scrolls sideways; Preview sits beside that
+  // scroller, so it stays in view, and leads the bar on phones.
   const row = (
     <div
       className={cn(
-        'flex items-center gap-1 px-2 [&_button]:min-h-11 [&_button]:min-w-11 can-hover:[&_button]:min-h-8 can-hover:[&_button]:min-w-8',
+        'flex items-center gap-1 [&_button]:min-h-11 [&_button]:min-w-11 can-hover:[&_button]:min-h-8 can-hover:[&_button]:min-w-8',
         compact && 'flex-wrap'
       )}
     >
@@ -132,19 +133,22 @@ export const EditorToolbar = ({
 
       {/* Utility Group */}
       {!compact && <SearchAndReplaceToolbar />}
-      {onTogglePreview && (
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="h-8 gap-2 px-2 text-xs max-sm:order-first"
-          onClick={onTogglePreview}
-        >
-          <Eye className="h-3.5 w-3.5" />
-          {labels.preview}
-        </Button>
-      )}
     </div>
+  );
+
+  // Outside the row, so the scroller never takes it off-screen. The row's
+  // `[&_button]` touch sizes do not reach it, so it carries the same ones.
+  const preview = onTogglePreview && (
+    <Button
+      type="button"
+      variant="ghost"
+      size="sm"
+      className="h-8 shrink-0 gap-2 px-2 text-xs min-h-11 min-w-11 can-hover:min-h-8 can-hover:min-w-8 max-sm:order-first"
+      onClick={onTogglePreview}
+    >
+      <Eye className="h-3.5 w-3.5" />
+      {labels.preview}
+    </Button>
   );
 
   return (
@@ -159,12 +163,19 @@ export const EditorToolbar = ({
       <ToolbarProvider editor={editor} labels={labels}>
         <TooltipProvider>
           {compact ? (
-            <div className="py-0.5">{row}</div>
+            <div className="flex items-start gap-1 px-2 py-0.5">
+              <div className="min-w-0 flex-1">{row}</div>
+              {preview}
+            </div>
           ) : (
-            <ScrollArea className="h-fit py-0.5">
-              <div>{row}</div>
-              <ScrollBar className="hidden" orientation="horizontal" />
-            </ScrollArea>
+            <div className="flex items-center gap-1 px-2 py-0.5">
+              {/* `min-w-0` lets the scroller shrink below its row's width. */}
+              <ScrollArea className="h-fit min-w-0 flex-1">
+                <div>{row}</div>
+                <ScrollBar className="hidden" orientation="horizontal" />
+              </ScrollArea>
+              {preview}
+            </div>
           )}
         </TooltipProvider>
       </ToolbarProvider>

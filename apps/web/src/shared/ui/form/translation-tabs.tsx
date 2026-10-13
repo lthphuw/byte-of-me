@@ -126,7 +126,8 @@ export function TranslationTabs({
   const t = useTranslations('dashboard.shared');
   const { fields, append, remove } = useFieldArray({ control, name });
   // Uncontrolled-or-controlled: `value` wins when the caller supplies one.
-  const [internalTab, setInternalTab] = useState<string>();
+  // Always a string: Radix warns when `value` goes from undefined to defined.
+  const [internalTab, setInternalTab] = useState<string>('0');
   const tab = value ?? internalTab;
 
   const setTab = useCallback(
@@ -146,7 +147,7 @@ export function TranslationTabs({
   // and the ids are generated privately in here.
   useEffect(() => {
     if (fields.length === 0) return;
-    const current = tab === undefined ? -1 : Number(tab);
+    const current = Number(tab);
     if (!Number.isInteger(current) || current < 0 || current >= fields.length) {
       setTab('0');
     }
@@ -158,11 +159,9 @@ export function TranslationTabs({
   // inside a collapsible inside the dialog's own tabs, and threading the error
   // object down every level is what left three of them silent.
   //
-  // Declared AFTER the clamp above, and that order is load-bearing: a nested
-  // instance mounts already holding the failed submit, so both effects fire in
-  // the same commit — the clamp sending the still-undefined tab to '0' and this
-  // one to the erroring index. React runs them in declaration order, so the
-  // later write is the one that survives.
+  // Declared AFTER the clamp above. A nested instance can mount already holding
+  // the failed submit, so both effects may fire in one commit; React runs them
+  // in declaration order, so this write to the erroring index wins.
   //
   // Skipped entirely while a caller controls `value`; the tab is theirs then.
   const isControlled = value !== undefined;

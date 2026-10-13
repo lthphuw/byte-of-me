@@ -15,9 +15,32 @@ import {
   TooltipTrigger,
 } from '../../../index';
 import { cn } from '../../../lib/utils';
+import type { EditorLabels } from '../editor-labels';
 
 import { MobileToolbarGroup, MobileToolbarItem } from './mobile-toolbar-group';
-import { HEADING_LEVELS, useToolbar } from './toolbar-provider';
+import {
+  HEADING_LEVELS,
+  type HeadingLevel,
+  useToolbar,
+} from './toolbar-provider';
+
+/**
+ * A heading control's accessible name, from the app's labels. Levels 1 to 3
+ * have a label; level 4 has no key, so it stays `undefined` and the control
+ * keeps its visible "H4" as its name.
+ */
+function headingName(labels: EditorLabels, level: HeadingLevel | undefined) {
+  switch (level) {
+    case 1:
+      return labels.heading1;
+    case 2:
+      return labels.heading2;
+    case 3:
+      return labels.heading3;
+    default:
+      return undefined;
+  }
+}
 
 export const HeadingsToolbar = React.forwardRef<
   HTMLButtonElement,
@@ -31,6 +54,7 @@ export const HeadingsToolbar = React.forwardRef<
     return (
       <MobileToolbarGroup
         label={activeLevel ? `H${activeLevel}` : labels.normal}
+        triggerLabel={headingName(labels, activeLevel)}
       >
         <MobileToolbarItem
           onClick={() => editor?.chain().focus().setParagraph().run()}
@@ -41,6 +65,7 @@ export const HeadingsToolbar = React.forwardRef<
         {HEADING_LEVELS.map((level) => (
           <MobileToolbarItem
             key={level}
+            aria-label={headingName(labels, level)}
             onClick={() =>
               editor?.chain().focus().toggleHeading({ level }).run()
             }
@@ -67,6 +92,7 @@ export const HeadingsToolbar = React.forwardRef<
                 className
               )}
               ref={ref}
+              aria-label={headingName(labels, activeLevel)}
               {...props}
             >
               {activeLevel ? `H${activeLevel}` : labels.normal}
@@ -86,6 +112,7 @@ export const HeadingsToolbar = React.forwardRef<
             {HEADING_LEVELS.map((level) => (
               <DropdownMenuItem
                 key={level}
+                aria-label={headingName(labels, level)}
                 onClick={() =>
                   editor?.chain().focus().toggleHeading({ level }).run()
                 }

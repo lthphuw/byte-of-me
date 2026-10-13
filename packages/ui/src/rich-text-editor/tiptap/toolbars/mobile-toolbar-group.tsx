@@ -15,12 +15,15 @@ import { cn } from '../../../lib/utils';
 
 interface MobileToolbarGroupProps {
   label: string;
+  /** Accessible name for the trigger, when its visible `label` is not one. */
+  triggerLabel?: string;
   children: React.ReactNode;
   className?: string;
 }
 
 export const MobileToolbarGroup = ({
   label,
+  triggerLabel,
   children,
   className,
 }: MobileToolbarGroupProps) => {
@@ -34,6 +37,7 @@ export const MobileToolbarGroup = ({
         <Button
           variant="ghost"
           size="sm"
+          aria-label={triggerLabel}
           className={cn('h-8 w-max gap-1 px-3 font-normal', className)}
         >
           {label}

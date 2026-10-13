@@ -20,6 +20,17 @@ const PLAIN_DOC: JSONContent = {
   content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Body' }] }],
 };
 
+const HEADING_DOC: JSONContent = {
+  type: 'doc',
+  content: [
+    {
+      type: 'heading',
+      attrs: { level: 2 },
+      content: [{ type: 'text', text: 'Section' }],
+    },
+  ],
+};
+
 const TABLE_DOC: JSONContent = {
   type: 'doc',
   content: [
@@ -89,6 +100,49 @@ describe('RichTextEditor toolbar names', () => {
       testEditorLabels.image,
     ]) {
       expect(screen.getByRole('button', { name })).toBeTruthy();
+    }
+  });
+
+  test('names the heading control and each level from the editor labels', async () => {
+    await mountFullEditor(HEADING_DOC);
+
+    // The caret opens inside the H2, so the control reads that level.
+    fireEvent.pointerDown(
+      screen.getByRole('button', { name: testEditorLabels.heading2 }),
+      { button: 0, ctrlKey: false }
+    );
+
+    for (const name of [
+      testEditorLabels.heading1,
+      testEditorLabels.heading2,
+      testEditorLabels.heading3,
+    ]) {
+      expect(screen.getByRole('menuitem', { name })).toBeTruthy();
+    }
+    expect(screen.queryByRole('menuitem', { name: 'H2' })).toBeNull();
+  });
+
+  test('names the phone heading group and its levels from the editor labels', async () => {
+    // The phone group is picked by a `max-width: 640px` media query, which
+    // happy-dom evaluates against `innerWidth`.
+    const width = window.innerWidth;
+    window.innerWidth = 375;
+    try {
+      await mountFullEditor(HEADING_DOC);
+
+      fireEvent.click(
+        screen.getByRole('button', { name: testEditorLabels.heading2 })
+      );
+
+      for (const name of [
+        testEditorLabels.heading1,
+        testEditorLabels.heading2,
+        testEditorLabels.heading3,
+      ]) {
+        expect(screen.getByRole('button', { name })).toBeTruthy();
+      }
+    } finally {
+      window.innerWidth = width;
     }
   });
 

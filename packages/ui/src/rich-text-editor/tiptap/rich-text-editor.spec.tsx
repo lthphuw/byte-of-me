@@ -20,7 +20,7 @@
  * and a second double would only move the problem.
  */
 import * as React from 'react';
-import { cleanup, fireEvent, render } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import type { Editor, JSONContent } from '@tiptap/react';
 import { afterEach, describe, expect, spyOn, test } from 'bun:test';
 
@@ -445,6 +445,22 @@ describe('RichTextEditor toolbar state', () => {
       editor.commands.insertContent('x');
     });
     expect(button('undo-2')?.disabled).toBe(false);
+  });
+});
+
+describe('RichTextEditor toolbar layout', () => {
+  test('keeps Preview outside the scrolling tools, so it stays in view', async () => {
+    await open(PLAIN_DOC);
+
+    const bold = screen.getByRole('button', { name: testEditorLabels.bold });
+    const preview = screen.getByRole('button', {
+      name: testEditorLabels.preview,
+    });
+
+    // The tools live in the horizontal scroller, which is what makes the
+    // assertion below mean something: the scroller does exist here.
+    expect(bold.closest('[data-radix-scroll-area-viewport]')).not.toBeNull();
+    expect(preview.closest('[data-radix-scroll-area-viewport]')).toBeNull();
   });
 });
 
