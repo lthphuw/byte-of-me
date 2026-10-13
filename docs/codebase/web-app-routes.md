@@ -27,7 +27,7 @@ apps/web/src/
       (auth)/auth/login -> AdminAuthLogInView     force-dynamic; admin -> /dashboard
       (print)/print/blogs/[slug] -> BlogPrintTrigger + PrintableDocument     public, no shell
       (protected)/                  force-dynamic; admin guard on the view
-        dashboard/layout.tsx        DashboardSidebar, HydrationBoundary (settings prefetch), dashboard messages
+        dashboard/layout.tsx        sidebar cookie, DashboardSidebar, HydrationBoundary (settings prefetch), dashboard messages
         dashboard/page.tsx          features/dashboard + ContactMessageGallery
         dashboard/<x>/page.tsx      <X>Manager: blogs comments companies educations featured-works media projects tags tech-stacks user-profile
 ```

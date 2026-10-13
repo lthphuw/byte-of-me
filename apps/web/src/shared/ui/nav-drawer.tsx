@@ -105,6 +105,67 @@ export function NavDrawerLink({
   );
 }
 
+/** The one active rule: `exact` entries match the pathname, the rest match a prefix. */
+export function isNavItemActive(
+  item: NavDrawerItem,
+  pathname: string
+): boolean {
+  return item.exact ? pathname === item.href : pathname.startsWith(item.href);
+}
+
+/**
+ * Hairline-separated destinations, shared by the drawer and the desktop sidebar.
+ * Each group is announced as an `h2`, and the active entry gets `aria-current`.
+ */
+export function NavDrawerGroups({
+  groups,
+  onNavigate,
+  className,
+}: {
+  groups: NavDrawerGroup[];
+  onNavigate?: () => void;
+  className?: string;
+}) {
+  const pathname = usePathname();
+
+  return (
+    <nav className={className}>
+      {groups.map((group) => (
+        <div
+          key={group.label}
+          className="space-y-1 border-t border-border/40 pt-3 first:border-t-0 first:pt-0"
+        >
+          <h2 className="sr-only">{group.label}</h2>
+          <ul className="space-y-1">
+            {group.items.map((item) => {
+              const Icon = item.icon;
+              const isActive = isNavItemActive(item, pathname);
+
+              return (
+                <li key={item.href}>
+                  <NavDrawerLink
+                    href={item.href}
+                    onClick={onNavigate}
+                    aria-current={isActive ? 'page' : undefined}
+                    className={cn(
+                      isActive &&
+                        'bg-muted font-medium text-foreground hover:text-foreground'
+                    )}
+                  >
+                    <Icon className="size-4 shrink-0" />
+                    <span className="truncate">{item.label}</span>
+                    {item.badge}
+                  </NavDrawerLink>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+    </nav>
+  );
+}
+
 /**
  * The navigation drawer both signed-in surfaces open below `lg`.
  *
@@ -119,10 +180,9 @@ export function NavDrawerLink({
  * The trigger lives here too, so the hamburger cannot end up a different size
  * or a different distance from the corner on one surface than the other.
  *
- * Below `lg` on BOTH surfaces, deliberately. The desktop alternative is a
- * 56px icon rail with no labels, which depends on hover tooltips to say what
- * anything is — and a tablet, the width band this decides, is a touch device
- * with no hover at all. The rail is for a pointer; this is for a finger.
+ * Below `lg` on BOTH surfaces. A labelled column at tablet width takes a third
+ * of the screen, and the collapsed rail depends on hover tooltips a touch
+ * device does not have.
  */
 export function NavDrawer({
   triggerLabel,
@@ -149,7 +209,6 @@ export function NavDrawer({
   /** Applied to the trigger, for the `lg:hidden` each caller passes. */
   className?: string;
 }) {
-  const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
   return (
@@ -195,42 +254,11 @@ export function NavDrawer({
             <span className="text-base font-bold tracking-tight">{title}</span>
           </div>
 
-          <nav className="flex-1 space-y-3 overflow-y-auto px-3 py-2">
-            {groups.map((group) => (
-              <div
-                key={group.label}
-                className="space-y-1 border-t border-border/40 pt-3 first:border-t-0 first:pt-0"
-              >
-                <h2 className="sr-only">{group.label}</h2>
-                <ul className="space-y-1">
-                  {group.items.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = item.exact
-                      ? pathname === item.href
-                      : pathname.startsWith(item.href);
-
-                    return (
-                      <li key={item.href}>
-                        <NavDrawerLink
-                          href={item.href}
-                          onClick={() => setOpen(false)}
-                          aria-current={isActive ? 'page' : undefined}
-                          className={cn(
-                            isActive &&
-                              'bg-muted font-medium text-foreground hover:text-foreground'
-                          )}
-                        >
-                          <Icon className="size-4 shrink-0" />
-                          <span className="truncate">{item.label}</span>
-                          {item.badge}
-                        </NavDrawerLink>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
-          </nav>
+          <NavDrawerGroups
+            groups={groups}
+            onNavigate={() => setOpen(false)}
+            className="flex-1 space-y-3 overflow-y-auto px-3 py-2"
+          />
 
           {/* `env(safe-area-inset-bottom)`: on a phone with a gesture bar the
               last entry sat underneath it — "Sign out" was clipped by the

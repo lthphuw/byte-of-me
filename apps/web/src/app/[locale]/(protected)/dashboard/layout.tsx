@@ -1,5 +1,6 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 
@@ -11,6 +12,10 @@ import {
 import { buildIconSet } from '@/shared/lib/metadata';
 import { getQueryClient } from '@/shared/lib/query/get-query-client';
 import { SkipToContentLink } from '@/shared/ui/skip-to-content-link';
+import {
+  isSidebarExpanded,
+  SIDEBAR_COOKIE,
+} from '@/widgets/dashboard/dashboard-sidebar/lib/sidebar-state';
 import { DashboardSidebar } from '@/widgets/dashboard/dashboard-sidebar/ui/dashboard-sidebar';
 
 /**
@@ -40,6 +45,12 @@ export default async function DashboardLayout({
   const queryClient = getQueryClient();
   await queryClient.prefetchQuery(workspaceSettingsQueries.current());
 
+  // Read on the server, so the first HTML already has the saved state and nothing flashes.
+  const cookieStore = await cookies();
+  const sidebarExpanded = isSidebarExpanded(
+    cookieStore.get(SIDEBAR_COOKIE)?.value
+  );
+
   return (
     <NextIntlClientProvider messages={messages}>
       <HydrationBoundary state={dehydrate(queryClient)}>
@@ -61,7 +72,7 @@ export default async function DashboardLayout({
           <SkipToContentLink targetId="main-content" />
 
           {/* Sidebar */}
-          <DashboardSidebar />
+          <DashboardSidebar initialExpanded={sidebarExpanded} />
 
           {/* Main content.
               overflow-x-clip, not overflow-hidden: `hidden` would make this the

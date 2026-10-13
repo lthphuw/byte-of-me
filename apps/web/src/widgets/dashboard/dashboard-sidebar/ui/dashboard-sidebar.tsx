@@ -1,42 +1,38 @@
 'use client';
 
-import { DatabaseZap, ExternalLink, Loader2, LogOut } from 'lucide-react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
+import { DashboardNavActions } from './dashboard-nav-actions';
 import { DashboardNavRail } from './dashboard-nav-rail';
 
 import { BrandMark } from '@/shared/ui/brand-mark';
-import {
-  NavDrawer,
-  NavDrawerAction,
-  NavDrawerLink,
-} from '@/shared/ui/nav-drawer';
-import { useClearCache } from '@/widgets/dashboard/dashboard-sidebar/lib/use-clear-cache';
-import { useLogOutDashboard } from '@/widgets/dashboard/dashboard-sidebar/lib/use-log-out-dashboard';
+import { NavDrawer } from '@/shared/ui/nav-drawer';
+import { persistSidebarExpanded } from '@/widgets/dashboard/dashboard-sidebar/lib/sidebar-state';
 import { useDashboardNavGroups } from '@/widgets/dashboard/dashboard-sidebar/model/use-dashboard-nav-groups';
 
 /**
- * The dashboard's navigation, in its two shapes: a 56px icon rail from `lg`
- * up, and a hamburger opening a labelled drawer below it.
- *
- * The drawer itself is `NavDrawer`, a shared primitive. This file
- * supplies only what is genuinely the dashboard's: its destinations, and the
- * three footer entries that exist nowhere else.
- *
- * Labelled in the drawer and icon-only on the rail, which is not an
- * inconsistency but the point of each. The rail is for a set you have
- * memorised and want out of the way; a drawer is opened deliberately, covers
- * the screen while it is open, and costs nothing to make legible.
+ * The dashboard's navigation: the desktop sidebar from `lg`, and a hamburger
+ * below it that opens the shared `NavDrawer`. Both read `useDashboardNavGroups`.
  */
-export function DashboardSidebar() {
+export function DashboardSidebar({
+  initialExpanded,
+}: {
+  initialExpanded: boolean;
+}) {
   const t = useTranslations('dashboard.sidebar');
   const groups = useDashboardNavGroups();
-  const { clearCache, isPending: cacheClearing } = useClearCache();
-  const { signOut } = useLogOutDashboard();
+  const [expanded, setExpanded] = useState(initialExpanded);
+
+  const toggleExpanded = () => {
+    const next = !expanded;
+    setExpanded(next);
+    persistSidebarExpanded(next);
+  };
 
   return (
     <>
-      <DashboardNavRail />
+      <DashboardNavRail expanded={expanded} onToggle={toggleExpanded} />
 
       {/* Mobile topbar. `env(safe-area-inset-top)` on top of the usual `py-1.5`
           for the same reason the dashboard layout pads left/right: this bar
@@ -44,7 +40,7 @@ export function DashboardSidebar() {
           manifest's `display: "standalone"`) it sticks flush under the
           camera housing with no gap otherwise. */}
       <div
-        className="sticky top-0 z-40 flex items-center gap-2 border-b border-border/50 bg-background/80 px-2 pb-1.5 backdrop-blur lg:hidden"
+        className="sticky top-0 z-40 flex items-center gap-2 border-b border-border/50 bg-background px-2 pb-1.5 lg:hidden"
         style={{
           paddingTop: 'calc(0.375rem + env(safe-area-inset-top))',
         }}
@@ -54,42 +50,7 @@ export function DashboardSidebar() {
           title="Byte of Me"
           brand={<BrandMark layer="cms" />}
           groups={groups}
-          footer={(close) => (
-            <>
-              {/* Disabled and spinning while the purge is in flight: without
-                  it the tap has no visible effect and gets repeated into a
-                  second full purge. */}
-              <NavDrawerAction
-                onClick={() => void clearCache()}
-                disabled={cacheClearing}
-                aria-busy={cacheClearing}
-              >
-                {cacheClearing ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
-                  <DatabaseZap className="size-4" />
-                )}
-                <span>{t('actions.clearCache')}</span>
-              </NavDrawerAction>
-
-              <NavDrawerLink href="/" target="_blank" onClick={close}>
-                <ExternalLink className="size-4" />
-                <span>{t('actions.viewSite')}</span>
-              </NavDrawerLink>
-
-              <form
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  signOut();
-                }}
-              >
-                <NavDrawerAction type="submit">
-                  <LogOut className="size-4" />
-                  <span>{t('actions.signOut')}</span>
-                </NavDrawerAction>
-              </form>
-            </>
-          )}
+          footer={(close) => <DashboardNavActions onNavigate={close} />}
         />
 
         <div className="flex items-center gap-2">

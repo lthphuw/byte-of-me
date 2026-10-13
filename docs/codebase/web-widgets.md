@@ -8,10 +8,14 @@
 apps/web/src/widgets/
 ├── auth/admin-auth-log-in-view/                login card, used by the login route
 ├── dashboard/                                  owner CMS, every dashboard route
-│   ├── dashboard-sidebar/                      rail + drawer nav, sign-out, cache purge
+│   ├── dashboard-sidebar/                      desktop sidebar (expandable), drawer nav, sign-out, cache purge
 │   │   ├── lib/purge-entire-cache.ts           'use server'; requireAdmin, then revalidatePath
+│   │   ├── lib/sidebar-state.ts                cookie dashboard-sidebar: the layout reads it, the toggle writes it
 │   │   ├── lib/use-clear-cache.ts              client hook, in-flight ref guard
-│   │   └── model/use-dashboard-nav-groups.ts   the one nav list; rail and drawer both read it
+│   │   ├── model/use-dashboard-nav-groups.ts   the one nav list; column, rail and drawer all read it
+│   │   ├── ui/dashboard-sidebar.tsx            owns the expanded state; mobile topbar and NavDrawer
+│   │   ├── ui/dashboard-nav-rail.tsx           lg and up: labelled column, or the 56px icon rail
+│   │   └── ui/dashboard-nav-actions.tsx        footer entries: clear cache, view site, sign out
 │   ├── tag-manager/                            reference CRUD: useCrudManager + entity barrel
 │   ├── featured-work-manager/                  CRUD; lib/ = form resolver, translation values, reorder hook
 │   └── ...                                     9 more: blog, comment, company, contact-message-gallery,
@@ -58,7 +62,7 @@ every slice: index.ts -> ui/index.ts -> ui/*.tsx (+ lib/, model/); *.spec.ts(x) 
 - Blog list: `apps/web/src/app/[locale]/(public)/blogs/page.tsx:48` prefetches `blogQueries.publicList` (`apps/web/src/entities/blog/query/blog-queries.ts`), and `blogs-content.tsx:40` reads it through `usePublicBlogList`, which spreads `HYDRATED_LIST_BEHAVIOR` (`apps/web/src/shared/hooks/use-infinite-list-query.ts:21`). The list renders in `QueryState`: a skeleton while loading, an error with retry, and `BlogEmpty` when there are no posts.
 - Project list: `apps/web/src/app/[locale]/(public)/projects/page.tsx:44` prefetches `projectQueries.publicList` (`apps/web/src/entities/project/query/project-queries.ts`), and `apps/web/src/widgets/public/projects-content/ui/projects-content.tsx` reads it through `usePublicProjectList`. The list renders in `QueryState`: a skeleton while loading, an error with retry, and `ProjectEmpty` when nothing matches.
 - Dashboard CRUD: `apps/web/src/app/[locale]/(protected)/dashboard/tags/page.tsx:29` prefetches `tagQueries.adminPage(1)` and renders `TagManager`, which calls `useCrudManager` (`apps/web/src/shared/hooks/use-crud-manager.ts`) on the `@/entities/tag` actions. The edit dialog loads its record by id with `useAdminTagById` (`apps/web/src/entities/tag/query/use-admin-tag-by-id.ts`).
-- Dashboard shell: `apps/web/src/app/[locale]/(protected)/dashboard/layout.tsx:14,64` mounts `DashboardSidebar`, which renders `DashboardNavRail` (`apps/web/src/widgets/dashboard/dashboard-sidebar/ui/dashboard-sidebar.tsx:39`) and `NavDrawer` (same file, `:52`).
+- Dashboard shell: `apps/web/src/app/[locale]/(protected)/dashboard/layout.tsx:49-52` reads the `dashboard-sidebar` cookie and mounts `DashboardSidebar` at `:75`, which renders `DashboardNavRail` (`apps/web/src/widgets/dashboard/dashboard-sidebar/ui/dashboard-sidebar.tsx:35`) and the mobile `NavDrawer` (same file, `:48`). The expanded column and the drawer share `NavDrawerGroups` (`apps/web/src/shared/ui/nav-drawer.tsx`) and `DashboardNavActions`; the toggle writes the cookie through `persistSidebarExpanded`.
 - Sign-in: `apps/web/src/app/[locale]/(auth)/auth/login/page.tsx:37` renders `AdminAuthLogInView`, which passes `?from=` to each provider and shows `?error=`.
 - Sign-out: `apps/web/src/widgets/public/public-site-header/lib/use-account.ts:41-54` runs `logOut()` (`apps/web/src/features/auth/lib/log-out.ts`) and next-auth `signOut` in one `useServerMutation`. On success it clears the TanStack cache and reloads the page. Until `useSession` settles, the account island and the mobile panel draw a skeleton.
 - Cache purge: `apps/web/src/widgets/dashboard/dashboard-sidebar/lib/use-clear-cache.ts` runs `purgeEntireCache()` through `useServerMutation`, with a ref that blocks a second click. The action returns `ApiResponse<null>` after `requireAdmin()` and `revalidatePath('/', 'layout')`.
