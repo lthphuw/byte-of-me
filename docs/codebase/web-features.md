@@ -49,13 +49,13 @@ apps/web/src/features/
 | `toggle-blog-interactions` | public | Like and clap buttons on a post, one button component and one hook for both; a signed-out click opens AuthModal | entities: `blog` (the actions live in `entities/blog/api`; reads through `useBlogInteractionState`); shared: `@/shared/hooks/use-server-mutation`, `@/shared/lib/constants`, `@/shared/lib/utils`; feature `auth` (deep) | `apps/web/src/widgets/public/blog-details-content/ui/blog-action-bar.tsx` |
 | `blog-analytics-overview` | dashboard | Thirty-day views and interactions, top five posts, cached five minutes | entities: none; shared: `@/shared/lib/auth`, `@/shared/lib/constants`, `@/shared/lib/i18n-utils`, `@/shared/lib/utils` | `apps/web/src/app/[locale]/(protected)/dashboard/page.tsx` |
 | `blog-editor` | dashboard | Create and edit blog dialog and form (TipTap, autosave) | entities: `blog`, `project`, `tag`, `media`; shared: `@/shared/ui`, `@/shared/ui/edit-record-gate`, `@/shared/ui/lazy-rich-text-editor`, `@/shared/hooks/use-form-autosave`, `@/shared/hooks/use-editor-labels`, `@/shared/lib/rich-text-doc-schema`; feature `media-library` (deep) | `apps/web/src/widgets/dashboard/blog-manager` |
-| `dashboard-profile` | dashboard | Profile summary card | entities: `user-profile`; shared: none | `apps/web/src/app/[locale]/(protected)/dashboard/page.tsx` |
-| `dashboard-stats` | dashboard | Counts for seven tables plus new messages, cached per owner | entities: none; shared: `@/shared/lib/auth`, `@/shared/lib/constants`, `@/shared/lib/utils` | `apps/web/src/app/[locale]/(protected)/dashboard/page.tsx` |
+| `dashboard-profile` | dashboard | Profile summary card | entities: `user-profile`; shared: `@/shared/ui` (`SectionLoadError`) | `apps/web/src/app/[locale]/(protected)/dashboard/page.tsx` |
+| `dashboard-stats` | dashboard | Counts for seven tables plus new messages, cached per owner | entities: none; shared: `@/shared/lib/auth`, `@/shared/lib/constants`, `@/shared/lib/utils`, `@/shared/types/api/api-response.type`, `@/shared/ui` (`SectionLoadError`) | `apps/web/src/app/[locale]/(protected)/dashboard/page.tsx` |
 | `manage-social-link-form` | dashboard | Social-link editor on the profile | entities: `user-profile`; shared: none | `apps/web/src/widgets/dashboard/user-profile-manager` |
 | `media-library` | dashboard | Upload, compress and pick media (single and multi) through `ui/media-picker-grid.tsx` and `ui/media-picker-upload-dialog.tsx` | entities: `media`, `workspace-settings`; shared: `@/shared/lib/media/image-compression-config`, `@/shared/lib/media/compress-in-browser`, `@/shared/lib/utils`, `@/shared/types/models`, `@/shared/ui/query-state`, `@/shared/ui/record-dialog` | `apps/web/src/widgets/dashboard/media-manager`, `apps/web/src/widgets/dashboard/education-manager`, `apps/web/src/widgets/dashboard/company-manager`, `apps/web/src/widgets/dashboard/tech-stack-manager`; feature `blog-editor` |
 | `tag-management` | dashboard | Tag cards | entities: `tag` (`tagDisplayName`); shared: `@/shared/ui` | `apps/web/src/widgets/dashboard/tag-manager` |
 | `tech-stack-management` | dashboard | Tech-stack rows (`TechStackCard`), each a shared record row (`RecordListItem` with `RecordRowActions`). The picker hook `useTechStackOptions` lives in `entities/tech-stack/query`; the company dialog imports it from there | entities: `tech-stack` (`query/` hook `useTechStackOptions`); shared: `@/shared/ui` (`RecordListItem`, `RecordRowActions`) | `apps/web/src/widgets/dashboard/tech-stack-manager` |
-| `update-profile` | dashboard | Profile load and save controller, with translations | entities: `user-profile` (`query/`); shared: `@/shared/ui`, `@/shared/hooks/use-server-mutation` | `apps/web/src/widgets/dashboard/user-profile-manager` |
+| `update-profile` | dashboard | Profile load and save controller, with translations | entities: `user-profile` (root barrel, `query/`); shared: `@/shared/ui`, `@/shared/hooks/use-server-mutation` | `apps/web/src/widgets/dashboard/user-profile-manager` |
 
 ## Key flows
 
@@ -78,7 +78,7 @@ apps/web/src/features/
 **Add a dashboard feature**
 
 1. Create `apps/web/src/features/dashboard/<name>/` with `index.ts`, `ui/`, and `lib/` if it reads data. Pattern: `apps/web/src/features/dashboard/dashboard-stats/`.
-2. Start each `lib/` server file with `'use server'` and call `requireAdmin()` from `@/shared/lib/auth` inside its body (`apps/web/src/features/dashboard/dashboard-stats/lib/get-dashboard-stats.ts:137`).
+2. Start each `lib/` server file with `'use server'` and call `requireAdmin()` from `@/shared/lib/auth` before the `try` (`apps/web/src/features/dashboard/dashboard-stats/lib/get-dashboard-stats.ts:131`).
 3. Add `export * from './<name>';` to `apps/web/src/features/dashboard/index.ts`, and import it in `apps/web/src/app/[locale]/(protected)/dashboard/page.tsx`. Or import the slice path from a widget, as `apps/web/src/widgets/dashboard/tag-manager/ui/tag-manager.tsx` does for `@/features/dashboard/tag-management`.
 
 **Add a feature-owned write action**
@@ -92,7 +92,7 @@ apps/web/src/features/
 
 - `apps/web/src/features/public/index.ts` and `apps/web/src/features/dashboard/index.ts` are root barrels. Their 9 importers are server files today. Client files must use slice paths (AGENTS §3 gives the same rule for `@/entities`).
 - `apps/web/src/entities/{tag,media,tech-stack,comment,blog}/index.ts` do not re-export `query/`. Import hooks from `@/entities/<slice>/query`, as `apps/web/src/features/public/blog-filters/ui/blog-filters.tsx:7` does.
-- `requireAdmin()` stays outside the `unstable_cache` callback, which runs with no cookies, headers or session. Pass the owner id or locale into the key instead (`apps/web/src/features/dashboard/dashboard-stats/lib/get-dashboard-stats.ts:129-142`, `apps/web/src/features/dashboard/blog-analytics-overview/lib/get-analytics-overview.ts:262-279`).
+- `requireAdmin()` stays outside the `unstable_cache` callback, which runs with no cookies, headers or session. Pass the owner id or locale into the key instead (`apps/web/src/features/dashboard/dashboard-stats/lib/get-dashboard-stats.ts:128-137`, `apps/web/src/features/dashboard/blog-analytics-overview/lib/get-analytics-overview.ts:262-279`).
 - `toggle-blog-interaction` takes `_blogSlug` and ignores it: a caller's slug would let any signed-in visitor purge any tag. The purged tag comes from the blog row (`apps/web/src/entities/blog/api/toggle-blog-interaction.ts:20-22`, `:84`).
 - Five feature `lib/` files query Prisma from `@byte-of-me/db` directly, not through `entities/*/api`: track-blog-view, update-blog-reading-time, get-public-info-for-footer, get-analytics-overview, get-dashboard-stats. A schema change reaches them too.
 - `logInToDashboard` accepts only the owner's email (`isSiteOwnerEmail`); its comment says neither input is logged (`apps/web/src/features/auth/lib/log-in-to-dashboard.ts:26-29`).

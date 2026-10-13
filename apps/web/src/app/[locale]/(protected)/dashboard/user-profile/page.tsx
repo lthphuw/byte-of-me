@@ -31,7 +31,7 @@ export default async function UserProfilePage() {
 
   if (!resp.success) {
     return (
-      <div className="flex h-[400px] items-center justify-center rounded-xl border-2 border-dashed">
+      <div className="flex min-h-48 items-center justify-center rounded-xl border-2 border-dashed p-6">
         <SectionLoadError
           title={tError('title')}
           description={tError('description')}

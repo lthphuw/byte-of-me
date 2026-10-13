@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 
-import { getUserProfile } from '@/entities/user-profile/api/get-user-profile';
+import { getUserProfile } from '@/entities/user-profile';
 import { SectionLoadError } from '@/shared/ui';
 
 export async function DashboardProfile() {

@@ -14,14 +14,21 @@ import { getErrorMessage } from '@/shared/lib/utils';
 import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
+type AboutMe = UserProfileFormValues['translations'][number]['aboutMe'];
+
+/** The column holds the editor's document as JSON text; legacy HTML is kept as is. */
+function aboutMeColumn(aboutMe: AboutMe): string | null {
+  if (aboutMe == null) return null;
+  return typeof aboutMe === 'string' ? aboutMe : JSON.stringify(aboutMe);
+}
+
 export async function saveProfile(
   input: UserProfileFormValues
 ): Promise<ApiResponse<null>> {
+  const user = await requireAdmin();
   const start = Date.now();
 
   try {
-    const user = await requireAdmin();
-
     const parsed = parseInput(userProfileSchema, input);
     if (!parsed.ok) {
       return { success: false, errorMsg: parsed.errorMsg };
@@ -34,7 +41,6 @@ export async function saveProfile(
 
     logger.debug('[PROFILE] Payload received', {
       userId: user.id,
-      birthdate: values.birthdate,
       translationsCount: values.translations?.length ?? 0,
       socialLinksCount: values.socialLinks?.length ?? 0,
     });
@@ -42,7 +48,6 @@ export async function saveProfile(
     await prisma.$transaction(async (tx) => {
       logger.debug('[PROFILE] Upserting userProfileSchema', {
         userId: user.id,
-        birthdate: values.birthdate,
       });
 
       const profile = await tx.userProfile.upsert({
@@ -118,7 +123,6 @@ export async function saveProfile(
         incomingSocialLinks.map((s, index) => {
           logger.debug('[PROFILE] Upserting social link', {
             platform: s.platform,
-            url: s.url,
             sortOrder: s.sortOrder,
             index,
           });
@@ -167,7 +171,7 @@ export async function saveProfile(
               tagLine: t.tagLine,
               greeting: t.greeting,
               bio: t.bio,
-              aboutMe: t.aboutMe ?? null,
+              aboutMe: aboutMeColumn(t.aboutMe),
               quote: t.quote,
               quoteAuthor: t.quoteAuthor,
             },
@@ -180,7 +184,7 @@ export async function saveProfile(
               tagLine: t.tagLine,
               greeting: t.greeting,
               bio: t.bio,
-              aboutMe: t.aboutMe ?? null,
+              aboutMe: aboutMeColumn(t.aboutMe),
               quote: t.quote,
               quoteAuthor: t.quoteAuthor,
             },

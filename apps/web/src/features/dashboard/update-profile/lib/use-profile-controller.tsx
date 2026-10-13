@@ -6,13 +6,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import type { AdminUserProfile } from '@/entities/user-profile';
-import { saveProfile } from '@/entities/user-profile/api/save-profile';
-import { userProfileKeys } from '@/entities/user-profile/model/query-keys';
 import {
+  type AdminUserProfile,
   createUserProfileSchema,
+  saveProfile,
   type UserProfileFormValues,
-} from '@/entities/user-profile/model/user-profile-schema';
+  userProfileKeys,
+} from '@/entities/user-profile';
 import { useUserProfile } from '@/entities/user-profile/query';
 import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 import { firstErroredIndex } from '@/shared/ui';
@@ -60,7 +60,7 @@ export function useProfileController(initUser: AdminUserProfile) {
     mutationFn: saveProfile,
     errorMessage: t('toast.saveError'),
     successMessage: t('toast.updated'),
-    invalidate: [userProfileKeys.profile(initUser.id)],
+    invalidate: [userProfileKeys.all],
   });
 
   const parseAboutMe = useCallback((content: unknown) => {
@@ -120,16 +120,13 @@ export function useProfileController(initUser: AdminUserProfile) {
     (values) => {
       const payload = {
         ...values,
-        translations: values.translations.map((t) => ({
-          ...t,
-          aboutMe:
-            typeof t.aboutMe === 'string'
-              ? t.aboutMe
-              : JSON.stringify(t.aboutMe),
-        })),
         socialLinks: values.socialLinks.map((s, i) => ({ ...s, sortOrder: i })),
       };
-      saveMutation.mutate(payload);
+      saveMutation.mutate(payload, {
+        // The saved values become the baseline, so the form is no longer dirty.
+        // `keepValues` keeps anything typed while the save was in flight.
+        onSuccess: () => form.reset(values, { keepValues: true }),
+      });
     },
     // A translation error otherwise renders inside an unmounted tab: Save
     // just appears to do nothing.

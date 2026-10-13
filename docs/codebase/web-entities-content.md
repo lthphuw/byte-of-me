@@ -60,7 +60,7 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 | --- | --- | --- |
 | `blog` | `BLOG` | blog: create, update, delete; project: update, delete; tag: create, update, delete; media delete |
 | `company` | `COMPANY` | company: create, update, delete; media delete |
-| `contact-message` | `CONTACT` | contact-message: send |
+| `contact-message` | `CONTACT` | contact-message: send, delete |
 | `education` | `EDUCATION` | education: create, update, delete; media delete |
 | `featured-work` | `FEATURED_WORK` | featured-work: create, update, delete, reorder; media delete |
 | `media` | `MEDIA` | media: upload, finalize video, delete |

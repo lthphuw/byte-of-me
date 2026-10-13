@@ -125,18 +125,13 @@ async function readDashboardStats(userId: string): Promise<DashboardStats> {
 export async function getDashboardStats(): Promise<
   ApiResponse<DashboardStats>
 > {
-  try {
-    // Stays here, and stays *outside* the cached callback, for two separate
-    // reasons. §5: the guard is the security boundary, and this function is an
-    // addressable endpoint whether or not the dashboard layout ever rendered.
-    // And `unstable_cache` runs its callback with no cookies, headers or
-    // session — reading the session in there would throw on the miss and, on a
-    // hit, would not run at all. So the id travels in as an argument and into
-    // the key, which is also what stops one identity's numbers from ever being
-    // served to another.
-    const session = await requireAdmin();
-    const userId = session.id;
+  // The guard stays above `try`, outside the cached callback: `unstable_cache`
+  // runs with no session, so the owner's id travels in as an argument and into
+  // the key. That key also keeps one owner's numbers from reaching another.
+  const session = await requireAdmin();
+  const userId = session.id;
 
+  try {
     const cached = unstable_cache(
       () => readDashboardStats(userId),
       ['dashboard-stats', userId],

@@ -10,7 +10,7 @@ import {
 } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
-import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
+import type { UserProfileFormValues } from '@/entities/user-profile';
 
 export function UserProfileSectionManager({
   form,

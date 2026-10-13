@@ -12,7 +12,7 @@ import {
   StatsGrid,
   StatsGridLoading,
 } from '@/features/dashboard';
-import { ContactMessageGallery } from '@/widgets/dashboard/contact-message-gallery/ui/contact-message-gallery';
+import { ContactMessageGallery } from '@/widgets/dashboard/contact-message-gallery';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('metadata.dashboard.home');

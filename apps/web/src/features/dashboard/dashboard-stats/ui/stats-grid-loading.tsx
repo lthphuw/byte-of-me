@@ -28,7 +28,8 @@ export function StatsGridLoading() {
           >
             <Skeleton className="h-8 w-8 rounded-lg" />
             <div>
-              <Skeleton className="h-5 w-8" />
+              {/* The value's `text-lg leading-none` line: 18px, not 20px. */}
+              <Skeleton className="h-[18px] w-8" />
               <Skeleton className="mt-1 h-3 w-14" />
             </div>
           </div>

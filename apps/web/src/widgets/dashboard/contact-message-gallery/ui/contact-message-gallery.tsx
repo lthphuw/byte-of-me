@@ -1,32 +1,35 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Button,
   Card,
   CardContent,
   CardHeader,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
+  ConfirmDeleteDialog,
   Input,
   Pagination,
   ScrollArea,
-  Skeleton,
   useDebounce,
 } from '@byte-of-me/ui';
-import { MessageSquare, Search, X } from 'lucide-react';
+import { MessageSquare, Search, Trash2, X } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import type { AdminContactMessage } from '@/entities/contact-message';
+import { ContactMessageGridSkeleton } from './contact-message-grid-skeleton';
+
+import {
+  type AdminContactMessage,
+  contactMessageKeys,
+  deleteContactMessage,
+} from '@/entities/contact-message';
 import { useContactMessages } from '@/entities/contact-message/query';
-import { QueryState } from '@/shared/ui/query-state';
+import { useServerMutation } from '@/shared/hooks/use-server-mutation';
+import { ManagerListState, RecordDialog } from '@/shared/ui';
 
 export function ContactMessageGallery() {
   const t = useTranslations('dashboard.contactGallery');
   const tShared = useTranslations('dashboard.shared');
+  const tCrud = useTranslations('dashboard.shared.crud');
   const format = useFormatter();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -34,12 +37,34 @@ export function ContactMessageGallery() {
 
   const [selectedMessage, setSelectedMessage] =
     useState<AdminContactMessage | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const { data, isLoading, isError, refetch, isPlaceholderData } =
     useContactMessages(page, debouncedSearch);
 
   const messages = data?.data ?? [];
   const meta = data?.meta;
+  const totalPages = meta?.totalPages;
+
+  // The last message on the last page was deleted: step back to the new last
+  // page. Placeholder data is skipped, because it describes the page being left.
+  useEffect(() => {
+    if (totalPages === undefined || isPlaceholderData) return;
+    const lastPage = Math.max(1, totalPages);
+    if (page > lastPage) setPage(lastPage);
+  }, [isPlaceholderData, page, totalPages]);
+
+  const entity = t('entity');
+  const deleteMutation = useServerMutation<string, null>({
+    mutationFn: deleteContactMessage,
+    errorMessage: tCrud('deleteError', { entity }),
+    successMessage: tCrud('deleted', { entity }),
+    invalidate: [contactMessageKeys.all],
+    onSuccess: () => {
+      setConfirmingDelete(false);
+      setSelectedMessage(null);
+    },
+  });
 
   return (
     <div className="space-y-6">
@@ -62,20 +87,21 @@ export function ContactMessageGallery() {
       <div className="group relative max-w-md">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
         <Input
+          aria-label={t('searchPlaceholder')}
           placeholder={t('searchPlaceholder')}
           value={search}
           onChange={(e) => {
             setPage(1);
             setSearch(e.target.value);
           }}
-          className="rounded-xl border-dashed bg-background/50 pl-9 transition-all focus:border-solid"
+          className="rounded-xl border-dashed bg-background/50 pl-9 pr-11 focus:border-solid"
         />
         {search && (
           <button
             type="button"
             aria-label={t('clearSearch')}
             onClick={() => setSearch('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            className="absolute right-0 top-1/2 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center text-muted-foreground hover:text-foreground can-hover:min-h-9 can-hover:min-w-9"
           >
             <X className="h-4 w-4" />
           </button>
@@ -83,21 +109,27 @@ export function ContactMessageGallery() {
       </div>
 
       {/* Gallery */}
-      <QueryState
+      <ManagerListState
         isLoading={isLoading}
         isError={isError}
         onRetry={() => void refetch()}
         isEmpty={messages.length === 0}
         emptyTitle={t('noMessages')}
-        errorTitle={tShared('managerListState.errorTitle')}
-        errorDescription={tShared('managerListState.errorDescription')}
-        retryLabel={tShared('managerListState.retry')}
-        skeleton={
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-[160px] rounded-xl" />
-            ))}
-          </div>
+        skeleton={<ContactMessageGridSkeleton />}
+        pagination={
+          meta && meta.totalPages > 1 ? (
+            <Pagination
+              pagination={meta}
+              setPage={setPage}
+              isPlaceholderData={isPlaceholderData}
+              pageLabel={tShared('pagination.pageLabel', {
+                page: meta.currentPage,
+                totalPages: meta.totalPages,
+              })}
+              previousLabel={tShared('pagination.previous')}
+              nextLabel={tShared('pagination.next')}
+            />
+          ) : null
         }
       >
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -139,7 +171,7 @@ export function ContactMessageGallery() {
                     type="button"
                     aria-label={t('readMessageFrom', { name: msg.name })}
                     onClick={() => setSelectedMessage(msg)}
-                    className="mt-4 text-[10px] font-medium uppercase tracking-wider text-primary underline-offset-2 after:absolute after:inset-0 hover:underline focus-visible:underline focus-visible:outline-none"
+                    className="mt-4 text-sm font-medium text-primary underline underline-offset-2 after:absolute after:inset-0 focus-visible:outline-none"
                   >
                     {t('clickMore')}
                   </button>
@@ -148,82 +180,89 @@ export function ContactMessageGallery() {
             </Card>
           ))}
         </div>
-      </QueryState>
+      </ManagerListState>
 
-      {/* Pagination */}
-      <Pagination
-        pagination={meta}
-        setPage={setPage}
-        isPlaceholderData={isPlaceholderData}
-        pageLabel={tShared('pagination.pageLabel', {
-          page: meta?.currentPage ?? 1,
-          totalPages: meta?.totalPages ?? 1,
-        })}
-        previousLabel={tShared('pagination.previous')}
-        nextLabel={tShared('pagination.next')}
-      />
-
-      {/* Shared Detail Dialog */}
-      <Dialog
-        open={!!selectedMessage}
-        onOpenChange={(open) => !open && setSelectedMessage(null)}
+      {/* Read-only detail, with delete as its one action. */}
+      <RecordDialog
+        open={selectedMessage !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedMessage(null);
+        }}
+        title={selectedMessage?.name ?? ''}
+        description={selectedMessage?.email}
+        size="lg"
+        isPending={deleteMutation.isPending}
+        footer={null}
       >
-        <DialogContent className="max-w-2xl">
-          {selectedMessage && (
-            <>
-              <DialogHeader>
-                <div className="flex items-start justify-between pr-6">
-                  <div>
-                    <DialogTitle className="text-xl">
-                      {selectedMessage.name}
-                    </DialogTitle>
-                    <DialogDescription>
-                      {selectedMessage.email}
-                    </DialogDescription>
-                  </div>
-                  <div className="rounded bg-muted px-2 py-1 text-xs text-muted-foreground">
-                    {format.dateTime(new Date(selectedMessage.createdAt), {
-                      dateStyle: 'long',
-                      timeStyle: 'short',
-                    })}
-                  </div>
-                </div>
-              </DialogHeader>
+        {selectedMessage && (
+          <div className="space-y-6">
+            <p className="text-sm text-muted-foreground">
+              {format.dateTime(new Date(selectedMessage.createdAt), {
+                dateStyle: 'long',
+                timeStyle: 'short',
+              })}
+            </p>
 
-              <div className="mt-4 space-y-4">
-                <div>
-                  <h4 className="mb-1 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                    {t('subjectLabel')}
-                  </h4>
-                  <p className="font-medium text-foreground">
-                    {selectedMessage.subject || t('noSubjectProvided')}
-                  </p>
-                </div>
+            <div className="space-y-2">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                {t('subjectLabel')}
+              </h3>
+              <p className="font-medium text-foreground">
+                {selectedMessage.subject || t('noSubjectProvided')}
+              </p>
+            </div>
 
-                <div className="pt-4">
-                  <h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                    {t('messageLabel')}
-                  </h4>
-                  <ScrollArea className="h-[40vh] w-full rounded-md border bg-muted/30 p-4">
-                    <p className="whitespace-pre-wrap break-words text-[15px] leading-7">
-                      {selectedMessage.message}
-                    </p>
-                  </ScrollArea>
-                </div>
-              </div>
+            <div className="space-y-2">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                {t('messageLabel')}
+              </h3>
+              <ScrollArea className="h-[40vh] w-full rounded-md border bg-muted/30 p-4">
+                <p className="whitespace-pre-wrap break-words text-[15px] leading-7">
+                  {selectedMessage.message}
+                </p>
+              </ScrollArea>
+            </div>
 
-              <div className="flex justify-end pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setSelectedMessage(null)}
-                >
-                  {t('close')}
-                </Button>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t pt-4">
+              <Button
+                type="button"
+                variant="ghost"
+                className="min-h-11 gap-2 text-destructive-text can-hover:min-h-9"
+                disabled={deleteMutation.isPending}
+                onClick={() => setConfirmingDelete(true)}
+              >
+                <Trash2 />
+                {tShared('confirmDelete.actionText')}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="min-h-11 can-hover:min-h-9"
+                onClick={() => setSelectedMessage(null)}
+              >
+                {t('close')}
+              </Button>
+            </div>
+          </div>
+        )}
+      </RecordDialog>
+
+      <ConfirmDeleteDialog
+        isOpen={confirmingDelete}
+        onClose={() => {
+          if (!deleteMutation.isPending) setConfirmingDelete(false);
+        }}
+        onConfirm={() => {
+          if (selectedMessage) deleteMutation.mutate(selectedMessage.id);
+        }}
+        isLoading={deleteMutation.isPending}
+        title={tCrud('deleteTitle', { entity })}
+        description={tCrud('deleteDescription', {
+          name: selectedMessage?.name ?? '',
+        })}
+        actionText={tShared('confirmDelete.actionText')}
+        cancelText={tShared('confirmDelete.cancelText')}
+      />
     </div>
   );
 }

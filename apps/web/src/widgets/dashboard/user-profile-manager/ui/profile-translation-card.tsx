@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { Control, Path, UseFormReturn } from 'react-hook-form';
+import type { UseFormReturn } from 'react-hook-form';
 import {
   ConfirmDeleteDialog,
   DeleteButton,
@@ -19,6 +19,7 @@ import { useTranslations } from 'next-intl';
 import { useScopedImageUploader } from '@/entities/media/query';
 import type { UserProfileFormValues } from '@/entities/user-profile';
 import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
+import { TextField } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
 /** The editor's empty document, which is what an untouched "About me" holds. */
@@ -109,17 +110,17 @@ export function ProfileTranslationCard({
       {/* Identity */}
       <Section title={t('identity.sectionTitle')}>
         <div className="grid gap-4 md:grid-cols-3">
-          <Field
+          <TextField
             control={form.control}
             name={`translations.${index}.firstName`}
             label={t('identity.firstNameLabel')}
           />
-          <Field
+          <TextField
             control={form.control}
             name={`translations.${index}.lastName`}
             label={t('identity.lastNameLabel')}
           />
-          <Field
+          <TextField
             control={form.control}
             name={`translations.${index}.displayName`}
             label={t('identity.displayNameLabel')}
@@ -130,7 +131,7 @@ export function ProfileTranslationCard({
       {/* Content */}
       <Section title={t('content.sectionTitle')}>
         <div className="grid gap-4 md:grid-cols-1">
-          <Field
+          <TextField
             control={form.control}
             name={`translations.${index}.greeting`}
             label={t('content.greetingLabel')}
@@ -197,7 +198,7 @@ export function ProfileTranslationCard({
               </FormItem>
             )}
           />
-          <Field
+          <TextField
             control={form.control}
             name={`translations.${index}.quoteAuthor`}
             label={t('quote.authorLabel')}
@@ -259,30 +260,5 @@ function Section({ title, children }: SectionProps) {
       </p>
       {children}
     </div>
-  );
-}
-
-interface FieldProps {
-  control: Control<UserProfileFormValues>;
-  name: Path<UserProfileFormValues>;
-  label: string;
-  className?: string;
-}
-
-function Field({ control, name, label, className }: FieldProps) {
-  return (
-    <FormField
-      control={control}
-      name={name}
-      render={({ field }) => (
-        <FormItem className={className}>
-          <FormLabel>{label}</FormLabel>
-          <FormControl>
-            <Input {...field} value={field.value ?? ''} />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
   );
 }

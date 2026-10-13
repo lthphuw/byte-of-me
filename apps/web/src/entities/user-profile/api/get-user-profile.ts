@@ -17,8 +17,9 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 export async function getUserProfile(): Promise<
   ApiResponse<PublicUserProfile>
 > {
+  const auth = await requireAdmin();
+
   try {
-    const auth = await requireAdmin();
     let email = auth.email;
 
     if (!email) {
@@ -26,7 +27,7 @@ export async function getUserProfile(): Promise<
     }
 
     const locale = await getLocale();
-    logger.debug(`Get user profile ${auth.email} with locale ${locale}`);
+    logger.debug(`Get user profile ${auth.id} with locale ${locale}`);
 
     // `select`, not `include`: the mapping below reads thirteen fields, and
     // `include` returned every `User` and `UserProfile` column behind them.
@@ -60,17 +61,12 @@ export async function getUserProfile(): Promise<
         },
       },
     });
-    // The row is NOT stringified into the log. It carries the owner's
-    // birthdate and every translated bio field, and this ran on every protected
-    // request before the callers narrowed to the owner's display name — a full
-    // personal profile written to the log line by line, for a message whose
-    // only job is to say the lookup resolved.
-    logger.debug(
-      `Get user profile ${auth.email} with locale ${locale}: resolved`
-    );
+    // The row is not logged: it holds the birthdate and every bio field.
+    // This line only says the lookup resolved.
+    logger.debug(`Get user profile ${auth.id} with locale ${locale}: resolved`);
 
     if (!user.userProfile) {
-      throw new Error(`Profile data missing for user: ${auth.email}`);
+      throw new Error(`Profile data missing for user: ${auth.id}`);
     }
 
     const { translations } = user.userProfile;

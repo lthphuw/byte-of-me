@@ -396,7 +396,7 @@ has arrived. The guard is `Boolean(editing) && !fullRecord` — one condition co
 loading, fetch failure **and** idle, because any of the three leaves the form holding a
 partial row.
 
-`project`, `tag`, `company` and `user-profile` still reuse their list rows. Their
+`project`, `tag` and `company` still reuse their list rows. Their
 translatable fields are short, so today it is only wasted bytes — but the failure mode is
 identical the moment one of them grows.
 

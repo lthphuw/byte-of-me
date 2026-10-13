@@ -16,8 +16,9 @@ export async function getPaginatedContactMessages(
     search?: string;
   }
 ): Promise<ApiResponse<PaginatedData<AdminContactMessage>>> {
+  const session = await requireAdmin();
+
   try {
-    const session = await requireAdmin();
     const { page, limit } = clampPagination(
       { page: rawPage, limit: rawLimit },
       { defaultLimit: 20 }

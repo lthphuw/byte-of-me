@@ -11,16 +11,16 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 export async function getAdminUserProfile(): Promise<
   ApiResponse<AdminUserProfile>
 > {
+  const user = await requireAdmin();
+
   try {
-    const user = await requireAdmin();
     const data = await prisma.user.findUniqueOrThrow({
       where: { id: user.id },
       include: {
         userProfile: {
           include: {
-            // use-profile-controller.tsx's form reads every one of these
-            // per translation; only the two timestamps and the redundant FK
-            // are dropped.
+            // The form renders each field per translation. middleName and id sit
+            // in its state unrendered; the two timestamps and the FK are dropped.
             translations: {
               select: {
                 id: true,

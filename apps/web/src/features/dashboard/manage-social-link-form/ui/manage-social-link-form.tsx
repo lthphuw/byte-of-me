@@ -16,7 +16,7 @@ import {
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
+import type { UserProfileFormValues } from '@/entities/user-profile';
 
 interface PendingRemoval {
   index: number;
@@ -63,6 +63,7 @@ export function SocialLinksSection({
           type="button"
           size="sm"
           variant="outline"
+          className="min-h-11 can-hover:min-h-9"
           onClick={() =>
             append({
               platform: '',
@@ -84,6 +85,8 @@ export function SocialLinksSection({
               {t('socialLinks.emptyTitle')}
             </p>
             <Button
+              type="button"
+              className="min-h-11 can-hover:min-h-9"
               onClick={() => append({ platform: '', url: '', sortOrder: 0 })}
             >
               {t('socialLinks.emptyAction')}
@@ -94,12 +97,12 @@ export function SocialLinksSection({
         {fields.map((field, index) => (
           <div
             key={field.id}
-            className="flex items-start gap-3 rounded-lg border bg-background/50 p-3"
+            className="flex flex-wrap items-start gap-3 rounded-lg border bg-background/50 p-3"
           >
             {/* Platform. The row is compact and self-evident on sight, so the
                 labels are `sr-only` — but a placeholder is not a label, and
                 without one these inputs are unnamed to a screen reader. */}
-            <div className="w-32">
+            <div className="w-full sm:w-32">
               <FormField
                 control={form.control}
                 name={`socialLinks.${index}.platform`}
@@ -121,7 +124,7 @@ export function SocialLinksSection({
             </div>
 
             {/* URL */}
-            <div className="flex-1">
+            <div className="min-w-0 flex-1">
               <FormField
                 control={form.control}
                 name={`socialLinks.${index}.url`}

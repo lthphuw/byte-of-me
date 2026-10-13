@@ -1,5 +1,14 @@
 import { z } from 'zod';
 
+import { richTextDocSchema } from '@/shared/lib/rich-text-doc-schema';
+
+/**
+ * The form holds the editor's document, but a row may hold legacy HTML, and the
+ * default empty value is a string. A stored string must pass, or that profile
+ * could never be saved again.
+ */
+const aboutMeSchema = z.union([richTextDocSchema, z.string()]);
+
 /** Stable ids for the validation messages, so the dashboard form can translate
  *  them (`dashboard.userProfile.validation.*`) without the entity importing
  *  next-intl. */
@@ -64,7 +73,7 @@ export function createUserProfileSchema(
           firstName: z.string().nullable().optional(),
           lastName: z.string().nullable().optional(),
           bio: z.string().nullable().optional(),
-          aboutMe: z.any().nullable().optional(),
+          aboutMe: aboutMeSchema.nullable().optional(),
           quote: z.string().nullable().optional(),
           quoteAuthor: z.string().nullable().optional(),
         })
