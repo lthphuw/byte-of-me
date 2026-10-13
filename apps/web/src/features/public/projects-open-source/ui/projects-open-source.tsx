@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import {
+  badgeVariants,
   Button,
   Pagination,
   Select,
@@ -9,6 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  useMediaQuery,
 } from '@byte-of-me/ui';
 import { ArrowUpRight, GitPullRequest, Star } from 'lucide-react';
 import Image from 'next/image';
@@ -17,10 +19,12 @@ import { useLocale, useTranslations } from 'next-intl';
 import {
   filterLedger,
   groupLedgerByMonth,
+  LEDGER_PAGE_SIZE,
   pageLedger,
   toLedger,
 } from '@/entities/open-source/model/ledger';
 import type { OpenSourceRepo } from '@/entities/open-source/model/types';
+import { cn } from '@/shared/lib/utils';
 import { FilterSearchInput } from '@/shared/ui';
 
 const ALL_REPOS = '*';
@@ -31,17 +35,24 @@ const SEARCH_ENABLED = false;
 
 /**
  * The merged-PR ledger on `/projects`. One flat list, newest first, filtered
- * by a free-text search and a repo picker, and paged 20 at a time. Choosing a
- * repo also shows that repo's full name, description and a link to it, since
- * the rows alone only carry `owner/name`.
+ * by a free-text search and a repo picker, and paged by viewport (5 on a
+ * phone, 8 from `md` up). Choosing a repo also shows its name, language, stars
+ * and a link to it, since the rows alone only carry `owner/name`. Only the
+ * `View` badge on a row links to the PR; the row itself does not.
  *
  * Client component: the search, the picker and the page are local state. The
  * first page is still rendered on the server, so the initial HTML is complete.
+ * The server has no viewport, so it renders the phone count and a desktop
+ * client swaps to the larger page after hydration.
  */
 export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
   const t = useTranslations('components.openSource');
   const tPagination = useTranslations('components.pagination');
   const locale = useLocale();
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const pageSize = isDesktop
+    ? LEDGER_PAGE_SIZE.desktop
+    : LEDGER_PAGE_SIZE.mobile;
 
   const [text, setText] = useState('');
   const [repoFilter, setRepoFilter] = useState(ALL_REPOS);
@@ -77,7 +88,7 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
   const repo = repoFilter === ALL_REPOS ? null : repoFilter;
   const selectedRepo = repos.find((r) => r.nameWithOwner === repo) ?? null;
   const filtered = filterLedger(ledger, { text, repo });
-  const { items, pagination } = pageLedger(filtered, page);
+  const { items, pagination } = pageLedger(filtered, page, pageSize);
   const months = groupLedgerByMonth(items);
 
   const changeText = (value: string) => {
@@ -134,11 +145,6 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
             <p className="break-all text-base font-semibold">
               {selectedRepo.nameWithOwner}
             </p>
-            {selectedRepo.description && (
-              <p className="text-sm text-muted-foreground">
-                {selectedRepo.description}
-              </p>
-            )}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
               {selectedRepo.language && (
                 <span className="inline-flex items-center gap-1.5">
@@ -191,52 +197,53 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
                   const [owner, name] = item.repo.split('/');
 
                   return (
-                    <li key={item.url}>
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-start gap-3 py-4 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:gap-4"
-                      >
-                        <GitPullRequest
-                          role="img"
-                          aria-label={t('merged')}
-                          className="mt-0.5 size-4 shrink-0 text-merged"
-                        />
-                        <div className="min-w-0 flex-1 space-y-1.5">
-                          <p className="line-clamp-2 text-sm font-medium leading-snug md:text-[15px]">
-                            {item.title}{' '}
-                            <span className="whitespace-nowrap font-normal tabular-nums text-muted-foreground">
-                              #{item.number}
+                    <li key={item.url} className="flex items-start gap-3 py-4 md:gap-4">
+                      <GitPullRequest
+                        role="img"
+                        aria-label={t('merged')}
+                        className="mt-0.5 size-4 shrink-0 text-merged"
+                      />
+                      <div className="min-w-0 flex-1 space-y-1.5">
+                        <p className="line-clamp-2 text-sm font-medium leading-snug md:text-[15px]">
+                          {item.title}{' '}
+                          <span className="whitespace-nowrap font-normal tabular-nums text-muted-foreground">
+                            #{item.number}
+                          </span>
+                        </p>
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground md:text-[13px]">
+                          <span className="min-w-0 break-all">
+                            {owner}/
+                            <span className="font-medium text-foreground">
+                              {name}
                             </span>
-                          </p>
-                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground md:text-[13px]">
-                            <span className="min-w-0 break-all">
-                              {owner}/
-                              <span className="font-medium text-foreground">
-                                {name}
-                              </span>
-                            </span>
-                            <span aria-hidden>·</span>
-                            <time dateTime={item.mergedAt}>
-                              {dateFormat.format(new Date(item.mergedAt))}
-                            </time>
-                            <span aria-hidden className="hidden md:inline">
-                              ·
-                            </span>
-                            <span className="hidden tabular-nums md:inline">
-                              <span className="font-medium text-primary">
-                                +{numberFormat.format(item.additions)}
-                              </span>{' '}
-                              −{numberFormat.format(item.deletions)}
-                            </span>
-                            <span className="ml-auto inline-flex shrink-0 items-center gap-1 font-medium text-primary underline underline-offset-4">
-                              {t('view')}
-                              <ArrowUpRight aria-hidden className="size-3" />
-                            </span>
-                          </div>
+                          </span>
+                          <span aria-hidden>·</span>
+                          <time dateTime={item.mergedAt}>
+                            {dateFormat.format(new Date(item.mergedAt))}
+                          </time>
+                          <span aria-hidden className="hidden md:inline">
+                            ·
+                          </span>
+                          <span className="hidden tabular-nums md:inline">
+                            <span className="font-medium text-primary">
+                              +{numberFormat.format(item.additions)}
+                            </span>{' '}
+                            −{numberFormat.format(item.deletions)}
+                          </span>
+                          <a
+                            href={item.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={cn(
+                              badgeVariants({ variant: 'outline' }),
+                              'ml-auto shrink-0 gap-1 text-primary transition-colors hover:bg-primary/10'
+                            )}
+                          >
+                            {t('view')}
+                            <ArrowUpRight aria-hidden className="size-3" />
+                          </a>
                         </div>
-                      </a>
+                      </div>
                     </li>
                   );
                 })}

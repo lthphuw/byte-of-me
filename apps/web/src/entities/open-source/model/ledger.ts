@@ -3,7 +3,11 @@ import type {
   OpenSourceRepo,
 } from '@/entities/open-source/model/types';
 
-export const LEDGER_PAGE_SIZE = 20;
+/**
+ * Rows per page, by the `md` breakpoint the page reads with `useMediaQuery`.
+ * Phones get fewer: each row wraps to two or three lines there.
+ */
+export const LEDGER_PAGE_SIZE = { mobile: 5, desktop: 8 };
 
 /** Every merged PR across the repos, newest first, each tagged with its repo. */
 export function toLedger(repos: OpenSourceRepo[]): OpenSourceLedgerItem[] {
@@ -54,7 +58,7 @@ export interface LedgerPage {
 export function pageLedger(
   items: OpenSourceLedgerItem[],
   page: number,
-  pageSize = LEDGER_PAGE_SIZE
+  pageSize = LEDGER_PAGE_SIZE.desktop
 ): LedgerPage {
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
   const currentPage = Math.min(Math.max(page, 1), totalPages);
