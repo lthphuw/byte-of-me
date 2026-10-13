@@ -4,7 +4,7 @@ export const educationTranslationSchema = z.object({
   id: z.string().optional(),
   language: z.string().min(1),
 
-  title: z.string().min(1, 'Title is required'),
+  title: z.string().min(1, 'validation.required'),
   description: z.string().nullable().optional(),
 });
 
@@ -12,7 +12,7 @@ export const educationAchievementTranslationSchema = z.object({
   id: z.string().optional(),
   language: z.string().min(1),
 
-  title: z.string().min(1),
+  title: z.string().min(1, 'validation.required'),
   content: z.string().nullable().optional(),
 });
 

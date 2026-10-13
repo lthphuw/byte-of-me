@@ -19,9 +19,9 @@ export async function updateTechStack(
   id: string,
   input: TechStackFormValues
 ): Promise<ApiResponse<AdminTechStack>> {
-  try {
-    const user = await requireAdmin();
+  const user = await requireAdmin();
 
+  try {
     const parsedId = parseInput(idSchema, id);
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };
@@ -38,7 +38,9 @@ export async function updateTechStack(
         userId: user.id,
       },
       data: {
-        ...data,
+        slug: data.slug,
+        name: data.name,
+        group: data.group,
         logoId: data.logoId ?? null,
       },
     });
@@ -59,7 +61,7 @@ export async function updateTechStack(
       return { success: false, errorMsg: 'Tech stack item not found' };
     }
 
-    revalidateTag(CACHE_TAGS.TECH, 'default');
+    revalidateTag(CACHE_TAGS.TECH, 'max');
 
     return { success: true, data: updatedRecord };
   } catch (error) {

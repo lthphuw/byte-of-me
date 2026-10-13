@@ -100,7 +100,7 @@ bun run preview    # build, then next start (blocks; curl from a second shell)
 - `AGENTS.md:181` (§6) scopes the public rule to "Public HTML". Rule 1 also matches `/feed.xml`, `/robots.txt`, `/sitemap.xml` and `/site.webmanifest` (`apps/web/next.config.js:228`).
 - `AGENTS.md:225` and `:245` (§7) say `@byte-of-me/ui` has no barrel and that `next.config.js` holds a barrel list. `packages/ui/package.json` exports `"."` (`./src/index.ts`), and `apps/web/next.config.js:119` says the list was removed.
 - `apps/web/src/app/providers/global-provider.tsx:4` (§7): a `'use client'` provider mounted on every page imports the `@byte-of-me/ui` root barrel; §7 says client entry points use subpaths.
-- `AGENTS.md:110` (§3): 13 deep `@/entities/<slice>/api/...` and 8 deep `@/widgets/<group>/<slice>/...` imports in `apps/web/src/app` (e.g. `apps/web/src/app/sitemap.ts:5`, `apps/web/src/app/[locale]/(protected)/dashboard/companies/page.tsx:4`). `apps/web/src/app/[locale]/(protected)/dashboard/layout.tsx:43-45` is the only stated reason; §3 has no carve-out.
+- `AGENTS.md:110` (§3): 8 deep `@/entities/<slice>/api/...` and 7 deep `@/widgets/<group>/<slice>/...` imports in `apps/web/src/app` (e.g. `apps/web/src/app/sitemap.ts:5`, `apps/web/src/app/[locale]/(protected)/dashboard/layout.tsx:18`). No comment in `apps/web/src/app` gives a reason for them; §3 has no carve-out.
 - `AGENTS.md:442` (§11.14): comment blocks far over three lines: `apps/web/next.config.js:119-140` (22 lines), `:12-29` (18), `apps/web/src/app/[locale]/(print)/layout.tsx:10-32` (23).
 
 ## See also

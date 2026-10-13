@@ -14,10 +14,10 @@ apps/web/src/entities/                 (* = 'use client')
 │   ├── ui/                            blog-card*, blog-card-skeleton, blog-editor-card*, blog-empty*
 │   └── index.ts                       export * from api, model, ui
 ├── company/
-│   ├── api/                           create|update|delete-company (admin) + 3 get-*
+│   ├── api/                           create|update|delete-company (admin) + 2 get-*
 │   ├── model/                         company-schema.ts  types.ts  query-keys.ts (companyKeys)
 │   ├── query/                         company-queries.ts (companyQueries: adminPage, adminById) + use-admin-company-by-id
-│   └── index.ts                       api + model; ./ui export commented out (line 3); no ui/ folder
+│   └── index.ts                       model only; ./ui export commented out (line 2); no api/index.ts, no ui/ folder
 ├── education/
 │   ├── api/                           create|update|delete-education (admin) + 3 get-*
 │   ├── model/                         education-schema.ts  types.ts  query-keys.ts (educationKeys)
@@ -42,7 +42,7 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 | Entity | Model types | Server action files | Per action: guard · validate · revalidate | Query keys | Main UI folder |
 | --- | --- | --- | --- | --- | --- |
 | blog | `apps/web/src/entities/blog/model/types.ts` | `create-blog`, `update-blog`, `delete-blog`, `toggle-blog-interaction`, 10 × `get-*` (`get-public-feed-blogs`, `get-published-blogs` are plain modules) | `create`: admin (before `try`) · parse `blogFormSchema` · BLOG `max`<br>`update`: admin (before `try`) · parse id + `blogFormSchema` · BLOG `max`<br>`delete`: admin (before `try`) · parse id · BLOG `max`<br>`get-admin-blog-by-id`: admin (before `try`) · parse id · —<br>`get-paginated-admin-blogs`: admin (before `try`) · `clampPagination` · —<br>`get-paginated-public-blogs`: public (admin only for `includeDrafts`) · parse `publicBlogsParamsSchema` · cache BLOG, not for drafts<br>`get-public-blog-by-slug`: public · `if (!slug)` · cache BLOG + slug<br>`get-related-public-blogs`: public · parse `relatedPublicBlogsParamsSchema` · cache BLOG<br>`get-adjacent-public-blogs`: public · none · cache BLOG<br>`get-public-blog-stats`: public · parse `cuidSchema` · uncached<br>`get-blog-interactions-for-user`: optional session · parse `blogId` + `interaction` · uncached, envelope on failure<br>`toggle-blog-interaction`: `requireUser` · parse · 20 per min per user · BLOG tag = the post's slug, `max`<br>`get-public-feed-blogs`, `get-published-blogs`: no guard · none · none, raw return | `apps/web/src/entities/blog/model/query-keys.ts` (`blogKeys`); reads through `apps/web/src/entities/blog/query/blog-queries.ts` (`blogQueries`) | `apps/web/src/entities/blog/ui/`; admin `apps/web/src/widgets/dashboard/blog-manager/ui/` and `apps/web/src/features/dashboard/blog-editor/ui/`; public `apps/web/src/widgets/public/blogs-content/ui/` |
-| company | `apps/web/src/entities/company/model/types.ts` | `create-company`, `update-company`, `delete-company`, 3 × `get-*` | `create`: admin · parse `companySchema` · COMPANY `max`<br>`update`: admin · parse id + `companySchema` · COMPANY `max` (after transaction)<br>`delete`: admin · parse id · COMPANY `max`<br>`get-admin-company-by-id`: admin · parse id · —<br>`get-paginated-admin-companies`: admin · `clampPagination` · — | `apps/web/src/entities/company/model/query-keys.ts` (`companyKeys`); `query/company-queries.ts` (`companyQueries`: `adminPage`, `adminById`); hook `useAdminCompanyById` | none in the slice; admin `apps/web/src/widgets/dashboard/company-manager/ui/` |
+| company | `apps/web/src/entities/company/model/types.ts` | `create-company`, `update-company`, `delete-company`, 2 × `get-*` | `create`: admin · parse `companySchema` · COMPANY `max`<br>`update`: admin · parse id + `companySchema` · COMPANY `max` (after transaction)<br>`delete`: admin · parse id · COMPANY `max`<br>`get-admin-company-by-id`: admin · parse id · —<br>`get-paginated-admin-companies`: admin · `clampPagination` · — | `apps/web/src/entities/company/model/query-keys.ts` (`companyKeys`); `query/company-queries.ts` (`companyQueries`: `adminPage`, `adminById`); hook `useAdminCompanyById` | none in the slice; admin `apps/web/src/widgets/dashboard/company-manager/ui/` |
 | education | `apps/web/src/entities/education/model/types.ts` | `create-education`, `update-education`, `delete-education`, 3 × `get-*` | `create`: admin · parse `educationSchema` · EDUCATION `max`<br>`update`: admin · parse id + `educationSchema` · EDUCATION `max` (after transaction)<br>`delete`: admin · parse id · EDUCATION `max`<br>`get-admin-education-by-id`: admin · parse id · —<br>`get-paginated-admin-educations`: admin · `clampPagination` · —<br>`get-all-public-educations`: public · none · cache EDUCATION | `apps/web/src/entities/education/model/query-keys.ts` (`educationKeys`); `query/education-queries.ts` (`educationQueries`: `adminPage`, `adminById`); hook `useAdminEducationById` | `apps/web/src/entities/education/ui/`; admin `apps/web/src/widgets/dashboard/education-manager/ui/`; public `apps/web/src/features/public/homepage-education/ui/` |
 | featured-work | `apps/web/src/entities/featured-work/model/types.ts` | `create-featured-work`, `update-featured-work`, `delete-featured-work`, `reorder-featured-work`, 3 × `get-*` | `create`: admin (before `try`) · parse `featuredWorkSchema` + `ownsAllMedia` · FEATURED_WORK `max`<br>`update`: admin (before `try`) · parse id + `featuredWorkSchema` + `ownsAllMedia` · FEATURED_WORK `max` (after transaction)<br>`delete`: admin (before `try`) · parse id · FEATURED_WORK `max`<br>`reorder`: admin (before `try`) · parse id + local `directionSchema` · FEATURED_WORK `max` (only if order changed)<br>`get-admin-featured-work-by-id`: admin (before `try`) · parse id · —<br>`get-paginated-admin-featured-works`: admin (before `try`) · `clampPagination` · —<br>`get-public-featured-works`: public · none · cache FEATURED_WORK (in `lib/load-public-featured-works.ts`) | `apps/web/src/entities/featured-work/model/query-keys.ts` (`featuredWorkKeys`); `query/featured-work-queries.ts` (`featuredWorkQueries`: `adminPage`, `adminById`); hook `useAdminFeaturedWorkById` | `apps/web/src/entities/featured-work/ui/`; admin `apps/web/src/widgets/dashboard/featured-work-manager/ui/`; public `apps/web/src/features/public/homepage-featured-works/ui/` |
 
@@ -80,7 +80,7 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 
 - Public blog list: `apps/web/src/app/[locale]/(public)/blogs/page.tsx:48` prefetches `blogQueries.publicList(1, DEFAULT_BLOG_FILTERS)`, and the client reads the same factory through `usePublicBlogList` (`apps/web/src/widgets/public/blogs-content/ui/blogs-content.tsx:40`). The factory unwraps the envelope, so a refused read throws and nothing is hydrated. `get-paginated-public-blogs.ts` is cached by page, limit, search, tags and locale; drafts bypass the cache and have their own key.
 - Public post: `apps/web/src/app/[locale]/(public)/blogs/[slug]/page.tsx:32` → `get-public-blog-by-slug.ts` (tags `blog` + slug); prev/next and related are separate cached reads.
-- Editors load the full row by id on open (`get-admin-*-by-id`), never the list row: `apps/web/src/widgets/dashboard/company-manager/ui/company-manager.tsx:79`; blog at `blog-manager.tsx:69`.
+- Editors load the full row by id on open (`get-admin-*-by-id`), never the list row: `apps/web/src/widgets/dashboard/company-manager/ui/company-manager.tsx:73`; blog at `blog-manager.tsx:69`.
 - Dashboard lists are prefetched with `*Keys.adminPage` into `HydrationBoundary`: `apps/web/src/app/[locale]/(protected)/dashboard/{blogs,companies,educations,featured-works}/page.tsx`.
 - Save: `apps/web/src/shared/hooks/use-crud-manager.ts` invalidates the root key (`:184`) and removes the detail key (`:190-191`) in `onSuccess`.
 - Homepage featured works: `apps/web/src/features/public/homepage-featured-works/ui/homepage-featured-works.tsx:8` → `get-public-featured-works.ts` → `lib/load-public-featured-works.ts` (DB rows) → `lib/get-featured-work-github.ts` (GitHub facts, 1 h; failure returns `{}`).
@@ -94,7 +94,7 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
    1. Add `api/<verb>-<slice>.ts` with `'use server';` as the first line.
    2. Inside `try`: `await requireAdmin()`, then `parseInput(idSchema, id)` (`delete-education.ts:16-22`).
    3. Scope the Prisma `where` by `userId` (`:24-26`).
-   4. After the write, and after any `$transaction` closes, call `revalidateTag(CACHE_TAGS.X, 'max')` (`update-education.ts:129-131`).
+   4. After the write, and after any `$transaction` closes, call `revalidateTag(CACHE_TAGS.X, 'max')` (`update-education.ts:141-143`).
    5. Return `ApiResponse<T>`; failures set `errorMsg`.
    6. Export it from `api/index.ts`, then call it from `apps/web/src/widgets/dashboard/<slice>-manager/ui/`.
 2. **New cached public read** (model: `apps/web/src/entities/blog/api/get-related-public-blogs.ts:102-111`)
@@ -113,10 +113,10 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 
 - `requireAdmin()` throws `Error('Unauthorized')` (`apps/web/src/shared/lib/auth/session.ts:65`). Inside `try` it becomes `errorMsg: 'Unauthorized'`; before `try` it escapes as a thrown error.
 - Blog update and delete scope their write by `userId` (`update-blog.ts:37`, `delete-blog.ts:22-25`). Company, education and featured-work updates first run `findFirst({ where: { id, userId } })`. Latent only: `getAuthenticatedAdmin()` admits just the site owner (`apps/web/src/shared/lib/auth/session.ts:43-62`).
-- Revalidate only after commit: `update-company.ts:155-157`, `update-education.ts:129-131`, `update-featured-work.ts:97-99`, `reorder-featured-work.ts:91-93`.
+- Revalidate only after commit: `update-company.ts:155-157`, `update-education.ts:141-143`, `update-featured-work.ts:97-99`, `reorder-featured-work.ts:91-93`.
 - Public cache keys are string literals, not factories: `featured-works-rows-v6` (`load-public-featured-works.ts:168`). Bump the version when the cached row shape changes.
 - Per the comment at `get-adjacent-public-blogs.ts:26-28`, a cache hit returns `Date` fields as strings; callers accept `Date | string`.
-- Company and education `api/index.ts` export only the public read. Admin actions are imported by deep path (see deviations).
+- Education `api/index.ts` exports only the public read; company has no `api/index.ts`. Admin actions are imported by deep path (see deviations).
 - Two blog modules are off the barrel on purpose (`apps/web/src/entities/blog/api/index.ts:1-6`). Import them by path: `apps/web/src/app/sitemap.ts:5`, `apps/web/src/app/feed.xml/route.ts:1`.
 
 ## Run
@@ -138,7 +138,7 @@ cd apps/web && bun test src/entities/featured-work   # one slice, bun path filte
 - `apps/web/src/entities/featured-work/api/reorder-featured-work.ts:14`: `directionSchema` is declared outside `model/featured-work-schema.ts` (§8).
 - `apps/web/src/entities/blog/model/types.ts:3`, `apps/web/src/entities/blog/api/get-paginated-public-blogs.ts:7`: import `@/entities/project/model/types`, another slice's internals (§3 "never sideways").
 - `apps/web/src/entities/featured-work/lib/featured-work-media.ts:4`, `lib/load-public-featured-works.ts:19`, `ui/featured-work-row.tsx:10`: import `@/entities/media/model/upload-constraints` (§3).
-- 73 import lines in 40 files outside these slices reach `api/`, `model/`, `ui/` or `lib/` directly instead of the slice barrel (§3). Example: `apps/web/src/widgets/dashboard/company-manager/ui/company-manager.tsx:17-24`.
+- 73 import lines in 40 files outside these slices reach `api/`, `model/`, `ui/` or `lib/` directly instead of the slice barrel (§3). Example: `apps/web/src/widgets/dashboard/company-manager/ui/company-manager.tsx:15-18`.
 
 ## See also
 

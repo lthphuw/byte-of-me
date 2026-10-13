@@ -11,9 +11,9 @@ import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function deleteCompany(id: string): Promise<ApiResponse<Company>> {
-  try {
-    const user = await requireAdmin();
+  const user = await requireAdmin();
 
+  try {
     const parsedId = parseInput(idSchema, id);
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };

@@ -16,9 +16,9 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 export async function getAdminCompanyById(
   id: string
 ): Promise<ApiResponse<AdminCompany>> {
-  try {
-    const user = await requireAdmin();
+  const user = await requireAdmin();
 
+  try {
     const parsedId = parseInput(idSchema, id);
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };

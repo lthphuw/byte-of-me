@@ -11,7 +11,7 @@ export const companyTaskTranslationSchema = z.object({
   id: z.string().optional(),
   language: z.string().min(1),
 
-  content: z.string().min(1, 'Content is required'),
+  content: z.string().min(1, 'validation.required'),
 });
 
 export const companyTaskSchema = z.object({
@@ -26,7 +26,7 @@ export const companyRoleTranslationSchema = z.object({
   id: z.string().optional(),
   language: z.string().min(1),
 
-  title: z.string().min(1, 'Title is required'),
+  title: z.string().min(1, 'validation.required'),
   description: z.string().nullable().optional(),
 });
 
@@ -43,8 +43,8 @@ export const companyRoleSchema = z.object({
 export const companySchema = z.object({
   id: z.string().optional(),
 
-  company: z.string().min(1, 'Company name is required'),
-  location: z.string().min(1, 'Location is required'),
+  company: z.string().min(1, 'validation.required'),
+  location: z.string().min(1, 'validation.required'),
 
   startDate: z.date(),
   endDate: z.date().nullable().optional(),

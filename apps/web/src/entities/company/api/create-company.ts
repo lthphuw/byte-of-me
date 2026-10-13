@@ -17,9 +17,9 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 export async function createCompany(
   input: CompanyFormValues
 ): Promise<ApiResponse<Company>> {
-  try {
-    const user = await requireAdmin();
+  const user = await requireAdmin();
 
+  try {
     const parsed = parseInput(companySchema, input);
     if (!parsed.ok) {
       return { success: false, errorMsg: parsed.errorMsg };

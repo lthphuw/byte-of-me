@@ -17,9 +17,9 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 export async function createEducation(
   input: EducationFormValues
 ): Promise<ApiResponse<Education>> {
-  try {
-    const user = await requireAdmin();
+  const user = await requireAdmin();
 
+  try {
     const parsed = parseInput(educationSchema, input);
     if (!parsed.ok) {
       return { success: false, errorMsg: parsed.errorMsg };

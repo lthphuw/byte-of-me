@@ -1,24 +1,29 @@
 'use client';
 
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { Button, ConfirmDeleteDialog } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { TechStackDialog } from './tech-stack-dialog';
-import { TechStackListLoading } from './tech-stack-list-loading';
 
-import type { AdminTechStack } from '@/entities/tech-stack';
 import { addTechStack } from '@/entities/tech-stack/api/create-tech-stack';
 import { deleteTechStack } from '@/entities/tech-stack/api/delete-tech-stack';
 import { getAllAdminTechStack } from '@/entities/tech-stack/api/get-all-admin-tech-stacks';
 import { updateTechStack } from '@/entities/tech-stack/api/update-tech-stack';
-import { techStackKeys } from '@/entities/tech-stack/model/query-keys';
-import type { TechStackFormValues } from '@/entities/tech-stack/model/tech-stack-schema';
+import {
+  type AdminTechStack,
+  type TechStackFormValues,
+  techStackKeys,
+} from '@/entities/tech-stack/model';
 import { useAdminTechStackById } from '@/entities/tech-stack/query';
 import { TechStackCard } from '@/features/dashboard/tech-stack-management';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
-import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
+import {
+  ManagerListState,
+  ManagerPageHeader,
+  RecordListSkeleton,
+} from '@/shared/ui';
 
 /**
  * `initialTechStacks` is the server's seed of the list. Absent when that read
@@ -31,6 +36,7 @@ export function TechStackManager({
 }) {
   const t = useTranslations('dashboard.techStack');
   const tShared = useTranslations('dashboard.shared');
+  const tCrud = useTranslations('dashboard.shared.crud');
   const {
     items: techStacks,
     isLoading,
@@ -51,18 +57,8 @@ export function TechStackManager({
     isDeleting,
     isDeletingItem,
   } = useCrudManager<AdminTechStack, TechStackFormValues>({
-    queryKey: techStackKeys.list(),
-    entityLabel: 'Tech stack',
-    messages: {
-      created: t('toast.created'),
-      updated: t('toast.updated'),
-      deleted: t('toast.deleted'),
-      saveError: t('toast.saveError'),
-      deleteError: t('toast.deleteError'),
-    },
-    // A save leaves `techStackKeys.detail(id)`, the record the dialog loads,
-    // holding pre-save content that no list invalidation reaches.
-    detailKey: (tech) => techStackKeys.detail(tech.id),
+    entity: t('entity'),
+    keys: { all: techStackKeys.all, detail: techStackKeys.detail },
     fetchAll: getAllAdminTechStack,
     initialItems: initialTechStacks,
     create: addTechStack,
@@ -83,6 +79,8 @@ export function TechStackManager({
     }, {});
   }, [techStacks, t]);
 
+  const newLabel = tCrud('newTitle', { entity: t('entity') });
+
   return (
     <div className="space-y-6">
       <ManagerPageHeader
@@ -90,7 +88,8 @@ export function TechStackManager({
         description={t('description')}
         action={
           <Button onClick={openCreateDialog} size="sm" className="gap-2">
-            <Plus className="h-4 w-4" /> {t('createButton')}
+            <Plus className="h-4 w-4" />
+            {newLabel}
           </Button>
         }
       />
@@ -104,36 +103,33 @@ export function TechStackManager({
           onRetry={() => refetch()}
           isFetching={isFetching}
           isEmpty={techStacks.length === 0}
-          skeleton={<TechStackListLoading />}
+          skeleton={<RecordListSkeleton variant="grid" />}
           emptyTitle={t('emptyTitle')}
           emptyAction={
             <Button variant="outline" size="sm" onClick={openCreateDialog}>
-              <Plus className="h-4 w-4" /> {t('createButton')}
+              <Plus className="h-4 w-4" />
+              {newLabel}
             </Button>
           }
         >
-          <div className="columns-1 gap-6 space-y-6 md:columns-2 lg:columns-3">
+          {/* One grid for the whole list. A group heading spans every column,
+              so the groups stay visible without a masonry layout. */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {Object.entries(grouped).map(([group, items]) => (
-              <section
-                key={group}
-                className="break-inside-avoid space-y-3 rounded-xl border bg-card p-4 shadow-sm"
-              >
-                <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+              <Fragment key={group}>
+                <h3 className="col-span-full text-sm font-bold uppercase tracking-wider text-muted-foreground">
                   {group}
                 </h3>
-
-                <div className="space-y-2">
-                  {items.map((tech) => (
-                    <TechStackCard
-                      key={tech.id}
-                      techStack={tech}
-                      onEdit={() => openEditDialog(tech)}
-                      onDelete={() => requestDelete(tech)}
-                      isDeleting={isDeletingItem(tech)}
-                    />
-                  ))}
-                </div>
-              </section>
+                {items.map((tech) => (
+                  <TechStackCard
+                    key={tech.id}
+                    techStack={tech}
+                    onEdit={() => openEditDialog(tech)}
+                    onDelete={() => requestDelete(tech)}
+                    isDeleting={isDeletingItem(tech)}
+                  />
+                ))}
+              </Fragment>
             ))}
           </div>
         </ManagerListState>
@@ -156,18 +152,10 @@ export function TechStackManager({
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
-        title={t('deleteTitle')}
-        description={
-          <p>
-            {t.rich('deleteDescription', {
-              name: () => (
-                <span className="font-bold text-foreground">
-                  {techToDelete?.name}
-                </span>
-              ),
-            })}
-          </p>
-        }
+        title={tCrud('deleteTitle', { entity: t('entity') })}
+        description={tCrud('deleteDescription', {
+          name: techToDelete?.name ?? '',
+        })}
         actionText={tShared('confirmDelete.actionText')}
         cancelText={tShared('confirmDelete.cancelText')}
       />

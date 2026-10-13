@@ -1,20 +1,22 @@
 'use client';
 
+import { useState } from 'react';
 import type { Control } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 import {
   Button,
+  ConfirmDeleteDialog,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   Input,
 } from '@byte-of-me/ui';
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { CompanyFormValues } from '@/entities/company/model/company-schema';
-import { TextField, TranslationTabs } from '@/shared/ui';
+import { FieldMessage, TextField, TranslationTabs } from '@/shared/ui';
 
 interface CompanyTaskItemFieldProps {
   roleIndex: number;
@@ -30,6 +32,22 @@ export function CompanyTaskItemField({
   remove,
 }: CompanyTaskItemFieldProps) {
   const t = useTranslations('dashboard.company');
+  const tShared = useTranslations('dashboard.shared');
+  const [confirmingRemove, setConfirmingRemove] = useState(false);
+
+  // A task still empty in every language is removed without a dialog.
+  const translations = useWatch({
+    control,
+    name: `roles.${roleIndex}.tasks.${index}.translations`,
+  });
+  const hasContent = translations.some((translation) =>
+    Boolean(translation.content)
+  );
+
+  const handleRemove = () => {
+    if (hasContent) setConfirmingRemove(true);
+    else remove(index);
+  };
 
   return (
     <div className="relative space-y-4 rounded-lg border bg-muted/30 p-4 pt-8">
@@ -37,9 +55,9 @@ export function CompanyTaskItemField({
         type="button"
         size="icon"
         variant="ghost"
-        className="absolute right-2 top-2"
+        className="absolute right-2 top-2 min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9"
         aria-label={t('task.removeButton')}
-        onClick={() => remove(index)}
+        onClick={handleRemove}
       >
         <X className="h-4 w-4" />
       </Button>
@@ -47,7 +65,7 @@ export function CompanyTaskItemField({
       <FormField
         control={control}
         name={`roles.${roleIndex}.tasks.${index}.sortOrder`}
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FormItem>
             <FormLabel>{t('task.sortLabel')}</FormLabel>
             <FormControl>
@@ -61,7 +79,7 @@ export function CompanyTaskItemField({
                 }
               />
             </FormControl>
-            <FormMessage />
+            <FieldMessage message={fieldState.error?.message} />
           </FormItem>
         )}
       />
@@ -77,6 +95,19 @@ export function CompanyTaskItemField({
             label={t('task.contentLabel')}
           />
         )}
+      />
+
+      <ConfirmDeleteDialog
+        isOpen={confirmingRemove}
+        onClose={() => setConfirmingRemove(false)}
+        onConfirm={() => {
+          setConfirmingRemove(false);
+          remove(index);
+        }}
+        title={t('task.removeConfirmTitle')}
+        description={t('task.removeConfirmDescription')}
+        actionText={tShared('confirmDelete.actionText')}
+        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

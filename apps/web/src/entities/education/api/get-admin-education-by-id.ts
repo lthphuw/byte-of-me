@@ -16,9 +16,9 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 export async function getAdminEducationById(
   id: string
 ): Promise<ApiResponse<AdminEducation>> {
-  try {
-    const session = await requireAdmin();
+  const session = await requireAdmin();
 
+  try {
     const parsedId = parseInput(idSchema, id);
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };

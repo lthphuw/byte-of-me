@@ -1,6 +1,6 @@
 'use client';
 
-import { type KeyboardEvent, useState } from 'react';
+import { useState } from 'react';
 import { type Control, useWatch } from 'react-hook-form';
 import {
   Badge,
@@ -17,8 +17,7 @@ import {
   fromEditorContent,
   toEditorContent,
 } from '@byte-of-me/ui';
-import { Reorder, useDragControls } from 'framer-motion';
-import { ChevronDown, GripVertical, ImageIcon, Trash } from 'lucide-react';
+import { ArrowDown, ArrowUp, ChevronDown, ImageIcon, Trash } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
@@ -30,20 +29,20 @@ import { cn } from '@/shared/lib/utils';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
+/** 44px on touch; 36px only with a fine pointer, under `can-hover:`. */
+const TOUCH_TARGET = 'min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9';
+
 interface EducationAchievementItemFieldProps {
-  /** `useFieldArray` field id — the stable value framer-motion reorders by. */
-  id: string;
   index: number;
   total: number;
   control: Control<EducationFormValues>;
   remove: (index: number) => void;
-  /** `useFieldArray`'s `move` — the keyboard path onto the same reorder. */
+  /** `useFieldArray`'s `move`: the up and down buttons swap with a neighbour. */
   move: (from: number, to: number) => void;
   defaultOpen?: boolean;
 }
 
 export function EducationAchievementItemField({
-  id,
   index,
   total,
   control,
@@ -58,7 +57,6 @@ export function EducationAchievementItemField({
   const tShared = useTranslations('dashboard.shared');
   const tMedia = useTranslations('dashboard.media');
   const editorLabels = useEditorLabels();
-  const dragControls = useDragControls();
   const [open, setOpen] = useState(defaultOpen);
   const [confirmingRemove, setConfirmingRemove] = useState(false);
 
@@ -80,6 +78,7 @@ export function EducationAchievementItemField({
     name: `achievements.${index}.imageIds`,
   });
   const imageCount = imageIds?.length ?? 0;
+  const name = summary || t('achievements.untitled');
 
   // A row the user just added and never typed into is not worth a
   // confirmation; both values are already subscribed above, so this is free.
@@ -90,53 +89,10 @@ export function EducationAchievementItemField({
     else remove(index);
   };
 
-  // Pointer drag is framer-motion's; this is the keyboard half of the same
-  // reorder, so the list is not mouse-only.
-  const handleGripKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-    const to =
-      event.key === 'ArrowUp'
-        ? index - 1
-        : event.key === 'ArrowDown'
-        ? index + 1
-        : null;
-
-    if (to === null || to < 0 || to >= total) return;
-    event.preventDefault();
-    move(index, to);
-  };
-
   return (
-    <Reorder.Item
-      as="div"
-      value={id}
-      // Only the grip handle starts a drag, so text selection and the rich
-      // text editor inside the card keep working normally.
-      dragListener={false}
-      dragControls={dragControls}
-      // Position only. The default `layout` also animates size, which framer
-      // does with a transform — so expanding the card would stretch and squash
-      // its contents while the collapsible's own height animation runs. This
-      // keeps the reorder animation and the expand animation from fighting.
-      layout="position"
-      className="rounded-lg border bg-card transition-shadow"
-    >
+    <div className="rounded-lg border bg-card">
       <Collapsible open={open} onOpenChange={setOpen}>
         <div className="flex items-center gap-1 p-2">
-          <button
-            type="button"
-            aria-label={t('achievements.reorderAriaLabel', {
-              index: index + 1,
-              total,
-            })}
-            onPointerDown={(event) => dragControls.start(event)}
-            onKeyDown={handleGripKeyDown}
-            // `touch-none` stops a touch drag from scrolling the dialog
-            // instead of moving the card.
-            className="flex h-8 w-6 shrink-0 cursor-grab touch-none select-none items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground active:cursor-grabbing"
-          >
-            <GripVertical className="h-4 w-4" />
-          </button>
-
           <span className="w-5 shrink-0 text-xs font-medium tabular-nums text-muted-foreground">
             {index + 1}
           </span>
@@ -155,7 +111,7 @@ export function EducationAchievementItemField({
                   !summary && 'text-muted-foreground'
                 )}
               >
-                {summary || t('achievements.untitled')}
+                {name}
               </span>
 
               {imageCount > 0 && (
@@ -181,8 +137,35 @@ export function EducationAchievementItemField({
             type="button"
             size="icon"
             variant="ghost"
+            aria-label={t('achievements.moveUpLabel', { name })}
+            disabled={index === 0}
+            className={cn('shrink-0 text-muted-foreground', TOUCH_TARGET)}
+            onClick={() => move(index, index - 1)}
+          >
+            <ArrowUp className="h-4 w-4" />
+          </Button>
+
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            aria-label={t('achievements.moveDownLabel', { name })}
+            disabled={index === total - 1}
+            className={cn('shrink-0 text-muted-foreground', TOUCH_TARGET)}
+            onClick={() => move(index, index + 1)}
+          >
+            <ArrowDown className="h-4 w-4" />
+          </Button>
+
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
             aria-label={t('achievements.removeAriaLabel')}
-            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive-text"
+            className={cn(
+              'shrink-0 text-muted-foreground hover:text-destructive-text',
+              TOUCH_TARGET
+            )}
             onClick={handleRemove}
           >
             <Trash className="h-4 w-4" />
@@ -265,12 +248,10 @@ export function EducationAchievementItemField({
           remove(index);
         }}
         title={t('achievements.removeConfirmTitle')}
-        description={t('achievements.removeConfirmDescription', {
-          name: summary || t('achievements.untitled'),
-        })}
+        description={t('achievements.removeConfirmDescription', { name })}
         actionText={tShared('confirmDelete.actionText')}
         cancelText={tShared('confirmDelete.cancelText')}
       />
-    </Reorder.Item>
+    </div>
   );
 }

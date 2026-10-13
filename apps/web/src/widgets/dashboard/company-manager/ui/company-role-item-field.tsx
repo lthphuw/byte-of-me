@@ -78,7 +78,12 @@ export function CompanyRoleItemField({
     >
       <div className="flex items-center justify-between p-2">
         <CollapsibleTrigger asChild>
-          <Button type="button" variant="ghost" size="sm" className="gap-2">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="min-h-11 gap-2 can-hover:min-h-9"
+          >
             <ChevronDown
               className={cn(
                 'h-4 w-4 transition-transform',
@@ -95,6 +100,7 @@ export function CompanyRoleItemField({
           type="button"
           size="icon"
           variant="ghost"
+          className="min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9"
           aria-label={t('role.removeButton')}
           onClick={handleRemove}
         >
@@ -103,7 +109,7 @@ export function CompanyRoleItemField({
       </div>
 
       <CollapsibleContent className="space-y-4 border-t p-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField
             control={control}
             name={`roles.${index}.startDate`}
@@ -166,6 +172,7 @@ export function CompanyRoleItemField({
               type="button"
               size="sm"
               variant="outline"
+              className="min-h-11 can-hover:min-h-9"
               onClick={() =>
                 appendTask({
                   sortOrder: tasks.length,

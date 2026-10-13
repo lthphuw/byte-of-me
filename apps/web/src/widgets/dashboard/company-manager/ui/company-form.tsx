@@ -1,18 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { type DefaultValues, useFieldArray, useForm } from 'react-hook-form';
 import {
   Button,
   DatePicker,
-  DialogFooter,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-  Icons,
   MultiSelect,
   Skeleton,
 } from '@byte-of-me/ui';
@@ -29,7 +26,7 @@ import {
 import type { AdminCompany } from '@/entities/company/model/types';
 import type { TechStackOptionsResult } from '@/entities/tech-stack/query';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
-import { TextField, TranslationTabs } from '@/shared/ui';
+import { FieldMessage, TextField, TranslationTabs } from '@/shared/ui';
 
 function toFormValues(
   initialData?: AdminCompany
@@ -98,18 +95,22 @@ function toFormValues(
 }
 
 interface CompanyFormProps {
+  /** The id the dialog's Save button submits. */
+  formId: string;
   initialData?: AdminCompany;
   /** Tech-stack picker state, owned by the dialog so its fetch starts on open. */
   techStacks: TechStackOptionsResult;
   onSubmit: (data: CompanyFormValues) => void;
-  loading?: boolean;
+  /** Reports unsaved edits. Cleared on unmount, so a closed dialog never asks. */
+  onDirtyChange: (dirty: boolean) => void;
 }
 
 export function CompanyForm({
+  formId,
   initialData,
   techStacks,
   onSubmit,
-  loading,
+  onDirtyChange,
 }: CompanyFormProps) {
   const t = useTranslations('dashboard.company');
   const tShared = useTranslations('dashboard.shared');
@@ -121,6 +122,12 @@ export function CompanyForm({
     resolver: zodResolver(companySchema),
     defaultValues,
   });
+  const { isDirty } = form.formState;
+
+  useEffect(() => {
+    onDirtyChange(isDirty);
+    return () => onDirtyChange(false);
+  }, [isDirty, onDirtyChange]);
 
   const {
     fields: roles,
@@ -137,11 +144,11 @@ export function CompanyForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form id={formId} onSubmit={handleSubmit} className="space-y-6">
         <FormField
           control={form.control}
           name="logoId"
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>{t('dialog.logoLabel')}</FormLabel>
               <FormControl>
@@ -150,12 +157,12 @@ export function CompanyForm({
                   onChange={(media) => field.onChange(media?.id ?? null)}
                 />
               </FormControl>
-              <FormMessage />
+              <FieldMessage message={fieldState.error?.message} />
             </FormItem>
           )}
         />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <TextField
             control={form.control}
             name="company"
@@ -170,13 +177,13 @@ export function CompanyForm({
           <FormField
             control={form.control}
             name="startDate"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t('dialog.startDateLabel')}</FormLabel>
                 <FormControl>
                   <DatePicker value={field.value} onChange={field.onChange} />
                 </FormControl>
-                <FormMessage />
+                <FieldMessage message={fieldState.error?.message} />
               </FormItem>
             )}
           />
@@ -184,7 +191,7 @@ export function CompanyForm({
           <FormField
             control={form.control}
             name="endDate"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t('dialog.endDateLabel')}</FormLabel>
                 <FormControl>
@@ -193,7 +200,7 @@ export function CompanyForm({
                     onChange={(d) => field.onChange(d || null)}
                   />
                 </FormControl>
-                <FormMessage />
+                <FieldMessage message={fieldState.error?.message} />
               </FormItem>
             )}
           />
@@ -202,7 +209,7 @@ export function CompanyForm({
         <FormField
           control={form.control}
           name="techStackIds"
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <FormItem>
               <FormLabel>{t('dialog.techStackLabel')}</FormLabel>
               {techStacks.isLoading ? (
@@ -232,7 +239,7 @@ export function CompanyForm({
                   </Button>
                 </div>
               )}
-              <FormMessage />
+              <FieldMessage message={fieldState.error?.message} />
             </FormItem>
           )}
         />
@@ -262,6 +269,7 @@ export function CompanyForm({
               type="button"
               size="sm"
               variant="outline"
+              className="min-h-11 can-hover:min-h-9"
               onClick={() =>
                 appendRole({
                   startDate: null,
@@ -288,12 +296,6 @@ export function CompanyForm({
           ))}
         </div>
 
-        <DialogFooter>
-          <Button type="submit" disabled={loading}>
-            {loading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}{' '}
-            {t('dialog.saveButton')}
-          </Button>
-        </DialogFooter>
       </form>
     </Form>
   );

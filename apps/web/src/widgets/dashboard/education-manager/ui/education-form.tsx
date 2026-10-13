@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { type DefaultValues, useForm } from 'react-hook-form';
 import {
   DatePicker,
@@ -30,11 +30,7 @@ import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
 import { TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
-/**
- * Reorder pulls framer-motion's heavy projection half and only renders inside
- * DialogContent, which Radix leaves unmounted while closed; lazy-loading keeps
- * drag-and-drop out of the `/dashboard/educations` first paint.
- */
+/** The achievements editor renders only inside the dialog, so it loads as its own chunk. */
 const EducationAchievementsField = dynamic(
   () =>
     import(
@@ -92,12 +88,15 @@ interface EducationFormProps {
   formId: string;
   initialData?: AdminEducation;
   onSubmit: (data: EducationFormValues) => void;
+  /** Reports unsaved edits. Cleared on unmount, so a closed dialog never asks. */
+  onDirtyChange: (dirty: boolean) => void;
 }
 
 export function EducationForm({
   formId,
   initialData,
   onSubmit,
+  onDirtyChange,
 }: EducationFormProps) {
   // Images pasted into this editor land under the `education` prefix in
   // storage.
@@ -113,6 +112,12 @@ export function EducationForm({
     resolver: zodResolver(educationSchema),
     defaultValues,
   });
+  const { isDirty } = form.formState;
+
+  useEffect(() => {
+    onDirtyChange(isDirty);
+    return () => onDirtyChange(false);
+  }, [isDirty, onDirtyChange]);
 
   // Achievement order is whatever the list shows, so `sortOrder` is stamped
   // from the position at submit time rather than tracked as an editable field.
@@ -132,12 +137,12 @@ export function EducationForm({
   return (
     <Form {...form}>
       <form id={formId} onSubmit={handleSubmit} className="space-y-8">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField
             control={form.control}
             name="logoId"
             render={({ field }) => (
-              <FormItem className="col-span-2">
+              <FormItem className="sm:col-span-2">
                 <FormLabel>{t('dialog.logoLabel')}</FormLabel>
                 <FormControl>
                   <MediaSelect
@@ -183,14 +188,9 @@ export function EducationForm({
         </div>
 
         <section className="space-y-4 border-t pt-6">
-          <div className="space-y-1">
-            <h3 className="text-sm font-medium">
-              {t('dialog.translationsTitle')}
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              {t('dialog.translationsDescription')}
-            </p>
-          </div>
+          <h3 className="text-sm font-medium">
+            {t('dialog.translationsTitle')}
+          </h3>
 
           <TranslationTabs
             control={form.control}

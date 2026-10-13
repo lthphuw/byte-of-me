@@ -17,9 +17,9 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 export async function getAllAdminTechStack(): Promise<
   ApiResponse<AdminTechStack[]>
 > {
-  try {
-    const user = await requireAdmin();
+  const user = await requireAdmin();
 
+  try {
     const techStacks = await prisma.techStack.findMany({
       where: { userId: user.id },
       include: { logo: true },

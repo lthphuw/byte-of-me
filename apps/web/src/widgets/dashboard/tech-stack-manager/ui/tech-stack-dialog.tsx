@@ -2,35 +2,30 @@
 
 import { useForm } from 'react-hook-form';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   Input,
-  SubmitButton,
 } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 
 import { TechStackFormLoading } from './tech-stack-form-loading';
 
-import type { AdminTechStack } from '@/entities/tech-stack';
 import {
+  type AdminTechStack,
   type TechStackFormValues,
   techStackSchema,
-} from '@/entities/tech-stack/model/tech-stack-schema';
+} from '@/entities/tech-stack/model';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import { useResetOnOpen } from '@/shared/hooks/use-reset-on-open';
-import { ContentFade } from '@/shared/ui';
-import { QueryState } from '@/shared/ui/query-state';
+import { EditRecordGate } from '@/shared/ui/edit-record-gate';
+import { FieldMessage } from '@/shared/ui/form/field-message';
+import { RecordDialog } from '@/shared/ui/record-dialog';
+
+const FORM_ID = 'tech-stack-form';
 
 export function TechStackDialog({
   open,
@@ -54,7 +49,9 @@ export function TechStackDialog({
   loading: boolean;
 }) {
   const t = useTranslations('dashboard.techStack');
-  const tShared = useTranslations('dashboard.shared');
+  const tCrud = useTranslations('dashboard.shared.crud');
+  // The form lives here, not in the gated body, so its dirty state is known
+  // to the dialog's close path before the record has arrived.
   const form = useForm<TechStackFormValues>({
     resolver: zodResolver(techStackSchema),
     defaultValues: {
@@ -77,113 +74,97 @@ export function TechStackDialog({
   const isEditing = Boolean(initialData) || isLoadingInitialData;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
-            {isEditing ? t('dialog.editTitle') : t('dialog.createTitle')}
-          </DialogTitle>
-          <DialogDescription>
-            {isEditing
-              ? t('dialog.editDescription')
-              : t('dialog.createDescription')}
-          </DialogDescription>
-        </DialogHeader>
+    <RecordDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={
+        isEditing
+          ? tCrud('editTitle', { entity: t('entity') })
+          : tCrud('newTitle', { entity: t('entity') })
+      }
+      description={
+        isEditing ? t('dialog.editDescription') : t('dialog.createDescription')
+      }
+      size="md"
+      formId={FORM_ID}
+      isPending={loading}
+      isDirty={form.formState.isDirty}
+    >
+      <EditRecordGate
+        isNotReady={isLoadingInitialData}
+        hasError={hasLoadError}
+        onRetry={() => onRetryLoad?.()}
+        skeleton={<TechStackFormLoading />}
+      >
+        <Form {...form}>
+          <form
+            id={FORM_ID}
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel>{t('dialog.nameLabel')}</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FieldMessage message={fieldState.error?.message} />
+                  </FormItem>
+                )}
+              />
 
-        {/* A dialog has no empty state, so `isEmpty` stays false. */}
-        <QueryState
-          isLoading={isLoadingInitialData && !hasLoadError}
-          isError={hasLoadError}
-          isEmpty={false}
-          onRetry={() => onRetryLoad?.()}
-          skeleton={<TechStackFormLoading />}
-          errorTitle={tShared('managerListState.errorTitle')}
-          errorDescription={tShared('managerListState.errorDescription')}
-          retryLabel={tShared('managerListState.retry')}
-          emptyTitle=""
-        >
-          <ContentFade>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  {/* name */}
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('dialog.nameLabel')}</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel>{t('dialog.slugLabel')}</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FieldMessage message={fieldState.error?.message} />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-                  {/* slug */}
-                  <FormField
-                    control={form.control}
-                    name="slug"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('dialog.slugLabel')}</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+            <FormField
+              control={form.control}
+              name="group"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel>{t('dialog.groupLabel')}</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FieldMessage message={fieldState.error?.message} />
+                </FormItem>
+              )}
+            />
 
-                {/* group */}
-                <FormField
-                  control={form.control}
-                  name="group"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('dialog.groupLabel')}</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* logoId */}
-                <FormField
-                  control={form.control}
-                  name="logoId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('dialog.logoLabel')}</FormLabel>
-                      <FormControl>
-                        <MediaSelect
-                          value={field.value ?? undefined}
-                          onChange={(m) => field.onChange(m?.id ?? null)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <DialogFooter>
-                  {/* Deliberately not gated on `formState.isValid`: nothing is
-                      touched on open, so Save sat greyed out with no message
-                      explaining why. Let `handleSubmit` run and surface the
-                      errors, as every other dialog here does. */}
-                  <SubmitButton loading={loading}>
-                    {t('dialog.saveButton')}
-                  </SubmitButton>
-                </DialogFooter>
-              </form>
-            </Form>
-          </ContentFade>
-        </QueryState>
-      </DialogContent>
-    </Dialog>
+            <FormField
+              control={form.control}
+              name="logoId"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel>{t('dialog.logoLabel')}</FormLabel>
+                  <FormControl>
+                    <MediaSelect
+                      value={field.value ?? undefined}
+                      onChange={(m) => field.onChange(m?.id ?? null)}
+                    />
+                  </FormControl>
+                  <FieldMessage message={fieldState.error?.message} />
+                </FormItem>
+              )}
+            />
+          </form>
+        </Form>
+      </EditRecordGate>
+    </RecordDialog>
   );
 }

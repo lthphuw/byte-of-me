@@ -4,33 +4,38 @@ import {
   Badge,
   Button,
   ConfirmDeleteDialog,
-  DeleteButton,
-  EditButton,
   Pagination,
 } from '@byte-of-me/ui';
 import { Briefcase, Plus } from 'lucide-react';
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { CompanyDialog } from './company-dialog';
-import { CompanyListLoading } from './company-list-loading';
 
 import { createCompany } from '@/entities/company/api/create-company';
 import { deleteCompany } from '@/entities/company/api/delete-company';
 import { getPaginatedAdminCompanies } from '@/entities/company/api/get-paginated-admin-companies';
 import { updateCompany } from '@/entities/company/api/update-company';
-import type { CompanyFormValues } from '@/entities/company/model/company-schema';
-import { companyKeys } from '@/entities/company/model/query-keys';
-import type { AdminCompanyListItem } from '@/entities/company/model/types';
+import {
+  type AdminCompanyListItem,
+  type CompanyFormValues,
+  companyKeys,
+} from '@/entities/company/model';
 import { companyQueries, useAdminCompanyById } from '@/entities/company/query';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
-import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { formatDate } from '@/shared/lib/utils';
-import { ManagerListState, ManagerPageHeader } from '@/shared/ui';
+import {
+  ManagerListState,
+  ManagerPageHeader,
+  RecordListItem,
+  RecordRowActions,
+} from '@/shared/ui';
 
 export function CompanyManager() {
   const t = useTranslations('dashboard.company');
   const tShared = useTranslations('dashboard.shared');
+  const tCrud = useTranslations('dashboard.shared.crud');
+  const locale = useLocale();
   const {
     items: companies,
     pagination,
@@ -54,21 +59,10 @@ export function CompanyManager() {
     isDeleting,
     isDeletingItem,
   } = useCrudManager<AdminCompanyListItem, CompanyFormValues>({
-    queryKey: companyKeys.adminList(),
-    entityLabel: 'Work experience',
-    messages: {
-      created: t('toast.created'),
-      updated: t('toast.updated'),
-      deleted: t('toast.deleted'),
-      saveError: t('toast.saveError'),
-      deleteError: t('toast.deleteError'),
-    },
-    // Saving leaves `companyKeys.detail(id)` — the record the editor below
-    // loads — holding pre-save content that no list invalidation reaches.
-    detailKey: (company) => companyKeys.detail(company.id),
-    pageSize: ADMIN_PAGE_SIZE,
+    entity: t('entity'),
+    keys: { all: companyKeys.all, detail: companyKeys.detail },
     pageKey: (page) => companyQueries.adminPage(page).queryKey,
-    fetchPage: (page, limit) => getPaginatedAdminCompanies(page, limit),
+    fetchPage: getPaginatedAdminCompanies,
     create: createCompany,
     update: updateCompany,
     remove: deleteCompany,
@@ -77,6 +71,23 @@ export function CompanyManager() {
   // The list row carries no roles or tasks, so the dialog loads the full
   // record by id; "New" (`editing` is null) fetches nothing and opens empty.
   const fullCompany = useAdminCompanyById(editing?.id);
+
+  const pager =
+    pagination && pagination.totalPages > 1 ? (
+      <div className="mt-6">
+        <Pagination
+          pagination={pagination}
+          setPage={setPage}
+          isPlaceholderData={isPlaceholderData}
+          pageLabel={tShared('pagination.pageLabel', {
+            page: pagination.currentPage,
+            totalPages: pagination.totalPages,
+          })}
+          previousLabel={tShared('pagination.previous')}
+          nextLabel={tShared('pagination.next')}
+        />
+      </div>
+    ) : null;
 
   return (
     <div className="space-y-6">
@@ -91,13 +102,12 @@ export function CompanyManager() {
         }
       />
 
-      <div className="relative min-h-[200px] space-y-4">
+      <div className="relative min-h-[200px]">
         <ManagerListState
           isLoading={isLoading}
           isError={isError}
           onRetry={() => refetch()}
           isFetching={isFetching}
-          skeleton={<CompanyListLoading />}
           isEmpty={companies.length === 0}
           emptyTitle={t('emptyTitle')}
           emptyDescription={t('emptyDescription')}
@@ -106,20 +116,21 @@ export function CompanyManager() {
               {t('emptyAction')}
             </Button>
           }
+          pagination={pager}
         >
-          <div className="grid gap-4">
+          <div className="space-y-3">
             {companies.map((company) => {
-              const dateRange = `${formatDate(company.startDate)} — ${
-                company.endDate ? formatDate(company.endDate) : t('present')
+              const dateRange = `${formatDate(company.startDate, locale)} — ${
+                company.endDate
+                  ? formatDate(company.endDate, locale)
+                  : t('present')
               }`;
 
               return (
-                <div
+                <RecordListItem
                   key={company.id}
-                  className="group flex items-center justify-between rounded-xl border bg-card p-4 transition-all hover:border-primary/50 hover:shadow-md"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="relative flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-muted">
+                  leading={
+                    <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-lg border bg-muted">
                       {company.logo?.url ? (
                         <Image
                           src={company.logo.url}
@@ -132,64 +143,44 @@ export function CompanyManager() {
                         <Briefcase className="h-6 w-6 text-muted-foreground" />
                       )}
                     </div>
-
-                    <div className="space-y-1">
-                      <h4 className="font-semibold leading-none">
-                        {company.company}
-                      </h4>
-                      <p className="text-xs font-medium text-muted-foreground">
-                        {company.location} · {dateRange}
-                      </p>
-                      <div className="flex flex-wrap gap-2 pt-1">
-                        <Badge
-                          variant="secondary"
-                          className="px-2 py-0 text-[10px]"
-                        >
-                          {t('rolesBadge', { count: company._count.roles })}
-                        </Badge>
-                        <Badge
-                          variant="secondary"
-                          className="px-2 py-0 text-[10px]"
-                        >
-                          {t('techStackBadge', {
-                            count: company._count.techStacks,
-                          })}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 transition-opacity sm:focus-within:opacity-100 sm:group-hover:opacity-100 can-hover:sm:opacity-0">
-                    <EditButton
-                      label={t('editLabel', { name: company.company })}
-                      onClick={() => openEditDialog(company)}
+                  }
+                  actions={
+                    <RecordRowActions
+                      name={company.company}
+                      onEdit={() => openEditDialog(company)}
+                      onDelete={() => requestDelete(company)}
+                      disabled={isDeletingItem(company)}
                     />
-                    <DeleteButton
-                      label={t('deleteLabel', { name: company.company })}
-                      isSubmitting={isDeletingItem(company)}
-                      onClick={() => requestDelete(company)}
-                    />
+                  }
+                >
+                  <h4 className="truncate font-semibold leading-none">
+                    {company.company}
+                  </h4>
+                  <p className="truncate pt-1 text-xs font-medium text-muted-foreground">
+                    {company.location} · {dateRange}
+                  </p>
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    <Badge
+                      variant="secondary"
+                      className="px-2 py-0 text-[10px]"
+                    >
+                      {t('rolesBadge', { count: company._count.roles })}
+                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="px-2 py-0 text-[10px]"
+                    >
+                      {t('techStackBadge', {
+                        count: company._count.techStacks,
+                      })}
+                    </Badge>
                   </div>
-                </div>
+                </RecordListItem>
               );
             })}
           </div>
         </ManagerListState>
       </div>
-
-      {companies.length > 0 && (
-        <Pagination
-          pagination={pagination}
-          setPage={setPage}
-          isPlaceholderData={isPlaceholderData}
-          pageLabel={tShared('pagination.pageLabel', {
-            page: pagination?.currentPage ?? 1,
-            totalPages: pagination?.totalPages ?? 1,
-          })}
-          previousLabel={tShared('pagination.previous')}
-          nextLabel={tShared('pagination.next')}
-        />
-      )}
 
       <CompanyDialog
         key={editing?.id ?? 'new'}
@@ -208,13 +199,9 @@ export function CompanyManager() {
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
-        title={t('deleteTitle')}
-        description={t.rich('deleteDescription', {
-          name: () => (
-            <span className="font-semibold text-foreground">
-              {companyToDelete?.company ?? ''}
-            </span>
-          ),
+        title={tCrud('deleteTitle', { entity: t('entity') })}
+        description={tCrud('deleteDescription', {
+          name: companyToDelete?.company ?? '',
         })}
         actionText={tShared('confirmDelete.actionText')}
         cancelText={tShared('confirmDelete.cancelText')}

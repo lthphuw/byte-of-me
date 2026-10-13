@@ -18,9 +18,9 @@ export async function updateCompany(
   id: string,
   input: CompanyFormValues
 ): Promise<ApiResponse<Company>> {
-  try {
-    const user = await requireAdmin();
+  const user = await requireAdmin();
 
+  try {
     const parsedId = parseInput(idSchema, id);
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };

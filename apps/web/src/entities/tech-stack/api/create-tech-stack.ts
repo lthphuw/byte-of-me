@@ -18,9 +18,9 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 export async function addTechStack(
   input: TechStackFormValues
 ): Promise<ApiResponse<AdminTechStack>> {
-  try {
-    const user = await requireAdmin();
+  const user = await requireAdmin();
 
+  try {
     const parsed = parseInput(techStackSchema, input);
     if (!parsed.ok) {
       return { success: false, errorMsg: parsed.errorMsg };
@@ -29,7 +29,9 @@ export async function addTechStack(
 
     const newTech = await prisma.techStack.create({
       data: {
-        ...data,
+        slug: data.slug,
+        name: data.name,
+        group: data.group,
         logoId: data.logoId ?? null,
         userId: user.id,
       },

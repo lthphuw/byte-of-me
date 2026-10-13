@@ -14,13 +14,21 @@ import { getErrorMessage } from '@/shared/lib/utils';
 import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
+type AchievementTranslationInput =
+  EducationFormValues['achievements'][number]['translations'][number];
+
+/** Field by field, so a parsed row's `id` never reaches the create input. */
+function toAchievementTranslation(t: AchievementTranslationInput) {
+  return { language: t.language, title: t.title, content: t.content };
+}
+
 export async function updateEducation(
   id: string,
   input: EducationFormValues
 ): Promise<ApiResponse<Education>> {
-  try {
-    const user = await requireAdmin();
+  const user = await requireAdmin();
 
+  try {
     const parsedId = parseInput(idSchema, id);
     if (!parsedId.ok) {
       return { success: false, errorMsg: parsedId.errorMsg };
@@ -71,7 +79,11 @@ export async function updateEducation(
 
             translations: {
               deleteMany: {},
-              create: values.translations,
+              create: values.translations.map((t) => ({
+                language: t.language,
+                title: t.title,
+                description: t.description,
+              })),
             },
           },
         });
@@ -87,7 +99,7 @@ export async function updateEducation(
                   sortOrder: a.sortOrder,
 
                   translations: {
-                    create: a.translations,
+                    create: a.translations.map(toAchievementTranslation),
                   },
 
                   images: {
@@ -106,7 +118,7 @@ export async function updateEducation(
 
                 translations: {
                   deleteMany: {},
-                  create: a.translations,
+                  create: a.translations.map(toAchievementTranslation),
                 },
 
                 images: {

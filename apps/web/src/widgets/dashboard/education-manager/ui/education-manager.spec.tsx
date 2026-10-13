@@ -202,7 +202,7 @@ describe('EducationManager', () => {
     expect(findMany).not.toHaveBeenCalled();
   });
 
-  it('keeps the form unmounted, and saving disabled, until the full entry arrives', async () => {
+  it('keeps the form unmounted until the full entry arrives', async () => {
     const entry = deferred<Row | null>();
     findFirst.mockReturnValue(entry.promise);
     renderManager();
@@ -211,13 +211,6 @@ describe('EducationManager', () => {
 
     expect(await screen.findByLabelText('Loading…')).toBeTruthy();
     expect(formField()).toBeNull();
-    expect(
-      (
-        screen.getByRole('button', {
-          name: 'Save changes',
-        }) as HTMLButtonElement
-      ).disabled
-    ).toBe(true);
 
     entry.resolve(fullEntry);
 
@@ -244,13 +237,6 @@ describe('EducationManager', () => {
     const retry = await screen.findByRole('button', { name: 'Retry' });
     expect(screen.getByRole('alert')).toBeTruthy();
     expect(formField()).toBeNull();
-    expect(
-      (
-        screen.getByRole('button', {
-          name: 'Save changes',
-        }) as HTMLButtonElement
-      ).disabled
-    ).toBe(true);
 
     findFirst.mockResolvedValue(fullEntry);
     fireEvent.click(retry);
@@ -278,7 +264,7 @@ describe('EducationManager', () => {
       queryClient.getQueryData(educationKeys.detail('edu-1'))
     ).toBeDefined();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     await waitFor(() => expect(toastSuccess).toHaveBeenCalled());
     expect(

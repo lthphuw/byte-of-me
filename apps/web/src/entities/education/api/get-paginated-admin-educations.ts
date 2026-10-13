@@ -14,8 +14,9 @@ export async function getPaginatedAdminEducations(
   rawPage: number = 1,
   rawLimit: number = 20
 ): Promise<ApiResponse<PaginatedData<AdminEducationListItem>>> {
+  const session = await requireAdmin();
+
   try {
-    const session = await requireAdmin();
     const userId = session.id;
     const { page, limit } = clampPagination(
       { page: rawPage, limit: rawLimit },

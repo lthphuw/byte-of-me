@@ -3,10 +3,10 @@ import { z } from 'zod';
 export const techStackSchema = z.object({
   slug: z
     .string()
-    .min(1, 'Slug is required')
-    .regex(/^[a-z0-9-]+$/, 'Slug must be lowercase and use "-"'),
-  name: z.string().min(1, 'Name is required'),
-  group: z.string().min(1, 'Group is required'),
+    .min(1, 'validation.required')
+    .regex(/^[a-z0-9-]+$/, 'validation.invalidSlug'),
+  name: z.string().min(1, 'validation.required'),
+  group: z.string().min(1, 'validation.required'),
   logoId: z.string().nullable(),
 });
 

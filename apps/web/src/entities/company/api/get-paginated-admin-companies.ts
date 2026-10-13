@@ -14,8 +14,9 @@ export async function getPaginatedAdminCompanies(
   rawPage: number = 1,
   rawLimit: number = 20
 ): Promise<ApiResponse<PaginatedData<AdminCompanyListItem>>> {
+  const user = await requireAdmin();
+
   try {
-    const user = await requireAdmin();
     const userId = user.id;
     const { page, limit } = clampPagination(
       { page: rawPage, limit: rawLimit },

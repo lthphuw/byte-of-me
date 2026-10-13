@@ -1,16 +1,14 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { type Control, useFieldArray } from 'react-hook-form';
 import { Button } from '@byte-of-me/ui';
-import { Reorder } from 'framer-motion';
 import { Plus, Trophy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { EducationAchievementItemField } from './education-achievement-item-field';
 
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
-import { resolveReorderMove } from '@/widgets/dashboard/education-manager/lib/resolve-reorder-move';
 
 interface EducationAchievementsFieldProps {
   control: Control<EducationFormValues>;
@@ -34,13 +32,6 @@ export function EducationAchievementsField({
   // while everything else stays collapsed.
   const [openOnMountIndex, setOpenOnMountIndex] = useState<number | null>(null);
 
-  const ids = useMemo(() => fields.map((field) => field.id), [fields]);
-
-  const handleReorder = (nextIds: string[]) => {
-    const step = resolveReorderMove(ids, nextIds);
-    if (step) move(step.from, step.to);
-  };
-
   const handleAdd = () => {
     setOpenOnMountIndex(fields.length);
     append({
@@ -53,16 +44,15 @@ export function EducationAchievementsField({
   return (
     <div className="space-y-4 border-t pt-4">
       <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-medium">{t('achievements.title')}</h3>
-          {fields.length > 1 && (
-            <p className="text-xs text-muted-foreground">
-              {t('achievements.reorderHint')}
-            </p>
-          )}
-        </div>
+        <h3 className="text-sm font-medium">{t('achievements.title')}</h3>
 
-        <Button type="button" size="sm" variant="outline" onClick={handleAdd}>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          className="min-h-11 can-hover:min-h-9"
+          onClick={handleAdd}
+        >
           <Plus className="mr-2 h-3 w-3" />
           {t('achievements.addButton')}
         </Button>
@@ -74,22 +64,21 @@ export function EducationAchievementsField({
           <p className="text-sm text-muted-foreground">
             {t('achievements.emptyText')}
           </p>
-          <Button type="button" size="sm" variant="ghost" onClick={handleAdd}>
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            className="min-h-11 can-hover:min-h-9"
+            onClick={handleAdd}
+          >
             {t('achievements.addFirstButton')}
           </Button>
         </div>
       ) : (
-        <Reorder.Group
-          as="div"
-          axis="y"
-          values={ids}
-          onReorder={handleReorder}
-          className="space-y-2"
-        >
+        <div className="space-y-2">
           {fields.map((field, index) => (
             <EducationAchievementItemField
               key={field.id}
-              id={field.id}
               index={index}
               total={fields.length}
               control={control}
@@ -98,7 +87,7 @@ export function EducationAchievementsField({
               defaultOpen={index === openOnMountIndex}
             />
           ))}
-        </Reorder.Group>
+        </div>
       )}
     </div>
   );
