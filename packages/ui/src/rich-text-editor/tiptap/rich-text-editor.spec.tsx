@@ -25,7 +25,7 @@ import type { Editor, JSONContent } from '@tiptap/react';
 import { afterEach, describe, expect, spyOn, test } from 'bun:test';
 
 import { testEditorLabels } from './editor-labels.test-fixture';
-import { RichTextEditor, type RichTextEditorApi } from './rich-text-editor';
+import { RichTextEditor } from './rich-text-editor';
 
 const PLAIN_DOC: JSONContent = {
   type: 'doc',
@@ -628,49 +628,6 @@ describe('RichTextEditor image rows', () => {
 });
 
 /**
- * `onEditorApi` is how the notes workspace reaches the markdown serializer
- * for `.md` export. The revocation half matters as much as the handing-out
- * half: the consumer stores the API on a ref, and an API left behind after
- * unmount points at a destroyed Tiptap instance.
- */
-describe('RichTextEditor onEditorApi', () => {
-  test('hands over a markdown serializer, then revokes it on unmount', async () => {
-    const seen: (RichTextEditorApi | null)[] = [];
-    let unmount: (() => void) | undefined;
-
-    await React.act(async () => {
-      unmount = render(
-        <RichTextEditor
-          uploadFailedText="Upload failed"
-          labels={testEditorLabels}
-          value={HEADING_DOC}
-          onChange={() => {}}
-          onEditorApi={(api) => seen.push(api)}
-        />
-      ).unmount;
-    });
-    await React.act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    });
-
-    const api = seen.find((entry) => entry !== null);
-    expect(api).toBeDefined();
-
-    const markdown = api?.getMarkdown() ?? '';
-    // The heading and the paragraph both survive the round trip — this is
-    // the actual document, not an empty editor reporting success.
-    expect(markdown).toContain('Reading list');
-    expect(markdown).toContain('Body');
-
-    await React.act(async () => {
-      unmount?.();
-    });
-
-    expect(seen[seen.length - 1]).toBeNull();
-  });
-});
-
-/**
  * Pasted Markdown source becomes blocks.
  *
  * ProseMirror read `text/plain` as paragraphs, so `## Title` arrived as those characters; only
@@ -776,6 +733,52 @@ describe('RichTextEditor markdown paste', () => {
     expect(blockTypes(editor)).not.toContain('heading');
     expect(blockTypes(editor)).not.toContain('bulletList');
     expect(editor.getText()).toContain('## not a heading');
+  });
+});
+
+/** A dropped or pasted image file is uploaded and lands in the document. */
+describe('RichTextEditor image paste', () => {
+  type Surface = HTMLElement & { editor?: Editor };
+
+  test('uploads a pasted image file and inserts it at the caret', async () => {
+    const uploaded: File[] = [];
+    await React.act(async () => {
+      render(
+        <RichTextEditor
+          uploadFailedText="Upload failed"
+          labels={testEditorLabels}
+          value={PLAIN_DOC}
+          uploadImage={async (file) => {
+            uploaded.push(file);
+            return `https://cdn.test/${file.name}`;
+          }}
+        />
+      );
+    });
+    await React.act(async () => {
+      while (!document.querySelector('.ProseMirror')) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+    });
+    const editor = (document.querySelector('.ProseMirror') as Surface).editor;
+    if (!editor) throw new Error('the editor did not mount');
+    editor.commands.focus('end');
+
+    const shot = new File(['x'], 'shot.png', { type: 'image/png' });
+    const event = new Event('paste', { bubbles: true, cancelable: true });
+    Object.defineProperty(event, 'clipboardData', {
+      value: { files: [shot], getData: () => '' },
+    });
+    await React.act(async () => {
+      editor.view.dom.dispatchEvent(event);
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    });
+
+    expect(uploaded).toEqual([shot]);
+    expect(event.defaultPrevented).toBe(true);
+    expect(JSON.stringify(editor.getJSON())).toContain(
+      'https://cdn.test/shot.png'
+    );
   });
 });
 

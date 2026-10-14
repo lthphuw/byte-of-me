@@ -199,7 +199,6 @@
         "@tiptap/extension-highlight": "catalog:",
         "@tiptap/extension-image": "catalog:",
         "@tiptap/extension-link": "catalog:",
-        "@tiptap/extension-mathematics": "^3.30.4",
         "@tiptap/extension-placeholder": "catalog:",
         "@tiptap/extension-subscript": "catalog:",
         "@tiptap/extension-superscript": "catalog:",
@@ -909,8 +908,6 @@
     "@tiptap/extension-list-item": ["@tiptap/extension-list-item@3.31.4", "", { "peerDependencies": { "@tiptap/extension-list": "3.31.4" } }, "sha512-ao8XAPvhOrtGFILs+fKtOM91omDSpUC8X19m44gbaq5xJDVpIMZ0rP+NAVUS72G7LskhcHa0bu/Pm022bUVjVw=="],
 
     "@tiptap/extension-list-keymap": ["@tiptap/extension-list-keymap@3.31.4", "", { "peerDependencies": { "@tiptap/extension-list": "3.31.4" } }, "sha512-etdkl/YnYfwtALDxecJ+4WYgJAez1fn1vzzZqJklZBpgqiZtny3NxpvWS7/JhsltNG84Wo/oovpfJgVmzhddrw=="],
-
-    "@tiptap/extension-mathematics": ["@tiptap/extension-mathematics@3.31.4", "", { "peerDependencies": { "@tiptap/core": "3.31.4", "@tiptap/pm": "3.31.4", "katex": "^0.16.4 || ^0.17.0 || ^0.18.0" } }, "sha512-qWJHvp+ETbwpaEY6WhWk94yzZFc3OnX/kfBqHfgpdX2x1LVgjZLpFqSmNIvpwtR97+RBP4cKLZT4kwJbSse/zA=="],
 
     "@tiptap/extension-ordered-list": ["@tiptap/extension-ordered-list@3.31.4", "", { "peerDependencies": { "@tiptap/extension-list": "3.31.4" } }, "sha512-UNWyF+Dhm08znszIMnT8Y2kJ1lvtiCvUGs1aG7m9cPHxDa7VycWnOqdtXWkc+6xRLNiC0zgWCFWgLLHduV8pRQ=="],
 

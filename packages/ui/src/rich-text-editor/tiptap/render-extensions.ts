@@ -43,7 +43,7 @@ import { ReferenceListBase } from './extensions/references/reference-list-base';
 // so the grammars never reach the client bundle — highlight classes are baked
 // into the HTML. Unknown languages (e.g. mermaid) fall through as plain text
 // with their `language-*` class intact, which the mermaid enhancer keys on.
-const lowlight = createLowlight(common);
+export const lowlight = createLowlight(common);
 
 /**
  * The one attribute `markNumericTableColumns` sets: this cell sits in a column

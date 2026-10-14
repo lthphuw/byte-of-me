@@ -61,7 +61,7 @@ The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced 
 | **Auth** | Auth.js / NextAuth v5 — email magic link, GitHub & Google OAuth, JWT sessions, role-based |
 | **i18n** | next-intl v4 (UI) + database translations (content) |
 | **Storage** | `@byte-of-me/storage` — S3-compatible client (AWS SDK v3) pointed at Supabase Storage |
-| **Editor** | TipTap 3 + lowlight/highlight.js, KaTeX for maths, `@tiptap/markdown` |
+| **Editor** | TipTap 3 + lowlight/highlight.js, KaTeX to render stored maths, `@tiptap/markdown` for pasted Markdown |
 | **Email** | Nodemailer (SMTP) — sign-in links and contact-form delivery |
 | **Forms & validation** | React Hook Form + Zod; env parsed with `@t3-oss/env-nextjs` |
 | **Analytics** | Vercel Analytics & Speed Insights, Google Analytics (`@next/third-parties`), plus first-party page-view/interaction logging |

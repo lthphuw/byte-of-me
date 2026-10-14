@@ -1,4 +1,5 @@
 import type { Editor } from '@tiptap/core';
+import type { EditorView } from '@tiptap/pm/view';
 import { toast } from 'sonner';
 
 import type { ImageUploadFn } from './image-base';
@@ -108,4 +109,38 @@ export async function resolveImages(
 export function imageFilesFrom(files: FileList | null | undefined): File[] {
   if (!files) return [];
   return Array.from(files).filter((file) => file.type.startsWith('image/'));
+}
+
+/**
+ * Uploads dropped or pasted files and inserts each as an `image` node, from `at`
+ * (where they were dropped) or the selection, one after another.
+ *
+ * `at` is a position in the document as it was at the drop: an author who types
+ * during the upload can have moved it, so it is clamped to the document that is
+ * there now. The editor may also be gone by the time an upload returns, in which
+ * case nothing is inserted.
+ */
+export async function insertImagesAt(
+  view: EditorView,
+  files: File[],
+  upload: ImageUploadFn,
+  uploadFailedText: string,
+  at?: number
+): Promise<void> {
+  const uploaded = await uploadImages(files, upload, uploadFailedText);
+  let insertAt = at;
+
+  for (const image of uploaded) {
+    if (view.isDestroyed) return;
+    const imageType = view.state.schema.nodes.image;
+    if (!imageType) return;
+
+    const pos = Math.min(
+      insertAt ?? view.state.selection.from,
+      view.state.doc.content.size
+    );
+    const node = imageType.create(image);
+    view.dispatch(view.state.tr.insert(pos, node));
+    insertAt = pos + node.nodeSize;
+  }
 }

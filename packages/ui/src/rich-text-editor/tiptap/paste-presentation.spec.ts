@@ -20,7 +20,7 @@ import { describe, expect, test } from 'bun:test';
 
 import { testEditorLabels } from './editor-labels.test-fixture';
 import { stripPastedPresentation } from './paste-presentation';
-import { createExtensions } from './rich-text-editor';
+import { createExtensions } from './create-extensions';
 
 const extensions = createExtensions({
   uploadFailedText: 'Upload failed',

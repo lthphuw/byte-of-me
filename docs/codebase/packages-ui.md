@@ -20,14 +20,16 @@ packages/ui/
     ├── mermaid-size.ts      svgNaturalSize / parseMermaidSize: a diagram's WxH, the `data-mermaid-size` attribute
     ├── math-renderer.tsx    MathRenderer: client; KaTeX over data-latex placeholders
     ├── hooks/               use-auto-grow, use-clipboard, use-debounce, use-embla-state, use-intersection, use-lock-body, use-media-query
-    ├── lib/                 cn, sanitize, rich-text-content codec, markdown-format, reduced-motion, surface-classes (scrim, modal, popup and menu class strings shared by the overlay and menu primitives)
+    ├── lib/                 cn, sanitize, rich-text-content codec, reduced-motion, surface-classes (scrim, modal, popup and menu class strings shared by the overlay and menu primitives)
     ├── motion/              MotionProvider (LazyMotion + reducedMotion), tokens, variants, transitions
     └── rich-text-editor/tiptap/
-        ├── rich-text-editor.tsx   RichTextEditor + createExtensions(): the editor schema
+        ├── rich-text-editor.tsx   RichTextEditor: the frame, the toolbar, the writing column and the outline aside
+        ├── create-extensions.ts   createExtensions(): the editor schema and behaviour
+        ├── use-debounced-change.ts, use-outline.ts, outline-aside.tsx   onChange coalescing and the submit flush; the heading outline and the active heading
         ├── render-extensions.ts   renderExtensions: server-safe mirror of the editor schema
         ├── extensions/            node/mark definitions; references/ = citations and bibliography
         ├── toolbars/              one button per file; editor-toolbar.tsx registers them
-        ├── mobile-tools.tsx, editor-preview.tsx, paste-presentation.ts, paste-markdown.ts, markdown-anchor.ts
+        ├── mobile-tools.tsx, editor-preview.tsx, paste-presentation.ts, paste-markdown.ts
         └── editor-surface.css     editor and article styles (imported by the editor)
 ```
 
@@ -39,7 +41,6 @@ packages/ui/
 | `@byte-of-me/ui/lib/utils` | you need `cn()` | not a §7 subpath; pure, safe anywhere |
 | `@byte-of-me/ui/lib/sanitize` | escaping or sanitising HTML in server code | listed in §7; pure |
 | `@byte-of-me/ui/lib/rich-text-content` | parsing or blank-checking a stored rich-text column | type-only TipTap import; safe anywhere |
-| `@byte-of-me/ui/lib/markdown-format` | tidying markdown source in the editor's markdown mode | not barrel-exported; pure |
 | `@byte-of-me/ui/lib/prefers-reduced-motion` | any programmatic scroll (`scrollIntoViewBehavior`) | §14: CSS cannot cover a literal `behavior: 'smooth'` |
 | `@byte-of-me/ui/rich-text-editor` | a dashboard form edits rich text (reach it via `LazyRichTextEditor`) | listed in §7: the whole editor must stay off public pages |
 | `@byte-of-me/ui/rich-text` | a server component renders stored rich text | listed in §7: load-bearing boundary; server-only schema |
@@ -52,10 +53,9 @@ packages/ui/
 
 ### Rich-text extension sets
 
-- Editor: `createExtensions()` at `packages/ui/src/rich-text-editor/tiptap/rich-text-editor.tsx:94`, called inside a `useMemo` at `:824`. StarterKit (heading, codeBlock, link, underline off), CodeBlockLowlight, CustomHeading, Placeholder, TextAlign, TextStyle, Sub/Superscript, Underline, Link, Color, Highlight (multicolor), Image, ImageGroup, ImagePlaceholder, SearchAndReplace, Typography, TableKit (not resizable), NumericTableColumns, TableHeaderScopes, Markdown, Citation, ReferenceList. Image, ImageGroup, ImagePlaceholder, Citation and ReferenceList are configured with `labels`, so their node views draw the app's text.
-- Conditional: math when `withMath` (`:158`); TableOfContents unless `compact` (`:826`); LinkSuggestion when `onLinkTrigger` (`:819`).
-- Render: `renderExtensions` at `packages/ui/src/rich-text-editor/tiptap/render-extensions.ts:263`. Same node and mark names via `*Base` / `Render*` / `ScopedTable` variants. No Placeholder, SearchAndReplace, Markdown, TableOfContents, LinkSuggestion or node views. Math always on.
-- Math: `extensions/math.ts` replaces the upstream input rules: `$…$` inline, `$$…$$` block.
+- Editor: `createExtensions()` (`packages/ui/src/rich-text-editor/tiptap/create-extensions.ts`), called inside a `useMemo` in `RichTextEditor`. StarterKit (heading, codeBlock, link, underline off), CodeBlockLowlight, CustomHeading, Placeholder, TextAlign, TextStyle, Sub/Superscript, Underline, Link, Color, Highlight (multicolor), Image, ImageGroup, ImagePlaceholder, SearchAndReplace, Typography, TableKit (not resizable), NumericTableColumns, TableHeaderScopes, Markdown, Citation, ReferenceList, ClipboardImport. Image, ImageGroup, ImagePlaceholder, Citation and ReferenceList are configured with `labels`, so their node views draw the app's text.
+- Conditional: TableOfContents unless `compact` (`useOutline`). `ClipboardImport` (`extensions/clipboard-import.ts`, priority 1000) owns paste and drop: it strips pasted presentation, uploads a dropped or pasted image file, and turns pasted Markdown source into blocks except in a code block.
+- Render: `renderExtensions` (`packages/ui/src/rich-text-editor/tiptap/render-extensions.ts`). Same node and mark names via `*Base` / `Render*` / `ScopedTable` variants. No Placeholder, SearchAndReplace, Markdown, TableOfContents, ClipboardImport or node views. Math nodes (`inlineMath`, `blockMath`) render for stored documents; the editor itself no longer authors them (no consumer passed `withMath` after the notes workspace was removed).
 
 ### Flat files
 
@@ -66,11 +66,11 @@ packages/ui/
 
 - Public rich text: `RichText` (`packages/ui/src/rich-text.tsx:22`) → `renderRichTextHtml` (`packages/ui/src/rich-text-render.ts:50`) → `generateHTML(…, renderExtensions)` after citation numbering and numeric-column marking (`rich-text-render.ts:26-29`) → `sanitizeHtml` (`packages/ui/src/lib/sanitize.ts:223`) → `RichTextHtml` (`packages/ui/src/rich-text-html.tsx:50`). `sanitizeHtml` rewrites an `href`/`src` outside `SAFE_SCHEMES` to `#`; it decodes character references once, with any number of leading zeros, and treats a reference it cannot resolve before the first colon as unsafe. It reads a quoted attribute value whole, so a `>` inside an image `alt` stays in the value, and writes `<` and `>` in a kept value as entities; a `<` that opens no complete tag becomes `&lt;`. The full variant reserves `aspect-[auto_16/9]` on the muted surface for every body `<img>` (`rich-text-html.tsx`, the "Images / media" class group). A blog post also passes `imageSizes` to `RichText`: `renderRichTextHtml` writes each image's stored size as an inline `aspect-ratio` after sanitizing (`lib/image-ratios.ts`, `withImageRatios`), so the box is exact before the file draws. An image with no media row keeps the 16:9 box. Mermaid code blocks carry `data-mermaid-size="WxH"`, written by the editor's `MermaidSize` extension (`rich-text-editor/tiptap/extensions/mermaid-size.ts`) once a diagram's text changes while the editor is focused, and kept by `sanitizeHtml` only when it matches `PATTERN_ATTRS`. Blocks saved before that carry no size and still swap in unreserved; they gain one the next time their author edits the diagram.
 - Client needing rendered rich text: a server action returns `renderRichTextHtml` output; the client prints it with `RichTextHtml` (e.g. `apps/web/src/entities/project/ui/project-timeline-item.tsx:6`).
-- Dashboard editing: `LazyRichTextEditor` (`apps/web/src/shared/ui/lazy-rich-text-editor.tsx:16`, `ssr: false`) → `RichTextEditor` (`packages/ui/src/rich-text-editor/tiptap/rich-text-editor.tsx:529`; required props `uploadFailedText`, the upload-failure text, and `labels`, an `EditorLabels` (`packages/ui/src/rich-text-editor/tiptap/editor-labels.ts`) holding every other line of text the editor draws). The app builds `labels` once per locale in `apps/web/src/shared/hooks/use-editor-labels.ts`, from `dashboard.media.editor`; Upload, Delete and Cancel reuse `dashboard.media.picker.uploadButton` and `dashboard.shared.confirmDelete`. Forms seed with `toEditorContent` and save `fromEditorContent(json)` (`apps/web/src/widgets/dashboard/project-manager/ui/project-form.tsx`, the editor field).
+- Dashboard editing: `LazyRichTextEditor` (`apps/web/src/shared/ui/lazy-rich-text-editor.tsx:16`, `ssr: false`) → `RichTextEditor` (`packages/ui/src/rich-text-editor/tiptap/rich-text-editor.tsx`; required props `uploadFailedText`, the upload-failure text, and `labels`, an `EditorLabels` (`packages/ui/src/rich-text-editor/tiptap/editor-labels.ts`) holding every other line of text the editor draws). The app builds `labels` once per locale in `apps/web/src/shared/hooks/use-editor-labels.ts`, from `dashboard.media.editor`; Upload, Delete and Cancel reuse `dashboard.media.picker.uploadButton` and `dashboard.shared.confirmDelete`. Forms seed with `toEditorContent` and save `fromEditorContent(json)` (`apps/web/src/widgets/dashboard/project-manager/ui/project-form.tsx`, the editor field).
 - Stored value parsing: `parseRichTextContent` accepts any object; legacy plain text passes through and becomes a paragraph (`packages/ui/src/lib/rich-text-content.ts:23,44`).
 - Motion: `MotionProvider` (`packages/ui/src/motion/motion-provider.tsx:19`) is mounted at the app root (`apps/web/src/app/providers/global-provider.tsx:24`). It lazy-loads `domAnimation` (`motion-provider.tsx:9-10`) and sets `reducedMotion="user"` (`:22`).
 - Scroll reveal: `fadeUp` starts at `motionOpacity.placeholder` (0.2), not 0, so a block below the fold holds its space as a faded placeholder until it reveals (`packages/ui/src/motion/tokens.ts`, `variants.ts`). Every `RevealSection` user gets this, not only the homepage.
-- Programmatic scroll: call `scrollIntoViewBehavior()` (`packages/ui/src/lib/prefers-reduced-motion.ts:27`), never a literal `'smooth'`. Used at `packages/ui/src/rich-text-editor/tiptap/rich-text-editor.tsx:1573` and `packages/ui/src/rich-text-editor/tiptap/extensions/search-and-replace.tsx:210`.
+- Programmatic scroll: call `scrollIntoViewBehavior()` (`packages/ui/src/lib/prefers-reduced-motion.ts:27`), never a literal `'smooth'`. Used at `packages/ui/src/rich-text-editor/tiptap/outline-aside.tsx` and `packages/ui/src/rich-text-editor/tiptap/extensions/search-and-replace.tsx`.
 - Public page frame: `ShellBase` (`packages/ui/src/shell.tsx:7`) owns the top/bottom padding and block gap; a page passes only its max-width (AGENTS §14).
 - Styling and build: apps/web scans `packages/ui/src/**` (`apps/web/tailwind.config.ts:8`) and transpiles the package (`apps/web/next.config.js`, `transpilePackages`).
 
@@ -78,7 +78,7 @@ packages/ui/
 
 1. **Add a primitive.** Create `packages/ui/src/<name>.tsx` (add `'use client'` only if it has state, effects, handlers or a browser API). Add `export * from './<name>';` to `packages/ui/src/index.ts`. Consumers import `@byte-of-me/ui/<name>` through the `./*` export. Examples: `packages/ui/src/shell.tsx` (server-safe), `packages/ui/src/copy-button.tsx` (client, uses `m.*`).
 2. **Add a hook.** Create `packages/ui/src/hooks/use-<name>.ts` and add `export * from './use-<name>';` to `packages/ui/src/hooks/index.ts`. Consumers import `@byte-of-me/ui/hooks/use-<name>` (`./hooks/*` export). Example: `packages/ui/src/hooks/use-lock-body.ts`, imported at `apps/web/src/widgets/public/public-site-header/ui/public-header-mobile-nav.tsx:7`.
-3. **Add an editor node.** (a) Define it in `packages/ui/src/rich-text-editor/tiptap/extensions/`. (b) Register it in `createExtensions()` (`rich-text-editor.tsx:94`). If its node view draws text, give it a `labels` option and add the keys to `editor-labels.ts`, `editor-labels.test-fixture.ts` and `apps/web/src/shared/hooks/use-editor-labels.ts`, then both catalogues. (c) Add a render-side twin with the same name and attributes to `renderExtensions` (`render-extensions.ts:263`). (d) Optional toolbar: `toolbars/<name>.tsx` plus a line in `toolbars/editor-toolbar.tsx`. Example: `Citation` (`extensions/references/citation.ts`) → `CitationBase` (`citation-base.ts`) → `toolbars/citation.tsx`.
+3. **Add an editor node.** (a) Define it in `packages/ui/src/rich-text-editor/tiptap/extensions/`. (b) Register it in `createExtensions()` (`create-extensions.ts`). If its node view draws text, give it a `labels` option and add the keys to `editor-labels.ts`, `editor-labels.test-fixture.ts` and `apps/web/src/shared/hooks/use-editor-labels.ts`, then both catalogues. (c) Add a render-side twin with the same name and attributes to `renderExtensions` (`render-extensions.ts`). (d) Optional toolbar: `toolbars/<name>.tsx` plus a line in `toolbars/editor-toolbar.tsx`. Example: `Citation` (`extensions/references/citation.ts`) → `CitationBase` (`citation-base.ts`) → `toolbars/citation.tsx`.
 
 ## Gotchas
 
@@ -118,7 +118,6 @@ cd packages/ui && bun test src/lib/utils.spec.ts  # one spec file, from this dir
 - `packages/ui/src/rich-text-editor/tiptap/extensions/image.tsx:196-197`: §14, `bg-black/40` and `text-white` on the upload overlay.
 - `packages/ui/src/rich-text-editor/tiptap/toolbars/color-and-highlight.tsx:174`: §14, `dark:bg-gray-2`.
 - `packages/ui/src/rich-text-editor/tiptap/toolbars/link.tsx:93-94`: §14, text arrow `↗` used as an icon (Lucide only) and a `decoration-gray-7` class.
-- `packages/ui/src/rich-text-editor/tiptap/rich-text-editor.tsx`: §9, 1,547 lines against the ~300-line component threshold; extract hooks.
 - `packages/ui/src/rich-text-editor/tiptap/toolbars/citation.tsx:80,91,101`, `toolbars/search-and-replace-toolbar.tsx:109`, `extensions/image.tsx:301`: §4, English UI strings hardcoded; the editor has no label props (unlike `pagination.tsx`).
 - `packages/ui/src/lib/rich-text-content.ts:3-20`, `packages/ui/src/shell.tsx:10-22`: §11.14, comment blocks over three lines (about 169 of 549 blocks, line-count heuristic).
 - `apps/web/src/features/public/blog-print/ui/blog-print-trigger.tsx:3-5`: §11.11, stale comment; it says the barrel reaches TipTap, and it does not.

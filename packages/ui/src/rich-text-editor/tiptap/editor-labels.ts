@@ -12,7 +12,6 @@
 export const EDITOR_LABEL_KEYS = [
   // Writing surface and its tabs
   'defaultPlaceholder', // Write, type '/' for commands
-  'markdownSource', // Markdown source
   'outlineTab', // Outline
   'referencesTab', // References
   'outlineEmpty', // Headings you add will show up here.

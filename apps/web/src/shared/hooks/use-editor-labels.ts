@@ -20,7 +20,6 @@ export function useEditorLabels(): EditorLabels {
   return useMemo(
     () => ({
       defaultPlaceholder: t('defaultPlaceholder'),
-      markdownSource: t('markdownSource'),
       outlineTab: t('outlineTab'),
       referencesTab: t('referencesTab'),
       outlineEmpty: t('outlineEmpty'),

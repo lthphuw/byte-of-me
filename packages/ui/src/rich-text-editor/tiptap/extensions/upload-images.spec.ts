@@ -1,7 +1,10 @@
+import { Editor } from '@tiptap/core';
+import Image from '@tiptap/extension-image';
+import StarterKit from '@tiptap/starter-kit';
 import { describe, expect, it, spyOn } from 'bun:test';
 import { toast } from 'sonner';
 
-import { uploadImages } from './upload-images';
+import { insertImagesAt, uploadImages } from './upload-images';
 
 const file = (name: string) => new File(['x'], name, { type: 'image/png' });
 
@@ -68,5 +71,82 @@ describe('uploadImages', () => {
     } finally {
       toastError.mockRestore();
     }
+  });
+});
+
+describe('insertImagesAt', () => {
+  function editorWith(html: string) {
+    return new Editor({ extensions: [StarterKit, Image], content: html });
+  }
+  const imageSrcs = (editor: Editor) =>
+    (editor.getJSON().content ?? [])
+      .filter((node) => node.type === 'image')
+      .map((node) => node.attrs?.src);
+
+  it('inserts each uploaded file as an image, in order, from the position given', async () => {
+    const editor = editorWith('<p>ab</p>');
+
+    await insertImagesAt(
+      editor.view,
+      [file('a.png'), file('b.png')],
+      async (f) => `/media/${f.name}`,
+      'Upload failed',
+      0
+    );
+
+    expect(imageSrcs(editor)).toEqual(['/media/a.png', '/media/b.png']);
+    editor.destroy();
+  });
+
+  it('inserts at the caret when no position is given', async () => {
+    const editor = editorWith('<p>ab</p>');
+    editor.commands.setTextSelection(2);
+
+    await insertImagesAt(
+      editor.view,
+      [file('a.png')],
+      async () => '/media/a.png',
+      'Upload failed'
+    );
+
+    expect(imageSrcs(editor)).toEqual(['/media/a.png']);
+    editor.destroy();
+  });
+
+  it('clamps a drop position that the document has since shrunk below', async () => {
+    const editor = editorWith('<p>a long paragraph of text</p>');
+
+    await insertImagesAt(
+      editor.view,
+      [file('a.png')],
+      async () => {
+        // The author deletes everything while the upload is in flight.
+        editor.commands.clearContent();
+        return '/media/a.png';
+      },
+      'Upload failed',
+      28
+    );
+
+    expect(imageSrcs(editor)).toEqual(['/media/a.png']);
+    editor.destroy();
+  });
+
+  it('does nothing, and does not throw, when the editor goes away mid-upload', async () => {
+    const editor = editorWith('<p>ab</p>');
+    const view = editor.view;
+    let release: (src: string) => void = () => {};
+
+    const done = insertImagesAt(
+      view,
+      [file('a.png')],
+      () => new Promise<string>((resolve) => (release = resolve)),
+      'Upload failed',
+      0
+    );
+    editor.destroy();
+    release('/media/a.png');
+
+    await expect(done).resolves.toBeUndefined();
   });
 });

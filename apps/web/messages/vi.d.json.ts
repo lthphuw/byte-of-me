@@ -760,7 +760,6 @@ declare const messages: {
       },
       "editor": {
         "defaultPlaceholder": "Viết nội dung, gõ '/' để xem lệnh",
-        "markdownSource": "Mã nguồn Markdown",
         "outlineTab": "Mục lục",
         "referencesTab": "Tham khảo",
         "outlineEmpty": "Các tiêu đề bạn thêm sẽ hiện ở đây.",

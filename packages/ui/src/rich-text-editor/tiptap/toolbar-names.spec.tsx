@@ -165,20 +165,35 @@ describe('RichTextEditor toolbar names', () => {
     ).toBeTruthy();
   });
 
-  test('offers the formatting sheet on a full editor', async () => {
+  test('offers the formatting sheet on a phone-width full editor, and not beside a desktop bar', async () => {
+    // Mounted only below `md`: a desktop editor has the full toolbar instead.
     await mountFullEditor(PLAIN_DOC);
-
-    fireEvent.click(
-      screen.getByRole('button', {
+    expect(
+      screen.queryByRole('button', {
         name: testEditorLabels.openFormattingTools,
       })
-    );
+    ).toBeNull();
+    cleanup();
 
-    expect(
-      screen.getByRole('menu', { name: testEditorLabels.formatting })
-    ).toBeTruthy();
-    expect(
-      screen.getByRole('menuitem', { name: testEditorLabels.bold })
-    ).toBeTruthy();
+    const width = window.innerWidth;
+    window.innerWidth = 375;
+    try {
+      await mountFullEditor(PLAIN_DOC);
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: testEditorLabels.openFormattingTools,
+        })
+      );
+
+      expect(
+        screen.getByRole('menu', { name: testEditorLabels.formatting })
+      ).toBeTruthy();
+      expect(
+        screen.getByRole('menuitem', { name: testEditorLabels.bold })
+      ).toBeTruthy();
+    } finally {
+      window.innerWidth = width;
+    }
   });
 });

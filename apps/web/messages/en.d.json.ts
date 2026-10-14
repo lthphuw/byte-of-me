@@ -760,7 +760,6 @@ declare const messages: {
       },
       "editor": {
         "defaultPlaceholder": "Write, type '/' for commands",
-        "markdownSource": "Markdown source",
         "outlineTab": "Outline",
         "referencesTab": "References",
         "outlineEmpty": "Headings you add will show up here.",
