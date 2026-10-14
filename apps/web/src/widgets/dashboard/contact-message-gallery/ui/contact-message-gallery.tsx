@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  ConfirmDeleteDialog,
   Input,
   Pagination,
   ScrollArea,
@@ -24,7 +23,11 @@ import {
 } from '@/entities/contact-message';
 import { useContactMessages } from '@/entities/contact-message/query';
 import { useServerMutation } from '@/shared/hooks/use-server-mutation';
-import { ManagerListState, RecordDialog } from '@/shared/ui';
+import {
+  ConfirmDeleteDialog,
+  ManagerListState,
+  RecordDialog,
+} from '@/shared/ui';
 
 export function ContactMessageGallery() {
   const t = useTranslations('dashboard.contactGallery');
@@ -247,7 +250,7 @@ export function ContactMessageGallery() {
       </RecordDialog>
 
       <ConfirmDeleteDialog
-        isOpen={confirmingDelete}
+        open={confirmingDelete}
         onClose={() => setConfirmingDelete(false)}
         onConfirm={() => {
           if (selectedMessage) deleteMutation.mutate(selectedMessage.id);
@@ -257,8 +260,6 @@ export function ContactMessageGallery() {
         description={tCrud('deleteDescription', {
           name: selectedMessage?.name ?? '',
         })}
-        actionText={tShared('confirmDelete.actionText')}
-        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

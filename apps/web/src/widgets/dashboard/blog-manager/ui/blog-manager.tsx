@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, ConfirmDeleteDialog, Pagination } from '@byte-of-me/ui';
+import { Button, Pagination } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -19,6 +19,7 @@ import { BlogEditorDialog } from '@/features/dashboard/blog-editor';
 import { useBlogReferenceOptions } from '@/features/dashboard/blog-editor/lib/use-blog-reference-options';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import {
+  ConfirmDeleteDialog,
   ManagerListState,
   ManagerPageHeader,
   RecordListSkeleton,
@@ -147,7 +148,7 @@ export function BlogManager() {
       />
 
       <ConfirmDeleteDialog
-        isOpen={!!itemToDelete}
+        open={!!itemToDelete}
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
@@ -156,8 +157,6 @@ export function BlogManager() {
           name:
             itemToDelete?.translations?.[0]?.title || itemToDelete?.slug || '',
         })}
-        actionText={tShared('confirmDelete.actionText')}
-        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

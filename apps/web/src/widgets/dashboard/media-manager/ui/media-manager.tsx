@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Button, ConfirmDeleteDialog, Pagination } from '@byte-of-me/ui';
+import { Button, Pagination } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -15,11 +15,7 @@ import { useCompressionSettings } from '@/features/dashboard/media-library/lib/u
 import { CompressionSettingsPopover } from '@/features/dashboard/media-library/ui/compression-settings-popover';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import type { Media } from '@/shared/types/models';
-import {
-  ManagerListState,
-  ManagerPageHeader,
-  RecordDialog,
-} from '@/shared/ui';
+import { ConfirmDeleteDialog, ManagerListState, ManagerPageHeader, RecordDialog } from '@/shared/ui';
 import { MediaLibrary } from '@/widgets/dashboard/media-manager/ui/media-library';
 import { MediaLibrarySkeleton } from '@/widgets/dashboard/media-manager/ui/media-library-skeleton';
 
@@ -162,7 +158,7 @@ export function MediaManager() {
       </RecordDialog>
 
       <ConfirmDeleteDialog
-        isOpen={mediaToDelete !== null}
+        open={mediaToDelete !== null}
         isLoading={remove.isPending}
         onClose={() => setMediaToDelete(null)}
         onConfirm={() => {
@@ -175,8 +171,6 @@ export function MediaManager() {
         description={tCrud('deleteDescription', {
           name: mediaToDelete?.fileName ?? '',
         })}
-        actionText={tShared('confirmDelete.actionText')}
-        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

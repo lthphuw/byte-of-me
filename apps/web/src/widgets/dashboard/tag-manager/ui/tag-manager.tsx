@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, ConfirmDeleteDialog, Pagination } from '@byte-of-me/ui';
+import { Button, Pagination } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -20,6 +20,7 @@ import { useAdminTagById } from '@/entities/tag/query';
 import { TagCard } from '@/features/dashboard/tag-management';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import {
+  ConfirmDeleteDialog,
   ManagerListState,
   ManagerPageHeader,
   RecordListSkeleton,
@@ -153,7 +154,7 @@ export function TagManager() {
       />
 
       <ConfirmDeleteDialog
-        isOpen={!!itemToDelete}
+        open={!!itemToDelete}
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
@@ -161,8 +162,6 @@ export function TagManager() {
         description={crud('deleteDescription', {
           name: itemToDelete ? tagDisplayName(itemToDelete, locale) : '',
         })}
-        actionText={tShared('confirmDelete.actionText')}
-        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

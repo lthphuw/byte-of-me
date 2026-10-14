@@ -6,7 +6,7 @@ import { useEditorState } from '@tiptap/react';
 import { Pencil, Plus, Quote, Trash2 } from 'lucide-react';
 
 import { Button } from '../../../../button';
-import { ConfirmDeleteDialog } from '../../../../confirm-delete-dialog';
+import { ConfirmDialog } from '../../../../confirm-dialog';
 import { Input } from '../../../../input';
 import { Label } from '../../../../label';
 import type { EditorLabels } from '../../editor-labels';
@@ -185,8 +185,9 @@ export function ReferencePanel({
         </p>
       )}
 
-      <ConfirmDeleteDialog
-        isOpen={pendingDelete !== null}
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        destructive
         onClose={() => setPendingDelete(null)}
         onConfirm={confirmDelete}
         title={labels.deleteReferenceTitle}
@@ -199,9 +200,8 @@ export function ReferencePanel({
               } ${labels.citedCountSuffix}`
             : labels.renumberedReferences
         }
-        // Without these the dialog's buttons fall back to its English defaults.
-        actionText={labels.delete}
-        cancelText={labels.cancel}
+        confirmLabel={labels.delete}
+        cancelLabel={labels.cancel}
       />
     </div>
   );

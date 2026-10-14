@@ -13,33 +13,37 @@ import {
   AlertDialogTitle,
 } from './alert-dialog';
 
-interface ConfirmDeleteDialogProps {
-  isOpen: boolean;
+interface ConfirmDialogProps {
+  open: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  /** The confirmed action is in flight: both buttons lock and the dialog stays. */
   isLoading?: boolean;
+  /** The action cannot be undone (a delete). Others keep the primary style. */
+  destructive?: boolean;
   title: string;
   description: string;
-  actionText: string;
-  cancelText: string;
+  confirmLabel: string;
+  cancelLabel: string;
 }
 
-export function ConfirmDeleteDialog({
-  isOpen,
+export function ConfirmDialog({
+  open,
   onClose,
   onConfirm,
   isLoading,
+  destructive = false,
   title,
   description,
-  actionText,
-  cancelText,
-}: ConfirmDeleteDialogProps) {
+  confirmLabel,
+  cancelLabel,
+}: ConfirmDialogProps) {
   return (
     <AlertDialog
-      open={isOpen}
-      // Escape and a scrim tap must not abandon a delete that is in flight.
-      onOpenChange={(open) => {
-        if (!open && !isLoading) onClose();
+      open={open}
+      // Escape and a scrim tap must not abandon an action that is in flight.
+      onOpenChange={(next) => {
+        if (!next && !isLoading) onClose();
       }}
     >
       <AlertDialogContent>
@@ -49,18 +53,19 @@ export function ConfirmDeleteDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading}>
-            {cancelText}
+            {cancelLabel}
           </AlertDialogCancel>
           <AlertDialogAction
-            variant="destructive"
-            onClick={(e) => {
-              e.preventDefault();
+            variant={destructive ? 'destructive' : 'default'}
+            // Radix would close the dialog on its own; the caller decides when.
+            onClick={(event) => {
+              event.preventDefault();
               onConfirm();
             }}
             disabled={isLoading}
           >
             {isLoading && <Loader2 className="animate-spin" />}
-            {actionText}
+            {confirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

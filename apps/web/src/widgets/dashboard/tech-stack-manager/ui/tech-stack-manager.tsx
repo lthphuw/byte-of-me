@@ -1,7 +1,7 @@
 'use client';
 
 import { Fragment, useMemo } from 'react';
-import { Button, ConfirmDeleteDialog } from '@byte-of-me/ui';
+import { Button } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -19,11 +19,7 @@ import {
 import { useAdminTechStackById } from '@/entities/tech-stack/query';
 import { TechStackCard } from '@/features/dashboard/tech-stack-management';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
-import {
-  ManagerListState,
-  ManagerPageHeader,
-  RecordListSkeleton,
-} from '@/shared/ui';
+import { ConfirmDeleteDialog, ManagerListState, ManagerPageHeader, RecordListSkeleton } from '@/shared/ui';
 
 /**
  * `initialTechStacks` is the server's seed of the list. Absent when that read
@@ -35,7 +31,6 @@ export function TechStackManager({
   initialTechStacks?: AdminTechStack[];
 }) {
   const t = useTranslations('dashboard.techStack');
-  const tShared = useTranslations('dashboard.shared');
   const tCrud = useTranslations('dashboard.shared.crud');
   const {
     items: techStacks,
@@ -157,7 +152,7 @@ export function TechStackManager({
       />
 
       <ConfirmDeleteDialog
-        isOpen={!!techToDelete}
+        open={!!techToDelete}
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
@@ -165,8 +160,6 @@ export function TechStackManager({
         description={tCrud('deleteDescription', {
           name: techToDelete?.name ?? '',
         })}
-        actionText={tShared('confirmDelete.actionText')}
-        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

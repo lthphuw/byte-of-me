@@ -5,7 +5,6 @@ import type { Control } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
 import {
   Button,
-  ConfirmDeleteDialog,
   FormControl,
   FormField,
   FormItem,
@@ -16,7 +15,12 @@ import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { CompanyFormValues } from '@/entities/company/model/company-schema';
-import { FieldMessage, TextField, TranslationTabs } from '@/shared/ui';
+import {
+  ConfirmDeleteDialog,
+  FieldMessage,
+  TextField,
+  TranslationTabs,
+} from '@/shared/ui';
 
 interface CompanyTaskItemFieldProps {
   roleIndex: number;
@@ -32,7 +36,6 @@ export function CompanyTaskItemField({
   remove,
 }: CompanyTaskItemFieldProps) {
   const t = useTranslations('dashboard.company');
-  const tShared = useTranslations('dashboard.shared');
   const [confirmingRemove, setConfirmingRemove] = useState(false);
 
   // A task still empty in every language is removed without a dialog.
@@ -98,7 +101,7 @@ export function CompanyTaskItemField({
       />
 
       <ConfirmDeleteDialog
-        isOpen={confirmingRemove}
+        open={confirmingRemove}
         onClose={() => setConfirmingRemove(false)}
         onConfirm={() => {
           setConfirmingRemove(false);
@@ -106,8 +109,6 @@ export function CompanyTaskItemField({
         }}
         title={t('task.removeConfirmTitle')}
         description={t('task.removeConfirmDescription')}
-        actionText={tShared('confirmDelete.actionText')}
-        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

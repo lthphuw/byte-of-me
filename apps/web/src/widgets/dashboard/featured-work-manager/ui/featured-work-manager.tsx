@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Button, ConfirmDeleteDialog, Pagination } from '@byte-of-me/ui';
+import { Button, Pagination } from '@byte-of-me/ui';
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -24,6 +24,7 @@ import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import {
+  ConfirmDeleteDialog,
   ManagerListState,
   ManagerPageHeader,
   RecordListItem,
@@ -261,7 +262,7 @@ export function FeaturedWorkManager() {
       />
 
       <ConfirmDeleteDialog
-        isOpen={!!workToDelete}
+        open={!!workToDelete}
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
@@ -269,8 +270,6 @@ export function FeaturedWorkManager() {
         description={crud('deleteDescription', {
           name: workToDelete ? titleOf(workToDelete) : '',
         })}
-        actionText={tShared('confirmDelete.actionText')}
-        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

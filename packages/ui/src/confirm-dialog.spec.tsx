@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, mock } from 'bun:test';
 
-import { ConfirmDeleteDialog } from './confirm-delete-dialog';
+import { ConfirmDialog } from './confirm-dialog';
 
 afterEach(cleanup);
 
@@ -9,21 +9,22 @@ function renderDialog(isLoading = false) {
   const onClose = mock();
   const onConfirm = mock();
   render(
-    <ConfirmDeleteDialog
-      isOpen
+    <ConfirmDialog
+      open
+      destructive
       isLoading={isLoading}
       onClose={onClose}
       onConfirm={onConfirm}
       title="Delete tag?"
       description="This removes it for good."
-      actionText="Delete"
-      cancelText="Keep"
+      confirmLabel="Delete"
+      cancelLabel="Keep"
     />
   );
   return { onClose, onConfirm };
 }
 
-describe('ConfirmDeleteDialog', () => {
+describe('ConfirmDialog', () => {
   it('shows the text it is given', () => {
     renderDialog();
 
@@ -41,6 +42,24 @@ describe('ConfirmDeleteDialog', () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
+  it('uses the primary style unless it is destructive', () => {
+    render(
+      <ConfirmDialog
+        open
+        onClose={mock()}
+        onConfirm={mock()}
+        title="Discard?"
+        description="Your edits are lost."
+        confirmLabel="Discard"
+        cancelLabel="Keep editing"
+      />
+    );
+
+    expect(
+      screen.getByRole('button', { name: 'Discard' }).className
+    ).not.toContain('bg-destructive');
+  });
+
   it('closes on Cancel and on Escape when idle', () => {
     const { onClose } = renderDialog();
 
@@ -50,7 +69,7 @@ describe('ConfirmDeleteDialog', () => {
     expect(onClose).toHaveBeenCalledTimes(2);
   });
 
-  it('ignores Escape while the delete is in flight and disables both buttons', () => {
+  it('ignores Escape while the action is in flight and disables both buttons', () => {
     const { onClose } = renderDialog(true);
 
     fireEvent.keyDown(document, { key: 'Escape' });

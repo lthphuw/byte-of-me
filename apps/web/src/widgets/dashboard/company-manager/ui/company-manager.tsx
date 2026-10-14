@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  Badge,
-  Button,
-  ConfirmDeleteDialog,
-  Pagination,
-} from '@byte-of-me/ui';
+import { Badge, Button, Pagination } from '@byte-of-me/ui';
 import { Briefcase, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
@@ -24,12 +19,7 @@ import {
 import { companyQueries, useAdminCompanyById } from '@/entities/company/query';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { formatDate } from '@/shared/lib/utils';
-import {
-  ManagerListState,
-  ManagerPageHeader,
-  RecordListItem,
-  RecordRowActions,
-} from '@/shared/ui';
+import { ConfirmDeleteDialog, ManagerListState, ManagerPageHeader, RecordListItem, RecordRowActions } from '@/shared/ui';
 
 export function CompanyManager() {
   const t = useTranslations('dashboard.company');
@@ -204,7 +194,7 @@ export function CompanyManager() {
       />
 
       <ConfirmDeleteDialog
-        isOpen={!!companyToDelete}
+        open={!!companyToDelete}
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
@@ -212,8 +202,6 @@ export function CompanyManager() {
         description={tCrud('deleteDescription', {
           name: companyToDelete?.company ?? '',
         })}
-        actionText={tShared('confirmDelete.actionText')}
-        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

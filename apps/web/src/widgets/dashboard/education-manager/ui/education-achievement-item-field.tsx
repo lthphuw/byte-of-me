@@ -2,21 +2,7 @@
 
 import { useState } from 'react';
 import { type Control, useWatch } from 'react-hook-form';
-import {
-  Badge,
-  Button,
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-  ConfirmDeleteDialog,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  fromEditorContent,
-  toEditorContent,
-} from '@byte-of-me/ui';
+import { Badge, Button, Collapsible, CollapsibleContent, CollapsibleTrigger, FormControl, FormField, FormItem, FormLabel, FormMessage, fromEditorContent, toEditorContent } from '@byte-of-me/ui';
 import { ArrowDown, ArrowUp, ChevronDown, ImageIcon, Trash } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -26,7 +12,7 @@ import { MediaMultiSelect } from '@/features/dashboard/media-library/ui/media-mu
 import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
 import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-submit';
 import { cn } from '@/shared/lib/utils';
-import { TextField, TranslationTabs } from '@/shared/ui';
+import { ConfirmDeleteDialog, TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { achievementHasContent } from '@/widgets/dashboard/education-manager/lib/achievement-has-content';
 
@@ -55,7 +41,6 @@ export function EducationAchievementItemField({
   // storage.
   const uploadImage = useScopedImageUploader('education');
   const t = useTranslations('dashboard.education');
-  const tShared = useTranslations('dashboard.shared');
   const tMedia = useTranslations('dashboard.media');
   const editorLabels = useEditorLabels();
   const [open, setOpen] = useState(defaultOpen);
@@ -244,7 +229,7 @@ export function EducationAchievementItemField({
       </Collapsible>
 
       <ConfirmDeleteDialog
-        isOpen={confirmingRemove}
+        open={confirmingRemove}
         onClose={() => setConfirmingRemove(false)}
         onConfirm={() => {
           setConfirmingRemove(false);
@@ -252,8 +237,6 @@ export function EducationAchievementItemField({
         }}
         title={t('achievements.removeConfirmTitle')}
         description={t('achievements.removeConfirmDescription', { name })}
-        actionText={tShared('confirmDelete.actionText')}
-        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

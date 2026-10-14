@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useFieldArray, type UseFormReturn } from 'react-hook-form';
 import {
   Button,
-  ConfirmDeleteDialog,
   DeleteButton,
   FormControl,
   FormField,
@@ -17,6 +16,7 @@ import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { UserProfileFormValues } from '@/entities/user-profile';
+import { ConfirmDeleteDialog } from '@/shared/ui';
 
 interface PendingRemoval {
   index: number;
@@ -29,7 +29,6 @@ export function SocialLinksSection({
   form: UseFormReturn<UserProfileFormValues>;
 }) {
   const t = useTranslations('dashboard.userProfile');
-  const tShared = useTranslations('dashboard.shared');
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'socialLinks',
@@ -154,7 +153,7 @@ export function SocialLinksSection({
       </div>
 
       <ConfirmDeleteDialog
-        isOpen={pendingRemoval !== null}
+        open={pendingRemoval !== null}
         onClose={() => setPendingRemoval(null)}
         onConfirm={() => {
           if (pendingRemoval) remove(pendingRemoval.index);
@@ -164,8 +163,6 @@ export function SocialLinksSection({
         description={t('socialLinks.removeConfirmDescription', {
           platform: pendingRemoval?.platform || t('socialLinks.unnamedLink'),
         })}
-        actionText={tShared('confirmDelete.actionText')}
-        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

@@ -1,52 +1,34 @@
 'use client';
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@byte-of-me/ui';
+import { ConfirmDialog } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
-export interface ConfirmDiscardDialogProps {
+interface ConfirmDiscardDialogProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onClose: () => void;
   onDiscard: () => void;
 }
 
-/** Asked before a dirty form closes. "Keep editing" only closes this prompt. */
+/**
+ * Asked before a dirty form closes. "Keep editing" only closes this prompt.
+ * Not destructive: that style is reserved for irreversible deletes.
+ */
 export function ConfirmDiscardDialog({
   open,
-  onOpenChange,
+  onClose,
   onDiscard,
 }: ConfirmDiscardDialogProps) {
   const t = useTranslations('dashboard.shared.crud');
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{t('discardTitle')}</AlertDialogTitle>
-          <AlertDialogDescription>
-            {t('discardDescription')}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>
-            {t('keepEditing')}
-          </AlertDialogCancel>
-          {/* Not destructive: spec 4.5 reserves that style for irreversible deletes. */}
-          <AlertDialogAction
-            onClick={onDiscard}
-          >
-            {t('discard')}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <ConfirmDialog
+      open={open}
+      onClose={onClose}
+      onConfirm={onDiscard}
+      title={t('discardTitle')}
+      description={t('discardDescription')}
+      confirmLabel={t('discard')}
+      cancelLabel={t('keepEditing')}
+    />
   );
 }

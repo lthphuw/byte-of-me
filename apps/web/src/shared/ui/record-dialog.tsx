@@ -141,7 +141,7 @@ export function RecordDialog({
 
       <ConfirmDiscardDialog
         open={confirmingDiscard}
-        onOpenChange={setConfirmingDiscard}
+        onClose={() => setConfirmingDiscard(false)}
         onDiscard={() => {
           setConfirmingDiscard(false);
           onOpenChange(false);

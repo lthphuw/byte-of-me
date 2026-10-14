@@ -134,7 +134,7 @@ export function UserProfileManager({
 
       <ConfirmDiscardDialog
         open={confirmingReset}
-        onOpenChange={setConfirmingReset}
+        onClose={() => setConfirmingReset(false)}
         onDiscard={() => {
           setConfirmingReset(false);
           handlers.handleReset();

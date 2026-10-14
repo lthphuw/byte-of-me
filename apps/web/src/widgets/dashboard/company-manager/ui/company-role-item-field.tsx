@@ -7,7 +7,6 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-  ConfirmDeleteDialog,
   FormControl,
   FormField,
   FormItem,
@@ -22,7 +21,12 @@ import { CompanyTaskItemField } from './company-task-item-field';
 import type { CompanyFormValues } from '@/entities/company/model/company-schema';
 import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-submit';
 import { cn } from '@/shared/lib/utils';
-import { LocalizedDatePicker, TextField, TranslationTabs } from '@/shared/ui';
+import {
+  ConfirmDeleteDialog,
+  LocalizedDatePicker,
+  TextField,
+  TranslationTabs,
+} from '@/shared/ui';
 import { roleHasContent } from '@/widgets/dashboard/company-manager/lib/role-has-content';
 
 interface CompanyRoleItemFieldProps {
@@ -37,7 +41,6 @@ export function CompanyRoleItemField({
   remove,
 }: CompanyRoleItemFieldProps) {
   const t = useTranslations('dashboard.company');
-  const tShared = useTranslations('dashboard.shared');
   const [open, setOpen] = useState(true);
   const [confirmingRemove, setConfirmingRemove] = useState(false);
 
@@ -199,7 +202,7 @@ export function CompanyRoleItemField({
       </CollapsibleContent>
 
       <ConfirmDeleteDialog
-        isOpen={confirmingRemove}
+        open={confirmingRemove}
         onClose={() => setConfirmingRemove(false)}
         onConfirm={() => {
           setConfirmingRemove(false);
@@ -209,8 +212,6 @@ export function CompanyRoleItemField({
         description={t('role.removeConfirmDescription', {
           name: title || t('role.fallbackTitle', { index: index + 1 }),
         })}
-        actionText={tShared('confirmDelete.actionText')}
-        cancelText={tShared('confirmDelete.cancelText')}
       />
     </Collapsible>
   );

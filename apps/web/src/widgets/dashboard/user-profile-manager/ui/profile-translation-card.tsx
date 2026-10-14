@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import {
-  ConfirmDeleteDialog,
   DeleteButton,
   FormControl,
   FormField,
@@ -19,7 +18,7 @@ import { useTranslations } from 'next-intl';
 import { useScopedImageUploader } from '@/entities/media/query';
 import type { UserProfileFormValues } from '@/entities/user-profile';
 import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
-import { TextField } from '@/shared/ui';
+import { ConfirmDeleteDialog, TextField } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
 /** The editor's empty document, which is what an untouched "About me" holds. */
@@ -46,7 +45,6 @@ export function ProfileTranslationCard({
   // Images pasted into this editor land under the `profile` prefix in storage.
   const uploadImage = useScopedImageUploader('profile');
   const t = useTranslations('dashboard.userProfile');
-  const tShared = useTranslations('dashboard.shared');
   const tMedia = useTranslations('dashboard.media');
   const editorLabels = useEditorLabels();
   // Holds the language code being confirmed — nothing here subscribes to the
@@ -229,7 +227,7 @@ export function ProfileTranslationCard({
       </Section>
 
       <ConfirmDeleteDialog
-        isOpen={confirmingLanguage !== null}
+        open={confirmingLanguage !== null}
         onClose={() => setConfirmingLanguage(null)}
         onConfirm={() => {
           setConfirmingLanguage(null);
@@ -240,8 +238,6 @@ export function ProfileTranslationCard({
           language:
             confirmingLanguage?.toUpperCase() || t('translations.newTabLabel'),
         })}
-        actionText={tShared('confirmDelete.actionText')}
-        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

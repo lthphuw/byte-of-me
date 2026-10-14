@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  Badge,
-  Button,
-  ConfirmDeleteDialog,
-  Pagination,
-} from '@byte-of-me/ui';
+import { Badge, Button, Pagination } from '@byte-of-me/ui';
 import { GraduationCap, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
@@ -28,12 +23,7 @@ import {
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { formatDate } from '@/shared/lib/utils';
-import {
-  ManagerListState,
-  ManagerPageHeader,
-  RecordListItem,
-  RecordRowActions,
-} from '@/shared/ui';
+import { ConfirmDeleteDialog, ManagerListState, ManagerPageHeader, RecordListItem, RecordRowActions } from '@/shared/ui';
 
 export function EducationManager() {
   const t = useTranslations('dashboard.education');
@@ -212,7 +202,7 @@ export function EducationManager() {
       />
 
       <ConfirmDeleteDialog
-        isOpen={!!eduToDelete}
+        open={!!eduToDelete}
         isLoading={isDeleting}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
@@ -220,8 +210,6 @@ export function EducationManager() {
         description={tCrud('deleteDescription', {
           name: eduToDelete ? titleOf(eduToDelete) : '',
         })}
-        actionText={tShared('confirmDelete.actionText')}
-        cancelText={tShared('confirmDelete.cancelText')}
       />
     </div>
   );

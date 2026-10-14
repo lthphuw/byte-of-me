@@ -127,5 +127,5 @@ Clean: no `@/app` import from `widgets/`; no `@/widgets` import from `features/`
 - [Web features](web-features.md): the `@/features/*` slices composed here
 - [Web entities, content](web-entities-content.md) and [Web entities, supporting](web-entities-supporting.md): the `@/entities/*` slices composed here
 - [Web shared](web-shared.md): `useCrudManager`, `requireAdmin`, `RevealSection`, `NavDrawer`
-- [Packages UI](packages-ui.md): `ShellBase`, `Icons`, `ConfirmDeleteDialog`
+- [Packages UI](packages-ui.md): `ShellBase`, `Icons`, `ConfirmDialog`
 - [Architecture](../architecture.md)

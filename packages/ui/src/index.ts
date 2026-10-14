@@ -9,7 +9,7 @@ export * from './carousel';
 export * from './checkbox';
 export * from './collapsible';
 export * from './command';
-export * from './confirm-delete-dialog';
+export * from './confirm-dialog';
 export * from './copy-button';
 export * from './date-picker';
 export * from './delete-button';
