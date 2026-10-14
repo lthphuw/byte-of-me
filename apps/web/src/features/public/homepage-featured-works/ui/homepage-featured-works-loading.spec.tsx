@@ -5,6 +5,11 @@
  */
 import { cleanup, render } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'bun:test';
+import { NextIntlClientProvider } from 'next-intl';
+
+// The catalogue lives outside `src/`, so the `@/` alias cannot reach it.
+// eslint-disable-next-line import-alias/import-alias
+import en from '../../../../../messages/en.json';
 
 import { HomepageFeaturedWorksLoading } from './homepage-featured-works-loading';
 
@@ -33,44 +38,51 @@ describe('HomepageFeaturedWorksLoading', () => {
     skeleton.unmount();
 
     const real = render(
-      <FeaturedWorkItem
-        anchorId="featured-works-w1"
-        title="Faster detector export"
-        links={
-          <ul className={WORK_LINKS}>
-            <li>
-              <a href="https://example.com/work">INT8</a>
-            </li>
-          </ul>
-        }
-        details={<p>How it was done.</p>}
-        media={[
-          {
-            id: 'm1',
-            url: 'https://cdn.example.com/fp16.mp4',
-            isVideo: true,
-            caption: null,
-            name: 'FP16',
-            playLabel: 'Play FP16',
-            fullscreenLabel: 'Full screen FP16',
-          },
-          {
-            id: 'm2',
-            url: 'https://cdn.example.com/int8.gif',
-            isVideo: false,
-            caption: null,
-            name: 'INT8',
-            playLabel: 'Play INT8',
-            fullscreenLabel: 'Full screen INT8',
-          },
-        ]}
-        demoControls={{
-          zoomIn: 'Zoom in',
-          zoomOut: 'Zoom out',
-          zoomReset: 'Reset zoom',
-          exitFullscreen: 'Exit full screen',
+      <NextIntlClientProvider
+        locale="en"
+        messages={{
+          components: { expandableText: en.components.expandableText },
         }}
-      />
+      >
+        <FeaturedWorkItem
+          anchorId="featured-works-w1"
+          title="Faster detector export"
+          links={
+            <ul className={WORK_LINKS}>
+              <li>
+                <a href="https://example.com/work">INT8</a>
+              </li>
+            </ul>
+          }
+          details={<p>How it was done.</p>}
+          media={[
+            {
+              id: 'm1',
+              url: 'https://cdn.example.com/fp16.mp4',
+              isVideo: true,
+              caption: null,
+              name: 'FP16',
+              playLabel: 'Play FP16',
+              fullscreenLabel: 'Full screen FP16',
+            },
+            {
+              id: 'm2',
+              url: 'https://cdn.example.com/int8.gif',
+              isVideo: false,
+              caption: null,
+              name: 'INT8',
+              playLabel: 'Play INT8',
+              fullscreenLabel: 'Full screen INT8',
+            },
+          ]}
+          demoControls={{
+            zoomIn: 'Zoom in',
+            zoomOut: 'Zoom out',
+            zoomReset: 'Reset zoom',
+            exitFullscreen: 'Exit full screen',
+          }}
+        />
+      </NextIntlClientProvider>
     );
     const realRoot = real.container.firstElementChild!;
     const realHead = realRoot.firstElementChild!;
@@ -83,7 +95,9 @@ describe('HomepageFeaturedWorksLoading', () => {
       skeletonHeadClasses.filter((name) => !classesOf(realHead).includes(name))
     ).toEqual([]);
     expect(
-      skeletonStripClasses.filter((name) => !classesOf(realStrip).includes(name))
+      skeletonStripClasses.filter(
+        (name) => !classesOf(realStrip).includes(name)
+      )
     ).toEqual([]);
   });
 
@@ -94,15 +108,19 @@ describe('HomepageFeaturedWorksLoading', () => {
 
     expect(rows).toHaveLength(2);
     for (const row of rows) {
-      expect(classesOf(row)).toEqual(expect.arrayContaining(WORK_ROW.split(' ')));
+      expect(classesOf(row)).toEqual(
+        expect.arrayContaining(WORK_ROW.split(' '))
+      );
       expect(row.children).toHaveLength(3);
       expect(row.children[0]?.className).toBe(WORK_HEAD);
-      expect(row.children[1]?.className).toContain(WORK_MEDIA_BLEED.split(' ')[0]!);
+      expect(row.children[1]?.className).toContain(
+        WORK_MEDIA_BLEED.split(' ')[0]!
+      );
       expect(row.querySelector('.leading-relaxed')).toBeNull();
     }
   });
 
-  it('draws the title as one bar at the title size, with one badge per proof link under it', () => {
+  it('draws the title as one bar at the title size, with one bar per proof link beside it', () => {
     const { container } = render(<HomepageFeaturedWorksLoading />);
     const head = container.querySelector('li')?.firstElementChild;
 

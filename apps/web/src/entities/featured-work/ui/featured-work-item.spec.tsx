@@ -1,11 +1,17 @@
 /**
- * A featured work as a visitor meets it: its title is the one link, the demo and the
- * details are always on show, and there is no toggle. Renders the real component; no
- * mocks. happy-dom cannot lay anything out, so the layout is pinned as a class contract.
+ * A featured work as a visitor meets it: the title with its links, the demo, then the
+ * details. The details are clamped with a toggle only when they overflow; happy-dom cannot
+ * lay anything out, so a short body shows no toggle here, and the layout is pinned as a
+ * class contract. Renders the real component; no mocks.
  */
 import type { ComponentProps } from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'bun:test';
+import { NextIntlClientProvider } from 'next-intl';
+
+// The catalogue lives outside `src/`, so the `@/` alias cannot reach it.
+// eslint-disable-next-line import-alias/import-alias
+import en from '../../../../messages/en.json';
 
 import { FeaturedWorkItem } from './featured-work-item';
 
@@ -40,7 +46,16 @@ const work: Omit<ComponentProps<typeof FeaturedWorkItem>, 'anchorId'> = {
 function renderItem(
   props: Partial<ComponentProps<typeof FeaturedWorkItem>> = {}
 ) {
-  return render(<FeaturedWorkItem anchorId={ANCHOR} {...work} {...props} />);
+  return render(
+    <NextIntlClientProvider
+      locale="en"
+      messages={{
+        components: { expandableText: en.components.expandableText },
+      }}
+    >
+      <FeaturedWorkItem anchorId={ANCHOR} {...work} {...props} />
+    </NextIntlClientProvider>
+  );
 }
 
 const bodyText = () => screen.getByText('How it was done: a streaming writer.');
@@ -168,42 +183,53 @@ describe('FeaturedWorkItem demo', () => {
 });
 
 /**
- * The demo sits under the title on every width, as one swipeable strip. On a phone it
- * bleeds to the screen edge (the shell's gutter is 32px); from md the strip keeps its
- * slider shape, with the next clip peeking in, and drops the bleed.
+ * The demo sits under the title on every width. On a phone a pair is one swipeable strip that
+ * bleeds to the screen edge (the shell's gutter is 32px), the next clip peeking in. From sm
+ * there is nothing to swipe: a pair is two equal columns inside the card, a lone clip fills
+ * the row.
  */
 describe('FeaturedWorkItem demo layout', () => {
-  it('lays the pair as one swipeable strip on every width, not as a grid', () => {
+  const stripOf = () => document.querySelector('figure')?.parentElement;
+
+  it('lays the pair as a swipeable strip on a phone and two equal columns from sm', () => {
     renderItem({ media: pair });
 
-    const strip = document.querySelector('figure')?.parentElement;
+    const strip = stripOf();
     expect(strip?.classList.contains('snap-x')).toBe(true);
     expect(strip?.classList.contains('overflow-x-auto')).toBe(true);
-    expect(strip?.classList.contains('md:grid')).toBe(false);
-    expect(strip?.classList.contains('md:grid-cols-2')).toBe(false);
+    expect(strip?.classList.contains('sm:overflow-visible')).toBe(true);
+    expect(strip?.classList.contains('sm:grid')).toBe(true);
+    expect(strip?.classList.contains('sm:grid-cols-2')).toBe(true);
   });
 
-  it('gives a single clip the full width of the card on a phone', () => {
+  it('sizes each clip of a pair at 82% on a phone, so the next one peeks in, and drops it from sm', () => {
+    renderItem({ media: pair });
+
+    expect(stripOf()?.className).toContain('[&>figure]:w-[82%]');
+    expect(stripOf()?.className).toContain('sm:[&>figure]:w-auto');
+    expect(stripOf()?.className).not.toContain('58%');
+  });
+
+  it('gives a single clip the full width of the card at every width', () => {
     renderItem({ media: pair.slice(0, 1) });
 
-    const strip = document.querySelector('figure')?.parentElement;
+    const strip = stripOf();
     expect(strip?.className).toContain('[&>figure]:w-full');
     expect(strip?.className).not.toContain('[&>figure]:w-[82%]');
+    expect(strip?.classList.contains('sm:grid-cols-2')).toBe(false);
   });
 
-  it('sizes each clip of a pair so the next one peeks in: 82% on a phone, 58% from md', () => {
+  it('bleeds the strip to the card edge on a phone and drops the bleed from sm', () => {
     renderItem({ media: pair });
 
-    const strip = document.querySelector('figure')?.parentElement;
-    expect(strip?.className).toContain('[&>figure]:w-[82%]');
-    expect(strip?.className).toContain('md:[&>figure]:w-[58%]');
+    expect(stripOf()?.classList.contains('-mx-4')).toBe(true);
+    expect(stripOf()?.classList.contains('sm:mx-0')).toBe(true);
   });
 
-  it('bleeds the strip to the card edge on a phone and drops the bleed from md', () => {
+  it('draws the details at the card width, so their edge lines up with the demo', () => {
     renderItem({ media: pair });
 
-    const strip = document.querySelector('figure')?.parentElement;
-    expect(strip?.classList.contains('-mx-4')).toBe(true);
-    expect(strip?.classList.contains('md:mx-0')).toBe(true);
+    const body = bodyText().closest('div');
+    expect(body?.className).not.toContain('max-w-prose');
   });
 });

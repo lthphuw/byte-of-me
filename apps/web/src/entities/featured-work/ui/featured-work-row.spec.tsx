@@ -1,6 +1,6 @@
 /**
- * What a visitor can observe on one featured work: its proof links (one row each, with
- * the pull request's repo, number, state and stars), the demo, and the details, which
+ * What a visitor can observe on one featured work: its proof links (plain `#number` text; the
+ * repo, label and state are hover and screen-reader only), the demo, and the details, which
  * always show. Renders the real component inside the real English catalogue.
  */
 import { cleanup, render, screen } from '@testing-library/react';
@@ -52,10 +52,12 @@ function renderRow(work: Partial<PublicFeaturedWork> = {}) {
 afterEach(cleanup);
 
 describe('FeaturedWorkRow links', () => {
-  it('draws each link as a badge: a new-tab link, with the title as plain text', () => {
+  it('draws each pull request as its number alone: a new-tab link, with the title as plain text', () => {
     renderRow();
 
-    const link = screen.getByRole('link', { name: /INT8.*\(opens in a new tab\)/ });
+    const link = screen.getByRole('link', { name: /#512.*\(opens in a new tab\)/ });
+    // The number is the whole visible text; the rest is for screen readers.
+    expect(link.firstChild?.textContent).toBe('#512');
     expect(link.getAttribute('href')).toBe(PR);
     expect(link.getAttribute('target')).toBe('_blank');
     expect(link.getAttribute('rel')).toBe('noopener noreferrer');
@@ -65,7 +67,15 @@ describe('FeaturedWorkRow links', () => {
     ).toBeTruthy();
   });
 
-  it('lists the badges in order, under the title', () => {
+  it('draws a link with no box of its own: no border, no pill', () => {
+    renderRow();
+
+    const link = screen.getByRole('link');
+    expect(link.className).not.toMatch(/\bborder\b|rounded-full/);
+    expect(link.className).toContain('underline');
+  });
+
+  it('lists the links in order, beside the title', () => {
     renderRow({
       links: [
         ...base.links,
@@ -81,19 +91,24 @@ describe('FeaturedWorkRow links', () => {
     });
 
     expect(
-      screen.getByRole('list', { name: 'Pull requests' }).textContent
-    ).toContain('INT8');
-    expect(screen.getAllByRole('link').map((a) => a.textContent)).toEqual([
-      expect.stringContaining('INT8'),
-      expect.stringContaining('Keypoints'),
-    ]);
+      screen.getAllByRole('link').map((a) => a.firstChild?.textContent)
+    ).toEqual(['#512', '#7']);
   });
 
-  it('shows a pull request without a label as its number, with the repo on hover', () => {
+  it('shows a pull request as its number whatever its label, keeping the label on hover and for a screen reader', () => {
+    renderRow();
+
+    const link = screen.getByRole('link', { name: /#512/ });
+    expect(link.firstChild?.textContent).toBe('#512');
+    expect(link.getAttribute('title')).toBe('INT8 · roboflow/rf-detr #512');
+    expect(link.textContent).toContain('INT8');
+  });
+
+  it('puts only the repo on hover for a pull request without a label', () => {
     renderRow({ links: [{ ...base.links[0]!, label: null }] });
 
     const link = screen.getByRole('link', { name: /#512/ });
-    expect(link.textContent).toContain('#512');
+    expect(link.firstChild?.textContent).toBe('#512');
     expect(link.getAttribute('title')).toBe('roboflow/rf-detr #512');
   });
 
@@ -101,7 +116,7 @@ describe('FeaturedWorkRow links', () => {
     renderRow();
 
     expect(
-      screen.getByRole('link', { name: /INT8.*Merged.*opens in a new tab/ })
+      screen.getByRole('link', { name: /#512.*Merged.*opens in a new tab/ })
     ).toBeTruthy();
     expect(screen.queryByText('Merged')).toBeNull();
   });
@@ -141,11 +156,11 @@ describe('FeaturedWorkRow links', () => {
     expect(screen.getByRole('link', { name: /Write-up/ })).toBeTruthy();
   });
 
-  it('keeps a pull request badge without GitHub facts, with no state name', () => {
+  it('keeps a pull request link without GitHub facts, with no state name', () => {
     renderRow({ links: [{ ...base.links[0]!, github: null }] });
 
-    const link = screen.getByRole('link', { name: /INT8/ });
-    expect(link.textContent).toContain('INT8');
+    const link = screen.getByRole('link', { name: /#512/ });
+    expect(link.firstChild?.textContent).toBe('#512');
     expect(link.textContent).not.toMatch(/Merged|Open|Closed/);
   });
 

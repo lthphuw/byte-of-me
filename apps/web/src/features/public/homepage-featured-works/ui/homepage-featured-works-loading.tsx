@@ -2,6 +2,8 @@ import { Skeleton } from '@byte-of-me/ui';
 
 import {
   WORK_BODY,
+  WORK_DEMO,
+  WORK_DEMO_PAIR,
   WORK_HEAD,
   WORK_LINKS,
   WORK_MEDIA_BLEED,
@@ -15,7 +17,7 @@ import { cn } from '@/shared/lib/utils';
  * list keeps roughly its height when it resolves.
  */
 const ROWS = 2;
-/** Proof-link badges per work: most works have two. */
+/** Proof links per work: most works have two. */
 const LINKS = 2;
 
 /**
@@ -50,21 +52,16 @@ export function HomepageFeaturedWorksLoading() {
               </div>
               <ul className={WORK_LINKS}>
                 {[...Array(LINKS)].map((_, j) => (
-                  <li key={j}>
-                    <Skeleton className="h-9 w-20 rounded-full" />
+                  <li key={j} className="-my-2 flex min-h-11 items-center">
+                    <Skeleton className="h-4 w-10" />
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div
-              className={cn(
-                WORK_MEDIA_BLEED,
-                'flex gap-3 md:gap-4'
-              )}
-            >
-              <Skeleton className="aspect-video w-[82%] shrink-0 rounded-md md:w-[58%]" />
-              <Skeleton className="aspect-video w-[82%] shrink-0 rounded-md md:w-[58%]" />
+            <div className={cn(WORK_MEDIA_BLEED, WORK_DEMO, WORK_DEMO_PAIR)}>
+              <Skeleton className="aspect-video rounded-md" />
+              <Skeleton className="aspect-video rounded-md" />
             </div>
 
             <div className={WORK_BODY}>

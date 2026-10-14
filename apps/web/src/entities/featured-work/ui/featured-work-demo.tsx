@@ -18,6 +18,11 @@ import {
   ZoomOut,
 } from 'lucide-react';
 
+import {
+  WORK_DEMO,
+  WORK_DEMO_PAIR,
+  WORK_DEMO_SINGLE,
+} from './featured-work-row-classes';
 import { useDemoZoom, ZOOM_MAX, ZOOM_MIN } from './use-demo-zoom';
 
 import { cn } from '@/shared/lib/utils';
@@ -402,9 +407,9 @@ interface FeaturedWorkDemoProps {
 
 /**
  * The demo of a featured work, always on show: a clip plays while it is on screen, an
- * image loads lazily, and each sits in a reserved 16:9 frame. On a phone the pair is a
- * swipeable strip, each figure most of the width so the next one shows at its edge;
- * from md the pair sits side by side.
+ * image loads lazily, and each sits in a reserved 16:9 frame. On a phone a pair is a
+ * swipeable strip, the next clip peeking in at the edge; from sm the pair is two equal
+ * columns and nothing is cut off. A lone clip fills the row.
  */
 export function FeaturedWorkDemo({
   media,
@@ -414,10 +419,8 @@ export function FeaturedWorkDemo({
   return (
     <div
       className={cn(
-        'flex min-w-0 snap-x snap-mandatory scroll-px-4 gap-3 md:gap-4 overflow-x-auto [scrollbar-width:none] [&>figure]:shrink-0 [&>figure]:snap-start',
-        // A pair is one strip on every width, the next clip peeking in as the achievement
-        // slider does: 82% of the card on a phone, 58% from md. One clip fills the card.
-        media.length > 1 ? '[&>figure]:w-[82%] md:[&>figure]:w-[58%]' : '[&>figure]:w-full',
+        WORK_DEMO,
+        media.length > 1 ? WORK_DEMO_PAIR : WORK_DEMO_SINGLE,
         className
       )}
     >

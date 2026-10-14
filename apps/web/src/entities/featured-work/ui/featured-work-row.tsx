@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import type { FeaturedWorkDemoItem } from './featured-work-demo';
 import { FeaturedWorkItem } from './featured-work-item';
-import { FeaturedWorkLinkBadge } from './featured-work-link';
+import { FeaturedWorkLink } from './featured-work-link';
 import { WORK_LINKS } from './featured-work-row-classes';
 
 import type { PublicFeaturedWork } from '@/entities/featured-work/model/types';
@@ -15,10 +15,10 @@ import { isVideoMimeType } from '@/entities/media/model/upload-constraints';
  * at body size so they do not out-size the work's title.
  */
 const DETAILS_PROSE =
-  'max-w-prose [&>:last-child]:mb-0 [&_h1]:text-base [&_h1]:font-semibold [&_h2]:text-base [&_h2]:font-semibold [&_tr>:first-child]:bg-card';
+  '[&>:last-child]:mb-0 [&_h1]:text-base [&_h1]:font-semibold [&_h2]:text-base [&_h2]:font-semibold [&_tr>:first-child]:bg-card';
 
 /**
- * One featured work on the homepage: its proof badges beside the title, then the demo, then
+ * One featured work on the homepage: its proof links beside the title, then the demo, then
  * the details.
  */
 export function FeaturedWorkRow({ work }: { work: PublicFeaturedWork }) {
@@ -28,7 +28,7 @@ export function FeaturedWorkRow({ work }: { work: PublicFeaturedWork }) {
     work.links.length > 0 ? (
       <ul aria-label={t('featuredLinksLabel')} className={WORK_LINKS}>
         {work.links.map((link) => (
-          <FeaturedWorkLinkBadge key={link.id} link={link} />
+          <FeaturedWorkLink key={link.id} link={link} />
         ))}
       </ul>
     ) : null;

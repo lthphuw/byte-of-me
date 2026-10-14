@@ -16,6 +16,7 @@ import {
 } from './featured-work-row-classes';
 
 import { cn } from '@/shared/lib/utils';
+import { ExpandableRichText } from '@/shared/ui/expandable-rich-text';
 
 const SCROLL_TARGET = 'scroll-mt-24 md:scroll-mt-28';
 
@@ -23,9 +24,9 @@ interface FeaturedWorkItemProps {
   /** `featured-works-<id>`: the row's id and its deep-link target. */
   anchorId: string;
   title: string;
-  /** The proof badges, on the title's line. Null when the work has none. */
+  /** The proof links, on the title's line. Null when the work has none. */
   links: ReactNode;
-  /** The body, always on show. Null when the work has none. */
+  /** The body, clamped with a toggle when long. Null when the work has none. */
   details: ReactNode;
   /** The demo pair, always on show. */
   media: FeaturedWorkDemoItem[];
@@ -34,8 +35,9 @@ interface FeaturedWorkItemProps {
 }
 
 /**
- * One featured work: the title with its proof badges beside it, then the demo, then the
- * details. On a phone the demo is a swipeable strip; from md it is two columns.
+ * One featured work: the title with its proof links beside it, then the demo, then the
+ * details, clamped to three lines with a toggle when longer. On a phone a pair of clips is
+ * a swipeable strip; from sm it is two equal columns.
  */
 export function FeaturedWorkItem({
   anchorId,
@@ -60,8 +62,9 @@ export function FeaturedWorkItem({
         />
       )}
 
-      {details && <div className={WORK_BODY}>{details}</div>}
-
+      {details && (
+        <ExpandableRichText className={WORK_BODY}>{details}</ExpandableRichText>
+      )}
     </div>
   );
 }
