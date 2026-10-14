@@ -1,6 +1,13 @@
 import { useState } from 'react';
-import { act, render, screen, waitFor } from '@testing-library/react';
-import { describe, expect, it } from 'bun:test';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
+import { afterEach, describe, expect, it } from 'bun:test';
 
 import {
   Carousel,
@@ -8,6 +15,8 @@ import {
   CarouselContent,
   CarouselItem,
 } from './carousel';
+
+afterEach(cleanup);
 
 function Harness({ setApi }: { setApi: (api: CarouselApi) => void }) {
   const [renders, setRenders] = useState(0);
@@ -51,5 +60,51 @@ describe('Carousel setApi', () => {
     });
 
     expect(selects).toBe(1);
+  });
+});
+
+describe('Carousel arrow keys', () => {
+  function withField() {
+    render(
+      <Carousel>
+        <CarouselContent>
+          <CarouselItem>
+            <input aria-label="caption" />
+            <video aria-label="clip" controls />
+          </CarouselItem>
+          <CarouselItem>two</CarouselItem>
+        </CarouselContent>
+      </Carousel>
+    );
+  }
+
+  it('claims an arrow key pressed on the carousel itself', () => {
+    withField();
+
+    const claimed = !fireEvent.keyDown(screen.getByRole('region'), {
+      key: 'ArrowRight',
+    });
+
+    expect(claimed).toBe(true);
+  });
+
+  it('leaves an arrow key to a text field inside a slide', () => {
+    withField();
+
+    const claimed = !fireEvent.keyDown(screen.getByLabelText('caption'), {
+      key: 'ArrowRight',
+    });
+
+    expect(claimed).toBe(false);
+  });
+
+  it("leaves an arrow key to a video's own controls", () => {
+    withField();
+
+    const claimed = !fireEvent.keyDown(screen.getByLabelText('clip'), {
+      key: 'ArrowLeft',
+    });
+
+    expect(claimed).toBe(false);
   });
 });

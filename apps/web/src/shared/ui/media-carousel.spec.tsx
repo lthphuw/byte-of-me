@@ -3,13 +3,25 @@
  * arrows and dots only when there is something to move to. Renders the real component with
  * the real Carousel; happy-dom lays nothing out, so widths are pinned as a class contract.
  */
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render as plainRender, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'bun:test';
+import { NextIntlClientProvider } from 'next-intl';
+
+// The catalogue lives outside `src/`, so the `@/` alias cannot reach it.
+// eslint-disable-next-line import-alias/import-alias
+import en from '../../../messages/en.json';
 
 import { MediaCarousel } from './media-carousel';
 import { mediaSlideBasis } from './media-carousel-classes';
 
 afterEach(cleanup);
+
+const render = (ui: React.ReactElement) =>
+  plainRender(
+    <NextIntlClientProvider locale="en" messages={en}>
+      {ui}
+    </NextIntlClientProvider>
+  );
 
 const slides = (count: number) =>
   Array.from({ length: count }, (_, i) => ({

@@ -301,6 +301,10 @@ declare const messages: {
     "dialog": {
       "close": "Đóng"
     },
+    "mediaCarousel": {
+      "previous": "Slide trước",
+      "next": "Slide sau"
+    },
     "multiSelect": {
       "search": "Tìm kiếm...",
       "empty": "Không có kết quả.",

@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import {
   Carousel,
   type CarouselApi,
@@ -8,7 +8,9 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  useEmblaState,
 } from '@byte-of-me/ui';
+import { useTranslations } from 'next-intl';
 
 import {
   MEDIA_SLIDE,
@@ -44,21 +46,9 @@ export function MediaCarousel({
   fillSingle = false,
   className,
 }: MediaCarouselProps) {
-  const [current, setCurrent] = useState(0);
+  const t = useTranslations('components.mediaCarousel');
   const [api, setApi] = useState<CarouselApi>();
-
-  // Subscribed here so the cleanup can remove it. Inside an inline `setApi`
-  // every render added another `select` listener and none were ever removed.
-  useEffect(() => {
-    if (!api) return;
-
-    const sync = () => setCurrent(api.selectedScrollSnap());
-    sync();
-    api.on('select', sync);
-    return () => {
-      api.off('select', sync);
-    };
-  }, [api]);
+  const { selectedIndex } = useEmblaState(api);
 
   if (slides.length === 0) return null;
 
@@ -87,16 +77,24 @@ export function MediaCarousel({
 
       {several && (
         <>
-          <CarouselPrevious className="left-2 hidden bg-background/80 md:inline-flex" />
-          <CarouselNext className="right-2 hidden bg-background/80 md:inline-flex" />
+          <CarouselPrevious
+            label={t('previous')}
+            className="left-2 hidden bg-background/80 md:inline-flex"
+          />
+          <CarouselNext
+            label={t('next')}
+            className="right-2 hidden bg-background/80 md:inline-flex"
+          />
 
-          <div className="pointer-events-none absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1.5">
+          <div className="pointer-events-none absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-background/80 px-2.5 py-1.5">
             {slides.map((slide, i) => (
               <div
                 key={slide.id}
                 className={cn(
                   'rounded-full',
-                  i === current ? 'h-2 w-2 bg-white' : 'h-1.5 w-1.5 bg-white/50'
+                  i === selectedIndex
+                    ? 'h-2 w-2 bg-foreground'
+                    : 'h-1.5 w-1.5 bg-foreground/40'
                 )}
               />
             ))}

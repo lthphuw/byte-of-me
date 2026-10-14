@@ -301,6 +301,10 @@ declare const messages: {
     "dialog": {
       "close": "Close"
     },
+    "mediaCarousel": {
+      "previous": "Previous slide",
+      "next": "Next slide"
+    },
     "multiSelect": {
       "search": "Search...",
       "empty": "No results found.",

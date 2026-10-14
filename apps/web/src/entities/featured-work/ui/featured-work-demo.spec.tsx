@@ -7,17 +7,30 @@ import {
   act,
   cleanup,
   fireEvent,
-  render,
+  render as plainRender,
   screen,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
+import { NextIntlClientProvider } from 'next-intl';
+
+// The catalogue lives outside `src/`, so the `@/` alias cannot reach it.
+// eslint-disable-next-line import-alias/import-alias
+import en from '../../../../messages/en.json';
 
 import {
   FeaturedWorkDemo,
   type FeaturedWorkDemoControlLabels,
   type FeaturedWorkDemoItem,
 } from './featured-work-demo';
+
+// The carousel names its arrows from `components.mediaCarousel`.
+const render = (ui: React.ReactElement) =>
+  plainRender(
+    <NextIntlClientProvider locale="en" messages={en}>
+      {ui}
+    </NextIntlClientProvider>
+  );
 
 const fp16: FeaturedWorkDemoItem = {
   id: 'm1',
