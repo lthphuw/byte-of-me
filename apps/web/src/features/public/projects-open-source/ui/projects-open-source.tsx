@@ -235,7 +235,7 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
                             target="_blank"
                             rel="noopener noreferrer"
                             className={cn(
-                              badgeVariants({ variant: 'outline' }),
+                              badgeVariants({ variant: 'outline', interactive: true }),
                               'ml-auto shrink-0 gap-1 text-primary transition-colors hover:bg-primary/10'
                             )}
                           >

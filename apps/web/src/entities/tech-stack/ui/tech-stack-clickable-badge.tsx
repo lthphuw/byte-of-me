@@ -1,10 +1,10 @@
 'use client';
 
 import { Badge } from '@byte-of-me/ui';
-import clsx from 'clsx';
 import Image from 'next/image';
 
 import type { PublicTechStack } from '@/entities/tech-stack/model/types';
+import { cn } from '@/shared/lib/utils';
 
 interface TechStackBadgeProps {
   tech: PublicTechStack;
@@ -17,15 +17,9 @@ export function TechStackClickableBadge({
   active,
   onClick,
 }: TechStackBadgeProps) {
-  return (
-    <Badge
-      variant={active ? 'default' : 'outline'}
-      className={clsx(
-        'flex cursor-pointer items-center gap-1.5',
-        active && 'ring-2 ring-primary'
-      )}
-      onClick={() => onClick?.(tech.slug)}
-    >
+  const variant = active ? 'default' : 'outline';
+  const content = (
+    <>
       {tech.logo?.url && (
         <Image
           src={tech.logo.url}
@@ -36,6 +30,30 @@ export function TechStackClickableBadge({
         />
       )}
       {tech.name}
+    </>
+  );
+
+  if (!onClick) {
+    return (
+      <Badge variant={variant} className="gap-1.5">
+        {content}
+      </Badge>
+    );
+  }
+
+  return (
+    <Badge
+      asChild
+      variant={variant}
+      className={cn('gap-1.5', active && 'ring-2 ring-primary')}
+    >
+      <button
+        type="button"
+        aria-pressed={Boolean(active)}
+        onClick={() => onClick(tech.slug)}
+      >
+        {content}
+      </button>
     </Badge>
   );
 }

@@ -12,16 +12,23 @@ interface TagBadgeProps {
 }
 
 export function TagClickableBadge({ tag, active, onClick }: TagBadgeProps) {
+  const variant = active ? 'default' : 'secondary';
+
+  if (!onClick) return <Badge variant={variant}>{tag.name}</Badge>;
+
   return (
     <Badge
-      variant={active ? 'default' : 'secondary'}
-      className={cn(
-        'cursor-pointer transition-colors',
-        active && 'ring-2 ring-primary'
-      )}
-      onClick={() => onClick?.(tag.slug)}
+      asChild
+      variant={variant}
+      className={cn(active && 'ring-2 ring-primary')}
     >
-      {tag.name}
+      <button
+        type="button"
+        aria-pressed={Boolean(active)}
+        onClick={() => onClick(tag.slug)}
+      >
+        {tag.name}
+      </button>
     </Badge>
   );
 }
