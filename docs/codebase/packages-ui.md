@@ -20,7 +20,7 @@ packages/ui/
     ├── mermaid-size.ts      svgNaturalSize / parseMermaidSize: a diagram's WxH, the `data-mermaid-size` attribute
     ├── math-renderer.tsx    MathRenderer: client; KaTeX over data-latex placeholders
     ├── hooks/               use-clipboard, use-debounce, use-intersection, use-lock-body, use-media-query
-    ├── lib/                 cn, sanitize, rich-text-content codec, markdown-format, reduced-motion, surface-classes (scrim and modal class strings shared by dialog, alert-dialog, sheet, drawer)
+    ├── lib/                 cn, sanitize, rich-text-content codec, markdown-format, reduced-motion, surface-classes (scrim, modal, popup and menu class strings shared by the overlay and menu primitives)
     ├── motion/              MotionProvider (LazyMotion + reducedMotion), tokens, variants, transitions
     └── rich-text-editor/tiptap/
         ├── rich-text-editor.tsx   RichTextEditor + createExtensions(): the editor schema

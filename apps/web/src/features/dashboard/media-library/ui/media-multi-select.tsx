@@ -110,7 +110,7 @@ export function MediaMultiSelect({
       </PopoverTrigger>
 
       <PopoverContent
-        className="w-[min(400px,calc(100vw-2rem))] p-0 shadow-xl"
+        className="w-[min(400px,calc(100vw-2rem))] p-0"
         align="start"
       >
         <div className="flex items-center justify-between border-b bg-muted/30 p-3">
