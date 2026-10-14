@@ -1,7 +1,6 @@
-// A rendered mermaid diagram's natural size, carried from the editor to the reader as
-// `data-mermaid-size="WxH"` on the code block. Mermaid draws its SVG no wider than the
-// viewBox, so the reader can reserve exactly the box the diagram will fill before the
-// library has loaded: the source block is swapped for a diagram of the same shape.
+// A mermaid diagram's natural size, carried from the editor to the reader as `data-mermaid-size="WxH"`.
+// Mermaid draws no wider than the viewBox, so the reader can reserve the exact box before the
+// library loads, and the swap shifts nothing.
 
 export const MERMAID_SIZE_ATTR = 'data-mermaid-size';
 

@@ -28,11 +28,9 @@ function sourceOf(tag: string): string | undefined {
 }
 
 /**
- * Gives each body image its own box before it draws, from its stored size. It runs
- * after sanitizing and only on markup this module can see whole: the one value it
- * writes is two checked integers, so nothing from the content can reach the style.
- *
- * An image with no stored size keeps the 16:9 reservation the stylesheet gives it.
+ * Gives each body image its own box before it draws. Runs after sanitizing, on markup it sees
+ * whole; the one value written is two checked integers, so nothing from the content reaches the
+ * style. An image with no stored size keeps the stylesheet's 16:9 reservation.
  */
 export function withImageRatios(
   html: string,

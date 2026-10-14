@@ -40,10 +40,7 @@ const ScrollBar = React.forwardRef<
     )}
     {...props}
   >
-    {/* Same width, same inset and same colour as the native scrollbars styled
-        in `globals.css`, so a Radix pane and an ordinary overflow pane sitting
-        next to each other wear the same bar. `--scrollbar-thumb` is the one
-        definition of that colour; `bg-border` was too faint to find. */}
+    {/* Same bar as the native scrollbars in `globals.css`: `--scrollbar-thumb` is the one colour. */}
     <ScrollAreaPrimitive.ScrollAreaThumb className="relative flex-1 rounded-full bg-[var(--scrollbar-thumb)] transition-colors hover:bg-[var(--scrollbar-thumb-hover)]" />
   </ScrollAreaPrimitive.ScrollAreaScrollbar>
 ));

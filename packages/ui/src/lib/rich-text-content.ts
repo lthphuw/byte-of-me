@@ -1,22 +1,8 @@
 import type { Content, JSONContent } from '@tiptap/core';
 
 /**
- * Bridges the gap between a Tiptap editor and a plain `String` DB column.
- *
- * Rich text is persisted as a stringified Tiptap document, but columns that
- * predate the editor still hold plain text. Both directions have to keep
- * working, so parsing is best-effort and never throws.
- *
- * Used by blog, project, education, profile and both note editors.
- * `apps/web/src/entities/day-entry/lib/reflection-content.ts` is a separate,
- * stricter codec for the day journal's `reflection` column — do not merge
- * the two. Differences that matter: `parseRichTextContent` below accepts any
- * parsed JSON object, so a non-document value like `[1,2,3]` gets handed to
- * Tiptap as if it were one; the day-journal version only accepts a value
- * with `type: 'doc'` and otherwise treats it as legacy plain text.
- * `richTextToPlainText` below also collapses whitespace for excerpt display,
- * which would break the day journal's length cap (it needs the reader's
- * actual character count, not a normalized one).
+ * Bridges a Tiptap editor and a plain `String` DB column: rich text is stored as a stringified
+ * Tiptap document, but older columns hold plain text, so parsing is best-effort and never throws.
  */
 
 /** Parse a stored value into a Tiptap document, or `null` if it isn't one. */
@@ -66,18 +52,9 @@ export function richTextToPlainText(value?: string | null): string {
     if (node.type === 'text') return node.text ?? '';
 
     const children = node.content ?? [];
-    // An INLINE run — a paragraph's text nodes, the pieces a mark splits a
-    // sentence into — must concatenate with nothing between them, or `Byte`
-    // + ` of Me` becomes `Byte  of Me`. Anything else is a run of BLOCKS
-    // (list items, the paragraphs inside one, table cells) and needs a gap.
-    //
-    // Joining every level with '' is what shipped, and it welded the last
-    // word of each block onto the first word of the next: two list items
-    // reading `…through the data.` and `Step Size: …` produced
-    // `data.Step`, which Postgres's full-text parser then tokenised as a
-    // single `host` token. Neither `data` nor `Step` was searchable
-    // afterwards. Measured against the real corpus before this changed: 300
-    // words present in the text were missing from `search_vector`.
+    // INLINE runs (a paragraph's text nodes, split by marks) join with '' (`Byte` + ` of Me`).
+    // Runs of BLOCKS (list items, table cells) join with ' ', or `data.` + `Step` welds into
+    // `data.Step`, which a full-text tokeniser reads as one host token.
     const inlineOnly = children.every((child) => child.type === 'text');
     return children.map(collect).join(inlineOnly ? '' : ' ');
   };
@@ -111,10 +88,8 @@ const CONTAINER_NODE_TYPES = new Set([
 ]);
 
 /**
- * True when a stored value shows nothing: no text, and no deliberate element
- * (image, code block, rule, table) — only empty containers such as paragraphs,
- * headings, lists and quotes. Legacy plain text with content is not blank.
- * Never throws, whatever the shape of the parsed JSON.
+ * True when a stored value shows nothing: no text and no deliberate element (image, code block,
+ * rule, table), only empty containers. Legacy plain text with content is not blank. Never throws.
  */
 export function isRichTextBlank(value?: string | null): boolean {
   if (!value?.trim()) return true;

@@ -1,8 +1,6 @@
-// Server-side only: pulls in `generateHTML` and the full extension schema
-// (tiptap + prosemirror + lowlight ≈ 1 MB). Import it from server components
-// and server actions, never from client code — a client that needs rendered
-// rich text should receive the HTML produced here and print it with
-// `RichTextHtml`.
+// Server-side only: pulls in `generateHTML` and the full extension schema (tiptap + prosemirror +
+// lowlight ≈ 1 MB). The schema is imported by direct path, never `./rich-text-editor`: that entry
+// is 'use client' and would ship the whole editor (~380 KB) with every page that renders rich text.
 import type { JSONContent } from '@tiptap/core';
 import { generateHTML } from '@tiptap/html';
 
@@ -13,10 +11,8 @@ import { applyCitationNumbering } from './rich-text-editor/tiptap/extensions/ref
 import { renderExtensions } from './rich-text-editor/tiptap/render-extensions';
 
 /**
- * Tiptap JSON (a stored string or an already-parsed object) to unsanitized HTML,
- * or null when it is not a document the render schema can draw. A throw is the
- * only failure signal: an unknown node type, a malformed `content` and a doc
- * whose serializer fails all land here.
+ * Tiptap JSON (stored string or parsed object) to unsanitized HTML, or null when the render
+ * schema cannot draw it. A throw is the only failure signal (unknown node, bad `content`).
  */
 function generateDocumentHtml(content: unknown): string | null {
   try {

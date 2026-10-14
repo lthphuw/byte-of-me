@@ -118,10 +118,9 @@ const CarouselContent = React.forwardRef<
     <div ref={carouselRef} className="overflow-hidden">
       <div
         ref={ref}
-        // Embla only gets the swipe if the browser leaves the carousel's own
-        // axis alone; with `touch-action: auto` the page claims a horizontal
-        // drag. An arbitrary property: `touch-pan-y touch-pinch-zoom` are one
-        // tailwind-merge group, so `cn` kept only the last.
+        // Embla only gets the swipe if the browser leaves the carousel's axis alone (`touch-action:
+        // auto` lets the page claim a horizontal drag). Arbitrary property: `touch-pan-y` and
+        // `touch-pinch-zoom` are one tailwind-merge group, so `cn` kept only the last.
         className={cn('flex -ml-4 [touch-action:pan-y_pinch-zoom]', className)}
         {...props}
       />

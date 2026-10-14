@@ -42,18 +42,9 @@ const ALLOWED_TAGS = new Set([
   'section',
 ]);
 
-// Attributes allowed on surviving tags. Notably excludes all `on*` event
-// handlers and `style`. Anything not listed is dropped.
-//
-// `id` and the `data-*`/`aria-*` entries below carry no script and are what
-// make in-page anchors work: heading ids for the table of contents, and the
-// citation/reference pairs that let a reader jump to a source and back.
-//
-// `scope` is the one that is easy to leave out and impossible to notice:
-// `render-extensions.ts` marks every `th` as a column or row header, and a
-// sanitizer that drops it turns the whole accessibility fix into a silent
-// no-op. It names a header's direction, carries no script, and its only
-// consumer is assistive tech.
+// Attributes allowed on surviving tags; anything else is dropped (no `on*`, no `style`).
+// `id`, `data-*` and `aria-*` carry no script and make anchors work (TOC, citation jumps).
+// Keep `scope`: `render-extensions.ts` marks every `th`, and dropping it voids that a11y fix.
 const ALLOWED_ATTRS = new Set([
   'href',
   'src',
@@ -114,10 +105,9 @@ const TAG = /<(?:[^>"']|"[^"]*"|'[^']*')*>|</g;
 const REPLACEMENT_CHAR = '\uFFFD';
 
 /**
- * The code point a browser resolves a numeric character reference to. HTML
- * allows any number of leading zeros (`&#00000106;` is `j`), so they are
- * trimmed before the length check rather than counted against it. Zero,
- * surrogates, out-of-range and overlong values become U+FFFD, as in a browser.
+ * The code point a browser resolves a numeric character reference to. Leading zeros are trimmed
+ * before the length check (`&#00000106;` is `j`); zero, surrogates and out-of-range or overlong
+ * values become U+FFFD.
  */
 function decodeNumericReference(digits: string, radix: 10 | 16): string {
   const significant = digits.replace(/^0+/, '');
@@ -144,12 +134,9 @@ const NAMED_REFERENCES: Record<string, string> = {
 };
 
 /**
- * Decode the HTML entities a browser resolves inside an attribute value.
- * Without this, `&#106;avascript:` reads as an ordinary relative URL here but
- * becomes `javascript:` by the time the browser resolves it.
- *
- * One pass, so `&#38;#106;` decodes once to the literal `&#106;` — as a
- * browser does — instead of being decoded a second time.
+ * Decode the HTML entities a browser resolves in an attribute value: `&#106;avascript:` reads as
+ * a relative URL here but is `javascript:` to the browser. One pass, so `&#38;#106;` decodes
+ * once to the literal `&#106;`, as in a browser.
  */
 function decodeEntities(value: string): string {
   return value.replace(
@@ -163,20 +150,12 @@ function decodeEntities(value: string): string {
 }
 
 /**
- * True when a browser would resolve this URL to something outside
- * `SAFE_SCHEMES`. Entities are decoded and control characters stripped first,
- * because browsers do both before looking at the scheme — `java&#09;script:`
- * and `java<TAB>script:` are both executable.
- *
- * Fails closed: if the text before the first colon still holds an entity this
- * decoder does not understand (or a replacement character from a malformed
- * one), the scheme cannot be read reliably, so the URL counts as unsafe. A
- * colon after a `/`, `?` or `#` is just part of a path and does not trigger it.
+ * True when a browser would resolve this URL outside `SAFE_SCHEMES`. Entities are decoded and
+ * controls stripped first, as browsers do (`java&#09;script:` runs). Fails closed: an entity
+ * this decoder cannot read before the first colon is unsafe; a colon after `/`, `?`, `#` is a path.
  */
 function isUnsafeUrl(value: string): boolean {
-  // Strip C0 controls, space and NBSP — all ignored inside a scheme.
-  // Matching control characters is the whole point: `java<TAB>script:`
-  // is executable once the browser normalizes it.
+  // Strip C0 controls, space and NBSP, all ignored inside a scheme (`java<TAB>script:` runs).
   // eslint-disable-next-line no-control-regex
   const controlChars = /[\u0000-\u0020\u00a0]/g;
   const normalized = decodeEntities(value).replace(controlChars, '');
@@ -210,16 +189,9 @@ export function escapeHtml(input: string): string {
 }
 
 /**
- * Allowlist HTML sanitizer. For each tag it keeps only allowlisted tags and
- * rebuilds them from an attribute allowlist — dropping every event handler and
- * inline style regardless of how the attribute is separated — and rewrites any
- * href/src whose scheme is outside `SAFE_SCHEMES` to `#`. Rebuilding (rather
- * than stripping) avoids the attribute-separator bypasses that strip-based
- * regex sanitizers miss.
- *
- * Untrusted free-form input should still go through escapeHtml rather than be
- * rendered as markup; this function is for already-structured markup such as
- * Tiptap-generated HTML.
+ * Allowlist HTML sanitizer: rebuilds each allowlisted tag from an attribute allowlist (no event
+ * handlers or style, however separated) and rewrites href/src outside `SAFE_SCHEMES` to `#`.
+ * Rebuilding beats stripping, which misses attribute-separator bypasses. Escape free-form text.
  */
 export function sanitizeHtml(html: string): string {
   if (!html) return '';

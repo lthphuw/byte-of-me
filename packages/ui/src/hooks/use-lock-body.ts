@@ -3,21 +3,9 @@
 import { useLayoutEffect } from 'react';
 
 /**
- * Freezes the page behind an overlay, without moving it.
- *
- * `overflow: hidden` alone takes the scrollbar away, and on any platform that
- * draws a classic scrollbar — Windows, Linux, a macOS mouse — the viewport
- * grows by its width the moment the overlay opens and shrinks again when it
- * closes. Everything on the page jumps sideways, twice, for every menu.
- *
- * So the width the scrollbar was occupying is measured and handed back as
- * padding. `body` covers normal content; `--scrollbar-lock` covers the rest,
- * because a `position: fixed` element is laid out against the viewport and
- * never sees the body's padding — the header is the case that matters here.
- *
- * Preferred over `scrollbar-gutter: stable`, which would solve it in one CSS
- * line but only from Safari 18.2, and would reserve the gutter on every page
- * whether or not anything ever opens.
+ * Freezes the page behind an overlay: hiding overflow drops a classic scrollbar, so its width is
+ * handed back as `body` padding and `--scrollbar-lock` (fixed elements ignore body padding).
+ * Not `scrollbar-gutter: stable`: Safari 18.2+ only, and it reserves the gutter on every page.
  */
 export function useLockBody(enabled?: boolean) {
   useLayoutEffect(() => {

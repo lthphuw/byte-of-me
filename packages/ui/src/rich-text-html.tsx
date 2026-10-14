@@ -1,8 +1,6 @@
-// Deliberately free of tiptap imports: this is the presentational half of
-// `RichText`, safe to import from client components (the projects timeline
-// receives its HTML pre-rendered by a server action). It prints
-// already-sanitized HTML — only ever feed it the output of
-// `renderRichTextHtml` (./rich-text-render), never raw user input.
+// Deliberately free of tiptap imports: the presentational half of `RichText`, safe for client
+// components. It prints already-sanitized HTML — only feed it `renderRichTextHtml` output
+// (./rich-text-render), never raw user input.
 import * as React from 'react';
 
 import { cn } from './lib/utils';
@@ -117,18 +115,15 @@ export function RichTextHtml({
         // Horizontal rule
         '[&_hr]:my-8 [&_hr]:border-border',
 
-        // Images / media. Before an image draws, `auto 16/9` reserves a box on the muted
-        // surface, so the text below does not jump; once loaded, `auto` takes the file's
-        // own ratio. The body's <img> carries no width or height, so this is the only
-        // reservation it can get.
+        // Images / media. `auto 16/9` reserves a muted box before an image draws, so text below does
+        // not jump; once loaded, `auto` takes the file's ratio. The body's <img> has no width or
+        // height, so this is the only reservation it gets.
         '[&_img]:my-6 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-2xl [&_img]:shadow-sm [&_img]:aspect-[auto_16/9] [&_img]:bg-muted',
         '[&_figure]:my-6 [&_figure]:max-w-full',
 
-        // A row of images (`imageGroup`). Column first, row from `sm` — at
-        // 375px two images side by side are two illegible thumbnails, and the
-        // alternative (letting them shrink) is what puts a horizontal
-        // scrollbar on the page. `min-w-0` on the items is what actually
-        // allows the shrink; flex children default to their content width.
+        // Image row (`imageGroup`): column first, row from `sm`; two images at 375px are illegible
+        // and letting them shrink puts a horizontal scrollbar on the page. `min-w-0` on the items
+        // is what allows the shrink (flex children default to their content width).
         '[&_.image-group-items]:flex [&_.image-group-items]:flex-col [&_.image-group-items]:gap-3',
         'sm:[&_.image-group-items]:flex-row sm:[&_.image-group-items]:items-start',
         '[&_.image-group-items>*]:min-w-0 [&_.image-group-items>*]:flex-1',
@@ -156,44 +151,25 @@ export function RichTextHtml({
         // narrow viewports.
         '[&_pre]:my-6 [&_pre]:max-w-full [&_pre]:overflow-x-auto',
 
-        // Tables.
-        //
-        // The scroll area is `div.tableWrapper`, which `renderWrapper`
-        // (render-extensions.ts) emits around every table and which the
-        // editor's own node view already creates — so this and
-        // `editor-surface.css` describe the same box, and a table looks the
-        // same while it is being written as it does published.
-        //
-        // What this replaces was `table { display: block }`, which scrolled by
-        // throwing the table layout algorithm away: columns stopped aligning
-        // to each other and `width: 100%` stopped meaning anything. The frame
-        // lives on the wrapper, so a scrolled table stays inside a border
-        // instead of appearing to run off the edge of one.
+        // Tables scroll in `div.tableWrapper` (`renderWrapper`; the editor's node view makes the same
+        // box), never `table {display:block}`: that drops table layout, so columns stop aligning and
+        // `width:100%` means nothing. The frame sits on the wrapper, so a scrolled table stays framed.
         '[&_.tableWrapper]:my-6 [&_.tableWrapper]:max-w-full [&_.tableWrapper]:overflow-x-auto',
         // Scrolling a table to its end must not then drag the page sideways.
         '[&_.tableWrapper]:overscroll-x-contain',
         '[&_.tableWrapper]:rounded-xl [&_.tableWrapper]:border [&_.tableWrapper]:border-border',
 
-        // `table-auto` + `min-w-full`, never `table-fixed`: fixed layout splits
-        // the reading column evenly however many columns there are, so an
-        // eleven-column table got 77px each and wrapped every heading — and,
-        // because it always fitted, it never scrolled either.
-        // `w-full`, matching `editor-surface.css` — see the note there: with
-        // `table-auto` a percentage width is a preference rather than a cap, so
-        // a narrow table fills the column and a wide one still overflows into
-        // the wrapper's scroll.
+        // `table-auto` + `min-w-full`, never `table-fixed`: fixed splits the column evenly (11 columns
+        // = 77px each, headings wrapped) and always fits, so never scrolls. `w-full` as in
+        // editor-surface.css: under `table-auto` it is a preference, so a wide table still overflows.
         '[&_table]:my-0 [&_table]:w-full [&_table]:min-w-full [&_table]:table-auto',
         // `border-separate`, because a collapsed table owns its borders and the
         // pinned column below would leave its own behind when it sticks.
         '[&_table]:border-separate [&_table]:border-spacing-0',
 
-        // A TABLE IS NOT PROSE, and this is the rule that matters most for
-        // reading one. Every cell holds a `<p>`, so without this each one
-        // inherits the article's reading rhythm — 17px on a 32px line — and a
-        // three-line cell stands 96px tall. A grid is scanned, not read: the
-        // eye needs rows close enough together to track across. 14px on a
-        // 1.45 line is roughly what Notion and every spreadsheet use, and it
-        // takes that same cell down to 60px.
+        // A TABLE IS NOT PROSE: each cell holds a `<p>` that would inherit the 17px/32px article
+        // rhythm (a three-line cell = 96px). 14px on a 1.45 line, as in Notion and spreadsheets,
+        // makes it 60px, close enough to track across rows.
         '[&_table]:text-[14px] [&_table]:tabular-nums',
         '[&_th>p]:my-0 [&_th>p]:text-[14px] [&_th>p]:leading-[1.45]',
         '[&_td>p]:my-0 [&_td>p]:text-[14px] [&_td>p]:leading-[1.45]',
@@ -208,11 +184,9 @@ export function RichTextHtml({
         '[&_th]:whitespace-nowrap [&_th]:bg-muted',
         '[&_td]:px-3 [&_td]:py-1.5 [&_td]:align-top',
 
-        // Columns of figures, worked out from the content by
-        // `markNumericTableColumns`. A number is read by its last digit, so
-        // right-aligned and never wrapped; and it needs a fraction of the
-        // width a sentence does, which is where most of an eleven-column
-        // table's excess width goes.
+        // Numeric columns (`markNumericTableColumns`): read by the last digit, so right-aligned and
+        // never wrapped, and they need a fraction of a sentence's width, which is where an
+        // eleven-column table's excess width goes.
         '[&_[data-numeric]]:text-right [&_[data-numeric]]:whitespace-nowrap',
         '[&_[data-numeric]]:min-w-[5ch]',
 
@@ -232,47 +206,18 @@ export function RichTextHtml({
         // one it is. On a table that already fits, it does nothing.
         '[&_tr>:first-child]:sticky [&_tr>:first-child]:left-0 [&_tr>:first-child]:z-[1]',
         '[&_tr>:first-child]:min-w-[14ch] [&_tr>:first-child]:bg-background',
-        // …but a `th` in that column keeps the header fill, which the rule
-        // above is specific enough to take away from it. Removing the pinned
-        // header row (53c1cc9) also removed the corner cell's fill here, so
-        // the header row's first cell and every `th` row label started
-        // painting as body cells — while `editor-surface.css` kept
-        // `tr > th:first-child` at `--muted`, leaving the writing surface and
-        // the published page disagreeing about the same table. Now that those
-        // cells carry `scope`, looking like a header is the visual half of
-        // what a screen reader is being told.
+        // …but a `th` in that column keeps the header fill, which the rule above would remove;
+        // `editor-surface.css` keeps `tr > th:first-child` at --muted, so both surfaces agree. Those
+        // cells carry `scope`, so the fill is the visual half of the header role.
         '[&_tr>th:first-child]:bg-muted',
-        // The column scrolling underneath is HIDDEN, not absent, and a reader
-        // has to be able to tell. Numeric columns are right-aligned, so what
-        // the pinned column covers is the leading digits — `25.9M` reading as
-        // `5.9M` is a plausible wrong number, which is worse than an obviously
-        // cut-off one. This edge is what makes the overlap visible.
-        //
-        // A hairline rather than the 6px blur this used to be, and a neutral
-        // rather than black. Both were real defects: a blur is a raster op
-        // paid per pinned cell and a benchmark note has hundreds of them, and
-        // the black version was invisible on a near-black page — so on the
-        // theme where the cue mattered most it was not being given at all.
-        // `--input` is the control-edge grey, at least 3:1 on the page in
-        // both themes, so one token does what the light/dark pair used to.
+        // The pinned column HIDES what scrolls under it, and right-aligned numbers lose leading
+        // digits (`25.9M` reads `5.9M`, a plausible wrong number). A 1px `--input` edge (>=3:1 on the
+        // page in both themes) shows the overlap; a blur costs a raster op per pinned cell.
         '[&_tr>:first-child]:shadow-[1px_0_0_hsl(var(--input))]',
 
-        // NO height cap, and NO pinned header row. `overflow-x-auto` above
-        // already makes `overflow-y`'s used value `auto` (CSS Overflow 3 §3),
-        // so capping the height gave every table a second scrolling axis —
-        // and a wheel gesture landing on a table then scrolled the TABLE to
-        // its end before the article moved at all. Measured on the survey
-        // note: with the pointer over a table, three wheel ticks moved the
-        // page 0px. The cap was gated at `md` for exactly this fear on
-        // phones; the trap is the pointer being over a table, not the width
-        // of the screen. Sideways scrolling and the pinned row-label column
-        // above both survive — those are the affordances that earned it.
-        //
-        // Off-screen tables also stop being laid out and painted: on a note
-        // with thirty of them that is the difference between ~280ms and
-        // ~43ms of recalc per style invalidation. `auto` on the intrinsic
-        // size lets a table that has been on screen once remember its real
-        // height, so the scrollbar settles instead of jittering.
+        // No height cap, no pinned header row: `overflow-x-auto` makes overflow-y `auto` too (CSS
+        // Overflow 3 §3), so a cap adds a scroll axis and a wheel over a table scrolls it, not the
+        // page (3 ticks, 0px). content-visibility on 30 tables: ~280ms -> ~43ms recalc per invalidation.
         '[&_.tableWrapper]:[content-visibility:auto]',
         '[&_.tableWrapper]:[contain-intrinsic-size:auto_400px]',
 
@@ -282,12 +227,8 @@ export function RichTextHtml({
         '[&_sup.citation]:align-super [&_sup.citation]:text-[0.7em] [&_sup.citation]:tabular-nums',
         '[&_sup.citation>a]:rounded [&_sup.citation>a]:bg-muted [&_sup.citation>a]:px-1 [&_sup.citation>a]:py-px',
         '[&_sup.citation>a]:transition-colors [&_sup.citation>a]:duration-500',
-        // Jump-back landing highlight — the inverse of .references-item's
-        // flash: the backlink script tags the marker with .is-flash and the
-        // chip inverts for a moment so the eye finds where it landed.
-        // The backlink script flashes either the exact marker <a> the reader
-        // came from (origins map) or, on deep links, the whole <sup> — cover
-        // both.
+        // Jump-back highlight, the inverse of .references-item's flash: the backlink script adds
+        // .is-flash to the exact marker <a> (origins map) or, on deep links, the whole <sup>.
         '[&_sup.citation.is-flash>a]:bg-foreground [&_sup.citation.is-flash>a]:text-background',
         '[&_sup.citation>a.is-flash]:bg-foreground [&_sup.citation>a.is-flash]:text-background',
         '[&_sup.citation>a]:font-medium [&_sup.citation>a]:text-muted-foreground [&_sup.citation>a]:no-underline',

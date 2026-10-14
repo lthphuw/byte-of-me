@@ -6,26 +6,9 @@ import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
 /**
- * Turns the `data-latex` placeholders in server-rendered rich text into real
- * KaTeX.
- *
- * `renderRichTextHtml` cannot do this itself: KaTeX emits a deep span tree
- * positioned entirely with inline `style`, and `sanitize.ts` strips `style`
- * from every rendered document on purpose. Rather than loosen that
- * repo-wide for one node type, the server emits the LaTeX source and this
- * upgrades it in the browser — the same division the editor already uses,
- * where KaTeX runs in a node view.
- *
- * `useLayoutEffect`, not `useEffect`: on the print route a sibling triggers
- * `window.print()` behind `document.fonts.ready`, and the KaTeX web fonts are
- * only requested once this has inserted the glyph spans. Running before paint
- * guarantees that request is in flight before anything starts waiting on it —
- * with `useEffect` the font wait can resolve against a page that has no maths
- * on it yet, and the PDF gets fallback glyphs.
- *
- * Idempotent by construction: KaTeX replaces each element's contents, so the
- * `data-latex` attribute stays but a second pass simply re-renders the same
- * formula.
+ * Upgrades `data-latex` placeholders to KaTeX in the browser (KaTeX needs inline `style`, which
+ * `sanitize.ts` strips). `useLayoutEffect`, not `useEffect`: print waits on `document.fonts.ready`
+ * and KaTeX fonts load only once glyph spans exist, else the PDF gets fallback glyphs. Idempotent.
  */
 export function MathRenderer() {
   useLayoutEffect(() => {

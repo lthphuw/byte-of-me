@@ -10,14 +10,9 @@ const Collapsible = CollapsiblePrimitive.Root;
 const CollapsibleTrigger = CollapsiblePrimitive.CollapsibleTrigger;
 
 /**
- * Radix exposes the open/closed state but ships no animation, so unstyled
- * content snaps open. This adds a short fade-and-lift.
- *
- * Note it does not animate height. Radix measures
- * `--radix-collapsible-content-height` when the content mounts, which is wrong
- * for any content that settles later — an async-rendering editor, a lazy
- * image — and a height tween would then run to a stale target and jump at the
- * end. Opacity needs no measurement and cannot go stale.
+ * Radix ships no animation, so unstyled content snaps open; this adds a short fade-and-lift.
+ * Not a height tween: Radix measures `--radix-collapsible-content-height` at mount, which goes
+ * stale for content that settles later (async editor, lazy image) and jumps at the end.
  */
 const CollapsibleContent = React.forwardRef<
   React.ElementRef<typeof CollapsiblePrimitive.CollapsibleContent>,

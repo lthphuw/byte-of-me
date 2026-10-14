@@ -1,8 +1,6 @@
 /**
- * Schemes a link may carry. An allowlist rather than a list of known-bad
- * schemes: a denylist must anticipate every dangerous one, an allowlist fails
- * closed on the ones nobody thought of. The sanitizer, the BibTeX import and the
- * link control all read this one list.
+ * Schemes a link may carry. An allowlist, not a denylist, so it fails closed on schemes nobody
+ * thought of. The sanitizer, the BibTeX import and the link control all read this one list.
  */
 export const SAFE_SCHEMES: ReadonlySet<string> = new Set([
   'http',
@@ -18,11 +16,9 @@ export function schemeOf(value: string): string | null {
 }
 
 /**
- * What an author typed into a link field, as an address to store; null when it
- * is not one. An address with a safe scheme, a path (`/about`), a fragment or a
- * query is kept as typed, a bare domain gets `https://`, and anything else — an
- * unsafe scheme, a space, no dot — is refused. A host with a port needs its
- * scheme, since `example.com:8080` reads as a scheme `example.com`.
+ * What an author typed into a link field, as an address to store; null when it is not one.
+ * Kept as typed: a safe scheme, a path, a fragment or a query; a bare domain gets `https://`.
+ * A host with a port needs its scheme (`example.com:8080` reads as scheme `example.com`).
  */
 export function normalizeLinkInput(raw: string): string | null {
   const value = raw.trim();

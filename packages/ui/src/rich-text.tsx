@@ -1,17 +1,8 @@
-// Deliberately NOT a client component. It has no state, effects or handlers —
-// it turns a stored Tiptap document into HTML and prints it. Keeping it on the
-// server is what stops `generateHTML` and the whole extension schema
-// (tiptap + prosemirror + lowlight ≈ 1 MB) from being shipped to visitors.
-// A client component that needs rendered rich text should take it as
-// `children` from a server parent — or, where the data arrives through a
-// server action (the projects timeline), receive HTML pre-rendered with
-// `renderRichTextHtml` and print it with `RichTextHtml`.
+// Deliberately NOT a client component: no state, effects or handlers, and staying on the server
+// keeps `generateHTML` and the extension schema (tiptap + prosemirror + lowlight ≈ 1 MB) out of
+// visitors' JS. A client component takes rich text as `children`, or HTML via `RichTextHtml`.
 import * as React from 'react';
 
-// Direct path into a directive-free module — NOT `./rich-text-editor`, whose
-// entry is a 'use client' file. Importing the schema from there registers the
-// whole editor as a client reference and ships it (~380 KB) with every page
-// that renders rich text.
 import type { ImageSizes } from './lib/image-ratios';
 import { RichTextHtml, type RichTextHtmlProps } from './rich-text-html';
 import { renderRichTextHtml } from './rich-text-render';

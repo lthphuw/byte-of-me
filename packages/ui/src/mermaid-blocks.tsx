@@ -5,19 +5,9 @@ import { type ReactNode, useEffect, useRef } from 'react';
 import { type MermaidSize, parseMermaidSize } from './mermaid-size';
 
 /**
- * Progressive enhancement for mermaid diagrams in rendered rich text.
- *
- * The server renders a mermaid snippet as a plain
- * `<pre><code class="language-mermaid">` block; this wrapper finds those
- * blocks after mount and swaps each for the drawn SVG. The `mermaid` library
- * (~500 KB) is `import()`ed only when at least one block exists on the page,
- * so pages without diagrams never download it. When rendering fails (syntax
- * error in the snippet) the code block is left as-is — readable source beats
- * a broken image.
- *
- * A block that carries its natural size (`data-mermaid-size`, set by the
- * editor) is given a box of that size first, pulsing on the muted surface, and
- * the diagram is drawn into it. The swap then changes nothing below it.
+ * Progressive enhancement: swaps `pre > code.language-mermaid` blocks for the drawn SVG after
+ * mount. `mermaid` (~500 KB) is `import()`ed only when a block exists; on a render error the
+ * source stays. A block with `data-mermaid-size` gets a pulsing box of that size first.
  */
 export function MermaidBlocks({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
