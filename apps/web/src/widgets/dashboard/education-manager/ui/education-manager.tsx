@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, Button, Pagination } from '@byte-of-me/ui';
+import { Badge, Button } from '@byte-of-me/ui';
 import { GraduationCap, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
@@ -23,11 +23,17 @@ import {
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { formatDate } from '@/shared/lib/utils';
-import { ConfirmDeleteDialog, ManagerListState, ManagerPageHeader, RecordListItem, RecordRowActions } from '@/shared/ui';
+import {
+  ConfirmDeleteDialog,
+  ManagerListState,
+  ManagerPageHeader,
+  ManagerPagination,
+  RecordListItem,
+  RecordRowActions,
+} from '@/shared/ui';
 
 export function EducationManager() {
   const t = useTranslations('dashboard.education');
-  const tShared = useTranslations('dashboard.shared');
   const tCrud = useTranslations('dashboard.shared.crud');
   const locale = useLocale();
   const {
@@ -71,22 +77,6 @@ export function EducationManager() {
   const titleOf = (edu: AdminEducationListItem) =>
     getTranslatedContent(edu.translations, locale)?.title || t('untitled');
 
-  const pager =
-    pagination && pagination.totalPages > 1 ? (
-      <div className="mt-6">
-        <Pagination
-          pagination={pagination}
-          setPage={setPage}
-          isPlaceholderData={isPlaceholderData}
-          pageLabel={tShared('pagination.pageLabel', {
-            page: pagination.currentPage,
-            totalPages: pagination.totalPages,
-          })}
-          previousLabel={tShared('pagination.previous')}
-          nextLabel={tShared('pagination.next')}
-        />
-      </div>
-    ) : null;
 
   return (
     <div className="space-y-6">
@@ -123,7 +113,14 @@ export function EducationManager() {
               {t('emptyAction')}
             </Button>
           }
-          pagination={pager}
+          pagination={
+            <ManagerPagination
+              pagination={pagination}
+              setPage={setPage}
+              isPlaceholderData={isPlaceholderData}
+              className="mt-6"
+            />
+          }
         >
           <div className="space-y-3">
             {educations.map((edu) => {

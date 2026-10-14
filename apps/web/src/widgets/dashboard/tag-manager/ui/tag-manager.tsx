@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Pagination } from '@byte-of-me/ui';
+import { Button } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -23,12 +23,12 @@ import {
   ConfirmDeleteDialog,
   ManagerListState,
   ManagerPageHeader,
+  ManagerPagination,
   RecordListSkeleton,
 } from '@/shared/ui';
 
 export function TagManager() {
   const t = useTranslations('dashboard.tag');
-  const tShared = useTranslations('dashboard.shared');
   const crud = useTranslations('dashboard.shared.crud');
   const locale = useLocale();
   const entity = t('entity');
@@ -81,21 +81,6 @@ export function TagManager() {
     </Button>
   );
 
-  const pager =
-    pagination && pagination.totalPages > 1 ? (
-      <Pagination
-        pagination={pagination}
-        setPage={setPage}
-        isPlaceholderData={isPlaceholderData}
-        pageLabel={tShared('pagination.pageLabel', {
-          page: pagination.currentPage,
-          totalPages: pagination.totalPages,
-        })}
-        previousLabel={tShared('pagination.previous')}
-        nextLabel={tShared('pagination.next')}
-      />
-    ) : undefined;
-
   return (
     <div className="space-y-6">
       <ManagerPageHeader
@@ -125,7 +110,13 @@ export function TagManager() {
               {t('emptyAction')}
             </Button>
           }
-          pagination={pager}
+          pagination={
+            <ManagerPagination
+              pagination={pagination}
+              setPage={setPage}
+              isPlaceholderData={isPlaceholderData}
+            />
+          }
         >
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {tags.map((tag) => (

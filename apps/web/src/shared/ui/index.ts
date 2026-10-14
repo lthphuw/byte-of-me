@@ -11,6 +11,7 @@ export * from './localized-controls';
 export * from './manager-list-state';
 export * from './manager-page-header';
 export * from './manager-page-loading';
+export * from './manager-pagination';
 export * from './motion';
 export * from './query-state';
 export * from './record-dialog';

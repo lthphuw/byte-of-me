@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Pagination } from '@byte-of-me/ui';
+import { Button } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -22,12 +22,12 @@ import {
   ConfirmDeleteDialog,
   ManagerListState,
   ManagerPageHeader,
+  ManagerPagination,
   RecordListSkeleton,
 } from '@/shared/ui';
 
 export function BlogManager() {
   const t = useTranslations('dashboard.blog');
-  const tShared = useTranslations('dashboard.shared');
   const crud = useTranslations('dashboard.shared.crud');
   const entity = t('entity');
   const {
@@ -84,21 +84,6 @@ export function BlogManager() {
     </Button>
   );
 
-  const pager =
-    pagination && pagination.totalPages > 1 ? (
-      <Pagination
-        pagination={pagination}
-        setPage={setPage}
-        isPlaceholderData={isPlaceholderData}
-        pageLabel={tShared('pagination.pageLabel', {
-          page: pagination.currentPage,
-          totalPages: pagination.totalPages,
-        })}
-        previousLabel={tShared('pagination.previous')}
-        nextLabel={tShared('pagination.next')}
-      />
-    ) : undefined;
-
   return (
     <div className="space-y-6">
       <ManagerPageHeader
@@ -119,7 +104,13 @@ export function BlogManager() {
           emptyTitle={t('emptyTitle')}
           emptyDescription={t('emptyDescription')}
           emptyAction={newBlogButton}
-          pagination={pager}
+          pagination={
+            <ManagerPagination
+              pagination={pagination}
+              setPage={setPage}
+              isPlaceholderData={isPlaceholderData}
+            />
+          }
         >
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {blogs.map((blog) => (

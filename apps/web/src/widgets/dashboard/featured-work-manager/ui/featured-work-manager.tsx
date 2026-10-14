@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Button, Pagination } from '@byte-of-me/ui';
+import { Button } from '@byte-of-me/ui';
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -27,6 +27,7 @@ import {
   ConfirmDeleteDialog,
   ManagerListState,
   ManagerPageHeader,
+  ManagerPagination,
   RecordListItem,
   RecordRowActions,
 } from '@/shared/ui';
@@ -35,7 +36,6 @@ import { useReorderFeaturedWork } from '@/widgets/dashboard/featured-work-manage
 export function FeaturedWorkManager() {
   const t = useTranslations('dashboard.featuredWorks');
   const crud = useTranslations('dashboard.shared.crud');
-  const tShared = useTranslations('dashboard.shared');
   const locale = useLocale();
   const entity = t('entity');
   const {
@@ -126,24 +126,6 @@ export function FeaturedWorkManager() {
     </Button>
   );
 
-  // Shown while there is more than one page, even when the current page is empty.
-  const pager =
-    (pagination?.totalPages ?? 1) > 1 ? (
-      <div className="mt-6">
-        <Pagination
-          pagination={pagination}
-          setPage={setPage}
-          isPlaceholderData={isPlaceholderData}
-          pageLabel={tShared('pagination.pageLabel', {
-            page: pagination?.currentPage ?? 1,
-            totalPages: pagination?.totalPages ?? 1,
-          })}
-          previousLabel={tShared('pagination.previous')}
-          nextLabel={tShared('pagination.next')}
-        />
-      </div>
-    ) : null;
-
   return (
     <div className="space-y-6">
       <ManagerPageHeader
@@ -159,7 +141,14 @@ export function FeaturedWorkManager() {
           onRetry={() => refetch()}
           isFetching={isFetching}
           isEmpty={works.length === 0}
-          pagination={pager}
+          pagination={
+            <ManagerPagination
+              pagination={pagination}
+              setPage={setPage}
+              isPlaceholderData={isPlaceholderData}
+              className="mt-6"
+            />
+          }
           emptyTitle={t('emptyTitle')}
           emptyDescription={t('emptyDescription')}
           emptyAction={

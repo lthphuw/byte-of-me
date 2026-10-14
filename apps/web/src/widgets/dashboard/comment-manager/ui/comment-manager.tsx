@@ -7,7 +7,6 @@ import {
   AvatarImage,
   Badge,
   Button,
-  Pagination,
 } from '@byte-of-me/ui';
 import { Eye, EyeOff } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
@@ -20,13 +19,13 @@ import {
 import {
   ManagerListState,
   ManagerPageHeader,
+  ManagerPagination,
   RecordListItem,
 } from '@/shared/ui';
 import { CommentListSkeleton } from '@/widgets/dashboard/comment-manager/ui/comment-list-skeleton';
 
 export function CommentManager() {
   const t = useTranslations('dashboard.comment');
-  const tShared = useTranslations('dashboard.shared');
   const format = useFormatter();
 
   function commentSource(comment: AdminComment): string {
@@ -74,19 +73,11 @@ export function CommentManager() {
           emptyTitle={t('emptyTitle')}
           emptyDescription={t('emptyDescription')}
           pagination={
-            pagination && pagination.totalPages > 1 ? (
-              <Pagination
-                pagination={pagination}
-                setPage={setPage}
-                isPlaceholderData={isPlaceholderData}
-                pageLabel={tShared('pagination.pageLabel', {
-                  page: pagination.currentPage,
-                  totalPages: pagination.totalPages,
-                })}
-                previousLabel={tShared('pagination.previous')}
-                nextLabel={tShared('pagination.next')}
-              />
-            ) : undefined
+            <ManagerPagination
+              pagination={pagination}
+              setPage={setPage}
+              isPlaceholderData={isPlaceholderData}
+            />
           }
           skeleton={<CommentListSkeleton />}
         >

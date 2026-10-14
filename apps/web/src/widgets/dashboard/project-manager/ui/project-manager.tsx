@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Pagination } from '@byte-of-me/ui';
+import { Button } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -24,13 +24,13 @@ import {
   ConfirmDeleteDialog,
   ManagerListState,
   ManagerPageHeader,
+  ManagerPagination,
   RecordListSkeleton,
 } from '@/shared/ui';
 
 export function ProjectManager() {
   const t = useTranslations('dashboard.project');
   const crud = useTranslations('dashboard.shared.crud');
-  const tShared = useTranslations('dashboard.shared');
   const locale = useLocale();
   const entity = t('entity');
   const {
@@ -80,24 +80,6 @@ export function ProjectManager() {
     </Button>
   );
 
-  // Shown while there is more than one page, even when the current page is empty.
-  const pager =
-    (pagination?.totalPages ?? 1) > 1 ? (
-      <div className="mt-6">
-        <Pagination
-          pagination={pagination}
-          setPage={setPage}
-          isPlaceholderData={isPlaceholderData}
-          pageLabel={tShared('pagination.pageLabel', {
-            page: pagination?.currentPage ?? 1,
-            totalPages: pagination?.totalPages ?? 1,
-          })}
-          previousLabel={tShared('pagination.previous')}
-          nextLabel={tShared('pagination.next')}
-        />
-      </div>
-    ) : null;
-
   return (
     <div className="space-y-6">
       <ManagerPageHeader
@@ -116,7 +98,14 @@ export function ProjectManager() {
           isFetching={isFetching}
           isEmpty={projects.length === 0}
           skeleton={<RecordListSkeleton variant="grid" />}
-          pagination={pager}
+          pagination={
+            <ManagerPagination
+              pagination={pagination}
+              setPage={setPage}
+              isPlaceholderData={isPlaceholderData}
+              className="mt-6"
+            />
+          }
           emptyTitle={t('emptyTitle')}
           emptyDescription={t('emptyDescription')}
           emptyAction={newProjectButton}

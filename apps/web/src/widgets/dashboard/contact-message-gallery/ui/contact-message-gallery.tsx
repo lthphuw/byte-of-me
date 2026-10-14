@@ -7,7 +7,6 @@ import {
   CardContent,
   CardHeader,
   Input,
-  Pagination,
   ScrollArea,
   useDebounce,
 } from '@byte-of-me/ui';
@@ -26,6 +25,7 @@ import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 import {
   ConfirmDeleteDialog,
   ManagerListState,
+  ManagerPagination,
   RecordDialog,
 } from '@/shared/ui';
 
@@ -120,19 +120,11 @@ export function ContactMessageGallery() {
         emptyTitle={t('noMessages')}
         skeleton={<ContactMessageGridSkeleton />}
         pagination={
-          meta && meta.totalPages > 1 ? (
-            <Pagination
-              pagination={meta}
-              setPage={setPage}
-              isPlaceholderData={isPlaceholderData}
-              pageLabel={tShared('pagination.pageLabel', {
-                page: meta.currentPage,
-                totalPages: meta.totalPages,
-              })}
-              previousLabel={tShared('pagination.previous')}
-              nextLabel={tShared('pagination.next')}
-            />
-          ) : null
+          <ManagerPagination
+            pagination={meta}
+            setPage={setPage}
+            isPlaceholderData={isPlaceholderData}
+          />
         }
       >
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">

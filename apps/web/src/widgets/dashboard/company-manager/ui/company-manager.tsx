@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge, Button, Pagination } from '@byte-of-me/ui';
+import { Badge, Button } from '@byte-of-me/ui';
 import { Briefcase, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
@@ -19,11 +19,17 @@ import {
 import { companyQueries, useAdminCompanyById } from '@/entities/company/query';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { formatDate } from '@/shared/lib/utils';
-import { ConfirmDeleteDialog, ManagerListState, ManagerPageHeader, RecordListItem, RecordRowActions } from '@/shared/ui';
+import {
+  ConfirmDeleteDialog,
+  ManagerListState,
+  ManagerPageHeader,
+  ManagerPagination,
+  RecordListItem,
+  RecordRowActions,
+} from '@/shared/ui';
 
 export function CompanyManager() {
   const t = useTranslations('dashboard.company');
-  const tShared = useTranslations('dashboard.shared');
   const tCrud = useTranslations('dashboard.shared.crud');
   const locale = useLocale();
   const {
@@ -62,22 +68,6 @@ export function CompanyManager() {
   // record by id; "New" (`editing` is null) fetches nothing and opens empty.
   const fullCompany = useAdminCompanyById(editing?.id);
 
-  const pager =
-    pagination && pagination.totalPages > 1 ? (
-      <div className="mt-6">
-        <Pagination
-          pagination={pagination}
-          setPage={setPage}
-          isPlaceholderData={isPlaceholderData}
-          pageLabel={tShared('pagination.pageLabel', {
-            page: pagination.currentPage,
-            totalPages: pagination.totalPages,
-          })}
-          previousLabel={tShared('pagination.previous')}
-          nextLabel={tShared('pagination.next')}
-        />
-      </div>
-    ) : null;
 
   return (
     <div className="space-y-6">
@@ -114,7 +104,14 @@ export function CompanyManager() {
               {t('emptyAction')}
             </Button>
           }
-          pagination={pager}
+          pagination={
+            <ManagerPagination
+              pagination={pagination}
+              setPage={setPage}
+              isPlaceholderData={isPlaceholderData}
+              className="mt-6"
+            />
+          }
         >
           <div className="space-y-3">
             {companies.map((company) => {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Button, Pagination } from '@byte-of-me/ui';
+import { Button } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -15,14 +15,19 @@ import { useCompressionSettings } from '@/features/dashboard/media-library/lib/u
 import { CompressionSettingsPopover } from '@/features/dashboard/media-library/ui/compression-settings-popover';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import type { Media } from '@/shared/types/models';
-import { ConfirmDeleteDialog, ManagerListState, ManagerPageHeader, RecordDialog } from '@/shared/ui';
+import {
+  ConfirmDeleteDialog,
+  ManagerListState,
+  ManagerPageHeader,
+  ManagerPagination,
+  RecordDialog,
+} from '@/shared/ui';
 import { MediaLibrary } from '@/widgets/dashboard/media-manager/ui/media-library';
 import { MediaLibrarySkeleton } from '@/widgets/dashboard/media-manager/ui/media-library-skeleton';
 
 export function MediaManager() {
   const t = useTranslations('dashboard.media');
   const tCrud = useTranslations('dashboard.shared.crud');
-  const tShared = useTranslations('dashboard.shared');
   const [page, setPage] = useState(1);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -118,19 +123,11 @@ export function MediaManager() {
           emptyDescription={t('empty.description')}
           emptyAction={addButton}
           pagination={
-            pagination && pagination.totalPages > 1 ? (
-              <Pagination
-                pagination={pagination}
-                setPage={setPage}
-                isPlaceholderData={query.isPlaceholderData}
-                pageLabel={tShared('pagination.pageLabel', {
-                  page: pagination.currentPage,
-                  totalPages: pagination.totalPages,
-                })}
-                previousLabel={tShared('pagination.previous')}
-                nextLabel={tShared('pagination.next')}
-              />
-            ) : undefined
+            <ManagerPagination
+              pagination={pagination}
+              setPage={setPage}
+              isPlaceholderData={query.isPlaceholderData}
+            />
           }
           skeleton={<MediaLibrarySkeleton />}
         >
