@@ -34,12 +34,9 @@ interface MediaCarouselProps {
 }
 
 /**
- * Photos or clips as one carousel at every width, as the education gallery draws them.
- *
- * A slide is wide enough that the next one is only partly in view: it can be dragged or
- * swiped into place, and the arrows (md and up) and the dots do the same for a mouse. A slide
- * brings its own frame and its own size; this owns the track, the gutter, the arrows and the dots.
- * A slide that pins itself to the viewport sets `data-media-pinned` on the element while it does.
+ * Photos or clips as one carousel at every width; the next slide peeks in to invite a swipe.
+ * A slide brings its own frame and size; this owns the track, gutter, arrows (md+) and dots.
+ * A slide that pins itself to the viewport sets `data-media-pinned` while it does.
  */
 export function MediaCarousel({
   slides,
@@ -61,10 +58,9 @@ export function MediaCarousel({
         className={cn(
           MEDIA_TRACK,
           'md:cursor-grab md:active:cursor-grabbing',
-          // Embla moves the track with a transform, and a transformed box is the containing block
-          // of its `position: fixed` descendants, so a slide that pins itself to the viewport
-          // (a clip in full screen) would stay inside the carousel. A slide that does so marks
-          // itself `data-media-pinned`, and the track drops its transform for as long as it does.
+          // Embla's track transform makes it the containing block of `position: fixed`
+          // descendants, so a full-screen clip would stay inside the carousel; a slide marked
+          // `data-media-pinned` makes the track drop its transform while it is pinned.
           'has-[[data-media-pinned]]:!transform-none'
         )}
       >

@@ -10,23 +10,16 @@ import { cn } from '@/shared/lib/utils';
 
 interface ExpandableRichTextProps {
   /**
-   * Already-rendered rich text, passed down from a server component.
-   *
-   * Deliberately `children` rather than a `content` string this component
-   * renders itself: importing `RichText` here would pull the Tiptap extension
-   * schema (~1 MB of tiptap/prosemirror/lowlight) into the client bundle of
-   * every page that shows an achievement. Rendering stays on the server; only
-   * the collapse behaviour is a client concern.
+   * Server-rendered rich text. `children`, not a `content` string rendered here:
+   * importing `RichText` would pull the Tiptap schema (~1 MB) into client JS.
    */
   children: ReactNode;
   className?: string;
 }
 
 /**
- * Expanding eases on the site's `sleek` curve; collapsing runs shorter and eases
- * in, so it gets out of the way rather than lingering. The chevron turns on the
- * spring the header menus use (`menuTransition`), which settles without the
- * hard stop a tween has.
+ * Expand eases on `sleek`; collapse runs shorter and eases in. The chevron turns
+ * on the `menuTransition` spring, which settles without a tween's hard stop.
  */
 const EXPAND_TRANSITION: Transition = {
   duration: 0.25,
@@ -41,32 +34,15 @@ const COLLAPSE_TRANSITION: Transition = {
 const INSTANT_TRANSITION: Transition = { duration: 0 };
 
 /**
- * How far the search for the clipped text block descends. A paragraph sits one
- * level under the wrapper, a list item or a blockquote's paragraph two — the
- * spare levels are for prose wrappers, and the bound is what keeps a deeply
- * nested tree from being walked on every resize.
+ * Descent bound for the text-block search: a paragraph is 1 level down, a list item
+ * or blockquote paragraph 2. The bound stops a deep tree being walked per resize.
  */
 const MAX_BLOCK_DESCENT = 4;
 
 /**
- * The first block-level descendant that actually renders text — the one whose
- * line grid the clamp cuts through.
- *
- * The wrapper `div` is the wrong element to measure: it carries only inherited
- * defaults (16px/24px on /projects), while the `<p>` the prose styles render
- * inside it is 15px/28px. Snapping 104px to the wrapper's 24px gave 96px, which
- * is 3.43 lines of the real 28px grid — the clamp landed 43% into the fourth
- * line and sliced it through the glyphs, exactly the fault this whole function
- * exists to prevent.
- *
- * Only block-level children are followed. An inline child (`<strong>`, `<a>`)
- * does not establish the line box — its block container's strut does — so
- * descending into one would report a grid the text is not laid out on. Lists and
- * blockquotes keep their text a level deeper than a paragraph does, hence a
- * descent rather than a single `firstElementChild` lookup.
- *
- * `null` when nothing under the wrapper renders text: an image or a table has no
- * line grid to snap to, and the caller keeps the raw height for those.
+ * First block-level descendant with text, whose line grid the clamp cuts through. The
+ * wrapper is wrong (24px vs the `<p>`'s 28px: 96px = 3.43 lines, a sliced glyph row).
+ * Inline children are skipped (the block's strut sets the line box); null if no text.
  */
 function findTextBlock(root: HTMLElement): HTMLElement | null {
   let textBlock: HTMLElement | null = null;
@@ -94,18 +70,9 @@ function findTextBlock(root: HTMLElement): HTMLElement | null {
 const COLLAPSED_HEIGHT = 104;
 
 /**
- * The clamp height, rounded DOWN to a whole number of text lines.
- *
- * This is what lets the collapsed state end in a clean cut instead of a fade.
- * An arbitrary pixel clamp lands wherever it lands — usually part-way through a
- * row of glyphs, leaving a sliced half-line that looks like a rendering fault,
- * which is the thing a gradient mask is normally there to hide. Cutting on a
- * line boundary removes the problem rather than veiling it, so no mask is
- * needed and the text stays at full contrast right down to the edge.
- *
- * Falls back to the raw height when the line height is not a usable number:
- * `getComputedStyle` reports `normal` for some elements, and content that is an
- * image or a table has no meaningful line grid to snap to.
+ * Clamp height rounded DOWN to whole text lines: a clean cut, so no fade mask is needed.
+ * Falls back to the raw height when line-height is unusable (`normal`) or there is no
+ * text block (image, table).
  */
 function snapToLineGrid(element: HTMLElement, collapsedHeight: number): number {
   const textBlock = findTextBlock(element);
@@ -120,18 +87,9 @@ function snapToLineGrid(element: HTMLElement, collapsedHeight: number): number {
 }
 
 /**
- * Collapsed view of rich text.
- *
- * Clamping happens by measured height rather than `-webkit-line-clamp`, which
- * only ever counts lines of a single text block and so leaves lists, images
- * and blockquotes uncut.
- *
- * Reduced motion needs no handling here: `MotionProvider` wraps the app in
- * `MotionConfig reducedMotion="user"`, and `height` is one of framer-motion's
- * positional keys — under that setting it is applied instantly instead of
- * tweened, as is the chevron's rotation. Hence `m.*` (which `LazyMotion` also
- * requires) rather than a CSS transition, which would have needed its own
- * `prefers-reduced-motion` gate.
+ * Collapsed rich text, clamped by measured height: `-webkit-line-clamp` counts one text
+ * block's lines only, leaving lists, images and blockquotes uncut. Reduced motion needs
+ * no code: `MotionConfig reducedMotion="user"` makes the height and chevron instant.
  */
 export function ExpandableRichText({
   children,
@@ -150,10 +108,8 @@ export function ExpandableRichText({
     const element = contentRef.current;
     if (!element) return;
 
-    // Images and webfonts settle after the first paint, so the measurement is
-    // repeated whenever the content box changes size. The line grid is read
-    // here too: a webfont swap changes the line height, and a clamp snapped to
-    // the fallback font's grid would stop being a clean cut once it lands.
+    // Images and webfonts settle after first paint, so re-measure on every size change,
+    // line grid included: a webfont swap changes line height and would un-snap the clamp.
     const measure = () => {
       const snapped = snapToLineGrid(element, COLLAPSED_HEIGHT);
       setClampHeight(snapped);
@@ -170,10 +126,8 @@ export function ExpandableRichText({
 
   const isCollapsed = isOverflowing && !expanded;
 
-  // Clipping stays on for the whole expand animation — the box is still
-  // shorter than its content until the tween lands — and comes off once it
-  // finishes, which is also what stops a late-loading image being cut off
-  // while expanded.
+  // Clip through the whole expand tween (the box is shorter than its content until it
+  // lands); releasing it afterwards is what stops a late image being cut off.
   const isClipped = isCollapsed || (isOverflowing && isAnimating);
 
   const toggle = () => {
@@ -184,26 +138,14 @@ export function ExpandableRichText({
 
   return (
     <div className={className}>
-      {/*
-        Animating to `'auto'` rather than to a measured pixel height on
-        purpose. The `collapsible-down` comment in tailwind.config.ts warns off
-        height tweens because Radix measures once at mount and TipTap renders a
-        tick later; neither applies here — these children are server-rendered
-        HTML, already in the DOM, and framer-motion measures at the moment of
-        the click, not at mount. `'auto'` is also self-correcting: framer
-        measures the target, tweens in pixels, then writes `height: auto` at the
-        end, so content that settles late (images, webfonts) simply grows the
-        box instead of being clipped by a stale target.
-      */}
+      {/* `'auto'` is safe: server HTML is already in the DOM, and late images just grow it. */}
       <m.div
         id={contentId}
         className={cn(isClipped && 'overflow-hidden')}
         style={{
-          // The very first clamp is plain CSS, not a framer value. `LazyMotion`
-          // code-splits the animation features, and until that chunk resolves
-          // an `m.*` element ignores `animate` altogether — so a page that has
-          // not finished loading framer would show the full, unclamped text.
-          // Dropped on the first toggle, so it can never fight the tween.
+          // First clamp is plain CSS: until the LazyMotion chunk loads, `m.*` ignores
+          // `animate` and would show the full text. Dropped on first toggle so it
+          // cannot fight the tween.
           maxHeight: !hasToggled && isCollapsed ? clampHeight : undefined,
         }}
         initial={false}
@@ -232,22 +174,9 @@ export function ExpandableRichText({
             onClick={toggle}
             aria-expanded={expanded}
             aria-controls={contentId}
-            // Underlined at rest, per the design system: a hover-only underline
-            // does not exist on touch at all.
-            // `items-start` + wrapping, because the Vietnamese labels are longer.
-            //
-            // `py-3.5` is a touch target, not spacing: the label is a 16px line
-            // box, which measured 83×16 — well under the 44×44 minimum. 16 + 2×14
-            // is exactly 44. Padding rather than an inset pseudo-element, because
-            // the hit area has to occupy real layout space here; the tech-stack
-            // badges below are themselves tappable and sit 16px away on mobile
-            // (24px from `md`, since the surrounding stack is the `gap-4 md:gap-6`
-            // rhythm role), and an overlay would have covered them and swallowed
-            // their taps. That separation only ever grows, never shrinks, so the
-            // reasoning holds wherever this component is reused. The
-            // wrapper's `pt-2` moved into this padding for the same reason — the
-            // gap under the rule is now clickable instead of dead space. Type
-            // scale and weight are untouched, so the label looks identical.
+            // Underlined at rest (no hover on touch). `items-start` + wrap: Vietnamese is longer.
+            // `py-3.5` is a touch target: label measured 83×16, so 16 + 2×14 = 44. Padding,
+            // not an overlay: tappable tech-stack badges sit 16px below and would lose taps.
             className="inline-flex cursor-pointer items-start gap-1 py-3.5 text-left text-xs font-medium text-primary underline underline-offset-4 hover:no-underline"
           >
             {expanded ? t('showLess') : t('showMore')}

@@ -6,20 +6,9 @@ import { MathRenderer } from '@byte-of-me/ui/math-renderer';
 import { RichText } from '@byte-of-me/ui/rich-text';
 
 /**
- * The page Chrome turns into a PDF — used by `/print/blogs/[slug]`.
- *
- * Rendered with `RichText` — the SERVER component — not the editor. It goes
- * through `render-extensions.ts`, so KaTeX markup, tables and images all come
- * out as static HTML and no editor JavaScript reaches the page at all. That
- * is what makes the resulting PDF text-true rather than a screenshot: Chrome
- * is laying out real glyphs from real fonts, and the `@media print` rules in
- * `globals.css` ARE the page layout.
- *
- * `MermaidBlocks` is deliberately absent even though the on-site article
- * renders inside it: it swaps code blocks for drawn SVGs after hydration,
- * which nothing here can wait for — `?print=1` fires on `document.fonts.ready`
- * and would race it. A mermaid block exports as its source, which is at least
- * deterministic.
+ * The page Chrome prints to PDF (`/print/blogs/[slug]`). Server `RichText`, no editor JS:
+ * real text, and `@media print` in `globals.css` is the layout. No `MermaidBlocks`, whose
+ * post-hydration SVG swap would race `?print=1`; mermaid exports as its source.
  */
 export function PrintableDocument({
   title,
@@ -36,10 +25,8 @@ export function PrintableDocument({
   children?: ReactNode;
 }) {
   return (
-    // A plain wrapper, NOT a `prose` container: `RichText` renders its own
-    // `<article class="prose …">`, and nesting one inside another made the
-    // typography variables resolve twice with the outer copy winning for some
-    // elements and the inner for others.
+    // A plain wrapper, not `prose`: `RichText` renders its own `<article class="prose">`,
+    // and nesting two made the typography variables resolve twice, split by element.
     <div>
       <h1 className="mb-1 text-3xl font-bold">{title}</h1>
 

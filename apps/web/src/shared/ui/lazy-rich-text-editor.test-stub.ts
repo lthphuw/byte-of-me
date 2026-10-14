@@ -1,11 +1,7 @@
 /**
- * Stand-in for `@/shared/ui/lazy-rich-text-editor` in component specs. The real
- * one is a ~570 KB Tiptap chunk, and a spec of this app should not exercise
- * ProseMirror under happy-dom. It records what each editor mounted with and,
- * like the real one, reports a normalised document on open (`initial: true`).
- *
- * Registered from a preload (`bunfig.toml`): a `plugin()` call inside a spec
- * runs after that spec's own static imports, so it would lose the race.
+ * Stand-in for `@/shared/ui/lazy-rich-text-editor` in specs (the real one is a ~570 KB
+ * Tiptap chunk). Records each mount and reports a normalised doc on open (`initial: true`).
+ * Registered from a `bunfig.toml` preload: a `plugin()` in a spec runs after its imports.
  */
 import * as React from 'react';
 import { plugin } from 'bun';

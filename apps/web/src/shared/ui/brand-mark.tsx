@@ -16,14 +16,9 @@ export interface BrandMarkProps
 }
 
 /**
- * The brand mark, in the app.
- *
- * Geometry comes from `@/shared/lib/brand-mark`, the same module the favicon
- * generator reads, so the tab icon and the mark in the header can never drift
- * apart. Colour does not: a favicon has to guess the tab strip's background
- * from `prefers-color-scheme`, while here `currentColor` inherits whatever the
- * surrounding text is using, which is correct under next-themes' class-based
- * dark mode too.
+ * The brand mark. Geometry comes from `@/shared/lib/brand-mark`, which the favicon
+ * generator also reads, so tab icon and header mark cannot drift. Colour is
+ * `currentColor` (a favicon must guess its background from `prefers-color-scheme`).
  */
 export function BrandMark({
   layer = 'public',

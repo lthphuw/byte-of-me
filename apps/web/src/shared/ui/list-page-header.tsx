@@ -14,11 +14,8 @@ interface ListPageHeaderProps {
 }
 
 /**
- * Heading for the public list pages. Gives Blogs and Projects the identity they
- * were missing — both used to open straight into a filter panel with no title,
- * description or count anywhere on the page.
- *
- * A `<header>` nested inside `<main>` is not a banner landmark, so this does not
+ * Heading for the public list pages: title, description, count, filters beneath.
+ * A `<header>` nested inside `<main>` is not a banner landmark, so it does not
  * compete with the site header.
  */
 export function ListPageHeader({

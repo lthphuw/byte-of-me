@@ -82,10 +82,9 @@ interface RevealItemProps {
   /** Above the fold: skip the entrance in the server HTML. See `RevealSection`. */
   immediate?: boolean;
   /**
-   * `false` renders the item plainly, with no entrance. Pass it for anything
-   * below the first screen — its entrance would finish before it is seen — and
-   * once a grid has played its first result set, so a filter or page change
-   * does not replay it. Read once, at mount (see `RevealItem`).
+   * `false` renders plainly, with no entrance: for items below the first screen (it would
+   * finish unseen) and once a grid has played its first results, so a filter or page
+   * change does not replay it. Read once, at mount (see `RevealItem`).
    */
   entrance?: boolean;
 }

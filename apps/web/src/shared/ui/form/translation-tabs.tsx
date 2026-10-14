@@ -24,14 +24,9 @@ import { TextField } from './text-field';
 import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-submit';
 
 /**
- * One element of the field array at `TName`.
- *
- * react-hook-form 7.83 added a `<FieldArray>` component and exports it by name
- * from the package root, which shadows the same-named type the root also
- * re-exports via `export * from './types'` — an explicit named export wins over
- * a star export, so importing `type FieldArray` now resolves to the component
- * and fails with TS2749. Reconstructed here from `FieldArrayPathValue`, which is
- * still exported cleanly, using the library's own definition of the type.
+ * One element of the field array at `TName`. rhf 7.83's `<FieldArray>` component shadows
+ * the `FieldArray` type (a named export beats a star export: TS2749), so it is rebuilt
+ * from `FieldArrayPathValue`.
  */
 type FieldArrayItem<
   T extends FieldValues,
@@ -125,16 +120,9 @@ export function TranslationTabs({
     }
   }, [fields, tab]);
 
-  // Self-revealing: a translation error otherwise renders inside an unmounted
-  // tab and the submit button just looks dead. Done here rather than in each
-  // caller's `handleSubmit` because these nest — a company role's tabs sit
-  // inside a collapsible inside the dialog's own tabs, and threading the error
-  // object down every level is what left three of them silent.
-  //
-  // Declared AFTER the clamp above. A nested instance can mount already holding
-  // the failed submit, so both effects may fire in one commit; React runs them
-  // in declaration order, so this write to the erroring index wins.
-  //
+  // Reveals the erroring tab (else the error sits in an unmounted tab and submit looks
+  // dead). Here, not in callers: these nest, and threading errors down left three silent.
+  // Declared AFTER the clamp above: both effects can fire in one commit and the later wins.
   useRevealOnInvalidSubmit(control, name, (errors) => {
     const index = firstErroredIndex(errors);
     if (index !== null) setTab(String(index));

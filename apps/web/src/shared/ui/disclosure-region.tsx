@@ -15,10 +15,9 @@ interface DisclosureRegionProps {
 }
 
 /**
- * Height reveal with no measurement: the track goes 0fr -> 1fr. Content stays in
- * the DOM (SEO, print); `inert` takes it out of the tab order, the accessibility
- * tree and Chrome's find-in-page while closed. Open eases out over 250ms, close
- * eases in over 200ms (.claude/rules/motion.md).
+ * Height reveal with no measurement: the track goes 0fr -> 1fr. Content stays in the DOM
+ * (SEO, print); `inert` takes it out of tab order, a11y tree and find-in-page while closed.
+ * Opens in 250ms, closes in 200ms (.claude/rules/motion.md).
  */
 export function DisclosureRegion({
   id,

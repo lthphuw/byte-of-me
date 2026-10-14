@@ -23,14 +23,9 @@ const Editor = dynamic(
 );
 
 /**
- * The one dynamic entry point for the full editor. Every dashboard form goes
- * through this module so the editor (~570 KB of tiptap/prosemirror/lowlight)
- * lands in a single shared async chunk — imported statically per form it was
- * duplicated into each route group's bundle and loaded before first paint.
- *
- * It supplies the editor's `labels` itself. Import it directly
- * (`@/shared/ui/lazy-rich-text-editor`), not through the shared/ui barrel, so
- * public pages never even see the reference.
+ * The one dynamic entry point for the full editor, so its ~570 KB (tiptap, prosemirror,
+ * lowlight) lands in one shared async chunk; it supplies `labels` itself. Import it
+ * directly, not through the shared/ui barrel, so public pages never see the reference.
  */
 export function LazyRichTextEditor(
   props: Omit<ComponentProps<typeof Editor>, 'labels'>

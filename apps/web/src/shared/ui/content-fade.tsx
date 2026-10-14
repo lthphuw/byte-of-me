@@ -8,10 +8,9 @@ interface ContentFadeProps {
 }
 
 /**
- * Fades a Suspense-resolved block in, so the swap from its skeleton does not pop.
- * Below the fold only — it starts at opacity 0, which would hold back an LCP element.
- * CSS only, so a server component can use it; opacity alone, so it needs no
- * `motion-safe:` (nothing moves, and a fade is what reduced motion keeps).
+ * Fades a Suspense-resolved block in, so the swap from its skeleton does not pop. Below
+ * the fold only: it starts at opacity 0, which would hold back an LCP element. CSS only
+ * (server-usable); opacity alone, so no `motion-safe:` (reduced motion keeps fades).
  */
 export function ContentFade({ children, className }: ContentFadeProps) {
   return (

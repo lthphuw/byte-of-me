@@ -22,32 +22,24 @@ export interface NavDrawerItem {
   label: string;
   icon: ComponentType<{ className?: string }>;
   /**
-   * Light this entry only on an exact pathname match. The default is a prefix
-   * match, which is what keeps `/dashboard/blogs` lit while a post is open at
-   * `/dashboard/blogs/<id>` — and exactly what a section root like
-   * `/dashboard` must opt out of, being a prefix of every route beneath it.
+   * Match the pathname exactly. The default prefix match keeps `/dashboard/blogs` lit on
+   * a post; a section root like `/dashboard` must opt out, being a prefix of every route.
    */
   exact?: boolean;
 }
 
 export interface NavDrawerGroup {
   /**
-   * Announced, not drawn. A hairline says "these belong together" as well as
-   * a caption does, but deleting the name outright would flatten ten
-   * destinations into one undifferentiated list for anyone navigating by
-   * heading.
+   * Announced (`sr-only` h2), not drawn: deleting it would flatten the destinations into
+   * one list for anyone navigating by heading.
    */
   label: string;
   items: NavDrawerItem[];
 }
 
 /**
- * One row of the drawer, at the one height every row here uses.
- *
- * Exported because the footer entries are not links to sections — signing out
- * is a form submit, opening settings is a dialog — and they must not be a
- * second, slightly different row. `min-h-11` is 44px: measured before this
- * existed, every row in both drawers was 36px.
+ * The one drawer row, `min-h-11` = 44px (rows measured 36px). `NavDrawerAction` and
+ * `NavDrawerLink` are exported so sign-out and settings share it, not a lookalike.
  */
 const ROW_CLASS =
   'flex w-full min-h-11 items-center gap-3 rounded-md px-3 text-sm transition-colors';
@@ -165,22 +157,9 @@ export function NavDrawerGroups({
 }
 
 /**
- * The navigation drawer both signed-in surfaces open below `lg`.
- *
- * There used to be two of these — `dashboard-sidebar.tsx` and
- * `space-nav-trigger.tsx` — around 150 lines each, describing the same drawer
- * in different words. They had already drifted: one grouped its destinations
- * behind hairlines and the other was a flat list, and the footers had
- * diverged in both contents and order. Nothing held them together, so they
- * came apart. Here the shape is one thing and each surface supplies only what
- * genuinely differs: its brand, its destinations, and its own footer entries.
- *
- * The trigger lives here too, so the hamburger cannot end up a different size
- * or a different distance from the corner on one surface than the other.
- *
- * Below `lg` on BOTH surfaces. A labelled column at tablet width takes a third
- * of the screen, and the collapsed rail depends on hover tooltips a touch
- * device does not have.
+ * The drawer both signed-in surfaces open below `lg`, trigger included so the hamburger
+ * cannot differ per surface. Below `lg`: a labelled column at tablet width takes a third
+ * of the screen, and the collapsed rail needs hover tooltips touch lacks.
  */
 export function NavDrawer({
   triggerLabel,
@@ -196,11 +175,8 @@ export function NavDrawer({
   brand: ReactNode;
   groups: NavDrawerGroup[];
   /**
-   * Surface-specific entries, built from `NavDrawerAction`/`NavDrawerLink`.
-   *
-   * A function rather than a node so the footer can close the drawer: opening
-   * the settings dialog or following the link to the other surface has to
-   * dismiss this first, and only the drawer knows how.
+   * Surface-specific entries from `NavDrawerAction`/`NavDrawerLink`. A function so the
+   * footer can close the drawer first (settings dialog, link to the other surface).
    */
   footer?: (close: () => void) => ReactNode;
 }) {
@@ -257,14 +233,7 @@ export function NavDrawer({
               home indicator on both surfaces. `max()` keeps the ordinary
               padding on everything else. */}
           <div className="mt-auto space-y-1 border-t border-border/40 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-            {/* Icons rather than two more labelled rows: these are the only
-                controls here that show their current value in the trigger
-                itself — a flag, and a sun or a moon — so a label beside them
-                would repeat what the icon already says.
-
-                `side="top"`: a menu opening to the right of a 288px drawer
-                has barely a sliver of screen to land in. Upwards it stays
-                inside the drawer it belongs to. */}
+            {/* `side="top"`: a menu opening right of the 288px drawer has no room to land. */}
             <div className="flex items-center gap-1 pb-1">
               <ColorSchemeModeToggle side="top" align="start" />
               <I18nToggle side="top" align="start" />

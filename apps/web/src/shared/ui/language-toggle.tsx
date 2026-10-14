@@ -28,10 +28,8 @@ const flagVariants = {
   exit: { opacity: 0, scale: 0.95, y: -8 },
 };
 
-// Only these two flags exist in the UI, so they are served as two static
-// files under public/flags (copied from the flag-icons package) instead of
-// importing flag-icons.min.css — which drags all 257 flag classes plus every
-// flag SVG (~550 files) into the build for the sake of two.
+// Only two flags exist in the UI: static files under public/flags, not flag-icons.min.css
+// (it drags all 257 flag classes and ~550 SVGs into the build).
 const flagClass =
   'inline-block w-[1.333333em] border border-border bg-contain bg-center bg-no-repeat leading-[1em]';
 
@@ -58,11 +56,8 @@ const Flags: Record<
 };
 
 /**
- * Switches the interface language.
- *
- * In `shared/ui` because three shells need it. Each option is a real `Link`,
- * not a router call: it is navigation, so middle-click and open-in-new-tab
- * should work, and next-intl writes the locale cookie on the way through.
+ * Switches the interface language. Each option is a real `Link`, not a router call:
+ * it is navigation (middle-click works) and next-intl writes the locale cookie.
  */
 export function I18nToggle({
   side = DEFAULT_MENU_PLACEMENT.side,

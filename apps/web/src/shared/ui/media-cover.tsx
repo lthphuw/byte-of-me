@@ -57,10 +57,9 @@ export function MediaFrame({
 }
 
 /**
- * The cover over a media frame until its file has drawn, then it fades out in place:
- * the cover and the media share one box, so nothing moves. A span, because a clip can
- * sit inside a button and a div may not. The pulse is an animation of opacity, and an
- * animation overrides `opacity-0`, so it has to stop before the cover can clear.
+ * The cover over a media frame until its file draws, then it fades out in place. A span:
+ * a clip can sit inside a button and a div may not. The pulse animates opacity and an
+ * animation overrides `opacity-0`, so it must stop before the cover can clear.
  */
 export function MediaCover({
   drawn,

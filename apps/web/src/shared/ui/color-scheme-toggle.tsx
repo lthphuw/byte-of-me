@@ -22,12 +22,9 @@ import {
 } from '@/shared/ui/menu-placement';
 
 /**
- * Light / dark / follow the system.
- *
- * In `shared/ui` because the dashboard and the public site both need it, and
- * a widget may not import from a sibling widget. Not stored in
- * `workspace_settings`: the theme must apply before first paint, which
- * next-themes' blocking script does and a database round trip cannot.
+ * Light / dark / follow the system. Not stored in `workspace_settings`: the theme must
+ * apply before first paint, which next-themes' blocking script does and a DB round trip
+ * cannot. In `shared/ui` because a widget may not import a sibling widget.
  */
 export function ColorSchemeModeToggle({
   side = DEFAULT_MENU_PLACEMENT.side,

@@ -1,12 +1,7 @@
 /**
- * Where a chrome toggle's menu opens.
- *
- * The theme and language toggles sit in different places: a header along the
- * top, a 56px rail down the left, a drawer over a phone. A menu that drops
- * downwards is right under a header and wrong from a control at the bottom of a
- * left-hand panel, where collision detection would shift it somewhere nobody
- * chose. So placement is the surface's decision, passed in; the defaults suit a
- * header.
+ * Where a chrome toggle's menu opens. The surface decides (header, 56px rail, drawer):
+ * a downward menu is wrong from the bottom of a left panel, where collision detection
+ * would shift it somewhere nobody chose. The defaults suit a header.
  */
 export interface MenuPlacement {
   /** Which edge of the trigger the menu grows from. */
