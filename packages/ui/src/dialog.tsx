@@ -2,17 +2,18 @@
 
 import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { X } from 'lucide-react';
 
+import {
+  MODAL_DESCRIPTION,
+  MODAL_HEADER,
+  MODAL_PANEL,
+  MODAL_TITLE,
+  SCRIM,
+} from './lib/surface-classes';
 import { cn } from './lib/utils';
+import { ModalClose } from './modal-close';
 
 const Dialog = DialogPrimitive.Root;
-
-const DialogTrigger = DialogPrimitive.Trigger;
-
-const DialogPortal = DialogPrimitive.Portal;
-
-const DialogClose = DialogPrimitive.Close;
 
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
@@ -20,10 +21,7 @@ const DialogOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
-    className={cn(
-      'fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-100 data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
-      className
-    )}
+    className={cn(SCRIM, className)}
     {...props}
   />
 ));
@@ -31,54 +29,26 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 interface DialogContentProps
   extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
-  /**
-   * Suppress the corner close button.
-   *
-   * For a dialog whose own content already carries a close control — a media
-   * viewer with a toolbar, say — the built-in one is a second X two
-   * centimetres from the first, and the reader has to work out whether they do
-   * the same thing. `SheetContent` has had this prop; the two now match.
-   */
-  hideClose?: boolean;
-  /**
-   * The close control's accessible name. English by default, because this
-   * package has no next-intl context; a localised caller passes its own.
-   */
+  /** The close control's accessible name. English by default, because this
+   *  package has no next-intl context; a localised caller passes its own. */
   closeLabel?: string;
 }
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
->(({ className, children, hideClose, closeLabel = 'Close', ...props }, ref) => (
-  <DialogPortal>
+>(({ className, children, closeLabel = 'Close', ...props }, ref) => (
+  <DialogPrimitive.Portal>
     <DialogOverlay />
     <DialogPrimitive.Content
       ref={ref}
-      className={cn(
-        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-100 data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 motion-safe:data-[state=closed]:zoom-out-95 motion-safe:data-[state=open]:zoom-in-95 motion-safe:data-[state=closed]:slide-out-to-left-1/2 motion-safe:data-[state=closed]:slide-out-to-top-[48%] motion-safe:data-[state=open]:slide-in-from-left-1/2 motion-safe:data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg',
-        className
-      )}
+      className={cn(MODAL_PANEL, className)}
       {...props}
     >
       {children}
-      {/* A 44px box around the same 16px glyph. It was the bare icon, which is
-          a 16px target — the smallest one in the product, on the control every
-          dialog needs.
-
-          `focus-visible`, not `focus`: Radix moves focus here when a dialog
-          opens with nothing else focusable, so a plain `focus:ring` drew a
-          hard square every time anyone opened one with a mouse. Keyboard users
-          still get the ring, which is the only way they can tell where they
-          are. Same fix, same reasons, as `sheet.tsx`. */}
-      {!hideClose && (
-        <DialogPrimitive.Close className="absolute right-2 top-2 flex size-11 items-center justify-center rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-          <X className="h-4 w-4" />
-          <span className="sr-only">{closeLabel}</span>
-        </DialogPrimitive.Close>
-      )}
+      <ModalClose label={closeLabel} />
     </DialogPrimitive.Content>
-  </DialogPortal>
+  </DialogPrimitive.Portal>
 ));
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
@@ -86,29 +56,9 @@ const DialogHeader = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn(
-      'flex flex-col space-y-1.5 text-center sm:text-left',
-      className
-    )}
-    {...props}
-  />
+  <div className={cn(MODAL_HEADER, className)} {...props} />
 );
 DialogHeader.displayName = 'DialogHeader';
-
-const DialogFooter = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn(
-      'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
-      className
-    )}
-    {...props}
-  />
-);
-DialogFooter.displayName = 'DialogFooter';
 
 const DialogTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
@@ -116,10 +66,7 @@ const DialogTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn(
-      'text-lg font-semibold leading-none tracking-tight',
-      className
-    )}
+    className={cn(MODAL_TITLE, className)}
     {...props}
   />
 ));
@@ -131,7 +78,7 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn('text-sm text-muted-foreground', className)}
+    className={cn(MODAL_DESCRIPTION, className)}
     {...props}
   />
 ));
@@ -139,13 +86,8 @@ DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
 export {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
-  DialogOverlay,
-  DialogPortal,
   DialogTitle,
-  DialogTrigger,
 };

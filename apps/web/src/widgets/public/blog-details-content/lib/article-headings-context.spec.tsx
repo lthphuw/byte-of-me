@@ -40,6 +40,7 @@ describe('ArticleHeadingsProvider', () => {
           targetId="article"
           contentsLabel="Open contents"
           referencesLabel="References"
+          closeLabel="Close"
         />
       </ArticleHeadingsProvider>
     );

@@ -49,7 +49,8 @@ export function ConfirmDeleteDialog({
             {cancelText}
           </AlertDialogCancel>
           <AlertDialogAction
-            className="min-h-11 bg-destructive text-destructive-foreground hover:bg-destructive/90 can-hover:min-h-9"
+            variant="destructive"
+            className="min-h-11 can-hover:min-h-9"
             onClick={(e) => {
               e.preventDefault();
               onConfirm();

@@ -32,6 +32,7 @@ const ARTICLE_ID = 'blog-article-content';
 
 export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
   const t = await getTranslations('blogDetails');
+  const tDialog = await getTranslations('components.dialog');
   const tagSlugs = blog.tags.map((tag) => tag.slug);
 
   return (
@@ -149,6 +150,7 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
         targetId={ARTICLE_ID}
         contentsLabel={t('tableOfContents')}
         referencesLabel={t('references')}
+        closeLabel={tDialog('close')}
       />
 
       <BlogCitationLinks targetId={ARTICLE_ID} />

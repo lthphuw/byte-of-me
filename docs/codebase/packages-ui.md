@@ -12,6 +12,7 @@ packages/ui/
 └── src/
     ├── index.ts             root barrel; omits rich-text*, rich-text-editor, mermaid, math
     ├── <name>.tsx           one file per primitive: shadcn-style wrappers + app-neutral composites
+    ├── modal-close.tsx      ModalClose: the corner X of dialog and sheet; takes the accessible name as `label`
     ├── rich-text.tsx        RichText: server component, stored Tiptap JSON -> HTML
     ├── rich-text-html.tsx   RichTextHtml: client-safe printer of already-sanitised HTML
     ├── rich-text-render.ts  renderRichTextHtml, renderRichTextDocumentHtml: server only
@@ -19,7 +20,7 @@ packages/ui/
     ├── mermaid-size.ts      svgNaturalSize / parseMermaidSize: a diagram's WxH, the `data-mermaid-size` attribute
     ├── math-renderer.tsx    MathRenderer: client; KaTeX over data-latex placeholders
     ├── hooks/               use-clipboard, use-debounce, use-intersection, use-lock-body, use-media-query
-    ├── lib/                 cn, sanitize, rich-text-content codec, markdown-format, reduced-motion
+    ├── lib/                 cn, sanitize, rich-text-content codec, markdown-format, reduced-motion, surface-classes (scrim and modal class strings shared by dialog, alert-dialog, sheet, drawer)
     ├── motion/              MotionProvider (LazyMotion + reducedMotion), tokens, variants, transitions
     └── rich-text-editor/tiptap/
         ├── rich-text-editor.tsx   RichTextEditor + createExtensions(): the editor schema
@@ -109,8 +110,6 @@ cd packages/ui && bun test src/lib/utils.spec.ts  # one spec file, from this dir
 ## AGENTS.md deviations
 
 - §7 (apps/web imports of `@byte-of-me/ui`): no real violation. The static closure of 143 client entries reaches no `rich-text*`, TipTap, KaTeX or Mermaid module. The only editor path is the dashboard-only `apps/web/src/shared/ui/lazy-rich-text-editor.tsx:16`. 92 client files import the root barrel, which carries no TipTap.
-- `packages/ui/src/dialog.tsx:24`, `alert-dialog.tsx:21`, `sheet.tsx:24`, `drawer.tsx:31`: §14, hardcoded `bg-black/80` scrim.
-- `packages/ui/src/dialog.tsx:77`: §4, the close button's accessible name defaults to the English `Close`. `DialogContent` takes `closeLabel`, which `RecordDialog` passes; a call site that does not pass one still hears English.
 - `packages/ui/src/rich-text-editor/tiptap/extensions/image.tsx:196-197`: §14, `bg-black/40` and `text-white` on the upload overlay.
 - `packages/ui/src/rich-text-editor/tiptap/toolbars/color-and-highlight.tsx:174`: §14, `dark:bg-gray-2`.
 - `packages/ui/src/rich-text-editor/tiptap/toolbars/link.tsx:93-94`: §14, text arrow `↗` used as an icon (Lucide only) and a `decoration-gray-7` class.

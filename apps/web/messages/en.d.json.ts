@@ -291,6 +291,9 @@ declare const messages: {
     "returnHome": "Return Home"
   },
   "components": {
+    "dialog": {
+      "close": "Close"
+    },
     "expandableText": {
       "showLess": "Show less",
       "showMore": "Show more"

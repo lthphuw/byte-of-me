@@ -127,6 +127,10 @@
     --ring: 237.6 73.9% 61%;
     --merged: 261 69% 59%;
 
+    /* The dim behind a dialog, sheet or drawer (`bg-scrim/80`). One value for
+       both themes: it darkens whatever page it covers, so it has no dark twin. */
+    --scrim: 240 20% 4%;
+
     --radius: 0.5rem;
 
     /* Scrollbars. Neutral alpha rather than a palette token: a thumb sits on

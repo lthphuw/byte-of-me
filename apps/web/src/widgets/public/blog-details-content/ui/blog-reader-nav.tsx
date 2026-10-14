@@ -38,10 +38,12 @@ export function BlogReaderNav({
   targetId,
   contentsLabel,
   referencesLabel,
+  closeLabel,
 }: {
   targetId: string;
   contentsLabel: string;
   referencesLabel: string;
+  closeLabel: string;
 }) {
   const [open, setOpen] = useState(false);
   const { headings, activeId } = useSharedArticleHeadings();
@@ -126,6 +128,7 @@ export function BlogReaderNav({
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent
           side="right"
+          closeLabel={closeLabel}
           className="flex w-[min(20rem,85vw)] flex-col gap-0 p-0 xl:hidden"
         >
           {hasBoth ? (

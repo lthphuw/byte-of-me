@@ -10,7 +10,7 @@ apps/web/src/
   app/
     layout.tsx, page.tsx            passthrough + globals.css; page.tsx redirects / to /en
     not-found.tsx, global-error.tsx root 404 and last-resort boundary (both client)
-    globals.css                     34 tokens, e.g. --background --foreground --card --muted --primary --border --input --ring; plus --brand-50..--brand-950, --radius
+    globals.css                     35 tokens, e.g. --background --foreground --card --muted --primary --border --input --ring --scrim; plus --brand-50..--brand-950, --radius
     providers/                      GlobalProvider: Query, Motion, Theme, Toaster, GA, SpeedInsights
     robots.ts, sitemap.ts           metadata routes -> /robots.txt, /sitemap.xml
     feed.xml/route.ts               route handler -> /feed.xml (RSS 2.0)

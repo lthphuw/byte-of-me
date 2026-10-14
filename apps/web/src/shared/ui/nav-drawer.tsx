@@ -10,6 +10,7 @@ import {
   SheetTrigger,
 } from '@byte-of-me/ui';
 import { Menu } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { Link, usePathname } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
@@ -210,6 +211,7 @@ export function NavDrawer({
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const tDialog = useTranslations('components.dialog');
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -237,6 +239,7 @@ export function NavDrawer({
           takeover with no way back except the X. */}
       <SheetContent
         side="left"
+        closeLabel={tDialog('close')}
         className="w-[min(18rem,85vw)] p-0"
         aria-describedby={undefined}
       >

@@ -60,6 +60,8 @@ export default {
         // Merged pull requests (`text-merged`). Purple is a status hue, not a
         // brand one: the icon beside it and the word "merged" carry the state.
         merged: 'hsl(var(--merged))',
+        // The dim behind a modal (`bg-scrim/80`); see `--scrim` in globals.css.
+        scrim: 'hsl(var(--scrim))',
         brand: {
           '50': 'hsl(var(--brand-50))',
           '100': 'hsl(var(--brand-100))',

@@ -23,11 +23,15 @@ interface AuthModalProps {
 
 export function AuthModal({ isOpen, onClose, children }: AuthModalProps) {
   const t = useTranslations('auth');
+  const tDialog = useTranslations('components.dialog');
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       {isOpen && (
-        <DialogContent className="w-[90vw] overflow-hidden rounded-2xl p-6 sm:max-w-[400px]">
+        <DialogContent
+          closeLabel={tDialog('close')}
+          className="w-[90vw] overflow-hidden rounded-2xl p-6 sm:max-w-[400px]"
+        >
           {/* No scale or fade of its own: DialogContent already zooms and fades
               in, and a second one on top started the modal at 0.9. */}
           <div className="flex flex-col">

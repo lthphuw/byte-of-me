@@ -291,6 +291,9 @@ declare const messages: {
     "returnHome": "Về trang chủ"
   },
   "components": {
+    "dialog": {
+      "close": "Đóng"
+    },
     "expandableText": {
       "showLess": "Thu gọn",
       "showMore": "Xem thêm"
