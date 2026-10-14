@@ -11,6 +11,7 @@ import {
   Italic,
   List,
   ListOrdered,
+  type LucideIcon,
   Plus,
   Quote,
   X,
@@ -22,17 +23,11 @@ import type { EditorLabelKey, EditorLabels } from './editor-labels';
 import type { ImageUploadFn } from './extensions/image';
 import { imageFilesFrom, resolveImages } from './extensions/upload-images';
 
-/**
- * The touch counterpart to markdown input rules and drag-and-drop, neither of
- * which a phone has. One thumb-sized button opens the tools; it shows under `md`
- * only, and never on a compact editor, whose bar is hidden below `sm`.
- */
-
 type Tool = {
   key: string;
   /** The `EditorLabels` entry this button is named by. */
   labelKey: EditorLabelKey;
-  icon: typeof Bold;
+  icon: LucideIcon;
   run: (editor: Editor) => void;
   isActive?: (editor: Editor) => boolean;
 };
@@ -96,6 +91,11 @@ const TOOLS: Tool[] = [
   },
 ];
 
+/**
+ * The touch counterpart to markdown input rules and drag-and-drop, neither of
+ * which a phone has. One thumb-sized button opens the tools; it shows under `md`
+ * only, and never on a compact editor, whose bar is hidden below `sm`.
+ */
 export function MobileEditorTools({
   editor,
   uploadImage,
@@ -134,16 +134,15 @@ export function MobileEditorTools({
           opened. */}
       {open && (
         <div
-          className="pointer-events-auto absolute bottom-20 right-4 grid w-52 grid-cols-4 gap-1 rounded-xl border bg-popover p-2 shadow-lg"
-          role="menu"
+          className="pointer-events-auto absolute bottom-20 right-4 grid w-56 grid-cols-4 gap-2 rounded-xl border bg-popover p-2 shadow-lg"
+          role="toolbar"
           aria-label={labels.formatting}
         >
           {uploadImage && (
             <button
               type="button"
-              role="menuitem"
               aria-label={labels.insertImage}
-              className="flex aspect-square min-h-11 min-w-11 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+              className="flex aspect-square min-h-11 min-w-11 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               onClick={() => fileInput.current?.click()}
             >
               <ImageIcon className="h-4 w-4" />
@@ -156,11 +155,10 @@ export function MobileEditorTools({
               <button
                 key={tool.key}
                 type="button"
-                role="menuitem"
                 aria-label={labels[tool.labelKey]}
                 aria-pressed={pressed[index]}
                 className={cn(
-                  'flex aspect-square min-h-11 min-w-11 items-center justify-center rounded-md hover:bg-muted',
+                  'flex aspect-square min-h-11 min-w-11 items-center justify-center rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                   pressed[index]
                     ? 'bg-muted text-foreground'
                     : 'text-muted-foreground hover:text-foreground'
@@ -185,7 +183,7 @@ export function MobileEditorTools({
           open ? labels.closeFormattingTools : labels.openFormattingTools
         }
         aria-expanded={open}
-        className="pointer-events-auto absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg"
+        className="pointer-events-auto absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         onClick={() => setOpen((v) => !v)}
       >
         {open ? <X className="h-5 w-5" /> : <Plus className="h-5 w-5" />}

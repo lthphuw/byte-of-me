@@ -308,7 +308,6 @@ export function ProjectForm({
                           compact
                           minHeight={140}
                           placeholder={t('dialog.descriptionPlaceholder')}
-                          className="rounded-md"
                           value={toEditorContent(field.value)}
                           // The editor's own normalised copy of the loaded body
                           // is not an edit: without this an untouched form is dirty.

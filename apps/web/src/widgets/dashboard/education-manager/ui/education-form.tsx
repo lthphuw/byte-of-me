@@ -222,7 +222,6 @@ export function EducationForm({
                           compact
                           minHeight={140}
                           placeholder={t('dialog.descriptionPlaceholder')}
-                          className="rounded-md"
                           value={toEditorContent(field.value)}
                           onChange={(json) =>
                             field.onChange(fromEditorContent(json))

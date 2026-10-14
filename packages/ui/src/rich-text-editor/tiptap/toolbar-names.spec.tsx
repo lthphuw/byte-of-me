@@ -4,7 +4,13 @@
  * alone, which a screen reader does not announce as a name.
  */
 import * as React from 'react';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from '@testing-library/react';
 import type { Editor, JSONContent } from '@tiptap/react';
 import { afterEach, describe, expect, test } from 'bun:test';
 
@@ -203,11 +209,11 @@ describe('RichTextEditor toolbar names', () => {
         })
       );
 
+      const sheet = screen.getByRole('toolbar', {
+        name: testEditorLabels.formatting,
+      });
       expect(
-        screen.getByRole('menu', { name: testEditorLabels.formatting })
-      ).toBeTruthy();
-      expect(
-        screen.getByRole('menuitem', { name: testEditorLabels.bold })
+        within(sheet).getByRole('button', { name: testEditorLabels.bold })
       ).toBeTruthy();
     } finally {
       window.innerWidth = width;

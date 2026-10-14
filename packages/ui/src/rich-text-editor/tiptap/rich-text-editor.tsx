@@ -12,6 +12,7 @@ import {
 } from '@tiptap/react';
 
 import { useMediaQuery } from '../../hooks/use-media-query';
+import { EditorSkeleton } from '../../editor-skeleton';
 import { cn } from '../../lib/utils';
 
 import { createExtensions } from './create-extensions';
@@ -149,7 +150,15 @@ export function RichTextEditor({
 
   useFlushBeforeSubmit(editor, flush);
 
-  if (!editor) return null;
+  if (!editor) {
+    return (
+      <EditorSkeleton
+        compact={compact}
+        minHeight={minHeight}
+        className={className}
+      />
+    );
+  }
 
   const toolbar = (
     <EditorToolbar
@@ -171,10 +180,11 @@ export function RichTextEditor({
       // The tighter of the two rhythms in `editor-surface.css`: an editor in a
       // form card is a field, so it gets the document rules at a smaller scale.
       data-editor-density={compact ? 'compact' : undefined}
-      // `overflow-clip`, not `hidden`: hidden makes a scroll container, which
-      // traps the toolbar's `sticky top-0` and lets it drift away.
+      // A field, so it takes a control's edge and focus ring. `overflow-clip`,
+      // not `hidden`: hidden makes a scroll container, which traps the
+      // toolbar's `sticky top-0` and lets it drift away.
       className={cn(
-        'relative flex w-full flex-col overflow-clip border bg-card',
+        'relative flex w-full flex-col overflow-clip rounded-md border border-input bg-card focus-within:ring-1 focus-within:ring-ring',
         className
       )}
     >

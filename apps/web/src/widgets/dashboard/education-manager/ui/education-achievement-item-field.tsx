@@ -220,7 +220,6 @@ export function EducationAchievementItemField({
                             compact
                             minHeight={140}
                             placeholder={t('achievements.contentPlaceholder')}
-                            className="rounded-md"
                             // Tiptap reads `value` once, on mount. Rendering is
                             // gated by the language tab and the collapsible above,
                             // so a remount always picks up the current form value.

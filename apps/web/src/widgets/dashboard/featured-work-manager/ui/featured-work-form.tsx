@@ -153,26 +153,23 @@ export function FeaturedWorkForm({
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>{t('detailsLabel')}</FormLabel>
-                    {/* FormControl sits inside the frame, as in the blog editor. */}
-                    <div className="rounded-md border">
-                      <FormControl>
-                        <RichTextEditor
-                          toolbarTarget={toolbarTarget}
-                          value={toEditorContent(field.value)}
-                          // Ignores the editor's own normalised copy of the loaded
-                          // body (not an edit), so an untouched save writes the
-                          // stored string back unchanged.
-                          onChange={(json, meta) => {
-                            if (!meta.initial) {
-                              field.onChange(fromEditorContent(json));
-                            }
-                          }}
-                          uploadImage={uploadImage}
-                          labels={editorLabels}
-                          uploadFailedText={tMedia('toast.uploadError')}
-                        />
-                      </FormControl>
-                    </div>
+                    <FormControl>
+                      <RichTextEditor
+                        toolbarTarget={toolbarTarget}
+                        value={toEditorContent(field.value)}
+                        // Ignores the editor's own normalised copy of the loaded
+                        // body (not an edit), so an untouched save writes the
+                        // stored string back unchanged.
+                        onChange={(json, meta) => {
+                          if (!meta.initial) {
+                            field.onChange(fromEditorContent(json));
+                          }
+                        }}
+                        uploadImage={uploadImage}
+                        labels={editorLabels}
+                        uploadFailedText={tMedia('toast.uploadError')}
+                      />
+                    </FormControl>
                     <FieldMessage message={fieldState.error?.message} />
                   </FormItem>
                 )}

@@ -269,18 +269,19 @@
  * Inline
  * ------------------------------------------------------------------------ */
 
+/* A link is `--primary` and underlined, as on the published page. */
 .ProseMirror a {
-  color: hsl(var(--foreground));
+  color: hsl(var(--primary));
   cursor: pointer;
   font-weight: 500;
   text-decoration: underline;
-  text-decoration-color: hsl(var(--muted-foreground) / 0.5);
+  text-decoration-color: hsl(var(--primary) / 0.4);
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
 }
 
 .ProseMirror a:hover {
-  text-decoration-color: hsl(var(--foreground));
+  text-decoration-color: hsl(var(--primary));
 }
 
 .ProseMirror code {

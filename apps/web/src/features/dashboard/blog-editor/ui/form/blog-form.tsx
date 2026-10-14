@@ -223,26 +223,20 @@ export function BlogForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('form.bodyLabel')}</FormLabel>
-                      {/* FormControl sits INSIDE the frame, not around it: its
-                          Slot injects the id the label points at, and a label
-                          has to resolve to something focusable — this div is
-                          not. The frame itself is unchanged. */}
-                      <div className="rounded-md border">
-                        <FormControl>
-                          <RichTextEditor
-                            toolbarTarget={toolbarTarget}
-                            value={field.value}
-                            // The editor's own normalised copy of the loaded body
-                            // is not an edit: without this an untouched form is dirty.
-                            onChange={(json, meta) => {
-                              if (!meta.initial) field.onChange(json);
-                            }}
-                            uploadImage={uploadImage}
-                            labels={editorLabels}
-                            uploadFailedText={tMedia('toast.uploadError')}
-                          />
-                        </FormControl>
-                      </div>
+                      <FormControl>
+                        <RichTextEditor
+                          toolbarTarget={toolbarTarget}
+                          value={field.value}
+                          // The editor's own normalised copy of the loaded body
+                          // is not an edit: without this an untouched form is dirty.
+                          onChange={(json, meta) => {
+                            if (!meta.initial) field.onChange(json);
+                          }}
+                          uploadImage={uploadImage}
+                          labels={editorLabels}
+                          uploadFailedText={tMedia('toast.uploadError')}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
