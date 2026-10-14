@@ -63,7 +63,7 @@ export function FeaturedWorkDialog({
       description={
         isEditing ? t('dialog.editDescription') : t('dialog.createDescription')
       }
-      size="lg"
+      size="xl"
       formId={FORM_ID}
       // A clip in flight holds Save and closing, like a save in progress.
       isPending={loading || isUploading}

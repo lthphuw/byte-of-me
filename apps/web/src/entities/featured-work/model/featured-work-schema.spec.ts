@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
 import {
-  FEATURED_WORK_DETAILS_MAX_LENGTH,
   FEATURED_WORK_LINKS_MAX,
   featuredWorkSchema,
 } from './featured-work-schema';
@@ -111,22 +110,8 @@ describe('featuredWorkSchema', () => {
       expect(withDetails('').data?.translations[0]?.details).toBeNull();
     });
 
-    it('accepts a body of exactly the maximum length', () => {
-      const body = 'x'.repeat(FEATURED_WORK_DETAILS_MAX_LENGTH);
-      expect(withDetails(body).success).toBe(true);
-    });
-
-    it('rejects a body one character over the maximum, reported on that translation', () => {
-      const result = withDetails(
-        'x'.repeat(FEATURED_WORK_DETAILS_MAX_LENGTH + 1)
-      );
-      expect(result.success).toBe(false);
-      expect(result.error?.issues[0]?.path).toEqual([
-        'translations',
-        0,
-        'details',
-      ]);
-      expect(result.error?.issues[0]?.message).toBe('validation.tooLong');
+    it('accepts a long body: there is no length cap, as blog bodies have none', () => {
+      expect(withDetails('x'.repeat(100_000)).success).toBe(true);
     });
   });
 });

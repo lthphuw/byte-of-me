@@ -79,6 +79,12 @@ export function FeaturedWorkForm({
 
   // The Save button is disabled meanwhile; this also stops Enter in an input.
   const isUploading = useRef(false);
+
+  // The editor's bar is pinned here, above the tabs: the dialog scrolls, and a bar
+  // inside the editor's frame would scroll out of sight. Mirrors the blog editor.
+  const [toolbarTarget, setToolbarTarget] = useState<HTMLDivElement | null>(
+    null
+  );
   const handleUploadingChange = useCallback(
     (value: boolean) => {
       isUploading.current = value;
@@ -110,6 +116,11 @@ export function FeaturedWorkForm({
         })}
         className="space-y-6"
       >
+        {/* Spans the dialog body's padding and sticks to its top edge, so the bar stays in view. */}
+        <div
+          ref={setToolbarTarget}
+          className="sticky -top-4 z-30 -mx-4 -mt-4 min-h-11 bg-background md:-mx-6"
+        />
         {translationsError && (
           <p
             role="alert"
@@ -142,25 +153,26 @@ export function FeaturedWorkForm({
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>{t('detailsLabel')}</FormLabel>
-                    <FormControl>
-                      <RichTextEditor
-                        compact
-                        minHeight={140}
-                        className="rounded-md"
-                        value={toEditorContent(field.value)}
-                        // Ignores the editor's own normalised copy of the loaded
-                        // body (not an edit), so an untouched save writes the
-                        // stored string back unchanged.
-                        onChange={(json, meta) => {
-                          if (!meta.initial) {
-                            field.onChange(fromEditorContent(json));
-                          }
-                        }}
-                        uploadImage={uploadImage}
-                        labels={editorLabels}
-                        uploadFailedText={tMedia('toast.uploadError')}
-                      />
-                    </FormControl>
+                    {/* FormControl sits inside the frame, as in the blog editor. */}
+                    <div className="rounded-md border">
+                      <FormControl>
+                        <RichTextEditor
+                          toolbarTarget={toolbarTarget}
+                          value={toEditorContent(field.value)}
+                          // Ignores the editor's own normalised copy of the loaded
+                          // body (not an edit), so an untouched save writes the
+                          // stored string back unchanged.
+                          onChange={(json, meta) => {
+                            if (!meta.initial) {
+                              field.onChange(fromEditorContent(json));
+                            }
+                          }}
+                          uploadImage={uploadImage}
+                          labels={editorLabels}
+                          uploadFailedText={tMedia('toast.uploadError')}
+                        />
+                      </FormControl>
+                    </div>
                     <FieldMessage message={fieldState.error?.message} />
                   </FormItem>
                 )}

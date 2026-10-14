@@ -1,9 +1,6 @@
 import { isRichTextBlank } from '@byte-of-me/ui/lib/rich-text-content';
 import { z } from 'zod';
 
-/** Stored TipTap JSON, in characters. A size guard, not a word budget. */
-export const FEATURED_WORK_DETAILS_MAX_LENGTH = 32_768;
-
 // Optional in every language, English included: only the title is required.
 // `parseInput` and the client resolver both run this, so the transform is the
 // one place a blank body becomes `null`. The outer `.optional()` keeps the key
@@ -11,7 +8,6 @@ export const FEATURED_WORK_DETAILS_MAX_LENGTH = 32_768;
 // Every message is a `validation.*` key, translated by the form at display time.
 const detailsSchema = z
   .string()
-  .max(FEATURED_WORK_DETAILS_MAX_LENGTH, 'validation.tooLong')
   .nullable()
   .transform((value) => (value && !isRichTextBlank(value) ? value : null))
   .optional();

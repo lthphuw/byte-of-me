@@ -45,7 +45,7 @@ export interface AdminFeaturedWorkLink {
 
 /**
  * The full row the editor dialog edits. `details` is a stringified TipTap document
- * (at most 32,768 characters), so it stays out of the list: the dialog loads this by id.
+ * (no length cap, as blog bodies have none), so it stays out of the list: the dialog loads this by id.
  * `media` is the demo pair, flattened and ordered by slot; `links` are the proof links in
  * position order. The list carries neither.
  */
