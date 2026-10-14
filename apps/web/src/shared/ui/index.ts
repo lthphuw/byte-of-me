@@ -3,6 +3,7 @@ export * from './add-button';
 export * from './confirm-delete-dialog';
 export * from './confirm-discard-dialog';
 export * from './content-fade';
+export * from './edit-record-dialog';
 export * from './expandable-rich-text';
 export * from './filter-search-input';
 export * from './form';

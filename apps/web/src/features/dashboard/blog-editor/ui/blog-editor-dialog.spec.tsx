@@ -98,11 +98,8 @@ function renderDialog(
         <BlogEditorDialog
           open
           onOpenChange={onOpenChange}
+          isEditing
           initialData={initialData}
-          isNotReady={false}
-          hasError={false}
-          onRetry={() => {}}
-          isPending={false}
           onSubmit={() => {}}
         />
       </NextIntlClientProvider>

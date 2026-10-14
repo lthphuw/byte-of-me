@@ -129,11 +129,12 @@ export function TagManager() {
         key={editing?.id || 'new'}
         open={isDialogOpen}
         onOpenChange={onDialogOpenChange}
+        isEditing={Boolean(editing)}
         initialData={fullTag.record}
-        isNotReady={fullTag.isNotReady}
-        hasError={fullTag.hasError}
-        onRetry={fullTag.retry}
-        isPending={isSaving}
+        isLoadingInitialData={fullTag.isNotReady}
+        hasLoadError={fullTag.hasError}
+        onRetryLoad={fullTag.retry}
+        loading={isSaving}
         onSubmit={save}
       />
 

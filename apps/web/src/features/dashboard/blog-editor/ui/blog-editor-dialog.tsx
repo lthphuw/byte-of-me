@@ -8,21 +8,13 @@ import { BlogForm } from './form/blog-form';
 
 import type { AdminBlog } from '@/entities/blog';
 import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
-import { RecordDialog } from '@/shared/ui';
-import { EditRecordGate } from '@/shared/ui/edit-record-gate';
+import { EditRecordDialog, type EditRecordDialogControls } from '@/shared/ui';
 
 const FORM_ID = 'blog-editor-form';
 
-export interface BlogEditorDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+export interface BlogEditorDialogProps extends EditRecordDialogControls {
   /** The full post, translations with `content` included. `null` for a new post. */
   initialData: Nullable<AdminBlog>;
-  /** The full post is loading or was never requested, so the form must not mount yet. */
-  isNotReady: boolean;
-  hasError: boolean;
-  onRetry: () => void;
-  isPending: boolean;
   onSubmit: (values: BlogFormValues, options: { onSaved: () => void }) => void;
 }
 
@@ -54,54 +46,35 @@ function BlogFormSkeleton() {
 }
 
 export function BlogEditorDialog({
-  open,
-  onOpenChange,
   initialData,
-  isNotReady,
-  hasError,
-  onRetry,
-  isPending,
   onSubmit,
+  ...controls
 }: BlogEditorDialogProps) {
   const t = useTranslations('dashboard.blog');
-  const crud = useTranslations('dashboard.shared.crud');
   const [isDirty, setIsDirty] = useState(false);
 
   // The form holding the changes unmounts with the dialog, so a closed dialog
   // has none. Without this, a reopened edit could ask about changes it never had.
   useEffect(() => {
-    if (!open) setIsDirty(false);
-  }, [open]);
-
-  // Loading counts as editing before the record arrives: only "new" has neither.
-  const isEditing = Boolean(initialData) || isNotReady;
-  const entity = t('entity');
+    if (!controls.open) setIsDirty(false);
+  }, [controls.open]);
 
   return (
-    <RecordDialog
-      open={open}
-      onOpenChange={onOpenChange}
-      title={
-        isEditing ? crud('editTitle', { entity }) : crud('newTitle', { entity })
-      }
+    <EditRecordDialog
+      {...controls}
+      entity={t('entity')}
       size="xl"
       formId={FORM_ID}
-      isPending={isPending}
       isDirty={isDirty}
+      hasRecord={Boolean(initialData)}
+      skeleton={<BlogFormSkeleton />}
     >
-      <EditRecordGate
-        isNotReady={isNotReady}
-        hasError={hasError}
-        onRetry={onRetry}
-        skeleton={<BlogFormSkeleton />}
-      >
-        <BlogForm
-          formId={FORM_ID}
-          initialData={initialData ?? undefined}
-          onSubmit={onSubmit}
-          onDirtyChange={setIsDirty}
-        />
-      </EditRecordGate>
-    </RecordDialog>
+      <BlogForm
+        formId={FORM_ID}
+        initialData={initialData ?? undefined}
+        onSubmit={onSubmit}
+        onDirtyChange={setIsDirty}
+      />
+    </EditRecordDialog>
   );
 }

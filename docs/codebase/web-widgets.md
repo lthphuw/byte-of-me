@@ -73,7 +73,7 @@ every slice: index.ts -> ui/index.ts -> ui/*.tsx (+ lib/, model/); *.spec.ts(x) 
 ### 1. New dashboard manager (model: `tag-manager`)
 
 1. Entity `apps/web/src/entities/<x>/`: `api/` (copy `apps/web/src/entities/tag/api/create-tag.ts`: guard, `parseInput`, Prisma, `revalidateTag`, `ApiResponse`), `model/` (`<x>-schema.ts`, `query-keys.ts`, `types.ts`), `index.ts` barrel.
-2. Widget `apps/web/src/widgets/dashboard/<x>-manager/`: `index.ts`, `ui/index.ts`, `ui/<x>-manager.tsx` (`'use client'`, `useCrudManager`), `ui/<x>-dialog.tsx`. Model: `apps/web/src/widgets/dashboard/tag-manager/`. An edit dialog loads its record by id through a `use-admin-<x>-by-id.ts` hook (`useEditingRecord`), gates the form on it with `EditRecordGate` (`@/shared/ui/edit-record-gate`) and a `<x>-form-loading.tsx` skeleton, and the manager passes `keys` (`CrudKeys`) so a save drops the stale record. The route's `loading.tsx` renders `ManagerPageLoading` (`@/shared/ui/manager-page-loading`, variant `list` or `grid`), never a spinner.
+2. Widget `apps/web/src/widgets/dashboard/<x>-manager/`: `index.ts`, `ui/index.ts`, `ui/<x>-manager.tsx` (`'use client'`, `useCrudManager`), `ui/<x>-dialog.tsx`. Model: `apps/web/src/widgets/dashboard/tag-manager/`. An edit dialog loads its record by id through a `use-admin-<x>-by-id.ts` hook (`useEditingRecord`), is an `EditRecordDialog` (`@/shared/ui/edit-record-dialog`: the title, the `EditRecordGate` and the Save lock) around the form and a `<x>-form-loading.tsx` skeleton, and the manager passes `keys` (`CrudKeys`) so a save drops the stale record. The route's `loading.tsx` renders `ManagerPageLoading` (`@/shared/ui/manager-page-loading`, variant `list` or `grid`), never a spinner.
 3. Route `apps/web/src/app/[locale]/(protected)/dashboard/<path>/page.tsx`: `getQueryClient()`, `prefetchQuery(<x>Queries.adminPage(1))` from the entity's query factory, then `HydrationBoundary` with `dehydrate(queryClient)`, and render the manager. Model: `apps/web/src/app/[locale]/(protected)/dashboard/companies/page.tsx`.
 4. Nav: add `{ href, label: t('items.<key>'), icon }` to `apps/web/src/widgets/dashboard/dashboard-sidebar/model/use-dashboard-nav-groups.ts`.
 5. Strings: `dashboard.<x>` and `dashboard.sidebar.items.<key>` in both `apps/web/messages/en.json` and `vi.json` (AGENTS §4).
@@ -89,7 +89,7 @@ every slice: index.ts -> ui/index.ts -> ui/*.tsx (+ lib/, model/); *.spec.ts(x) 
 ### 3. New field on a manager form (model: `company-manager`)
 
 1. Schema `apps/web/src/entities/company/model/company-schema.ts` (zod).
-2. Fields in `apps/web/src/widgets/dashboard/company-manager/ui/company-form.tsx`; `company-dialog.tsx` only wraps it in `RecordDialog` and `EditRecordGate`.
+2. Fields in `apps/web/src/widgets/dashboard/company-manager/ui/company-form.tsx`; `company-dialog.tsx` only wraps it in `EditRecordDialog`.
 3. Server `apps/web/src/entities/company/api/create-company.ts` and `update-company.ts` validate with `parseInput(companySchema, ...)`; the Prisma write must carry the field.
 4. Labels in both `en.json` and `vi.json`.
 

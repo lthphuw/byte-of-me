@@ -9,83 +9,46 @@ import { CompanyFormLoading } from './company-form-loading';
 import type { CompanyFormValues } from '@/entities/company/model/company-schema';
 import type { AdminCompany } from '@/entities/company/model/types';
 import { useTechStackOptions } from '@/entities/tech-stack/query';
-import { EditRecordGate } from '@/shared/ui/edit-record-gate';
-import { RecordDialog } from '@/shared/ui/record-dialog';
+import { EditRecordDialog, type EditRecordDialogControls } from '@/shared/ui';
 
 const FORM_ID = 'company-form';
 
-interface CompanyDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  /** Set from the list row, so the title does not flip while the record loads. */
-  isEditing: boolean;
+interface CompanyDialogProps extends EditRecordDialogControls {
   initialData?: Nullable<AdminCompany>;
-  /**
-   * The full record is loading or its fetch failed. The list row carries no
-   * roles or tasks, so the form stays unmounted until this clears.
-   */
-  isLoadingInitialData?: boolean;
-  /** The full-record fetch failed; the dialog offers `onRetryLoad` instead. */
-  hasLoadError?: boolean;
-  onRetryLoad?: () => void;
   onSubmit: (data: CompanyFormValues) => void;
-  loading?: boolean;
 }
 
 export function CompanyDialog({
-  open,
-  onOpenChange,
-  isEditing,
   initialData,
-  isLoadingInitialData = false,
-  hasLoadError = false,
-  onRetryLoad,
   onSubmit,
-  loading,
+  ...controls
 }: CompanyDialogProps) {
   const t = useTranslations('dashboard.company');
-  const tCrud = useTranslations('dashboard.shared.crud');
   // Shared with ProjectDialog on purpose — same query key, same mapping. Owned
   // here, not by the form, so the fetch starts with the dialog and runs in
   // parallel with the record the form is gated on.
-  const techStacks = useTechStackOptions(open);
+  const techStacks = useTechStackOptions(controls.open);
   const [isDirty, setIsDirty] = useState(false);
 
   return (
-    <RecordDialog
-      open={open}
-      onOpenChange={onOpenChange}
-      title={
-        isEditing
-          ? tCrud('editTitle', { entity: t('entity') })
-          : tCrud('newTitle', { entity: t('entity') })
-      }
-      description={
-        isEditing ? t('dialog.editDescription') : t('dialog.createDescription')
-      }
+    <EditRecordDialog
+      {...controls}
+      entity={t('entity')}
+      editDescription={t('dialog.editDescription')}
+      createDescription={t('dialog.createDescription')}
       size="xl"
       formId={FORM_ID}
-      isPending={loading}
       isDirty={isDirty}
-      // Save waits for the full record, as the gate below holds the form back.
-      submitDisabled={
-        isEditing && (isLoadingInitialData || hasLoadError || !initialData)
-      }
+      hasRecord={Boolean(initialData)}
+      skeleton={<CompanyFormLoading />}
     >
-      <EditRecordGate
-        isNotReady={isLoadingInitialData}
-        hasError={hasLoadError}
-        onRetry={() => onRetryLoad?.()}
-        skeleton={<CompanyFormLoading />}
-      >
-        <CompanyForm
-          formId={FORM_ID}
-          initialData={initialData ?? undefined}
-          techStacks={techStacks}
-          onSubmit={onSubmit}
-          onDirtyChange={setIsDirty}
-        />
-      </EditRecordGate>
-    </RecordDialog>
+      <CompanyForm
+        formId={FORM_ID}
+        initialData={initialData ?? undefined}
+        techStacks={techStacks}
+        onSubmit={onSubmit}
+        onDirtyChange={setIsDirty}
+      />
+    </EditRecordDialog>
   );
 }

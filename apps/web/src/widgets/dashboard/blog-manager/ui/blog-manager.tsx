@@ -122,11 +122,12 @@ export function BlogManager() {
         key={editing?.id ?? 'new'}
         open={isDialogOpen}
         onOpenChange={onDialogOpenChange}
+        isEditing={Boolean(editing)}
         initialData={fullBlog.record}
-        isNotReady={fullBlog.isNotReady}
-        hasError={fullBlog.hasError}
-        onRetry={fullBlog.retry}
-        isPending={isSaving}
+        isLoadingInitialData={fullBlog.isNotReady}
+        hasLoadError={fullBlog.hasError}
+        onRetryLoad={fullBlog.retry}
+        loading={isSaving}
         onSubmit={save}
       />
 
