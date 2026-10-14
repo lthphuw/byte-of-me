@@ -1,16 +1,10 @@
 'use client';
 
 import { type ReactNode, useState } from 'react';
-import {
-  Button,
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-  Loading,
-} from '@byte-of-me/ui';
+import { Button, Loading } from '@byte-of-me/ui';
 
 import { ContentFade } from './content-fade';
+import { StateBlock } from './state-block';
 
 export type QueryStateProps = {
   isLoading: boolean;
@@ -70,38 +64,27 @@ export function QueryState({
 
   if (isError) {
     body = (
-      <div className="flex justify-center py-20">
-        <Empty>
-          <EmptyHeader>
-            <EmptyTitle>{errorTitle}</EmptyTitle>
-            <EmptyDescription>{errorDescription}</EmptyDescription>
-          </EmptyHeader>
-          {onRetry && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onRetry}
-            >
+      <StateBlock
+        role="alert"
+        title={errorTitle}
+        description={errorDescription}
+        action={
+          onRetry && (
+            <Button variant="outline" size="sm" onClick={onRetry}>
               {retryLabel}
             </Button>
-          )}
-        </Empty>
-      </div>
+          )
+        }
+      />
     );
   } else if (isEmpty) {
     body = (
       <>
-        <div className="flex justify-center py-20">
-          <Empty>
-            <EmptyHeader>
-              <EmptyTitle>{emptyTitle}</EmptyTitle>
-              {emptyDescription && (
-                <EmptyDescription>{emptyDescription}</EmptyDescription>
-              )}
-            </EmptyHeader>
-            {emptyAction}
-          </Empty>
-        </div>
+        <StateBlock
+          title={emptyTitle}
+          description={emptyDescription}
+          action={emptyAction}
+        />
         {pagination}
       </>
     );

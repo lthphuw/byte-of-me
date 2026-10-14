@@ -1,13 +1,9 @@
 'use client';
 
-import {
-  Button,
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from '@byte-of-me/ui';
+import { Button } from '@byte-of-me/ui';
 import { useRouter } from 'next/navigation';
+
+import { StateBlock } from './state-block';
 
 export type SectionLoadErrorProps = {
   title: string;
@@ -29,18 +25,16 @@ export function SectionLoadError({
   const router = useRouter();
 
   return (
-    <div className="flex justify-center py-20">
-      <Empty>
-        <EmptyHeader>
-          <EmptyTitle>{title}</EmptyTitle>
-          {description && <EmptyDescription>{description}</EmptyDescription>}
-        </EmptyHeader>
-        {retryLabel && (
+    <StateBlock
+      title={title}
+      description={description}
+      action={
+        retryLabel && (
           <Button variant="outline" size="sm" onClick={() => router.refresh()}>
             {retryLabel}
           </Button>
-        )}
-      </Empty>
-    </div>
+        )
+      }
+    />
   );
 }

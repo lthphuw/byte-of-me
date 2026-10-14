@@ -4,6 +4,8 @@ import type { ReactNode } from 'react';
 import { Button } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
+import { StateBlock } from './state-block';
+
 interface EditRecordGateProps {
   /** The full record has not arrived: loading, or never requested. */
   isNotReady: boolean;
@@ -30,15 +32,16 @@ export function EditRecordGate({
 
   if (hasError) {
     return (
-      <div
+      <StateBlock
         role="alert"
-        className="flex flex-col items-center justify-center gap-3 py-16 text-center"
-      >
-        <p className="text-sm text-muted-foreground">{t('errorTitle')}</p>
-        <Button type="button" variant="outline" size="sm" onClick={onRetry}>
-          {t('retry')}
-        </Button>
-      </div>
+        title={t('errorTitle')}
+        description={t('errorDescription')}
+        action={
+          <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+            {t('retry')}
+          </Button>
+        }
+      />
     );
   }
 
