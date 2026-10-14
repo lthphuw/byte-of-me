@@ -42,13 +42,10 @@ export function useInfiniteListQuery<T>({
 }: InfiniteListQueryOptions<T>) {
   return useInfiniteQuery({
     queryKey,
-    queryFn: async ({ pageParam = 1 }) =>
+    queryFn: async ({ pageParam }) =>
       unwrapApiResponse(await fetchPage(pageParam)),
-    getNextPageParam: (lastPage) => {
-      return lastPage?.meta.hasMore
-        ? lastPage?.meta.currentPage + 1
-        : undefined;
-    },
+    getNextPageParam: ({ meta }) =>
+      meta.hasMore ? meta.currentPage + 1 : undefined,
     initialPageParam: 1,
     // Spread, not named: an explicit `staleTime: undefined` would overwrite
     // the QueryClient's 60s default (options are merged over it last).

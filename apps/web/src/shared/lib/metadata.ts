@@ -4,7 +4,17 @@ import { host } from '@/shared/config/host';
 import { siteConfig } from '@/shared/config/site';
 import { routing } from '@/shared/i18n/routing';
 import type { BrandLayer } from '@/shared/lib/brand-mark';
-import type { JsonLdObject } from '@/shared/ui/json-ld';
+
+/** A JSON value, which is all schema.org payloads ever are. */
+export type JsonLdValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonLdValue[]
+  | { [key: string]: JsonLdValue | undefined };
+
+export type JsonLdObject = { [key: string]: JsonLdValue | undefined };
 
 /**
  * Site-level structured data, rendered once in the locale layout so every page

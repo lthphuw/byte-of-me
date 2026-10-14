@@ -1,3 +1,5 @@
+import type { JsonLdObject } from '@/shared/lib/metadata';
+
 /**
  * Renders a schema.org payload as a JSON-LD script tag.
  *
@@ -5,18 +7,6 @@
  * content (a blog title, a description typed in the dashboard) can never close
  * the tag early and inject markup.
  */
-
-/** A JSON value, which is all schema.org payloads ever are. */
-export type JsonLdValue =
-  | string
-  | number
-  | boolean
-  | null
-  | JsonLdValue[]
-  | { [key: string]: JsonLdValue | undefined };
-
-export type JsonLdObject = { [key: string]: JsonLdValue | undefined };
-
 export function JsonLd({ data }: { data: JsonLdObject }) {
   return (
     <script
