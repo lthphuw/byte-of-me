@@ -12,8 +12,8 @@
  */
 export const WORK_ROW = 'grid gap-y-3 py-5 md:gap-y-4 md:py-7';
 
-/** The title and the proof links under it. */
-export const WORK_HEAD = 'grid min-w-0 gap-1.5';
+/** The title and its proof badges, on one line that wraps on a phone. */
+export const WORK_HEAD = 'flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2';
 
 /**
  * The title, at the size of the other homepage item titles: 18px on a phone, 20px from
@@ -22,8 +22,8 @@ export const WORK_HEAD = 'grid min-w-0 gap-1.5';
 export const WORK_TITLE =
   'font-heading text-lg leading-snug tracking-tight [overflow-wrap:anywhere] md:text-xl';
 
-/** The proof links as one wrapping line of badges. */
-export const WORK_LINKS = 'flex flex-wrap gap-2';
+/** The proof badges, in a wrapping row beside the title. */
+export const WORK_LINKS = 'flex flex-wrap items-center gap-2';
 
 /**
  * One proof link as a badge. 36px tall, the touch target the rest of the app uses; the
@@ -37,6 +37,3 @@ export const WORK_BADGE =
  * a second clip shows at the edge. From md the demo sits inside the card's padding.
  */
 export const WORK_MEDIA_BLEED = '-mx-4 px-4 md:mx-0 md:px-0';
-
-/** The details: the compact body size used across the homepage. */
-export const WORK_BODY = 'min-w-0 max-w-prose text-[15px] leading-7';

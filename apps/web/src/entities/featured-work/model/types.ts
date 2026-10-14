@@ -93,8 +93,6 @@ export interface PublicFeaturedWorkLink {
 export interface PublicFeaturedWork {
   id: string;
   title: string;
-  /** Sanitized HTML of this language's details body, or null. Never the stored JSON. */
-  detailsHtml: string | null;
   /** The proof links in position order. Empty when the work has none. */
   links: PublicFeaturedWorkLink[];
   /** The side-by-side demo pair in slot order; empty when the work has none. */

@@ -58,7 +58,7 @@ function row(
     id,
     media: [],
     links,
-    translations: [{ language: 'en', title, details: null }],
+    translations: [{ language: 'en', title }],
   };
 }
 
@@ -89,7 +89,6 @@ describe('toRows', () => {
       {
         id: 'a',
         title: 'Work a',
-        detailsHtml: null,
         links: [],
         media: [],
       },
@@ -107,12 +106,10 @@ describe('toRows', () => {
             {
               language: 'en',
               title: 'Hello',
-              details: null,
             },
             {
               language: 'vi',
               title: 'Xin chào',
-              details: null,
             },
           ],
         },
@@ -147,12 +144,10 @@ describe('toRows', () => {
             {
               language: 'en',
               title: 'Hello',
-              details: null,
             },
             {
               language: 'vi',
               title: '  ',
-              details: null,
             },
           ],
         },
@@ -233,181 +228,6 @@ describe('toRows links', () => {
       'l4',
       'l5',
     ]);
-  });
-});
-
-describe('details body', () => {
-  /** A translation as the query returns it, with a body. */
-  const translation = (
-    language: string,
-    details: string | null,
-    title = `Title ${language}`
-  ) => ({ language, title, details });
-
-  const work = (
-    translations: ReturnType<typeof translation>[]
-  ): Parameters<typeof toRows>[0] => [
-    { id: 'a', links: [], media: [], translations },
-  ];
-
-  it('renders the stored body to sanitized HTML, not the stored JSON', () => {
-    const [detailsRow] = toRows(work([translation('en', DETAILS_EN)]), 'en');
-
-    expect(detailsRow?.detailsHtml).toBe('<p>How it was done.</p>');
-  });
-
-  it('neutralizes script text and unsafe link targets in the body', () => {
-    const hostile = JSON.stringify({
-      type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [
-            { type: 'text', text: '<script>alert(1)</script>' },
-            {
-              type: 'text',
-              text: 'click',
-              marks: [{ type: 'link', attrs: { href: 'javascript:alert(1)' } }],
-            },
-          ],
-        },
-      ],
-    });
-    const [hostileRow] = toRows(work([translation('en', hostile)]), 'en');
-
-    expect(hostileRow?.detailsHtml).toContain('click');
-    expect(hostileRow?.detailsHtml).not.toContain('<script');
-    expect(hostileRow?.detailsHtml).not.toContain('javascript:');
-  });
-
-  it.each([
-    ['null', null],
-    ['an empty string', ''],
-    [
-      'an empty document',
-      JSON.stringify({ type: 'doc', content: [{ type: 'paragraph' }] }),
-    ],
-    ['a whitespace-only document', doc('   ')],
-  ])('gives no body for %s', (_label, details) => {
-    const [blankRow] = toRows(work([translation('en', details)]), 'en');
-
-    expect(blankRow?.detailsHtml).toBeNull();
-  });
-
-  it.each([
-    ['truncated JSON', '{"type":'],
-    ['a bare number', '42'],
-    ['the literal null', 'null'],
-    ['a JSON array', '[1,2,3]'],
-  ])('gives no body for %s, and does not throw', (_label, details) => {
-    let result: ReturnType<typeof toRows> = [];
-    expect(() => {
-      result = toRows(work([translation('en', details)]), 'en');
-    }).not.toThrow();
-
-    expect(result[0]?.detailsHtml).toBeNull();
-  });
-
-  it('gives a vi row with no vi body no body, even when en has one', () => {
-    const [viRow] = toRows(
-      work([translation('en', DETAILS_EN), translation('vi', null, 'Tiêu đề')]),
-      'vi'
-    );
-
-    expect(viRow?.title).toBe('Tiêu đề');
-    expect(viRow?.detailsHtml).toBeNull();
-  });
-
-  it("renders the visitor's own language body when it has one", () => {
-    const [viRow] = toRows(
-      work([
-        translation('en', DETAILS_EN),
-        translation('vi', DETAILS_VI, 'Tiêu đề'),
-      ]),
-      'vi'
-    );
-
-    expect(viRow?.detailsHtml).toBe('<p>Cách làm.</p>');
-  });
-
-  it('carries the body through the loader to the homepage row', async () => {
-    findMany.mockReset().mockResolvedValue([
-      {
-        id: 'a',
-        links: [],
-        media: [],
-        translations: [translation('en', DETAILS_EN)],
-      },
-    ]);
-
-    const result = await works(makeDeps().deps);
-
-    expect(result[0]?.detailsHtml).toBe('<p>How it was done.</p>');
-  });
-
-  it('gives no body for a node type the render schema does not know', () => {
-    const [unknownRow] = toRows(
-      work([
-        translation(
-          'en',
-          JSON.stringify({ type: 'doc', content: [{ type: 'bogus' }] })
-        ),
-      ]),
-      'en'
-    );
-
-    expect(unknownRow?.detailsHtml).toBeNull();
-  });
-
-  it('gives no body for a bare node that is not a document', () => {
-    // A paragraph at the top level parses and has text, but it is not a body.
-    const [bareRow] = toRows(
-      work([
-        translation(
-          'en',
-          JSON.stringify({
-            type: 'paragraph',
-            content: [{ type: 'text', text: 'Loose paragraph' }],
-          })
-        ),
-      ]),
-      'en'
-    );
-
-    expect(bareRow?.detailsHtml).toBeNull();
-  });
-
-  it('renders a document with lists and headings to HTML', () => {
-    const rich = JSON.stringify({
-      type: 'doc',
-      content: [
-        {
-          type: 'heading',
-          attrs: { level: 3 },
-          content: [{ type: 'text', text: 'Results' }],
-        },
-        {
-          type: 'bulletList',
-          content: [
-            {
-              type: 'listItem',
-              content: [
-                {
-                  type: 'paragraph',
-                  content: [{ type: 'text', text: 'Export 2x faster' }],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    });
-    const [richRow] = toRows(work([translation('en', rich)]), 'en');
-
-    expect(richRow?.detailsHtml).toContain('Results');
-    expect(richRow?.detailsHtml).toContain('<li>');
-    expect(richRow?.detailsHtml).toContain('Export 2x faster');
-    expect(richRow?.detailsHtml).not.toContain('"type"');
   });
 });
 
@@ -532,7 +352,6 @@ describe('loadPublicFeaturedWorks', () => {
     expect(args.orderBy).toEqual([{ sortOrder: 'asc' }, { id: 'asc' }]);
     expect(args.take).toBe(6);
     expect(args.select.translations.where.language.in).toEqual(['en']);
-    expect(args.select.translations.select.details).toBe(true);
     expect(result.map((w) => w.id)).toEqual([
       'w0',
       'w1',
@@ -554,7 +373,6 @@ describe('loadPublicFeaturedWorks', () => {
       {
         id: 'a',
         title: 'Work a',
-        detailsHtml: null,
         media: [],
         links: [
           {

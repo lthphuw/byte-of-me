@@ -1,7 +1,7 @@
 /**
- * A featured work as a visitor meets it: its title is the one link, the demo and the
- * details are always on show, and there is no toggle. Renders the real component; no
- * mocks. happy-dom cannot lay anything out, so the layout is pinned as a class contract.
+ * A featured work as a visitor meets it: the title with its proof badges beside it, then
+ * the demo. Renders the real component; no mocks. happy-dom cannot lay anything out, so
+ * the layout is pinned as a class contract.
  */
 import type { ComponentProps } from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
@@ -22,7 +22,7 @@ const work: Omit<ComponentProps<typeof FeaturedWorkItem>, 'anchorId'> = {
           target="_blank"
           rel="noopener noreferrer"
         >
-          INT8
+          #512
         </a>
       </li>
     </ul>
@@ -34,7 +34,6 @@ const work: Omit<ComponentProps<typeof FeaturedWorkItem>, 'anchorId'> = {
     zoomReset: 'Reset zoom',
     exitFullscreen: 'Exit full screen',
   },
-  details: <p>How it was done: a streaming writer.</p>,
 };
 
 function renderItem(
@@ -43,62 +42,34 @@ function renderItem(
   return render(<FeaturedWorkItem anchorId={ANCHOR} {...work} {...props} />);
 }
 
-const bodyText = () => screen.getByText('How it was done: a streaming writer.');
-
 afterEach(cleanup);
 
-describe('FeaturedWorkItem details', () => {
-  it('shows the details at once, with no toggle and nothing inert', () => {
+describe('FeaturedWorkItem header', () => {
+  it('leaves the title as plain text, so the badges are the only links', () => {
     renderItem();
-
-    expect(screen.queryByRole('button')).toBeNull();
-    expect(bodyText()).toBeTruthy();
-    expect(document.querySelector('[inert]')).toBeNull();
-  });
-
-  it('leaves the title as plain text, not a button', () => {
-    renderItem();
-
-    expect(
-      screen.queryByRole('button', { name: 'Faster detector export' })
-    ).toBeNull();
-    expect(
-      screen.getByRole('heading', { name: 'Faster detector export' })
-    ).toBeTruthy();
-  });
-
-  it('draws no details block for a work without details', () => {
-    renderItem({ details: null });
-
-    expect(
-      screen.queryByText('How it was done: a streaming writer.')
-    ).toBeNull();
-    expect(screen.queryByRole('button')).toBeNull();
-  });
-});
-
-describe('FeaturedWorkItem links', () => {
-  it('leaves the title as plain text, so the links are the only links', () => {
-    renderItem({ details: null });
 
     expect(
       screen.getByRole('heading', { name: 'Faster detector export' })
     ).toBeTruthy();
     expect(screen.getAllByRole('link')).toHaveLength(1);
-    expect(screen.getByRole('link', { name: 'INT8' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: /#512/ })).toBeTruthy();
   });
 
-  it('shows the links from the row, under the title', () => {
-    renderItem({ details: null });
+  it('puts the badges on the same line as the title, not under it', () => {
+    renderItem();
 
-    expect(screen.getByRole('list', { name: 'Pull requests' })).toBeTruthy();
+    const heading = screen.getByRole('heading', { name: 'Faster detector export' });
+    const list = screen.getByRole('list', { name: 'Pull requests' });
+    expect(heading.parentElement).toBe(list.parentElement);
   });
 
-  it('keeps the links when the work also has a demo and details', () => {
-    renderItem({ media: pair });
+  it('draws no badge list for a work without links', () => {
+    renderItem({ links: null });
 
-    expect(screen.getByRole('link', { name: 'INT8' })).toBeTruthy();
-    expect(bodyText()).toBeTruthy();
+    expect(screen.queryByRole('list', { name: 'Pull requests' })).toBeNull();
+    expect(
+      screen.getByRole('heading', { name: 'Faster detector export' })
+    ).toBeTruthy();
   });
 });
 
@@ -126,41 +97,28 @@ const pair: ComponentProps<typeof FeaturedWorkItem>['media'] = [
 ];
 
 describe('FeaturedWorkItem demo', () => {
-  it('is plain with neither a demo nor details, and shows each one it has', () => {
-    renderItem({ details: null, media: [] });
-    expect(screen.queryByRole('button')).toBeNull();
-    expect(document.querySelectorAll('figure')).toHaveLength(0);
-    cleanup();
-
+  it('is only a title and badges when there is no demo', () => {
     renderItem({ media: [] });
-    expect(bodyText()).toBeTruthy();
-    expect(screen.queryByRole('button')).toBeNull();
-    cleanup();
 
-    renderItem({ details: null, media: pair });
-    expect(document.querySelectorAll('figure')).toHaveLength(2);
-    expect(
-      screen.queryByText('How it was done: a streaming writer.')
-    ).toBeNull();
+    expect(document.querySelector('figure')).toBeNull();
+    expect(screen.queryByRole('button')).toBeNull();
   });
 
-  it('draws the demo and the details together, with no toggle', () => {
+  it('draws the two clips of the demo, with no toggle', () => {
     renderItem({ media: pair });
 
     expect(document.querySelector('video')).not.toBeNull();
     expect(document.querySelector('img')).not.toBeNull();
-    expect(bodyText()).toBeTruthy();
     expect(screen.queryByRole('button', { name: /details$/ })).toBeNull();
   });
 
-  it('puts the title first, then the links, then the demo, then the details', () => {
+  it('puts the title and badges first, then the demo', () => {
     renderItem({ media: pair });
 
     const order = [
       screen.getByRole('heading', { name: /Faster detector export/ }),
       screen.getByRole('list', { name: 'Pull requests' }),
       document.querySelector('figure'),
-      bodyText(),
     ];
     for (let i = 0; i < order.length - 1; i += 1) {
       const position = order[i]?.compareDocumentPosition(order[i + 1] as Node);

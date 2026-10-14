@@ -8,7 +8,6 @@ import {
   type FeaturedWorkDemoItem,
 } from './featured-work-demo';
 import {
-  WORK_BODY,
   WORK_HEAD,
   WORK_MEDIA_BLEED,
   WORK_ROW,
@@ -23,10 +22,8 @@ interface FeaturedWorkItemProps {
   /** `featured-works-<id>`: the row's id and its deep-link target. */
   anchorId: string;
   title: string;
-  /** The proof links under the title. Null when the work has none. */
+  /** The proof badges, on the title's line. Null when the work has none. */
   links: ReactNode;
-  /** The body, always on show. Null when the work has none. */
-  details: ReactNode;
   /** The demo pair, always on show. */
   media: FeaturedWorkDemoItem[];
   /** The full-screen toolbar's labels for the demo pair. */
@@ -34,14 +31,13 @@ interface FeaturedWorkItemProps {
 }
 
 /**
- * One featured work: the title, its proof links, its demo, then its details. On a phone
+ * One featured work: the title with its proof badges beside it, then the demo. On a phone
  * the demo is a swipeable strip; from md it is two columns.
  */
 export function FeaturedWorkItem({
   anchorId,
   title,
   links,
-  details,
   media,
   demoControls,
 }: FeaturedWorkItemProps) {
@@ -60,7 +56,6 @@ export function FeaturedWorkItem({
         />
       )}
 
-      {details && <div className={WORK_BODY}>{details}</div>}
     </div>
   );
 }
