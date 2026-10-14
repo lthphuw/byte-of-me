@@ -60,11 +60,11 @@ export function HomepageFeaturedWorksLoading() {
             <div
               className={cn(
                 WORK_MEDIA_BLEED,
-                'flex gap-3 md:grid md:grid-cols-2 md:gap-4'
+                'flex gap-3 md:gap-4'
               )}
             >
-              <Skeleton className="aspect-video w-[82%] shrink-0 rounded-md md:w-full" />
-              <Skeleton className="hidden aspect-video shrink-0 rounded-md md:block md:w-full" />
+              <Skeleton className="aspect-video w-[82%] shrink-0 rounded-md md:w-[58%]" />
+              <Skeleton className="aspect-video w-[82%] shrink-0 rounded-md md:w-[58%]" />
             </div>
 
             <div className={WORK_BODY}>

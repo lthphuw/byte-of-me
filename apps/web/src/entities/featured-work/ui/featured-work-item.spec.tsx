@@ -168,18 +168,19 @@ describe('FeaturedWorkItem demo', () => {
 });
 
 /**
- * The demo sits under the title on every width. On a phone it is a swipeable strip
- * that bleeds to the screen edge (the shell's gutter is 32px); from md it is two
- * columns, with no bleed.
+ * The demo sits under the title on every width, as one swipeable strip. On a phone it
+ * bleeds to the screen edge (the shell's gutter is 32px); from md the strip keeps its
+ * slider shape, with the next clip peeking in, and drops the bleed.
  */
 describe('FeaturedWorkItem demo layout', () => {
-  it('lays the demo as a swipeable strip below md, with two columns from md', () => {
+  it('lays the pair as one swipeable strip on every width, not as a grid', () => {
     renderItem({ media: pair });
 
     const strip = document.querySelector('figure')?.parentElement;
     expect(strip?.classList.contains('snap-x')).toBe(true);
     expect(strip?.classList.contains('overflow-x-auto')).toBe(true);
-    expect(strip?.classList.contains('md:grid-cols-2')).toBe(true);
+    expect(strip?.classList.contains('md:grid')).toBe(false);
+    expect(strip?.classList.contains('md:grid-cols-2')).toBe(false);
   });
 
   it('gives a single clip the full width of the card on a phone', () => {
@@ -190,11 +191,12 @@ describe('FeaturedWorkItem demo layout', () => {
     expect(strip?.className).not.toContain('[&>figure]:w-[82%]');
   });
 
-  it('sizes each clip of a pair to most of the card, so the next one peeks in', () => {
+  it('sizes each clip of a pair so the next one peeks in: 82% on a phone, 58% from md', () => {
     renderItem({ media: pair });
 
     const strip = document.querySelector('figure')?.parentElement;
     expect(strip?.className).toContain('[&>figure]:w-[82%]');
+    expect(strip?.className).toContain('md:[&>figure]:w-[58%]');
   });
 
   it('bleeds the strip to the card edge on a phone and drops the bleed from md', () => {

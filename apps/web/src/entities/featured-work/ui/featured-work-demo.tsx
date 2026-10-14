@@ -414,11 +414,10 @@ export function FeaturedWorkDemo({
   return (
     <div
       className={cn(
-        'flex min-w-0 snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto [scrollbar-width:none] [&>figure]:shrink-0 [&>figure]:snap-start',
-        // A pair is a strip of large clips, the next one peeking in; one clip takes the card.
-        media.length > 1 ? '[&>figure]:w-[82%]' : '[&>figure]:w-full',
-        'md:grid md:gap-4 md:overflow-visible md:[&>figure]:w-auto',
-        media.length > 1 && 'md:grid-cols-2',
+        'flex min-w-0 snap-x snap-mandatory scroll-px-4 gap-3 md:gap-4 overflow-x-auto [scrollbar-width:none] [&>figure]:shrink-0 [&>figure]:snap-start',
+        // A pair is one strip on every width, the next clip peeking in as the achievement
+        // slider does: 82% of the card on a phone, 58% from md. One clip fills the card.
+        media.length > 1 ? '[&>figure]:w-[82%] md:[&>figure]:w-[58%]' : '[&>figure]:w-full',
         className
       )}
     >
