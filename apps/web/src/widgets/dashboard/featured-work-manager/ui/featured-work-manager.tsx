@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { Button } from '@byte-of-me/ui';
-import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { FeaturedWorkDialog } from './featured-work-dialog';
@@ -24,6 +24,7 @@ import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import {
+  AddButton,
   ConfirmDeleteDialog,
   ManagerListState,
   ManagerPageHeader,
@@ -116,14 +117,7 @@ export function FeaturedWorkManager() {
     getTranslatedContent(work.translations, locale)?.title || t('untitled');
 
   const newWorkButton = (
-    <Button
-      onClick={openCreateDialog}
-      size="sm"
-      className="min-h-11 gap-2 can-hover:min-h-9"
-    >
-      <Plus className="h-4 w-4" />
-      {t('createButton')}
-    </Button>
+    <AddButton label={t('createButton')} onClick={openCreateDialog} />
   );
 
   return (

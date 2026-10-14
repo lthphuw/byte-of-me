@@ -1,14 +1,14 @@
 import { useId } from 'react';
 import { type Control, useFieldArray, useFormState } from 'react-hook-form';
 import { Button, FormField, FormItem } from '@byte-of-me/ui';
-import { ChevronDown, ChevronUp, Plus, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
   FEATURED_WORK_LINKS_MAX,
   type FeaturedWorkFormValues,
 } from '@/entities/featured-work/model/featured-work-schema';
-import { FieldMessage, TextField } from '@/shared/ui';
+import { AddButton, FieldMessage, TextField } from '@/shared/ui';
 
 /**
  * The proof links of one featured work, in the order they are listed. Each row is a url and
@@ -107,16 +107,14 @@ export function FeaturedWorkLinks({
             );
           })}
 
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full sm:w-auto"
-            disabled={atMax}
+          <AddButton
+            label={t('addLink')}
             onClick={() => append({ url: '', label: '' })}
-          >
-            <Plus className="h-4 w-4" />
-            {t('addLink')}
-          </Button>
+            variant="outline"
+            size="default"
+            disabled={atMax}
+            className="w-full sm:w-auto"
+          />
 
           <FieldMessage message={listError ?? fieldState.error?.message} />
         </FormItem>

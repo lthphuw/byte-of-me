@@ -11,7 +11,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@byte-of-me/ui';
-import { Globe2, Plus, RotateCcw } from 'lucide-react';
+import { Globe2, RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ProfileTranslationCard } from './profile-translation-card';
@@ -23,7 +23,11 @@ import type {
 } from '@/entities/user-profile';
 import { SocialLinksSection } from '@/features/dashboard/manage-social-link-form';
 import { useProfileController } from '@/features/dashboard/update-profile';
-import { ConfirmDiscardDialog, ManagerPageHeader } from '@/shared/ui';
+import {
+  AddButton,
+  ConfirmDiscardDialog,
+  ManagerPageHeader,
+} from '@/shared/ui';
 
 const FORM_ID = 'user-profile-form';
 
@@ -71,15 +75,12 @@ export function UserProfileManager({
             <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
               <Globe2 className="h-4 w-4" /> {t('translations.heading')}
             </div>
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
+            <AddButton
+              label={t('translations.addLanguage')}
               onClick={handlers.addLanguage}
-              className="min-h-11 gap-2 text-primary can-hover:min-h-9"
-            >
-              <Plus className="h-4 w-4" /> {t('translations.addLanguage')}
-            </Button>
+              variant="ghost"
+              className="text-primary"
+            />
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>

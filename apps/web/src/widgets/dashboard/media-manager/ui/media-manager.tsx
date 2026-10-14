@@ -1,8 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Button } from '@byte-of-me/ui';
-import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -16,6 +14,7 @@ import { CompressionSettingsPopover } from '@/features/dashboard/media-library/u
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import type { Media } from '@/shared/types/models';
 import {
+  AddButton,
   ConfirmDeleteDialog,
   ManagerListState,
   ManagerPageHeader,
@@ -86,13 +85,7 @@ export function MediaManager() {
   };
 
   const addButton = (
-    <Button
-      size="sm"
-      className="min-h-11 gap-2 can-hover:min-h-9"
-      onClick={() => setIsUploadOpen(true)}
-    >
-      <Plus className="h-4 w-4" /> {t('addButton')}
-    </Button>
+    <AddButton label={t('addButton')} onClick={() => setIsUploadOpen(true)} />
   );
 
   return (

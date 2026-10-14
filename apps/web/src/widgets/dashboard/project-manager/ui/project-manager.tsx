@@ -1,7 +1,5 @@
 'use client';
 
-import { Button } from '@byte-of-me/ui';
-import { Plus } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { ProjectDialog } from './project-dialog';
@@ -21,6 +19,7 @@ import { ProjectEditorCard } from '@/entities/project/ui/project-editor-card';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import {
+  AddButton,
   ConfirmDeleteDialog,
   ManagerListState,
   ManagerPageHeader,
@@ -70,14 +69,7 @@ export function ProjectManager() {
   const fullProject = useAdminProjectById(editing?.id ?? null);
 
   const newProjectButton = (
-    <Button
-      size="sm"
-      className="min-h-11 can-hover:min-h-9"
-      onClick={openCreateDialog}
-    >
-      <Plus className="mr-2 h-4 w-4" />
-      {t('createButton')}
-    </Button>
+    <AddButton label={t('createButton')} onClick={openCreateDialog} />
   );
 
   return (

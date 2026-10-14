@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import { type Control, useFieldArray } from 'react-hook-form';
 import { Button } from '@byte-of-me/ui';
-import { Plus, Trophy } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { EducationAchievementItemField } from './education-achievement-item-field';
 
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
+import { AddButton } from '@/shared/ui';
 
 interface EducationAchievementsFieldProps {
   control: Control<EducationFormValues>;
@@ -46,16 +47,11 @@ export function EducationAchievementsField({
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium">{t('achievements.title')}</h3>
 
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          className="min-h-11 can-hover:min-h-9"
+        <AddButton
+          label={t('achievements.addButton')}
           onClick={handleAdd}
-        >
-          <Plus className="mr-2 h-3 w-3" />
-          {t('achievements.addButton')}
-        </Button>
+          variant="outline"
+        />
       </div>
 
       {fields.length === 0 ? (

@@ -12,7 +12,6 @@ import {
   Skeleton,
 } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { CompanyRoleItemField } from './company-role-item-field';
@@ -25,6 +24,7 @@ import type { AdminCompany } from '@/entities/company/model/types';
 import type { TechStackOptionsResult } from '@/entities/tech-stack/query';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import {
+  AddButton,
   FieldMessage,
   LocalizedDatePicker,
   LocalizedMultiSelect,
@@ -272,11 +272,8 @@ export function CompanyForm({
         <div className="space-y-4 border-t pt-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-medium">{t('dialog.rolesTitle')}</h3>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              className="min-h-11 can-hover:min-h-9"
+            <AddButton
+              label={t('dialog.addRoleButton')}
               onClick={() =>
                 appendRole({
                   startDate: null,
@@ -287,10 +284,8 @@ export function CompanyForm({
                   tasks: [],
                 })
               }
-            >
-              <Plus className="mr-2 h-3 w-3" />
-              {t('dialog.addRoleButton')}
-            </Button>
+              variant="outline"
+            />
           </div>
 
           {roles.map((role, index) => (

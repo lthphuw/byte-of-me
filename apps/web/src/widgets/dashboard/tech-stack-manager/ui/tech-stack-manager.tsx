@@ -1,8 +1,6 @@
 'use client';
 
 import { Fragment, useMemo } from 'react';
-import { Button } from '@byte-of-me/ui';
-import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { TechStackDialog } from './tech-stack-dialog';
@@ -19,7 +17,13 @@ import {
 import { useAdminTechStackById } from '@/entities/tech-stack/query';
 import { TechStackCard } from '@/features/dashboard/tech-stack-management';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
-import { ConfirmDeleteDialog, ManagerListState, ManagerPageHeader, RecordListSkeleton } from '@/shared/ui';
+import {
+  AddButton,
+  ConfirmDeleteDialog,
+  ManagerListState,
+  ManagerPageHeader,
+  RecordListSkeleton,
+} from '@/shared/ui';
 
 /**
  * `initialTechStacks` is the server's seed of the list. Absent when that read
@@ -82,14 +86,7 @@ export function TechStackManager({
         title={t('title')}
         description={t('description')}
         action={
-          <Button
-            onClick={openCreateDialog}
-            size="sm"
-            className="gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            {newLabel}
-          </Button>
+          <AddButton label={newLabel} onClick={openCreateDialog} />
         }
       />
 
@@ -105,14 +102,11 @@ export function TechStackManager({
           skeleton={<RecordListSkeleton variant="grid" />}
           emptyTitle={t('emptyTitle')}
           emptyAction={
-            <Button
-              variant="outline"
-              size="sm"
+            <AddButton
+              label={newLabel}
               onClick={openCreateDialog}
-            >
-              <Plus className="h-4 w-4" />
-              {newLabel}
-            </Button>
+              variant="outline"
+            />
           }
         >
           {/* One grid for the whole list. A group heading spans every column,

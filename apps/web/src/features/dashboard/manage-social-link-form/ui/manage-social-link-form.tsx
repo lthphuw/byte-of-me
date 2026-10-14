@@ -12,11 +12,10 @@ import {
   FormMessage,
   Input,
 } from '@byte-of-me/ui';
-import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { UserProfileFormValues } from '@/entities/user-profile';
-import { ConfirmDeleteDialog } from '@/shared/ui';
+import { AddButton, ConfirmDeleteDialog } from '@/shared/ui';
 
 interface PendingRemoval {
   index: number;
@@ -58,11 +57,8 @@ export function SocialLinksSection({
           </p>
         </div>
 
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          className="min-h-11 can-hover:min-h-9"
+        <AddButton
+          label={t('socialLinks.addLink')}
           onClick={() =>
             append({
               platform: '',
@@ -70,10 +66,8 @@ export function SocialLinksSection({
               sortOrder: fields.length,
             })
           }
-        >
-          <Plus className="mr-1 h-4 w-4" />
-          {t('socialLinks.addLink')}
-        </Button>
+          variant="outline"
+        />
       </div>
 
       {/* Content */}

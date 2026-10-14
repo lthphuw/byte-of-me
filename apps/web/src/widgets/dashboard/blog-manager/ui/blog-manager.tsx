@@ -1,7 +1,5 @@
 'use client';
 
-import { Button } from '@byte-of-me/ui';
-import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -19,6 +17,7 @@ import { BlogEditorDialog } from '@/features/dashboard/blog-editor';
 import { useBlogReferenceOptions } from '@/features/dashboard/blog-editor/lib/use-blog-reference-options';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import {
+  AddButton,
   ConfirmDeleteDialog,
   ManagerListState,
   ManagerPageHeader,
@@ -74,14 +73,7 @@ export function BlogManager() {
   useBlogReferenceOptions(isDialogOpen);
 
   const newBlogButton = (
-    <Button
-      size="sm"
-      className="min-h-11 can-hover:min-h-9"
-      onClick={openCreateDialog}
-    >
-      <Plus className="mr-2 h-4 w-4" />
-      {t('createButton')}
-    </Button>
+    <AddButton label={t('createButton')} onClick={openCreateDialog} />
   );
 
   return (

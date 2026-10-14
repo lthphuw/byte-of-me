@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@byte-of-me/ui';
-import { Plus } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { TagDialog } from './tag-dialog';
@@ -20,6 +19,7 @@ import { useAdminTagById } from '@/entities/tag/query';
 import { TagCard } from '@/features/dashboard/tag-management';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import {
+  AddButton,
   ConfirmDeleteDialog,
   ManagerListState,
   ManagerPageHeader,
@@ -71,14 +71,7 @@ export function TagManager() {
   const fullTag = useAdminTagById(editing?.id ?? null);
 
   const createButton = (
-    <Button
-      size="sm"
-      className="min-h-11 gap-2 shadow-sm can-hover:min-h-9"
-      onClick={openCreateDialog}
-    >
-      <Plus className="h-4 w-4" />
-      {t('createButton')}
-    </Button>
+    <AddButton label={t('createButton')} onClick={openCreateDialog} />
   );
 
   return (

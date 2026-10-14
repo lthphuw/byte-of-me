@@ -1,7 +1,7 @@
 'use client';
 
 import { Badge, Button } from '@byte-of-me/ui';
-import { GraduationCap, Plus } from 'lucide-react';
+import { GraduationCap } from 'lucide-react';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -24,6 +24,7 @@ import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { formatDate } from '@/shared/lib/utils';
 import {
+  AddButton,
   ConfirmDeleteDialog,
   ManagerListState,
   ManagerPageHeader,
@@ -84,14 +85,7 @@ export function EducationManager() {
         title={t('title')}
         description={t('description')}
         action={
-          <Button
-            onClick={openCreateDialog}
-            size="sm"
-            className="gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            {t('createButton')}
-          </Button>
+          <AddButton label={t('createButton')} onClick={openCreateDialog} />
         }
       />
 

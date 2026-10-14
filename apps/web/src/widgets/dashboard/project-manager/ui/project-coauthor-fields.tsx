@@ -9,11 +9,11 @@ import {
   FormLabel,
   Input,
 } from '@byte-of-me/ui';
-import { Plus, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { ProjectFromValues } from '@/entities/project/model';
-import { FieldMessage, TextField } from '@/shared/ui';
+import { AddButton, FieldMessage, TextField } from '@/shared/ui';
 
 interface ProjectCoauthorFieldsProps {
   control: Control<ProjectFromValues>;
@@ -31,15 +31,11 @@ export function ProjectCoauthorFields({ control }: ProjectCoauthorFieldsProps) {
     <div className="space-y-4 border-t pt-4">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">{t('coauthors.title')}</span>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          className="min-h-11 can-hover:min-h-9"
+        <AddButton
+          label={t('coauthors.addButton')}
           onClick={() => append({ fullName: '', email: '' })}
-        >
-          <Plus /> {t('coauthors.addButton')}
-        </Button>
+          variant="outline"
+        />
       </div>
 
       {fields.map((field, index) => (

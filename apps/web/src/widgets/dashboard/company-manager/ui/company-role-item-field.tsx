@@ -13,7 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@byte-of-me/ui';
-import { ChevronDown, Plus, X } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { CompanyTaskItemField } from './company-task-item-field';
@@ -22,6 +22,7 @@ import type { CompanyFormValues } from '@/entities/company/model/company-schema'
 import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-submit';
 import { cn } from '@/shared/lib/utils';
 import {
+  AddButton,
   ConfirmDeleteDialog,
   LocalizedDatePicker,
   TextField,
@@ -172,21 +173,16 @@ export function CompanyRoleItemField({
         <div className="space-y-4 border-t pt-4">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-medium">{t('role.tasksTitle')}</h4>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              className="min-h-11 can-hover:min-h-9"
+            <AddButton
+              label={t('role.addTaskButton')}
               onClick={() =>
                 appendTask({
                   sortOrder: tasks.length,
                   translations: [{ language: 'en', content: '' }],
                 })
               }
-            >
-              <Plus className="mr-2 h-3 w-3" />
-              {t('role.addTaskButton')}
-            </Button>
+              variant="outline"
+            />
           </div>
 
           {tasks.map((task, taskIndex) => (

@@ -1,7 +1,7 @@
 'use client';
 
 import { Badge, Button } from '@byte-of-me/ui';
-import { Briefcase, Plus } from 'lucide-react';
+import { Briefcase } from 'lucide-react';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -20,6 +20,7 @@ import { companyQueries, useAdminCompanyById } from '@/entities/company/query';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { formatDate } from '@/shared/lib/utils';
 import {
+  AddButton,
   ConfirmDeleteDialog,
   ManagerListState,
   ManagerPageHeader,
@@ -75,14 +76,7 @@ export function CompanyManager() {
         title={t('title')}
         description={t('description')}
         action={
-          <Button
-            onClick={openCreateDialog}
-            size="sm"
-            className="gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            {t('createButton')}
-          </Button>
+          <AddButton label={t('createButton')} onClick={openCreateDialog} />
         }
       />
 

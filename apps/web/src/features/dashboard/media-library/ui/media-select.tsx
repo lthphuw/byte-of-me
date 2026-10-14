@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
   ScrollArea,
 } from '@byte-of-me/ui';
-import { Check, ChevronDown, ImageIcon, Plus } from 'lucide-react';
+import { Check, ChevronDown, ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
@@ -20,6 +20,7 @@ import { MediaPickerGrid } from '@/features/dashboard/media-library/ui/media-pic
 import { MediaPickerUploadDialog } from '@/features/dashboard/media-library/ui/media-picker-upload-dialog';
 import { cn } from '@/shared/lib/utils';
 import type { Media } from '@/shared/types/models';
+import { AddButton } from '@/shared/ui';
 
 type MediaSelectProps = Omit<
   ButtonProps,
@@ -103,14 +104,12 @@ export function MediaSelect({
           <span className="text-xs font-bold uppercase text-muted-foreground">
             {t('picker.libraryLabel')}
           </span>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="min-h-11 gap-1 text-xs text-primary can-hover:min-h-9"
+          <AddButton
+            label={t('picker.uploadButton')}
             onClick={() => setIsUploadOpen(true)}
-          >
-            <Plus className="h-3 w-3" /> {t('picker.uploadButton')}
-          </Button>
+            variant="ghost"
+            className="gap-1 text-xs text-primary"
+          />
           <MediaPickerUploadDialog
             open={isUploadOpen}
             onOpenChange={setIsUploadOpen}

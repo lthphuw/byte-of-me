@@ -1,4 +1,5 @@
 // App-specific UI components. Generic, reusable components live in @byte-of-me/ui.
+export * from './add-button';
 export * from './confirm-delete-dialog';
 export * from './confirm-discard-dialog';
 export * from './content-fade';
