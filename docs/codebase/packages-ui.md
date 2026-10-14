@@ -58,7 +58,7 @@ packages/ui/
 
 ### Flat files
 
-- Primitives (shadcn-style wrappers over Radix or a third-party lib): alert-dialog, avatar, badge, breadcrumb, button, calendar, card, carousel, checkbox, collapsible, command, context-menu, dialog, drawer, dropdown-menu, form, input, label, popover, scroll-area, select, separator, sheet, skeleton, sonner, switch, table, tabs, textarea, toggle, tooltip.
+- Primitives (shadcn-style wrappers over Radix or a third-party lib): alert-dialog, avatar, badge, button, calendar, card, carousel, checkbox, collapsible, command, dialog, drawer, dropdown-menu, form, input, label, popover, scroll-area, select, separator, sheet, skeleton, sonner, switch, tabs, textarea, tooltip.
 - Composites: auto-growing-text-area, confirm-delete-dialog, copy-button, date-picker, delete-button, edit-button, empty, expandable-text, icons (`Icons` map), image-placeholder, loading, multi-select, pagination, shell (`ShellBase`), submit-button.
 
 ## Key flows
