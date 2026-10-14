@@ -3,7 +3,17 @@
 import { CheckIcon, ChevronDownIcon } from 'lucide-react';
 
 import { useMediaQuery } from '../../../hooks/use-media-query';
-import { Button , Popover, PopoverContent, PopoverTrigger , ScrollArea , Separator , Tooltip, TooltipContent, TooltipTrigger } from '../../../index';
+import {
+  Button,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  ScrollArea,
+  Separator,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '../../../index';
 import { cn } from '../../../lib/utils';
 import type { EditorLabels } from '../editor-labels';
 

@@ -12,26 +12,28 @@ import { cn } from '../../../lib/utils';
 import type { EditorLabels } from '../editor-labels';
 
 import { AlignmentTooolbar } from './alignment';
-import { BlockquoteToolbar } from './blockquote';
-import { BoldToolbar } from './bold';
-import { BulletListToolbar } from './bullet-list';
+import {
+  BlockquoteToolbar,
+  BoldToolbar,
+  BulletListToolbar,
+  CodeBlockToolbar,
+  CodeToolbar,
+  HorizontalRuleToolbar,
+  ImagePlaceholderToolbar,
+  ItalicToolbar,
+  OrderedListToolbar,
+  RedoToolbar,
+  StrikeThroughToolbar,
+  UnderlineToolbar,
+  UndoToolbar,
+} from './basic-toolbars';
 import { CitationToolbar } from './citation';
-import { CodeToolbar } from './code';
-import { CodeBlockToolbar } from './code-block';
 import { ColorHighlightToolbar } from './color-and-highlight';
 import { HeadingsToolbar } from './headings';
-import { HorizontalRuleToolbar } from './horizontal-rule';
-import { ImagePlaceholderToolbar } from './image-placeholder-toolbar';
-import { ItalicToolbar } from './italic';
 import { LinkToolbar } from './link';
-import { OrderedListToolbar } from './ordered-list';
-import { RedoToolbar } from './redo';
 import { SearchAndReplaceToolbar } from './search-and-replace-toolbar';
-import { StrikeThroughToolbar } from './strikethrough';
 import { TableToolbar } from './table';
 import { ToolbarProvider } from './toolbar-provider';
-import { UnderlineToolbar } from './underline';
-import { UndoToolbar } from './undo';
 
 type EditorToolbarProps = {
   editor: Editor;
@@ -60,7 +62,7 @@ export const EditorToolbar = ({
   if (previewing) {
     return (
       <div className="sticky top-0 z-20 flex w-full items-center justify-between border-b bg-background px-3 py-1.5">
-        <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <span className="text-xs font-medium text-muted-foreground">
           {labels.previewNotice}
         </span>
         <Button
@@ -82,13 +84,13 @@ export const EditorToolbar = ({
   // — the ScrollArea below with its hidden scrollbar — leaves the overflowing
   // buttons (image, colour) with no visible way to reach them. The full
   // editor keeps the single scrolling row: it owns the page width.
-  // Touch: 44px targets at every width (AGENTS §14); a fine pointer keeps each
-  // button's own height. The row scrolls sideways; Preview sits beside that
-  // scroller, so it stays in view, and leads the bar on phones.
+  // The row scrolls sideways; Preview sits beside that scroller, so it stays in
+  // view, and leads the bar on phones. Buttons are 44px on touch with 8px
+  // between them, and tighter with a pointer.
   const row = (
     <div
       className={cn(
-        'flex items-center gap-1 [&_button]:min-h-11 [&_button]:min-w-11 can-hover:[&_button]:min-h-8 can-hover:[&_button]:min-w-8',
+        'flex items-center gap-2 can-hover:gap-1',
         compact && 'flex-wrap'
       )}
     >
@@ -136,8 +138,7 @@ export const EditorToolbar = ({
     </div>
   );
 
-  // Outside the row, so the scroller never takes it off-screen. The row's
-  // `[&_button]` touch sizes do not reach it, so it carries the same ones.
+  // Outside the row, so the scroller never takes it off-screen.
   const preview = onTogglePreview && (
     <Button
       type="button"

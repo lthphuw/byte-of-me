@@ -28,7 +28,7 @@ packages/ui/
         ├── use-debounced-change.ts, use-outline.ts, outline-aside.tsx   onChange coalescing and the submit flush; the heading outline and the active heading
         ├── render-extensions.ts   renderExtensions: server-safe mirror of the editor schema
         ├── extensions/            node/mark definitions; references/ = citations and bibliography
-        ├── toolbars/              one button per file; editor-toolbar.tsx registers them
+        ├── toolbars/              ToolbarButton + basic-toolbars.tsx (the one-command buttons, from a factory); one file per menu or popover control; editor-toolbar.tsx registers them
         ├── mobile-tools.tsx, editor-preview.tsx, paste-presentation.ts, paste-markdown.ts
         └── editor-surface.css     editor and article styles (imported by the editor)
 ```
@@ -78,7 +78,7 @@ packages/ui/
 
 1. **Add a primitive.** Create `packages/ui/src/<name>.tsx` (add `'use client'` only if it has state, effects, handlers or a browser API). Add `export * from './<name>';` to `packages/ui/src/index.ts`. Consumers import `@byte-of-me/ui/<name>` through the `./*` export. Examples: `packages/ui/src/shell.tsx` (server-safe), `packages/ui/src/copy-button.tsx` (client, uses `m.*`).
 2. **Add a hook.** Create `packages/ui/src/hooks/use-<name>.ts` and add `export * from './use-<name>';` to `packages/ui/src/hooks/index.ts`. Consumers import `@byte-of-me/ui/hooks/use-<name>` (`./hooks/*` export). Example: `packages/ui/src/hooks/use-lock-body.ts`, imported at `apps/web/src/widgets/public/public-site-header/ui/public-header-mobile-nav.tsx:7`.
-3. **Add an editor node.** (a) Define it in `packages/ui/src/rich-text-editor/tiptap/extensions/`. (b) Register it in `createExtensions()` (`create-extensions.ts`). If its node view draws text, give it a `labels` option and add the keys to `editor-labels.ts`, `editor-labels.test-fixture.ts` and `apps/web/src/shared/hooks/use-editor-labels.ts`, then both catalogues. (c) Add a render-side twin with the same name and attributes to `renderExtensions` (`render-extensions.ts`). (d) Optional toolbar: `toolbars/<name>.tsx` plus a line in `toolbars/editor-toolbar.tsx`. Example: `Citation` (`extensions/references/citation.ts`) → `CitationBase` (`citation-base.ts`) → `toolbars/citation.tsx`.
+3. **Add an editor node.** (a) Define it in `packages/ui/src/rich-text-editor/tiptap/extensions/`. (b) Register it in `createExtensions()` (`create-extensions.ts`). If its node view draws text, give it a `labels` option and add the keys to `editor-labels.ts`, `editor-labels.test-fixture.ts` and `apps/web/src/shared/hooks/use-editor-labels.ts`, then both catalogues. (c) Add a render-side twin with the same name and attributes to `renderExtensions` (`render-extensions.ts`). (d) Optional toolbar: a command button is one `createToolbarButton` spec in `toolbars/basic-toolbars.tsx`; a control with a menu or popover gets its own `toolbars/<name>.tsx`; either way a line in `toolbars/editor-toolbar.tsx`. Example: `Citation` (`extensions/references/citation.ts`) → `CitationBase` (`citation-base.ts`) → `toolbars/citation.tsx`.
 
 ## Gotchas
 

@@ -23,7 +23,7 @@ type ToggleState = { active: boolean; can: boolean };
  * asks `editor.isActive()` during render would never learn the selection moved.
  * `ToolbarProvider` subscribes once and hands these down instead.
  */
-interface ToolbarState {
+export interface ToolbarState {
   /** Keyed by the mark/node name `isActive` takes. */
   toggles: {
     bold: ToggleState;
@@ -139,9 +139,7 @@ interface ToolbarContextProps {
   labels: EditorLabels;
 }
 
-const ToolbarContext = React.createContext<ToolbarContextProps | null>(
-  null
-);
+const ToolbarContext = React.createContext<ToolbarContextProps | null>(null);
 
 interface ToolbarProviderProps {
   editor: Editor;
