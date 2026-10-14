@@ -4,6 +4,8 @@ import { type ComponentProps, createContext, useContext } from 'react';
 import { EditorSkeleton } from '@byte-of-me/ui/editor-skeleton';
 import dynamic from 'next/dynamic';
 
+import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
+
 // `next/dynamic` hands its `loading` component no props, so the size the editor
 // will take reaches the skeleton through this.
 const SizeContext = createContext<{ compact?: boolean; minHeight?: number }>(
@@ -26,15 +28,20 @@ const Editor = dynamic(
  * lands in a single shared async chunk — imported statically per form it was
  * duplicated into each route group's bundle and loaded before first paint.
  *
- * Import this directly (`@/shared/ui/lazy-rich-text-editor`), not through the
- * shared/ui barrel, so public pages never even see the reference.
+ * It supplies the editor's `labels` itself. Import it directly
+ * (`@/shared/ui/lazy-rich-text-editor`), not through the shared/ui barrel, so
+ * public pages never even see the reference.
  */
-export function LazyRichTextEditor(props: ComponentProps<typeof Editor>) {
+export function LazyRichTextEditor(
+  props: Omit<ComponentProps<typeof Editor>, 'labels'>
+) {
+  const labels = useEditorLabels();
+
   return (
     <SizeContext.Provider
       value={{ compact: props.compact, minHeight: props.minHeight }}
     >
-      <Editor {...props} />
+      <Editor {...props} labels={labels} />
     </SizeContext.Provider>
   );
 }

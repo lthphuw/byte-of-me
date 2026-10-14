@@ -25,7 +25,6 @@ import {
 } from '@/entities/education/model/education-schema';
 import { useScopedImageUploader } from '@/entities/media/query';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
-import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
 import { LocalizedDatePicker, TextField, TranslationTabs } from '@/shared/ui';
 import { FieldMessage } from '@/shared/ui/form';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
@@ -103,7 +102,6 @@ export function EducationForm({
   const uploadImage = useScopedImageUploader('education');
   const t = useTranslations('dashboard.education');
   const tMedia = useTranslations('dashboard.media');
-  const editorLabels = useEditorLabels();
 
   // Seeded once, at mount: the dialog mounts this on a loaded entry. A later
   // `form.reset` would remount every editor (new field-array ids) and wipe edits.
@@ -227,7 +225,6 @@ export function EducationForm({
                             field.onChange(fromEditorContent(json))
                           }
                           uploadImage={uploadImage}
-                          labels={editorLabels}
                           uploadFailedText={tMedia('toast.uploadError')}
                         />
                       </FormControl>

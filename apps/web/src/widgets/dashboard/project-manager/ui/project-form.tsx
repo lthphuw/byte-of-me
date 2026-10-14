@@ -25,7 +25,6 @@ import {
   type ProjectFromValues,
   projectSchema,
 } from '@/entities/project/model';
-import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
 import {
   ContentFade,
   FieldMessage,
@@ -158,7 +157,6 @@ export function ProjectForm({
   const uploadImage = useScopedImageUploader('project');
   const t = useTranslations('dashboard.project');
   const tMedia = useTranslations('dashboard.media');
-  const editorLabels = useEditorLabels();
 
   // Seeded once, at mount: the dialog content mounts per open, and the manager
   // keys the dialog per project. A `form.reset` would remount every editor.
@@ -317,7 +315,6 @@ export function ProjectForm({
                             }
                           }}
                           uploadImage={uploadImage}
-                          labels={editorLabels}
                           uploadFailedText={tMedia('toast.uploadError')}
                         />
                       </FormControl>

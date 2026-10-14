@@ -36,22 +36,22 @@ every slice: index.ts -> ui/index.ts -> ui/*.tsx (+ lib/, model/); *.spec.ts(x) 
 | --- | --- | --- | --- |
 | `apps/web/src/widgets/auth/admin-auth-log-in-view/` | auth | `@/features/auth` | client |
 | `apps/web/src/widgets/dashboard/blog-manager/` | dashboard | `@/entities/blog`, `@/entities/blog/query`, `@/features/dashboard/blog-editor`, `@/shared/ui` | client |
-| `apps/web/src/widgets/dashboard/comment-manager/` | dashboard | `@/entities/comment/query` | client |
-| `apps/web/src/widgets/dashboard/company-manager/` | dashboard | `@/entities/company/api/*`, `@/entities/company/model`, `@/entities/company/query`, `@/entities/tech-stack/query`, `@/features/dashboard/media-library`, `@/shared/ui`, `@/shared/ui/edit-record-gate`, `@/shared/ui/record-dialog` | client |
+| `apps/web/src/widgets/dashboard/comment-manager/` | dashboard | `@/entities/comment/query`, `@/shared/ui` | client |
+| `apps/web/src/widgets/dashboard/company-manager/` | dashboard | `@/entities/company/api/*`, `@/entities/company/model`, `@/entities/company/query`, `@/entities/tech-stack/query`, `@/features/dashboard/media-library`, `@/shared/ui` | client |
 | `apps/web/src/widgets/dashboard/contact-message-gallery/` | dashboard | `@/entities/contact-message`, `@/entities/contact-message/query`, `@/shared/hooks/use-server-mutation`, `@/shared/ui` | client |
 | `apps/web/src/widgets/dashboard/dashboard-sidebar/` | dashboard | `@/features/auth` | client |
-| `apps/web/src/widgets/dashboard/education-manager/` | dashboard | `@/entities/education`, `@/entities/education/api/*`, `@/entities/education/model`, `@/entities/education/query`, `@/entities/media/query`, `@/features/dashboard/media-library`, `@/shared/ui`, `@/shared/ui/edit-record-gate`, `@/shared/ui/lazy-rich-text-editor`, `@/shared/ui/record-dialog` | client |
-| `apps/web/src/widgets/dashboard/featured-work-manager/` | dashboard | `@/entities/featured-work/api/*`, `@/entities/featured-work/model`, `@/entities/featured-work/query`, `@/entities/media`, `@/entities/media/query`, `@/shared/ui/edit-record-gate` | client |
+| `apps/web/src/widgets/dashboard/education-manager/` | dashboard | `@/entities/education`, `@/entities/education/api/*`, `@/entities/education/model`, `@/entities/education/query`, `@/entities/media/query`, `@/features/dashboard/media-library`, `@/shared/ui`, `@/shared/ui/lazy-rich-text-editor` | client |
+| `apps/web/src/widgets/dashboard/featured-work-manager/` | dashboard | `@/entities/featured-work/api/*`, `@/entities/featured-work/model`, `@/entities/featured-work/query`, `@/entities/media`, `@/entities/media/query`, `@/shared/ui`, `@/shared/ui/lazy-rich-text-editor` | client |
 | `apps/web/src/widgets/dashboard/media-manager/` | dashboard | `@/entities/media`, `@/entities/media/model/upload-constraints`, `@/entities/media/query`, `@/features/dashboard/media-library`, `@/shared/ui` | client |
-| `apps/web/src/widgets/dashboard/project-manager/` | dashboard | `@/entities/media/query`, `@/entities/project/api/*`, `@/entities/project/model`, `@/entities/project/query`, `@/entities/project/ui/project-editor-card`, `@/entities/tag/query`, `@/entities/tech-stack/query`, `@/shared/ui/edit-record-gate`, `@/shared/ui/query-state` | client |
-| `apps/web/src/widgets/dashboard/tag-manager/` | dashboard | `@/entities/tag`, `@/entities/tag/query`, `@/features/dashboard/tag-management`, `@/shared/ui`, `@/shared/ui/edit-record-gate` | client |
-| `apps/web/src/widgets/dashboard/tech-stack-manager/` | dashboard | `@/entities/tech-stack/api/*`, `@/entities/tech-stack/model`, `@/entities/tech-stack/query`, `@/features/dashboard/media-library`, `@/features/dashboard/tech-stack-management`, `@/shared/ui`, `@/shared/ui/edit-record-gate`, `@/shared/ui/form/field-message`, `@/shared/ui/record-dialog` | client |
-| `apps/web/src/widgets/dashboard/user-profile-manager/` | dashboard | `@/entities/media/query`, `@/entities/user-profile`, `@/features/dashboard/manage-social-link-form`, `@/features/dashboard/update-profile`, `@/shared/hooks/use-editor-labels`, `@/shared/ui`, `@/shared/ui/lazy-rich-text-editor` | client |
-| `apps/web/src/widgets/public/blog-details-content/` | public | `@/entities/blog`, `@/features/public` (group), `@/features/public/blog-print` | server entry, 7 client files |
-| `apps/web/src/widgets/public/blogs-content/` | public | `@/entities/blog`, `@/entities/blog/query`, `@/features/public/blog-filters` | client |
-| `apps/web/src/widgets/public/contact-content/` | public | `@/features/public` (group) | server |
-| `apps/web/src/widgets/public/homepage-content/` | public | `@/features/public` (group) | server |
-| `apps/web/src/widgets/public/projects-content/` | public | `@/entities/project`, `@/entities/project/query`, `@/features/public/project-filters`, `@/shared/ui/query-state` | client |
+| `apps/web/src/widgets/dashboard/project-manager/` | dashboard | `@/entities/media/query`, `@/entities/project/api/*`, `@/entities/project/model`, `@/entities/project/query`, `@/entities/project/ui/project-editor-card`, `@/entities/tag/query`, `@/entities/tech-stack/query`, `@/shared/ui`, `@/shared/ui/lazy-rich-text-editor`, `@/shared/ui/query-state` | client |
+| `apps/web/src/widgets/dashboard/tag-manager/` | dashboard | `@/entities/tag`, `@/entities/tag/query`, `@/features/dashboard/tag-management`, `@/shared/ui` | client |
+| `apps/web/src/widgets/dashboard/tech-stack-manager/` | dashboard | `@/entities/tech-stack/api/*`, `@/entities/tech-stack/model`, `@/entities/tech-stack/query`, `@/features/dashboard/media-library`, `@/features/dashboard/tech-stack-management`, `@/shared/ui`, `@/shared/ui/form/field-message` | client |
+| `apps/web/src/widgets/dashboard/user-profile-manager/` | dashboard | `@/entities/media/query`, `@/entities/user-profile`, `@/features/dashboard/manage-social-link-form`, `@/features/dashboard/update-profile`, `@/shared/ui`, `@/shared/ui/lazy-rich-text-editor` | client |
+| `apps/web/src/widgets/public/blog-details-content/` | public | `@/entities/blog`, `@/features/public` (group), `@/features/public/blog-print`, `@/shared/ui` | server entry, 7 client files |
+| `apps/web/src/widgets/public/blogs-content/` | public | `@/entities/blog`, `@/entities/blog/query`, `@/features/public/blog-filters`, `@/shared/ui` | client |
+| `apps/web/src/widgets/public/contact-content/` | public | `@/features/public` (group), `@/shared/ui` | server |
+| `apps/web/src/widgets/public/homepage-content/` | public | `@/features/public` (group), `@/shared/ui` | server |
+| `apps/web/src/widgets/public/projects-content/` | public | `@/entities/project`, `@/entities/project/query`, `@/features/public/project-filters`, `@/shared/ui`, `@/shared/ui/query-state` | client |
 | `apps/web/src/widgets/public/public-site-footer/` | public | `@/features/public/public-site-footer` | server |
 | `apps/web/src/widgets/public/public-site-header/` | public | `@/features/auth` | client |
 

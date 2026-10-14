@@ -9,7 +9,6 @@ import { useTranslations } from 'next-intl';
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
 import { useScopedImageUploader } from '@/entities/media/query';
 import { MediaMultiSelect } from '@/features/dashboard/media-library/ui/media-multi-select';
-import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
 import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-submit';
 import { cn } from '@/shared/lib/utils';
 import { ConfirmDeleteDialog, TextField, TranslationTabs } from '@/shared/ui';
@@ -42,7 +41,6 @@ export function EducationAchievementItemField({
   const uploadImage = useScopedImageUploader('education');
   const t = useTranslations('dashboard.education');
   const tMedia = useTranslations('dashboard.media');
-  const editorLabels = useEditorLabels();
   const [open, setOpen] = useState(defaultOpen);
   const [confirmingRemove, setConfirmingRemove] = useState(false);
 
@@ -213,7 +211,6 @@ export function EducationAchievementItemField({
                               field.onChange(fromEditorContent(json))
                             }
                             uploadImage={uploadImage}
-                            labels={editorLabels}
                             uploadFailedText={tMedia('toast.uploadError')}
                           />
                         </FormControl>
