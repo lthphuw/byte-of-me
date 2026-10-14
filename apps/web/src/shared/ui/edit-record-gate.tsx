@@ -41,7 +41,6 @@ export function EditRecordGate({
           type="button"
           variant="outline"
           size="sm"
-          className="min-h-11 can-hover:min-h-8"
           onClick={onRetry}
         >
           {t('retry')}

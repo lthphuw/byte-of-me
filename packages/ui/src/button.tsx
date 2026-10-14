@@ -5,7 +5,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from './lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,background-color,border-color,text-decoration-color,fill,stroke,transform] motion-safe:active:scale-[0.97] motion-safe:active:duration-120 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,background-color,border-color,text-decoration-color,fill,stroke,transform] motion-safe:active:scale-[0.97] motion-safe:active:duration-120 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
@@ -18,19 +18,17 @@ const buttonVariants = cva(
         secondary:
           'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
-        // Underlined at rest, not on hover. The palette is achromatic, so
-        // `text-primary` (9% lightness) is all but identical to body text at
-        // 3.9% — a hover-only underline left "View all projects" on the
-        // homepage looking like a sentence, and touch devices never hover at
-        // all. The underline is the affordance; removing it on hover is the
-        // state change. WCAG 1.4.1: do not rely on color alone.
+        // Underlined at rest, not on hover: touch never hovers, and WCAG 1.4.1
+        // says colour alone is not the affordance. Hover removes the underline.
         link: 'text-primary underline underline-offset-4 hover:no-underline',
       },
+      // Every size is 44px on touch (`min-h-11`) and its own height with a
+      // pointer (`can-hover:`). A caller's `min-h-*` still wins through `cn`.
       size: {
-        default: 'h-9 px-4 py-2',
-        sm: 'h-8 rounded-md px-3 text-xs',
-        lg: 'h-10 rounded-md px-8',
-        icon: 'h-9 w-9',
+        default: 'h-9 min-h-11 px-4 py-2 can-hover:min-h-9',
+        sm: 'h-8 min-h-11 px-3 text-xs can-hover:min-h-8',
+        lg: 'h-10 min-h-11 px-8 can-hover:min-h-10',
+        icon: 'h-9 w-9 min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9',
       },
     },
     defaultVariants: {
@@ -53,12 +51,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        // Only when this really renders a <button>. Under `asChild` the Slot
-        // forwards every prop to its child, which is almost always a <Link>,
-        // and `type` is not a valid attribute on an anchor — three of them
-        // carried `type="button"` on /en/projects. `undefined` renders no
-        // attribute at all, and `{...props}` still lets a caller pass
-        // `type="submit"`.
+        // Only a real <button> gets a type: under `asChild` the Slot forwards
+        // props to a <Link>, where `type` is invalid. `{...props}` still wins.
         type={asChild ? undefined : 'button'}
         {...props}
       />

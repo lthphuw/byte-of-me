@@ -80,7 +80,6 @@ export function QueryState({
             <Button
               variant="outline"
               size="sm"
-              className="min-h-11 can-hover:min-h-8"
               onClick={onRetry}
             >
               {retryLabel}

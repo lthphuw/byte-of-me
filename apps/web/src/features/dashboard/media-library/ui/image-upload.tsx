@@ -181,7 +181,7 @@ export function ImageUpload({
         <Button
           type="button"
           variant="outline"
-          className="mt-4 min-h-11 can-hover:min-h-9"
+          className="mt-4"
           disabled={isBusy}
         >
           {t('upload.chooseFiles')}
@@ -209,7 +209,6 @@ export function ImageUpload({
               type="button"
               variant="ghost"
               size="icon"
-              className="min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9"
               aria-label={t('upload.removeFile', { name: file.name })}
               onClick={() => removeFile(idx)}
               disabled={isUploading}
@@ -221,7 +220,7 @@ export function ImageUpload({
       </div>
 
       <Button
-        className="min-h-11 w-full can-hover:min-h-9"
+        className="w-full"
         onClick={handleUpload}
         disabled={files.length === 0 || isUploading || isCompressing}
       >

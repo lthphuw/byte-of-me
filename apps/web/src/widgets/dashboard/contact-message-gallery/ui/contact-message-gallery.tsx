@@ -227,7 +227,7 @@ export function ContactMessageGallery() {
               <Button
                 type="button"
                 variant="ghost"
-                className="min-h-11 gap-2 text-destructive-text can-hover:min-h-9"
+                className="gap-2 text-destructive-text"
                 disabled={deleteMutation.isPending}
                 onClick={() => setConfirmingDelete(true)}
               >
@@ -237,7 +237,6 @@ export function ContactMessageGallery() {
               <Button
                 type="button"
                 variant="outline"
-                className="min-h-11 can-hover:min-h-9"
                 onClick={() => setSelectedMessage(null)}
               >
                 {t('close')}

@@ -119,7 +119,6 @@ export function RecordDialog({
                   <Button
                     type="button"
                     variant="outline"
-                    className="min-h-11 can-hover:min-h-9"
                     onClick={requestClose}
                     disabled={isPending}
                   >
@@ -128,7 +127,6 @@ export function RecordDialog({
                   <Button
                     type="submit"
                     form={formId}
-                    className="min-h-11 can-hover:min-h-9"
                     disabled={isPending || submitDisabled}
                   >
                     {isPending ? (

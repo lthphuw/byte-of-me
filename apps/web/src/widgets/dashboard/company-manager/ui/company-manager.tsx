@@ -98,7 +98,7 @@ export function CompanyManager() {
           <Button
             onClick={openCreateDialog}
             size="sm"
-            className="min-h-11 gap-2 can-hover:min-h-8"
+            className="gap-2"
           >
             <Plus className="h-4 w-4" />
             {t('createButton')}
@@ -119,7 +119,6 @@ export function CompanyManager() {
             <Button
               variant="outline"
               size="sm"
-              className="min-h-11 can-hover:min-h-8"
               onClick={openCreateDialog}
             >
               {t('emptyAction')}

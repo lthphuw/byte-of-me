@@ -25,8 +25,6 @@ export function EditButton({
       size="icon"
       type={'button'}
       variant="ghost"
-      // 44px on touch; 36px only with a fine pointer, under `can-hover:`.
-      className="min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9"
       disabled={isSubmitting}
       onClick={onClick}
       aria-label={label}

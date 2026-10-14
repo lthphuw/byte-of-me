@@ -192,7 +192,6 @@ export function TranslationTabs({
           type="button"
           size="sm"
           variant="outline"
-          className="min-h-11 can-hover:min-h-8"
           onClick={() => append(newTranslation())}
         >
           <Languages /> {t('translationTabs.addLanguage')}
@@ -215,7 +214,6 @@ export function TranslationTabs({
               type="button"
               size="sm"
               variant="outline"
-              className="min-h-11 can-hover:min-h-8"
               onClick={() => {
                 remove(i);
                 setTab('0');

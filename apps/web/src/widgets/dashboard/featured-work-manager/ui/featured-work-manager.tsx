@@ -106,10 +106,6 @@ export function FeaturedWorkManager() {
     if (node) moveButtons.current.set(key, node);
     else moveButtons.current.delete(key);
   };
-  // 44px on touch; 36px only with a fine pointer, under `can-hover:`.
-  const moveButtonClass =
-    'min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9 aria-disabled:cursor-not-allowed aria-disabled:opacity-50';
-
   // Position in the whole list, not on this page: the first row of page 2 can
   // still move up, and only the very first and very last entries cannot move.
   const firstPosition = ((pagination?.currentPage ?? 1) - 1) * ADMIN_PAGE_SIZE;
@@ -201,7 +197,6 @@ export function FeaturedWorkManager() {
                             type="button"
                             size="icon"
                             variant="ghost"
-                            className={moveButtonClass}
                             aria-label={t('moveUpLabel', { name: title })}
                             aria-disabled={isMoving || position === 0}
                             onClick={() =>
@@ -215,7 +210,6 @@ export function FeaturedWorkManager() {
                             type="button"
                             size="icon"
                             variant="ghost"
-                            className={moveButtonClass}
                             aria-label={t('moveDownLabel', { name: title })}
                             aria-disabled={
                               isMoving || position === totalCount - 1

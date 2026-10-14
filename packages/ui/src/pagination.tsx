@@ -45,7 +45,6 @@ export function Pagination({
         <Button
           variant="outline"
           size="sm"
-          className="min-h-11 can-hover:min-h-8"
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1 || isPlaceholderData}
         >
@@ -54,7 +53,6 @@ export function Pagination({
         <Button
           variant="outline"
           size="sm"
-          className="min-h-11 can-hover:min-h-8"
           onClick={() => setPage((prev) => prev + 1)}
           disabled={!pagination?.hasMore || isPlaceholderData}
         >

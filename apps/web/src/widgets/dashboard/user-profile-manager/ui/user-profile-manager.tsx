@@ -115,7 +115,6 @@ export function UserProfileManager({
           <Button
             type="button"
             variant="ghost"
-            className="min-h-11 can-hover:min-h-9"
             onClick={requestReset}
           >
             {t('cancelButton')}
@@ -123,7 +122,7 @@ export function UserProfileManager({
           <Button
             type="submit"
             disabled={isSaving}
-            className="min-h-11 min-w-[140px] can-hover:min-h-9"
+            className="min-w-[140px]"
           >
             {isSaving && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />

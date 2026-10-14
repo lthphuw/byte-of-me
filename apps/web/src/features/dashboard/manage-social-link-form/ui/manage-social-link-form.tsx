@@ -86,7 +86,6 @@ export function SocialLinksSection({
             </p>
             <Button
               type="button"
-              className="min-h-11 can-hover:min-h-9"
               onClick={() => append({ platform: '', url: '', sortOrder: 0 })}
             >
               {t('socialLinks.emptyAction')}

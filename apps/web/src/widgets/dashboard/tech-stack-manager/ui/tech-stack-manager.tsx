@@ -90,7 +90,7 @@ export function TechStackManager({
           <Button
             onClick={openCreateDialog}
             size="sm"
-            className="min-h-11 gap-2 can-hover:min-h-8"
+            className="gap-2"
           >
             <Plus className="h-4 w-4" />
             {newLabel}
@@ -113,7 +113,6 @@ export function TechStackManager({
             <Button
               variant="outline"
               size="sm"
-              className="min-h-11 can-hover:min-h-8"
               onClick={openCreateDialog}
             >
               <Plus className="h-4 w-4" />

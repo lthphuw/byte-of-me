@@ -10,9 +10,6 @@ import {
 } from '@/entities/featured-work/model/featured-work-schema';
 import { FieldMessage, TextField } from '@/shared/ui';
 
-const moveButtonClass =
-  'min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9 aria-disabled:cursor-not-allowed aria-disabled:opacity-50';
-
 /**
  * The proof links of one featured work, in the order they are listed. Each row is a url and
  * a tag; the buttons move a row up or down, or remove it. The list is capped at six.
@@ -76,7 +73,6 @@ export function FeaturedWorkLinks({
                     type="button"
                     size="icon"
                     variant="ghost"
-                    className={moveButtonClass}
                     aria-label={t('moveLinkUp', { position })}
                     aria-disabled={index === 0}
                     onClick={() => {
@@ -89,7 +85,6 @@ export function FeaturedWorkLinks({
                     type="button"
                     size="icon"
                     variant="ghost"
-                    className={moveButtonClass}
                     aria-label={t('moveLinkDown', { position })}
                     aria-disabled={index === fields.length - 1}
                     onClick={() => {
@@ -102,7 +97,6 @@ export function FeaturedWorkLinks({
                     type="button"
                     size="icon"
                     variant="ghost"
-                    className={moveButtonClass}
                     aria-label={t('removeLink', { position })}
                     onClick={() => remove(index)}
                   >
@@ -116,7 +110,7 @@ export function FeaturedWorkLinks({
           <Button
             type="button"
             variant="outline"
-            className="min-h-11 w-full can-hover:min-h-9 sm:w-auto"
+            className="w-full sm:w-auto"
             disabled={atMax}
             onClick={() => append({ url: '', label: '' })}
           >

@@ -103,7 +103,6 @@ export function CompanyRoleItemField({
           type="button"
           size="icon"
           variant="ghost"
-          className="min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9"
           aria-label={t('role.removeButton')}
           onClick={handleRemove}
         >

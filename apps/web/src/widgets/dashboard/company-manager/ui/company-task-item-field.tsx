@@ -55,7 +55,7 @@ export function CompanyTaskItemField({
         type="button"
         size="icon"
         variant="ghost"
-        className="absolute right-2 top-2 min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9"
+        className="absolute right-2 top-2"
         aria-label={t('task.removeButton')}
         onClick={handleRemove}
       >

@@ -77,7 +77,7 @@ export function ProjectCoauthorFields({ control }: ProjectCoauthorFieldsProps) {
             type="button"
             size="icon"
             variant="ghost"
-            className="min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9 md:mt-8"
+            className="md:mt-8"
             onClick={() => remove(index)}
             aria-label={t('coauthors.removeButton')}
           >
