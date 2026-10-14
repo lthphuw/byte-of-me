@@ -18,9 +18,9 @@ import { generateJSON } from '@tiptap/html';
 import type { JSONContent } from '@tiptap/react';
 import { describe, expect, test } from 'bun:test';
 
+import { createExtensions } from './create-extensions';
 import { testEditorLabels } from './editor-labels.test-fixture';
 import { stripPastedPresentation } from './paste-presentation';
-import { createExtensions } from './create-extensions';
 
 const extensions = createExtensions({
   uploadFailedText: 'Upload failed',

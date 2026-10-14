@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import type { ImageUploadFn } from './image-base';
 
 /** An uploaded file, as the `image` node's attributes. */
-export type UploadedImage = { src: string; alt: string };
+type UploadedImage = { src: string; alt: string };
 
 /** The options the consumer configures on the image extension. */
 type ImageExtensionOptions = {

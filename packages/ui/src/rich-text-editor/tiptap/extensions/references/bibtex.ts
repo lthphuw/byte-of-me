@@ -17,7 +17,7 @@ import { createReferenceId, type ReferenceItem } from './types';
 /** An entry that could not become a reference, and why. */
 export type SkippedBibtexEntry = { key: string; reason: string };
 
-export type BibtexParseResult = {
+type BibtexParseResult = {
   entries: ReferenceItem[];
   skipped: SkippedBibtexEntry[];
 };

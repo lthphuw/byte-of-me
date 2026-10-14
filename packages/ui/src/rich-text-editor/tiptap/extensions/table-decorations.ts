@@ -14,19 +14,19 @@ import { type Decoration, DecorationSet } from '@tiptap/pm/view';
  * quietly stops matching a rebuild.
  */
 
-export interface TableDecorations {
+interface TableDecorations {
   decorations: DecorationSet;
   /** The table nodes the set above is currently correct for. */
   covered: WeakSet<ProseMirrorNode>;
 }
 
 /** What one table contributes, given its position in the document. */
-export type TableDecorationSource = (
+type TableDecorationSource = (
   table: ProseMirrorNode,
   tablePos: number
 ) => Decoration[];
 
-export interface IncrementalTableDecorations {
+interface IncrementalTableDecorations {
   buildAll(doc: ProseMirrorNode): TableDecorations;
   advance(
     previous: TableDecorations,

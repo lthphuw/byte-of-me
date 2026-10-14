@@ -23,7 +23,7 @@ type CitationViewProps = ReactNodeViewProps & {
  * from editor state so every marker renumbers itself the moment a citation is
  * inserted, removed, or moved.
  */
-export function CitationView({ editor, node, labels }: CitationViewProps) {
+function CitationView({ editor, node, labels }: CitationViewProps) {
   const refId = typeof node.attrs.refId === 'string' ? node.attrs.refId : '';
 
   const order = useEditorState({

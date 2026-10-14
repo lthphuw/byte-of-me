@@ -1,6 +1,5 @@
 'use client';
 
-// @ts-nocheck
 import { type ChangeEvent, type FormEvent, useState } from 'react';
 import {
   type CommandProps,
@@ -34,10 +33,8 @@ import {
 } from './upload-images';
 import { useImageUpload } from './use-image-upload';
 
-export interface ImagePlaceholderOptions {
+interface ImagePlaceholderOptions {
   HTMLAttributes: Record<string, unknown>;
-  onUpload?: (url: string) => void;
-  onError?: (error: string) => void;
   /**
    * The editor's labels, handed to the node view. `createExtensions` sets it.
    */
@@ -61,8 +58,6 @@ export const ImagePlaceholder = Node.create<ImagePlaceholderOptions>({
   addOptions() {
     return {
       HTMLAttributes: {},
-      onUpload: () => {},
-      onError: () => {},
       labels: EMPTY_EDITOR_LABELS,
     };
   },
@@ -106,7 +101,7 @@ export const ImagePlaceholder = Node.create<ImagePlaceholderOptions>({
 function ImagePlaceholderComponent(
   props: NodeViewProps & { labels: EditorLabels }
 ) {
-  const { editor, extension, selected, labels } = props;
+  const { editor, selected, labels } = props;
 
   /**
    * Whether THIS editor was configured with a real uploader (read off the

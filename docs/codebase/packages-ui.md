@@ -42,7 +42,7 @@ packages/ui/
 | `@byte-of-me/ui/lib/sanitize` | escaping or sanitising HTML in server code | listed in §7; pure |
 | `@byte-of-me/ui/lib/rich-text-content` | parsing or blank-checking a stored rich-text column | type-only TipTap import; safe anywhere |
 | `@byte-of-me/ui/lib/prefers-reduced-motion` | any programmatic scroll (`scrollIntoViewBehavior`) | §14: CSS cannot cover a literal `behavior: 'smooth'` |
-| `@byte-of-me/ui/rich-text-editor` | a dashboard form edits rich text (reach it via `LazyRichTextEditor`) | listed in §7: the whole editor must stay off public pages |
+| `@byte-of-me/ui/rich-text-editor` | a dashboard form edits rich text (reach it via `LazyRichTextEditor`); exports `RichTextEditor`, `EditorLabels` and `RichTextChangeMeta` and nothing else | listed in §7: the whole editor must stay off public pages |
 | `@byte-of-me/ui/rich-text` | a server component renders stored rich text | listed in §7: load-bearing boundary; server-only schema |
 | `@byte-of-me/ui/rich-text-html` | a client component prints HTML a server already rendered | presentational; no TipTap |
 | `@byte-of-me/ui/rich-text-render` | a server action or loader returns sanitised HTML | server only (`generateHTML`) |

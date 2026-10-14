@@ -23,17 +23,6 @@ export const REFERENCE_LIST_NAME = 'referenceList';
  */
 export const DEFAULT_REFERENCES_TITLE = 'References';
 
-/** Field names an author can fill in, in the order they are displayed. */
-export const REFERENCE_FIELDS = [
-  'title',
-  'authors',
-  'source',
-  'year',
-  'url',
-] as const;
-
-export type ReferenceField = (typeof REFERENCE_FIELDS)[number];
-
 /** Creates an id for a new reference. Falls back when `crypto` is unavailable. */
 export function createReferenceId(): string {
   const uuid =

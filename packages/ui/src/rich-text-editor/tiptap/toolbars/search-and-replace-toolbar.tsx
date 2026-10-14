@@ -1,21 +1,13 @@
 'use client';
 
-/* eslint-disable */
-// @ts-nocheck
 import { useEffect, useState } from 'react';
 import { useEditorState } from '@tiptap/react';
 import { ArrowLeftIcon, ArrowRightIcon, Repeat, X } from 'lucide-react';
 
+import { Button , Checkbox , Input , Label , Popover, PopoverContent, PopoverTrigger , Separator , Tooltip, TooltipContent, TooltipTrigger } from '../../../index';
 import { cn } from '../../../lib/utils';
-import { Button } from '../../../index';
-import { Checkbox } from '../../../index';
-import { Input } from '../../../index';
-import { Label } from '../../../index';
-import { Popover, PopoverContent, PopoverTrigger } from '../../../index';
-import { Separator } from '../../../index';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../../../index';
-
 import { type SearchAndReplaceStorage } from '../extensions/search-and-replace';
+
 import { useToolbar } from './toolbar-provider';
 
 export function SearchAndReplaceToolbar() {

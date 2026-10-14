@@ -1,27 +1,14 @@
 'use client';
 
-/* eslint-disable */
-// @ts-nocheck
-import type { Extension } from '@tiptap/core';
-import type { ColorOptions } from '@tiptap/extension-color';
-import type { HighlightOptions } from '@tiptap/extension-highlight';
 import { CheckIcon, ChevronDownIcon } from 'lucide-react';
 
 import { useMediaQuery } from '../../../hooks/use-media-query';
+import { Button , Popover, PopoverContent, PopoverTrigger , ScrollArea , Separator , Tooltip, TooltipContent, TooltipTrigger } from '../../../index';
 import { cn } from '../../../lib/utils';
-import { Button } from '../../../index';
-import { Popover, PopoverContent, PopoverTrigger } from '../../../index';
-import { ScrollArea } from '../../../index';
-import { Separator } from '../../../index';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../../../index';
 import type { EditorLabels } from '../editor-labels';
 
 import { MobileToolbarGroup, MobileToolbarItem } from './mobile-toolbar-group';
 import { useToolbar } from './toolbar-provider';
-
-type TextStylingExtensions =
-  | Extension<ColorOptions>
-  | Extension<HighlightOptions>;
 
 const getTextColors = (labels: EditorLabels) => [
   { name: labels.colorDefault, color: 'var(--editor-text-default)' },

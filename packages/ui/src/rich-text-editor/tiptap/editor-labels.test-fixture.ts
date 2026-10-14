@@ -53,7 +53,6 @@ export const testEditorLabels: EditorLabels = {
   color: 'Color',
   highlight: 'Highlight',
   background: 'Background',
-  hardBreak: 'Hard break',
   colorDefault: 'Default',
   colorGray: 'Gray',
   colorBrown: 'Brown',

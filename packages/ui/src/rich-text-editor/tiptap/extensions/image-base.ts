@@ -16,8 +16,8 @@ import Image from '@tiptap/extension-image';
 export const IMAGE_GROUP_NAME = 'imageGroup';
 
 /** `data-type` of a captioned single image, and of a row. */
-export const IMAGE_FIGURE_TYPE = 'image-figure';
-export const IMAGE_GROUP_TYPE = 'image-group';
+const IMAGE_FIGURE_TYPE = 'image-figure';
+const IMAGE_GROUP_TYPE = 'image-group';
 
 /** Uploads one file and resolves to its public URL. */
 export type ImageUploadFn = (file: File) => Promise<string>;
@@ -25,7 +25,7 @@ export type ImageUploadFn = (file: File) => Promise<string>;
 type Spec = [string, ...unknown[]];
 
 /** A node's caption, trimmed. `''` when it has none. */
-export function captionOf(node: {
+function captionOf(node: {
   attrs?: Record<string, unknown> | null;
 }): string {
   const caption = node.attrs?.caption;

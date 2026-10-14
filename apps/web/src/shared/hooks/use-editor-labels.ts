@@ -66,7 +66,6 @@ export function useEditorLabels(): EditorLabels {
       color: t('color'),
       highlight: t('highlight'),
       background: t('background'),
-      hardBreak: t('hardBreak'),
       colorDefault: t('colorDefault'),
       colorGray: t('colorGray'),
       colorBrown: t('colorBrown'),

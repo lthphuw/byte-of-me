@@ -8,7 +8,7 @@ import {
   type ReferenceItem,
 } from './types';
 
-export type CitationNumbering = {
+type CitationNumbering = {
   /** Reference id → its 1-based citation number. */
   numbers: Map<string, number>;
   /** Reference entries sorted so `index + 1` equals the entry's number. */
@@ -91,7 +91,7 @@ function buildNumbering(
 }
 
 /** Reads citations and the bibliography out of a Tiptap JSON document. */
-export function readReferencesFromJSON(doc: JSONContent): CitationNumbering {
+function readReferencesFromJSON(doc: JSONContent): CitationNumbering {
   const citedIds: string[] = [];
   let items: ReferenceItem[] = [];
   let title = DEFAULT_REFERENCES_TITLE;

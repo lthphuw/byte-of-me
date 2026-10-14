@@ -18,7 +18,6 @@ import { createExtensions } from './create-extensions';
 import type { EditorLabels } from './editor-labels';
 import { EditorPreview } from './editor-preview';
 import { TipTapFloatingMenu } from './extensions/floating-menu';
-import { FloatingToolbar } from './extensions/floating-toolbar';
 import type { ImageUploadFn } from './extensions/image';
 import { MobileEditorTools } from './mobile-tools';
 import { OutlineAside } from './outline-aside';
@@ -202,13 +201,10 @@ export function RichTextEditor({
             preview !== null && 'hidden'
           )}
         >
-          {/* Page-scale surfaces: a bubble bar and a 20-item slash palette
-              overwhelm an editor in a form card, and a phone has its own bar. */}
+          {/* A 20-item slash palette overwhelms an editor in a form card, and a
+              phone has its own tools. */}
           {!compact && !isNarrow && (
-            <>
-              <FloatingToolbar editor={editor} labels={labels} />
-              <TipTapFloatingMenu editor={editor} labels={labels} />
-            </>
+            <TipTapFloatingMenu editor={editor} labels={labels} />
           )}
           <EditorContent editor={editor} />
         </div>

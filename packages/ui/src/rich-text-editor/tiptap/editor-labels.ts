@@ -9,7 +9,7 @@
  * Keys are the list below; `EditorLabels` is derived from it, so a key cannot
  * be added to one and forgotten in the other.
  */
-export const EDITOR_LABEL_KEYS = [
+const EDITOR_LABEL_KEYS = [
   // Writing surface and its tabs
   'defaultPlaceholder', // Write, type '/' for commands
   'outlineTab', // Outline
@@ -60,7 +60,6 @@ export const EDITOR_LABEL_KEYS = [
   'color', // Color
   'highlight', // Highlight
   'background', // Background
-  'hardBreak', // Hard break
   'colorDefault', // Default
   'colorGray', // Gray
   'colorBrown', // Brown

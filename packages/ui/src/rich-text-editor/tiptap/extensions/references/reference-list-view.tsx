@@ -23,7 +23,7 @@ type ReferenceListViewProps = ReactNodeViewProps & {
  * article will show, while all editing happens in the references panel — the
  * entries are structured data, not free text.
  */
-export function ReferenceListView({ editor, labels }: ReferenceListViewProps) {
+function ReferenceListView({ editor, labels }: ReferenceListViewProps) {
   const { ordered, title } = useEditorState({
     editor,
     selector: ({ editor: current }) => {

@@ -46,7 +46,7 @@ declare module '@tiptap/core' {
  * node, on every `upsertReference` / `removeReference` / `setReferencesTitle`,
  * and on every one of the twelve lookups a BibTeX import used to make.
  */
-export function findReferenceList(
+function findReferenceList(
   doc: ProseMirrorNode
 ): { pos: number; node: ProseMirrorNode } | null {
   let found: { pos: number; node: ProseMirrorNode } | null = null;

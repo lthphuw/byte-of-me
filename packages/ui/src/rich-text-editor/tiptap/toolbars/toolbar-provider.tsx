@@ -12,7 +12,7 @@ import type { EditorLabels } from '../editor-labels';
 export const HEADING_LEVELS = [1, 2, 3, 4] as const;
 export type HeadingLevel = (typeof HEADING_LEVELS)[number];
 
-export type TextAlignment = 'left' | 'center' | 'right' | 'justify';
+type TextAlignment = 'left' | 'center' | 'right' | 'justify';
 
 type ToggleState = { active: boolean; can: boolean };
 
@@ -23,7 +23,7 @@ type ToggleState = { active: boolean; can: boolean };
  * asks `editor.isActive()` during render would never learn the selection moved.
  * `ToolbarProvider` subscribes once and hands these down instead.
  */
-export interface ToolbarState {
+interface ToolbarState {
   /** Keyed by the mark/node name `isActive` takes. */
   toggles: {
     bold: ToggleState;
@@ -132,14 +132,14 @@ function selectToolbarState({
   };
 }
 
-export interface ToolbarContextProps {
+interface ToolbarContextProps {
   editor: Editor;
   state: ToolbarState;
   /** The app's text for every control; see `EditorLabels`. */
   labels: EditorLabels;
 }
 
-export const ToolbarContext = React.createContext<ToolbarContextProps | null>(
+const ToolbarContext = React.createContext<ToolbarContextProps | null>(
   null
 );
 

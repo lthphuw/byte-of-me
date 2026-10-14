@@ -805,7 +805,6 @@ declare const messages: {
         "color": "Màu chữ",
         "highlight": "Tô sáng",
         "background": "Nền",
-        "hardBreak": "Xuống dòng",
         "colorDefault": "Mặc định",
         "colorGray": "Xám",
         "colorBrown": "Nâu",
