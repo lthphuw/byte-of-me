@@ -4,7 +4,8 @@
  *
  * A work is a rule, then its title and its proof links, then its demo, then its details,
  * one column at every width. The homepage column is `max-w-3xl`, too narrow for a split.
- * The demo and the details share the card's full inner width, so their edges line up.
+ * The demo and the details share the card's full inner width, so their edges line up. The demo is
+ * the shared media carousel (`@/shared/ui/media-carousel`), which owns its own geometry.
  */
 
 /**
@@ -42,27 +43,3 @@ export const WORK_LINK =
  * `ExpandableRichText` clamps it to three 28px lines and adds the toggle only when it is longer.
  */
 export const WORK_BODY = 'min-w-0 text-[15px] leading-7';
-
-/**
- * The demo strip bleeds to the card's edge on a phone, past the card's 16px padding, so
- * a second clip shows at the edge. From sm there is nothing to swipe, so it sits inside
- * the card's padding.
- */
-export const WORK_MEDIA_BLEED = '-mx-4 px-4 sm:mx-0 sm:px-0';
-
-/**
- * The demo's box, shared with the loading skeleton so the two cannot drift. On a phone it
- * is a swipeable strip; from sm it is a grid, so no clip is ever cut off by the card.
- */
-export const WORK_DEMO =
-  'flex min-w-0 snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto [scrollbar-width:none] sm:gap-4 sm:overflow-visible [&>figure]:shrink-0 [&>figure]:snap-start';
-
-/**
- * A pair: on a phone each clip is 82% of the strip, so the next one peeks in at the edge
- * and invites the swipe; from sm the two share the row in equal columns.
- */
-export const WORK_DEMO_PAIR =
-  '[&>figure]:w-[82%] sm:grid sm:grid-cols-2 sm:[&>figure]:w-auto';
-
-/** A lone clip fills the row at every width. */
-export const WORK_DEMO_SINGLE = '[&>figure]:w-full';

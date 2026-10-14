@@ -183,47 +183,49 @@ describe('FeaturedWorkItem demo', () => {
 });
 
 /**
- * The demo sits under the title on every width. On a phone a pair is one swipeable strip that
- * bleeds to the screen edge (the shell's gutter is 32px), the next clip peeking in. From sm
- * there is nothing to swipe: a pair is two equal columns inside the card, a lone clip fills
- * the row.
+ * The demo sits under the title as one carousel, as the education gallery is: on every width a
+ * pair is two slides of which the next is only partly in view (85% wide on a phone, 58% from
+ * md), a lone clip fills the row, and the track sits inside the card's padding.
  */
-describe('FeaturedWorkItem demo layout', () => {
-  const stripOf = () => document.querySelector('figure')?.parentElement;
+describe('FeaturedWorkDemo layout in an item', () => {
+  const slides = () => [
+    ...document.querySelectorAll('[aria-roledescription="slide"]'),
+  ];
 
-  it('lays the pair as a swipeable strip on a phone and two equal columns from sm', () => {
+  it('draws the demo as a carousel with one slide per clip', () => {
     renderItem({ media: pair });
 
-    const strip = stripOf();
-    expect(strip?.classList.contains('snap-x')).toBe(true);
-    expect(strip?.classList.contains('overflow-x-auto')).toBe(true);
-    expect(strip?.classList.contains('sm:overflow-visible')).toBe(true);
-    expect(strip?.classList.contains('sm:grid')).toBe(true);
-    expect(strip?.classList.contains('sm:grid-cols-2')).toBe(true);
+    expect(
+      document.querySelector('[aria-roledescription="carousel"]')
+    ).not.toBeNull();
+    expect(slides()).toHaveLength(2);
+    expect(slides().every((slide) => slide.querySelector('figure'))).toBe(true);
   });
 
-  it('sizes each clip of a pair at 82% on a phone, so the next one peeks in, and drops it from sm', () => {
+  it('sizes each slide of a pair at 85% on a phone and 58% from md, so the next one peeks in', () => {
     renderItem({ media: pair });
 
-    expect(stripOf()?.className).toContain('[&>figure]:w-[82%]');
-    expect(stripOf()?.className).toContain('sm:[&>figure]:w-auto');
-    expect(stripOf()?.className).not.toContain('58%');
+    for (const slide of slides()) {
+      expect(slide.className).toContain('basis-[85%]');
+      expect(slide.className).toContain('md:basis-[58%]');
+    }
   });
 
   it('gives a single clip the full width of the card at every width', () => {
     renderItem({ media: pair.slice(0, 1) });
 
-    const strip = stripOf();
-    expect(strip?.className).toContain('[&>figure]:w-full');
-    expect(strip?.className).not.toContain('[&>figure]:w-[82%]');
-    expect(strip?.classList.contains('sm:grid-cols-2')).toBe(false);
+    expect(slides()).toHaveLength(1);
+    expect(slides()[0]?.className).toContain('basis-full');
+    expect(slides()[0]?.className).not.toContain('md:basis-[58%]');
   });
 
-  it('bleeds the strip to the card edge on a phone and drops the bleed from sm', () => {
+  it('has no grid and no bleed: the carousel stays inside the card', () => {
     renderItem({ media: pair });
 
-    expect(stripOf()?.classList.contains('-mx-4')).toBe(true);
-    expect(stripOf()?.classList.contains('sm:mx-0')).toBe(true);
+    const carousel = document.querySelector(
+      '[aria-roledescription="carousel"]'
+    );
+    expect(carousel?.className).not.toMatch(/-mx-|grid/);
   });
 
   it('draws the details at the card width, so their edge lines up with the demo', () => {

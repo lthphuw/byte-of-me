@@ -2,21 +2,25 @@ import { Skeleton } from '@byte-of-me/ui';
 
 import {
   WORK_BODY,
-  WORK_DEMO,
-  WORK_DEMO_PAIR,
   WORK_HEAD,
   WORK_LINKS,
-  WORK_MEDIA_BLEED,
   WORK_ROW,
   WORK_TITLE,
 } from '@/entities/featured-work/ui/featured-work-row-classes';
 import { cn } from '@/shared/lib/utils';
+import {
+  MEDIA_SLIDE,
+  MEDIA_TRACK,
+  mediaSlideBasis,
+} from '@/shared/ui/media-carousel-classes';
 
 /**
  * Two works, about what the homepage shows now. Each one has a demo and a body, so the
  * list keeps roughly its height when it resolves.
  */
 const ROWS = 2;
+/** Clips in the demo: a pair, the carousel's usual case. */
+const CLIPS = 2;
 /** Proof links per work: most works have two. */
 const LINKS = 2;
 
@@ -59,9 +63,23 @@ export function HomepageFeaturedWorksLoading() {
               </ul>
             </div>
 
-            <div className={cn(WORK_MEDIA_BLEED, WORK_DEMO, WORK_DEMO_PAIR)}>
-              <Skeleton className="aspect-video rounded-md" />
-              <Skeleton className="aspect-video rounded-md" />
+            <div className="relative">
+              <div className="overflow-hidden">
+                <div className={cn('flex', MEDIA_TRACK)}>
+                  {[...Array(CLIPS)].map((_, j) => (
+                    <div
+                      key={j}
+                      className={cn(
+                        'min-w-0 shrink-0 grow-0',
+                        MEDIA_SLIDE,
+                        mediaSlideBasis(CLIPS)
+                      )}
+                    >
+                      <Skeleton className="aspect-video rounded-md" />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div className={WORK_BODY}>

@@ -10,7 +10,6 @@ import {
 import {
   WORK_BODY,
   WORK_HEAD,
-  WORK_MEDIA_BLEED,
   WORK_ROW,
   WORK_TITLE,
 } from './featured-work-row-classes';
@@ -36,8 +35,8 @@ interface FeaturedWorkItemProps {
 
 /**
  * One featured work: the title with its proof links beside it, then the demo, then the
- * details, clamped to three lines with a toggle when longer. On a phone a pair of clips is
- * a swipeable strip; from sm it is two equal columns.
+ * details, clamped to three lines with a toggle when longer. The demo is a carousel, as the
+ * education gallery is.
  */
 export function FeaturedWorkItem({
   anchorId,
@@ -55,11 +54,7 @@ export function FeaturedWorkItem({
       </div>
 
       {media.length > 0 && (
-        <FeaturedWorkDemo
-          media={media}
-          controlLabels={demoControls}
-          className={WORK_MEDIA_BLEED}
-        />
+        <FeaturedWorkDemo media={media} controlLabels={demoControls} />
       )}
 
       {details && (

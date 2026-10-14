@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  type MouseEvent,
   type ReactNode,
   type Ref,
   useCallback,
@@ -10,22 +11,12 @@ import {
 } from 'react';
 import { useIntersection } from '@byte-of-me/ui/hooks/use-intersection';
 import { useMediaQuery } from '@byte-of-me/ui/hooks/use-media-query';
-import {
-  Maximize,
-  Minimize,
-  Play,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
+import { Maximize, Minimize, Play, ZoomIn, ZoomOut } from 'lucide-react';
 
-import {
-  WORK_DEMO,
-  WORK_DEMO_PAIR,
-  WORK_DEMO_SINGLE,
-} from './featured-work-row-classes';
 import { useDemoZoom, ZOOM_MAX, ZOOM_MIN } from './use-demo-zoom';
 
 import { cn } from '@/shared/lib/utils';
+import { MediaCarousel } from '@/shared/ui/media-carousel';
 import { MediaCover, useMediaDrawn } from '@/shared/ui/media-cover';
 
 /** One demo item, translated and resolved by the server row. */
@@ -52,6 +43,8 @@ export interface FeaturedWorkDemoControlLabels {
 }
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
+/** Two taps on a clip within this long are a double tap, which takes it full screen. */
+const DOUBLE_TAP_MS = 300;
 /** A clip plays while at least this much of it is on screen. */
 const VISIBLE = { threshold: 0.25 };
 /** A clip's file is requested this far before it reaches the screen, so it is ready on arrival. */
@@ -130,7 +123,9 @@ function ControlButton({
  * One clip. The frame is a play/pause button; it plays while it is on screen unless
  * the visitor asked for reduced motion or paused it themselves. A second button
  * beside it (never inside: a button may not hold a button) takes the clip full screen,
- * with sound and a zoom toolbar. Where the browser refuses element full screen, the
+ * with sound and a zoom toolbar; a double tap on the frame does the same. With a mouse
+ * that button shows only while the clip is hovered or focused; on a touch screen, which has
+ * no hover, it is always there. Where the browser refuses element full screen, the
  * same box is pinned to the viewport instead (iPhone Safari has no element full screen).
  */
 function DemoVideo({
@@ -163,6 +158,7 @@ function DemoVideo({
   // Set the moment full screen is asked for: the page leaves the viewport before the
   // `fullscreenchange` event arrives, and the visibility effect would pause the clip in between.
   const fullscreenAsked = useRef(false);
+  const lastTap = useRef(0);
   // Known only in the browser, so the button appears after mount.
   const [fullscreenReady, setFullscreenReady] = useState(false);
 
@@ -217,20 +213,6 @@ function DemoVideo({
     return () => document.removeEventListener('keydown', onKey);
   }, [fullscreen, exitFullscreen]);
 
-  const toggle = () => {
-    // The click that ends a drag or pinch is a pan, not a tap on the clip.
-    if (zoom.takeMoved()) return;
-    const video = videoRef.current;
-    if (!video) return;
-    if (video.paused) {
-      setUserPaused(false);
-      playQuietly(video);
-    } else {
-      setUserPaused(true);
-      video.pause();
-    }
-  };
-
   const enterFullscreen = () => {
     const stage = stageRef.current;
     const video = videoRef.current;
@@ -244,6 +226,31 @@ function DemoVideo({
     playQuietly(video);
   };
 
+  const toggle = (event: MouseEvent<HTMLButtonElement>) => {
+    // The click that ends a drag or pinch is a pan, not a tap on the clip.
+    if (zoom.takeMoved()) return;
+    const video = videoRef.current;
+    if (!video) return;
+
+    // The first tap of a double tap paused or resumed the clip; the clip plays in full screen
+    // either way, and `userPaused` is cleared so leaving it does not leave a clip nobody paused.
+    if (!fullscreen && event.timeStamp - lastTap.current < DOUBLE_TAP_MS) {
+      lastTap.current = 0;
+      setUserPaused(false);
+      enterFullscreen();
+      return;
+    }
+    lastTap.current = event.timeStamp;
+
+    if (video.paused) {
+      setUserPaused(false);
+      playQuietly(video);
+    } else {
+      setUserPaused(true);
+      video.pause();
+    }
+  };
+
   // A clip that will not load keeps its frame and is no longer offered as playable.
   if (failed) return <Frame />;
 
@@ -255,7 +262,12 @@ function DemoVideo({
 
   return (
     <div ref={nearRef} className="relative">
-      <div ref={stageRef} className={cn(fullscreen ? STAGE_FULL : 'relative')}>
+      <div
+        ref={stageRef}
+        // Tells the carousel to let go of its transform: the in-page full screen is `fixed`.
+        data-media-pinned={fullscreen ? '' : undefined}
+        className={cn(fullscreen ? STAGE_FULL : 'group/stage relative')}
+      >
         <button
           ref={frameRef}
           type="button"
@@ -306,11 +318,7 @@ function DemoVideo({
               >
                 <ZoomOut aria-hidden className="size-5" />
               </ControlButton>
-              <button
-                type="button"
-                onClick={zoom.resetZoom}
-                className={LEVEL}
-              >
+              <button type="button" onClick={zoom.resetZoom} className={LEVEL}>
                 {Math.round(level * 100)}%
                 <span className="sr-only">{controlLabels.zoomReset}</span>
               </button>
@@ -335,7 +343,12 @@ function DemoVideo({
             type="button"
             aria-label={fullscreenLabel}
             onClick={enterFullscreen}
-            className="absolute bottom-1 right-1 flex size-11 items-center justify-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className={cn(
+              'absolute right-1 top-1 flex size-11 items-center justify-center rounded-md transition-opacity duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+              // Hidden until the clip is hovered or something in it has focus, for a mouse only:
+              // a touch screen has no hover, so there it stays on show.
+              'can-hover:opacity-0 can-hover:focus-visible:opacity-100 can-hover:group-focus-within/stage:opacity-100 can-hover:group-hover/stage:opacity-100'
+            )}
           >
             <span className="flex size-8 items-center justify-center rounded-full bg-background/80 text-foreground">
               <Maximize aria-hidden className="size-4" />
@@ -387,10 +400,11 @@ function DemoFigure({
   );
 
   return (
-    <figure className="min-w-0">
+    <figure className="relative min-w-0">
       {media}
+      {/* On the frame, not under it: the carousel's dots sit at the bottom of the slide, and the full-screen button opposite, top right. */}
       {item.caption && (
-        <figcaption className="mt-2 font-mono text-xs text-muted-foreground [overflow-wrap:anywhere]">
+        <figcaption className="pointer-events-none absolute left-2 top-2 max-w-[calc(100%-1rem)] rounded-full bg-background/80 px-2 py-1 font-mono text-xs leading-none text-foreground [overflow-wrap:anywhere]">
           {item.caption}
         </figcaption>
       )}
@@ -406,10 +420,10 @@ interface FeaturedWorkDemoProps {
 }
 
 /**
- * The demo of a featured work, always on show: a clip plays while it is on screen, an
- * image loads lazily, and each sits in a reserved 16:9 frame. On a phone a pair is a
- * swipeable strip, the next clip peeking in at the edge; from sm the pair is two equal
- * columns and nothing is cut off. A lone clip fills the row.
+ * The demo of a featured work, always on show: a clip plays while it is on screen, an image
+ * loads lazily, and each sits in a reserved 16:9 frame. The media are one carousel, as the
+ * education gallery is: the next one only partly in view, dragged or swiped into place. A lone
+ * clip fills the row.
  */
 export function FeaturedWorkDemo({
   media,
@@ -417,16 +431,13 @@ export function FeaturedWorkDemo({
   className,
 }: FeaturedWorkDemoProps) {
   return (
-    <div
-      className={cn(
-        WORK_DEMO,
-        media.length > 1 ? WORK_DEMO_PAIR : WORK_DEMO_SINGLE,
-        className
-      )}
-    >
-      {media.map((item) => (
-        <DemoFigure key={item.id} item={item} controlLabels={controlLabels} />
-      ))}
-    </div>
+    <MediaCarousel
+      fillSingle
+      className={className}
+      slides={media.map((item) => ({
+        id: item.id,
+        node: <DemoFigure item={item} controlLabels={controlLabels} />,
+      }))}
+    />
   );
 }

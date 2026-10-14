@@ -146,9 +146,17 @@ function stubReducedMotion(reduced: boolean) {
   });
 }
 
-/** The play observer watches the button; the lazy-load observer watches its wrapper. */
+/**
+ * The play observer watches the button; the lazy-load observer watches the clip's wrapper. The
+ * carousel's own observers (one per slide, a `group`) share the stub, so they are left out.
+ */
 const latest = (tag: string) =>
-  observers.filter((o) => o.target?.tagName === tag).at(-1);
+  observers
+    .filter(
+      (o) =>
+        o.target?.tagName === tag && o.target.getAttribute('role') !== 'group'
+    )
+    .at(-1);
 const visible = (isIntersecting = true) =>
   latest('BUTTON')?.report(isIntersecting);
 const nearClip = (isIntersecting = true) =>
@@ -187,7 +195,9 @@ const videoEl = () => {
 
 describe('FeaturedWorkDemo mounting', () => {
   it('draws the media at once, with no row to open', () => {
-    const { container } = render(<FeaturedWorkDemo media={[fp16, int8]} controlLabels={controlLabels} />);
+    const { container } = render(
+      <FeaturedWorkDemo media={[fp16, int8]} controlLabels={controlLabels} />
+    );
 
     expect(container.querySelector('video')).not.toBeNull();
     expect(container.querySelector('img')).not.toBeNull();
@@ -197,7 +207,9 @@ describe('FeaturedWorkDemo mounting', () => {
 
 describe('FeaturedWorkDemo figures', () => {
   it('renders a pair as two figures, each captioned with its label', () => {
-    const { container } = render(<FeaturedWorkDemo media={[fp16, int8]} controlLabels={controlLabels} />);
+    const { container } = render(
+      <FeaturedWorkDemo media={[fp16, int8]} controlLabels={controlLabels} />
+    );
 
     const figures = container.querySelectorAll('figure');
     expect(figures).toHaveLength(2);
@@ -206,7 +218,9 @@ describe('FeaturedWorkDemo figures', () => {
   });
 
   it('renders a single item as one figure', () => {
-    const { container } = render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
+    const { container } = render(
+      <FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />
+    );
 
     expect(container.querySelectorAll('figure')).toHaveLength(1);
   });
@@ -217,7 +231,9 @@ describe('FeaturedWorkDemo figures', () => {
       caption: null,
       name: 'Faster detector export',
     };
-    const { container } = render(<FeaturedWorkDemo media={[unlabelled]} controlLabels={controlLabels} />);
+    const { container } = render(
+      <FeaturedWorkDemo media={[unlabelled]} controlLabels={controlLabels} />
+    );
 
     expect(container.querySelector('figcaption')).toBeNull();
     expect(
@@ -323,7 +339,9 @@ describe('FeaturedWorkDemo video', () => {
   });
 
   it('keeps the frame but drops the button when the clip fails to load', () => {
-    const { container } = render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
+    const { container } = render(
+      <FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />
+    );
 
     act(() => {
       videoEl().dispatchEvent(new Event('error'));
@@ -376,11 +394,19 @@ describe('FeaturedWorkDemo frame', () => {
   const frame = (container: HTMLElement) =>
     container.querySelector<HTMLElement>('figure .aspect-video');
 
-  it('draws every clip in a 16:9 box, whatever the file\'s own ratio', () => {
-    const { container } = render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
+  it("draws every clip in a 16:9 box, whatever the file's own ratio", () => {
+    const { container } = render(
+      <FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />
+    );
     const video = videoEl();
-    Object.defineProperty(video, 'videoWidth', { configurable: true, value: 1920 });
-    Object.defineProperty(video, 'videoHeight', { configurable: true, value: 670 });
+    Object.defineProperty(video, 'videoWidth', {
+      configurable: true,
+      value: 1920,
+    });
+    Object.defineProperty(video, 'videoHeight', {
+      configurable: true,
+      value: 670,
+    });
     act(() => {
       video.dispatchEvent(new Event('loadedmetadata'));
     });
@@ -390,10 +416,18 @@ describe('FeaturedWorkDemo frame', () => {
   });
 
   it('draws an image in the same 16:9 box as a clip', () => {
-    const { container } = render(<FeaturedWorkDemo media={[int8]} controlLabels={controlLabels} />);
+    const { container } = render(
+      <FeaturedWorkDemo media={[int8]} controlLabels={controlLabels} />
+    );
     const image = screen.getByRole('img', { name: 'INT8' });
-    Object.defineProperty(image, 'naturalWidth', { configurable: true, value: 800 });
-    Object.defineProperty(image, 'naturalHeight', { configurable: true, value: 200 });
+    Object.defineProperty(image, 'naturalWidth', {
+      configurable: true,
+      value: 800,
+    });
+    Object.defineProperty(image, 'naturalHeight', {
+      configurable: true,
+      value: 200,
+    });
 
     fireEvent.load(image);
 
@@ -481,9 +515,7 @@ describe('FeaturedWorkDemo full screen', () => {
       this: HTMLElement
     ) {
       requested.push(this);
-      return refuse
-        ? Promise.reject(new Error('refused'))
-        : Promise.resolve();
+      return refuse ? Promise.reject(new Error('refused')) : Promise.resolve();
     };
   });
   afterEach(() => {
@@ -512,6 +544,68 @@ describe('FeaturedWorkDemo full screen', () => {
     fireEvent.click(fullscreenButton());
 
     expect(requested).toEqual([stage()]);
+  });
+
+  it('hides the full-screen button only where a mouse can hover, so a touch screen always sees it', () => {
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
+
+    const classes = fullscreenButton().className.split(' ');
+    expect(classes).toContain('can-hover:opacity-0');
+    expect(classes).toContain('can-hover:group-hover/stage:opacity-100');
+    expect(classes).toContain('can-hover:focus-visible:opacity-100');
+    expect(classes).toContain('can-hover:group-focus-within/stage:opacity-100');
+    // Not hidden for everyone: a bare `opacity-0` would take it away from a phone.
+    expect(classes).not.toContain('opacity-0');
+  });
+
+  /** A click that reports `at` as its time, so two taps can be placed apart exactly. */
+  const tap = (at: number) => {
+    const event = new MouseEvent('click', { bubbles: true, cancelable: true });
+    Object.defineProperty(event, 'timeStamp', { value: at });
+    act(() => {
+      clip().dispatchEvent(event);
+    });
+  };
+
+  it('takes the clip full screen on a double tap, and leaves it playing', () => {
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
+    visible(true);
+
+    tap(1000);
+    tap(1200);
+
+    expect(requested).toEqual([stage()]);
+    expect(
+      screen.getByRole('button', { name: 'Exit full screen' })
+    ).toBeTruthy();
+    expect(clip().getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('does not take a clip full screen on one tap, or on two taps far apart', () => {
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
+    visible(true);
+
+    tap(1000);
+    expect(requested).toEqual([]);
+    expect(clip().getAttribute('aria-pressed')).toBe('false');
+
+    tap(1400);
+    expect(requested).toEqual([]);
+    expect(clip().getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('does not leave a clip paused that was only tapped twice', () => {
+    render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
+    visible(true);
+    tap(1000);
+    tap(1200);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Exit full screen' }));
+    act(() => {
+      visible(true);
+    });
+
+    expect(clip().getAttribute('aria-pressed')).toBe('true');
   });
 
   it('shows the toolbar in place when the browser refuses element full screen', () => {

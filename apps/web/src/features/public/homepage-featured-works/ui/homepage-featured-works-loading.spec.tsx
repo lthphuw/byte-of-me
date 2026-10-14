@@ -17,7 +17,6 @@ import { FeaturedWorkItem } from '@/entities/featured-work/ui/featured-work-item
 import {
   WORK_HEAD,
   WORK_LINKS,
-  WORK_MEDIA_BLEED,
   WORK_ROW,
   WORK_TITLE,
 } from '@/entities/featured-work/ui/featured-work-row-classes';
@@ -27,6 +26,14 @@ afterEach(cleanup);
 const classesOf = (element: Element) =>
   element.className.split(/\s+/).filter(Boolean);
 
+/** The class lists of a demo's root, its viewport, its track and its first slide. */
+function carouselLevels(root: Element): string[][] {
+  const viewport = root.firstElementChild!;
+  const track = viewport.firstElementChild!;
+  const slide = track.firstElementChild!;
+  return [root, viewport, track, slide].map(classesOf);
+}
+
 describe('HomepageFeaturedWorksLoading', () => {
   it('draws each work with the classes of a real featured work', () => {
     const skeleton = render(<HomepageFeaturedWorksLoading />);
@@ -34,7 +41,8 @@ describe('HomepageFeaturedWorksLoading', () => {
     if (!skeletonRow) throw new Error('the skeleton renders no rows');
     const skeletonRowClasses = classesOf(skeletonRow);
     const skeletonHeadClasses = classesOf(skeletonRow.firstElementChild!);
-    const skeletonStripClasses = classesOf(skeletonRow.children[1]!);
+    // The demo, level by level: the carousel's root, its viewport, its track and a slide.
+    const skeletonLevels = carouselLevels(skeletonRow.children[1]!);
     skeleton.unmount();
 
     const real = render(
@@ -86,7 +94,7 @@ describe('HomepageFeaturedWorksLoading', () => {
     );
     const realRoot = real.container.firstElementChild!;
     const realHead = realRoot.firstElementChild!;
-    const realStrip = realRoot.children[1]!;
+    const realLevels = carouselLevels(realRoot.children[1]!);
 
     expect(
       skeletonRowClasses.filter((name) => !classesOf(realRoot).includes(name))
@@ -94,14 +102,14 @@ describe('HomepageFeaturedWorksLoading', () => {
     expect(
       skeletonHeadClasses.filter((name) => !classesOf(realHead).includes(name))
     ).toEqual([]);
-    expect(
-      skeletonStripClasses.filter(
-        (name) => !classesOf(realStrip).includes(name)
-      )
-    ).toEqual([]);
+    skeletonLevels.forEach((classes, level) => {
+      expect(
+        classes.filter((name) => !realLevels[level]?.includes(name))
+      ).toEqual([]);
+    });
   });
 
-  it('draws two works, each a head, a demo strip and a body, and no rule of its own', () => {
+  it('draws two works, each a head, a demo carousel and a body, and no rule of its own', () => {
     const { container } = render(<HomepageFeaturedWorksLoading />);
     // The works are the list under the heading; the proof-link rows are nested inside them.
     const rows = [...(container.querySelector('ul')?.children ?? [])];
@@ -113,9 +121,10 @@ describe('HomepageFeaturedWorksLoading', () => {
       );
       expect(row.children).toHaveLength(3);
       expect(row.children[0]?.className).toBe(WORK_HEAD);
-      expect(row.children[1]?.className).toContain(
-        WORK_MEDIA_BLEED.split(' ')[0]!
-      );
+      // A pair of slides, 85% wide on a phone so the next one peeks in.
+      const slides = row.children[1]?.querySelectorAll('.flex > div') ?? [];
+      expect(slides).toHaveLength(2);
+      expect(slides[0]?.className).toContain('basis-[85%]');
       expect(row.querySelector('.leading-relaxed')).toBeNull();
     }
   });
