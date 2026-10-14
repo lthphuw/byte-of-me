@@ -39,7 +39,7 @@ apps/web/src/features/
 | `contact-me` | public | Contact form, writes a contact message | entities: `contact-message`; shared: `@/shared/hooks/use-server-mutation`, `@/shared/lib/query/unwrap-api-response` | `apps/web/src/widgets/public/contact-content` |
 | `homepage-cta` | public | Contact call to action on the homepage | entities: none; shared: `@/shared/config/global`, `@/shared/i18n/navigation` | `apps/web/src/widgets/public/homepage-content` |
 | `homepage-education` | public | Education list on the homepage | entities: `education`; shared: `@/shared/ui` (`ContentFade`) | `apps/web/src/widgets/public/homepage-content` |
-| `homepage-featured-works` | public | Featured works on the homepage | entities: `featured-work`; shared: `@/shared/lib/utils`, `@/shared/ui` (`ContentFade`) | `apps/web/src/widgets/public/homepage-content` |
+| `homepage-featured-works` | public | Featured works on the homepage: each card with its proof links (PR repo, number, state, stars) | entities: `featured-work`; shared: `@/shared/lib/utils`, `@/shared/ui` (`ContentFade`) | `apps/web/src/widgets/public/homepage-content` |
 | `homepage-open-source` | public | Open-source contributions on the homepage | entities: `open-source`; shared: `@/shared/config/global`, `@/shared/i18n/navigation`, `@/shared/ui` (`ContentFade`) | `apps/web/src/widgets/public/homepage-content` |
 | `homepage-profile` | public | Hero profile, with empty and loading states | entities: `user-profile`; shared: `@/shared/config/global`, `@/shared/i18n/navigation` | `apps/web/src/widgets/public/homepage-content` |
 | `homepage-tech-stack` | public | Tech-stack badges on the homepage | entities: `tech-stack`; shared: `@/shared/ui` (`ContentFade`) | `apps/web/src/widgets/public/homepage-content` |

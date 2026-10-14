@@ -52,6 +52,7 @@ type ListArgs = {
   where: { userId: string };
   include: {
     translations: { select: Record<string, boolean>; orderBy: unknown };
+    _count: { select: Record<string, boolean> };
   };
 };
 
@@ -67,6 +68,13 @@ describe('getPaginatedAdminFeaturedWorks', () => {
       'title',
     ]);
     expect(args.include.translations.select.details).toBeUndefined();
+  });
+
+  it("counts each work's links, and never loads their urls for the list", async () => {
+    await getPaginatedAdminFeaturedWorks();
+
+    const args = findMany.mock.calls[0]?.[0] as ListArgs;
+    expect(args.include._count.select).toEqual({ links: true });
   });
 
   it('scopes the list to the signed-in owner', async () => {

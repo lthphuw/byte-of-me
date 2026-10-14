@@ -406,6 +406,7 @@ export const ModelName = {
   UserProfileTranslation: 'UserProfileTranslation',
   Education: 'Education',
   FeaturedWork: 'FeaturedWork',
+  FeaturedWorkLink: 'FeaturedWorkLink',
   FeaturedWorkTranslation: 'FeaturedWorkTranslation',
   FeaturedWorkMedia: 'FeaturedWorkMedia',
   EducationTranslation: 'EducationTranslation',
@@ -453,7 +454,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "featuredWork" | "featuredWorkTranslation" | "featuredWorkMedia" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "workspaceSettings"
+    modelProps: "account" | "session" | "verificationToken" | "user" | "socialLink" | "userProfile" | "userProfileTranslation" | "education" | "featuredWork" | "featuredWorkLink" | "featuredWorkTranslation" | "featuredWorkMedia" | "educationTranslation" | "educationAchievement" | "educationAchievementTranslation" | "achievementOnMedias" | "techStack" | "techStackOnProjects" | "techStackOnCompanies" | "company" | "companyTranslation" | "role" | "roleTranslation" | "task" | "taskTranslation" | "project" | "projectTranslation" | "projectOnProjectCoAuthor" | "coauthor" | "blog" | "blogTranslation" | "blogStatisticLog" | "tag" | "tagTranslation" | "blogTag" | "projectTag" | "media" | "interaction" | "comment" | "rateLimitHit" | "contactMessage" | "workspaceSettings"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1120,6 +1121,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.FeaturedWorkCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.FeaturedWorkCountAggregateOutputType> | number
+        }
+      }
+    }
+    FeaturedWorkLink: {
+      payload: Prisma.$FeaturedWorkLinkPayload<ExtArgs>
+      fields: Prisma.FeaturedWorkLinkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FeaturedWorkLinkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkLinkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FeaturedWorkLinkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkLinkPayload>
+        }
+        findFirst: {
+          args: Prisma.FeaturedWorkLinkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkLinkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FeaturedWorkLinkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkLinkPayload>
+        }
+        findMany: {
+          args: Prisma.FeaturedWorkLinkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkLinkPayload>[]
+        }
+        create: {
+          args: Prisma.FeaturedWorkLinkCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkLinkPayload>
+        }
+        createMany: {
+          args: Prisma.FeaturedWorkLinkCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FeaturedWorkLinkCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkLinkPayload>[]
+        }
+        delete: {
+          args: Prisma.FeaturedWorkLinkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkLinkPayload>
+        }
+        update: {
+          args: Prisma.FeaturedWorkLinkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkLinkPayload>
+        }
+        deleteMany: {
+          args: Prisma.FeaturedWorkLinkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FeaturedWorkLinkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FeaturedWorkLinkUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkLinkPayload>[]
+        }
+        upsert: {
+          args: Prisma.FeaturedWorkLinkUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturedWorkLinkPayload>
+        }
+        aggregate: {
+          args: Prisma.FeaturedWorkLinkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFeaturedWorkLink>
+        }
+        groupBy: {
+          args: Prisma.FeaturedWorkLinkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeaturedWorkLinkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FeaturedWorkLinkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeaturedWorkLinkCountAggregateOutputType> | number
         }
       }
     }
@@ -3645,11 +3720,23 @@ export const FeaturedWorkScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   sortOrder: 'sortOrder',
-  url: 'url',
   userId: 'userId'
 } as const
 
 export type FeaturedWorkScalarFieldEnum = (typeof FeaturedWorkScalarFieldEnum)[keyof typeof FeaturedWorkScalarFieldEnum]
+
+
+export const FeaturedWorkLinkScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  url: 'url',
+  label: 'label',
+  sortOrder: 'sortOrder',
+  featuredWorkId: 'featuredWorkId'
+} as const
+
+export type FeaturedWorkLinkScalarFieldEnum = (typeof FeaturedWorkLinkScalarFieldEnum)[keyof typeof FeaturedWorkLinkScalarFieldEnum]
 
 
 export const FeaturedWorkTranslationScalarFieldEnum = {
@@ -4333,6 +4420,7 @@ export type GlobalOmitConfig = {
   userProfileTranslation?: Prisma.UserProfileTranslationOmit
   education?: Prisma.EducationOmit
   featuredWork?: Prisma.FeaturedWorkOmit
+  featuredWorkLink?: Prisma.FeaturedWorkLinkOmit
   featuredWorkTranslation?: Prisma.FeaturedWorkTranslationOmit
   featuredWorkMedia?: Prisma.FeaturedWorkMediaOmit
   educationTranslation?: Prisma.EducationTranslationOmit

@@ -10,10 +10,15 @@ import {
   type FeaturedWorkGithubDeps,
   getFeaturedWorkGithub,
 } from '@/entities/featured-work/lib/get-featured-work-github';
+import { parseGithubPullRequestUrl } from '@/entities/featured-work/lib/parse-github-pull-request-url';
 import { safeLink } from '@/entities/featured-work/lib/safe-link';
-import { FEATURED_WORK_MEDIA_MAX } from '@/entities/featured-work/model/featured-work-schema';
+import {
+  FEATURED_WORK_LINKS_MAX,
+  FEATURED_WORK_MEDIA_MAX,
+} from '@/entities/featured-work/model/featured-work-schema';
 import type {
   PublicFeaturedWork,
+  PublicFeaturedWorkLink,
   PublicFeaturedWorkMedia,
 } from '@/entities/featured-work/model/types';
 import { ACCEPTED_VIDEO_MIME_TYPES } from '@/entities/media/model/upload-constraints';
@@ -27,10 +32,18 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 const MAX_WORKS = 6;
 
-type FeaturedWorkRow = Pick<
-  PublicFeaturedWork,
-  'id' | 'title' | 'detailsHtml' | 'url' | 'host' | 'media'
->;
+/** A link before GitHub is asked about it: `github` is added by the loader. */
+type LinkRow = Omit<PublicFeaturedWorkLink, 'github'>;
+
+type FeaturedWorkRow = Pick<PublicFeaturedWork, 'id' | 'title' | 'detailsHtml' | 'media'> & {
+  links: LinkRow[];
+};
+
+interface StoredLink {
+  id: string;
+  url: string;
+  label: string | null;
+}
 
 interface StoredDemoItem {
   label: string | null;
@@ -72,6 +85,29 @@ function toPublicMedia(items: StoredDemoItem[]): PublicFeaturedWorkMedia[] {
 }
 
 /**
+ * The proof links a visitor may be served, in the order stored. A link whose url is not
+ * http(s) is dropped on its own, and the list is capped, as the demo pair is.
+ */
+function toPublicLinks(stored: StoredLink[]): LinkRow[] {
+  return stored
+    .flatMap(({ id, url, label }) => {
+      const safe = safeLink(url);
+      if (safe.url === null || safe.host === null) return [];
+      const ref = parseGithubPullRequestUrl(safe.url);
+      return [
+        {
+          id,
+          url: safe.url,
+          label,
+          host: safe.host,
+          pr: ref ? { repo: `${ref.owner}/${ref.repo}`, number: ref.number } : null,
+        },
+      ];
+    })
+    .slice(0, FEATURED_WORK_LINKS_MAX);
+}
+
+/**
  * Sanitized HTML of one row's details, or null. Runs inside the cached handler,
  * so a cache hit skips TipTap and the sanitizer. Only a `doc` that renders is a
  * body: anything else shows no details, and the stored JSON is never printed.
@@ -86,7 +122,8 @@ function toDetailsHtml(details: string | null): string | null {
 export function toRows(
   works: Array<{
     id: string;
-    url: string | null;
+    /** In position order (the query sorts them). */
+    links: StoredLink[];
     /** In slot order (the query sorts them). */
     media: StoredDemoItem[];
     translations: Array<{
@@ -108,7 +145,7 @@ export function toRows(
         title: translation.title,
         // Row-level: the body comes from the translation the title came from.
         detailsHtml: toDetailsHtml(translation.details),
-        ...safeLink(work.url),
+        links: toPublicLinks(work.links),
         media: toPublicMedia(work.media),
       },
     ];
@@ -128,7 +165,10 @@ async function getPublicFeaturedWorkRows(): Promise<
           take: MAX_WORKS,
           select: {
             id: true,
-            url: true,
+            links: {
+              orderBy: { sortOrder: 'asc' },
+              select: { id: true, url: true, label: true },
+            },
             media: {
               orderBy: { sortOrder: 'asc' },
               select: {
@@ -165,7 +205,8 @@ async function getPublicFeaturedWorkRows(): Promise<
         // cached before the first clip was attached, which a tag revalidation served stale.
         // v5: the demo items carry each file's pixel size, which v4 rows lack.
         // v6: no is_published filter any more, so v5 rows would hide the drafts that now show.
-        cacheKey: ['featured-works-rows-v6'],
+        // v7: a work's single `url` became `links`, so v6 rows carry no links at all.
+        cacheKey: ['featured-works-rows-v7'],
         cacheTags: [CACHE_TAGS.FEATURED_WORK],
       }
     );
@@ -184,7 +225,7 @@ export async function loadPublicFeaturedWorks(
 
   const { rows } = rowsResp.data;
   const github = await getFeaturedWorkGithub(
-    rows.flatMap((row) => (row.url ? [row.url] : [])),
+    rows.flatMap((row) => row.links.map((link) => link.url)),
     deps
   );
 
@@ -193,7 +234,10 @@ export async function loadPublicFeaturedWorks(
     data: {
       works: rows.map((row) => ({
         ...row,
-        github: row.url ? github[row.url] ?? null : null,
+        links: row.links.map((link) => ({
+          ...link,
+          github: github[link.url] ?? null,
+        })),
       })),
     },
   };

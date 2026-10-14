@@ -11,7 +11,6 @@ import { createFeaturedWork } from '@/entities/featured-work/api/create-featured
 import { deleteFeaturedWork } from '@/entities/featured-work/api/delete-featured-work';
 import { getPaginatedAdminFeaturedWorks } from '@/entities/featured-work/api/get-paginated-admin-featured-works';
 import { updateFeaturedWork } from '@/entities/featured-work/api/update-featured-work';
-import { safeLink } from '@/entities/featured-work/lib/safe-link';
 import {
   type AdminFeaturedWork,
   type FeaturedWorkFormValues,
@@ -180,7 +179,6 @@ export function FeaturedWorkManager() {
           <ol role="list" className="grid gap-4">
             {works.map((work, index) => {
               const title = titleOf(work);
-              const { host } = safeLink(work.url);
               const position = firstPosition + index;
 
               return (
@@ -244,11 +242,9 @@ export function FeaturedWorkManager() {
                     <h4 className="truncate font-semibold leading-none">
                       {title}
                     </h4>
-                    {host && (
-                      <p className="truncate pt-1 text-xs text-muted-foreground">
-                        {host}
-                      </p>
-                    )}
+                    <p className="truncate pt-1 text-xs text-muted-foreground">
+                      {t('linkCount', { count: work._count.links })}
+                    </p>
                   </RecordListItem>
                 </li>
               );

@@ -36,6 +36,7 @@ const DETAILS_EN = JSON.stringify({
 type Row = {
   id: string;
   userId: string;
+  links: Array<{ id: string; url: string; label: string | null; sortOrder: number }>;
   media: Array<{
     sortOrder: number;
     label: string | null;
@@ -53,6 +54,15 @@ const ROWS: Row[] = [
   {
     id: 'fw-owned',
     userId: 'admin-1',
+    links: [
+      {
+        id: 'l1',
+        url: 'https://github.com/roboflow/rf-detr/pull/512',
+        label: 'INT8',
+        sortOrder: 0,
+      },
+      { id: 'l2', url: 'https://example.com/post', label: null, sortOrder: 1 },
+    ],
     media: [
       {
         sortOrder: 0,
@@ -91,6 +101,7 @@ const ROWS: Row[] = [
   {
     id: 'fw-other',
     userId: 'someone-else',
+    links: [],
     media: [],
     translations: [
       {
@@ -184,6 +195,30 @@ describe('getAdminFeaturedWorkById', () => {
       include: { media: { orderBy: unknown } };
     };
     expect(args.include.media.orderBy).toEqual({ sortOrder: 'asc' });
+  });
+
+  it('returns the links in position order, with their url, label and position', async () => {
+    const res = await getAdminFeaturedWorkById('fw-owned');
+
+    if (!res.success) throw new Error('expected success');
+    expect(res.data.links).toEqual([
+      {
+        id: 'l1',
+        url: 'https://github.com/roboflow/rf-detr/pull/512',
+        label: 'INT8',
+        sortOrder: 0,
+      },
+      { id: 'l2', url: 'https://example.com/post', label: null, sortOrder: 1 },
+    ]);
+  });
+
+  it('asks for the links in position order', async () => {
+    await getAdminFeaturedWorkById('fw-owned');
+
+    const args = findFirst.mock.calls[0]?.[0] as unknown as {
+      include: { links: { orderBy: unknown } };
+    };
+    expect(args.include.links.orderBy).toEqual({ sortOrder: 'asc' });
   });
 
   it('is not found when the id belongs to another owner', async () => {

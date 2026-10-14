@@ -45,9 +45,10 @@ Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`).
 | `EducationAchievementTranslation` (`education_achievement_translations`) | `language`, `title`, `content` | `(educationAchievementId, language)` | → EducationAchievement (cascade) | parent: EducationAchievement |
 | `AchievementOnMedias` (`achievement_medias`) | join; timestamps only | `(educationAchievementId, mediaId)`; no `id` | → EducationAchievement, → Media (cascade) | — |
 | **Featured works** | | | | |
-| `FeaturedWork` (`featured_works`) | `sortOrder`, `url` (proof link) | index `(userId, sortOrder)` | user → User (cascade) | `FeaturedWorkTranslation` |
+| `FeaturedWork` (`featured_works`) | `sortOrder` | index `(userId, sortOrder)` | user → User (cascade) | `FeaturedWorkTranslation`, `FeaturedWorkMedia`, `FeaturedWorkLink` |
 | `FeaturedWorkTranslation` (`featured_work_translations`) | `language`, `title`, `details` (TipTap JSON string) | `(featuredWorkId, language)` | → FeaturedWork (cascade) | parent: FeaturedWork |
 | `FeaturedWorkMedia` (`featured_work_media`) | `sortOrder` (slot 0 or 1), `label` | `(featuredWorkId, mediaId)`; `(featuredWorkId, sortOrder)`; no `id` | → FeaturedWork, → Media (cascade) | — |
+| `FeaturedWorkLink` (`featured_work_links`) | `url`, `label` (language-neutral tag, nullable), `sortOrder` (0 to 5, CHECK) | `(featuredWorkId, sortOrder)` unique | → FeaturedWork (cascade) | parent: FeaturedWork. Up to six proof links per work; a PR's own title is the fallback label |
 | **Work experience** | | | | |
 | `Company` (`companies`) | `company`, `location`, `startDate`, `endDate` | — | user → User (cascade); logo → Media (setNull) | `CompanyTranslation` |
 | `CompanyTranslation` (`company_translations`) | `language`, `description` | `(companyId, language)` | → Company (cascade) | parent: Company |
@@ -90,6 +91,8 @@ Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`).
 | 3 (Oct 10) | Featured works: base, details, demo media |
 | 1 (Oct 10) | `media.width`, `media.height`: nullable, additive; applied to production 2026-10-10 by `prisma migrate deploy`, 25 existing rows left NULL until backfilled |
 | 1 (Oct 13) | Featured works: drop `is_published` and `featured_work_translations.description`. Destructive, the only migration here that is not additive; applied to production by hand, not by `migrate dev` |
+| 1 (Oct 14) | Featured works: `featured_work_links` (additive) plus a backfill of each non-empty `featured_works.url` to one link at position 0. Step 1 of 2; NOT yet applied to production |
+| 1 (Oct 14) | Featured works: drop `featured_works.url`. Destructive. Step 2 of 2: apply only after the code that reads `featured_work_links` is live. A guard refuses the drop while a stored url has no link row |
 
 ## Key flows
 

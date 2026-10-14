@@ -4,6 +4,7 @@ import { type FeaturedWork, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
+import { toLinkRows } from '@/entities/featured-work/lib/featured-work-links';
 import {
   ownsAllMedia,
   toMediaRows,
@@ -50,7 +51,6 @@ export async function createFeaturedWork(
     const featuredWork = await prisma.featuredWork.create({
       data: {
         sortOrder: (_max.sortOrder ?? -1) + 1,
-        url: values.url || null,
 
         user: { connect: { id: user.id } },
 
@@ -63,6 +63,7 @@ export async function createFeaturedWork(
         },
 
         media: { create: toMediaRows(media) },
+        links: { create: toLinkRows(values.links ?? []) },
       },
     });
 

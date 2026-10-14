@@ -27,12 +27,12 @@ describe('fetchFeaturedWorkGithub', () => {
         pr0: {
           nameWithOwner: 'roboflow/rf-detr',
           stargazerCount: 4200,
-          pullRequest: { number: 512 },
+          pullRequest: { number: 512, title: 'Export INT8', state: 'MERGED' },
         },
         pr1: {
           nameWithOwner: 'a/b',
           stargazerCount: 3,
-          pullRequest: { number: 7 },
+          pullRequest: { number: 7, title: 'Keypoints', state: 'OPEN' },
         },
       },
     });
@@ -40,8 +40,8 @@ describe('fetchFeaturedWorkGithub', () => {
     const out = await fetchFeaturedWorkGithub(refs, 'secret', fetchImpl);
 
     expect(out).toEqual([
-      { repo: 'roboflow/rf-detr', stars: 4200 },
-      { repo: 'a/b', stars: 3 },
+      { repo: 'roboflow/rf-detr', stars: 4200, title: 'Export INT8', state: 'MERGED' },
+      { repo: 'a/b', stars: 3, title: 'Keypoints', state: 'OPEN' },
     ]);
     const [url, init] = (fetchImpl as unknown as ReturnType<typeof mock>).mock
       .calls[0] as [string, RequestInit];
@@ -61,7 +61,7 @@ describe('fetchFeaturedWorkGithub', () => {
         pr0: {
           nameWithOwner: 'roboflow/rf-detr',
           stargazerCount: 10,
-          pullRequest: { number: 512 },
+          pullRequest: { number: 512, title: 'Export INT8', state: 'OPEN' },
         },
         pr1: null,
       },
@@ -71,7 +71,12 @@ describe('fetchFeaturedWorkGithub', () => {
     });
 
     expect(await fetchFeaturedWorkGithub(refs, 'token', fetchImpl)).toEqual([
-      { repo: 'roboflow/rf-detr', stars: 10 },
+      {
+        repo: 'roboflow/rf-detr',
+        stars: 10,
+        title: 'Export INT8',
+        state: 'OPEN',
+      },
       null,
     ]);
   });

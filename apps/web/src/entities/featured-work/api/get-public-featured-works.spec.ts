@@ -27,7 +27,12 @@ Object.defineProperty(prisma, 'featuredWork', {
 });
 
 const PR_URL = 'https://github.com/roboflow/rf-detr/pull/512';
-const GITHUB: FeaturedWorkGithub = { repo: 'roboflow/rf-detr', stars: 4200 };
+const GITHUB: FeaturedWorkGithub = {
+  repo: 'roboflow/rf-detr',
+  stars: 4200,
+  title: 'Export INT8',
+  state: 'MERGED',
+};
 
 const DETAILS_EN = doc('How it was done.');
 const DETAILS_VI = doc('Cách làm.');
@@ -40,11 +45,19 @@ function doc(text: string): string {
   });
 }
 
-function row(id: string, url: string | null = null, title = `Work ${id}`) {
+/** A stored work; `url` becomes its one link, `links` a list of them. */
+function row(
+  id: string,
+  url: string | null = null,
+  title = `Work ${id}`,
+  links: Array<{ id: string; url: string; label: string | null }> = url
+    ? [{ id: `${id}-l0`, url, label: null }]
+    : []
+) {
   return {
     id,
-    url,
     media: [],
+    links,
     translations: [{ language: 'en', title, details: null }],
   };
 }
@@ -77,8 +90,7 @@ describe('toRows', () => {
         id: 'a',
         title: 'Work a',
         detailsHtml: null,
-        url: null,
-        host: null,
+        links: [],
         media: [],
       },
     ]);
@@ -89,7 +101,7 @@ describe('toRows', () => {
       [
         {
           id: 'a',
-          url: null,
+          links: [],
           media: [],
           translations: [
             {
@@ -114,7 +126,7 @@ describe('toRows', () => {
   it('skips a work with no translations or an empty title instead of throwing', () => {
     const rows = toRows(
       [
-        { id: 'none', url: null, media: [], translations: [] },
+        { id: 'none', links: [], media: [], translations: [] },
         row('blank', null, ''),
         row('ok'),
       ],
@@ -129,7 +141,7 @@ describe('toRows', () => {
       [
         {
           id: 'a',
-          url: null,
+          links: [],
           media: [],
           translations: [
             {
@@ -152,24 +164,75 @@ describe('toRows', () => {
   });
 });
 
-describe('toRows url handling', () => {
+describe('toRows links', () => {
   it.each([
     ['a javascript: url', 'javascript:alert(1)'],
     ['a data: url', 'data:text/html,x'],
     ['text that is not a url', 'not a url'],
-  ])('keeps the work but drops %s and its host', (_label, url) => {
+  ])('keeps the work but drops a link with %s and its host', (_label, url) => {
     const rows = toRows([row('a', url)], 'en');
 
     expect(rows).toHaveLength(1);
-    expect(rows[0]?.url).toBeNull();
-    expect(rows[0]?.host).toBeNull();
+    expect(rows[0]?.links).toEqual([]);
   });
 
-  it('keeps an https url and strips a leading www from its host', () => {
+  it('keeps an https link and strips a leading www from its host', () => {
     const rows = toRows([row('a', 'https://www.example.com/x')], 'en');
 
-    expect(rows[0]?.url).toBe('https://www.example.com/x');
-    expect(rows[0]?.host).toBe('example.com');
+    expect(rows[0]?.links).toEqual([
+      {
+        id: 'a-l0',
+        url: 'https://www.example.com/x',
+        label: null,
+        host: 'example.com',
+        pr: null,
+      },
+    ]);
+  });
+
+  it('reads the repo and number from a pull request link', () => {
+    const rows = toRows([row('a', PR_URL)], 'en');
+
+    expect(rows[0]?.links[0]?.pr).toEqual({
+      repo: 'roboflow/rf-detr',
+      number: 512,
+    });
+  });
+
+  it('keeps the links in the order given and drops a bad one alone', () => {
+    const rows = toRows(
+      [
+        row('a', null, 'Work a', [
+          { id: 'l0', url: PR_URL, label: 'INT8' },
+          { id: 'l1', url: 'javascript:alert(1)', label: null },
+          { id: 'l2', url: 'https://example.com/post', label: null },
+        ]),
+      ],
+      'en'
+    );
+
+    expect(rows[0]?.links.map((link) => [link.id, link.label])).toEqual([
+      ['l0', 'INT8'],
+      ['l2', null],
+    ]);
+  });
+
+  it('serves no more than six links to a visitor', () => {
+    const links = Array.from({ length: 7 }, (_, i) => ({
+      id: `l${i}`,
+      url: `https://example.com/${i}`,
+      label: null,
+    }));
+    const rows = toRows([row('a', null, 'Work a', links)], 'en');
+
+    expect(rows[0]?.links.map((link) => link.id)).toEqual([
+      'l0',
+      'l1',
+      'l2',
+      'l3',
+      'l4',
+      'l5',
+    ]);
   });
 });
 
@@ -184,7 +247,7 @@ describe('details body', () => {
   const work = (
     translations: ReturnType<typeof translation>[]
   ): Parameters<typeof toRows>[0] => [
-    { id: 'a', url: null, media: [], translations },
+    { id: 'a', links: [], media: [], translations },
   ];
 
   it('renders the stored body to sanitized HTML, not the stored JSON', () => {
@@ -271,7 +334,7 @@ describe('details body', () => {
     findMany.mockReset().mockResolvedValue([
       {
         id: 'a',
-        url: null,
+        links: [],
         media: [],
         translations: [translation('en', DETAILS_EN)],
       },
@@ -446,6 +509,16 @@ describe('loadPublicFeaturedWorks', () => {
     findMany.mockReset().mockResolvedValue([]);
   });
 
+  it("selects each work's links in position order", async () => {
+    findMany.mockResolvedValue([row('a', PR_URL)]);
+
+    await works(makeDeps().deps);
+
+    const args = findMany.mock.calls[0]?.[0];
+    expect(args.select.links.orderBy).toEqual({ sortOrder: 'asc' });
+    expect(args.select.links.select).toEqual({ id: true, url: true, label: true });
+  });
+
   it('selects every work, ordered and capped at six', async () => {
     findMany.mockResolvedValue(
       Array.from({ length: 6 }, (_, i) => row(`w${i}`))
@@ -482,39 +555,62 @@ describe('loadPublicFeaturedWorks', () => {
         id: 'a',
         title: 'Work a',
         detailsHtml: null,
-        url: PR_URL,
-        host: 'github.com',
-        github: null,
         media: [],
+        links: [
+          {
+            id: 'a-l0',
+            url: PR_URL,
+            label: null,
+            host: 'github.com',
+            pr: { repo: 'roboflow/rf-detr', number: 512 },
+            github: null,
+          },
+        ],
       },
     ]);
     expect(fetchGithub).not.toHaveBeenCalled();
     warn.mockRestore();
   });
 
-  it('attaches GitHub facts to the pull-request row only, and a host to every linked row', async () => {
+  it('attaches GitHub facts to each pull-request link by its own url, and a host to every link', async () => {
     findMany.mockResolvedValue([
-      row('pr', PR_URL),
-      row('blog', 'https://www.example.com/post'),
-      row('bare'),
+      row('a', null, 'Work a', [
+        { id: 'pr', url: PR_URL, label: 'INT8' },
+        { id: 'pr2', url: 'https://github.com/a/b/pull/7', label: null },
+        { id: 'blog', url: 'https://www.example.com/post', label: null },
+      ]),
     ]);
-    const { deps, fetchGithub } = makeDeps();
+    const fetchGithub = mock(async (refs: GithubPullRequestRef[], _token: string) =>
+      refs.map((ref) =>
+        ref.repo === 'rf-detr'
+          ? GITHUB
+          : { repo: 'a/b', stars: 3, title: 'Keypoints', state: 'OPEN' }
+      )
+    );
+    const { deps } = makeDeps({
+      fetchGithub:
+        fetchGithub as unknown as FeaturedWorkGithubDeps['fetchGithub'],
+    });
 
-    const result = await works(deps);
+    const [work] = await works(deps);
 
     expect(fetchGithub).toHaveBeenCalledTimes(1);
+    // Asked for in url order, the way the GitHub cache keys them.
     expect(fetchGithub.mock.calls[0]).toEqual([
-      [{ owner: 'roboflow', repo: 'rf-detr', number: 512 }],
+      [
+        { owner: 'a', repo: 'b', number: 7 },
+        { owner: 'roboflow', repo: 'rf-detr', number: 512 },
+      ],
       'token',
     ]);
-    expect(result.map((w) => [w.id, w.host, w.github])).toEqual([
+    expect(work?.links.map((link) => [link.id, link.host, link.github])).toEqual([
       ['pr', 'github.com', GITHUB],
+      ['pr2', 'github.com', { repo: 'a/b', stars: 3, title: 'Keypoints', state: 'OPEN' }],
       ['blog', 'example.com', null],
-      ['bare', null, null],
     ]);
   });
 
-  it('does not call GitHub when no row links a pull request', async () => {
+  it('does not call GitHub when no link is a pull request', async () => {
     findMany.mockResolvedValue([row('blog', 'https://example.com/post')]);
     const { deps, fetchGithub } = makeDeps();
 
@@ -536,8 +632,8 @@ describe('loadPublicFeaturedWorks', () => {
     const result = await works(deps);
 
     expect(result).toHaveLength(1);
-    expect(result[0]?.github).toBeNull();
-    expect(result[0]?.host).toBe('github.com');
+    expect(result[0]?.links[0]?.github).toBeNull();
+    expect(result[0]?.links[0]?.host).toBe('github.com');
     warn.mockRestore();
     error.mockRestore();
   });

@@ -24,6 +24,11 @@ describe('buildPullRequestQuery', () => {
     expect(query).toContain('pr0: repository(');
     expect(query).toContain('pr1: repository(');
   });
+
+  it('asks for the title and state of each pull request', () => {
+    const { query } = buildPullRequestQuery([refs[0]]);
+    expect(query).toContain('pullRequest(number: $p0) { number title state }');
+  });
 });
 
 describe('mapPullRequestResponse', () => {
@@ -32,17 +37,17 @@ describe('mapPullRequestResponse', () => {
       pr0: {
         nameWithOwner: 'roboflow/rf-detr',
         stargazerCount: 4200,
-        pullRequest: { number: 512 },
+        pullRequest: { number: 512, title: 'Export INT8', state: 'MERGED' },
       },
       pr1: {
         nameWithOwner: 'a/b',
         stargazerCount: 3,
-        pullRequest: { number: 7 },
+        pullRequest: { number: 7, title: 'Keypoints', state: 'OPEN' },
       },
     });
     expect(out).toEqual([
-      { repo: 'roboflow/rf-detr', stars: 4200 },
-      { repo: 'a/b', stars: 3 },
+      { repo: 'roboflow/rf-detr', stars: 4200, title: 'Export INT8', state: 'MERGED' },
+      { repo: 'a/b', stars: 3, title: 'Keypoints', state: 'OPEN' },
     ]);
   });
 
@@ -57,10 +62,13 @@ describe('mapPullRequestResponse', () => {
       pr1: {
         nameWithOwner: 'a/b',
         stargazerCount: 3,
-        pullRequest: { number: 512 },
+        pullRequest: { number: 512, title: 'Keypoints', state: 'CLOSED' },
       },
     });
-    expect(mixed).toEqual([null, { repo: 'a/b', stars: 3 }]);
+    expect(mixed).toEqual([
+      null,
+      { repo: 'a/b', stars: 3, title: 'Keypoints', state: 'CLOSED' },
+    ]);
   });
 
   it('returns an empty list for no refs', () => {

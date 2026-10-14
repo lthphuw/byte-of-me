@@ -2,6 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import {
   FEATURED_WORK_DETAILS_MAX_LENGTH,
+  FEATURED_WORK_LINKS_MAX,
   featuredWorkSchema,
 } from './featured-work-schema';
 
@@ -21,28 +22,8 @@ const base = {
 };
 
 describe('featuredWorkSchema', () => {
-  it('accepts an http(s) url, an empty url and no url', () => {
-    for (const url of [
-      'https://github.com/a/b/pull/1',
-      'http://example.com',
-      '',
-      null,
-      undefined,
-    ]) {
-      expect(featuredWorkSchema.safeParse({ ...base, url }).success).toBe(true);
-    }
-  });
-
-  it('rejects non-http(s) urls', () => {
-    for (const url of [
-      'javascript:alert(1)',
-      'ftp://x.y/z',
-      'github.com/a/b',
-    ]) {
-      expect(featuredWorkSchema.safeParse({ ...base, url }).success).toBe(
-        false
-      );
-    }
+  it('needs no link: the links key may be omitted', () => {
+    expect(featuredWorkSchema.safeParse(base).success).toBe(true);
   });
 
   it('requires a title in every translation', () => {
@@ -189,5 +170,55 @@ describe('featuredWorkSchema media', () => {
     const twice = parse([{ mediaId: 'a' }, { mediaId: 'a' }]);
     expect(twice.success).toBe(false);
     expect(twice.error?.issues[0]?.message).toBe('validation.duplicateMedia');
+  });
+});
+
+describe('featuredWorkSchema links', () => {
+  const parse = (links: unknown) =>
+    featuredWorkSchema.safeParse({ ...base, links });
+  const PR = 'https://github.com/roboflow/rf-detr/pull/512';
+
+  it('is optional: omitted stays undefined, [] stays empty', () => {
+    expect(featuredWorkSchema.parse(base).links).toBeUndefined();
+    expect(parse([]).data?.links).toEqual([]);
+  });
+
+  it('accepts an http(s) url and trims the label, turning blank into null', () => {
+    expect(
+      parse([
+        { url: PR, label: '  INT8  ' },
+        { url: 'http://example.com/post', label: '  ' },
+      ]).data?.links
+    ).toEqual([
+      { url: PR, label: 'INT8' },
+      { url: 'http://example.com/post', label: null },
+    ]);
+  });
+
+  it('refuses a link that is blank or not http(s)', () => {
+    for (const url of ['', '   ', 'javascript:alert(1)', 'ftp://x.y/z', 'github.com/a/b']) {
+      expect(parse([{ url }]).success).toBe(false);
+    }
+  });
+
+  it('refuses the same url twice in one work, with a clean message', () => {
+    const result = parse([{ url: PR }, { url: PR }]);
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0]?.message).toBe('validation.duplicateLink');
+  });
+
+  it('allows six links and refuses a seventh', () => {
+    const six = Array.from({ length: FEATURED_WORK_LINKS_MAX }, (_, i) => ({
+      url: `${PR}/files#${i}`,
+    }));
+    expect(parse(six).success).toBe(true);
+    const seven = parse([...six, { url: 'https://example.com/7' }]);
+    expect(seven.success).toBe(false);
+    expect(seven.error?.issues[0]?.message).toBe('validation.tooManyItems');
+  });
+
+  it('allows a 24-character label and refuses 25', () => {
+    expect(parse([{ url: PR, label: 'x'.repeat(24) }]).success).toBe(true);
+    expect(parse([{ url: PR, label: 'x'.repeat(25) }]).success).toBe(false);
   });
 });

@@ -65,9 +65,9 @@ function work(
     createdAt: NOW,
     updatedAt: NOW,
     sortOrder,
-    url: null,
     userId: 'admin-1',
     translations,
+    _count: { links: 0 },
     ...extra,
   };
 }
@@ -79,9 +79,7 @@ const tr = (language: string, title: string) => ({
 });
 
 const rows = [
-  work('w1', 0, [tr('en', 'Faster export')], {
-    url: 'https://www.github.com/a/b/pull/1',
-  }),
+  work('w1', 0, [tr('en', 'Faster export')], { _count: { links: 2 } }),
   work('w2', 1, [tr('en', 'Quantized model'), tr('vi', 'Mô hình lượng tử')]),
   work('w3', 2, [tr('en', 'Release notes')]),
 ];
@@ -106,6 +104,8 @@ const txUpdate = mock<(args: unknown) => Promise<Row>>();
 const txMediaCount = mock<(args: unknown) => Promise<number>>();
 const txMediaDeleteMany = mock<(args: unknown) => Promise<Row>>();
 const txMediaCreateMany = mock<(args: unknown) => Promise<Row>>();
+const txLinkDeleteMany = mock<(args: unknown) => Promise<Row>>();
+const txLinkCreateMany = mock<(args: unknown) => Promise<Row>>();
 
 const mediaCount = mock<(args: unknown) => Promise<number>>();
 
@@ -136,6 +136,10 @@ Object.defineProperty(prisma, '$transaction', {
       featuredWorkMedia: {
         deleteMany: txMediaDeleteMany,
         createMany: txMediaCreateMany,
+      },
+      featuredWorkLink: {
+        deleteMany: txLinkDeleteMany,
+        createMany: txLinkCreateMany,
       },
     }),
   writable: true,
@@ -218,11 +222,13 @@ const demoRow = (
 function detailOf(
   list: AdminFeaturedWork,
   bodies: Record<string, string> = {},
-  demo: ReturnType<typeof demoRow>[] = []
+  demo: ReturnType<typeof demoRow>[] = [],
+  links: Array<{ id: string; url: string; label: string | null; sortOrder: number }> = []
 ) {
   return {
     ...list,
     media: demo,
+    links,
     translations: list.translations.map((t) => ({
       id: t.id,
       language: t.language,
@@ -283,6 +289,8 @@ beforeEach(() => {
     .mockReset()
     .mockResolvedValue(rows.map(({ id, sortOrder }) => ({ id, sortOrder })));
   txUpdate.mockReset().mockResolvedValue({});
+  txLinkDeleteMany.mockReset().mockResolvedValue({ count: 0 });
+  txLinkCreateMany.mockReset().mockResolvedValue({ count: 0 });
   txMediaCount.mockReset().mockImplementation(async (args) => {
     const { where } = args as { where: { id: { in: string[] } } };
     return where.id.in.length;
@@ -321,7 +329,8 @@ describe('FeaturedWorkManager list', () => {
     renderManager();
 
     expect(screen.getByText('Faster export')).toBeTruthy();
-    expect(screen.getByText('github.com')).toBeTruthy();
+    expect(screen.getByText('2 links')).toBeTruthy();
+    expect(screen.getAllByText('No links')).toHaveLength(2);
     expect(screen.getByText('3')).toBeTruthy();
     expect(findMany).not.toHaveBeenCalled();
   });
@@ -826,6 +835,136 @@ describe('FeaturedWorkManager edit loads the full row', () => {
   });
 });
 
+/**
+ * The form releases Save one commit AFTER the clip's slot renders: the slot
+ * (and its label) appears when the upload lands, but the manager learns the
+ * upload is over from an effect, which re-renders the button later. A click
+ * on a still-disabled button is dropped, so wait for Save to be live (the
+ * signal that the upload is fully over) instead of racing it off the label.
+ */
+const save = async () => {
+  await waitFor(() => expect(button('Save').disabled).toBe(false));
+  fireEvent.click(button('Save'));
+  await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
+};
+
+describe('FeaturedWorkManager links', () => {
+  const PR_1 = 'https://github.com/roboflow/rf-detr/pull/512';
+  const PR_2 = 'https://github.com/a/b/pull/7';
+  const LINK_1 = { id: 'l1', url: PR_1, label: 'INT8', sortOrder: 0 };
+  const LINK_2 = { id: 'l2', url: PR_2, label: null, sortOrder: 1 };
+
+  /** The join rows the last update wrote, or null when it wrote none. */
+  const savedLinks = () =>
+    (txLinkCreateMany.mock.calls[0]?.[0] as { data: Row[] } | undefined)
+      ?.data ?? null;
+  const urlInputs = () =>
+    screen.queryAllByLabelText('URL') as HTMLInputElement[];
+  const labelInputs = () =>
+    screen.queryAllByLabelText('Label') as HTMLInputElement[];
+
+  const openWork = async (
+    links: Array<{ id: string; url: string; label: string | null; sortOrder: number }>
+  ) => {
+    findFirst.mockResolvedValue(
+      detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }, [], links)
+    );
+    renderManager();
+    openEdit('Faster export');
+    await formLoaded();
+  };
+
+  const clickSave = async () => {
+    await waitFor(() => expect(button('Save').disabled).toBe(false));
+    fireEvent.click(button('Save'));
+  };
+
+  it('shows each stored link in order, with its url and its label', async () => {
+    await openWork([LINK_1, LINK_2]);
+
+    expect(urlInputs().map((input) => input.value)).toEqual([PR_1, PR_2]);
+    expect(labelInputs().map((input) => input.value)).toEqual(['INT8', '']);
+  });
+
+  it('adds a row for each new link, and stops at six', async () => {
+    await openWork([]);
+
+    for (let i = 0; i < 6; i += 1) fireEvent.click(button('Add link'));
+
+    expect(urlInputs()).toHaveLength(6);
+    expect(button('Add link').disabled).toBe(true);
+  });
+
+  it('removes a link and keeps the others in order', async () => {
+    await openWork([LINK_1, LINK_2]);
+
+    fireEvent.click(button('Remove link 1'));
+
+    expect(urlInputs().map((input) => input.value)).toEqual([PR_2]);
+  });
+
+  it('moves a link up together with its own label', async () => {
+    await openWork([LINK_1, LINK_2]);
+
+    fireEvent.click(button('Move link 2 up'));
+
+    expect(urlInputs().map((input) => input.value)).toEqual([PR_2, PR_1]);
+    expect(labelInputs().map((input) => input.value)).toEqual(['', 'INT8']);
+  });
+
+  it('submits the links in the order shown, with each label trimmed', async () => {
+    await openWork([LINK_1, LINK_2]);
+    fireEvent.change(labelInputs()[1]!, { target: { value: '  Keypoints  ' } });
+    fireEvent.click(button('Move link 2 up'));
+
+    await clickSave();
+    await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
+
+    expect(savedLinks()).toEqual([
+      { featuredWorkId: 'w1', url: PR_2, label: 'Keypoints', sortOrder: 0 },
+      { featuredWorkId: 'w1', url: PR_1, label: 'INT8', sortOrder: 1 },
+    ]);
+  });
+
+  it('sends the link list even when it is empty, so stored links are cleared, not kept', async () => {
+    await openWork([LINK_1]);
+    fireEvent.click(button('Remove link 1'));
+
+    await clickSave();
+    await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
+
+    expect(txLinkDeleteMany).toHaveBeenCalledTimes(1);
+    expect(savedLinks()).toBeNull();
+  });
+
+  it('holds Save and names the link that is not http(s)', async () => {
+    await openWork([LINK_1]);
+    fireEvent.change(urlInputs()[0]!, {
+      target: { value: 'javascript:alert(1)' },
+    });
+
+    await clickSave();
+
+    await waitFor(() =>
+      expect(screen.getByText('Enter a valid URL')).toBeTruthy()
+    );
+    expect(txUpdate).not.toHaveBeenCalled();
+  });
+
+  it('holds Save and says so when the same link is listed twice', async () => {
+    await openWork([LINK_1]);
+    fireEvent.click(button('Add link'));
+    fireEvent.change(urlInputs()[1]!, { target: { value: PR_1 } });
+
+    await clickSave();
+
+    await waitFor(() =>
+      expect(screen.getByText('The same link is listed twice')).toBeTruthy()
+    );
+    expect(txUpdate).not.toHaveBeenCalled();
+  });
+});
+
 describe('FeaturedWorkManager demo pair', () => {
   const FP16 = demoRow('m1', 0, 'FP16');
   const INT8 = demoRow('m2', 1, 'INT8', 'image/gif');
@@ -858,19 +997,6 @@ describe('FeaturedWorkManager demo pair', () => {
   };
   const clip = () =>
     new File([new Uint8Array(8)], 'int8.mp4', { type: 'video/mp4' });
-
-  /**
-   * The form releases Save one commit AFTER the clip's slot renders: the slot
-   * (and its label) appears when the upload lands, but the manager learns the
-   * upload is over from an effect, which re-renders the button later. A click
-   * on a still-disabled button is dropped, so wait for Save to be live (the
-   * signal that the upload is fully over) instead of racing it off the label.
-   */
-  const save = async () => {
-    await waitFor(() => expect(button('Save').disabled).toBe(false));
-    fireEvent.click(button('Save'));
-    await waitFor(() => expect(txUpdate).toHaveBeenCalledTimes(1));
-  };
 
   it('re-submits the same pair when the section is left alone', async () => {
     await openWork([FP16, INT8]);

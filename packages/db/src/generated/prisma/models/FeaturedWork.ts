@@ -39,7 +39,6 @@ export type FeaturedWorkMinAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   sortOrder: number | null
-  url: string | null
   userId: string | null
 }
 
@@ -48,7 +47,6 @@ export type FeaturedWorkMaxAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   sortOrder: number | null
-  url: string | null
   userId: string | null
 }
 
@@ -57,7 +55,6 @@ export type FeaturedWorkCountAggregateOutputType = {
   createdAt: number
   updatedAt: number
   sortOrder: number
-  url: number
   userId: number
   _all: number
 }
@@ -76,7 +73,6 @@ export type FeaturedWorkMinAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   sortOrder?: true
-  url?: true
   userId?: true
 }
 
@@ -85,7 +81,6 @@ export type FeaturedWorkMaxAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   sortOrder?: true
-  url?: true
   userId?: true
 }
 
@@ -94,7 +89,6 @@ export type FeaturedWorkCountAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   sortOrder?: true
-  url?: true
   userId?: true
   _all?: true
 }
@@ -190,7 +184,6 @@ export type FeaturedWorkGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   sortOrder: number
-  url: string | null
   userId: string
   _count: FeaturedWorkCountAggregateOutputType | null
   _avg: FeaturedWorkAvgAggregateOutputType | null
@@ -222,11 +215,11 @@ export type FeaturedWorkWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"FeaturedWork"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FeaturedWork"> | Date | string
   sortOrder?: Prisma.IntFilter<"FeaturedWork"> | number
-  url?: Prisma.StringNullableFilter<"FeaturedWork"> | string | null
   userId?: Prisma.StringFilter<"FeaturedWork"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   translations?: Prisma.FeaturedWorkTranslationListRelationFilter
   media?: Prisma.FeaturedWorkMediaListRelationFilter
+  links?: Prisma.FeaturedWorkLinkListRelationFilter
 }
 
 export type FeaturedWorkOrderByWithRelationInput = {
@@ -234,11 +227,11 @@ export type FeaturedWorkOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
-  url?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   translations?: Prisma.FeaturedWorkTranslationOrderByRelationAggregateInput
   media?: Prisma.FeaturedWorkMediaOrderByRelationAggregateInput
+  links?: Prisma.FeaturedWorkLinkOrderByRelationAggregateInput
 }
 
 export type FeaturedWorkWhereUniqueInput = Prisma.AtLeast<{
@@ -249,11 +242,11 @@ export type FeaturedWorkWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"FeaturedWork"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FeaturedWork"> | Date | string
   sortOrder?: Prisma.IntFilter<"FeaturedWork"> | number
-  url?: Prisma.StringNullableFilter<"FeaturedWork"> | string | null
   userId?: Prisma.StringFilter<"FeaturedWork"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   translations?: Prisma.FeaturedWorkTranslationListRelationFilter
   media?: Prisma.FeaturedWorkMediaListRelationFilter
+  links?: Prisma.FeaturedWorkLinkListRelationFilter
 }, "id">
 
 export type FeaturedWorkOrderByWithAggregationInput = {
@@ -261,7 +254,6 @@ export type FeaturedWorkOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
-  url?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   _count?: Prisma.FeaturedWorkCountOrderByAggregateInput
   _avg?: Prisma.FeaturedWorkAvgOrderByAggregateInput
@@ -278,7 +270,6 @@ export type FeaturedWorkScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"FeaturedWork"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"FeaturedWork"> | Date | string
   sortOrder?: Prisma.IntWithAggregatesFilter<"FeaturedWork"> | number
-  url?: Prisma.StringNullableWithAggregatesFilter<"FeaturedWork"> | string | null
   userId?: Prisma.StringWithAggregatesFilter<"FeaturedWork"> | string
 }
 
@@ -287,10 +278,10 @@ export type FeaturedWorkCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sortOrder?: number
-  url?: string | null
   user: Prisma.UserCreateNestedOneWithoutFeaturedWorksInput
   translations?: Prisma.FeaturedWorkTranslationCreateNestedManyWithoutFeaturedWorkInput
   media?: Prisma.FeaturedWorkMediaCreateNestedManyWithoutFeaturedWorkInput
+  links?: Prisma.FeaturedWorkLinkCreateNestedManyWithoutFeaturedWorkInput
 }
 
 export type FeaturedWorkUncheckedCreateInput = {
@@ -298,10 +289,10 @@ export type FeaturedWorkUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sortOrder?: number
-  url?: string | null
   userId: string
   translations?: Prisma.FeaturedWorkTranslationUncheckedCreateNestedManyWithoutFeaturedWorkInput
   media?: Prisma.FeaturedWorkMediaUncheckedCreateNestedManyWithoutFeaturedWorkInput
+  links?: Prisma.FeaturedWorkLinkUncheckedCreateNestedManyWithoutFeaturedWorkInput
 }
 
 export type FeaturedWorkUpdateInput = {
@@ -309,10 +300,10 @@ export type FeaturedWorkUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutFeaturedWorksNestedInput
   translations?: Prisma.FeaturedWorkTranslationUpdateManyWithoutFeaturedWorkNestedInput
   media?: Prisma.FeaturedWorkMediaUpdateManyWithoutFeaturedWorkNestedInput
+  links?: Prisma.FeaturedWorkLinkUpdateManyWithoutFeaturedWorkNestedInput
 }
 
 export type FeaturedWorkUncheckedUpdateInput = {
@@ -320,10 +311,10 @@ export type FeaturedWorkUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   translations?: Prisma.FeaturedWorkTranslationUncheckedUpdateManyWithoutFeaturedWorkNestedInput
   media?: Prisma.FeaturedWorkMediaUncheckedUpdateManyWithoutFeaturedWorkNestedInput
+  links?: Prisma.FeaturedWorkLinkUncheckedUpdateManyWithoutFeaturedWorkNestedInput
 }
 
 export type FeaturedWorkCreateManyInput = {
@@ -331,7 +322,6 @@ export type FeaturedWorkCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sortOrder?: number
-  url?: string | null
   userId: string
 }
 
@@ -340,7 +330,6 @@ export type FeaturedWorkUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type FeaturedWorkUncheckedUpdateManyInput = {
@@ -348,7 +337,6 @@ export type FeaturedWorkUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -367,7 +355,6 @@ export type FeaturedWorkCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
-  url?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -380,7 +367,6 @@ export type FeaturedWorkMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
-  url?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -389,7 +375,6 @@ export type FeaturedWorkMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
-  url?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -444,6 +429,20 @@ export type FeaturedWorkUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.FeaturedWorkScalarWhereInput | Prisma.FeaturedWorkScalarWhereInput[]
 }
 
+export type FeaturedWorkCreateNestedOneWithoutLinksInput = {
+  create?: Prisma.XOR<Prisma.FeaturedWorkCreateWithoutLinksInput, Prisma.FeaturedWorkUncheckedCreateWithoutLinksInput>
+  connectOrCreate?: Prisma.FeaturedWorkCreateOrConnectWithoutLinksInput
+  connect?: Prisma.FeaturedWorkWhereUniqueInput
+}
+
+export type FeaturedWorkUpdateOneRequiredWithoutLinksNestedInput = {
+  create?: Prisma.XOR<Prisma.FeaturedWorkCreateWithoutLinksInput, Prisma.FeaturedWorkUncheckedCreateWithoutLinksInput>
+  connectOrCreate?: Prisma.FeaturedWorkCreateOrConnectWithoutLinksInput
+  upsert?: Prisma.FeaturedWorkUpsertWithoutLinksInput
+  connect?: Prisma.FeaturedWorkWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.FeaturedWorkUpdateToOneWithWhereWithoutLinksInput, Prisma.FeaturedWorkUpdateWithoutLinksInput>, Prisma.FeaturedWorkUncheckedUpdateWithoutLinksInput>
+}
+
 export type FeaturedWorkCreateNestedOneWithoutTranslationsInput = {
   create?: Prisma.XOR<Prisma.FeaturedWorkCreateWithoutTranslationsInput, Prisma.FeaturedWorkUncheckedCreateWithoutTranslationsInput>
   connectOrCreate?: Prisma.FeaturedWorkCreateOrConnectWithoutTranslationsInput
@@ -477,9 +476,9 @@ export type FeaturedWorkCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sortOrder?: number
-  url?: string | null
   translations?: Prisma.FeaturedWorkTranslationCreateNestedManyWithoutFeaturedWorkInput
   media?: Prisma.FeaturedWorkMediaCreateNestedManyWithoutFeaturedWorkInput
+  links?: Prisma.FeaturedWorkLinkCreateNestedManyWithoutFeaturedWorkInput
 }
 
 export type FeaturedWorkUncheckedCreateWithoutUserInput = {
@@ -487,9 +486,9 @@ export type FeaturedWorkUncheckedCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sortOrder?: number
-  url?: string | null
   translations?: Prisma.FeaturedWorkTranslationUncheckedCreateNestedManyWithoutFeaturedWorkInput
   media?: Prisma.FeaturedWorkMediaUncheckedCreateNestedManyWithoutFeaturedWorkInput
+  links?: Prisma.FeaturedWorkLinkUncheckedCreateNestedManyWithoutFeaturedWorkInput
 }
 
 export type FeaturedWorkCreateOrConnectWithoutUserInput = {
@@ -526,8 +525,63 @@ export type FeaturedWorkScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"FeaturedWork"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FeaturedWork"> | Date | string
   sortOrder?: Prisma.IntFilter<"FeaturedWork"> | number
-  url?: Prisma.StringNullableFilter<"FeaturedWork"> | string | null
   userId?: Prisma.StringFilter<"FeaturedWork"> | string
+}
+
+export type FeaturedWorkCreateWithoutLinksInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sortOrder?: number
+  user: Prisma.UserCreateNestedOneWithoutFeaturedWorksInput
+  translations?: Prisma.FeaturedWorkTranslationCreateNestedManyWithoutFeaturedWorkInput
+  media?: Prisma.FeaturedWorkMediaCreateNestedManyWithoutFeaturedWorkInput
+}
+
+export type FeaturedWorkUncheckedCreateWithoutLinksInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sortOrder?: number
+  userId: string
+  translations?: Prisma.FeaturedWorkTranslationUncheckedCreateNestedManyWithoutFeaturedWorkInput
+  media?: Prisma.FeaturedWorkMediaUncheckedCreateNestedManyWithoutFeaturedWorkInput
+}
+
+export type FeaturedWorkCreateOrConnectWithoutLinksInput = {
+  where: Prisma.FeaturedWorkWhereUniqueInput
+  create: Prisma.XOR<Prisma.FeaturedWorkCreateWithoutLinksInput, Prisma.FeaturedWorkUncheckedCreateWithoutLinksInput>
+}
+
+export type FeaturedWorkUpsertWithoutLinksInput = {
+  update: Prisma.XOR<Prisma.FeaturedWorkUpdateWithoutLinksInput, Prisma.FeaturedWorkUncheckedUpdateWithoutLinksInput>
+  create: Prisma.XOR<Prisma.FeaturedWorkCreateWithoutLinksInput, Prisma.FeaturedWorkUncheckedCreateWithoutLinksInput>
+  where?: Prisma.FeaturedWorkWhereInput
+}
+
+export type FeaturedWorkUpdateToOneWithWhereWithoutLinksInput = {
+  where?: Prisma.FeaturedWorkWhereInput
+  data: Prisma.XOR<Prisma.FeaturedWorkUpdateWithoutLinksInput, Prisma.FeaturedWorkUncheckedUpdateWithoutLinksInput>
+}
+
+export type FeaturedWorkUpdateWithoutLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  user?: Prisma.UserUpdateOneRequiredWithoutFeaturedWorksNestedInput
+  translations?: Prisma.FeaturedWorkTranslationUpdateManyWithoutFeaturedWorkNestedInput
+  media?: Prisma.FeaturedWorkMediaUpdateManyWithoutFeaturedWorkNestedInput
+}
+
+export type FeaturedWorkUncheckedUpdateWithoutLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  translations?: Prisma.FeaturedWorkTranslationUncheckedUpdateManyWithoutFeaturedWorkNestedInput
+  media?: Prisma.FeaturedWorkMediaUncheckedUpdateManyWithoutFeaturedWorkNestedInput
 }
 
 export type FeaturedWorkCreateWithoutTranslationsInput = {
@@ -535,9 +589,9 @@ export type FeaturedWorkCreateWithoutTranslationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sortOrder?: number
-  url?: string | null
   user: Prisma.UserCreateNestedOneWithoutFeaturedWorksInput
   media?: Prisma.FeaturedWorkMediaCreateNestedManyWithoutFeaturedWorkInput
+  links?: Prisma.FeaturedWorkLinkCreateNestedManyWithoutFeaturedWorkInput
 }
 
 export type FeaturedWorkUncheckedCreateWithoutTranslationsInput = {
@@ -545,9 +599,9 @@ export type FeaturedWorkUncheckedCreateWithoutTranslationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sortOrder?: number
-  url?: string | null
   userId: string
   media?: Prisma.FeaturedWorkMediaUncheckedCreateNestedManyWithoutFeaturedWorkInput
+  links?: Prisma.FeaturedWorkLinkUncheckedCreateNestedManyWithoutFeaturedWorkInput
 }
 
 export type FeaturedWorkCreateOrConnectWithoutTranslationsInput = {
@@ -571,9 +625,9 @@ export type FeaturedWorkUpdateWithoutTranslationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutFeaturedWorksNestedInput
   media?: Prisma.FeaturedWorkMediaUpdateManyWithoutFeaturedWorkNestedInput
+  links?: Prisma.FeaturedWorkLinkUpdateManyWithoutFeaturedWorkNestedInput
 }
 
 export type FeaturedWorkUncheckedUpdateWithoutTranslationsInput = {
@@ -581,9 +635,9 @@ export type FeaturedWorkUncheckedUpdateWithoutTranslationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   media?: Prisma.FeaturedWorkMediaUncheckedUpdateManyWithoutFeaturedWorkNestedInput
+  links?: Prisma.FeaturedWorkLinkUncheckedUpdateManyWithoutFeaturedWorkNestedInput
 }
 
 export type FeaturedWorkCreateWithoutMediaInput = {
@@ -591,9 +645,9 @@ export type FeaturedWorkCreateWithoutMediaInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sortOrder?: number
-  url?: string | null
   user: Prisma.UserCreateNestedOneWithoutFeaturedWorksInput
   translations?: Prisma.FeaturedWorkTranslationCreateNestedManyWithoutFeaturedWorkInput
+  links?: Prisma.FeaturedWorkLinkCreateNestedManyWithoutFeaturedWorkInput
 }
 
 export type FeaturedWorkUncheckedCreateWithoutMediaInput = {
@@ -601,9 +655,9 @@ export type FeaturedWorkUncheckedCreateWithoutMediaInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sortOrder?: number
-  url?: string | null
   userId: string
   translations?: Prisma.FeaturedWorkTranslationUncheckedCreateNestedManyWithoutFeaturedWorkInput
+  links?: Prisma.FeaturedWorkLinkUncheckedCreateNestedManyWithoutFeaturedWorkInput
 }
 
 export type FeaturedWorkCreateOrConnectWithoutMediaInput = {
@@ -627,9 +681,9 @@ export type FeaturedWorkUpdateWithoutMediaInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutFeaturedWorksNestedInput
   translations?: Prisma.FeaturedWorkTranslationUpdateManyWithoutFeaturedWorkNestedInput
+  links?: Prisma.FeaturedWorkLinkUpdateManyWithoutFeaturedWorkNestedInput
 }
 
 export type FeaturedWorkUncheckedUpdateWithoutMediaInput = {
@@ -637,9 +691,9 @@ export type FeaturedWorkUncheckedUpdateWithoutMediaInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   translations?: Prisma.FeaturedWorkTranslationUncheckedUpdateManyWithoutFeaturedWorkNestedInput
+  links?: Prisma.FeaturedWorkLinkUncheckedUpdateManyWithoutFeaturedWorkNestedInput
 }
 
 export type FeaturedWorkCreateManyUserInput = {
@@ -647,7 +701,6 @@ export type FeaturedWorkCreateManyUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sortOrder?: number
-  url?: string | null
 }
 
 export type FeaturedWorkUpdateWithoutUserInput = {
@@ -655,9 +708,9 @@ export type FeaturedWorkUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   translations?: Prisma.FeaturedWorkTranslationUpdateManyWithoutFeaturedWorkNestedInput
   media?: Prisma.FeaturedWorkMediaUpdateManyWithoutFeaturedWorkNestedInput
+  links?: Prisma.FeaturedWorkLinkUpdateManyWithoutFeaturedWorkNestedInput
 }
 
 export type FeaturedWorkUncheckedUpdateWithoutUserInput = {
@@ -665,9 +718,9 @@ export type FeaturedWorkUncheckedUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   translations?: Prisma.FeaturedWorkTranslationUncheckedUpdateManyWithoutFeaturedWorkNestedInput
   media?: Prisma.FeaturedWorkMediaUncheckedUpdateManyWithoutFeaturedWorkNestedInput
+  links?: Prisma.FeaturedWorkLinkUncheckedUpdateManyWithoutFeaturedWorkNestedInput
 }
 
 export type FeaturedWorkUncheckedUpdateManyWithoutUserInput = {
@@ -675,7 +728,6 @@ export type FeaturedWorkUncheckedUpdateManyWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -686,11 +738,13 @@ export type FeaturedWorkUncheckedUpdateManyWithoutUserInput = {
 export type FeaturedWorkCountOutputType = {
   translations: number
   media: number
+  links: number
 }
 
 export type FeaturedWorkCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   translations?: boolean | FeaturedWorkCountOutputTypeCountTranslationsArgs
   media?: boolean | FeaturedWorkCountOutputTypeCountMediaArgs
+  links?: boolean | FeaturedWorkCountOutputTypeCountLinksArgs
 }
 
 /**
@@ -717,17 +771,24 @@ export type FeaturedWorkCountOutputTypeCountMediaArgs<ExtArgs extends runtime.Ty
   where?: Prisma.FeaturedWorkMediaWhereInput
 }
 
+/**
+ * FeaturedWorkCountOutputType without action
+ */
+export type FeaturedWorkCountOutputTypeCountLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FeaturedWorkLinkWhereInput
+}
+
 
 export type FeaturedWorkSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   sortOrder?: boolean
-  url?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   translations?: boolean | Prisma.FeaturedWork$translationsArgs<ExtArgs>
   media?: boolean | Prisma.FeaturedWork$mediaArgs<ExtArgs>
+  links?: boolean | Prisma.FeaturedWork$linksArgs<ExtArgs>
   _count?: boolean | Prisma.FeaturedWorkCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["featuredWork"]>
 
@@ -736,7 +797,6 @@ export type FeaturedWorkSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   createdAt?: boolean
   updatedAt?: boolean
   sortOrder?: boolean
-  url?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["featuredWork"]>
@@ -746,7 +806,6 @@ export type FeaturedWorkSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   createdAt?: boolean
   updatedAt?: boolean
   sortOrder?: boolean
-  url?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["featuredWork"]>
@@ -756,15 +815,15 @@ export type FeaturedWorkSelectScalar = {
   createdAt?: boolean
   updatedAt?: boolean
   sortOrder?: boolean
-  url?: boolean
   userId?: boolean
 }
 
-export type FeaturedWorkOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "sortOrder" | "url" | "userId", ExtArgs["result"]["featuredWork"]>
+export type FeaturedWorkOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "sortOrder" | "userId", ExtArgs["result"]["featuredWork"]>
 export type FeaturedWorkInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   translations?: boolean | Prisma.FeaturedWork$translationsArgs<ExtArgs>
   media?: boolean | Prisma.FeaturedWork$mediaArgs<ExtArgs>
+  links?: boolean | Prisma.FeaturedWork$linksArgs<ExtArgs>
   _count?: boolean | Prisma.FeaturedWorkCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type FeaturedWorkIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -780,13 +839,13 @@ export type $FeaturedWorkPayload<ExtArgs extends runtime.Types.Extensions.Intern
     user: Prisma.$UserPayload<ExtArgs>
     translations: Prisma.$FeaturedWorkTranslationPayload<ExtArgs>[]
     media: Prisma.$FeaturedWorkMediaPayload<ExtArgs>[]
+    links: Prisma.$FeaturedWorkLinkPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     createdAt: Date
     updatedAt: Date
     sortOrder: number
-    url: string | null
     userId: string
   }, ExtArgs["result"]["featuredWork"]>
   composites: {}
@@ -1185,6 +1244,7 @@ export interface Prisma__FeaturedWorkClient<T, Null = never, ExtArgs extends run
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   translations<T extends Prisma.FeaturedWork$translationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FeaturedWork$translationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeaturedWorkTranslationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   media<T extends Prisma.FeaturedWork$mediaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FeaturedWork$mediaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeaturedWorkMediaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  links<T extends Prisma.FeaturedWork$linksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FeaturedWork$linksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeaturedWorkLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1218,7 +1278,6 @@ export interface FeaturedWorkFieldRefs {
   readonly createdAt: Prisma.FieldRef<"FeaturedWork", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"FeaturedWork", 'DateTime'>
   readonly sortOrder: Prisma.FieldRef<"FeaturedWork", 'Int'>
-  readonly url: Prisma.FieldRef<"FeaturedWork", 'String'>
   readonly userId: Prisma.FieldRef<"FeaturedWork", 'String'>
 }
     
@@ -1666,6 +1725,30 @@ export type FeaturedWork$mediaArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.FeaturedWorkMediaScalarFieldEnum | Prisma.FeaturedWorkMediaScalarFieldEnum[]
+}
+
+/**
+ * FeaturedWork.links
+ */
+export type FeaturedWork$linksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FeaturedWorkLink
+   */
+  select?: Prisma.FeaturedWorkLinkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FeaturedWorkLink
+   */
+  omit?: Prisma.FeaturedWorkLinkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FeaturedWorkLinkInclude<ExtArgs> | null
+  where?: Prisma.FeaturedWorkLinkWhereInput
+  orderBy?: Prisma.FeaturedWorkLinkOrderByWithRelationInput | Prisma.FeaturedWorkLinkOrderByWithRelationInput[]
+  cursor?: Prisma.FeaturedWorkLinkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FeaturedWorkLinkScalarFieldEnum | Prisma.FeaturedWorkLinkScalarFieldEnum[]
 }
 
 /**

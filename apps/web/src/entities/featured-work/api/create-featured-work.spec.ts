@@ -62,11 +62,12 @@ afterAll(() => {
 });
 
 const input = (
-  media?: FeaturedWorkFormValues['media']
+  media?: FeaturedWorkFormValues['media'],
+  links?: FeaturedWorkFormValues['links']
 ): FeaturedWorkFormValues => ({
-  url: '',
   translations: [{ language: 'en', title: 'INT8 vs FP16' }],
   media,
+  links,
 });
 
 type CreateArgs = {
@@ -82,6 +83,51 @@ type CreateArgs = {
 };
 const written = () =>
   (create.mock.calls[0]?.[0] as CreateArgs).data.media.create;
+
+type LinkArgs = {
+  data: {
+    links: {
+      create: Array<{ url: string; sortOrder: number; label: string | null }>;
+    };
+  };
+};
+const linkWrites = () =>
+  (create.mock.calls[0]?.[0] as LinkArgs).data.links.create;
+
+describe('createFeaturedWork links', () => {
+  const PR = 'https://github.com/roboflow/rf-detr/pull/512';
+
+  it('writes the links with the work: position from order, label trimmed, blank as null', async () => {
+    const res = await createFeaturedWork(
+      input(undefined, [
+        { url: PR, label: ' INT8 ' },
+        { url: 'https://example.com/post', label: '   ' },
+      ])
+    );
+
+    expect(res.success).toBe(true);
+    expect(linkWrites()).toEqual([
+      { url: PR, sortOrder: 0, label: 'INT8' },
+      { url: 'https://example.com/post', sortOrder: 1, label: null },
+    ]);
+  });
+
+  it('writes no links when the form omits them', async () => {
+    const res = await createFeaturedWork(input());
+
+    expect(res.success).toBe(true);
+    expect(linkWrites()).toEqual([]);
+  });
+
+  it('refuses a link that is not http(s), and creates nothing', async () => {
+    const res = await createFeaturedWork(
+      input(undefined, [{ url: 'javascript:alert(1)', label: null }])
+    );
+
+    expect(res.success).toBe(false);
+    expect(create).not.toHaveBeenCalled();
+  });
+});
 
 describe('createFeaturedWork demo media', () => {
   it('writes the pair with the work: slot from position, label trimmed, blank as null', async () => {

@@ -47,17 +47,22 @@ export async function getAdminFeaturedWorkById(
           },
           orderBy: { sortOrder: 'asc' },
         },
+        links: {
+          select: { id: true, url: true, label: true, sortOrder: true },
+          orderBy: { sortOrder: 'asc' },
+        },
       },
     });
 
     if (!featuredWork) {
       return { success: false, errorMsg: 'Featured work not found' };
     }
-    const { media, ...row } = featuredWork;
+    const { media, links, ...row } = featuredWork;
     return {
       success: true,
       data: {
         ...row,
+        links,
         media: media.map((slot) => ({
           ...slot.media,
           label: slot.label,

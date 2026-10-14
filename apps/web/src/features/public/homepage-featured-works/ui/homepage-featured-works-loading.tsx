@@ -3,8 +3,9 @@ import { Skeleton } from '@byte-of-me/ui';
 import {
   WORK_BODY,
   WORK_HEAD,
+  WORK_LINK,
+  WORK_LINKS,
   WORK_MEDIA_BLEED,
-  WORK_META,
   WORK_ROW,
   WORK_TITLE,
 } from '@/entities/featured-work/ui/featured-work-row-classes';
@@ -15,6 +16,8 @@ import { cn } from '@/shared/lib/utils';
  * list keeps roughly its height when it resolves.
  */
 const ROWS = 2;
+/** Proof-link rows per work: the real list shows one row per link, most works have two. */
+const LINKS = 2;
 
 /**
  * One line of the text a bar stands in for. The wrapper's height is `1lh` of the
@@ -46,10 +49,16 @@ export function HomepageFeaturedWorksLoading() {
               <div className={WORK_TITLE}>
                 <Line barClassName="h-4 w-3/4 md:h-5 md:w-2/3" />
               </div>
-              <div className={WORK_META}>
-                <Skeleton className="h-3 w-24" />
-                <Skeleton className="h-3 w-14" />
-              </div>
+              <ul className={WORK_LINKS}>
+                {[...Array(LINKS)].map((_, j) => (
+                  <li key={j}>
+                    <div className={WORK_LINK}>
+                      <Skeleton className="h-3.5 w-36 md:h-4" />
+                      <Skeleton className="h-3 w-24" />
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             <div

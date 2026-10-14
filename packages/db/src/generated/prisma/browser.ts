@@ -63,6 +63,11 @@ export type Education = Prisma.EducationModel
  */
 export type FeaturedWork = Prisma.FeaturedWorkModel
 /**
+ * Model FeaturedWorkLink
+ * 
+ */
+export type FeaturedWorkLink = Prisma.FeaturedWorkLinkModel
+/**
  * Model FeaturedWorkTranslation
  * 
  */

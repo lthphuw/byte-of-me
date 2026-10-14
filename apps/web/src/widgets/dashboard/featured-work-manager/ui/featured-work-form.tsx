@@ -20,20 +20,22 @@ import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
 import { FieldMessage, TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { featuredWorkResolver } from '@/widgets/dashboard/featured-work-manager/lib/featured-work-resolver';
+import { toLinkValues } from '@/widgets/dashboard/featured-work-manager/lib/link-values';
 import { toTranslationValues } from '@/widgets/dashboard/featured-work-manager/lib/translation-values';
 import {
   FeaturedWorkDemo,
   toDemoValues,
 } from '@/widgets/dashboard/featured-work-manager/ui/featured-work-demo';
+import { FeaturedWorkLinks } from '@/widgets/dashboard/featured-work-manager/ui/featured-work-links';
 
 function toFormValues(
   initialData?: AdminFeaturedWorkDetail
 ): DefaultValues<FeaturedWorkFormValues> {
   return {
-    url: initialData?.url ?? '',
-    // Always set, even to []: the update action keeps a pair it is not sent, so
+    // Always set, even to []: the update action keeps a list it is not sent, so
     // a form that left this out could never clear one, and one that dropped the
-    // loaded pair would erase it.
+    // loaded list would erase it. The same holds for the demo pair and the links.
+    links: toLinkValues(initialData?.links),
     media: toDemoValues(initialData?.media),
     translations: toTranslationValues(initialData?.translations),
   };
@@ -180,12 +182,7 @@ export function FeaturedWorkForm({
           )}
         />
 
-        <TextField
-          control={form.control}
-          name="url"
-          label={t('urlLabel')}
-          placeholder={t('urlPlaceholder')}
-        />
+        <FeaturedWorkLinks control={form.control} />
       </form>
     </Form>
   );

@@ -5,9 +5,15 @@ export interface GithubPullRequestRef {
   repo: string;
   number: number;
 }
+/** GitHub's own pull request state. The UI shows it as a text label, never as colour alone. */
+export type FeaturedWorkPullRequestState = 'OPEN' | 'MERGED' | 'CLOSED';
+
+/** What GitHub says about one pull request, as the homepage row shows it. */
 export interface FeaturedWorkGithub {
   repo: string;
   stars: number;
+  title: string;
+  state: FeaturedWorkPullRequestState;
 }
 
 /** One row of the admin list. The editor loads `AdminFeaturedWorkDetail` by id instead. */
@@ -16,6 +22,7 @@ export type AdminFeaturedWork = Prisma.FeaturedWorkGetPayload<{
     translations: {
       select: { id: true; language: true; title: true };
     };
+    _count: { select: { links: true } };
   };
 }>;
 
@@ -28,10 +35,19 @@ export interface AdminFeaturedWorkMedia {
   sortOrder: number;
 }
 
+/** One proof link as the editor shows it; `sortOrder` is its position, 0 to 5. */
+export interface AdminFeaturedWorkLink {
+  id: string;
+  url: string;
+  label: string | null;
+  sortOrder: number;
+}
+
 /**
  * The full row the editor dialog edits. `details` is a stringified TipTap document
  * (at most 32,768 characters), so it stays out of the list: the dialog loads this by id.
- * `media` is the demo pair, flattened and ordered by slot; the list never carries it.
+ * `media` is the demo pair, flattened and ordered by slot; `links` are the proof links in
+ * position order. The list carries neither.
  */
 export type AdminFeaturedWorkDetail = Prisma.FeaturedWorkGetPayload<{
   include: {
@@ -44,7 +60,7 @@ export type AdminFeaturedWorkDetail = Prisma.FeaturedWorkGetPayload<{
       };
     };
   };
-}> & { media: AdminFeaturedWorkMedia[] };
+}> & { media: AdminFeaturedWorkMedia[]; links: AdminFeaturedWorkLink[] };
 
 /** One demo item as the homepage renders it: a validated http(s) url. */
 export interface PublicFeaturedWorkMedia {
@@ -58,16 +74,29 @@ export interface PublicFeaturedWorkMedia {
   height: number | null;
 }
 
-/** What the homepage renders: translated, with `host` and the GitHub facts resolved. */
+/** One proof link as the homepage renders it: a validated http(s) url and what it resolves to. */
+export interface PublicFeaturedWorkLink {
+  id: string;
+  /** Already checked as http(s); the stored value is never trusted to be safe. */
+  url: string;
+  /** The authored tag ("INT8"); null means show the pull request's own title. */
+  label: string | null;
+  /** Hostname of `url` without a leading `www.`. */
+  host: string;
+  /** Repo and number, read from a pull request url; null for any other link. */
+  pr: { repo: string; number: number } | null;
+  /** GitHub's facts for this pull request; null when GitHub is off or did not answer. */
+  github: FeaturedWorkGithub | null;
+}
+
+/** What the homepage renders: translated, with each link resolved. */
 export interface PublicFeaturedWork {
   id: string;
   title: string;
   /** Sanitized HTML of this language's details body, or null. Never the stored JSON. */
   detailsHtml: string | null;
-  url: string | null;
-  /** Hostname of `url` without a leading `www.`; null when there is no url. */
-  host: string | null;
-  github: FeaturedWorkGithub | null;
+  /** The proof links in position order. Empty when the work has none. */
+  links: PublicFeaturedWorkLink[];
   /** The side-by-side demo pair in slot order; empty when the work has none. */
   media: PublicFeaturedWorkMedia[];
 }

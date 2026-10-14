@@ -14,9 +14,19 @@ const ANCHOR = 'featured-works-w1';
 /** The row's content, shared by every item a test renders. */
 const work: Omit<ComponentProps<typeof FeaturedWorkItem>, 'anchorId'> = {
   title: 'Faster detector export',
-  meta: <span>roboflow/rf-detr</span>,
-  href: null,
-  newTabLabel: '(opens in a new tab)',
+  links: (
+    <ul aria-label="Pull requests">
+      <li>
+        <a
+          href="https://github.com/roboflow/rf-detr/pull/512"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          INT8
+        </a>
+      </li>
+    </ul>
+  ),
   media: [],
   demoControls: {
     zoomIn: 'Zoom in',
@@ -67,29 +77,28 @@ describe('FeaturedWorkItem details', () => {
   });
 });
 
-describe('FeaturedWorkItem title link', () => {
-  it('is one new-tab link whose accessible name says it opens in a new tab', () => {
-    renderItem({ href: 'https://example.com/post', details: null });
+describe('FeaturedWorkItem links', () => {
+  it('leaves the title as plain text, so the links are the only links', () => {
+    renderItem({ details: null });
 
-    const link = screen.getByRole('link');
-    expect(link.getAttribute('target')).toBe('_blank');
-    expect(link.getAttribute('rel')).toBe('noopener noreferrer');
     expect(
-      screen.getByRole('link', {
-        name: /Faster detector export.*\(opens in a new tab\)/,
-      })
-    ).toBe(link);
+      screen.getByRole('heading', { name: 'Faster detector export' })
+    ).toBeTruthy();
+    expect(screen.getAllByRole('link')).toHaveLength(1);
+    expect(screen.getByRole('link', { name: 'INT8' })).toBeTruthy();
   });
 
-  it('stays the one link when the work also has a demo and details', () => {
-    renderItem({ href: 'https://example.com/work', media: pair });
+  it('shows the links from the row, under the title', () => {
+    renderItem({ details: null });
 
-    expect(screen.getAllByRole('link')).toHaveLength(1);
-    expect(
-      screen.getByRole('link', {
-        name: /Faster detector export.*\(opens in a new tab\)/,
-      })
-    ).toBeTruthy();
+    expect(screen.getByRole('list', { name: 'Pull requests' })).toBeTruthy();
+  });
+
+  it('keeps the links when the work also has a demo and details', () => {
+    renderItem({ media: pair });
+
+    expect(screen.getByRole('link', { name: 'INT8' })).toBeTruthy();
+    expect(bodyText()).toBeTruthy();
   });
 });
 
@@ -144,11 +153,12 @@ describe('FeaturedWorkItem demo', () => {
     expect(screen.queryByRole('button', { name: /details$/ })).toBeNull();
   });
 
-  it('puts the title first, then the demo, then the details', () => {
-    renderItem({ media: pair, href: 'https://example.com/work' });
+  it('puts the title first, then the links, then the demo, then the details', () => {
+    renderItem({ media: pair });
 
     const order = [
       screen.getByRole('heading', { name: /Faster detector export/ }),
+      screen.getByRole('list', { name: 'Pull requests' }),
       document.querySelector('figure'),
       bodyText(),
     ];

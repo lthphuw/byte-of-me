@@ -17,7 +17,7 @@ apps/web/src/widgets/
 │   │   ├── ui/dashboard-nav-rail.tsx           lg and up: labelled column, or the 56px icon rail
 │   │   └── ui/dashboard-nav-actions.tsx        footer entries: clear cache, view site, sign out
 │   ├── tag-manager/                            reference CRUD: useCrudManager + entity barrel
-│   ├── featured-work-manager/                  CRUD; lib/ = form resolver, translation values, reorder hook
+│   ├── featured-work-manager/                  CRUD; lib/ = form resolver, translation values, link values, reorder hook; ui/featured-work-links = the links field array
 │   └── ...                                     9 more: blog, comment, company, contact-message-gallery,
 │                                               education, media, project, tech-stack, user-profile
 └── public/
@@ -41,7 +41,7 @@ every slice: index.ts -> ui/index.ts -> ui/*.tsx (+ lib/, model/); *.spec.ts(x) 
 | `apps/web/src/widgets/dashboard/contact-message-gallery/` | dashboard | `@/entities/contact-message`, `@/entities/contact-message/query`, `@/shared/hooks/use-server-mutation`, `@/shared/ui` | client |
 | `apps/web/src/widgets/dashboard/dashboard-sidebar/` | dashboard | `@/features/auth` | client |
 | `apps/web/src/widgets/dashboard/education-manager/` | dashboard | `@/entities/education`, `@/entities/education/api/*`, `@/entities/education/model`, `@/entities/education/query`, `@/entities/media/query`, `@/features/dashboard/media-library`, `@/shared/ui`, `@/shared/ui/edit-record-gate`, `@/shared/ui/lazy-rich-text-editor`, `@/shared/ui/record-dialog` | client |
-| `apps/web/src/widgets/dashboard/featured-work-manager/` | dashboard | `@/entities/featured-work/api/*`, `@/entities/featured-work/lib/safe-link`, `@/entities/featured-work/model`, `@/entities/featured-work/query`, `@/entities/media`, `@/entities/media/query`, `@/shared/ui/edit-record-gate` | client |
+| `apps/web/src/widgets/dashboard/featured-work-manager/` | dashboard | `@/entities/featured-work/api/*`, `@/entities/featured-work/model`, `@/entities/featured-work/query`, `@/entities/media`, `@/entities/media/query`, `@/shared/ui/edit-record-gate` | client |
 | `apps/web/src/widgets/dashboard/media-manager/` | dashboard | `@/entities/media`, `@/entities/media/model/upload-constraints`, `@/entities/media/query`, `@/features/dashboard/media-library`, `@/shared/ui` | client |
 | `apps/web/src/widgets/dashboard/project-manager/` | dashboard | `@/entities/media/query`, `@/entities/project/api/*`, `@/entities/project/model`, `@/entities/project/query`, `@/entities/project/ui/project-editor-card`, `@/entities/tag/query`, `@/entities/tech-stack/query`, `@/shared/ui/edit-record-gate`, `@/shared/ui/query-state` | client |
 | `apps/web/src/widgets/dashboard/tag-manager/` | dashboard | `@/entities/tag`, `@/entities/tag/query`, `@/features/dashboard/tag-management`, `@/shared/ui`, `@/shared/ui/edit-record-gate` | client |

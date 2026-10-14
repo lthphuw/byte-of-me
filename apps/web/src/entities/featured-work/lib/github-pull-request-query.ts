@@ -1,12 +1,17 @@
 import type {
   FeaturedWorkGithub,
+  FeaturedWorkPullRequestState,
   GithubPullRequestRef,
 } from '@/entities/featured-work/model/types';
 
 export type RepositoryNode = {
   nameWithOwner: string;
   stargazerCount: number;
-  pullRequest: { number: number } | null;
+  pullRequest: {
+    number: number;
+    title: string;
+    state: FeaturedWorkPullRequestState;
+  } | null;
 } | null;
 
 /**
@@ -21,7 +26,7 @@ export function buildPullRequestQuery(refs: GithubPullRequestRef[]) {
     variables[`n${i}`] = ref.repo;
     variables[`p${i}`] = ref.number;
     params.push(`$o${i}: String!`, `$n${i}: String!`, `$p${i}: Int!`);
-    return `pr${i}: repository(owner: $o${i}, name: $n${i}) { nameWithOwner stargazerCount pullRequest(number: $p${i}) { number } }`;
+    return `pr${i}: repository(owner: $o${i}, name: $n${i}) { nameWithOwner stargazerCount pullRequest(number: $p${i}) { number title state } }`;
   });
   return {
     query: `query (${params.join(', ')}) { ${fields.join(' ')} }`,
@@ -36,6 +41,11 @@ export function mapPullRequestResponse(
   return refs.map((_, i) => {
     const node = data[`pr${i}`];
     if (!node?.pullRequest) return null;
-    return { repo: node.nameWithOwner, stars: node.stargazerCount };
+    return {
+      repo: node.nameWithOwner,
+      stars: node.stargazerCount,
+      title: node.pullRequest.title,
+      state: node.pullRequest.state,
+    };
   });
 }

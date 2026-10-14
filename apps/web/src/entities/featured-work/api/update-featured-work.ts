@@ -4,6 +4,7 @@ import { type FeaturedWork, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
+import { toLinkRows } from '@/entities/featured-work/lib/featured-work-links';
 import {
   ownsAllMedia,
   toMediaRows,
@@ -60,8 +61,6 @@ export async function updateFeaturedWork(
         const featuredWork = await tx.featuredWork.update({
           where: { id },
           data: {
-            url: values.url || null,
-
             translations: {
               deleteMany: {},
               create: values.translations.map((t) => ({
@@ -81,6 +80,21 @@ export async function updateFeaturedWork(
           if (values.media.length > 0) {
             await tx.featuredWorkMedia.createMany({
               data: toMediaRows(values.media).map((row) => ({
+                ...row,
+                featuredWorkId: id,
+              })),
+            });
+          }
+        }
+
+        // Same rule as the demo pair: omitted keeps the stored links, [] clears them.
+        if (values.links) {
+          await tx.featuredWorkLink.deleteMany({
+            where: { featuredWorkId: id },
+          });
+          if (values.links.length > 0) {
+            await tx.featuredWorkLink.createMany({
+              data: toLinkRows(values.links).map((row) => ({
                 ...row,
                 featuredWorkId: id,
               })),

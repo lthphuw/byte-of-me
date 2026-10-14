@@ -83,10 +83,24 @@ Object.defineProperty(prisma, '$transaction', {
     fn({
       featuredWork: { findFirst, update },
       featuredWorkMedia: { deleteMany, createMany },
+      featuredWorkLink: { deleteMany: linkDeleteMany, createMany: linkCreateMany },
       media: { count },
     }),
   writable: true,
   configurable: true,
+});
+
+/** Every write to the links, in order, and the rows the last `createMany` was given. */
+const linkWrites: string[] = [];
+let linkRows: unknown[] = [];
+const linkDeleteMany = mock(async (_args: unknown) => {
+  linkWrites.push('deleteMany');
+  return { count: 0 };
+});
+const linkCreateMany = mock(async (args: { data: unknown[] }) => {
+  linkWrites.push('createMany');
+  linkRows = args.data;
+  return { count: args.data.length };
 });
 
 const logError = spyOn(logger, 'error').mockImplementation(() => {});
@@ -96,6 +110,10 @@ beforeEach(() => {
   update.mockClear();
   deleteMany.mockClear();
   createMany.mockClear();
+  linkDeleteMany.mockClear();
+  linkCreateMany.mockClear();
+  linkWrites.length = 0;
+  linkRows = [];
   count.mockClear();
   mediaWrites.length = 0;
   library = [ownImage('m-fp16'), ownImage('m-int8')];
@@ -127,8 +145,61 @@ function writtenTranslations(): UpdateArgs['data']['translations']['create'] {
 }
 
 const input = (
-  translations: FeaturedWorkFormValues['translations']
-): FeaturedWorkFormValues => ({ url: '', translations });
+  translations: FeaturedWorkFormValues['translations'],
+  links?: FeaturedWorkFormValues['links']
+): FeaturedWorkFormValues => ({ translations, links });
+
+const TITLE = [{ language: 'en', title: 'INT8 quantization' }];
+const PR = 'https://github.com/roboflow/rf-detr/pull/512';
+
+describe('updateFeaturedWork links', () => {
+  it('keeps the stored links when the caller omits them', async () => {
+    const res = await updateFeaturedWork('fw-1', input(TITLE));
+
+    expect(res.success).toBe(true);
+    expect(linkWrites).toEqual([]);
+  });
+
+  it('replaces the links with the sent list: position from order, label trimmed', async () => {
+    const res = await updateFeaturedWork(
+      'fw-1',
+      input(TITLE, [
+        { url: PR, label: ' INT8 ' },
+        { url: 'https://example.com/post', label: '' },
+      ])
+    );
+
+    expect(res.success).toBe(true);
+    expect(linkWrites).toEqual(['deleteMany', 'createMany']);
+    expect(linkRows).toEqual([
+      { url: PR, label: 'INT8', sortOrder: 0, featuredWorkId: 'fw-1' },
+      {
+        url: 'https://example.com/post',
+        label: null,
+        sortOrder: 1,
+        featuredWorkId: 'fw-1',
+      },
+    ]);
+  });
+
+  it('clears the links when [] is sent, without creating any', async () => {
+    const res = await updateFeaturedWork('fw-1', input(TITLE, []));
+
+    expect(res.success).toBe(true);
+    expect(linkWrites).toEqual(['deleteMany']);
+  });
+
+  it('refuses a link that is not http(s), and writes nothing', async () => {
+    const res = await updateFeaturedWork(
+      'fw-1',
+      input(TITLE, [{ url: 'javascript:alert(1)', label: null }])
+    );
+
+    expect(res.success).toBe(false);
+    expect(update).not.toHaveBeenCalled();
+    expect(linkWrites).toEqual([]);
+  });
+});
 
 describe('updateFeaturedWork details', () => {
   it('stores a translation sent without details as null, clearing any stored body', async () => {

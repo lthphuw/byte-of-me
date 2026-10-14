@@ -39,6 +39,8 @@ export async function getPaginatedAdminFeaturedWorks(
             },
             orderBy: { language: 'asc' },
           },
+          // The list shows how many links a card has, not the links themselves.
+          _count: { select: { links: true } },
         },
         // `id` breaks ties between equal `sortOrder`s so `skip`/`take` cannot
         // repeat a row across pages.

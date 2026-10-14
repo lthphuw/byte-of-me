@@ -20,18 +20,38 @@ const detailsSchema = z
 export const FEATURED_WORK_MEDIA_MAX = 2;
 export const FEATURED_WORK_MEDIA_LABEL_MAX_LENGTH = 24;
 
+/** A card gathers at most this many proof links (PRs, commits, posts). */
+export const FEATURED_WORK_LINKS_MAX = 6;
+export const FEATURED_WORK_LINK_LABEL_MAX_LENGTH = 24;
+const FEATURED_WORK_URL_MAX_LENGTH = 2048;
+
 // '' (an emptied input) and whitespace both mean "no label"; stored as null.
-const mediaLabelSchema = z
-  .string()
-  .trim()
-  .max(FEATURED_WORK_MEDIA_LABEL_MAX_LENGTH, 'validation.tooLong')
-  .nullable()
-  .transform((value) => value || null)
-  .optional();
+// Shared by the demo labels and the link labels, which have the same rule.
+const tagLabelSchema = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max, 'validation.tooLong')
+    .nullable()
+    .transform((value) => value || null)
+    .optional();
 
 export const featuredWorkMediaItemSchema = z.object({
   mediaId: z.string().min(1, 'validation.required'),
-  label: mediaLabelSchema,
+  label: tagLabelSchema(FEATURED_WORK_MEDIA_LABEL_MAX_LENGTH),
+});
+
+// A link is required to have a url: an emptied row in the form is a validation error,
+// not a silently dropped row. Only http(s) is accepted, as the homepage only renders those.
+export const featuredWorkLinkSchema = z.object({
+  id: z.string().optional(),
+  url: z
+    .string()
+    .trim()
+    .min(1, 'validation.required')
+    .max(FEATURED_WORK_URL_MAX_LENGTH, 'validation.tooLong')
+    .refine((v) => /^https?:\/\/\S+$/i.test(v), 'validation.invalidUrl'),
+  label: tagLabelSchema(FEATURED_WORK_LINK_LABEL_MAX_LENGTH),
 });
 
 export const featuredWorkTranslationSchema = z.object({
@@ -47,16 +67,16 @@ export const featuredWorkTranslationSchema = z.object({
 
 export const featuredWorkSchema = z.object({
   id: z.string().optional(),
-  // '' is what an emptied input submits; the actions store it as null.
-  url: z
-    .string()
-    .trim()
-    .max(2048, 'validation.tooLong')
+  // Omitted = keep the stored links, [] = clear them (see `updateFeaturedWork`).
+  // A link's `sortOrder` is its array position, so it is not part of the input.
+  links: z
+    .array(featuredWorkLinkSchema)
+    .max(FEATURED_WORK_LINKS_MAX, 'validation.tooManyItems')
+    // The same PR twice in one card reads as a mistake. The DB key is (work, position).
     .refine(
-      (v) => v === '' || /^https?:\/\/\S+$/i.test(v),
-      'validation.invalidUrl'
+      (list) => new Set(list.map((item) => item.url)).size === list.length,
+      'validation.duplicateLink'
     )
-    .nullable()
     .optional(),
   // Omitted = keep the stored pair, [] = clear it (see `updateFeaturedWork`).
   // A slot's `sortOrder` is its array position, so it is not part of the input.

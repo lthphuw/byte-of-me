@@ -11,6 +11,8 @@ import { HomepageFeaturedWorksLoading } from './homepage-featured-works-loading'
 import { FeaturedWorkItem } from '@/entities/featured-work/ui/featured-work-item';
 import {
   WORK_HEAD,
+  WORK_LINK,
+  WORK_LINKS,
   WORK_MEDIA_BLEED,
   WORK_ROW,
   WORK_TITLE,
@@ -35,9 +37,16 @@ describe('HomepageFeaturedWorksLoading', () => {
       <FeaturedWorkItem
         anchorId="featured-works-w1"
         title="Faster detector export"
-        meta={<span>roboflow/rf-detr</span>}
-        href="https://example.com/work"
-        newTabLabel="(opens in a new tab)"
+        links={
+          <ul className={WORK_LINKS}>
+            <li>
+              <div className={WORK_LINK}>
+                <a href="https://example.com/work">INT8</a>
+                <span>roboflow/rf-detr</span>
+              </div>
+            </li>
+          </ul>
+        }
         details={<p>How it was done.</p>}
         media={[
           {
@@ -86,7 +95,8 @@ describe('HomepageFeaturedWorksLoading', () => {
 
   it('draws two works, each a head, a demo strip and a body, and no rule of its own', () => {
     const { container } = render(<HomepageFeaturedWorksLoading />);
-    const rows = [...container.querySelectorAll('li')];
+    // The works are the list under the heading; the proof-link rows are nested inside them.
+    const rows = [...(container.querySelector('ul')?.children ?? [])];
 
     expect(rows).toHaveLength(2);
     for (const row of rows) {
@@ -98,12 +108,15 @@ describe('HomepageFeaturedWorksLoading', () => {
     }
   });
 
-  it('draws the title as one bar at the title size, with the meta bars under it', () => {
+  it('draws the title as one bar at the title size, with one bar row per proof link under it', () => {
     const { container } = render(<HomepageFeaturedWorksLoading />);
     const head = container.querySelector('li')?.firstElementChild;
 
     expect(head?.children[0]?.className).toContain(WORK_TITLE.split(' ')[0]!);
-    expect(head?.children[1]?.querySelectorAll('.animate-pulse').length).toBe(2);
+    const links = head?.children[1];
+    expect(links?.tagName).toBe('UL');
+    expect(links?.children).toHaveLength(2);
+    expect(links?.querySelectorAll('li > div > .animate-pulse').length).toBe(4);
   });
 
   it('keeps the heading to a single bar, with the list under it', () => {

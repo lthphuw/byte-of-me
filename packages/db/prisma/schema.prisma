@@ -187,9 +187,6 @@ model FeaturedWork {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   sortOrder Int     @default(0) @map("sort_order")
-  // A PR, commit or post that proves the feature. Optional on purpose: an
-  // unmerged or off-GitHub piece of work is still worth pinning.
-  url       String?
 
   userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -197,9 +194,31 @@ model FeaturedWork {
   translations FeaturedWorkTranslation[]
   // The side-by-side demo pair (a clip or GIF each), at most two.
   media        FeaturedWorkMedia[]
+  // The PRs, commits or posts that prove the work, in order, at most six. Optional
+  // on purpose: an unmerged or off-GitHub piece of work is still worth pinning.
+  links        FeaturedWorkLink[]
 
   @@index([userId, sortOrder], map: "idx_featured_works_public_list")
   @@map("featured_works")
+}
+
+// One proof link of a featured work. `sortOrder` is its position (0..5); the unique key
+// keeps two links from sharing a position, and the CHECK in the migration caps the list.
+model FeaturedWorkLink {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  url       String
+  // Language-neutral tag ("INT8"), never translated. Null = show the PR's own title.
+  label     String?
+  sortOrder Int     @map("sort_order")
+
+  featuredWorkId String       @map("featured_work_id")
+  featuredWork   FeaturedWork @relation(fields: [featuredWorkId], references: [id], onDelete: Cascade)
+
+  @@unique([featuredWorkId, sortOrder])
+  @@map("featured_work_links")
 }
 
 model FeaturedWorkTranslation {

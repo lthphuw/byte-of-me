@@ -9,7 +9,7 @@ import { featuredWorkResolver } from './featured-work-resolver';
 import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
 
 const run = (translations: FeaturedWorkFormValues['translations']) =>
-  featuredWorkResolver({ url: '', translations }, undefined, {
+  featuredWorkResolver({ translations }, undefined, {
     fields: {},
     shouldUseNativeValidation: false,
   });

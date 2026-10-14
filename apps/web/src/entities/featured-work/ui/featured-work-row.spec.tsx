@@ -1,7 +1,7 @@
 /**
- * What a visitor can observe on one featured work: the title is its only link, the
- * repo/host line, the demo, and the details, which always show. Renders the real
- * component inside the real English catalogue.
+ * What a visitor can observe on one featured work: its proof links (one row each, with
+ * the pull request's repo, number, state and stars), the demo, and the details, which
+ * always show. Renders the real component inside the real English catalogue.
  */
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'bun:test';
@@ -17,13 +17,27 @@ import { FeaturedWorkRow } from './featured-work-row';
 
 import type { PublicFeaturedWork } from '@/entities/featured-work/model/types';
 
+const PR = 'https://github.com/roboflow/rf-detr/pull/512';
+
 const base: PublicFeaturedWork = {
   id: 'w1',
   title: 'Faster detector export',
   detailsHtml: null,
-  url: 'https://github.com/roboflow/rf-detr/pull/512',
-  host: 'github.com',
-  github: { repo: 'roboflow/rf-detr', stars: 4200 },
+  links: [
+    {
+      id: 'l1',
+      url: PR,
+      label: 'INT8',
+      host: 'github.com',
+      pr: { repo: 'roboflow/rf-detr', number: 512 },
+      github: {
+        repo: 'roboflow/rf-detr',
+        stars: 4200,
+        title: 'Export INT8',
+        state: 'MERGED',
+      },
+    },
+  ],
   media: [],
 };
 
@@ -37,42 +51,112 @@ function renderRow(work: Partial<PublicFeaturedWork> = {}) {
 
 afterEach(cleanup);
 
-describe('FeaturedWorkRow', () => {
-  it('is one link that names the work and opens in a new tab', () => {
+describe('FeaturedWorkRow links', () => {
+  it('draws each link as its own new-tab link, and the title as plain text', () => {
     renderRow();
 
-    const link = screen.getByRole('link', { name: /Faster detector export/ });
-    expect(link.getAttribute('href')).toBe(base.url);
+    const link = screen.getByRole('link', { name: /INT8.*\(opens in a new tab\)/ });
+    expect(link.getAttribute('href')).toBe(PR);
     expect(link.getAttribute('target')).toBe('_blank');
     expect(link.getAttribute('rel')).toBe('noopener noreferrer');
-    expect(link.textContent).toContain('(opens in a new tab)');
     expect(screen.getAllByRole('link')).toHaveLength(1);
+    expect(
+      screen.getByRole('heading', { name: 'Faster detector export' })
+    ).toBeTruthy();
   });
 
-  it('has no link when the work has no url', () => {
-    renderRow({ url: null, host: null, github: null });
-
-    expect(screen.queryByRole('link')).toBeNull();
-    expect(screen.getByText('Faster detector export')).toBeTruthy();
-  });
-
-  it('shows the repository and its star count when GitHub details exist', () => {
-    renderRow();
-
-    expect(screen.getByText('roboflow/rf-detr')).toBeTruthy();
-    expect(screen.getByText(/4,200 stars/)).toBeTruthy();
-    expect(screen.queryByText('github.com')).toBeNull();
-  });
-
-  it('falls back to the host alone when there are no GitHub details', () => {
+  it('lists the links in order, under the title', () => {
     renderRow({
-      url: 'https://example.com/post',
-      host: 'example.com',
-      github: null,
+      links: [
+        ...base.links,
+        {
+          id: 'l2',
+          url: 'https://github.com/a/b/pull/7',
+          label: 'Keypoints',
+          host: 'github.com',
+          pr: { repo: 'a/b', number: 7 },
+          github: null,
+        },
+      ],
     });
 
-    expect(screen.getByText('example.com')).toBeTruthy();
+    expect(
+      screen.getByRole('list', { name: 'Pull requests' }).textContent
+    ).toContain('INT8');
+    expect(screen.getAllByRole('link').map((a) => a.textContent)).toEqual([
+      expect.stringContaining('INT8'),
+      expect.stringContaining('Keypoints'),
+    ]);
+  });
+
+  it('shows the repo, the number, the state and the stars of a pull request', () => {
+    renderRow();
+
+    expect(screen.getByText('roboflow/rf-detr #512')).toBeTruthy();
+    expect(screen.getByText('Merged')).toBeTruthy();
+    expect(screen.getByText(/4,200 stars/)).toBeTruthy();
+  });
+
+  it('names a link by its label, else the PR title, else the repo and number', () => {
+    renderRow({
+      links: [
+        { ...base.links[0]!, id: 'a', label: null },
+        { ...base.links[0]!, id: 'b', label: null, github: null },
+      ],
+    });
+
+    expect(
+      screen.getByRole('link', { name: /Export INT8.*opens in a new tab/ })
+    ).toBeTruthy();
+    expect(
+      screen.getAllByRole('link', { name: /roboflow\/rf-detr #512.*opens in a new tab/ })
+    ).toHaveLength(1);
+  });
+
+  it('shows the state as text, so colour is never the only signal', () => {
+    renderRow({
+      links: [{ ...base.links[0]!, github: { ...base.links[0]!.github!, state: 'OPEN' } }],
+    });
+
+    expect(screen.getByText('Open')).toBeTruthy();
+  });
+
+  it('gives a non-pull-request link its host alone', () => {
+    renderRow({
+      links: [
+        {
+          id: 'blog',
+          url: 'https://example.com/post',
+          label: null,
+          host: 'example.com',
+          pr: null,
+          github: null,
+        },
+      ],
+    });
+
+    expect(screen.getByRole('link', { name: /example\.com/ })).toBeTruthy();
     expect(screen.queryByText(/stars?$/)).toBeNull();
+  });
+
+  it('keeps a pull request link with no GitHub facts, showing the repo and number', () => {
+    renderRow({
+      links: [{ ...base.links[0]!, label: null, github: null }],
+    });
+
+    expect(screen.getByRole('link', { name: /roboflow\/rf-detr #512/ })).toBeTruthy();
+    expect(screen.queryByText('Merged')).toBeNull();
+    expect(screen.queryByText(/stars?$/)).toBeNull();
+  });
+
+  it('draws no link list for a work without links, and no link at all', () => {
+    renderRow({ links: [] });
+
+    expect(screen.queryByRole('list', { name: 'Pull requests' })).toBeNull();
+    expect(screen.queryByRole('link')).toBeNull();
+    expect(
+      screen.getByRole('heading', { name: 'Faster detector export' })
+    ).toBeTruthy();
   });
 
   it('draws no row number before the title', () => {
@@ -93,12 +177,26 @@ describe('FeaturedWorkRow', () => {
     render(
       <NextIntlClientProvider locale="vi" messages={{ homepage }}>
         <FeaturedWorkRow
-          work={{ ...base, github: { repo: 'a/b', stars: 9755 } }}
+          work={{
+            ...base,
+            links: [{ ...base.links[0]!, github: { ...base.links[0]!.github!, stars: 9755 } }],
+          }}
         />
       </NextIntlClientProvider>
     );
 
     expect(screen.getByText(/9\.755 sao/)).toBeTruthy();
+  });
+
+  it('names the pull request state in Vietnamese', () => {
+    const homepage = vi.homepage as unknown as typeof en.homepage;
+    render(
+      <NextIntlClientProvider locale="vi" messages={{ homepage }}>
+        <FeaturedWorkRow work={base} />
+      </NextIntlClientProvider>
+    );
+
+    expect(screen.getByText('Đã hợp nhất')).toBeTruthy();
   });
 });
 
@@ -113,18 +211,10 @@ describe('FeaturedWorkRow with details', () => {
       screen.getByText('How it was done: a streaming writer.')
     ).toBeTruthy();
     expect(screen.getAllByRole('link')).toHaveLength(1);
-    expect(
-      screen.queryByRole('link', { name: 'View on GitHub (opens in a new tab)' })
-    ).toBeNull();
   });
 
-  it('shows a work with details and no url, with no link anywhere', () => {
-    renderRow({
-      detailsHtml: DETAILS_HTML,
-      url: null,
-      host: null,
-      github: null,
-    });
+  it('shows a work with details and no links, with no link anywhere', () => {
+    renderRow({ detailsHtml: DETAILS_HTML, links: [] });
 
     expect(screen.queryByRole('button')).toBeNull();
     expect(screen.queryByRole('link')).toBeNull();
@@ -160,15 +250,11 @@ describe('FeaturedWorkRow with a demo', () => {
     },
   ];
 
-  it('makes the title the one link, with the demo and no link beside it', () => {
+  it('keeps the demo beside the proof links, with no link of its own', () => {
     renderRow({ media });
 
     expect(screen.queryByRole('button', { name: /details$/ })).toBeNull();
     expect(document.querySelectorAll('figure')).toHaveLength(2);
-    const link = screen.getByRole('link', {
-      name: /Faster detector export.*\(opens in a new tab\)/,
-    });
-    expect(link.getAttribute('href')).toBe(base.url);
     expect(screen.getAllByRole('link')).toHaveLength(1);
   });
 
