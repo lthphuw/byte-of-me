@@ -1,29 +1,7 @@
 /*
- * The writing surface.
- *
- * Replaces `tiptap.css` + `tiptap-lite.css`, which were a vendored starter
- * stylesheet and a near-verbatim copy of it: ~440 lines each, differing in
- * exactly two declarations (`.ProseMirror` padding, `.ProseMirror p`
- * font-size). Both were reachable from `…/rich-text-editor`'s barrel, so both
- * shipped in the same chunk on every page that mounts any editor, and the copy
- * loaded second silently won every conflicting declaration.
- *
- * That is not a hypothetical. Measured on `/space/notes/<id>` before this
- * file existed: the notes editor imports the FULL editor, whose sheet asks for
- * 18px body text and 4rem/2rem padding — and rendered at 14px with 16px
- * padding, because `tiptap-lite.css` came after it in the bundle. Every
- * dashboard editor was being styled by the contact form's stylesheet.
- *
- * Two rules keep it from growing back into that:
- *
- *  1. ONE sheet. Density differences are a `data-editor-density` attribute on
- *     the host, not a second file.
- *  2. Colour comes from the app's own tokens (`hsl(var(--foreground))` and
- *     friends, defined in `apps/web/src/app/globals.css`). The starter shipped
- *     a parallel hardcoded palette plus a `.dark` block that restated all of
- *     it; both were a second copy of the theme that could — and did — drift.
- *     The only colours declared here are the author-facing text/highlight
- *     swatches, which are a palette the writer picks from, not theme values.
+ * The writing surface: one sheet for every editor (density is a
+ * `data-editor-density` attribute on the host), coloured from the app's own
+ * tokens. Only the author's text and highlight swatches below are a palette.
  */
 
 :root {
@@ -125,9 +103,8 @@
   --size-code: 0.8125rem;
 
   max-width: 90ch;
-  /* No inline padding: the host already pads (`p-4 sm:p-6` in
-     `rich-text-editor.tsx`), and the second helping was what made the notes
-     body text sit 16px right of the title input above it. */
+  /* No inline padding: the host already pads (`p-4 sm:p-6`), and a second layer
+     sat the text 16px right of the field above it. */
   padding: 0.25rem 0;
   margin: 0 auto;
   position: relative;
@@ -696,118 +673,17 @@
   padding: 0;
 }
 
-/*
- * The compact TYPE size, gated the same way `[data-editor-type='small']` is
- * below, and for the same reason — but this one is a repair rather than a
- * precaution.
- *
- * `--size` was declared in the block above when this file replaced the two
- * vendored stylesheets. That is (0,2,0); the 16px floor further down is a bare
- * `.ProseMirror` inside `@media (max-width: 640px)`, which is (0,1,0) because a
- * media query contributes no specificity. So the compact rule won on phones and
- * dropped the contact form's message box to 14px — and iOS Safari zooms the
- * whole page whenever a focused editable computes under 16px, which is the
- * behaviour that box's own comment said it existed to avoid. (That box is a
- * plain `Textarea` now, but the bug outlived it: every editable on a phone
- * hits the same floor.) The stylesheets this replaced did not have the bug: both declared
- * the small size at (0,1,0), so the narrow-viewport block outranked it by
- * source order.
- *
- * Gating it to wide viewports makes the two blocks non-overlapping, so on a
- * phone the compact size simply does not exist and the floor applies.
- */
+/* Compact type only above 640px: below it the 16px floor must win, because iOS
+   Safari zooms the page when a focused editable computes under 16px. A media
+   query adds no specificity, so an ungated compact rule would beat the floor. */
 @media (min-width: 641px) {
   [data-editor-density='compact'] .ProseMirror {
     --size: 0.875rem;
   }
 }
 
-/* ---------------------------------------------------------------------------
- * Type scale
- *
- * Body size and nothing else. The rhythm tokens, the heading ladder and
- * `--size-code` are all absolute `rem`, so moving the type leaves every one of
- * them exactly where the density variant put it — which is the point: scale
- * and density are two independent knobs, not one enum with six values. The one
- * thing that does follow is INLINE code, which is `0.9em` and so stays
- * proportional to the text it sits in, which is what `em` is there for.
- *
- * `medium` is the base declared on `.ProseMirror` above and deliberately has
- * NO rule of its own. A surface with no attribute must render byte-identically
- * to one asked for the default, so there is nothing here to get out of step.
- *
- * ---- Why `small` is behind a min-width query ----
- *
- * This is load-bearing, not tidiness, and it will read as redundant to anyone
- * who has not traced the specificity:
- *
- *   [data-editor-type='small'] .ProseMirror   →  (0,2,0)
- *   .ProseMirror  (in the narrow block below) →  (0,1,0)
- *
- * A media query contributes NOTHING to specificity, so an ungated attribute
- * rule wins inside the narrow block and drags a phone's body text down to
- * 14px. That block restates `--size: 1rem` for one reason only — iOS Safari
- * zooms the whole page the moment a focused editable computes under 16px, and
- * a contenteditable is no exception — so beating it is not a smaller-looking
- * editor, it is the viewport jumping every time the author taps into the note.
- *
- * The two queries never overlap (<=640px / >=641px), so on a phone the small
- * scale simply does not exist and the floor holds. Merging this rule back out
- * of the media query is the "simplification" that reintroduces the zoom.
- *
- * At a fractional width between the two (640.5px, which fractional device
- * pixel ratios and browser zoom do produce) neither query matches and the base
- * 15px stands. That is not a hole this rule opens: a default editor already
- * renders 15px at that width, because the narrow block it would otherwise
- * inherit from does not match either.
- *
- * `large` needs no such gate. 17px is already above the floor, so letting it
- * win inside the narrow block is exactly what an author who asked for large
- * type wants. The asymmetry is the rule, not an oversight.
- *
- * (`[data-editor-density='compact']` above has the same shape and no gate, so
- * it does override the floor to 14px. That predates these variants and is left
- * alone here rather than changed in passing — but it is the same failure mode,
- * and worth knowing about before the pattern is copied a third time.)
- * ------------------------------------------------------------------------ */
-
-@media (min-width: 641px) {
-  [data-editor-type='small'] .ProseMirror {
-    --size: 0.875rem;
-  }
-}
-
-[data-editor-type='large'] .ProseMirror {
-  --size: 1.0625rem;
-}
-
-/* ---------------------------------------------------------------------------
- * Measure
- *
- * `max-width: 90ch` on `.ProseMirror` is the readable line length, and it is
- * the right default: past roughly that width the eye loses the start of the
- * next line. `full` hands the column whatever width the pane gives it, for an
- * author working in wide tables or side-by-side image rows where the ceiling
- * is the thing in the way.
- *
- * `max-width`, not `width`: the surface keeps its `margin: 0 auto`, so with no
- * ceiling to centre against it simply fills the pane. Same declaration the
- * print block already makes, for the same reason.
- * ------------------------------------------------------------------------ */
-
-[data-editor-measure='full'] .ProseMirror {
-  max-width: none;
-}
-
-/* ---------------------------------------------------------------------------
- * Narrow viewports
- *
- * The rhythm scales down; the TYPE does not go below 16px. iOS Safari zooms
- * the page whenever a focused editable computes under 16px, and a
- * contenteditable is no exception — the same threshold the shared `Input`
- * already handles. The starter's mobile block set the
- * body to 1rem for what looks like this reason and never wrote it down.
- * ------------------------------------------------------------------------ */
+/* Narrow viewports: the rhythm scales down, the type does not go below 16px
+   (iOS Safari zooms a focused editable under that, as it does an `Input`). */
 
 @media (max-width: 640px) {
   .ProseMirror {
@@ -837,13 +713,7 @@
   }
 }
 
-/* ---------------------------------------------------------------------------
- * Print
- *
- * `/print/notes/[id]` renders through `rich-text-html.tsx`, not through this
- * surface — but a browser print of a page with an editor on it should still
- * not paste a scroll box into the paper.
- * ------------------------------------------------------------------------ */
+/* A browser print of a page with an editor must not paste a scroll box into the paper. */
 
 @media print {
   .ProseMirror {
@@ -851,93 +721,3 @@
     max-width: none;
   }
 }
-
-/* Where the Files panel just sent the reader.
-   A short flash rather than a persistent selection: it answers "which one of
-   these links did I click" and then gets out of the way, because a highlight
-   that stays becomes part of the document to anyone who looks away and back.
-   `prefers-reduced-motion` drops the animation but keeps the mark, so the
-   answer is still given — it just arrives all at once. */
-.ProseMirror a.note-attachment-flash {
-  border-radius: 0.25rem;
-  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.35);
-  background-color: hsl(var(--primary) / 0.12);
-  animation: note-attachment-flash 1.6s ease-out forwards;
-}
-
-@keyframes note-attachment-flash {
-  0%,
-  60% {
-    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.35);
-    background-color: hsl(var(--primary) / 0.12);
-  }
-  100% {
-    box-shadow: 0 0 0 3px hsl(var(--primary) / 0);
-    background-color: hsl(var(--primary) / 0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ProseMirror a.note-attachment-flash {
-    animation: none;
-  }
-}
-
-
-/* An attached file, in the text.
-
-   A styled LINK, not a node type of its own. The chip is entirely this rule:
-   the document still holds an ordinary link, so markdown export, print and the
-   shared read-only surface all carry the attachment without a single new case
-   to handle — and if this stylesheet never loads, the author still has a
-   working link rather than a blank rectangle.
-
-   Keyed on the href prefix because that prefix IS the meaning: it is the only
-   address an attachment has. */
-.ProseMirror a[href^='/api/notes/documents/'] {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  vertical-align: baseline;
-  max-width: 100%;
-  padding: 0.125rem 0.5rem 0.125rem 0.375rem;
-  border: 1px solid hsl(var(--border));
-  border-radius: 0.375rem;
-  background-color: hsl(var(--muted) / 0.6);
-  color: hsl(var(--foreground));
-  font-size: 0.875em;
-  line-height: 1.5;
-  text-decoration: none;
-  transition:
-    background-color 150ms ease,
-    border-color 150ms ease;
-}
-
-/* A mask rather than a background image, so one asset works on both themes —
-   the glyph takes `currentColor` instead of being baked black. */
-.ProseMirror a[href^='/api/notes/documents/']::before {
-  content: '';
-  flex: none;
-  width: 1em;
-  height: 1em;
-  background-color: currentColor;
-  opacity: 0.65;
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/%3E%3Cpath d='M14 2v4a2 2 0 0 0 2 2h4'/%3E%3Cpath d='M10 9H8'/%3E%3Cpath d='M16 13H8'/%3E%3Cpath d='M16 17H8'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/%3E%3Cpath d='M14 2v4a2 2 0 0 0 2 2h4'/%3E%3Cpath d='M10 9H8'/%3E%3Cpath d='M16 13H8'/%3E%3Cpath d='M16 17H8'/%3E%3C/svg%3E");
-  -webkit-mask-size: contain;
-  mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-}
-
-.ProseMirror a[href^='/api/notes/documents/']:hover {
-  border-color: hsl(var(--primary) / 0.5);
-  background-color: hsl(var(--muted));
-}
-
-/* An IMAGE served from the same route is an inline picture, not an attachment
-   — it must not inherit any of the above. Images are `img` elements, so the
-   rules never reach them; this note exists so nobody widens the selector to
-   the route prefix alone and quietly boxes every screenshot. */
