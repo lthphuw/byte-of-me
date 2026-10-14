@@ -1,18 +1,8 @@
 import type { AnyExtension } from '@tiptap/core';
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import { Color } from '@tiptap/extension-color';
-import Highlight from '@tiptap/extension-highlight';
-import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
-import Subscript from '@tiptap/extension-subscript';
-import Superscript from '@tiptap/extension-superscript';
 import { TableKit } from '@tiptap/extension-table';
-import TextAlign from '@tiptap/extension-text-align';
-import { TextStyle } from '@tiptap/extension-text-style';
 import Typography from '@tiptap/extension-typography';
-import Underline from '@tiptap/extension-underline';
 import { Markdown } from '@tiptap/markdown';
-import StarterKit from '@tiptap/starter-kit';
 
 import type { EditorLabels } from './editor-labels';
 import { ClipboardImport } from './extensions/clipboard-import';
@@ -20,13 +10,12 @@ import { TableHeaderScopes } from './extensions/header-scopes-plugin';
 import { ImageExtension, type ImageUploadFn } from './extensions/image';
 import { ImageGroup } from './extensions/image-group';
 import { ImagePlaceholder } from './extensions/image-placeholder';
-import { MermaidSize } from './extensions/mermaid-size';
 import { NumericTableColumns } from './extensions/numeric-columns-plugin';
 import { Citation } from './extensions/references/citation';
 import { ReferenceList } from './extensions/references/reference-list';
 import { SearchAndReplace } from './extensions/search-and-replace';
 // Shared with the server-side render schema so both stay identical.
-import { CustomHeading, lowlight } from './render-extensions';
+import { sharedExtensions } from './render-extensions';
 
 /** The editor's schema and behaviour. `render-extensions.ts` mirrors it for the public page. */
 export function createExtensions(options: {
@@ -38,28 +27,10 @@ export function createExtensions(options: {
   placeholder?: string;
 }): AnyExtension[] {
   return [
-    StarterKit.configure({
-      heading: false,
-      codeBlock: false,
-      // Registered explicitly below; leaving them on duplicates the extension
-      // names ('link', 'underline') and Tiptap warns on every editor mount.
-      link: false,
-      underline: false,
-    }),
-    CodeBlockLowlight.configure({ lowlight }),
-    MermaidSize,
-    CustomHeading,
+    ...sharedExtensions,
     Placeholder.configure({
       placeholder: options.placeholder ?? options.labels.defaultPlaceholder,
     }),
-    TextAlign.configure({ types: ['heading', 'paragraph'] }),
-    TextStyle,
-    Subscript,
-    Superscript,
-    Underline,
-    Link,
-    Color,
-    Highlight.configure({ multicolor: true }),
     ImageExtension.configure({
       uploadFn: options.uploadImage,
       uploadFailedText: options.uploadFailedText,

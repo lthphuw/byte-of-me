@@ -11,7 +11,7 @@
 // Invariant: every node/mark type the editor can persist must be represented
 // here with the same name and attributes, or `generateHTML` throws and the
 // content falls back to escaped plain text.
-import { mergeAttributes, Node } from '@tiptap/core';
+import { type AnyExtension, mergeAttributes, Node } from '@tiptap/core';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { Color } from '@tiptap/extension-color';
 import Heading from '@tiptap/extension-heading';
@@ -43,7 +43,7 @@ import { ReferenceListBase } from './extensions/references/reference-list-base';
 // so the grammars never reach the client bundle — highlight classes are baked
 // into the HTML. Unknown languages (e.g. mermaid) fall through as plain text
 // with their `language-*` class intact, which the mermaid enhancer keys on.
-export const lowlight = createLowlight(common);
+const lowlight = createLowlight(common);
 
 /**
  * The one attribute `markNumericTableColumns` sets: this cell sits in a column
@@ -266,7 +266,12 @@ const RenderBlockMath = Node.create({
   },
 });
 
-export const renderExtensions = [
+/**
+ * The text, headings, code and marks the editor and the published page agree on.
+ * Both lists start from this one, so the invariant at the top of the file holds
+ * for them by construction rather than by two copies kept in step.
+ */
+export const sharedExtensions: AnyExtension[] = [
   StarterKit.configure({
     heading: false,
     codeBlock: false,
@@ -286,6 +291,10 @@ export const renderExtensions = [
   Link,
   Color,
   Highlight.configure({ multicolor: true }),
+];
+
+export const renderExtensions: AnyExtension[] = [
+  ...sharedExtensions,
   // Read path only: the editor registers `ImageBase` unconfigured, so these
   // never reach what it stores, copies or edits. Body images sit below the
   // fold and must not compete with the cover for bandwidth.
