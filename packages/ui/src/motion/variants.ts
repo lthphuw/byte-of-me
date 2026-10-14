@@ -63,9 +63,9 @@ export const staggerItem: Variants = {
   },
 };
 
-// Define icon animation switch variants
-export const iconSwitchVariants = {
-  initial: { opacity: 0, scale: 0.8, rotate: 90 },
+/** One icon swapping for another in place (theme, copy). Never scales from far below 1. */
+export const iconSwitchVariants: Variants = {
+  initial: { opacity: 0, scale: 0.95, rotate: 90 },
   animate: { opacity: 1, scale: 1, rotate: 0 },
-  exit: { opacity: 0, scale: 0.8, rotate: -90 },
+  exit: { opacity: 0, scale: 0.95, rotate: -90 },
 };

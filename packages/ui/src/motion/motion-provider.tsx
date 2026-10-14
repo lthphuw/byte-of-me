@@ -10,15 +10,13 @@ const loadFeatures = () =>
   import('./motion-features').then((mod) => mod.default);
 
 /**
- * Wraps a subtree so it can use lazy-loaded framer-motion (`m.*`) and, via
- * MotionConfig, automatically honours the user's `prefers-reduced-motion`
- * setting — transform/layout animations are disabled while opacity fades are
- * kept. `strict` is intentionally off so shared components still using
- * `motion.*` keep working inside this provider.
+ * Lazy-loaded framer-motion (`m.*`) for a subtree, with `prefers-reduced-motion`
+ * honoured through MotionConfig: transforms stop, opacity fades stay. `strict`
+ * makes a stray `motion.*` fail loudly instead of loading the full feature set.
  */
 export function MotionProvider({ children }: { children: ReactNode }) {
   return (
-    <LazyMotion features={loadFeatures} strict={false}>
+    <LazyMotion features={loadFeatures} strict>
       <MotionConfig reducedMotion="user">{children}</MotionConfig>
     </LazyMotion>
   );

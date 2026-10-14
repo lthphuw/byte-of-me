@@ -1,5 +1,5 @@
 export * from './alert-dialog';
-export * from './auto-growing-text-area';
+export * from './auto-growing-textarea';
 export * from './avatar';
 export * from './badge';
 export * from './button';

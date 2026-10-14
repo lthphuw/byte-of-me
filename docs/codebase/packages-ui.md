@@ -19,7 +19,7 @@ packages/ui/
     ├── mermaid-blocks.tsx   MermaidBlocks: client; swaps mermaid blocks for SVG (lazy import); reserves a box of the stored size first
     ├── mermaid-size.ts      svgNaturalSize / parseMermaidSize: a diagram's WxH, the `data-mermaid-size` attribute
     ├── math-renderer.tsx    MathRenderer: client; KaTeX over data-latex placeholders
-    ├── hooks/               use-clipboard, use-debounce, use-embla-state, use-intersection, use-lock-body, use-media-query
+    ├── hooks/               use-auto-grow, use-clipboard, use-debounce, use-embla-state, use-intersection, use-lock-body, use-media-query
     ├── lib/                 cn, sanitize, rich-text-content codec, markdown-format, reduced-motion, surface-classes (scrim, modal, popup and menu class strings shared by the overlay and menu primitives)
     ├── motion/              MotionProvider (LazyMotion + reducedMotion), tokens, variants, transitions
     └── rich-text-editor/tiptap/
@@ -60,7 +60,7 @@ packages/ui/
 ### Flat files
 
 - Primitives (shadcn-style wrappers over Radix or a third-party lib): alert-dialog, avatar, badge, button, calendar, card, carousel, checkbox, collapsible, command, dialog, drawer, dropdown-menu, form, input, label, popover, scroll-area, select, separator, sheet, skeleton, sonner, switch, tabs, textarea, tooltip.
-- Composites: auto-growing-text-area, confirm-delete-dialog, copy-button, date-picker, delete-button, edit-button, empty, icons (`Icons` map: the Lucide glyphs the app uses, an inlined clap, and the brand marks), loading, multi-select, pagination, shell (`ShellBase`).
+- Composites: auto-growing-textarea, confirm-delete-dialog, copy-button, date-picker, delete-button, edit-button, empty, icons (`Icons` map: the Lucide glyphs the app uses, an inlined clap, and the brand marks), loading, multi-select, pagination, shell (`ShellBase`).
 
 ## Key flows
 
@@ -95,6 +95,7 @@ packages/ui/
 - `EditButton` and `DeleteButton` (`edit-button.tsx`, `delete-button.tsx`) are `size="icon"`: 44 px on touch, 36 px with a mouse. `DeleteButton` has three consumers, all dashboard surfaces (`rg -n "DeleteButton" apps packages`); `EditButton` has none yet. Neither takes a size prop.
 - `Calendar` is a thin react-day-picker wrapper for the single-date `DatePicker`: 44 px cells on touch (`--cell-size`), 32 px with a pointer, no range, week-number or dropdown-caption styling. `Carousel` is horizontal only; `CarouselPrevious` and `CarouselNext` take their accessible name as `label`, and arrow keys typed into an input, a `<video>` or another handled event are left to it. `useEmblaState(api)` is the one subscription to Embla's selected slide and scroll limits, shared by `Carousel` and the app's `MediaCarousel`. `Pagination` is a `<nav>` named by `pageLabel`, and all three labels are required.
 - Hooks: `useDebounce(value, wait)` returns the debounced value. `useClipboard({ timeout })` returns `{ copy, copied }`; `copy` resolves to whether the browser took the text (it refuses outside a secure context or when permission is denied), so a caller can say so. `useIntersection` compares `threshold` by value, so a literal array in the caller does not re-observe on every render.
+- `MotionProvider` mounts `LazyMotion` with `strict`: a `motion.*` element throws instead of loading the full feature set, which is how AGENTS §14 (`m.*` only) is enforced. `AutoGrowingTextarea` sizes itself with `useAutoGrow` and scrolls past `max-h-[200px]`.
 - `ConfirmDeleteDialog`: `title`, `description`, `actionText` and `cancelText` are required; this package has no next-intl context, so it ships no English default. While `isLoading` it ignores Escape and a scrim tap and disables both buttons. Both buttons use the default Button size.
 - `DatePicker` (`placeholder`, `formatDate`, optional `calendarLocale`), `MultiSelect` (`placeholder`, `searchPlaceholder`, `emptyLabel`, `removeLabel`) and `CopyButton` (`label`, `copiedLabel`) take every visible or announced string as a prop. The app calls the `Localized*` wrappers in `apps/web/src/shared/ui/localized-controls.tsx` for the first two (`components.datePicker`, `components.multiSelect`); `MediaCard`, an entity, takes `copyLabel` and `copiedLabel` from `MediaLibrary` (`components.copyButton`). `MultiSelect` keeps its chips beside the combobox button, not inside it, so no button nests in another.
 

@@ -58,7 +58,7 @@ export function RichTextHtml({
   return (
     <article
       className={cn(
-        'mx-auto w-full max-w-[720px]',
+        'mx-auto w-full',
         'break-words [word-break:break-word] [overflow-wrap:anywhere]',
         'text-[17px] leading-8 tracking-[0.01em]',
         'text-foreground',

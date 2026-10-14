@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { motionStagger } from './tokens';
-import { fadeUp, staggerStep } from './variants';
+import { fadeUp, iconSwitchVariants, staggerStep } from './variants';
 
 // A section below the fold waits as a faded placeholder: at zero it is a hole in
 // the page until it scrolls in (.claude/rules/motion.md).
@@ -31,5 +31,17 @@ describe('staggerStep', () => {
 
   it('shrinks the step once the budget would be exceeded', () => {
     expect(staggerStep(40)).toBeLessThan(motionStagger.step);
+  });
+});
+
+// An entry never starts far below full size, and a press is 0.97
+// (.claude/rules/motion.md).
+describe('iconSwitchVariants', () => {
+  it('never scales an icon in or out from below 0.95', () => {
+    for (const state of ['initial', 'exit'] as const) {
+      const { scale } = iconSwitchVariants[state] as { scale: number };
+
+      expect(scale).toBeGreaterThanOrEqual(0.95);
+    }
   });
 });
