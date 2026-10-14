@@ -1,7 +1,5 @@
 'use client';
 
-import * as React from 'react';
-import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 
 import { Button, type ButtonProps } from './button';
@@ -9,27 +7,26 @@ import { Calendar } from './calendar';
 import { cn } from './lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
-export type DatePickerProps = Omit<
+type DatePickerProps = Omit<
   ButtonProps,
   'value' | 'onChange' | 'children' | 'asChild'
 > & {
   value?: Date | null;
   onChange: (date: Date | undefined) => void;
-  /**
-   * The selected date already formatted in the caller's locale. Formatting
-   * here would mean date-fns' English output on a `vi` screen, and this
-   * package has no next-intl context to do better; the date-fns fallback
-   * below only covers call sites that have not been migrated yet.
-   */
-  displayValue?: string;
-  placeholder?: string;
+  /** Shown while no date is picked. */
+  placeholder: string;
+  /** The picked date in the caller's locale; this package has no i18n context. */
+  formatDate: (date: Date) => string;
+  /** react-day-picker locale for the month and weekday names. */
+  calendarLocale?: React.ComponentProps<typeof Calendar>['locale'];
 };
 
 export function DatePicker({
   value,
   onChange,
-  displayValue,
-  placeholder = 'Pick a date',
+  placeholder,
+  formatDate,
+  calendarLocale,
   className,
   // `id` and the aria-* attributes arrive from <FormControl>'s Slot; dropping
   // them left <FormLabel htmlFor> pointing at nothing and the error unlinked.
@@ -47,8 +44,8 @@ export function DatePicker({
             className
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {value ? displayValue ?? format(value, 'PPP') : placeholder}
+          <CalendarIcon />
+          {value ? formatDate(value) : placeholder}
         </Button>
       </PopoverTrigger>
 
@@ -57,7 +54,8 @@ export function DatePicker({
           mode="single"
           selected={value ?? undefined}
           onSelect={onChange}
-          initialFocus
+          locale={calendarLocale}
+          autoFocus
         />
       </PopoverContent>
     </Popover>

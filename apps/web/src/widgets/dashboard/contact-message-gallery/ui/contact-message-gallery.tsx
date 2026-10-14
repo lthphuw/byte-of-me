@@ -248,9 +248,7 @@ export function ContactMessageGallery() {
 
       <ConfirmDeleteDialog
         isOpen={confirmingDelete}
-        onClose={() => {
-          if (!deleteMutation.isPending) setConfirmingDelete(false);
-        }}
+        onClose={() => setConfirmingDelete(false)}
         onConfirm={() => {
           if (selectedMessage) deleteMutation.mutate(selectedMessage.id);
         }}

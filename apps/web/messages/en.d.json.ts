@@ -291,8 +291,20 @@ declare const messages: {
     "returnHome": "Return Home"
   },
   "components": {
+    "copyButton": {
+      "copy": "Copy to clipboard",
+      "copied": "Copied"
+    },
+    "datePicker": {
+      "placeholder": "Pick a date"
+    },
     "dialog": {
       "close": "Close"
+    },
+    "multiSelect": {
+      "search": "Search...",
+      "empty": "No results found.",
+      "remove": "Remove {label}"
     },
     "expandableText": {
       "showLess": "Show less",

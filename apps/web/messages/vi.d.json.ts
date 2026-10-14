@@ -291,8 +291,20 @@ declare const messages: {
     "returnHome": "Về trang chủ"
   },
   "components": {
+    "copyButton": {
+      "copy": "Sao chép",
+      "copied": "Đã sao chép"
+    },
+    "datePicker": {
+      "placeholder": "Chọn ngày"
+    },
     "dialog": {
       "close": "Đóng"
+    },
+    "multiSelect": {
+      "search": "Tìm kiếm...",
+      "empty": "Không có kết quả.",
+      "remove": "Bỏ {label}"
     },
     "expandableText": {
       "showLess": "Thu gọn",

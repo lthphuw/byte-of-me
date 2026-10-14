@@ -10,8 +10,7 @@ import {
   FormItem,
   FormLabel,
   fromEditorContent,
-  MultiSelect,
-  type Option,
+  type MultiSelectOption,
   Skeleton,
   toEditorContent,
 } from '@byte-of-me/ui';
@@ -30,6 +29,7 @@ import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
 import {
   ContentFade,
   FieldMessage,
+  LocalizedMultiSelect,
   TextField,
   TranslationTabs,
 } from '@/shared/ui';
@@ -80,7 +80,7 @@ function toFormValues(
 
 /** One picker's options and read state. A picker shows its own skeleton, error and empty state. */
 type ProjectPickerState = {
-  options: Option[];
+  options: MultiSelectOption[];
   isLoading: boolean;
   isError: boolean;
   retry: () => void;
@@ -122,7 +122,7 @@ function ProjectPicker({
       <ContentFade>
         <FormControl>
           {/* 40px is the trigger's desktop height; `can-hover:min-h-9` would shrink it. */}
-          <MultiSelect
+          <LocalizedMultiSelect
             className="min-h-11 can-hover:min-h-10"
             options={picker.options}
             selected={selected}

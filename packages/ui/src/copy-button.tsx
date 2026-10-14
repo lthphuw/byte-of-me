@@ -1,57 +1,44 @@
 'use client';
 
-import { type MouseEvent, useCallback } from 'react';
 import { AnimatePresence, m } from 'framer-motion';
 
 import { Button } from './button';
-import { useClipboard } from './hooks/index';
+import { useClipboard } from './hooks/use-clipboard';
 import { Icons } from './icons';
-import { cn } from './lib/utils';
 // Straight at the token modules, not `./motion` — its barrel pulls in
 // MotionProvider and framer-motion's full feature set.
 import { menuTransition } from './motion/transitions';
 import { iconSwitchVariants } from './motion/variants';
 
-export interface CopyButtonProps {
-  copyTimeout?: number;
-  content: string;
-  className?: string;
-  style?: React.CSSProperties;
-}
-
 export function CopyButton({
-  copyTimeout = 2000,
   content,
+  label,
+  copiedLabel,
   className,
-  style,
-}: CopyButtonProps) {
-  const { copy, copied } = useClipboard({ timeout: copyTimeout });
-
-  const handleCopy = useCallback(
-    (e: MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      copy(content);
-    },
-    [copy, content]
-  );
+}: {
+  content: string;
+  /** Accessible name before the copy; this package has no i18n context. */
+  label: string;
+  /** Accessible name after it. */
+  copiedLabel: string;
+  className?: string;
+}) {
+  const { copy, copied } = useClipboard();
 
   return (
     <Button
-      type={'button'}
       size="icon"
       variant="ghost"
-      onClick={handleCopy}
-      className={cn(
-        'relative h-8 w-8 rounded-md transition-[color,background-color,box-shadow] duration-200',
-        // copied && 'border-green-500/50 bg-green-500/10 text-green-600'
-        className
-      )}
-      style={style}
-      aria-label={copied ? 'Copied' : 'Copy to clipboard'}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        copy(content);
+      }}
+      className={className}
+      aria-label={copied ? copiedLabel : label}
     >
       <AnimatePresence mode="wait" initial={false}>
-        <m.div
+        <m.span
           key={copied ? 'check' : 'copy'}
           variants={iconSwitchVariants}
           initial="initial"
@@ -60,12 +47,8 @@ export function CopyButton({
           transition={menuTransition}
           className="flex items-center justify-center"
         >
-          {copied ? (
-            <Icons.check size={14} className="stroke-[3]" />
-          ) : (
-            <Icons.copy size={14} />
-          )}
-        </m.div>
+          {copied ? <Icons.check className="stroke-[3]" /> : <Icons.copy />}
+        </m.span>
       </AnimatePresence>
     </Button>
   );

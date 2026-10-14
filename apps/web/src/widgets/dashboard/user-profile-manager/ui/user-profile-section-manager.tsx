@@ -1,16 +1,11 @@
 'use client';
 
 import type { UseFormReturn } from 'react-hook-form';
-import {
-  DatePicker,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@byte-of-me/ui';
+import { FormControl, FormField, FormItem, FormLabel } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
 import type { UserProfileFormValues } from '@/entities/user-profile';
+import { LocalizedDatePicker } from '@/shared/ui';
 
 export function UserProfileSectionManager({
   form,
@@ -37,7 +32,7 @@ export function UserProfileSectionManager({
               <FormItem>
                 <FormLabel>{t('commonInfo.birthdateLabel')}</FormLabel>
                 <FormControl>
-                  <DatePicker
+                  <LocalizedDatePicker
                     value={field.value ? new Date(field.value) : null}
                     onChange={(date) =>
                       field.onChange(date ? date.toISOString() : null)

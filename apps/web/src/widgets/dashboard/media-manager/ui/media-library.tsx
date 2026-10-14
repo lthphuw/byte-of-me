@@ -19,6 +19,7 @@ export function MediaLibrary({
   deletingId?: string | null;
 }) {
   const t = useTranslations('dashboard.shared.crud');
+  const tCopy = useTranslations('components.copyButton');
 
   return (
     <div
@@ -34,6 +35,8 @@ export function MediaLibrary({
           onDeleteMedia={() => onDelete(item)}
           isDeleting={deletingId === item.id}
           deleteLabel={t('deleteItem', { name: item.fileName })}
+          copyLabel={tCopy('copy')}
+          copiedLabel={tCopy('copied')}
         />
       ))}
     </div>

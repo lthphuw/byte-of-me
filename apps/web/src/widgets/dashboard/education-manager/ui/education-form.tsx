@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { type DefaultValues, useForm } from 'react-hook-form';
 import {
-  DatePicker,
   Form,
   FormControl,
   FormField,
@@ -27,7 +26,7 @@ import {
 import { useScopedImageUploader } from '@/entities/media/query';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import { useEditorLabels } from '@/shared/hooks/use-editor-labels';
-import { TextField, TranslationTabs } from '@/shared/ui';
+import { LocalizedDatePicker, TextField, TranslationTabs } from '@/shared/ui';
 import { FieldMessage } from '@/shared/ui/form';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
@@ -163,7 +162,10 @@ export function EducationForm({
               <FormItem>
                 <FormLabel>{t('dialog.startDateLabel')}</FormLabel>
                 <FormControl>
-                  <DatePicker value={field.value} onChange={field.onChange} />
+                  <LocalizedDatePicker
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
                 </FormControl>
                 <FieldMessage message={fieldState.error?.message} />
               </FormItem>
@@ -177,7 +179,7 @@ export function EducationForm({
               <FormItem>
                 <FormLabel>{t('dialog.endDateLabel')}</FormLabel>
                 <FormControl>
-                  <DatePicker
+                  <LocalizedDatePicker
                     value={field.value}
                     onChange={(d) => field.onChange(d || null)}
                   />

@@ -1,6 +1,6 @@
 'use client';
 
-import type { Option } from '@byte-of-me/ui';
+import type { MultiSelectOption } from '@byte-of-me/ui';
 
 import type { ProjectOption } from '@/entities/project/api/get-admin-project-options';
 import { useProjectReferenceOptions } from '@/entities/project/query';
@@ -19,7 +19,7 @@ export type PickerState = {
  * the form is gated on; the form's own call then reads the same cache entries.
  */
 export function useBlogReferenceOptions(enabled = true): {
-  tagOptions: Option[];
+  tagOptions: MultiSelectOption[];
   projects: ProjectOption[];
   tagsState: PickerState;
   projectsState: PickerState;

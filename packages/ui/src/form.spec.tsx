@@ -161,14 +161,26 @@ function expectWiredUp(
 describe('FormControl wiring', () => {
   test('DatePicker', async () => {
     const { container, target } = await submitAndResolveLabelTarget(
-      <DatePicker onChange={() => {}} />
+      <DatePicker
+        onChange={() => {}}
+        placeholder="Pick a date"
+        formatDate={() => ''}
+      />
     );
     expectWiredUp(container, target, 'button');
   });
 
   test('MultiSelect', async () => {
     const { container, target } = await submitAndResolveLabelTarget(
-      <MultiSelect options={[]} selected={[]} onValueChange={() => {}} />
+      <MultiSelect
+        options={[]}
+        selected={[]}
+        onValueChange={() => {}}
+        placeholder="Pick"
+        searchPlaceholder="Search"
+        emptyLabel="None"
+        removeLabel={(label) => label}
+      />
     );
     expectWiredUp(container, target, 'button');
   });

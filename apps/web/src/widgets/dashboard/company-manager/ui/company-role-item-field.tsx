@@ -8,7 +8,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
   ConfirmDeleteDialog,
-  DatePicker,
   FormControl,
   FormField,
   FormItem,
@@ -23,7 +22,7 @@ import { CompanyTaskItemField } from './company-task-item-field';
 import type { CompanyFormValues } from '@/entities/company/model/company-schema';
 import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-submit';
 import { cn } from '@/shared/lib/utils';
-import { TextField, TranslationTabs } from '@/shared/ui';
+import { LocalizedDatePicker, TextField, TranslationTabs } from '@/shared/ui';
 import { roleHasContent } from '@/widgets/dashboard/company-manager/lib/role-has-content';
 
 interface CompanyRoleItemFieldProps {
@@ -119,7 +118,7 @@ export function CompanyRoleItemField({
               <FormItem>
                 <FormLabel>{t('role.startDateLabel')}</FormLabel>
                 <FormControl>
-                  <DatePicker
+                  <LocalizedDatePicker
                     value={field.value ?? undefined}
                     onChange={(d) => field.onChange(d || null)}
                   />
@@ -136,7 +135,7 @@ export function CompanyRoleItemField({
               <FormItem>
                 <FormLabel>{t('role.endDateLabel')}</FormLabel>
                 <FormControl>
-                  <DatePicker
+                  <LocalizedDatePicker
                     value={field.value ?? undefined}
                     onChange={(d) => field.onChange(d || null)}
                   />

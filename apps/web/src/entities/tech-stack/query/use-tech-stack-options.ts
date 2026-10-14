@@ -1,13 +1,13 @@
 'use client';
 
 import { useMemo } from 'react';
-import type { Option } from '@byte-of-me/ui';
+import type { MultiSelectOption } from '@byte-of-me/ui';
 import { useQuery } from '@tanstack/react-query';
 
 import { techStackQueries } from '@/entities/tech-stack/query/tech-stack-queries';
 
 export interface TechStackOptionsResult {
-  options: Option[];
+  options: MultiSelectOption[];
   isLoading: boolean;
   isError: boolean;
   refetch: () => void;
@@ -24,7 +24,7 @@ export function useTechStackOptions(enabled: boolean): TechStackOptionsResult {
     enabled,
   });
 
-  const options = useMemo<Option[]>(
+  const options = useMemo<MultiSelectOption[]>(
     () => data?.map((tech) => ({ label: tech.name, value: tech.id })) ?? [],
     [data]
   );

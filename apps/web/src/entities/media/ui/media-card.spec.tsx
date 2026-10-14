@@ -25,13 +25,17 @@ const media = (overrides: Partial<Media>): Media => ({
   ...overrides,
 });
 
+const COPY_LABELS = { copyLabel: 'Copy link', copiedLabel: 'Link copied' };
+
 afterEach(cleanup);
 
 describe('MediaCard', () => {
   it.each(['video/mp4', 'video/webm'])(
     'shows a %s entry as a muted metadata-only video, never an img',
     (mimeType) => {
-      const { container } = render(<MediaCard media={media({ mimeType })} />);
+      const { container } = render(
+        <MediaCard media={media({ mimeType })} {...COPY_LABELS} />
+      );
 
       const video = container.querySelector('video');
       expect(video).not.toBeNull();
@@ -50,6 +54,7 @@ describe('MediaCard', () => {
     const { container, getByText } = render(
       <MediaCard
         media={media({ mimeType: 'application/pdf', fileName: 'a.pdf' })}
+        {...COPY_LABELS}
       />
     );
 

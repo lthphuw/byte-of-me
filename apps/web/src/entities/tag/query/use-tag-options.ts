@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import type { Option } from '@byte-of-me/ui';
+import type { MultiSelectOption } from '@byte-of-me/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useLocale } from 'next-intl';
 
@@ -12,7 +12,7 @@ import { tagQueries } from '@/entities/tag/query/tag-queries';
  * same cache entry, so a tag saved on one page is already on the other.
  */
 export function useTagOptions(enabled = true): {
-  tagOptions: Option[];
+  tagOptions: MultiSelectOption[];
   isLoading: boolean;
   isError: boolean;
   retry: () => void;

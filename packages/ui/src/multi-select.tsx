@@ -4,7 +4,6 @@ import * as React from 'react';
 import { Check, ChevronsUpDown, X } from 'lucide-react';
 
 import { Badge } from './badge';
-import { Button, type ButtonProps } from './button';
 import {
   Command,
   CommandEmpty,
@@ -14,105 +13,121 @@ import {
   CommandList,
 } from './command';
 import { cn } from './lib/utils';
-import { Popover, PopoverContent, PopoverTrigger } from './popover';
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+  PopoverTrigger,
+} from './popover';
 
-export interface Option {
+export interface MultiSelectOption {
   label: string;
   value: string;
 }
 
-export type MultiSelectProps = Omit<
-  ButtonProps,
-  'value' | 'onChange' | 'children' | 'asChild'
+type MultiSelectProps = Omit<
+  React.ComponentPropsWithoutRef<'button'>,
+  'value' | 'onChange' | 'children'
 > & {
-  options: Option[];
+  options: MultiSelectOption[];
   selected: string[];
   onValueChange: (value: string[]) => void;
-  placeholder?: string;
+  /** Shown while nothing is selected. */
+  placeholder: string;
+  searchPlaceholder: string;
+  emptyLabel: string;
+  /** Accessible name of a chip's remove button, from the chip's label. */
+  removeLabel: (label: string) => string;
 };
 
 export function MultiSelect({
   options,
-  selected = [],
+  selected,
   onValueChange,
-  placeholder = 'Select items...',
+  placeholder,
+  searchPlaceholder,
+  emptyLabel,
+  removeLabel,
   className,
   // `id` and the aria-* attributes arrive from <FormControl>'s Slot.
   ...triggerProps
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);
 
-  const handleUnselect = (item: string) => {
-    onValueChange(selected.filter((i) => i !== item));
-  };
+  const toggle = (value: string) =>
+    onValueChange(
+      selected.includes(value)
+        ? selected.filter((item) => item !== value)
+        : [...selected, value]
+    );
 
+  // The chips sit beside the trigger, not inside it: a button in a button is
+  // invalid HTML and the inner one has no place in the tab order.
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          {...triggerProps}
-          role="combobox"
-          aria-expanded={open}
+      <PopoverAnchor asChild>
+        <div
           className={cn(
-            'h-auto min-h-10 w-full justify-between hover:bg-background',
+            'flex min-h-11 w-full items-start rounded-md border border-input bg-background shadow-sm focus-within:ring-1 focus-within:ring-ring can-hover:min-h-10',
             className
           )}
         >
-          <div className="flex flex-wrap gap-1">
-            {selected.length > 0 ? (
-              selected.map((value) => {
-                const option = options.find((o) => o.value === value);
+          {selected.length > 0 && (
+            <div className="flex flex-wrap gap-1 py-1.5 pl-2">
+              {selected.map((value) => {
+                const label =
+                  options.find((option) => option.value === value)?.label ??
+                  value;
                 return (
                   <Badge
                     key={value}
                     variant="secondary"
                     className="font-normal"
                   >
-                    {option?.label ?? value}
+                    {label}
                     <button
-                      className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleUnselect(value);
-                      }}
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                      onClick={() => handleUnselect(value)}
+                      type="button"
+                      aria-label={removeLabel(label)}
+                      disabled={triggerProps.disabled}
+                      onClick={() => toggle(value)}
+                      className="-my-1 -mr-1.5 ml-1 flex size-6 items-center justify-center rounded-full text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                      <X className="size-3" />
                     </button>
                   </Badge>
                 );
-              })
-            ) : (
-              <span className="text-muted-foreground">{placeholder}</span>
-            )}
-          </div>
-          <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
+              })}
+            </div>
+          )}
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              {...triggerProps}
+              role="combobox"
+              aria-expanded={open}
+              className="flex min-h-[inherit] flex-1 items-center justify-between gap-2 self-stretch px-3 text-left text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {selected.length === 0 && (
+                <span className="text-muted-foreground">{placeholder}</span>
+              )}
+              <ChevronsUpDown className="ml-auto size-4 shrink-0 opacity-50" />
+            </button>
+          </PopoverTrigger>
+        </div>
+      </PopoverAnchor>
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>{emptyLabel}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
-                  onSelect={() => {
-                    onValueChange(
-                      selected.includes(option.value)
-                        ? selected.filter((item) => item !== option.value)
-                        : [...selected, option.value]
-                    );
-                  }}
+                  onSelect={() => toggle(option.value)}
                 >
                   <Check
                     className={cn(
-                      'mr-2 h-4 w-4',
                       selected.includes(option.value)
                         ? 'opacity-100'
                         : 'opacity-0'

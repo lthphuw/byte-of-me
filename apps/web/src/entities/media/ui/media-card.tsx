@@ -14,12 +14,14 @@ export interface MediaCardProps {
   isDeleting?: boolean;
   className?: string;
   /**
-   * Accessible name for the icon-only delete action. Passed in rather than
+   * Accessible names for the icon-only actions. Passed in rather than
    * translated here: this is an `entities/` component and must not decide
-   * which `dashboard.*` namespace owns the copy (same rule as
-   * `useMediaLibrary`'s toast messages).
+   * which namespace owns the copy (same rule as `useMediaLibrary`'s toast
+   * messages).
    */
   deleteLabel?: string;
+  copyLabel: string;
+  copiedLabel: string;
 }
 
 export function MediaCard({
@@ -28,6 +30,8 @@ export function MediaCard({
   isDeleting,
   className,
   deleteLabel,
+  copyLabel,
+  copiedLabel,
 }: MediaCardProps) {
   const isImage = media.mimeType.startsWith('image/');
   const isVideo = media.mimeType.startsWith('video/');
@@ -83,7 +87,8 @@ export function MediaCard({
             <div className="flex justify-end gap-2">
               <CopyButton
                 content={media.url}
-                className="min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9"
+                label={copyLabel}
+                copiedLabel={copiedLabel}
               />
 
               {onDeleteMedia && (

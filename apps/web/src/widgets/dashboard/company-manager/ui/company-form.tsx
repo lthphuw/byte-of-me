@@ -4,13 +4,11 @@ import { useEffect, useState } from 'react';
 import { type DefaultValues, useFieldArray, useForm } from 'react-hook-form';
 import {
   Button,
-  DatePicker,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  MultiSelect,
   Skeleton,
 } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,7 +24,13 @@ import {
 import type { AdminCompany } from '@/entities/company/model/types';
 import type { TechStackOptionsResult } from '@/entities/tech-stack/query';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
-import { FieldMessage, TextField, TranslationTabs } from '@/shared/ui';
+import {
+  FieldMessage,
+  LocalizedDatePicker,
+  LocalizedMultiSelect,
+  TextField,
+  TranslationTabs,
+} from '@/shared/ui';
 
 function toFormValues(
   initialData?: AdminCompany
@@ -181,7 +185,10 @@ export function CompanyForm({
               <FormItem>
                 <FormLabel>{t('dialog.startDateLabel')}</FormLabel>
                 <FormControl>
-                  <DatePicker value={field.value} onChange={field.onChange} />
+                  <LocalizedDatePicker
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
                 </FormControl>
                 <FieldMessage message={fieldState.error?.message} />
               </FormItem>
@@ -195,7 +202,7 @@ export function CompanyForm({
               <FormItem>
                 <FormLabel>{t('dialog.endDateLabel')}</FormLabel>
                 <FormControl>
-                  <DatePicker
+                  <LocalizedDatePicker
                     value={field.value ?? undefined}
                     onChange={(d) => field.onChange(d || null)}
                   />
@@ -216,7 +223,7 @@ export function CompanyForm({
                 <Skeleton className="h-10 w-full" />
               ) : (
                 <FormControl>
-                  <MultiSelect
+                  <LocalizedMultiSelect
                     options={techStacks.options}
                     selected={field.value || []}
                     onValueChange={field.onChange}
@@ -295,7 +302,6 @@ export function CompanyForm({
             />
           ))}
         </div>
-
       </form>
     </Form>
   );

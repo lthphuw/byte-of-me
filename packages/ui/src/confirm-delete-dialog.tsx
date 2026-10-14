@@ -18,10 +18,10 @@ interface ConfirmDeleteDialogProps {
   onClose: () => void;
   onConfirm: () => void;
   isLoading?: boolean;
-  title?: string;
-  description?: string;
-  actionText?: string;
-  cancelText?: string;
+  title: string;
+  description: string;
+  actionText: string;
+  cancelText: string;
 }
 
 export function ConfirmDeleteDialog({
@@ -29,22 +29,26 @@ export function ConfirmDeleteDialog({
   onClose,
   onConfirm,
   isLoading,
-  title = 'Are you absolutely sure?',
-  description = 'This action cannot be undone. This will permanently delete the item.',
-  actionText = 'Delete',
-  cancelText = 'Cancel',
+  title,
+  description,
+  actionText,
+  cancelText,
 }: ConfirmDeleteDialogProps) {
   return (
-    <AlertDialog open={isOpen} onOpenChange={onClose}>
+    <AlertDialog
+      open={isOpen}
+      // Escape and a scrim tap must not abandon a delete that is in flight.
+      onOpenChange={(open) => {
+        if (!open && !isLoading) onClose();
+      }}
+    >
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel
-            disabled={isLoading}
-          >
+          <AlertDialogCancel disabled={isLoading}>
             {cancelText}
           </AlertDialogCancel>
           <AlertDialogAction
@@ -55,7 +59,7 @@ export function ConfirmDeleteDialog({
             }}
             disabled={isLoading}
           >
-            {isLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}{' '}
+            {isLoading && <Loader2 className="animate-spin" />}
             {actionText}
           </AlertDialogAction>
         </AlertDialogFooter>
