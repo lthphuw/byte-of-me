@@ -122,7 +122,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 | `apps/web/server-only-stub.ts` | `server-only` becomes an empty module; must load before `env.ts` |
 | `apps/web/next-runtime-stubs.ts` | `Bun.plugin` stubs: `next-intl/server`, `next/cache` (no-op revalidate), `@/shared/lib/auth/auth` (fake `auth()`), `@/shared/lib/auth` (identity: default ADMIN owner, id `admin-1`), `@/shared/i18n/navigation` (records pushes) |
 | `apps/web/test-setup.ts` | DB guard (below) |
-| `apps/web/happydom.ts` | happy-dom `Window` on `globalThis` for `*.spec.tsx` |
+| `apps/web/happydom.ts` | happy-dom `Window` on `globalThis` for `*.spec.tsx`, and `IS_REACT_ACT_ENVIRONMENT = true` so React's `act` runs without a warning per call |
 | `apps/web/src/shared/ui/lazy-rich-text-editor.test-stub.ts` | replaces the TipTap editor for every spec |
 
 - DB guard: `test-setup.ts` sets the two database URL env vars to a local, unreachable placeholder unconditionally, then throws if either is non-local. Bun loads `apps/web/.env` before preloads, so a `??=` default would keep production (AGENTS §10).

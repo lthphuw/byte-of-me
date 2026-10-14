@@ -8,7 +8,7 @@
 packages/ui/
 ├── package.json             exports map = the public surface (table below)
 ├── bunfig.toml              [test] preload = ["./happydom.ts"], resolved against cwd
-├── happydom.ts              GlobalRegistrator.register(): DOM for *.spec.tsx
+├── happydom.ts              GlobalRegistrator.register(): DOM for *.spec.tsx; sets IS_REACT_ACT_ENVIRONMENT
 └── src/
     ├── index.ts             root barrel; omits rich-text*, rich-text-editor, mermaid, math
     ├── <name>.tsx           one file per primitive: shadcn-style wrappers + app-neutral composites
