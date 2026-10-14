@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import type { FeaturedWorkDemoItem } from './featured-work-demo';
 import { FeaturedWorkItem } from './featured-work-item';
-import { FeaturedWorkLinkRow } from './featured-work-link';
+import { FeaturedWorkLinkBadge } from './featured-work-link';
 import { WORK_LINKS } from './featured-work-row-classes';
 
 import type { PublicFeaturedWork } from '@/entities/featured-work/model/types';
@@ -28,7 +28,7 @@ export function FeaturedWorkRow({ work }: { work: PublicFeaturedWork }) {
     work.links.length > 0 ? (
       <ul aria-label={t('featuredLinksLabel')} className={WORK_LINKS}>
         {work.links.map((link) => (
-          <FeaturedWorkLinkRow key={link.id} link={link} />
+          <FeaturedWorkLinkBadge key={link.id} link={link} />
         ))}
       </ul>
     ) : null;

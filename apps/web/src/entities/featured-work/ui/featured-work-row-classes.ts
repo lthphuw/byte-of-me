@@ -2,8 +2,8 @@
  * The featured work's classes, in a plain module: the loading skeleton is a server
  * component and imports these, so they must not sit in a `'use client'` file.
  *
- * A work is a rule, then its title and meta, then its demo, then its details, one
- * column at every width. The homepage column is `max-w-3xl`, too narrow for a split.
+ * A work is a rule, then its title and its proof badges, then its demo, then its details,
+ * one column at every width. The homepage column is `max-w-3xl`, too narrow for a split.
  */
 
 /**
@@ -15,20 +15,6 @@ export const WORK_ROW = 'grid gap-y-3 py-5 md:gap-y-4 md:py-7';
 /** The title and the proof links under it. */
 export const WORK_HEAD = 'grid min-w-0 gap-1.5';
 
-/** The proof links, one row each, in a tight list. */
-export const WORK_LINKS = 'grid gap-2';
-
-/** One proof link: its text, then its meta on the same line, wrapping on a phone. */
-export const WORK_LINK = 'flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1';
-
-/** A proof link's text: underlined at rest, as every link in the app is. */
-export const WORK_LINK_TEXT =
-  'min-w-0 rounded-sm text-[15px] font-medium text-foreground underline decoration-border underline-offset-4 [overflow-wrap:anywhere] hover:decoration-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:text-base';
-
-/** A pull request's state: a text pill, so the word carries the meaning and colour only adds to it. */
-export const WORK_STATE =
-  'inline-flex items-center rounded-full border border-border px-2 py-0.5 text-xs leading-4';
-
 /**
  * The title, at the size of the other homepage item titles: 18px on a phone, 20px from
  * md. Larger titles made this block outweigh the sections around it.
@@ -36,9 +22,15 @@ export const WORK_STATE =
 export const WORK_TITLE =
   'font-heading text-lg leading-snug tracking-tight [overflow-wrap:anywhere] md:text-xl';
 
-/** The repo and stars, or the host, in one muted line. */
-export const WORK_META =
-  'flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-xs tabular-nums text-muted-foreground md:text-sm';
+/** The proof links as one wrapping line of badges. */
+export const WORK_LINKS = 'flex flex-wrap gap-2';
+
+/**
+ * One proof link as a badge. 36px tall, the touch target the rest of the app uses; the
+ * text stays the foreground colour, so the badge needs no hue of its own.
+ */
+export const WORK_BADGE =
+  'inline-flex min-h-9 items-center gap-2 rounded-full border border-border px-3 text-sm font-medium tabular-nums text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 
 /**
  * The demo strip bleeds to the card's edge on a phone, past the card's 16px padding, so

@@ -11,7 +11,6 @@ import { HomepageFeaturedWorksLoading } from './homepage-featured-works-loading'
 import { FeaturedWorkItem } from '@/entities/featured-work/ui/featured-work-item';
 import {
   WORK_HEAD,
-  WORK_LINK,
   WORK_LINKS,
   WORK_MEDIA_BLEED,
   WORK_ROW,
@@ -40,10 +39,7 @@ describe('HomepageFeaturedWorksLoading', () => {
         links={
           <ul className={WORK_LINKS}>
             <li>
-              <div className={WORK_LINK}>
-                <a href="https://example.com/work">INT8</a>
-                <span>roboflow/rf-detr</span>
-              </div>
+              <a href="https://example.com/work">INT8</a>
             </li>
           </ul>
         }
@@ -108,7 +104,7 @@ describe('HomepageFeaturedWorksLoading', () => {
     }
   });
 
-  it('draws the title as one bar at the title size, with one bar row per proof link under it', () => {
+  it('draws the title as one bar at the title size, with one badge per proof link under it', () => {
     const { container } = render(<HomepageFeaturedWorksLoading />);
     const head = container.querySelector('li')?.firstElementChild;
 
@@ -116,7 +112,7 @@ describe('HomepageFeaturedWorksLoading', () => {
     const links = head?.children[1];
     expect(links?.tagName).toBe('UL');
     expect(links?.children).toHaveLength(2);
-    expect(links?.querySelectorAll('li > div > .animate-pulse').length).toBe(4);
+    expect(links?.querySelectorAll('li > .animate-pulse').length).toBe(2);
   });
 
   it('keeps the heading to a single bar, with the list under it', () => {

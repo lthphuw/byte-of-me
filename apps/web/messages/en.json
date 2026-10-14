@@ -266,7 +266,6 @@
     "openSourceTitle": "Open source",
     "viewAllContributions": "All contributions",
     "featuredWorksTitle": "Featured works",
-    "featuredStars": "{count, plural, one {# star} other {# stars}}",
     "featuredOpensInNewTab": "(opens in a new tab)",
     "featuredLinksLabel": "Pull requests",
     "featuredPrStateOpen": "Open",

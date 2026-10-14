@@ -52,7 +52,7 @@ function renderRow(work: Partial<PublicFeaturedWork> = {}) {
 afterEach(cleanup);
 
 describe('FeaturedWorkRow links', () => {
-  it('draws each link as its own new-tab link, and the title as plain text', () => {
+  it('draws each link as a badge: a new-tab link, with the title as plain text', () => {
     renderRow();
 
     const link = screen.getByRole('link', { name: /INT8.*\(opens in a new tab\)/ });
@@ -65,7 +65,7 @@ describe('FeaturedWorkRow links', () => {
     ).toBeTruthy();
   });
 
-  it('lists the links in order, under the title', () => {
+  it('lists the badges in order, under the title', () => {
     renderRow({
       links: [
         ...base.links,
@@ -89,39 +89,31 @@ describe('FeaturedWorkRow links', () => {
     ]);
   });
 
-  it('shows the repo, the number, the state and the stars of a pull request', () => {
+  it('shows a pull request without a label as its number, with the repo on hover', () => {
+    renderRow({ links: [{ ...base.links[0]!, label: null }] });
+
+    const link = screen.getByRole('link', { name: /#512/ });
+    expect(link.textContent).toContain('#512');
+    expect(link.getAttribute('title')).toBe('roboflow/rf-detr #512');
+  });
+
+  it('names the state for a screen reader, and shows no state word', () => {
     renderRow();
 
-    expect(screen.getByText('roboflow/rf-detr #512')).toBeTruthy();
-    expect(screen.getByText('Merged')).toBeTruthy();
-    expect(screen.getByText(/4,200 stars/)).toBeTruthy();
-  });
-
-  it('names a link by its label, else the PR title, else the repo and number', () => {
-    renderRow({
-      links: [
-        { ...base.links[0]!, id: 'a', label: null },
-        { ...base.links[0]!, id: 'b', label: null, github: null },
-      ],
-    });
-
     expect(
-      screen.getByRole('link', { name: /Export INT8.*opens in a new tab/ })
+      screen.getByRole('link', { name: /INT8.*Merged.*opens in a new tab/ })
     ).toBeTruthy();
-    expect(
-      screen.getAllByRole('link', { name: /roboflow\/rf-detr #512.*opens in a new tab/ })
-    ).toHaveLength(1);
+    expect(screen.queryByText('Merged')).toBeNull();
   });
 
-  it('shows the state as text, so colour is never the only signal', () => {
-    renderRow({
-      links: [{ ...base.links[0]!, github: { ...base.links[0]!.github!, state: 'OPEN' } }],
-    });
+  it('shows no stars and no repo line', () => {
+    renderRow();
 
-    expect(screen.getByText('Open')).toBeTruthy();
+    expect(screen.queryByText(/stars?$/)).toBeNull();
+    expect(screen.queryByText('roboflow/rf-detr #512')).toBeNull();
   });
 
-  it('gives a non-pull-request link its host alone', () => {
+  it('gives a non-pull-request link its host, or its label', () => {
     renderRow({
       links: [
         {
@@ -132,21 +124,29 @@ describe('FeaturedWorkRow links', () => {
           pr: null,
           github: null,
         },
+        {
+          id: 'post',
+          url: 'https://example.com/write',
+          label: 'Write-up',
+          host: 'example.com',
+          pr: null,
+          github: null,
+        },
       ],
     });
 
-    expect(screen.getByRole('link', { name: /example\.com/ })).toBeTruthy();
-    expect(screen.queryByText(/stars?$/)).toBeNull();
+    expect(
+      screen.getByRole('link', { name: /example\.com.*opens in a new tab/ })
+    ).toBeTruthy();
+    expect(screen.getByRole('link', { name: /Write-up/ })).toBeTruthy();
   });
 
-  it('keeps a pull request link with no GitHub facts, showing the repo and number', () => {
-    renderRow({
-      links: [{ ...base.links[0]!, label: null, github: null }],
-    });
+  it('keeps a pull request badge without GitHub facts, with no state name', () => {
+    renderRow({ links: [{ ...base.links[0]!, github: null }] });
 
-    expect(screen.getByRole('link', { name: /roboflow\/rf-detr #512/ })).toBeTruthy();
-    expect(screen.queryByText('Merged')).toBeNull();
-    expect(screen.queryByText(/stars?$/)).toBeNull();
+    const link = screen.getByRole('link', { name: /INT8/ });
+    expect(link.textContent).toContain('INT8');
+    expect(link.textContent).not.toMatch(/Merged|Open|Closed/);
   });
 
   it('draws no link list for a work without links, and no link at all', () => {
@@ -171,24 +171,7 @@ describe('FeaturedWorkRow links', () => {
     expect(container.querySelector('p')).toBeNull();
   });
 
-  it('groups Vietnamese star counts with the locale separator', () => {
-    // The typed catalogue is English literals; the cast only widens it for this locale.
-    const homepage = vi.homepage as unknown as typeof en.homepage;
-    render(
-      <NextIntlClientProvider locale="vi" messages={{ homepage }}>
-        <FeaturedWorkRow
-          work={{
-            ...base,
-            links: [{ ...base.links[0]!, github: { ...base.links[0]!.github!, stars: 9755 } }],
-          }}
-        />
-      </NextIntlClientProvider>
-    );
-
-    expect(screen.getByText(/9\.755 sao/)).toBeTruthy();
-  });
-
-  it('names the pull request state in Vietnamese', () => {
+  it('names the state in Vietnamese for a screen reader', () => {
     const homepage = vi.homepage as unknown as typeof en.homepage;
     render(
       <NextIntlClientProvider locale="vi" messages={{ homepage }}>
@@ -196,7 +179,9 @@ describe('FeaturedWorkRow links', () => {
       </NextIntlClientProvider>
     );
 
-    expect(screen.getByText('Đã hợp nhất')).toBeTruthy();
+    expect(
+      screen.getByRole('link', { name: /Đã hợp nhất/ })
+    ).toBeTruthy();
   });
 });
 

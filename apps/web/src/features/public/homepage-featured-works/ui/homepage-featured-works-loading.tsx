@@ -3,7 +3,6 @@ import { Skeleton } from '@byte-of-me/ui';
 import {
   WORK_BODY,
   WORK_HEAD,
-  WORK_LINK,
   WORK_LINKS,
   WORK_MEDIA_BLEED,
   WORK_ROW,
@@ -16,7 +15,7 @@ import { cn } from '@/shared/lib/utils';
  * list keeps roughly its height when it resolves.
  */
 const ROWS = 2;
-/** Proof-link rows per work: the real list shows one row per link, most works have two. */
+/** Proof-link badges per work: most works have two. */
 const LINKS = 2;
 
 /**
@@ -52,10 +51,7 @@ export function HomepageFeaturedWorksLoading() {
               <ul className={WORK_LINKS}>
                 {[...Array(LINKS)].map((_, j) => (
                   <li key={j}>
-                    <div className={WORK_LINK}>
-                      <Skeleton className="h-3.5 w-36 md:h-4" />
-                      <Skeleton className="h-3 w-24" />
-                    </div>
+                    <Skeleton className="h-9 w-20 rounded-full" />
                   </li>
                 ))}
               </ul>

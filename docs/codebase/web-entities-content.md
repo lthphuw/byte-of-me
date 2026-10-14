@@ -31,7 +31,7 @@ apps/web/src/entities/                 (* = 'use client')
     │                                  parse-github-pull-request-url, github-pull-request-query, safe-link
     ├── model/                         featured-work-schema.ts  types.ts  query-keys.ts (featuredWorkKeys)
     ├── query/                         featured-work-queries.ts (featuredWorkQueries: adminPage, adminById) + use-admin-featured-work-by-id
-    ├── ui/                            featured-work-row, featured-work-item*, featured-work-link*, featured-work-demo*, use-demo-zoom, featured-work-row-classes
+    ├── ui/                            featured-work-row, featured-work-item*, featured-work-link (badge), featured-work-demo*, use-demo-zoom, featured-work-row-classes
     └── index.ts                       api + model + ui
 ```
 
@@ -83,7 +83,7 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 - Editors load the full row by id on open (`get-admin-*-by-id`), never the list row: `apps/web/src/widgets/dashboard/company-manager/ui/company-manager.tsx:73`; blog at `blog-manager.tsx:69`.
 - Dashboard lists are prefetched with `*Keys.adminPage` into `HydrationBoundary`: `apps/web/src/app/[locale]/(protected)/dashboard/{blogs,companies,educations,featured-works}/page.tsx`.
 - Save: `apps/web/src/shared/hooks/use-crud-manager.ts` invalidates `keys.all` (`:133`) and removes the detail key (`:139-141`) in `onSuccess`.
-- Homepage featured works: `apps/web/src/features/public/homepage-featured-works/ui/homepage-featured-works.tsx:8` → `get-public-featured-works.ts` → `lib/load-public-featured-works.ts` (DB rows with their links, position order, six at most) → `lib/get-featured-work-github.ts` (GitHub facts per pull-request link: repo, stars, title, state; 1 h; failure returns `{}` and each link keeps its repo and number from its url).
+- Homepage featured works: `apps/web/src/features/public/homepage-featured-works/ui/homepage-featured-works.tsx:8` → `get-public-featured-works.ts` → `lib/load-public-featured-works.ts` (DB rows with their links, position order, six at most) → `lib/get-featured-work-github.ts` (GitHub facts per pull-request link: repo, stars, title, state; 1 h; failure returns `{}`). The homepage badge reads only `state` (the dot) and the number from the url; stars and title are fetched but not shown.
 - Blog body images: `getPublicBlogBySlug` reads each body image's stored size from its media row (`apps/web/src/entities/blog/lib/read-image-sizes.ts`), cached with the post under the `image-sizes` key.
 - Homepage media: each clip's box takes the stored size (`media.width`/`height`, from `load-public-featured-works.ts`) before the file is fetched, and the file's own metadata only corrects it. Each clip's file is requested only once it is within 200 px of the screen (`apps/web/src/entities/featured-work/ui/featured-work-demo.tsx`, `NEAR`), then kept. A clip and an image sit under a pulsing cover until their file draws, and the cover fades out in place (`MediaCover`, `shared/ui/media-cover.tsx`). Full screen (`featured-work-demo.tsx`) takes the clip's stage with sound on, through the browser's element API where it exists. Where the browser refuses it or has none (iPhone Safari), the same stage is pinned to the viewport instead. A toolbar zooms 1×–4× (steps, pinch, one-finger pan; `use-demo-zoom.ts`), and the zoom resets on leaving.
 - Education: `apps/web/src/features/public/homepage-education/ui/homepage-education.tsx:12` (`getAllPublicEducations`).
