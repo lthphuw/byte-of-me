@@ -247,6 +247,45 @@ describe('sanitizeHtml', () => {
     });
   });
 
+  describe('a > or < inside a quoted attribute value', () => {
+    it('stays part of the value instead of ending the tag', () => {
+      expect(sanitizeHtml('<img src="a.png" alt="a -> b">')).toBe(
+        '<img src="a.png" alt="a -&gt; b" />'
+      );
+    });
+
+    it('escapes an angle-bracket pair so it cannot read as markup', () => {
+      expect(sanitizeHtml('<img src="a.png" alt="x <c> y">')).toBe(
+        '<img src="a.png" alt="x &lt;c&gt; y" />'
+      );
+    });
+
+    it('reads a single-quoted value the same way', () => {
+      expect(sanitizeHtml(`<img src='a.png' alt='say "hi" > ok'>`)).toBe(
+        '<img src="a.png" alt="say &quot;hi&quot; &gt; ok" />'
+      );
+    });
+
+    it('still drops a handler that sits after the quoted >', () => {
+      expect(
+        sanitizeHtml('<a title=">" onclick="alert(1)" href="/x">t</a>')
+      ).toBe('<a title="&gt;" href="/x">t</a>');
+    });
+
+    it('is unchanged by a second pass', () => {
+      const once = sanitizeHtml('<img src="a.png" alt="a -> b <c>">');
+
+      expect(sanitizeHtml(once)).toBe(once);
+    });
+
+    it('turns a tag whose quote never closes into text, not markup', () => {
+      const out = sanitizeHtml('<a title="oops>click</a>');
+
+      expect(out).not.toContain('<a');
+      expect(out).toContain('&lt;a title=');
+    });
+  });
+
   it('escapes quotes inside a kept attribute value', () => {
     expect(sanitizeHtml("<p title='a\"b'>x</p>")).toBe(
       '<p title="a&quot;b">x</p>'

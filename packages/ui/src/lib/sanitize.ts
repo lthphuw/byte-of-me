@@ -110,6 +110,11 @@ const VOID_TAGS = new Set(['br', 'hr', 'img']);
 const SAFE_SCHEMES = new Set(['http', 'https', 'mailto', 'tel']);
 const SCHEME = /^([a-z][a-z0-9+.-]*):/i;
 
+// One tag, with a quoted attribute value read whole so a `>` inside `alt="a -> b"`
+// does not end it (a browser reads it the same way). A `<` that opens no
+// complete tag matches alone and becomes text.
+const TAG = /<(?:[^>"']|"[^"]*"|'[^']*')*>|</g;
+
 const REPLACEMENT_CHAR = '\uFFFD';
 
 /**
@@ -229,7 +234,9 @@ export function sanitizeHtml(html: string): string {
     ''
   );
 
-  clean = clean.replace(/<[^>]*>/g, (tag) => {
+  clean = clean.replace(TAG, (tag) => {
+    if (tag === '<') return '&lt;';
+
     const match = /^<\s*(\/?)\s*([a-zA-Z][a-zA-Z0-9]*)/.exec(tag);
     if (!match) return '';
 
@@ -254,7 +261,13 @@ export function sanitizeHtml(html: string): string {
       if ((attrName === 'href' || attrName === 'src') && isUnsafeUrl(value)) {
         value = '#';
       }
-      attrs.push(`${attrName}="${value.replace(/"/g, '&quot;')}"`);
+      // `<` and `>` are escaped so the output stays one well-formed tag and
+      // survives a second pass through this function unchanged.
+      const escaped = value
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      attrs.push(`${attrName}="${escaped}"`);
     }
 
     const rendered = attrs.length ? `<${name} ${attrs.join(' ')}` : `<${name}`;

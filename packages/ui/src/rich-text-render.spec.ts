@@ -104,3 +104,17 @@ describe('renderRichTextHtml', () => {
     expect(html).toContain('&quot;type&quot;');
   });
 });
+
+describe('renderRichTextDocumentHtml: attribute values', () => {
+  it('keeps an image alt that contains > and <, whole and inert', () => {
+    const html = renderRichTextDocumentHtml(
+      docOf({
+        type: 'image',
+        attrs: { src: 'https://cdn.test/a.png', alt: 'a -> b <c>' },
+      })
+    );
+
+    expect(html).toContain('alt="a -&gt; b &lt;c&gt;"');
+    expect(html).not.toContain('<c>');
+  });
+});
