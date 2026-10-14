@@ -1,4 +1,9 @@
 import { prisma } from '@byte-of-me/db';
+import {
+  isRichTextBlank,
+  parseRichTextContent,
+} from '@byte-of-me/ui/lib/rich-text-content';
+import { renderRichTextDocumentHtml } from '@byte-of-me/ui/rich-text-render';
 
 import {
   defaultFeaturedWorkGithubDeps,
@@ -30,7 +35,7 @@ const MAX_WORKS = 6;
 /** A link before GitHub is asked about it: `github` is added by the loader. */
 type LinkRow = Omit<PublicFeaturedWorkLink, 'github'>;
 
-type FeaturedWorkRow = Pick<PublicFeaturedWork, 'id' | 'title' | 'media'> & {
+type FeaturedWorkRow = Pick<PublicFeaturedWork, 'id' | 'title' | 'detailsHtml' | 'media'> & {
   links: LinkRow[];
 };
 
@@ -102,6 +107,17 @@ function toPublicLinks(stored: StoredLink[]): LinkRow[] {
     .slice(0, FEATURED_WORK_LINKS_MAX);
 }
 
+/**
+ * Sanitized HTML of one row's details, or null. Runs inside the cached handler,
+ * so a cache hit skips TipTap and the sanitizer. Only a `doc` that renders is a
+ * body: anything else shows no details, and the stored JSON is never printed.
+ */
+function toDetailsHtml(details: string | null): string | null {
+  if (isRichTextBlank(details)) return null;
+  if (parseRichTextContent(details)?.type !== 'doc') return null;
+  return renderRichTextDocumentHtml(details);
+}
+
 /** A work with no usable translation is skipped: one bad row must not blank the section. */
 export function toRows(
   works: Array<{
@@ -113,6 +129,7 @@ export function toRows(
     translations: Array<{
       language: string;
       title: string;
+      details: string | null;
     }>;
   }>,
   locale: string
@@ -126,6 +143,8 @@ export function toRows(
       {
         id: work.id,
         title: translation.title,
+        // Row-level: the body comes from the translation the title came from.
+        detailsHtml: toDetailsHtml(translation.details),
         links: toPublicLinks(work.links),
         media: toPublicMedia(work.media),
       },
@@ -171,6 +190,7 @@ async function getPublicFeaturedWorkRows(): Promise<
               select: {
                 language: true,
                 title: true,
+                details: true,
               },
             },
           },

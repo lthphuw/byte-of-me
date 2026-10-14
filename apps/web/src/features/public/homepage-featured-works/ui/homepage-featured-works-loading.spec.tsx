@@ -43,6 +43,7 @@ describe('HomepageFeaturedWorksLoading', () => {
             </li>
           </ul>
         }
+        details={<p>How it was done.</p>}
         media={[
           {
             id: 'm1',
@@ -88,7 +89,7 @@ describe('HomepageFeaturedWorksLoading', () => {
     ).toEqual([]);
   });
 
-  it('draws two works, each a head and a demo strip, and no rule of its own', () => {
+  it('draws two works, each a head, a demo strip and a body, and no rule of its own', () => {
     const { container } = render(<HomepageFeaturedWorksLoading />);
     // The works are the list under the heading; the proof-link rows are nested inside them.
     const rows = [...(container.querySelector('ul')?.children ?? [])];
@@ -96,7 +97,7 @@ describe('HomepageFeaturedWorksLoading', () => {
     expect(rows).toHaveLength(2);
     for (const row of rows) {
       expect(classesOf(row)).toEqual(expect.arrayContaining(WORK_ROW.split(' ')));
-      expect(row.children).toHaveLength(2);
+      expect(row.children).toHaveLength(3);
       expect(row.children[0]?.className).toBe(WORK_HEAD);
       expect(row.children[1]?.className).toContain(WORK_MEDIA_BLEED.split(' ')[0]!);
       expect(row.querySelector('.leading-relaxed')).toBeNull();

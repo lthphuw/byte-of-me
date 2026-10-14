@@ -32,6 +32,9 @@ export const WORK_LINKS = 'flex flex-wrap items-center gap-2';
 export const WORK_BADGE =
   'inline-flex min-h-9 items-center gap-2 rounded-full border border-border px-3 text-sm font-medium tabular-nums text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 
+/** The details: the compact body size used across the homepage. */
+export const WORK_BODY = 'min-w-0 max-w-prose text-[15px] leading-7';
+
 /**
  * The demo strip bleeds to the card's edge on a phone, past the card's 16px padding, so
  * a second clip shows at the edge. From md the demo sits inside the card's padding.

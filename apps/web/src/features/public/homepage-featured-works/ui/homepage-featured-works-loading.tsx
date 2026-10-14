@@ -1,6 +1,7 @@
 import { Skeleton } from '@byte-of-me/ui';
 
 import {
+  WORK_BODY,
   WORK_HEAD,
   WORK_LINKS,
   WORK_MEDIA_BLEED,
@@ -10,8 +11,8 @@ import {
 import { cn } from '@/shared/lib/utils';
 
 /**
- * Two works, about what the homepage shows now. Each one has a title with its badges and a
- * demo, so the list keeps roughly its height when it resolves.
+ * Two works, about what the homepage shows now. Each one has a demo and a body, so the
+ * list keeps roughly its height when it resolves.
  */
 const ROWS = 2;
 /** Proof-link badges per work: most works have two. */
@@ -64,6 +65,12 @@ export function HomepageFeaturedWorksLoading() {
             >
               <Skeleton className="aspect-video w-[82%] shrink-0 rounded-md md:w-full" />
               <Skeleton className="hidden aspect-video shrink-0 rounded-md md:block md:w-full" />
+            </div>
+
+            <div className={WORK_BODY}>
+              <Line barClassName="w-full" />
+              <Line barClassName="w-full" />
+              <Line barClassName="w-2/3" />
             </div>
           </li>
         ))}

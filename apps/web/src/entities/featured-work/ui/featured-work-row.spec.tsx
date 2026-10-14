@@ -1,6 +1,7 @@
 /**
  * What a visitor can observe on one featured work: its proof links (one row each, with
- * the pull request's repo, number, state and stars), then the demo. Renders the real component inside the real English catalogue.
+ * the pull request's repo, number, state and stars), the demo, and the details, which
+ * always show. Renders the real component inside the real English catalogue.
  */
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'bun:test';
@@ -21,6 +22,7 @@ const PR = 'https://github.com/roboflow/rf-detr/pull/512';
 const base: PublicFeaturedWork = {
   id: 'w1',
   title: 'Faster detector export',
+  detailsHtml: null,
   links: [
     {
       id: 'l1',
@@ -180,6 +182,36 @@ describe('FeaturedWorkRow links', () => {
     expect(
       screen.getByRole('link', { name: /Đã hợp nhất/ })
     ).toBeTruthy();
+  });
+});
+
+const DETAILS_HTML = '<p>How it was done: a streaming writer.</p>';
+
+describe('FeaturedWorkRow with details', () => {
+  it('shows the details at once, with no toggle and no link of their own', () => {
+    renderRow({ detailsHtml: DETAILS_HTML });
+
+    expect(screen.queryByRole('button')).toBeNull();
+    expect(
+      screen.getByText('How it was done: a streaming writer.')
+    ).toBeTruthy();
+    expect(screen.getAllByRole('link')).toHaveLength(1);
+  });
+
+  it('shows a work with details and no links, with no link anywhere', () => {
+    renderRow({ detailsHtml: DETAILS_HTML, links: [] });
+
+    expect(screen.queryByRole('button')).toBeNull();
+    expect(screen.queryByRole('link')).toBeNull();
+    expect(
+      screen.getByText('How it was done: a streaming writer.')
+    ).toBeTruthy();
+  });
+
+  it('gives a work without details no button at all', () => {
+    renderRow();
+
+    expect(screen.queryByRole('button')).toBeNull();
   });
 });
 
