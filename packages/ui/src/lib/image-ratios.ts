@@ -1,5 +1,5 @@
 /** A stored image's pixel size. Whole numbers, as the database holds them. */
-export interface ImageSize {
+interface ImageSize {
   width: number;
   height: number;
 }

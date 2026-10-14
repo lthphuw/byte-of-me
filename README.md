@@ -43,7 +43,7 @@ The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced 
 ### Engineered for quality
 - **Feature-Sliced Design** architecture with clear `app → widgets → features → entities → shared` boundaries.
 - **Server Components first**; server actions for mutations, TanStack Query for client-side server state.
-- **Bundle discipline** — subpath exports keep TipTap out of public-site JS; `optimizePackageImports` deep-imports the barrel packages (`lucide-react`, `react-icons`, `date-fns`, `framer-motion`, …).
+- **Bundle discipline** — subpath exports keep TipTap out of public-site JS; `optimizePackageImports` deep-imports the barrel packages (`lucide-react`, `date-fns`, `framer-motion`, …).
 - **Edge caching by route group** — public pages get `s-maxage=3600, stale-while-revalidate=86400`; every dashboard route is `no-store`.
 - **Turborepo + Bun** workspace with shared, independently-typed packages and a full `type-check → lint → test → build` gate.
 

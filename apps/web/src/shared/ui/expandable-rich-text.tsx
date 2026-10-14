@@ -119,7 +119,7 @@ function snapToLineGrid(element: HTMLElement, collapsedHeight: number): number {
 }
 
 /**
- * Collapsed view of rich text, sharing the copy of `ExpandableText`.
+ * Collapsed view of rich text.
  *
  * Clamping happens by measured height rather than `-webkit-line-clamp`, which
  * only ever counts lines of a single text block and so leaves lists, images

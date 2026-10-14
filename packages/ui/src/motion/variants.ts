@@ -49,19 +49,6 @@ export const entranceUp: Variants = {
   }),
 };
 
-/** Plain opacity fade, no movement — a result set swapping in. */
-export const fadeIn: Variants = {
-  hidden: { opacity: 0 },
-  visible: (delay = 0) => ({
-    opacity: 1,
-    transition: {
-      duration: motionDuration.fast,
-      ease: motionEase.out,
-      delay,
-    },
-  }),
-};
-
 /**
  * One item of a staggered group. The parent carries
  * `delayChildren: stagger(staggerStep(count))`; the item only needs matching

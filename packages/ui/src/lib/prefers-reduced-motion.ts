@@ -1,16 +1,9 @@
 /**
- * Whether the user has asked the OS to reduce motion, read at call time.
- *
- * Deliberately a plain read rather than a hook. Every caller is an event
- * handler that needs the value at the instant it scrolls — not a value that
- * re-renders a component when the setting flips — and two of the call sites
- * (the editor's search-and-replace helpers) are not React at all, so
- * `useMediaQuery` could not reach them.
- *
- * Returns `false` during SSR: `window.matchMedia` does not exist there, and
- * nothing scrolls on the server anyway.
+ * Whether the OS asks for reduced motion, read at call time rather than as a
+ * hook: callers are event handlers (some not React at all) and need the value
+ * at the instant they scroll. `false` on the server, where nothing scrolls.
  */
-export function prefersReducedMotion(): boolean {
+function prefersReducedMotion(): boolean {
   if (typeof window === 'undefined') return false;
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }

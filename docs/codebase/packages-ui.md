@@ -60,7 +60,7 @@ packages/ui/
 ### Flat files
 
 - Primitives (shadcn-style wrappers over Radix or a third-party lib): alert-dialog, avatar, badge, button, calendar, card, carousel, checkbox, collapsible, command, dialog, drawer, dropdown-menu, form, input, label, popover, scroll-area, select, separator, sheet, skeleton, sonner, switch, tabs, textarea, tooltip.
-- Composites: auto-growing-text-area, confirm-delete-dialog, copy-button, date-picker, delete-button, edit-button, empty, expandable-text, icons (`Icons` map), image-placeholder, loading, multi-select, pagination, shell (`ShellBase`), submit-button.
+- Composites: auto-growing-text-area, confirm-delete-dialog, copy-button, date-picker, delete-button, edit-button, empty, icons (`Icons` map: the Lucide glyphs the app uses, an inlined clap, and the brand marks), loading, multi-select, pagination, shell (`ShellBase`).
 
 ## Key flows
 
@@ -113,8 +113,6 @@ cd packages/ui && bun test src/lib/utils.spec.ts  # one spec file, from this dir
 - `packages/ui/src/rich-text-editor/tiptap/extensions/image.tsx:196-197`: §14, `bg-black/40` and `text-white` on the upload overlay.
 - `packages/ui/src/rich-text-editor/tiptap/toolbars/color-and-highlight.tsx:174`: §14, `dark:bg-gray-2`.
 - `packages/ui/src/rich-text-editor/tiptap/toolbars/link.tsx:93-94`: §14, text arrow `↗` used as an icon (Lucide only) and a `decoration-gray-7` class.
-- `packages/ui/src/icons.tsx:1,145-146`: §14, react-icons (`PiHandsClapping`) used for a non-brand glyph (`apps/web/src/features/public/toggle-blog-interactions/ui/blog-interaction-button.tsx:41`).
-- `packages/ui/src/loading.tsx:1`: §9, `'use client'` on a pure SVG spinner with no state, effects, handlers or browser APIs.
 - `packages/ui/src/rich-text-editor/tiptap/rich-text-editor.tsx`: §9, 1,547 lines against the ~300-line component threshold; extract hooks.
 - `packages/ui/src/rich-text-editor/tiptap/toolbars/citation.tsx:80,91,101`, `toolbars/search-and-replace-toolbar.tsx:109`, `extensions/image.tsx:301`: §4, English UI strings hardcoded; the editor has no label props (unlike `pagination.tsx`).
 - `packages/ui/src/lib/rich-text-content.ts:3-20`, `packages/ui/src/shell.tsx:10-22`: §11.14, comment blocks over three lines (about 169 of 549 blocks, line-count heuristic).

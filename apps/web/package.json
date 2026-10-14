@@ -82,7 +82,6 @@
     "react-day-picker": "catalog:",
     "react-dom": "^19.2.5",
     "react-hook-form": "catalog:",
-    "react-icons": "catalog:",
     "sharp": "^0.35.5",
     "sonner": "catalog:",
     "tailwind-merge": "catalog:",
