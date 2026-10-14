@@ -28,8 +28,6 @@ export interface FeaturedWorkDemoItem {
   id: string;
   url: string;
   isVideo: boolean;
-  /** Width over height of the stored file, known before it draws; null until it loads. */
-  knownRatio: number | null;
   /** The visible figcaption (the stored label); null draws none. */
   caption: string | null;
   /** The image's alt: the label, else the work title. */
@@ -65,25 +63,22 @@ const LEVEL =
   'flex h-11 min-w-14 items-center justify-center rounded-full bg-background/80 px-3 font-mono text-xs tabular-nums text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 
 /**
- * The media's box. It reserves 16:9 so nothing shifts before the file arrives, then
- * takes the file's own ratio, so a wide clip is not framed by empty bars. Full screen
- * fills the space the toolbar leaves instead.
+ * The media's box. Every inline box is 16:9, whatever the file's own ratio, so the two
+ * clips of a pair are the same size; the file is fitted inside it. Full screen fills the
+ * space the toolbar leaves instead.
  */
 function Frame({
   children,
-  ratio,
   ref,
   fullscreen = false,
 }: {
   children?: ReactNode;
-  ratio?: number;
   ref?: Ref<HTMLSpanElement>;
   fullscreen?: boolean;
 }) {
   return (
     <span
       ref={ref}
-      style={ratio && !fullscreen ? { aspectRatio: ratio } : undefined}
       className={cn(
         'relative block overflow-hidden bg-muted',
         fullscreen
@@ -97,10 +92,6 @@ function Frame({
 }
 
 /** Width over height of a loaded file, or undefined while its size is unknown. */
-function ratioOf(width: number, height: number): number | undefined {
-  return width > 0 && height > 0 ? width / height : undefined;
-}
-
 function playQuietly(video: HTMLVideoElement) {
   // A refused play() (autoplay policy, an interrupted load) is not an error to show.
   video.play().catch(() => undefined);
@@ -142,13 +133,11 @@ function DemoVideo({
   playLabel,
   fullscreenLabel,
   controlLabels,
-  knownRatio,
 }: {
   src: string;
   playLabel: string;
   fullscreenLabel: string;
   controlLabels: FeaturedWorkDemoControlLabels;
-  knownRatio: number | null;
 }) {
   const reducedMotion = useMediaQuery(REDUCED_MOTION);
   const { ref: frameRef, entry } = useIntersection<HTMLButtonElement>(VISIBLE);
@@ -166,11 +155,6 @@ function DemoVideo({
   const [failed, setFailed] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const zoom = useDemoZoom(videoRef, fullscreen);
-  // The stored size gives the box its shape before the clip is fetched; the file's own
-  // metadata only corrects it if the stored size was wrong or missing.
-  const [ratio, setRatio] = useState<number | undefined>(
-    knownRatio ?? undefined
-  );
   // Set the moment full screen is asked for: the page leaves the viewport before the
   // `fullscreenchange` event arrives, and the visibility effect would pause the clip in between.
   const fullscreenAsked = useRef(false);
@@ -181,10 +165,6 @@ function DemoVideo({
     const video = videoRef.current;
     if (!video) return;
     setFullscreenReady(true);
-    // The server-rendered video may have its size before React listens for the event.
-    if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
-      setRatio(ratioOf(video.videoWidth, video.videoHeight));
-    }
   }, []);
 
   useEffect(() => {
@@ -283,7 +263,7 @@ function DemoVideo({
             FOCUS
           )}
         >
-          <Frame ref={coverRef} ratio={ratio} fullscreen={fullscreen}>
+          <Frame ref={coverRef} fullscreen={fullscreen}>
             <video
               ref={videoRef}
               src={requested ? `${src}${FIRST_FRAME}` : undefined}
@@ -291,14 +271,6 @@ function DemoVideo({
               loop
               playsInline
               preload={requested ? 'metadata' : 'none'}
-              onLoadedMetadata={(event) =>
-                setRatio(
-                  ratioOf(
-                    event.currentTarget.videoWidth,
-                    event.currentTarget.videoHeight
-                  )
-                )
-              }
               onPlay={() => setPlaying(true)}
               onPause={() => setPlaying(false)}
               onError={() => {
@@ -370,30 +342,12 @@ function DemoVideo({
   );
 }
 
-function DemoImage({
-  src,
-  alt,
-  knownRatio,
-}: {
-  src: string;
-  alt: string;
-  knownRatio: number | null;
-}) {
-  const [ratio, setRatio] = useState<number | undefined>(
-    knownRatio ?? undefined
-  );
+function DemoImage({ src, alt }: { src: string; alt: string }) {
   const { ref: coverRef, drawn } = useMediaDrawn<HTMLSpanElement>();
   const imageRef = useRef<HTMLImageElement>(null);
 
-  // A cached image can finish before hydration, and its `load` event is gone.
-  useEffect(() => {
-    const image = imageRef.current;
-    if (image?.complete)
-      setRatio(ratioOf(image.naturalWidth, image.naturalHeight));
-  }, []);
-
   return (
-    <Frame ref={coverRef} ratio={ratio}>
+    <Frame ref={coverRef}>
       {/* A plain <img> is the only way a stored SVG or GIF is drawn: never inline, never <object>. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -402,14 +356,6 @@ function DemoImage({
         alt={alt}
         loading="lazy"
         decoding="async"
-        onLoad={(event) =>
-          setRatio(
-            ratioOf(
-              event.currentTarget.naturalWidth,
-              event.currentTarget.naturalHeight
-            )
-          )
-        }
         className="size-full object-contain"
       />
       <MediaCover drawn={drawn} />
@@ -430,10 +376,9 @@ function DemoFigure({
       playLabel={item.playLabel}
       fullscreenLabel={item.fullscreenLabel}
       controlLabels={controlLabels}
-      knownRatio={item.knownRatio}
     />
   ) : (
-    <DemoImage src={item.url} alt={item.name} knownRatio={item.knownRatio} />
+    <DemoImage src={item.url} alt={item.name} />
   );
 
   return (

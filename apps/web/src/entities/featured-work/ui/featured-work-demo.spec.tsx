@@ -23,7 +23,6 @@ const fp16: FeaturedWorkDemoItem = {
   id: 'm1',
   url: 'https://cdn.example.com/fp16.mp4',
   isVideo: true,
-  knownRatio: null,
   caption: 'FP16',
   name: 'FP16',
   playLabel: 'Play FP16',
@@ -33,7 +32,6 @@ const int8: FeaturedWorkDemoItem = {
   id: 'm2',
   url: 'https://cdn.example.com/int8.gif',
   isVideo: false,
-  knownRatio: null,
   caption: 'INT8',
   name: 'INT8',
   playLabel: 'Play INT8',
@@ -377,66 +375,29 @@ describe('FeaturedWorkDemo placeholder', () => {
 describe('FeaturedWorkDemo frame', () => {
   const frame = (container: HTMLElement) =>
     container.querySelector<HTMLElement>('figure .aspect-video');
-  /** The inline ratio as written, `null` while the frame still holds the 16:9 reserve. */
-  const ratioOf = (container: HTMLElement) => {
-    const match = /aspect-ratio:\s*([\d.]+)/.exec(
-      frame(container)?.getAttribute('style') ?? ''
-    );
-    return match ? Number(match[1]) : null;
-  };
 
-  it("reserves 16:9, then takes the clip's own ratio so a wide clip has no empty bars", () => {
+  it('draws every clip in a 16:9 box, whatever the file\'s own ratio', () => {
     const { container } = render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
-    expect(ratioOf(container)).toBeNull();
-
     const video = videoEl();
-    Object.defineProperty(video, 'videoWidth', {
-      configurable: true,
-      value: 1920,
-    });
-    Object.defineProperty(video, 'videoHeight', {
-      configurable: true,
-      value: 670,
-    });
+    Object.defineProperty(video, 'videoWidth', { configurable: true, value: 1920 });
+    Object.defineProperty(video, 'videoHeight', { configurable: true, value: 670 });
     act(() => {
       video.dispatchEvent(new Event('loadedmetadata'));
     });
 
-    expect(ratioOf(container)).toBeCloseTo(1920 / 670, 3);
+    expect(frame(container)).not.toBeNull();
+    expect(frame(container)?.getAttribute('style')).toBeNull();
   });
 
-  it('keeps 16:9 when the file reports no size', () => {
-    const { container } = render(<FeaturedWorkDemo media={[fp16]} controlLabels={controlLabels} />);
-
-    act(() => {
-      videoEl().dispatchEvent(new Event('loadedmetadata'));
-    });
-
-    expect(ratioOf(container)).toBeNull();
-  });
-
-  it('takes the stored size before the file has drawn, so the box never waits for it', () => {
-    const sized = { ...fp16, knownRatio: 1920 / 670 };
-    const { container } = render(<FeaturedWorkDemo media={[sized]} controlLabels={controlLabels} />);
-
-    expect(ratioOf(container)).toBeCloseTo(1920 / 670, 3);
-  });
-
-  it('gives an image its own ratio once it has loaded', () => {
+  it('draws an image in the same 16:9 box as a clip', () => {
     const { container } = render(<FeaturedWorkDemo media={[int8]} controlLabels={controlLabels} />);
     const image = screen.getByRole('img', { name: 'INT8' });
-    Object.defineProperty(image, 'naturalWidth', {
-      configurable: true,
-      value: 800,
-    });
-    Object.defineProperty(image, 'naturalHeight', {
-      configurable: true,
-      value: 200,
-    });
+    Object.defineProperty(image, 'naturalWidth', { configurable: true, value: 800 });
+    Object.defineProperty(image, 'naturalHeight', { configurable: true, value: 200 });
 
     fireEvent.load(image);
 
-    expect(ratioOf(container)).toBe(4);
+    expect(frame(container)?.getAttribute('style')).toBeNull();
   });
 });
 

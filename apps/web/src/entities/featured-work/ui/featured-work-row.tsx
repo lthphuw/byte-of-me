@@ -47,7 +47,6 @@ export function FeaturedWorkRow({ work }: { work: PublicFeaturedWork }) {
       id: item.id,
       url: item.url,
       isVideo: isVideoMimeType(item.mimeType),
-      knownRatio: item.width && item.height ? item.width / item.height : null,
       caption: item.label,
       name,
       playLabel: t('featuredDemoPlay', { label: name }),
