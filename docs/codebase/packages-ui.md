@@ -72,7 +72,7 @@ packages/ui/
 - Scroll reveal: `fadeUp` starts at `motionOpacity.placeholder` (0.2), not 0, so a block below the fold holds its space as a faded placeholder until it reveals (`packages/ui/src/motion/tokens.ts`, `variants.ts`). Every `RevealSection` user gets this, not only the homepage. `RevealSection` takes only `id`, `className` and `immediate`; it reveals once, as a `div`.
 - Programmatic scroll: call `scrollIntoViewBehavior()` (`packages/ui/src/lib/prefers-reduced-motion.ts:27`), never a literal `'smooth'`. Used at `packages/ui/src/rich-text-editor/tiptap/outline-aside.tsx` and `packages/ui/src/rich-text-editor/tiptap/extensions/search-and-replace.tsx`.
 - Public page frame: `ShellBase` (`packages/ui/src/shell.tsx:7`) owns the top/bottom padding and block gap; a page passes only its max-width (AGENTS §14).
-- Styling and build: apps/web scans `packages/ui/src/**` (`apps/web/tailwind.config.ts:8`) and transpiles the package (`apps/web/next.config.js`, `transpilePackages`).
+- Styling and build: apps/web scans `packages/ui/src/**` (`apps/web/tailwind.config.ts:8`) and transpiles the package (`apps/web/next.config.js`, `transpilePackages`). Dependencies: this package declares the Radix, TipTap, KaTeX, Mermaid, embla, cmdk, vaul and highlight.js libraries it imports; `apps/web` declares only what its own source imports (it no longer lists the UI-only ones). Versions shared by both packages live in the root `workspaces.catalog`, and every dependency here that has a catalog entry uses `catalog:`.
 
 ## Recipes
 
