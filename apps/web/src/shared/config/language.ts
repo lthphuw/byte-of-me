@@ -1,8 +1,7 @@
 import type { LocaleType } from '@/shared/types';
 
-export const supportedLanguages: LocaleType[] = ['en', 'vi'];
-
-export const languageNames: Record<LocaleType, string> = {
+/** The message key under `global.i18nToggle` that names each language. */
+export const languageNames = {
   en: 'english',
   vi: 'vietnamese',
-};
+} as const satisfies Record<LocaleType, string>;
