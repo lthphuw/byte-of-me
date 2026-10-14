@@ -1,72 +1,41 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-export interface UseClipboardInput {
-  /** Time in ms after which the copied state will reset, `2000` by default */
-  timeout?: number;
-}
-
-export interface UseClipboardReturnValue {
-  /** Function to copy value to clipboard */
-  copy: (value: string) => void;
-
-  /** Function to reset copied state and error */
-  reset: () => void;
-
-  /** Error if copying failed */
-  error: Error | null;
-
-  /** Boolean indicating if the value was copied successfully */
-  copied: boolean;
-}
-
-export function useClipboard(
-  options: UseClipboardInput = {}
-): UseClipboardReturnValue {
-  const timeout = options.timeout ?? 2000;
-  const [error, setError] = useState<Error | null>(null);
+/**
+ * Copies text and reports it: `copied` stays true for `timeout` ms after a
+ * success, and `copy` resolves to whether the browser took the text (it
+ * refuses outside a secure context, or when permission is denied).
+ */
+export function useClipboard({ timeout = 2000 }: { timeout?: number } = {}) {
   const [copied, setCopied] = useState(false);
-  const timeoutRef = useRef<number | null>(null);
+  const timer = useRef<number | undefined>(undefined);
+  const mounted = useRef(true);
 
-  useEffect(
-    () => () => {
-      window.clearTimeout(timeoutRef.current!);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      window.clearTimeout(timer.current);
+    };
+  }, []);
+
+  const copy = useCallback(
+    async (value: string): Promise<boolean> => {
+      try {
+        await navigator.clipboard.writeText(value);
+      } catch {
+        return false;
+      }
+      if (mounted.current) {
+        window.clearTimeout(timer.current);
+        setCopied(true);
+        timer.current = window.setTimeout(() => setCopied(false), timeout);
+      }
+      return true;
     },
-    []
+    [timeout]
   );
 
-  const handleCopyResult = (value: boolean) => {
-    window.clearTimeout(timeoutRef.current!);
-    timeoutRef.current = window.setTimeout(() => setCopied(false), timeout);
-    setCopied(value);
-  };
-
-  const copy = (value: string) => {
-    if ('clipboard' in navigator) {
-      navigator.clipboard
-        .writeText(value)
-        .then(() => {
-          setError(null);
-          handleCopyResult(true);
-        })
-        .catch((err) => setError(err));
-    } else {
-      setError(new Error('useClipboard: navigator.clipboard is not supported'));
-    }
-  };
-
-  const reset = () => {
-    setCopied(false);
-    setError(null);
-    window.clearTimeout(timeoutRef.current!);
-  };
-
-  return { copy, reset, error, copied };
-}
-
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace useClipboard {
-  export type Input = UseClipboardInput;
-  export type ReturnValue = UseClipboardReturnValue;
+  return { copy, copied };
 }

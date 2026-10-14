@@ -211,7 +211,7 @@ export const TipTapFloatingMenu = memo(function TipTapFloatingMenu({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const [debouncedSearch] = useDebounce(search, 300);
+  const debouncedSearch = useDebounce(search, 300);
   const commandRef = useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);

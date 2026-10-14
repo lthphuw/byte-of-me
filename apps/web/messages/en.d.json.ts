@@ -201,6 +201,7 @@ declare const messages: {
     "cancel": "Cancel",
     "hideCommentFailed": "Failed to delete the comment, try again later",
     "linkCopied": "Link copied to clipboard",
+    "linkCopyFailed": "Could not copy the link",
     "home": "Home",
     "allPosts": "All posts",
     "tableOfContents": "On this page",

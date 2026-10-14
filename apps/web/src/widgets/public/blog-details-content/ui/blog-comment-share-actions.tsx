@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@byte-of-me/ui';
+import { Button, useClipboard } from '@byte-of-me/ui';
 import { FileDown, MessageSquare, Share2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -35,17 +35,22 @@ export function BlogCommentShareActions({
   noCommentAppear?: boolean;
 }) {
   const t = useTranslations('blogDetails');
+  const { copy } = useClipboard();
   const handleShare = async () => {
     const url = window.location.href;
 
     // Web Share API is unavailable on most desktop browsers.
     if (navigator.share) {
-      await navigator.share({ title, url });
-      return;
+      try {
+        await navigator.share({ title, url });
+        return;
+      } catch (error) {
+        // The reader closed the sheet: nothing to report, nothing to copy.
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+      }
     }
 
-    await navigator.clipboard.writeText(url);
-    toast(t('linkCopied'));
+    toast(t((await copy(url)) ? 'linkCopied' : 'linkCopyFailed'));
   };
 
   return (

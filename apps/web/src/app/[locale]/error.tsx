@@ -26,10 +26,10 @@ export default function Error({
     [error]
   );
 
-  const { copied, copy } = useClipboard({ timeout: 2000 });
+  const { copied, copy } = useClipboard();
 
   const handleCopyError = useCallback(() => {
-    copy(prettyStringify(errorDetails));
+    void copy(prettyStringify(errorDetails));
   }, [copy, errorDetails]);
 
   useEffect(() => {

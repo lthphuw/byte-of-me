@@ -198,6 +198,7 @@
     "cancel": "Huỷ",
     "hideCommentFailed": "Xoá bình luận thất bại, vui lòng thử lại sau",
     "linkCopied": "Đã sao chép liên kết",
+    "linkCopyFailed": "Không sao chép được liên kết",
     "home": "Trang chủ",
     "allPosts": "Tất cả bài viết",
     "tableOfContents": "Nội dung",

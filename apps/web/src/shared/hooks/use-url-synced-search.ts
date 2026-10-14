@@ -59,7 +59,7 @@ export function useUrlSyncedSearch({
   delay = SEARCH_DEBOUNCE_MS,
 }: UseUrlSyncedSearchParams): UrlSyncedSearch {
   const [search, setSearch] = useState(urlSearch);
-  const [debounced] = useDebounce(search, delay);
+  const debounced = useDebounce(search, delay);
 
   const lastWritten = useRef(urlSearch);
 

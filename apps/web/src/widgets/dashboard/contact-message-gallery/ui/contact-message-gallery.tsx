@@ -33,7 +33,7 @@ export function ContactMessageGallery() {
   const format = useFormatter();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const [debouncedSearch] = useDebounce(search, 400);
+  const debouncedSearch = useDebounce(search, 400);
 
   const [selectedMessage, setSelectedMessage] =
     useState<AdminContactMessage | null>(null);

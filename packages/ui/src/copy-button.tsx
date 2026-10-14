@@ -32,7 +32,7 @@ export function CopyButton({
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        copy(content);
+        void copy(content);
       }}
       className={className}
       aria-label={copied ? copiedLabel : label}
